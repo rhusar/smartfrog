@@ -10,6 +10,9 @@ rem  set SFDYNAMICCLASSLOADING_ON=ENABLED
 rem Uncomment to enable Security
 rem  set SFSECURITY_ON=ENABLED
 
+rem To define a user classpath, use variable SFUSERCLASSPATH
+rem set SFUSERCLASSPATH=.
+
 rem -------------------End user properties-------------------------
 
 
@@ -56,6 +59,6 @@ if not defined SFUSERHOME4 goto continue6
   CALL "%SFHOME%\bin\setClassPath"
 :continue6
 
-if defined srcDir set CLASSPATH=%srcDir%;%classpath%
+if defined SFUSERCLASSPATH set CLASSPATH=%SFUSERCLASSPATH%;%classpath%
 
 
