@@ -23,6 +23,7 @@ package org.smartfrog.sfcore.logging;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 
 import java.io.PrintStream;
 import java.io.Serializable;
@@ -53,6 +54,8 @@ import java.util.Date;
  */
 public class LogToErrImpl implements LogToErr, Log, LogMessage, LogLevel, Serializable {
 
+    //Configuration for LogImpl class
+    ComponentDescription classComponentDescription = null;
 
   /** Include the instance name in the log message? */
   protected boolean showLogName = true;
@@ -138,11 +141,18 @@ public class LogToErrImpl implements LogToErr, Log, LogMessage, LogLevel, Serial
      */
 
     public LogToErrImpl(String name, Integer initialLogLevel,PrintStream out) {
+        setOutstream(out);
+        setLevel(initialLogLevel.intValue());
+      //Check Class and read configuration...including system.properties
+        try {
+          ComponentDescription classComponentDescription = LogImpl.getClassComponentDescription(this, true);
+        } catch (SmartFrogException ex) {
+           this.warn(ex.toString());
+        }
         assert name != null;
         logName = name;
         // Set initial log level
         setLevel(initialLogLevel.intValue());
-        setOutstream(out);
     }
 
     /**
