@@ -39,5 +39,6 @@ For more information: www.smartfrog.org
 #include "org/smartfrog/sfcore/workflow/components/terminator.sf"
 #include "org/smartfrog/sfcore/workflow/components/attribute.sf"
 #include "org/smartfrog/sfcore/workflow/components/eventCounter.sf"
+#include "org/smartfrog/sfcore/workflow/components/eventQueue.sf"
 
 
