@@ -25,7 +25,8 @@ import org.apache.tools.ant.BuildException;
 
 /**
  * Run an application by deploying it locally; only return from ant after it has finished.
- * The default timeout of this task is zero; it only exits when finished.
+ * The default timeout of this task is zero; it only exits when finished. It does
+ * have a failonerror value of true; any failure to run is an error.
  *
  * @ant.task category="SmartFrog" name="sf-run"
  */
@@ -37,7 +38,7 @@ public class RunApplicationTask extends DeployingTaskBase {
     public void init() throws BuildException {
         super.init();
         setFailOnError(true);
-        setTaskTimeout(0);
+        setTimeout(0);
     }
 
     /**

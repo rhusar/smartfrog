@@ -27,7 +27,8 @@ import org.apache.tools.ant.BuildException;
  * Ant task to stop a smartfrog daemon on a host
  * As the daemon is just another process, this is implemented as a call to shut down the application
  * named 'rootProcess'.
- * By default this target raises an error when the daemon cannot be stopped,
+ * By default this target raises an error when the application cannot be stopped, and has a timeout
+ * set to the standard default value. {@link SmartFrogTask#DEFAULT_TIMEOUT_VALUE}.
  * @author steve loughran
  * @ant.task category="SmartFrog" name="sf-stopdaemon"
  *
@@ -37,7 +38,8 @@ public class StopDaemon extends SmartFrogTask {
     public StopDaemon() {
         setHost("localhost");
         setFailOnError(true);
-    }
+        setTimeout(DEFAULT_TIMEOUT_VALUE);
+   }
 
     /**
      * execution logic

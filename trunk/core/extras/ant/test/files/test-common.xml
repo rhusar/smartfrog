@@ -14,8 +14,10 @@
    <property name="medium.timeout"   value="10000" />
   
    <presetdef name="sf-block">
-       <waitfor maxwait="10" maxwaitunit="second">
-        <socket server="localhost" port="3800"/>
+     <waitfor maxwait="10" maxwaitunit="second"
+        checkevery="1" checkeveryunit="second"
+        timeoutproperty="block.timeout">
+          <socket server="localhost" port="3800"/>
       </waitfor>
    </presetdef>
 

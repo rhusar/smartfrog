@@ -38,7 +38,7 @@ import org.apache.tools.ant.Project;
  * <li>set the timeout to enforce a death time on the process.
  * </ol>
  * Timeout killing of a process is somewhat brutal; we do not (yet) cleanly shut
- * down the localhost, though that is a distinctly possibile option in future.
+ * down the localhost, though that is a distinctly possible option in future.
  * @author steve loughran
  * created 16-Feb-2004 16:37:26
  * @ant.task category="SmartFrog" name="sf-startdaemon"
@@ -73,14 +73,6 @@ public class StartDaemon extends DeployingTaskBase {
     public void setSpawn(boolean spawn) {
         this.spawn=spawn;
         setFailOnError(false);
-    }
-
-    /**
-     * set the timeout for execution. This is incompatible with spawning.
-     * @param timeout
-     */
-    public void setTimeout(long timeout) {
-        smartfrog.setTimeout(new Long(timeout));
     }
 
     /**
