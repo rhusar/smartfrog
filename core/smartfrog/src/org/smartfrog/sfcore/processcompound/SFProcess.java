@@ -475,7 +475,7 @@ public class SFProcess implements MessageKeys {
         String subProcess) throws SmartFrogException, RemoteException {
         try {
             if (host==null) {
-                return sfSelectTargetProcess(host,
+                return sfSelectTargetProcess((InetAddress)null,
                                            subProcess);
             } else {
                 return sfSelectTargetProcess(InetAddress.getByName(host),
