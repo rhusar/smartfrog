@@ -188,7 +188,7 @@ public class SmartFrogDeploymentException extends SmartFrogRuntimeException {
                                 ? (get(SOURCE)+ " failed to deploy ") : "" ));
         strb.append ((((this.containsKey(OBJECT_NAME)))? ("'"+get(OBJECT_NAME)
                                  +"' component") : "unnamed component" ));
-        strb.append ((super.getMessage() == null)  ? "" : ": "+super.getMessage().toString());
+        //strb.append ((super.getMessage() == null)  ? "" : ": "+super.getMessage().toString());
        return strb.toString();
     }
 
