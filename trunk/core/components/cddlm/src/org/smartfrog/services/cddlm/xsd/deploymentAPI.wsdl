@@ -1,0 +1,370 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<wsdl:definitions 
+	targetNamespace="http://smartfrog.org/cddlm" 
+	xmlns:apachesoap="http://xml.apache.org/xml-soap" 
+	xmlns:impl="http://smartfrog.org/cddlm" 
+	xmlns:intf="http://smartfrog.org/cddlm" 
+	xmlns:tns1="http://cddlm.services.smartfrog.org" 
+  xmlns:api="http://cddlm.services.smartfrog.org"
+	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" 
+	xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" 
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns:cdl="urn:cddlm/xml/0.1"
+  xmlns:wsa="http://schemas.xmlsoap.org/ws/2003/03/addressing"
+  xmlns:jsdl="http://www.gridforum.org/JSDL"
+  >
+  
+  <!-- ============================================================= -->
+  <!--
+    This is the WSDL Describing the service API for the public deployment
+    services of a CDDLM Basic Services runtime. 
+    
+    Version: 0.1. 
+    This is an initial draft for the first demonstration-grade prototypes. 
+    It may change completely in future. 
+    
+    WSDL created by Apache Axis version: 1.2beta2
+    Built on Jul 14, 2004 (13:52:26 BST)
+    Then extended by Steve Loughran
+  -->
+  <!-- ============================================================= -->
+ <wsdl:types>
+  <xsd:schema elementFormDefault="qualified" 
+    targetNamespace="http://cddlm.services.smartfrog.org" 
+    xmlns="http://www.w3.org/2001/XMLSchema">
+    
+  <!-- ============================================================= -->
+  <!-- BEGIN SIMPLETYPES -->
+  <!-- ============================================================= -->
+    
+  <xsd:simpleType name="callbackEnum">
+    <xsd:annotation>
+      <xsd:documentation>
+      Enumeration of supported callback types. Any
+      unexpected type constitutes an error and should be
+      flagged. 
+        -none: we have no callback
+        -direct:  caller calls URL with a predefined event message
+        -ws-notification:  callbacks via WS-N
+        
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="none"/>
+      <xsd:enumeration value="direct"/>
+      <xsd:enumeration value="ws-notification"/>
+      <xsd:enumeration value="ws-eventing"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="languageEnum">
+    <xsd:annotation>
+      <xsd:documentation>
+      Enumeration of supported callback language types. Any
+      unexpected type constitutes an error and should be
+      flagged. 
+        -smartfrog
+        -cdl
+      Commentary: we could make this self describing from the name
+      of the deployment descriptor
+        
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="smartfrog"/>
+      <xsd:enumeration value="cdl"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  
+
+  <!-- ============================================================= -->
+  <!-- naming rules for application -->
+  <!-- ============================================================= -->
+  <xsd:simpleType name="applicationNameType">
+      <xsd:annotation>
+        <xsd:documentation>
+        This is the policy for the naming of applications
+        </xsd:documentation>
+      </xsd:annotation>  
+    <xsd:restriction base="xsd:NCName"/>
+<!--
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value="[\p{L}\-\.][\p{L}\-\.\P{Nd}]*"/>
+    </xsd:restriction>
+-->
+  </xsd:simpleType>      
+
+  <!-- ============================================================= -->
+  <!-- The response to deployment requests is the URI to a endpoint
+       within the Basic-Services generated component model -->
+  <!-- Commentary: we may want to make this a WS-Addressing endpoint -->     
+  <!-- ============================================================= -->
+  
+  <xsd:simpleType name="applicationReferenceType">
+      <xsd:annotation>
+        <xsd:documentation>
+        This is the policy for the naming of applications
+        </xsd:documentation>
+      </xsd:annotation>  
+    <xsd:restriction base="xsd:anyURI"/>
+  </xsd:simpleType>      
+  
+  <xsd:simpleType name="remoteDescriptorType">
+      <xsd:annotation>
+        <xsd:documentation>
+        Descriptors can also be URLs. 
+        We extend the URI type in case of future needs to add attributes such as
+        authentication information.
+        </xsd:documentation>
+      </xsd:annotation>  
+    <xsd:restriction base="xsd:anyURI"/>
+  </xsd:simpleType>      
+
+  <!-- ============================================================= -->
+  <!-- BEGIN COMPLEXTYPES -->
+  <!-- ============================================================= -->
+  
+
+  <!--
+    we could actually explicitly declare both the smartfrog
+    and CDL types in here, where smartfrog is a simple
+    element containing arbitrary text inside, and with a language
+    attribute
+  -->  
+  <xsd:complexType name="OlddeploymentDescriptorType">
+    <xsd:sequence>
+        <!-- namespace="##other" -->
+      <xsd:any  processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="cdlDeploymentDescriptorType" type="cdl:cdlDocumentType">
+  </xsd:complexType>  
+  
+  <xsd:complexType name="smartFrogDeploymentDescriptorType">
+      <xsd:annotation>
+      <xsd:documentation>
+        SmartFrog deployment Descriptor. 
+        Contains the payload as a string, the language version as an attribute
+      </xsd:documentation>
+    </xsd:annotation>  
+      <xsd:element name="smartfrog" type="xsd:string" 
+        minOccurs="0" maxOccurs="1"/>
+    <xsd:attribute name="version" type="xsd:string" use="required"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="deploymentDescriptorType">
+    <xsd:choice>
+      <xsd:element name="remoteURL" type="remoteDescriptorType"/>
+      <xsd:element name="smartfrog" type="smartFrogDeploymentDescriptorType"/>
+      <xsd:element name="cdl" type="cdlDeploymentDescriptorType"/>
+        <!-- namespace="##other" -->
+      <xsd:any  processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:choice>
+  </xsd:complexType>  
+  
+  <!-- TODO: incorporate JSDL into the specification -->
+  <xsd:complexType name="jsdlType">
+    <xsd:sequence>
+        <!-- namespace="##other" -->
+      <xsd:any  processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  
+  <xsd:complexType name="serverStatusType">
+    <xsd:sequence>
+        <!-- namespace="##other" -->
+      <xsd:any  processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  
+  <xsd:complexType name="propertyTupleType">
+    <xsd:annotation>
+      <xsd:documentation>
+        A name/value pair of properties. Names are restricted to NCName type;
+        values are any string. Why restrict name type? For easier incorporation
+        into the 
+      </xsd:documentation>
+    </xsd:annotation>  
+    <xsd:sequence>
+      <xsd:element name="name" type="xsd:NCName" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="value" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+    </xsd:sequence>
+  </xsd:complexType>  
+  
+  <xsd:complexType name="propertyMapType">
+    <xsd:annotation>
+      <xsd:documentation>
+        A set of name/value pair of properties. Only one instance of each name
+        is allowed. This is essentially a serialisation of a map/hash table.
+      </xsd:documentation>
+    </xsd:annotation>  
+    <xsd:sequence>
+      <xsd:element name="property" type="propertyTupleType" 
+        minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>  
+  
+  
+  <!-- ============================================================= -->
+  <!-- Requests and responses. These are the complex types that
+  get sent/received as messages-->
+  <!-- ============================================================= -->
+    
+  <xsd:element name="deployRequest">
+    <xsd:complexType>
+      <xsd:annotation>
+        <xsd:documentation>
+        This is our deployment request
+        </xsd:documentation>
+      </xsd:annotation>
+     <xsd:sequence>
+      <xsd:element ref="jsdl:job"/>
+      <xsd:element name="hostname" type="xsd:string"/>
+      <xsd:element name="application" type="api:applicationNameType"/>
+      <xsd:element name="language" type="api:applicationNameType"/>
+      <xsd:element name="descriptor" type="api:deploymentDescriptorType"/>
+      <xsd:element name="callbackType" type="api:callbackEnum"/>
+      <xsd:element name="callbackAddress" type="xsd:string"/>
+      <xsd:element name="synchronous" type="xsd:boolean"/>
+      <xsd:element name="properties" type="api:propertyMapType"/>
+     </xsd:sequence>
+    </xsd:complexType>
+   </xsd:element>
+   
+   <xsd:element name="deployResponse">
+    <xsd:complexType>
+      <xsd:annotation>
+        <xsd:documentation>
+        This is our deployment response
+        </xsd:documentation>
+      </xsd:annotation>      
+     <xsd:sequence>
+      <xsd:element name="applicationReference" type="api:applicationNameType"/>
+     </xsd:sequence>
+    </xsd:complexType>
+   </xsd:element>
+   
+   
+   <xsd:element name="listLanguages">
+    <xsd:complexType/>
+   </xsd:element>
+   <xsd:element name="listLanguagesResponse">
+    <xsd:complexType>
+      <xsd:annotation>
+        <xsd:documentation>
+        The list of languages that is supported
+        </xsd:documentation>
+      </xsd:annotation>      
+     <xsd:sequence>
+      <xsd:element name="listLanguagesReturn" type="xsd:string"
+        maxOccurs="unbounded" minOccurs="1"/>
+     </xsd:sequence>
+    </xsd:complexType>
+   </xsd:element>
+
+  <!-- ============================================================= -->
+  <!-- end schema-->
+  <!-- ============================================================= -->
+
+  </xsd:schema>
+  
+  
+  
+ </wsdl:types>
+
+  <!-- ============================================================= -->
+  <!-- begin WSDL message types-->
+  <!-- ============================================================= -->
+
+ <wsdl:message name="deployRequest">
+  <wsdl:part element="tns1:deployRequest" name="deploy"/>
+ </wsdl:message>
+ <wsdl:message name="deployResponse">
+  <wsdl:part element="tns1:deployResponse" name="parameters"/>
+ </wsdl:message> 
+
+ <wsdl:message name="listLanguagesRequest">
+  <wsdl:part element="tns1:listLanguages" name="parameters"/>
+ </wsdl:message>
+
+ <wsdl:message name="listLanguagesResponse">
+  <wsdl:part element="tns1:listLanguagesResponse" name="languages"/>
+ </wsdl:message>
+ 
+  <!-- ============================================================= -->
+  <!-- begin WSDL operations -->
+  <!-- ============================================================= -->
+
+ <wsdl:portType name="DeploymentEndpoint">
+  <wsdl:operation name="deploy">
+   <wsdl:input message="impl:deployRequest" name="deployRequest"/>
+   <wsdl:output message="impl:deployResponse" name="deployResponse"/>
+  </wsdl:operation>
+  <wsdl:operation name="listLanguages">
+   <wsdl:input message="impl:listLanguagesRequest" name="listLanguagesRequest"/>
+   <wsdl:output message="impl:listLanguagesResponse" name="listLanguagesResponse"/>
+  </wsdl:operation>
+  <!--
+  <wsdl:operation name="deployURL">
+   <wsdl:input message="impl:deployURLRequest" name="deployURLRequest"/>
+   <wsdl:output message="impl:deployURLResponse" name="deployURLResponse"/>
+  </wsdl:operation>
+  -->
+ </wsdl:portType>
+ 
+ 
+  <!-- ============================================================= -->
+  <!-- Bind WSDL to SOAP -->
+  <!-- ============================================================= -->
+ 
+ <wsdl:binding name="cddlmSoapBinding" type="impl:DeploymentEndpoint">
+  <wsdlsoap:binding style="document" 
+    transport="http://schemas.xmlsoap.org/soap/http"/>
+  <wsdl:operation name="deploy">
+   <wsdlsoap:operation soapAction=""/>
+   <wsdl:input name="deployRequest">
+    <wsdlsoap:body use="literal"/>
+   </wsdl:input>
+   <wsdl:output name="deployResponse">
+    <wsdlsoap:body use="literal"/>
+   </wsdl:output>
+  </wsdl:operation>
+  <wsdl:operation name="listLanguages">
+   <wsdlsoap:operation soapAction=""/>
+   <wsdl:input name="listLanguagesRequest">
+    <wsdlsoap:body use="literal"/>
+   </wsdl:input>
+   <wsdl:output name="listLanguagesResponse">
+    <wsdlsoap:body use="literal"/>
+   </wsdl:output>
+  </wsdl:operation>
+  <!--
+  <wsdl:operation name="deployURL">
+   <wsdlsoap:operation soapAction=""/>
+   <wsdl:input name="deployURLRequest">
+    <wsdlsoap:body use="literal"/>
+   </wsdl:input>
+   <wsdl:output name="deployURLResponse">
+    <wsdlsoap:body use="literal"/>
+   </wsdl:output>
+  </wsdl:operation>
+  -->
+ </wsdl:binding>
+ 
+  <!-- ============================================================= -->
+  <!-- begin WSDL service declaration -->
+  <!-- this is just a sample declaration; the real location of the service -->
+  <!-- has to be determined through other means -->
+  <!-- ============================================================= -->
+
+ 
+ <wsdl:service name="CDDLMDeploymentService">
+  <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+    This is the CDDLM deployment service  
+  </wsdl:documentation>
+  <wsdl:port binding="impl:cddlmSoapBinding" name="cddlm">
+   <wsdlsoap:address location="http://localhost:5050/axis/services/cddlm"/>
+  </wsdl:port>
+ </wsdl:service>
+</wsdl:definitions>

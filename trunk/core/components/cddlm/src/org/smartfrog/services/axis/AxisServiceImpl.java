@@ -22,6 +22,7 @@
 package org.smartfrog.services.axis;
 
 import org.apache.axis.client.AdminClient;
+import org.apache.axis.AxisFault;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.prim.PrimImpl;
@@ -181,4 +182,5 @@ public class AxisServiceImpl extends PrimImpl implements AxisService {
             log.debug("Received " + results);
         }
     }
+
 }

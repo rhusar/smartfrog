@@ -19,7 +19,7 @@
   <!-- ============================================================= -->
 
   <!-- ============================================================= -->
-  <!-- propertyModeType sets requirements on a configurable component: ?-->
+  <!-- propertyModeType sets requirements on a configurable component-->
   <!-- ============================================================= -->
 
   <xsd:simpleType name="propertyModeType">
@@ -45,9 +45,14 @@
 
 
   <!-- ============================================================= -->
-  <!-- naming rules for components ?-->
+  <!-- naming rules for components -->
   <!-- ============================================================= -->
   <xsd:simpleType name="namingType">
+      <xsd:annotation>
+        <xsd:documentation>
+        This is the policy for the naming of components
+        </xsd:documentation>
+      </xsd:annotation>  
     <xsd:restriction base="xsd:NCName"/>
 <!--
     <xsd:restriction base="xsd:string">
@@ -58,7 +63,7 @@
 
 
   <!-- ============================================================= -->
-  <!-- extendsType ?-->
+  <!-- extendsType -->
   <!-- ============================================================= -->
   <xsd:simpleType name="extendsType">
     <xsd:annotation>
@@ -71,7 +76,7 @@
   </xsd:simpleType>
 
   <!-- ============================================================= -->
-  <!-- refrootType ?-->
+  <!-- refrootType -->
   <!-- ============================================================= -->
   <xsd:simpleType name="refrootType">
     <xsd:annotation>
@@ -84,7 +89,7 @@
   </xsd:simpleType>
 
   <!-- ============================================================= -->
-  <!-- refType ?-->
+  <!-- refType -->
   <!-- ============================================================= -->
   <xsd:simpleType name="refType">
     <xsd:annotation>
@@ -185,27 +190,8 @@
       <xsd:any  processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
   </xsd:complexType>
-
-  <!-- ============================================================= -->
-  <!-- END COMPLEX TYPES -->
-  <!-- ============================================================= -->
-
-  <!-- ============================================================= -->
-  <!-- BEGIN ELEMENTS -->
-  <!-- ============================================================= -->
-
-
-  <!-- ============================================================= -->
-  <!-- This is the base declaration; cdl -->
-  <!-- ============================================================= -->
-
-  <xsd:element name="cdl">
-    <xsd:annotation>
-      <xsd:documentation>
-        This is the root element.
-      </xsd:documentation>
-    </xsd:annotation>
-    <xsd:complexType>
+  
+    <xsd:complexType name="cdlDocumentType">
       <xsd:sequence>
         <xsd:element ref="comment" minOccurs="0"/>
         <xsd:element ref="import" minOccurs="0" />
@@ -229,7 +215,27 @@
       </xsd:attribute>
         <!-- let people stick on other attributes as needed -->
     <xsd:anyAttribute namespace="##other" processContents="lax"/>
-    </xsd:complexType>
+  </xsd:complexType>
+
+  <!-- ============================================================= -->
+  <!-- END COMPLEX TYPES -->
+  <!-- ============================================================= -->
+
+  <!-- ============================================================= -->
+  <!-- BEGIN ELEMENTS -->
+  <!-- ============================================================= -->
+
+
+  <!-- ============================================================= -->
+  <!-- This is the base declaration; cdl -->
+  <!-- ============================================================= -->
+
+  <xsd:element name="cdl" type="cdlDocumentType">
+    <xsd:annotation>
+      <xsd:documentation>
+        This is the root element.
+      </xsd:documentation>
+    </xsd:annotation>
   </xsd:element>
 
 
