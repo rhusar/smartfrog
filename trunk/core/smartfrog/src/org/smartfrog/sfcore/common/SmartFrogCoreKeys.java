@@ -28,7 +28,7 @@ public interface SmartFrogCoreKeys {
     /**
      * Attribute used to determine the host to use to
      * locate the root process compound on that host.
-     * 
+     *
      * Value {@value}
      * @see PrimHostDeployerImpl
      */
@@ -267,6 +267,6 @@ public interface SmartFrogCoreKeys {
      *
      * Value {@value}
      */
-    public final static String SF_APP_LOG_NAME = "sfAppLogName";
+    public final static String SF_APP_LOG_NAME = "sfLog";
 
 }

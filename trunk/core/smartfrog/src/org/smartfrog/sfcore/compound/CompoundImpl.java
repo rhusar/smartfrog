@@ -122,7 +122,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
                                 formatMessage(MSG_NON_REP_ATTRIB, name), null,null);
             }
 
-            if (sflog().isTraceEnabled()){
+            if (sfLog().isTraceEnabled()){
               StringBuffer message = new StringBuffer();
               try {
                 message.append(this.sfCompleteNameSafe());
@@ -143,9 +143,9 @@ public class CompoundImpl extends PrimImpl implements Compound {
                   message.append(parms.toString());
                 }
               } catch (Exception ex1) {
-                sflog().trace("",ex1);
+                sfLog().trace("",ex1);
               }
-              sflog().trace(message.toString());
+              sfLog().trace(message.toString());
             }
 
             // try to deploy
@@ -263,15 +263,15 @@ public class CompoundImpl extends PrimImpl implements Compound {
 
         //synchronized (this) {
         if (!phasedComp.sfIsTerminated()) {
-            if (sflog().isTraceEnabled()) {
+            if (sfLog().isTraceEnabled()) {
                 try {
                   if (parent!=null) {
-                    sflog().trace("Creating new child '"+name+"' for: " + parent.sfCompleteName() + ", with description: " +  cmp.toString() + ", and parameters: " + parms);
+                    sfLog().trace("Creating new child '"+name+"' for: " + parent.sfCompleteName() + ", with description: " +  cmp.toString() + ", and parameters: " + parms);
                   } else {
-                    sflog().trace("Creating new application: " + name + ", with description: " +  cmp.toString() + ", and parameters: " + parms);
+                    sfLog().trace("Creating new application: " + name + ", with description: " +  cmp.toString() + ", and parameters: " + parms);
                   }
                 } catch (Exception ex1) {
-                    sflog().trace(ex1.toString());
+                    sfLog().trace(ex1.toString());
                 }
             }
             comp = sfDeployComponentDescription(name, parent, cmp, parms);
@@ -319,15 +319,15 @@ public class CompoundImpl extends PrimImpl implements Compound {
         throw (SmartFrogDeploymentException) SmartFrogDeploymentException.forward(e);
     }
 
-    if (sflog().isTraceEnabled()) {
+    if (sfLog().isTraceEnabled()) {
       try {
         if (parent!=null){
-          sflog().trace("New child created: " + comp.sfCompleteName() + " ");
+          sfLog().trace("New child created: " + comp.sfCompleteName() + " ");
         } else {
-          sflog().trace("New application created: " + comp.sfCompleteName() + " ");
+          sfLog().trace("New application created: " + comp.sfCompleteName() + " ");
         }
       } catch (Exception ex1) {
-        sflog().trace(ex1.toString());
+        sfLog().trace(ex1.toString());
       }
     }
     return comp;
@@ -542,7 +542,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
             }
         } catch (Throwable thr) {
             Reference name = sfCompleteNameSafe();
-            sfGetProcessLog().error("caught on deployment ("+name.toString()+")", thr);
+            sfCoreLog().error("caught on deployment ("+name.toString()+")", thr);
             throw SmartFrogLifecycleException.forward(thr);
         }
     }
@@ -577,7 +577,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
                // any exception causes termination
                Reference name = sfCompleteNameSafe();
                sfTerminate(TerminationRecord.abnormal("Compound sfStart failure: " + thr, name));
-               sfGetProcessLog().error("caught on start ("+name.toString()+")", thr);
+               sfCoreLog().error("caught on start ("+name.toString()+")", thr);
                throw SmartFrogLifecycleException.forward(thr);
          }
     }
@@ -613,8 +613,8 @@ public class CompoundImpl extends PrimImpl implements Compound {
      * @param status status to terminate with
      */
     protected void sfSyncTerminateWith(TerminationRecord status) {
-        if (sflog().isTraceEnabled()) {
-           sflog().trace("SYNCTermination: "+ sfCompleteNameSafe(),null,status);
+        if (sfLog().isTraceEnabled()) {
+           sfLog().trace("SYNCTermination: "+ sfCompleteNameSafe(),null,status);
         }
         for (int i = sfChildren.size()-1; i>=0; i--) {
             try {
@@ -634,8 +634,8 @@ public class CompoundImpl extends PrimImpl implements Compound {
      * @param status status to terminate with
      */
     protected void sfASyncTerminateWith(TerminationRecord status) {
-        if (sflog().isTraceEnabled()) {
-           sflog().trace("ASYNCTermination: "+ sfCompleteNameSafe(),null,status);
+        if (sfLog().isTraceEnabled()) {
+           sfLog().trace("ASYNCTermination: "+ sfCompleteNameSafe(),null,status);
         }
         for (int i = sfChildren.size()-1; i>=0; i--) {
             try {
@@ -762,7 +762,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
      * @param thrown
      */
     private void ignoreThrowable(String message,Throwable thrown) {
-        sfGetProcessLog().ignore(message, thrown);
+        sfCoreLog().ignore(message, thrown);
     }
 
     /**

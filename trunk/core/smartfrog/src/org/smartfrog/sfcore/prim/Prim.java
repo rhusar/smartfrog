@@ -297,14 +297,14 @@ public interface Prim extends Liveness, RemoteReferenceResolver, RemoteReference
      * @return Logger implementing LogSF and Log
      * @throws RemoteException
      */
-    public LogSF sfGetProcessLog() throws RemoteException;
+    public LogSF sfCoreLog() throws RemoteException;
 
     /**
      *  To log into sfCore logger. This method should be used to log Core messages
      * @return Logger implementing LogSF and Log
      * @throws RemoteException
      */
-    public LogSF sflog() throws RemoteException;
+    public LogSF sfLog() throws RemoteException;
 
     /**
      *  Method to replace logger used by components.

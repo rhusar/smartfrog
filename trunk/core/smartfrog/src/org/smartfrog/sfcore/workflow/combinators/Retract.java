@@ -54,7 +54,7 @@ public class Retract extends EventCompoundImpl implements Compound {
      * @param status termination status
      */
     public synchronized void sfTerminateWith(TerminationRecord status) {
-        log = sfGetProcessLog();
+        log = sfCoreLog();
         for (int i = sfChildren.size() - 1; i >= 0; i--) {
             try {
                 ((Prim) sfChildren.elementAt(i)).sfTerminateQuietlyWith(status);

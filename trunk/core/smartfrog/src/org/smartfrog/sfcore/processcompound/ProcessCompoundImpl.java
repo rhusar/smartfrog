@@ -352,7 +352,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
             throw new SmartFrogRuntimeException(MSG_FAILED_TO_CONTACT_PARENT,
                                                 rex, this);
         }
-        if (sflog().isTraceEnabled()) sflog().trace("Started ProcessCompound '"+sfProcessName+"'");
+        if (sfLog().isTraceEnabled()) sfLog().trace("Started ProcessCompound '"+sfProcessName+"'");
     }
 
     /**
@@ -410,14 +410,14 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
       }
       catch (RemoteException ex) {
         //Logger.logQuietly(ex);
-        if (sflog().isIgnoreEnabled()){
-          sflog().ignore(ex);
+        if (sfLog().isIgnoreEnabled()){
+          sfLog().ignore(ex);
         }
       }
       catch (SmartFrogRuntimeException ex) {
           //Logger.logQuietly(ex);
-          if (sflog().isIgnoreEnabled()){
-            sflog().ignore(ex);
+          if (sfLog().isIgnoreEnabled()){
+            sfLog().ignore(ex);
           }
       }
     }
@@ -460,8 +460,8 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
                 SFProcess.getRootLocator().unbindRootProcessCompound();
             } catch (Exception ex) {
                 //Logger.logQuietly(ex);
-                if (sflog().isIgnoreEnabled()){
-                  sflog().ignore(ex);
+                if (sfLog().isIgnoreEnabled()){
+                  sfLog().ignore(ex);
                 }
             }
         }
@@ -475,7 +475,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
 //                } else {
 //                    Logger.log(MessageUtil.formatMessage(MSG_SF_DEAD, name));
 //                }
-                sflog().out(MessageUtil.formatMessage(MSG_SF_DEAD, name)+" "+ new Date(System.currentTimeMillis()));
+                sfLog().out(MessageUtil.formatMessage(MSG_SF_DEAD, name)+" "+ new Date(System.currentTimeMillis()));
             } catch (Throwable thr){
             }
             System.exit(0);
@@ -503,8 +503,8 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
           } catch (Exception ex) {
             //@TODO: Log
             //Logger.logQuietly(ex);
-            if (sflog().isIgnoreEnabled()){
-              sflog().ignore(ex);
+            if (sfLog().isIgnoreEnabled()){
+              sfLog().ignore(ex);
             }
             // ignore
           }
@@ -521,8 +521,8 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
           } catch (Exception ex) {
             //@TODO: Log
             //Logger.logQuietly(ex);
-            if (sflog().isIgnoreEnabled()){
-              sflog().ignore(ex);
+            if (sfLog().isIgnoreEnabled()){
+              sfLog().ignore(ex);
             }
             // ignore
           }
@@ -536,8 +536,8 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
           } catch (Exception ex) {
             //@TODO: Log
             //Logger.logQuietly(ex);
-            if (sflog().isIgnoreEnabled()){
-              sflog().ignore(ex);
+            if (sfLog().isIgnoreEnabled()){
+              sfLog().ignore(ex);
             }
             // ignore
           }
@@ -563,8 +563,8 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
           } catch (Exception ex) {
             //@TODO: Log
             //Logger.logQuietly(ex);
-            if (sflog().isIgnoreEnabled()){
-              sflog().ignore(ex);
+            if (sfLog().isIgnoreEnabled()){
+              sfLog().ignore(ex);
             }
             // ignore
           }
@@ -582,8 +582,8 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
           } catch (Exception ex) {
             //@TODO: Log
             //Logger.logQuietly(ex);
-            if (sflog().isIgnoreEnabled()){
-              sflog().ignore(ex);
+            if (sfLog().isIgnoreEnabled()){
+              sfLog().ignore(ex);
             }
             // ignore
           }
@@ -598,8 +598,8 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
           } catch (Exception ex) {
             //@TODO: Log
             //Logger.logQuietly(ex);
-            if (sflog().isIgnoreEnabled()){
-              sflog().ignore(ex);
+            if (sfLog().isIgnoreEnabled()){
+              sfLog().ignore(ex);
             }
             // ignore
           }
@@ -884,15 +884,15 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
             try {
                 pc = (ProcessCompound) sfResolve(new Reference(new HereReferencePart(name)));
             } catch (SmartFrogResolutionException e) {
-                if (sflog().isTraceEnabled()) sflog().trace(" Creating a new ProcessCompound: "+ name.toString());
+                if (sfLog().isTraceEnabled()) sfLog().trace(" Creating a new ProcessCompound: "+ name.toString());
                 pc = addNewProcessCompound(name, cd);
                 pc.sfParentageChanged();
             }
         } else { // I am a child process - find in the parent
             pc = ((ProcessCompound) sfParent()).sfResolveProcess(name, cd);
         }
-        if (sflog().isTraceEnabled()){
-            sflog().trace("ProcessCompound '"+name+"' found: "+pc.sfCompleteName());
+        if (sfLog().isTraceEnabled()){
+            sfLog().trace("ProcessCompound '"+name+"' found: "+pc.sfCompleteName());
         }
 
         return pc;
@@ -929,7 +929,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
             allowProcess = ((Boolean) ap).booleanValue() && sfIsRoot;
         } else {
             allowProcess = false;
-            if (sflog().isErrorEnabled()) {
+            if (sfLog().isErrorEnabled()) {
                 SmartFrogResolutionException srex =
                         SmartFrogResolutionException.illegalClassType(
                                 Reference.fromString(SmartFrogCoreKeys.SF_PROCESS_ALLOW),
@@ -937,7 +937,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
                                 ap,
                                 ap.getClass().getName(),
                                 "java.lang.Boolean");
-                sflog().error(srex);
+                sfLog().error(srex);
             }
         }
 
@@ -987,8 +987,8 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
         try {
             // Wait for new compound to appear and try to return it
             ProcessCompound newPc = (ProcessCompound) sfResolveHereOrWait(name, timeout);
-            if (sflog().isDebugEnabled()){
-                sflog().debug("New ProcessCompound "+name+" created: "+ newPc.sfCompleteName());
+            if (sfLog().isDebugEnabled()){
+                sfLog().debug("New ProcessCompound "+name+" created: "+ newPc.sfCompleteName());
             }
             return newPc;
         } catch (Exception ex) {
@@ -1032,7 +1032,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
 
         String[] runCmdArray = new String[runCmd.size()];
         runCmd.copyInto(runCmdArray);
-        if (sflog().isTraceEnabled()) sflog().trace("startProcess["+name.toString()+"].runCmd: "+runCmd.toString());
+        if (sfLog().isTraceEnabled()) sfLog().trace("startProcess["+name.toString()+"].runCmd: "+runCmd.toString());
         return Runtime.getRuntime().exec(runCmdArray);
     }
 
@@ -1233,8 +1233,8 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
               }
             } catch (Exception ex) {
                 //Logger.log(ex);
-                if (sflog().isErrorEnabled()){
-                  sflog().error(ex);
+                if (sfLog().isErrorEnabled()){
+                  sfLog().error(ex);
                 }
             }
         }

@@ -72,8 +72,8 @@ public class Terminator extends EventPrimImpl implements Prim {
         try {
             String killName = kill.sfCompleteName().toString();
             String terminator = sfCompleteNameSafe().toString();
-            if (sflog().isTraceEnabled()) {
-                sflog().trace("Terminating: "+ killName +" by terminator: "+ terminator,null,term);
+            if (sfLog().isTraceEnabled()) {
+                sfLog().trace("Terminating: "+ killName +" by terminator: "+ terminator,null,term);
             }
 
             if (detachFirst) {
@@ -83,8 +83,8 @@ public class Terminator extends EventPrimImpl implements Prim {
                 kill.sfTerminate(new TerminationRecord(type, description,
                             id));
             }
-            if (sflog().isTraceEnabled()) {
-                sflog().trace("Terminated: "+killName+" by terminator: "+
+            if (sfLog().isTraceEnabled()) {
+                sfLog().trace("Terminated: "+killName+" by terminator: "+
                               sfCompleteNameSafe(), null, term);
             }
         } catch (Exception e) {
