@@ -1,14 +1,13 @@
 package org.smartfrog.sfcore.logging;
 
-import org.smartfrog.sfcore.common.SmartFrogLogException;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogLogException;
 import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.processcompound.SFProcess;
 import org.smartfrog.sfcore.reference.Reference;
 
-import java.util.Hashtable;
 import java.rmi.RemoteException;
+import java.util.Hashtable;
 
 
 public  class LogFactory {
@@ -54,7 +53,8 @@ public  class LogFactory {
     /**
      * get a named log.
      * @param name
-     * @return
+     * @return a log from cache or new.
+     *
      */
     public static LogSF getLog(String name)
     {
@@ -155,11 +155,13 @@ public  class LogFactory {
         Log log=null;
         try {
             log=owner.sfGetApplicationLog();
-        } catch (SmartFrogException e) {
-        } catch (RemoteException e) {
+        } catch (SmartFrogException ignored) {
+
+        } catch (RemoteException ignored) {
         }
         if(log==null) {
             log=getLog(clazz.getName());
+            assert log!=null;
         }
         return log;
     }
@@ -175,4 +177,16 @@ public  class LogFactory {
     public static Log getOwnerLog(final Prim owner, final Object object) {
         return getOwnerLog(owner, object.getClass());
     }
+
+    /**
+     * get the log of an owner, or, if that fails, from its classname.
+     * always returns a log of one form or other
+     * @param owner  component that owns this helper class
+     * @return a log
+     */
+    public static Log getOwnerLog(final Prim owner) {
+        return getOwnerLog(owner, owner);
+    }
+
+
 }

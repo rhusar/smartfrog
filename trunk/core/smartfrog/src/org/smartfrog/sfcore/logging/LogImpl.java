@@ -4,14 +4,11 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLogException;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 
-import java.util.Hashtable;
-import java.util.Enumeration;
-import java.util.Vector;
-
-import java.rmi.RemoteException;
 import java.io.Serializable;
-
 import java.lang.reflect.Method;
+import java.rmi.RemoteException;
+import java.util.Enumeration;
+import java.util.Hashtable;
 
 /**
  * A simple logging interface abstracting logging APIs based in Apache Jakarta
@@ -108,6 +105,10 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
         }
     }
 
+    /**
+     * constructor
+     * @param name
+     */
     public LogImpl (String name){
         //@TODO: load the default class from a SF definition
         // Similar for default deployer.
