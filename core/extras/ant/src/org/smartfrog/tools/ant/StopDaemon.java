@@ -45,10 +45,11 @@ public class StopDaemon extends SmartFrogTask {
      */
     public void execute() throws BuildException {
         setStandardSmartfrogProperties();
-        addHostname();
-        addApplicationCommand("-t", ROOT_PROCESS);
+        String terminateCommand = ROOT_PROCESS + ":TERMINATE:::"+host+ ":";
+        addApplicationCommand("-a", terminateCommand);
+        //addArg(terminateCommand);
+        //addArg(host);
         addExitFlag();
-
         execSmartfrog("failed to terminate " + ROOT_PROCESS);
     }
 
