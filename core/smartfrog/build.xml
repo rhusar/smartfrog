@@ -148,6 +148,8 @@ relevant JAR files into the javacc subdirectory
     <property name="examplesFiles" value="org/smartfrog/examples/**/*"/>
      <!-- a list of files for rmic -->
     <property name="rmitargets" value="${basedir}/rmitargets"/>
+    <!-- assume the sun compiler -->
+    <property name="rmic.compiler" value="sun" />    
 
     <!-- Compile options for Smartfrog Release -->
     <property name="javac.debug.mode" value="on"/> <!-- turn on compile -g -->
@@ -276,10 +278,12 @@ relevant JAR files into the javacc subdirectory
         We'd need to fork rmic to get decent isolation.
         -->
     <rmic includesfile="${rmitargets}"
+      compiler="${rmic.compiler}"
       base="${build.classes.dir}">
       <classpath refid="smartfrog.class.path"/>
     </rmic>
     <rmic includesfile="${rmitargets}Examples"
+      compiler="${rmic.compiler}"
         base="${build.classes.dir}">
       <classpath refid="smartfrog.class.path"/>
     </rmic>

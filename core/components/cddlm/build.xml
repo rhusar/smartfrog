@@ -62,9 +62,10 @@
       <!-- schema config -->
       <property name="xsd.path" 
         value="${component.package.path}/xsd"/>
-
+      <property name="xsd.dir" 
+        value="${src.dir}/${xsd.path}"/>
       <property name="cddlm.xsd"
-        location="${src.dir}/${xsd.path}/cddlm.xsd" />
+        location="${xsd.dir}/cddlm.xsd" />
 
 
     </target>
@@ -354,7 +355,16 @@
    
      <wsdltodotnet URL="${deploymentAPI.wsdl.url}"
       destFile="${soap.dotnet.proxy.class}"
-      />
+      parseableErrors="true"
+      makeURL="true"
+      protocol="SOAP"
+      >
+<!--       
+        <schema file="${xsd.dir}/deployAPIschema.xsd"/>
+        <schema file="${xsd.dir}/ws-addressing.xsd"/>
+        <schema file="${xsd.dir}/jsdl.xsd"/>
+
+ -->      </wsdltodotnet>
    </target>
 
    
