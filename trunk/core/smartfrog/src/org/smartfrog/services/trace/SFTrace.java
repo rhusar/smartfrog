@@ -29,6 +29,7 @@ import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
+import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimHook;
 import org.smartfrog.sfcore.prim.PrimImpl;
@@ -53,6 +54,8 @@ public class SFTrace extends PrimImpl implements Prim {
     /** Flag indicating verbose is on or off. */
     boolean verbose = true;
 
+    /** the log component to which to generate the trace logs */
+    LogSF log = null;
 
     //SmartFrog Attributes:
     final static String ATR_DEPLOY_HOOK = "deployHook";
@@ -94,13 +97,16 @@ public class SFTrace extends PrimImpl implements Prim {
     RemoteException {
         super.sfDeploy();
 
+	log = sfGetProcessLog();
+
         try {
             try {
                 localhost = java.net.InetAddress.getLocalHost();
             } catch (Exception ex) {
                 //TODO
-                System.err.println("sfTrace: Exception deployment:" +
-                    ex.toString());
+		if (log.isErrorEnabled()) 
+		    log.error("sfTrace: Exception deployment:" +
+			      ex.toString());
             }
 
             try {
@@ -109,16 +115,18 @@ public class SFTrace extends PrimImpl implements Prim {
                                            .toString();
             } catch (Exception ex) {
                 //TODO
-                System.err.println("sfTrace: Exception deployment:" +
-                    ex.toString());
+		if (log.isErrorEnabled()) 
+		    log.error("sfTrace: Exception deployment:" +
+			      ex.toString());
             }
 
             try {
                 processName = getSfProcessName();
             } catch (Exception ex) {
                 //TODO
-                System.err.println("sfTrace: Exception deployment:" +
-                    ex.toString());
+		if (log.isErrorEnabled()) 
+		    log.error("sfTrace: Exception deployment:" +
+			      ex.toString());
             }
 
             verbose = sfResolve(this.ATR_VERBOSE,verbose,false);
@@ -171,8 +179,9 @@ public class SFTrace extends PrimImpl implements Prim {
 
             // TODO: Check
         } catch (Exception ex) {
-            System.err.println("sfTrace: Exception(getUniqueID :" +
-                ex.toString());
+	    if (log.isErrorEnabled()) 
+		log.error("sfTrace: Exception(getUniqueID :" +
+			      ex.toString());
             id = "defaultUniqueID";
         }
 
@@ -186,7 +195,7 @@ public class SFTrace extends PrimImpl implements Prim {
      * @throws RemoteException in case of network/rmi error
      */
     public synchronized void sfStart() throws SmartFrogException,
-    RemoteException {
+					      RemoteException {
         super.sfStart();
     }
 
@@ -290,17 +299,19 @@ public class SFTrace extends PrimImpl implements Prim {
             }
 
             if (printMsgImp == null) {
-                System.out.println("sfTrace: " + msg);
+		log.info("sfTrace: " + msg);
             } else {
                 try {
                     printMsgImp.printMsg(msg + "\n");
                 } catch (Exception ex) {
-                    System.out.println("sfTrace: " + ex);
-                    ex.printStackTrace();
+		    if (log.isErrorEnabled()) 
+			log.error("sfTrace: " + ex);
+                    //ex.printStackTrace();
                 }
             }
         } catch (Throwable th) {
-            System.err.println("SFTrace.printMsg " + th.toString());
+	    if (log.isErrorEnabled()) 
+		log.error("SFTrace.printMsg " + th.toString());
         }
     }
 
