@@ -43,6 +43,8 @@ EmailerSchema extends Schema {
 	message extends OptionalString;
 	subject extends OptionalString;
 	runAsWorkFlowComponent extends Boolean;
+	sendOnStartup extends OptionalBoolean;
+	sendOnShutdown extends OptionalBoolean;
     attachments extends OptionalVector;
 }
  
@@ -67,5 +69,7 @@ Emailer extends Prim {
        finished. 
        Please see exampleUsageAsWFComponent.sf for this type of usage.
      */
-     runAsWorkFlowComponent true; //by default 
+     runAsWorkFlowComponent true; //by default
+     //only relevant if runAsWorkFlowComponent==true
+     sendOnStartup false;
 }

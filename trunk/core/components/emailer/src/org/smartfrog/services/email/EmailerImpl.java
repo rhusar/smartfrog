@@ -46,6 +46,8 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.common.TerminatorThread;
+import org.smartfrog.sfcore.logging.Log;
+import org.smartfrog.sfcore.logging.LogFactory;
 
 /**
  * Emailer component can be used in two modes.
@@ -75,8 +77,15 @@ public class EmailerImpl extends PrimImpl implements Emailer {
     private boolean runAsWorkFlowComponent = true; // by default
     private Session session = null;
     private String message = "SmartFrog Message";
-    
-    private final String PROP_HOST_NAME = "mail.smtp.host";
+    private boolean sendOnStartup=false;
+    private boolean sendOnShutdown = false;
+
+    private static final String PROP_HOST_NAME = "mail.smtp.host";
+
+    /**
+     * our log
+     */
+    private Log log;
 
     /**
      * Constructs Emailer object.
@@ -96,11 +105,13 @@ public class EmailerImpl extends PrimImpl implements Emailer {
      */ 
     public synchronized void sfDeploy() throws SmartFrogException, 
                                                             RemoteException {
+        log = LogFactory.getOwnerLog(this, this);
         //read SmartFrog Attributes
         readSFAttributes();
         Properties props = new Properties();
         props.put(PROP_HOST_NAME, host);
         session = Session.getInstance(props, null);
+        //then parent
         super.sfDeploy();
     }
     
@@ -113,30 +124,50 @@ public class EmailerImpl extends PrimImpl implements Emailer {
      */ 
     public synchronized void sfStart() throws SmartFrogException, 
                                                           RemoteException {
-        // send mail only when it is part of workflow and user has set 
-        // boolean attribute "runAsWorkFlowComponent"                   
-        if(runAsWorkFlowComponent) {
-            if(attachmentList == null)
-                sendEmail(toList ,ccList, from, subject, message); 
-            else {
-                sendEmailWithAttachments(toList ,ccList, from, subject,
-                                         message, attachmentList); 
-            }
-        }
+        //start parent
         super.sfStart();
-        if(runAsWorkFlowComponent) {
+        // send mail only when it is part of workflow and user has set
+        // boolean attribute "runAsWorkFlowComponent"                   
+        if(runAsWorkFlowComponent || sendOnStartup ) {
+            sendConfiguredMessage();
+        }
+        if(runAsWorkFlowComponent  ) {
             TerminationRecord termR = new TerminationRecord("normal",
                 "Emailer finished: ",sfCompleteName());
             TerminatorThread terminator = new TerminatorThread(this,termR);
             terminator.start();
         }
     }
-    
+
+    /**
+     * send the message we are configured to send.
+     * @throws SmartFrogException
+     * @throws RemoteException
+     */
+    public void sendConfiguredMessage() throws SmartFrogException, RemoteException {
+        if(attachmentList == null)
+            sendEmail(toList ,ccList, from, subject, message);
+        else {
+            sendEmailWithAttachments(toList ,ccList, from, subject,
+                                     message, attachmentList);
+        }
+    }
+
     /**
      * Life cycle method for terminating the SmartFrog component.
      * @param tr Termination record
      */ 
     public synchronized void sfTerminateWith(TerminationRecord tr) {
+        if(sendOnShutdown) {
+            //send a shutdown message
+            try {
+                sendConfiguredMessage();
+            } catch (SmartFrogException e) {
+                log.error(e);
+            } catch (RemoteException e) {
+                log.error(e);
+            }
+        }
         super.sfTerminateWith(tr);
     }
     
@@ -160,7 +191,8 @@ public class EmailerImpl extends PrimImpl implements Emailer {
         subject =  sfResolve(SUBJECT, subject, false);
         message =  sfResolve(MESSAGE, message, false);
         attachmentList = (Vector) sfResolve(ATTACHMENTS, attachmentList,false);
-    }
+        sendOnStartup= sfResolve(SEND_ON_STARTUP, sendOnStartup,false);
+        sendOnShutdown = sfResolve(SEND_ON_SHUTDOWN, sendOnShutdown, false);    }
 
     // Utility methods to send Emails used when Emailer is to be used multiple
     // times by other components.
@@ -181,15 +213,15 @@ public class EmailerImpl extends PrimImpl implements Emailer {
     /**
      * Sends a single part message using to, from attributes defined in
      * the Emailer component
-     * @param sub The subject text that overrides the default value
+     * @param subject The subject text that overrides the default value
      * @param message Message body
      * @throws SmartFrogException if any error while sending the email
      * @throws RemoteException if any rmi or network error
      */
-    public void sendEmail(String sub, String msg) 
+    public void sendEmail(String subject, String message)
                             throws SmartFrogException, RemoteException {
         //use default to and from email addresses
-        sendEmail(toList, ccList, from, sub, msg);
+        sendEmail(toList, ccList, from, subject, message);
     }
 
     /**
@@ -203,14 +235,20 @@ public class EmailerImpl extends PrimImpl implements Emailer {
      * @throws RemoteException if any rmi or network error
      */
     public void sendEmail(String to ,String cc, 
-                        String from, String sub, String msg) 
-                                throws SmartFrogException, RemoteException {
-       try {
-           Message emailMsg = constructSinglepartMessage(to, cc,from, sub,msg);
-           sendMessage(emailMsg); 
-       }catch (MessagingException mex) {
+                        String from, String subject, String message)
+            throws SmartFrogException, RemoteException {
+        try {
+            if ( log.isInfoEnabled() ) {
+                log.info("Sending email to " + to + " cc: +" + cc + " from: " + from);
+                log.info("Subject :" + subject);
+                log.info("Message:" + message);
+            }
+            Message emailMsg = constructSinglepartMessage(to, cc, from, subject, message);
+            sendMessage(emailMsg);
+        } catch (MessagingException mex) {
+            log.error("failed to send message", mex);
             throw new SmartFrogException(mex);
-       }
+        }
     }
 
     /**
@@ -263,13 +301,20 @@ public class EmailerImpl extends PrimImpl implements Emailer {
      * @throws SmartFrogException if unable to send email
      */
     public void sendEmailWithAttachments(String to, String cc, String from,
-                String subject, String msg, Vector attachments) 
+                String subject, String message, Vector attachments)
                     throws SmartFrogException {
         try {
+            if ( log.isInfoEnabled() ) {
+                log.info("Sending email to " + to + " cc: +" + cc + " from: " + from);
+                log.info("Subject :" + subject);
+                log.info("Message:" + message);
+            }
+
             Message emailMsg = constructMultipartMessage(to, cc, from, subject,
-                                msg, attachments);
+                                message, attachments);
             sendMessage(emailMsg);
         }catch (MessagingException mex) {
+            log.error("failed to send message", mex);
             throw new SmartFrogException(mex);
         }
     }
