@@ -10,5 +10,5 @@ export SERVER=eb97201.india.hp.com:8080
 export CODEBASE="http://$SERVER/sfExamples.jar"
  
 echo "Stopping sfDaemon on" $1 "..."
-java -Dorg.smartfrog.codebase=$CODEBASE org.smartfrog.SFSystem -h1 $1 -t rootProcess -e
+java -Dorg.smartfrog.codebase=$CODEBASE org.smartfrog.SFSystem -a rootProcess:TERMINATE:::$1: -e
 echo "Stopped sfDaemon on" $1

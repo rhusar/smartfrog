@@ -19,5 +19,5 @@ java -Djava.security.manager -Djava.security.policy==$SFPRIVATE/sf.policy \
       -Djava.security.debug=scl \
       -Djava.rmi.server.logCalls=true \
       -Dsun.rmi.loader.logLevel=VERBOSE \
-       -Dorg.smartfrog.codebase=$CODEBASE org.smartfrog.SFSystem -h1 $1 -t rootProcess -e
+       -Dorg.smartfrog.codebase=$CODEBASE org.smartfrog.SFSystem -a rootProcess:TERMINATE:::$1: -e
 echo "Stopped sfDaemon on" $1 
