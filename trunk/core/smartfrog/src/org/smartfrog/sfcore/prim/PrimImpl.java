@@ -191,7 +191,6 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
      * @return Object value for attribute
      *
      * @throws SmartFrogResolutionException failed to find attribute
-     * @throws RemoteException In case of network/rmi error
      */
     public Object sfResolveHere(Object name, boolean mandatory)
         throws SmartFrogResolutionException {
@@ -722,11 +721,10 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     public synchronized void sfDeploy()
         throws SmartFrogException, RemoteException {
         this.sfSetLog(sfGetApplicationLog());
-	Reference componentId = sfCompleteName();
+        Reference componentId = sfCompleteName();
         if (sfIsTerminated) {
-            throw new SmartFrogDeploymentException(MessageUtil.formatMessage(
-                    MSG_DEPLOY_COMP_TERMINATED, componentId.toString()),
-                this);
+            throw new SmartFrogDeploymentException(MessageUtil.formatMessage(MSG_DEPLOY_COMP_TERMINATED, componentId.toString()),
+                    this);
         }
         sfDeployHooks.applyHooks(this, null);
         sfIsDeployed = true;
@@ -815,7 +813,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
         // Provide ID to termination record
         // Note that it uses the name of the first component terminated not the actual caller id.
 
-	// protect aganist two callers invoing this
+	    // protect aganist two callers invoing this
         //  can't synchronize of "this" as it can cause deqdlock in sync termination
         synchronized (termLock) {
             if (sfIsTerminating || sfIsTerminated) {
@@ -1178,8 +1176,6 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
      * To get a logger with a particular name.
      * @param name logger name
      * @return Logger implementing LogSF and Log
-     * @throws SmartFrogException
-     * @throws RemoteException
      */
     public LogSF sfGetLog (String name){
        return LogFactory.getLog(name);
