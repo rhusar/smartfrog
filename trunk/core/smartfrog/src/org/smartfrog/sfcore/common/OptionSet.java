@@ -58,17 +58,34 @@ public class OptionSet {
         "       ex. Terminate local sfDaemon - " + "\n" +
         "           -a rootProcess:TERMINATE:::localhost:" + "\n" +"\n" +
         "       Format for URL_DESCRIPTOR: " +"name:ACTION:url:sfConfig:HOST:PROCESS\n" +
-        "             - name: name where to apply ACTION\n" +
-        "             - ACTION: possible actions: DEPLOY, TERMINATE, DETACH, DETaTERM\n" +
-        "             - url: description used by ACTION\n" +
-        "             - target: for now only 'sfConfig' or 'empty' are considered.\n" +
-        "             - HOST: host name or IP where to apply ACTION. When empty it assumes localhost.\n" +
-        "             - PROCESS: process namewhere to apply ACTION. When empty it assumes rootProcess\n" +
+        "           - name: name where to apply ACTION \n" +
+        "              ex. foo\n" +
+        "              ex. \"HOST localhost:foo\"\n" +
+        "          - ACTION: possible actions: DEPLOY, TERMINATE, DETACH, DETaTERM\n" +
+        "          - url: description used by ACTION\n" +
+        "              ex. /home/sf/foo.sf\n" +
+        "              ex. c:\\sf\\foo.sf\n" +
+        "          - target: component description name to use with action. It can be empty\n" +
+        "              ex: foo\n" +
+        "              ex: fist:foo\n" +
+        "              note: sfConfig cannot be use with DEPLOY!\n" +
+        "          - HOST: host name or IP where to apply ACTION. When empty it assumes localhost.\n" +
+        "              ex: localhost\n" +
+        "              ex: 127.0.0.1\n" +
+        "          - PROCESS: process namewhere to apply ACTION. When empty it assumes rootProcess\n" +
+        "          \n" +
+        "              ex1: Deploy a description in local daemon\n" +
+        "                   counterEx:DEPLOY:org/smartfrog/examples/counter/example.sf::localhost:\n" +
+        "              ex2. Terminate local sfDaemon\n" +
+        "                   rootProcess:TERMINATE:::localhost:\n" +
+        "              ex3: Deploy \"counterToSucceed\" from counter/example2.sf\n" +
+        "                   counterEx3:DEPLOY:org/smartfrog/examples/counter/example2.sf:\"testLevel1:counterToSucceed\":localhost:\n" +
         "\n" +
         "    -f FILE_URL: file url with the ConfigurationDescriptors to deploy" +
         "\n" +
         "    -e:             exit after deployment is finished" + "\n" +
         " ";
+
 
     /** Error string for SFSystem. */
     public String errorString = null;
