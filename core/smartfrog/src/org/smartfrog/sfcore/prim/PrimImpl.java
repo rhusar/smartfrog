@@ -1095,8 +1095,7 @@ public class PrimImpl extends Object implements Prim, MessageKeys {
         boolean illegalClassType = false;
         try {
             Object referenceObj = sfResolve(reference, 0);
-
-            if ((defaultValue==null) || (referenceObj.getClass() == defaultValue.getClass())) {
+            if ((defaultValue==null) || ( defaultValue.getClass().isAssignableFrom(referenceObj.getClass()))) {
                 return (referenceObj);
             } else {
                 illegalClassType = true;
