@@ -44,6 +44,9 @@ public class LookupApplicationProcessor extends Processor {
     public URI lookupApplication(_lookupApplicationRequest lookupApplication)
             throws RemoteException {
         org.apache.axis.types.NCName appname = lookupApplication.getApplication();
+        if (appname == null) {
+            throw raiseBadArgumentFault(ERROR_NO_APPLICATION);
+        }
         URI uri = makeURI(appname.toString());
         return uri;
     }

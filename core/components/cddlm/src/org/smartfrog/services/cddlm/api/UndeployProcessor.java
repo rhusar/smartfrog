@@ -54,6 +54,10 @@ public class UndeployProcessor extends Processor {
 
     public boolean undeploy(_undeployRequest undeploy) throws RemoteException {
         final URI appURI = undeploy.getApplication();
+        if (appURI == null) {
+            throw raiseBadArgumentFault(ERROR_NO_APPLICATION);
+        }
+
         String reason;
         reason = undeploy.getReason();
         if (reason == null) {

@@ -20,24 +20,36 @@
 package org.smartfrog.services.cddlm.engine;
 
 import org.apache.axis.AxisFault;
+import org.apache.axis.MessageContext;
+import org.apache.axis.encoding.SerializationContext;
 import org.apache.axis.message.MessageElement;
+import org.apache.axis.types.NCName;
 import org.apache.axis.types.URI;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.smartfrog.services.cddlm.api.CallbackRaiser;
 import org.smartfrog.services.cddlm.api.OptionProcessor;
 import org.smartfrog.services.cddlm.api.Processor;
-import org.smartfrog.services.cddlm.generated.api.types.DeploymentDescriptorType;
-import org.smartfrog.services.cddlm.generated.api.types._deployRequest;
 import org.smartfrog.services.cddlm.cdl.CdlDocument;
+import org.smartfrog.services.cddlm.cdl.XomAxisHelper;
+import org.smartfrog.services.cddlm.generated.api.types.ApplicationStatusType;
+import org.smartfrog.services.cddlm.generated.api.types.DeploymentDescriptorType;
+import org.smartfrog.services.cddlm.generated.api.types.UnboundedXMLOtherNamespace;
+import org.smartfrog.services.cddlm.generated.api.types._deployRequest;
 import org.smartfrog.sfcore.prim.Prim;
 
 import javax.xml.namespace.QName;
+import java.io.StringWriter;
 import java.lang.ref.WeakReference;
+import java.net.URL;
 
 /**
  * created Aug 5, 2004 3:00:26 PM
  */
 
 public class JobState {
+
+    private final static Log log = LogFactory.getLog(JobState.class);
 
     public JobState() {
     }
@@ -76,7 +88,7 @@ public class JobState {
     /**
      * what handles callbacks
      */
-    private CallbackRaiser callbacks;
+    private CallbackRaiser callbackRaiser;
 
     /**
      * job info
@@ -87,7 +99,7 @@ public class JobState {
     /**
      * any fault
      */
-    private Throwable fault;
+    private AxisFault fault;
 
 
     /**
@@ -102,18 +114,46 @@ public class JobState {
     private CdlDocument cdlDocument;
 
     /**
+     * type of the callback
+     */
+    private String callbackType;
+
+
+    /**
+     *
+     */
+    private URL callbackURL;
+
+    /**
      * the language
      */
     private int language = -1;
 
+    /**
+     * name of the language (one of the constants)
+     */
     private String languageName = null;
 
-    public CallbackRaiser getCallbacks() {
-        return callbacks;
+    /**
+     * callback identifier
+     */
+    private String callbackIdentifier;
+
+
+    public String getCallbackIdentifier() {
+        return callbackIdentifier;
     }
 
-    public void setCallbacks(CallbackRaiser callbacks) {
-        this.callbacks = callbacks;
+    public void setCallbackIdentifier(String callbackIdentifier) {
+        this.callbackIdentifier = callbackIdentifier;
+    }
+
+    public CallbackRaiser getCallbackRaiser() {
+        return callbackRaiser;
+    }
+
+    public void setCallbackRaiser(CallbackRaiser callbackRaiser) {
+        this.callbackRaiser = callbackRaiser;
     }
 
     public WeakReference getPrimReference() {
@@ -128,11 +168,11 @@ public class JobState {
         return request;
     }
 
-    public Throwable getFault() {
+    public AxisFault getFault() {
         return fault;
     }
 
-    public void setFault(Throwable fault) {
+    public void setFault(AxisFault fault) {
         this.fault = fault;
     }
 
@@ -156,6 +196,22 @@ public class JobState {
 
     public String getLanguageName() {
         return languageName;
+    }
+
+    public String getCallbackType() {
+        return callbackType;
+    }
+
+    public void setCallbackType(String callbackType) {
+        this.callbackType = callbackType;
+    }
+
+    public URL getCallbackURL() {
+        return callbackURL;
+    }
+
+    public void setCallbackURL(URL callbackURL) {
+        this.callbackURL = callbackURL;
     }
 
     /**
@@ -289,5 +345,31 @@ public class JobState {
      */
     public int hashCode() {
         return (uri != null ? uri.hashCode() : 0);
+    }
+
+
+    public ApplicationStatusType createApplicationStatus() throws AxisFault {
+        ApplicationStatusType status = new ApplicationStatusType();
+        status.setName(new NCName(name));
+        status.setReference(getUri());
+        if (fault != null) {
+            MessageContext msgContext = MessageContext.getCurrentContext();
+            StringWriter sw = new StringWriter();
+            SerializationContext context = new SerializationContext(sw,
+                    msgContext);
+            try {
+                fault.output(context);
+                sw.flush();
+                MessageElement me = XomAxisHelper.parseAndConvert(
+                        sw.toString());
+                UnboundedXMLOtherNamespace extendedState = new UnboundedXMLOtherNamespace();
+                extendedState.set_any(XomAxisHelper.toArray(me));
+                status.setExtendedState(extendedState);
+            } catch (Exception e) {
+                //ignore and continue
+                log.warn(e);
+            }
+        }
+        return status;
     }
 }

@@ -19,15 +19,19 @@
  */
 package org.smartfrog.services.cddlm.api;
 
+import org.smartfrog.services.cddlm.engine.CallbackAction;
 import org.smartfrog.services.cddlm.engine.JobState;
+import org.smartfrog.services.cddlm.engine.ServerInstance;
+import org.smartfrog.services.cddlm.generated.api.types.ApplicationStatusType;
+import org.smartfrog.services.cddlm.generated.api.types._lifecycleEventCallbackRequest;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
 
 /**
- * created Aug 5, 2004 3:01:45 PM
+ * class handles cddlm callbacks created Sep 14, 2004 4:04:05 PM
  */
 
-public abstract class CallbackRaiser {
+public class CddlmCallbackRaiser extends CallbackRaiser {
 
     /**
      * raise an event
@@ -35,7 +39,21 @@ public abstract class CallbackRaiser {
      * @param object object (may be null
      * @param sfe
      */
-    public abstract void raiseLifecycleEvent(JobState job, Prim object,
-            SmartFrogException sfe);
+    public void raiseLifecycleEvent(JobState job, Prim object,
+            SmartFrogException sfe) {
+
+        ServerInstance server = ServerInstance.currentInstance();
+        _lifecycleEventCallbackRequest event = new _lifecycleEventCallbackRequest();
+        event.setApplicationReference(job.getUri());
+        event.setIdentifier(job.getCallbackIdentifier());
+        ApplicationStatusType status = new ApplicationStatusType();
+
+        event.setStatus(null);
+        CallbackAction action = new CallbackAction(job.getCallbackURL(),
+                event);
+        server.queue(action);
+
+    }
+
 
 }

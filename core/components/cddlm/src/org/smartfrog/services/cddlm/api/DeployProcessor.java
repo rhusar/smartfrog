@@ -25,14 +25,14 @@ import org.apache.axis.types.URI;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.smartfrog.services.axis.SmartFrogHostedEndpoint;
+import org.smartfrog.services.cddlm.cdl.CdlDocument;
+import org.smartfrog.services.cddlm.cdl.CdlParser;
 import org.smartfrog.services.cddlm.engine.JobRepository;
 import org.smartfrog.services.cddlm.engine.JobState;
 import org.smartfrog.services.cddlm.engine.ServerInstance;
 import org.smartfrog.services.cddlm.generated.api.types.DeploymentDescriptorType;
 import org.smartfrog.services.cddlm.generated.api.types._deployRequest;
 import org.smartfrog.services.cddlm.generated.api.types._deployResponse;
-import org.smartfrog.services.cddlm.cdl.CdlDocument;
-import org.smartfrog.services.cddlm.cdl.CdlParser;
 import org.smartfrog.sfcore.common.ConfigurationDescriptor;
 import org.smartfrog.sfcore.prim.Prim;
 
@@ -57,6 +57,7 @@ public class DeployProcessor extends Processor {
     private _deployRequest request;
     private OptionProcessor options;
     private JobState job;
+    public static final String ERROR_NO_DESCRIPTOR = "No descriptor element";
 
     public DeployProcessor(SmartFrogHostedEndpoint owner) {
         super(owner);
@@ -93,7 +94,7 @@ public class DeployProcessor extends Processor {
         request = deploy;
 
         CallbackProcessor callbackProcessor = new CallbackProcessor(getOwner());
-        callbackProcessor.process(job, deploy.getCallback());
+        callbackProcessor.process(job, deploy.getCallback(), false);
 
         DeploymentDescriptorType dd = deploy.getDescriptor();
         if (dd == null) {
@@ -153,14 +154,14 @@ public class DeployProcessor extends Processor {
      */
     private boolean deployCDL() throws AxisFault {
         MessageElement descriptorElement = job.getDescriptor();
-        if(descriptorElement==null) {
-            throw raiseBadArgumentFault("No descriptor element");
+        if (descriptorElement == null) {
+            throw raiseBadArgumentFault(ERROR_NO_DESCRIPTOR);
         }
         CdlDocument document;
         try {
             CdlParser parser = ServerInstance.currentInstance()
-                                            .getCdlParser();
-            assert parser!=null;
+                    .getCdlParser();
+            assert parser != null;
             document = parser.parseMessageElement(descriptorElement);
         } catch (Exception e) {
             throw translateException(e);

@@ -31,9 +31,9 @@ import java.rmi.RemoteException;
 
 public class Deploy extends ConsoleOperation {
 
-    String name;
+    private String name;
 
-    File sourceFile;
+    private File sourceFile;
 
     public Deploy(ServerBinding binding, PrintWriter out) {
         super(binding, out);

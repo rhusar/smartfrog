@@ -32,11 +32,12 @@ import org.smartfrog.services.cddlm.generated.api.types._deployRequest;
 import org.smartfrog.services.cddlm.generated.api.types._deployResponse;
 import org.smartfrog.services.cddlm.generated.api.types._lookupApplicationRequest;
 import org.smartfrog.services.cddlm.generated.api.types._serverStatusRequest;
+import org.smartfrog.services.cddlm.generated.api.types._setCallbackRequest;
 import org.smartfrog.services.cddlm.generated.api.types._undeployRequest;
 
+import javax.xml.rpc.ServiceException;
 import javax.xml.rpc.server.ServiceLifecycle;
 import javax.xml.rpc.server.ServletEndpointContext;
-import javax.xml.rpc.ServiceException;
 import java.rmi.RemoteException;
 
 /**
@@ -45,8 +46,7 @@ import java.rmi.RemoteException;
 
 public class DeploymentEndpoint extends SmartFrogHostedEndpoint
         implements org.smartfrog.services.cddlm.generated.api.endpoint.DeploymentEndpoint,
-        ServiceLifecycle
- {
+        ServiceLifecycle {
 
     /**
      * log for everything other than operations
@@ -131,6 +131,19 @@ public class DeploymentEndpoint extends SmartFrogHostedEndpoint
         } finally {
             operations.info("exiting listApplications");
         }
+    }
+
+    /**
+     * set a new callback
+     *
+     * @param setCallback
+     * @return
+     * @throws RemoteException
+     */
+    public boolean setCallback(_setCallbackRequest setCallback)
+            throws RemoteException {
+        CallbackProcessor processor = new CallbackProcessor(this);
+        return processor.process(setCallback);
     }
 
     /**

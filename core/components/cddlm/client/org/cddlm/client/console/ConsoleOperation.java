@@ -19,16 +19,23 @@
  */
 package org.cddlm.client.console;
 
+import nu.xom.ParsingException;
 import org.apache.axis.message.MessageElement;
 import org.apache.axis.message.Text;
 import org.apache.axis.types.NCName;
 import org.apache.axis.types.URI;
 import org.cddlm.client.common.Constants;
 import org.cddlm.client.common.ServerBinding;
+import org.smartfrog.services.cddlm.cdl.CdlDocument;
+import org.smartfrog.services.cddlm.cdl.CdlParser;
+import org.smartfrog.services.cddlm.cdl.ResourceLoader;
+import org.smartfrog.services.cddlm.cdl.XomAxisHelper;
 import org.smartfrog.services.cddlm.generated.api.DeployApiConstants;
 import org.smartfrog.services.cddlm.generated.api.endpoint.CddlmSoapBindingStub;
 import org.smartfrog.services.cddlm.generated.api.types.ApplicationReferenceListType;
 import org.smartfrog.services.cddlm.generated.api.types.ApplicationStatusType;
+import org.smartfrog.services.cddlm.generated.api.types.CallbackAddressType;
+import org.smartfrog.services.cddlm.generated.api.types.CallbackEnum;
 import org.smartfrog.services.cddlm.generated.api.types.CallbackInformationType;
 import org.smartfrog.services.cddlm.generated.api.types.DeploymentDescriptorType;
 import org.smartfrog.services.cddlm.generated.api.types.EmptyElementType;
@@ -44,24 +51,17 @@ import org.smartfrog.services.cddlm.generated.api.types._deploymentDescriptorTyp
 import org.smartfrog.services.cddlm.generated.api.types._languageListType_language;
 import org.smartfrog.services.cddlm.generated.api.types._lookupApplicationRequest;
 import org.smartfrog.services.cddlm.generated.api.types._serverStatusRequest;
+import org.smartfrog.services.cddlm.generated.api.types._setCallbackRequest;
 import org.smartfrog.services.cddlm.generated.api.types._undeployRequest;
-import org.smartfrog.services.cddlm.cdl.XomAxisHelper;
-import org.smartfrog.services.cddlm.cdl.CdlDocument;
-import org.smartfrog.services.cddlm.cdl.CdlParser;
-import org.smartfrog.services.cddlm.cdl.ResourceLoader;
 import org.w3c.dom.DOMImplementation;
 import org.xml.sax.SAXException;
 
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.rmi.RemoteException;
-
-import nu.xom.Document;
-import nu.xom.ParsingException;
-
-import javax.xml.parsers.ParserConfigurationException;
 
 /**
  * base class for console operations created Aug 31, 2004 4:44:30 PM
@@ -290,8 +290,9 @@ public abstract class ConsoleOperation {
 
 
     /**
-     * wrap the element parameter in a MessageElement[] array and then
-     * hand off to {@link #createDescriptorWithXML(MessageElement[])}
+     * wrap the element parameter in a MessageElement[] array and then hand off
+     * to {@link #createDescriptorWithXML(MessageElement[])}
+     *
      * @param element
      * @return a deployment descriptor for use in a request
      */
@@ -305,7 +306,9 @@ public abstract class ConsoleOperation {
 
     /**
      * fill the descriptor element with some attached XML
-     * @param any an array of data. The size of the array should be 1 for correct operation.
+     *
+     * @param any an array of data. The size of the array should be 1 for
+     *            correct operation.
      * @return a deployment descriptor for use in a request
      */
     public DeploymentDescriptorType createDescriptorWithXML(
@@ -320,11 +323,13 @@ public abstract class ConsoleOperation {
 
     /**
      * jump through hoops to turn a Xom document into a descriptor
+     *
      * @param xom
      * @return
      * @throws ParserConfigurationException
      */
-    public DeploymentDescriptorType createDescriptorWithXom(nu.xom.Document xom)
+    public DeploymentDescriptorType createDescriptorWithXom(
+            nu.xom.Document xom)
             throws ParserConfigurationException {
         DOMImplementation impl = XomAxisHelper.loadDomImplementation();
         MessageElement messageElement = XomAxisHelper.convert(xom, impl);
@@ -333,6 +338,7 @@ public abstract class ConsoleOperation {
 
     /**
      * wrap a smartfrog text file into a message element and process it
+     *
      * @param source
      * @return
      */
@@ -349,17 +355,20 @@ public abstract class ConsoleOperation {
     }
 
     /**
-     * load a resource, make a CDL descriptor from it. The file can be validated before sending
+     * load a resource, make a CDL descriptor from it. The file can be validated
+     * before sending
+     *
      * @param resource
      * @return
      */
-    public DeploymentDescriptorType createDescriptorFromCdlResource(String resource,
+    public DeploymentDescriptorType createDescriptorFromCdlResource(
+            String resource,
             boolean validate) throws SAXException, IOException,
             ParsingException, ParserConfigurationException {
         ResourceLoader loader = new ResourceLoader(this.getClass());
         CdlParser parser = new CdlParser(loader, validate);
-        CdlDocument cdlDoc=parser.parseResource(resource);
-        if(validate) {
+        CdlDocument cdlDoc = parser.parseResource(resource);
+        if (validate) {
             cdlDoc.validate();
         }
         return createDescriptorWithXom(cdlDoc.getDocument());
@@ -440,6 +449,39 @@ public abstract class ConsoleOperation {
     public boolean undeploy(URI uri, String reason) throws RemoteException {
         _undeployRequest undeploy = new _undeployRequest(uri, reason);
         return getStub().undeploy(undeploy);
+    }
+
+    /**
+     * set any callback
+     *
+     * @param request
+     * @return true
+     * @throws RemoteException
+     */
+    public boolean setCallback(_setCallbackRequest request)
+            throws RemoteException {
+        return getStub().setCallback(request);
+    }
+
+    /**
+     * set a CDDLM callback to a given endpoint
+     *
+     * @param application app identifier
+     * @param url         endpoint for return messages
+     * @param identifier  optional identifier
+     * @return
+     */
+    public boolean setCddlmCallback(URI application, String url,
+            String identifier)
+            throws RemoteException {
+        CallbackInformationType callbackInfo = new CallbackInformationType();
+        callbackInfo.setType(CallbackEnum.fromString(
+                DeployApiConstants.CALLBACK_CDDLM_PROTOTYPE));
+        callbackInfo.setIdentifier(identifier);
+        callbackInfo.setAddress(new CallbackAddressType(application, null));
+        _setCallbackRequest request = new _setCallbackRequest(application,
+                callbackInfo);
+        return setCallback(request);
     }
 
     /**

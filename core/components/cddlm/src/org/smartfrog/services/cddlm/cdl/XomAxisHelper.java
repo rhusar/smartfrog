@@ -19,44 +19,93 @@
  */
 package org.smartfrog.services.cddlm.cdl;
 
+import nu.xom.Builder;
+import nu.xom.Document;
+import nu.xom.ParsingException;
+import nu.xom.converters.DOMConverter;
 import org.apache.axis.message.MessageElement;
 import org.w3c.dom.DOMImplementation;
-import org.w3c.dom.DocumentType;
-import nu.xom.Document;
-import nu.xom.Element;
-import nu.xom.DocType;
-import nu.xom.Node;
-import nu.xom.converters.DOMConverter;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
+import java.io.StringReader;
 
 /**
  * Code to convert from Xom to a message element graph.
- * @see nu.xom.converters.DOMConverter
- * LGPL code from that is in here (also LGPL)
- * created Sep 13, 2004 3:37:44 PM
+ *
+ * @see nu.xom.converters.DOMConverter LGPL code from that is in here (also
+ *      LGPL) created Sep 13, 2004 3:37:44 PM
  */
 
 public class XomAxisHelper {
 
     /**
-     * brute force recursive serialisation of a DOM document.
-     * Yes, very ugly :(
+     * make an array from a single element
+     *
+     * @param element
+     * @return
+     */
+    public static MessageElement[] toArray(MessageElement element) {
+        MessageElement[] array = new MessageElement[1];
+        array[0] = element;
+        return array;
+    }
+
+    /**
+     * brute force recursive serialisation of a DOM document. Yes, very ugly :(
+     *
      * @param elt element to copy
      * @return
      */
 
     public static MessageElement convert(org.w3c.dom.Element elt) {
-        MessageElement dest=new MessageElement(elt);
+        MessageElement dest = new MessageElement(elt);
         return dest;
     }
 
+    /**
+     * parse a string, then convert to a message element graph
+     *
+     * @param string
+     * @return
+     * @throws SAXException
+     * @throws ParsingException
+     * @throws IOException
+     * @throws ParserConfigurationException
+     */
+    public static MessageElement parseAndConvert(String string)
+            throws SAXException, ParsingException, IOException,
+            ParserConfigurationException {
+        Document document = parse(string);
+        return convert(document, loadDomImplementation());
+
+    }
+
+    /**
+     * non validating parse of a string
+     *
+     * @param string
+     * @return
+     * @throws SAXException
+     * @throws ParsingException
+     * @throws IOException
+     */
+    private static Document parse(String string) throws SAXException,
+            ParsingException, IOException {
+        XMLReader xerces = XmlHelper.createXmlParser(false);
+        Builder builder = new Builder(xerces, false);
+        Document document = builder.build(new StringReader(string));
+        return document;
+    }
 
 
     /**
      * convert a Xom document to message elements
+     *
      * @param doc
      * @return
      */
@@ -68,6 +117,7 @@ public class XomAxisHelper {
 
     /**
      * use the JAXP APIs to locate and bind to a parser
+     *
      * @return
      * @throws ParserConfigurationException
      */
