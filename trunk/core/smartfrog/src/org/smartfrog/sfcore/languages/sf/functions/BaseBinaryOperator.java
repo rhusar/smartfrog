@@ -20,7 +20,6 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.languages.sf.functions;
 
-import java.util.Enumeration;
 
 import org.smartfrog.sfcore.common.MessageUtil;
 import org.smartfrog.sfcore.common.MessageKeys;
@@ -47,7 +46,7 @@ public abstract class BaseBinaryOperator extends BaseFunction implements PhaseAc
     /** Implements the functionality of base operator.
      *  it expects to find two attributes: left and right
      * if these are not present it will throw an exception
-     * 
+     *
      * @returns the result of the operation
      * @throws SmartFrogCompileResolutionException if either of the required attributes are not present or the operation throws an exception
      */
@@ -56,10 +55,10 @@ public abstract class BaseBinaryOperator extends BaseFunction implements PhaseAc
 	Object right = context.get("right");
 
 	if (left == null)
-	    throw new SmartFrogCompileResolutionException(MessageUtil.formatMessage(MISSING_PARAMETER, "left"), 
+	    throw new SmartFrogCompileResolutionException(MessageUtil.formatMessage(MISSING_PARAMETER, "left"),
 							  null, name, "function", null);
 	if (right == null)
-	    throw new SmartFrogCompileResolutionException(MessageUtil.formatMessage(MISSING_PARAMETER, "right"), 
+	    throw new SmartFrogCompileResolutionException(MessageUtil.formatMessage(MISSING_PARAMETER, "right"),
 							  null, name, "function", null);
 
 	return doOperator(left, right);

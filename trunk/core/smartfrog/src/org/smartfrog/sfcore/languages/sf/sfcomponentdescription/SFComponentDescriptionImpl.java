@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.rmi.RemoteException;
 import java.util.Enumeration;
 import java.util.Vector;
 
@@ -41,7 +40,6 @@ import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.languages.sf.Phase;
 import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
 import org.smartfrog.sfcore.parser.Phases;
-import org.smartfrog.sfcore.reference.ReferenceResolver;
 import org.smartfrog.sfcore.reference.HereReferencePart;
 import org.smartfrog.sfcore.reference.Reference;
 

@@ -20,7 +20,6 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.processcompound;
 
-import org.smartfrog.sfcore.common.Logger;
 import org.smartfrog.sfcore.common.MessageKeys;
 import org.smartfrog.sfcore.common.MessageUtil;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
@@ -88,10 +87,10 @@ public class SFProcess implements MessageKeys {
                 "ProcessCompound");
 
 
-    /** ProcessLog. This log is used to log into the core log: SF_CORE_LOG
-     *  It can be replaced using sfSetLog()
-     */
-    private LogSF sflog = LogFactory.sfGetProcessLog();
+//    /** ProcessLog. This log is used to log into the core log: SF_CORE_LOG
+//     *  It can be replaced using sfSetLog()
+//     */
+//    private LogSF sflog = LogFactory.sfGetProcessLog();
 
     private SFProcess (){
     }

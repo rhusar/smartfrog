@@ -31,8 +31,6 @@ import org.smartfrog.sfcore.common.TerminatorThread;
 import org.smartfrog.sfcore.security.SFClassLoader;
 
 import java.rmi.RemoteException;
-import java.util.logging.Logger;
-import java.util.logging.Level;
 import java.io.InputStream;
 
 /**

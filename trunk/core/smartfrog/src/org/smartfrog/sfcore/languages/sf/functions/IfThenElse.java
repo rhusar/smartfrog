@@ -20,8 +20,6 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.languages.sf.functions;
 
-import java.util.Enumeration;
-
 import org.smartfrog.sfcore.common.MessageKeys;
 import org.smartfrog.sfcore.common.MessageUtil;
 
@@ -47,19 +45,19 @@ public class IfThenElse extends BaseFunction implements PhaseAction, MessageKeys
 
 	if (ifObj == null)
 	    throw new SmartFrogCompileResolutionException(
-				      MessageUtil.formatMessage(MISSING_PARAMETER, "if"), 
+				      MessageUtil.formatMessage(MISSING_PARAMETER, "if"),
 				      null, name, "function", null);
 	if (thenObj == null)
 	    throw new SmartFrogCompileResolutionException(
-				      MessageUtil.formatMessage(MISSING_PARAMETER, "then"), 
+				      MessageUtil.formatMessage(MISSING_PARAMETER, "then"),
 				      null, name, "function", null);
 	if (elseObj == null)
 	    throw new SmartFrogCompileResolutionException(
-				      MessageUtil.formatMessage(MISSING_PARAMETER, "else"), 
+				      MessageUtil.formatMessage(MISSING_PARAMETER, "else"),
 				      null, name, "function", null);
 	if (!(ifObj instanceof Boolean))
 	    throw new SmartFrogCompileResolutionException(
-				      MessageUtil.formatMessage(ILLEGAL_BOOLEAN_PARAMETER), 
+				      MessageUtil.formatMessage(ILLEGAL_BOOLEAN_PARAMETER),
 				      null, name, "function", ifObj.getClass().toString() + " (" + ifObj + ")");
 
 

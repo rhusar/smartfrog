@@ -23,7 +23,6 @@ package org.smartfrog.sfcore.reference;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
-import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 
 

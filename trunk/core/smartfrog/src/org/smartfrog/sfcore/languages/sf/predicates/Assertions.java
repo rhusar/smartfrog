@@ -21,18 +21,10 @@ For more information: www.smartfrog.org
 package org.smartfrog.sfcore.languages.sf.predicates;
 
 import java.util.Enumeration;
-import java.util.Vector;
-
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.languages.sf.PhaseAction;
 import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
 import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.reference.ReferencePart;
-import org.smartfrog.sfcore.security.SFClassLoader;
-
-
 
 /**
  * Defines the basic schema implementation.

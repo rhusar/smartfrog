@@ -32,8 +32,6 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
-import org.smartfrog.sfcore.common.Logger;
-
 
 /**
  * Sequence is a modified compound which differs in that the sub-components

@@ -27,17 +27,12 @@ import java.util.Enumeration;
 import java.util.Vector;
 import java.util.Hashtable;
 
-import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.workflow.eventbus.EventPrimImpl;
 import org.smartfrog.sfcore.workflow.eventbus.EventSink;
 
 import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.reference.Reference;
-
 
 /**
  * An extension of Prim providing the Primitive SmartFrog Component with the
@@ -86,7 +81,7 @@ public class EventQueue extends EventPrimImpl implements Prim {
 			return false;
 		    }
 		}
-		
+
 	    }
 	    return true;
 	}
@@ -94,7 +89,7 @@ public class EventQueue extends EventPrimImpl implements Prim {
 	public void run() {
 	    while (!finished) {
 		synchronized (messages) {
-		    if (allDone()) 
+		    if (allDone())
 			try {
 			    messages.wait();
 			} catch (InterruptedException e) {
@@ -141,7 +136,7 @@ public class EventQueue extends EventPrimImpl implements Prim {
 	    }
         }
     }
-    
+
 
     /**
      * Deregisters an EventSink for forwarding of events.
@@ -159,7 +154,7 @@ public class EventQueue extends EventPrimImpl implements Prim {
     }
 
     /**
-     * Default implementation of the EventBus event method to 
+     * Default implementation of the EventBus event method to
      * forward an event to this component
      *
      * @param event java.lang.String

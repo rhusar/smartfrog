@@ -32,7 +32,8 @@ import java.util.Iterator;
 
 import org.smartfrog.SFSystem;
 import org.smartfrog.sfcore.common.Context;
-import org.smartfrog.sfcore.common.Logger;
+import org.smartfrog.sfcore.common.ContextImpl;
+import org.smartfrog.sfcore.common.TerminatorThread;
 import org.smartfrog.sfcore.common.MessageKeys;
 import org.smartfrog.sfcore.common.MessageUtil;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
@@ -52,9 +53,6 @@ import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferencePart;
 import org.smartfrog.sfcore.security.SFSecurity;
 import org.smartfrog.sfcore.security.SFSecurityProperties;
-import org.smartfrog.sfcore.common.Context;
-import org.smartfrog.sfcore.common.ContextImpl;
-import org.smartfrog.sfcore.common.TerminatorThread;
 
 
 

@@ -27,16 +27,14 @@ import java.util.Vector;
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
-import org.smartfrog.sfcore.common.Logger;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
+import org.smartfrog.sfcore.common.CreateNewChildThread;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
-import org.smartfrog.sfcore.common.*;
-import org.smartfrog.sfcore.workflow.eventbus.EventRegistration;
-
 
 /**
  * Parallel is a modified compound which differs in that the sub-components
