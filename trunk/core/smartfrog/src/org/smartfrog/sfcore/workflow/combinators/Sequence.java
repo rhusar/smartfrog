@@ -100,10 +100,7 @@ public class Sequence extends EventCompoundImpl implements Compound {
             }
             ComponentDescription act = (ComponentDescription) actions.
                                 get(componentName);
-            Prim comp = sfDeployComponentDescription(componentName, this, act,
-                                                                    null);
-            comp.sfDeploy();
-            comp.sfStart();
+            sfCreateNewChild(componentName, act, null);
     }
 
     /**
@@ -126,10 +123,7 @@ public class Sequence extends EventCompoundImpl implements Compound {
                         //System.out.println("starting next component in sequence " + name.toString());
                         String componentName = (String)actionKeys.nextElement();
                         ComponentDescription act = (ComponentDescription) actions.get(componentName);
-                        Prim c = sfDeployComponentDescription(componentName, this,
-                                act, null);
-                        c.sfDeploy();
-                        c.sfStart();
+                        sfCreateNewChild(componentName, act, null);
                     } else {
                         // Sequence terminates if there are no more sub-components
                         //log message

@@ -89,10 +89,8 @@ public class Retry extends EventCompoundImpl implements Compound {
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
 
-        Prim comp = sfDeployComponentDescription(name+"_actionRunning", this,
-                (ComponentDescription) action.copy(), null);
-        comp.sfDeploy();
-        comp.sfStart();
+        sfCreateNewChild(name+"_actionRunning", 
+			 (ComponentDescription) action.copy(), null);
     }
 
     /**
@@ -111,10 +109,8 @@ public class Retry extends EventCompoundImpl implements Compound {
 
                 if (!(status.errorType.equals("normal".intern()))) {
                     if (currentRetries++ < retry) {
-                        Prim c = sfDeployComponentDescription(name+"_actionRunning"+currentRetries, this,
-                                (ComponentDescription) action.copy(), null);
-                        c.sfDeploy();
-                        c.sfStart();
+                        sfCreateNewChild(name+"_actionRunning"+currentRetries,
+					 (ComponentDescription) action.copy(), null);
                     } else {
                         //System.out.println("terminated incorrectly: too many reties - fail " + name.toString());
                         sfTerminate(TerminationRecord.abnormal(

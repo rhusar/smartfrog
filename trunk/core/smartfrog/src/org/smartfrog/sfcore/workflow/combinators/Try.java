@@ -86,10 +86,7 @@ public class Try extends EventCompoundImpl implements Compound {
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
 
-        Prim comp = sfDeployComponentDescription("action", this, action,
-                null);
-        comp.sfDeploy();
-        comp.sfStart();
+	sfCreateNewChild("action", action, null);
     }
 
     /**
@@ -113,10 +110,8 @@ public class Try extends EventCompoundImpl implements Compound {
 //                    System.out.println("Try carrying out \n" + nextAction +
 //                        " for status " + status.errorType);
 
-                    Prim c = sfDeployComponentDescription(name+"_actionRunning", this,
-                            nextAction, null);
-                    c.sfDeploy();
-                    c.sfStart();
+		    sfCreateNewChild(name + "_actionRunning", nextAction, null);
+
                 } catch (Exception e) {
                     sfTerminate(TerminationRecord.abnormal(
                             "error in starting follow-on component", name));

@@ -124,10 +124,7 @@ public class During extends EventCompoundImpl implements Compound {
                     }
                 });
         timer.start();
-        Prim comp = sfDeployComponentDescription(name+"_actionRunning", this, action,
-                null);
-        comp.sfDeploy();
-        comp.sfStart();
+        sfCreateNewChild(name+"_actionRunning", action, null);
     }
 
     /**
