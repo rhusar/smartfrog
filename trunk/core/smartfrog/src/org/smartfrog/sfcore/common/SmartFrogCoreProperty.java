@@ -84,7 +84,7 @@ public class SmartFrogCoreProperty {
      *  @see org.smartfrog.SFSystem
      *  */
     public static final String propLogLiveness = propBase +
-        "logger.logSfPing";
+        "logger.logLiveness";
 
 
     // Reference

@@ -66,6 +66,8 @@ public class ErrorMessageBundle extends ListResourceBundle
         { MSG_SF_DEAD, "SmartFrog [{0}] dead "},
         { MSG_SF_TERMINATED, "SmartFrog daemon terminated"},
         { MSG_ERR_SF_RUNNING, "SmartFrog daemon could not start because another instance is running"},
+        { MSG_WARNING_LIVENESS_ENABLED ,
+                             "Warning: Liveness trace logging enabled"},
         { MSG_WARNING_STACKTRACE_ENABLED ,
                              "Warning: stack trace logging enabled"},
         { MSG_WARNING_STACKTRACE_DISABLED ,

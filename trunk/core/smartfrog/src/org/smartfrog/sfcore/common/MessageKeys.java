@@ -200,16 +200,21 @@ public interface MessageKeys {
     * Message key: successful detachment and termination of components.
     */
    public static String MSG_DETACH_TERMINATE_SUCCESS = "MSG_DETACH_TERMINATE_SUCCESS";
+
+
+   /**
+    * Message key: liveness trace logging enabled
+    */
+   public static String MSG_WARNING_LIVENESS_ENABLED = "MSG_WARNING_LIVENESS_ENABLED";
+
    /**
      * Message key: stack trace logging enabled.
      */
-    public static String MSG_WARNING_STACKTRACE_ENABLED
-                        = "MSG_WARNING_STACKTRACE_ENABLED";
+    public static String MSG_WARNING_STACKTRACE_ENABLED  = "MSG_WARNING_STACKTRACE_ENABLED";
     /**
      * Message key: stack trace logging disabled.
      */
-    public static String MSG_WARNING_STACKTRACE_DISABLED
-                        = "MSG_WARNING_STACKTRACE_DISABLED";
+    public static String MSG_WARNING_STACKTRACE_DISABLED  = "MSG_WARNING_STACKTRACE_DISABLED";
 
     // Resolution Exception Messages starts
     /**

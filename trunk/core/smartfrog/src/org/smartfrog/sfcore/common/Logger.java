@@ -42,7 +42,7 @@ public class Logger implements MessageKeys {
      */
     public static boolean logLiveness = false;
 
-    private static boolean initialized=false;
+    private static boolean initialized = false;
 
     private Logger(){
     }
@@ -69,9 +69,13 @@ public class Logger implements MessageKeys {
         source = System.getProperty(SmartFrogCoreProperty.propLogLiveness);
         if ("true".equals(source)) {
             Logger.logLiveness = true;
+            if (SFSystem.sflog().isWarnEnabled()) {
+              SFSystem.sflog().warn(MessageUtil.
+                    formatMessage(MSG_WARNING_LIVENESS_ENABLED));
+            }
         }
 
-        initialized = false;
+        initialized = true;
     }
 
 }
