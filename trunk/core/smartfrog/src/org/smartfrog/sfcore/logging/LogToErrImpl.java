@@ -167,7 +167,7 @@ public class LogToErrImpl implements LogToErr, Log, LogMessage, LogLevel, Serial
      * @exception  SmartFrogException error while reading attributes
      * @exception  RemoteException In case of network/rmi error
      */
-    private void readSFAttributes() throws SmartFrogException {
+    protected void readSFAttributes() throws SmartFrogException {
         if (classComponentDescription==null) return;
 
         //Optional attributes.
