@@ -76,8 +76,6 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite, juni
      * test class list we build up
      */
     private HashMap testClasses;
-    private String regexp;
-    private Pattern pattern;
 
     public JUnitTestSuiteImpl() throws RemoteException {
         helper = new ComponentHelper(this);
