@@ -104,8 +104,9 @@ public class Download extends PrimImpl implements Prim {
         } catch (Exception e) {
 	    String errStr="error in downloading of url " + url + " to " + 
 		    localFile;
-    	     if(log.isErrorEnabled())
-		 log.error(errStr);    
+    	     if(log.isErrorEnabled()) {
+		        log.error(errStr);
+             }
             //e.printStackTrace();
             //TODO : Need to be revisited
             throw new SmartFrogLifecycleException(e, this);
