@@ -505,9 +505,9 @@ For more information: www.smartfrog.org
 			<replacefilter 
     		token="@{compname}-minver" 
     		property="@{compname}.minversion"/>
-			<replacefilter 
+			<!--replacefilter 
     		token="@{compname}-maxver" 
-    		property="@{compname}.maxversion"/>
+    		property="@{compname}.maxversion"/-->
 	</replace>
       </sequential>
     </macrodef>
