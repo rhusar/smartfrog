@@ -56,6 +56,9 @@ public class ToUrlTest extends TaskTestBase {
     public void testNoFile() {
         expectBuildExceptionContaining("testNoFile", "missing file", "file");
     }
+    public void testValidation() {
+        expectBuildExceptionContaining("testValidation", ToUrlTask.ERROR_MISSING_FILE, "file");
+    }
 
     public void testWorks() {
         executeTarget("testWorks");
