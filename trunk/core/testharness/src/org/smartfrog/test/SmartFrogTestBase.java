@@ -156,12 +156,13 @@ public abstract class SmartFrogTestBase extends TestCase {
             //Deploy and don't throw exception. Exception will be contained
             // in a ConfigurationDescriptor.
             deployedApp = SFSystem.runConfigurationDescriptor(cfgDesc,false);
+            /*
             System.out.println("\n"+"* Test failure in description: \n    "+cfgDesc.toString("\n    ")+"\n"
                                    +"  - searching for: "+searchString+"\n"
                                    +"  - exception name: "+containedExceptionName+"\n"
                                    +"  - exception text: "+containedExceptionText+"\n"
                                    );
-
+            */
             if ((deployedApp instanceof ConfigurationDescriptor) &&
                     (((ConfigurationDescriptor) deployedApp).resultException != null)) {
                 searchForExpectedExceptions(deployedApp, cfgDesc, exceptionName,
@@ -236,9 +237,12 @@ public abstract class SmartFrogTestBase extends TestCase {
 
             assertContains(cause.toString(),
                     faultText,
-                    details);
+                    details,
+                    extractDiagnosticsInfo(cause));
         }
     }
+
+
 
     private ConfigurationDescriptor createDeploymentConfigurationDescriptor(String appName, String testURL)
             throws SmartFrogInitException {
@@ -255,7 +259,31 @@ public abstract class SmartFrogTestBase extends TestCase {
      * @param name
      */
     public void assertThrowableNamed(Throwable thrown,String name, String cfgDescMsg) {
-        assertContains(thrown.getClass().getName(),name, cfgDescMsg);
+        assertContains(thrown.getClass().getName(),name, cfgDescMsg, extractDiagnosticsInfo(thrown));
+    }
+
+    /**
+     * extract as much info as we can from a throwable.
+     * @param thrown
+     * @return a string describing the throwable; includes a stack trace
+     */
+    protected String extractDiagnosticsInfo(Throwable thrown) {
+        StringBuffer buffer=new StringBuffer();
+        thrown.getStackTrace();
+        buffer.append("Message:  ");
+        buffer.append(thrown.getMessage());
+        buffer.append('\n');
+        buffer.append("Class:    ");
+        buffer.append(thrown.getClass().getName());
+        buffer.append('\n');
+        buffer.append("Stack:    ");
+        final StackTraceElement[] stackTrace = thrown.getStackTrace();
+        for(int i=0;i<stackTrace.length;i++) {
+            StackTraceElement frame=stackTrace[i];
+            buffer.append(frame.toString());
+            buffer.append('\n');
+        }
+        return buffer.toString();
     }
 
     /**
@@ -263,12 +291,21 @@ public abstract class SmartFrogTestBase extends TestCase {
      * @param source
      * @param substring
      * @param cfgDescMsg
+     * @param extraText any extra text, can be null
      */
-    public void assertContains(String source, String substring, String cfgDescMsg) {
+    public void assertContains(String source, String substring, String cfgDescMsg,String extraText) {
         assertNotNull("No string to look for ["+substring+"]",source);
         assertNotNull("No substring ", substring);
-        assertTrue("Did not find ["+substring+"] in ["+source+"]"+"\n, Result:"+cfgDescMsg,
-                source.indexOf(substring)>=0);
+        final boolean contained = source.indexOf(substring)>=0;
+        if(!contained)
+        {
+            String message = "Did not find ["+substring+"] in ["+source+"]"+"\n, Result:"+cfgDescMsg;
+            System.out.println(message);
+            if (extraText != null) {
+                System.out.println(extraText);
+            }
+            fail(message);
+        }
     }
 
 
@@ -278,7 +315,7 @@ public abstract class SmartFrogTestBase extends TestCase {
      * @param substring
      */
     public void assertContains(String source, String substring) {
-       assertContains(source,substring,"");
+       assertContains(source,substring,"",null);
     }
 
 
@@ -443,7 +480,7 @@ public abstract class SmartFrogTestBase extends TestCase {
 
      /**
      * parse a smartfrog file; throw an exception if something went wrong
-     * @param file
+     * @param fileUrl
      * @throws SmartFrogException
      */
     protected Phases parse(String fileUrl) throws SmartFrogException {
