@@ -28,7 +28,7 @@ org/smartfrog/services/trace/SFTrace.class
 org/smartfrog/services/persistance/SFPersist.class
 org/smartfrog/services/display/SFDisplay.class
 org/smartfrog/services/os/runshell/RunShellImpl.class
-org/smartfrog/services/os/download/Download.class
+org/smartfrog/services/os/download/DownloadImpl.class
 org/smartfrog/services/gobbler/SFStreamGobbler.class
 org/smartfrog/services/utils/concat/SFConcatImpl.class
 org/smartfrog/services/utils/logtofile/SFLogToFile.class
