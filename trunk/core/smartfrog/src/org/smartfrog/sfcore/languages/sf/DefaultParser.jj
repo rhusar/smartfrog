@@ -384,10 +384,9 @@ Object[] Attribute() :
 {
   (Name(name) attribute[1]=Value()
    { if (name.size() == 1)
-      attribute[0] = ((HereReferencePart)name.firstElement()).value;
+        attribute[0] = ((HereReferencePart)name.firstElement()).value;
      else
-      attribute[0] = name;
-     //if (attribute[1] == null) attribute[1] = ((HereReferencePart)name.lastElement()).value;
+        attribute[0] = name;
      if (attribute[1] == null) attribute[1] = SFNull.get();
      return attribute;
    })
@@ -400,11 +399,16 @@ void Name(Reference res) :
   Token t;
 }
 {
-    <UNIQUE>
-    {
-        res.addElement(ReferencePart.here("unique" + nextId++));
-    }
-    |	(IdReferencePart(res) [(<REFPARTSEP> Name(res))])
+     (<UNIQUE>
+       {
+           res.addElement(ReferencePart.here("unique" + nextId++));
+       }
+     )
+    | 
+     (
+       (t=<WORD> {res.addElement(ReferencePart.here(t.image));}) 
+       [(<REFPARTSEP> Name(res))]
+     )
 }
 
 
@@ -628,6 +632,7 @@ void ReferencePart(Reference ref) :
     (<ROOT> { ref.addElement(ReferencePart.root()); })
   | (<PARENT> { ref.addElement(ReferencePart.parent()); })
   | (<ATTRIB> id=<WORD> { ref.addElement(ReferencePart.attrib(id.image)); })
+  | (<HERE> id=<WORD> { ref.addElement(ReferencePart.here(id.image)); })
   | (<THIS> { ref.addElement(ReferencePart.thisref()); })
   | (<PROPERTY> id=<WORD> { ref.addElement(ReferencePart.property(id.image));})
   | (<IPROPERTY> id=<WORD> { ref.addElement(ReferencePart.iproperty(id.image));})
@@ -636,16 +641,13 @@ void ReferencePart(Reference ref) :
       |(id=<STRING> { ref.addElement(ReferencePart.host(id.image.substring(1, id.image.length() - 1)));})
      ))
   | (<PROCESS> { ref.addElement(ReferencePart.process());})
-  | IdReferencePart(ref)
+  | (id=<WORD> { if (ref.size() == 0) // id in first position - treat as an attrib, not a here
+		     ref.addElement(ReferencePart.attrib(id.image));
+                 else
+		     ref.addElement(ReferencePart.here(id.image));
+                })
 }
 
-void IdReferencePart(Reference ref) :
-{
-  Token id;
-}
-{
-  (id=<WORD> { ref.addElement(ReferencePart.here(id.image)); })
-}
 
 Object Basic() :
 {
