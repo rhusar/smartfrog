@@ -63,7 +63,7 @@ For more information: www.smartfrog.org
 
   <target name="components" depends="main-dist,tasks" 
     description="components distribution(s)">
-    <ant dir="${ant.project}" target="dist" inheritAll="false" />
+    <ant dir="${components.project}" target="dist" inheritAll="false" />
   </target>
 
   
