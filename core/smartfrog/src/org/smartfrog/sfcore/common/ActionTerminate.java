@@ -31,16 +31,25 @@ public class ActionTerminate extends ConfigurationAction{
 
 
     /**
-      * Terminates name from component targetP
-      *
-      * @param appName name of the application
-      * @param target the target process compound to request deployment
-      * @return Reference to detached component
-      * @exception SmartFrogException failure in some part of the process
-      * @throws RemoteException In case of network/rmi error
-      */
-      public static Prim sfTerminate(String name, ProcessCompound targetP)
-            throws SmartFrogException, RemoteException  {
+     * Terminates name from component targetP
+     *
+     * @param appName name of the application
+     * @param target the target process compound to request deployment
+     * @return Reference to detached component
+     * @exception SmartFrogException failure in some part of the process
+     * @throws RemoteException In case of network/rmi error
+     */
+    public static Prim sfTerminate(String name, ProcessCompound targetP) throws
+        SmartFrogException, RemoteException {
+
+        //First thing first: system gets initialized
+        //Protect system if people use this as entry point
+        try {
+            org.smartfrog.SFSystem.initSystem();
+        } catch (Exception ex) {
+            throw SmartFrogException.forward(ex);
+        }
+
         Prim targetC;
 
         try {
@@ -66,7 +75,7 @@ public class ActionTerminate extends ConfigurationAction{
         } catch (Throwable thr) {
             throw SmartFrogException.forward(thr);
         }
-     }
+    }
 
 
     /**

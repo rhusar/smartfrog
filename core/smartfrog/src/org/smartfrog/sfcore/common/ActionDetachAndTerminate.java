@@ -31,21 +31,29 @@ public class ActionDetachAndTerminate extends ConfigurationAction{
 
 
     /**
-       * Detaches and Terminates name from component targetP
-       *
-       * @param appName name of the application
-       * @param target the target process compound to request deployment
-       * @return Reference to detached component
-       * @exception SmartFrogException failure in some part of the process
-       * @throws RemoteException In case of network/rmi error
-       */
-       public static Prim DetachAndTerminate(String name, ProcessCompound targetP)
-             throws SmartFrogException, RemoteException  {
-        if(name==null) {
+     * Detaches and Terminates name from component targetP
+     *
+     * @param appName name of the application
+     * @param target the target process compound to request deployment
+     * @return Reference to detached component
+     * @exception SmartFrogException failure in some part of the process
+     * @throws RemoteException In case of network/rmi error
+     */
+    public static Prim DetachAndTerminate(String name, ProcessCompound targetP) throws
+        SmartFrogException, RemoteException {
+        //First thing first: system gets initialized
+        //Protect system if people use this as entry point
+        try {
+            org.smartfrog.SFSystem.initSystem();
+        } catch (Exception ex) {
+            throw SmartFrogException.forward(ex);
+        }
+
+        if (name==null) {
             throw new SmartFrogException("No application name provided");
         }
-          Prim targetC=(Prim) targetP.sfResolveWithParser(name);
-          boolean isRootProcess = false;
+        Prim targetC = (Prim)targetP.sfResolveWithParser(name);
+        boolean isRootProcess = false;
         try {
             if (targetC instanceof ProcessCompound) {
                 isRootProcess = ((ProcessCompound)targetC).sfIsRoot();
@@ -60,12 +68,12 @@ public class ActionDetachAndTerminate extends ConfigurationAction{
             }
             return targetC;
         } catch (Throwable thr) {
-                    throw SmartFrogException.forward(thr);
+            throw SmartFrogException.forward(thr);
         }
 
-      }
+    }
 
-
+    /**
      /**
       * Detach and Terminate action
       *

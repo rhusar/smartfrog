@@ -62,6 +62,16 @@ public class ActionDeploy extends ConfigurationAction {
       */
      public static Prim Deploy(String url, String appName,Prim parent, Compound target,
          Context c, Reference deployReference) throws SmartFrogException, RemoteException {
+
+        //First thing first: system gets initialized
+        //Protect system if people use this as entry point
+        try {
+            org.smartfrog.SFSystem.initSystem();
+        } catch (Exception ex) {
+            throw SmartFrogException.forward(ex);
+        }
+
+
          Prim comp = null;
          Phases top;
          //To calculate how long it takes to deploy a description
