@@ -50,7 +50,8 @@
     <!-- read these after the env settings -->
     <property file="${core.dir}/build.properties"/>
 
-<!--     <fail unless="ant.home">Your IDE is not setting ant.home.
+<!-- turned off for gump
+    <fail unless="ant.home">Your IDE is not setting ant.home.
         edit core/build.properties to set it to the base dir of Ant
     </fail> -->
     <property name="smartfrog.home" location="${core.dir}/smartfrog"/>
@@ -67,6 +68,13 @@
     <!-- assume the sun compiler -->
     <property name="rmic.compiler" value="sun" />
 
+    <fileset id="smartfrog.core.fileset"
+      dir="${smartfrog.dist.lib.dir}">
+      <include name="smartfrog.jar"/>
+      <include name="sfExamples.jar"/>
+      <include name="sfServices.jar"/>
+    </fileset>
+    
     <fileset id="smartfrog.lib.fileset"
       dir="${smartfrog.dist.lib.dir}">
       <include name="**/*.jar"/>
@@ -75,6 +83,9 @@
     <!-- set up the path of common files in the dist/lib directory -->
     <path id="smartfrog.classpath">
       <fileset refid="smartfrog.lib.fileset" />
+    </path>
+    <path id="smartfrog.core.classpath">
+      <fileset refid="smartfrog.core.fileset" />
     </path>
 
     <path id="smartfrog.components.classpath">
@@ -125,7 +136,7 @@
 <!--     <property name="smartfrog.tasks.lib.dir"
       location="${extras.dir}/ant/${dist.lib.dir.relative}"/> -->
       
-        <property name="smartfrog.tasks.lib.dir"
+    <property name="smartfrog.tasks.lib.dir"
       location="${extras.dir}/ant/${dist.lib.dir.relative}"/>
     <property name="smartfrog.tasks.jar"
       location="${smartfrog.tasks.lib.dir}/${smartfrog.tasks.name}"/>
@@ -311,7 +322,7 @@
         
   <target name="declare-base.compile.classpath" depends="init" >  
     <path id="base.compile.classpath">
-      <path refid="smartfrog.classpath"/>
+      <path refid="smartfrog.core.classpath"/>
     </path>
   </target>
     
@@ -428,7 +439,7 @@
   <target name="use-smartfrog-tasks" depends="init-common"
     description="declare the classpath and imports for the smartfrog tasks">
     <path id="smartfrog.tasks.classpath">
-      <path refid="smartfrog.classpath"/>
+      <path refid="smartfrog.core.classpath"/>
       <path refid="smartfrog.components.classpath"/>
       <pathelement location="${smartfrog.tasks.jar}"/>
     </path>
@@ -628,7 +639,6 @@
   <target name="maybe-test" depends="verify-prerequisites" if="verified.ok">
     <antcall target="batch-test" />
   </target>
-  
   
   <!-- ========================================================== -->
   <!-- entry point for the components/build.xml delegation;
