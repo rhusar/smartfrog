@@ -30,9 +30,9 @@ import java.rmi.RemoteException;
  * created 15-Apr-2004 15:44:41
  */
 
-public class TestRunnerImpl extends CompoundImpl implements TestRunner {
+public class TestRunnerComponent extends CompoundImpl implements TestRunner {
 
-    public TestRunnerImpl() throws RemoteException {
+    public TestRunnerComponent() throws RemoteException {
     }
 
     /**
@@ -45,6 +45,9 @@ public class TestRunnerImpl extends CompoundImpl implements TestRunner {
      */
     private boolean keepGoing = true;
 
+    /**
+     * fork into a new process?
+     */
     private boolean fork = false;
 
     /**
@@ -84,9 +87,14 @@ public class TestRunnerImpl extends CompoundImpl implements TestRunner {
     public synchronized void sfStart() throws SmartFrogException,
             RemoteException {
         super.sfStart();
-        listener = (TestListener) sfResolve(LISTENER_ATTRIBUTE, listener, true);
-        fork = sfResolve(FORK_ATTRIBUTE, fork, false);
-        keepGoing = sfResolve(KEEPGOING_ATTRIBUTE, keepGoing, false);
+        Object o = sfResolve(ATTRIBUTE_LISTENER, listener, true);
+        if (!(o instanceof TestListener)) {
+            throw new SmartFrogException("The attribute " + ATTRIBUTE_LISTENER
+                    + "must refer to an implementation of TestListener");
+        }
+        listener = (TestListener) o;
+        fork = sfResolve(ATTRIBUTE_FORK, fork, false);
+        keepGoing = sfResolve(ATTRIBUTE_KEEPGOING, keepGoing, false);
         validate();
     }
 
@@ -98,7 +106,7 @@ public class TestRunnerImpl extends CompoundImpl implements TestRunner {
         this.listener = listener;
     }
 
-    public boolean isKeepGoing() {
+    public boolean getKeepGoing() {
         return keepGoing;
     }
 
@@ -106,7 +114,7 @@ public class TestRunnerImpl extends CompoundImpl implements TestRunner {
         this.keepGoing = keepGoing;
     }
 
-    public boolean isFork() {
+    public boolean getFork() {
         return fork;
     }
 
