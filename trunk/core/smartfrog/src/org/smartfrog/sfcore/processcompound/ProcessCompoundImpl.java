@@ -760,7 +760,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
      */
     public synchronized boolean sfDeRegister(Prim comp)
         throws SmartFrogException, RemoteException {
-        boolean success= true;
+        boolean success= false;
         if (sfContext.contains(comp)){
            sfContext.remove(sfContext.keyFor(comp));
            success=true;
