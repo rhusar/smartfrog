@@ -102,7 +102,7 @@ For more information: www.smartfrog.org
     <property name="dist.docs.dir" value="${dist.dir}/${docs}"/>
     <property name="dist.jdocs.dir" value="${dist.dir}/${jdocs}"/>
 
-     <property name="componentsFiles" value="org/smartfrog/services/**/*"/>
+    <property name="componentsFiles" value="org/smartfrog/services/**/*"/>
     
     <!-- this is where dependency logic is imposed
          the path must be ordered such that dependent projects
@@ -163,6 +163,7 @@ component.path :=
     description="diagnostics">
     <delegate target="diagnostics"/>
   </target>  
+  
   <target name="diag2" depends="init"
     description="diagnostics">
     <delegate target="diag2"/>
@@ -242,124 +243,93 @@ component.path :=
   <!-- =================================================================== -->
   <!--                                                                     -->
   <!-- =================================================================== -->
-  <target name="copylibs" depends="initdist">
-    <copy todir="${dist.lib.dir}">
-      <!--fileset dir="${cddlm.project}/${build}/${dist.lib.dir}">
-           <include name="**/*.jar" />
-      </fileset-->
-      <fileset dir="${emailer.project}/${build}/${dist.lib.dir}">
-           <include name="**/*.jar" />
-      </fileset>
-      <fileset dir="${jetty.project}/${build}/${dist.lib.dir}">
-           <include name="**/*.jar" />
-      </fileset>
-      <fileset dir="${logger.project}/${build}/${dist.lib.dir}">
-           <include name="**/*.jar" />
-      </fileset>
-      <fileset dir="${net.project}/${build}/${dist.lib.dir}">
-           <include name="**/*.jar" />
-      </fileset>
-      <fileset dir="${scripting.project}/${build}/${dist.lib.dir}">
-           <include name="**/*.jar" />
-      </fileset>
-      <fileset dir="${slp.project}/${build}/${dist.lib.dir}">
-           <include name="**/*.jar" />
-      </fileset>
-      <fileset dir="${ssh.project}/${build}/${dist.lib.dir}">
-           <include name="**/*.jar" />
-      </fileset>
-      <fileset dir="${utils.project}/${build}/${dist.lib.dir}">
-           <include name="**/*.jar" />
-      </fileset>
-      <fileset dir="${lib}">
-           <include name="**/*.jar" />
-      </fileset>
-    </copy>
+  <target name="copylibs" depends="initdist,dist">
+  
+    <macrodef name="copylibs" >
+      <attribute name="project" description="component to copy"/>
+      <attribute name="libdir" default="${build}/${dist.lib.dir}" />
+      <attribute name="includes" default="**/*" />
+      
+      <sequential>
+        <copy todir="${dist.lib.dir}">
+          <fileset dir="@{project}/@{libdir}" includes="@{includes}" />
+        </copy>
+      </sequential>
+    </macrodef>
+
+    <copylibs project="${emailer.project}" />
+    <copylibs project="${jetty.project}" />
+    <copylibs project="${logger.project}" />
+    <copylibs project="${net.project}" />
+    <copylibs project="${scripting.project}" />
+    <copylibs project="${slp.project}"  />
+    <copylibs project="${ssh.project}" />
+    <copylibs project="${utils.project}" />
+
   </target>
 
   <!-- =================================================================== -->
   <!--                                                                     -->
   <!-- =================================================================== -->
   <target name="copycomponents" depends="initdist">
-    <copy todir="${dist.src.dir}">
-      <!--fileset dir="${cddlm.project}/${src}">
-        <include name="${componentsFiles}" />
-        <exclude name="**/*.dfPackage"/>
-      </fileset-->
-      <fileset dir="${emailer.project}/${src}">
-        <include name="${componentsFiles}" />
-        <exclude name="**/*.dfPackage"/>
-      </fileset>
-      <fileset dir="${jetty.project}/${src}">
-        <include name="${componentsFiles}" />
-        <exclude name="**/*.dfPackage"/>
-      </fileset>
-      <fileset dir="${logger.project}/${src}">
-        <include name="${componentsFiles}" />
-        <exclude name="**/*.dfPackage"/>
-      </fileset>
-      <fileset dir="${net.project}/${src}">
-        <include name="${componentsFiles}" />
-        <exclude name="**/*.dfPackage"/>
-      </fileset>
-      <fileset dir="${scripting.project}/${src}">
-        <include name="${componentsFiles}" />
-        <exclude name="**/*.dfPackage"/>
-      </fileset>
-      <fileset dir="${slp.project}/${src}">
-        <include name="${componentsFiles}" />
-        <exclude name="**/*.dfPackage"/>
-      </fileset>
-      <fileset dir="${ssh.project}/${src}">
-        <include name="${componentsFiles}" />
-        <exclude name="**/*.dfPackage"/>
-      </fileset>
-      <fileset dir="${utils.project}/${src}">
-        <include name="${componentsFiles}" />
-        <exclude name="**/*.dfPackage"/>
-      </fileset>
-    </copy>
+  
+    <macrodef name="copycomponents" >
+      <attribute name="project" description="component to copy"/>
+      <attribute name="srcdir" default="${src}" />
+      <attribute name="includes" default="**/*" />
+      <sequential>
+        <copy todir="${dist.src.dir}">
+          <fileset dir="@{project}/@{srcdir}" >
+            <include name="@{includes}" />
+            <exclude name="**/*.dfPackage"/>
+          </fileset>
+        </copy>
+      </sequential>
+    </macrodef>
+
+    <copycomponents project="${emailer.project}" />
+    <copycomponents project="${jetty.project}" />
+    <copycomponents project="${logger.project}" />
+    <copycomponents project="${net.project}"  />
+    <copycomponents project="${scripting.project}" />
+    <copycomponents project="${net.project}"  />
+    <copycomponents project="${slp.project}"  />
+    <copycomponents project="${ssh.project}" />
+    <copycomponents project="${utils.project}" />
   </target>
 
   <!-- =================================================================== -->
   <!--                                                                     -->
   <!-- =================================================================== -->
   <target name="copydocs" depends="initdist">
-    <copy todir="${dist.docs.dir}">
-      <!--fileset dir="${cddlm.project}/${doc}">
-        <include name="**/*.*" />
-      </fileset-->
-      <fileset dir="${emailer.project}/${doc}">
-        <include name="**/*.*" />
-      </fileset>
-      <fileset dir="${jetty.project}/${doc}">
-        <include name="**/*.*" />
-      </fileset>
-      <fileset dir="${logger.project}/${doc}">
-        <include name="**/*.*" />
-      </fileset>
-      <fileset dir="${net.project}/${doc}">
-        <include name="**/*.*" />
-      </fileset>
-      <fileset dir="${scripting.project}/${docs}">
-        <include name="**/*.*" />
-      </fileset>
-      <fileset dir="${slp.project}/${docs}">
-        <include name="**/*.*" />
-      </fileset>
-      <fileset dir="${ssh.project}/${doc}">
-        <include name="**/*.*" />
-      </fileset>
-      <fileset dir="${utils.project}/${doc}">
-        <include name="**/*.*" />
-      </fileset>
-    </copy>
+  
+    <macrodef name="copydocs" >
+      <attribute name="project" description="component to copy"/>
+      <attribute name="docdir" default="${doc}" />
+      <attribute name="includes" default="**/*" />
+      
+      <sequential>
+        <copy todir="${dist.docs.dir}">
+          <fileset dir="@{project}/@{docdir}" includes="@{includes}" />
+        </copy>
+      </sequential>
+    </macrodef>
+
+    <copydocs project="${emailer.project}" />
+    <copydocs project="${jetty.project}" />
+    <copydocs project="${logger.project}" />
+    <copydocs project="${net.project}" />
+    <copydocs project="${scripting.project}" docdir="docs" />
+    <copydocs project="${slp.project}" docdir="docs" />
+    <copydocs project="${ssh.project}" />
+    <copydocs project="${utils.project}" />
   </target>
 
   <!-- =================================================================== -->
   <!-- src.zip                                                             -->
   <!-- =================================================================== -->
   <target name="srczip" depends="initdist"  description="Creates src.zip with Components sources">
+  
     <zip destfile="${dist.dir}/src.zip" >
       <!--zipfileset dir="${cddlm.project}/${src}">
         <include name="**/**"/>
@@ -419,172 +389,8 @@ component.path :=
 
   <target name="default" depends="dist"/>
 
-<!-- =================================================================== -->
-  <!--  Generate Forrest Documentation									   -->
-  <!-- =================================================================== -->
-
-
-
-	<property environment="env"/>
-	<property name="forrest.home"  location="${env.FORREST_HOME}"/>
-	
-	<import file="${env.FORREST_HOME}/forrest.build.xml"/>
-	<import file="${env.FORREST_HOME}/forrest.antproxy.xml"/>
-	
-	<target name="seedforrest" depends="seed" description="Creates forrest project template">
-		<echo>Created forrest project template</echo>
-			</target>
-	<property name="comp.home"  location="${SFHOME}/../../components"/>
-	
-<target name="Collectcompdocs">
-	<delete>
-	    <fileset dir="${comp.home}" includes="forrest.properties"/>
-	</delete>
-		<copy todir="${comp.home}">
-        <fileset dir="./forrest_skin">
-				 <include name="forrest.properties" />
-			</fileset>
-		</copy>	
-		<mkdir dir="${comp.home}/src/documentation/content/xdocs/smarfrogdoc"/>
-		<copy todir="${comp.home}/src/documentation/content/xdocs/smarfrogdoc">
-        <fileset dir="./forrest_skin">
-				 <include name="SFComponents.xml" />
-			</fileset>
-		</copy>	
-		<!--mkdir dir="${comp.home}/src/documentation/content/xdocs/smarfrogdoc/cddlm"/>
-		<copy todir="${comp.home}/src/documentation/content/xdocs/smarfrogdoc/cddlm">
-        <fileset dir="./cddlm/doc">
-			<include name="**/*.*" />
-		</fileset>
-		</copy-->	
-		<mkdir dir="${comp.home}/src/documentation/content/xdocs/smarfrogdoc/emailer"/>
-		<copy todir="${comp.home}/src/documentation/content/xdocs/smarfrogdoc/emailer">
-        	<fileset dir="./emailer/doc">
-				 <include name="**/*.*" />
-			</fileset>
-			<fileset dir="./forrest_skin">
-				 <include name="emailer.xml" />
-			</fileset>
-		</copy>	
-		<mkdir dir="${comp.home}/src/documentation/content/xdocs/smarfrogdoc/jetty"/>
-		<copy todir="${comp.home}/src/documentation/content/xdocs/smarfrogdoc/jetty">
-         <fileset dir="./jetty/doc">
-        <include name="**/*.*" />
-      </fileset>
-	  	<fileset dir="./forrest_skin">
-				 <include name="jetty.xml" />
-			</fileset>
-		</copy>	
-		<mkdir dir="${comp.home}/src/documentation/content/xdocs/smarfrogdoc/logger"/>
-		<copy todir="${comp.home}/src/documentation/content/xdocs/smarfrogdoc/logger">
-        <fileset dir="./logger/doc">
-         <include name="**/*.*" />
-      </fileset>
-	  	<fileset dir="./forrest_skin">
-				 <include name="logger.xml" />
-			</fileset>
-	  	</copy>	
-
-		<mkdir dir="${comp.home}/src/documentation/content/xdocs/smarfrogdoc/net"/>
-		<copy todir="${comp.home}/src/documentation/content/xdocs/smarfrogdoc/net">
-        <fileset dir="./net/doc">
-         <include name="**/*.*" />
-      </fileset>
-	  	<fileset dir="./forrest_skin">
-				 <include name="net.xml" />
-			</fileset>
-		</copy>
-		<mkdir dir="${comp.home}/src/documentation/content/xdocs/smarfrogdoc/ssh"/>
-		<copy todir="${comp.home}/src/documentation/content/xdocs/smarfrogdoc/ssh">
-        <fileset dir="./ssh/doc">
-        <include name="**/*.*"/>
-      </fileset>
-	  	<fileset dir="./forrest_skin">
-				 <include name="ssh.xml" />
-			</fileset>
-		</copy>	
-		<mkdir dir="${comp.home}/src/documentation/content/xdocs/smarfrogdoc/utils"/>
-		<copy todir="${comp.home}/src/documentation/content/xdocs/smarfrogdoc/utils">
-         <fileset dir="./utils/doc">
-        <include name="**/*.*" />
-      </fileset>
-	  	<fileset dir="./forrest_skin">
-				 <include name="utils.xml" />
-			</fileset>
-		</copy>	
- 		<mkdir dir="${comp.home}/src/documentation/content/xdocs/smarfrogdoc/scripting"/>
-		<copy todir="${comp.home}/src/documentation/content/xdocs/smarfrogdoc/scripting">
-       <fileset dir="./scripting/docs">
-        <include name="**/*.sxw" />
-      </fileset>
-	  	<fileset dir="./forrest_skin">
-				 <include name="scripting.xml" />
-			</fileset>
-		</copy>	
-		<mkdir dir="${comp.home}/src/documentation/content/xdocs/smarfrogdoc/slp"/>
-		<copy todir="${comp.home}/src/documentation/content/xdocs/smarfrogdoc/slp">
-        <fileset dir="./slp/docs">
-        <include name="**/*.sxw" />
-      </fileset>
-	  	<fileset dir="./forrest_skin">
-				 <include name="slp.xml" />
-			</fileset>
-		</copy>	
-	
-	<delete>
-    <fileset dir="${comp.home}/src/documentation/content/xdocs" includes="index.xml"/>
-	<fileset dir="${comp.home}/src/documentation/content/xdocs" includes="site.xml"/>
-	<fileset dir="${comp.home}/src/documentation/content/xdocs" includes="tabs.xml"/>
-	<fileset dir="${comp.home}/src/documentation" includes="skinconf.xml"/>
-	</delete>
-		
-		<copy todir="${comp.home}/src/documentation/content/xdocs">
-			<fileset dir="./forrest_skin">
-				 <include name="site.xml" />
-				</fileset>
-				<fileset dir="./forrest_skin">
-					 <include name="index.xml" />
-				</fileset>
-				<fileset dir="./forrest_skin">
-				 <include name="tabs.xml" />
-			</fileset>
-		</copy>	
-	
-		<copy todir="${comp.home}/src/documentation">
-			<fileset dir="./forrest_skin">
-				 <include name="skinconf.xml" />
-				</fileset>
-		</copy>	
-			<copy todir="${comp.home}/src/documentation/content/xdocs/images">
-			<fileset dir="./forrest_skin">
-				 <include name="sf.*" />
-				  <include name="frog.*" />
-				</fileset>
-		</copy>	
-	
-	
-		<echo>${comp.home}</echo>
- 	</target>
-
-	<target name="generatesite">
-	<ant target="site"/>
-		</target>
-	<target name="copyforrestdocs">
-
-		<copy todir="${dist.docs.dir}">
-      <fileset dir="${comp.home}/build/site">
-	     <include name="**/*.*" />
-		 <exclude name="samples/*.*"/>
-		 <exclude name="test1.html"/>
-		 <exclude name="test2.html"/>
-		 <exclude name="hello.pdf"/>
-		</fileset>
-    </copy>
-		<echo>Forrest site docs Copied</echo>
-	</target>
-
-	<target name="generatedoc" depends="seedforrest, Collectcompdocs , generatesite , copyforrestdocs" description="Document Generation">
-	<echo>Forrest Documents Generated</echo>
+	<target name="generatedoc" depends="init" description="Document Generation" if="env.FORREST_HOME">
+    <ant antfile="documentation.xml" inheritall="false" />
 	</target>
 
 

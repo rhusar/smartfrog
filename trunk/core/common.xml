@@ -44,19 +44,20 @@
     overrides (like the compiler settings) that apply across
     all projects that use this common file-->
     <property file="${core.dir}/common.properties"/>
-    <property file="${core.dir}/build.properties"/>
-    
+
     <!-- now read in environment settings -->
     <property environment="env" />
+    <!-- read these after the env settings -->
+    <property file="${core.dir}/build.properties"/>
 
     <fail unless="ant.home">Your IDE is not setting ant.home.
         edit core/build.properties to set it to the base dir of Ant
     </fail>
     <property name="smartfrog.home" location="${core.dir}/smartfrog"/>
-    <!--property name="smartfrog.dist.dir" location="${smartfrog.home}/dist"/-->
-    <property name="smartfrog.dist.dir" location="${env.SFHOME}"/>
+    <property name="smartfrog.dist.dir" location="${smartfrog.home}/dist" />
     <property name="smartfrog.dist.lib.dir" location="${smartfrog.dist.dir}/lib"/>
-    <property name="smartfrog.components.lib.dir" value="${env.SFCOMPONENTS}/lib"/>
+    <property name="smartfrog.components.dir" location="${core.dir}/components"/>
+    <property name="smartfrog.components.lib.dir" location="${smartfrog.components.dir}/lib"/>
     <!-- Compile options for Smartfrog Release -->
     <property name="javac.debug.mode" value="true"/> 
     <property name="javac.deprecation.mode" value="true"/> 
@@ -65,17 +66,23 @@
     
     <!-- assume the sun compiler -->
     <property name="rmic.compiler" value="sun" />
+
+    <fileset id="smartfrog.lib.fileset"
+      dir="${smartfrog.dist.lib.dir}">
+      <include name="**/*.jar"/>
+    </fileset>
+
+    <!-- set up the path of common files in the dist/lib directory -->
     <path id="smartfrog.classpath">
-      <fileset dir="${smartfrog.dist.lib.dir}">
-        <include name="**/*.jar"/>
-      </fileset>       
+      <fileset refid="smartfrog.lib.fileset" />
     </path>
-    
+
     <path id="smartfrog.components.classpath">
       <fileset dir="${smartfrog.components.lib.dir}">
         <include name="**/*.jar"/>
-      </fileset>       
-    </path> 
+      </fileset>
+    </path>
+
     <property name="extras.dir"
       location="${core.dir}/extras"/>
       
@@ -114,7 +121,10 @@
       <!-- information about the ant tasks -->
     <property name="smartfrog.tasks.prefix" value="smartfrog-tasks"/>      
     <property name="smartfrog.tasks.name" value="${smartfrog.tasks.prefix}.jar"/>      
-    <property name="smartfrog.tasks.lib.dir"
+<!--     <property name="smartfrog.tasks.lib.dir"
+      location="${extras.dir}/ant/${dist.lib.dir.relative}"/> -->
+      
+        <property name="smartfrog.tasks.lib.dir"
       location="${extras.dir}/ant/${dist.lib.dir.relative}"/>
     <property name="smartfrog.tasks.jar"
       location="${smartfrog.tasks.lib.dir}/${smartfrog.tasks.name}"/>
