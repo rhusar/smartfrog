@@ -197,7 +197,7 @@ public class GraphPanel extends JPanel implements ComponentListener,
 
     public void initImages() {
         try {
-            String imagesPath = this.getClass().getPackage().getName()+".";
+            String imagesPath = org.smartfrog.examples.dynamicwebserver.gui.graphpanel.GraphPanel.class.getPackage().getName()+".";
             imagesPath=imagesPath.replace('.','/');
 //            topBar = java.awt.Toolkit.getDefaultToolkit().getImage(org.smartfrog.examples.dynamicwebserver.gui.graphpanel.GraphPanel.class.getResource(
 //                        "top.gif"));
