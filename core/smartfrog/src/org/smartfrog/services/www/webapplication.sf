@@ -38,7 +38,7 @@ JavaWebApplicationSchema extends Schema {
     warFile extends Optional;
 
     //application server
-    server extends String;
+    server extends OptionalCD;
 }
 
 JavaWebApplication extends Prim {

@@ -47,6 +47,10 @@ public class ComponentHelper {
         this.owner = owner;
     }
 
+    public Prim getOwner() {
+        return owner;
+    }
+
     /**
      * mark this task for termination by spawning a separate thread to do it.
      * as {@link Prim#sfTerminate} and {@link Prim#sfStart()} are synchronized,
@@ -160,6 +164,60 @@ public class ComponentHelper {
             throw new SmartFrogException("Not found: " + resourcename);
         }
         return in;
+    }
+
+    /**
+     * find an ancestor of a given type
+     * @param node node to look for
+     * @param interfaceName full name of interface to look for
+     * @param depth: 0 means dont look upwards, -1 means indefinite.
+     * @return a parent or null for no match
+     * @throws java.rmi.RemoteException
+     */
+    public static Prim findAncestorImplementing(Prim node, String interfaceName, int depth) throws RemoteException {
+        if (depth == 0 || node == null) {
+            return null;
+        }
+        Prim parent = node.sfParent();
+        if(parent==null) {
+            //we run out here
+            return null;
+        }
+        if ( implementsInterface(parent.getClass(),interfaceName)) {
+            return parent;
+        }
+        return findAncestorImplementing(parent, interfaceName, depth - 1);
+    }
+
+    /**
+     * find an ancestor of the owner that implements this class.
+     *
+     * @param interfaceName full name of interface to look for
+     * @param depth: 0 means dont look upwards, -1 means indefinite.
+     * @return a parent or null for no match
+     * @throws RemoteException
+     */
+    public Prim findAncestorImplementing(String interfaceName, int depth) throws RemoteException {
+        return findAncestorImplementing(owner, interfaceName, depth);
+    }
+
+    /**
+     * recursive search for interface inheritance
+     * @param clazz
+     * @param interfaceName
+     * @return
+     */
+    public static boolean implementsInterface(Class clazz,String interfaceName ) {
+        if(clazz==null) {
+            return false;
+        }
+        Class[] interfaces = clazz.getInterfaces();
+        for (int i = 0; i < interfaces.length; i++) {
+            if (interfaces[i].getName().equals(interfaceName)) {
+                return true;
+            }
+        }
+        return implementsInterface(clazz.getSuperclass(),interfaceName);
     }
 
 }
