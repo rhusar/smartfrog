@@ -24,6 +24,7 @@ import java.net.InetAddress;
 import java.rmi.RemoteException;
 import java.rmi.server.RemoteStub;
 import java.util.Vector;
+import java.util.Enumeration;
 
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.Logger;
@@ -1618,6 +1619,29 @@ public class PrimImpl extends Object implements Prim, MessageKeys {
         try {
             sfParent = parent;
             sfContext = cxt;
+
+	    /* @TODO Would like to do this, but requires Prim to be a ComponentDescription
+	     * which is a good idea in anycase, but requires a refactoring of the interfaces
+	     *
+	     * in the mean time reference resolution from a CD is bounded to that CD hierarchy
+	     * and cannot move between this and the Component hierarchy
+	     * 
+	     * Could do this by providing a proxy which implements CD and forwards the resovlve
+	     * requests to the Prim...
+	     *
+
+	    // set the parent link of any contained component description to this Prim
+	    // so that references work
+	    for (Enumeration e = sfContext.keys(); e.hasMoreElements();) {
+		Object value = sfContext.get(e.nextElement());
+
+		if (value instanceof ComponentDescription) {
+		    ((ComponentDescription) value).setParent(this);
+		}
+	    }
+
+	    */
+
 
             boolean es; // allow exportRef to be defined by string (backward compatability) or boolean
             Object eso = sfResolveId("sfExport");
