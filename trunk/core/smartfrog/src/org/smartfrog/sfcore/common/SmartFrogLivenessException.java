@@ -25,8 +25,9 @@ import java.rmi.RemoteException;
 import org.smartfrog.sfcore.prim.Prim;
 
 /**
- * A SmartFrogRuntimeException is thrown when an irrecoverable error occurs
- * while running a SmartFrog component.
+ * A SmartFrogLivenessException is thrown when a liveness test
+ * fails
+ * @see org.smartfrog.sfcore.prim.Liveness#sfPing(Object) 
  *
  */
 public class SmartFrogLivenessException extends SmartFrogRuntimeException {
