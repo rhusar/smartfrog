@@ -61,7 +61,7 @@ public abstract class SmartFrogTask extends TaskBase {
     /**
      * name of host
      */
-    protected String host;
+    protected String host="";
 
 
     /**
@@ -279,15 +279,16 @@ public abstract class SmartFrogTask extends TaskBase {
     protected void addArg(String value) {
         smartfrog.createArg().setValue(value);
     }
-    /**
-     * adds the hostname to the task
-     */
-    protected void addHostname() {
-        if (host != null) {
-            addArg( "-h");
-            addArg(host);
-        }
-    }
+
+//    /**
+//     * adds the hostname to the task
+//     */
+//    protected void addHostname() {
+//        if (host != null) {
+//            addArg( "-h");
+//            addArg(host);
+//        }
+//    }
 
     /**
      * set a flag to tell the runtime to exit after actioning something
@@ -315,7 +316,7 @@ public abstract class SmartFrogTask extends TaskBase {
 
     /**
      * set the timeout of a task, in seconds. After this time it will be
-     * killed. 
+     * killed.
      * @param taskTimeout
      */
     public void setTaskTimeout(int taskTimeout) {
