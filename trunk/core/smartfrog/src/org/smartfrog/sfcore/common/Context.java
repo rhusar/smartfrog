@@ -22,6 +22,7 @@ package org.smartfrog.sfcore.common;
 
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.io.Serializable;
 
 
 /**
@@ -31,7 +32,7 @@ import java.util.Iterator;
  *
  * @see Copying
  */
-public interface Context extends Copying {
+public interface Context extends Copying, Serializable {
     /**
      * Returns true if the context contains value.
      * Deprecated: replaced by sfContainsValue()
