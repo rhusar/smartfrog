@@ -275,7 +275,7 @@ To use: ant -f buildRelease release
 	
 
 	<macrodef name="copyreleasestars" >
-      <aettribute name="project" description="component to copy"/>
+      <attribute name="project" description="component to copy"/>
       <attribute name="releasesdir" default="${releases.dir}" />
       <attribute name="includes" default="**/*DIST.tar.gz" />
       
