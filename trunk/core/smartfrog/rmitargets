@@ -25,6 +25,7 @@ org/smartfrog/sfcore/workflow/combinators/RandomSequence.class
 org/smartfrog/sfcore/workflow/combinators/Retract.class
 org/smartfrog/services/assertions/AssertComponent.class
 org/smartfrog/services/trace/SFTrace.class
+org/smartfrog/services/persistacne/SFPersist.class
 org/smartfrog/services/display/SFDisplay.class
 org/smartfrog/services/os/runshell/RunShellImpl.class
 org/smartfrog/services/os/download/Download.class
