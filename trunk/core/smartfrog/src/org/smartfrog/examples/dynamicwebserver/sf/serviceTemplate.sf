@@ -18,110 +18,131 @@ For more information: www.smartfrog.org
 
 */
 
-#include "/org/smartfrog/examples/dynamicwebserver/sf/nodes.sf"
+#include "/org/smartfrog/components.sf"
+#include "/org/smartfrog/functions.sf"
+#include "/org/smartfrog/predicates.sf"
+
+
 #include "/org/smartfrog/examples/dynamicwebserver/thresholder/components.sf"
 #include "/org/smartfrog/examples/dynamicwebserver/logging/components.sf"
 #include "/org/smartfrog/examples/dynamicwebserver/stresstest/components.sf"
 #include "/org/smartfrog/examples/dynamicwebserver/balancer/components.sf"
 #include "/org/smartfrog/examples/dynamicwebserver/sf/webTemplate.sf";
 
-serviceLoadGenerator extends StressTester {
-        host ATTRIB balancerHost;
-        port ATTRIB webPort;
 
-        page "/cgi-bin/u1";
-        frequency 1;
-        factor 200;
-        numHits 10;
-}
+/*
+ * The following global values must be defined in the include location 
+ * for this file, otherwise errors will be thrown.
+ */
 
 
+// the host on which the thresholder, measuring component, etc will run
+serviceManagerHost TBD;
 
-WebThresholder extends Thresholder {
-        minInstances 1;
+// the host on which the load balancer will run
+balancerHost       TBD;
 
-        balancer;
+// a vector of all of the hosts to be used for the Apache web server
+// they must all be x86, linux
+serverHosts        TBD;
 
-        template extends LAZY WebServerTemplate {
-            //logTo LAZY ATTRIB logger;
-        };
-
-        servers extends serverHosts;
-
-        repeatMeasures 2;
-        stabilizationMeasures 5;
-
-        isAuto true;
-}
+// the cgi script to use to measure webserver performance
+measurementCgi     TBD;
 
 
+/*
+ * The template for the service itself...
+ */
 
+ServiceTemplate extends Compound {
+    sfProcessHost serviceManagerHost;
 
-serviceTemplate extends Compound {
-    sfProcessHost ATTRIB serviceManagerHost;
     polling 5;
 
     upper 800;
     lower 350;
-    max 1500;
-    min 0;
+    max   1500;
+    min   0;
+
 
     logger extends Logger {
         //verbose true;
     }
 
-    loadGenerator extends serviceLoadGenerator {
-        //logTo LAZY ATTRIB logger;
-        frequency 10;
-    }
 
-    balancerGroup extends Compound{
-       sfProcessHost ATTRIB balancerHost;
-       sfProcessComponentName "loadBalancer";
-       balancer extends WebBalancer {
-            //logTo LAZY ATTRIB logger;
-            hosts extends serverHosts;
+    webThresholder extends Thresholder {
+        minInstances 1;
+
+        //logTo LAZY logger;
+        balancer        LAZY balancerGroup:balancer;
+
+        template extends LAZY WebServerTemplate {
+            //logTo LAZY logger;
         }
-        connectionMeter extends Meter {
-            dataSource LAZY ATTRIB balancer;
-            pollingPeriod ATTRIB polling;
-            maxY 300;
-            minY 0;
-            gridStepY 10;
-            positionDisplay "NE";
-            dataDisplayed "connections";
-       }
-    }
 
-    webThresholder extends WebThresholder {
-        //logTo LAZY ATTRIB logger;
-        balancer LAZY ATTRIB balancerGroup:balancer;
+        servers extends serverHosts;
 
-        polling PARENT:polling;
+        polling         PARENT:polling;
+        lowerThreshold  lower;
+        upperThreshold  upper;
+        dataSource LAZY loadGenerator;
 
-        lowerThreshold ATTRIB lower;
-        upperThreshold ATTRIB upper;
-        dataSource LAZY ATTRIB loadGenerator;
+        repeatMeasures        2;
+        stabilizationMeasures 5;
+        isAuto                true;
     }
 
     thresholdGraph extends DisplayThresholder {
         //logTo LAZY ATTRIB logger;
-        dataSource LAZY ATTRIB loadGenerator;
-        thresholder LAZY ATTRIB webThresholder;
+        dataSource LAZY  loadGenerator;
+        thresholder LAZY webThresholder;
 
-        pollingPeriod ATTRIB polling;
+        pollingPeriod    polling;
 
-        panelWidth 600;
-        panelHeight 200;
+        panelWidth       600;
+        panelHeight      200;
 
-        maxY ATTRIB max;
-        minY ATTRIB min;
+        maxY             max;
+        minY             min;
+
+	dataDisplayed    "measurement response time (ms)";
+        frameTitle       "thresholder";
+    }
+
+    loadGenerator extends StressTester {
+        //logTo LAZY logger;
+
+        host balancerHost;
+        port 80;
+
+        page      measurementCgi;
+        frequency 10;
+        factor    200;
+        numHits   10;
+    }
+
+
+    balancerGroup extends Compound{
+       sfProcessHost           balancerHost;
+       sfProcessComponentName "loadBalancer";
+
+       balancer extends WebBalancer {
+            //logTo LAZY logger;
+            hosts extends serverHosts;
+       }
+
+       connectionMeter extends Meter {
+            dataSource       LAZY balancer;
+            pollingPeriod    polling; 
+            maxY             300;
+            minY             0;
+            gridStepY        10;
+            positionDisplay  "NE";
+            dataDisplayed    "connections";
+	    frameTitle       "load balancer";
+       }
     }
 
 }
 
-
-sfConfig extends serviceTemplate {
-    sfLivenessDelay 0;
-}
 
