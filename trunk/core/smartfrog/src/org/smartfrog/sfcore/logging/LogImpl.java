@@ -140,7 +140,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
                                    , (String)classComponentDescription.sfResolve(new Reference("localLoggerClass"))
                                    , getSfCodeBase(classComponentDescription));
         } catch (Exception ex ){
-            localLog=new LogToFile(name,new Integer(currentLogLevel));
+            localLog=new LogToFileImpl(name,new Integer(currentLogLevel));
             localLog.warn("Error init localLog for LogImpl",ex);
         }
         logName = name;
