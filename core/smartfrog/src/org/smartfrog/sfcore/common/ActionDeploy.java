@@ -66,25 +66,40 @@ public class ActionDeploy extends ConfigurationAction {
          if (appName!=null) c.put("sfProcessComponentName", appName);
 
          try {
-             ComponentDescription
-                     cd = ComponentDescriptionImpl.sfComponentDescription(url);
-             if (Logger.logStackTrace) {
-                 parseTime = System.currentTimeMillis() - deployTime;
-                 deployTime = System.currentTimeMillis();
+             ComponentDescription cd;
+             try {
+                 cd = ComponentDescriptionImpl.sfComponentDescription(url);
+                 if (Logger.logStackTrace) {
+                     parseTime = System.currentTimeMillis()-deployTime;
+                     deployTime = System.currentTimeMillis();
+                 }
+             } catch (SmartFrogException sfex) {
+                 if (sfex instanceof SmartFrogDeploymentException)
+                     throw sfex;
+                 else
+                     throw new SmartFrogDeploymentException(
+                        "deploying description '"+url+"' for '"+appName+"'",
+                        sfex,
+                        comp,
+                        c);
              }
              comp = target.sfDeployComponentDescription(null, null, cd, c);
              try {
                  comp.sfDeploy();
              } catch (Throwable thr){
-                 if (thr instanceof SmartFrogLifecycleException)
-                     throw (SmartFrogLifecycleException) SmartFrogLifecycleException.forward(thr);
+                 if (thr instanceof SmartFrogLifecycleException){
+                     throw (SmartFrogLifecycleException)
+                         SmartFrogLifecycleException.forward(thr);
+                 }
                  throw SmartFrogLifecycleException.sfDeploy("",thr,null);
              }
              try {
                  comp.sfStart();
              } catch (Throwable thr){
-                 if (thr instanceof SmartFrogLifecycleException)
-                     throw (SmartFrogLifecycleException)SmartFrogLifecycleException.forward(thr);
+                 if (thr instanceof SmartFrogLifecycleException){
+                     throw (SmartFrogLifecycleException)
+                         SmartFrogLifecycleException.forward(thr);
+                 }
                  throw SmartFrogLifecycleException.sfStart("",thr,null);
              }
          } catch (Throwable e) {
