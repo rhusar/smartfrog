@@ -30,6 +30,8 @@ import java.text.SimpleDateFormat;
 import java.text.DateFormat;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 
 
 //------------------- RUNProcess -------------------------------
@@ -42,10 +44,10 @@ public class RunProcessImpl  extends Thread implements RunProcess {
       dateFormatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss:SSS zzz");
     }
 
-    static final int STATE_INACTIVE = 0;
-    static final int STATE_STARTING = 1;
-    static final int STATE_STARTED = 2;
-    static final int STATE_PROCESSING = 3;
+    public static final int STATE_INACTIVE = 0;
+    public static final int STATE_STARTING = 1;
+    public static final int STATE_STARTED = 2;
+    public static final int STATE_PROCESSING = 3;
 
     private int state = 0;
 
@@ -54,10 +56,15 @@ public class RunProcessImpl  extends Thread implements RunProcess {
         return state;
     }
 
+    public boolean ready()
+    {
+        return (getProcessState()==STATE_PROCESSING);
+    }
+
     private void setState( int newState )
     {
-      if (sfLog.isInfoEnabled()){
-        sfLog.info("setState "+ stateToString(state) + " -> " + stateToString(newState));
+      if (sfLog.isDebugEnabled()){
+        sfLog.debug("setState "+ stateToString(state) + " -> " + stateToString(newState));
       }
       state = newState;
     }
@@ -123,6 +130,7 @@ public class RunProcessImpl  extends Thread implements RunProcess {
         setName(this.name);
         sfLog = LogFactory.getLog(this.name);
         killRequested = false;
+
     }
 
     public void run() {
@@ -132,16 +140,19 @@ public class RunProcessImpl  extends Thread implements RunProcess {
             setState(STATE_INACTIVE);
             return;
         }
-
+        setState(STATE_STARTING);
         int exitValue = -9999;
 
         try {
             synchronized (this) {
+                if (sfLog.isDebugEnabled()){
+                    sfLog.trace("Cmd: "+ cmd.getCmdArray()+", "+ cmd.getEnvp()+", "+cmd.getFile());
+                }
                 process = runtime.exec(cmd.getCmdArray(), cmd.getEnvp(),
                                        cmd.getFile());
-
-                if (sfLog.isInfoEnabled()){
-                   sfLog.info("run" + ID + " -- attaching data output stream");
+                setState(STATE_STARTED);
+                if (sfLog.isTraceEnabled()){
+                   sfLog.trace("attaching data output stream");
                 }
                 processDos = new DataOutputStream(process.getOutputStream());
 
@@ -149,10 +160,9 @@ public class RunProcessImpl  extends Thread implements RunProcess {
                   new FilterImpl( ID, process.getInputStream(), "stdout", null, null),
                   new FilterImpl( ID, process.getErrorStream(), "stderr", null, null)
                 );
-            }
 
-            if (sfLog.isInfoEnabled()){
-                  sfLog.info("run"+ ID + " -- waiting for application to exit");
+            if (sfLog.isTraceEnabled()){
+                  sfLog.trace("waiting for application to exit");
             }
 
             // process may be null by the time we get here after the synchronized
@@ -163,14 +173,20 @@ public class RunProcessImpl  extends Thread implements RunProcess {
             if (process!=null) {
                 setState(STATE_PROCESSING);
                 exitValue = process.waitFor();
+                if (sfLog.isInfoEnabled()){
+                  sfLog.info("exit = " + exitValue);
+                }
+            } else {
+                if (sfLog.isWarnEnabled()){
+                      sfLog.warn("process null");
+                }
             }
+            this.notify();
+          } //synchronized
 
-            if (sfLog.isInfoEnabled()){
-              sfLog.info("run" + ID + " -- exit = " + exitValue);
-            }
         } catch (Throwable t) {
           if (sfLog.isErrorEnabled()){
-            sfLog.error("run" + ID + " -- failed to complete execution", t);
+            sfLog.error("failed to complete execution", t);
           }
         }
 
@@ -215,7 +231,7 @@ public class RunProcessImpl  extends Thread implements RunProcess {
                     message = "Unexpected application state: " + state;
                   }
                   if (sfLog.isWarnEnabled()) {
-                    sfLog.warn("run " + ID + message);
+                    sfLog.warn(message);
                   }
                 }
 
@@ -223,17 +239,16 @@ public class RunProcessImpl  extends Thread implements RunProcess {
                 // has stopped.
             } catch (Throwable t) {
               if (sfLog.isErrorEnabled()) {
-                sfLog.error("run" + ID + " -- failed to release resources", t);
+                sfLog.error("failed to release resources", t);
               }
             }
         }
     }
 
     public synchronized void replaceFilters(FilterImpl fout, FilterImpl ferr) {
-      if (sfLog.isInfoEnabled()){
-        sfLog.info("run" + ID + " -- attaching filters");
+      if (sfLog.isTraceEnabled()){
+        sfLog.trace("attaching filters");
       }
-
       stopFilters();
 
       stdoutFilter = fout;
@@ -241,6 +256,9 @@ public class RunProcessImpl  extends Thread implements RunProcess {
 
       stdoutFilter.start();
       stderrFilter.start();
+      if (sfLog.isTraceEnabled()){
+        sfLog.trace("filters attached");
+      }
     }
 
     private void stopFilters() {
@@ -257,29 +275,29 @@ public class RunProcessImpl  extends Thread implements RunProcess {
         waitForFilters();
         stdoutFilter = null;
         stderrFilter = null;
-        if (sfLog.isInfoEnabled()) {
-          sfLog.info(ID + "-- Application log for " + ID + " stopped @ "
+        if (sfLog.isTraceEnabled()) {
+          sfLog.trace("Application log stopped @ "
                      + dateFormatter.format(new Date()) +
                      " -------------------------------------------------");
         }
     }
 
     private void waitForFilters() {
-      if (sfLog.isInfoEnabled()) {
-        sfLog.info("waitForFilters" + ID + " -- waiting for filters to stop");
+      if (sfLog.isTraceEnabled()) {
+        sfLog.trace("waiting for filters to stop");
       }
       boolean bothFinished = false;
 
       while (!bothFinished) {
           if (stdoutFilter!=null) {
               try {
-                if (sfLog.isInfoEnabled()) {
-                  sfLog.info("waitForFilters" + ID +" -- waiting for stdout filter");
+                if (sfLog.isTraceEnabled()) {
+                  sfLog.trace(" waiting for stdout filter");
                 }
                 stdoutFilter.join();
               } catch (InterruptedException e) {
-                if (sfLog.isInfoEnabled()) {
-                  sfLog.info("waitForFilters" + ID + " -- interrupted while waiting for stdout filter");
+                if (sfLog.isTraceEnabled()) {
+                  sfLog.trace("interrupted while waiting for stdout filter", e);
                 }
                 continue;
               }
@@ -287,13 +305,13 @@ public class RunProcessImpl  extends Thread implements RunProcess {
 
           if (stderrFilter!=null) {
               try {
-                if (sfLog.isInfoEnabled()) {
-                  sfLog.info("waitForFilters" + ID +" -- waiting for stderr filter");
+                if (sfLog.isTraceEnabled()) {
+                  sfLog.trace("waiting for stderr filter");
                 }
                   stderrFilter.join();
               } catch (InterruptedException e) {
-                if (sfLog.isInfoEnabled()) {
-                  sfLog.info("waitForFilters" + ID +" -- interrupted while waiting for stderr filter");
+                if (sfLog.isTraceEnabled()) {
+                  sfLog.trace("interrupted while waiting for stderr filter");
                 }
                 continue;
               }
@@ -302,8 +320,8 @@ public class RunProcessImpl  extends Thread implements RunProcess {
           bothFinished = true;
       }
 
-      if (sfLog.isInfoEnabled()) {
-        sfLog.info("waitForFilters" + ID + " -- filters stopped");
+      if (sfLog.isTraceEnabled()) {
+        sfLog.trace("filters stopped");
       }
 
     }
@@ -314,8 +332,8 @@ public class RunProcessImpl  extends Thread implements RunProcess {
         // the process.
         synchronized (this) {
             if (process==null) {
-              if (sfLog.isInfoEnabled()) {
-                sfLog.info("kill" + ID + " -- application has not started yet");
+              if (sfLog.isTraceEnabled()) {
+                sfLog.trace("kill" + ID + " -- application has not started yet");
               }
               killRequested = true;
             }
@@ -323,22 +341,22 @@ public class RunProcessImpl  extends Thread implements RunProcess {
 
         // If the process has already been created then kill it.
         if (!killRequested) {
-          if (sfLog.isInfoEnabled()) {
-            sfLog.info("kill" + ID + " -- terminating process");
+          if (sfLog.isTraceEnabled()) {
+            sfLog.trace("kill" + ID + " -- terminating process");
           }
           killRequested = true;
           process.destroy();
 
           try {
-            if (sfLog.isInfoEnabled()) {
-              sfLog.info("kill" + ID + " -- waiting for exit");
+            if (sfLog.isTraceEnabled()) {
+              sfLog.trace("kill" + ID + " -- waiting for exit");
             }
             process.waitFor();
           } catch (InterruptedException e) {
           }
 
-          if (sfLog.isInfoEnabled()) {
-            sfLog.info("kill" + ID+ " -- exit = " + process.exitValue());
+          if (sfLog.isDebugEnabled()) {
+            sfLog.debug("kill" + ID+ " -- exit = " + process.exitValue());
           }
           process = null;
           try {
@@ -367,8 +385,8 @@ public class RunProcessImpl  extends Thread implements RunProcess {
          synchronized (processDos) {
            if (processDos != null) {
              try {
-               if (sfLog.isTraceEnabled()) {
-                 sfLog.trace("Executing: " + cmd);
+               if (sfLog.isDebugEnabled()) {
+                 sfLog.debug("Executing: " + cmd);
                }
                processDos.writeBytes(command);
                processDos.flush();

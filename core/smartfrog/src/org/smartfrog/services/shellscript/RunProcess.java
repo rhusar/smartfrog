@@ -26,6 +26,7 @@ package org.smartfrog.services.shellscript;
  */
 public interface RunProcess {
     public int getProcessState();
+    public boolean ready();
     public void run();
     public void execCommand(String command);
     public void kill();
