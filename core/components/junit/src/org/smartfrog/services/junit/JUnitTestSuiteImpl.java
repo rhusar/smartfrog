@@ -252,8 +252,8 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
         }
 
         //bind to our listener
-        listener =
-                configuration.getListenerFactory().listen(hostname,
+        TestListenerFactory listenerFactory = configuration.getListenerFactory();
+        listener =listenerFactory.listen(hostname,
                         suitename,
                         System.currentTimeMillis());
 

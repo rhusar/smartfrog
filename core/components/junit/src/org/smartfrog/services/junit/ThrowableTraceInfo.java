@@ -86,7 +86,7 @@ public class ThrowableTraceInfo implements Serializable, Cloneable {
         stack = fault.getStackTrace();
         //maybe recurse down
         if (fault.getCause() != null) {
-            cause = new ThrowableTraceInfo(fault);
+            cause = new ThrowableTraceInfo(fault.getCause());
         }
     }
 

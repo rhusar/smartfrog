@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.Writer;
 import java.rmi.RemoteException;
 import java.util.Date;
 
@@ -61,7 +62,7 @@ public class OneHostXMLListener implements TestListener {
     private Date startTime;
 
     private OutputStream out = null;
-    private PrintWriter xmlFile = null;
+    private Writer xmlFile = null;
 
     /**
      * cache of last test failed; this is so that a failure will be logged as
@@ -100,7 +101,7 @@ public class OneHostXMLListener implements TestListener {
                               String preamble
                               ) throws IOException {
         //create our new directory
-        destFile.mkdirs();
+        this.destFile=destFile;
         this.hostname = hostname;
         this.suitename = suitename;
         this.startTime = startTime;
@@ -127,9 +128,9 @@ public class OneHostXMLListener implements TestListener {
      */
     public void open() throws IOException {
         assert !isOpen(): "file is already open";
-        destFile.mkdirs();
+        destFile.getParentFile().mkdirs();
         out = new BufferedOutputStream(new FileOutputStream(destFile));
-        xmlFile = new PrintWriter(new OutputStreamWriter(out, ENCODING));
+        xmlFile = new OutputStreamWriter(out, ENCODING);
         //XML declaration whose encoding had better match
         xmlFile.write(XML_DECLARATION);
         xmlFile.write("\n");
@@ -169,10 +170,6 @@ public class OneHostXMLListener implements TestListener {
 
         xmlFile.write(ROOT_CLOSE);
 
-        // flush and check for a fault
-        if (xmlFile.checkError()) {
-            throw new IOException("Error while writing " + destFile);
-        }
         try {
             xmlFile.close();
         } catch (Exception e) {
@@ -193,19 +190,7 @@ public class OneHostXMLListener implements TestListener {
      * @return true iff we have an output stream and it is open
      */
     public boolean isHappy() {
-        return xmlFile!=null && xmlFile.checkError();
-    }
-
-    /**
-     * Raise a smartfrog exception if there are any
-     * pending errors on the output stream.
-     * @throws SmartFrogException
-     */
-    public void raisePendingErrors() throws SmartFrogException {
-        if(!xmlFile.checkError()) {
-            throw new SmartFrogLivenessException("Trouble writing to " + destFile);
-        }
-
+        return xmlFile!=null ;
     }
 
     /**
@@ -293,8 +278,11 @@ public class OneHostXMLListener implements TestListener {
             lastTestFailed = null;
         }
         String entry = toXML(tag, test);
-        xmlFile.write(entry);
-        raisePendingErrors();
+        try {
+            xmlFile.write(entry);
+        } catch (IOException e) {
+            throw SmartFrogException.forward(e);
+        }
     }
 
 
@@ -308,7 +296,7 @@ public class OneHostXMLListener implements TestListener {
     protected void write(String tag,
             String attrs,
             String body,
-            boolean escape) {
+            boolean escape) throws IOException {
         String x = x(tag, attrs, body, escape);
         xmlFile.write(x);
     }

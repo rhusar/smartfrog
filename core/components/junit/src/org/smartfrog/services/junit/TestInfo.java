@@ -102,7 +102,7 @@ public class TestInfo implements Serializable, Cloneable {
     public TestInfo(Test test, Throwable fault) {
         init();
         extractTestInfo(test);
-        extractFaultInfo(fault);
+        addFaultInfo(fault);
     }
 
     /**
@@ -128,7 +128,7 @@ public class TestInfo implements Serializable, Cloneable {
      *
      * @param thrown something that was thrown
      */
-    protected void extractFaultInfo(Throwable thrown) {
+    public void addFaultInfo(Throwable thrown) {
         assert thrown != null;
         fault = new ThrowableTraceInfo(thrown);
     }
@@ -147,6 +147,14 @@ public class TestInfo implements Serializable, Cloneable {
 
     public void setClassname(String classname) {
         this.classname = classname;
+    }
+
+    public void markStartTime() {
+        setStartTime(System.currentTimeMillis());
+    }
+
+    public void markEndTime() {
+        setEndTime(System.currentTimeMillis());
     }
 
     public long getStartTime() {
