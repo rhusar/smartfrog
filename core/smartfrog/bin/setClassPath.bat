@@ -6,6 +6,8 @@ if defined SFHOME goto continue1
   cd bin
 :continue1
 
+if not defined SFLIBPATH set SFLIBPATH=%cd%
+
 rem set CLASSPATH=  (This is reset in setSFProperties.bat)
 set cd=
 for /f "tokens=*" %%i in (
@@ -14,7 +16,7 @@ for /f "tokens=*" %%i in (
 rem set CLASSPATH
 popd&goto :MORE
 
-:add2path 
+:add2path
 set file=%*
 if not defined cd set file=%file:~1%
 
