@@ -318,7 +318,7 @@ public class SFSystem implements MessageKeys {
             try {
                 ((Prim) target.sfResolveHere(term)).
                         sfTerminate(new TerminationRecord(
-                        "management action", "force to terminate", targetName));
+                        "management action", "forced to terminate", targetName));
             } catch (ClassCastException cce) {
                 errorTermination  = true;
                 try {
@@ -327,7 +327,7 @@ public class SFSystem implements MessageKeys {
                                sfResolveHere(term))).
                                 sfTerminate(new TerminationRecord(
                                 "management action",
-                                "sfDaemon force to terminate ", targetName));
+                                "sfDaemon forced to terminate ", targetName));
                     }
                 } catch (Exception ex) {
                     //TODO: Check exception handling
@@ -510,7 +510,7 @@ public class SFSystem implements MessageKeys {
      */
     public static void main(String[] args) {
 
-        ProcessCompound rootProcess=null;
+        ProcessCompound rootProcess = null;
 
         showVersionInfo();
 
@@ -521,41 +521,14 @@ public class SFSystem implements MessageKeys {
             exit();
         }
         try {
-            // Initialize Smart Frog Security
-            SFSecurity.initSecurity();
-
-            // Read init properties
-            readPropertiesFromIniFile();
-
-            // Set stackTracing
-            readPropertyLogStackTrace();
-
-            // Redirect output streams
-            setOutputStreams();
-            // Deploy process Compound
-            rootProcess = SFProcess.deployProcessCompound();
-
-            // Add boot time
-            try {
-                rootProcess.sfAddAttribute("sfBootDate", new Date(System.currentTimeMillis()));
-            } catch (RemoteException rex){
-            }
-
-            deployFromIniSFFile();
-
-            // get the target process compound
-            ProcessCompound targetPC = selectTargetProcess(opts);
-
-            terminateNamedApplications(opts, targetPC);
-
-            deployFromURLsGiven(opts, targetPC);
+            rootProcess = runSmartFrog(opts, null);
 
         } catch (SmartFrogException sfex) {
             Logger.log(sfex);
             exit();
-        } catch (UnknownHostException uhex){
+        } catch (UnknownHostException uhex) {
             Logger.log(MessageUtil.formatMessage(MSG_UNKNOWN_HOST, opts.host),
-                            uhex);
+                    uhex);
             exit();
         } catch (ConnectException cex) {
             Logger.log(MessageUtil.formatMessage(MSG_CONNECT_ERR, opts.host),
@@ -563,41 +536,88 @@ public class SFSystem implements MessageKeys {
             exit();
         } catch (RemoteException rmiEx) {
             // log stack trace
-        Logger.log(MessageUtil.formatMessage(MSG_REMOTE_CONNECT_ERR,
-                    opts.host),rmiEx);
+            Logger.log(MessageUtil.formatMessage(MSG_REMOTE_CONNECT_ERR,
+                    opts.host), rmiEx);
             exit();
         } catch (Exception ex) {
             //log stack trace
             Logger.log(MessageUtil.
-                            formatMessage(MSG_UNHANDLED_EXCEPTION), ex);
+                    formatMessage(MSG_UNHANDLED_EXCEPTION), ex);
             exit();
         }
         // Check for exit flag
         if (opts.exit) {
-            if(opts.names.size() !=0 && !errorDeploy) {
+            if (opts.names.size() != 0 && !errorDeploy) {
                 Logger.log(MessageUtil.
-                            formatMessage(MSG_DEPLOY_SUCCESS,opts.names));
+                        formatMessage(MSG_DEPLOY_SUCCESS, opts.names));
             }
-            if(opts.terminations.size() !=0 && !errorTermination) {
+            if (opts.terminations.size() != 0 && !errorTermination) {
                 Logger.log(MessageUtil.
-                    formatMessage(MSG_TERMINATE_SUCCESS,opts.terminations));
+                        formatMessage(MSG_TERMINATE_SUCCESS, opts.terminations));
             }
             System.exit(0);
         } else {
             //Logger.log(MessageUtil.formatMessage(MSG_SF_READY));
-           if (Logger.logStackTrace) {
+            if (Logger.logStackTrace) {
                 String name = "";
                 try {
-                    if (rootProcess!=null) {
+                    if (rootProcess != null) {
                         name = rootProcess.sfResolve("sfProcessName", name, false);
                     }
-                } catch (Exception ex){
+                } catch (Exception ex) {
                     //ignore.
                 }
-               Logger.log(MessageUtil.formatMessage(MSG_SF_READY, "["+name+"]")+ " "+ new Date(System.currentTimeMillis()));
-           } else {
-               Logger.log(MessageUtil.formatMessage(MSG_SF_READY, ""));
-           }
+                Logger.log(MessageUtil.formatMessage(MSG_SF_READY, "[" + name + "]") + " " + new Date(System.currentTimeMillis()));
+            } else {
+                Logger.log(MessageUtil.formatMessage(MSG_SF_READY, ""));
+            }
         }
+    }
+
+    /**
+     * Run SmartFrog as configured. This call does not exit smartfrog, even if the OptionSet requests it.
+     * This entry point exists so that alternate entry points (e.g. Ant Tasks) can start the system.
+     * Important: things like the output streams can be redirected if the
+     * @param options option set up configured with SmartFrog Options
+     * @param iniFile optional initialisation file.
+     * @return the root process
+     * @throws SmartFrogException for a specific SmartFrog problem
+     * @throws UnknownHostException if the target host is unknown
+     * @throws ConnectException if the remote system's SmartFrog daemon is unreachable
+     * @throws RemoteException if something goes wrong during the communication
+     * @throws Exception if anything else went wrong
+     */
+    public static ProcessCompound runSmartFrog(OptionSet options, String iniFile)
+            throws SmartFrogException, UnknownHostException, ConnectException, RemoteException, Exception {
+        ProcessCompound process = null;
+        // Initialize Smart Frog Security
+        SFSecurity.initSecurity();
+
+        // Read init properties
+        readPropertiesFromIniFile();
+
+        // Set stackTracing
+        readPropertyLogStackTrace();
+
+        // Redirect output streams
+        setOutputStreams();
+        // Deploy process Compound
+        process = SFProcess.deployProcessCompound();
+
+        // Add boot time
+        try {
+            process.sfAddAttribute("sfBootDate", new Date(System.currentTimeMillis()));
+        } catch (RemoteException swallowed) {
+        }
+
+        deployFromIniSFFile();
+
+        // get the target process compound
+        ProcessCompound targetPC = selectTargetProcess(options);
+
+        terminateNamedApplications(options, targetPC);
+
+        deployFromURLsGiven(options, targetPC);
+        return process;
     }
 }
