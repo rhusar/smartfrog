@@ -58,7 +58,7 @@ JUnitTestSuiteSchema extends Schema {
     package extends String;
     //the classes in the package.
     //e.g. ["test1","subpackage.test2"]
-    classes extends OptionalVector;
+    classes extends Vector;
 }
 
 /**
@@ -90,8 +90,8 @@ ForkedJUnitTestSuite extends JUnitTestSuite {
     //insert the JVM
     //javaSchema extends JavaSchema;
     sfClass "org.smartfrog.services.junit.ForkedJunitTestRunner";
-    subpackages true;
-    pattern "*Test.class";
+//    subpackages true;
+//    pattern "*Test.class";
     forkedJVM extends Java {
         classname "org.smartfrog.services.junit.ForkedJVM";
     }
@@ -116,6 +116,7 @@ XMLListenerSchema extends Schema {
 }
 
 XMLListener extends TestListener {
+    sfClass "org.smartfrog.services.junit.listeners.OneHostXMLListener";
     useHostname "true";
 }
 

@@ -79,7 +79,6 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite, juni
 
     public JUnitTestSuiteImpl() throws RemoteException {
         helper = new ComponentHelper(this);
-        log = helper.getLogger();
     }
 
 
@@ -110,6 +109,20 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite, juni
         this.configuration = configuration;
     }
 
+    /**
+     * Called after instantiation for deployment purposed. Heart monitor is
+     * started and if there is a parent the deployed component is added to the
+     * heartbeat. Subclasses can override to provide additional deployment
+     * behavior.
+     *
+     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     *                                  error while deploying
+     * @throws java.rmi.RemoteException In case of network/rmi error
+     */
+    public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
+        super.sfDeploy();
+        log = helper.getLogger();
+    }
 
     /**
      * Can be called to start components. Subclasses should override to provide
@@ -122,7 +135,7 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite, juni
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         readConfiguration();
-        runTests();
+        //runTests();
     }
 
     protected void readConfiguration() throws SmartFrogException, RemoteException {

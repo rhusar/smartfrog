@@ -60,7 +60,6 @@ public class TestRunnerComponent extends CompoundImpl implements TestRunner, Run
 
     public TestRunnerComponent() throws RemoteException {
         helper = new ComponentHelper(this);
-        log=helper.getLogger();
     }
 
     /**
@@ -97,6 +96,7 @@ public class TestRunnerComponent extends CompoundImpl implements TestRunner, Run
     public synchronized void sfDeploy() throws SmartFrogException,
             RemoteException {
         super.sfDeploy();
+        log = helper.getLogger();
     }
 
     /**
