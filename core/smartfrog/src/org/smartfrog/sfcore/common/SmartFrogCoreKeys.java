@@ -45,7 +45,7 @@ public interface SmartFrogCoreKeys {
     public final static String SF_PROCESS_NAME = "sfProcessName";
 
     /**
-     * Attribute eued to name a component
+     * Attribute used to name a component
      */
     public final static String SF_PROCESS_COMPONENT_NAME = "sfProcessComponentName";
 
@@ -60,7 +60,7 @@ public interface SmartFrogCoreKeys {
     public final static String SF_SUBPROCESS_GC_TIMEOUT = "sfSubprocessGCTimeout";
 
     /**
-     * Used to determine the host address where a component runs
+     * Attribute used to determine the host address where a component runs
      */
     public final static String SF_HOST = "sfHost";
 
@@ -108,7 +108,7 @@ public interface SmartFrogCoreKeys {
 
 
     /**
-     * Attrituted that determines the definition of a schema
+     * Attritute that determines the definition of a schema
      */
     public final static String SF_SCHEMA_DESCRIPTION="sfSchemaDescription";
 
