@@ -29,7 +29,7 @@ import org.smartfrog.services.os.java.JavaPackage;
 
 public class JavaPackageTest extends SmartFrogTestBase {
 
-    private static final String FILES = "org/smartfrog/test/system/java/";
+    public static final String FILES = "org/smartfrog/test/system/java/";
 
     public JavaPackageTest(String name) {
         super(name);

@@ -33,6 +33,7 @@ import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.security.SFClassLoader;
 import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.logging.LogFactory;
+import org.smartfrog.services.filesystem.FileImpl;
 
 /**
  * Defines the Downloader class. It downloads the data from a given url.
@@ -68,7 +69,7 @@ public class Download extends PrimImpl implements Prim {
 
         try {
             url = (String) sfResolve("url");
-            localFile = (String) sfResolve("toLocalFile");
+            localFile = FileImpl.lookupAbsolutePath(this,"toLocalFile",null,null,true,null);
 
             int blocksize = ((Integer) sfResolve("blocksize")).intValue();
             int bytesRead;

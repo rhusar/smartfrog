@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2005 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -19,24 +19,46 @@
  */
 package org.smartfrog.services.os.java;
 
-import org.smartfrog.services.os.runshell.RunShell;
+import org.smartfrog.services.filesystem.FileUsingComponent;
 
 /**
- * created 21-May-2004 17:23:10
+ * Attributes of a library
+ * created 04-Apr-2005 12:16:14
  */
 
 
-public interface RunJava extends RunShell {
+public interface LibraryArtifact extends FileUsingComponent {
+    /**
+     * {@value}
+     */
+    String ATTR_REPOSITORY = "repository";
+    /**
+     * {@value}
+     */
+    String ATTR_PROJECT="project";
 
-    String ATTR_JARFILE="jar";
-    String ATTR_ENVIRONMENT = "environment";
-    String ATTR_CLASSNAME = "classname";
-    String ATTR_CLASSPATH="classpath";
-    String ATTR_SYSPROPERTIES="sysProperties";
-    String ATTR_MAXMEMORY = "maxMemory";
-    String ATTR_ASSERTIONS ="assertions";
-    String ATTR_SYSTEMASSERTIONS ="systemAssertions";
-    String ATTR_JVM_ARGS="jvmargs";
-    String ATTR_ARGUMENTS="arguments";
-    String ATTR_ENDORSED_DIRS="endorsedDirs";
+    /** {@value} */
+    String ATTR_ARTIFACT = "artifact";
+    /**
+     * {@value}
+     */
+    String ATTR_EXTENSION = "extension";
+    /**
+     * {@value}
+     */
+    String ATTR_SHA1 = "sha1";
+    /**
+     * {@value}
+     */
+    String ATTR_MD5 = "md5";
+    /**
+     * {@value}
+     */
+    String ATTR_VERSION = "version";
+    /**
+     * {@value}
+     */
+    String ATTR_SYNCHRONOUS = "synchronousDownload ";
+
+    
 }

@@ -710,15 +710,19 @@ public abstract class SmartFrogTestBase extends TestCase {
     }
 
     public static void assertEquals(String o1, String o2) {
+/*
       System.out.println("       - AssertEquals: \n"+
                          "          > "+ o1+"\n"+
                          "          > "+ o2+"\n");
+*/
       TestCase.assertEquals(o1,o2);
     }
     public static void assertEquals(Object o1, Object o2) {
+/*
       System.out.println("       - AssertEquals(Obj): \n"+
                          "          > "+ o1.toString()+"\n"+
                          "          > "+ o2.toString()+"\n");
+*/
       TestCase.assertEquals(o1,o2);
     }
 
