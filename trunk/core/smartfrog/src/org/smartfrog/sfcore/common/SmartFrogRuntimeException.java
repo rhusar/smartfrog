@@ -120,7 +120,7 @@ public class SmartFrogRuntimeException extends SmartFrogException implements Ser
             //ignore
         }
         try {
-           add(REFERENCE,sfObject.sfCompleteName());
+           add(REFERENCE,sfObject.sfCompleteName().copy());
         } catch (Throwable rex){
             //ignore
         }
