@@ -26,9 +26,11 @@ import org.smartfrog.sfcore.reference.Reference;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
 import java.util.Vector;
+import java.rmi.RemoteException;
 
 import org.smartfrog.sfcore.common.MessageKeys;
 import org.smartfrog.sfcore.common.MessageUtil;
+import org.smartfrog.sfcore.processcompound.ProcessCompound;
 
 public class ConfigurationDescriptor implements MessageKeys{
     public static class Action {
@@ -45,6 +47,11 @@ public class ConfigurationDescriptor implements MessageKeys{
     }
     //Action type
     private int actionType = Action.UNDEFINED;
+
+    /**
+     * the action to perform
+     */
+    ConfigurationAction action;
 
     public String name = null;
     public String url = null;
@@ -366,6 +373,22 @@ public class ConfigurationDescriptor implements MessageKeys{
             throw new SmartFrogInitException("Action type unknown");
         }
         this.actionType = type;
+        switch(actionType) {
+            case Action.DEPLOY:
+                action=new ActionDeploy();
+                break;
+            case Action.DETACH:
+                action = new ActionDetach();
+                break;
+            case Action.TERMINATE:
+                action = new ActionTerminate();
+                break;
+            case Action.DETaTERM:
+                action = new ActionDetachAndTerminate();
+                break;
+            default:
+                throw new SmartFrogInitException("Action type unknown");
+        }
     }
 
     public void setActionType(String type) throws SmartFrogInitException {
@@ -395,5 +418,24 @@ public class ConfigurationDescriptor implements MessageKeys{
         return "no message";
     }
 
+    /**
+     * perform the nominated action
+     * @param targetProcess optional target process; set to null to
+     * hand off process lookup to the ConfigurationAction subclass.
+     * @return the object created from the operation
+     * @throws SmartFrogException if smartfrog is unhappy
+     * @throws RemoteException if the network is unhappy
+     */
+    public Object execute(ProcessCompound targetProcess) throws SmartFrogException,
+            RemoteException {
+        if(action ==null) {
+            throw new SmartFrogInitException("No valid action");
+        }
+        if(targetProcess==null) {
+            return action.execute(this);
+        } else {
+            return action.execute(targetProcess,this);
+        }
+    }
 
 }
