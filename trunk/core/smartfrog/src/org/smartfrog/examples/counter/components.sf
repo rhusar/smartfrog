@@ -19,9 +19,9 @@ For more information: www.smartfrog.org
 */
 
 /**
- * This component generates a counter with seed value "counter" and increments 
- * it by 1 till it reaches the "limit".  
- * The Counter component is a basic primitive component.     
+ * This component generates a counter with seed value "counter" and increments
+ * it by 1 till it reaches the "limit".
+ * The Counter component is a basic primitive component.
  */
 
 #include "/org/smartfrog/predicates.sf"
@@ -39,21 +39,26 @@ Counter extends Prim {
         limit extends OptionalInteger;
         //sleep time in milliseconds. 0 means no sleep.
         sleep extends OptionalInteger;
+
         /** debug flag */
         debug extends OptionalBoolean;
+
+        /** pause flag -> pause "limit" secs during sfDeploy and sfStart.*/
+        pause extends OptionalBoolean;
+
     }
 
 
-   /** 
-    * Optional attribute: a seed value( integer) for the counter 
-    */  
+   /**
+    * Optional attribute: a seed value( integer) for the counter
+    */
    counter 1;
 
    /**
     * Optional attribute: message(string) to be printed with the values
     */
    message "step";
-   
+
    /**
     * Mandatory attribute: the class for component description
     */
@@ -63,6 +68,11 @@ Counter extends Prim {
     * Mandatory attribute: the upper limit(integer) for the counter
     * It is defined by the user.
     */
-   //limit 20; 
+   //limit 2;
+
+   /**
+    * Optional attribute: pause "limit" secs during sfDeploy and sfStart.
+    */
+   //pause false;
 }
 

@@ -26,6 +26,8 @@ package org.smartfrog.examples.counter;
 public interface Counter {
     /** String name for optional attribute "debug". */
     final static String ATR_DEBUG = "debug";
+    /** String name for optional attribute "sleep". */
+    final static String ATR_PAUSE = "pause";
     /** String name for optional attribute "counter". */
     final static String ATR_COUNTER = "counter";
     /** String name for optional attribute "message". */
@@ -37,4 +39,8 @@ public interface Counter {
      * string name for optional attribute, sleep
      */
     final static String ATR_SLEEP = "sleep";
+    /**
+      * string name for optional attribute, terminate
+     */
+    final static String ATR_TERMINATE = "terminate";
 }

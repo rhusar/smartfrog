@@ -25,8 +25,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
+
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.logging.LogSF;
@@ -68,6 +70,16 @@ public class CounterImpl extends PrimImpl implements Prim, Counter, Runnable {
     private boolean debug = true;
 
     /**
+     *  Should pause during sfDeploy and sfStart?
+     */
+    private boolean pause = true;
+
+    /**
+     *  Terminates component when counter reaches limit
+     */
+    private boolean terminate = false;
+
+    /**
      * Component name used for debug messages.
      */
     private String myName = "CounterImpl";
@@ -105,6 +117,14 @@ public class CounterImpl extends PrimImpl implements Prim, Counter, Runnable {
              */
             myName = this.sfCompleteNameSafe().toString();
             readSFAttributes();
+            if (pause) {
+                this.log("sleepDeploy","sleeping");
+                try {
+                    this.wait(limit*sleeptime);
+                } catch (InterruptedException ex) {
+                }
+                this.log("sleepDeploy","end-sleeping");
+            }
     }
 
     /**
@@ -121,52 +141,65 @@ public class CounterImpl extends PrimImpl implements Prim, Counter, Runnable {
         super.sfStart();
         log("sfStart", "Starting with msg-" + message);
         System.out.println("********Temporal test for logging*************");
-        if (logApp.isTraceEnabled()){
-          System.out.println("TRACE:"+message);
-          logApp.trace(message);
-          System.out.println();
-        }
-        if (logApp.isDebugEnabled()){
-          System.out.println("DEBUG:"+message);
-          logApp.debug(message);
-          System.out.println();
-        }
-        if (logApp.isInfoEnabled()){
-          System.out.println("INFO:"+message);
-          logApp.info(message);
-          System.out.println();
-        }
+        try {
+            if (logApp.isTraceEnabled()) {
+                System.out.println("TRACE:"+message);
+                logApp.trace(message);
+                System.out.println();
+            }
+            if (logApp.isDebugEnabled()) {
+                System.out.println("DEBUG:"+message);
+                logApp.debug(message);
+                System.out.println();
+            }
+            if (logApp.isInfoEnabled()) {
+                System.out.println("INFO:"+message);
+                logApp.info(message);
+                System.out.println();
+            }
 
-        if (logApp.isWarnEnabled()){
-          System.out.println("WARN:"+message);
-          logApp.warn(message);
-          System.out.println();
-        }
+            if (logApp.isWarnEnabled()) {
+                System.out.println("WARN:"+message);
+                logApp.warn(message);
+                System.out.println();
+            }
 
-        if (logApp.isErrorEnabled()){
-          System.out.println("ERROR:"+message);
-          logApp.error(message);
-          System.out.println();
-        }
-        if (logApp.isFatalEnabled()){
-          System.out.println("FATAL:"+message);
-          logApp.fatal(message);
-          System.out.println();
-        }
+            if (logApp.isErrorEnabled()) {
+                System.out.println("ERROR:"+message);
+                logApp.error(message);
+                System.out.println();
+            }
+            if (logApp.isFatalEnabled()) {
+                System.out.println("FATAL:"+message);
+                logApp.fatal(message);
+                System.out.println();
+            }
 
-        if (logApp.isInfoEnabled()){
-          System.out.println(".out:"+message);
-          logApp.out(message);
-          System.out.println();
-          System.out.println(".err:"+message);
-          logApp.err(message);
-          logApp.err(message+1,null);
-          System.out.println();
+            if (logApp.isInfoEnabled()) {
+                System.out.println(".out:"+message);
+                logApp.out(message);
+                System.out.println();
+                System.out.println(".err:"+message);
+                logApp.err(message);
+                logApp.err(message+1, null);
+                System.out.println();
+            }
+        } catch (Throwable ex) {
+            ex.printStackTrace();
         }
 
         System.out.println("******************************");
 
+        if (pause) {
+            this.log("sleepStart", "sleeping");
+            try {
+                this.wait(limit*sleeptime);
+            } catch (InterruptedException ex) {
+            }
+            this.log("sleepStart", "end-sleeping");
+        }
         action = new Thread(this);
+        action.setName("Counter");
         action.start();
     }
 
@@ -228,6 +261,8 @@ public class CounterImpl extends PrimImpl implements Prim, Counter, Runnable {
              * returns the default value
              */
         debug = sfResolve(ATR_DEBUG, debug, false);
+
+        pause = sfResolve(ATR_PAUSE, pause, false);
             /*
              * Resolves the optional attribute "counter" from sf description
              * The resolution method takes the following parameters:
@@ -255,6 +290,8 @@ public class CounterImpl extends PrimImpl implements Prim, Counter, Runnable {
              * returns the default value
              */
         message = sfResolve(ATR_MESSAGE, message, false);
+
+        terminate = sfResolve (ATR_TERMINATE, terminate, false);
           /*
           sleep time, >=0;.
           */
@@ -305,13 +342,13 @@ public class CounterImpl extends PrimImpl implements Prim, Counter, Runnable {
 //                }
 
 
-
                 if(sleeptime>0) {
                     Thread.sleep(sleeptime);
 
                 }
                 counter++;
             }
+            if (terminate) sfTerminate(TerminationRecord.normal(this.sfCompleteNameSafe()));
 
             //end while
         } catch (InterruptedException ie) {
