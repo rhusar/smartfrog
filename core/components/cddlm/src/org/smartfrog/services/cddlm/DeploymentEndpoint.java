@@ -120,10 +120,9 @@ public class DeploymentEndpoint extends SmartfrogHostedEndpoint {
      */
     private String deployThroughSFSystem(String hostname, String application,
                                          String url,
-                                         String subprocess,
+                                         String subprocess
                                          ) throws AxisFault {
         try {
-<<<<<<< DeploymentEndpoint.java
             ConfigurationDescriptor deploy=new ConfigurationDescriptor(application,url);
             deploy.setHost(hostname);
             deploy.setActionType(ConfigurationDescriptor.Action.DEPLOY);

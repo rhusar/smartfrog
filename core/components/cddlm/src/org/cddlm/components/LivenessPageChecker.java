@@ -26,6 +26,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.rmi.RemoteException;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 
 /**
@@ -91,7 +93,7 @@ public class LivenessPageChecker implements LivenessPage {
     /**
      * our log
      */
-    Log log;
+    Logger log;
 
     /**
      * create a new liveness page
@@ -147,7 +149,7 @@ public class LivenessPageChecker implements LivenessPage {
      */
     private void bind(Prim owner) {
         this.owner = owner;
-        log = CommonsLogFactory.createLog(owner);
+        log = Logger.getLogger(owner.getClass().getName());
     }
 
 
@@ -209,8 +211,8 @@ public class LivenessPageChecker implements LivenessPage {
         HttpURLConnection connection = null;
 
         try {
-            if (log.isDebugEnabled()) {
-                log.debug("connecting to " + targetURL);
+            if (log.isLoggable(Level.FINE)) {
+                log.fine("connecting to " + targetURL);
             }
             connection = (HttpURLConnection) targetURL.openConnection();
             connection.setInstanceFollowRedirects(followRedirects);
@@ -224,8 +226,8 @@ public class LivenessPageChecker implements LivenessPage {
             }
 
             String response = connection.getResponseMessage();
-            if (log.isDebugEnabled()) {
-                log.debug("response=" + response);
+            if (log.isLoggable(Level.FINE)) {
+                log.fine("response=" + response);
             }
 
             if ((responseCode < minimumResponseCode)
@@ -234,12 +236,28 @@ public class LivenessPageChecker implements LivenessPage {
                         + " returned error " + response
                         + maybeGetErrorText(connection));
             }
+
+            //now fetch the file
+            String body=getInputOrErrorText(connection);
+            postProcess(responseCode,response,body);
+
         } catch (IOException exception) {
             String message = "Failed to read" + targetURL.toString() + "\n"
                     + maybeGetErrorText(connection);
             throw new SmartFrogLivenessException(message, exception);
         }
     }
+
+    /**
+     * just a little something for subclassers out there
+     * @param responseCode
+     * @param response
+     * @param body
+     * @throws SmartFrogLivenessException
+     */
+    private void postProcess(int responseCode, String response, String body) throws SmartFrogLivenessException {
+    }
+
 
     /**
      * fetch error text if configured to do so, otherwise return an empty

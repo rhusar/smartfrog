@@ -19,12 +19,13 @@
  */
 package org.cddlm.components;
 
-import org.apache.commons.logging.Log;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.utils.ComponentHelper;
 
 import java.rmi.RemoteException;
+import java.util.logging.Logger;
 
 
 /**
@@ -103,14 +104,14 @@ public class LivenessPageComponent extends PrimImpl implements LivenessPage {
         //now tell the liveness page it is deployed
         livenessPage.onDeploy();
 
-        log = CommonsLogFactory.createLog(this);
+        log = new ComponentHelper(this).getLogger();
         log.info("Deployed " + toString());
     }
 
     /**
      * a log
      */
-    Log log;
+    Logger log;
 
     /**
      * Liveness call in to check if this component is still alive.
@@ -119,7 +120,7 @@ public class LivenessPageComponent extends PrimImpl implements LivenessPage {
      * @throws org.smartfrog.sfcore.common.SmartFrogLivenessException
      *          component is terminated
      */
-    public void sfPing(Object source) throws SmartFrogLivenessException {
+    public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
 
         //check the counter
