@@ -22,16 +22,16 @@ package org.smartfrog.services.shellscript;
 
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import java.util.List;
+import org.smartfrog.sfcore.componentdescription.ComopnentDescription;
 
 /**
  * Iterface to the "future" object returned from submiting an execute request
  * to A ScriptExecution imlpmenting object.
  *
- * The resuts are structured in the vector of three elements as follows:
- *   first the result code of the final command in the vector - 0 if not supported in shell,
- *   second a list of lines on stdout - empty if not supported in shell,
- *   third a list of lines on stderr - empty if not supported in shell.
+ * The resut contains three attributes as follows:
+ *   "code" the int result code of the final command - 0 if not supported in shell,
+ *   "stdout" a list of lines on stdout - empty if not supported in shell,
+ *   "stdin" a list of lines on stderr - empty if not supported in shell.
  */
 public interface ScriptResults {
     /**
@@ -46,14 +46,14 @@ public interface ScriptResults {
      *
      * @oaram timeout the maximum time to wait for the results: 0 don't wait, -1 wait forever
      *
-     * @returns a vector of results:
-     * The resuts are structured in the vector of three elements as follows:
-     *   first the result code of the final command in the vector - 0 if not supported in shell,
-     *   second a list of lines on stdout - empty if not supported in shell,
-     *   third a list of lines on stderr - empty if not supported in shell.
+     * @returns a component description containing aspects of the result:
+     * The resut contains three attributes as follows:
+     *   "code" the int result code of the final command in the vector - 0 if not supported in shell,
+     *   "stdout" a list of lines on stdout - empty if not supported in shell,
+     *   "stdin" a list of lines on stderr - empty if not supported in shell.
      *
      * @throws SmartFrogException if the results are not ready in time
      */
-    public List waitForResults(long timeout) throws SmartFrogException;
+    public ComponentDescription waitForResults(long timeout) throws SmartFrogException;
 
 }

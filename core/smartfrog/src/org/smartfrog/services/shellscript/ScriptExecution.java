@@ -73,6 +73,21 @@ public interface ScriptExecution {
     public ScriptResults execute(List commands, ScriptLock lock) throws SmartFrogException;
 
     /**
+     * submit  a command to the shell
+     *
+     * @parameter command the command to execute
+     * @parameter lock the lock object receieved from the lockShell
+     *
+     * @returns the "future" ScriptResult implementation that allows the code to
+     * obtain the results of executnig the script
+     *
+     * @throws SmartFrogException if the lock object is not valid, i.e. if it is
+     * not currently holding the l0ck
+     */
+    public ScriptResults execute(String command, ScriptLock lock) throws SmartFrogException;
+
+
+    /**
      * relaese the lock on the shell
      *
      * @param lock the lock object receieved from the lockShell
@@ -97,4 +112,20 @@ public interface ScriptExecution {
      * time
      */
     public ScriptResults execute(List commands, long timeout) throws SmartFrogException;
+
+    /**
+     * submit  a command to the shell as a single atomic lock/execute/unlock
+     *
+     * @param command the command
+     * @param timeout max number of miliseconds to obtain the lock:
+     *    0 is don't wait,
+     *    -1 is wait forever
+     *
+     * @returns the "future" ScriptResult implementation that allows the code to
+     * obtain the results of executnig the script
+     *
+     * @throws SmartFrogException  if the lock is not obtained in the requisite
+     * time
+     */
+    public ScriptResults execute(String command, long timeout) throws SmartFrogException;
 }
