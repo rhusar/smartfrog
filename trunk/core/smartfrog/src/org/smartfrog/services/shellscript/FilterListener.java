@@ -18,21 +18,11 @@ For more information: www.smartfrog.org
 
 */
 
+
 package org.smartfrog.services.shellscript;
 
-import org.smartfrog.sfcore.prim.Prim;
-
-
-/**
- * Interface to the lock object that is returned when the shell is locked.
- * It provides a method to get the ScriptExecution to which it is a lock
- */
-public interface ScriptLock {
-
-    /**
-     *  Obtain the ScriptExecution implementation component for which this is a lock
-     *  @returns the ScriptExecution
-     */
-    ScriptExecution getScriptExecution();
-
+public interface FilterListener
+{
+    public void line (String line);
+    public void found( String line, int i);
 }
