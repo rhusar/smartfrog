@@ -436,12 +436,12 @@ public class SFSystem implements MessageKeys {
 
     public ProcessCompound runSmartFrog(Vector cfgDescriptors) throws
         Exception {
-        ProcessCompound rootProcess;
-        rootProcess = runSmartFrog();
+        ProcessCompound process;
+        process = runSmartFrog();
         if (cfgDescriptors!=null){
             runConfigurationDescriptors(cfgDescriptors);
         }
-        return rootProcess;
+        return process;
     }
 
 
