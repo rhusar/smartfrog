@@ -22,6 +22,7 @@ package org.smartfrog.sfcore.workflow.combinators;
 
 import java.rmi.RemoteException;
 import java.util.Enumeration;
+import java.util.Vector;
 
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.SmartFrogException;
@@ -33,6 +34,8 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
+import org.smartfrog.sfcore.common.*;
+import org.smartfrog.sfcore.workflow.eventbus.EventRegistration;
 
 
 /**
@@ -53,9 +56,13 @@ import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
  */
 public class Parallel extends EventCompoundImpl implements Compound {
     static Reference actionsRef = new Reference("actions");
+    static Reference asynchCreateChildRef = new Reference ("asynchCreateChild");
+
     Context actions;
     Enumeration actionKeys;
     Reference name;
+    boolean asynchCreateChild=false;
+    Vector asynchChildren = null;
 
     /**
      * Constructs Parallel.
@@ -76,6 +83,7 @@ public class Parallel extends EventCompoundImpl implements Compound {
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
         actions = ((ComponentDescription) sfResolve(actionsRef)).sfContext();
+        asynchCreateChild = sfResolve(asynchCreateChildRef,asynchCreateChild,false);
         name = sfCompleteNameSafe();
     }
 
@@ -90,39 +98,71 @@ public class Parallel extends EventCompoundImpl implements Compound {
 
         // let any errors be thrown and caught by SmartFrog for abnormal termination  - including empty actions
         try {
-            actionKeys = actions.keys();
-            try {
-                while (actionKeys.hasMoreElements()) {
-                    Object key = actionKeys.nextElement();
-                    ComponentDescription act = (ComponentDescription)
-                        actions.get(key);
-                    Prim comp = sfDeployComponentDescription(key, this, act, null);
-                }
-            } catch (java.util.NoSuchElementException nex){
-               throw new SmartFrogRuntimeException ("Empty actions",this);
-            }
-
-            //Actions are now children of parallel, they are deployed and
-            //started
-            for (Enumeration e = sfChildren(); e.hasMoreElements();) {
-                Object elem = e.nextElement();
-
-                if (elem instanceof Prim) {
-                    ((Prim) elem).sfDeploy();
-                }
-            }
-
-            for (Enumeration e = sfChildren(); e.hasMoreElements();) {
-                Object elem = e.nextElement();
-
-                if (elem instanceof Prim) {
-                    ((Prim) elem).sfStart();
-                }
+            if (!asynchCreateChild){
+                synchCreateChild();
+            } else {
+                asynchCreateChild();
             }
         } catch (Exception ex) {
             Logger.log(this.sfCompleteNameSafe()+" - Failed to start sub-components ",ex);
             sfTerminate(TerminationRecord.abnormal(
                     "Failed to start sub-components " + ex, name));
+        }
+    }
+
+
+
+
+    private void asynchCreateChild() throws SmartFrogDeploymentException,
+            RemoteException, SmartFrogRuntimeException, SmartFrogException {
+            asynchChildren = new Vector();
+            actionKeys = actions.keys();
+            try {
+                while (actionKeys.hasMoreElements()) {
+                    Object key = actionKeys.nextElement();
+                    ComponentDescription act = (ComponentDescription) actions.get(key);
+                    //asynchChildren.add();
+                    Thread thread = new CreateNewChildThread(key,this,act, null);
+                    thread.start();
+                    asynchChildren.add(thread);
+                }
+            } catch (java.util.NoSuchElementException nex){
+               throw new SmartFrogRuntimeException ("Empty actions",this);
+            }
+    }
+
+
+
+    private void synchCreateChild() throws SmartFrogDeploymentException,
+        RemoteException, SmartFrogRuntimeException, SmartFrogException {
+        actionKeys = actions.keys();
+        try {
+            while (actionKeys.hasMoreElements()) {
+                Object key = actionKeys.nextElement();
+                ComponentDescription act = (ComponentDescription)
+                    actions.get(key);
+                Prim comp = sfDeployComponentDescription(key, this, act, null);
+            }
+        } catch (java.util.NoSuchElementException nex){
+           throw new SmartFrogRuntimeException ("Empty actions",this);
+        }
+
+        //Actions are now children of parallel, they are deployed and
+        //started
+        for (Enumeration e = sfChildren(); e.hasMoreElements();) {
+            Object elem = e.nextElement();
+
+            if (elem instanceof Prim) {
+                ((Prim) elem).sfDeploy();
+            }
+        }
+
+        for (Enumeration e = sfChildren(); e.hasMoreElements();) {
+            Object elem = e.nextElement();
+
+            if (elem instanceof Prim) {
+                ((Prim) elem).sfStart();
+            }
         }
     }
 
@@ -154,5 +194,26 @@ public class Parallel extends EventCompoundImpl implements Compound {
                         "error handling child termination " + e, name));
             }
         }
+    }
+
+    /**
+     * Cancels all remaining createChild threads
+     *
+     * @param status Termination  Record
+     * @param comp Component which caused the termination
+     */
+    public synchronized void sfTerminateWith(TerminationRecord status) {
+
+        /* unregister from all remote registrations */
+        if  (asynchChildren!=null){
+            for (Enumeration e = asynchChildren.elements(); e.hasMoreElements(); ) {
+                CreateNewChildThread t = (CreateNewChildThread)e.nextElement();
+                try {
+                    t.cancel(true);
+                } catch (Exception ex1) {
+                }
+            }
+        }
+        super.sfTerminateWith(status);
     }
 }
