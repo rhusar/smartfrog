@@ -49,23 +49,6 @@ sfConfig extends Compound {
     //so they terminate one after the other
     sfSyncTerminate true;
 
-    //our CDDLM description
-    /*
-    cddlm extends AxisServer {
-        port PARENT:port;
-        threads 4;
-        sessions 8;
-        }
-    */
-
-
-    //fetch the WSDL every so often, just to see that we are happy
-    /*
-    wsdlFetch extends FetchCddlmWSDL {
-        port PARENT:port;
-    }
-    */
-
     /*
      deploy axis on jetty
      */
@@ -97,11 +80,11 @@ sfConfig extends Compound {
         AxisWebApp extends JettyWebApplication {
             webApp LAZY warFile:absolutePath;
             contextPath "/axis";
-            server LAZY jettyServer;
+            //server LAZY jettyServer;
         }
 
     }
-
+/*
     cddlmService extends CddlmService {
         port PARENT:port;
     }
@@ -111,6 +94,6 @@ sfConfig extends Compound {
     wsdlFetch extends FetchCddlmWSDL {
         port PARENT:port;
     }
-
+*/
 }
 

@@ -20,6 +20,8 @@
 package org.smartfrog.services.jetty;
 
 
+import org.smartfrog.services.www.JavaWebApplicationServer;
+
 import java.rmi.Remote;
 
 /**
@@ -27,7 +29,7 @@ import java.rmi.Remote;
  */
 
 
-public interface JettyIntf extends Remote {
+public interface JettyIntf extends JavaWebApplicationServer {
 
     /** jetty home attribute */
     String JETTY_HOME = "jettyhome";

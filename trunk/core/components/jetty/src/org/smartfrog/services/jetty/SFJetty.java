@@ -5,6 +5,7 @@ import org.smartfrog.sfcore.common.Logger;
 import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.compound.CompoundImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.sfcore.processcompound.SFProcess;
 import org.smartfrog.sfcore.reference.Reference;
@@ -141,7 +142,40 @@ public class SFJetty extends CompoundImpl implements JettyIntf {
         }
     }
 
+    /**
+     * deploy a web application.
+     * Deploys a web application identified by the component passed as a parameter; a component of arbitrary
+     * type but which must have the mandatory attributes identified in {@link org.smartfrog.services.www.JavaWebApplication};
+     * possibly even extra types required by the particular application server.
+     *
+     * @param webApplication the web application. this must be a component whose attributes include the
+     *                       mandatory set of attributes defined for a JavaWebApplication component. Application-server specific attributes
+     *                       (both mandatory and optional) are also permitted
+     * @return the context path deployed to.
+     * @throws java.rmi.RemoteException on network trouble
+     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     *                                  on any other problem
+     * @todo implement
+     */
+    public String DeployWebApplication(Prim webApplication)
+            throws RemoteException, SmartFrogException {
 
+        throw new SmartFrogException("not implemented : DeployWebApplication");
+    }
+
+    /**
+     * undeploy a web application
+     * @todo implement
+     *
+     * @param webApplication the web application itself;
+     * @throws java.rmi.RemoteException on network trouble
+     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     *                                  on any other problem
+     */
+    public void UndeployWebApplication(Prim webApplication)
+            throws RemoteException, SmartFrogException {
+        throw new SmartFrogException("not implemented : UndeployWebApplication");
+    }
 
 
 }
