@@ -24,5 +24,8 @@ LogToFileImpl extends  LogToErrImpl {
   path PROPERTY java.io.tmpdir; //".";
   logFileExtension "logJ";
   useDatedFileName true;
+  useLogNameInFileName true;
+  useHostNameInFileName true;
+  //fileNamePrefix //"prefix"; //or PROPERTY java.io.tmpdir;
   redirectSystemOutputs false;
 }
