@@ -33,6 +33,7 @@ import java.rmi.RemoteException;
 import java.io.File;
 
 /**
+ * Implement a class that can dynamically map to a file
  * created 27-May-2004 10:47:34
  */
 
