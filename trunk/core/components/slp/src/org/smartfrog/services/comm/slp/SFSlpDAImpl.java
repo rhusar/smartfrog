@@ -46,6 +46,9 @@ public class SFSlpDAImpl extends PrimImpl implements Prim, SFSlpDA {
         
     }
     
+    /**
+        Creates an instance of the SLP DA.
+    */
     public void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
         // get properties
@@ -69,9 +72,11 @@ public class SFSlpDAImpl extends PrimImpl implements Prim, SFSlpDA {
         }
     }
     
-    // make sure DA stops on sfTerminate...
+    /**
+        Terminates the Directory Agent.
+    */
     public void sfTerminateWith(TerminationRecord tr) {
-        System.out.println("Killing DA");
+        //System.out.println("Killing DA");
         da.killDA();
         da = null;
         super.sfTerminateWith(tr);

@@ -76,7 +76,6 @@ public class SFSlpAdvertiserImpl extends PrimImpl implements Prim, SFSlpAdvertis
         Properties p = getSlpConfiguration();
         
         // get properties for the service to advertise.
-        System.out.println("AdvRef: " + toAdvertiseRef.toString());
         toAdvertise = sfContext().get("toAdvertise"); //sfResolve(toAdvertiseRef);
         serviceType = (String)sfResolve(serviceTypeRef);
         serviceAttributes = (Vector)sfResolve(serviceAttributeRef);
@@ -128,7 +127,6 @@ public class SFSlpAdvertiserImpl extends PrimImpl implements Prim, SFSlpAdvertis
         }catch(ServiceLocationException ex) {
             throw (SmartFrogException)SmartFrogException.forward(ex);
         }
-        System.out.println("Advertising: " + serviceURL.toString());
     }
     
     public synchronized void sfTerminateWith(TerminationRecord r) {
@@ -211,11 +209,16 @@ public class SFSlpAdvertiserImpl extends PrimImpl implements Prim, SFSlpAdvertis
         // Check if string could be a URL.
         String adv = toAdvertise.toString();
         String host = adv;
-        if(adv.indexOf("/") != -1) host = adv.substring(0, adv.indexOf("/"));
+        String path = "";
+        if(adv.indexOf("/") != -1) {
+            host = adv.substring(0, adv.indexOf("/"));
+            path = adv.substring(adv.indexOf("/"));
+        }
         boolean url = false;
         try {
             InetAddress a = InetAddress.getByName(host);
-            serviceURL = new ServiceURL(serviceType+"://"+a, serviceLifetime);
+            String urlStr = a.getHostName() + path;
+            serviceURL = new ServiceURL(serviceType+"://"+urlStr, serviceLifetime);
             url = true;
         }catch(Exception ex) { }
         

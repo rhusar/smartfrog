@@ -101,7 +101,6 @@ public class ServiceURL implements java.io.Serializable {
         }
                 
         if(!host.equals("://")) {
-            System.out.println("Host: " + host);
             try {
                 uri = new URI("srv" + host);
             }catch(URISyntaxException ex) {
@@ -111,9 +110,7 @@ public class ServiceURL implements java.io.Serializable {
                        
         serviceURL = url;
         this.lifetime = lifetime;
-        
-        //System.out.println("URL: " + serviceURL);
-        //System.out.println("Length: " + serviceURL.length());
+
     }
     
     public ServiceType getServiceType() {
