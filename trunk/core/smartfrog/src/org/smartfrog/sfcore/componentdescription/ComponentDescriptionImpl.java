@@ -45,6 +45,7 @@ import org.smartfrog.sfcore.security.SFClassLoader;
 import org.smartfrog.sfcore.parser.Phases;
 import org.smartfrog.sfcore.parser.SFParser;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.common.SmartFrogContextException;
 import java.rmi.RemoteException;
 import java.io.InputStream;
 
@@ -102,6 +103,66 @@ public class ComponentDescriptionImpl implements Serializable, Cloneable,
 
         return r;
     }
+
+    /**
+     * Adds an attribute to this component description under given name.
+     *
+     * @param name name of attribute
+     * @param value value of attribute
+     *
+     * @return added attribute if non-existent or null otherwise
+     *
+     * @throws SmartFrogRuntimeException when name or value are null
+     */
+    public synchronized Object sfAddAttribute(Object name, Object value)
+        throws SmartFrogRuntimeException {
+        return context.sfAddAttribute(name, value);
+    }
+
+    /**
+     * Removes an attribute from this component.
+     *
+     * @param name of attribute to be removed
+     *
+     * @return removed attribute value if successfull or null if not
+     *
+     * @throws SmartFrogRuntimeException when name is null
+     */
+    public synchronized Object sfRemoveAttribute(Object name)
+        throws SmartFrogRuntimeException {
+        return context.sfRemoveAttribute(name);
+    }
+
+    /**
+     * Replace named attribute in component context. If attribute is not
+     * present it is added to the context.
+     *
+     * @param name of attribute to replace
+     * @param value value to add or replace
+     *
+     * @return the old value if present, null otherwise
+     *
+     * @throws SmartFrogRuntimeException when name or value are null
+     */
+    public synchronized Object sfReplaceAttribute(Object name, Object value)
+        throws SmartFrogRuntimeException {
+        return context.sfReplaceAttribute(name, value);
+    }
+
+
+    /**
+     * Returns the attribute key given a value.
+     *
+     * @param value value to look up key for
+     *
+     * @return key for attribute value or null if none
+     */
+
+    // perhaps this should be synchronized... but causes problems with sfCompleteName if it is
+    public Object sfAttributeKeyFor(Object value) {
+        return context.sfAttributeKeyFor(value);
+    }
+
 
     /**
      * Gets the context for this description.
