@@ -176,20 +176,20 @@ public class Parse extends TaskBase {
 
 
             //now lets create the Java statement
-            String entryPoint = "org.smartfrog.SFParse";
+            String entryPoint = SmartFrogJVMProperties.PARSER_ENTRY_POINT;
             Java java = createJavaTask(entryPoint);
             setupClasspath(java);
             java.setFailonerror(true);
             java.setFork(true);
             //and add various options to it
-            java.createArg().setValue("-r");
+            java.createArg().setValue(SmartFrogJVMProperties.PARSER_OPTION_R);
             if (quiet) {
-                java.createArg().setValue("-q");
+                java.createArg().setValue(SmartFrogJVMProperties.PARSER_OPTION_QUIET);
             }
             if (verbose) {
-                java.createArg().setValue("-v");
+                java.createArg().setValue(SmartFrogJVMProperties.PARSER_OPTION_VERBOSE);
             }
-            java.createArg().setValue("-f");
+            java.createArg().setValue(SmartFrogJVMProperties.PARSER_OPTION_FILENAME);
             java.createArg().setFile(tempFile);
 
             //run it

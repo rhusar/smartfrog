@@ -58,13 +58,6 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
     protected List codebase = new LinkedList();
 
     /**
-     * keep in sync with whatever the classloader uses, including
-     * the format it takes
-     * @see org.smartfrog.sfcore.security.SFClassLoader#SF_CODEBASE_PROPERTY
-     */
-    protected static final String CODEBASE_PROPERTY = "org.smartfrog.codebase";
-
-    /**
      * add a new application to the list.
      */
     public Application createApplication() {
@@ -146,7 +139,7 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
             //add the codebase for extra stuff
             String codelist = Codebase.getCodebaseString(codebase);
             log("Codebase set to " + codelist, Project.MSG_VERBOSE);
-            addJVMProperty(CODEBASE_PROPERTY, codelist);
+            addJVMProperty(SmartFrogJVMProperties.CODEBASE_PROPERTY, codelist);
         }
     }
 

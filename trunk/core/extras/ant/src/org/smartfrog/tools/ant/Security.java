@@ -45,7 +45,6 @@ public class Security extends DataType {
     private File keystore;
     private File passFile;
     private File policyFile;
-    protected static final String KEYSTORE_PASSWORD = "org.smartfrog.sfcore.security.keyStorePassword";
 
     public File getKeystore() {
         return keystore;
@@ -147,9 +146,9 @@ public class Security extends DataType {
      */
     public void applySecuritySettings(SmartFrogTask task) {
         validate();
-        task.addJVMProperty("org.smartfrog.sfcore.security.keyStoreName",
+        task.addJVMProperty(SmartFrogJVMProperties.KEYSTORE_NAME,
                 keystore.getAbsolutePath());
-        task.addJVMProperty("org.smartfrog.sfcore.security.propFile",
+        task.addJVMProperty(SmartFrogJVMProperties.KEYSTORE_PROPFILE,
                 passFile.getAbsolutePath());
         task.defineJVMArg("-Djava.security.manager");
         //the extra equals in the assignment forces it to overide all others
@@ -169,7 +168,7 @@ public class Security extends DataType {
         signJar.setKeystore(keystore.getAbsolutePath());
         //todo: get the pass in.
             Properties securityProps = loadPassFile();
-            signJar.setKeypass(securityProps.getProperty(KEYSTORE_PASSWORD));
+            signJar.setKeypass(securityProps.getProperty(SmartFrogJVMProperties.KEYSTORE_PASSWORD));
     }
 
     /**

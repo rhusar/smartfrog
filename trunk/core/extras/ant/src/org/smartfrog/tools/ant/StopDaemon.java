@@ -40,7 +40,7 @@ public class StopDaemon extends SmartFrogTask {
 
     public void init() throws BuildException {
         super.init();
-        setHost("localhost");
+        bindToLocalhost();
         setFailOnError(true);
         setTimeout(DEFAULT_TIMEOUT_VALUE);
     }
@@ -54,10 +54,10 @@ public class StopDaemon extends SmartFrogTask {
     public void execute() throws BuildException {
         setStandardSmartfrogProperties();
         verifyHostDefined();
-        String terminateCommand = ROOT_PROCESS + ":TERMINATE:::" + getHost() + ":";
+        String terminateCommand = SmartFrogJVMProperties.ROOT_PROCESS + ":TERMINATE:::" + getHost() + ":";
         addApplicationCommand("-a", terminateCommand);
         addExitFlag();
-        execSmartFrog("failed to terminate " + ROOT_PROCESS);
+        execSmartFrog("failed to terminate " + SmartFrogJVMProperties.ROOT_PROCESS);
     }
 
 

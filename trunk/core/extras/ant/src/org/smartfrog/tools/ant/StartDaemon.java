@@ -82,12 +82,12 @@ public class StartDaemon extends DeployingTaskBase {
      */
     public void execute() throws BuildException {
         verifyHostUndefined();
-        setHost("localhost");
+        bindToLocalhost();
         setStandardSmartfrogProperties();
         //this is needed to start the registry. Without it you cannot shut
         //smartfrog down.
-        addJVMProperty("org.smartfrog.sfcore.processcompound.sfProcessName",
-                ROOT_PROCESS);
+        addJVMProperty(SmartFrogJVMProperties.PROCESS_NAME,
+                SmartFrogJVMProperties.ROOT_PROCESS);
         addIniFile();
         deployApplications();
         if (spawn) {

@@ -51,11 +51,10 @@ import java.util.List;
  * {@link SmartFrogTask#setFailOnError(boolean)} calls respectively.
  */
 public abstract class SmartFrogTask extends TaskBase {
-
     /**
-     * the name of a root process
+     * what is the default timeout for those tasks that have a timeout
      */
-    protected static final String ROOT_PROCESS = "rootProcess";
+    public static final long DEFAULT_TIMEOUT_VALUE = 60 * 10 * 1000L;
 
     public SmartFrogTask() {
 
@@ -145,11 +144,6 @@ public abstract class SmartFrogTask extends TaskBase {
     protected boolean failOnError;
 
     /**
-     * what is the default timeout for those tasks that have a timeout
-     */
-    public static final long DEFAULT_TIMEOUT_VALUE = 60 * 10 * 1000L;
-
-    /**
      * our security holder
      */
     private SecurityHolder securityHolder = new SecurityHolder();
@@ -223,7 +217,7 @@ public abstract class SmartFrogTask extends TaskBase {
      * @param allowSpawning
      */
     public void setAllowSpawning(boolean allowSpawning) {
-        this.allowSpawning = new Boolean(allowSpawning);
+        this.allowSpawning = Boolean.valueOf(allowSpawning);
     }
 
     /**
@@ -282,7 +276,7 @@ public abstract class SmartFrogTask extends TaskBase {
      * @param logStackTraces
      */
     public void setLogStackTraces(boolean logStackTraces) {
-        this.logStackTraces = new Boolean(logStackTraces);
+        this.logStackTraces = Boolean.valueOf(logStackTraces);
     }
 
     /**
@@ -309,7 +303,7 @@ public abstract class SmartFrogTask extends TaskBase {
      * @return a java task set up with forking, the entry point set to SFSystem, timeout maybe enabled
      */
     protected Java getBaseJavaTask() {
-        Java java = createJavaTask("org.smartfrog.SFSystem");
+        Java java = createJavaTask(SmartFrogJVMProperties.SMARTFROG_ENTRY_POINT);
         java.setFork(true);
         java.setDir(getProject().getBaseDir());
         return java;
@@ -364,7 +358,7 @@ public abstract class SmartFrogTask extends TaskBase {
      */
     protected void addIniFile() {
         if (iniFile != null && iniFile.exists()) {
-            addJVMProperty("org.smartfrog.iniFile", iniFile.toString());
+            addJVMProperty(SmartFrogJVMProperties.INIFILE, iniFile.toString());
         }
     }
 
@@ -372,19 +366,19 @@ public abstract class SmartFrogTask extends TaskBase {
      * set various standard properties if they are set in the task
      */
     protected void setStandardSmartfrogProperties() {
-        addSmartfrogPropertyIfDefined("org.smartfrog.logger.logStackTrace",
+        addSmartfrogPropertyIfDefined(SmartFrogJVMProperties.LOG_STACK_TRACE,
                 logStackTraces);
-        addSmartfrogPropertyIfDefined("org.smartfrog.ProcessCompound.sfRootLocatorPort",
+        addSmartfrogPropertyIfDefined(SmartFrogJVMProperties.ROOT_LOCATOR_PORT,
                 port);
-        addSmartfrogPropertyIfDefined("org.smartfrog.ProcessCompound.sfLivenessDelay",
+        addSmartfrogPropertyIfDefined(SmartFrogJVMProperties.LIVENESS_DELAY,
                 livenessCheckPeriod);
-        addSmartfrogPropertyIfDefined("org.smartfrog.ProcessCompound.sfLivenessFactor",
+        addSmartfrogPropertyIfDefined(SmartFrogJVMProperties.LIVENESS_FACTOR,
                 livenessCheckRetries);
-        addSmartfrogPropertyIfDefined("org.smartfrog.ProcessCompound.sfProcessAllow",
+        addSmartfrogPropertyIfDefined(SmartFrogJVMProperties.PROCESS_ALLOW,
                 allowSpawning);
-        addSmartfrogPropertyIfDefined("org.smartfrog.ProcessCompound.sfProcessTimeout",
+        addSmartfrogPropertyIfDefined(SmartFrogJVMProperties.PROCESS_TIMEOUT,
                 spawnTimeout);
-        addSmartfrogPropertyIfDefined("org.smartfrog.sfcore.processcompound.sfDefault.sfDefault",
+        addSmartfrogPropertyIfDefined(SmartFrogJVMProperties.SF_DEFAULT,
                 initialSmartFrogFile);
     }
 
@@ -594,4 +588,7 @@ public abstract class SmartFrogTask extends TaskBase {
     }
 
 
+    protected void bindToLocalhost() {
+        setHost("localhost");
+    }
 }
