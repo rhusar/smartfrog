@@ -133,7 +133,7 @@ public class SLPUtil {
             // create the current attribute.
             String[] a = attr.split("=");
             if(a.length != 2) {
-                System.out.println("ERROR: Something strange happened when parsing the attribute");
+                //System.out.println("ERROR: Something strange happened when parsing the attribute");
                 throw new ServiceLocationException(ServiceLocationException.PARSE_ERROR);
             }
             String id = a[0];
@@ -268,7 +268,6 @@ public class SLPUtil {
     }
     
     public static Vector mergeVectors(Vector v1, Vector v2) {
-        System.out.println("Merging:\n\t " + v1.toString() + "\n\t" + v2.toString());
         Vector toReturn = new Vector();
         Iterator i1 = v1.iterator();
         Iterator i2 = v2.iterator();
@@ -276,21 +275,17 @@ public class SLPUtil {
         String s2 = i2.hasNext() ? (String)i2.next() : null;
         
         while(s1 != null && s2 != null) {
-            System.out.println("Comparing " + s1 + " and " + s2);
             int comp = s1.compareToIgnoreCase(s2);
             if(comp < 0) {
                 toReturn.add(s1);
-                System.out.println("Added " + s1);
                 s1 = i1.hasNext() ? (String)i1.next() : null;
             }
             else if(comp > 0) {
                 toReturn.add(s2);
-                System.out.println("Added " + s2);
                 s2 = i2.hasNext() ? (String)i2.next() : null;
             }
             else {
                 toReturn.add(s1);
-                System.out.println("Added " + s1);
                 s1 = i1.hasNext() ? (String)i1.next() : null;
                 s2 = i2.hasNext() ? (String)i2.next() : null;
             }
@@ -298,11 +293,9 @@ public class SLPUtil {
         // add remaining
         if(s1 != null) {
             toReturn.add(s1);
-            System.out.println("Added " + s1);
         }
         if(s2 != null) {
             toReturn.add(s2);
-            System.out.println("Added " + s2);
         }
         while(i1.hasNext()) toReturn.add(i1.next());
         while(i2.hasNext()) toReturn.add(i2.next());

@@ -30,6 +30,7 @@ import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.logging.LogSF;
 
 import java.rmi.RemoteException;
 import java.util.Properties;
@@ -41,6 +42,7 @@ import org.smartfrog.services.comm.slp.agents.DirectoryAgent;
 */
 public class SFSlpDAImpl extends PrimImpl implements Prim, SFSlpDA {
     private DirectoryAgent da;
+	private LogSF slpLog = null;
     
     public SFSlpDAImpl() throws RemoteException {
         
@@ -63,10 +65,16 @@ public class SFSlpDAImpl extends PrimImpl implements Prim, SFSlpDA {
         properties.setProperty("net.slp.logErrors", sfResolve("slp_config_log_errors").toString());
         properties.setProperty("net.slp.logMsg", sfResolve("slp_config_log_msg").toString());
         properties.setProperty("net.slp.logfile", sfResolve("slp_config_logfile").toString());
+		properties.setProperty("net.slp.sflog", sfResolve("slp_config_sflog").toString());
         
         // create DA.
         try {
             da = new DirectoryAgent(properties);
+			// logging.
+			if(properties.getProperty("net.slp.sflog").equalsIgnoreCase("true")) {
+				slpLog = sfGetLog(properties.getProperty("net.slp.logfile"));
+				da.setSFLog(slpLog);
+			}
         }catch(ServiceLocationException sle) {
             throw (SmartFrogException)SmartFrogException.forward(sle);
         }

@@ -66,7 +66,7 @@ public class SLPTcpClient {
             socket.close();
         }catch(Exception ex) {
             // handle error
-            ex.printStackTrace();
+            //ex.printStackTrace();
         }
     }
 }

@@ -96,7 +96,6 @@ public class UserAgent extends SLPAgent implements Locator, SlpUdpCallback {
                                                       CONFIG_SLP_MTU, this);
             }
         }catch(Exception e) { 
-            e.printStackTrace();
             throw new ServiceLocationException(ServiceLocationException.NETWORK_ERROR,
                                                "UA: Could not create unicast socket");
         }
@@ -207,7 +206,9 @@ public class UserAgent extends SLPAgent implements Locator, SlpUdpCallback {
                              SLPInputStream sis, 
                              ServiceLocationEnumeration results) throws ServiceLocationException {
         msg.fromInputStream(sis);
-                                 
+                     
+		logMessage("Received Message:", msg);
+		
         boolean complete = true;
         
         if(results == null) {
@@ -220,10 +221,6 @@ public class UserAgent extends SLPAgent implements Locator, SlpUdpCallback {
             if( (msg.getFlags() & SLPMessageHeader.FLAG_OVERFLOW) != 0x0 ) {
                 complete = false;
             }
-        }
-        
-        if(CONFIG_LOG_MSG) {
-            writeLog("Received Service Reply: \n" + msg.toString());
         }
         
         return complete;
@@ -240,6 +237,7 @@ public class UserAgent extends SLPAgent implements Locator, SlpUdpCallback {
                                 
         // read message...
         msg.fromInputStream(sis);
+		logMessage("Received Message:", msg);
         
         boolean complete = true;
         if(results == null) {
@@ -254,10 +252,6 @@ public class UserAgent extends SLPAgent implements Locator, SlpUdpCallback {
             }
         }
         
-        if(CONFIG_LOG_MSG) {
-            writeLog("Received Service Type Reply: \n" + msg.toString());
-        }
-        
         return complete;
     }
     
@@ -269,6 +263,7 @@ public class UserAgent extends SLPAgent implements Locator, SlpUdpCallback {
                                       
         // read message
         msg.fromInputStream(sis);
+		logMessage("Received Messaage: ", msg);
         
         boolean complete = true;
         if(results == null) {
@@ -281,10 +276,6 @@ public class UserAgent extends SLPAgent implements Locator, SlpUdpCallback {
             if( (msg.getFlags() & SLPMessageHeader.FLAG_OVERFLOW) != 0x0 ) {
                 complete = false;
             }
-        }
-        
-        if(CONFIG_LOG_MSG) {
-            writeLog("Received Attribute Reply: \n" + msg.toString());
         }
         
         return complete;
@@ -308,7 +299,7 @@ public class UserAgent extends SLPAgent implements Locator, SlpUdpCallback {
         SLPSAAdvMessage msg = new SLPSAAdvMessage();
         msg.fromInputStream(sis);
         
-        writeLog(msg.toString());
+        logMessage("Received Message:", msg);
         
         // add scopes...
         if(userSelectableScopes) {
@@ -383,6 +374,7 @@ public class UserAgent extends SLPAgent implements Locator, SlpUdpCallback {
             default:
                 //System.out.println("UserAgent -> handleUCM: function = " + function);
                 //error = ServiceLocationException.PARSE_ERROR;
+				logError("handleReplyMessage: Unknown message type ("+function+")", null);
                 break;
         }
         return true;
@@ -406,6 +398,7 @@ public class UserAgent extends SLPAgent implements Locator, SlpUdpCallback {
                               unicastCommunicator);
         }catch(ServiceLocationException se) {
             // ignored
+			logError("sendSARequest failed", se);
         }
     }
     
@@ -503,7 +496,7 @@ public class UserAgent extends SLPAgent implements Locator, SlpUdpCallback {
         // return the discovered service types
         return results;
     }
-    
+    /*
     protected void writeLog(String message) {
         String toWrite;
         toWrite = "------ UserAgent ------\n";
@@ -511,5 +504,42 @@ public class UserAgent extends SLPAgent implements Locator, SlpUdpCallback {
         toWrite += "------ End ------";
         SLPUtil.writeLogFile(toWrite, CONFIG_LOGFILE);
     }
+	*/
+	protected void logDebug(String message) {
+		if(CONFIG_DEBUG) {
+			String toWrite;
+			toWrite = "------ SLP UserAgent ------\n"
+					+ message + "\n"
+					+ "---------------------------";
+			if(sflog == null) SLPUtil.writeLogFile(toWrite, CONFIG_LOGFILE);
+			else sflog.info("\n"+toWrite);
+		}
+	}
+	
+	protected void logMessage(String text, SLPMessageHeader message) {
+		if(CONFIG_LOG_MSG) {
+			String toWrite;
+			toWrite = "------ SLP UserAgent ------\n"
+					+ text + "\n";
+			if(message != null) toWrite += message.toString() + "\n";
+			toWrite += "---------------------------";
+		
+			if(sflog == null)SLPUtil.writeLogFile(toWrite, CONFIG_LOGFILE);
+			else sflog.info("\n"+toWrite);
+		}
+	}
+	
+	protected void logError(String text, Exception error) {
+		if(CONFIG_LOG_ERRORS) {
+			String toWrite;
+			toWrite = "------ SLP UserAgent ------\n"
+					+ text + "\n";
+			if(error != null) toWrite += error.toString();
+			toWrite += "---------------------------";
+		
+			if(sflog == null)SLPUtil.writeLogFile(toWrite, CONFIG_LOGFILE);
+			else sflog.error("\n"+text, error);
+		}
+	}
 }
 

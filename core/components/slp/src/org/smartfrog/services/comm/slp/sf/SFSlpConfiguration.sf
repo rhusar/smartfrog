@@ -41,6 +41,8 @@ SFSlpConfiguration extends {
     slp_config_debug "false"; // turn debug output on/off
     slp_config_log_errors "false"; // turn on/off logging of errors
     slp_config_log_msg "false"; // turn on/off logging of sent/received messages
-    slp_config_logfile ""; // name of log file ("" -> stdout)
+    slp_config_logfile "SLP_LOG"; // name of log file (or SmartFrog log)
+	slp_config_sflog "true"; // Enable SmartFrog logging.
+	
 }
 

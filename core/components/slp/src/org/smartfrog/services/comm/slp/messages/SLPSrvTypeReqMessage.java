@@ -150,4 +150,14 @@ public class SLPSrvTypeReqMessage extends SLPMessageHeader {
         
         length += PRList.length();
     }
+	
+	public String toString() {
+		String s = super.toString();
+		s +=  "PRList: " + PRList + "\n"
+		  + "Naming Auth: " + namingAuth + "\n"
+		  + "Scopes: " + scopeStr + "\n"
+		  + "*** End Of Message ***";
+		
+		return s;
+	}
 }

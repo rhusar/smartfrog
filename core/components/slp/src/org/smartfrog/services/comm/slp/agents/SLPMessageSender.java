@@ -115,7 +115,7 @@ class SLPMessageSender implements SlpUdpCallback {
             timer = null;
             communicator = comm;
             tcpTargets.clear();
-            if(owner.CONFIG_LOG_MSG) owner.writeLog("Sending Message:\n"+msg.toString());
+            owner.logMessage("Sending Message:", msg);
             try {
                 InetAddress toAddress = InetAddress.getByName(addr);
                 DatagramPacket p = SLPUtil.createDatagram(msg, toAddress, port);
@@ -139,9 +139,7 @@ class SLPMessageSender implements SlpUdpCallback {
                 }
                 
             }catch(Exception e) {
-                e.printStackTrace();
                 weAreDone();
-                if(owner.CONFIG_LOG_ERRORS) owner.writeLog("Failed to send message:\n" + e.toString());
                 throw new ServiceLocationException(ServiceLocationException.NETWORK_ERROR);
             }
             waitForReply();
@@ -152,7 +150,7 @@ class SLPMessageSender implements SlpUdpCallback {
                 SLPTcpClient tcp = new SLPTcpClient(owner);
                 for(Iterator tcpIter = tcpTargets.iterator(); tcpIter.hasNext(); ) {
                     tcpHost host = (tcpHost)tcpIter.next();
-                    System.out.println("TCP: " + host.address.getHostAddress()+" - " +host.port);
+                    owner.logDebug("TCP: " + host.address.getHostAddress()+" - " +host.port);
                     ((SLPSrvReqMessage)msg).clearResponders();
                     msg.clearFlags();
                     tcp.sendSlpMessage(msg, host.address.getHostAddress(), host.port, results);
@@ -205,10 +203,9 @@ class SLPMessageSender implements SlpUdpCallback {
     */
     public synchronized boolean udpError(Exception e) {
         // We stop waiting.
-        e.printStackTrace();
         weAreDone();
         stupidException = ServiceLocationException.INTERNAL_SYSTEM_ERROR;
-        if(owner.CONFIG_LOG_ERRORS) owner.writeLog("Internal System Error: " +e.toString());
+        owner.logError("Internal System Error: ", e);
         return true;
     }
     
@@ -228,21 +225,19 @@ class SLPMessageSender implements SlpUdpCallback {
         // check that version == 2. We only support version 2 of the SLP.
         if(version != 2) {
             function = 0; // packet will be ignored
-            if(owner.CONFIG_LOG_ERRORS) owner.writeLog("Wrong SLP Version number: " + version);
+			owner.logError("Wrong SLP Version number: " + version, null);
         }
         
         boolean complete = true;
         try {
             complete = owner.handleReplyMessage(function, sis, results);
         }catch(ServiceLocationException e) {
-            // TODO
-            // Check error code. If internal system error: stop listening.
-            // Other errors are ignored. Write to log if configured to do so...
-            e.printStackTrace();
+            // log error.
+			owner.logError("Error during message handling", e);
         }
         if(!complete) {
             // need to try again with TCP...
-            if(owner.CONFIG_DEBUG) owner.writeLog("Received Message was truncated");
+            owner.logDebug("Received Message was truncated");
             tcpTargets.add(new tcpHost(packet.getAddress(),
                                        packet.getPort()));
         }
@@ -271,6 +266,7 @@ class SLPMessageSender implements SlpUdpCallback {
     */
     private synchronized void timerResendCallback() {
         try {
+			owner.logMessage("ReSending Message:", theRequest);
             communicator.send(thePacket);
         }catch(Exception e) { }
         currentTimeout *= 2;
@@ -298,7 +294,7 @@ class SLPMessageSender implements SlpUdpCallback {
         try {
             communicator.removeCallback(theRequest.getXID());
         }catch(ServiceLocationException ex) {
-            System.out.println("ERROR: SlpMessageSender.weAreDone() - Failed to remove callback !");
+            owner.logError("ERROR: SlpMessageSender.weAreDone() - Failed to remove callback !", null);
         }
         if(timer != null)timer.cancel();
         timer = null;

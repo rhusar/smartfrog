@@ -138,5 +138,21 @@ public class SLPSrvTypeRplyMessage extends SLPMessageHeader {
     public Vector getServiceTypes() {
         return serviceTypes;
     }
+	
+	/** Creates a String with the contents of the message */
+	public String toString() {
+		String s = super.toString();
+		s += "\n"
+			+ "Error Code: " + errorCode + "\n"
+			+ "Service Types:\n";
+			
+		for(Iterator it = serviceTypes.iterator(); it.hasNext(); ) {
+			s += "\t" + it.next().toString() + "\n";
+		}
+		
+		s += "*** End Of Message ***";
+		
+		return s;
+	}
 }
 

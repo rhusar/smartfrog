@@ -103,7 +103,6 @@ public class ServiceAgent extends SLPAgent implements Advertiser {
                                                     CONFIG_SLP_MC_ADDR, address, CONFIG_SLP_PORT,
                                                     CONFIG_SLP_MTU, this);
         }catch(Exception e) {
-            e.printStackTrace();
             if(multicastCommunicator != null) multicastCommunicator.close();
             throw new ServiceLocationException(ServiceLocationException.NETWORK_ERROR,
                                                "SA: Could not create multicast socket");
@@ -121,7 +120,8 @@ public class ServiceAgent extends SLPAgent implements Advertiser {
             tcpListener = new SLPTcpServer(address, unicastCommunicator.getPort(), this);
             tcpListener.start();
         }catch(Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
+			tcpListener = null;
         }
     }        
      
@@ -180,6 +180,9 @@ public class ServiceAgent extends SLPAgent implements Advertiser {
             case SLPMessageHeader.SLPMSG_SRVACK:
                 recvSrvAck(sis);
                 break;
+			default:
+				logError("handleReplyMessage: Unknown message type ("+function+")", null);
+				break;
         }
         return true; // Not going to get partial messages here...
     }
@@ -205,9 +208,7 @@ public class ServiceAgent extends SLPAgent implements Advertiser {
                 }
                 break;
             default:
-                if(CONFIG_LOG_ERRORS) {
-                    writeLog("Received Unsupported message type: "+function);
-                }
+				logError("handleNonReplyMessage: Unknown message type ("+function+")", null);
                 break;
         }
         return null;
@@ -223,15 +224,17 @@ public class ServiceAgent extends SLPAgent implements Advertiser {
         SLPSrvReqMessage msg = new SLPSrvReqMessage();
         try {
             msg.fromInputStream(sis);
-            // if we have replied to this message before: do nothing.
-            if(msg.getPRList().indexOf(address.getHostAddress()) != -1) {
-                return null; //have replied before...
-            }
         }catch(ServiceLocationException e) {
-            e.printStackTrace();
+			logError("Error parsing message", e);
             error = e.getErrorCode();
         }
         if(error == 0) {
+			logMessage("Received Message:", msg);
+			// if we have replied to this message before: do nothing.
+            if(msg.getPRList().indexOf(address.getHostAddress()) != -1) {
+                return null; //have replied before...
+            }
+			
             // check that at least one requested scope is supported.
             if(msg.getScopes().isEmpty() || SLPUtil.supportScopes(supportedScopes, msg.getScopes())) {
                 // handle service:service-agent requests here...
@@ -250,14 +253,6 @@ public class ServiceAgent extends SLPAgent implements Advertiser {
                                                                          CONFIG_SLP_MTU,
                                                                          isUDP);
 
-        if(CONFIG_LOG_MSG) {
-            String dbgMsg = "Received Service Request:\n" + msg.toString() + "\n";
-            if(reply != null) dbgMsg += "Sending Reply:\n" + reply.toString();
-            else dbgMsg += "Not Sending Reply";
-            
-            writeLog(dbgMsg);
-        }
-        
         return reply;
     }
     
@@ -272,15 +267,17 @@ public class ServiceAgent extends SLPAgent implements Advertiser {
         SLPSrvTypeReqMessage msg = new SLPSrvTypeReqMessage();
         try {
             msg.fromInputStream(sis);
-            // if we have replied to this message before: do nothing.
-            if(msg.getPRList().indexOf(address.getHostAddress()) != -1) {
-                return null; //have replied before...
-            }
         }catch(ServiceLocationException e) {
-            e.printStackTrace();
+			logError("Error parsing message", e);
             error = e.getErrorCode();
         }
         if(error == 0) {
+			logMessage("Received Message: ", msg);
+			// if we have replied to this message before: do nothing.
+            if(msg.getPRList().indexOf(address.getHostAddress()) != -1) {
+                return null; //have replied before...
+            }
+			
             // check scopes...
             if(!SLPUtil.supportScopes(supportedScopes, msg.getScopes())) {
                 error = ServiceLocationException.SCOPE_NOT_SUPPORTED;
@@ -306,15 +303,16 @@ public class ServiceAgent extends SLPAgent implements Advertiser {
         SLPAttrReqMessage msg = new SLPAttrReqMessage();
         try {
             msg.fromInputStream(sis);
-            // if we have replied to this message before: do nothing.
+        }catch(ServiceLocationException e) {
+			logError("Error parsing message", e);
+			error = e.getErrorCode();
+        }
+        if(error == 0) {
+			logMessage("Received Message: ", msg);
+			// if we have replied to this message before: do nothing.
             if(msg.getPRList().indexOf(address.getHostAddress()) != -1) {
                 return null; //have replied before...
             }
-        }catch(ServiceLocationException e) {
-            e.printStackTrace();
-            error = e.getErrorCode();
-        }
-        if(error == 0) {
             // check scopes...
             if(!SLPUtil.supportScopes(supportedScopes, msg.getScopes())) {
                 error = ServiceLocationException.SCOPE_NOT_SUPPORTED;
@@ -358,9 +356,7 @@ public class ServiceAgent extends SLPAgent implements Advertiser {
         
         int error = msg.getErrorCode();
         
-        if(CONFIG_LOG_MSG) {
-            writeLog("Received Service Ack:\n"+msg.toString());
-        }
+		logMessage("Received Message:", msg);
         
         return error;
     }
@@ -415,7 +411,7 @@ public class ServiceAgent extends SLPAgent implements Advertiser {
         SLPSrvRegMessage msg = new SLPSrvRegMessage(url, scopelist, attrs, locale);
         msg.setFlags(SLPMessageHeader.FLAG_FRESH);
         if(msg.getLength() <= CONFIG_SLP_MTU) {
-            if(CONFIG_DEBUG) writeLog("Service Reg to DA Using UDP");
+            logDebug("Service Reg to DA Using UDP");
             SLPMessageSender ms = new SLPMessageSender(this, CONFIG_SLP_MTU, CONFIG_RETRY, null);
             try {
                 ms.sendSLPMessage(msg, 
@@ -430,7 +426,7 @@ public class ServiceAgent extends SLPAgent implements Advertiser {
             }
         }
         else {
-            if(CONFIG_DEBUG) writeLog("Service Reg to DA Using TCP");
+            logDebug("Service Reg to DA Using TCP");
             SLPTcpClient tcp = new SLPTcpClient(this);
             tcp.sendSlpMessage(msg, da.getHost(), da.getPort(), null);
         }
@@ -463,7 +459,7 @@ public class ServiceAgent extends SLPAgent implements Advertiser {
     protected Vector getDAList() {
         return new Vector(DAs.values());
     }
-    
+    /*
     protected void writeLog(String message) {
         String toWrite;
         toWrite = "------ ServiceAgent ------\n";
@@ -471,5 +467,42 @@ public class ServiceAgent extends SLPAgent implements Advertiser {
         toWrite += "------ End ------";
         SLPUtil.writeLogFile(toWrite, CONFIG_LOGFILE);
     }
+	*/
+	protected void logDebug(String message) {
+		if(CONFIG_DEBUG) {
+			String toWrite;
+			toWrite = "------ SLP ServiceAgent ------\n"
+					+ message + "\n"
+					+ "------------------------------";
+			if(sflog == null) SLPUtil.writeLogFile(toWrite, CONFIG_LOGFILE);
+			else sflog.info("\n"+toWrite);
+		}
+	}
+	
+	protected void logMessage(String text, SLPMessageHeader message) {
+		if(CONFIG_LOG_MSG) {
+			String toWrite;
+			toWrite = "------ SLP ServiceAgent ------\n"
+					+ text + "\n";
+			if(message != null) toWrite += message.toString() + "\n";
+			toWrite += "------------------------------";
+		
+			if(sflog == null) SLPUtil.writeLogFile(toWrite, CONFIG_LOGFILE);
+			else sflog.info("\n"+toWrite);
+		}
+	}
+	
+	protected void logError(String text, Exception error) {
+		if(CONFIG_LOG_ERRORS) {
+			String toWrite;
+			toWrite = "------ SLP ServiceAgent ------\n"
+					+ text + "\n";
+			if(error != null) toWrite += error.toString();
+			toWrite += "------------------------------";
+		
+			if(sflog == null) SLPUtil.writeLogFile(toWrite, CONFIG_LOGFILE);
+			else sflog.error("\n"+text, error);
+		}
+	}
 }
 

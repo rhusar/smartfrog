@@ -62,6 +62,7 @@ public class SLPDefaults {
     public static final boolean DEF_CONFIG_LOG_ERRORS = false;
     public static final boolean DEF_CONFIG_LOG_MSG = false;
     public static final String DEF_CONFIG_LOGFILE = "";
+	public static final boolean DEF_CONFIG_SFLOG = false;
     
     // properties object...
     private static java.util.Properties defProperties = null;
@@ -99,6 +100,7 @@ public class SLPDefaults {
             defProperties.setProperty("net.slp.logErrors", Boolean.toString(DEF_CONFIG_LOG_ERRORS));
             defProperties.setProperty("net.slp.logMsg", Boolean.toString(DEF_CONFIG_LOG_MSG));
             defProperties.setProperty("net.slp.logfile", DEF_CONFIG_LOGFILE);
+			defProperties.setProperty("net.slp.sflog", Boolean.toString(DEF_CONFIG_SFLOG));
         }
         
         return (java.util.Properties)defProperties.clone();

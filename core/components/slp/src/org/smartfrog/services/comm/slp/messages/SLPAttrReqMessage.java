@@ -197,5 +197,16 @@ public class SLPAttrReqMessage extends SLPMessageHeader {
         
         length += PRList.length();
     }
+	
+	public String toString() {
+		String s = super.toString();
+		s += "PRList: " + PRList + "\n"
+		  + "URL: " + url.toString() + "\n"
+		  + "Scope list: " + scopeStr + "\n"
+		  + "Tag list: " + tagList + "\n"
+		  + "*** End Of Message ***";
+		
+		return s;
+	}
 }
 

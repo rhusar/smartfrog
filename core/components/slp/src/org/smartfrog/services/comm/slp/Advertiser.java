@@ -29,6 +29,8 @@ package org.smartfrog.services.comm.slp;
 
 
 import java.util.*;
+import org.smartfrog.sfcore.logging.LogSF;
+
 /**
  * The advertiser interface allows service agents to register / deregister
  * service advertisements and their attributes.
@@ -83,4 +85,6 @@ public interface Advertiser {
     Returns the list of scopes supported by the advertiser.
   */
   public abstract Vector getScopes();
+  
+  public abstract void setSFLog(LogSF log);
 }

@@ -33,6 +33,8 @@ import org.smartfrog.services.comm.slp.network.*;
 import org.smartfrog.services.comm.slp.messages.*;
 import org.smartfrog.services.comm.slp.util.*;
 
+import org.smartfrog.sfcore.logging.LogSF;
+
 import java.util.*;
 import java.net.*;
 import java.io.*;
@@ -46,6 +48,8 @@ public class DirectoryAgent implements SlpUdpCallback, SLPMessageCallbacks {
         The service type for the Directory Agent.
     */
     public static final String DA_TYPE = "service:directory-agent";
+	
+	private LogSF sflog = null;
     
     /**
         The database in which to store advertisements
@@ -75,6 +79,7 @@ public class DirectoryAgent implements SlpUdpCallback, SLPMessageCallbacks {
     private boolean CONFIG_LOG_ERRORS = SLPDefaults.DEF_CONFIG_LOG_ERRORS;
     private boolean CONFIG_LOG_MSG = SLPDefaults.DEF_CONFIG_LOG_MSG;
     private String CONFIG_LOGFILE = SLPDefaults.DEF_CONFIG_LOGFILE;
+	private boolean CONFIG_SFLOG = SLPDefaults.DEF_CONFIG_SFLOG;
     
     /**
         A Vector containing all scopes supported by this DA.
@@ -171,6 +176,10 @@ public class DirectoryAgent implements SlpUdpCallback, SLPMessageCallbacks {
         if( (stringVal = properties.getProperty("net.slp.logfile")) != null ) {
             CONFIG_LOGFILE = stringVal;
         }
+		if( (stringVal = properties.getProperty("net.slp.sflog")) != null ) {
+			if(stringVal.equalsIgnoreCase("true")) CONFIG_SFLOG = true;
+			else if(stringVal.equalsIgnoreCase("false")) CONFIG_SFLOG = false;
+		}
         
         createDA();
     }
@@ -193,7 +202,6 @@ public class DirectoryAgent implements SlpUdpCallback, SLPMessageCallbacks {
             tcpListener.start();
             
         }catch(Exception e) {
-            e.printStackTrace();
             if(unicastListener != null) unicastListener.close();
             if(multicastListener != null) multicastListener.close();
             throw new ServiceLocationException(ServiceLocationException.NETWORK_ERROR,
@@ -234,29 +242,24 @@ public class DirectoryAgent implements SlpUdpCallback, SLPMessageCallbacks {
             try {
                 SLPMessageHeader reply = handleNonReplyMessage(function, sis, true);
                 if(reply != null) {
-                    if(CONFIG_LOG_MSG) writeLog("Sending Reply\n" + reply.toString());
+                    logMessage("Sending Message:", reply);
                     sendServiceReply(reply, packet.getAddress(), packet.getPort());
                 }
             }catch(ServiceLocationException e) {
-                if(CONFIG_LOG_ERRORS) writeLog("Error parsing message: " + e.toString());
-                e.printStackTrace();
+                logError("Error parsing message: ", e);
             }
         }
         
-        //return 0;
         return true;
     }
     
     public boolean udpError(Exception e) {
-        e.printStackTrace();
-        if(CONFIG_LOG_ERRORS) writeLog("System Error: " + e.toString());
-        //return -1;
+        logError("System Error: ", e);
         return false;
     }
     
     public boolean udpTimeout() {
-        if(CONFIG_LOG_ERRORS) writeLog("Network timeout. Should never happen!");
-        //return -1; // we should never get a timeout...
+        logError("Network timeout. Should never happen!", null);
         return false;
     }
     
@@ -270,7 +273,7 @@ public class DirectoryAgent implements SlpUdpCallback, SLPMessageCallbacks {
         switched on.
     */
     private void handleUnsupportedVersion(SLPInputStream sis, DatagramPacket packet) {
-        if(CONFIG_LOG_ERRORS) writeLog("DA ERROR: Unsupported SLP Version");
+        logError("DA ERROR: Unsupported SLP Version", null);
     }
     
     public SLPMessageHeader handleNonReplyMessage(int function, SLPInputStream sis, boolean isUDP)
@@ -290,7 +293,7 @@ public class DirectoryAgent implements SlpUdpCallback, SLPMessageCallbacks {
                 return handleServiceDeregistration(sis, isUDP);
         }
             
-        if(CONFIG_LOG_ERRORS) writeLog("Received Unsupported request: " + function);
+        logError("Received Unsupported request: " + function, null);
         return null;
     }
     
@@ -315,7 +318,7 @@ public class DirectoryAgent implements SlpUdpCallback, SLPMessageCallbacks {
         try {
             msg.fromInputStream(sis);
             if(msg.getPRList().indexOf(address.getHostAddress()) != -1) {
-                if(CONFIG_DEBUG) System.out.println("Has replied before...");
+                logDebug("Has replied before...");
                 return null;
             }
         }catch(ServiceLocationException sle) {
@@ -324,7 +327,7 @@ public class DirectoryAgent implements SlpUdpCallback, SLPMessageCallbacks {
             error = sle.getErrorCode();
         }
         
-        if(CONFIG_LOG_MSG) writeLog("Received Service Request\n" + msg.toString());
+        logMessage("Received Message:", msg);
         
         if(error == 0) {
             if(msg.getScopes().size()==0 || SLPUtil.supportScopes(supportedScopes, msg.getScopes())) {
@@ -335,9 +338,9 @@ public class DirectoryAgent implements SlpUdpCallback, SLPMessageCallbacks {
                 }
             }//scopes
             else {
-                if(CONFIG_LOG_ERRORS)writeLog("Scope NOT supported: " + msg.getScopes().toString());
-                if(msg.getScopes().isEmpty())System.out.println("No scope list provided");
-                System.out.println("num scopes: " + msg.getScopes().size());
+                logError("Scope NOT supported: " + msg.getScopes().toString(), null);
+                if(msg.getScopes().isEmpty())logDebug("No scope list provided");
+                logDebug("num scopes: " + msg.getScopes().size());
                 error = ServiceLocationException.SCOPE_NOT_SUPPORTED;
             }
         }//error
@@ -364,8 +367,8 @@ public class DirectoryAgent implements SlpUdpCallback, SLPMessageCallbacks {
                 return null; //have replied before...
             }
         }catch(ServiceLocationException e) {
-            e.printStackTrace();
-            error = e.getErrorCode();
+            logError("Error parsing message", e);
+			error = e.getErrorCode();
         }
         if(error == 0) {
             // check scopes...
@@ -398,8 +401,8 @@ public class DirectoryAgent implements SlpUdpCallback, SLPMessageCallbacks {
                 return null; //have replied before...
             }
         }catch(ServiceLocationException e) {
-            e.printStackTrace();
-            error = e.getErrorCode();
+            logError("Error parsing message", e);
+			error = e.getErrorCode();
         }
         if(error == 0) {
             // check scopes...
@@ -432,7 +435,7 @@ public class DirectoryAgent implements SlpUdpCallback, SLPMessageCallbacks {
             error = sle.getErrorCode();
         }
         
-        if(CONFIG_LOG_MSG) writeLog("Received Service Registration\n" + msg.toString());
+        logMessage("Received Message:", msg);
         
         // handle registration
         if(error == 0) {
@@ -478,7 +481,7 @@ public class DirectoryAgent implements SlpUdpCallback, SLPMessageCallbacks {
             error = sle.getErrorCode();
         }
         
-        if(CONFIG_LOG_MSG) writeLog("Received Service Dereg\n" + msg.toString());
+        logMessage("Received Message:", msg);
 
         if(error == 0) {
             ServiceURL url = msg.getURL();
@@ -520,16 +523,17 @@ public class DirectoryAgent implements SlpUdpCallback, SLPMessageCallbacks {
     */
     private void sendServiceReply(SLPMessageHeader m, InetAddress toAddress, int toPort) {
         try {
-            if(CONFIG_DEBUG) System.out.println("DA -> Sending to: " + toAddress.getHostAddress() + " - " + toPort);
+            logDebug("DA -> Sending to: " + toAddress.getHostAddress() + " - " + toPort);
             DatagramPacket toSend = SLPUtil.createDatagram(m, toAddress, toPort);
             unicastListener.send(toSend);
-            if(CONFIG_DEBUG) System.out.println("DA -> Reply sent!");
+            logDebug("DA -> Reply sent!");
         }catch(Exception e) {
-            if(CONFIG_LOG_ERRORS) writeLog("Failed to send reply");
+            logError("Failed to send reply", null);
         }
     }
     
     // write to log
+	/*
     protected void writeLog(String message) {
         String toWrite;
         toWrite = "------ DirectoryAgent ------\n";
@@ -537,7 +541,45 @@ public class DirectoryAgent implements SlpUdpCallback, SLPMessageCallbacks {
         toWrite += "------ End ------";
         SLPUtil.writeLogFile(toWrite, CONFIG_LOGFILE);
     }
-    
+    */
+	
+	protected void logDebug(String message) {
+		if(CONFIG_DEBUG) {
+			String toWrite;
+			toWrite = "------ SLP DirectoryAgent ------\n"
+					+ message + "\n"
+					+ "--------------------------------";
+			if(sflog == null) SLPUtil.writeLogFile(toWrite, CONFIG_LOGFILE);
+			else sflog.info("\n"+toWrite);
+		}
+	}
+	
+	protected void logMessage(String text, SLPMessageHeader message) {
+		if(CONFIG_LOG_MSG) {
+			String toWrite;
+			toWrite = "------ SLP DirectoryAgent ------\n"
+					+ text + "\n";
+			if(message != null) toWrite += message.toString() + "\n";
+			toWrite += "--------------------------------";
+		
+			if(sflog == null) SLPUtil.writeLogFile(toWrite, CONFIG_LOGFILE);
+			else sflog.info("\n"+toWrite);
+		}
+	}
+	
+	protected void logError(String text, Exception error) {
+		if(CONFIG_LOG_ERRORS) {
+			String toWrite;
+			toWrite = "------ SLP DirectoryAgent ------\n"
+					+ text + "\n";
+			if(error != null) toWrite += error.toString();
+			toWrite += "--------------------------------";
+		
+			if(sflog == null) SLPUtil.writeLogFile(toWrite, CONFIG_LOGFILE);
+			else sflog.error("\n"+text, error);
+		}
+	}
+	
     /**
         Called when an unsolicited DAAdvert is to be sent.
         This is done every CONFIG_DA_BEAT seconds.
@@ -548,8 +590,7 @@ public class DirectoryAgent implements SlpUdpCallback, SLPMessageCallbacks {
         try {
             unicastListener.send(toSend);
         }catch(ServiceLocationException e) {
-            e.printStackTrace();
-            if(CONFIG_LOG_ERRORS) writeLog("Failed to send DA Advert.");
+            logError("Failed to send DA Advert.", null);
         }
     }
     
@@ -573,8 +614,18 @@ public class DirectoryAgent implements SlpUdpCallback, SLPMessageCallbacks {
     }
     
     public void finalize() {
-        System.out.println("DA is dead !");
+        logDebug("DA is dead !");
     }
+	
+	public synchronized void setSFLog(LogSF log) {
+		if(CONFIG_SFLOG) {
+			if(sflog != null) {
+				sflog.info("Warning: Log Changed");
+			}
+			sflog = log;
+		}
+		else logError("SmartFrog Logging not Enabled", null);
+	}
 
     /**
         Simple main method to start a DA.
