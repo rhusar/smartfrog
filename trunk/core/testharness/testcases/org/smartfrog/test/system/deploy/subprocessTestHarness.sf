@@ -126,7 +126,7 @@ System extends Compound {
         sfProcessName "test2";
         demoC extends MyCounter {
            Message "demoC";
-           limit 2;
+           limit 9;
         }
      }
 
