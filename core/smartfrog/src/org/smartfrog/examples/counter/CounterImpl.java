@@ -55,6 +55,8 @@ public class CounterImpl extends PrimImpl implements Prim, Counter, Runnable {
     int limit = 2;
     /** Thread object */
     Thread action = null;
+    /** sleep time */
+    int sleeptime=1000;
 
     /**
      *  Shows debug messages.
@@ -147,7 +149,7 @@ public class CounterImpl extends PrimImpl implements Prim, Counter, Runnable {
         //
         // Mandatory attributes.
         try {
-            /**
+            /*
              * Resolves the mandatory attribute "limit" from sf description
              * The resolution method takes the following parameters:
              * String name "attrLIMIT" of the attribute,
@@ -164,7 +166,7 @@ public class CounterImpl extends PrimImpl implements Prim, Counter, Runnable {
             throw e;
         }
         //Optional attributes.
-            /**
+            /*
              * Resolves the optional attribute "debug" from sf description
              * The resolution method takes the following parameters:
              * String name "attrDEBUG" of the attribute,
@@ -174,7 +176,7 @@ public class CounterImpl extends PrimImpl implements Prim, Counter, Runnable {
              * returns the default value
              */
         debug = sfResolve(ATR_DEBUG, debug, false);
-            /**
+            /*
              * Resolves the optional attribute "counter" from sf description
              * The resolution method takes the following parameters:
              * String name "attrDEBUG" of the attribute,
@@ -191,7 +193,7 @@ public class CounterImpl extends PrimImpl implements Prim, Counter, Runnable {
              */
         counter = sfResolve(ATR_COUNTER, counter, null, new Integer(limit),
             false);
-            /**
+            /*
              * Resolves the optional attribute "message" from sf description
              * The resolution method takes the following parameters:
              * String name "attrMESSAGE" of the attribute,
@@ -201,6 +203,14 @@ public class CounterImpl extends PrimImpl implements Prim, Counter, Runnable {
              * returns the default value
              */
         message = sfResolve(ATR_MESSAGE, message, false);
+          /*
+          sleep time, >=0;. 
+          */
+        sleeptime = sfResolve(ATR_SLEEP,sleeptime,false);
+        if(sleeptime<0) {
+            throw new SmartFrogResolutionException("Attribute "
+                    +ATR_SLEEP+" cannot be less than zero");
+        }
 
     }
 
@@ -211,9 +221,11 @@ public class CounterImpl extends PrimImpl implements Prim, Counter, Runnable {
      */
     public void run() {
         try {
-                while (limit >= counter) {
+            while (limit >= counter) {
                 System.out.println("COUNTER: " + message + " " + counter);
-                action.sleep(1000);
+                if(sleeptime>0) {
+                    Thread.sleep(sleeptime);
+                }
                 counter++;
             }
 

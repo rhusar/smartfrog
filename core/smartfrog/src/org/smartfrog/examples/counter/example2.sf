@@ -32,6 +32,9 @@ For more information: www.smartfrog.org
  */
 #include "org/smartfrog/examples/counter/components.sf"
 
+SchemalessCounter extends Counter {
+    counterSchema extends Schema;
+}
 /**
  * Counter example 2 creates a component "testLevel1" that has 3 sub-components  * which are examples of use of Counter component.
  */
@@ -64,7 +67,7 @@ sfConfig extends Compound {
        * It fails because of wrong type for mandatory attribute "limit".
        * This is a basic primitive component.
        */
-      counterToFailWrongType extends Counter {
+      counterToFailWrongType extends SchemalessCounter {
               /**
                * Mandatory attribute "limit" is defined with wrong type.
                * It will trigger an exception.
@@ -77,7 +80,7 @@ sfConfig extends Compound {
        * It fails because of missing mandatory attribute "limit".
        * This is a basic primitive component.
        */
-      counterToFailMissingLimit extends Counter { 
+      counterToFailMissingLimit extends SchemalessCounter { 
                /**
                 * Mandatory attribute "limit" is missing. 
                 * It will trigger an exception.
