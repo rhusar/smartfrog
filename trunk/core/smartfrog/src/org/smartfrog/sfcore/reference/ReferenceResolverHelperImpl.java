@@ -174,7 +174,6 @@ import org.smartfrog.sfcore.prim.Prim;
     public boolean sfResolve(Reference reference, boolean defaultValue,
         boolean mandatory) throws SmartFrogResolutionException {
         boolean illegalClassType = false;
-
         try {
             Object referenceObj = sfResolve(reference, 0);
 
@@ -183,7 +182,9 @@ import org.smartfrog.sfcore.prim.Prim;
             } else {
                 illegalClassType = true;
                 throw SmartFrogResolutionException.illegalClassType(reference,
-                    this.sfCompleteNameSafe());
+                    this.sfCompleteNameSafe()
+                    , referenceObj.getClass().toString()
+                    , "boolean");
             }
         } catch (SmartFrogResolutionException e) {
             if ((mandatory) || (illegalClassType)) {
@@ -223,7 +224,10 @@ import org.smartfrog.sfcore.prim.Prim;
             } else {
                 illegalClassType = true;
                 throw SmartFrogResolutionException.illegalClassType(reference,
-                    this.sfCompleteNameSafe());
+                    this.sfCompleteNameSafe()
+                    , referenceObj.getClass().toString()
+                    , "int");
+
             }
         } catch (SmartFrogResolutionException e) {
             if ((mandatory) || (illegalClassType)) {
@@ -293,7 +297,10 @@ import org.smartfrog.sfcore.prim.Prim;
             } else {
                 illegalClassType = true;
                 throw SmartFrogResolutionException.illegalClassType(reference,
-                    this.sfCompleteNameSafe());
+                                    this.sfCompleteNameSafe()
+                                    , referenceObj.getClass().toString()
+                                    , "long");
+
             }
         } catch (SmartFrogResolutionException e) {
             if ((mandatory) || (illegalClassType)) {
@@ -361,7 +368,10 @@ import org.smartfrog.sfcore.prim.Prim;
             } else {
                 illegalClassType = true;
                 throw SmartFrogResolutionException.illegalClassType(reference,
-                    this.sfCompleteNameSafe());
+                                    this.sfCompleteNameSafe()
+                                    , referenceObj.getClass().toString()
+                                    , "float");
+
             }
         } catch (SmartFrogResolutionException e) {
             if ((mandatory) || (illegalClassType)) {
@@ -432,7 +442,10 @@ import org.smartfrog.sfcore.prim.Prim;
             } else {
                 illegalClassType = true;
                 throw SmartFrogResolutionException.illegalClassType(reference,
-                    this.sfCompleteNameSafe());
+                                    this.sfCompleteNameSafe()
+                                    , referenceObj.getClass().toString()
+                                    , "double");
+
             }
         } catch (SmartFrogResolutionException e) {
             if ((mandatory) || (illegalClassType)) {
@@ -500,7 +513,10 @@ import org.smartfrog.sfcore.prim.Prim;
             } else {
                 illegalClassType = true;
                 throw SmartFrogResolutionException.illegalClassType(reference,
-                    this.sfCompleteNameSafe());
+                                    this.sfCompleteNameSafe()
+                                    , referenceObj.getClass().toString()
+                                    , "java.lang.String");
+
             }
         } catch (SmartFrogResolutionException e) {
             if ((mandatory) || (illegalClassType)) {
@@ -540,7 +556,10 @@ import org.smartfrog.sfcore.prim.Prim;
             } else {
                 illegalClassType = true;
                 throw SmartFrogResolutionException.illegalClassType(reference,
-                    this.sfCompleteNameSafe());
+                                    this.sfCompleteNameSafe()
+                                    , referenceObj.getClass().toString()
+                                    , "java.util.Vector");
+
             }
         } catch (SmartFrogResolutionException e) {
             if ((mandatory) || (illegalClassType)) {
@@ -588,7 +607,10 @@ import org.smartfrog.sfcore.prim.Prim;
             } else {
                 illegalClassType = true;
                 throw SmartFrogResolutionException.illegalClassType(reference,
-                    this.sfCompleteNameSafe());
+                                    this.sfCompleteNameSafe()
+                                    , referenceObj.getClass().toString()
+                                    , "java.util.Vector to String[]");
+
             }
         } catch (SmartFrogResolutionException e) {
             if ((mandatory) || (illegalClassType)) {
@@ -631,7 +653,9 @@ import org.smartfrog.sfcore.prim.Prim;
             } else {
                 illegalClassType = true;
                 throw SmartFrogResolutionException.illegalClassType(reference,
-                    this.sfCompleteNameSafe());
+                                    this.sfCompleteNameSafe()
+                                    , referenceObj.getClass().toString()
+                                    , "org.smartfrog.sfcore.componentdescription.ComponentDescription");
             }
         } catch (SmartFrogResolutionException e) {
             if ((mandatory) || (illegalClassType)) {
@@ -673,7 +697,9 @@ import org.smartfrog.sfcore.prim.Prim;
             } else {
                 illegalClassType = true;
                 throw SmartFrogResolutionException.illegalClassType(reference,
-                    this.sfCompleteNameSafe());
+                                    this.sfCompleteNameSafe()
+                                    , referenceObj.getClass().toString()
+                                    , "org.smartfrog.sfcore.reference.Reference");
             }
         } catch (SmartFrogResolutionException e) {
             if ((mandatory) || (illegalClassType)) {
@@ -715,7 +741,9 @@ import org.smartfrog.sfcore.prim.Prim;
             } else {
                 illegalClassType = true;
                 throw SmartFrogResolutionException.illegalClassType(reference,
-                    this.sfCompleteNameSafe());
+                                    this.sfCompleteNameSafe()
+                                    , referenceObj.getClass().toString()
+                                    , "org.smartfrog.sfcore.prim.Prim");
             }
         } catch (SmartFrogResolutionException e) {
             if ((mandatory) || (illegalClassType)) {
@@ -757,7 +785,9 @@ import org.smartfrog.sfcore.prim.Prim;
             } else {
                 illegalClassType = true;
                 throw SmartFrogResolutionException.illegalClassType(reference,
-                    this.sfCompleteNameSafe());
+                                    this.sfCompleteNameSafe()
+                                    , referenceObj.getClass().toString()
+                                    , "org.smartfrog.sfcore.compound.Compound");
             }
         } catch (SmartFrogResolutionException e) {
             if ((mandatory) || (illegalClassType)) {
@@ -809,7 +839,9 @@ import org.smartfrog.sfcore.prim.Prim;
             } else {
                 illegalClassType = true;
                 throw SmartFrogResolutionException.illegalClassType(reference,
-                    this.sfCompleteNameSafe());
+                                    this.sfCompleteNameSafe()
+                                    , referenceObj.getClass().toString()
+                                    , "java.net.InetAddress/java.lang.String");
             }
         } catch (SmartFrogResolutionException e) {
             if ((mandatory) || (illegalClassType)) {
@@ -847,8 +879,14 @@ import org.smartfrog.sfcore.prim.Prim;
                 return (referenceObj);
             } else {
                 illegalClassType = true;
+                String defaultValueClass="";
+                if (defaultValue!=null){
+                   defaultValueClass=defaultValue.getClass().toString();
+                }
                 throw SmartFrogResolutionException.illegalClassType(reference,
-                    this.sfCompleteNameSafe(),referenceObj.getClass().toString(),defaultValue.getClass().toString());
+                                    this.sfCompleteNameSafe()
+                                    , referenceObj.getClass().toString()
+                                    , defaultValueClass);
             }
         } catch (SmartFrogResolutionException e) {
             if ((mandatory) || (illegalClassType)) {
