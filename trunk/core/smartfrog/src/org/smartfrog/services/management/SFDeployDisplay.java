@@ -266,6 +266,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
             }
          }
       }
+      display.tabPane.setSelectedIndex(0);
    }
 
 
