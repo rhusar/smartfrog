@@ -31,6 +31,7 @@ import java.rmi.Remote;
 
 public interface JettyWebApplicationContext extends JavaWebApplication {
 
-    String WEBAPP = "webApp";
+    //String WEBAPP = "webApp";
+    String WEBAPP = "warFile";
     String REQUEST_ID = "requestId";
 }
