@@ -32,6 +32,7 @@ import org.apache.tools.ant.types.Reference;
 import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * Class to let ant task derivatives run smartfrog. How it invokes smartfrog is an implementation detail;
@@ -52,7 +53,7 @@ import java.util.List;
  * Note that when spawning, timeout and failonerror attributes are ignored (a verbose level message
  * warns of this). passing them on to the java task would result in a failure.
  */
-public abstract class SmartFrogTask extends TaskBase {
+public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder {
     /**
      * what is the default timeout for those tasks that have a timeout
      */
@@ -192,12 +193,13 @@ public abstract class SmartFrogTask extends TaskBase {
     }
 
 
+
     /**
      * add a property file to the JVM
      * @param propFile
      */
     public void addConfiguredPropertyFile(PropertyFile propFile) {
-        propFile.addPropertiesToJvm(smartfrog);
+        propFile.addPropertiesToJvm(this);
     }
 
     /**
@@ -465,11 +467,11 @@ public abstract class SmartFrogTask extends TaskBase {
     /**
      * Adds a set of properties as system properties.
      *
-     * @param sysp set of properties to add
+     * @param propset set of properties to add
      * @since Ant 1.6
      */
-    public void addSyspropertyset(PropertySet sysp) {
-        smartfrog.addSyspropertyset(sysp);
+    public void addSyspropertyset(PropertySet propset) {
+        smartfrog.addSyspropertyset(propset);
     }
 
     /**
@@ -482,8 +484,9 @@ public abstract class SmartFrogTask extends TaskBase {
         Environment.Variable property = new Environment.Variable();
         property.setKey(name);
         property.setValue(value);
-        smartfrog.addSysproperty(property);
+        addSysproperty(property);
     }
+
 
     /**
      * this is a convenience method for things that work
@@ -508,7 +511,7 @@ public abstract class SmartFrogTask extends TaskBase {
 
     /**
      * set a sys property on the smartfrog JVM if the object used to set the property value is defined
-     *
+     * and if it is not already declared in the properties list
      * @param name
      * @param object: if defined the toString() value is used
      */

@@ -108,9 +108,9 @@ public class PropertyFile  extends DataType  implements Cloneable {
 
     /**
      * add the declared properties to the JVM
-     * @param jvm
+     * @param dest
      */
-    public void addPropertiesToJvm(Java jvm) {
+    public void addPropertiesToJvm(SysPropertyAdder dest) {
         Properties props=getProperties();
         Enumeration en=props.propertyNames();
         while (en.hasMoreElements()) {
@@ -120,7 +120,7 @@ public class PropertyFile  extends DataType  implements Cloneable {
             getProject().log("Setting property "+name+"="+value, Project.MSG_DEBUG);
             sysProp.setKey(name);
             sysProp.setValue(value);
-            jvm.addSysproperty(sysProp);
+            dest.addSysproperty(sysProp);
         }
     }
 
@@ -145,7 +145,7 @@ public class PropertyFile  extends DataType  implements Cloneable {
          * add all properties to teh list
          * @param jvm
          */
-        public void addPropertiesToJvm(Java jvm) {
+        public void addPropertiesToJvm(SysPropertyAdder jvm) {
             Iterator it=list.iterator();
             while (it.hasNext()) {
                 PropertyFile propertyFile = (PropertyFile) it.next();
