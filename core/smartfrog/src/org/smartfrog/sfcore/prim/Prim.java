@@ -306,6 +306,12 @@ public interface Prim extends Liveness, RemoteReferenceResolver, RemoteReference
      */
     public LogSF sflog() throws RemoteException;
 
+    /**
+     *  Method to replace logger used by components.
+     *  @param newlog replacement for Prim core log
+     *  @return oldlog
+     */
+    public LogSF sfSetLog(LogSF newlog) throws RemoteException;
 
     /**
      *  To get application logger using ROOT name.
@@ -328,8 +334,21 @@ public interface Prim extends Liveness, RemoteReferenceResolver, RemoteReference
      */
     public LogSF sfGetLog(String name) throws SmartFrogException, RemoteException;
 
-
+    /**
+     * Parentage changed in component hierachy.
+     */
     public void sfParentageChanged() throws RemoteException;
 
+    /** Returns value of flag indicating if this component has been terminated. */
+    public boolean sfIsTerminated() throws RemoteException;
+
+    /** Returns value of flag indicating if this component is terminating. */
+    public boolean sfIsTerminating() throws RemoteException;
+
+    /** Returns value of flag indicating if this component has been deployed. */
+    public boolean sfIsDeployed() throws RemoteException;
+
+    /** Returns value of flag indicating if this component has been started. */
+    public boolean sfIsStarted() throws RemoteException;
 
 }
