@@ -97,8 +97,6 @@ public class LogToErr implements Log, LogMessage, LogLevel, Serializable {
     public static final int LOG_LEVEL_OFF    = (LOG_LEVEL_FATAL + 1);
 
 
-    // Initialize class attributes.
-    // Load properties file, if found.
     // Override with system properties.
     static {
         if(showDateTime) {
@@ -125,7 +123,7 @@ public class LogToErr implements Log, LogMessage, LogLevel, Serializable {
      * otherwise chosen
      */
 
-    private PrintStream outstream;
+    protected PrintStream outstream;
 
     /**
      * buffer size
@@ -135,11 +133,19 @@ public class LogToErr implements Log, LogMessage, LogLevel, Serializable {
     /**
      * Construct a simple log with given name and log level
      * and log to output level
+
+     */
+    protected LogToErr() {
+    }
+
+    /**
+     * Construct a simple log with given name and log level
+     * and log to output level
      * @param name log name
      * @param intialLogLevel level to log at
      */
-    public LogToErr(String name, int intialLogLevel) {
-       this(name,intialLogLevel,System.err);
+    public LogToErr(String name, int initialLogLevel) {
+       this(name,initialLogLevel,System.err);
     }
 
     /**
@@ -150,12 +156,12 @@ public class LogToErr implements Log, LogMessage, LogLevel, Serializable {
      * @param out output stream to log to
      */
 
-    public LogToErr(String name, int intialLogLevel,PrintStream out) {
+    public LogToErr(String name, int initialLogLevel,PrintStream out) {
         assert name != null;
-        assert intialLogLevel >= 0;
+        assert initialLogLevel >= 0;
         logName = name;
         // Set initial log level
-        setLevel(intialLogLevel);
+        setLevel(initialLogLevel);
         setOutstream(out);
     }
 
