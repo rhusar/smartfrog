@@ -170,6 +170,9 @@ TempFileWithCleanup extends TempFile {
 MkdirSchema extends Schema {
     //file is a file or a string.
     dir extends Compulsory;
+
+    //parent dir may not be needed.
+    parent extends Optional;
 }
 
 /**

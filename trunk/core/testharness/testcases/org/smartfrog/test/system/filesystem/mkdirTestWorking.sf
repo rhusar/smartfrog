@@ -19,19 +19,18 @@ For more information: www.smartfrog.org
 */
 #include "/org/smartfrog/services/filesystem/components.sf"
 #include "/org/smartfrog/services/assertions/components.sf"
-#include "org/smartfrog/functions.sf";
 
 
 
 sfConfig extends Compound {
 
-    tmpdir PROPERTY java.io.tmpdir;
-    newdir (tmpdir ++ "/new-directory-for-mkdir");
+    newdir LAZY mkdir:absolutePath;
 
     sfSyncTerminate true;
 
     mkdir extends Mkdir {
-        dir PARENT:newdir;
+        parent LAZY PROPERTY java.io.tmpdir;
+        dir "/new-directory-for-mkdir";
     }
 
     assert extends Assert {
