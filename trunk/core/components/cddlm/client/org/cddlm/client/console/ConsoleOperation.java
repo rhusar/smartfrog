@@ -380,7 +380,8 @@ public abstract class ConsoleOperation {
         _languageListType_language[] languages = staticStatus.getLanguages().getLanguage();
         for ( int i = 0; i < languages.length; i++ ) {
             _languageListType_language l = languages[i];
-            if(languageURI.equals(l.getNamespace())) {
+            org.apache.axis.types.URI nsURI = l.getNamespace();
+            if(languageURI.equals(nsURI.toString())) {
                 //positive match
                 return true ;
             }

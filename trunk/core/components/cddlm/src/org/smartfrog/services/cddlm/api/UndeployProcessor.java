@@ -49,12 +49,16 @@ public class UndeployProcessor extends Processor {
     public boolean undeploy(_undeployRequest undeploy) throws RemoteException {
         final URI appURI = undeploy.getApplication();
         JobState job = lookupJob(appURI);
-        Prim p = job.resolvePrimFromJob();
-        throwNotImplemented();
-        return true;
+        if(doUndeploy(job)) {
+            //purge the store
+            JobRepository jobs = ServerInstance.currentInstance().getJobs();
+            jobs.remove(appURI);
+            return true;
+        }
+        return false;
     }
 
-    public boolean undeploy2(JobState job) throws RemoteException {
+    public boolean doUndeploy(JobState job) throws RemoteException {
         try {
             String application=job.getName();
             ConfigurationDescriptor config = new ConfigurationDescriptor();
@@ -67,14 +71,13 @@ public class UndeployProcessor extends Processor {
             assert processCompound != null;
             config.execute(processCompound);
             Object targetC = config.execute(null);
-            //TODO: act on the target
+            //act on the target
             return true;
         } catch (SmartFrogException exception) {
             throw translateSmartFrogException(exception);
         } catch (Exception exception) {
             throw AxisFault.makeFault(exception);
         }
-        return true;
     }
 
 
