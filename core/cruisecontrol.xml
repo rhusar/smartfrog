@@ -44,7 +44,7 @@
         <!-- email assumes that localhost is an SMTP server -->
 
       <email
-        buildresultsurl="http://serrano.hpl.hp.com:8080/cc/buildresults.jsp"
+        buildresultsurl="http://serrano.hpl.hp.com:8080/cc/main.jsp?tab=buildResults.jsp"
         mailhost="localhost"
         returnname="CruiseControl Automated Mailer"
         returnaddress="smartfrog@users.sf.net"
