@@ -149,7 +149,7 @@ relevant JAR files into the javacc subdirectory
      <!-- a list of files for rmic -->
     <property name="rmitargets" value="${basedir}/rmitargets"/>
     <!-- assume the sun compiler -->
-    <property name="rmic.compiler" value="sun" />    
+    <property name="rmic.compiler" value="sun" />
 
     <!-- Compile options for Smartfrog Release -->
     <property name="javac.debug.mode" value="on"/> <!-- turn on compile -g -->
@@ -400,6 +400,9 @@ relevant JAR files into the javacc subdirectory
       </fileset>
     </copy>
    <chmod dir="${dist.bin.dir}"
+          perm="ugo+rx"
+          excludes="**/*.ico, **/*.ini, **/*.sf*"/>
+   <chmod dir="${dist.bin.dir}/security"
           perm="ugo+rx"
           excludes="**/*.ico, **/*.ini, **/*.sf*"/>
   </target>
