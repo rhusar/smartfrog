@@ -28,9 +28,8 @@ For more information: www.smartfrog.org
  */
 
 TestANode extends Sequence {
-/*--------------------Begin Parameters -------------------------------------*/
+/*--------------------Begin-Parameters -------------------------------------*/
     hostType "Windows/Linux";
-    hostName "localhost";
     repository "Host name where release files are available";
     repUser "user id required to login in to repository";
 
@@ -48,11 +47,9 @@ TestANode extends Sequence {
     path "path required for ant and jdk ";
     anthome "ant home in local machine";
     sfInstallDir "SmartFrog installtion dir";
-    pathSeperator IF (hostType == "Windows") THEN "\\" ELSE "/" FI;
-    //sfhome "smartfrog home";
-    //javahome "java home";
     systemroot "System root directory";
-/*--------------------End Parameters -------------------------------------*/
+    testHome "Directory where all test reports are collected";
+/*--------------------End-Parameters -------------------------------------*/
     
     actions extends LAZY {
         // Use SCP component to copy SF/JUnit release files
@@ -70,18 +67,12 @@ TestANode extends Sequence {
                        ];
             transferType "get";
         }
-        chmod extends RunShellScripts {
+        chmod extends DefaultRunShellScripts {
             platform PARENT:ATTRIB  hostType;
             shellCmd "chmod";
             shellCmdAtt_Arg1 "755";
             shellCmdAtt_filename PARENT:ATTRIB localReleaseTestScript;
-            processId IF (platform == "Windows") THEN "(WinShell)" ELSE "(bash)" FI;
-            exitCmd "exit 0"; 
-            useExitCmd true; 
-            shouldTerminate true; 
-            processName "SmartFrog";
-            logLevel 5;
-            printStack true;
+            processId IF (platform == "Windows") THEN "(winShell)" ELSE "(bash)" FI;
         }
         inst1 extends installAndRunTest {
             installDir PARENT:ATTRIB  sfInstallDir;        
@@ -94,14 +85,18 @@ TestANode extends Sequence {
             junitReleaseName PARENT:ATTRIB junitReleaseName;
             path PARENT:ATTRIB path;
             anthome PARENT:ATTRIB anthome;
-            //sfhome PARENT:ATTRIB sfhome;
-            //javahome PARENT:ATTRIB javahome;
             systemroot PARENT:ATTRIB systemroot;
+            hostName PARENT:ATTRIB sfProcessHost;
+            testHome PARENT:ATTRIB testHome;
         }
     }
 } 
+/**
+ * Installs SmartFrog release and runs Junit testcases.
+ */
+
 installAndRunTest extends Compound {
-/*-----------Begin Parameters ------------------------*/
+/*-----------Begin-Parameters ------------------------*/
     installDir;        
     platform;
     junitReleaseFile;
@@ -111,19 +106,13 @@ installAndRunTest extends Compound {
     junitReleaseName;
     path;
     anthome;
-    //sfhome;
-    //javahome;
-/*-----------End Parameters --------------------------*/
-    runInstallation extends RunShellScripts {
+    hostName;
+    testHome;
+/*-----------End-Parameters --------------------------*/
+    runInstallation extends DefaultRunShellScripts {
         //shellCmd releaseTestFile;
         shellCmd ATTRIB releaseTestFile;
         processId IF (platform == "Windows") THEN "(WinShell)" ELSE "(bash)" FI;
-        exitCmd "exit 0"; 
-        useExitCmd true; 
-        shouldTerminate true; 
-        processName "SmartFrog";
-        logLevel 5;
-        printStack true;
         envProperties [("INSTALL_DIR" ++ "=" ++ ATTRIB installDir),
                        ("JUNIT_RELEASE_FILE" ++ "=" ++ ATTRIB junitReleaseFile),
                        ("SF_RELEASE_FILE" ++ "=" ++ ATTRIB smartfrogReleaseFile),
@@ -131,7 +120,57 @@ installAndRunTest extends Compound {
                        ("JUNIT_RELEASE" ++ "=" ++ ATTRIB junitReleaseName),
                        ("ANT_HOME" ++ "=" ++ ATTRIB anthome),
                        ("PATH" ++ "=" ++ ATTRIB path),
-                       ("SystemRoot"++ "=" ++ ATTRIB systemroot)
+                       ("SystemRoot"++ "=" ++ ATTRIB systemroot),
+                       ("HOST_NAME"++ "=" ++ ATTRIB hostName),
+                       ("TEST_HOME"++ "=" ++ ATTRIB testHome)
                       ]; 
     }
+}
+
+/**
+ * Collects test reports from all the test nodes to driver node. So that at the end of run 
+ * driver node (a windows m/c) would have node-name/reports under testhome directory.
+ *
+ */
+collectTestReport extends Sequence {
+    /*---------------Start-Parameters --------------------------*/
+    remoteHost;
+    loginId;
+    passwdFile;
+    remoteFile;
+    localFile;
+    testHome;
+    path;
+    scriptName;
+    /*---------------End-Parameters ----------------------------*/
+    actions extends LAZY {
+       scpTestReport extends ScpSession {
+            host ATTRIB remoteHost;
+            userId ATTRIB loginId;
+            passwordFile ATTRIB passwdFile;
+            remoteFiles [ATTRIB remoteFile];
+            localFiles [(ATTRIB testHome ++ "\\"++ ATTRIB localFile)];
+            transferType "get";
+        }
+        extractTestReport extends DefaultRunShellScripts {
+            shellCmd scriptName;
+            processId "WinShell";
+            envProperties [("PATH" ++ "=" ++ ATTRIB path),
+                           ("TEST_HOME"++ "=" ++ ATTRIB testHome),
+                           ("TEST_REPORT_FILE"++ "=" ++ ATTRIB localFile)
+                          ];
+        }
+    }
+}
+/**
+ * RunShellScript Component with default options.
+ */
+ 
+DefaultRunShellScripts extends RunShellScripts {
+    exitCmd "exit 0"; 
+    useExitCmd true; 
+    shouldTerminate true; 
+    processName "SmartFrog";
+    logLevel 5;
+    printStack true;
 }

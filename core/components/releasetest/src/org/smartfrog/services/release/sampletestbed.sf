@@ -24,30 +24,35 @@ For more information: www.smartfrog.org
 #include "org/smartfrog/sfcore/workflow/combinators/sequence.sf"
 #include "org/smartfrog/sfcore/workflow/combinators/parallel.sf"
 /**
- * This is a sample description of release test bed. It includes a Windows XP 
- * and Red Hat Linux machine. Release Test bed can be extended by adding 
- * children to parellel component "testBed".
+ * This is a sample description of release test bed. It includes a Windows 
+ * and Linux machine. Windows XP machine works as a driver to run the tests 
+ * and also collects test reports from various nodes.
  */
 sfConfig extends Sequence {
+    testHome "e:\\temp\\sftest";    // Place where all the test reports are collected
+    localPath "c:\\cygwin\\bin";
+    releaseRepositoryHost "ebnt171"; // A Linux Machine
+    repositoryLoginId "ashish";
+    repositoryLocation "/home/ashish/releases";    
     actions extends LAZY {
         testBed extends Parallel {
-            hostReleaseRepository "ebnt171"; // A Linux Machine
-            repositoryLoginId "ashish";
-            repositoryLocation "/home/ashish/releases";
+            releaseRepositoryHost PARENT:ATTRIB releaseRepositoryHost;
+            repositoryLoginId PARENT:ATTRIB repositoryLoginId;
+            repositoryLocation PARENT:ATTRIB repositoryLocation;
+            testHome PARENT:ATTRIB testHome;
             actions extends LAZY {
                 node1 extends TestANode {
                     hostType "Linux";
                     sfProcessHost "ebnt171";
-                    repository PARENT:ATTRIB hostReleaseRepository;
+                    repository PARENT:ATTRIB releaseRepositoryHost;
                     repositoryLocation PARENT:ATTRIB repositoryLocation;
                     repUser PARENT:ATTRIB repositoryLoginId;
                     // TODO: SCP authentication using public/private keys
                     repPasswordLocation "/home/ashish/passwd";
-                    
                     /*-----------------machine specific attributes --------------*/
-                    junitReleaseFile "testharness.3.02.002.beta.20040714.tar.gz";
+                    junitReleaseFile "testharness.3.02.002.beta.20040716.tar.gz";
                     sfReleaseFile "SmartFrog.3.02.002.beta.20040708_ALL.tar.gz";
-                    releaseTestScript "install.sh";
+                    releaseTestScript "releasetest.sh";
                     sfReleaseName "SmartFrog.3.02.002.beta";
                     junitReleaseName "testharness.3.02.002.beta";
                     localJunitReleaseFile "/tmp/junit.tar.gz";
@@ -56,36 +61,52 @@ sfConfig extends Sequence {
                     sfInstallDir "/home/ashish/sftest";
                     path "/usr/java/j2sdk1.4.1_05/bin:/opt/apache-ant-1.6.1/bin:/usr/local/bin:/bin:/usr/bin";
                     anthome "/opt/apache-ant-1.6.1";
-                    //sfhome "/home/ashish/sftest/smartfrog";
+                    testHome PARENT:ATTRIB testHome;
                 }
                 node2 extends TestANode {
                     hostType "Windows";
                     sfProcessHost "ebnt17";
-                    repository PARENT:ATTRIB hostReleaseRepository;
+                    repository PARENT:ATTRIB releaseRepositoryHost;
                     repositoryLocation PARENT:ATTRIB repositoryLocation;
                     repUser PARENT:ATTRIB repositoryLoginId;
                     // TODO: SCP authentication using public keys
                     repPasswordLocation "e:\\cvs\\forge\\passwd.txt";
 
                     /*-----------------machine specific attributes --------------*/
-                    junitReleaseFile "testharness.3.02.002.beta.20040708.zip";
+                    junitReleaseFile "testharness.3.02.002.beta.20040716.zip";
                     sfReleaseFile "SmartFrog.3.02.002.beta.20040708_ALL.zip";
-                    releaseTestScript "install.bat";
+                    releaseTestScript "releasetest.bat";
                     sfReleaseName "SmartFrog.3.02.002.beta";
                     junitReleaseName "testharness.3.02.002.beta";
                     localJunitReleaseFile "C:\\junit.zip";
                     localSfReleaseFile "C:\\smartfrog.zip";
-                    localReleaseTestScript "C:\\install.bat";
+                    localReleaseTestScript "C:\\releasetest.bat";
                     sfInstallDir "e:\\temp\\sftest";
-                    path "E:\\apps\\apache-ant-1.6.1\\bin;C:\\j2sdk1.4.2_04\\bin;e:\\temp\\sftest\\smartfrog\\dist\\bin;C:\\cygwin\\bin";
+                    path "E:\\apps\\apache-ant-1.6.1\\bin;C:\\j2sdk1.4.2_04\\bin;C:\\cygwin\\bin";
                     anthome "E:\\apps\\apache-ant-1.6.1";
-                    //sfhome "E:\\temp\\sftest\\smartfrog\\dist";
+                    // Following special attribute is required for windows node
+                    // TODO: Fix
                     systemroot "C:\\WINNT";
+                    testHome PARENT:ATTRIB testHome;
                 }
             }
         }
-        //collectResultsInst extends collectResults {
-        // TODO
-        //}
+        /** 
+         * Download test reports from all the test nodes
+         */
+        collectTestReports  extends Parallel {
+            actions extends LAZY {    
+                fromHost1 extends collectTestReport {
+                    remoteHost "ebnt171";
+                    loginId "ashish";
+                    passwdFile "E:\\cvs\\forge\\password.txt";
+                    remoteFile "/home/ashish/sftest/ebnt171.tar.gz";
+                    localFile "ebnt171.tar.gz";
+                    testHome PARENT:ATTRIB testHome;
+                    path PARENT:ATTRIB localPath;
+                    scriptName "c:\\extract.bat";
+                }
+            }
+        }
     }
 }
