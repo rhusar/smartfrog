@@ -33,9 +33,12 @@ For more information: www.smartfrog.org
 <!-- 
   <echo>base dir ${basedir}</echo> -->
   
-  <property name="root.dir" location="../.."  />
-    <!-- Import common stuff -->
+  <property name="root.dir" location=".."  />
+  <!-- Import common stuff -->
+  <available file="../../common.xml" property="root.dir" value="../.."/> 
   <import file="${root.dir}/common.xml"/>
   
-
+  <target name="init" depends="init-standard-output-dirs,use-smartfrog-tasks">
+	  <property name="Name.System" value="sfinstaller"/>
+  </target> 
 </project>

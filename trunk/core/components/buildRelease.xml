@@ -122,17 +122,13 @@ To use: ant -f buildRelease release
 	<include name="${dist}/jdocs/**"/>
 	<include name="${dist}/lib/**"/>
 	<include name="${dist}/src/**"/>
-	<include name="${dist}/build.xml"/>
-	<include name="${dist}/buildRelease.xml"/>
 	<include name="${dist}/src.zip"/>
        </zipfileset>
    </zip>
 	  
    <zip destfile="../releases/${Name.System}.${version}.${DSTAMP}_ALL.zip">
        <zipfileset dir="." prefix="${Name.System}.${version}">
-	<include name="cddlm/**"/>
 	<include name="emailer/**"/>
-	<include name="jdocs/**"/>
 	<include name="jetty/**"/>
 	<include name="logger/**"/>
 	<include name="net/**"/>
@@ -142,6 +138,7 @@ To use: ant -f buildRelease release
 	<include name="utils/**"/>
         <include name="build.xml"/>
         <include name="buildRelease.xml"/>
+	<include name="lib/**"/>
 	<include name="${dist}/**"/>
 	<include name="${dist}/docs/**"/>
 	<include name="${dist}/jdocs/**"/>
@@ -149,6 +146,7 @@ To use: ant -f buildRelease release
 	<include name="${dist}/src/**"/>
 	<include name="${dist}/build.xml"/>
 	<include name="${dist}/buildRelease.xml"/>
+	<include name="common.xml"/>
 	<include name="${dist}/src.zip"/>
         <exclude name="**/CVS" />
         <exclude name="**/*.dfPackage" />
@@ -165,8 +163,6 @@ To use: ant -f buildRelease release
 	<include name="${dist}/jdocs/**"/>
 	<include name="${dist}/lib/**"/>
 	<include name="${dist}/src/**"/>
-	<include name="${dist}/build.xml"/>
-	<include name="${dist}/buildRelease.xml"/>
 	<include name="${dist}/src.zip"/>
       </tarfileset>
   </tar>
@@ -176,21 +172,18 @@ To use: ant -f buildRelease release
 
    <tar tarfile="../releases/${Name.System}.${version}.${DSTAMP}_ALL.tar">
       <tarfileset dir="." prefix="${Name.System}.${version}">
-	<include name="arithmetic-testharness/**"/>
-	<include name="cddlm/**"/>
 	<include name="emailer/**"/>
-	<include name="jdocs/**"/>
 	<include name="jetty/**"/>
-	<include name="junit/**"/>
 	<include name="logger/**"/>
 	<include name="net/**"/>
-	<include name="releasetest/**"/>
 	<include name="scripting/**"/>
 	<include name="slp/**"/>
 	<include name="ssh/**"/>
 	<include name="utils/**"/>
         <include name="build.xml"/>
         <include name="buildRelease.xml"/>
+	<include name="common.xml"/>
+	<include name="lib/**"/>
 	<include name="${dist}/**"/>
 	<include name="${dist}/docs/**"/>
 	<include name="${dist}/jdocs/**"/>
