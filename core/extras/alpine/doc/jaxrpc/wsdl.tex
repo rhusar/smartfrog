@@ -27,7 +27,7 @@ issue is the exception, rather than the rule.
 IDLs have many advantages for creating interoperable systems, yet the
 generally accepted practise for working with JAX-RPC discards all
 these notions. Instead of generating implementation classes from the
-WSDL, the WSDL is often generated from the implementation classes,
+WSDL, the WSDL is usually generated from the implementation classes,
 using Java's Reflection API. We shall term this process
 \emph{WSDL-last development}.
 
@@ -58,13 +58,6 @@ when there are problems, as the IDL will not compile. Yet with WSDL-last
 development, everything seems to work, until the service goes live and
 a customer using a different language attempts to import the WSDL and
 invoke the service.
-
-%% This is a problem, but its not a problem for people doing WSDL-last
-%% development: its a problem for everyone else
-% \item
-% 
-% Not enough people have been hand-generating WSDL for the WSDL-to-Java
-% side of the tool-chain to be broadly tested as well as it should.
 
     
 \end{itemize}

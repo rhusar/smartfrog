@@ -1,5 +1,5 @@
-%\documentclass[fignum,jou]{apa}
-\documentclass[a4]{article}
+\documentclass[fignum,jou]{apa}
+%\documentclass{article}
 %twocolumn , a4, ,twoside
 
 %see http://ringlord.com/publications/latex-pdf-howto/
@@ -12,30 +12,30 @@
 \fi
 %----------------------------------------------------------------------
 \ifpdf
-    \usepackage[pdftex,
-        colorlinks=true,
-        urlcolor=rltblue,       % \href{...}{...} external (URL)
-        filecolor=rltgreen,     % \href{...} local file
-        linkcolor=rltred,       % \ref{...} and \pageref{...}
-        pdftitle={What's wrong with the Java SOAP API?},
-        pdfauthor={Steve Loughran},
-        pdfsubject={Web Service Development},
-        pdfkeywords={Web Services, SOAP, WSDL, JAX-RPC, JAXM},
-        pdfpagemode=None,
-        bookmarksopen=true]{hyperref}
+    % \usepackage[pdftex,
+        % colorlinks=true,
+        % urlcolor=rltblue,       % \href{...}{...} external (URL)
+        % filecolor=rltgreen,     % \href{...} local file
+        % linkcolor=rltred,       % \ref{...} and \pageref{...}
+        % pdftitle={What's wrong with the Java SOAP API?},
+        % pdfauthor={Steve Loughran},
+        % pdfsubject={Web Service Development},
+        % pdfkeywords={Web Services, SOAP, WSDL, JAX-RPC, JAXM},
+        % pdfpagemode=None,
+        % bookmarksopen=true]{hyperref}
 %        pagebackref,
     \pdfcompresslevel=9
     \usepackage[pdftex]{graphicx}
 \else
-    \usepackage[
-        colorlinks=true,
-        urlcolor=rltblue,               % \href{...}{...}
-        anchorcolor=rltbrightblue,
-        filecolor=rltgreen,             % \href*{...}
-        linkcolor=rltred,               % \ref{...} and \pageref{...}
-        menucolor=webdarkblue,
-        citecolor=webbrightgreen]{hyperref}
-    \usepackage{graphicx}
+    % \usepackage[
+        % colorlinks=true,
+        % urlcolor=rltblue,               % \href{...}{...}
+        % anchorcolor=rltbrightblue,
+        % filecolor=rltgreen,             % \href*{...}
+        % linkcolor=rltred,               % \ref{...} and \pageref{...}
+        % menucolor=webdarkblue,
+        % citecolor=webbrightgreen]{hyperref}
+\usepackage{graphicx}
 \fi
 \usepackage{color}
 \definecolor{rltred}{rgb}{0.75,0,0}
@@ -45,31 +45,44 @@
 \definecolor{webdarkblue}{rgb}{0,0,0.5}
 \definecolor{webbrightgreen}{rgb}{0,0,0.75}
 
-\newcommand{\todo}[1]{{\it \color{red} {#1}}}
-\newcommand{\tocheck}[1]{{\color{blue} {#1}}}
+%\newcommand{\todo}[1]{{\it \color{red} {#1}}}
+%\newcommand{\tocheck}[1]{{\color{blue} {#1}}}
+
+
+\usepackage{fancyhdr}
+\usepackage{ftnright}
+\usepackage{flushend}
 
 \begin{document}
 
-% line spacing of 1.5 lines
-%\renewcommand{\baselinestretch}{1.5}
-
-%gaps between paragraphs
-%\setlength{\parskip}{3ex}
-
-%don't indent new paragraphs
-%\parindent 0pt
 
 
 \title{What's wrong with the Java SOAP API?}
-\author{
-    Steve Loughran, HP Laboratories,\\
-    Edmund Smith, University of Edinburgh. 
-%    \\
-%    slo@hplb.hpl.hp.com, 
-    }
+\twoauthors{Steve Loughran}{Edmund Smith}
+\twoaffiliations{HP Laboratories}{University of Edinburgh}
+
+% \author{
+    % Steve Loughran, HP Laboratories,\\
+    % Edmund Smith, University of Edinburgh. 
+% %    \\
+% %    slo@hplb.hpl.hp.com, 
+    % }
+
+%\section{Acknowledgements}
+\acknowledgements{
+The authors would like to thank Tim Ewald and Ted Neward for their
+valuable feedback and corrections. One implementation of the CDDLM 
+deployment service was
+created for the OGSAConfig project, which is funded by a grant from
+the Joint Information Systems Committee (JISC). The other was produced
+as part of the HP Laboratories SmartFrog project. 
+}
+\input{abstract}
+\shorttitle{What's wrong with the Java SOAP API?}
+\rightheader{Steve Loughran, Edmund Smith}
+\leftheader{What's wrong with the Java SOAP API?}
 \maketitle
 
-\input{abstract}
 
 %\tableofcontents
 
@@ -78,20 +91,11 @@
 \input{implications}
 \input{alpine}
 
-\section{Acknowledgements}
-
-The authors would like to thank Tim Ewald and Ted Neward for their
-valuable feedback and corrections. One CDDLM implementation was
-created for the OGSAConfig project, which is funded by a grant from
-the Joint Information Systems Committee (JISC). The other was produced
-as part of the HP Laboratories SmartFrog project. 
-
 %pull in our bibliography
 
-\onecolumn
+%\onecolumn
 
-%\bibliographystyle{plain}
-\bibliographystyle{alpha}
+%bibliographystyle{alpha}
 \bibliography{bibliography}
 
 \end{document}
