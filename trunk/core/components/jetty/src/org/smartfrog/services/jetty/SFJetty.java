@@ -25,17 +25,15 @@ import org.mortbay.util.MultiException;
  * @author Ritu Sabharwal
  */
 
-public class SFJetty extends CompoundImpl implements JettyIntf {
+public class SFJetty extends CompoundImpl implements Compound,JettyIntf {
 
     protected Reference jettyhomeRef = new Reference(JETTY_HOME);
-    protected Reference serverNameRef = new Reference(SERVER);
 
     /**
      * Jetty home path
      */
     protected String jettyhome;
 
-    protected String serverName = null;
 
     protected JettyHelper jettyHelper = new JettyHelper(this);
 
@@ -62,7 +60,6 @@ public class SFJetty extends CompoundImpl implements JettyIntf {
     try {
 
         server = new HttpServer();
-        serverName = sfResolve(serverNameRef, serverName, true);
         jettyHelper.cacheJettyServer(server);
         jettyhome = sfResolve(jettyhomeRef, jettyhome, true);
         jettyHelper.cacheJettyHome(jettyhome);
