@@ -45,16 +45,28 @@ For more information: www.smartfrog.org
     <ant dir="${main.project}" target="clean" inheritAll="false" />
     <ant dir="${test.project}" target="clean" inheritAll="false" />
     <ant dir="${ant.project}" target="clean" inheritAll="false" />
+    <ant dir="${component.project}" target="clean" inheritAll="false" />
   </target>
 
   <!-- =================================================================== -->
-  <!-- ant distribution                                                    -->
+  <!-- ant tasks distribution                                                    -->
   <!-- =================================================================== -->
 
   <target name="tasks" depends="init" description="ant tasks">
     <ant dir="${ant.project}" target="dist" inheritAll="false" />
   </target>
 
+
+  <!-- =================================================================== -->
+  <!-- components distribution                                                    -->
+  <!-- =================================================================== -->
+
+  <target name="components" depends="main-dist,tasks" 
+    description="components distribution(s)">
+    <ant dir="${ant.project}" target="dist" inheritAll="false" />
+  </target>
+
+  
   <!-- =================================================================== -->
   <!-- main distribution                                                    -->
   <!-- =================================================================== -->
@@ -89,6 +101,15 @@ For more information: www.smartfrog.org
   </target>
 
   <!-- =================================================================== -->
+  <!-- test in the harness                                                 -->
+  <!-- =================================================================== -->
+  <target name="test-components" depends="init,tasks"
+    description="test in test harness; only run system tests">
+    <ant dir="${components.project}" target="test" inheritAll="false" >
+    </ant>
+  </target>  
+  
+  <!-- =================================================================== -->
   <!-- test all                                                            -->
   <!-- =================================================================== -->
   <target name="test" depends="test-main,test-ant,test-testharness"
@@ -106,6 +127,7 @@ For more information: www.smartfrog.org
     <property name="toplevel.dir" location=".." />
     <property name="main.project" location="smartfrog" />
     <property name="test.project" location="testharness" />
+    <property name="components.project" location="components" />
     <property name="extras.dir" location="extras" />
     <property name="ant.project" location="${extras.dir}/ant" />
   </target>

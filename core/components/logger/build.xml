@@ -31,9 +31,6 @@ For more information: www.smartfrog.org
    <!-- override point -->
   <property file="build.properties" />
 
-  <!-- this component keeps its test files in a different place from the 
-       rest, for historical reasons (i.e. it is nothing but test) -->  
-   <property name="test.src.dir" location="testcases" />
    <property name="logger.lib.dir" location="lib" description=
                         "place to put third party libraries"/>
        
@@ -47,10 +44,6 @@ For more information: www.smartfrog.org
   <!-- ========================================================== -->
   <target name="init" depends="init-standard-output-dirs,use-smartfrog-tasks">
           
-    <property name="target.jar" 
-            location="${dist.lib.dir}/logger.jar" />
-    
-    
     <!-- the compile time path includes axis-->
     <path id="compile.classpath">
       <path refid="smartfrog.classpath"/>
@@ -66,56 +59,5 @@ For more information: www.smartfrog.org
     
   </target>
     
-  <!-- ========================================================== -->
-  <!-- compile -->
-  <!-- ========================================================== -->
-  <target name="compile" 
-      depends="verify-smartfrog,init">
-    <depend srcdir="${src.dir}"
-      destdir="${build.classes.dir}"
-      cache="${build.dir}/depends"
-      closure="yes"/>
-    <sf-javac
-      classpathref="compile.classpath"
-      srcdir="${src.dir}"
-      destdir="${build.classes.dir}"
-      />
-    <copy-useful-files src="${src.dir}" dest="${build.classes.dir}" />   
-  </target>
-  
-  <!-- ========================================================== -->
-  <!-- use rmi to generate stubs and skeleton-->
-  <!-- ========================================================== -->
-  <target name="compile-RMI" depends="compile"
-        description="create the RMI classes">
-        <sf-rmic
-            base="${build.classes.dir}"
-            verify="true"
-            includes="**/*.class">
-            <classpath refid="compile.classpath"/>
-        </sf-rmic>
-  </target>  
-  
-  <!-- ========================================================== -->
-  <!-- create the jar -->
-  <!-- ========================================================== -->
-  <target name="dist" depends="compile" 
-    description="create the jar files">
-    <jar destfile="${target.jar}" basedir="${build.classes.dir}" includes="**/*"/>
-  </target>
-
-  <!-- ========================================================== -->
-  <!-- install the jar -->
-  <!-- ========================================================== -->
-  <target name="install" depends="dist"
-    description="copy the jar file to the SmartFrog distribution directory">
-    <copy file="${target.jar}" todir="${smartfrog.dist.lib.dir}"/>
-  </target>
-
-
-  <!-- ========================================================== -->
-  <!-- default target -->
-  <!-- ========================================================== -->
-  <target name="default" depends="compile, compile-RMI, dist" description="default target" />
 
 </project>

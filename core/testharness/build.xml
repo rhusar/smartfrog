@@ -63,27 +63,12 @@ For more information: www.smartfrog.org
   <import file="${root.dir}/common.xml"/>
 
 
-  <!-- turn on the tests. If you dont want this, set one (or both) to false)  in the unit tests-->
-  <property name="system.tests" value="true" />
-  <property name="unit.tests" value="true" />
-
-
-
   <!-- ========================================================== -->
   <!-- Test settings                                              -->
   <!-- ========================================================== -->
 
   <target name="init" depends="init-common,init-standard-output-dirs,use-smartfrog-tasks">
-    <condition property="system.tests.enabled">
-      <istrue value="${system.tests}"/>
-    </condition>
 
-    <condition property="unit.tests.enabled">
-      <istrue value="${unit.tests}"/>
-    </condition>
-
-    <echo>system.tests.enabled=${system.tests.enabled}</echo>
-    <echo>unit.tests.enabled=${unit.tests.enabled}</echo>
 
     <!-- the compile time path -->
     <path id="compile.classpath">
@@ -105,7 +90,7 @@ For more information: www.smartfrog.org
   <!-- ========================================================== -->
   <!-- compile the tests -->
   <!-- ========================================================== -->
-  <target name="compile-tests"
+  <target name="compile"
     depends="verify-smartfrog,init,init-common">
     <depend srcdir="${test.src.dir}"
       destdir="${test.classes.dir}"
@@ -124,11 +109,13 @@ For more information: www.smartfrog.org
   <!-- compile the RMI. This is separate from the other compile, so that unit
        tests dont depend on it -->
   <!-- ========================================================== -->
-  <target name="compile-RMI"
-    depends="verify-smartfrog,init,init-common">
-    <rmic includesfile="rmitargets" base="${test.classes.dir}">
+  <target name="rmi"
+    depends="compile">
+    <sf-rmic includesfile="rmitargets" 
+      base="${test.classes.dir}"
+      verify="true">
       <classpath refid="compile.classpath"/>
-    </rmic>
+    </sf-rmic>
   </target>
 
   <!-- ========================================================== -->
@@ -155,7 +142,7 @@ For more information: www.smartfrog.org
   <!-- ========================================================== -->
   <!-- run the unit tests tests -->
   <!-- ========================================================== -->
-  <target name="unit-tests" depends="compile-tests"  unless="testcase"
+  <target name="unit-tests" depends="compile"  unless="testcase"
     description="run unit tests">
     <sf-junit
            errorProperty="test.failed"
@@ -186,7 +173,8 @@ For more information: www.smartfrog.org
        it runs in the ant UI.
        -->
   <!-- ========================================================== -->
-  <target name="system-tests" depends="compile-tests,compile-RMI,jar, probe-local-daemon"
+  <target name="system-tests" 
+    depends="compile,rmi,jar, probe-local-daemon"
     description="run system tests"
     if="system.tests.enabled">
     <parallel>
@@ -233,53 +221,14 @@ For more information: www.smartfrog.org
     </parallel>
   </target>
 
-  <!-- ========================================================== -->
-  <!-- generate the reports-->
-  <!-- ========================================================== -->
-
-  <target name="reports" depends="init"
-    description="generate the test reports" >
-    <sf-test-report data="${test.data.dir}"
-      reports="${test.reports.dir}"
-      failed="test.failed"/>
-  </target>
 
 
-  <!-- ========================================================== -->
-  <!-- ========================================================== -->
-  <target name="run-tests"
-    depends="unit-tests,system-tests" />
-
-  <!-- ========================================================== -->
-  <!-- public entry point does all tests and the reports -->
-  <!-- ========================================================== -->
-  <target name="test"
-    depends="run-tests,reports"
-    description="compile and run all the tests"
-    />
-
-  <!-- ========================================================== -->
-  <!-- shortcut for testing -->
-  <!-- ========================================================== -->
-  <target name="smartfrog-dist"
-    depends="init-common"
-    >
-    <ant dir="${smartfrog.home}" target="dist" inheritall="false"/>
-  </target>
-
-  <!-- ========================================================== -->
-  <!-- shortcut for development -->
-  <!-- ========================================================== -->
-  <target name="buildtest"
-    depends="smartfrog-dist,test"
-    description="compile the distribution, compile and run all the tests"
-    />
 
   <!-- ========================================================== -->
   <!-- creates a jar and sticks it into the smartfrog dist library -->
   <!-- this contains only the tests not the utility classes -->
   <!-- ========================================================== -->
-   <target name="jar" depends="compile-tests"
+  <target name="jar" depends="compile"
     description="creates the jar file for the test cases">
     <!-- Create sfTestCases.jar file -->
     <property name="testcases.jar" value="sfTestCases.jar"/>
@@ -291,13 +240,13 @@ For more information: www.smartfrog.org
          basedir="${test.classes.dir}"
          includes="**/system/**, **/unit/**" >
     </jar>
-</target>
+  </target>
 
   <!-- ========================================================== -->
   <!-- create a redistributable testharness jar file -->
   <!-- this contains only the test utility classes, not the tests -->
   <!-- ========================================================== -->
-  <target name="dist" depends="compile-tests"
+  <target name="dist" depends="compile"
     description="creates the jar file for the testharness">
 
     <property name="testharness.core.jar" value="smartfrog-testharness.jar"/>
@@ -307,6 +256,6 @@ For more information: www.smartfrog.org
     <jar jarfile="${testharness.core.jar.file}"
          basedir="${test.classes.dir}"
          includes="org/smartfrog/test/*" />
- </target>
+  </target>
 
 </project>

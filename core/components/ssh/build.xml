@@ -41,13 +41,15 @@ For more information: www.smartfrog.org
     <!-- Import common stuff -->
   <import file="${root.dir}/common.xml"/>
   
+ 
+
   
   <!-- ========================================================== -->
   <!-- ========================================================== -->
-  <target name="init" depends="init-standard-output-dirs,use-smartfrog-tasks">
+  <target name="init" depends="init-standard-output-dirs">
           
-    <property name="target.jar" 
-        location="${dist.lib.dir}/sshComponents.jar" />
+<!--     <property name="target.jar" 
+        location="${dist.lib.dir}/sshComponents.jar" /> -->
     
     
     <!-- the compile time path includes ssh-->
@@ -64,60 +66,47 @@ For more information: www.smartfrog.org
     </path>  
     
   </target>
-    
-  <!-- ========================================================== -->
-  <!-- compile -->
-  <!-- ========================================================== -->
-  <target name="compile" 
-      depends="verify-smartfrog,init">
-    <depend srcdir="${src.dir}"
-      destdir="${build.classes.dir}"
-      cache="${build.dir}/depends"
-      closure="yes"/>
-    <sf-javac
-      classpathref="compile.classpath"
-      srcdir="${src.dir}"
-      destdir="${build.classes.dir}"
-      />
-    <copy-useful-files src="${src.dir}" dest="${build.classes.dir}" />   
-  </target>
+  
   
   <!-- ========================================================== -->
-  <!-- use rmi to generate stubs and skeleton-->
+  <!-- this is an override point -->
+  <!-- set the verified.ok property if everything needed is present -->
+  <!-- Do Not Fail. This test is used to control conditional builds -->
+  <!-- NB, set property verify.fail.message to something meaningful
+       for better diagnostic messages on failure (see assert-prerequisites) 
+       -->
   <!-- ========================================================== -->
-  <target name="compile-RMI" depends="compile"
-        description="create the RMI classes">
-        <sf-rmic
-            base="${build.classes.dir}"
-            verify="true"
-            includes="**/*.class">
-            <classpath refid="compile.classpath"/>
-        </sf-rmic>
-    </target>
+  <target name="verify-prerequisites" depends="init">
+        <available property="verified.ok"
+            classname="com.jcraft.jsch.JSch"
+            classpathref="compile.classpath"
+            ignoresystemclasses="false"/>
+        <property name="verify.fail.message"
+          value="No Jcraft SSH found in ${ssh.lib.dir}"/>    
+  </target>
   
   <!-- ========================================================== -->
   <!-- create the jar -->
   <!-- ========================================================== -->
-  <target name="dist" depends="compile" 
+  <target name="dist" depends="common.dist" 
     description="create the jar files">
-    <jar destfile="${target.jar}" basedir="${build.classes.dir}" includes="**/*"/>
     <copy toDir = "${dist.lib.dir}">
         <fileset dir ="${ssh.lib.dir}">
             <include name = "**/*.jar"/>
         </fileset>    
     </copy>
-    <!--
-    <copy toDir = "${smartfrog.dist.lib.dir}">
+  </target>
+
+  <!-- ========================================================== -->
+  <!-- override: copy in the SSH files too -->
+  <!-- ========================================================== -->
+  <target name="install" depends="dist">
+      <copy toDir = "${smartfrog.dist.lib.dir}">
         <fileset dir ="${dist.lib.dir}"> 
             <include name = "**/*.jar"/>
         </fileset>    
     </copy>
-    -->
   </target>
 
-  <!-- ========================================================== -->
-  <!-- default target -->
-  <!-- ========================================================== -->
-  <target name="default" depends="compile, compile-RMI, dist" description="default target" />
 
 </project>

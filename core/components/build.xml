@@ -1,0 +1,147 @@
+<?xml version="1.0"?>
+<project name="cddlm" default="default">
+
+<!--
+/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+-->
+
+
+<description>
+     Build file for components.
+	 Each component supported must have the following targets in 
+	 its build.xml
+	 	maybe-dist        distribute if prereqs are met
+		maybe-test      	test if prereqs are met
+    maybe-install     conditional install
+    clean             clean up the output dirs
+		
+  The easiest way to do this is import root.dir/common.xml 
+  as a common build file; it provides template operations for this process.  
+	 
+</description>
+ <!-- ========================================================== -->
+ <!--
+    Implementation notes
+    
+    This build file is cutting-edge Ant1.6 scalability at work. It is 
+    not going to run on older versions, and the documentation for what
+    is in use is still sparse. 
+    Best docs so far: http://otn.oracle.com/pub/articles/bodewig_ant1.6.html
+    
+    <subant> is a new task that delegates the same task to any build files
+    listed in files and directores. We set up a path for this task,
+    which is ordered such that projects other components depend on 
+    must build first. Then we create a preset wrapper for the process,
+    called <delegate>.
+    
+    It is inevitable that not all projects will have their dependent
+    libraries in place on all machines. So each component build file must
+    have conditional targets that only do a dist or test if they are 
+    present.
+    
+    This has one adverse consequence: if something needs a predecessor, and
+    the predecessor wont build, the build file does not automatically stop.
+    Every build file must therefore consider the problem of the dependent
+    components being missing.
+    
+  -->
+ <!-- ========================================================== -->
+   <!-- override point -->
+  <property file="build.properties" />
+
+  <!-- this component keeps its test files in a different place from the 
+       rest, for historical reasons (i.e. it is nothing but test) -->  
+  <property name="test.src.dir" location="testcases" />
+  
+  <property name="root.dir" location="../.."  />
+  
+  <!-- ========================================================== -->
+  <!-- initialisation -->
+  <!-- ========================================================== -->
+  <target name="init" >
+    <!-- add new components here, in alphabetical order. this is
+      not where dependency logic is imposed -->
+    <property name="arithmetic-testharness.project" location="arithmetic-testharness" />
+    <property name="cddlm.project" location="cddlm" />
+    <property name="emailer.project" location="emailer" />
+    <property name="jetty.project" location="jetty" />
+    <property name="junit.project" location="junit" />
+    <property name="logger.project" location="logger" />
+    <property name="net.project" location="net" />
+    <property name="ssh.project" location="ssh" />
+    <property name="slp.project" location="slp" />
+    <property name="utils.project" location="utils" />
+  
+    <!-- this is where dependency logic is imposed
+         the path must be ordered such that dependent projects
+         come in the path after the things they depend on
+    -->
+    
+    <path id="component.path">
+      <pathelement location="${logger.project}"/>
+      <pathelement location="${ssh.project}"/>
+      <pathelement location="${net.project}"/>
+      <pathelement location="${emailer.project}"/>
+      <pathelement location="${utils.project}"/>
+      <pathelement location="${arithmetic-testharness.project}"/>
+      <pathelement location="${junit.project}"/>
+      <pathelement location="${jetty.project}"/>
+      <pathelement location="${cddlm.project}"/>
+      <!--
+      <pathelement location="${slp.project}"/>
+      
+      -->
+    </path>
+    <property name="component.path.asproperty"
+      refid="component.path"/>
+    <echo level="verbose">
+component.path := 
+  ${component.path.asproperty}
+    </echo>
+    
+    <presetdef name="delegate">
+      <subant buildpathref="component.path" />
+    </presetdef>
+    
+  </target>
+  
+  <target name="clean" depends="init"
+    description="clean all projects">
+    <delegate target="clean"/>
+  </target>
+  
+  <target name="test" depends="init"
+    description=" all projects">
+    <delegate target="maybe-test"/>
+  </target>
+
+  <target name="dist" depends="init"
+    description="build distributions of all projects">
+    <delegate target="maybe-dist"/>
+  </target>
+  
+  <target name="install" depends="init"
+    description="install all projects">
+    <delegate target="maybe-install"/>
+  </target>  
+  
+  <target name="default" depends="dist"/>
+</project>

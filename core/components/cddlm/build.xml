@@ -48,7 +48,6 @@
     <!-- ========================================================== -->
     <target name="init" depends="init-standard-output-dirs,use-smartfrog-tasks">
 
-        <property name="target.jar" location="${dist.lib.dir}/cddlm.jar"/>
         <property name="deploy.sf" 
           value="org/smartfrog/services/cddlm/cddlm_on_jetty.sf"/>
 
@@ -68,18 +67,8 @@
             </fileset>
         </path>
 
-        <!-- check for axis. Because we pull in system classes too (the default),
-             if axis is on the classpath it gets used, even if axis.lib.dir is unset
-             -->
-        <available property="axis.found"
-            classname="org.apache.axis.transport.http.SimpleAxisServer"
-            classpathref="compile.classpath"
-            ignoresystemclasses="false"/>
-        <fail unless="axis.found">No Axis found in ${axis.lib.dir}</fail>
 
-        <!-- import Axis tasks-->
-        <taskdef resource="axis-tasks.properties"
-            classpathref="compile.classpath"/>
+
         <!-- set up the runtime path -->
         <path id="run.classpath">
             <path refid="compile.classpath"/>
@@ -88,6 +77,41 @@
 
     </target>
     
+    
+  <!-- ========================================================== -->
+  <!-- import all our axis tasks -->
+  <!-- ========================================================== -->
+  <target name="import-axis-tasks" depends="assert-prerequisites">
+        <!-- import Axis tasks-->
+    <taskdef resource="axis-tasks.properties"
+        classpathref="compile.classpath"/>
+  </target>    
+    
+  <!-- ========================================================== -->
+  <!-- this is an override point -->
+  <!-- set the verified.ok property if everything needed is present -->
+  <!-- Do Not Fail. This test is used to control conditional builds -->
+  <!-- NB, set property verify.fail.message to something meaningful
+       for better diagnostic messages on failure (see assert-prerequisites) 
+       -->
+  <!-- ========================================================== -->
+  <target name="verify-prerequisites" depends="init">
+        <!-- check for axis. Because we pull in system classes too (the default),
+             if axis is on the classpath it gets used, even if axis.lib.dir is unset
+             -->
+        <available property="verified.ok"
+            classname="org.apache.axis.transport.http.SimpleAxisServer"
+            classpathref="compile.classpath"
+            ignoresystemclasses="false"/>
+        <property name="verify.fail.message"
+          value="No Axis found in ${axis.lib.dir}"/>    
+  </target>
+  
+  <!-- ========================================================== -->
+  <!-- utility method for anyone keeping lib up to date wrt axis
+      files; this copies them if they have any byte-for-byte differences
+      -->
+  <!-- ========================================================== -->
     <target name="fetch-axis-files" if="axis.home"
     depends="init"
         description="fetch the latest axis distribution">
@@ -103,44 +127,6 @@
         </copy>
     </target>    
     
-
-    <!-- ========================================================== -->
-    <!-- compile -->
-    <!-- ========================================================== -->
-    <target name="compile"
-        depends="verify-smartfrog,init">
-        <depend srcdir="${src.dir}"
-            destdir="${build.classes.dir}"
-            cache="${build.dir}/depends"
-            closure="yes"/>
-        <sf-javac
-            classpathref="compile.classpath"
-            srcdir="${src.dir}"
-            destdir="${build.classes.dir}"
-            />
-        <copy-useful-files src="${src.dir}" dest="${build.classes.dir}"/>
-    </target>
-
-    <!-- ========================================================== -->
-    <!-- RMI compile-->
-    <!-- ========================================================== -->
-    <target name="rmi" depends="compile"
-        description="create the RMI classes">
-        <sf-rmic
-            base="${build.classes.dir}"
-            verify="true"
-            includes="**/*.class">
-            <classpath refid="compile.classpath"/>
-        </sf-rmic>
-    </target>
-
-    <!-- ========================================================== -->
-    <!-- create the jar -->
-    <!-- ========================================================== -->
-    <target name="dist" depends="compile,rmi"
-        description="create the jar files">
-        <jar destfile="${target.jar}" basedir="${build.classes.dir}" includes="**/*"/>
-    </target>
 
     <!-- ========================================================== -->
     <!-- parse the file -->
@@ -174,7 +160,7 @@
     <!-- run the service inline -->
     <!-- ========================================================== -->
     <target name="run" depends="parse,dist"
-        description="run the service inline r">
+        description="run the service inline">
         <sf-run classpathref="run.classpath" includeantruntime="false"
             logStackTraces="true">
             <assertions enableSystemAssertions="true">
@@ -188,17 +174,14 @@
     <!-- ========================================================== -->
     <!-- start the daemon -->
     <!-- ========================================================== -->
-    <target name="start-daemon" depends="parse,dist"
+    <target name="start-daemon" depends="parse,dist,start-daemon-if-needed"
         description="start the daemon">
-        <sf-startdaemon classpathref="run.classpath"
-            logStackTraces="true" spawn="true">
-            <assertions enableSystemAssertions="true">
-                <enable/>
-            </assertions>
-        </sf-startdaemon>
     </target>
 
     
+    <!-- ========================================================== -->
+    <!-- set up any properties for deployment -->
+    <!-- ========================================================== -->
     <target name="init-deploy-properties" depends="init">
         <property name="deploy.host" value="localhost"/>
         <property name="application.name" value="cddlm"/>
@@ -242,7 +225,7 @@
     <!-- ========================================================== -->
     <!-- -->
     <!-- ========================================================== -->
-    <target name="wsdl" depends="init,init-deploy-properties" 
+    <target name="wsdl" depends="init,init-deploy-properties,import-axis-tasks" 
       description="fetch the WSDL From a deployed service and create test+client classes">
         <mkdir dir="${generated.dir}"/>
         <axis-wsdl2java 
@@ -293,10 +276,5 @@
             </sequential>
         </parallel>
     </target>
-
-    <!-- ========================================================== -->
-    <!-- default target -->
-    <!-- ========================================================== -->
-    <target name="default" depends="deploy" description="default target"/>
 
 </project>
