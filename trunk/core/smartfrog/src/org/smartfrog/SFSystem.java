@@ -30,6 +30,7 @@ import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Properties;
+import java.util.StringTokenizer;
 
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.ContextImpl;
@@ -41,6 +42,7 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogInitException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.common.SmartFrogParseException;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.parser.Phases;
 import org.smartfrog.sfcore.parser.SFParser;
@@ -103,8 +105,6 @@ public class SFSystem implements MessageKeys {
     public static final String propLogStackTrace = propBase +
         "logger.logStackTrace";
 
-    private SFSystem(){
-    }
 
     /**
      * Gets language grom the URL
@@ -297,6 +297,53 @@ public class SFSystem implements MessageKeys {
     }
 
     /**
+     * Deploy a single application URL.
+     * @param appName name of the application
+     * @param target the target process compound to request deployment
+     * @throws SmartFrogException something went wrong with the deploy -this may contain a nested exception
+     * @throws RemoteException if anything went wrong over the net
+     */
+    private static void deployFromURL(String url, String appName,
+         ProcessCompound target) throws SmartFrogException, RemoteException {
+
+        //To calculate how long it takes to deploy a description
+        long deployTime = 0;
+        if (org.smartfrog.sfcore.common.Logger.logStackTrace) {
+            deployTime = System.currentTimeMillis();
+        }
+
+        ComponentDescription comp = null;
+        Context nameContext = null;
+        nameContext = new ContextImpl();
+        nameContext.put("sfProcessComponentName", appName);
+        try {
+            //assumes that the URL refers to stuff on the classpath
+            InputStream is = SFClassLoader.getResourceAsStream(url);
+
+            if (is == null) {
+                throw new SmartFrogDeploymentException(MessageUtil.
+                        formatMessage(MSG_URL_NOT_FOUND, url, appName));
+            }
+            deployFrom(is, target, nameContext, getLanguageFromUrl(url));
+            if (org.smartfrog.sfcore.common.Logger.logStackTrace) {
+                deployTime = System.currentTimeMillis() - deployTime;
+                org.smartfrog.sfcore.common.Logger.log("  - " + appName + " (" + url + ")"
+                        + " deployed in " + deployTime + " millisecs.");
+            }
+        } catch (SmartFrogException sfex) {
+            sfex.put("URL:", url);
+            sfex.put("Component Name:", appName);
+            throw sfex;
+        } catch (RemoteException ex) {
+            //rethrow
+            throw ex;
+        } catch (Exception ex) {
+            //anything that was not dealt with gets wrapped
+            throw new SmartFrogException(ex);
+        }
+    }
+
+    /**
      * Terminates the named applications given as -t options on the command
      * line.
      *
@@ -318,20 +365,21 @@ public class SFSystem implements MessageKeys {
             try {
                 ((Prim) target.sfResolveHere(term)).
                         sfTerminate(new TerminationRecord(
-                        "management action", "forced to terminate", targetName));
+                                "management action", "forced to terminate", targetName));
             } catch (ClassCastException cce) {
-                errorTermination  = true;
+                errorTermination = true;
                 try {
                     if (term.equals("rootProcess")) {
                         ((Prim) target.sfResolve((Reference) target.
-                               sfResolveHere(term))).
+                                sfResolveHere(term))).
                                 sfTerminate(new TerminationRecord(
-                                "management action",
-                                "sfDaemon forced to terminate ", targetName));
+                                        "management action",
+                                        "sfDaemon forced to terminate ", targetName));
                     }
                 } catch (Exception ex) {
                     //TODO: Check exception handling
-                    if ((ex.getCause() instanceof java.net.SocketException)){
+                    if ((ex.getCause() instanceof java.net.SocketException) ||
+                             (ex.getCause() instanceof java.io.EOFException)){
                        Logger.log(MessageUtil.formatMessage(MSG_SF_TERMINATED));
                     } else {
                         Logger.log(ex);
@@ -344,6 +392,46 @@ public class SFSystem implements MessageKeys {
                 Logger.log(e);
             }
         }
+    }
+
+    /**
+     * Get this object to terminate, after detaching itself from its parent.
+     *
+     * @param status termination status
+     */
+    public static void detachAndTerminate(OptionSet opts,
+        ProcessCompound target) {
+            Prim obj = null;
+            try {
+                    obj = (Prim)target;
+            } catch (Exception e) {
+                errorTermination  = true;
+                Logger.log(MessageUtil.formatMessage(MSG_ERR_TERM, target));
+                // log stack trace
+                Logger.log(e);
+            }
+            StringTokenizer st = null;
+            String token = null;
+            TerminationRecord tr = new TerminationRecord("management action",
+                         "force to terminate", null);
+            for (Enumeration detachs = opts.detaching.elements();
+                detachs.hasMoreElements();) {
+                     String detach = (String) detachs.nextElement();
+                     st = new StringTokenizer(detach, ":");
+                     try {
+                             while (st.hasMoreTokens()) {
+                                     token = st.nextToken();
+                                     obj = ((Prim)obj.sfResolveHere(token));
+                             }
+                             obj.sfDetachAndTerminate(tr);
+                     } catch (Exception e) {
+                             errorTermination  = true;
+                             Logger.log(MessageUtil.formatMessage(
+                                                       MSG_ERR_TERM,token));
+                             // log stack trace
+                             Logger.log(e);
+                     }
+            }
     }
 
     /**
@@ -474,6 +562,27 @@ public class SFSystem implements MessageKeys {
 
         return target;
     }
+    /**
+     * Gets the ProcessCompound running on the host.
+     * @param hostname Name of the host
+     * @param remoteHost boolean indicating if the host is remote host
+     * @return ProcessCompound
+     */
+    private static ProcessCompound getTargetProcessCompound(String hostName,
+            boolean remoteHost) throws SmartFrogException, RemoteException {
+        ProcessCompound target = null;
+        try {
+            if (!remoteHost) {
+                target = SFProcess.getProcessCompound();
+            }else {
+               target = SFProcess.getRootLocator().
+                   getRootProcessCompound(InetAddress.getByName(hostName));
+            }
+        }catch (Exception ex) {
+            throw SmartFrogException.forward(ex);
+        }
+        return target;
+    }
 
     /**
      * Prints given error string and exits system.
@@ -501,6 +610,36 @@ public class SFSystem implements MessageKeys {
         System.out.println(Version.versionString);
         System.out.println(Version.copyright);
     }
+    /**
+     * Bring up smartfrog and deploy a component on the specified host.
+     * A useful little entry point for external programs and tests.
+     * @param hostName host where to deploy
+     * @param url url to the component
+     * @param appName application name
+     * @param remoteHost host is a remote host or not
+     * @throws SmartFrogException if any application error
+     * @throws RemoteException if any rmi or network error
+     */
+    public static void deployAComponent(String hostName, String Url,
+            String appName, boolean remoteHost)
+                    throws SmartFrogException, RemoteException {
+        try {
+            ProcessCompound rootProcess=null;
+            // init sec
+            SFSecurity.initSecurity();
+            // Read init properties
+            readPropertiesFromIniFile();
+            // Deploy process Compound
+            rootProcess = SFProcess.deployProcessCompound();
+            // get the target process compound
+            ProcessCompound target = getTargetProcessCompound(hostName,
+                                                                remoteHost);
+            deployFromURL(Url, appName, target);
+        }catch (Exception ex) {
+            throw SmartFrogException.forward(ex);
+        }
+    }
+
 
     /**
      * Method invoked to start the SmartFrog system.
