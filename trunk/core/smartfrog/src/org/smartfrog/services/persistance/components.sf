@@ -23,9 +23,7 @@ For more information: www.smartfrog.org
 #include "org/smartfrog/services/display/components.sf"
 
 /**
- * A basic deployment trace component.
- * Displays a message indicating the phases every component goes through.
- * See example.sf for use.
+ * Persist a component to a directory
  */
 
 
@@ -36,6 +34,8 @@ SFPersist extends Prim {
         //this is the axis configuration file for a service
         directory extends String;
     }
+
+    directory LAZY PROPERTY java.io.tmpdir;
 
 }
 

@@ -27,7 +27,7 @@ For more information: www.smartfrog.org
 
 sfConfig extends Compound {
      persistanceHook extends SFPersist {
-	 sfExport false;
-	 directory "/tmp/persist/";
+         sfExport false;
+         directory "/tmp/persist/";
      }
 }
