@@ -123,8 +123,9 @@ public class Parse extends TaskBase {
             DirectoryScanner scanner = set.getDirectoryScanner(getProject());
             String[] included=scanner.getIncludedFiles();
             for(int i=0;i<included.length;i++) {
-                log("scanning "+ included[i],Project.MSG_VERBOSE);
-                files.add(included[i]);
+                File parsefile = new File(scanner.getBasedir(),included[i]);
+                log("scanning "+ parsefile,Project.MSG_VERBOSE);
+                files.add(parsefile.toString());
             }
         }
         //at this point the files are all scanned.
