@@ -193,12 +193,14 @@ public class LogToErr implements Log, LogMessage, Serializable {
      * text for error levels
      */
     protected static final String ERROR_NAMES[]={
+        "ALL",
         "TRACE",
         "DEBUG",
         "INFO",
         "WARN",
         "ERROR",
-        "FATAL"
+        "FATAL",
+        "NONE"
     };
 
     // -------------------------------------------------------- Logging Methods
