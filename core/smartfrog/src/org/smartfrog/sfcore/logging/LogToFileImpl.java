@@ -67,6 +67,11 @@ public class LogToFileImpl extends LogToErrImpl implements LogToFile {
      */
     public LogToFileImpl (String name, Integer initialLogLevel) {
         super(name,initialLogLevel);
+        try {
+          readSFAttributes();
+        } catch (SmartFrogException ex1) {
+           this.error("",ex1);
+        }
 //        assert name != null;
 //        logName = name;
 //        // Set initial log level
@@ -86,6 +91,10 @@ public class LogToFileImpl extends LogToErrImpl implements LogToFile {
         } catch (Exception ex){
           //@todo
           ex.printStackTrace();
+        }
+        if (isTraceEnabled() && this.getClass().toString().endsWith("LogToFileImpl")) {
+            //This will go to the std output.
+            trace("LogToFileImpl using file name: "+logFile.getAbsolutePath());
         }
         setOutstream(out);
         if (redirectSystemOutputs){

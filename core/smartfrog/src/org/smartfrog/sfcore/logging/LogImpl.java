@@ -148,7 +148,6 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      */
     public LogImpl (String name){
         //@TODO: improve error protection
-        //@TODO: read configuration parameters from component description also localLog has to be configured
         logName = name;
         try {
             //Check Class and read configuration...including system.properties
