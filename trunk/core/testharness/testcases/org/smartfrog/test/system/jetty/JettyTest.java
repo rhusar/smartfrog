@@ -53,7 +53,7 @@ public class JettyTest
                                  "tcn53",
                                  "SmartFrogLifecycleException",
                                  "sfStart",
-                                 "SmartFrogException",
+                                 "SmartFrogDeploymentException",
                                  "java.net.UnknownHostException: no-hostname");
     }
 
