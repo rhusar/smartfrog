@@ -137,8 +137,8 @@ public class SFJettyAdmin extends PrimImpl implements JettyAdminIntf {
         try {
             server.stop();
         } catch (InterruptedException ie) {
-          if (sflog().isErrorEnabled()){
-            sflog().error(" Interrupted on server termination " , ie);
+          if (sfLog().isErrorEnabled()){
+            sfLog().error(" Interrupted on server termination " , ie);
           }
 //          Logger.log(" Interrupted on server termination " , ie);
         }
