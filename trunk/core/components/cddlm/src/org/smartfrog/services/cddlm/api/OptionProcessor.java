@@ -43,16 +43,21 @@ public class OptionProcessor extends Processor {
 
     private Properties propertyMap = new Properties();
     private boolean validateOnly = false;
+    private String name;
 
     private static final URI propertyURI;
     private static final URI validateURI;
+    private static final URI nameURI;
+
 
     static {
         try {
             propertyURI =
-            new URI(FaultCodes.OPTION_PROPERTIES);
+                    new URI(FaultCodes.OPTION_PROPERTIES);
             validateURI =
-            new URI(FaultCodes.OPTION_VALIDATE_ONLY);
+                    new URI(FaultCodes.OPTION_VALIDATE_ONLY);
+            nameURI =
+                    new URI(FaultCodes.OPTION_NAME);
         } catch (URI.MalformedURIException e) {
             throw new RuntimeException(e);
         }
@@ -67,13 +72,8 @@ public class OptionProcessor extends Processor {
         super(owner);
     }
 
-    public OptionProcessor(SmartFrogHostedEndpoint owner, boolean validateOnly) {
-        this(!validateOnly);
-    }
-
-    public OptionProcessor(boolean validateOnly) {
+    public OptionProcessor() {
         super(null);
-        this.validateOnly = validateOnly;
     }
 
     /**
@@ -92,32 +92,66 @@ public class OptionProcessor extends Processor {
         for (int i = 0; i < len; i++) {
             boolean processed = false;
             OptionType option = array[i];
-            URI nameURI = option.getName();
-            final String name = nameURI.toString();
+            URI uri = option.getName();
+            final String optionName = uri.toString();
             if (log.isDebugEnabled()) {
-                log.debug("option " + name);
+                log.debug("option " + optionName);
             }
-            if (propertyURI.equals(nameURI)) {
+            if (propertyURI.equals(uri)) {
                 processPropertiesOption(option);
                 processed = true;
             }
-            if (validateURI.equals(nameURI)) {
+            if (validateURI.equals(uri)) {
                 processValidateOption(option);
+                processed = true;
+            }
+            if (nameURI.equals(uri)) {
+                processNameOption(option);
                 processed = true;
             }
             if (!processed) {
                 //not processed
                 if (log.isDebugEnabled()) {
-                    log.debug("Ignored header " + name);
+                    log.debug("Ignored header " + optionName);
                 }
                 if (option.isMustUnderstand()) {
-                    log.warn("failed to process option " + name);
-                    throw raiseFault(FaultCodes.FAULT_NOT_UNDERSTOOD, name);
+                    throwFailedToUnderstand(option);
                 }
             }
         }
     }
 
+    /**
+     * throw a fault declaring the option is not understood
+     *
+     * @param option
+     * @throws AxisFault always
+     */
+    private void throwFailedToUnderstand(OptionType option) throws AxisFault {
+        URI uri = option.getName();
+        final String uriName = uri.toString();
+        log.warn("failed to process option " + uriName);
+        throw raiseFault(FaultCodes.FAULT_NOT_UNDERSTOOD,
+                "Did not recognise the mustUnderstand option" + uriName);
+    }
+
+    /**
+     * extract the name option
+     *
+     * @param option
+     * @throws AxisFault
+     */
+    private void processNameOption(OptionType option) throws AxisFault {
+        assertNoXml(option);
+        name = option.getString();
+    }
+
+    /**
+     * extract validation option
+     *
+     * @param option
+     * @throws AxisFault
+     */
     private void processValidateOption(OptionType option) throws AxisFault {
         assertNoXml(option);
         validateOnly = option.is_boolean();
@@ -126,6 +160,12 @@ public class OptionProcessor extends Processor {
         }
     }
 
+    /**
+     * extract values from the properties.
+     *
+     * @param option
+     * @throws AxisFault
+     */
     private void processPropertiesOption(OptionType option) throws AxisFault {
         UnboundedXMLAnyNamespace xml = option.getXml();
         MessageElement[] contents = xml.get_any();
@@ -142,11 +182,12 @@ public class OptionProcessor extends Processor {
         parseMessageFragment(element, message);
 
         //TODO
-        throwNotImplemented();
-
+        if (option.isMustUnderstand()) {
+            throwFailedToUnderstand(option);
+        }
     }
 
-    private AxisFault raiseBadPropertiesData() {
+    private static AxisFault raiseBadPropertiesData() {
         return raiseBadArgumentFault(
                 "wrong structure of the properties option");
     }
@@ -157,7 +198,7 @@ public class OptionProcessor extends Processor {
      * @param option
      * @throws AxisFault
      */
-    private void assertNoXml(OptionType option) throws AxisFault {
+    private static void assertNoXml(OptionType option) throws AxisFault {
         if (option.getXml() != null) {
             raiseBadArgumentFault("No XML allowed in " + option.getName());
         }
@@ -167,4 +208,24 @@ public class OptionProcessor extends Processor {
         return validateOnly;
     }
 
+    /**
+     * get the name of the request, or null
+     *
+     * @return
+     */
+    public String getName() {
+        return name;
+    }
+
+    public void setPropertyMap(Properties propertyMap) {
+        this.propertyMap = propertyMap;
+    }
+
+    public void setValidateOnly(boolean validateOnly) {
+        this.validateOnly = validateOnly;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }

@@ -37,10 +37,11 @@ public class JobState {
 
     /**
      * fill in from a job request
+     *
      * @param request
      */
-    public JobState(_deployRequest request) {
-        setRequest(request);
+    public JobState(_deployRequest request, OptionProcessor options) {
+        bind(request, options);
     }
 
     /**
@@ -96,14 +97,17 @@ public class JobState {
     }
 
     /**
-     * set the request. Also, get name and uri from the message
+     * set the request. The name is extracted here; it remains null if currently
+     * undefined
      *
-     * @param request
+     * @param requestIn
      */
-    public void setRequest(_deployRequest request) {
-        this.request = request;
-        name = request.getName().toString();
-        uri = Processor.makeURIFromApplication(name);
+    public void bind(_deployRequest requestIn, OptionProcessor options) {
+        this.request = requestIn;
+
+        if (options != null && options.getName() != null) {
+            name = options.getName();
+        }
     }
 
     public URI getUri() {
@@ -131,7 +135,7 @@ public class JobState {
     }
 
     public void bindToPrim(Prim prim) {
-        primReference=new WeakReference(prim);
+        primReference = new WeakReference(prim);
     }
 
     /**
@@ -141,7 +145,6 @@ public class JobState {
      * @throws AxisFault
      */
     public Prim resolvePrimFromJob() throws AxisFault {
-        final WeakReference primReference = getPrimReference();
         if (primReference == null) {
             throw Processor.raiseNoSuchApplicationFault(
                     "job exists but reference is undefined");
@@ -154,6 +157,18 @@ public class JobState {
         }
         Prim prim = (Prim) weakRef;
         return prim;
+    }
+
+    /**
+     * get the prim
+     *
+     * @return the prim reference or null for no such reference.
+     */
+    public Prim resolvePrimNonFaulting() {
+        if (primReference != null) {
+            return (Prim) primReference.get();
+        }
+        return null;
     }
 
     /**
@@ -181,6 +196,7 @@ public class JobState {
 
     /**
      * hash code is from the URI
+     *
      * @return
      */
     public int hashCode() {

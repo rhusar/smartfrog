@@ -27,9 +27,10 @@ import org.smartfrog.services.axis.SmartFrogHostedEndpoint;
 import org.smartfrog.services.cddlm.generated.api.types._undeployRequest;
 import org.smartfrog.sfcore.common.ConfigurationDescriptor;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.sfcore.processcompound.SFProcess;
-import org.smartfrog.sfcore.prim.Prim;
 
 import java.rmi.RemoteException;
 
@@ -43,13 +44,25 @@ public class UndeployProcessor extends Processor {
      */
     private static final Log log = LogFactory.getLog(UndeployProcessor.class);
 
+
     public UndeployProcessor(SmartFrogHostedEndpoint owner) {
         super(owner);
     }
+
     public boolean undeploy(_undeployRequest undeploy) throws RemoteException {
         final URI appURI = undeploy.getApplication();
-        JobState job = lookupJob(appURI);
-        if(doUndeploy(job)) {
+        String reason;
+        reason = undeploy.getReason();
+        if (reason == null) {
+            reason = "";
+        }
+        JobState job = lookupJobNonFaulting(appURI);
+        if (job == null) {
+            //job was not found, this is not an error.
+            return true;
+        }
+        log.info("Undeploying " + job.getName() + " for " + reason);
+        if (undeploy3(job, reason)) {
             //purge the store
             JobRepository jobs = ServerInstance.currentInstance().getJobs();
             jobs.remove(appURI);
@@ -58,14 +71,28 @@ public class UndeployProcessor extends Processor {
         return false;
     }
 
+    public boolean undeploy3(JobState job, String reason)
+            throws RemoteException {
+        Prim target = job.resolvePrimNonFaulting();
+        if (target == null) {
+            log.info("job already terminated");
+            return true;
+        }
+        TerminationRecord termination;
+        termination =
+                new TerminationRecord(TerminationRecord.NORMAL, reason, null);
+        target.sfTerminate(termination);
+        return true;
+    }
+
     public boolean doUndeploy(JobState job) throws RemoteException {
         try {
-            String application=job.getName();
+            String application = job.getName();
             ConfigurationDescriptor config = new ConfigurationDescriptor();
             config.setHost(null);
             config.setName(application);
             config.setActionType(ConfigurationDescriptor.Action.DETaTERM);
-            log.info("Undeploying " + application);
+
             //deploy, throwing an exception if we cannot
             final ProcessCompound processCompound = SFProcess.getProcessCompound();
             assert processCompound != null;

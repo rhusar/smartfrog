@@ -69,13 +69,28 @@ public class DeployProcessor extends Processor {
         return options;
     }
 
+    /**
+     * deployment
+     *
+     * @param deploy
+     * @return
+     * @throws AxisFault
+     */
     public _deployResponse deploy(_deployRequest deploy) throws AxisFault {
-        //create a new jobstate
-        job = new JobState(deploy);
-        request = deploy;
+
+        JobRepository repository;
+        repository = ServerInstance.currentInstance().getJobs();
+
         //get the options out the way
         options = new OptionProcessor(getOwner());
         options.process(deploy.getOptions());
+
+        //create a new jobstate
+        job = new JobState(deploy, options);
+        //then assign it missing parts. This does not add it to the repository yet
+        repository.assignNameAndUri(job);
+        request = deploy;
+
         CallbackProcessor callbackProcessor = new CallbackProcessor(getOwner());
         callbackProcessor.process(job, deploy.getCallback());
 
@@ -96,7 +111,7 @@ public class DeployProcessor extends Processor {
         }
         //add the job state to the store
         if (deployed) {
-            ServerInstance.currentInstance().getJobs().add(job);
+            repository.add(job);
         }
         _deployResponse response = new _deployResponse(applicationReference);
         return response;
@@ -211,7 +226,8 @@ public class DeployProcessor extends Processor {
             tempFile = saveStringToFile(descriptor, ".sf");
             String url = tempFile.toURI().toURL().toExternalForm();
             Prim runningJobInstance;
-            runningJobInstance = deployThroughSFSystem(null, applicationName, url, null);
+            runningJobInstance =
+                    deployThroughSFSystem(null, applicationName, url, null);
             job.bindToPrim(runningJobInstance);
         } catch (IOException e) {
             throw AxisFault.makeFault(e);
@@ -276,8 +292,8 @@ public class DeployProcessor extends Processor {
      * @throws AxisFault
      */
     private Prim deployThroughSFSystem(String hostname, String application,
-                                       String url,
-                                       String subprocess) throws AxisFault {
+            String url,
+            String subprocess) throws AxisFault {
         try {
             ConfigurationDescriptor config = new ConfigurationDescriptor(
                     application, url);

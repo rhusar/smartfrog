@@ -22,20 +22,20 @@ package org.smartfrog.services.cddlm.api;
 import org.apache.axis.types.URI;
 
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
 /**
- * This class remembers what got deployed by whom. It retains weak references to running
- * apps, for easy purging.
- * created Aug 5, 2004 2:59:38 PM
+ * This class remembers what got deployed by whom. It retains weak references to
+ * running apps, for easy purging. This class *must* be thread safe created Aug
+ * 5, 2004 2:59:38 PM
  */
 
-public class JobRepository implements Map {
+public class JobRepository /* implements Map */ {
 
-    HashMap jobs = new HashMap();
+    private Hashtable jobs = new Hashtable();
 
     public void clear() {
         jobs.clear();
@@ -81,7 +81,7 @@ public class JobRepository implements Map {
         jobs.putAll(t);
     }
 
-    public Object remove(Object key) {
+    private Object remove(Object key) {
         return jobs.remove(key);
     }
 
@@ -104,13 +104,24 @@ public class JobRepository implements Map {
      * @return
      */
     public JobState lookup(URI uri) {
+        assert uri != null;
         return (JobState) get(uri.toString());
     }
 
+    /**
+     * remove an item identified by a URI
+     *
+     * @param uri
+     */
     public void remove(URI uri) {
         remove(uri.toString());
     }
 
+    /**
+     * get an iterator
+     *
+     * @return
+     */
     public Iterator iterator() {
         return values().iterator();
     }
@@ -124,10 +135,38 @@ public class JobRepository implements Map {
         URI[] uriList = new URI[size()];
         Iterator it = iterator();
         int counter = 0;
-        while ( it.hasNext() ) {
+        while (it.hasNext()) {
             JobState jobState = (JobState) it.next();
             uriList[counter++] = jobState.getUri();
         }
         return uriList;
     }
+
+
+    /**
+     * job counter
+     */
+    private int counter = 0;
+
+    private synchronized String getUniqueName() {
+        counter++;
+        String name = "job" + counter;
+        return name;
+    }
+
+
+    /**
+     * if the job has no name, we give it one. If it has a name or no, a new URI
+     * is assigned
+     *
+     * @param job
+     */
+    public void assignNameAndUri(JobState job) {
+        final String uniqueName = getUniqueName();
+        if (job.getName() == null) {
+            job.setName(uniqueName);
+        }
+        job.setUri(Processor.makeURIFromApplication(uniqueName));
+    }
+
 }

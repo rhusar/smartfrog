@@ -33,16 +33,18 @@ import org.cddlm.client.generated.api.types.DeploymentDescriptorType;
 import org.cddlm.client.generated.api.types.EmptyElementType;
 import org.cddlm.client.generated.api.types.JsdlType;
 import org.cddlm.client.generated.api.types.OptionMapType;
+import org.cddlm.client.generated.api.types.OptionType;
 import org.cddlm.client.generated.api.types.ServerStatusType;
+import org.cddlm.client.generated.api.types.StaticServerStatusType;
 import org.cddlm.client.generated.api.types._applicationStatusRequest;
 import org.cddlm.client.generated.api.types._deployRequest;
 import org.cddlm.client.generated.api.types._deployResponse;
 import org.cddlm.client.generated.api.types._deploymentDescriptorType_data;
+import org.cddlm.client.generated.api.types._languageListType_language;
 import org.cddlm.client.generated.api.types._lookupApplicationRequest;
 import org.cddlm.client.generated.api.types._serverStatusRequest;
 import org.cddlm.client.generated.api.types._undeployRequest;
-import org.cddlm.client.generated.api.types.StaticServerStatusType;
-import org.cddlm.client.generated.api.types._languageListType_language;
+import org.smartfrog.services.cddlm.generated.faults.FaultCodes;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -218,24 +220,47 @@ public abstract class ConsoleOperation {
      * @throws RemoteException
      */
     public URI deploy(String name,
-                      DeploymentDescriptorType descriptor,
-                      Options options,
-                      CallbackInformationType callbackInfo)
+            DeploymentDescriptorType descriptor,
+            Options options,
+            CallbackInformationType callbackInfo)
             throws RemoteException {
         JsdlType jsdl = new JsdlType();
-        NCName ncname = makeName(name);
+        if (name != null) {
+            //name processing
+            if (options == null) {
+                options = new Options();
+            }
+            addNameOption(options, name);
+        }
         OptionMapType map = null;
         if (options != null) {
             map = options.toOptionMap();
         }
         _deployRequest request = new _deployRequest(jsdl,
-                ncname,
                 descriptor,
                 callbackInfo,
                 map);
         _deployResponse response = getStub().deploy(request);
         return response.getApplicationReference();
 
+    }
+
+    /**
+     * add a name option to our options
+     *
+     * @param options
+     * @param name
+     * @throws RuntimeException if we cannot turn {@link FaultCodes#OPTION_NAME}
+     *                          into a URI
+     */
+    public static void addNameOption(Options options, String name) {
+        try {
+            OptionType o = options.createNamedOption(
+                    new URI(FaultCodes.OPTION_NAME), true);
+            o.setString(name);
+        } catch (URI.MalformedURIException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
@@ -347,13 +372,14 @@ public abstract class ConsoleOperation {
 
     /**
      * initiate an undeployment
+     *
      * @param uri
      * @param reason
      * @return true if the process has commenced. Undeployment is asynchronous
      * @throws RemoteException
      */
-    public boolean undeploy(URI uri,String reason) throws RemoteException {
-        _undeployRequest undeploy=new _undeployRequest(uri,reason);
+    public boolean undeploy(URI uri, String reason) throws RemoteException {
+        _undeployRequest undeploy = new _undeployRequest(uri, reason);
         return getStub().undeploy(undeploy);
     }
 
@@ -364,26 +390,28 @@ public abstract class ConsoleOperation {
      * @return true if the URI is in the list of known languages
      */
     public boolean supportsLanguage(String languageURI) throws RemoteException {
-        ServerStatusType status=getStatus();
+        ServerStatusType status = getStatus();
         return supportsLanguage(status, languageURI);
     }
 
     /**
      * test for a language being supported
      *
-     * @param status server status
+     * @param status      server status
      * @param languageURI
      * @return true if the URI is in the list of known languages
      */
-    public boolean supportsLanguage(ServerStatusType status, String languageURI) {
+    public boolean supportsLanguage(ServerStatusType status,
+            String languageURI) {
         StaticServerStatusType staticStatus = status.get_static();
-        _languageListType_language[] languages = staticStatus.getLanguages().getLanguage();
-        for ( int i = 0; i < languages.length; i++ ) {
+        _languageListType_language[] languages = staticStatus.getLanguages()
+                .getLanguage();
+        for (int i = 0; i < languages.length; i++) {
             _languageListType_language l = languages[i];
             org.apache.axis.types.URI nsURI = l.getNamespace();
-            if(languageURI.equals(nsURI.toString())) {
+            if (languageURI.equals(nsURI.toString())) {
                 //positive match
-                return true ;
+                return true;
             }
         }
         //if we get here, no match
@@ -399,7 +427,6 @@ public abstract class ConsoleOperation {
     protected static void exit(boolean success) {
         Runtime.getRuntime().exit(success ? 0 : -1);
     }
-
 
 
 }
