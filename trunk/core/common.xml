@@ -311,6 +311,8 @@
  
  <target name="declare-compile.classpath" 
     depends="declare-compile.classpath-no-lib-dir,declare-compile.classpath-lib-dir" >  
+    <property name="compile.classpath.value" refid="compile.classpath"/>
+    <echo level="verbose">compile.classpath=${compile.classpath.value}</echo>
   </target>
   
   <target name="declare-exec.classpath" depends="declare-compile.classpath" >  
@@ -318,6 +320,8 @@
       <path refid="compile.classpath"/>
       <pathelement location="${build.classes.dir}"/>
     </path>    
+    <property name="exec.classpath.value" refid="exec.classpath"/>
+    <echo level="verbose">exec.classpath=${exec.classpath.value}</echo>
   </target>
 
   <target name="declare-tests.compile.classpath" 
@@ -517,7 +521,7 @@
        for better diagnostic messages on failure (see assert-prerequisites) 
        -->
   <!-- ========================================================== -->
-  <target name="verify-prerequisites" depends="init">
+  <target name="verify-prerequisites" depends="init,declare-classpaths">
     <property name="verified.ok" value="true"/>
   </target>
   
@@ -755,10 +759,11 @@
     <echoproperties/>
   </target> 
 
- <target name="diag2" depends="init">
+ <target name="diag2" depends="init,verify-prerequisites">
     <echo>
       build file ${ant.project.name}
       base dir ${basedir}
+      verified.ok=${verified.ok}
     </echo>
   </target> 
   
