@@ -292,47 +292,6 @@ public interface Prim extends Liveness, RemoteReferenceResolver, RemoteReference
      */
     public String sfDeployedProcessName() throws RemoteException;
 
-    /**
-     *  To get the sfCore logger
-     * @return Logger implementing LogSF and Log
-     * @throws RemoteException
-     */
-    public LogSF sfGetCoreLog() throws RemoteException;
-
-    /**
-     *  To log into sfCore logger. This method should be used to log Core messages
-     * @return Logger implementing LogSF and Log
-     * @throws RemoteException
-     */
-    public LogSF sfLog() throws RemoteException;
-
-    /**
-     *  Method to replace logger used by components.
-     *  @param newlog replacement for Prim core log
-     *  @return oldlog
-     */
-    public LogSF sfSetLog(LogSF newlog) throws RemoteException;
-
-    /**
-     *  To get application logger using ROOT name.
-     *  The name used is cached in attritube @see SmartFrogCoreKeys.SF_APP_LOG_NAME
-     *  If this attribute has been pre-set then it is used to get the applition logger,
-     *  otherwise ROOT cannonical name is used.
-     *
-     * @return Logger implementing LogSF and Log
-     * @throws SmartFrogException
-     * @throws RemoteException
-     */
-    public LogSF sfGetApplicationLog() throws SmartFrogException, RemoteException;
-
-    /**
-     * To get a logger
-     * @param name logger name
-     * @return Logger implementing LogSF and Log
-     * @throws SmartFrogException
-     * @throws RemoteException
-     */
-    public LogSF sfGetLog(String name) throws SmartFrogException, RemoteException;
 
     /**
      * Parentage changed in component hierachy.
