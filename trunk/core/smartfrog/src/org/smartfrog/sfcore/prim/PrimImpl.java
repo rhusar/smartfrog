@@ -1181,7 +1181,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
      * @throws SmartFrogException
      * @throws RemoteException
      */
-    public LogSF sfGetLog (String name) throws SmartFrogException, RemoteException {
+    public LogSF sfGetLog (String name){
        return LogFactory.getLog(name);
     }
 
@@ -1203,7 +1203,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
      * @throws SmartFrogException
      * @throws RemoteException
      */
-    public LogSF sfGetApplicationLog() throws SmartFrogException, RemoteException{
+    public LogSF sfGetApplicationLog() throws SmartFrogException, RemoteException {
         //@todo should we use prim name and get a hierarchy of logs?
          //this.sfResolveHere(SmartFrogCoreKeys.SF_APP_LOG_NAME,false);
         try {

@@ -68,7 +68,7 @@ public class SFSetPropertyImpl extends CompoundImpl implements Compound, SFSetPr
      */
     public synchronized void sfDeployWith(Prim parent, Context cxt) throws SmartFrogDeploymentException, RemoteException {
         try {
-          log = parent.sfGetApplicationLog();//.sfGetLog(sfResolve(SmartFrogCoreKeys.SF_APP_LOG_NAME, "", true));
+          log = this.sfGetApplicationLog();//.sfGetLog(sfResolve(SmartFrogCoreKeys.SF_APP_LOG_NAME, "", true));
           // Mandatory attributes.
           try {
             name = (String)cxt.sfResolveAttribute(ATR_NAME);

@@ -3,6 +3,7 @@ package org.smartfrog.sfcore.logging;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLogException;
+import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
@@ -180,7 +181,7 @@ public  class LogFactory {
     public static Log getOwnerLog(final Prim owner, final Class clazz) {
         Log log=null;
         try {
-            log=owner.sfGetApplicationLog();
+            log= ((PrimImpl)owner).sfGetApplicationLog();
         } catch (SmartFrogException ignored) {
 
         } catch (RemoteException ignored) {
