@@ -1,12 +1,12 @@
 <%@ page isErrorPage="true" %>
 <html>
 <head>
-<title>Compiere Error</title>
+<title><cws:message txt='wsm_WebstoreError'/></title>
 </head>
 <body>
-<h1>Compiere Error</h1>
-<p>Sorry, an error occured. If the error persists, please inform us.</p>
-<p>Error Message:</p>
+<h1><cws:message txt='wsm_WebstoreError'/></h1>
+<p><cws:message txt='wsm_WebstoreErrorExplanation'/></p>
+<p><cws:message txt='wsm_ErrorMessage'/></p>
 <pre><font color="red">
 <%= exception.getMessage() %>
 </font></pre>
