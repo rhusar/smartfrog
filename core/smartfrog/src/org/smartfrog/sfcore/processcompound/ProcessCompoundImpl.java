@@ -426,8 +426,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
         } catch (SmartFrogException sfex) {
             // Add the context
             sfex.put("sfDetachFailure", this.sfContext);
-
-            //TODO: Check if component is to be terminated
+            throw sfex;
         }
     }
 
