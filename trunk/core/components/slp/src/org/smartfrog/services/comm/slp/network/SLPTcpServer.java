@@ -101,9 +101,9 @@ class SLPTcpRequestHandler extends Thread {
             msgReply.toOutputStream(sos);
             ostream.write(sos.getByteArray());
         }catch(IOException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         }catch(ServiceLocationException e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         }
     }
 }

@@ -180,4 +180,14 @@ public class SLPSAAdvMessage extends SLPMessageHeader {
     public Vector getAuthBlocks() {
         return authBlocks;
     }
+	
+	public String toString() {
+		String s = super.toString();
+		s += "Scope list: " + scopeStr + "\n"
+		  + "Attributes: " + attributeStr + "\n"
+		  + "URL: " + url.toString() + "\n"
+		  + "*** End Of Message ***";
+		
+		return s;
+	}
 }

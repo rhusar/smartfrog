@@ -123,5 +123,15 @@ public class SLPSrvDeregMessage extends SLPMessageHeader {
 
         scopes = SLPUtil.stringToVector(scopeStr);
     }
+	
+	public String toString() {
+		String s = super.toString();
+		s += "Scopes: " + scopeStr + "\n"
+		  + "Tag list: " + taglist + "\n"
+		  + "URL: " + urlEntry.getURL().toString() + "\n"
+		  + "*** End Of Message ***";
+		
+		return s;
+	}
 }
 

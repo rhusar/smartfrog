@@ -60,7 +60,6 @@ public class SlpMulticastClient extends SlpUdpClient {
             
             socket = s;
         }catch(Exception ex) {
-            ex.printStackTrace();
             throw new ServiceLocationException(ServiceLocationException.NETWORK_INIT_FAILED);
         }
         

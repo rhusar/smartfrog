@@ -34,6 +34,8 @@ import org.smartfrog.services.comm.slp.network.*;
 import org.smartfrog.services.comm.slp.util.*;
 import org.smartfrog.services.comm.slp.messages.*;
 
+import org.smartfrog.sfcore.logging.LogSF;
+
 import java.util.*;
 import java.net.*;
 import java.io.*;
@@ -42,6 +44,9 @@ import java.io.*;
     Base class for Service- and User Agents.
 */
 abstract class SLPAgent implements SlpUdpCallback, SLPMessageCallbacks {
+	// smartfrog logging.
+	protected LogSF sflog = null;
+	
     // properties
     protected Properties properties = null;
     
@@ -71,6 +76,7 @@ abstract class SLPAgent implements SlpUdpCallback, SLPMessageCallbacks {
     protected boolean CONFIG_LOG_ERRORS = SLPDefaults.DEF_CONFIG_LOG_ERRORS;
     protected boolean CONFIG_LOG_MSG = SLPDefaults.DEF_CONFIG_LOG_MSG;
     protected String CONFIG_LOGFILE = SLPDefaults.DEF_CONFIG_LOGFILE;
+	protected boolean CONFIG_SFLOG = SLPDefaults.DEF_CONFIG_SFLOG;
     
     // language
     protected Locale locale = new Locale(SLPDefaults.DEF_CONFIG_LOCALE);
@@ -195,6 +201,10 @@ abstract class SLPAgent implements SlpUdpCallback, SLPMessageCallbacks {
         if( (stringVal = properties.getProperty("net.slp.logfile")) != null ) {
             CONFIG_LOGFILE = stringVal;
         }
+		if( (stringVal = properties.getProperty("net.slp.sflog")) != null ) {
+			if(stringVal.equalsIgnoreCase("true")) CONFIG_SFLOG = true;
+			else if(stringVal.equalsIgnoreCase("false")) CONFIG_SFLOG = false;
+		}
     }
     
     /**
@@ -236,7 +246,7 @@ abstract class SLPAgent implements SlpUdpCallback, SLPMessageCallbacks {
                                       das[i], CONFIG_SLP_PORT, CONFIG_RETRY_MAX,
                                       unicastCommunicator);
                 }catch(ServiceLocationException se) {
-                    System.out.println("WARNING: Predefined DA is no good !");
+                    logDebug("Failed to contact DA at " + das[i]);
                                     // could throw exception, but do we really
                                       // want to do that ? The system should be
                                       // able to run without the DA. Perhaps this
@@ -264,17 +274,13 @@ abstract class SLPAgent implements SlpUdpCallback, SLPMessageCallbacks {
     // timeout
     public boolean udpTimeout() {
         // should never get a timeout. But in any case, we just continue to listen.
-        //return 0;
+		logError("UDP Timeout", null);
         return true;
     }
     
     // error
     public boolean udpError(Exception e) {
-        if(CONFIG_LOG_ERRORS) {
-            writeLog("Internal System Error: " + e.toString());
-            e.printStackTrace();
-        }
-        //return -1; // This will stop the listener thread...
+		logError("Internal System Error: ", e);
         return false;
     }
     
@@ -290,32 +296,32 @@ abstract class SLPAgent implements SlpUdpCallback, SLPMessageCallbacks {
             function = sis.readByte();
         }catch(IOException ioe) {
             function = version = 0; // this packet will not be handled.
-            ioe.printStackTrace();
+            logError("Received invalid message - packet ignored", ioe);
         }
 
         // check that version == 2. We only support version 2 of the SLP.
         if(version != 2) {
             function = 0; // packet will be ignored
-            if(CONFIG_LOG_ERRORS) writeLog("Wrong SLP Version number: " + version);
+            logError("Wrong SLP Version number: " + version, null);
         }
 
         SLPMessageHeader msgReply = null;
         try {
             msgReply = handleNonReplyMessage(function, sis, true);
         }catch(ServiceLocationException e) {
-            e.printStackTrace();
+            logError("Error during message handling", e);
         }
         
         if(msgReply != null) {
             try {
-                if(CONFIG_DEBUG) System.out.println("address: " + packet.getAddress() + " - port: " + packet.getPort());
                 DatagramPacket toSend = SLPUtil.createDatagram(msgReply, packet.getAddress(), packet.getPort());
                 unicastCommunicator.send(toSend);
-                if(CONFIG_DEBUG) System.out.println("ServiceAgent -> Reply sent!");
-            }catch(Exception e) { e.printStackTrace(); }
+                logMessage("Sending Message:", msgReply);
+            }catch(Exception e) { 
+				logError("Failed to send message!", e);
+			}
         }
 
-        //return 0; 
         return true;
     }
     
@@ -337,7 +343,8 @@ abstract class SLPAgent implements SlpUdpCallback, SLPMessageCallbacks {
                               CONFIG_SLP_MC_ADDR, CONFIG_SLP_PORT, CONFIG_MC_MAX,
                               unicastCommunicator);
         }catch(ServiceLocationException se) {
-            // currently ignored
+            // write log if requested. Otherwise, ignore.
+			logError("DA Discovery failed", se);
         }
     }
     
@@ -354,7 +361,7 @@ abstract class SLPAgent implements SlpUdpCallback, SLPMessageCallbacks {
         SLPDAAdvMessage msg = new SLPDAAdvMessage();
         msg.fromInputStream(sis);
             
-        if(CONFIG_LOG_MSG) writeLog("Received DAAdvert:\n"+msg.toString());
+        logMessage("Received Message:", msg);
         
         if(msg.getErrorCode() == 0) {
             ServiceURL daUrl = msg.getURL();
@@ -363,10 +370,10 @@ abstract class SLPAgent implements SlpUdpCallback, SLPMessageCallbacks {
             // if the DA is not allready registered: Add it to the DA list.
             synchronized(DAs) {
                 if(!DAs.containsKey(daUrl.getHost())) {
-                    if(CONFIG_DEBUG) writeLog("Found a new DA - timestamp: " + msg.getTimestamp());
+					logDebug("Found a new DA - timestamp: " + msg.getTimestamp());
                     // we have a new DA. Add it to the list of DAs (if the DA is not going down)
                     if(msg.getTimestamp() != 0) { // 0 means the DA is going down
-                        if(CONFIG_DEBUG) writeLog("Adding DA to list");
+                        logDebug("Adding DA to list");
                         DAInfo newDA = new DAInfo(daUrl.getHost(), daPort, msg);
                         DAs.put(daUrl.getHost(), newDA);
                         added = newDA;
@@ -379,18 +386,18 @@ abstract class SLPAgent implements SlpUdpCallback, SLPMessageCallbacks {
                     // service registrations with this DA.
                     // if timestamp == 0, the DA is removed, since a ts of 0 is an
                     // indication of the server going down.
-                    if(CONFIG_DEBUG) writeLog("DA Allready known");
+                    logDebug("DA Allready known");
                     DAInfo theDA = (DAInfo)DAs.get(daUrl.getHost());
                     if(msg.getTimestamp() == 0) {
                         // DA going down...
-                        if(CONFIG_DEBUG) writeLog("DA going down - Removing DA");
+                        logDebug("DA going down - Removing DA");
                         DAs.remove(daUrl.getHost());
                     }
                     else {
                         DAInfo newDA = new DAInfo(daUrl.getHost(), daPort, msg);
                         if(msg.getTimestamp() < theDA.getTimestamp()) {
                             // The DA has been down. Need to reregister...
-                            if(CONFIG_DEBUG) writeLog("Existing DA has been down. Reregistering");
+                            logDebug("Existing DA has been down. Reregistering");
                             added = newDA;
                         }
                         // update DAInfo (The attributes may have changed)
@@ -413,8 +420,10 @@ abstract class SLPAgent implements SlpUdpCallback, SLPMessageCallbacks {
     public abstract SLPMessageHeader handleNonReplyMessage(int function, SLPInputStream sis, boolean isUDP)
         throws ServiceLocationException;
     
-    // write to logfile...
-    protected abstract void writeLog(String message);
+    // logging methods
+    protected abstract void logDebug(String message);
+	protected abstract void logMessage(String text, SLPMessageHeader message);
+	protected abstract void logError(String text, Exception error);
     
     /**
         Returns the locale for this agent
@@ -436,4 +445,15 @@ abstract class SLPAgent implements SlpUdpCallback, SLPMessageCallbacks {
     public Vector getScopes() {
         return (Vector)supportedScopes.clone();
     }
+	
+	public synchronized void setSFLog(LogSF log) {
+		if(CONFIG_SFLOG) {
+			if(sflog != null && sflog != log) {
+				sflog.info("Warning: Log changed");
+			}
+		
+			sflog = log;
+		}
+		else logError("SmartFrog logging not enabled.", null);
+	}
 }

@@ -48,7 +48,6 @@ public class SlpSharedUnicastClient extends SlpUnicastClient {
     
     public synchronized boolean send(DatagramPacket p, int id, SlpUdpCallback cb) throws ServiceLocationException {
         if(callbackMap.containsKey(Integer.toString(id))) {
-            System.out.println("ERROR: XID in use !!!");
             return false; // XID is in use !
         }
         
@@ -81,13 +80,14 @@ public class SlpSharedUnicastClient extends SlpUnicastClient {
                             if(!callback.udpReceived(packet)) running = false;
                             callback = null;
                         }
-                        else {
+                        /*
+						else {
                             System.out.println("SLP: No callback for XID = " + xid);
                         }
+						*/
                     }
                 }
             } catch (InterruptedIOException e) {
-                e.printStackTrace();
                 // should never get a timeout.
                 // we try to continue.
             }

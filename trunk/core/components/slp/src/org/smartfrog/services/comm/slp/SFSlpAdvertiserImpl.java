@@ -34,6 +34,7 @@ import org.smartfrog.sfcore.reference.ReferencePart;
 import org.smartfrog.sfcore.reference.HereReferencePart;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.Context;
+import org.smartfrog.sfcore.logging.LogSF;
 
 import java.net.InetAddress;
 import java.util.Vector;
@@ -58,6 +59,8 @@ public class SFSlpAdvertiserImpl extends PrimImpl implements Prim, SFSlpAdvertis
     protected Object toAdvertise;
     /** Advertise reference ? */
     protected boolean advertiseReference;
+	/** Log */
+	protected LogSF slpLog = null;
     
     // references.
     public static final Reference toAdvertiseRef = new Reference("toAdvertise");
@@ -72,6 +75,7 @@ public class SFSlpAdvertiserImpl extends PrimImpl implements Prim, SFSlpAdvertis
     
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
+				
         // get configureation for SLP
         Properties p = getSlpConfiguration();
         
@@ -113,6 +117,11 @@ public class SFSlpAdvertiserImpl extends PrimImpl implements Prim, SFSlpAdvertis
         try {
             ServiceLocationManager.setProperties(p);
             advertiser = ServiceLocationManager.getAdvertiser(new Locale(p.getProperty("net.slp.locale")));
+			// create log, if requested.
+			if(p.getProperty("net.slp.sflog").equalsIgnoreCase("true")) {
+				slpLog = sfGetLog(p.getProperty("net.slp.logfile"));
+				advertiser.setSFLog(slpLog);
+			}
         }catch(ServiceLocationException ex) {
             throw (SmartFrogException)SmartFrogException.forward(ex);
         }
@@ -157,6 +166,7 @@ public class SFSlpAdvertiserImpl extends PrimImpl implements Prim, SFSlpAdvertis
         properties.setProperty("net.slp.logErrors", sfResolve("slp_config_log_errors").toString());
         properties.setProperty("net.slp.logMsg", sfResolve("slp_config_log_msg").toString());
         properties.setProperty("net.slp.logfile", sfResolve("slp_config_logfile").toString());
+		properties.setProperty("net.slp.sflog", sfResolve("slp_config_sflog").toString());
         
         return properties;
     }

@@ -29,6 +29,7 @@ package org.smartfrog.services.comm.slp;
 import org.smartfrog.sfcore.prim.*;
 import org.smartfrog.sfcore.reference.*;
 import org.smartfrog.sfcore.common.*;
+import org.smartfrog.sfcore.logging.LogSF;
 
 import java.util.*;
 import java.net.InetAddress;
@@ -53,6 +54,7 @@ public class SFSlpLocatorImpl extends PrimImpl implements Prim, SFSlpLocator {
     private Object wtSync = new Object();
     private volatile boolean amWaiting = true;
     private boolean runThread = true;
+	protected LogSF slpLog = null;
     
     public SFSlpLocatorImpl() throws RemoteException {
         super();
@@ -83,7 +85,8 @@ public class SFSlpLocatorImpl extends PrimImpl implements Prim, SFSlpLocator {
         properties.setProperty("net.slp.logErrors", sfResolve("slp_config_log_errors").toString());
         properties.setProperty("net.slp.logMsg", sfResolve("slp_config_log_msg").toString());
         properties.setProperty("net.slp.logfile", sfResolve("slp_config_logfile").toString());
-        
+		properties.setProperty("net.slp.sflog", sfResolve("slp_config_sflog").toString());
+		        
         // get locator configuration
         discoveryDelay = ((Integer)sfResolve("locator_discovery_delay")).intValue();
         discoveryInterval = ((Integer)sfResolve("locator_discovery_interval")).intValue();
@@ -103,8 +106,12 @@ public class SFSlpLocatorImpl extends PrimImpl implements Prim, SFSlpLocator {
         try {
             locator = ServiceLocationManager.getLocator(new Locale(properties.getProperty("net.slp.locale")));
             if(scope_list.isEmpty())scope_list = ServiceLocationManager.findScopes();
+			// get SmartFrog log, if requested.
+			if(properties.getProperty("net.slp.sflog").equalsIgnoreCase("true")) {
+				slpLog = sfGetLog(properties.getProperty("net.slp.logfile"));
+				locator.setSFLog(slpLog);
+			}
         }catch(Exception ex) {
-            ex.printStackTrace();
             throw (SmartFrogException) SmartFrogException.forward(ex);
         }
         
@@ -144,7 +151,6 @@ public class SFSlpLocatorImpl extends PrimImpl implements Prim, SFSlpLocator {
                 return super.sfResolve(r, index);
             }
         }catch(Exception ex) {
-            ex.printStackTrace();
             throw (SmartFrogResolutionException) SmartFrogResolutionException.forward(ex);
         }
     }
@@ -166,7 +172,9 @@ public class SFSlpLocatorImpl extends PrimImpl implements Prim, SFSlpLocator {
                 stopWaiting();
             }catch(ServiceLocationException ex) {
                 // error during discovery.
-                ex.printStackTrace();
+				if(slpLog != null) slpLog.error("Error during discovery", ex);
+				else ex.printStackTrace();
+				
                 // stop thread...
                 runThread = false;
                 stopWaiting();

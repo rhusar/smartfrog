@@ -148,4 +148,13 @@ public class SLPAttrRplyMessage extends SLPMessageHeader {
     public Vector getAttributes() {
         return attributes;
     }
+	
+	public String toString() {
+		String s = super.toString();
+		s += "Error code: " + errorCode + "\n"
+		  + "Attributes: " + attributeStr + "\n"
+		  + "***End Of Message";
+		
+		return s;
+	}
 }

@@ -28,6 +28,8 @@ Service Location Protocol - SmartFrog components.
 package org.smartfrog.services.comm.slp;
 
 import java.util.*;
+import org.smartfrog.sfcore.logging.LogSF;
+
 /**
  * The Locator interface allows user agent objects to query for service URLs,
  * service types or service attributes.
@@ -92,4 +94,6 @@ public interface Locator {
     this method will return the scopes discovered by the UA through DA/SA adverts.
   */
   public abstract Vector getScopes();
+  
+  public abstract void setSFLog(LogSF log);
 }

@@ -65,7 +65,6 @@ public class SlpUnicastClient extends SlpUdpClient {
             // set timeout to 0. (no timeout)
             socket.setSoTimeout(0);
         }catch(SocketException e) {
-            e.printStackTrace();
             throw new ServiceLocationException(ServiceLocationException.NETWORK_INIT_FAILED,
                                                "Could not create a socket on " + 
                                                address.getHostAddress() + " port " + port);
@@ -80,7 +79,6 @@ public class SlpUnicastClient extends SlpUdpClient {
         try {
             socket.send(pk);
         }catch(Exception e) {
-            e.printStackTrace();
             throw new ServiceLocationException(ServiceLocationException.NETWORK_ERROR,
                                                "Could not send SLP message.");
         }

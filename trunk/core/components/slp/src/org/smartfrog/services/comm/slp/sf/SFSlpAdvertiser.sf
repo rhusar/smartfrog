@@ -48,6 +48,7 @@ SFSlpAdvertiser extends Prim {
     slp_config_log_errors ATTRIB SFSlpConfiguration:slp_config_log_errors;
     slp_config_log_msg ATTRIB SFSlpConfiguration:slp_config_log_msg;
     slp_config_logfile ATTRIB SFSlpConfiguration:slp_config_logfile;
+	slp_config_sflog ATTRIB SFSlpConfiguration:slp_config_sflog;
 
     // service to advertise
     serviceType ""; // e.g. service:http
