@@ -20,7 +20,6 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.reference;
 
-
 import java.util.Vector;
 
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
@@ -28,57 +27,32 @@ import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.prim.Prim;
 
+
 /**
- * Defines reference resolving. It abstracts the target of the resolution so
- * references do not need to know about it. This way, implementations can also
- * decide the mechanism used to resolve each part. An example of a difference
- * resolver would be one that walks a directory service, or a web server to
- * locate the reference. ReferenceParts will call back to resolve themselves,
- * causing the reference resolver to forward the rest of the resolution to the
- * next component.
+ * This makes a reference resolver interface available for remotable objects.
+ * ReferenceResolver can not extend from Remote since RMI would then try to
+ * marshal a stub to component descriptions on the wire, thinking the
+ * description is remotable because it indirectly inherits Remote. Interfaces
+ * or classes that need to offer reference resolution and be serializable
+ * should implement ReferenceResolver while remotable classes or interfaces
+ * should implement RemoteReferenceResolver
+ *
  */
-public interface ReferenceResolverHelper extends ReferenceResolver {
-    /**
-     * Resolve a given reference. Generally forwards directly to indexed
-     * resolve with index 0
-     *
-     * @param r reference to resolve
-     *
-     * @return resolved reference
-     *
-     * @throws SmartFrogResolutionException if error occurred while resolving
-     */
-    public Object sfResolve(Reference r)
-        throws SmartFrogResolutionException;
+public interface ReferenceResolverHelper {
 
     /**
-     * Resolves a reference starting at a given index.
-     *
-     * @param reference reference to be resolved
-     * @param index starting index
-     *
-     * @return Object attribute at resolved reference
-     *
-     * @throws SmartFrogResolutionException if error occurred while resolving
-     */
-    public Object sfResolve(Reference reference, int index)
-        throws SmartFrogResolutionException;
-
-
-
-    // sfResolve Helper methods
-
-    /**
-     * Useful method since references are generally built up from strings This
+     * Useful method since references are generally built up from strings. This
      * will translate the string into a reference with a single part and
-     * resolve it. If the reference is illegal (ie. not parseable) a illegal
-     * reference resolution exception is thrown
+     * resolve it. If the reference is illegal (ie. not parseable) a
+     * illegal reference resolution exception is thrown
      *
      * @param referencePart string representation of reference to resolve
      *
      * @return the resolved object
      *
-     * @throws SmartFrogResolutionException if error occurred while resolving
+     * @throws SmartFrogResolutionException if invalid reference of reference
+     * not resolvable
+     * @throws RemoteException if there is any network/rmi error
      */
     public Object sfResolve(String referencePart) throws SmartFrogResolutionException;
 
@@ -89,10 +63,10 @@ public interface ReferenceResolverHelper extends ReferenceResolver {
      *
      * @param reference string field reference
      *
-     * @return In case of network/rmi error
-     *
-     * @throws SmartFrogResolutionException if illegal reference or reference
+     * @return the resolved object
+     * @throws SmartFrogResolutionException if invalid reference of reference
      * not resolvable
+     * @throws RemoteException if there is any network/rmi error
      */
     public Object sfResolveWithParser(String reference) throws SmartFrogResolutionException;
 
@@ -108,8 +82,9 @@ public interface ReferenceResolverHelper extends ReferenceResolver {
      * @return java Object for attribute value or null if not
      *         found
      *
-     * @throws SmartFrogResolutionException if illegal reference or reference
+     * @throws SmartFrogResolutionException if invalid reference of reference
      * not resolvable
+     * @throws RemoteException if there is any network/rmi error
      */
     public Object sfResolve(Reference reference, boolean mandatory)
             throws SmartFrogResolutionException;
@@ -126,8 +101,9 @@ public interface ReferenceResolverHelper extends ReferenceResolver {
      *
      * @return java Object for attribute value or null if not found
      *
-     * @throws SmartFrogResolutionException if illegal reference or reference
+     * @throws SmartFrogResolutionException if invalid reference of reference
      * not resolvable
+     * @throws RemoteException if there is any network/rmi error
      */
     public Object sfResolve(String referencePart, boolean mandatory)
              throws SmartFrogResolutionException;
@@ -145,8 +121,9 @@ public interface ReferenceResolverHelper extends ReferenceResolver {
      *
      * @return boolean for attribute value or null if not found
      *
-     * @throws SmartFrogResolutionException if illegal reference or reference
+     * @throws SmartFrogResolutionException if invalid reference of reference
      * not resolvable
+     * @throws RemoteException if there is any network/rmi error
      */
     public boolean sfResolve(Reference reference, boolean defaultValue,
         boolean mandatory) throws SmartFrogResolutionException;
@@ -164,12 +141,12 @@ public interface ReferenceResolverHelper extends ReferenceResolver {
      *
      * @return int for attribute value or null if not found
      *
-     * @throws SmartFrogResolutionException if illegal reference or reference
+     * @throws SmartFrogResolutionException if invalid reference of reference
      * not resolvable
+     * @throws RemoteException if there is any network/rmi error
      */
     public int sfResolve(Reference reference, int defaultValue, boolean mandatory)
         throws SmartFrogResolutionException;
-
     /**
      * Resolves a given reference and gets an int. Utility method to
      * resolve an attribute with an int value.
@@ -180,14 +157,15 @@ public interface ReferenceResolverHelper extends ReferenceResolver {
      * @param mandatory boolean that indicates if this attribute must be
      *        present in the description. If it is mandatory and not found it
      *        triggers a ResolutionException
-     * @param minValue allowed (included)
-     * @param maxValue allowed (included).
+     * @param minValue allowed (included).
+     * @param maxValue allowd (included).
      *
      * @return int for attribute value or null if not found
      *
-     * @throws SmartFrogResolutionException if illegal reference or reference
-     * not resolvable or resolved value &lt; minValue or resolved value &gt;
-     * maxValue
+     * @throws SmartFrogResolutionException if invalid reference of reference
+     * not resolvable or resolve value &lt;minValue or resolveValue
+     * &gt;maxValue
+     * @throws RemoteException if there is any network/rmi error
      */
     public int sfResolve(Reference reference, int defaultValue, Integer minValue, Integer maxValue, boolean mandatory)
         throws SmartFrogResolutionException;
@@ -205,7 +183,9 @@ public interface ReferenceResolverHelper extends ReferenceResolver {
      *
      * @return long for attribute value or defaultValue if not found
      *
-     * @throws SmartFrogResolutionException if illegal reference or reference
+     * @throws SmartFrogResolutionException if invalid reference of reference
+     * not resolvable
+     * @throws RemoteException if there is any network/rmi error
      */
 
     public long sfResolve(Reference reference, long defaultValue, boolean mandatory)
@@ -226,9 +206,10 @@ public interface ReferenceResolverHelper extends ReferenceResolver {
      *
      * @return long for attribute value or defaultValue if not found
      *
-     * @throws SmartFrogResolutionException if illegal reference or reference
-     * not resolvable or resolved value &lt; minValue or resolved value &gt;
-     * maxValue
+     * @throws SmartFrogResolutionException if invalid reference of reference
+     * not resolvable or resolve value &lt;minValue or resolveValue
+     * &gt;maxValue
+     * @throws RemoteException if there is any network/rmi error
      */
 
     public long sfResolve(Reference reference, long defaultValue, Long minValue, Long maxValue, boolean mandatory)
@@ -247,7 +228,9 @@ public interface ReferenceResolverHelper extends ReferenceResolver {
      *
      * @return float for attribute value or defaultValue if not found
      *
-     * @throws SmartFrogResolutionException if illegal reference or reference
+     * @throws SmartFrogResolutionException if invalid reference of reference
+     * not resolvable
+     * @throws RemoteException if there is any network/rmi error
      */
 
     public float sfResolve(Reference reference, float defaultValue, boolean mandatory)
@@ -268,9 +251,10 @@ public interface ReferenceResolverHelper extends ReferenceResolver {
      *
      * @return float for attribute value or defaultValue if not found
      *
-     * @throws SmartFrogResolutionException if illegal reference or reference
-     * not resolvable or resolved value &lt; minValue or resolved value &gt;
-     * maxValue
+     * @throws SmartFrogResolutionException if invalid reference of reference
+     * not resolvable or resolve value &lt;minValue or resolveValue
+     * &gt;maxValue
+     * @throws RemoteException if there is any network/rmi error
      */
 
     public float sfResolve(Reference reference, float defaultValue, Float minValue, Float maxValue, boolean mandatory)
@@ -289,7 +273,10 @@ public interface ReferenceResolverHelper extends ReferenceResolver {
      *
      * @return double for attribute value or defaultValue if not found
      *
-     * @throws SmartFrogResolutionException if illegal reference or reference
+     * @throws SmartFrogResolutionException if invalid reference of reference
+     * not resolvable or resolve value &lt;minValue or resolveValue
+     * &gt;maxValue
+     * @throws RemoteException if there is any network/rmi error
      */
 
     public double sfResolve(Reference reference, double defaultValue, boolean mandatory)
@@ -310,10 +297,10 @@ public interface ReferenceResolverHelper extends ReferenceResolver {
      *
      * @return double for attribute value or defaultValue if not found
      *
-     * @throws SmartFrogResolutionException if illegal reference or reference
-     * not resolvable or resolved value &lt; minValue or resolved value &gt;
-     * maxValue
-
+     * @throws SmartFrogResolutionException if invalid reference of reference
+     * not resolvable or resolve value &lt;minValue or resolveValue
+     * &gt;maxValue
+     * @throws RemoteException if there is any network/rmi error
      */
 
     public double sfResolve(Reference reference, double defaultValue, Double minValue, Double maxValue, boolean mandatory)
@@ -332,7 +319,9 @@ public interface ReferenceResolverHelper extends ReferenceResolver {
      *
      * @return String for attribute value or null if not found
      *
-     * @throws SmartFrogResolutionException if illegal reference or reference
+     * @throws SmartFrogResolutionException if invalid reference of reference
+     * not resolvable
+     * @throws RemoteException if there is any network/rmi error
      */
     public String sfResolve(Reference reference, String defaultValue,
         boolean mandatory) throws SmartFrogResolutionException;
@@ -350,7 +339,9 @@ public interface ReferenceResolverHelper extends ReferenceResolver {
      *
      * @return Vector for attribute value or null if not found
      *
-     * @throws SmartFrogResolutionException if illegal reference or reference
+     * @throws SmartFrogResolutionException if invalid reference of reference
+     * not resolvable
+     * @throws RemoteException if there is any network/rmi error
      */
     public Vector sfResolve(Reference reference, Vector defaultValue,
         boolean mandatory) throws SmartFrogResolutionException;
@@ -368,7 +359,9 @@ public interface ReferenceResolverHelper extends ReferenceResolver {
      *
      * @return String[] for attribute value or null if not found
      *
-     * @throws SmartFrogResolutionException if illegal reference or reference
+     * @throws SmartFrogResolutionException if invalid reference of reference
+     * not resolvable
+     * @throws RemoteException if there is any network/rmi error
      */
     public String[] sfResolve(Reference reference, String[] defaultValue,
         boolean mandatory) throws SmartFrogResolutionException;
@@ -388,7 +381,9 @@ public interface ReferenceResolverHelper extends ReferenceResolver {
      * @return java.net.InetAddress for attribute value or defaultValue if not
      *         found
      *
-     * @throws SmartFrogResolutionException if illegal reference or reference
+     * @throws SmartFrogResolutionException if invalid reference of reference
+     * not resolvable
+     * @throws RemoteException if there is any network/rmi error
      */
     public java.net.InetAddress sfResolve(Reference reference,
         java.net.InetAddress defaultValue, boolean mandatory)
@@ -409,7 +404,9 @@ public interface ReferenceResolverHelper extends ReferenceResolver {
      * @return SmartFrog ComponentDescription for attribute value or
      *         defaultValue if not found
      *
-     * @throws SmartFrogResolutionException if illegal reference or reference
+     * @throws SmartFrogResolutionException if invalid reference of reference
+     * not resolvable
+     * @throws RemoteException if there is any network/rmi error
      */
     public ComponentDescription sfResolve(Reference reference,
         ComponentDescription defaultValue, boolean mandatory)
@@ -430,7 +427,9 @@ public interface ReferenceResolverHelper extends ReferenceResolver {
      * @return SmartFrog Reference for attribute value or defaultValue if not
      *         found
      *
-     * @throws SmartFrogResolutionException if illegal reference or reference
+     * @throws SmartFrogResolutionException if invalid reference of reference
+     * not resolvable
+     * @throws RemoteException if there is any network/rmi error
      */
     public Reference sfResolve(Reference reference, Reference defaultValue,
         boolean mandatory) throws SmartFrogResolutionException;
@@ -450,7 +449,9 @@ public interface ReferenceResolverHelper extends ReferenceResolver {
      * @return SmartFrog Prim for attribute value or defaultValue if not
      *         found
      *
-     * @throws SmartFrogResolutionException if illegal reference or reference
+     * @throws SmartFrogResolutionException if invalid reference of reference
+     * not resolvable
+     * @throws RemoteException if there is any network/rmi error
      */
     public Prim sfResolve(Reference reference, Prim defaultValue,
         boolean mandatory) throws SmartFrogResolutionException;
@@ -470,7 +471,9 @@ public interface ReferenceResolverHelper extends ReferenceResolver {
      * @return SmartFrog Compound for attribute value or defaultValue if not
      *         found
      *
-     * @throws SmartFrogResolutionException if illegal reference or reference
+     * @throws SmartFrogResolutionException if invalid reference of reference
+     * not resolvable
+     * @throws RemoteException if there is any network/rmi error
      */
     public Compound sfResolve(Reference reference, Compound defaultValue,
         boolean mandatory) throws SmartFrogResolutionException;
@@ -488,7 +491,9 @@ public interface ReferenceResolverHelper extends ReferenceResolver {
      *
      * @return String[] for attribute value or null if not found
      *
-     * @throws SmartFrogResolutionException if illegal reference or reference
+     * @throws SmartFrogResolutionException if invalid reference of reference
+     * not resolvable
+     * @throws RemoteException if there is any network/rmi error
      */
     public Object sfResolve(Reference reference, Object defaultValue,
         boolean mandatory) throws SmartFrogResolutionException;
@@ -506,7 +511,9 @@ public interface ReferenceResolverHelper extends ReferenceResolver {
      *
      * @return boolean for attribute value or null if not found
      *
-     * @throws SmartFrogResolutionException if illegal reference or reference
+     * @throws SmartFrogResolutionException if invalid reference of reference
+     * not resolvable
+     * @throws RemoteException if there is any network/rmi error
      */
     public boolean sfResolve(String referencePart, boolean defaultValue,
         boolean mandatory) throws SmartFrogResolutionException;
@@ -524,7 +531,9 @@ public interface ReferenceResolverHelper extends ReferenceResolver {
      *
      * @return int for attribute value or null if not found
      *
-     * @throws SmartFrogResolutionException if illegal reference or reference
+     * @throws SmartFrogResolutionException if invalid reference of reference
+     * not resolvable
+     * @throws RemoteException if there is any network/rmi error
      */
     public int sfResolve(String referencePart, int defaultValue, boolean mandatory)
         throws SmartFrogResolutionException;
@@ -544,16 +553,17 @@ public interface ReferenceResolverHelper extends ReferenceResolver {
      *
      * @return int for attribute value or null if not found
      *
-     * @throws SmartFrogResolutionException if illegal reference or reference
-     * not resolvable or resolved value &lt; minValue or resolved value &gt;
-     * maxValue
+     * @throws SmartFrogResolutionException if invalid reference of reference
+     * not resolvable or resolve value &lt;minValue or resolveValue
+     * &gt;maxValue
+     * @throws RemoteException if there is any network/rmi error
      */
     public int sfResolve(String referencePart, int defaultValue, Integer minValue, Integer maxValue, boolean mandatory)
         throws SmartFrogResolutionException;
 
     /**
-     * Resolves a referencePart given a string and gets a long. Utility method
-     * to resolve an attribute with an long value. Int values are upcasted to
+     * Resolves a referencePart given a string and gets a long. Utility method to
+     * resolve an attribute with an long value. Int values are upcastted to
      * long.
      *
      * @param referencePart string field reference
@@ -565,14 +575,16 @@ public interface ReferenceResolverHelper extends ReferenceResolver {
      *
      * @return long for attribute value or defaultValue if not found
      *
-     * @throws SmartFrogResolutionException if illegal reference or reference
+     * @throws SmartFrogResolutionException if invalid reference of reference
+     * not resolvable
+     * @throws RemoteException if there is any network/rmi error
      */
     public long sfResolve(String referencePart, long defaultValue, boolean mandatory)
         throws SmartFrogResolutionException;
 
     /**
-     * Resolves a referencePart given a string and gets a long. Utility method
-     * to resolve an attribute with an long value. Int values are upcasted to
+     * Resolves a referencePart given a string and gets a long. Utility method to
+     * resolve an attribute with an long value. Int values are upcastted to
      * long.
      *
      * @param referencePart string field reference
@@ -586,12 +598,103 @@ public interface ReferenceResolverHelper extends ReferenceResolver {
      *
      * @return long for attribute value or defaultValue if not found
      *
-     * @throws SmartFrogResolutionException if illegal reference or reference
-     * not resolvable or resolved value &lt; minValue or resolved value &gt;
-     * maxValue
+     * @throws SmartFrogResolutionException if invalid reference of reference
+     * not resolvable or resolve value &lt;minValue or resolveValue
+     * &gt;maxValue
+     * @throws RemoteException if there is any network/rmi error
      */
     public long sfResolve(String referencePart, long defaultValue, Long minValue, Long maxValue, boolean mandatory)
         throws SmartFrogResolutionException;
+    /**
+     * Resolves a reference given a string and gets an float. Utility method to
+     * resolve an attribute with an float value. Int is "upcasted" to float.
+     *
+     * @param referencePart string field reference with single part
+     * @param defaultValue float default value that is returned when reference
+     * is not found and it is not mandatory
+     * @param mandatory boolean that indicates if this attribute must be
+     *        present in the description. If it is mandatory and not found it
+     *        triggers a ResolutionException
+     *
+     * @return float for attribute value or null if not found
+     *
+     * @throws SmartFrogResolutionException if invalid reference of reference
+     * not resolvable or resolve value &lt;minValue or resolveValue
+     * &gt;maxValue
+     * @throws RemoteException if there is any network/rmi error
+     */
+    public float sfResolve(String referencePart, float defaultValue, boolean mandatory)
+        throws SmartFrogResolutionException;
+
+    /**
+     * Resolves a reference given a string and gets an float. Utility method to
+     * resolve an attribute with an float value. Int is "upcasted to float.
+     *
+     * @param referencePart string field reference with single part
+     * @param defaultValue float default value that is returned when reference
+     * is not found and it is not mandatory
+     * @param mandatory boolean that indicates if this attribute must be
+     *        present in the description. If it is mandatory and not found it
+     *        triggers a ResolutionException
+     * @param minValue allowed (included)
+     * @param maxValue allowed (included)
+     *
+     * @return float for attribute value or null if not found
+     *
+     * @throws SmartFrogResolutionException if invalid reference of reference
+     * not resolvable or resolve value &lt;minValue or resolveValue
+     * &gt;maxValue
+     * @throws RemoteException if there is any network/rmi error
+     */
+    public float sfResolve(String referencePart, float defaultValue, Float minValue, Float maxValue, boolean mandatory)
+        throws SmartFrogResolutionException;
+
+    /**
+     * Resolves a referencePart given a string and gets a double. Utility
+     * method to  resolve an attribute with an double value. Int, Long and
+     * Float values are upcasted to double.
+     *
+     * @param referencePart string field reference
+     * @param defaultValue double default value that is returned when reference
+     *        is not found and it is not mandatory
+     * @param mandatory boolean that indicates if this attribute must be
+     *        present in the description. If it is mandatory and not found it
+     *        triggers a SmartFrogResolutionException
+     *
+     * @return double for attribute value or defaultValue if not found
+     *
+     * @throws SmartFrogResolutionException if invalid reference of reference
+     * not resolvable or resolve value &lt;minValue or resolveValue
+     * &gt;maxValue
+     * @throws RemoteException if there is any network/rmi error
+     */
+    public double sfResolve(String referencePart, double defaultValue, boolean mandatory)
+        throws SmartFrogResolutionException;
+
+    /**
+     * Resolves a referencePart given a string and gets a double. Utility
+     * method to  resolve an attribute with an double value. Int, Long and
+     * Float values are upcasted to double.
+     *
+     * @param referencePart string field reference
+     * @param defaultValue double default value that is returned when reference
+     *        is not found and it is not mandatory
+     * @param mandatory boolean that indicates if this attribute must be
+     *        present in the description. If it is mandatory and not found it
+     *        triggers a SmartFrogResolutionException
+     * @param minValue allowed (included)
+     * @param maxValue allowed (included)
+     *
+     * @return double for attribute value or defaultValue if not found
+     *
+     * @throws SmartFrogResolutionException if invalid reference of reference
+     * not resolvable or resolve value &lt;minValue or resolveValue
+     * &gt;maxValue
+     * @throws RemoteException if there is any network/rmi error
+     */
+    public double sfResolve(String referencePart, double defaultValue, Double minValue, Double maxValue, boolean mandatory)
+        throws SmartFrogResolutionException;
+
     /**
      * Resolves a reference given a string and gets a String. Utility method to
      * resolve an attribute with a String value.
@@ -605,7 +708,10 @@ public interface ReferenceResolverHelper extends ReferenceResolver {
      *
      * @return String for attribute value or null if not found
      *
-     * @throws SmartFrogResolutionException if illegal reference or reference
+     * @throws SmartFrogResolutionException if invalid reference of reference
+     * not resolvable or resolve value &lt;minValue or resolveValue
+     * &gt;maxValue
+     * @throws RemoteException if there is any network/rmi error
      */
     public String sfResolve(String referencePart, String defaultValue,
         boolean mandatory) throws SmartFrogResolutionException;
@@ -623,7 +729,9 @@ public interface ReferenceResolverHelper extends ReferenceResolver {
      *
      * @return Vector for attribute value or null if not found
      *
-     * @throws SmartFrogResolutionException if illegal reference or reference
+     * @throws SmartFrogResolutionException if invalid reference of reference
+     * not resolvable
+     * @throws RemoteException if there is any network/rmi error
      */
     public Vector sfResolve(String referencePart, Vector defaultValue,
         boolean mandatory) throws SmartFrogResolutionException;
@@ -641,7 +749,9 @@ public interface ReferenceResolverHelper extends ReferenceResolver {
      *
      * @return String[] for attribute value or null if not found
      *
-     * @throws SmartFrogResolutionException if illegal reference or reference
+     * @throws SmartFrogResolutionException if invalid reference of reference
+     * not resolvable
+     * @throws RemoteException if there is any network/rmi error
      */
     public String[] sfResolve(String referencePart, String[] defaultValue,
         boolean mandatory) throws SmartFrogResolutionException;
@@ -661,7 +771,9 @@ public interface ReferenceResolverHelper extends ReferenceResolver {
      * @return java.net.InetAddress for attribute value or defaultValue if not
      * found
      *
-     * @throws SmartFrogResolutionException if illegal reference or reference
+     * @throws SmartFrogResolutionException if invalid reference of reference
+     * not resolvable
+     * @throws RemoteException if there is any network/rmi error
      */
     public java.net.InetAddress sfResolve(String referencePart,
         java.net.InetAddress defaultValue, boolean mandatory)
@@ -682,7 +794,9 @@ public interface ReferenceResolverHelper extends ReferenceResolver {
      * @return ComponentDescription for attribute value or defaultValue if not
      *         found
      *
-     * @throws SmartFrogResolutionException if illegal reference or reference
+     * @throws SmartFrogResolutionException if invalid reference of reference
+     * not resolvable
+     * @throws RemoteException if there is any network/rmi error
      */
     public ComponentDescription sfResolve(String referencePart,
         ComponentDescription defaultValue, boolean mandatory)
@@ -701,7 +815,9 @@ public interface ReferenceResolverHelper extends ReferenceResolver {
      *
      * @return Reference for attribute value or defaultValue if not found
      *
-     * @throws SmartFrogResolutionException if illegal reference or reference
+     * @throws SmartFrogResolutionException if invalid reference of reference
+     * not resolvable
+     * @throws RemoteException if there is any network/rmi error
      */
     public Reference sfResolve(String referencePart, Reference defaultValue,
         boolean mandatory) throws SmartFrogResolutionException;
@@ -719,7 +835,9 @@ public interface ReferenceResolverHelper extends ReferenceResolver {
      *
      * @return Prim for attribute value or defaultValue if not found
      *
-     * @throws SmartFrogResolutionException if illegal reference or reference
+     * @throws SmartFrogResolutionException if invalid reference of reference
+     * not resolvable
+     * @throws RemoteException if there is any network/rmi error
      */
     public Prim sfResolve(String referencePart, Prim defaultValue,
         boolean mandatory) throws SmartFrogResolutionException;
@@ -737,7 +855,9 @@ public interface ReferenceResolverHelper extends ReferenceResolver {
      *
      * @return Compound for attribute value or defaultValue if not found
      *
-     * @throws SmartFrogResolutionException if illegal reference or reference
+     * @throws SmartFrogResolutionException if invalid reference of reference
+     * not resolvable
+     * @throws RemoteException if there is any network/rmi error
      */
     public Compound sfResolve(String referencePart, Compound defaultValue,
         boolean mandatory) throws SmartFrogResolutionException;
@@ -756,8 +876,11 @@ public interface ReferenceResolverHelper extends ReferenceResolver {
      *
      * @return java Object for attribute value or null if not found
      *
-     * @throws SmartFrogResolutionException if illegal reference or reference
+     * @throws SmartFrogResolutionException if invalid reference of reference
+     * not resolvable
+     * @throws RemoteException if there is any network/rmi error
      */
     public Object sfResolve(String referencePart, Object defaultValue,
         boolean mandatory) throws SmartFrogResolutionException;
+
 }
