@@ -87,6 +87,10 @@ JUnitTestSuite extends TestSuite {
  */
 
 TestListener extends Prim {
+
+   testListenerSchema extends Schema {
+       name extends String;
+   }
 }
 
 /**
@@ -94,12 +98,13 @@ TestListener extends Prim {
  */
 ConsoleListener extends TestListener {
     sfClass "org.smartfrog.services.junit.listeners.ConsoleListenerComponent";
+    name "ConsoleListener";
 }
 
 /**
  * XML listener is the most complex beast
  */
-XMLListenerSchema extends Schema {
+XmlListenerSchema extends Schema {
 /** output directories are compusory and can be a path or a File ref*/
     outputDirectory extends Compulsory ;
     //outputFile extends Compulsory ;
@@ -108,10 +113,11 @@ XMLListenerSchema extends Schema {
     useHostname extends Boolean;
 }
 
-XMLListener extends TestListener {
-    schema extends XMLListenerSchema;
+XmlListener extends TestListener {
+    xmlListenerSchema extends XmlListenerSchema;
     sfClass "org.smartfrog.services.junit.listeners.XmlListenerComponent";
     useHostname true;
+    name "XmlListener";
 }
 
 /**
@@ -119,6 +125,7 @@ XMLListener extends TestListener {
  */
 BufferingListener extends TestListener {
     sfClass "org.smartfrog.services.junit.listeners.BufferingListenerComponent";
+    name "BufferingListener";
 }
 
 /**

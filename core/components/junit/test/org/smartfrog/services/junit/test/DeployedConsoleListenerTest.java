@@ -19,8 +19,8 @@
  */
 package org.smartfrog.services.junit.test;
 
-import org.smartfrog.services.junit.TestListenerFactory;
 import org.smartfrog.services.junit.TestRunner;
+import org.smartfrog.services.junit.listeners.ConsoleListenerFactory;
 import org.smartfrog.sfcore.prim.Prim;
 
 /**
@@ -44,9 +44,9 @@ public class DeployedConsoleListenerTest extends TestRunnerTestBase {
             deploy = deployExpectingSuccess(url, appName);
             TestRunner runner = (TestRunner) deploy;
             assertTrue(runner != null);
-            TestListenerFactory listener = null;
+            ConsoleListenerFactory listener = null;
             listener =
-                    (TestListenerFactory) deploy.sfResolve(
+                    (ConsoleListenerFactory) deploy.sfResolve(
                             TestRunner.ATTR_LISTENER,
                             listener,
                             true);

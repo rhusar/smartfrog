@@ -20,19 +20,18 @@
 package org.smartfrog.services.junit;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.prim.Prim;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.util.List;
 
 
 /**
- * A test suite is anything that is testable
- * created 15-Apr-2004 11:51:51
+ * A test suite is anything that is testable created 15-Apr-2004 11:51:51
  */
 
 
-public interface TestSuite extends Remote, TestResultAttributes  {
+public interface TestSuite extends Prim, Remote, TestResultAttributes {
 
     public String ATTR_NAME = "name";
     public String ATTR_IF = "if";
@@ -41,13 +40,16 @@ public interface TestSuite extends Remote, TestResultAttributes  {
     //read only properties
     /**
      * bind to the configuration. A null parameter means 'stop binding'
+     *
      * @param configuration
      * @throws RemoteException
      */
-    void bind(RunnerConfiguration configuration) throws RemoteException, SmartFrogException;
+    void bind(RunnerConfiguration configuration) throws RemoteException,
+            SmartFrogException;
 
     /**
      * run the test
+     *
      * @throws RemoteException
      */
     boolean runTests() throws RemoteException, SmartFrogException;

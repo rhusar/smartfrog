@@ -19,14 +19,10 @@
  */
 package org.smartfrog.services.junit.test;
 
-import junit.framework.TestCase;
 import org.smartfrog.services.junit.TestInfo;
 import org.smartfrog.services.junit.TestListener;
 import org.smartfrog.services.junit.listeners.OneHostXMLListener;
-import org.w3c.dom.Document;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
@@ -37,10 +33,13 @@ import java.util.Date;
  * PM
  */
 
-public class OneHostXMLListenerTest extends TestCase {
+public class OneHostXMLListenerTest extends TestRunnerTestBase {
 
+    public OneHostXMLListenerTest(String name) {
+        super(name);
+    }
 
-    File tempdir;
+    private File tempdir;
 
     /**
      * Sets up the fixture, for example, open a network connection. This method
@@ -59,7 +58,7 @@ public class OneHostXMLListenerTest extends TestCase {
         ti.markEndTime();
         listener.endTest(ti);
         listener.endSuite();
-        validate(file);
+        validateXmlLog(file);
     }
 
 
@@ -75,7 +74,7 @@ public class OneHostXMLListenerTest extends TestCase {
         listener.endTest(ti);
         listener.endSuite();
 
-        validate(file);
+        validateXmlLog(file);
     }
 
     public OneHostXMLListener createListener(File file, String suite)
@@ -90,18 +89,6 @@ public class OneHostXMLListenerTest extends TestCase {
                 startTime,
                 null);
         return listener;
-    }
-
-
-    public Document validate(File file) throws Exception {
-        assertTrue(file.exists());
-        DocumentBuilder builder;
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-//        factory.setNamespaceAware(true);
-//        factory.setValidating(true);
-        builder = factory.newDocumentBuilder();
-        Document document = builder.parse(file);
-        return document;
     }
 
 }

@@ -22,7 +22,6 @@
 package org.smartfrog.services.junit.listeners;
 
 import org.smartfrog.services.junit.TestInfo;
-import org.smartfrog.services.junit.TestListener;
 import org.smartfrog.services.junit.ThrowableTraceInfo;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
@@ -44,7 +43,7 @@ import java.util.Date;
  * Important: close the file after use. The finalizer does not clean up; it
  * merely throws an assertion failure if it is called while the file is open.
  */
-public class OneHostXMLListener implements TestListener {
+public class OneHostXMLListener implements XmlListener {
 
     /**
      * file we save to
@@ -504,5 +503,14 @@ public class OneHostXMLListener implements TestListener {
      */
     public int hashCode() {
         return destFile.toString().hashCode();
+    }
+
+    /**
+     * get the filename of this
+     *
+     * @return the filename used
+     */
+    public String getFilename() {
+        return destFile.getAbsolutePath();
     }
 }

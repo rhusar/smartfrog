@@ -24,7 +24,11 @@ package org.smartfrog.services.junit.test;
 import org.smartfrog.services.junit.TestRunner;
 import org.smartfrog.test.SmartFrogTestBase;
 import org.smartfrog.test.TestHelper;
+import org.w3c.dom.Document;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.File;
 import java.rmi.RemoteException;
 
 /**
@@ -68,5 +72,16 @@ public class TestRunnerTestBase extends SmartFrogTestBase {
             seconds = Integer.valueOf(timeout).intValue();
         }
         return seconds;
+    }
+
+    public Document validateXmlLog(File file) throws Exception {
+        assertTrue(file.exists());
+        DocumentBuilder builder;
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+//        factory.setNamespaceAware(true);
+//        factory.setValidating(true);
+        builder = factory.newDocumentBuilder();
+        Document document = builder.parse(file);
+        return document;
     }
 }

@@ -29,25 +29,25 @@ public interface TestResultAttributes {
     /**
      * true if the test has finished
      */
-    String ATTR_FINISHED = "finished";
+    String ATTR_FINISHED = "testsFinished";
 
     /**
      * number of tests
      */
-    String ATTR_TESTS = "tests";
+    String ATTR_TESTS = "testsRun";
     /**
      * number of failures
      */
-    String ATTR_FAILURES = "failures";
+    String ATTR_FAILURES = "testsFailed";
 
     /**
      * number of errors
      */
-    String ATTR_ERRORS = "errors";
+    String ATTR_ERRORS = "testErrors";
     /**
      * boolean set to true iff all tests passed
      */
-    String ATTR_SUCCESSFUL = "successful";
+    String ATTR_SUCCESSFUL = "testsSuccessful";
 
 
 }

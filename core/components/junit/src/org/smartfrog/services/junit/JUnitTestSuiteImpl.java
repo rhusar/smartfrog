@@ -55,9 +55,9 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
 
     private List classes;
 
-    private boolean ifValue;
+    private boolean ifValue = true;
 
-    private boolean unlessValue;
+    private boolean unlessValue = false;
 
 
     private String packageValue;
@@ -252,7 +252,9 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
      * @throws java.rmi.RemoteException
      */
     public boolean runTests() throws RemoteException, SmartFrogException {
-        if (configuration == null || getListener() == null) {
+
+        log.info("running test suite " + suitename);
+        if (configuration == null) {
             throw new SmartFrogException(
                     "TestSuite has not been configured yet");
         }
@@ -265,7 +267,7 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
 
         //bind to our listener
         TestListenerFactory listenerFactory = configuration.getListenerFactory();
-        listener = listenerFactory.listen(hostname,
+        listener = listenerFactory.listen(this, hostname,
                 suitename,
                 System.currentTimeMillis());
 

@@ -19,19 +19,20 @@ For more information: www.smartfrog.org
 */
 
 #include "/files/components.sf"
+
 sfCodeBase PROPERTY org.smartfrog.codebase;
+
     /**
-     * run all tests in the suite.
-     * output to an XML listener
+     * this is just somewhere to put together statements to debug the thing,
+     * when the tests dont provide enough information
      */
 
-sfConfig extends testAll {
+sfConfig extends TestAll {
 
     //buffer the results
 
-    listener extends XMLListener {
+    listener extends XmlListener {
         outputDirectory LAZY PROPERTY java.io.tmpdir;
     }
-
 
 }

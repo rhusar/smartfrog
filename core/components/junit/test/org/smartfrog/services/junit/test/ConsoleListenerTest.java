@@ -45,7 +45,7 @@ public class ConsoleListenerTest extends TestCase {
 
     public void testSuccess() throws Exception {
         ConsoleListenerComponent factory = createListener(null);
-        TestListener listener = factory.listen("localhost", "test", 0);
+        TestListener listener = factory.listen(null, "localhost", "test", 0);
         TestInfo ti = new TestInfo(this);
         ti.markStartTime();
         listener.startTest(ti);
@@ -56,7 +56,7 @@ public class ConsoleListenerTest extends TestCase {
 
     public void testError() throws Exception {
         ConsoleListenerComponent factory = createListener(null);
-        TestListener listener = factory.listen("localhost", "test", 0);
+        TestListener listener = factory.listen(null, "localhost", "test", 0);
         TestInfo ti = new TestInfo(this);
         listener.startTest(ti);
         Throwable t = new RuntimeException("oops", new Throwable("ne&>sted"));

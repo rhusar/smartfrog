@@ -55,18 +55,19 @@ public class LocalhostTest extends TestRunnerTestBase {
                             true);
             boolean finished = spinTillFinished(runner, seconds);
             assertTrue("Test run timed out", finished);
-            Statistics statistics = runner.getStatistics();
-            assertEquals("statistics.testRun==1", 1, statistics.getTestsRun());
-            assertEquals("statistics.errors==0", 0, statistics.getErrors());
-            assertEquals("statistics.failures==0",
-                    0,
-                    statistics.getFailures());
             assertTrue("expected tests to run", listener.getStartCount() == 1);
             assertTrue("session started",
                     listener.getSessionStartCount() == 1);
             assertTrue("session ended",
                     listener.getSessionEndCount() == 1);
             assertTrue("all tests passed", listener.testsWereSuccessful());
+            Statistics statistics = runner.getStatistics();
+            assertEquals("statistics.testRun==1", 1, statistics.getTestsRun());
+            assertEquals("statistics.errors==0", 0, statistics.getErrors());
+            assertEquals("statistics.failures==0",
+                    0,
+                    statistics.getFailures());
+
 
         } finally {
             terminateApplication(deploy);

@@ -25,7 +25,7 @@ sfCodeBase PROPERTY org.smartfrog.codebase;
      * output to an XML listener
      */
 
-sfConfig extends testAll {
+sfConfig extends TestAll {
 
     //buffer the results
 
