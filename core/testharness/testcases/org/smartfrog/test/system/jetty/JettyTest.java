@@ -28,7 +28,7 @@ import java.net.*;
 import java.io.*;
 
 /**
- * JUnit test class for test cases related to life cycle method "sfDeploy"
+ * JUnit test class for test cases related to "jetty" component
  */
 public class JettyTest extends SmartFrogTestBase {
 
