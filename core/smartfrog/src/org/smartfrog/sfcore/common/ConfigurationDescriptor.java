@@ -786,6 +786,11 @@ public class ConfigurationDescriptor implements MessageKeys{
      * @param url
      */
     public void setUrl(String url) {
+        // Added to avoid problems with "" in shell scripts (Unix vs Windows)
+        url=url.trim();
+        if (url.startsWith("\"")&&(url.endsWith("\""))){
+           url=url.substring(1,url.length()-1);
+        }
         this.url = url;
     }
 
