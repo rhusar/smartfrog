@@ -32,6 +32,7 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.security.SFSecurity;
+import java.rmi.*;
 
 
 
@@ -50,6 +51,9 @@ public class DefaultRootLocatorImpl implements RootLocator, MessageKeys {
 
     /** Port for registry. */
     protected static int registryPort = -1;
+
+     /** RMI Registry. */
+    protected static Registry registry = null;
 
     /**
      * Constructs the DefaultRootLocatorImpl object.
@@ -104,9 +108,12 @@ public class DefaultRootLocatorImpl implements RootLocator, MessageKeys {
         throws SmartFrogException, RemoteException {
 
         registryPort = getRegistryPort(c);
+
         try {
-            Registry reg = SFSecurity.createRegistry(registryPort);
-            reg.bind(defaultName, c);
+            if (registry==null) {
+                registry = SFSecurity.createRegistry(registryPort);
+            }
+            registry.bind(defaultName, c);
         } catch (Throwable t) {
             if (t instanceof java.rmi.server.ExportException){
                 throw new SmartFrogRuntimeException ( MessageUtil.formatMessage(MSG_ERR_SF_RUNNING) , t);
@@ -115,6 +122,29 @@ public class DefaultRootLocatorImpl implements RootLocator, MessageKeys {
             throw SmartFrogRuntimeException.forward(t);
         }
     }
+
+
+    /**
+     * Unbinds root process compound from local registry.
+     *
+     * @param c process compound to set as root
+     *
+     * @throws RemoteException if there is any network/rmi error
+     * @throws SmartFrogRuntimeException if failed to unbind
+     *
+     */
+    public void unbindRootProcessCompound()
+        throws SmartFrogException, RemoteException{
+       if (registry!=null) {
+        try {
+            registry.unbind(defaultName);
+        } catch (NotBoundException ex) {
+          throw SmartFrogRuntimeException.forward(ex);
+        }
+       }
+
+    }
+
 
     /**
      * Gets the root process compound for a given host. If the passed host is
