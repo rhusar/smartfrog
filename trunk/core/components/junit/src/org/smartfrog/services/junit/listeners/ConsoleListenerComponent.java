@@ -20,11 +20,12 @@
 package org.smartfrog.services.junit.listeners;
 
 import org.smartfrog.services.junit.TestInfo;
-import org.smartfrog.services.junit.ThrowableTraceInfo;
-import org.smartfrog.services.junit.TestListenerFactory;
 import org.smartfrog.services.junit.TestListener;
-import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.services.junit.TestListenerFactory;
+import org.smartfrog.services.junit.ThrowableTraceInfo;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.prim.TerminationRecord;
 
 import java.io.PrintStream;
 import java.rmi.RemoteException;
@@ -35,26 +36,55 @@ import java.rmi.RemoteException;
  */
 
 public class ConsoleListenerComponent extends PrimImpl
-        implements  TestListenerFactory {
+        implements TestListenerFactory {
 
     /**
      * cache the prinstream so that when system.out is used to capture output we
      * still go to the original console (i.e. no recursion)
      */
 
-    PrintStream outstream = System.out;
+    PrintStream outputstream = System.out;
 
     public ConsoleListenerComponent() throws RemoteException {
     }
 
 
-
-    private void log(String s) {
-        outstream.println(s);
+    /**
+     * set a new output stream
+     *
+     * @param out
+     */
+    public void setOutputStream(PrintStream out) {
+        outputstream = out;
     }
 
-    private void flush() {
-        outstream.flush();
+    /**
+     * get the current output stream
+     *
+     * @return
+     */
+    public PrintStream getOutputstream() {
+        return outputstream;
+    }
+
+    /**
+     * Provides hook for subclasses to implement useful termination behavior.
+     * Deregisters component from local process compound (if ever registered)
+     *
+     * @param status termination status
+     */
+    public synchronized void sfTerminateWith(TerminationRecord status) {
+        outputstream.flush();
+        super.sfTerminateWith(status);
+    }
+
+
+    public void log(String s) {
+        outputstream.println(s);
+    }
+
+    public void flush() {
+        outputstream.flush();
     }
 
     private void logTrouble(String message, TestInfo test) {
@@ -91,12 +121,11 @@ public class ConsoleListenerComponent extends PrimImpl
      * @param hostname  name of host
      * @param suitename name of test suite
      * @param timestamp start timestamp (UTC)
-     *
      * @return a listener to talk to
      */
     public TestListener listen(String hostname,
-                               String suitename,
-                               long timestamp) throws RemoteException,
+            String suitename,
+            long timestamp) throws RemoteException,
             SmartFrogException {
         return new ConsoleTestListener();
     }
@@ -104,7 +133,7 @@ public class ConsoleListenerComponent extends PrimImpl
     /**
      * this class exists to forward tests to the console
      */
-    protected class ConsoleTestListener implements TestListener {
+    protected class ConsoleTestListener implements ConsoleListener {
 
         /**
          * end this test suite. After calling this, caller should discard all
@@ -124,12 +153,20 @@ public class ConsoleListenerComponent extends PrimImpl
         }
 
         public void endTest(TestInfo test) throws RemoteException {
-            log("   ending " + test.getClassname() + " on " + test.getHostname());
+            log(
+                    "   ending " +
+                    test.getClassname() +
+                    " on " +
+                    test.getHostname());
 
         }
 
         public void startTest(TestInfo test) throws RemoteException {
-            log("Starting " + test.getClassname() + " on " + test.getHostname());
+            log(
+                    "Starting " +
+                    test.getClassname() +
+                    " on " +
+                    test.getHostname());
         }
     }
 }

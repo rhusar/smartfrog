@@ -192,7 +192,7 @@
         </sf-junit>
 
         <!-- conditionally stop the daemon -->
-        <antcall target="stop-daemon-if-started"/>
+        <!-- <antcall target="stop-daemon-if-started"/> -->
         <!-- end the test thread -->
       </sequential>
     </parallel>

@@ -22,10 +22,9 @@
 package org.smartfrog.services.junit.listeners;
 
 import org.smartfrog.services.junit.TestInfo;
-import org.smartfrog.services.junit.ThrowableTraceInfo;
 import org.smartfrog.services.junit.TestListener;
+import org.smartfrog.services.junit.ThrowableTraceInfo;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -33,7 +32,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 import java.io.Writer;
 import java.rmi.RemoteException;
 import java.util.Date;
@@ -42,10 +40,9 @@ import java.util.Date;
  * This class listens to tests on a single host. The XML Listener forwards stuff
  * to it. It is not a component; it is a utility class that components use, so
  * as to log different test suites to different files.
- *
- * Important: close the file after use. The finalizer does not clean up; it merely
- * throws an assertion failure if it is called while the file is open.
- *
+ * <p/>
+ * Important: close the file after use. The finalizer does not clean up; it
+ * merely throws an assertion failure if it is called while the file is open.
  */
 public class OneHostXMLListener implements TestListener {
 
@@ -84,24 +81,24 @@ public class OneHostXMLListener implements TestListener {
 
 
     /**
-     * Listen to stuff coming from a single host.
-     * opens the file for future messages
+     * Listen to stuff coming from a single host. opens the file for future
+     * messages
      *
-     * @param destFile destination file
-     * @param hostname hostname of the (possibly remote system)
+     * @param destFile  destination file
+     * @param hostname  hostname of the (possibly remote system)
      * @param suitename name of the test suite
      * @param startTime timestamp (in UTC) of the start of the tests
-     * @param preamble any text to include before the root element, like PI and comments
+     * @param preamble  any text to include before the root element, like PI and
+     *                  comments
      * @throws IOException if there is trouble opening the file.
      */
     public OneHostXMLListener(String hostname,
-                              File destFile,
-                              String suitename,
-                              Date startTime,
-                              String preamble
-                              ) throws IOException {
+            File destFile,
+            String suitename,
+            Date startTime,
+            String preamble) throws IOException {
         //create our new directory
-        this.destFile=destFile;
+        this.destFile = destFile;
         this.hostname = hostname;
         this.suitename = suitename;
         this.startTime = startTime;
@@ -124,6 +121,7 @@ public class OneHostXMLListener implements TestListener {
 
     /**
      * open the file for writing
+     *
      * @throws IOException
      */
     public void open() throws IOException {
@@ -135,15 +133,15 @@ public class OneHostXMLListener implements TestListener {
         xmlFile.write(XML_DECLARATION);
         xmlFile.write("\n");
         //preamble if supplied
-        if(preamble!=null) {
+        if (preamble != null) {
             xmlFile.write(preamble);
             xmlFile.write("\n");
         }
         //write the root tag
         xmlFile.write("<");
         xmlFile.write(ROOT_TAG);
-        xmlFile.write(" "+ROOT_ATTRS+"\n");
-        xmlFile.write(a("hostname",hostname));
+        xmlFile.write(" " + ROOT_ATTRS + "\n");
+        xmlFile.write(a("hostname", hostname));
         xmlFile.write(a("suitename", suitename));
         xmlFile.write(a("utc", startTime.getTime()));
         xmlFile.write(a("started", startTime.toString()));
@@ -153,10 +151,11 @@ public class OneHostXMLListener implements TestListener {
 
     /**
      * close the file
+     *
      * @throws IOException
      */
     public void close() throws IOException {
-        if(!isOpen()) {
+        if (!isOpen()) {
             //harmless to close an already closed file.
             return;
         }
@@ -180,33 +179,36 @@ public class OneHostXMLListener implements TestListener {
         } catch (IOException e) {
 
         }
-        xmlFile=null;
-        out=null;
-        destFile=null;
+        xmlFile = null;
+        out = null;
+        destFile = null;
     }
 
     /**
      * check for errors
+     *
      * @return true iff we have an output stream and it is open
      */
     public boolean isHappy() {
-        return xmlFile!=null ;
+        return xmlFile != null;
     }
 
     /**
      * test for the file being open
+     *
      * @return
      */
     public boolean isOpen() {
-        return xmlFile!=null;
+        return xmlFile != null;
     }
 
     /**
-     * Returns a string representation of the object. 
+     * Returns a string representation of the object.
+     *
      * @return a string representation of the object.
      */
     public String toString() {
-        return destFile!=null?destFile.toString():super.toString();
+        return destFile != null ? destFile.toString() : super.toString();
     }
 
 
@@ -226,7 +228,8 @@ public class OneHostXMLListener implements TestListener {
     /**
      * An error occurred.
      */
-    public void addError(TestInfo test) throws RemoteException, SmartFrogException {
+    public void addError(TestInfo test) throws RemoteException,
+            SmartFrogException {
         errorCount++;
         add("error", test);
     }
@@ -234,7 +237,8 @@ public class OneHostXMLListener implements TestListener {
     /**
      * A failure occurred.
      */
-    public void addFailure(TestInfo test) throws RemoteException, SmartFrogException {
+    public void addFailure(TestInfo test) throws RemoteException,
+            SmartFrogException {
         failureCount++;
         add("failure", test);
     }
@@ -242,7 +246,8 @@ public class OneHostXMLListener implements TestListener {
     /**
      * A test ended.
      */
-    public void endTest(TestInfo test) throws RemoteException, SmartFrogException {
+    public void endTest(TestInfo test) throws RemoteException,
+            SmartFrogException {
         testCount++;
         if (!test.getClassname().equals(lastTestFailed)) {
             add("pass", test);
@@ -254,7 +259,8 @@ public class OneHostXMLListener implements TestListener {
     /**
      * A test started.
      */
-    public void startTest(TestInfo test) throws RemoteException, SmartFrogException {
+    public void startTest(TestInfo test) throws RemoteException,
+            SmartFrogException {
         //do nothing
     }
 
@@ -267,7 +273,7 @@ public class OneHostXMLListener implements TestListener {
      * @param test test result to log
      */
     protected void add(String tag, TestInfo test) throws SmartFrogException {
-        if(!isOpen()) {
+        if (!isOpen()) {
             //bail out on a closed operation
             throw new SmartFrogException(ERROR_LISTENER_CLOSED);
         }
@@ -491,8 +497,9 @@ public class OneHostXMLListener implements TestListener {
     }
 
     /**
-     * hashcode is hashcode of the session ID, which
-     * makes it easy to sort in a sensible table.
+     * hashcode is hashcode of the session ID, which makes it easy to sort in a
+     * sensible table.
+     *
      * @return
      */
     public int hashCode() {

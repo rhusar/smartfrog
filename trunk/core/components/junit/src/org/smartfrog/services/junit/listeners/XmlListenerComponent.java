@@ -1,34 +1,28 @@
 package org.smartfrog.services.junit.listeners;
 
-import org.smartfrog.sfcore.prim.PrimImpl;
-import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.services.filesystem.FileImpl;
+import org.smartfrog.services.junit.TestListener;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
-import org.smartfrog.services.junit.TestInfo;
-import org.smartfrog.services.junit.TestListener;
-import org.smartfrog.services.filesystem.FileImpl;
+import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.prim.TerminationRecord;
 
-import java.rmi.RemoteException;
-import java.io.IOException;
 import java.io.File;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+import java.io.IOException;
+import java.rmi.RemoteException;
 import java.util.Date;
-import java.util.HashMap;
 
 /**
- * Implement the {@link XmlListener} interface and so provide a component
- * for XML logging.
- * Note that we are only a factory; the listening is done by
- * {@link OneHostXMLListener }
+ * Implement the {@link XmlListener} interface and so provide a component for
+ * XML logging. Note that we are only a factory; the listening is done by {@link
+ * OneHostXMLListener }
  */
 public class XmlListenerComponent extends PrimImpl implements XmlListener {
 
 
-
-
     /**
      * construct a base interface
+     *
      * @throws RemoteException
      */
     public XmlListenerComponent() throws RemoteException {
@@ -71,14 +65,13 @@ public class XmlListenerComponent extends PrimImpl implements XmlListener {
      * @param hostname  name of host
      * @param suitename name of test suite
      * @param timestamp start timestamp (UTC)
-     *
      * @return a session ID to be used in test responses
      */
     public TestListener listen(String hostname,
-                               String suitename,
-                               long timestamp) throws RemoteException,
+            String suitename,
+            long timestamp) throws RemoteException,
             SmartFrogException {
-        //only support a single filre
+        //only support a single file
         String outputDir = FileImpl.lookupAbsolutePath(this,
                 OUTPUT_DIRECTORY,
                 null,
@@ -87,17 +80,20 @@ public class XmlListenerComponent extends PrimImpl implements XmlListener {
                 null);
         String preamble = sfResolve(PREAMBLE, (String) null, false);
         boolean useHostname = sfResolve(USE_HOSTNAME, true, true);
-
+        if (suitename == null && "".equals(suitename)) {
+            throw new SmartFrogException(
+                    "Test suite must be named for XML exporting");
+        }
 
         try {
             File destDir = new File(outputDir);
-            if(useHostname) {
-                destDir=new File(destDir,hostname);
+            if (useHostname) {
+                destDir = new File(destDir, hostname);
             }
 
-            String outputFile= suitename + ".xml";
+            String outputFile = suitename + ".xml";
 
-            File destFile = new File(destDir,outputFile);
+            File destFile = new File(destDir, outputFile);
             Date start = new Date(timestamp);
 
             OneHostXMLListener xmlLog;
@@ -125,8 +121,8 @@ public class XmlListenerComponent extends PrimImpl implements XmlListener {
 
     /**
      * Liveness call in to check if this component is still alive.
-     * @param source source of call
      *
+     * @param source source of call
      * @throws org.smartfrog.sfcore.common.SmartFrogLivenessException
      *                                  component is terminated
      * @throws java.rmi.RemoteException for consistency with the {@link
