@@ -1,3 +1,14 @@
+release 3.04.009_beta -> CVS
+---------------------
+2004-Nov-02 Mod: setDefaultProperties shell scripts check if properties exist and do not overwrite them
+2004-Nov-02 Fix: sfGui.bat now works when SF installed in path using spaces
+2004-Nov-02 Add: Log4J adaptor (sf-CoreLoggers.jar)
+2004-Nov-02 Mod: SFTrace using Log.info() for lifecycle messages
+2004-Nov-02 Mod: LogToErr uses System.out by default
+2004-Nov-01 Add: ANT tasks (sf-tasks.jar)
+2004-Oct-26 Fix: sfDaemon.bat
+2004-Oct-25 Mod: Phases now extends ComponentDescription
+
 release 3.04.008_beta
 ---------------------
 2004-Oct-15 Release date
