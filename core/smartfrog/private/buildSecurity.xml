@@ -25,14 +25,14 @@ For more information: www.smartfrog.org
 
 <!-- CA related properties -->
 
-<!-- dist is set by surrounding build.xml -->
-  <property name="disttestCA" value="${dist}/${testCA}"/>
-  <property name="distprivate" value="${dist}/${private}"/>
-  <property name="distsignedLib" value="${dist}/${signedLib}"/>
-  <property name="distlib" value="${dist}/${lib}"/>
-
+<!-- dist.dir and others are set by surrounding build.xml -->
+<!--   <property name="disttestCA" value="${dist.testCA.dir}"/>
+  <property name="dist.private.dir" value="${dist.dir}/${private}"/>
+  <property name="distsignedLib" value="${dist.signedLib.dir}"/>
+  <property name="distlib" value="${dist.lib.dir}"/>
+ -->
   <property name="CAFromPrivate" value="ca"/>
-  <property name="CA" value="${distprivate}/${CAFromPrivate}"/>
+  <property name="CA" location="${dist.private.dir}/${CAFromPrivate}"/>
   <property name="CAsubdir" value="demoCA"/>
 
 
@@ -40,7 +40,7 @@ For more information: www.smartfrog.org
   <property name="defaultCodeSignerCAKeyStore" value="codesigner.st"/>
   <property name="defaultPolicyName" value="sf.policy"/>
 
- <property name="defaultSecProp" value="SFSecurity.properties"/>
+  <property name="defaultSecProp" value="SFSecurity.properties"/>
 
   <property name="aliasCSKey" value="sfcodesigner"/>
   <property name="aliasCommunityKey" value="sfcommunity"/>
@@ -91,12 +91,15 @@ For more information: www.smartfrog.org
     <arg line="-keystore ${defaultCodeSignerCAKeyStore} -export -alias ${aliasSelfKey} -storepass ${defaultCAPassword} -file codesigner.cer"/>
    </exec>
 </target>
+
+
 <target name="touchLibs">
   <!-- force that libraries will get signed in a build -->
   <touch>
-        <fileset dir="${distlib}" includes="**/*.jar" />
-   </touch>
+      <fileset dir="${dist.lib.dir}" includes="**/*.jar" />
+  </touch>
 </target>
+
 <target name="initCA" depends="cleanCA,initCodeSignerCA,initCommunityCA,touchLibs">
 </target>
 
@@ -113,23 +116,23 @@ For more information: www.smartfrog.org
 <!-- 1.3.2 Sets a random password in the property defaultPassword -->
 <target name="randomPasswd" >
   <!-- First generate a file with random characters -->
-  <exec dir="${distprivate}" executable="openssl">
+  <exec dir="${dist.private.dir}" executable="openssl">
     <arg line="rand -out ${tempPasswdFile} -base64 15"/>
   </exec>
   <!-- Second generate a property file with it-->
-  <echo message="defaultPassword=" file="${distprivate}/header.txt"/>
-  <concat destfile = "${distprivate}/${tempPasswdFile}.properties">
-    <filelist dir="${distprivate}"
+  <echo message="defaultPassword=" file="${dist.private.dir}/header.txt"/>
+  <concat destfile = "${dist.private.dir}/${tempPasswdFile}.properties">
+    <filelist dir="${dist.private.dir}"
         files="header.txt,${tempPasswdFile}"/>
   </concat>
 
 
   <!-- Read property file -->
-     <property file="${distprivate}/${tempPasswdFile}.properties"/>
+     <property file="${dist.private.dir}/${tempPasswdFile}.properties"/>
   <!-- Clean up -->
-     <delete file="${distprivate}/${tempPasswdFile}.properties"/>
-     <delete file="${distprivate}/${tempPasswdFile}"/>
-     <delete file="${distprivate}/header.txt"/>
+     <delete file="${dist.private.dir}/${tempPasswdFile}.properties"/>
+     <delete file="${dist.private.dir}/${tempPasswdFile}"/>
+     <delete file="${dist.private.dir}/header.txt"/>
 </target>
 
 <!-- 1.4 Initialize security credentials for new daemon -->
@@ -141,8 +144,8 @@ For more information: www.smartfrog.org
   <tstamp>
    <format property="Unique" pattern="yyyymmddhhmmss"/>
   </tstamp>
- <property name="daemonFromPrivate" value="${hostDirPrefix}${suffix}"/>
- <property name="daemonDir" value="${distprivate}/${hostDirPrefix}${suffix}"/>
+  <property name="daemonFromPrivate" value="${hostDirPrefix}${suffix}"/>
+  <property name="daemonDir" location="${dist.private.dir}/${hostDirPrefix}${suffix}"/>
   <mkdir dir="${daemonDir}"/>
 
   <!-- First generate new keys -->
@@ -152,8 +155,8 @@ For more information: www.smartfrog.org
           dname="CN=SmartFrog${Unique}, OU=HPL, O=HP, C=UK"/>
 
   <!-- Generate request for certificate -->
-   <exec dir="${distprivate}" executable="keytool">
-    <arg line="-keystore ${daemonFromPrivate}/${defaultKeyStore} -certreq -alias ${aliasSelfKey} -storepass ${defaultPassword} -file ${CAFromPrivate}/client.crs"/>
+   <exec dir="${dist.private.dir}" executable="keytool">
+   <arg line="-keystore ${daemonFromPrivate}/${defaultKeyStore} -certreq -alias ${aliasSelfKey} -storepass ${defaultPassword} -file ${CAFromPrivate}/client.crs"/>
    </exec>
 
   <!-- Get the CA to sign it -->
@@ -167,22 +170,22 @@ For more information: www.smartfrog.org
   </exec>
 
   <!-- Add public of Community CA to Root of Trust -->
-  <exec dir="${distprivate}" executable="keytool">
+  <exec dir="${dist.private.dir}" executable="keytool">
     <arg line="-keystore ${daemonFromPrivate}/${defaultKeyStore} -alias ${aliasCommunityKey} -import -noprompt -storepass ${defaultPassword} -file ${CAFromPrivate}/${CAsubdir}/cacert.pem"/>
   </exec>
 
   <!-- Add certificate to my keys storage -->
-  <exec dir="${distprivate}" executable="keytool">
+  <exec dir="${dist.private.dir}" executable="keytool">
     <arg line="-storepass ${defaultPassword} -keystore ${daemonFromPrivate}/${defaultKeyStore} -alias ${aliasSelfKey} -import -file ${CAFromPrivate}/client.crs.der"/>
   </exec>
 
   <!-- Add public of CodeSigner CA to Root of Trust -->
-  <exec dir="${distprivate}" executable="keytool">
+  <exec dir="${dist.private.dir}" executable="keytool">
     <arg line="-keystore ${daemonFromPrivate}/${defaultKeyStore} -alias ${aliasCSKey} -import -noprompt -storepass ${defaultPassword} -file ${CAFromPrivate}/codesigner.cer"/>
   </exec>
 
   <!-- Create ad-hoc security properties file -->
-   <copy file="${distprivate}/${defaultSecProp}" tofile="${daemonDir}/${defaultSecProp}"/>
+  <copy file="${dist.private.dir}/${defaultSecProp}" tofile="${daemonDir}/${defaultSecProp}"/>
   <propertyfile file="${daemonDir}/${defaultSecProp}">
      <entry key="org.smartfrog.sfcore.security.keyStorePassword" value="${defaultPassword}"/>
   </propertyfile>
@@ -200,17 +203,17 @@ For more information: www.smartfrog.org
     <delete file="${CA}/client.crs"/>
     <delete file="${CA}/client.crs.der"/>
     <delete includeEmptyDirs="true">
-      <fileset dir="${distprivate}" includes="host*/*"/>
-      <fileset dir="${distprivate}" includes="host*"/>
+      <fileset dir="${dist.private.dir}" includes="host*/*"/>
+      <fileset dir="${dist.private.dir}" includes="host*"/>
     </delete>
     <delete file="${CA}/client.crs.pem"/>
 </target>
 
 <!-- 1.6 Dummy CA initialization when openssl is not available -->
 <target name="dummyInitCA" depends="cleanCA,touchLibs" description="Initialise a dummy CA">
-     <copy todir="${distprivate}">
-      <fileset dir="${disttestCA}">
-        <include name = "host*/*" />
+   <copy todir="${dist.private.dir}">
+     <fileset dir="${disttestCA}">
+     <include name = "host*/*" />
      </fileset>
     </copy>
     <copy file="${disttestCA}/${defaultCodeSignerCAKeyStore}"
@@ -221,18 +224,18 @@ For more information: www.smartfrog.org
 <!-- 1.7 Sign jars, need to edit to change what is signed -->
  <target name="signJars">
     <antcall target="signjarbuild">
-      <param name="jarname" value="${distlib}/smartfrog.jar"/>
-      <param name="signedjarname" value="${distsignedLib}/smartfrog.jar"/>
+      <param name="jarname" value="${dist.lib}/smartfrog.jar"/>
+      <param name="signedjarname" value="${dist.signedLib.dir}/smartfrog.jar"/>
     </antcall>
 
     <antcall target="signjarbuild">
-      <param name="jarname" value="${distlib}/sfExamples.jar"/>
-      <param name="signedjarname" value="${distsignedLib}/sfExamples.jar"/>
+      <param name="jarname" value="${dist.lib.dir}/sfExamples.jar"/>
+      <param name="signedjarname" value="${dist.signedLib.dir}/sfExamples.jar"/>
     </antcall>
 
     <antcall target="signjarbuild">
-      <param name="jarname" value="${distlib}/sfServices.jar"/>
-      <param name="signedjarname" value="${distsignedLib}/sfServices.jar"/>
+      <param name="jarname" value="${dist.lib.dir}/sfServices.jar"/>
+      <param name="signedjarname" value="${dist.signedLib.dir}/sfServices.jar"/>
   </antcall>
     
   <!-- don't sign those considered insecure, or not required -->
