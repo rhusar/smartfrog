@@ -97,7 +97,7 @@
     <property name="extras.dir"
       location="${core.dir}/extras"/>
     <property name="maven.lib.dir"
-      location="${smartfrog.components.dir}/mavenlib"/>
+      location="${core.dir}/lib"/>
     <property name="maven.url"
       value="http://ibiblio.org/maven/"/>
       
@@ -973,6 +973,20 @@
     <antcall target="release"/>
   </target>
 
+  <!-- configure an HTTP proxy -->
+  <target name="setproxy" unless="setproxy.disabled" depends="init-common">
+    <!-- put your proxy settings here -->
+    <property file="${user.home}/.ant/proxy.properties" />
+    <property name="proxy.host" value="" />
+    <property name="proxy.port" value="80" />
+    <property name="proxy.user" value="" />
+    <property name="proxy.pass" value="" />
+    <echo level="verbose">
+      proxy: ${proxy.host}:${proxy.port} [${proxy.user}/${proxy.pass}]
+    </echo>
+      <setproxy proxyhost="${proxy.host}" proxyport="${proxy.port}"
+        proxyuser="${proxy.user}" proxypassword="${proxy.pass}" />
+  </target>  
 </project>   
 
 
