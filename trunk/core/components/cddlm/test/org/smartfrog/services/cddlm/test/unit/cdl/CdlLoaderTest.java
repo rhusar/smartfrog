@@ -21,11 +21,11 @@
 package org.smartfrog.services.cddlm.test.unit.cdl;
 
 import junit.framework.TestCase;
-import org.smartfrog.services.cddlm.cdl.CdlParser;
-import org.smartfrog.services.cddlm.cdl.ResourceLoader;
-import org.smartfrog.services.cddlm.cdl.CdlDocument;
 import nu.xom.Document;
 import nu.xom.ParsingException;
+import org.smartfrog.services.cddlm.cdl.CdlDocument;
+import org.smartfrog.services.cddlm.cdl.CdlParser;
+import org.smartfrog.services.cddlm.cdl.ResourceLoader;
 
 import java.io.IOException;
 
@@ -58,7 +58,7 @@ public class CdlLoaderTest extends TestCase {
     protected void setUp() throws Exception {
         ResourceLoader loader=new ResourceLoader(this.getClass());
         laxParser=new CdlParser(loader,false);
-        parser = new CdlParser(loader, false);
+        parser = new CdlParser(loader, true);
     }
 
     /**
