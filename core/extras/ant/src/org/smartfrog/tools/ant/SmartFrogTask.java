@@ -49,12 +49,31 @@ import java.util.List;
  * failure to execute to the build file. These can be adjusted via the
  * {@link SmartFrogTask#setTimeout(long)} and
  * {@link SmartFrogTask#setFailOnError(boolean)} calls respectively.
+ * Note that when spawning, timeout and failonerror attributes are ignored (a verbose level message
+ * warns of this). passing them on to the java task would result in a failure.
  */
 public abstract class SmartFrogTask extends TaskBase {
     /**
      * what is the default timeout for those tasks that have a timeout
      */
     public static final long DEFAULT_TIMEOUT_VALUE = 60 * 10 * 1000L;
+    /**
+     * spawn flag, false by default. Needs Ant1.7 or later to work.
+     */
+    private boolean spawn;
+    public static final String MESSAGE_SPAWNED_DAEMON = "Spawned SmartFrog daemon started";
+    public static final String MESSAGE_IGNORING_FAILONERROR = "ignoring failonerror setting for spawned application";
+    public static final String MESSAGE_IGNORING_TIMEOUT = "ignoring timeout setting for spawned application";
+    public static final String ERROR_HOST_NOT_SETTABLE = "host cannot be set on this task; it is set to ";
+    public static final String ERROR_HOST_UNDEFINED = "host is undefined";
+    public static final String LOCALHOST = "localhost";
+    public static final String LOCALHOST_IPV6_LONG = "0:0:0:0:0:0:0:1";
+    public static final String LOCALHOST_IPV6_SHORT = ":::::::1";
+
+    public static final String ERROR_MISSING_APPLICATION_NAME = "Missing application name";
+    public static final String ERROR_UNEXPECTED_FILE_TYPE = "Unexpected file type: ";
+    public static final String ERROR_MISSING_INITIAL_SMARTFROG_FILE = "Not found: ";
+    public static final String LOCALHOST_IPV4 = "127.0.0.1";
 
     public SmartFrogTask() {
 
@@ -247,10 +266,10 @@ public abstract class SmartFrogTask extends TaskBase {
     public void setInitialSmartFrogFile(File initialSmartFrogFile) {
         if (initialSmartFrogFile != null && initialSmartFrogFile.length() > 0) {
             if (!initialSmartFrogFile.exists()) {
-                throw new BuildException("Not found: " + initialSmartFrogFile);
+                throw new BuildException(ERROR_MISSING_INITIAL_SMARTFROG_FILE + initialSmartFrogFile);
             }
             if (!initialSmartFrogFile.isFile()) {
-                throw new BuildException("Unexpected file type: " + initialSmartFrogFile);
+                throw new BuildException(ERROR_UNEXPECTED_FILE_TYPE + initialSmartFrogFile);
             }
         }
 
@@ -372,6 +391,20 @@ public abstract class SmartFrogTask extends TaskBase {
     }
 
     /**
+     * sets the spawn flag. makes it hard (no, impossible!) to log outputs.
+     * only recommended for long-lived tasks, and complicates failonerror and timeout
+     * logic
+     * @param spawn
+     */
+    public void setSpawn(boolean spawn) {
+        this.spawn = spawn;
+    }
+
+    public boolean isSpawn() {
+        return spawn;
+    }
+
+    /**
      * set various standard properties if they are set in the task
      */
     protected void setStandardSmartfrogProperties() {
@@ -415,7 +448,7 @@ public abstract class SmartFrogTask extends TaskBase {
     protected void verifyApplicationName(String application)
             throws BuildException {
         if (application == null || application.length() == 0) {
-            throw new BuildException("Missing application name");
+            throw new BuildException(ERROR_MISSING_APPLICATION_NAME);
         }
     }
 
@@ -501,13 +534,13 @@ public abstract class SmartFrogTask extends TaskBase {
         //last minute fixup of error properties.
         //this is because pre Ant1.7, even setting this to false stops spawn working
         //delayed setting only when the flag is true reduces the need to flip the bit
-        if (failOnError) {
-            smartfrog.setFailonerror(failOnError);
-        }
-        //same for timeout
-        propagateTimeout();
+        propagateSpawnIncompatibleSettings();
         //run it
         int err = smartfrog.executeJava();
+        if (isSpawn()) {
+            //when spawning output gets lost, so we print something here
+            log(MESSAGE_SPAWNED_DAEMON);
+        }
         //if we didnt want the error code, we are finished
         if (!failOnError) {
             return;
@@ -524,6 +557,39 @@ public abstract class SmartFrogTask extends TaskBase {
                 throw new BuildException(failureText);
             default:
                 throw new BuildException(errorText + " - error code " + err);
+        }
+
+    }
+
+    /**
+     * this code looks at the spawn flag and only sets some properties if spawn
+     * is true
+     */
+    private void propagateSpawnIncompatibleSettings() {
+        if (isSpawn()) {
+            if(failOnError) {
+                setFailOnError(false);
+                log(MESSAGE_IGNORING_FAILONERROR,Project.MSG_VERBOSE);
+            }
+            if(timeout>0) {
+                setTimeout(0);
+                log(MESSAGE_IGNORING_TIMEOUT,
+                        Project.MSG_VERBOSE);
+            }
+            smartfrog.setSpawn(true);
+        } else {
+            propagateFailOnError();
+            propagateTimeout();
+        }
+    }
+
+    /**
+     * propagate failonerror only if it is true.
+     */
+    private void propagateFailOnError() {
+        if (failOnError) {
+            log("Setting JVM timeout to " + timeout, Project.MSG_VERBOSE);
+            smartfrog.setFailonerror(failOnError);
         }
     }
 
@@ -544,7 +610,8 @@ public abstract class SmartFrogTask extends TaskBase {
      */
     protected void resetHostIfLocal() {
 
-        if ("localhost".equals(host) || "127.0.0.1".equals(host)) {
+        if (LOCALHOST.equals(host) || LOCALHOST_IPV4.equals(host)
+        || LOCALHOST_IPV6_LONG.equals(host) || LOCALHOST_IPV6_SHORT.equals(host)) {
             host = null;
             return;
         }
@@ -559,7 +626,7 @@ public abstract class SmartFrogTask extends TaskBase {
      */
     protected void verifyHostUndefined() {
         if (host != null && host.length() > 0) {
-            throw new BuildException("host cannot be set on this task; it is set to " + host);
+            throw new BuildException(ERROR_HOST_NOT_SETTABLE + host);
         }
     }
 
@@ -577,6 +644,7 @@ public abstract class SmartFrogTask extends TaskBase {
      */
     protected void propagateTimeout() {
         if (timeout > 0) {
+            log("Setting JVM timeout to "+timeout,Project.MSG_VERBOSE);
             smartfrog.setTimeout(new Long(timeout));
         } else {
             //no valid timeout; ignore it.
@@ -592,12 +660,12 @@ public abstract class SmartFrogTask extends TaskBase {
      */
     protected void verifyHostDefined() {
         if (getHost() == null) {
-            throw new BuildException("host is undefined");
+            throw new BuildException(ERROR_HOST_UNDEFINED);
         }
     }
 
 
     protected void bindToLocalhost() {
-        setHost("localhost");
+        setHost(LOCALHOST);
     }
 }

@@ -22,6 +22,7 @@ package org.smartfrog.tools.ant.test;
 import org.apache.tools.ant.BuildException;
 import org.smartfrog.tools.ant.PropertyFile;
 import org.smartfrog.tools.ant.DeployingTaskBase;
+import org.smartfrog.tools.ant.SmartFrogTask;
 
 /**
  * This test tests the daemon starting.
@@ -63,9 +64,9 @@ public class StartTest extends TaskTestBase {
      * test for bad settings
      */
     public void testIncompatibleSettings() {
-        expectBuildExceptionContaining("testIncompatibleSettings",
-                "spawn and timeout",
-                "not compatible with spawn");
+        executeTarget("testIncompatibleSettings");
+        assertInLog(SmartFrogTask.MESSAGE_SPAWNED_DAEMON);
+        assertInLog("SmartFrog daemon terminated");
     }
 
     /**
@@ -73,7 +74,7 @@ public class StartTest extends TaskTestBase {
      */
     public void testBadHost() {
         expectBuildExceptionContaining("testBadHost", "host parameter",
-                "host cannot be set on this task");
+            SmartFrogTask.ERROR_HOST_NOT_SETTABLE);
     }
 
     public void testDefaults() {
@@ -94,14 +95,9 @@ public class StartTest extends TaskTestBase {
 
      */
     public void testSpawn() {
-        try {
-            executeTarget("testSpawn");
-            assertInLog("Standalone SmartFrog daemon started");
-            assertInLog("SmartFrog daemon terminated");
-        } catch (BuildException e) {
-            //older ant versions will not spawn
-            assertTrue(e.getMessage().indexOf("not compatible with spawn")>=0);
-        }
+        executeTarget("testSpawn");
+        assertInLog(SmartFrogTask.MESSAGE_SPAWNED_DAEMON);
+        assertInLog("SmartFrog daemon terminated");
     }
 
 
@@ -137,11 +133,7 @@ public class StartTest extends TaskTestBase {
 
     public void testResource() {
         executeTarget("testResource");
-        assertInLog("COUNTER: hello - here is a constructed message");
-        assertInLog("value is 99");
-        assertInLog("goodbye");
-        assertInLog("[[elementA, elementB], Message from outerVector, [value is , 99]]");
-        assertInLog("1");
+        assertInLog("All these moments will be lost in time, like tears in rain.");
         assertTerminationInLog();
     }
 

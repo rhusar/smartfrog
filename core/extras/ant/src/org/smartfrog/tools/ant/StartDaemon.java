@@ -59,23 +59,6 @@ public class StartDaemon extends DeployingTaskBase {
 
 
     /**
-     * spawn flag, false by default. Needs Ant1.7 or later to work.
-     */
-    protected boolean spawn;
-
-    /**
-     * run the process standalone, losing all output.
-     * This also sets the failonerror flag to false.
-     *
-     * @param spawn
-     */
-    public void setSpawn(boolean spawn) {
-        this.spawn = spawn;
-        setFailOnError(false);
-        setTimeout(0);
-    }
-
-    /**
      * Start the daemon in this thread or a new process.
      *
      * @throws org.apache.tools.ant.BuildException
@@ -91,19 +74,9 @@ public class StartDaemon extends DeployingTaskBase {
                 SmartFrogJVMProperties.ROOT_PROCESS);
         addIniFile();
         deployApplications();
-        if (spawn) {
-            smartfrog.setSpawn(spawn);
-        } else {
-            log("embedded smartfrog daemon started; " +
-                    "this thread will block until it exits",
-                    Project.MSG_VERBOSE);
-        }
+
 
         execSmartFrog(ERROR_FAILED_TO_START_DAEMON);
-        if (spawn) {
-            //when spawning output gets lost, so we print something here
-            log("Standalone SmartFrog daemon started");
-        }
     }
 
 
