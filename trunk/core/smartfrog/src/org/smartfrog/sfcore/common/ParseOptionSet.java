@@ -25,6 +25,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.LineNumberReader;
 import java.util.Vector;
+import org.smartfrog.SFSystem;
 
 
 /**
@@ -144,7 +145,11 @@ public class ParseOptionSet {
                 i++;
             } catch (Exception e) {
                 errorString = "illegal format for options ";
-                Logger.log(e);
+                //Logger.log(ex);
+                if (SFSystem.sflog().isErrorEnabled()) {
+                    SFSystem.sflog().error(e);
+                }
+
             }
         }
 
@@ -158,7 +163,10 @@ public class ParseOptionSet {
             //System.exit(1);
         }
        } catch (Exception ex){
-         Logger.log(ex);
+           //Logger.log(ex);
+           if (SFSystem.sflog().isErrorEnabled()) {
+               SFSystem.sflog().error(ex);
+           }
        }
     }
 
@@ -179,11 +187,17 @@ public class ParseOptionSet {
               list.add(thisLine.trim());
           }
           file.close();
-      } catch (IOException e) {
-         errorString = e.getMessage();
-        Logger.log(e);
+      } catch (IOException ex) {
+         errorString = ex.getMessage();
+         //Logger.log(ex);
+         if (SFSystem.sflog().isErrorEnabled()) {
+             SFSystem.sflog().error(ex);
+         }
       } catch (Exception ex){
-        Logger.log(ex);
+          //Logger.log(ex);
+          if (SFSystem.sflog().isErrorEnabled()) {
+              SFSystem.sflog().error(ex);
+          }
       }
       return list;
    }

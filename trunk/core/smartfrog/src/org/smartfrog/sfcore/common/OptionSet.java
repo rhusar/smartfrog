@@ -29,6 +29,7 @@ import org.smartfrog.sfcore.common.SmartFrogInitException;
 import java.io.LineNumberReader;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import org.smartfrog.SFSystem;
 
 
 /**
@@ -130,13 +131,23 @@ public class OptionSet {
                     case 'a':
                         try {
                             this.cfgDescriptors.add(new ConfigurationDescriptor(args[++i]));
-                        } catch (SmartFrogInitException ex){Logger.log(ex);}
+                        } catch (SmartFrogInitException ex){
+                          //Logger.log(ex);
+                          if (SFSystem.sflog().isErrorEnabled()) {
+                              SFSystem.sflog().error(ex);
+                          }
+                        }
                         break;
 
                     case 'f':
                         try {
                             this.readCfgDescriptorsFile(args[++i]);
-                        } catch (SmartFrogInitException ex){Logger.log(ex);}
+                        } catch (SmartFrogInitException ex){
+                          //Logger.log(ex);
+                          if (SFSystem.sflog().isErrorEnabled()) {
+                              SFSystem.sflog().error(ex);
+                          }
+                        }
                          break;
 
                     case 'e':
@@ -157,7 +168,11 @@ public class OptionSet {
                 if (!(e instanceof java.lang.ArrayIndexOutOfBoundsException)){
                    errorString = "illegal format for options ";
                 }
-                Logger.logQuietly(e);
+                //Logger.logQuietly(e);
+                if (SFSystem.sflog().isIgnoreEnabled()) {
+                  SFSystem.sflog().ignore(e);
+                }
+
             }
         }
 
@@ -194,15 +209,29 @@ public class OptionSet {
                        //Logger.log("line ignored: " + line);
                      }
                    }
-               } catch (SmartFrogInitException ex){Logger.logQuietly(ex);}
+               } catch (SmartFrogInitException ex){
+//                 Logger.logQuietly(ex);
+                 if (SFSystem.sflog().isIgnoreEnabled()) {
+                   SFSystem.sflog().ignore(ex);
+                 }
+
+               }
             }
         }  catch (Exception e) {
-            Logger.log(e);
-            throw SmartFrogException.forward(e);
+//            Logger.log(e);
+          if (SFSystem.sflog().isTraceEnabled()) {
+            SFSystem.sflog().trace(e);
+          }
+          throw SmartFrogException.forward(e);
         } finally {
             try {
                 file.close();
-            } catch (Exception ex){Logger.logQuietly(ex);}
+            } catch (Exception ex){
+              //Logger.logQuietly(ex);
+              if (SFSystem.sflog().isIgnoreEnabled()) {
+                SFSystem.sflog().ignore(ex);
+              }
+            }
         }
     }
 }

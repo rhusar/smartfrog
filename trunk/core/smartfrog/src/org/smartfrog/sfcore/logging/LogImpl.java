@@ -687,8 +687,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * @param message log this message
      */
     public void err(Object message, SmartFrogException t, TerminationRecord tr){
-       err(message,(Throwable)t);
-       System.err.println(tr.toString());
+       err(message.toString()+", TR:"+tr.toString(),(Throwable)t);
     }
 
 

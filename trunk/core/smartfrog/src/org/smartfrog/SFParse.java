@@ -160,7 +160,7 @@ public class SFParse implements MessageKeys {
         } catch (Exception e) {
             //report.add("Error: "+ e.getMessage());
             //report.add("   "+ phase +" phase: FAILED!");
-            Logger.log("ERROR '"+fileUrl+"': \n"+ e+"\n");
+            SFSystem.sflog().out("ERROR '"+fileUrl+"': \n"+ e+"\n");
             Vector itemError = new Vector();
             itemError.add(fileUrl);
             if (e instanceof SmartFrogException) {
@@ -196,7 +196,7 @@ public class SFParse implements MessageKeys {
                      strb.append("-  Parsing: " + file+"\n");
                      strb.append(
                          "-----------------------------------------------");
-                     if (!opts.quiet) Logger.log(strb.toString());
+                     if (!opts.quiet) SFSystem.sflog().out(strb.toString());
                      report.add(parseFile(file));
                  }
              } catch (Throwable thr){
@@ -207,7 +207,7 @@ public class SFParse implements MessageKeys {
                  strb.append("-     "+thr.getMessage()+"\n");
                  strb.append(
                      "-----------------------------------------------");
-                 if (!opts.quiet) Logger.log(strb.toString(),thr);
+                 if (!opts.quiet) SFSystem.sflog().err(strb.toString(),thr);
              }
          }
          if (opts.statusReport){
@@ -231,8 +231,13 @@ public class SFParse implements MessageKeys {
               newFile.write("<html/>"+"\n");
               newFile.flush();
               newFile.close();
-              Logger.log("Report created: "+opts.fileName+"_report.html");
-            } catch (IOException e) { Logger.log(e);}
+              SFSystem.sflog().out("Report created: "+opts.fileName+"_report.html");
+            } catch (IOException e) {
+              if (SFSystem.sflog().isErrorEnabled()){
+                SFSystem.sflog().error(e);
+              }
+              //Logger.log(e);
+            }
          }
     }
 
@@ -252,14 +257,14 @@ public class SFParse implements MessageKeys {
             // Read init properties
             SFSystem.readPropertiesFromIniFile();
 
-            // Set stackTracing
-            SFSystem.readPropertyLogStackTrace();
+            // Read logging properties
+            Logger.init();
 
             // Redirect output streams
             SFSystem.setOutputStreams();
 
             opts = new ParseOptionSet(args);
-            //Logger.log(opts.toString());
+            //SFSystem.SFSystem.sflog().out(opts.toString());
 
             showVersionInfo();
             // Read init properties
@@ -267,9 +272,9 @@ public class SFParse implements MessageKeys {
 
             if (opts.errorString != null) {
                 if (opts.help) {
-                    Logger.log( "Help: \n"+opts.errorString);
+                    SFSystem.sflog().out( "Help: \n"+opts.errorString);
                 } else {
-                    Logger.log( "Error: "+opts.errorString);
+                    SFSystem.sflog().out( "Error: "+opts.errorString);
                 }
                 exit();
             }
@@ -285,13 +290,16 @@ public class SFParse implements MessageKeys {
            //Added so that ant task detects error during build process.
            // If we found errors during parsing we force exit.
            if (!errorReport.isEmpty()) {
-             Logger.log("Error detected. Check report.");
+             SFSystem.sflog().out("Error detected. Check report.");
              exit();
            } else {
-               Logger.log( "SFParse: SUCCESSFUL");
+               SFSystem.sflog().out( "SFParse: SUCCESSFUL");
            }
         } catch (Throwable thr){
-           Logger.log(thr);
+//           Logger.log(thr);
+           if (SFSystem.sflog().isErrorEnabled()){
+             SFSystem.sflog().error(thr);
+           }
         }
 
     }
@@ -300,7 +308,7 @@ public class SFParse implements MessageKeys {
      * Exits SFParse.
      */
     private static void exit() {
-        Logger.log( "SFParse: FAILED");
+        SFSystem.sflog().out( "SFParse: FAILED");
         System.exit(-1);
     }
 
@@ -308,9 +316,9 @@ public class SFParse implements MessageKeys {
      * Shows the version info of the SmartFrog system.
      */
     private static void showVersionInfo() {
-        Logger.log("\nParser - " +Version.versionString());
-        Logger.log(Version.copyright());
-        Logger.log(" ");
+        SFSystem.sflog().out("\nParser - " +Version.versionString());
+        SFSystem.sflog().out(Version.copyright());
+        SFSystem.sflog().out(" ");
     }
 
 
@@ -321,11 +329,11 @@ public class SFParse implements MessageKeys {
      * @param result the result to be printed
      */
     private static void printPhase(String phaseName, String result) {
-        Logger.log(
+        SFSystem.sflog().out(
             "******************** PHASE " + phaseName +
             " *********************");
-        Logger.log(result);
-        Logger.log("\n\n\n\n\n");
+        SFSystem.sflog().out(result);
+        SFSystem.sflog().out("\n\n\n\n\n");
     }
 
    /**
@@ -339,17 +347,20 @@ public class SFParse implements MessageKeys {
        try {
            if (!opts.quiet) {
                if (opts.verbose)
-                   Logger.log(
+                   SFSystem.sflog().out(
                        "******************** component description *********************");
                if (opts.description) {
-                   Logger.log("Description of sfConfig component\n\n");
+                   SFSystem.sflog().out("Description of sfConfig component\n\n");
                    top.sfResolvePhase("description");
-                   Logger.log(top.sfAsComponentDescription().toString());
+                   SFSystem.sflog().out(top.sfAsComponentDescription().toString());
                } else
-                   Logger.log(top.sfAsComponentDescription().toString());
+                   SFSystem.sflog().out(top.sfAsComponentDescription().toString());
            }
        } catch (Exception ex) {
-           Logger.log(ex);
+           if (SFSystem.sflog().isErrorEnabled()){
+             SFSystem.sflog().error(ex);
+           }
+           //Logger.log(ex);
        }
    }
 
@@ -370,13 +381,13 @@ public class SFParse implements MessageKeys {
     *  @param report the report to be printed
     */
     private static void printItemReport(Vector report) {
-      //Logger.log("STATUS REPORT:\n");
+      //SFSystem.sflog().out("STATUS REPORT:\n");
       StringBuffer st = new StringBuffer("STATUS REPORT: ");
       for (Enumeration e = report.elements(); e.hasMoreElements(); ) {
         st.append(e.nextElement().toString());
-        //Logger.log((String) e.nextElement());
+        //SFSystem.sflog().out((String) e.nextElement());
       }
-      Logger.log(st.toString());
+      SFSystem.sflog().out(st.toString());
     }
 
    /**
@@ -406,7 +417,7 @@ public class SFParse implements MessageKeys {
     *  @param report the report to be printed
     */
     private static String printItemReportHTML(Vector report) {
-      //Logger.log("STATUS REPORT:\n");
+      //SFSystem.sflog().out("STATUS REPORT:\n");
       StringBuffer st = new StringBuffer("<tr>"+"\n");
       for (Enumeration e = report.elements(); e.hasMoreElements(); ) {
         st.append("<td>"+e.nextElement().toString()+"<td/>"+"\n");

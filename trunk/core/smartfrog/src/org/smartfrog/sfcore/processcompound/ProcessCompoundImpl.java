@@ -411,10 +411,16 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
         sfRemoveAttribute(sfAttributeKeyFor(comp));
       }
       catch (RemoteException ex) {
-        Logger.logQuietly(ex);
+        //Logger.logQuietly(ex);
+        if (sflog().isIgnoreEnabled()){
+          sflog().ignore(ex);
+        }
       }
       catch (SmartFrogRuntimeException ex) {
-        Logger.logQuietly(ex);
+          //Logger.logQuietly(ex);
+          if (sflog().isIgnoreEnabled()){
+            sflog().ignore(ex);
+          }
       }
     }
 
@@ -455,7 +461,10 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
             try {
                 SFProcess.getRootLocator().unbindRootProcessCompound();
             } catch (Exception ex) {
-                Logger.logQuietly(ex);
+                //Logger.logQuietly(ex);
+                if (sflog().isIgnoreEnabled()){
+                  sflog().ignore(ex);
+                }
             }
         }
         //System.out.println("terminating with " + rec.toString());
@@ -463,11 +472,12 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
             try {
                 String name = SmartFrogCoreKeys.SF_PROCESS_NAME;
                 name = sfResolve(SmartFrogCoreKeys.SF_PROCESS_NAME, name, false);
-                if (Logger.logStackTrace) {
-                    Logger.log(MessageUtil.formatMessage(MSG_SF_DEAD, name)+" "+ new Date(System.currentTimeMillis()));
-                } else {
-                    Logger.log(MessageUtil.formatMessage(MSG_SF_DEAD, name));
-                }
+//                if (Logger.logStackTrace) {
+//                    Logger.log(MessageUtil.formatMessage(MSG_SF_DEAD, name)+" "+ new Date(System.currentTimeMillis()));
+//                } else {
+//                    Logger.log(MessageUtil.formatMessage(MSG_SF_DEAD, name));
+//                }
+                sflog().out(MessageUtil.formatMessage(MSG_SF_DEAD, name)+" "+ new Date(System.currentTimeMillis()));
             } catch (Throwable thr){
             }
             System.exit(0);
@@ -494,7 +504,10 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
             }
           } catch (Exception ex) {
             //@TODO: Log
-            Logger.logQuietly(ex);
+            //Logger.logQuietly(ex);
+            if (sflog().isIgnoreEnabled()){
+              sflog().ignore(ex);
+            }
             // ignore
           }
         }
@@ -509,7 +522,10 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
             }
           } catch (Exception ex) {
             //@TODO: Log
-            Logger.logQuietly(ex);
+            //Logger.logQuietly(ex);
+            if (sflog().isIgnoreEnabled()){
+              sflog().ignore(ex);
+            }
             // ignore
           }
         }
@@ -521,7 +537,10 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
             (child).sfTerminateQuietlyWith(status);
           } catch (Exception ex) {
             //@TODO: Log
-            Logger.logQuietly(ex);
+            //Logger.logQuietly(ex);
+            if (sflog().isIgnoreEnabled()){
+              sflog().ignore(ex);
+            }
             // ignore
           }
         }
@@ -545,7 +564,10 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
             }
           } catch (Exception ex) {
             //@TODO: Log
-            Logger.logQuietly(ex);
+            //Logger.logQuietly(ex);
+            if (sflog().isIgnoreEnabled()){
+              sflog().ignore(ex);
+            }
             // ignore
           }
         }
@@ -561,7 +583,10 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
             }
           } catch (Exception ex) {
             //@TODO: Log
-            Logger.logQuietly(ex);
+            //Logger.logQuietly(ex);
+            if (sflog().isIgnoreEnabled()){
+              sflog().ignore(ex);
+            }
             // ignore
           }
         }
@@ -574,7 +599,10 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
             (new TerminatorThread(child,status).quietly()).start();
           } catch (Exception ex) {
             //@TODO: Log
-            Logger.logQuietly(ex);
+            //Logger.logQuietly(ex);
+            if (sflog().isIgnoreEnabled()){
+              sflog().ignore(ex);
+            }
             // ignore
           }
         }
@@ -1206,7 +1234,10 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
                 }
               }
             } catch (Exception ex) {
-                Logger.log(ex);
+                //Logger.log(ex);
+                if (sflog().isErrorEnabled()){
+                  sflog().error(ex);
+                }
             }
         }
 

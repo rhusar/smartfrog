@@ -3,7 +3,6 @@ package org.smartfrog.services.jetty.listeners;
 import java.rmi.RemoteException;
 import java.net.UnknownHostException;
 
-import org.smartfrog.sfcore.common.Logger;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;

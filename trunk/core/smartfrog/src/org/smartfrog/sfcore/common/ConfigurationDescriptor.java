@@ -21,6 +21,7 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.common;
 
+import org.smartfrog.SFSystem;
 import org.smartfrog.sfcore.common.SmartFrogInitException;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.prim.Prim;
@@ -262,7 +263,10 @@ public class ConfigurationDescriptor implements MessageKeys{
                 message.append(" parse time: " + time);
               }
               catch (Exception ex1) {
-                Logger.logQuietly(ex1);
+                //Logger.logQuietly(ex1);
+                if (SFSystem.sflog().isIgnoreEnabled()){
+                  SFSystem.sflog().ignore(ex1);
+               }
               }
             }
 
@@ -273,7 +277,10 @@ public class ConfigurationDescriptor implements MessageKeys{
                 message.append(" deploy time: " + time);
               }
               catch (Exception ex1) {
-                Logger.logQuietly(ex1);
+                //Logger.logQuietly(ex1);
+                if (SFSystem.sflog().isIgnoreEnabled()){
+                  SFSystem.sflog().ignore(ex1);
+               }
               }
             }
           }
@@ -640,7 +647,10 @@ public class ConfigurationDescriptor implements MessageKeys{
             try {
                 throw new SmartFrogInitException("Result type unknown");
             } catch (Exception ex) {
-                Logger.log(ex);
+                //Logger.log(ex);
+                if (SFSystem.sflog().isTraceEnabled()){
+                  SFSystem.sflog().trace(ex);
+               }
             }
         } else this.resultType = type;
         if (message!=null) this.resultMessage = message;

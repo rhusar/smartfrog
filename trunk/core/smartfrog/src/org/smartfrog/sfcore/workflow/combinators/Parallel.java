@@ -104,9 +104,11 @@ public class Parallel extends EventCompoundImpl implements Compound {
                 asynchCreateChild();
             }
         } catch (Exception ex) {
-            Logger.log(this.sfCompleteNameSafe()+" - Failed to start sub-components ",ex);
-            sfTerminate(TerminationRecord.abnormal(
-                    "Failed to start sub-components " + ex, name));
+            //Logger.log(this.sfCompleteNameSafe()+" - Failed to start sub-components ",ex);
+            if (sflog().isErrorEnabled()){
+              sflog().error(this.sfCompleteNameSafe()+" - Failed to start sub-components ",ex);
+            }
+            sfTerminate(TerminationRecord.abnormal("Failed to start sub-components " + ex, name));
         }
     }
 
@@ -189,9 +191,11 @@ public class Parallel extends EventCompoundImpl implements Compound {
                     sfTerminate(TerminationRecord.normal(name));
                 }
             } catch (Exception e) {
-                Logger.log(this.sfCompleteNameSafe()+" - error handling child termination ",e );
-                sfTerminate(TerminationRecord.abnormal(
-                        "error handling child termination " + e, name));
+//                Logger.log(this.sfCompleteNameSafe()+" - error handling child termination ",e );
+              if (sflog().isErrorEnabled()){
+                sflog().error(this.sfCompleteNameSafe()+" - error handling child termination ",e );
+              }
+              sfTerminate(TerminationRecord.abnormal("error handling child termination " + e, name));
             }
         }
     }
