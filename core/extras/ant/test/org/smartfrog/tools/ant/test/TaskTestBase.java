@@ -36,6 +36,7 @@ public abstract class TaskTestBase extends BuildFileTest {
 
     /**
      * implementation point: return the name of a test build file
+     *
      * @return the path (from the test files base dir) to the build file
      */
     protected abstract String getBuildFile();
@@ -56,22 +57,24 @@ public abstract class TaskTestBase extends BuildFileTest {
     }
 
     public void setUp() {
-        String basedir= getRequiredTestProperty("test.files.dir");
-        String filename=getBuildFile();
-        configureProject(basedir+"/"+ filename);
+        String basedir = getRequiredTestProperty("test.files.dir");
+        String filename = getBuildFile();
+        configureProject(basedir + "/" + filename);
     }
 
 
     /**
      * assert that some text is not in the log
+     *
      * @param text
      */
     public void assertNotInLog(String text) {
         String log = getLog();
         boolean found = log.indexOf(text) >= 0;
-        if(found) {
+        if (found) {
             System.out.print(log);
-            fail("Did not want to find: "+ text);
+            System.out.flush();
+            fail("Did not want to find: " + text);
         }
     }
 
@@ -81,12 +84,13 @@ public abstract class TaskTestBase extends BuildFileTest {
 
     protected void assertInLog(String text) {
         String log = getLog();
-        boolean found = log.indexOf(text) >=0;
+        boolean found = log.indexOf(text) >= 0;
         if (!found) {
             System.out.println("not found:");
             System.out.println(text);
             System.out.println(" log was:-");
             System.out.print(log);
+            System.out.flush();
             String errorText = "not found: \"" + text + "\" log was \""
                     + log + "\"";
             fail(errorText);
@@ -95,6 +99,7 @@ public abstract class TaskTestBase extends BuildFileTest {
 
     /**
      * for overrides
+     *
      * @param text
      */
     protected void assertLogContaining(String text) {
@@ -103,17 +108,19 @@ public abstract class TaskTestBase extends BuildFileTest {
 
     /**
      * expect an exception with the text in the log
+     *
      * @param target
      * @param log
      * @param cause
      */
-    public void expectExceptionWithLogContaining(String target,String log,String cause) {
-        expectBuildException(target,cause);
+    public void expectExceptionWithLogContaining(String target, String log,
+                                                 String cause) {
+        expectBuildException(target, cause);
         assertInLog(log);
     }
 
     public void expectExceptionWithLogContaining(String target, String log) {
-        expectExceptionWithLogContaining(target,log,target);
+        expectExceptionWithLogContaining(target, log, target);
     }
 
     public void assertRootProcessInLog() {

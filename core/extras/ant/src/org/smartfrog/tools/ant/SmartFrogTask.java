@@ -23,9 +23,9 @@ package org.smartfrog.tools.ant;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Java;
+import org.apache.tools.ant.types.Assertions;
 import org.apache.tools.ant.types.Environment;
 import org.apache.tools.ant.types.PropertySet;
-import org.apache.tools.ant.types.Assertions;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -39,13 +39,12 @@ import java.util.List;
  * it may be calling the Java task, it may be calling smartfrog direct.
  * What is not a detail is that the combined classpath of ant+ any classpath parameters must include
  * all the relevant smartfrog JAR files.
- *
+ * <p/>
  * Smartfrog can be configured via system properties, an ini file, or the explicit
  * properties of this task. All the attributes of this task that configure SmartFrog
  * (port, liveness, spawning, stack trace) are undefined; whatever defaults are built into
  * SmartFrog apply, not any hard coded in the task. This also permits one to override smartfrog
  * by setting system properties inline, or in a property set.
- *
  */
 public abstract class SmartFrogTask extends TaskBase {
     protected static final String ROOT_PROCESS = "rootProcess";
@@ -62,7 +61,7 @@ public abstract class SmartFrogTask extends TaskBase {
     /**
      * name of host
      */
-    private String host=null;
+    private String host = null;
 
 
     /**
@@ -81,41 +80,41 @@ public abstract class SmartFrogTask extends TaskBase {
     protected Java smartfrog;
 
     /**
-    SmartFrog daemon connection port.
-    org.smartfrog.ProcessCompound.sfRootLocatorPort=3800;
-    */
+     * SmartFrog daemon connection port.
+     * org.smartfrog.ProcessCompound.sfRootLocatorPort=3800;
+     */
     protected Integer port; // = 3800;
 
     /**
-    Liveness check period (in seconds); default=15.
-    org.smartfrog.ProcessCompound.sfLivenessDelay=15;
-    */
+     * Liveness check period (in seconds); default=15.
+     * org.smartfrog.ProcessCompound.sfLivenessDelay=15;
+     */
     protected Integer livenessCheckPeriod; // = 15;
 
 
     /**
-     *  Liveness check retries
+     * Liveness check retries
      * org.smartfrog.ProcessCompound.sfLivenessFactor=5;
-    */
-    protected Integer  livenessCheckRetries; // = 5;
+     */
+    protected Integer livenessCheckRetries; // = 5;
     /**
      * Allow spawning of subprocess
-     *# org.smartfrog.ProcessCompound.sfProcessAllow=true;
-    */
+     * # org.smartfrog.ProcessCompound.sfProcessAllow=true;
+     */
     protected Boolean allowSpawning; // = true;
 
     /**
      * Subprocess creation/failure timeout - default=60 seconds
      * (slower machines might need longer periods to start a new subprocess)
-     *  org.smartfrog.ProcessCompound.sfProcessTimeout=60;
+     * org.smartfrog.ProcessCompound.sfProcessTimeout=60;
      */
-    protected Integer  spawnTimeout; // = 60;
+    protected Integer spawnTimeout; // = 60;
 
 
     /**
-    * stack tracing
-    * map to org.smartfrog.logger.logStrackTrace
-    */
+     * stack tracing
+     * map to org.smartfrog.logger.logStrackTrace
+     */
     protected Boolean logStackTraces; //= false;
 
     /**
@@ -135,16 +134,18 @@ public abstract class SmartFrogTask extends TaskBase {
      * the process gets killed. Not compatible with spawning.
      */
 
-    int taskTimeout;
+    private int taskTimeout = DEFAULT_TIMEOUT_VALUE;
+
+    public static final int DEFAULT_TIMEOUT_VALUE = 60;
 
     /**
      * codebase string
-     *
      */
-    protected List codebase=new LinkedList();
+    protected List codebase = new LinkedList();
 
     /**
      * add a file to the list
+     *
      * @param filename
      */
     public void addSourceFile(File filename) {
@@ -153,6 +154,7 @@ public abstract class SmartFrogTask extends TaskBase {
 
     /**
      * add a URL to the list.
+     *
      * @param url URL (or file) to add
      */
     public void addSourceURL(String url) {
@@ -161,6 +163,7 @@ public abstract class SmartFrogTask extends TaskBase {
 
     /**
      * set the hostname to deploy to (optional)
+     *
      * @param host
      */
     public void setHost(String host) {
@@ -169,6 +172,7 @@ public abstract class SmartFrogTask extends TaskBase {
 
     /**
      * port of daemon; optional -default is 3800
+     *
      * @param port
      */
     public void setPort(Integer port) {
@@ -177,6 +181,7 @@ public abstract class SmartFrogTask extends TaskBase {
 
     /**
      * liveness check in seconds; optional
+     *
      * @param livenessCheckPeriod
      */
     public void setLivenessCheckPeriod(Integer livenessCheckPeriod) {
@@ -185,6 +190,7 @@ public abstract class SmartFrogTask extends TaskBase {
 
     /**
      * retry count for liveness checks.
+     *
      * @param livenessCheckRetries
      */
     public void setLivenessCheckRetries(Integer livenessCheckRetries) {
@@ -193,6 +199,7 @@ public abstract class SmartFrogTask extends TaskBase {
 
     /**
      * can this process spawn new processes?
+     *
      * @param allowSpawning
      */
     public void setAllowSpawning(boolean allowSpawning) {
@@ -201,6 +208,7 @@ public abstract class SmartFrogTask extends TaskBase {
 
     /**
      * when to assume a spawn failed -in seconds.
+     *
      * @param spawnTimeout
      */
     public void setSpawnTimeout(Integer spawnTimeout) {
@@ -210,14 +218,16 @@ public abstract class SmartFrogTask extends TaskBase {
 
     /**
      * the name of a smartfrog file to load on startupe
+     *
      * @param initialSmartfrogFile
      */
     public void setInitialSmartfrogFile(File initialSmartfrogFile) {
-        if(!initialSmartfrogFile.exists()) {
-            throw new BuildException("Not found: "+initialSmartfrogFile);
+        if (!initialSmartfrogFile.exists()) {
+            throw new BuildException("Not found: " + initialSmartfrogFile);
         }
-        if(!initialSmartfrogFile.isFile()) {
-            throw new BuildException("Unexpected file type: " + initialSmartfrogFile);
+        if (!initialSmartfrogFile.isFile()) {
+            throw new BuildException(
+                    "Unexpected file type: " + initialSmartfrogFile);
         }
 
         this.initialSmartfrogFile = initialSmartfrogFile;
@@ -226,6 +236,7 @@ public abstract class SmartFrogTask extends TaskBase {
 
     /**
      * get the current host
+     *
      * @return
      */
     protected String getHost() {
@@ -233,9 +244,9 @@ public abstract class SmartFrogTask extends TaskBase {
     }
 
 
-
     /**
      * Name an ini file can contain data that overrides the basic settings.
+     *
      * @param iniFile
      */
     public void setIniFile(File iniFile) {
@@ -253,22 +264,32 @@ public abstract class SmartFrogTask extends TaskBase {
     }
 
     /**
-     * get the base java task
-     * @return a java task set up with forking, the entry point set to SFSystem
+     * get the base java task with common config options
      *
+     * @return a java task set up with forking, the entry point set to SFSystem, timeout maybe enabled
      */
     protected Java getBaseJavaTask() {
-        Java java =createJavaTask("org.smartfrog.SFSystem", getTaskTitle());
+        Java java = createJavaTask("org.smartfrog.SFSystem", getTaskTitle());
         java.setFork(true);
-
-
         java.setDir(getProject().getBaseDir());
-
+        applyTimeout(java);
         return java;
+    }
+
+
+    /**
+     * apply any defined timeout; do nothing if there is none
+     */
+    protected void applyTimeout(Java jvm) {
+        if (getTaskTimeout() > 0) {
+            long timeoutMS = getTaskTimeout() * 1000L;
+            jvm.setTimeout(new Long(timeoutMS));
+        }
     }
 
     /**
      * get the title string used to name a task
+     *
      * @return the name of the task
      */
     protected abstract String getTaskTitle();
@@ -304,6 +325,7 @@ public abstract class SmartFrogTask extends TaskBase {
 
     /**
      * set the fail on error flag.
+     *
      * @param failOnError
      */
     public void setFailOnError(boolean failOnError) {
@@ -314,10 +336,21 @@ public abstract class SmartFrogTask extends TaskBase {
     /**
      * set the timeout of a task, in seconds. After this time it will be
      * killed.
+     *
      * @param taskTimeout
      */
     public void setTaskTimeout(int taskTimeout) {
         this.taskTimeout = taskTimeout;
+        applyTimeout(smartfrog);
+    }
+
+    /**
+     * get the task timeout (in seconds)
+     *
+     * @return
+     */
+    public int getTaskTimeout() {
+        return taskTimeout;
     }
 
     /**
@@ -328,35 +361,41 @@ public abstract class SmartFrogTask extends TaskBase {
     public void addAssertions(Assertions asserts) {
         smartfrog.addAssertions(asserts);
     }
+
     /**
      * adds the ini file by setting the appropriate system property
      */
     protected void addIniFile() {
         if (iniFile != null && iniFile.exists()) {
-            addSmartfrogProperty("org.smartfrog.iniFile",iniFile.toString());
+            addSmartfrogProperty("org.smartfrog.iniFile", iniFile.toString());
         }
     }
 
     protected void setStandardSmartfrogProperties() {
         addSmartfrogPropertyIfDefined("org.smartfrog.logger.logStackTrace",
-            logStackTraces);
-        addSmartfrogPropertyIfDefined("org.smartfrog.ProcessCompound.sfRootLocatorPort",
-            port);
-        addSmartfrogPropertyIfDefined("org.smartfrog.ProcessCompound.sfLivenessDelay",
-            livenessCheckPeriod);
-        addSmartfrogPropertyIfDefined("org.smartfrog.ProcessCompound.sfLivenessFactor",
-            livenessCheckRetries);
-        addSmartfrogPropertyIfDefined("org.smartfrog.ProcessCompound.sfProcessAllow",
-            allowSpawning);
-        addSmartfrogPropertyIfDefined("org.smartfrog.ProcessCompound.sfProcessTimeout",
-            spawnTimeout);
-        if(codebase!=null && !codebase.isEmpty()) {
+                logStackTraces);
+        addSmartfrogPropertyIfDefined(
+                "org.smartfrog.ProcessCompound.sfRootLocatorPort",
+                port);
+        addSmartfrogPropertyIfDefined(
+                "org.smartfrog.ProcessCompound.sfLivenessDelay",
+                livenessCheckPeriod);
+        addSmartfrogPropertyIfDefined(
+                "org.smartfrog.ProcessCompound.sfLivenessFactor",
+                livenessCheckRetries);
+        addSmartfrogPropertyIfDefined(
+                "org.smartfrog.ProcessCompound.sfProcessAllow",
+                allowSpawning);
+        addSmartfrogPropertyIfDefined(
+                "org.smartfrog.ProcessCompound.sfProcessTimeout",
+                spawnTimeout);
+        if (codebase != null && !codebase.isEmpty()) {
             //add the codebase for extra stuff
-            String codelist=Codebase.getCodebaseString(codebase);
-//            if(codelist.length()>0) 
+            String codelist = Codebase.getCodebaseString(codebase);
+//            if(codelist.length()>0)
             {
-                log("Codebase set to "+codelist,Project.MSG_VERBOSE);
-                addSmartfrogProperty("org.smartfrog.codebase",codelist);
+                log("Codebase set to " + codelist, Project.MSG_VERBOSE);
+                addSmartfrogProperty("org.smartfrog.codebase", codelist);
             }
         }
 
@@ -364,13 +403,13 @@ public abstract class SmartFrogTask extends TaskBase {
 
 
     /**
-     *  add a command
+     * add a command
      *
      * @param command
      * @param name
      * @throws BuildException if there is no app name
      */
-    protected  void addApplicationCommand(String command, String name) {
+    protected void addApplicationCommand(String command, String name) {
         verifyApplicationName(name);
         addArg(command);
         addArg(name);
@@ -379,13 +418,13 @@ public abstract class SmartFrogTask extends TaskBase {
     /**
      * verify the app name is valid by whatever logic we have
      * current asserts that it is non null
+     *
      * @param application
      * @throws BuildException when unhappy
-     *
      */
     protected void verifyApplicationName(String application)
-        throws BuildException{
-        if(application==null || application.length()==0) {
+            throws BuildException {
+        if (application == null || application.length() == 0) {
             throw new BuildException("Missing application name");
         }
     }
@@ -404,18 +443,19 @@ public abstract class SmartFrogTask extends TaskBase {
      * Adds a set of properties as system properties.
      *
      * @param sysp set of properties to add
-     *
      * @since Ant 1.6
      */
     public void addSyspropertyset(PropertySet sysp) {
         smartfrog.addSyspropertyset(sysp);
     }
+
     /**
      * set a sys property on the smartfrog JVM
+     *
      * @param name
      * @param value
      */
-    protected void addSmartfrogProperty(String name,String value) {
+    protected void addSmartfrogProperty(String name, String value) {
         Environment.Variable property = new Environment.Variable();
         property.setKey(name);
         property.setValue(value);
@@ -425,23 +465,24 @@ public abstract class SmartFrogTask extends TaskBase {
 
     /**
      * set a sys property on the smartfrog JVM if the object used to set the property value is defined
+     *
      * @param name
      * @param object: if defined the toString() value is used
      */
     protected void addSmartfrogPropertyIfDefined(String name, Object object) {
-        if(object!=null) {
+        if (object != null) {
             addSmartfrogProperty(name, object.toString());
         }
     }
 
 
     /**
-     *
      * run smartfrog and throw an exception if something went awry.
      * failure texts are for when smartfrog ran and failed; errorTexts when
      * smartfrog wouldnt run.
+     *
      * @param failureText text when return value==-1
-     * @param errorText text when return value!=0 && !=1-
+     * @param errorText   text when return value!=0 && !=1-
      * @throws BuildException if the return value from java!=0
      */
     protected void execSmartfrog(String failureText, String errorText) {
@@ -450,14 +491,14 @@ public abstract class SmartFrogTask extends TaskBase {
         //last minute fixup of error properties.
         //this is because pre Ant1.7, even setting this to false stops spawn working
         //delayed setting only when the flag is true reduces the need to flip the bit
-        if(failOnError) {
+        if (failOnError) {
             smartfrog.setFailonerror(failOnError);
         }
-        int err= smartfrog.executeJava();
-        if(!failOnError) {
+        int err = smartfrog.executeJava();
+        if (!failOnError) {
             return;
         }
-        switch(err) {
+        switch (err) {
             case 0:
                 return;
                 //-1 is an expected error, but
@@ -467,24 +508,27 @@ public abstract class SmartFrogTask extends TaskBase {
             case 255:
                 throw new BuildException(failureText);
             default:
-                throw new BuildException(errorText+" - error code "+err);
+                throw new BuildException(errorText + " - error code " + err);
         }
     }
 
     /**
      * simpler entry point with a set message on errors
+     *
      * @param failureText text when smartfrog returns '1'
      */
     protected void execSmartfrog(String failureText) {
-        execSmartfrog(failureText,"Problems running smartfrog JVM");
+        execSmartfrog(failureText, "Problems running smartfrog JVM");
     }
 
     /**
      * check no host;
-     * @throws org.apache.tools.ant.BuildException if a host is defined
+     *
+     * @throws org.apache.tools.ant.BuildException
+     *          if a host is defined
      */
     protected void checkNoHost() {
-        if(host!=null && host.length()>0) {
+        if (host != null && host.length() > 0) {
             throw new BuildException("host cannot be set on this task");
         }
     }
@@ -502,15 +546,17 @@ public abstract class SmartFrogTask extends TaskBase {
 
         /**
          * the URL of the JAR file
+         *
          * @param url
          */
         public void setURL(String url) {
-            location=url;
+            location = url;
         }
 
         /**
          * provide a URL. This is for the convenience of programmatic access, not
          * ant build files
+         *
          * @param url
          */
         public void setURL(URL url) {
@@ -519,14 +565,15 @@ public abstract class SmartFrogTask extends TaskBase {
 
         /**
          * name a JAR file for addition to the path
+         *
          * @param file
          */
         public void setFile(File file) {
-            if(!file.exists()) {
-                throw new BuildException("Not found :"+file);
+            if (!file.exists()) {
+                throw new BuildException("Not found :" + file);
             }
-            if(file.isDirectory()) {
-                throw new BuildException("Not a JAR file :"+file);
+            if (file.isDirectory()) {
+                throw new BuildException("Not a JAR file :" + file);
             }
             try {
                 setURL(file.toURL());
@@ -537,6 +584,7 @@ public abstract class SmartFrogTask extends TaskBase {
 
         /**
          * get the location
+         *
          * @return
          */
         public String getLocation() {
@@ -545,16 +593,17 @@ public abstract class SmartFrogTask extends TaskBase {
 
         /**
          * take a list of codebase elements and then turn them into a string
+         *
          * @param codebases
          * @return
          */
         public static String getCodebaseString(List codebases) {
-            StringBuffer results=new StringBuffer();
-            Iterator it=codebases.iterator();
+            StringBuffer results = new StringBuffer();
+            Iterator it = codebases.iterator();
             while (it.hasNext()) {
                 Codebase codebase = (Codebase) it.next();
-                String l= codebase.getLocation();
-                if(l==null) {
+                String l = codebase.getLocation();
+                if (l == null) {
                     throw new BuildException("Undefined codebase");
                 }
                 results.append(l);
