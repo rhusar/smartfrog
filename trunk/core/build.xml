@@ -57,7 +57,9 @@ For more information: www.smartfrog.org
   <!-- test in the harness                                                 -->
   <!-- =================================================================== -->
   <target name="test-testharness" depends="init" description="test in main project">
-    <ant dir="${test.project}" target="test" inheritAll="false" />
+    <ant dir="${test.project}" target="test" inheritAll="false" >
+      <property name="system.test" value="false" />
+    </ant>
   </target>
 
   <!-- =================================================================== -->
