@@ -105,6 +105,7 @@
       
       <!-- common directories -->
     <property name="src.dir" location="src"/>
+	 <property name="bin.dir" location="bin"/>
     <property name="doc.dir" location="doc"/>
     <property name="lib.dir" location="lib" />
     <property name="test.src.dir" location="test" />
