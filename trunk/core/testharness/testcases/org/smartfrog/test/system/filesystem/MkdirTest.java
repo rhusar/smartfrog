@@ -45,8 +45,8 @@ public class MkdirTest  extends SmartFrogTestBase {
                     true);
             file = new File(filename);
             //now verify we clean up
-            assertTrue(file.exists());
-            assertTrue(file.isDirectory());
+            assertTrue("Directory not found: "+filename,file.exists());
+            assertTrue("Not a directory: " + filename,file.isDirectory());
         } finally {
             //cleanup
             terminateApplication(application);
