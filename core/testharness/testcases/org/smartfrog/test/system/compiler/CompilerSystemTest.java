@@ -51,7 +51,7 @@ public class CompilerSystemTest extends SmartfrogTestBase {
                 "tcn47",
                 "SmartFrogDeploymentException",
                 "FAILED when trying DEPLOY",
-                "org.smartfrog.sfcore.common.SmartFrogResolutionException",
+                "SmartFrogResolutionException",
                 "The result is not a ComponentDescription");
     }
 
