@@ -24,13 +24,13 @@ Where to start:
 
 - Web site:	    www.smartfrog.org
 
-- User manual:      <SF>/docs/sfUserManual.pdf
+- User manual:      <SF>/dist/docs/sfUserManual.pdf
 
-- Reference manual: <SF>/docs/sfReferenceManual.pdf
+- Reference manual: <SF>/dist/docs/sfReferenceManual.pdf
 
-- Java docs:        <SF>/docs/jdocs/index.html
+- Java docs:        <SF>/dist/docs/jdocs/index.html
 
-- Examples:         <SF>/src/org/smartfrog/examples/examples.html
+- Examples:         <SF>/dist/src/org/smartfrog/examples/examples.html
 
 - Build process:    <SF>/docs/build.html
 
