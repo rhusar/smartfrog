@@ -177,6 +177,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
         phases.add("type");
         phases.add("link");
         phases.add("function");
+        phases.add("predicate");
         // Get componentDescription and
         ComponentDescription cmpDesc = ComponentDescriptionImpl.sfComponentDescription(
                                                                    urlDescription.toLowerCase()
