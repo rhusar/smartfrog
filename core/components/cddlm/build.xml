@@ -219,7 +219,7 @@
     <!-- SOAP -->
     <!-- =================================================================== -->
 
-    <target name="init-soap" depends="init,init-deploy-properties,import-axis-tasks" >
+    <target name="init-soap" depends="init,init-deploy-properties,import-axis-tasks,init-proxy" >
       <!-- SOAP properties -->
       <property name="deploymentAPI.wsdl"
         location="${src.dir}/${xsd.path}/deploymentAPI.wsdl" />
@@ -317,7 +317,7 @@
    <touch file="${soapapi.touch.file}"/>
   </target>
   
-  <!-- yes, they really cant spell parseable -->
+  <!-- yes, they really can't spell parseable -->
    <target name="dotnet-client-wsdl" depends="init-soap">
      <wsdltodotnet srcFile="${deploymentAPI.wsdl}"
       destFile="${soap.dotnet.proxy.class}"
