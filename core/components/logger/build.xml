@@ -41,14 +41,63 @@ For more information: www.smartfrog.org
   <property name="is.component" value="true"  />
 
   
-  
+   <property name="Name.System" value="Logger"/>
   <!-- ========================================================== -->
   <!-- ========================================================== -->
   <target name="init" depends="init-standard-output-dirs,use-smartfrog-tasks">
-    
+     <tstamp/>
+    <property name="Name.Company" value="(C) Copyright 1998-2004 Hewlett-Packard Development Company, LP"/>
+    <property name="version" value="smartfrog components"/>
+    <property name="Version" value="1.00.000"/>
+    <property name="year" value="2004"/>
+
+    <echo message=""/>
+    <echo message="==================================================================="/>
+    <echo message="= ${Name.System} ${version}"/>
+    <echo message="= ${Name.Company} "/>
+    <echo message="==================================================================="/>
+    <echo message=""/>
+    <echo message="(${ant.version})"/>
+	
   </target>
     
-  
+  <!-- =================================================================== -->
+  <!--   JDocs                                                             -->
+  <!-- =================================================================== -->
+  <target name="jdocs" depends="init" description="Generates the API documentation">
+    <!--  Java Docs for all                                                -->
+    <echo message=""/>
+    <echo message="------------------------------------------------------------------------"/>
+    <echo message="  Creating Java Docs for ${Name.System} ${version} [${dist.dir}/${jdocs}]"/>
+    <echo message="------------------------------------------------------------------------"/>
+    <mkdir dir="${dist.jdocs.dir}"/>
+    <javadoc packagenames="org.smartfrog.*"
+           sourcepath="${src.dir}"
+           destdir="${dist.jdocs.dir}"
+           author="true"
+           version="true"
+           use="true"
+           windowtitle="${Name.System}"
+           Header="${Name.System} ${Version}"
+           Footer="${Name.System} ${version} ${Version}"
+           doctitle="${Name.System}"
+           bottom="${Name.Company}"
+           source="${javac.runtime.target}"
+           >
+      <group title="SmartFrog Packages" packages="org.smartfrog.*"/>
+      <classpath>
+          <fileset dir="${smartfrog.dist.lib.dir}">
+              <include name="**/*.jar"/>
+          </fileset>
+		   <fileset dir="${dist.lib.dir}">
+              <include name="**/*.jar"/>
+          </fileset>
+      </classpath>
+    </javadoc>
+
+  </target>
+
+
   <target name="declare-run.classpath" 
     depends="declare-run.classpath-no-tests" />  
   
