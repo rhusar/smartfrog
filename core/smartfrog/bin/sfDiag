@@ -1,5 +1,5 @@
 #! /bin/sh
-if ! test $SFHOME; 
+if ! test "$SFHOME"; 
 then 
     SFHOME="$PWD";
     echo SFHOME undefined, 
@@ -7,7 +7,7 @@ then
 else
     echo SFHOME is set to $SFHOME;
 fi
-for i in $SFHOME/lib/*.jar; 
+for i in "$SFHOME/lib"/*.jar; 
     do CLASSPATH="$i:$CLASSPATH"; 
 done
 

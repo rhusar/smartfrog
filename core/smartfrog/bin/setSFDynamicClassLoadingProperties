@@ -12,7 +12,7 @@
 export SERVER=http://localhost:8080
 export CODEBASE="$SERVER/sfExamples.jar"
 
-export SFCODEBASE="-Dorg.smartfrog.codebase=$CODEBASE"
+export SFCODEBASE=-Dorg.smartfrog.codebase="$CODEBASE"
 
 # -------------------End user properties---------------
 
