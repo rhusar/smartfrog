@@ -21,15 +21,20 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.logger;
 
 
-import java.util.logging.*;
-import java.io.File;
-import java.rmi.RemoteException;
-
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+
+import java.io.File;
+import java.rmi.RemoteException;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.FileHandler;
+import java.util.logging.Formatter;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 
 /**
  * Default implementation of distributed logger. This logger is deployed as 
@@ -37,7 +42,7 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
  * APIs provided by JDK.
  * @Author Ashish Awasthi
  */ 
-public class SFLoggerImpl extends PrimImpl implements SFLogger {
+public class SFLoggerImpl extends PrimImpl implements Prim, SFLogger {
     //default values of the attributes
     private String logFile = "smartfrog.log"; 
     private String logsDir = "logs"; 

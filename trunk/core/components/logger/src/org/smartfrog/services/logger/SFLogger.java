@@ -24,7 +24,6 @@ package org.smartfrog.services.logger;
 import java.rmi.RemoteException;
 import java.util.logging.LogRecord;
 
-import org.smartfrog.sfcore.prim.Prim;
 
 /**
  * SmartFrog Logger Interface. Defines names of Logger attributes and methods
@@ -37,7 +36,7 @@ import org.smartfrog.sfcore.prim.Prim;
  * Obviously, making that call before every debug message is sent does not save any time
  * either, so if it is to be used, cache the return value.
  */ 
-public interface SFLogger extends Prim {
+public interface SFLogger {
     
     //SmartFrog attributes for the distributed logger
     public static final String FILE_LOGGING = "fileLogging";
