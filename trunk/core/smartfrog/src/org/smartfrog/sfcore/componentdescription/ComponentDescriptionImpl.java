@@ -666,6 +666,15 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
                 } catch (Exception ex) {
                 // ignore, value is not a number
                 }
+                if ((value.toString().startsWith("true"))||
+                    (value.toString().startsWith("false"))){
+                  try {
+                    // convert to boolean
+                    value = Boolean.valueOf( (String) value);
+                  } catch (Exception ex) {
+                  // ignore, value is not a number
+                  }
+                }
                 String cxtKey = key.substring(startWith.length());
                 compDesc.getContext().put(cxtKey, value);
             }
