@@ -18,6 +18,8 @@ For more information: www.smartfrog.org
 
 */
 
+Note: <SF> = 'smartfrog' directory
+
 Where to start:
 
 - Web site:	    www.smartfrog.org
@@ -26,6 +28,9 @@ Where to start:
 
 - Reference manual: <SF>/docs/sfReferenceManual.pdf
 
+- Java docs:        <SF>/docs/jdocs/index.html
+
 - Examples:         <SF>/src/org/smartfrog/examples/examples.html
 
 - Build process:    <SF>/docs/build.html
+
