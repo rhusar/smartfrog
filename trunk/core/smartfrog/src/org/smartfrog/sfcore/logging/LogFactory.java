@@ -16,7 +16,7 @@ public  class LogFactory {
     /**
      * hashtable of loggers
      */
-    protected static Hashtable loggers = new Hashtable();
+    protected static Hashtable loggers       = new Hashtable();
 
     /**
      * Protected constructor that is not available for public use.
