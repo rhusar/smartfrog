@@ -103,17 +103,17 @@
       <description>version attribute of smartfrog documents</description>
     </string>
 
-    <string name="CALLBACK_WS_NOTIFICATION" value="http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseNotification">
+    <uri name="CALLBACK_WS_NOTIFICATION" value="http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseNotification">
       <description>name of ws-notification notification type</description>
-    </string>
+    </uri>
 
-    <string name="CALLBACK_WS_EVENTING" value="http://schemas.xmlsoap.org/ws/2004/08/eventing">
+    <uri name="CALLBACK_WS_EVENTING" value="http://schemas.xmlsoap.org/ws/2004/08/eventing">
       <description>name of ws-eventing notification type</description>
-    </string>
+    </uri>
 
-    <string name="CALLBACK_CDDLM_PROTOTYPE" value="http://gridforum.org/cddlm/serviceAPI/notifications/2004/10/11/">
+    <uri name="CALLBACK_CDDLM_PROTOTYPE" value="http://gridforum.org/cddlm/serviceAPI/notifications/2004/10/11/">
       <description>name of prototype-quality CDDLM notification type</description>
-    </string>
+    </uri>
 
 
     <!-- state constants. These are non-normative; the normative definitions
@@ -138,6 +138,16 @@
 
     <string name="STATE_TERMINATED" value="terminated">
       <description>terminated state</description>
+    </string>
+
+    <string name="CDDLM_PROTOTYPE_SUBSCRIPTION_ROOT_ELEMENT"
+      value="prototypeSubscriptionRequest">
+      <description> element local name for prototype subscription</description>
+    </string>
+
+    <string name="CDDLM_PROTOTYPE_SUBSCRIPTION_ADDRESS_ELEMENT"
+      value="address">
+      <description> element local name for prototype subscription address</description>
     </string>
 
 

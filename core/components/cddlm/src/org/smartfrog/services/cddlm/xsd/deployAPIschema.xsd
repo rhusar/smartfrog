@@ -49,51 +49,7 @@
       <xsd:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
   </xsd:complexType>
-  <!-- ============================================================= -->
-  <!-- BEGIN SIMPLETYPES -->
-  <!-- ============================================================= -->
-  <!-- 
-  <xsd:simpleType name="notificationEnum">
-    <xsd:annotation>
-      <xsd:documentation>
-      Enumeration of supported notification types. Any
-      unexpected type constitutes an error and should be
-      flagged.
 
-        -ws-notification:  notification via WS-N
-        -ws-eventing: subscriptions and notifications of WS-Eventing
-        -CDDLM:  a non-standard direct invocation mechanism
-
-      </xsd:documentation>
-    </xsd:annotation>
-    <xsd:restriction base="xsd:string">
-      <xsd:enumeration value="http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseNotification">
-        <xsd:annotation>
-          <xsd:documentation>
-            Notification
-          </xsd:documentation>
-        </xsd:annotation>
-      </xsd:enumeration>
-
-      <xsd:enumeration value="http://schemas.xmlsoap.org/ws/2004/08/eventing">
-        <xsd:annotation>
-          <xsd:documentation>
-            WS-eventing
-          </xsd:documentation>
-        </xsd:annotation>
-      </xsd:enumeration>
-
-      <xsd:enumeration value="http://gridforum.org/cddlm/serviceAPI/notifications/2004/07/30">
-        <xsd:annotation>
-          <xsd:documentation>
-            Direct endpoint invocation for protoyping only.
-          </xsd:documentation>
-        </xsd:annotation>
-      </xsd:enumeration>
-
-
-    </xsd:restriction>
-  </xsd:simpleType> -->
   <!-- ============================================================= -->
   <!-- lifecycle states-->
   <!-- ============================================================= -->
@@ -195,22 +151,7 @@
   <!-- ============================================================= -->
   <!-- BEGIN COMPLEXTYPES -->
   <!-- ============================================================= -->
-  <!-- ============================================================= -->
-  <!-- notification address union -->
-  <!-- TODO replace with any XML -->
-  <!-- ============================================================= -->
-  <!-- 
-  <xsd:complexType name="notificationAddressType">
-    <xsd:annotation>
-      <xsd:documentation>
-      holder for different notification types
-      </xsd:documentation>
-    </xsd:annotation>
-    <xsd:choice>
-      <xsd:element name="uri" type="xsd:anyURI"/>
-      <xsd:element name="address" type="wsa:EndpointReferenceType"/>
-    </xsd:choice>
-  </xsd:complexType> -->
+
   <!-- ============================================================= -->
   <!-- composite representation of notification enum, address and identifier -->
   <!-- ============================================================= -->
@@ -953,6 +894,11 @@
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
+  
+  <!-- ============================================================= -->
+  <!-- response  -->
+  <!-- ============================================================= -->
+  
   <xsd:element name="lifecycleEventResponse" type="xsd:boolean">
     <xsd:annotation>
       <xsd:documentation>
@@ -963,6 +909,7 @@
       </xsd:documentation>
     </xsd:annotation>
   </xsd:element>
+
   <!-- ============================================================= -->
   <!-- end schema-->
   <!-- ============================================================= -->

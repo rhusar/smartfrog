@@ -20,6 +20,8 @@
 package org.cddlm.client.console;
 
 import nu.xom.ParsingException;
+import nu.xom.Document;
+import nu.xom.Element;
 import org.apache.axis.AxisFault;
 import org.apache.axis.message.MessageElement;
 import org.apache.axis.message.Text;
@@ -39,8 +41,6 @@ import org.smartfrog.services.cddlm.generated.api.types.ApplicationStatusType;
 import org.smartfrog.services.cddlm.generated.api.types.DeploymentDescriptorType;
 import org.smartfrog.services.cddlm.generated.api.types.EmptyElementType;
 import org.smartfrog.services.cddlm.generated.api.types.JsdlType;
-import org.smartfrog.services.cddlm.generated.api.types.NotificationAddressType;
-import org.smartfrog.services.cddlm.generated.api.types.NotificationEnum;
 import org.smartfrog.services.cddlm.generated.api.types.NotificationInformationType;
 import org.smartfrog.services.cddlm.generated.api.types.OptionMapType;
 import org.smartfrog.services.cddlm.generated.api.types.OptionType;
@@ -55,6 +55,8 @@ import org.smartfrog.services.cddlm.generated.api.types._lookupApplicationReques
 import org.smartfrog.services.cddlm.generated.api.types._serverStatusRequest;
 import org.smartfrog.services.cddlm.generated.api.types._setNotificationRequest;
 import org.smartfrog.services.cddlm.generated.api.types._terminateRequest;
+import org.smartfrog.services.cddlm.generated.api.types.UnboundedXMLOtherNamespace;
+import org.smartfrog.services.cddlm.api.CallbackInfo;
 import org.w3c.dom.DOMImplementation;
 import org.xml.sax.SAXException;
 
@@ -533,19 +535,14 @@ public abstract class ConsoleOperation {
     public boolean setCddlmNotification(URI application, String url,
             String identifier)
             throws RemoteException {
-        NotificationInformationType callbackInfo = new NotificationInformationType();
-        callbackInfo.setType(NotificationEnum.fromString(
-                DeployApiConstants.CALLBACK_CDDLM_PROTOTYPE));
-        callbackInfo.setIdentifier(identifier);
-        URI replyAddress = null;
-        if (url != null) {
-            replyAddress = URIHelper.toAxisUri(url);
-        }
-        callbackInfo.setAddress(
-                new NotificationAddressType(replyAddress, null));
+        CallbackInfo info=new CallbackInfo();
+        info.setAddress(url);
+        info.setIdentifier(identifier);
+        NotificationInformationType notification;
+        notification= info.createCallback();
         _setNotificationRequest request = new _setNotificationRequest(
                 application,
-                callbackInfo);
+                notification);
         return setNotification(request);
     }
 

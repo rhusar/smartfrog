@@ -37,6 +37,7 @@ import org.smartfrog.services.cddlm.generated.api.types.NotificationInformationT
 import org.smartfrog.services.cddlm.generated.api.types.UnboundedXMLOtherNamespace;
 import org.smartfrog.services.cddlm.generated.api.types._createRequest;
 import org.smartfrog.services.cddlm.generated.api.types._lifecycleEventRequest;
+import org.smartfrog.services.cddlm.generated.api.types.UnboundedXMLAnyNamespace;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 
@@ -146,7 +147,7 @@ public class JobState {
     /**
      * type of the callback
      */
-    private String callbackType;
+    private URI callbackType;
 
     /**
      * url for callbacks
@@ -249,11 +250,11 @@ public class JobState {
         return languageName;
     }
 
-    public String getCallbackType() {
+    public URI getCallbackType() {
         return callbackType;
     }
 
-    public void setCallbackType(String callbackType) {
+    public void setCallbackType(URI callbackType) {
         this.callbackType = callbackType;
     }
 
@@ -468,7 +469,7 @@ public class JobState {
         //add our extra state
         MessageElement[] elements = XomAxisHelper.toArray(extras);
         if (elements != null) {
-            UnboundedXMLOtherNamespace extendedState = new UnboundedXMLOtherNamespace();
+            UnboundedXMLAnyNamespace extendedState = new UnboundedXMLAnyNamespace();
             extendedState.set_any(elements);
             status.setExtendedState(extendedState);
         }

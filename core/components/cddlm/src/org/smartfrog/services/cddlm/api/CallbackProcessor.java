@@ -25,14 +25,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.smartfrog.services.axis.SmartFrogHostedEndpoint;
 import org.smartfrog.services.cddlm.engine.JobState;
-import org.smartfrog.services.cddlm.generated.api.DeployApiConstants;
-import org.smartfrog.services.cddlm.generated.api.types.NotificationAddressType;
-import org.smartfrog.services.cddlm.generated.api.types.NotificationEnum;
 import org.smartfrog.services.cddlm.generated.api.types.NotificationInformationType;
 import org.smartfrog.services.cddlm.generated.api.types._setNotificationRequest;
-
-import java.net.MalformedURLException;
-import java.net.URL;
 
 /**
  * extract callback information from a job, attach it to a job Can be called in
@@ -47,11 +41,6 @@ public class CallbackProcessor extends Processor {
      * log
      */
     private static final Log log = LogFactory.getLog(CallbackProcessor.class);
-    public static final String ERROR_NO_CALLBACK = "No callback information";
-    public static final String ERROR_NO_ADDRESS = "No address for callbacks";
-    public static final String ERROR_NO_URI = "No URI in the address";
-    public static final String ERROR_NO_CALLBACK_TYPE = "no callback type specified";
-    public static final String ERROR_BAD_CALLBACK_URL = "Bad callback URL : ";
 
     public CallbackProcessor(SmartFrogHostedEndpoint owner) {
         super(owner);
@@ -68,48 +57,18 @@ public class CallbackProcessor extends Processor {
     public void process(JobState job, NotificationInformationType callbackInfo,
             boolean required)
             throws AxisFault {
-        NotificationEnum type = null;
-        if (callbackInfo == null) {
-            if (!required) {
-                job.clearCallbackData();
-                return;
-            } else {
-                throw raiseBadArgumentFault(ERROR_NO_CALLBACK);
-            }
-        }
+        CallbackInfo info=new CallbackInfo();
+        if(!info.extractCallback(callbackInfo, required)) {
+            job.clearCallbackData();
+            return;
+        } else {
 
-        type = callbackInfo.getType();
-        if (type == null) {
-            throw raiseBadArgumentFault(ERROR_NO_CALLBACK_TYPE);
         }
-        if (!DeployApiConstants.CALLBACK_CDDLM_PROTOTYPE.equals(
-                type.getValue())) {
-            throw raiseUnsupportedCallbackFault(
-                    DeployApiConstants.UNSUPPORTED_CALLBACK_WIRE_MESSAGE);
-        }
-
-        NotificationAddressType address = callbackInfo.getAddress();
-        if (address == null) {
-            throw raiseBadArgumentFault(ERROR_NO_ADDRESS);
-        }
-
-        URI uri = address.getUri();
-        if (uri == null) {
-            throw raiseBadArgumentFault(ERROR_NO_URI);
-        }
-        URL url;
-        try {
-            url = makeURL(uri);
-        } catch (MalformedURLException e) {
-            throw raiseBadArgumentFault(
-                    ERROR_BAD_CALLBACK_URL + uri.toString());
-        }
-        String identifier = callbackInfo.getIdentifier();
-        log.info("sending callbacks to " + url);
+        log.info("sending callbacks to " + info.getAddress());
         job.setCallbackInformation(callbackInfo);
-        job.setCallbackURL(url);
-        job.setCallbackType(type.getValue());
-        job.setCallbackIdentifier(identifier);
+        job.setCallbackURL(info.getUrl());
+        job.setCallbackType(info.getType());
+        job.setCallbackIdentifier(info.getIdentifier());
         CddlmCallbackRaiser callbackRaiser = new CddlmCallbackRaiser(job);
         job.setCallbackRaiser(callbackRaiser);
     }

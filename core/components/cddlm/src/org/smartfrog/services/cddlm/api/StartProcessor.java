@@ -20,7 +20,7 @@
 package org.smartfrog.services.cddlm.api;
 
 import org.smartfrog.services.axis.SmartFrogHostedEndpoint;
-import org.smartfrog.services.cddlm.generated.api.types._startRequest;
+import org.smartfrog.services.cddlm.generated.api.types._runRequest;
 
 /**
  * created Oct 14, 2004 3:47:50 PM
@@ -33,7 +33,8 @@ public class StartProcessor extends Processor {
     }
 
 
-    public boolean start(_startRequest request) {
+    public boolean run(_runRequest request) {
+        //TODO
         return true;
     }
 }
