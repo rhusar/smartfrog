@@ -418,13 +418,13 @@ public class ComponentDescriptionImpl implements Serializable, Cloneable,
     }
 
     private String unfixEscapes(String s) {
-	s = s.replaceAll("\\\\", "\\\\\\\\");
-	s = s.replaceAll("\n", "\\\\n");
-	s = s.replaceAll("\t", "\\\\t");
-	s = s.replaceAll("\b", "\\\\b");
-	s = s.replaceAll("\r", "\\\\r");
-	s = s.replaceAll("\f", "\\\\f");
-	return s;
+        s = s.replaceAll("\\\\", "\\\\\\\\");
+        s = s.replaceAll("\n", "\\\\n");
+        s = s.replaceAll("\t", "\\\\t");
+        s = s.replaceAll("\b", "\\\\b");
+        s = s.replaceAll("\r", "\\\\r");
+        s = s.replaceAll("\f", "\\\\f");
+        return s;
     }
 
     /**
