@@ -31,6 +31,19 @@ public interface Assert extends Remote {
     public static final String CHECK_ON_STARTUP = "checkOnStartup";
     public static final String FILE_EXISTS = "fileExists";
     public static final String DIR_EXISTS = "dirExists";
+    public String ATTRIBUTE_EQUALS = "attributeEquals";
+
+    /**
+     * first equality string
+     */
+    public String EQUALS_STRING1 = "equalsString1";
+
+    /**
+     * second equality string
+     */
+    public String EQUALS_STRING2 = "equalsString2";
+
+    public String EQUALITY_IGNORES_CASE = "equalityIgnoresCase";
 
     /**
      * check when we start up
