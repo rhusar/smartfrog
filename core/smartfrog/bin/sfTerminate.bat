@@ -10,9 +10,12 @@ if (%1) == () goto usage
 if (%1) == (-?) goto help
 if (%2) == () goto usage
 if exist "%SFHOME%\jre\bin\java.exe" set path=%SFHOME%\jre\bin
-call %SFHOME%\bin\setClassPath
 
-java -Dorg.smartfrog.iniFile=%SFHOME%\bin\default.ini org.smartfrog.SFSystem -a %2:TERMINATE:::%1: -e
+call %SFHOME%\bin\setClassPath
+call "%SFHOME%\bin\setSFProperties"
+
+echo "Terminating %1"
+java %SFCMDPARAMETERS% org.smartfrog.SFSystem -a %2:TERMINATE:::%1: -e
 
 GOTO end
 :usage

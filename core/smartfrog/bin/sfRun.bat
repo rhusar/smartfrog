@@ -10,8 +10,12 @@ if (%1)==(-?) GOTO help
 
 if exist "%SFHOME%\jre\bin\java.exe" set path=%SFHOME%\jre\bin
 call %SFHOME%\bin\setClassPath
+call "%SFHOME%\bin\setSFProperties"
 
-java -Dorg.smartfrog.iniFile=%SFHOME%\bin\default.ini  org.smartfrog.SFSystem  -a :DEPLOY:%1::: %2
+rem sfDefault files only need it in sfDaemon and sfRun
+if defined SFDEFAULTSF  set SFCMDPARAMETERS=%SFCMDPARAMETERS% %SFDEFAULTSF%
+
+java %SFCMDPARAMETERS% org.smartfrog.SFSystem  -a :DEPLOY:%1::: %2
 GOTO end
 :usage
 echo Insufficient arguments to use sfRun
