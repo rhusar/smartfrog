@@ -142,27 +142,38 @@ public class PrimDeployerImpl implements ComponentDeployer, MessageKeys {
     protected Class getPrimClass() throws Exception {
         String targetCodeBase=null;
         String targetClassName=null;
+        Object obj=null;
         try {
             // extract code base
             targetCodeBase = getSfCodeBase(target);
 
             // extract class name
-            targetClassName = (String) target.sfResolve(refClass);
+            obj =  target.sfResolve(refClass);
+            targetClassName = (String) obj;
 
             // We look in the default code base if everything else fails.
-            return SFClassLoader.forName(targetClassName, targetCodeBase, true);
+            return SFClassLoader.forName(targetClassName, new String(), true);
         } catch (SmartFrogResolutionException resex) {
             resex.put(resex.SOURCE, target.getCompleteName());
             resex.fillInStackTrace();
 
             throw resex;
+        } catch (java.lang.ClassCastException ccex){
+            Object name = null;
+            if (target.getContext().containsKey(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME)) {
+                name =target.getContext().get(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME);
+            }
+            throw new SmartFrogDeploymentException (refClass,null,name,target,
+              null,"Wrong class when resolving '"+refClass+ "': '"
+              +obj+"' ("+obj.getClass().getName()+")" , ccex, targetCodeBase);
         } catch (java.lang.ClassNotFoundException cnfex){
             Object name = null;
             if (target.getContext().containsKey(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME)) {
                 name =target.getContext().get(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME);
             }
-            throw new SmartFrogDeploymentException (refClass,null,name,target,null,"Class not found", cnfex, targetCodeBase);
+            throw new SmartFrogDeploymentException (refClass,null,name,target,null,"Class '"+targetClassName+"' not found", cnfex, targetCodeBase);
         }
+
     }
 
     //
