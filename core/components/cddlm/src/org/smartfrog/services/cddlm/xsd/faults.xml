@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE faults [
+<!ELEMENT code (#PCDATA)>
+<!ELEMENT faultset (fault)*>
+<!ATTLIST faultset
+    namespace CDATA #REQUIRED>
+<!ELEMENT errormessage (#PCDATA)>
+<!ELEMENT fault (code|wiremessage|errormessage|documentation)*>
+<!ELEMENT wiremessage (#PCDATA)>
+<!ELEMENT documentation (#PCDATA)>
+<!ELEMENT faults (faultset)*>
+]>
+<faults>
+  <!-- this document lists standard faults of the deployment services -->
+  <faultset namespace="http://gridforge.org/cddlm/smartfrog/2004/07/30">
+    <fault>
+      <code>bad-argument</code>
+      <wiremessage>bad argument</wiremessage>
+      <errormessage>A bad argument was sent in a message</errormessage>
+      <documentation>
+        This is the generic response when some argument is out of bounds, invalid
+        or otherwise not parseable.
+        The wire message should be extended to explain which particular part of
+        the message is at fault, where possible.
+      </documentation>
+    </fault>
+    <fault>
+      <code>not-understood</code>
+      <wiremessage>A mustUnderstand option was not understood</wiremessage>
+      <errormessage>A mustUnderstand option was not understood</errormessage>
+      <documentation>
+        An option was sent to this deployment endpoint with a mustUnderstand
+        header that was true, yet it was not understood.
+        The particular header should be identified in the subcode.
+      </documentation>
+    </fault>
+
+    <fault>
+      <code>nested-exception</code>
+      <wiremessage>nested-exception</wiremessage>
+      <errormessage>This message contains a nested exception</errormessage>
+      <documentation>
+      </documentation>
+    </fault>
+
+    <fault>
+      <code>no-such-application</code>
+      <wiremessage>The specified application was not found</wiremessage>
+      <errormessage>There is no such application running in the deployment system</errormessage>
+      <documentation>
+        The name or URI used to refer to an application did not map to an existing
+        application. Either it has already terminated, or it was never deployed.
+      </documentation>
+    </fault>
+
+    <fault>
+      <code>wrong-application-state</code>
+      <wiremessage>The application is in the wrong state for the operation.</wiremessage>
+      <errormessage>The application is in the wrong state for the operation.</errormessage>
+      <documentation>
+        An attempt was made to move an application to a new state, but it cannot
+        make that state transition from the state it is currently in.
+        For example, you cannot terminate an already-terminated application.
+      </documentation>
+    </fault>
+
+
+    <fault>
+      <code>unsupported-language</code>
+      <wiremessage>The language is unsupported</wiremessage>
+      <errormessage>The deployment server does not support that language</errormessage>
+      <documentation>
+        The language (or language version) is not supported.
+        The list of supported languages can be enumerated from the
+        server information operation
+      </documentation>
+    </fault>
+
+    <fault>
+      <code>unsupported-callback</code>
+      <wiremessage>The callback option is not supported</wiremessage>
+      <errormessage>The deployment server does not support that callback mechanism</errormessage>
+      <documentation>
+        The callback option request is not supported by this server.
+      </documentation>
+    </fault>
+
+
+    <!--
+        <fault>
+          <code></code>
+          <wiremessage></wiremessage>
+          <errormessage></errormessage>
+          <documentation>
+          </documentation>
+        </fault>
+    -->
+
+  </faultset>
+</faults>
