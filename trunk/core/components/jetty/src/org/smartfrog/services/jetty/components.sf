@@ -29,7 +29,7 @@ HttpServer extends CoreJettyServer {
  * base webserver schema
  */
 CoreJettySchema extends WebServerSchema {
-    server extends OptionalString;
+    server extends String;
     jettyhome extends String;
     enableLogging extends Boolean;
     serverHost extends String;
@@ -121,6 +121,7 @@ JettyListenerSchema extends Schema {
 
 JettyListener extends Prim {
     sfClass "org.smartfrog.services.jetty.listeners.Socketlistener";
+    jettyListenerSchema extends JettyListenerSchema;
 }
 
 /**

@@ -55,11 +55,10 @@ public class Servlet extends CompoundImpl implements ServletContextIntf {
    public void sfDeploy() throws SmartFrogException, RemoteException {
        context =  new ServletHttpContext();
        sfAddAttribute(CONTEXT, context);
-       server = jettyHelper.findJettyServer(true);
+       server = jettyHelper.bindToServer();
        jettyhome = jettyHelper.findJettyHome();
        contextPath = sfResolve(contextPathRef, contextPath, true);
-       resourceBase = sfResolve(resourceBaseRef, 
-		       jettyhome + resourceBase, true);
+       resourceBase = sfResolve(resourceBaseRef,resourceBase, true);
        classPath = sfResolve(classPathRef, classPath, false);
        super.sfDeploy();      
        }
@@ -85,13 +84,8 @@ public class Servlet extends CompoundImpl implements ServletContextIntf {
    * Termination phase
    */
    public void sfTerminateWith(TerminationRecord status) {
-   try{
-		  context.stop();
-	   } catch(Exception ex){
-		  Logger.log(" Interrupted on ServletHttpContext termination " , ex);
-	  }
-	   server.removeContext(context);
-           super.sfTerminateWith(status);
+       jettyHelper.terminateContext(context);
+       super.sfTerminateWith(status);
    }
      
    /**

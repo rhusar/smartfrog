@@ -11,6 +11,7 @@ import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
+import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.mortbay.http.HttpServer;
 import org.mortbay.http.HashUserRealm;
 import org.mortbay.http.BasicAuthenticator;
@@ -58,7 +59,6 @@ public class SFJetty extends CompoundImpl implements JettyIntf {
    */
   public void sfDeploy() throws SmartFrogException, RemoteException {
     try {
-        super.sfDeploy();
         server = new HttpServer();
         serverName = sfResolve(serverNameRef, serverName, true);
         jettyHelper.cacheJettyServer(serverName, server);
@@ -66,6 +66,7 @@ public class SFJetty extends CompoundImpl implements JettyIntf {
         jettyHelper.cacheJettyHome(jettyhome);
         enableLogging=sfResolve(ENABLE_LOGGING,enableLogging,true);
         configureHttpServer();
+        super.sfDeploy();
 
     } catch (Exception ex){ 
        throw SmartFrogDeploymentException.forward(ex);
@@ -117,10 +118,25 @@ public class SFJetty extends CompoundImpl implements JettyIntf {
    */
   public void sfTerminateWith(TerminationRecord status) {
 	  try {
-		  server.stop();
+          if(server!=null) {
+		    server.stop();
+          }
 	  } catch (InterruptedException ie) {
 		  Logger.log(" Interrupted on server termination " , ie);
 	  }
 	  super.sfTerminateWith(status);
   }
+
+    /**
+     * liveness test verifies the server is started
+     * @param source
+     * @throws SmartFrogLivenessException
+     * @throws RemoteException
+     */
+    public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
+        super.sfPing(source);
+        if(server==null || !server.isStarted()) {
+            throw new SmartFrogLivenessException("Server is not started");
+        }
+    }
 }
