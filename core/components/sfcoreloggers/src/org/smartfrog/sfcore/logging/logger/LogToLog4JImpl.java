@@ -199,12 +199,14 @@ public class LogToLog4JImpl implements LogToLog4J, Log, LogMessage, LogLevel,
         this.out("LogToLog4JImpl: Using Log4J.BasicConfigurator");
       }
     }
-    // Set initial log level after reading configuration
-    setLevel(initialLogLevel.intValue());
-    if (isTraceEnabled()) {
-        this.trace("LogToLog4JImpl logger: "+ logger.toString());
+    // Set initial log level after reading configuration to the lowest one
+    // the most verbose of the two
+    if (logger.getLevel().toInt() >= initialLogLevel.intValue()) {
+      setLevel(initialLogLevel.intValue());
     }
-
+    if (isTraceEnabled()) {
+        this.trace("LogToLog4JImpl logger: "+ logger.toString() +"("+logger.getLevel().toString()+")");
+    }
   }
 
   /**
