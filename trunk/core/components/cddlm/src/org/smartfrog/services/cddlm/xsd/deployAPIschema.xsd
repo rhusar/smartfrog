@@ -616,9 +616,27 @@
           </xsd:annotation>
         </xsd:element>
 
-        <xsd:element name="name" type="types:applicationNameType"/>
-        <xsd:element name="descriptor" type="types:deploymentDescriptorType"/>
-        <xsd:element name="callback" type="types:callbackInformationType" minOccurs="0"/>
+        <xsd:element name="name" type="types:applicationNameType">
+          <xsd:annotation>
+            <xsd:documentation>
+          The name of the application
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="descriptor" type="types:deploymentDescriptorType">
+          <xsd:annotation>
+            <xsd:documentation>
+          Mandatory deployment descriptor
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="callback" type="types:callbackInformationType" minOccurs="0">
+          <xsd:annotation>
+            <xsd:documentation>
+            callback data, can be committed
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
         <xsd:element name="options" type="types:optionMapType" minOccurs="0">
           <xsd:annotation>
             <xsd:documentation>
