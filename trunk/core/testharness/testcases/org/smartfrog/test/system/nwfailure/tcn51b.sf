@@ -17,16 +17,15 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-#include "org/smartfrog/components.sf"
 
-NWComponent extends Prim {
-   sfClass "org.smartfrog.test.system.nwfailure.NetworkFailure";
-   message "step";
-}
+#include "org/smartfrog/components.sf"
+#include "org/smartfrog/test/system/nwfailure/component.sf"
 
 /*
- reuse the deployment component
+ * try deploying to an IP addr of google. Something in the router chain will reject this
  */
-Noop extends Compound {
-     sfClass "org.smartfrog.test.system.deploy.DummyComp";
+
+sfConfig extends Compound {
+    sfProcessHost "216.239.59.99";
+    noop extends Noop;
 }
