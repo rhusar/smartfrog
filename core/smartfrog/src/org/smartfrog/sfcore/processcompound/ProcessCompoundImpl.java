@@ -705,7 +705,6 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
                 r.addElement(ReferencePart.host((canonicalHostName)));
 
                 Object key = sfParent.sfAttributeKeyFor(this);
-                System.out.println("PC completeName got "+ key);
 
                 if (key!=null) {
                     r.addElement(ReferencePart.here(key));
