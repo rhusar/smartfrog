@@ -53,16 +53,25 @@ AssertSchema extends Schema {
     //name of an attribute on the reference
     attribute extends OptionalString;
 
+    //name of a value attribute on that reference
+    attributeEquals extends OptionalString;
+
     //name of a file to probe for
     fileExists extends OptionalString;
     //name of a directory to probe for
     dirExists extends OptionalString;
 
+
+    //two strings to compare.
+    equalsString1 extends OptionalString;
+    equalsString2 extends OptionalString;
+
+    equalityIgnoresCase extends Boolean;
+
     //flag to enable startup checking (default: true)
     checkOnStartup extends OptionalBoolean;
     //flag to enable liveness checking (default: true)
     checkOnLiveness extends OptionalBoolean;
-
 }
 
 /**
@@ -76,4 +85,5 @@ Assert extends Prim {
     isFalse false;
     checkOnStartup true;
     checkOnLiveness true;
+    equalityIgnoresCase false;
 }

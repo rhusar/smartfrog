@@ -51,10 +51,14 @@ public class AssertComponent extends PrimImpl implements Assert {
             SmartFrogAssertionException {
         boolean isTrue = sfResolve(IS_TRUE, true, false);
         boolean isFalse = sfResolve(IS_FALSE, false, false);
+        boolean equalityIgnoresCase = sfResolve(EQUALITY_IGNORES_CASE,false,true);
         String evaluatesTrue = sfResolve(EVALUATES_TRUE, (String) null, false);
         String evaluatesFalse = sfResolve(EVALUATES_FALSE, (String) null,
                 false);
         String attribute=sfResolve(Assert.HAS_ATTRIBUTE, (String) null, false);
+        String attributeEquals = sfResolve(Assert.ATTRIBUTE_EQUALS,
+                (String) null,
+                false);
         assertTrue(isTrue, IS_TRUE);
         assertTrue(!isFalse, IS_FALSE);
 
@@ -75,6 +79,11 @@ public class AssertComponent extends PrimImpl implements Assert {
             //look for a named attribute existing
             assertTrue(prim.sfResolve(attribute,false)!=null,
                     "Resolving attribute "+attribute+" of "+prim);
+            if(attributeEquals!=null) {
+                //do string match if needed
+                String attrValue=prim.sfResolve(attribute, (String)null,true);
+                assertEqualStrings(attributeEquals, attrValue, equalityIgnoresCase);
+            }
         }
 
         //file existence check
@@ -90,6 +99,33 @@ public class AssertComponent extends PrimImpl implements Assert {
             File dir = new File(filename);
             assertTrue(dir.exists() && dir.isDirectory(), DIR_EXISTS + " " + filename);
         }
+
+        String equals1=null;
+        String equals2 = null;
+        equals1=sfResolve(Assert.EQUALS_STRING1,equals1,false);
+        equals2 = sfResolve(Assert.EQUALS_STRING2, equals2, false);
+        if((equals1==null && equals2!=null)
+            || equals1!=null && equals2==null) {
+            assertTrue(false, Assert.EQUALS_STRING1 +" and "+
+                    Assert.EQUALS_STRING2+" are both defined");
+        }
+        if(equals1!=null) {
+            assertEqualStrings(equals1,equals2,equalityIgnoresCase);
+        }
+
+    }
+
+    private void assertEqualStrings(String equals1, String equals2,
+                                    boolean equalityIgnoresCase)
+            throws SmartFrogAssertionException {
+        boolean fact;
+        if(equalityIgnoresCase) {
+            fact = equals1.equals(equals2);
+        } else {
+            fact = equals1.equalsIgnoreCase(equals2);
+        }
+        assertTrue(fact,
+            equals2+" equals "+equals1);
     }
 
     /**
