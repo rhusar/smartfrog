@@ -103,8 +103,7 @@ public class SFConcatImpl extends PrimImpl implements Prim, SFConcat {
             if (debug) {
                 if (createReference) {
                     log("SFConcat.sfDeploy",
-                        "reference solved: " + this.sfResolve(REF_REFERENCE) +
-                        ", reference: " +
+                        "reference created: " +
                         this.sfContext.get(ATR_REFERENCE));
                 } else {
                     log("SFConcat.sfDeploy",
