@@ -41,6 +41,8 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 
+import org.smartfrog.sfcore.reference.Reference;
+
 
 /**
  *  This class implements the Compound interface because it can "contain"
@@ -185,8 +187,8 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
                         printErrMsgImp);
             }
 
-            errorGobbler.setPassType(true);
-            outputGobbler.setPassType(true);
+            errorGobbler.setPassType(false);
+            outputGobbler.setPassType(false);
 
             // kick them off
             errorGobbler.start();
@@ -241,205 +243,45 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
     /**
      *  Reads SF description = initial configuration.
      */
-    private void readSFAttributes() {
-        try {
-            //         try {
-            //            outputStreamObj = (OutputStreamIntf)sfResolve(this.
-        //            varOutputStream);
-            //         } catch (ResolutionException e) {
-            //            log(varSFProcessId + " not found.", 5);
-            //         } catch (Exception ex){
-            //            ex.printStackTrace();
-            //         }
-            try {
-                this.logger = ((Integer) sfResolve(varLogger)).intValue();
-            } catch (SmartFrogResolutionException e) {
-                log(varLogger + " not found.", 5);
-            } catch (Exception ex) {
-                if (this.printStack) {
-                    ex.printStackTrace();
-                }
-            }
+    private void readSFAttributes() throws SmartFrogException, RemoteException {
 
-            try {
-                Object printStackObj = sfResolve(varPrintStack);
+        logger = sfResolve(varLogger,logger,false);
+        printStack = sfResolve(varPrintStack, printStack,false);
 
-                if (printStackObj instanceof Boolean) {
-                    this.printStack = (((Boolean) printStackObj).booleanValue());
-                }
-            } catch (SmartFrogResolutionException e) {
-                log(varPrintStack + " not found.", 5);
-            }
+        //Optional attributes
+        delayBetweenCmds = sfResolve(varDelayBetweenCmds,delayBetweenCmds,false);
+        //4 methods for intf...
 
-            try {
-                this.delayBetweenCmds = ((Integer) sfResolve(
-                    varDelayBetweenCmds)).intValue();
-            } catch (SmartFrogResolutionException e) {
-                log(varDelayBetweenCmds + " not found.", 5);
-            } catch (Exception ex) {
-                if (this.printStack) {
-                    ex.printStackTrace();
-                }
-            }
+        waitSignalGoAhead = sfResolve(varWaitSignalGoAhead,waitSignalGoAhead,false);
+        shouldTerminate = sfResolve(varShouldTerminate,shouldTerminate,false);
+        shouldDetach = sfResolve(varShouldDetach,shouldDetach,false);
+        lineReturn = sfResolve(varLineReturn, lineReturn, false);
+        processId = sfResolve(varSFProcessId, processId, false);
+        shellCommand = sfResolve(varShellCommand,shellCommand, false);
+        workDir = sfResolve(varSFWorkDir, workDir, false);
+        exitCmd = sfResolve(varExitCmd, exitCmd, false);
+        useExitCmd =sfResolve(varUseExitCmd, useExitCmd, false);
+        shellCommandAtt = this.readShellAttributes();
+        cmds = this.readVarData(this.varCMDs);
+        sfResolve(varEnvProp, envProp , false);
 
-            //To redirect outputStream
-            try {
-                Object obj = sfResolve(varOutputStreamTo);
-
-                //System.out.println("reference to" +varOutputStreamTo+ "found");
-                if (obj instanceof OutputStreamIntf) {
-                    outputStreamObj = (OutputStreamIntf) obj;
-                } else {
-                    log("Wrong object in " + varOutputStreamTo, 1);
-                }
-            } catch (SmartFrogResolutionException e) {
-                log(varOutputStreamTo + " not found.", 5);
-            }
-
-            //To redirect errorStream
-            try {
-                Object obj = sfResolve(varErrorStreamTo);
-
-                //System.out.println("reference to" +varErrorStreamTo+ "found");
-                if (obj instanceof StreamIntf) {
-                    errorStreamObj = (StreamIntf) obj;
-                } else {
-                    log("Wrong object in " + varErrorStreamTo, 1);
-                }
-            } catch (SmartFrogResolutionException e) {
-                log(varErrorStreamTo + " not found.", 5);
-            }
-
-            //To redirect output to printer
-            try {
-                Object obj = sfResolve(varOutputMsgTo);
-
-                //System.out.println("reference to" +varOutputMsgTo+ "found");
-                if (obj instanceof PrintMsgInt) {
-                    printMsgImp = (PrintMsgInt) obj;
-                } else {
-                    log("Wrong object in " + varOutputMsgTo, 1);
-                }
-            } catch (SmartFrogResolutionException e) {
-                log(varOutputMsgTo + " not found.", 5);
-            }
-
-            //To redirect error to printer
-            try {
-                Object obj = sfResolve(varErrorMsgTo);
-
-                //System.out.println("reference to" +varErrorMsgTo+ "found");
-                if (obj instanceof PrintErrMsgInt) {
-                    printErrMsgImp = (PrintErrMsgInt) obj;
-                } else {
-                    log("Wrong object in " + varErrorMsgTo, 1);
-                }
-            } catch (SmartFrogResolutionException e) {
-                log(varErrorMsgTo + " not found.", 5);
-            }
-
-            try {
-                Object waitSignalGoAheadObj = sfResolve(varWaitSignalGoAhead);
-
-                if (waitSignalGoAheadObj instanceof Boolean) {
-                    this.waitSignalGoAhead = (((Boolean) waitSignalGoAheadObj).
-                    booleanValue());
-                }
-            } catch (SmartFrogResolutionException e) {
-                log(varWaitSignalGoAhead + " not found.", 5);
-            }
-
-            try {
-                Object shouldTerminateObj = sfResolve(varShouldTerminate);
-
-                if (shouldTerminateObj instanceof Boolean) {
-                    this.shouldTerminate = (((Boolean) shouldTerminateObj).
-                    booleanValue());
-                }
-            } catch (SmartFrogResolutionException e) {
-                log(varShouldTerminate + " not found.", 5);
-            }
-
-            try {
-                Object shouldDetachObj = sfResolve(varShouldDetach);
-
-                if (shouldDetachObj instanceof Boolean) {
-                    this.shouldDetach = (((Boolean) shouldDetachObj).
-                    booleanValue());
-                }
-            } catch (SmartFrogResolutionException e) {
-                log(varShouldDetach + " not found.", 5);
-            }
-
-            try {
-                this.lineReturn = (String) sfResolve(varLineReturn);
-            } catch (SmartFrogResolutionException e) {
-                log(varLineReturn + " not found.", 5);
-            }
-
-            //Mandatory
-            processName = (String) sfResolve(varSFProcessName);
-
-            //     // Not mandatory
-            try {
-                processId = (String) sfResolve(varSFProcessId);
-            } catch (SmartFrogResolutionException e) {
-                log(varSFProcessId + " not found.", 5);
-            }
-
-            try {
-                this.shellCommand = (String) sfResolve(varShellCommand);
-            } catch (SmartFrogResolutionException e) {
-                log(varShellCommand + " not found.", 5);
-            }
-
-            this.shellCommandAtt = this.readShellAttributes();
-            this.cmds = this.readVarData(this.varCMDs);
-
-            try {
-                workDir = (String) sfResolve(varSFWorkDir);
-            } catch (SmartFrogResolutionException e) {
-                log(varSFWorkDir + " not found.", 5);
-            }
-
-            // Not mandatory
-            try {
-                exitCmd = (String) sfResolve(varExitCmd);
-            } catch (SmartFrogResolutionException e) {
-                log(varExitCmd + " not found.", 5);
-            }
-
-            try {
-                Object useExitCmdObj = sfResolve(varUseExitCmd);
-
-                if (useExitCmdObj instanceof Boolean) {
-                    this.useExitCmd = (((Boolean) useExitCmdObj).
-                    booleanValue());
-                }
-            } catch (SmartFrogResolutionException e) {
-                log(varUseExitCmd + " not found.", 5);
-            }
-
-            // Reading environment variables
-            try {
-                Vector envPropVector = (Vector) sfResolve(varEnvProp);
-
-                if (!envPropVector.isEmpty()) {
-                    envPropVector.trimToSize();
-                    envProp = new String[envPropVector.size()];
-                    envPropVector.copyInto(envProp);
-                }
-            } catch (SmartFrogResolutionException e) {
-                log(varEnvProp + " not found.", 5);
-            }
-        } catch (Exception e) {
-            log("Error reading SF attributes: " + e.getMessage(), 2);
-
-            if (this.printStack) {
-                e.printStackTrace();
-            }
+        // Mandatory attributes
+        try{
+            processName = sfResolve(varSFProcessName,processName,true);
+        } catch (SmartFrogResolutionException e) {
+            log("Failed to read mandatory attribute (readSFAttributes): "+e.toString(),1);
+            throw e;
         }
+
+        outputStreamObj = (OutputStreamIntf) sfResolve(varOutputStreamTo, outputStreamObj , false);
+        errorStreamObj  = (StreamIntf) sfResolve(varErrorStreamTo, errorStreamObj , false);
+
+        printMsgImp  =   (PrintMsgInt) sfResolve(varOutputMsgTo, printMsgImp , false);
+        printErrMsgImp = (PrintErrMsgInt) sfResolve(varErrorMsgTo, printErrMsgImp , false);
+
     }
+
+
 
     /**
      *  This sets a flag that will start the httpd process running.
@@ -494,6 +336,7 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
      * @param  cmd  command to be exceuted
      */
     public synchronized void execCmd(String cmd) {
+        if (cmd==null) return;
         cmd = cmd + lineReturn;
 
         if (delayBetweenCmds > 0) {
@@ -529,8 +372,10 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
      * @param  cmds  vector of commands to be executed
      */
     public synchronized void execBatch(Vector cmds) {
-        log("Executing Batch: " + cmds, 1);
 
+        if ((cmds==null)||(cmds.isEmpty())) return;
+
+        log("Executing Batch: " + cmds, 1);
         Object element = null;
 
         for (Enumeration e = cmds.elements(); e.hasMoreElements();) {
@@ -554,9 +399,11 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
      *  Read all Replace Var Attributes in Vectors
      *
      *@param  typeAttrib  all var attributes
-     *@return         a vector containing all Replace Var Attributes
+     *@return a vector containing all Replace Var Attributes or null.
      */
     private Vector readVarData(String typeAttrib) {
+        if (typeAttrib==null) return null;
+
         log(" runShell.readVarData()", 4);
 
         Object key = null;
@@ -606,7 +453,6 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
         }
 
         log("runShell.readVarData().data: " + data, 4);
-
         return data;
     }
 
@@ -778,4 +624,5 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
             }
         }
     }
+
 }
