@@ -485,7 +485,7 @@ public abstract class SmartFrogTask extends TaskBase {
      * @throws org.apache.tools.ant.BuildException if a host is defined
      */
     protected void checkNoHost() {
-        if(host!=null) {
+        if(host!=null || host.length()>0) {
             throw new BuildException("host cannot be set on this task");
         }
     }
