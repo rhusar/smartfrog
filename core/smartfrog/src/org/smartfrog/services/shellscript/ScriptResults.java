@@ -25,8 +25,8 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 
 /**
- * Iterface to the "future" object returned from submiting an execute request
- * to A ScriptExecution imlpmenting object.
+ * Interface to the "future" object returned from submiting an execute request
+ * to A ScriptExecution implementing object.
  *
  * The resut contains three attributes as follows:
  *   "code" the int result code of the final command - 0 if not supported in shell,
@@ -50,7 +50,7 @@ public interface ScriptResults {
      * The resut contains three attributes as follows:
      *   "code" the int result code of the final command in the vector - 0 if not supported in shell,
      *   "stdout" a list of lines on stdout - empty if not supported in shell,
-     *   "stdin" a list of lines on stderr - empty if not supported in shell.
+     *   "stderr" a list of lines on stderr - empty if not supported in shell.
      *
      * @throws SmartFrogException if the results are not ready in time
      */

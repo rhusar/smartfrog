@@ -18,21 +18,25 @@ For more information: www.smartfrog.org
 
 */
 
+
 package org.smartfrog.services.shellscript;
 
-import org.smartfrog.sfcore.prim.Prim;
+public abstract class ScriptRun
+{
+    static final int STATE_INACTIVE = 0;
+    static final int STATE_STARTING = 1;
+    static final int STATE_STARTED = 2;
+    static final int STATE_PROCESSING = 3;
 
+    long ID = -1;
 
-/**
- * Interface to the lock object that is returned when the shell is locked.
- * It provides a method to get the ScriptExecution to which it is a lock
- */
-public interface ScriptLock {
+    public ScriptRun( long ID)
+    {
+        this.ID = ID;
+    }
 
-    /**
-     *  Obtain the ScriptExecution implementation component for which this is a lock
-     *  @returns the ScriptExecution
-     */
-    ScriptExecution getScriptExecution();
+    public abstract void stop();
+    public abstract void startScriptRunner( long ID, String name, Cmd cmd ) throws Exception;
+    public abstract void stopScriptRunner( long ID) throws Exception;
 
 }
