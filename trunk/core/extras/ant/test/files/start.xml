@@ -42,7 +42,10 @@ ant -lib ..\..\build\dist\lib\smartfrog-tasks.jar -lib ..\..\..\..\smartfrog\dis
 
     <target name="testIncompatibleSettings" depends="setup">
       <sf-startdaemon spawn="true"  timeout="500" />
-    </target>    
+      <sf-startdaemon iniFile="default.ini" spawn="true" timeout="500" initialSmartfrogFile="default.sf"/>
+      <sf-block/>
+      <sf-stopdaemon failonerror="true"/>
+    </target>
     
     <target name="testNoFailure">
       <sf-startdaemon failonerror="false"/>
@@ -102,13 +105,13 @@ ant -lib ..\..\build\dist\lib\smartfrog-tasks.jar -lib ..\..\..\..\smartfrog\dis
     
     <target name="testResource">
      <parallel>
-        <sf-startdaemon  timeout="${long.timeout}" >
-          <application name="app" descriptor="${resource.sf}"/>
+        <sf-startdaemon  timeout="${long.timeout}" initialSmartfrogFile="default.sf">
+          <application name="app" descriptor="${terminator.sf}"/>
         </sf-startdaemon>
         <sequential>
           <sf-block/>
           <sleep milliseconds="${short.delay}"/>
-          <sf-stopdaemon />
+          <sf-stopdaemon failonerror="false"/>
         </sequential>
       </parallel>      
     </target>
