@@ -53,6 +53,18 @@ public class SFTrace extends PrimImpl implements Prim {
     /** Flag indicating verbose is on or off. */
     boolean verbose = true;
 
+
+    //SmartFrog Attributes:
+    final static String ATR_DEPLOY_HOOK = "deployHook";
+    final static String ATR_START_HOOK = "startHook";
+    final static String ATR_TERMINATE_HOOK = "terminateHook";
+    final static String ATR_OUTPUT_MSG = "outputMsg";
+    final static String ATR_VERBOSE = "verbose";
+
+    boolean deployHook = true;
+    boolean startHook = true;
+    boolean terminateHook = true;
+
     /**
      * Instances of the different tracers. (Non anonymous to allow removal on
      * sfTerminate)
@@ -109,85 +121,25 @@ public class SFTrace extends PrimImpl implements Prim {
                     ex.toString());
             }
 
-            try {
-                verbose = ((Boolean) this.sfResolve("verbose")).booleanValue();
-            } catch (Exception ex) {
-                //TODO
-            }
+            verbose = sfResolve(this.ATR_VERBOSE,verbose,false);
 
-            //
-            //  Get where to print!!!!
-            //
-            try {
-                printMsgImp = (PrintMsgInt) sfResolve("outputMsg");
-            } catch (SmartFrogResolutionException e) {
-                // TODO
-                //System.out.println("reference to Display. DONT Got it!!!!");
-                //System.out.println(e);
-            }
+            printMsgImp = (PrintMsgInt) sfResolve(ATR_OUTPUT_MSG,false );
 
             //DeployHook
-            try {
-                Object deployHookObj = sfResolve("deployHook");
-
-                if (deployHookObj instanceof Boolean) {
-                    if (((Boolean) deployHookObj).booleanValue()) {
-                        sfDeployHooks.addHook(sfDeployTracer);
-                    }
-                } else if (deployHookObj instanceof String) {
-                    // String format (Deprecated)
-                    String deployHook = (String) deployHookObj;
-
-                    if (!deployHook.equals("false")) {
-                        sfDeployHooks.addHook(sfDeployTracer);
-                    }
-                }
-            } catch (SmartFrogResolutionException e) {
-                // applied by default
-                sfDeployHooks.addHook(sfDeployTracer);
-            }
+            deployHook = sfResolve (ATR_DEPLOY_HOOK,deployHook ,false);
+              // applied by default
+            if (deployHook) sfDeployHooks.addHook(sfDeployTracer);
 
             //StartHook
-            try {
-                Object startHookObj = sfResolve("startHook");
+            startHook = sfResolve (ATR_START_HOOK,startHook ,false);
+              // applied by default
+            if (startHook) sfStartHooks.addHook(sfStartTracer);
 
-                if (startHookObj instanceof Boolean) {
-                    if (((Boolean) startHookObj).booleanValue()) {
-                        sfStartHooks.addHook(sfStartTracer);
-                    }
-                } else if (startHookObj instanceof String) {
-                    // String format (Deprecated)
-                    String startHook = (String) startHookObj;
+            //TeminateWithHook
+            terminateHook = sfResolve (ATR_TERMINATE_HOOK,terminateHook ,false);
+              // applied by default
+            if (terminateHook) sfTerminateWithHooks.addHook(sfTerminateWithTracer);
 
-                    if (!startHook.equals("false")) {
-                        sfStartHooks.addHook(sfStartTracer);
-                    }
-                }
-            } catch (SmartFrogResolutionException e) {
-                // applied by default
-                sfStartHooks.addHook(sfStartTracer);
-            }
-
-            //TerminateHook
-            try {
-                Object terminateHookObj = sfResolve("terminateHook");
-
-                if (terminateHookObj instanceof Boolean) {
-                    if (((Boolean) terminateHookObj).booleanValue()) {
-                        sfTerminateWithHooks.addHook(sfTerminateWithTracer);
-                    }
-                } else if (terminateHookObj instanceof String) {
-                    // String format (Deprecated)
-                    String terminateHook = (String) terminateHookObj;
-
-                    if (!terminateHook.equals("false")) {
-                        sfTerminateWithHooks.addHook(sfTerminateWithTracer);
-                    }
-                }
-            } catch (SmartFrogResolutionException e) {
-                // applied by default
-                sfTerminateWithHooks.addHook(sfTerminateWithTracer);
-            }
         } catch (Throwable t) {
             // TODO: Need to be revisited
             throw new SmartFrogDeploymentException(t, this);
@@ -246,10 +198,19 @@ public class SFTrace extends PrimImpl implements Prim {
     public synchronized void sfTerminateWith(TerminationRecord r) {
         try {
             sfDeployHooks.removeHook(sfDeployTracer);
+        } catch (Exception e) {
+            printMsg(" Couldn't remove all deploy hooks " + e,  new Date(System.currentTimeMillis()));
+        }
+
+        try {
             sfStartHooks.removeHook(sfStartTracer);
+        } catch (Exception e) {
+            printMsg(" Couldn't remove all start hooks " + e,  new Date(System.currentTimeMillis()));
+        }
+        try {
             sfTerminateWithHooks.removeHook(sfTerminateWithTracer);
         } catch (Exception e) {
-            printMsg(" Couldn't remove all hooks " + e,  new Date(System.currentTimeMillis()));
+            printMsg(" Couldn't remove terminate all hooks " + e,  new Date(System.currentTimeMillis()));
         }
 
         super.sfTerminateWith(r);
