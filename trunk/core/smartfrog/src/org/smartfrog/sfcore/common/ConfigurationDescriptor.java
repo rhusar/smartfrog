@@ -405,27 +405,70 @@ public class ConfigurationDescriptor implements MessageKeys{
     public ConfigurationDescriptor (String deploymentURL) throws SmartFrogInitException {
         try {
             this.originalSFACT = deploymentURL;
+
             if (deploymentURL==null) {
                 throw new SmartFrogInitException("Deployment URL: null");
             }
-            tempURL = null;
+
             String item = null;
             deploymentURL = deploymentURL.trim();
+            tempURL = deploymentURL;
+
             if (deploymentURL.length() < 1) throw
                     new SmartFrogInitException("Deployment URL: wrong format");
 
-            // GET NAME
+
+              //GET SUBPROCESS_NAME (6th Element)
+              try {
+                 this.setSubProcess(getAndCutLastFieldTempURL (separator));
+              } catch (Exception ex) {
+                  throw new SmartFrogInitException(
+                      "Error parsing SUBPROCESS_NAME in: "+
+                      deploymentURL, ex);
+              }
+
+              //GET HOST_NAME (5th Element)
+              try {
+                  this.setHost(getAndCutLastFieldTempURL (separator));
+              } catch (Exception ex) {
+                  throw new SmartFrogInitException("Error parsing HOST in: "+
+                                                   deploymentURL, ex);
+              }
+
+              //GET DEPLOY_REFERENCE (4th Element)
+              //If it contains : has to be between double quotes(")
+              //ex. ...:"componentOne:componentTwo":...
+              try {
+
+                  if (tempURL.trim().endsWith("\"")){
+                      tempURL=tempURL.substring(0,tempURL.lastIndexOf("\""));
+                     this.setDeployReference(getAndCutLastFieldTempURL("\""));
+                     tempURL=tempURL.substring(0,tempURL.lastIndexOf(separator));
+                  } else {
+                      this.setDeployReference(getAndCutLastFieldTempURL(separator));
+                  }
+              } catch (Exception ex) {
+                  throw new SmartFrogInitException(
+                      "Error parsing DEPLOY_REFERENCE in: "+
+                      deploymentURL, ex);
+              }
+
+
+            // GET NAME (1st Element)
             //Check if url starts with " and extract name:
             // Valid examples:
-            //"HOST guijarro.hpl.hp.com":rootProcess:sfDefault:display":TER:::localhost:subprocess;
-            //display:TER:::localhost:subprocess;
-            //:TER:::localhost:subprocess; ->Unnamed component
+            // "HOST guijarro.hpl.hp.com":rootProcess:sfDefault:display":TER:::localhost:subprocess;
+            // "HOST "127.0.0.1":rootProcess:sfDefault:display":TER:::localhost:subprocess;
+            // display:TER:::localhost:subprocess;
+            // :TER:::localhost:subprocess; ->Unnamed component
+            deploymentURL=tempURL;
+            tempURL=null;
             try {
                 if (deploymentURL.startsWith("\"")) {
                     setName(deploymentURL.substring(1,
-                        deploymentURL.indexOf("\"", 1)));
+                        deploymentURL.lastIndexOf("\"")));
                     tempURL = deploymentURL.substring(deploymentURL.
-                        indexOf("\"", 1)+2);
+                        lastIndexOf("\"")+2);
                 } else {
                     setName(deploymentURL.substring(0,
                         deploymentURL.indexOf(separator)));
@@ -438,7 +481,7 @@ public class ConfigurationDescriptor implements MessageKeys{
                                                  deploymentURL, ex);
             }
 
-            //GET ACTION
+            //GET ACTION(2nd Element)
             try {
                 this.setActionType(tempURL.substring(0,tempURL.indexOf(separator)));
                 tempURL = (tempURL.substring(tempURL.indexOf(":")+1,tempURL.length()));
@@ -448,42 +491,8 @@ public class ConfigurationDescriptor implements MessageKeys{
                     deploymentURL, ex);
             }
 
-            //GET SUBPROCESS_NAME
-            try {
-               this.setSubProcess(getAndCutLastFieldTempURL (separator));
-            } catch (Exception ex) {
-                throw new SmartFrogInitException(
-                    "Error parsing SUBPROCESS_NAME in: "+
-                    deploymentURL, ex);
-            }
-
-            //GET HOST_NAME
-            try {
-                this.setHost(getAndCutLastFieldTempURL (separator));
-            } catch (Exception ex) {
-                throw new SmartFrogInitException("Error parsing HOST in: "+
-                                                 deploymentURL, ex);
-            }
-
-            //GET DEPLOY_REFERENCE
-            //If it contains : has to be between ""
-            //ex. ...:"componentOne:componentTwo":...
-            try {
-
-                if (tempURL.trim().endsWith("\"")){
-                    tempURL=tempURL.substring(0,tempURL.lastIndexOf("\""));
-                   this.setDeployReference(getAndCutLastFieldTempURL("\""));
-                   tempURL=tempURL.substring(0,tempURL.lastIndexOf(separator));
-                } else {
-                    this.setDeployReference(getAndCutLastFieldTempURL(separator));
-                }
-            } catch (Exception ex) {
-                throw new SmartFrogInitException(
-                    "Error parsing DEPLOY_REFERENCE in: "+
-                    deploymentURL, ex);
-            }
-            //GET URL
-            //(Everything that is left)
+            //GET URL (3rd Element)
+            //(Everything that is left at the end)
             try {
                 this.setUrl(tempURL);
             } catch (Exception ex) {
