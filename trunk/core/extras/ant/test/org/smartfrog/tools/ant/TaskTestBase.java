@@ -88,4 +88,9 @@ public abstract class TaskTestBase extends BuildFileTest {
     public void assertRootProcessInLog() {
         assertLogContaining("[rootProcess]");
     }
+
+    protected void assertDeployed(String s) {
+        assertLogContaining("Successfully deployed");
+        assertLogContaining(s);
+    }
 }
