@@ -19,7 +19,7 @@
     #set ($httpJars = ["sfRegTest.jar","sfServices.jar","sfTools.jar","bsh-1.1a17.jar","SFGuiTools.jar","SFGuiBrowser.jar"])
   #else
     ## security AND DL are OFF
-    #set ($libJars = ["sfServices.jar","sfTools.jar","sfRegTest.jar","bsh-1.1a17.jar","SFGuiTools.jar","SFGuiBrowser.jar"])
+    #set ($libJars = ["sfServices.jar","velocity-1.1.jar","bsh-1.3.0.jar","SFGuiTools.jar","SFGuiBrowser.jar" , "sf-arithmetic-testharness.jar"])
 
   #end
 #end
@@ -207,9 +207,9 @@ Scheduler extends SchedulerCompound {
         workingDirectory "${daemon.sfHome}";
 #if ($daemon.isLinux())
         allEnvProperties ["SFHOME=${daemon.sfHome}",
-                         "JAVA_HOME=/usr/java/j2sdk1.4.2_03",
-                         "PATH=/usr/java/j2sdk1.4.2_03/bin:/usr/local/bin:/usr/bin:/bin:."];
-        classPath "${daemon.sfHome}${libSubdir}${mainJar}#foreach ($jar in $libJars):${daemon.sfHome}${libSubdir}${jar}#end"; 
+                         "JAVA_HOME=/usr/java/j2sdk1.4.1_05",
+                         "PATH=/usr/java/j2sdk1.4.1_05/bin:/usr/local/bin:/usr/bin:/bin:."];
+        classPath "${daemon.sfHome}/${libSubdir}${mainJar}#foreach ($jar in $libJars):${daemon.sfHome}/${libSubdir}${jar}#end"; 
 #else
         command "java";
         allEnvProperties ["SFHOME=${daemon.sfHome}",
@@ -220,9 +220,9 @@ Scheduler extends SchedulerCompound {
 #end
 
 #if ($securityOn)
-        secPolicy "${daemon.sfHome}private/sf.policy";
-        secKeyStore "${daemon.sfHome}private/local/mykeys.st";
-        secPropFile "${daemon.sfHome}private/local/SFsecurity.properties";
+        secPolicy "${daemon.sfHome}/private/sf.policy";
+        secKeyStore "${daemon.sfHome}/private/local/mykeys.st";
+        secPropFile "${daemon.sfHome}/private/local/SFsecurity.properties";
 #end
       }
 #end
@@ -236,16 +236,16 @@ TemplateSerrano extends Compound {
   command "java";
   workingDirectory  "${principalDaemon.sfHome}";
   allEnvProperties ["SFHOME=${principalDaemon.sfHome}",
-                   "JAVA_HOME=/usr/java/j2sdk1.4.2_03",
-                    "PATH=/usr/java/j2sdk1.4.2_03/bin:/usr/local/bin:/usr/bin:/bin:."];
-  classPath "${principalDaemon.sfHome}${libSubdir}${mainJar}#foreach ($jar in $libJars):${principalDaemon.sfHome}${libSubdir}${jar}#end";
+                   "JAVA_HOME=/usr/java/j2sdk1.4.1_05",
+                    "PATH=/usr/java/j2sdk1.4.1_05/bin:/usr/local/bin:/usr/bin:/bin:."];
+  classPath "${principalDaemon.sfHome}/${libSubdir}${mainJar}#foreach ($jar in $libJars):${principalDaemon.sfHome}/${libSubdir}${jar}#end";
 #if ($dynamicLoadingOn)
   httpCodebase "#foreach ($jar in $httpJars)http://${principalDaemon.host}:8080/${jar} #end";
 #end
 #if ($securityOn)
-        secPolicy "${principalDaemon.sfHome}private/sf.policy";
-        secKeyStore "${principalDaemon.sfHome}private/local/mykeys.st";
-        secPropFile "${principalDaemon.sfHome}private/local/SFsecurity.properties";
+        secPolicy "${principalDaemon.sfHome}/private/sf.policy";
+        secKeyStore "${principalDaemon.sfHome}/private/local/mykeys.st";
+        secPropFile "${principalDaemon.sfHome}/private/local/SFsecurity.properties";
 #end
 
   port 3801;

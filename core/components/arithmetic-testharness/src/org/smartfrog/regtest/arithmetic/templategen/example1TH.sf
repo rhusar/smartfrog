@@ -1,8 +1,8 @@
 
 // include the core smartfrog components and the components for the arithmetic example
-#include "org/smartfrog/sfcore/components.sf"
-#include "org/smartfrog/regrest/arithmetic/netComponents.sf"
-#include "org/smartfrog/regrest/arithmetic/comparator.sf"
+#include "org/smartfrog/components.sf" // india team changes
+#include "org/smartfrog/regtest/arithmetic/netComponents.sf"
+#include "org/smartfrog/regtest/arithmetic/comparator.sf"
 
 
 
@@ -15,7 +15,7 @@ Example1 extends Compound {
     Evaluator1003 extends Evaluator {
       inputs:G extends Input;
       operation "(((((((-(((-(-(-8071)))*(55576*(G+G)))+(59186*7763)))*(((G*5361)+46861)*((-(G+24014))+G)))*((((G+(G+31000))+(((-((-G)*(-28545)))*G)+20667))*G)*((-(G*((43937+56215)+30705)))*G)))*8991)*(((G+((((2529+(28660+((G*((-(-45156))+G))+(G+62399))))*(G*(-((G*62297)*((-27876)+(-G))))))*53998)+(61783+(18578+(G+29256)))))+((-(((-35238)*(-(((-(G*G))+(41511+(-(G*(-10791)))))*28641)))*(-G)))+((G+(-21563))+(G*(G+G)))))*G))+(((((((27960+23941)+((11723+G)+((-G)*(((54600+((G+58514)+G))+62539)+35831))))+(G*48366))+(48428*(56124*(G+G))))*(-G))*((((((G+(-G))*((((G+(-G))+(G+(-52059)))+(-(G*3938)))*(-(G+(((6673*33295)+(-43040))+G)))))*((((G+(((-(-60998))*((59590*53623)*27133))+9318))+57501)*G)*((-(-(56383+(-10810))))*(-G))))+((-G)+G))+((-(((G+(-63711))+G)*(27548*(-29011))))*G))*((((((-((62326+(51317*(-50589)))+((-(-33129))*(5014+(G+(7267+17416))))))*(-(-G)))+(G+4067))*((-(-((-(G+((G*G)+(-35561))))+(G*(-(-(-18062)))))))*(-(((-(-14257))*G)*29149))))*((((G+G)*(59885+G))+(-37283))*(G+(-G))))+((15145*(G+((2276+(((-(-(-G)))+44707)+((61833*4254)+(-(G+(-G))))))*(((-(-G))+G)*(-(-(G*G)))))))+(38258+((-(-55059))*G))))))+(((-((G+48803)+(((G+(G+((-45963)+(29350+((-G)*(-(17058+4763)))))))+(-(-G)))*((((-(-G))+G)*((G+(-((36411+(-G))+(-G))))*G))*54336))))+(((((-(-G))*((((-19530)+((-61453)*61820))*17516)+1094))*(-((((G+((G*32106)*4865))+((G+((-(-35379))+(G+(-41040))))+(59620*G)))*((-(-(-G)))*58872))*G)))+G)+((((55332+(-53458))+(-((22403*((-(-7354))*G))+21492)))*((-G)+G))+G)))+((G*((-(-16302))+G))*G)))))" ;		// use same variable as input name.
-      outputs:value:to LAZY ATTRIB comparator:inputs:target;
+      outputs:value:to LAZY ATTRIB sink:comparator:inputs:target;
     }
 
     comparator extends Comparator {
@@ -1938,8 +1938,9 @@ Example1 extends Compound {
             outputs:Generator998:to LAZY ATTRIB Times999:inputs:rhs;
         interval ATTRIB intervalGen; // speed it up a bit,a number every second
     min 1;
+	seed ATTRIB seedVal;
     max ATTRIB maxValueGen;
-    }
+	}
   }
 }
 
@@ -1951,8 +1952,9 @@ Example1 extends Compound {
 sfConfig1 extends Compound { 
   sfProcessHost ATTRIB host1;
   //sfRootLocatorPort ATTRIB port;    
-  numMatches 10;
+  numMatches 10; 
   maxValueGen 10000;
+  seedVal 123456;
   intervalGen 5;
   example extends Example1;            // add the example itself as a component
 }

@@ -26,6 +26,7 @@ public class Comparator extends NetElemImpl implements Remote {
       // we have a match. Remove all candidates previous to the one matching the target
       for (int i = 0 ; i <= index ; i++) {
         candidateCache.removeElementAt(0);
+		//candidateCache.removeElementAt(i);// india team changes
       }
       // and remove the current target.
       targetCache.removeElementAt(0);
@@ -50,15 +51,19 @@ public class Comparator extends NetElemImpl implements Remote {
       candidateCache.addElement(new Integer(value));
     }
 
-    //System.out.println( " Target    : "+ targetCache);
-    //System.out.println( " Candidate : "+ candidateCache);
+    System.out.println( " Target size   : "+ targetCache.size());
+   // System.out.println( " Candidate : "+ candidateCache);
     // compare only if the first target has arrived. Always compare afterwards.
     if(targetCache.size()!=0) {
       Integer currentTarget = (Integer) targetCache.firstElement();
       searchCache(currentTarget);
       return value - currentTarget.intValue(); // irrelevant for comparison anyway
-    } else
+    }
+	else
+	{
+	//System.out.println("Evaluate() ============>:returining -1 ");	
       return -1;
+	}
   }
   public void sfDeploy() throws SmartFrogException, RemoteException {
     super.sfDeploy();

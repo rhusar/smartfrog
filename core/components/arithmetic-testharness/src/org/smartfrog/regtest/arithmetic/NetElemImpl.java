@@ -10,7 +10,7 @@ import org.smartfrog.sfcore.prim.*;
 import org.smartfrog.sfcore.compound.*;
 import org.smartfrog.tools.testharness.TestHelper;
 
-// make the class abstract as the evaluate() method must be completed correctly before use
+// make the class abstract as the evaluate () method must be completed correctly before use
 
 public abstract class NetElemImpl extends CompoundImpl implements Compound, NetElem, Remote {
 
@@ -23,7 +23,7 @@ public abstract class NetElemImpl extends CompoundImpl implements Compound, NetE
 
   protected void addValue(int i) {
    currentInvocation++;
-   // System.out.println("addValue:Invocation number " + currentInvocation);
+    System.out.println("addValue:Invocation number " + currentInvocation + "Integer" +  i);
     if (currentInvocation> maxInvocations)
       TestHelper.printSFStartDone(System.out,false);
      synchronized(currentValues){
@@ -55,6 +55,7 @@ public abstract class NetElemImpl extends CompoundImpl implements Compound, NetE
 	  	  	if (outputs.get(name) instanceof Output) {
 	     	 		Output out = (Output) outputs.get(name);
 	     	 		try {
+				//System.out.println("output @ NETELEMIMPL ===============>  " + value);
 					out.output(value);
 				} catch (Exception e) {
 					e.printStackTrace();

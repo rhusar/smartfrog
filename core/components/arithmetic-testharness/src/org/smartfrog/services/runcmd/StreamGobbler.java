@@ -76,9 +76,10 @@ public class StreamGobbler extends Thread
           type="GOBBLER";
         }
         try {
+		System.out.println("IN RUN STREAMGOBBLER");
             PrintWriter pw = null;
-            if (os != null)
-                pw = new PrintWriter(os);
+            if (this.os != null)
+                pw = new PrintWriter(this.os);
 
             InputStreamReader isr = new InputStreamReader(is);
             BufferedReader br = new BufferedReader(isr);

@@ -8,15 +8,17 @@ package org.smartfrog.services.runcmd;
  *@version    1.0
  */
 
+
 import org.smartfrog.sfcore.prim.*;
 import org.smartfrog.sfcore.parser.*;
 import org.smartfrog.sfcore.common.*;
 import org.smartfrog.sfcore.reference.*;
+import org.smartfrog.sfcore.componentdescription.*;
 import org.smartfrog.services.runcmd.InfoProcess;
 import org.smartfrog.services.runcmd.OutputStreamIntf;
 import org.smartfrog.services.display.PrintErrMsgInt;
 import org.smartfrog.services.display.PrintMsgInt;
-
+import org.smartfrog.tools.testharness.NotifyOutputFilterPrimImpl;
 import java.rmi.*;
 import java.net.*;
 import java.io.*;
@@ -56,7 +58,9 @@ public class SFRunCommand extends PrimImpl implements Prim, RunCommandInt {
    /**
     *  Description of the Field
     */
-   public OutputStreamIntf outputStreamObj = null;
+   //public OutputStreamIntf outputStreamObj = null;
+   public NotifyOutputFilterPrimImpl outputStreamObj = null;
+   
    /**
     *  Description of the Field
     */
@@ -514,17 +518,35 @@ public class SFRunCommand extends PrimImpl implements Prim, RunCommandInt {
     *  Description of the Method
     */
    private void readSFAttributes() {
+
       try {
          try {
-            outputStreamObj = (OutputStreamIntf)sfResolve(this.varOutputStream);
+            //outputStreamObj = (OutputStreamIntf)sfResolveHere(this.varOutputStream); //india team changes
+			
+			outputStreamObj= (NotifyOutputFilterPrimImpl) sfResolve(varOutputStream, outputStreamObj , false);
+		if(outputStreamObj!=null)
+				System.out.println("outputStreamObj =============> "+ outputStreamObj.toString());
+			else
+				System.out.println("outputStreamObj is null=============> ");
+				
          } catch (SmartFrogResolutionException e) {
-            log(varOutputStream + " not found.", 5);
+            log(varOutputStream + " not found.",  5);
          } catch (Exception ex){
+			 
             ex.printStackTrace();
+
          }
 
+
+
          try {
-            errorStreamObj = (StreamIntf)sfResolve(this.varErrorStream);
+            //errorStreamObj = (StreamIntf)sfResolve(this.varErrorStream);
+			  errorStreamObj = (StreamIntf) sfResolve(this.varErrorStream, errorStreamObj , false);
+
+
+
+
+
          } catch (SmartFrogResolutionException e) {
             log(varErrorStream + " not found.", 5);
          } catch (Exception ex){
@@ -544,6 +566,7 @@ public class SFRunCommand extends PrimImpl implements Prim, RunCommandInt {
             } catch (SmartFrogResolutionException e) {
                 log(varOutputMsgTo + " not found.", 5);
             }
+
 
             //To redirect error to printer
             try {
@@ -569,20 +592,24 @@ public class SFRunCommand extends PrimImpl implements Prim, RunCommandInt {
          processName = (String)sfResolve(varSFProcessName);
 
          //     // Not mandatory
+
          try {
-            processId = (String)sfResolve(varSFProcessId);
+            //processId = (String)sfResolve(varSFProcessId);
+			 processId = sfResolve(varSFProcessId,processId, false);
+			
          } catch (SmartFrogResolutionException e) {
             log(varSFProcessId + " not found.", 5);
          }
 
+
          try {
-            startCmd = (String)sfResolve(varSFCmdStart);
+            startCmd = sfResolve(varSFCmdStart,startCmd,false);
          } catch (SmartFrogResolutionException e) {
             log(varSFCmdStart + " not found.", 5);
          }
 
          try {
-            stopCmd = (String)sfResolve(varSFCmdStop);
+            stopCmd = sfResolve(varSFCmdStop,stopCmd,false);
          } catch (SmartFrogResolutionException e) {
             log(varSFCmdStop + " not found.", 5);
          }
@@ -599,6 +626,7 @@ public class SFRunCommand extends PrimImpl implements Prim, RunCommandInt {
 //         }
          readCmdAttributes();
 
+
          // Just in case someone decides to overwrite startAtt and stopAtt created with readCmdAttributes!
          // Optional attributes.
        try {
@@ -608,6 +636,7 @@ public class SFRunCommand extends PrimImpl implements Prim, RunCommandInt {
           log ("readSFAttributes: Failed to read optional attribute: " + e.toString(),5);
           throw e;
        }
+
 
 
          try {
@@ -634,6 +663,7 @@ public class SFRunCommand extends PrimImpl implements Prim, RunCommandInt {
             log(varAutoReStart + " not found.", 5);
          }
 
+
          try {
             Object startProcessObj = sfResolve(varAutoStart);
             if (startProcessObj instanceof Boolean) {
@@ -652,6 +682,8 @@ public class SFRunCommand extends PrimImpl implements Prim, RunCommandInt {
             log(varAutoStart + " not found.", 5);
          }
 
+
+
          try {
             Object shouldTerminateObj = sfResolve(varShouldTerminate);
             if (shouldTerminateObj instanceof Boolean) {
@@ -668,6 +700,7 @@ public class SFRunCommand extends PrimImpl implements Prim, RunCommandInt {
          } catch (SmartFrogResolutionException e) {
             log(varShouldTerminate + " not found.", 5);
          }
+
          try {
             Object shouldDetachObj = sfResolve(varShouldDetach);
             if (shouldDetachObj instanceof Boolean) {
@@ -685,11 +718,14 @@ public class SFRunCommand extends PrimImpl implements Prim, RunCommandInt {
             log(varShouldDetach + " not found.", 5);
          }
 
+
+
          try {
             this.setDelayRestart(((Integer)sfResolve(varDelayReStart)).longValue());
          } catch (SmartFrogResolutionException ex) {
             log(varDelayReStart + " not found.", 5);
          }
+
 
          try {
             Object isBatchObj = sfResolve(varIsBatch);

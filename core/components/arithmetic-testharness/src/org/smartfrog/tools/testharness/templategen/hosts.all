@@ -1,5 +1,3 @@
-daemon1 r001s001e01.sfcluster.hpl.hp.com /home/sf/shared/testharness/daemons/demo-linux-50/core/smartfrog/dist linux
-daemon2 r001s002e01.sfcluster.hpl.hp.com /home/sf/shared/testharness/daemons/demo-linux-51/core/smartfrog/dist linux
-daemon3 r001s005e01.sfcluster.hpl.hp.com /home/sf/shared/testharness/daemons/demo-linux-54/core/smartfrog/dist linux
-daemonNT5 r001s004e01.sfcluster.hpl.hp.com e:/testharness/daemons/win-demo-53/core/smartfrog/dist windows
-
+daemon1 ebnt171.india.hp.com /home/testharness/daemons/ebnt171/SmartFrog.3.04.014.beta/dist linux
+daemon2 bhargava.india.hp.com /home/testharness/daemons/bhargava/SmartFrog.3.04.014.beta/dist linux
+daemon3 eb96147.india.hp.com /home/testharness/daemons/eb96147/SmartFrog.3.04.014.beta/dist linux
