@@ -73,7 +73,7 @@ ApacheInstallScript extends GenericInstallScript {
 
     actions:startEvent:event    (name ++ ":1:4:Apache download started");
     actions:downloadEvent:event (name ++ ":2:4:Apache downloaded, starting install");
-    action:completeEvent:event  (name ++ ":3:4:Apache install complete, downloading data");
+    actions:completeEvent:event  (name ++ ":3:4:Apache install complete, downloading data");
 
     //----------------------------------
     // add additional steps to the generic install script workflow
