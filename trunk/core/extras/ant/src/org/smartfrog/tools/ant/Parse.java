@@ -19,26 +19,20 @@
  */
 package org.smartfrog.tools.ant;
 
-import org.apache.tools.ant.Task;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Java;
-import org.apache.tools.ant.util.FileUtils;
-import org.apache.tools.ant.types.FileList;
 import org.apache.tools.ant.types.FileSet;
-import org.apache.tools.ant.types.Path;
-import org.apache.tools.ant.types.Reference;
+import org.apache.tools.ant.util.FileUtils;
 
-import java.util.List;
-import java.util.LinkedList;
-import java.util.Iterator;
 import java.io.File;
-import java.io.PrintWriter;
-import java.io.OutputStream;
 import java.io.FileOutputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * This task parses smartfrog files and validates them. Errors are thrown when appropriate
@@ -46,7 +40,7 @@ import java.io.IOException;
  *         created 20-Feb-2004 16:17:41
  */
 
-public class Parse extends Task {
+public class Parse extends TaskBase {
 
     /**
      * ini file to read in first
@@ -58,10 +52,6 @@ public class Parse extends Task {
      */
     private boolean logStackTrace=false;
 
-
-    private Path classpath;
-
-    private Reference classpathRef;
 
     private boolean verbose=false;
 
@@ -79,6 +69,9 @@ public class Parse extends Task {
      * @param file
      */
     public void setFile(File file) {
+        if(!file.exists()) {
+            throw new BuildException("File not found :"+file.toString());
+        }
         FileSet fs=new FileSet();
         fs.setFile(file);
         addSource(fs);
@@ -91,22 +84,6 @@ public class Parse extends Task {
      */
     public void addSource(FileSet fs) {
         source.add(fs);
-    }
-
-    /**
-     * the classpath to run the parser
-     * @param classpath
-     */
-    public void addClasspath(Path classpath) {
-        this.classpath = classpath;
-    }
-
-    /**
-     * a reference to the classpath to use to run smartfrog
-     * @param classpathRef
-     */
-    public void setClasspathRef(Reference classpathRef) {
-        this.classpathRef = classpathRef;
     }
 
     /**
@@ -150,63 +127,61 @@ public class Parse extends Task {
                 files.add(included[i]);
             }
         }
-        //at this point the files are all scanned. Verify we have something interesting
+        //at this point the files are all scanned.
+        // Verify we have something interesting
         if(files.isEmpty()) {
             log("No source files");
             return;
         }
 
         //now save them to a file.
-        File tempFile=FileUtils.newFileUtils().createTempFile("sfp","txt",null);
+        File tempFile=FileUtils.newFileUtils().createTempFile("parse",".txt",null);
         PrintWriter out=null;
-        try {
-            out = new PrintWriter(new FileOutputStream(tempFile));
-            src=files.iterator();
-            while (src.hasNext()) {
-                String s = (String) src.next();
-                out.println(s);
-            }
-        } catch (IOException e) {
-            throw new BuildException("while saving to "+tempFile,e);
-        } finally {
-            if(out!=null) {
-                try {
-                    out.close();
-                } catch (Exception swallowed) {
 
+        int err;
+        try {
+            try {
+                out = new PrintWriter(new FileOutputStream(tempFile));
+                src=files.iterator();
+                while (src.hasNext()) {
+                    String s = (String) src.next();
+                    out.println(s);
+                }
+            } catch (IOException e) {
+                throw new BuildException("while saving to "+tempFile,e);
+            } finally {
+                if(out!=null) {
+                    try {
+                        out.close();
+                    } catch (Exception swallowed) {
+
+                    }
                 }
             }
+
+
+            //now lets create the Java statement
+            String entryPoint = "org.smartfrog.SFParse";
+            Java java = createJavaTask(entryPoint, "sf-parse");
+            setupClasspath(java);
+            java.setFailonerror(true);
+            java.setFork(true);
+            //and add various options to it
+            java.createArg().setValue("-r");
+            if(quiet) {
+                java.createArg().setValue("-q");
+            }
+            if(verbose ) {
+                java.createArg().setValue("-v");
+            }
+            java.createArg().setValue("-f");
+            java.createArg().setFile(tempFile);
+
+            //run it
+            err = java.executeJava();
+        } finally {
             tempFile.delete();
         }
-
-        //now lets create the Java statement
-        Java java=(Java)getProject().createTask("java");
-        java.setFailonerror(true);
-        java.setFork(true);
-        java.setClassname("org.smartfrog.sfParse");
-        if(classpath!=null) {
-            java.setClasspath(classpath);
-        } else {
-            if(classpathRef!=null) {
-                java.setClasspathRef(classpathRef);
-            }
-            else {
-                Path path = new Path(getProject(), System.getProperty("java.class.path"));
-                java.setClasspath(path);
-            }
-        //and add various options to it
-        java.createArg().setValue("-r");
-        if(quiet) {
-            java.createArg().setValue("-q");
-        }
-        if(verbose ) {
-            java.createArg().setValue("-v");
-        }
-        java.createArg().setValue("-f");
-        java.createArg().setFile(tempFile);
-
-        //run it
-        int err=java.executeJava();
 
         //process the results
         switch(err) {
@@ -218,8 +193,10 @@ public class Parse extends Task {
                 throw new BuildException("parse failure");
             default:
                 //something else
-                throw new BuildException("Spawning Java application return error code "+err);
+                throw new BuildException("Java application error code "+err);
         }
 
     }
+
 }
+

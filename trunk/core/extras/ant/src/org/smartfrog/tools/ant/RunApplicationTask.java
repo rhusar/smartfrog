@@ -20,7 +20,7 @@
 
 package org.smartfrog.tools.ant;
 
-import org.apache.tools.ant.Task;
+
 
 /**
  * Run an application by deploying it locally; only return from ant after it has finished.

@@ -21,19 +21,16 @@
 package org.smartfrog.tools.ant;
 
 import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.Task;
-import org.apache.tools.ant.types.Environment;
-import org.apache.tools.ant.types.Path;
-import org.apache.tools.ant.types.Reference;
-import org.apache.tools.ant.types.PropertySet;
 import org.apache.tools.ant.taskdefs.Java;
+import org.apache.tools.ant.types.Environment;
+import org.apache.tools.ant.types.PropertySet;
 
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Iterator;
-import java.io.File;
-import java.net.URL;
-import java.net.MalformedURLException;
 
 /**
  * Class to let ant task derivatives run smartfrog. How it invokes smartfrog is an implementation detail;
@@ -48,7 +45,7 @@ import java.net.MalformedURLException;
  * by setting system properties inline, or in a property set.
  *
  */
-public abstract class SmartFrogTask extends Task {
+public abstract class SmartFrogTask extends TaskBase {
 
     public SmartFrogTask() {
 
@@ -260,21 +257,7 @@ public abstract class SmartFrogTask extends Task {
         this.iniFile = iniFile;
     }
 
-    /**
-     * JVM classpath
-     * @param classpath
-     */
-    public void addClasspath(Path classpath) {
-        smartfrog.setClasspath(classpath);
-    }
 
-    /**
-     * classpath reference
-     * @param classpathRef
-     */
-    public void setClasspathRef(Reference classpathRef) {
-        smartfrog.setClasspathRef(classpathRef);
-    }
 
     /**
      * should the runtime log stack traces
@@ -291,13 +274,11 @@ public abstract class SmartFrogTask extends Task {
      *
      */
     protected Java getBaseJavaTask() {
-        Java java = (Java) getProject().createTask("java");
+        Java java =createJavaTask("org.smartfrog.SFSystem", getTaskTitle());
         java.setFork(true);
-        java.setClassname("org.smartfrog.SFSystem");
-        java.setTaskName(getTaskTitle());
+
+
         java.setDir(getProject().getBaseDir());
-        Path path=new Path(getProject(),System.getProperty("java.class.path"));
-        java.setClasspath(path);
 
         return java;
     }
@@ -448,6 +429,8 @@ public abstract class SmartFrogTask extends Task {
      * @throws BuildException if the return value from java!=0
      */
     protected void execSmartfrog(String failureText, String errorText) {
+        //adopt the classpath
+        setupClasspath(smartfrog);
         //last minute fixup of error properties.
         //this is because pre Ant1.6, even setting this to false stops spawn working
         //delayed setting only when the flag is true reduces the need to flip the bit

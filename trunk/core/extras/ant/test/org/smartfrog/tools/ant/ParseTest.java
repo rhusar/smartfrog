@@ -42,37 +42,41 @@ public class ParseTest extends TaskTestBase {
     }
 
     public void testNoop() {
-        executeTarget("testNoop");
+        expectLogContaining("testNoop","No source files");
     }
 
     public void testValid1() {
-        executeTarget("testValid1");
+        expectLogContaining("testValid1","port 8080;");
     }
 
     public void testValid2() {
-        executeTarget("testValid2");
+        expectLogContaining("testValid2", "port 8080;");
     }
 
     public void testInvalid() {
         expectBuildException("testInvalid", "parse failure");
+        assertLogContaining("SmartFrogCompileResolutionException");
     }
+    
     public void testMissingFile() {
-        expectBuildException("testMissingFile", "not found");
+        expectBuildExceptionContaining("testMissingFile", "not found", "File not found :");
     }
     public void testTwoFiles() {
         expectBuildException("testTwoFiles", "parse failure");
     }
 
     public void testVerbose() {
-        executeTarget("testVerbose");
+        expectLogContaining("testVerbose","sfClass \"org.smartfrog.sfcore.compound.CompoundImpl\";");
     }
 
     public void testQuiet() {
-        executeTarget("testQuiet");
+        expectLogContaining("testQuiet", "STATUS REPORT: File: valid.sf");
+        assertNotInLog("port 8080;");
     }
 
     public void testVerboseQuiet() {
-        executeTarget("testVerboseQuiet");
+        expectLogContaining("testVerboseQuiet", "STATUS REPORT: File: valid.sf");
+        assertNotInLog("port 8080;");
     }
 
 

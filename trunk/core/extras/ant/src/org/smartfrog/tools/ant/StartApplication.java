@@ -19,9 +19,7 @@
  */
 package org.smartfrog.tools.ant;
 
-import org.apache.tools.ant.Task;
 import org.apache.tools.ant.BuildException;
-import org.apache.tools.ant.taskdefs.Java;
 
 /**
  * Start an SF application; that deployes it remotely
@@ -38,5 +36,9 @@ public class StartApplication extends SmartFrogTask {
         enableFailOnError();
         addExitFlag();
         execSmartfrog("Could not deploy");
+    }
+
+    protected String getTaskTitle() {
+        return "sf-deploy";
     }
 }
