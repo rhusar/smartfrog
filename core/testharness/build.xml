@@ -177,8 +177,11 @@ For more information: www.smartfrog.org
            errorProperty="test.failed"
            failureProperty="test.failed"
            >
-        <sysproperty key="test.smartfrog.classesdir"
-            value="${test.smartfrog.classesdir}" />
+      <sysproperty key="test.smartfrog.classesdir"
+          value="${test.smartfrog.classesdir}" />
+      <syspropertyset >
+        <propertyref prefix="runtime"/>
+      </syspropertyset>             
       <classpath>
         <path refid="tests.run.classpath"/>
       </classpath>
@@ -229,6 +232,9 @@ For more information: www.smartfrog.org
                >
             <sysproperty key="test.smartfrog.classesdir"
                 value="${test.smartfrog.classesdir}" />
+            <syspropertyset >
+              <propertyref prefix="runtime"/>
+            </syspropertyset>                
           <classpath>
             <path refid="tests.run.classpath"/>
           </classpath>
@@ -290,20 +296,5 @@ For more information: www.smartfrog.org
     </jar>
   </target>
 
-  <!-- ========================================================== -->
-  <!-- create a redistributable testharness jar file -->
-  <!-- this contains only the test utility classes, not the tests -->
-  <!-- ========================================================== -->
-<!--   <target name="dist" depends="compile"
-    description="creates the jar file for the testharness">
-
-    <property name="testharness.core.jar" value="smartfrog-testharness.jar"/>
-    <property name="testharness.core.jar.file"
-      location="${dist.lib.dir}/${testharness.core.jar}"/>
-
-    <jar jarfile="${testharness.core.jar.file}"
-         basedir="${test.classes.dir}"
-         includes="org/smartfrog/test/*" />
-  </target> -->
 
 </project>
