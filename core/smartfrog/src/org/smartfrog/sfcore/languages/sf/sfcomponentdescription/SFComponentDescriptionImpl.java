@@ -541,38 +541,28 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
    }
 
 
-   /**
-    *  Writes a given value on a writer. Recognizes descriptions, strings and
-    *  vectors of basic values and turns them into string representation.
-    *  Default is to turn into string using normal toString() call
-    *
-    *@param  ps               writer to write on
-    *@param  indent           indent level
-    *@param  value            value to stringify
-    *@exception  IOException  failure while writing
-    */
-   protected void writeValueOn(Writer ps, int indent, Object value)
-          throws IOException {
-      if (value instanceof ComponentDescription) {
-         SFComponentDescription compVal = (SFComponentDescription) value;
-         ps.write("extends " + (compVal.getEager() ? "" : "LAZY ") +
-               ((compVal.getType() == null) ? "" : compVal.getType().toString()));
-
-         if (compVal.sfContext().size() > 0) {
-            ps.write(" {\n");
-            compVal.writeContextOn(ps, indent + 1,
-                  compVal.sfContext().keys());
-            tabPad(ps, indent);
-            ps.write('}');
-         } else {
-            ps.write(';');
-         }
-      } else {
-         writeBasicValueOn(ps, indent, value);
-         ps.write(';');
-      }
-   }
-
+    /**
+     * Writes this component description on a writer. Used by toString. Should
+     * be used instead of toString to write large descriptions to file, since
+     * memory can become a problem given the LONG strings created
+     *
+     * @param ps writer to write on
+     * @param indent the indent to use for printing offset
+     *
+     * @throws IOException failure while writing
+     */
+    public void writeOn(Writer ps, int indent) throws IOException {
+	ps.write("extends " + (getEager() ? "" : "LAZY ") +
+               ((getType() == null) ? "" : getType().toString()));
+	
+	if (context.size() > 0) {
+	    ps.write(" {\n");
+	    context.writeOn(ps, indent+1);
+	    tabPad(ps, indent); ps.write('}');
+	} else {
+	    ps.write(';');
+	}
+    }
 
    /**
     *  Return a component description as required by the deployer.

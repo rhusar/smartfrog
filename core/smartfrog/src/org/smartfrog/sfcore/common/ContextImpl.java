@@ -23,6 +23,10 @@ package org.smartfrog.sfcore.common;
 import java.io.Serializable;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.Vector;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.io.IOException;
 
 import org.smartfrog.sfcore.common.SmartFrogContextException;
 
@@ -36,7 +40,7 @@ import org.smartfrog.sfcore.common.SmartFrogContextException;
  *
  */
 public class ContextImpl extends OrderedHashtable implements Context,
-    Serializable {
+    Serializable, PrettyPrinting {
 
     /**
      * Creates an empty context with default capacity.
@@ -255,5 +259,173 @@ public class ContextImpl extends OrderedHashtable implements Context,
          return this.keyFor(value);
      }
 
+
+
+
+
+    /**
+     * Returns a string representation of the component. This will give a
+     * description of the component which is parseable, and deployable
+     * again... Unless someone removed attributes which are essential to
+     * startup that is. Large description trees should be written out using
+     * writeOn since memory for large strings runs out quick!
+     *
+     * @return string representation of component
+     */
+    public String toString() {
+        StringWriter sw = new StringWriter();
+
+        try {
+            writeOn(sw);
+        } catch (IOException ioex) {
+            // ignore should not happen
+        }
+
+        return sw.toString();
+    }
+
+    /**
+     * Writes this component description on a writer. Used by toString. Should
+     * be used instead of toString to write large descriptions to file, since
+     * memory can become a problem given the LONG strings created
+     *
+     * @param ps writer to write on
+     *
+     * @throws IOException failure while writing
+     */
+    public void writeOn(Writer ps) throws IOException {
+        writeContextOn(ps, 0, this.keys());
+    }
+
+    /**
+     * Writes this component description on a writer. Used by toString. Should
+     * be used instead of toString to write large descriptions to file, since
+     * memory can become a problem given the LONG strings created
+     *
+     * @param ps writer to write on
+     * @param indent the indent to use for printing offset
+     *
+     * @throws IOException failure while writing
+     */
+    public void writeOn(Writer ps, int indent) throws IOException {
+        writeContextOn(ps, indent, this.keys());
+    }
+ 
+    /**
+     * Writes the context on a writer.
+     *
+     * @param ps writer to write on
+     * @param indent level
+     * @param keys enumeation over the keys of the context to write out
+     *
+     * @throws IOException failure while writing
+     */
+    protected void writeContextOn(Writer ps, int indent, Enumeration keys)
+        throws IOException {
+        while (keys.hasMoreElements()) {
+            Object key = keys.nextElement();
+            Object value = get(key);
+            tabPad(ps, indent);
+            writeKeyOn(ps, indent, key);
+            ps.write(' ');
+            writeValueOn(ps, indent, value);
+            ps.write('\n');
+        }
+    }
+
+    /**
+     * Writes given attribute key on a writer.
+     *
+     * @param ps writer to write on
+     * @param indent indent level
+     * @param key key to stringify
+     *
+     * @throws IOException failure while writing
+     */
+    protected void writeKeyOn(Writer ps, int indent, Object key)
+        throws IOException {
+        ps.write(key.toString());
+    }
+
+    /**
+     * Writes a given value on a writer. Recognizes descriptions, strings and
+     * vectors of basic values and turns them into string representation.
+     * Default is to turn into string using normal toString() call
+     *
+     * @param ps writer to write on
+     * @param indent indent level
+     * @param value value to stringify
+     *
+     * @throws IOException failure while writing
+     */
+    protected void writeValueOn(Writer ps, int indent, Object value)
+        throws IOException {
+        if (value instanceof PrettyPrinting) {
+	    ((PrettyPrinting)value).writeOn(ps, indent);
+	} else {
+            writeBasicValueOn(ps, indent, value);
+            ps.write(';');
+        }
+    }
+
+    /**
+     * Writes a given value on a writer. Recognizes descriptions, strings and
+     * vectors of basic values and turns them into string representation.
+     * Default is to turn into string using normal toString() call
+     *
+     * @param ps writer to write on
+     * @param indent indent level
+     * @param value value to stringify
+     *
+     * @throws IOException failure while writing
+     */
+    protected void writeBasicValueOn(Writer ps, int indent, Object value)
+        throws IOException {
+        if (value instanceof String) {
+            ps.write("\"" + unfixEscapes((String)value) + "\"");
+        } else if (value instanceof Vector) {
+            ps.write("[|");
+
+            for (Enumeration e = ((Vector) value).elements();
+                    e.hasMoreElements();) {
+                writeBasicValueOn(ps, indent, e.nextElement());
+
+                if (e.hasMoreElements()) {
+                    ps.write(", ");
+                }
+            }
+
+            ps.write("|]");
+        } else if (value instanceof Long) {
+            ps.write(value.toString() + 'L');
+        } else if (value instanceof Double) {
+            ps.write(value.toString() + 'D');
+        } else {
+            ps.write(value.toString());
+        }
+    }
+
+    private String unfixEscapes(String s) {
+        s = s.replaceAll("\\\\", "\\\\\\\\");
+        s = s.replaceAll("\n", "\\\\n");
+        s = s.replaceAll("\t", "\\\\t");
+        s = s.replaceAll("\b", "\\\\b");
+        s = s.replaceAll("\r", "\\\\r");
+        s = s.replaceAll("\f", "\\\\f");
+        return s;
+    }
+
+    /**
+     * Internal method to pad out a writer.
+     *
+     * @param ps writer to tab to
+     * @param amount amount to tab
+     *
+     * @throws IOException failure while writing
+     */
+    protected void tabPad(Writer ps, int amount) throws IOException {
+        for (int i = 0; i < amount; i++)
+            ps.write("  ");
+    }
 
 }
