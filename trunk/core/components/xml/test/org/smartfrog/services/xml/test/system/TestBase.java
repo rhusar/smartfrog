@@ -22,11 +22,17 @@
 package org.smartfrog.services.xml.test.system;
 
 import org.smartfrog.test.SmartFrogTestBase;
+import org.smartfrog.services.xml.interfaces.XmlNode;
+import org.smartfrog.sfcore.prim.Prim;
+
+import java.rmi.RemoteException;
 
 /**
  * base class for tests; currently extends the smartfrog testbase
  */
 public abstract class TestBase extends SmartFrogTestBase {
+
+    public static final String CODEBASE_PROPERTY = "org.smartfrog.codebase";
 
     protected TestBase(String name) {
         super(name);
@@ -34,5 +40,39 @@ public abstract class TestBase extends SmartFrogTestBase {
 
     public static final String FILE_BASE = "/org/smartfrog/services/xml/test/files/";
 
+    /**
+     * Sets up the fixture, for example, open a network connection. This method
+     * is called before a test is executed.
+     */
+    protected void setUp() throws Exception {
+        super.setUp();
+        assertSystemPropertySet(CODEBASE_PROPERTY);
+    }
 
+    /**
+     * Deploy an XML node
+     * @param url
+     * @param appName
+     * @return
+     * @throws Throwable
+     */
+    public XmlNode deployXmlNode(String url,String appName) throws Throwable {
+        Prim prim=  deployExpectingSuccess(url, appName);
+        try {
+            XmlNode node=(XmlNode) prim;
+            return node;
+        } catch (Exception e) {
+            terminateApplication(prim);
+            throw e;
+        }
+    }
+
+    /**
+     * terminate a deployed app of type xmlnode
+     * @param node
+     * @throws RemoteException
+     */
+    protected void terminateNode(XmlNode node) throws RemoteException {
+        terminateApplication((Prim)node);
+    }
 }

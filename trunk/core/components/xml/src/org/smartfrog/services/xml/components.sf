@@ -66,6 +66,7 @@ XmlQNameNode extends XmlNode {
  * PIs contain strings
  */
 XmlProcessingInstruction extends XmlNode {
+
     sfClass "org.smartfrog.services.xml.impl.XmlProcessingInstructionImpl";
     target TBD;
     data TBD;

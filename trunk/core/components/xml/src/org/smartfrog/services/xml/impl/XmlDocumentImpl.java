@@ -45,6 +45,7 @@ import java.util.Enumeration;
 public class XmlDocumentImpl extends CompoundXmlNode implements XmlDocument {
     public static final String ERROR_UNSUPPORTED_FEATURE = "Unsupported Feature";
     public static final String ERROR_NO_SAVE = "Failed to save to ";
+    public static final String UTF8 = "UTF-8";
 
     public XmlDocumentImpl() throws RemoteException {
     }
@@ -149,6 +150,12 @@ public class XmlDocumentImpl extends CompoundXmlNode implements XmlDocument {
 
     }
 
+    /**
+     * internal save routine
+     * @param filename
+     * @param encoding
+     * @throws IOException
+     */
     protected void saveToFile(String filename, String encoding)
             throws IOException {
         File file = new File(filename);
@@ -158,5 +165,27 @@ public class XmlDocumentImpl extends CompoundXmlNode implements XmlDocument {
         out = new BufferedOutputStream(fileout);
         Serializer serializer = new Serializer(out, encoding);
         serializer.write(getDocument());
+    }
+
+    /**
+     * save a document to a file
+     *
+     * @param filename
+     * @throws RemoteException
+     */
+    public void save(String filename) throws RemoteException, IOException {
+        save(filename,UTF8);
+    }
+
+    /**
+     * save a document to a file
+     *
+     * @param filename
+     * @param encoding
+     * @throws RemoteException
+     */
+    public void save(String filename, String encoding) throws RemoteException,
+            IOException {
+        saveToFile(filename, encoding);
     }
 }

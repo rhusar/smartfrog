@@ -19,6 +19,24 @@
  */
 package org.smartfrog.services.xml.test.system;
 
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.services.xml.interfaces.XmlNode;
+import org.smartfrog.services.xml.interfaces.XmlDocument;
+import org.smartfrog.services.xml.interfaces.XmlTextNode;
+import org.smartfrog.services.xml.utils.ParserHelper;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+import junit.awtui.TestRunner;
+
+import java.rmi.RemoteException;
+import java.io.File;
+import java.io.IOException;
+
+import nu.xom.Builder;
+import nu.xom.ValidityException;
+import nu.xom.ParsingException;
+import nu.xom.Document;
+
 /**
  * created 27-Jan-2005 14:02:01
  */
@@ -28,6 +46,53 @@ public class DocumentCreationTest extends TestBase {
     public DocumentCreationTest(String name) {
         super(name);
     }
+
+    /**
+     * load a document, save it to a temp file.
+     * @throws Throwable
+     */
+    public void testDocumentLoad() throws Throwable {
+        XmlNode node=deployXmlNode(FILE_BASE+"testDocument.sf","testDocument");
+        try {
+            XmlDocument doc=(XmlDocument) node;
+            String xml=doc.toXML();
+            File tempfile=File.createTempFile("doc",".xml");
+            doc.save(tempfile.getAbsolutePath());
+            Document xdom=loadXMLFile(tempfile);
+        } finally {
+            terminateNode(node);
+        }
+    }
+
+    public void testTextNode() throws Throwable {
+        XmlNode node = deployXmlNode(FILE_BASE + "textNode.sf",
+                "textNode");
+        try {
+            XmlTextNode element = (XmlTextNode) node;
+            String xml = element.toXML();
+            assertContains(xml,"nested text element");
+        } finally {
+            terminateNode(node);
+        }
+    }
+
+    /**
+     * load an XML File
+     * @param file
+     * @return
+     * @throws SAXException
+     * @throws ParsingException
+     * @throws IOException
+     */
+    public Document loadXMLFile(File file) throws SAXException,
+            ParsingException, IOException {
+        XMLReader xmlParser = ParserHelper.createXmlParser(true,true,false);
+        Builder builder = new Builder(xmlParser, true);
+        Document document = builder.build(file);
+        return document;
+    }
+
+
 
 
 }
