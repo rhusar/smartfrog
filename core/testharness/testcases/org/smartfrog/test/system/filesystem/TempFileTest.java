@@ -40,7 +40,7 @@ public class TempFileTest extends SmartFrogTestBase {
         deployExpectingException(FILES + "tempFileTestEmpty.sf",
                 "tempFileTestEmpty",
                         "SmartFrogDeploymentException", null,
-                        "SmartFrogCompileResolutionException", "non-optional attribute is missing: 'prefix'");
+                        "SmartFrogCompileResolutionException", "non-optional attribute 'prefix' is missing");
     }
 
     public void testWorking() throws Throwable {
