@@ -374,18 +374,26 @@ public class SFSystem implements MessageKeys {
      *
      * @exception Exception failed to create or set output/error streams
      */
-    public static void setOutputStreams() throws Exception {
+    public static void setOutputStreams() throws SmartFrogException {
         String outClass = SFSystem.getProperty(propOutStreamClass);
         String errClass = SFSystem.getProperty(propErrStreamClass);
 
-        if (errClass != null) {
-            System.setErr((PrintStream) SFClassLoader.forName(errClass)
-                                                     .newInstance());
-        }
+        try {
+            if (errClass != null) {
+                System.setErr((PrintStream) SFClassLoader.forName(errClass)
+                                                         .newInstance());
+            }
 
-        if (outClass != null) {
-            System.setOut((PrintStream) SFClassLoader.forName(outClass)
-                                                     .newInstance());
+            if (outClass != null) {
+                System.setOut((PrintStream) SFClassLoader.forName(outClass)
+                                                         .newInstance());
+            }
+        } catch (InstantiationException e) {
+            throw SmartFrogException.forward(e);
+        } catch (IllegalAccessException e) {
+            throw SmartFrogException.forward(e);
+        } catch (ClassNotFoundException e) {
+            throw SmartFrogException.forward(e);
         }
     }
 
@@ -753,7 +761,8 @@ public class SFSystem implements MessageKeys {
      * @throws Exception if anything else went wrong
      */
     public static ProcessCompound runSmartFrog()
-            throws SmartFrogException, UnknownHostException, ConnectException, RemoteException, Exception {
+            throws SmartFrogException, UnknownHostException, ConnectException,
+            RemoteException, SFGeneralSecurityException {
 
         ProcessCompound process = null;
 

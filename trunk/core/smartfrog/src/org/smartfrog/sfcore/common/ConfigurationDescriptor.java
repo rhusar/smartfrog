@@ -368,10 +368,14 @@ public class ConfigurationDescriptor implements MessageKeys{
       this.resultType=Result.SUCCESSFUL;
     }
 
+    /**
+     * set the action type. this also sets the #action attribute
+     * which is needed to do the actual execution.
+     *
+     * @param type
+     * @throws SmartFrogInitException
+     */
     public void setActionType(int type) throws SmartFrogInitException {
-        if ((type<0)||(type>Action.type.length)) {
-            throw new SmartFrogInitException("Action type unknown");
-        }
         this.actionType = type;
         switch(actionType) {
             case Action.DEPLOY:
@@ -393,13 +397,13 @@ public class ConfigurationDescriptor implements MessageKeys{
 
     public void setActionType(String type) throws SmartFrogInitException {
         if (type.equals(Action.type[Action.DEPLOY])) {
-            this.actionType=Action.DEPLOY;
+            setActionType(Action.DEPLOY);
         } else if (type.equals(Action.type[Action.DETACH])) {
-            this.actionType=Action.DETACH;
+            setActionType(Action.DETACH);
         } else if (type.equals(Action.type[Action.DETaTERM])) {
-            this.actionType=Action.DETaTERM;
+            setActionType(Action.DETaTERM);
         } else if (type.equals(Action.type[Action.TERMINATE])) {
-            this.actionType=Action.TERMINATE;
+            setActionType(Action.TERMINATE);
         } else {
             throw new SmartFrogInitException("Action type unknown: "+ type);
         }
