@@ -88,7 +88,7 @@ public class ErrorMessageBundle extends ListResourceBundle
         { MSG_DETACH_SUCCESS , "Successfully detached component: {0}"},
         { MSG_DETACH_TERMINATE_SUCCESS , "Successfully detatched and terminated: {0}"},
         { MSG_UNHANDLED_EXCEPTION , "Unhandled exception: "},
-        { MSG_URL_TO_PARSE_NOT_FOUND , "Unable to locate URL \"{0}\"\n    Reason: URL may be incorrect or resource is misssing"},
+        { MSG_URL_TO_PARSE_NOT_FOUND , "Unable to locate URL \"{0}\"\n    Reason: URL may be incorrect or resource is missing"},
 
         { ILLEGAL_NUMERIC_PARAMETER , "Illegal numeric parameter"},
         { ILLEGAL_STRING_PARAMETER  , "Illegal string parameter"},
