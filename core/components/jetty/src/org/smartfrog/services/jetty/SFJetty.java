@@ -62,7 +62,7 @@ public class SFJetty extends CompoundImpl implements Compound,JettyIntf {
         server = new HttpServer();
         jettyHelper.cacheJettyServer(server);
         jettyhome = sfResolve(jettyhomeRef, jettyhome, true);
-        jettyHelper.cacheJettyHome(jettyhome);
+	jettyHelper.cacheJettyHome(jettyhome);
         enableLogging=sfResolve(ENABLE_LOGGING,enableLogging,true);
         configureHttpServer();
         super.sfDeploy();
