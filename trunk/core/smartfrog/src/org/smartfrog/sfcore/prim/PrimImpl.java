@@ -1969,11 +1969,23 @@ public class PrimImpl extends Object implements Prim, MessageKeys {
         if (sfParent == null) {
             return;
         }
-        ((ChildMinder) sfParent).sfRemoveChild(this);
-        sfParent = null;
-        sfStartLivenessSender();
-        sfParentageChanged();
+        try {
+            if (!(SFProcess.getProcessCompound().sfContainsChild(this))) {
+                //Registers with local process compound!
+               SFProcess.getProcessCompound().sfRegister(this.sfResolveId(
+                   SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME), this);
+            }
+            ((ChildMinder) sfParent).sfRemoveChild(this);
+            sfParent = null;
+            sfStartLivenessSender();
+            sfParentageChanged();
+        } catch (SmartFrogResolutionException ex){
+            //@Todo: log
+            //ignore
+        }
+
     }
+
 
     /**
      * Get this object to terminate, after detaching itself from its parent.
@@ -2209,7 +2221,7 @@ public class PrimImpl extends Object implements Prim, MessageKeys {
      * Parentage changed in component hierachy.
      * Actions: sfCompleteName cache is cleaned
      */
-    public synchronized void sfParentageChanged() throws RemoteException{
+    public void sfParentageChanged() throws RemoteException{
        sfCompleteName=null;
     }
 }
