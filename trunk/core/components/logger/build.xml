@@ -24,7 +24,8 @@ For more information: www.smartfrog.org
 -->
 
 <description>
-    Build file for distributed logger SmartFrog component. See docs/distributed-logger.sxw for more details.
+    Build file for distributed logger SmartFrog component. 
+    See docs/distributed-logger.sxw for more details.
 </description>
 
    <!-- override point -->
@@ -97,8 +98,16 @@ For more information: www.smartfrog.org
   <target name="dist" depends="compile" 
     description="create the jar files">
     <jar destfile="${target.jar}" basedir="${build.classes.dir}" includes="**/*"/>
-    <copy file ="${target.jar}"  todir="${smartfrog.dist.lib.dir}"/>
   </target>
+
+  <!-- ========================================================== -->
+  <!-- install the jar -->
+  <!-- ========================================================== -->
+  <target name="install" depends="dist"
+    description="copy the jar file to the SmartFrog distribution directory">
+    <copy file="${target.jar}" todir="${smartfrog.dist.lib.dir}"/>
+  </target>
+
 
   <!-- ========================================================== -->
   <!-- default target -->

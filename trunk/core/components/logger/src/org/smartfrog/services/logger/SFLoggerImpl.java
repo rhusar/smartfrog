@@ -119,7 +119,7 @@ public class SFLoggerImpl extends PrimImpl implements SFLogger {
     
     /**
      * Logs Info message.
-     * @param the log message
+     * @param msg the log message
      * @throws RemoteException if there is any network or RMI error
      */
     public void logInfo(String msg) throws RemoteException {
@@ -127,7 +127,7 @@ public class SFLoggerImpl extends PrimImpl implements SFLogger {
     }
     /**
      * Logs Warning message.
-     * @param the log message
+     * @param msg the log message
      * @throws RemoteException if there is any network or RMI error
      */
     public void logWarning(String msg) throws RemoteException {
@@ -135,7 +135,7 @@ public class SFLoggerImpl extends PrimImpl implements SFLogger {
     }
     /**
      * Logs Error message.
-     * @param the log message
+     * @param msg the log message
      * @throws RemoteException if there is any network or RMI error
      */
     public void logError(String msg) throws RemoteException {
@@ -143,11 +143,34 @@ public class SFLoggerImpl extends PrimImpl implements SFLogger {
     }
     /**
      * Logs a log reecord
-     * @param the log record
+     * @param logRec the log record
      * @throws RemoteException if there is any network or RMI error
      * @see java.util.logging.LogRecord
      */
     public void log(LogRecord logRec) throws RemoteException {
         logger.log(logRec);
+    }
+
+    /**
+     * log at debug level
+     *
+     * @param msg
+     * @throws java.rmi.RemoteException
+     * @see #isDebugEnabled()
+     */
+
+
+    public void logDebug(String msg) throws RemoteException {
+        logger.log(Level.FINE,msg);
+    }
+
+    /**
+     * message which determines whether debug logging is enabled
+     *
+     * @return
+     * @throws java.rmi.RemoteException
+     */
+    public boolean isDebugEnabled() throws RemoteException {
+        return logger.isLoggable(Level.FINE);
     }
 }
