@@ -22,17 +22,14 @@ package org.smartfrog.services.cddlm.cdl;
 
 
 import nu.xom.Builder;
-import nu.xom.Document;
-import nu.xom.ValidityException;
 import nu.xom.ParsingException;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.XMLReaderFactory;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-
-import org.xml.sax.helpers.XMLReaderFactory;
-import org.xml.sax.XMLReader;
-import org.xml.sax.SAXException;
 
 /**
  * JDom based utility to parse CDL files. created Jul 1, 2004 1:49:31 PM
@@ -63,13 +60,13 @@ public class CdlParser {
         XMLReader xerces = XMLReaderFactory.createXMLReader("org.apache.xerces.parsers.SAXParser");
         xerces.setFeature("http://apache.org/xml/features/validation/schema",
                     validate);
-        /*
-        CatalogResolver resolver=new CatalogResolver();
-        resolver.namespaceAware=true;
-        xerces.setEntityResolver(resolver);
-        */
+        if(validate) {
+            CdlCatalog resolver=new CdlCatalog(loader);
+            xerces.setEntityResolver(resolver);
+        }
         builder = new Builder(xerces,validate);
     }
+
 
 
     /**

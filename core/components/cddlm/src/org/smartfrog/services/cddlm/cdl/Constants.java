@@ -26,10 +26,16 @@ package org.smartfrog.services.cddlm.cdl;
  * Time: 22:26:34
  */
 public class Constants {
+    public static final String WS_ADDRESSING_NAMESPACE = "http://schemas.xmlsoap.org/ws/2003/03/addressing";
+    public static final String CDDLM_XSD_FILENAME = "cddlm.xsd";
+    public static final String DEPLOY_API_SCHEMA_FILENAME = "deployAPIschema.xsd";
+
     private Constants() {
     }
 
     public static final String CDL_NAMESPACE="urn:cddlm/xml/0.1";
+
+    public static final String CDL_API_NAMESPACE = "urn:cddlm/api/0.1";
 
     public static final String CDL_ELT_CDL="cdl";
 

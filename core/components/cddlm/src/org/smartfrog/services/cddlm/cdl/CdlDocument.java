@@ -19,10 +19,10 @@
  */
 package org.smartfrog.services.cddlm.cdl;
 
-import nu.xom.Document;
-import nu.xom.ParsingException;
-import nu.xom.Element;
 import nu.xom.Attribute;
+import nu.xom.Document;
+import nu.xom.Element;
+import nu.xom.ParsingException;
 
 /**
  * This represents a parsed CDL document, or an error caused during parsing.

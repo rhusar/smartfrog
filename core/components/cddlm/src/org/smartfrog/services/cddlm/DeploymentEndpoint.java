@@ -29,13 +29,13 @@ import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.sfcore.processcompound.SFProcess;
 
-import java.rmi.RemoteException;
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.BufferedOutputStream;
-import java.io.FileOutputStream;
 import java.io.PrintWriter;
+import java.rmi.RemoteException;
 
 /**
  * This is our SOAP service
