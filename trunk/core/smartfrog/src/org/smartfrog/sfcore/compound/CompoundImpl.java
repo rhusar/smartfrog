@@ -189,8 +189,20 @@ public class CompoundImpl extends PrimImpl implements Compound {
         if (!sfIsTerminated) {
             comp = sfDeployComponentDescription(name, this, cmp, parms);
             // it is now a child, so need to guard against double calling of lifecycle...
-            if (sfIsDeployed) comp.sfDeploy(); // otherwise let the deploy of this component do it...
-            if (sfIsStarted) comp.sfStart(); // otherwise let the start of this component do it...
+            if (sfIsDeployed) {
+                try {
+                    comp.sfDeploy();
+                } catch (Exception ex) {
+                   throw SmartFrogLifecycleException.sfDeploy("Failed to create a new child.",ex,this);
+                }
+            } // otherwise let the deploy of this component do it...
+            if (sfIsStarted) {
+                try {
+                    comp.sfStart(); // otherwise let the start of this component do it...
+                } catch (Exception ex) {
+                   throw SmartFrogLifecycleException.sfStart("Failed to create a new child.",ex,this);
+                }
+            }
         }
         }
     } catch (Exception e) {
@@ -227,8 +239,19 @@ public class CompoundImpl extends PrimImpl implements Compound {
     Prim comp = null;
     try {
         comp = sfDeployComponentDescription(null, null, cmp, parms);
-        comp.sfDeploy();
-        comp.sfStart();
+
+        try {
+            comp.sfDeploy();
+        } catch (Exception ex) {
+           throw SmartFrogLifecycleException.sfDeploy("Failed to create a new child.",ex,this);
+        }
+
+        try {
+            comp.sfStart(); // otherwise let the start of this component do it...
+        } catch (Exception ex) {
+           throw SmartFrogLifecycleException.sfStart("Failed to create a new child.",ex,this);
+        }
+
     } catch (Exception e) {
         if (comp != null) {
         try {
@@ -334,25 +357,27 @@ public class CompoundImpl extends PrimImpl implements Compound {
      * @exception SmartFrogDeploymentException failed to deploy sub-components
      * @throws RemoteException In case of Remote/nework error
      */
-    public synchronized void sfDeployWith(Prim parent, Context cxt)
-                                throws SmartFrogDeploymentException, RemoteException {
+    public synchronized void sfDeployWith(Prim parent, Context cxt) throws
+        SmartFrogDeploymentException, RemoteException {
+
         super.sfDeployWith(parent, cxt);
 
-    try { // if an exception is thrown in the super call - the termination is already handled
-        for (Enumeration e = sfContext().keys(); e.hasMoreElements();) {
-        Object key = e.nextElement();
-        Object elem = sfContext.get(key);
+        try { // if an exception is thrown in the super call - the termination is already handled
+            for (Enumeration e = sfContext().keys(); e.hasMoreElements(); ) {
+                Object key = e.nextElement();
+                Object elem = sfContext.get(key);
 
-                if ((elem instanceof ComponentDescription) &&
-            (((ComponentDescription) elem).getEager())) {
+                if ((elem instanceof ComponentDescription)&&
+                    (((ComponentDescription)elem).getEager())) {
                     sfDeployComponentDescription(key, this,
-                         (ComponentDescription) elem, null);
+                                                 (ComponentDescription)elem, null);
                 }
+            }
+        } catch (Exception sfex) {
+            new TerminatorThread(this, sfex, null).quietly().run();
+            throw (SmartFrogDeploymentException)SmartFrogDeploymentException.
+                forward(sfex);
         }
-    } catch (Exception sfex) {
-        new TerminatorThread(this, sfex, null).quietly().run();
-            throw (SmartFrogDeploymentException)SmartFrogDeploymentException.forward (sfex);
-    }
     }
 
     /**
