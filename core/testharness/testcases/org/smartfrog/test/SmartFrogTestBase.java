@@ -135,15 +135,23 @@ public abstract class SmartFrogTestBase extends TestCase {
                                             String containedExceptionName,
                                             String containedExceptionText) throws SmartFrogException,
             RemoteException, UnknownHostException, SFGeneralSecurityException {
+
         startSmartFrog();
         ConfigurationDescriptor cfgDesc =
                 createDeploymentConfigurationDescriptor(appName, testURL);
+
         Object deployedApp = null;
         Throwable resultException = null;
         try {
             //Deploy and don't throw exception. Exception will be contained
             // in a ConfigurationDescriptor.
             deployedApp = SFSystem.runConfigurationDescriptor(cfgDesc,false);
+            System.out.println("\n"+"* Test failure in description: \n    "+cfgDesc.toString("\n    ")+"\n"
+                                   +"  - searching for: "+searchString+"\n"
+                                   +"  - exception name: "+containedExceptionName+"\n"
+                                   +"  - exception text: "+containedExceptionText+"\n"
+                                   );
+
             if ((deployedApp instanceof ConfigurationDescriptor) &&
                     (((ConfigurationDescriptor) deployedApp).resultException != null)) {
                 searchForExpectedExceptions(deployedApp, cfgDesc, exceptionName,
@@ -299,6 +307,10 @@ public abstract class SmartFrogTestBase extends TestCase {
             if (deployedApp instanceof Prim) {
                 return ((Prim) deployedApp);
             } else if (deployedApp instanceof ConfigurationDescriptor) {
+                System.out.println("\n    "
+                            +"* ERROR IN: Test success in description: \n        "
+                            +((ConfigurationDescriptor)deployedApp).toString("\n        ")
+                               );
                 Throwable exception = ((ConfigurationDescriptor)deployedApp).
                         resultException;
                 if (exception!=null); {
@@ -323,6 +335,9 @@ public abstract class SmartFrogTestBase extends TestCase {
                         ConfigurationDescriptor.Action.DEPLOY,
                         hostname,
                         null);
+        System.out.println("\n"+"* Test success in description: \n    "+cfgDesc.toString("\n    ")
+                               );
+
         Object deployedApp = SFSystem.runConfigurationDescriptor(cfgDesc,true);
         return deployedApp;
     }
