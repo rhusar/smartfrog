@@ -108,7 +108,7 @@ public class SFSlpEventAdvertiserImpl extends EventPrimImpl implements Prim, SFS
             }
         }
     }
-    
+
     public synchronized void sfTerminateWith(TerminationRecord tr) {
         // deregister the component.
         try {

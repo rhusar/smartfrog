@@ -37,18 +37,18 @@ import org.smartfrog.services.comm.slp.util.SLPUtil;
 
 /**
     This class represents a service type request message.
- 
+ <pre>
   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  |       Service location header (function = SrvTypeRqst = 9)    |
  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- |    Length of <PRList>         |         <PRList> string       \
+ |     Length of PRList          |           PRList string       \
  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  |  length og naming authority   |    Naming authority string    \
  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- |  Lenggth of <scope-list>      |        <scope-list>           \
+ |    Length of scope-list       |         scope-list            \
  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- 
+ </pre>
 */
 public class SLPSrvTypeReqMessage extends SLPMessageHeader {
     /** List of previous responders */

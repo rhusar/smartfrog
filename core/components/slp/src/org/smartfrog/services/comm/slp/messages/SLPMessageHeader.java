@@ -41,7 +41,7 @@ import java.util.Iterator;
 /**
 This class represents an SLP Message header as defined in RFC2608.
 This is also the base class for all SLP message classes.
- 
+ <pre>
   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  |   Version     |  Function-ID  |            Length             |
@@ -52,6 +52,7 @@ This is also the base class for all SLP message classes.
  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  |      Language Tag Length      |      Language Tag             \
  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ </pre>
  */
 public class SLPMessageHeader {
     /**********************************/

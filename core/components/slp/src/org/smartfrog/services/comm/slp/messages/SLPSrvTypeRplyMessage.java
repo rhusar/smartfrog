@@ -38,16 +38,16 @@ import java.io.IOException;
 
 /**
     This class represents a service type reply message.
- 
+ <pre>
   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  |      Service location header (function = SrvTypeRply = 10)    |
  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- |       Error code              |   length of <srvType-list>    |
+ |       Error code              |    length of srvType-list     |
  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- |                       <srvType-list>                          \
+ |                        srvType-list                           \
  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- 
+ </pre>
 */
 public class SLPSrvTypeRplyMessage extends SLPMessageHeader {
     /** The SLP error code.*/

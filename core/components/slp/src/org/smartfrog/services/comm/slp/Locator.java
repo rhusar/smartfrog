@@ -30,7 +30,7 @@ package org.smartfrog.services.comm.slp;
 import java.util.*;
 /**
  * The Locator interface allows user agent objects to query for service URLs,
- * service types or service types through different filters.
+ * service types or service attributes.
  */
 public interface Locator {
 /**

@@ -40,7 +40,7 @@ import java.io.*;
     This class represents a DAAdvert message as defined in RFC2608.
     It offers the ability to write a DAAdvert message to an output stream
     and read data into a message from a input stream.
- 
+ <pre>
   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  |        Service Location header (function = DAAdvert = 8)      |
@@ -51,15 +51,15 @@ import java.io.*;
  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  |                              URL                              \
  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- |   Length of <scope-list>      |           <scope-list>        \
+ |    Length of scope-list       |            scope-list         \
  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- |  Length of <attr-list>        |           <attr-list>         \
+ |   Length of attr-list         |            attr-list          \
  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- |  Length of <SLP SPI List>     |     <SLP SPI LIST> string     \
+ |   Length of SLP SPI List      |      SLP SPI LIST string      \
  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  | # Auth Blocks |          Authentication blocks (if any)       \
  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- 
+ </pre>
  Note that Authentication blocks are not currently supported in this
  implementation.
  

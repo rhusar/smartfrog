@@ -32,16 +32,14 @@ SFSlpPrimAdvertiser extends SFSlpAdvertiser {
     // implementation
     sfClass "org.smartfrog.services.comm.slp.SFSlpPrimAdvertiserImpl";
     
-    concreteType ""; // the concrete service type.
-    // complete service type will be service:sf-prim:concreteType
-  
-    serviceType ("service:sf-prim:" ++ concreteType);
-    referenceServiceType ("service:sf-reference:" ++ concreteType);
+    /*
+    For the Prim advertiser, the attributes should be as follows:
+    serviceTypes ["type1", "type2", ...] // Each type is a single word.
+    toAdvertise [LAZY comp1, LAZY comp2, ...] // the components to advertise.
     
-    advertiseComponent true;
-    advertiseReference false;
-        
-    //toAdvertise LAZY...; // The component to advertise.
-                    // The ServiceURL will be automatically created to match this.
+    Attributes and lifetimes are as for the generic advertiser.
+    The service type will automatically become service:sf-prim:<type>
+    where <type> is what you specify in the serviceTypes vector. This may be an empty String.
+    */
 }
 

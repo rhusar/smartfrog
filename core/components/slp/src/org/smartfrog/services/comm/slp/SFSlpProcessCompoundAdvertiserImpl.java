@@ -27,6 +27,7 @@
 package org.smartfrog.services.comm.slp;
 
 import java.rmi.RemoteException;
+import java.util.Vector;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
@@ -44,15 +45,33 @@ public class SFSlpProcessCompoundAdvertiserImpl extends SFSlpAdvertiserImpl
     }
     
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
-        super.sfDeploy();
         // find the process compound to advertise.
         String procName = sfDeployedProcessName();
         String procHost = sfDeployedHost().getHostAddress();
     
         // build the service location...
-        serviceLocation = procHost+"/"+procName;
+        Vector toAdv = new Vector();
+        toAdv.add(procHost+"/"+procName);
         
-        //System.out.println("PC Location: " + serviceLocation);
+        // replace toAdvertise attribute
+        sfRemoveAttribute(ATTRIB_TO_ADVERTISE);
+        sfAddAttribute(ATTRIB_TO_ADVERTISE, toAdv);
+        
+        super.sfDeploy();        
+    }
+        
+    protected void buildURLs(Vector toAdvertise, Vector serviceTypes, Vector lifetimes) throws SmartFrogException, RemoteException {
+        String location = (String)toAdvertise.firstElement();
+        String srvType = (String)serviceTypes.firstElement();
+        int lifetime = ((Integer)lifetimes.firstElement()).intValue();
+            
+        // create service type
+        if(srvType.equals("")) srvType = PC_SERVICE_TYPE;
+        else srvType = PC_SERVICE_TYPE+":"+srvType;
+            
+        // create URL.
+        ServiceURL url = new ServiceURL(srvType+"://"+location, lifetime);
+        serviceURLs.add(url);
     }
 }
 

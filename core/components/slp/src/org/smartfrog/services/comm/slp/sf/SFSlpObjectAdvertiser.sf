@@ -31,16 +31,6 @@
 SFSlpObjectAdvertiser extends SFSlpAdvertiser {
     // implementation
     sfClass "org.smartfrog.services.comm.slp.SFSlpObjectAdvertiserImpl";
-    
-    concreteType ""; // the concrete service type.
-    // complete service type will be service:concreteType
-    // The concreteType can here include the abstract type
-    // i.e. <abstract_type>:<concrete_type> 
-    // or just <abstract_type>
-    
-    serviceType ("service:" ++ concreteType);
-        
-    //toAdvertise LAZY...; // The object to advertise.
-                    // The ServiceURL will be automatically created to match this.
+
 }
 
