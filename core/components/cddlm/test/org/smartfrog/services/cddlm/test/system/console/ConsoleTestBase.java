@@ -64,11 +64,22 @@ public abstract class ConsoleTestBase extends TestCase {
         if (portName != null) {
             port = Integer.parseInt(portName);
         }
-        URL url = new URL("http", host, port, path);
+        URL url = new URL(Constants.DEFAULT_PROTOCOL, host, port, path);
         binding = new ServerBinding();
         binding.setUrl(url);
+    }
 
-
+    /**
+     * create a server bound to an invalid host
+     * @return
+     * @throws IOException
+     */
+    protected ServerBinding bindToInvalidHost()  throws IOException {
+        URL url=new URL(Constants.DEFAULT_PROTOCOL,
+                "invalid-host",
+                Constants.DEFAULT_SERVICE_PORT,
+                Constants.DEFAULT_PATH);
+        return new ServerBinding(url);
     }
 
     /**

@@ -22,6 +22,7 @@
 package org.smartfrog.services.cddlm.test.system.console;
 
 import org.apache.axis.types.URI;
+import org.apache.axis.Constants;
 import org.cddlm.client.console.ShowServerStatus;
 import org.cddlm.client.generated.api.types.DynamicServerStatusType;
 import org.cddlm.client.generated.api.types.ServerInformationType;
@@ -29,6 +30,7 @@ import org.cddlm.client.generated.api.types.ServerStatusType;
 import org.cddlm.client.generated.api.types.StaticServerStatusType;
 
 import java.rmi.RemoteException;
+import java.io.IOException;
 
 /**
  * Date: 01-Sep-2004 Time: 11:16:43
@@ -86,4 +88,31 @@ public class ServerStatusTest extends ConsoleTestBase {
         return status.getDynamic();
     }
 
+    public void testConsoleErrorsArePrinted() throws IOException {
+        operation = new ShowServerStatus(bindToInvalidHost(), getOut());
+        executeExpectingOutput(Constants.FAULT_SERVER_USER);
+    }
+
+    private void executeExpectingOutput(final String search) {
+        String text = execute();
+        assertInText(text, search);
+    }
+
+    private String execute() {
+        operation.doExecute();
+        String text = getOutputBuffer();
+        return text;
+    }
+
+    private static void assertInText(String source, String search) {
+        assertTrue("not found [" + search + "] in " + source,
+                source.indexOf(search) >= 0);
+    }
+
+    public void testSuccessIsPrinted() throws IOException {
+        String text = execute();
+        assertInText(text, "Connecting to");
+        assertInText(text, "SmartFrog/1.0");
+        assertInText(text, "cddlm-prototype");
+    }
 }
