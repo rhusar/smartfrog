@@ -482,20 +482,18 @@ public class CompoundImpl extends PrimImpl implements Compound {
                     } catch (Throwable thr){
                         String name = "";
                         try {name =((Prim)elem).sfCompleteName().toString();} catch (Exception ex) {};
-                        SmartFrogLifecycleException sflex = SmartFrogLifecycleException.sfDeploy(name ,thr,this);
+                        SmartFrogLifecycleException sflex = SmartFrogLifecycleException.sfDeploy(name ,thr,(Prim)this);
+                        String classFailed = ((Prim) elem).sfResolve(SmartFrogCoreKeys.SF_CLASS,"",false);
                         sflex.add(SmartFrogLifecycleException.DATA,
-                                "Failed object class: "+((Prim) elem).sfResolve(SmartFrogCoreKeys.SF_CLASS,"",false));
+                                "Failed object class: "+ classFailed);
                         throw sflex;
                     }
                 }
             }
-        } catch (SmartFrogException sfex){
-            //log
-            sfGetProcessLog().error("caught on deployment", sfex);
-            throw sfex;
         } catch (Throwable thr) {
-            sfGetProcessLog().error("caught on deployment", thr);
-            throw SmartFrogLifecycleException.sfDeploy(null,thr, (Prim)this);
+            Reference name = sfCompleteNameSafe();
+            sfGetProcessLog().error("caught on deployment ("+name.toString()+")", thr);
+            throw SmartFrogLifecycleException.forward(thr);
         }
     }
     /**
@@ -507,9 +505,8 @@ public class CompoundImpl extends PrimImpl implements Compound {
      * @throws RemoteException In case of Remote/nework error
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
-        super.sfStart();
-
         try {
+            super.sfStart();
             for (Enumeration e = sfChildren(); e.hasMoreElements();) {
                 Object elem = e.nextElement();
 
@@ -529,8 +526,8 @@ public class CompoundImpl extends PrimImpl implements Compound {
          } catch (Throwable thr) {
                // any exception causes termination
                Reference name = sfCompleteNameSafe();
-               sfTerminate(TerminationRecord.abnormal("Compound sfStart failure: " + thr,
-                                  name));
+               sfTerminate(TerminationRecord.abnormal("Compound sfStart failure: " + thr, name));
+               sfGetProcessLog().error("caught on start ("+name.toString()+")", thr);
                throw SmartFrogLifecycleException.forward(thr);
          }
     }

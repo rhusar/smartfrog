@@ -140,7 +140,8 @@ public class SmartFrogResolutionException extends SmartFrogRuntimeException
                                String reason, Object data) {
       super(reason);
       if ((ref!=null))put(REFERENCE,ref.copy());
-      if ((source!=null)) put(SOURCE,source.copy());
+//      if ((source!=null)) put(SOURCE,source.copy());
+      if ((source!=null)) put(SOURCE,source.copy().toString());
       if (data!=null) put(DATA,data.toString());
       //addCallerInfo(4);
     }
@@ -397,9 +398,15 @@ public class SmartFrogResolutionException extends SmartFrogRuntimeException
             &&(((Reference)this.get(REFERENCE)).size()!=0))) ? (nm+
                 MessageUtil.formatMessage(MSG_UNRESOLVED_REFERENCE)+ ": " +
                     get(REFERENCE)) : "" );
+
+//        strb.append((((this.containsKey(SOURCE)&&(this.get(SOURCE)!=null)
+//                            &&(((Reference)this.get(SOURCE)).size()!=0)))
+//                               ? (nm+SOURCE+  ": " + get(SOURCE)) : "" ));
         strb.append((((this.containsKey(SOURCE)&&(this.get(SOURCE)!=null)
-                            &&(((Reference)this.get(SOURCE)).size()!=0)))
+                             &&((this.get(SOURCE)).toString().length()!=0)))
                                ? (nm+SOURCE+  ": " + get(SOURCE)) : "" ));
+
+
         strb.append((((this.containsKey(REFERENCE_OBJECT_RESOLVED))) ?
                     (nm+REFERENCE_OBJECT_RESOLVED+  ": '" + get(REFERENCE_OBJECT_RESOLVED)+"'") : "" ));
         strb.append((((this.containsKey(REFERENCE_OBJECT_CLASS_TYPE))) ?
