@@ -139,7 +139,8 @@ For more information: www.smartfrog.org
 
  <target name="clean" depends="init,common.clean" description="clean up build ,dist and releases" >
     <property name="releases.dir" value="releases"/>
-    <delete dir="${releases.dir}"  />  
+    <delete dir="${releases.dir}"  />
+    <delete dir="test"  />    
  </target>  
 
 
