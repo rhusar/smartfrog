@@ -140,7 +140,7 @@ For more information: www.smartfrog.org
   <!-- and do not complain if it could not start (or execution timed out) -->
   <!-- ========================================================== -->
   <target name="start-daemon-if-needed-with-logging"
-    depends="use-smartfrog-tasks,probe-local-daemon"
+    depends="use-smartfrog-tasks,probe-local-daemon,declare-extended-smartfrog-tasks"
     unless="local.daemon.running">
       <property name="config.dir"
           location="${test.classes.dir}/org/smartfrog/test/configuration" />
