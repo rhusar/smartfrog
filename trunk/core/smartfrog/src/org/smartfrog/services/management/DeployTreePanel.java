@@ -116,7 +116,10 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener {
         jSplitPane1.setResizeWeight(0.3);
         jSplitPane1.setDividerLocation(200);
         systemViewTree.addMouseListener(new java.awt.event.MouseAdapter() {
-                public void mouseClicked(MouseEvent e) {
+                public void mouseReleased(MouseEvent e) {
+                    systemViewTree_mouseClicked(e);
+                }
+                public void mousePressed(MouseEvent e) {
                     systemViewTree_mouseClicked(e);
                 }
             });
@@ -142,7 +145,10 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener {
         statusPanel.add(completeName, BorderLayout.SOUTH);
         this.add(jSplitPane1, BorderLayout.CENTER);
         table.addMouseListener(new java.awt.event.MouseAdapter() {
-                public void mouseClicked(MouseEvent e) {
+                public void mouseReleased(MouseEvent e) {
+                    table_mouseClicked(e);
+                }
+                public void mousePressed(MouseEvent e) {
                     table_mouseClicked(e);
                 }
             });
@@ -271,8 +277,9 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener {
      *@param  e  Mouse event
      */
     void systemViewTree_mouseClicked(MouseEvent e) {
-        if (e.getModifiers() == Event.META_MASK) {
-            // Make the jPopupMenu visible relative to the current mouse position in the container.
+        if (e.isPopupTrigger()) {
+            // Make the jPopupMenu visible relative to the current mouse
+            // position in the container.
             this.treePopUp.show(this.systemViewTree, e.getX(), e.getY(), this);
         }
     }
@@ -288,19 +295,16 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener {
             this.jTextArea1.setText("* Attribute: " + value.toString());
             value = this.table.getValueAt(this.table.getSelectedRow(), 1);
             this.jTextArea1.append("\n* Value: \n" + value.toString());
-
             //Only gets class when the value is not a reference converted to string.
             if (!this.jTextArea1.getText().endsWith(".Reference")) {
                 this.jTextArea1.append("\n\n" + "+ Value class:" +
                     value.getClass().toString());
             }
-
-            //System.out.println("Row: "+this.table.getSelectedRow());
         } catch (Exception ex) {
             //ex.printStackTrace();
         }
 
-        if (e.getModifiers() == Event.META_MASK) {
+        if (e.isPopupTrigger()) {
             // Make the jPopupMenu visible relative to the current mouse position in the container.
             this.tablePopUp.show(this.systemViewTree, this.table, e.getX(),
                 e.getY(), this);
