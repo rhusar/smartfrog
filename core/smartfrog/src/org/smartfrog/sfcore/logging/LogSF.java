@@ -8,7 +8,7 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
  * logging.
  *
  */
-public interface LogSF extends Log, LogMessage, LogRegistration {
+public interface LogSF extends Log, LogMessage {
 
     /** "IGNORE" level logging. */
     public static final int LOG_LEVEL_IGNORE  = 0;
