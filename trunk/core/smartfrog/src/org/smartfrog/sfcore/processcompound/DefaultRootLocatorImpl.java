@@ -164,36 +164,15 @@ public class DefaultRootLocatorImpl implements RootLocator, MessageKeys {
      */
     public ProcessCompound getRootProcessCompound(InetAddress hostAddress)
         throws Exception {
-        final ProcessCompound localCompound = SFProcess.getProcessCompound();
 
-        if(localCompound == null) {
-            throw new SmartFrogRuntimeException("No local process compound");
-        }
-        if (hostAddress == null) {
-            hostAddress = InetAddress.getLocalHost();
-        }
-
-        if (hostAddress.equals(InetAddress.getLocalHost()) &&
-                localCompound.sfIsRoot()) {
-            return localCompound;
-        }
-
-        Registry reg = SFSecurity.getRegistry(hostAddress.getHostAddress(),
-                getRegistryPort(localCompound));
-        ProcessCompound pc = (ProcessCompound) reg.lookup(defaultName);
-
-        // Get rid of the stub if local
-        if (pc.equals(localCompound)) {
-            return localCompound;
-        }
-
-        return pc;
+        return getRootProcessCompound (hostAddress, -1);
     }
 
     /**
      * Gets the root process compound for a given host on a specified port. If
      * the passed host is null the root process compound for the local host is
-     * looked up. Checks if the local process compound is equal to the
+     * looked up. If the passed port number is negative (ex.-1) the default port number (3800)
+     *  is  used. . Checks if the local process compound is equal to the
      * requested one, and returns the local object instead of the stub to
      * avoid all calls going through RMI
      *
@@ -209,24 +188,32 @@ public class DefaultRootLocatorImpl implements RootLocator, MessageKeys {
      */
     public ProcessCompound getRootProcessCompound(InetAddress hostAddress,
         int portNum) throws Exception {
+
         ProcessCompound localCompound = SFProcess.getProcessCompound();
+
+        if(localCompound == null) {
+            throw new SmartFrogRuntimeException("No local process compound");
+        }
 
         if (hostAddress == null) {
             hostAddress = InetAddress.getLocalHost();
         }
 
-        if ((localCompound != null) &&
-                hostAddress.equals(InetAddress.getLocalHost()) &&
-                localCompound.sfIsRoot()) {
+        if (portNum < 0){
+            portNum = getRegistryPort(localCompound);
+        }
+
+        if (hostAddress.equals(InetAddress.getLocalHost()) &&
+              localCompound.sfIsRoot()) {
             return localCompound;
         }
 
-        Registry reg = SFSecurity.getRegistry(hostAddress.getHostAddress(),
-                portNum);
+        Registry reg = SFSecurity.getRegistry(hostAddress.getHostAddress(), portNum);
+
         ProcessCompound pc = (ProcessCompound) reg.lookup(defaultName);
 
         // Get rid of the stub if local
-        if ((localCompound != null) && pc.equals(localCompound)) {
+        if (pc.equals(localCompound)) {
             return localCompound;
         }
 
