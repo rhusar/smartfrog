@@ -26,6 +26,9 @@ import java.rmi.RemoteException;
 
 import org.smartfrog.SFSystem;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.processcompound.ProcessCompound;
+import org.smartfrog.sfcore.processcompound.SFProcess;
+import org.smartfrog.sfcore.prim.Prim;
 
 /**
  * A base class for smartfrog tests
@@ -165,4 +168,40 @@ public abstract class SmartfrogTestBase extends TestCase {
     public void setHostname(String hostname) {
         this.hostname = hostname;
     }
+    /**
+     * Deploys an application and returns the refence to deployed application.
+     * TODO: deployAComponent should return reference to deployed application
+     * @param testURL  URL to test
+     * @param appName  Application name
+     * @return Reference to deployed application
+     * @throws RemoteException in the event of remote trouble. 
+     */
+    protected Prim deployExpectingSuccess(String testURL, String appName) 
+                                                    throws RemoteException {
+        Prim app = null;                                                    
+        try {
+            SFSystem.deployAComponent(hostname, testURL, appName, false);
+            app = getLocalApplicationReference(appName);
+        }catch (SmartFrogException sfEx) {
+            // should never throw exception
+            fail("Unable to deploy component, Error:"+ sfEx.getMessage());
+        }
+        return app;
+    }
+    
+    /**
+     * Gets reference to application deployed in local process compound.
+     * @param appName Application name deployed in process compound
+     * @return Reference to deployed application
+     * @throws SmartFrogException in the event of any trouble
+     * @throws RemoteException in the event of remote trouble. 
+     */
+    private Prim getLocalApplicationReference (String appName) 
+                                    throws SmartFrogException, RemoteException{
+        // get reference to process compound
+        ProcessCompound pc = SFProcess.getProcessCompound();
+        // get reference to application
+        Prim comp = (Prim) pc.sfResolveHere(appName);
+        return comp;
+    } 
 }
