@@ -72,7 +72,7 @@ public class OrderedHashtableTest extends TestCase {
     }
 
 
-    public void testSomething() throws Exception {
+    public void testIllegalCapacity() throws Exception {
         OrderedHashtable table = null;
         try {
             table = new OrderedHashtable(-4, -1);
