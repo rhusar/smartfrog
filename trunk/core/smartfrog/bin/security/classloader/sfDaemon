@@ -7,7 +7,7 @@ echo "Usage: sfDaemon"
 exit
 fi
 export CLASSPATH=$SFHOME/signedLib/smartfrog.jar:$SFHOME$/signedLib/sfServices.jar:$SFHOME/signedLib/sfTestCases.jar:$CLASSPATH
-export SERVER=eb97201.india.hp.com:8080
+export SERVER=localhost:8080
 #Please edit codease if you have any other jar file in wedserver
 export CODEBASE="http://$SERVER/sfExamples.jar"
 

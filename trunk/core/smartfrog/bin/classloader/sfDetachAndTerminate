@@ -5,7 +5,7 @@ echo "Usage: sfDetachAndTerminate HostName ComponentName"
 exit
 fi
 export CLASSPATH=$SFHOME/lib/smartfrog.jar:$SFHOME/lib/sfServices.jar:$SFHOME/lib/sfTestCases.jar:$CLASSPATH
-export SERVER=eb97201.india.hp.com:8080
+export SERVER=localhost:8080
 # Please dit codebase if you have any other jar file in webserver
 export CODEBASE="http://$SERVER/sfExamples.jar"
 
