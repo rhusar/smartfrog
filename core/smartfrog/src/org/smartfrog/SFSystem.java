@@ -162,7 +162,7 @@ public class SFSystem implements MessageKeys {
         System.setProperties(sysProps);
 
         if (sflog().isTraceEnabled()){
-            sflog().trace("New system properties: " +sysProps.toString());
+            sflog().trace("New system properties: \n" +sysProps.toString().replace(',','\n'));
         }
     }
 
