@@ -35,16 +35,16 @@ import java.rmi.RemoteException;
 import java.util.Date;
 
 /**
- * Date: 16-Sep-2004
- * Time: 21:03:30
+ * Date: 16-Sep-2004 Time: 21:03:30
  */
-public class Listen extends ConsoleOperation implements DeploymentCallbackEndpoint {
+public class Listen extends ConsoleOperation
+        implements DeploymentCallbackEndpoint {
 
     _lifecycleEventCallbackRequest lastMessage;
 
     int messageCount = 0;
 
-    int timeout = 0 ;
+    int timeout = 0;
 
     public Listen(ServerBinding binding, PrintWriter out, String[] args) {
         super(binding, out);
@@ -78,8 +78,8 @@ public class Listen extends ConsoleOperation implements DeploymentCallbackEndpoi
     }
 
     /**
-     * execute this operation, or throw a remote exception
-     * when we return, it is because we timed out
+     * execute this operation, or throw a remote exception when we return, it is
+     * because we timed out
      *
      * @throws java.rmi.RemoteException
      */
@@ -88,7 +88,7 @@ public class Listen extends ConsoleOperation implements DeploymentCallbackEndpoi
         try {
             server.start();
         } catch (Exception e) {
-            throw new WrappedException(null,e);
+            throw new WrappedException(null, e);
         }
         String identifier = null;
 
@@ -108,19 +108,19 @@ public class Listen extends ConsoleOperation implements DeploymentCallbackEndpoi
 
             }
             //now unsubscribe
-            setCddlmCallback(getUri(), null, null);
+            setUnsubscribeCallback(getUri());
         } finally {
             //shutdown code
             server.stop();
-            if ( identifier != null ) {
+            if (identifier != null) {
                 CallbackServer.removeMapping(identifier);
             }
         }
     }
 
     /**
-     * useful little override point for testing
-     * the cddlm callback has already been set at this point
+     * useful little override point for testing the cddlm callback has already
+     * been set at this point
      */
 
     protected void aboutToWait() {
@@ -134,7 +134,8 @@ public class Listen extends ConsoleOperation implements DeploymentCallbackEndpoi
      * @return
      * @throws RemoteException
      */
-    public synchronized boolean callback(_lifecycleEventCallbackRequest callback) throws RemoteException {
+    public synchronized boolean callback(
+            _lifecycleEventCallbackRequest callback) throws RemoteException {
         messageCount++;
         lastMessage = callback;
         processCallback(callback);
@@ -149,19 +150,19 @@ public class Listen extends ConsoleOperation implements DeploymentCallbackEndpoi
      */
     protected void processCallback(_lifecycleEventCallbackRequest callback) {
         BigInteger timestamp = callback.getTimestamp();
-        if(timestamp!=null) {
+        if (timestamp != null) {
             long utc = timestamp.longValue();
             Date date = new Date(utc * 1000);
             out.println("time:   " + date.toString());
         }
         ApplicationStatusType status = callback.getStatus();
         out.println("event:  " + status.getState());
-        if ( status.getStateInfo() != null ) {
+        if (status.getStateInfo() != null) {
             out.println("info :" + status.getStateInfo());
         }
-        if ( status.getExtendedState() != null ) {
+        if (status.getExtendedState() != null) {
             MessageElement[] any = status.getExtendedState().get_any();
-            for ( int i = 0; i < any.length; i++ ) {
+            for (int i = 0; i < any.length; i++) {
                 out.println(any[i].toString());
             }
         }
@@ -169,16 +170,19 @@ public class Listen extends ConsoleOperation implements DeploymentCallbackEndpoi
     }
 
     /**
-     * if we have a message, return immediately, else suspend till a message arrives
+     * if we have a message, return immediately, else suspend till a message
+     * arrives
+     *
      * @param timeout
      * @return true if there is a message
      * @throws InterruptedException
      */
-    public synchronized boolean  blockForMessages(long timeout) throws InterruptedException {
-        if(messageCount<=0) {
+    public synchronized boolean blockForMessages(long timeout)
+            throws InterruptedException {
+        if (messageCount <= 0) {
             wait(timeout);
         }
-        return messageCount>0;
+        return messageCount > 0;
     }
 
     /**
@@ -213,7 +217,8 @@ public class Listen extends ConsoleOperation implements DeploymentCallbackEndpoi
         public WrappedException(String s) {
             super(s);
         }
-        public WrappedException(String s,Throwable cause) {
+
+        public WrappedException(String s, Throwable cause) {
             super(s);
             initCause(cause);
         }
