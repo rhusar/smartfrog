@@ -20,20 +20,19 @@ Computer Science"} - Ted Neward. He means that it's a problem you can
 never declare victory over, merely invest more and more effort to get
 deeper into the quagmire.
 %http://www.neward.net/ted/weblog/index.jsp?date=20041003#1096871640048
-}
-There is less experience in mapping between XML and objects, and
+}.  There is less experience in mapping between XML and objects, and
 rather than drawing on the experiences of the many failed attempts at
 O/R mapping problem, O/X mapping technologies appear destined to share
 a similar evolution.
 
 At first glance, O/X mapping appears simple: create a Java object
 for each XML element, building a DAG\footnote{directed, acyclic graph}
-when serializing to rpc/encoded SOAP or a tree with document/literal
+when serializing to rpc/encoded SOAP or a tree with doc/lit
 messages. Read or write between attributes and class fields, bind to
 children and the conversion is complete. If only it were so
 straightforward. Here are just some of the problems:
 
-\emph{ideally each of these is discussed in a separate subsection
+\todo{ideally each of these is discussed in a separate subsection
 the list should be adapted to be exhaustive. we can omit detail
 discussion of any that are especially obvious.}
 
@@ -42,15 +41,11 @@ discussion of any that are especially obvious.}
 \item deciding which classes to use for an endpoint, and
 deciding which XML elements to use for a Java class. 
 
-\item deciding which types to use for the XML encoding. In rpc/encoded messages,
+\item deciding which types to use for the XML encoding. In rpc/enc messages,
 this type must be explicitly declared from the small set of possible types. In
-document/literal messages, the type is omitted in messages. 
+doc/lit messages, the type is omitted in messages. 
 
-\item determining the XML names of types and values. In JAX-RPC, this is
-done through Java Introspection.
-
-\item Generating the WSDL description of a service and its types,
-again through Java Introspection.
+\item generating the WSDL description of service types through introspection.
 
 \item map from XML names to valid Java names.
 
@@ -69,7 +64,7 @@ Schema, it is simple to declare that a dog is a mammal with four legs,
 and a three legged dog is a restriction where the number of legs must
 be three.
 
-\emph{This section would benefit from a discussion of why the
+\todo{This section would benefit from a discussion of why the
 fundamental differences in the type systems of the two representations
 mean that mappings, if achieved, will always be unstable. Some of the
 enumeration discussion below could migrate in here, but the
@@ -78,7 +73,7 @@ enumeration discussion doesn't perhaps go far enough.}
 \subsubsection{Mapping XML QNames to Java Identifiers}
 \label{objections:o-x:names}
 
-\emph{Need to discuss the particular difficulties involved in mapping
+\todo{Need to discuss the particular difficulties involved in mapping
 XML QNames to Java identifiers, this will set the scene for the
 following discussion of enumerations}.
 
@@ -95,17 +90,17 @@ This is a simple example of how O/X mapping should work. Except, what if the
 value of the one of the enumeration types is a reserved word, such as in the
 lifecycle state machine we wrote:
 
-
- %<xsd:simpleType name="lifecycleStateEnum">
-%    <xsd:restriction base="xsd:string">
-%      <xsd:enumeration value="initialized"/>
-%      <xsd:enumeration value="running"/>
-%      <xsd:enumeration value="failed"/>
-%      <xsd:enumeration value="terminated"/>
-%      <xsd:enumeration value="null"/>
-%    </xsd:restriction>
-%  </xsd:simpleType>
-%$
+{\tt
+ <xsd:simpleType name="lifecycleStateEnum">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="initialized"/>
+      <xsd:enumeration value="running"/>
+      <xsd:enumeration value="failed"/>
+      <xsd:enumeration value="terminated"/>
+      <xsd:enumeration value="null"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+}
 
 One element in the enumeration is reserved, \verb|null|, so the
 enumeration must now enumerate all states as \verb|value1|,
@@ -139,7 +134,7 @@ without the code detecting a change.
 \subsubsection{Automatically Generating WSDL from Java}
 \label{objections:o-x:wsdl-gen}
 
-\emph{Why is Java2WSDL mapping hard? Why is it a bad idea? How is it
+\todo{Why is Java2WSDL mapping hard? Why is it a bad idea? How is it
 vulnerable to interopability problems or to brittleness problems?}
 
 \subsection{SOAP is not RMI}
