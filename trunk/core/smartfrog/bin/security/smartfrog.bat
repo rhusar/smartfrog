@@ -13,7 +13,7 @@ rem set SFDYNAMICCLASSLOADING_ON=ENABLED
 rem Security Enabled
 set SFSECURITY_ON=ENABLED
 
-call "%SFHOME%\bin\smartfrog"
+call "%SFHOME%\bin\smartfrog" %1 %2 %3 %4 %5 %6 %7 %8 %9
 
 endlocal
 
