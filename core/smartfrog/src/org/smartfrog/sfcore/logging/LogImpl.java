@@ -701,7 +701,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * @param message log this message
      */
     public void err(Object message, SmartFrogException t, TerminationRecord tr){
-       err(message,t);
+       err(message,(Throwable)t);
        System.err.println(tr.toString());
     }
 
@@ -724,7 +724,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * @param message log this message
      */
     public void trace(Object message, SmartFrogException t, TerminationRecord tr){
-        trace(message,t);
+        trace(message, (Throwable)t);
     }
 
 
@@ -735,7 +735,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * @param t log this cause
      */
     public void trace(Object message, SmartFrogException t){
-        trace(message,t);
+        trace(message,(Throwable)t);
     }
 
 
@@ -745,7 +745,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * @param message log this message
      */
     public void debug(Object message, SmartFrogException t, TerminationRecord tr){
-        debug(message,t);
+        debug(message,(Throwable)t);
     }
 
 
@@ -756,7 +756,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * @param t log this cause
      */
     public void debug(Object message, SmartFrogException t){
-        debug(message,t);
+        debug(message,(Throwable)t);
     }
 
 
@@ -766,7 +766,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * @param message log this message
      */
     public void info(Object message, SmartFrogException t, TerminationRecord tr){
-        info(message,t);
+        info(message,(Throwable)t);
     }
 
 
@@ -777,7 +777,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * @param t log this cause
      */
     public void info(Object message, SmartFrogException t){
-        info(message,t);
+        info(message,(Throwable)t);
     }
 
 
@@ -787,7 +787,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * @param message log this message
      */
     public void warn(Object message, SmartFrogException t, TerminationRecord tr){
-        warn(message,t);
+        warn(message,(Throwable)t);
     }
 
 
@@ -798,7 +798,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * @param t log this cause
      */
     public void warn(Object message, SmartFrogException t){
-        warn(message,t);
+        warn(message,(Throwable)t);
     }
 
 
@@ -808,7 +808,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * @param message log this message
      */
     public void error(Object message, SmartFrogException t, TerminationRecord tr){
-        error(message,t);
+        error(message,(Throwable)t);
     }
 
 
@@ -819,7 +819,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * @param t log this cause
      */
     public void error(Object message, SmartFrogException t){
-        error(message,t);
+        error(message,(Throwable)t);
     }
 
 
@@ -829,7 +829,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * @param message log this message
      */
     public void fatal(Object message, SmartFrogException t, TerminationRecord tr){
-        fatal(message,t);
+        fatal(message,(Throwable)t);
     }
 
 
@@ -840,7 +840,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * @param t log this cause
      */
     public void fatal(Object message, SmartFrogException t){
-        fatal(message,t);
+        fatal(message,(Throwable)t);
     }
 
 
