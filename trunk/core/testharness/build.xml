@@ -72,27 +72,42 @@ For more information: www.smartfrog.org
   <target name="init" depends="init-common,init-standard-output-dirs,use-smartfrog-tasks">
 
 
-    <!-- the compile time path -->
-    <path id="compile.classpath">
-      <path refid="smartfrog.classpath"/>
-    </path>
-
     <!-- test time path -->
-    <path id="test.classpath">
+<!--     <path id="test.classpath">
       <path refid="compile.classpath"/>
       <pathelement location="${test.classes.dir}"/>
-    </path>
+    </path> -->
 
     <property name="test.smartfrog.classesdir" location="${test.classes.dir}"/>
   </target>
 
+  <target name="declare-compile.classpath" depends="declare-base.compile.classpath" >  
+    <path id="compile.classpath">
+      <path refid="base.compile.classpath"/>
+      <pathelement location="${junit.jar}"/>
+    </path>    
+  </target>
+  
+  
+<!--   <target name="declare-tests.compile.classpath" 
+      depends="declare-exec.classpath,use-smartfrog-testharness" >  
+    <path id="tests.compile.classpath">
+      <path refid="exec.classpath"/>
+      <pathelement location="${junit.jar}"/>
+    </path>
+  </target>   -->
 
-
-
+  <!-- replace the normal test with a simple noop, because we will
+      not have the test harness around in the early stages of the build -->
+  <target name="assert-smartfrog-testharness" />
+  
+  <target name="compile-tests"
+      depends="package,declare-tests.compile.classpath,common.compile-tests"/>
+      
   <!-- ========================================================== -->
   <!-- compile the tests -->
   <!-- ========================================================== -->
-  <target name="compile"
+<!--   <target name="compile"
     depends="verify-smartfrog,init,init-common">
     <depend srcdir="${test.src.dir}"
       destdir="${test.classes.dir}"
@@ -105,18 +120,18 @@ For more information: www.smartfrog.org
       >
     </sf-javac-with-ant>
     <copy-useful-files src="${test.src.dir}" dest="${test.classes.dir}" />
-  </target>
+  </target> -->
 
   <!-- ========================================================== -->
   <!-- compile the RMI. This is separate from the other compile, so that unit
        tests dont depend on it -->
   <!-- ========================================================== -->
-  <target name="rmi"
-    depends="compile">
+  <target name="rmi-tests"
+    depends="compile-tests">
     <sf-rmic includesfile="rmitargets" 
       base="${test.classes.dir}"
       verify="true">
-      <classpath refid="compile.classpath"/>
+      <classpath refid="tests.compile.classpath"/>
     </sf-rmic>
   </target>
 
@@ -127,24 +142,26 @@ For more information: www.smartfrog.org
   <target name="start-daemon-if-needed-with-logging"
     depends="use-smartfrog-tasks,probe-local-daemon"
     unless="local.daemon.running">
+      <property name="config.dir"
+          location="${test.classes.dir}/org/smartfrog/test/configuration" />
       <property name="smartfrog.iniFile"
-            location="${test.classes.dir}/org/smartfrog/test/default.ini" />
+            location="${config.dir}/default.ini" />
       <available file="${smartfrog.iniFile}" property="inifile.found"/>
       <fail unless="inifile.found">No file:${smartfrog.iniFile}</fail> 
       <sf-startdaemon  failonerror="false">
         <sysproperty key="java.util.config.logging.config.file"
-          file="${test.classes.dir}/org/smartfrog/test/logging.properties" />
+          file="${config.dir}/logging.properties" />
         <sysproperty key="org.smartfrog.iniFile"
             file="${smartfrog.iniFile}" />
         <sysproperty key="org.smartfrog.sfcore.processcompound.sfDefault.sfDefault"
-          file="${test.classes.dir}/org/smartfrog/test/default.sf" />
+          file="${config.dir}/default.sf" />
       </sf-startdaemon>
   </target>
 
   <!-- ========================================================== -->
   <!-- run the unit tests tests -->
   <!-- ========================================================== -->
-  <target name="unit-tests" depends="compile"  unless="testcase"
+  <target name="unit-tests" depends="compile-tests"  unless="testcase"
     description="run unit tests">
     <sf-junit
            errorProperty="test.failed"
@@ -153,8 +170,7 @@ For more information: www.smartfrog.org
         <sysproperty key="test.smartfrog.classesdir"
             value="${test.smartfrog.classesdir}" />
       <classpath>
-        <path refid="compile.classpath"/>
-        <pathelement location="${test.classes.dir}"/>
+        <path refid="tests.run.classpath"/>
       </classpath>
       <batchtest todir="${test.data.dir}" if="unit.tests.enabled">
         <!-- bulk test case -->
@@ -176,7 +192,7 @@ For more information: www.smartfrog.org
        -->
   <!-- ========================================================== -->
   <target name="system-tests" 
-    depends="compile,rmi,jar, probe-local-daemon"
+    depends="compile-tests,rmi-tests,test-package, probe-local-daemon"
     description="run system tests"
     if="system.tests.enabled">
     <parallel>
@@ -204,8 +220,7 @@ For more information: www.smartfrog.org
             <sysproperty key="test.smartfrog.classesdir"
                 value="${test.smartfrog.classesdir}" />
           <classpath>
-            <path refid="compile.classpath"/>
-            <pathelement location="${test.classes.dir}"/>
+            <path refid="tests.run.classpath"/>
           </classpath>
           <!-- #Test case isolation technique -->
           <test name="${testcase}" if="testcase"/>
@@ -230,7 +245,7 @@ For more information: www.smartfrog.org
   <!-- creates a jar and sticks it into the smartfrog dist library -->
   <!-- this contains only the tests not the utility classes -->
   <!-- ========================================================== -->
-  <target name="jar" depends="compile"
+  <target name="test-package" depends="compile-tests"
     description="creates the jar file for the test cases">
     <!-- Create sfTestCases.jar file -->
     <property name="testcases.jar" value="sfTestCases.jar"/>
@@ -248,7 +263,7 @@ For more information: www.smartfrog.org
   <!-- create a redistributable testharness jar file -->
   <!-- this contains only the test utility classes, not the tests -->
   <!-- ========================================================== -->
-  <target name="dist" depends="compile"
+<!--   <target name="dist" depends="compile"
     description="creates the jar file for the testharness">
 
     <property name="testharness.core.jar" value="smartfrog-testharness.jar"/>
@@ -258,6 +273,6 @@ For more information: www.smartfrog.org
     <jar jarfile="${testharness.core.jar.file}"
          basedir="${test.classes.dir}"
          includes="org/smartfrog/test/*" />
-  </target>
+  </target> -->
 
 </project>

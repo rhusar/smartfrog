@@ -42,36 +42,21 @@ For more information: www.smartfrog.org
     depends="init-standard-output-dirs,use-smartfrog-tasks,use-smartfrog-testharness">
           
     <property name="deploy.sf" value="test/files/success.sf" />
-    
     <property name="default.ini" location="test/files/default.ini"/>
     <property name="default.sf" location="test/files/default.sf"/>
 
-    <path id="compile.classpath">
-      <path refid="smartfrog.classpath"/>
-      <pathelement location="${junit.jar}"/>
-    </path>
-    
-    <path id="exec.classpath">
-      <path refid="compile.classpath"/>
-      <pathelement location="${build.classes.dir}"/>
-    </path>    
-
-    <path id="tests.compile.classpath">
-      <path refid="exec.classpath"/>
-      <pathelement location="${testharness.jar}"/>
-    </path>
-   
-    <path id="tests.run.classpath">
-      <path refid="tests.compile.classpath"/>
-      <pathelement location="${test.classes.dir}"/>
-    </path>
-
-    <path id="run.classpath">
-      <path refid="tests.run.classpath"/>
-    </path>
-    
   </target>
-    
+  
+  
+  <!-- ========================================================== -->
+  <!-- declare our compile time classpath -->
+  <!-- ========================================================== -->
+  <target name="declare-compile.classpath" depends="declare-base.compile.classpath" >  
+    <path id="compile.classpath">
+      <path refid="base.compile.classpath"/>
+      <pathelement location="${junit.jar}"/>
+    </path>    
+  </target>
   
   <!-- ========================================================== -->
   <!-- parse the file -->
@@ -86,10 +71,19 @@ For more information: www.smartfrog.org
         </sf-parse>    
   </target>
 
+  
+    <!-- ========================================================== -->
+    <!-- set up any properties for deployment -->
+    <!-- ========================================================== -->
+    <target name="init-deploy-properties" depends="init">
+      <property name="deploy.host" value="localhost"/>
+      <property name="application.name" value="{project.name}"/>
+    </target>
+    
   <!-- ========================================================== -->
   <!-- deploy; requires a host -->
   <!-- ========================================================== -->
-  <target name="deploy" depends="dist" 
+  <target name="deploy0" depends="dist" 
     description="deploy">
      <property name="deploy.host" value="localhost"/>
       <sf-deploy classpathref="run.classpath"
@@ -101,22 +95,35 @@ For more information: www.smartfrog.org
       </sf-deploy>
   </target>  
 
-  <!-- ========================================================== -->
-  <!-- compile the tests -->
-  <!-- ========================================================== -->
-  <target name="compile-tests" 
-      depends="dist,use-smartfrog-testharness">
-      <!-- set up a new path with the tasks and testutil -->
-    <property name="test.src.dir" location="test/files"/>
-    <sf-javac-with-ant 
-      srcdir="${test.src.dir}"
-      destdir="${test.classes.dir}"
-      classpathref="tests.compile.classpath"
-      >
-    </sf-javac-with-ant>
-    <copy-useful-files src="${test.src.dir}" dest="${test.classes.dir}" />
-  </target>
   
+    <!-- ========================================================== -->
+    <!-- deploy; requires a host -->
+    <!-- ========================================================== -->
+    <target name="deploy" depends="dist,init-deploy-properties"
+        description="deploy">
+        <sf-tourl property="target.jar.url" file="${target.jar}">
+<!--           <filelist>
+            <file name="${junit.jar}"/>
+          </filelist>
+ -->        </sf-tourl>
+        <sf-tourl property="junit.jar.url" file="${junit.jar}"/>
+        <property name="codebase" 
+         value="${target.jar.url} ${junit.jar.url}" />
+        <echo> codebase= ${codebase}</echo>
+        <sf-deploy classpathref="run.classpath"
+            logStackTraces="true"
+            host="${deploy.host}"
+            >
+            <codebase url="${codebase}"/>
+            
+            <application name="${application.name}">
+              #include "/${deploy.sf}"
+              sfCodeBase PROPERTY org.smartfrog.codebase;         
+            </application>
+        </sf-deploy>
+    </target>
+    
+
   <!-- ========================================================== -->
   <!-- system tests -->
   <!-- ========================================================== -->

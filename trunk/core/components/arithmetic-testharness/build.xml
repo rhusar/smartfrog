@@ -31,8 +31,8 @@ For more information: www.smartfrog.org
   <property file="build.properties" />
 
 
-   <property name="arithmetic.testharness.lib.dir" location="lib" />
-       
+<!--    <property name="arithmetic.testharness.lib.dir" location="lib" />
+ -->       
   
   <property name="root.dir" location="../.."  />
     <!-- Import common stuff -->
@@ -44,7 +44,7 @@ For more information: www.smartfrog.org
   <target name="init" depends="init-standard-output-dirs,use-smartfrog-tasks">
           
     <!-- the compile time path includes axis-->
-    <path id="compile.classpath">
+<!--     <path id="compile.classpath">
       <path refid="smartfrog.classpath"/>
       <fileset dir="${arithmetic.testharness.lib.dir}">
         <include name="**/*.jar"/>
@@ -55,7 +55,7 @@ For more information: www.smartfrog.org
       <path refid="compile.classpath"/>
       <path location="${target.jar}" />
     </path>  
-    
+     -->
   </target> 
   
   <!-- ========================================================== -->
@@ -89,7 +89,7 @@ For more information: www.smartfrog.org
   <target name="dist" depends="common.dist" 
     description="create the jar files">
     <!--copy file ="${target.jar}"  todir="${smartfrog.dist.lib.dir}"/ -->
-    <copy-useful-files src="${arithmetic.testharness.lib.dir}" 
+    <copy-useful-files src="${lib.dir}" 
         dest="${dist.lib.dir}" pattern ="**/*.jar"/>   
   </target>
 

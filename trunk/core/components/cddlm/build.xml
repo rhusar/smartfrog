@@ -54,23 +54,22 @@
         <property name="default.ini" location="test/files/default.ini"/>
         <property name="default.sf" location="test/files/default.sf"/>
 
-        <property name="lib.dir" location="lib"/>
         <property name="generated.dir" location="build/generated"/>
 
         <!-- the compile time path includes everything in the lib directory. 
           that must include jdom and axis-->
-        <path id="compile.classpath">
+<!--         <path id="compile.classpath">
             <path refid="smartfrog.classpath"/>
 
             <fileset dir="${lib.dir}">
               <include name="**/*.jar"/>
             </fileset>
-        </path>
+        </path> -->
 
 
 
         <!-- set up the runtime path -->
-        <path id="run.classpath">
+<!--         <path id="run.classpath">
             <path refid="compile.classpath"/>
             <path location="${target.jar}"/>
         </path>
@@ -78,7 +77,7 @@
         <path id="test.classpath">
             <path refid="run.classpath"/>
             <pathelement location="${test.classes.dir}"/>
-        </path>
+        </path> -->
         
     </target>
     
@@ -109,7 +108,7 @@
             classpathref="compile.classpath"
             ignoresystemclasses="false"/>
         <property name="verify.fail.message"
-          value="No Axis found in ${axis.lib.dir}"/>    
+          value="No Axis found in ${lib.dir}"/>    
   </target>
   
   <!-- ========================================================== -->
@@ -138,12 +137,12 @@
     <!-- ========================================================== -->
     <target name="parse" depends="init,dist"
         description="parse the cddlm descriptor">
-
+<!-- 
         <sf-parse quiet="true" file="${src.dir}/${deploy.sf}">
-            <!--  <codebase file="${target.jar}"/> -->
+            
             <classpath path="${target.jar}"/>
         </sf-parse>
-
+ -->
     </target>
 
     <!-- ========================================================== -->
@@ -199,7 +198,7 @@
     <target name="deploy" depends="parse,dist,init-deploy-properties,undeploy"
         description="deploy">
         <sf-tourl property="target.jar.url" file="${target.jar}">
-            <fileset dir="${axis.lib.dir}">
+            <fileset dir="${lib.dir}">
                 <include name="**/*.jar"/>
             </fileset>
         </sf-tourl>
@@ -208,7 +207,7 @@
             logStackTraces="true"
             host="${deploy.host}"
             >
-            <sysproperty key="axis.home" file="${axis.lib.dir}" />
+            <sysproperty key="axis.home" file="${lib.dir}" />
             <codebase url="${target.jar.url}"/>
             
             <application name="${application.name}">

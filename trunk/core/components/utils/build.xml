@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="utils" default="default">
+<project name="utils" default="default" basedir=".">
 
 <!--
 /** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
@@ -29,34 +29,13 @@ For more information: www.smartfrog.org
 
    <!-- override point -->
   <property file="build.properties" />
-
-   <property name="utils.lib.dir" location="lib" description=
-                        "place to put third party libraries"/>
-       
+  <!-- for diagnostics of ant/subant interaction -->
+<!-- 
+  <echo>base dir ${basedir}</echo> -->
   
   <property name="root.dir" location="../.."  />
     <!-- Import common stuff -->
   <import file="${root.dir}/common.xml"/>
   
-  
-  <!-- ========================================================== -->
-  <!-- ========================================================== -->
-  <target name="init" depends="init-standard-output-dirs,use-smartfrog-tasks">
-          
-    
-    <!-- the compile time path includes -->
-    <path id="compile.classpath">
-      <path refid="smartfrog.classpath"/>
-      <!--fileset dir="${utils.lib.dir}">
-        <include name="**/*.jar"/>
-      </fileset-->
-    </path>
-    
-    <path id="run.classpath">
-      <path refid="compile.classpath"/>
-      <path location="${target.jar}" />
-    </path>  
-    
-  </target>
 
 </project>

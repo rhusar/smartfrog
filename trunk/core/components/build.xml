@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="components" default="default">
+<project name="components" default="default" basedir=".">
 
 <!--
 /** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
@@ -91,11 +91,11 @@ For more information: www.smartfrog.org
     -->
     
     <path id="component.path">
+      <pathelement location="${utils.project}"/>
       <pathelement location="${logger.project}"/>
       <pathelement location="${ssh.project}"/>
       <pathelement location="${net.project}"/>
       <pathelement location="${emailer.project}"/>
-      <pathelement location="${utils.project}"/>
       <pathelement location="${arithmetic-testharness.project}"/>
       <pathelement location="${junit.project}"/>
       <pathelement location="${jetty.project}"/>
@@ -139,6 +139,11 @@ component.path :=
     description="install all projects">
     <delegate target="maybe-install"/>
   </target>  
-  
+
+  <target name="diag2" depends="init"
+    description="diagnostics">
+    <delegate target="diag2"/>
+  </target>  
+    
   <target name="default" depends="dist"/>
 </project>

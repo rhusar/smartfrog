@@ -22,6 +22,7 @@ For more information: www.smartfrog.org
 */
 -->
 
+
   <target name="help" description="help information">
     <echo>
     This is a primary build file for SmartFrog, which delegates down to
@@ -30,22 +31,63 @@ For more information: www.smartfrog.org
     </echo>
   </target>
 
+    <!-- =================================================================== -->
+  <!-- any common initialisations                                          -->
+  <!-- =================================================================== -->
+  <target name="init">
+    <property file="build.properties" />
+    <!-- look for a feature that only came in in ant 1.7alpha -->
+    <available property="nice.task.present"
+      classname="org.apache.tools.ant.taskdefs.Nice" />
+    <property name="toplevel.dir" location=".." />
+    <property name="main.project" location="smartfrog" />
+    <property name="test.project" location="testharness" />
+    <property name="components.project" location="components" />
+    <property name="extras.dir" location="extras" />
+    <property name="ant.project" location="${extras.dir}/ant" />
+    <macrodef name="forward">
+     <attribute name="dir" />
+     <attribute name="target" />
+     <attribute name="inheritAll" default="false" />
+     <sequential>
+        <forward2 dir="@{dir}" target="@{target}" inheritAll="@{inheritAll}" />
+     </sequential>
+    </macrodef>
+    <macrodef name="forward2">
+     <attribute name="dir" />
+     <attribute name="target" />
+     <attribute name="inheritAll" default="false" />
+     <sequential>
+      <subant 
+        antfile="build.xml"
+        target="@{target}" inheritAll="@{inheritAll}"
+        inheritrefs="false">
+        <buildpathelement location="@{dir}"/> 
+      </subant>
+     </sequential>
+    </macrodef>
+  </target>
+  
   <!-- =================================================================== -->
   <!-- build a distribution of smartfrog.jar, sfExamples.jar               -->
   <!-- =================================================================== -->
   <target name="main-dist" depends="init" description="build a distribution">
-    <ant dir="${main.project}" target="dist" inheritAll="false" />
+    <forward2 dir="${main.project}" target="dist"  />
   </target>
-
-
+  
+  <!-- tracking down quirks in subant -->
+   <target name="diag2" depends="init" >
+    <forward2 dir="${components.project}" target="diag2"  /> 
+  </target>
+  
   <!-- =================================================================== -->
   <!-- clean all sub-projects                                              -->
   <!-- =================================================================== -->
   <target name="clean" depends="init" description="clean up">
-    <ant dir="${main.project}" target="clean" inheritAll="false" />
-    <ant dir="${test.project}" target="clean" inheritAll="false" />
-    <ant dir="${ant.project}" target="clean" inheritAll="false" />
-    <!-- <ant dir="${components.project}" target="clean" inheritAll="false" /> -->
+    <forward2 dir="${main.project}" target="clean"  />
+    <forward2 dir="${test.project}" target="clean"  />
+    <forward2 dir="${ant.project}" target="clean"  />
+    <forward2 dir="${components.project}" target="clean"  /> 
   </target>
 
   <!-- =================================================================== -->
@@ -53,7 +95,7 @@ For more information: www.smartfrog.org
   <!-- =================================================================== -->
 
   <target name="tasks" depends="init" description="ant tasks">
-    <ant dir="${ant.project}" target="dist" inheritAll="false" />
+    <forward2 dir="${ant.project}" target="dist"  />
   </target>
 
 
@@ -63,7 +105,7 @@ For more information: www.smartfrog.org
 
   <target name="components" depends="main-dist,tasks" 
     description="components distribution(s)">
-    <ant dir="${components.project}" target="dist" inheritAll="false" />
+    <forward2 dir="${components.project}" target="dist"  />
   </target>
 
   
@@ -79,14 +121,14 @@ For more information: www.smartfrog.org
   <!-- test in the ant project                                            -->
   <!-- =================================================================== -->
   <target name="test-ant" depends="init" description="test in main project">
-    <ant dir="${ant.project}" target="test" inheritAll="false" />
+    <forward2 dir="${ant.project}" target="test"  />
   </target>
 
   <!-- =================================================================== -->
   <!-- test in the main project                                            -->
   <!-- =================================================================== -->
   <target name="test-main" depends="init" description="test in main project">
-    <ant dir="${main.project}" target="sfParseTest" inheritAll="false" />
+    <forward2 dir="${main.project}" target="sfParseTest"  />
   </target>
 
 
@@ -95,9 +137,7 @@ For more information: www.smartfrog.org
   <!-- =================================================================== -->
   <target name="test-testharness" depends="init,tasks"
     description="test in test harness; only run system tests">
-    <ant dir="${test.project}" target="test" inheritAll="false" >
-      <!-- <property name="system.tests" value="false" /> -->
-    </ant>
+    <forward2 dir="${test.project}" target="test"  />
   </target>
 
   <!-- =================================================================== -->
@@ -105,8 +145,7 @@ For more information: www.smartfrog.org
   <!-- =================================================================== -->
   <target name="test-components" depends="init,tasks"
     description="test in test harness; only run system tests">
-    <ant dir="${components.project}" target="test" inheritAll="false" >
-    </ant>
+    <forward2 dir="${components.project}" target="test"  />
   </target>  
   
   <!-- =================================================================== -->
@@ -116,21 +155,7 @@ For more information: www.smartfrog.org
     description="test everything"/>
 
 
-  <!-- =================================================================== -->
-  <!-- any common initialisations                                          -->
-  <!-- =================================================================== -->
-  <target name="init">
-    <property file="build.properties" />
-    <!-- look for a feature that only came in in ant 1.7alpha -->
-    <available property="nice.task.present"
-      classname="org.apache.tools.ant.taskdefs.Nice" />
-    <property name="toplevel.dir" location=".." />
-    <property name="main.project" location="smartfrog" />
-    <property name="test.project" location="testharness" />
-    <property name="components.project" location="components" />
-    <property name="extras.dir" location="extras" />
-    <property name="ant.project" location="${extras.dir}/ant" />
-  </target>
+
 
   <!-- the following targets are for use in CruiseControl automated builds;
        rather than for normal command line/IDE work. -->
