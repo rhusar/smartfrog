@@ -118,6 +118,8 @@ public class SFSLPLocator extends PrimImpl implements Prim{
     }
     }catch (ServiceLocationException sle) {
         throw new SmartFrogResolutionException(sle);
+    }catch (SmartFrogRuntimeException sfrex){
+           throw new SmartFrogResolutionException(sfrex);
     }
     return res;
   }
@@ -185,7 +187,7 @@ public class SFSLPLocator extends PrimImpl implements Prim{
  *  - sfServiceQuery : a String query on the services attributes, or :
  *  - sfServiceAttributes : a ComponentDescription describing a set of attribute/value pairs to be matched.
  */
-  public synchronized ServiceLocationEnumeration discoverService(ComponentDescription serviceDescription) throws ServiceLocationException{
+  public synchronized ServiceLocationEnumeration discoverService(ComponentDescription serviceDescription) throws ServiceLocationException, RemoteException{
     Context serviceInfo = serviceDescription.getContext();
     serviceType = new ServiceType((String) serviceInfo.get("sfServiceType"));
     if (!serviceType.isServiceURL()) {
@@ -202,7 +204,11 @@ public class SFSLPLocator extends PrimImpl implements Prim{
   //  System.out.println(" Attempting to locate " + serviceType + " with scopes " + scopes + "matching "+ serviceQuery);
     ServiceLocationEnumeration results = getLocator().findServices(serviceType,scopes,serviceQuery);
     // and place them in the sfLocationResults attribute.
-    this.sfReplaceAttribute(refResults,results);
+    try { 
+        this.sfReplaceAttribute(refResults,results);
+    }catch (SmartFrogRuntimeException sfrex) {
+        throw new ServiceLocationException (sfrex.getMessage());
+    }
     return results;
   }
 
