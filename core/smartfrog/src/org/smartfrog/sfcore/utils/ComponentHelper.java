@@ -21,11 +21,11 @@ package org.smartfrog.sfcore.utils;
 
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.reference.Reference;
 
 import java.rmi.RemoteException;
 import java.util.logging.Logger;
+import java.util.logging.Level;
 
 /**
  * Contains methods for helping components; a factoring out of common functionality.
@@ -35,9 +35,9 @@ import java.util.logging.Logger;
 
 public class ComponentHelper {
 
-    private PrimImpl owner;
+    private Prim owner;
 
-    public ComponentHelper(PrimImpl owner) {
+    public ComponentHelper(Prim owner) {
         this.owner = owner;
     }
 
@@ -46,6 +46,7 @@ public class ComponentHelper {
      * as {@link Prim#sfTerminate} and {@link Prim#sfStart()} are synchronized,
      * the thread blocks until sfStart has finished.
      * Note that we detach before terminating; this stops our timely end propagating.
+     * @todo what about TerminatorThread; does that do this better?
      */
     public void targetForTermination() {
         //spawn the thread to terminate normally
@@ -58,7 +59,12 @@ public class ComponentHelper {
                     name = null;
 
                 }
-                owner.sfDetachAndTerminate(TerminationRecord.normal(name));
+                try {
+                    owner.sfDetachAndTerminate(TerminationRecord.normal(name));
+                } catch (RemoteException e) {
+                    //we cannot rethrow this as it is not in the signature of the interface
+                    logIgnoredException(e);
+                }
             }
         };
 
@@ -66,13 +72,23 @@ public class ComponentHelper {
     }
 
     /**
-     * get the relevant java1.4 logger for this component
+     * get the relevant java1.4 logger for this component.
+     * When logging against a remote class, this is probably the classname of the proxy.
      * @return
      */
     public Logger getLogger() {
         String classname=owner.getClass().getName();
+        //todo: we could opt to use the name of the prim instead.
         //String primname=owner.sfCompleteNameSafe();
         return Logger.getLogger(classname);
     }
 
+    /**
+     * ignore an exception by logging it at the fine level.
+     * @param thrown
+     */
+    public void logIgnoredException(Throwable thrown) {
+        Logger log=getLogger();
+        log.log(Level.FINE,"ignoring ",thrown);
+    }
 }
