@@ -22,9 +22,9 @@
 package org.smartfrog.services.cddlm.test.system.console;
 
 import junit.framework.TestCase;
+import org.apache.axis.AxisFault;
 import org.cddlm.client.common.Constants;
 import org.cddlm.client.common.ServerBinding;
-import org.apache.axis.AxisFault;
 
 import javax.xml.namespace.QName;
 import java.io.IOException;
@@ -145,7 +145,7 @@ public abstract class ConsoleTestBase extends TestCase {
     }
 
     protected static void assertInText(String source, String search) {
-        assertNotNull("empty source",source);
+        assertNotNull("empty source", source);
         assertTrue("not found [" + search + "] in " + source,
                 source.indexOf(search) >= 0);
     }
@@ -158,17 +158,33 @@ public abstract class ConsoleTestBase extends TestCase {
 
     /**
      * assert that a fault has the relevant properties
-     * @param fault fault received
+     *
+     * @param fault     fault received
      * @param faultCode fault code of the fault
-     * @param text optional text to look for in the reason
+     * @param text      optional text to look for in the reason
      */
-    public static void assertFaultMatches(AxisFault fault, final QName faultCode, final String text) {
-        assertEquals(faultCode, fault.getFaultCode());
+    public static void assertFaultMatches(AxisFault fault,
+                                          final QName faultCode,
+                                          final String text) {
+        String faultAsString = fault.dumpToString();
+        assertEquals(
+                "expected [" +
+                faultCode +
+                "] \nbut got\n[" +
+                fault.getFaultCode() +
+                "]\n" +
+                faultAsString,
+                faultCode, fault.getFaultCode());
         if (text != null) {
             String message = fault.getFaultReason();
-            String faultAsString=fault.dumpToString();
-            assertNotNull("fault reason is null in "+faultAsString, message);
-            assertTrue("expected [" + text + "] in " + message+" in \n"+faultAsString,
+            assertNotNull("fault reason is null in " + faultAsString, message);
+            assertTrue(
+                    "expected [" +
+                    text +
+                    "] in " +
+                    message +
+                    " in \n" +
+                    faultAsString,
                     message.indexOf(text) >= 0);
         }
     }

@@ -1,25 +1,112 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE faults [
-<!ELEMENT code (#PCDATA)>
 <!ELEMENT faultset (description|fault)*>
 <!ATTLIST faultset
     name CDATA #REQUIRED
-    namespace CDATA #REQUIRED
- >
-<!ELEMENT errormessage (#PCDATA)>
+    namespace CDATA #REQUIRED>
 <!ELEMENT fault (name|code|wiremessage|errormessage|documentation)*>
+<!ELEMENT int (description)*>
+<!ATTLIST int
+    name CDATA #REQUIRED
+    value CDATA #REQUIRED>
+<!ELEMENT code (#PCDATA)>
+<!ELEMENT constants (string|int|uri)*>
+<!ELEMENT string (description)*>
+<!ATTLIST string
+    name CDATA #REQUIRED
+    value CDATA #REQUIRED>
+<!ELEMENT errormessage (#PCDATA)>
+<!ELEMENT uri (description)*>
+<!ATTLIST uri
+    name CDATA #REQUIRED
+    value CDATA #REQUIRED>
 <!ELEMENT wiremessage (#PCDATA)>
 <!ELEMENT documentation (#PCDATA)>
 <!ELEMENT description (#PCDATA)>
 <!ELEMENT name (#PCDATA)>
-<!ELEMENT faults (faultset)*>
+<!ELEMENT faults (constants|faultset)*>
 <!ATTLIST faults
-  xmlns	CDATA	#IMPLIED	
- >
+    xmlns CDATA #REQUIRED>
 ]>
 <faults xmlns="http://gridforum.org/cddlm/serviceAPI/faultsets/2004/07/30">
+
+  <constants>
+
+    <uri name="WS_ADDRESSING_NAMESPACE" value="http://schemas.xmlsoap.org/ws/2003/03/addressing">
+      <description>URL for WS-Addressing</description>
+    </uri>
+
+    <uri name="XML_CDL_NAMESPACE" value="http://gridforge.org/cddlm/xml/2004/07/30/">
+      <description>Namespace of XML-CDL documents</description>
+    </uri>
+
+    <uri name="CDL_API_NAMESPACE" value="http://gridforum.org/cddlm/serviceAPI/api/2004/07/30">
+      <description>Namespace of CDL deployment API</description>
+    </uri>
+
+    <uri name="XPATH_NAMESPACE" value="http://www.w3.org/TR/1999/REC-xpath-19991116">
+      <description>URI of XPath 1999</description>
+    </uri>
+
+    <uri name="SMARTFROG_NAMESPACE" value="http://gridforge.org/cddlm/smartfrog/2004/07/30">
+      <description>SmartFrog XML wrapper namespace</description>
+    </uri>
+
+    <uri name="ANT_NAMESPACE" value="http://ant.apache.org/xsd/1.7">
+      <description>Placeholder for ant namespace</description>
+    </uri>
+
+    <uri name="OPTION_VALIDATE_ONLY" value="http://gridforum.org/cddlm/serviceAPI/options/validateOnly/2004/07/30">
+      <description>URI of option to indicate that a descriptor should be validated, but not deployed
+        "validation" is a per-language option</description>
+    </uri>
+
+    <uri name="OPTION_PROPERTIES" value="http://gridforum.org/cddlm/serviceAPI/options/propertyMap/2004/07/30">
+      <description>URI of option to include a property mapping</description>
+    </uri>
+
+    <!--
+        <uri name="" value="">
+          <description></description>
+        </uri>
+    -->
+    <string name="SMARTFROG_ELEMENT_NAME" value="smartfrog">
+      <description>Element name of smartfrog descriptors</description>
+    </string>
+
+    <string name="CDL_ELT_CDL" value="cdl">
+      <description>Element name of smartfrog descriptors</description>
+    </string>
+
+    <string name="SMARTFROG_ELEMENT_VERSION_ATTR" value="version">
+      <description>version attribute of smartfrog documents</description>
+    </string>
+
+    <string name="CALLBACK_WS_NOTIFICATION" value="ws-notification">
+      <description>name of ws-notification callback type</description>
+    </string>
+
+    <string name="CALLBACK_WS_EVENTING" value="ws-eventing">
+      <description>name of ws-eventing callback type</description>
+    </string>
+
+    <string name="CALLBACK_CDDLM_PROTOTYPE" value="cddlm-prototype">
+      <description>name of prototype-quality CDDLM notification type</description>
+    </string>
+    <!--
+        <string name="" value="">
+          <description></description>
+        </string>
+
+        <string name="" value="">
+          <description></description>
+        </string>
+    -->
+  </constants>
+
+
   <!-- this document lists standard faults of the deployment services -->
-  <faultset name="CDDLM_FAULTS"
+  <faultset name="CDDLM_FAULT"
     namespace="http://gridforge.org/cddlm/smartfrog/faults/2004/07/30"
     >
     <description>
@@ -108,7 +195,105 @@
       </documentation>
     </fault>
 
+    <fault>
+      <name>DESCRIPTOR_PARSE_ERROR</name>
+      <code>descriptor-parse-error</code>
+      <wiremessage>unable to parse the descriptor</wiremessage>
+      <errormessage>The deployment descriptor could not be parsed</errormessage>
+      <documentation>
+        There was an error parsing the deployment descriptor.
+      </documentation>
+    </fault>
 
+    <fault>
+      <name>DESCRIPTOR_COMPILATION_ERROR</name>
+      <code>descriptor-compilation-error</code>
+      <wiremessage>unable to compile the descriptor</wiremessage>
+      <errormessage>The deployment descriptor could not be compiled</errormessage>
+      <documentation>
+        There was an error compiling the deployment descriptor.
+      </documentation>
+    </fault>
+
+    <fault>
+      <name>DEPLOYMENT_FAILURE</name>
+      <code>deployment-failure</code>
+      <wiremessage>failed to deploy</wiremessage>
+      <errormessage>The deployment encountered a problem</errormessage>
+      <documentation>
+        There was some error with the deployment itself, an error which resulted in
+        the deployment failing. This is usually either an error in the deployment
+        descriptor, or an error in executing the descriptor.
+      </documentation>
+    </fault>
+
+    <fault>
+      <name>RESOLUTION_FAILURE</name>
+      <code>resolution-failure</code>
+      <wiremessage>unresolved reference</wiremessage>
+      <errormessage>The descriptor contained a reference which could not be resolved</errormessage>
+      <documentation>
+        The descriptor contained a reference which could not be resolved.
+      </documentation>
+    </fault>
+
+    <fault>
+      <name>INITIALIZATION_FAILURE</name>
+      <code>initialisation-failure</code>
+      <wiremessage>unable to initialise</wiremessage>
+      <errormessage>a failure was encountered during the initialisation stage of deployment</errormessage>
+      <documentation>
+        When the runtime tried to move a component into the initialisation state,
+        it threw a fault instead.
+      </documentation>
+    </fault>
+
+    <fault>
+      <name>RUNTIME_EXCEPTION</name>
+      <code>runtime-failure</code>
+      <wiremessage>An error has occured in the deployment run-time</wiremessage>
+      <errormessage>An error has occured in the deployment run-time</errormessage>
+      <documentation>
+        An internal fault has occurred in a deployment component
+      </documentation>
+    </fault>
+
+    <fault>
+      <name>LIFECYCLE_EXCEPTION</name>
+      <code>lifecycle-exception</code>
+      <wiremessage>An error has occured during a lifecycle transition</wiremessage>
+      <errormessage>An attempt to move a component to a new lifecycle stage failed</errormessage>
+      <documentation>
+        An error occured while attempting to move a component to a new stage in
+        the deployment lifecycle
+      </documentation>
+    </fault>
+
+    <fault>
+      <name>LIVENESS_EXCEPTION</name>
+      <code>liveness-exception</code>
+      <wiremessage>A liveness test on a component failed</wiremessage>
+      <errormessage>An attempt to verify the liveness of a component failed</errormessage>
+      <documentation>
+        An error occured while probing the liveness of a component.
+        This can mean it is in a terminated state, or that the component's internal health
+        check failed.
+      </documentation>
+    </fault>
+
+    <fault>
+      <name>COMPILE_RESOLUTION_FAILURE</name>
+      <code>compile-resolution-failure</code>
+      <wiremessage>Compile-time resolution failure</wiremessage>
+      <errormessage>unable to resolve references</errormessage>
+      <documentation>
+        References which needed to be resolved at compile time
+        could not be so resolved.
+        This may be an error in the deployment descriptor, or
+        simply that some references need to be marked for deployment-time
+        resolution.
+      </documentation>
+    </fault>
     <!--
         <fault>
           <name></name>

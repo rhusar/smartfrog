@@ -28,19 +28,31 @@ import org.apache.axis.types.URI;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.smartfrog.services.axis.SmartFrogHostedEndpoint;
+import org.smartfrog.services.cddlm.generated.faults.FaultCodes;
+import org.smartfrog.sfcore.common.Context;
+import org.smartfrog.sfcore.common.SmartFrogCompilationException;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogInitException;
+import org.smartfrog.sfcore.common.SmartFrogLivenessException;
+import org.smartfrog.sfcore.common.SmartFrogParseException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
 
 import javax.xml.namespace.QName;
 import java.io.Reader;
 import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Enumeration;
 
 /**
  * created Aug 4, 2004 3:59:42 PM
  */
 
 public class Processor {
-    private static Log log = LogFactory.getLog(EndpointHelper.class);
+    private static final Log log = LogFactory.getLog(EndpointHelper.class);
 
     public Processor(SmartFrogHostedEndpoint owner) {
         this.owner = owner;
@@ -68,7 +80,7 @@ public class Processor {
         try {
             uri = new URI(url);
         } catch (URI.MalformedURIException e) {
-           throw raiseNoSuchApplicationFault(url);
+            throw raiseNoSuchApplicationFault(url);
         }
         return uri;
     }
@@ -131,6 +143,7 @@ public class Processor {
 
     /**
      * look up a job in the repository
+     *
      * @param jobURI
      * @return the jobstate reference
      * @throws AxisFault if there is no such job
@@ -138,8 +151,8 @@ public class Processor {
     public JobState lookupJob(URI jobURI) throws AxisFault {
         JobRepository jobs = ServerInstance.currentInstance().getJobs();
         JobState jobState = jobs.lookup(jobURI);
-        if(jobState==null) {
-            raiseNoSuchApplicationFault(jobURI.toString());
+        if (jobState == null) {
+            throw raiseNoSuchApplicationFault(jobURI.toString());
         }
         return jobState;
     }
@@ -186,15 +199,19 @@ public class Processor {
     }
 
     protected static AxisFault raiseUnsupportedLanguageFault(String message) {
-        return raiseFault(Constants.FAULT_UNSUPPORTED_LANGUAGE, message);
+        return raiseFault(FaultCodes.FAULT_UNSUPPORTED_LANGUAGE, message);
+    }
+
+    protected static AxisFault raiseUnsupportedCallbackFault(String message) {
+        return raiseFault(FaultCodes.FAULT_UNSUPPORTED_CALLBACK, message);
     }
 
     protected static AxisFault raiseBadArgumentFault(String message) {
-        return raiseFault(Constants.FAULT_BAD_ARGUMENT, message);
+        return raiseFault(FaultCodes.FAULT_BAD_ARGUMENT, message);
     }
 
     protected static AxisFault raiseNoSuchApplicationFault(String message) {
-        return raiseFault(Constants.FAULT_APPLICATION_NOT_FOUND, message);
+        return raiseFault(FaultCodes.FAULT_NO_SUCH_APPLICATION, message);
     }
 
     protected URL makeURL(URI source) throws MalformedURLException {
@@ -204,7 +221,7 @@ public class Processor {
     public AxisFault raiseNestedFault(Exception e, String message) {
         AxisFault fault = AxisFault.makeFault(e);
         fault.setFaultReason(message);
-        fault.setFaultCode(Constants.FAULT_NESTED_EXCEPTION);
+        fault.setFaultCode(FaultCodes.FAULT_NESTED_EXCEPTION);
         return fault;
     }
 
@@ -231,5 +248,63 @@ public class Processor {
             throw raiseNestedFault(e, message);
 
         }
+    }
+
+    /**
+     * turn a smartfrog exception into an axis fault
+     *
+     * @param exception
+     * @return
+     */
+    public AxisFault translateSmartFrogException(SmartFrogException exception) {
+        AxisFault fault = AxisFault.makeFault(exception);
+        QName faultCode = FaultCodes.FAULT_NESTED_EXCEPTION;
+        //compilation and subclasses
+        if (exception instanceof SmartFrogCompilationException) {
+            faultCode = FaultCodes.FAULT_DESCRIPTOR_PARSE_ERROR;
+            SmartFrogCompilationException ex = (SmartFrogCompilationException) exception;
+        }
+        if (exception instanceof SmartFrogParseException) {
+            faultCode = FaultCodes.FAULT_DESCRIPTOR_PARSE_ERROR;
+        }
+        if (exception instanceof SmartFrogCompileResolutionException) {
+            faultCode = FaultCodes.FAULT_COMPILE_RESOLUTION_FAILURE;
+        }
+        //init failure
+        if (exception instanceof SmartFrogInitException) {
+            faultCode = FaultCodes.FAULT_INITIALIZATION_FAILURE;
+        }
+
+        //runtime faults
+        if (exception instanceof SmartFrogRuntimeException) {
+            faultCode = FaultCodes.FAULT_RUNTIME_EXCEPTION;
+        }
+        if (exception instanceof SmartFrogResolutionException) {
+            faultCode = FaultCodes.FAULT_RESOLUTION_FAILURE;
+        }
+        if (exception instanceof SmartFrogLivenessException) {
+            faultCode = FaultCodes.FAULT_LIVENESS_EXCEPTION;
+        }
+        if (exception instanceof SmartFrogDeploymentException) {
+            faultCode = FaultCodes.FAULT_DEPLOYMENT_FAILURE;
+        }
+        //TODO: add the other runtime faults
+
+        //copy all context keys
+        Context context = exception.getContext();
+        Enumeration keys = context.keys();
+        while (keys.hasMoreElements()) {
+            Object key = (Object) keys.nextElement();
+            Object value = context.get(key);
+            String stringVal = value.toString();
+            //TODO: escape local parts that are not valid.
+            final String localPart = key.toString();
+            fault.addFaultDetail(
+                    new QName(FaultCodes.SMARTFROG_NAMESPACE, localPart)
+                    , value.toString());
+        }
+
+        fault.setFaultCode(faultCode);
+        return fault;
     }
 }

@@ -29,6 +29,7 @@ import org.smartfrog.services.axis.SmartFrogHostedEndpoint;
 import org.smartfrog.services.cddlm.generated.api.types.OptionMapType;
 import org.smartfrog.services.cddlm.generated.api.types.OptionType;
 import org.smartfrog.services.cddlm.generated.api.types.UnboundedXMLAnyNamespace;
+import org.smartfrog.services.cddlm.generated.faults.FaultCodes;
 
 import java.util.Properties;
 
@@ -49,11 +50,9 @@ public class OptionProcessor extends Processor {
     static {
         try {
             propertyURI =
-            new URI(
-                    org.smartfrog.services.cddlm.cdl.Constants.OPTION_PROPERTIES);
+            new URI(FaultCodes.OPTION_PROPERTIES);
             validateURI =
-            new URI(
-                    org.smartfrog.services.cddlm.cdl.Constants.OPTION_VALIDATE_ONLY);
+            new URI(FaultCodes.OPTION_VALIDATE_ONLY);
         } catch (URI.MalformedURIException e) {
             throw new RuntimeException(e);
         }
@@ -66,6 +65,15 @@ public class OptionProcessor extends Processor {
 
     public OptionProcessor(SmartFrogHostedEndpoint owner) {
         super(owner);
+    }
+
+    public OptionProcessor(SmartFrogHostedEndpoint owner, boolean validateOnly) {
+        this(!validateOnly);
+    }
+
+    public OptionProcessor(boolean validateOnly) {
+        super(null);
+        this.validateOnly = validateOnly;
     }
 
     /**
@@ -104,7 +112,7 @@ public class OptionProcessor extends Processor {
                 }
                 if (option.isMustUnderstand()) {
                     log.warn("failed to process option " + name);
-                    throw raiseFault(Constants.FAULT_NOTUNDERSTOOD, name);
+                    throw raiseFault(FaultCodes.FAULT_NOT_UNDERSTOOD, name);
                 }
             }
         }
@@ -155,5 +163,8 @@ public class OptionProcessor extends Processor {
         }
     }
 
+    public boolean isValidateOnly() {
+        return validateOnly;
+    }
 
 }

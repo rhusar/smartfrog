@@ -24,14 +24,13 @@ import org.apache.axis.message.MessageElement;
 import org.apache.axis.types.URI;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.smartfrog.SFSystem;
 import org.smartfrog.services.axis.SmartFrogHostedEndpoint;
 import org.smartfrog.services.cddlm.generated.api.types.DeploymentDescriptorType;
 import org.smartfrog.services.cddlm.generated.api.types._deployRequest;
 import org.smartfrog.services.cddlm.generated.api.types._deployResponse;
 import org.smartfrog.sfcore.common.ConfigurationDescriptor;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.processcompound.SFProcess;
+import org.smartfrog.sfcore.prim.Prim;
 
 import javax.xml.namespace.QName;
 import java.io.BufferedOutputStream;
@@ -40,6 +39,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.rmi.RemoteException;
 
 /**
  * This class is *NOT* re-entrant. Create one for each deployment. created Aug
@@ -55,6 +55,7 @@ public class DeployProcessor extends Processor {
 
     private _deployRequest request;
     private OptionProcessor options;
+    private JobState job;
 
     public DeployProcessor(SmartFrogHostedEndpoint owner) {
         super(owner);
@@ -69,27 +70,31 @@ public class DeployProcessor extends Processor {
     }
 
     public _deployResponse deploy(_deployRequest deploy) throws AxisFault {
+        //create a new jobstate
+        job = new JobState(deploy);
         request = deploy;
         //get the options out the way
         options = new OptionProcessor(getOwner());
         options.process(deploy.getOptions());
+        CallbackProcessor callbackProcessor = new CallbackProcessor(getOwner());
+        callbackProcessor.process(job, deploy.getCallback());
+
         DeploymentDescriptorType dd = deploy.getDescriptor();
         URI source = dd.getSource();
-        String applicationName = deploy.getName().toString();
-        //create a new jobstate
-        JobState jobState = new JobState(deploy);
         //this is our URI
-        URI applicationReference = jobState.getUri();
-
+        URI applicationReference = job.getUri();
+        boolean deployed = false;
         if (source != null) {
             throwNotImplemented();
         } else {
             //here we deploy inline
-            determineLanguageAndDeploy();
+            deployed = determineLanguageAndDeploy(job);
 
         }
         //add the job state to the store
-        ServerInstance.currentInstance().getJobs().add(jobState);
+        if (deployed) {
+            ServerInstance.currentInstance().getJobs().add(job);
+        }
         _deployResponse response = new _deployResponse(applicationReference);
         return response;
     }
@@ -97,9 +102,10 @@ public class DeployProcessor extends Processor {
     /**
      * process a smartfrog deployment
      *
+     * @param job
      * @throws AxisFault
      */
-    public void determineLanguageAndDeploy() throws AxisFault {
+    public boolean determineLanguageAndDeploy(JobState job) throws AxisFault {
         DeploymentDescriptorType descriptor = request.getDescriptor();
         MessageElement[] messageElements = descriptor.getData().get_any();
         if (messageElements.length != 1) {
@@ -111,23 +117,24 @@ public class DeployProcessor extends Processor {
         QName qname = descriptorData.getQName();
         String languageAsString = qname.toString();
         int lan = determineLanguage(qname);
+        boolean deployed = false;
         switch (lan) {
             case Constants.LANGUAGE_SMARTFROG:
-                deploySmartFrog(descriptorData);
+                deployed = deploySmartFrog(descriptorData);
                 break;
             case Constants.LANGUAGE_XML_CDL:
-                deployCDL(descriptorData);
+                deployed = deployCDL(descriptorData);
                 break;
             case Constants.LANGUAGE_ANT:
-                deployAnt(descriptorData);
+                deployed = deployAnt(descriptorData);
                 break;
             case Constants.LANGUAGE_UNKNOWN:
             default:
                 throw raiseUnsupportedLanguageFault(languageAsString);
         }
-
-
+        return deployed;
     }
+
 
     /**
      * go from qname to language enum
@@ -147,7 +154,14 @@ public class DeployProcessor extends Processor {
         return l;
     }
 
-    private void deployCDL(MessageElement elt) throws AxisFault {
+    /**
+     * CDL deploymenet
+     *
+     * @param elt
+     * @throws AxisFault
+     * @todo implement
+     */
+    private boolean deployCDL(MessageElement elt) throws AxisFault {
         throw raiseUnsupportedLanguageFault("CDL is unsupported");
     }
 
@@ -156,9 +170,10 @@ public class DeployProcessor extends Processor {
      *
      * @param elt
      * @throws AxisFault
-     * @todo
+     * @throws AxisFault for any problem
+     * @todo implement
      */
-    private void deployAnt(MessageElement elt)
+    private boolean deployAnt(MessageElement elt)
             throws AxisFault {
 
         throw raiseUnsupportedLanguageFault("Ant is unsupported");
@@ -170,30 +185,38 @@ public class DeployProcessor extends Processor {
      *
      * @throws AxisFault
      */
-    private void deploySmartFrog(MessageElement descriptorElement)
+    private boolean deploySmartFrog(MessageElement descriptorElement)
             throws AxisFault {
         descriptorElement.getValue();
+        String applicationName = job.getName();
+        String version = descriptorElement.getAttributeNS(
+                descriptorElement.getNamespaceURI(), "version");
+        if (!"1.0".equals(version)) {
+            raiseUnsupportedLanguageFault("Unsupported SmartFrog version");
+        }
 
-        throw raiseUnsupportedLanguageFault(
-                "Smartfrog is currently unsupported");
-
-/*
+        if (options.isValidateOnly()) {
+            //finishing here.
+            return false;
+        }
+        File tempFile = null;
 
         try {
-            String applicationName = request.getName().toString();
-            DeploymentDescriptorType dd = request.getDescriptor();
-            _deploymentDescriptorType_data data = dd.getData();
-            String descriptor = data.get_any().toString();
+            String descriptor = descriptorElement.getValue();
 
 
             log.info("processing descriptor " + descriptor);
-            File tempFile = saveStringToFile(descriptor, ".sf");
+            tempFile = saveStringToFile(descriptor, ".sf");
             String url = tempFile.toURI().toURL().toExternalForm();
             deployThroughSFSystem(null, applicationName, url, null);
         } catch (IOException e) {
             throw AxisFault.makeFault(e);
+        } finally {
+            if (tempFile != null) {
+                tempFile.delete();
+            }
         }
-        */
+        return true;
     }
 
     /**
@@ -248,7 +271,7 @@ public class DeployProcessor extends Processor {
      * @return
      * @throws AxisFault
      */
-    private void deployThroughSFSystem(String hostname, String application,
+    private Prim deployThroughSFSystem(String hostname, String application,
                                        String url,
                                        String subprocess) throws AxisFault {
         try {
@@ -261,13 +284,20 @@ public class DeployProcessor extends Processor {
             }
             log.info("Deploying " + url + " to " + hostname);
             //deploy, throwing an exception if we cannot
-            config.execute(SFProcess.getProcessCompound());
-            SFSystem.runConfigurationDescriptor(config, true);
+            Object result = config.execute(null);
+            if (result instanceof Prim) {
+                return (Prim) result;
+            } else {
+                final String message = "got something not a prim back from a deployer";
+                log.info(message);
+                throw new AxisFault(message + " " + result.toString());
+            }
 
         } catch (SmartFrogException exception) {
-            throw AxisFault.makeFault(exception);
-        } catch (Exception exception) {
+            throw translateSmartFrogException(exception);
+        } catch (RemoteException exception) {
             throw AxisFault.makeFault(exception);
         }
     }
+
 }

@@ -19,8 +19,8 @@
  */
 package org.smartfrog.services.cddlm.api;
 
-import org.apache.axis.types.URI;
 import org.apache.axis.AxisFault;
+import org.apache.axis.types.URI;
 import org.smartfrog.services.cddlm.generated.api.types._deployRequest;
 import org.smartfrog.sfcore.prim.Prim;
 
@@ -108,14 +108,21 @@ public class JobState {
 
     /**
      * get the prim; raise a fault if it is terminated
+     *
      * @return
      * @throws AxisFault
      */
     public Prim resolvePrimFromJob() throws AxisFault {
-        Object weakRef = getPrimReference().get();
-        if ( weakRef == null ) {
+        final WeakReference primReference = getPrimReference();
+        if (primReference == null) {
+            throw Processor.raiseNoSuchApplicationFault(
+                    "application not found");
+        }
+        Object weakRef = primReference.get();
+        if (weakRef == null) {
             //TODO return a terminated reference
-            throw Processor.raiseNoSuchApplicationFault("application is no longer active");
+            throw Processor.raiseNoSuchApplicationFault(
+                    "application is no longer active");
         }
         Prim prim = (Prim) weakRef;
         return prim;
@@ -128,16 +135,16 @@ public class JobState {
      * @return
      */
     public boolean equals(Object o) {
-        if ( this == o ) {
+        if (this == o) {
             return true;
         }
-        if ( !(o instanceof JobState) ) {
+        if (!(o instanceof JobState)) {
             return false;
         }
 
         final JobState jobState = (JobState) o;
 
-        if ( uri != null ? !uri.equals(jobState.uri) : jobState.uri != null ) {
+        if (uri != null ? !uri.equals(jobState.uri) : jobState.uri != null) {
             return false;
         }
 

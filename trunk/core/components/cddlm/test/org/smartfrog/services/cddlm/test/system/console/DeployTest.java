@@ -30,8 +30,8 @@ import org.cddlm.client.generated.api.types.DeploymentDescriptorType;
 import org.cddlm.client.generated.api.types.OptionMapType;
 import org.cddlm.client.generated.api.types.OptionType;
 import org.cddlm.client.generated.api.types._deploymentDescriptorType_data;
-import org.smartfrog.services.cddlm.api.Constants;
 import org.smartfrog.services.cddlm.cdl.ResourceLoader;
+import org.smartfrog.services.cddlm.generated.faults.FaultCodes;
 
 import javax.xml.namespace.QName;
 import java.io.IOException;
@@ -112,7 +112,7 @@ public class DeployTest extends ConsoleTestBase {
                        DeploymentDescriptorType descriptor,
                        Options options, CallbackInformationType callback)
             throws RemoteException {
-        URI uri = operation.deploy(name, descriptor, options, null);
+        URI uri = operation.deploy(name, descriptor, options, callback);
         assertNotNull("uri", uri);
         return uri;
     }
@@ -126,7 +126,7 @@ public class DeployTest extends ConsoleTestBase {
                 dd,
                 null,
                 null,
-                Constants.FAULT_UNSUPPORTED_LANGUAGE,
+                FaultCodes.FAULT_UNSUPPORTED_LANGUAGE,
                 null);
     }
 
@@ -148,7 +148,7 @@ public class DeployTest extends ConsoleTestBase {
                                       final String text)
             throws RemoteException {
         try {
-            URI uri = deploy(name, dd, options, null);
+            URI uri = deploy(name, dd, options, callback);
         } catch (AxisFault af) {
             assertFaultMatches(af, fault, text);
         }
@@ -168,7 +168,7 @@ public class DeployTest extends ConsoleTestBase {
         deployExpectingFault("unsupportedVersion",
                 dd,
                 null,
-                null, Constants.FAULT_UNSUPPORTED_LANGUAGE,
+                null, FaultCodes.FAULT_UNSUPPORTED_LANGUAGE,
                 null);
 
     }
@@ -187,7 +187,7 @@ public class DeployTest extends ConsoleTestBase {
                 dd,
                 null,
                 null,
-                Constants.FAULT_UNSUPPORTED_LANGUAGE,
+                FaultCodes.FAULT_UNSUPPORTED_LANGUAGE,
                 null);
     }
 
@@ -205,7 +205,7 @@ public class DeployTest extends ConsoleTestBase {
                 dd,
                 null,
                 callback,
-                Constants.FAULT_UNSUPPORTED_CALLBACK,
+                FaultCodes.FAULT_UNSUPPORTED_CALLBACK,
                 null);
     }
 
@@ -246,7 +246,7 @@ public class DeployTest extends ConsoleTestBase {
                 dd,
                 options,
                 null,
-                Constants.FAULT_NOTUNDERSTOOD,
+                FaultCodes.FAULT_NOT_UNDERSTOOD,
                 null);
     }
 
