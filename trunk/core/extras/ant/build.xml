@@ -144,11 +144,12 @@
       <pathelement location="${test.classes.dir}"/>
       <pathelement path="${java.class.path}"/>        
     </path>
-
+    <property name="filter.trace" value="true"/>
     <sf-junit 
            errorProperty="test.failed"
            failureProperty="test.failed" 
            includeantruntime="true"
+           filtertrace="${filter.trace}"
            >
        <classpath 
           refid="tests.run.classpath"/>

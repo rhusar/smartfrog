@@ -350,11 +350,14 @@ public abstract class SmartFrogTask extends TaskBase {
             allowSpawning);
         addSmartfrogPropertyIfDefined("org.smartfrog.ProcessCompound.sfProcessTimeout",
             spawnTimeout);
-        if(codebase!=null) {
+        if(codebase!=null && !codebase.isEmpty()) {
             //add the codebase for extra stuff
             String codelist=Codebase.getCodebaseString(codebase);
-            log("Codebase set to "+codelist,Project.MSG_VERBOSE);
-            addSmartfrogProperty("org.smartfrog.codebase",codelist);
+//            if(codelist.length()>0) 
+            {
+                log("Codebase set to "+codelist,Project.MSG_VERBOSE);
+                addSmartfrogProperty("org.smartfrog.codebase",codelist);
+            }
         }
 
     }
