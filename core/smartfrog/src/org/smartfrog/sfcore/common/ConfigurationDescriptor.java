@@ -45,32 +45,38 @@ public class ConfigurationDescriptor implements MessageKeys{
                       "DETACH",
                       "DETaTERM"};
     }
-    //Action type
+    /**
+     Action type; one of the Action enumerations. Initially set to
+     #Action.UNDEFINED
+     */
     private int actionType = Action.UNDEFINED;
 
     /**
      * the action to perform
      */
-    ConfigurationAction action;
+    private ConfigurationAction action;
 
     /**
      * application/component name
      */
-    public String name = null;
+    private String name = null;
     /**
      * resource to use during action. Usually a sf description
      */
-    public String url = null;
+    private String url = null;
 
     /**
-     * host were to apply action. Can be null and then no rootProcess is used.
+     * host where to apply action. Can be null and then no rootProcess is used.
      */
-    public String host = null;
+    private String host = null;
     /**
-     * subProcess were to apply action. Can be null.
+     * subProcess where to apply action. Can be null.
      */
-    public String subProcess = null;
+    private String subProcess = null;
 
+    /**
+     * class acting as an enumeration for results
+     */
     public static class Result {
         final static public int SUCCESSFUL=0;
         final static public int FAILED=1;
@@ -97,7 +103,7 @@ public class ConfigurationDescriptor implements MessageKeys{
      /**
       * Extra parameters for action
       */
-     public Hashtable options = new Hashtable();
+     private Hashtable options = new Hashtable();
 
      /**
       *   Special Options for SF1 Language
@@ -122,27 +128,27 @@ public class ConfigurationDescriptor implements MessageKeys{
      */
     public String toString(String separator){
         StringBuffer str = new StringBuffer();
-        if (name!=null) {
-            str.append(" n:"); str.append(name.toString());
+        if (getName()!=null) {
+            str.append(" n:"); str.append(getName().toString());
         }
         str.append(separator);
         str.append(" t:"); str.append(Action.type[actionType].toString());
 
-        if (url!=null) {
+        if (getUrl()!=null) {
             str.append(separator);
-            str.append(" u:"); str.append(url.toString());
+            str.append(" u:"); str.append(getUrl().toString());
         }
         if ((getDeployReference()!=null)&&(getDeployReference().size()>0)) {
             str.append(separator);
             str.append(" d:"); str.append(getDeployReference().toString());
         }
-        if (host!=null) {
+        if (getHost()!=null) {
             str.append(separator);
-            str.append(" h:"); str.append(host.toString());
+            str.append(" h:"); str.append(getHost().toString());
         }
-        if (subProcess!=null) {
+        if (getSubProcess()!=null) {
             str.append(separator);
-            str.append(" s:"); str.append(subProcess.toString());
+            str.append(" s:"); str.append(getSubProcess().toString());
         }
 
         str.append(separator);
@@ -175,25 +181,25 @@ public class ConfigurationDescriptor implements MessageKeys{
           StringBuffer message = new StringBuffer();
           String result = null;
 
-          if (name!=null) {
-              message.append(""); message.append(name.toString());
+          if (getName()!=null) {
+              message.append(""); message.append(getName().toString());
           }
 
-          if (url!=null) {
+          if (getUrl()!=null) {
               message.append(separator);
-              message.append(" ["); message.append(url.toString()+"]");
+              message.append(" ["); message.append(getUrl().toString()+"]");
           }
           if (getDeployReference()!=null) {
               message.append(separator);
               message.append(" deployReference: "); message.append(getDeployReference().toString());
           }
-          if (host!=null) {
+          if (getHost()!=null) {
               message.append(separator);
-              message.append(" host:"); message.append(host.toString());
+              message.append(" host:"); message.append(getHost().toString());
           }
-          if (subProcess!=null) {
+          if (getSubProcess()!=null) {
               message.append(separator);
-              message.append(" subProcess:"); message.append(subProcess.toString());
+              message.append(" subProcess:"); message.append(getSubProcess().toString());
           }
 
           if (this.resultType==Result.SUCCESSFUL){
@@ -243,7 +249,11 @@ public class ConfigurationDescriptor implements MessageKeys{
     }
 
 
-    String token = ":";
+    /**
+     * this is a constant that defines what the inter-element token is when cracking
+     * the string
+     */
+    private static final String separator = ":";
 
     /**
      * Creates a Configuration Descriptor using a deployment URL
@@ -265,8 +275,9 @@ public class ConfigurationDescriptor implements MessageKeys{
      */
     public ConfigurationDescriptor (String deploymentURL) throws SmartFrogInitException {
         try {
-            if (deploymentURL==null)
+            if (deploymentURL==null) {
                 throw new SmartFrogInitException("Deployment URL: null");
+            }
             String tempURL = null;
             String item = null;
             deploymentURL = deploymentURL.trim();
@@ -277,18 +288,18 @@ public class ConfigurationDescriptor implements MessageKeys{
             //display:TER:::localhost:subprocess;
             try {
                 if (deploymentURL.startsWith("\"")) {
-                    name = deploymentURL.substring(1,
-                        deploymentURL.indexOf("\"", 1));
+                    setName(deploymentURL.substring(1,
+                        deploymentURL.indexOf("\"", 1)));
                     tempURL = deploymentURL.substring(deploymentURL.
                         indexOf("\"", 1)+2);
                 } else {
-                    name = deploymentURL.substring(0,
-                        deploymentURL.indexOf(token));
+                    setName(deploymentURL.substring(0,
+                        deploymentURL.indexOf(separator)));
                     tempURL = deploymentURL.substring(deploymentURL.indexOf(
-                        token)+1);
+                            separator)+1);
                 }
-                if (this.name.equals(" ")) {
-                    this.name = null;
+                if (this.getName().equals(" ")) {
+                    this.setName(null);
                 }
             } catch (Exception ex) {
                 throw new SmartFrogInitException("Error parsing NAME in: "+
@@ -302,7 +313,7 @@ public class ConfigurationDescriptor implements MessageKeys{
             try {
                 if (deploymenturl[3]!=null) {
                     //Logger.log("Type: "+(String)deploymenturl[0]);
-                    this.setActionType((String)deploymenturl[0]);
+                    this.setActionType(deploymenturl[0]);
                 }
             } catch (Exception ex) {
                 throw new SmartFrogInitException(
@@ -312,9 +323,9 @@ public class ConfigurationDescriptor implements MessageKeys{
             try {
               if (deploymenturl[3]!=null) {
                   //Logger.log("Url: "+(String)deploymenturl[1]);
-                  this.url = (String)deploymenturl[1];
-                  if (this.url.equals(" ")) {
-                      this.url = null;
+                  this.setUrl(deploymenturl[1]);
+                  if (this.getUrl().equals(" ")) {
+                      this.setUrl(null);
                   }
               }
             } catch (Exception ex) {
@@ -323,7 +334,7 @@ public class ConfigurationDescriptor implements MessageKeys{
             }
             try {
                 //Logger.log("DeployRef: "+(String)deploymenturl[2]);
-                this.setDeployReference((String)deploymenturl[2]);
+                this.setDeployReference(deploymenturl[2]);
             } catch (Exception ex) {
                 throw new SmartFrogInitException(
                     "Error parsing DEPLOY_REFERENCE in: "+
@@ -332,9 +343,9 @@ public class ConfigurationDescriptor implements MessageKeys{
             try {
                 //Logger.log("host: "+(String)deploymenturl[3]);
                 if (deploymenturl[3]!=null) {
-                    this.host = ((String)deploymenturl[3]);
-                    if (this.host.equals("")) {
-                        this.host = null;
+                    this.setHost((deploymenturl[3]));
+                    if (this.getHost().equals("")) {
+                        this.setHost(null);
                     }
                 }
             } catch (Exception ex) {
@@ -345,9 +356,9 @@ public class ConfigurationDescriptor implements MessageKeys{
               if (!deploymentURL.endsWith(":")) {
                     //Logger.log("subproc: "+(String)deploymenturl[4]);
                 if (deploymenturl[4]!=null) {
-                    this.subProcess = (String)deploymenturl[4];
-                    if (this.subProcess.equals("")) {
-                        this.subProcess = null;
+                    this.setSubProcess(deploymenturl[4]);
+                    if (this.getSubProcess().equals("")) {
+                        this.setSubProcess(null);
                     }
                 }
               }
@@ -369,8 +380,8 @@ public class ConfigurationDescriptor implements MessageKeys{
      */
     public ConfigurationDescriptor (String name, String url){
         if (url == null) return;
-        this.url = url;
-        this.name=name;
+        this.setUrl(url);
+        this.setName(name);
     }
 
     /**
@@ -386,10 +397,16 @@ public class ConfigurationDescriptor implements MessageKeys{
             throws SmartFrogInitException{
 
         this.setActionType(actionType);
-        this.url = url;
-        this.name=name;
-        this.host=host;
-        this.subProcess=subProcess;
+        this.setUrl(url);
+        this.setName(name);
+        this.setHost(host);
+        this.setSubProcess(subProcess);
+    }
+
+    /**
+     * empty constructor for people who know what they are doing
+     */
+    public ConfigurationDescriptor() {
     }
 
     /**
@@ -407,13 +424,13 @@ public class ConfigurationDescriptor implements MessageKeys{
             throws SmartFrogInitException{
 
         this.setActionType(actionType);
-        this.url = url;
-        this.name=name;
+        this.setUrl(url);
+        this.setName(name);
         // Deploy Reference is a particular case for SF1 and therefore added to
         // options
         this.setDeployReference(deployReference);
-        this.host=host;
-        this.subProcess=subProcess;
+        this.setHost(host);
+        this.setSubProcess(subProcess);
     }
 
     /**
@@ -423,8 +440,8 @@ public class ConfigurationDescriptor implements MessageKeys{
      */
     private Reference getDeployReference(){
         String key = SF1Options.SFCONFIGREF;
-        if (options.containsKey(key)){
-            return ((Reference)options.get(key));
+        if (getOptions().containsKey(key)){
+            return ((Reference)getOptions().get(key));
         }
         return null;
     }
@@ -439,7 +456,7 @@ public class ConfigurationDescriptor implements MessageKeys{
         if (reference.equals(" ")){
             return;
         }
-        this.options.put(SF1Options.SFCONFIGREF, new Reference (reference));
+        this.getOptions().put(SF1Options.SFCONFIGREF, new Reference (reference));
     }
 
     /**
@@ -561,5 +578,87 @@ public class ConfigurationDescriptor implements MessageKeys{
             return action.execute(targetProcess,this);
         }
     }
+
+    /**
+     * get the name of this component
+     * @return
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * set the name of this component
+     * @param name
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
+     * Get resource to use during action.
+     * @return a url
+     */
+    public String getUrl() {
+        return url;
+    }
+
+    /**
+     * Set resource to use during action.
+     * @param url
+     */
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    /**
+     * host for action. May be null
+     * @return
+     */
+    public String getHost() {
+        return host;
+    }
+
+    /**
+     * host where to apply action. Can be null and then no rootProcess is used.
+     * @param host
+     */
+    public void setHost(String host) {
+        this.host = host;
+    }
+
+    /**
+     * subProcess where to apply action. Can be null.
+     * @return string or null
+     */
+    public String getSubProcess() {
+        return subProcess;
+    }
+
+    /**
+     * set subProcess where to apply action. Can be null.
+     * @param subProcess
+     */
+    public void setSubProcess(String subProcess) {
+        this.subProcess = subProcess;
+    }
+
+    /**
+     * get option hashtable. This is not a copy; it is a direct
+     * accessor to the table.
+     * @return
+     */
+    public Hashtable getOptions() {
+        return options;
+    }
+
+    /**
+     * option table
+     * @param options
+     */
+    public void setOptions(Hashtable options) {
+        this.options = options;
+    }
+
 
 }
