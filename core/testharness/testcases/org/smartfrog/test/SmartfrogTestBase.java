@@ -33,7 +33,7 @@ import org.smartfrog.sfcore.common.SmartFrogException;
  * created 17-Feb-2004 17:08:35
  */
 
-public class SmartfrogTestBase extends TestCase {
+public abstract class SmartfrogTestBase extends TestCase {
     /**
      * cached directory of classes
      */
@@ -78,10 +78,10 @@ public class SmartfrogTestBase extends TestCase {
         try {
             SFSystem.deployAComponent(hostname,
                     testURL, appName,
-                        false);
-        }catch (Exception e) {
+                    false);
+        } catch (SmartFrogException e) {
             assertTrue(e.getMessage(),
-                    e.getMessage().indexOf(searchString)>=0);
+                    e.getMessage().indexOf(searchString) >= 0);
         }
     }
 

@@ -69,8 +69,20 @@ public class OrderedHashtableTest extends TestCase {
         for (int i = 0; i < testItems.length; i++) {
             assertEquals(testItems[i],keys.nextElement());
         }
+    }
 
 
+    public void testSomething() throws Exception {
+        OrderedHashtable table = null;
+        try {
+            table = new OrderedHashtable(-4, -1);
+            fail();
+        } catch (IllegalArgumentException e) {
+            assertTrue(e.getMessage().indexOf("Illegal Capacity") >= 0);
+        }
 
     }
+
+
+
 }
