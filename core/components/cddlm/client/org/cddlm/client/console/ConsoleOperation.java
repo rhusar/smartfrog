@@ -57,6 +57,9 @@ import org.w3c.dom.DOMImplementation;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -85,6 +88,9 @@ public abstract class ConsoleOperation {
      */
     private CddlmSoapBindingStub stub;
     public static final String SMARTFROG_VERSION = "1.0";
+    protected URI uri;
+    public static final String NO_URI_FOUND = "No application URI";
+    public static final String INVALID_URI = "Invalid URI:";
 
     /**
      * demand create our stub. retain it afterwards for reuse.
@@ -110,7 +116,7 @@ public abstract class ConsoleOperation {
      *
      * @throws RemoteException
      */
-    public abstract void execute() throws RemoteException;
+    public abstract void execute() throws IOException;
 
     /**
      * log a throwable to the output stream
@@ -132,8 +138,9 @@ public abstract class ConsoleOperation {
             execute();
             out.flush();
             return true;
-        } catch (RemoteException e) {
-            logThrowable(e);
+        } catch (Exception e) {
+            //logThrowable(e);
+            processThrowableInMain(e, out);
             return false;
         }
     }
@@ -388,6 +395,29 @@ public abstract class ConsoleOperation {
         return createSmartFrogDescriptor(source);
     }
 
+
+    /**
+     * wrap a string with a smartfrog deploy descriptor
+     *
+     * @param file file to load into the descriptor
+     * @return a deployment descriptor for smartfrog
+     * @throws IOException
+     */
+    public DeploymentDescriptorType createSmartFrogDescriptor(File file)
+            throws IOException {
+        InputStream in = new BufferedInputStream(new FileInputStream(file));
+        try {
+            String source = readIntoString(in);
+            return createSmartFrogDescriptor(source);
+        } finally {
+            try {
+                in.close();
+            } catch (IOException e) {
+
+            }
+        }
+    }
+
     /**
      * helper to read into a string
      *
@@ -559,5 +589,31 @@ public abstract class ConsoleOperation {
             }
         }
         return null;
+    }
+
+    public URI getUri() {
+        return uri;
+    }
+
+    public void setUri(URI uri) {
+        this.uri = uri;
+    }
+
+    /**
+     * assume first non-empty command line (after the server binding) is a URI;
+     * extract it and set our URI value
+     *
+     * @param args
+     */
+    protected void bindUriToCommandLine(String[] args) {
+        String appURI = getFirstNonNullElement(args);
+        if (appURI == null) {
+            throw new BadCommandLineException(NO_URI_FOUND);
+        }
+        try {
+            uri = new URI(appURI);
+        } catch (URI.MalformedURIException e) {
+            throw new BadCommandLineException(INVALID_URI + appURI);
+        }
     }
 }

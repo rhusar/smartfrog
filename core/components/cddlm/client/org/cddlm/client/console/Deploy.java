@@ -20,10 +20,11 @@
 package org.cddlm.client.console;
 
 import org.cddlm.client.common.ServerBinding;
+import org.smartfrog.services.cddlm.generated.api.types.DeploymentDescriptorType;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.PrintWriter;
-import java.rmi.RemoteException;
 
 /**
  * created Sep 1, 2004 5:34:02 PM
@@ -35,12 +36,68 @@ public class Deploy extends ConsoleOperation {
 
     private File sourceFile;
 
+    private DeploymentDescriptorType descriptor;
+
+    public static final String ERROR_NO_FILE_ARGUMENT = "No file specified";
+    public static final String ERROR_NO_FILE_FOUND = "File not found: ";
+
     public Deploy(ServerBinding binding, PrintWriter out) {
         super(binding, out);
     }
 
-    public void execute() throws RemoteException {
+    public Deploy(ServerBinding binding, PrintWriter out, String[] args) {
+        super(binding, out);
+        bindToCommandLine(args);
+    }
 
+    public DeploymentDescriptorType getDescriptor() {
+        return descriptor;
+    }
+
+    public void setDescriptor(DeploymentDescriptorType descriptor) {
+        this.descriptor = descriptor;
+    }
+
+    public void createDeploymentDescriptor() throws IOException {
+
+    }
+
+    /**
+     * get uri and reason from the command line
+     *
+     * @param args
+     */
+    public void bindToCommandLine(String[] args) {
+        String filename = getFirstNonNullElement(args);
+        if (filename == null) {
+            throw new BadCommandLineException(ERROR_NO_FILE_ARGUMENT);
+        }
+        sourceFile = new File(filename);
+        if (!sourceFile.exists()) {
+            throw new BadCommandLineException(ERROR_NO_FILE_FOUND + filename);
+        }
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public File getSourceFile() {
+        return sourceFile;
+    }
+
+    public void setSourceFile(File sourceFile) {
+        this.sourceFile = sourceFile;
+    }
+
+
+    public void execute() throws IOException {
+        createDeploymentDescriptor();
+        deploy(name, descriptor, null, null);
     }
 
 
@@ -61,7 +118,7 @@ public class Deploy extends ConsoleOperation {
         final PrintWriter pw = new PrintWriter(System.out);
         try {
             server = extractBindingFromCommandLine(args);
-            operation = new ListApplications(server, pw);
+            operation = new Deploy(server, pw, args);
             success = operation.doExecute();
         } catch (Throwable e) {
             processThrowableInMain(e, pw);

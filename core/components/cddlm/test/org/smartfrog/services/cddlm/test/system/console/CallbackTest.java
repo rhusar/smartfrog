@@ -24,7 +24,11 @@ import org.apache.axis.types.URI;
 import org.smartfrog.services.cddlm.api.CallbackProcessor;
 import org.smartfrog.services.cddlm.api.Processor;
 import org.smartfrog.services.cddlm.generated.api.DeployApiConstants;
+import org.smartfrog.services.cddlm.generated.api.types.CallbackAddressType;
+import org.smartfrog.services.cddlm.generated.api.types.CallbackEnum;
+import org.smartfrog.services.cddlm.generated.api.types.CallbackInformationType;
 import org.smartfrog.services.cddlm.generated.api.types.DeploymentDescriptorType;
+import org.smartfrog.services.cddlm.generated.api.types._setCallbackRequest;
 
 /**
  * created Sep 14, 2004 2:27:34 PM
@@ -32,7 +36,27 @@ import org.smartfrog.services.cddlm.generated.api.types.DeploymentDescriptorType
 
 public class CallbackTest extends DeployingTestBase {
     public static final String DUMMY_ENDPOINT = "http://localhost:8080/endpoint";
+    private URI application;
 
+    /**
+     * Sets up the fixture, for example, open a network connection. This method
+     * is called before a test is executed.
+     */
+    protected void setUp() throws Exception {
+        super.setUp();
+        DeploymentDescriptorType dt = operation.createSmartFrogDescriptor(
+                DeploySmartFrogTest.SIMPLE_DESCRIPTOR);
+        application = deploy(null, dt, null, null);
+    }
+
+    /**
+     * Tears down the fixture, for example, close a network connection. This
+     * method is called after a test is executed.
+     */
+    protected void tearDown() throws Exception {
+        undeploy(application);
+
+    }
 
     public void testNullApp() throws Exception {
         try {
@@ -59,21 +83,55 @@ public class CallbackTest extends DeployingTestBase {
     }
 
     public void testNullURL() throws Exception {
-        DeploymentDescriptorType dt = operation.createSmartFrogDescriptor(
-                DeploySmartFrogTest.SIMPLE_DESCRIPTOR);
-        URI uri = deploy(null, dt, null, null);
         try {
-            try {
-                operation.setCddlmCallback(uri, DUMMY_ENDPOINT, null);
-            } catch (AxisFault e) {
-                assertFaultMatches(e,
-                        DeployApiConstants.FAULT_BAD_ARGUMENT,
-                        CallbackProcessor.ERROR_NO_ADDRESS);
-            }
-        } finally {
-            undeploy(uri);
+            operation.setCddlmCallback(application, DUMMY_ENDPOINT, null);
+        } catch (AxisFault e) {
+            assertFaultMatches(e,
+                    DeployApiConstants.FAULT_BAD_ARGUMENT,
+                    CallbackProcessor.ERROR_NO_ADDRESS);
         }
     }
 
+    public void testBadType() throws Exception {
+        try {
+            CallbackInformationType callbackInfo = new CallbackInformationType();
+            callbackInfo.setType(null);
+            callbackInfo.setAddress(new CallbackAddressType(application, null));
+            _setCallbackRequest request = new _setCallbackRequest(application,
+                    callbackInfo);
+            operation.setCallback(request);
+
+        } catch (AxisFault e) {
+            assertFaultMatches(e,
+                    DeployApiConstants.FAULT_BAD_ARGUMENT,
+                    CallbackProcessor.ERROR_NO_CALLBACK_TYPE);
+        }
+    }
+
+    public void testNoCallbackIsAllowed() throws Exception {
+        _setCallbackRequest request = new _setCallbackRequest(application,
+                null);
+        operation.setCallback(request);
+    }
+
+    public void testUnsupportedType() throws Exception {
+        try {
+            CallbackInformationType callbackInfo = new CallbackInformationType();
+            callbackInfo.setType(null);
+            callbackInfo.setType(
+                    CallbackEnum.fromString(
+                            DeployApiConstants.CALLBACK_WS_NOTIFICATION));
+
+            callbackInfo.setAddress(new CallbackAddressType(application, null));
+            _setCallbackRequest request = new _setCallbackRequest(application,
+                    callbackInfo);
+            operation.setCallback(request);
+
+        } catch (AxisFault e) {
+            assertFaultMatches(e,
+                    DeployApiConstants.FAULT_UNSUPPORTED_CALLBACK,
+                    null);
+        }
+    }
 
 }

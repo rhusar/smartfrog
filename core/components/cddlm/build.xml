@@ -137,6 +137,36 @@
     <property name="verify.fail.message"
       value="No Axis found in ${lib.dir}"/>
   </target>
+
+
+  <target name="declare-client.compile.classpath" depends="declare-exec.classpath">
+    <path id="client.compile.classpath">
+      <path refid="exec.classpath"/>
+    </path>
+    <property name="client.compile.classpath.value" refid="client.compile.classpath"/>
+    <echo level="verbose">client.compile.classpath=${client.compile.classpath.value}</echo>
+  </target>
+
+
+  <target name="declare-client.run.classpath" depends="declare-client.compile.classpath">
+    <path id="client.run.classpath">
+      <path refid="client.compile.classpath"/>
+      <pathelement location="${build.client.classes.dir}"/>
+    </path>
+    <property name="client.run.classpath.value" refid="client.run.classpath"/>
+    <echo level="verbose">client.run.classpath=${client.run.classpath.value}</echo>
+  </target>
+
+  <target name="declare-tests.compile.classpath"
+    depends="declare-exec.classpath,use-smartfrog-testharness">
+    <path id="tests.compile.classpath">
+      <path refid="client.run.classpath"/>
+      <pathelement location="${junit.jar}"/>
+      <pathelement location="${testharness.jar}"/>
+    </path>
+    <property name="tests.compile.classpath.value" refid="tests.compile.classpath"/>
+    <echo level="verbose">tests.compile.classpath=${tests.compile.classpath.value}</echo>
+  </target>  
   
   <!-- ========================================================== -->
   <!-- utility method for anyone keeping lib up to date wrt axis
@@ -203,14 +233,6 @@
   </target>
 
   <!-- ========================================================== -->
-  <!-- start the daemon -->
-  <!-- ========================================================== -->
-  <!--     <target name="start-daemon" depends="parse,dist,start-daemon-if-needed"
-          description="start the daemon">
-      </target> -->
-
-
-  <!-- ========================================================== -->
   <!-- set up any properties for deployment -->
   <!-- ========================================================== -->
   <target name="init-deploy-properties" depends="init">
@@ -224,10 +246,11 @@
   <!-- ========================================================== -->
   <target name="deploy" depends="parse,dist,init-deploy-properties,undeploy,start-daemon-if-needed"
     description="deploy">
-    <sf-tourl property="target.jar.url" file="${target.jar}">
+    <sf-tourl property="target.jar.url">
       <fileset dir="${lib.dir}">
         <include name="**/*.jar"/>
       </fileset>
+      <fileset file="${target.jar}"/>
     </sf-tourl>
     <echo> codebase= ${target.jar.url}</echo>
     <sf-deploy classpathref="run.classpath"
@@ -472,14 +495,16 @@
       cache="${build.client.dir}/depends"
       closure="yes"/>
     <sf-javac
-      classpathref="compile.classpath"
-      srcdir="${client.src.dir}:${soap.client.dir}"
+      classpathref="client.compile.classpath"
+      srcdir="${client.src.dir}"
       destdir="${build.client.classes.dir}"
       />
     <copy-useful-files src="${client.src.dir}" dest="${build.client.classes.dir}"/>
-    <copy-useful-files src="${soap.client.dir}" dest="${build.client.classes.dir}"/>
   </target>
 
+
+  
+  
   <!-- ========================================================== -->
   <!-- system tests -->
   <!-- ========================================================== -->
@@ -593,4 +618,56 @@
       <param name="package" expression="${constants.package}"/>
     </xslt>
   </target>
+
+  <!-- ========================================================== -->
+  <!-- demo commands -->
+  <!-- ========================================================== -->
+
+  <target name="demo-init" depends="declare-classpaths">
+    <property name="console.package" value="org.cddlm.client.console"/>
+    <property name="server" value="http://localhost:5050/axis/services/cddlm"/>
+    <presetdef name="operation">
+      <java
+        fork="true"
+        failonerror="true"
+        classpathref="client.run.classpath"
+        >
+      </java>
+    </presetdef>
+  </target>
+
+
+  <target name="demo-listApplications" depends="demo-init"
+    description="list applications">
+    <operation classname="${console.package}.ListApplications">
+    </operation>
+  </target>
+
+  <target name="demo-serverStatus" depends="demo-init"
+    description="show server status">
+    <operation
+      classname="${console.package}.ShowServerStatus"/>
+  </target>
+
+  <target name="demo-applicationStatus" depends="demo-init"
+    description="show app status">
+    <operation classname="${console.package}.ApplicationStatus">
+      <arg value="${uri}"/>
+    </operation>
+  </target>
+
+  <target name="demo-undeploy" depends="demo-init"
+    description="undeploy an application; set uri property">
+    <operation classname="${console.package}.Undeploy">
+      <arg value="${uri}"/>
+    </operation>
+  </target>
+
+  <target name="demo-deploy-sf" depends="demo-init"
+    description="deploy an application; set file properties ">
+    <operation classname="${console.package}.DeploySmartFrogFile">
+      <arg file="${file}"/>
+    </operation>
+  </target>
+
 </project>

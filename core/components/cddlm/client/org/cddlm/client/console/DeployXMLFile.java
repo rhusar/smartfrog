@@ -1,4 +1,4 @@
-/** (C) Copyright 2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -17,49 +17,27 @@
  For more information: www.smartfrog.org
 
  */
-
-
 package org.cddlm.client.console;
 
 import org.cddlm.client.common.ServerBinding;
 
+import java.io.IOException;
 import java.io.PrintWriter;
-import java.rmi.RemoteException;
 
 /**
- * Date: 02-Sep-2004 Time: 20:43:09
+ * created Sep 15, 2004 1:41:46 PM
  */
-public class Undeploy extends ConsoleOperation {
 
-    private String reason;
+public class DeployXMLFile extends Deploy {
 
-    public Undeploy(ServerBinding binding, PrintWriter out) {
-        super(binding, out);
-    }
 
-    public Undeploy(ServerBinding binding, PrintWriter out, String[] args) {
-        super(binding, out);
-        bindToCommandLine(args);
-    }
-
-    /**
-     * get uri and reason from the command line
-     *
-     * @param args
-     */
-    public void bindToCommandLine(String[] args) {
-        bindUriToCommandLine(args);
-        reason = getFirstNonNullElement(args);
+    public DeployXMLFile(ServerBinding binding, PrintWriter out, String[] args) {
+        super(binding, out, args);
     }
 
 
-    /**
-     * execute this operation, or throw a remote exception
-     *
-     * @throws java.rmi.RemoteException
-     */
-    public void execute() throws RemoteException {
-        undeploy(uri, reason);
+    public void createDeploymentDescriptor() throws IOException {
+
     }
 
     /**
@@ -74,12 +52,12 @@ public class Undeploy extends ConsoleOperation {
 
     public static boolean innerMain(String[] args) {
         ServerBinding server;
-        Undeploy operation;
+        ConsoleOperation operation;
         boolean success = false;
         final PrintWriter pw = new PrintWriter(System.out);
         try {
             server = extractBindingFromCommandLine(args);
-            operation = new Undeploy(server, pw, args);
+            operation = new DeploySmartFrogFile(server, pw, args);
             success = operation.doExecute();
         } catch (Throwable e) {
             processThrowableInMain(e, pw);
@@ -88,4 +66,5 @@ public class Undeploy extends ConsoleOperation {
         pw.flush();
         return success;
     }
+
 }

@@ -29,7 +29,7 @@ public class Constants {
     public static final String[] LANGUAGES = {
         "SmartFrog", "1.0", DeployApiConstants.SMARTFROG_NAMESPACE,
         "XML-CDL", "0.3", DeployApiConstants.XML_CDL_NAMESPACE,
-        "Apache Ant", "1.7", DeployApiConstants.ANT_NAMESPACE
+//        "Apache Ant", "1.7", DeployApiConstants.ANT_NAMESPACE
     };
 
     public static final String[] LANGUAGE_NAMESPACES = {

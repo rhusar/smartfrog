@@ -202,7 +202,7 @@ public class DeployTest extends DeployingTestBase {
     }
 
 
-    public void testDeployInvalidURL() throws Exception {
+    public void NotestDeployInvalidURL() throws Exception {
         DeploymentDescriptorType descriptor = new DeploymentDescriptorType();
         descriptor.setSource(new URI("http://localhost/invalid.sf"));
         URI uri = deploy(null, descriptor, null, null);

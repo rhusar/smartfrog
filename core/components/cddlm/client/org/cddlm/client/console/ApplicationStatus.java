@@ -1,4 +1,4 @@
-/** (C) Copyright 2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -17,50 +17,49 @@
  For more information: www.smartfrog.org
 
  */
-
-
 package org.cddlm.client.console;
 
+import org.apache.axis.message.MessageElement;
 import org.cddlm.client.common.ServerBinding;
+import org.smartfrog.services.cddlm.generated.api.types.ApplicationStatusType;
+import org.smartfrog.services.cddlm.generated.api.types.UnboundedXMLOtherNamespace;
 
 import java.io.PrintWriter;
 import java.rmi.RemoteException;
 
 /**
- * Date: 02-Sep-2004 Time: 20:43:09
+ * created Sep 15, 2004 12:01:50 PM
  */
-public class Undeploy extends ConsoleOperation {
 
-    private String reason;
+public class ApplicationStatus extends ConsoleOperation {
 
-    public Undeploy(ServerBinding binding, PrintWriter out) {
+    public ApplicationStatus(ServerBinding binding, PrintWriter out,
+            String[] args) {
         super(binding, out);
-    }
-
-    public Undeploy(ServerBinding binding, PrintWriter out, String[] args) {
-        super(binding, out);
-        bindToCommandLine(args);
-    }
-
-    /**
-     * get uri and reason from the command line
-     *
-     * @param args
-     */
-    public void bindToCommandLine(String[] args) {
         bindUriToCommandLine(args);
-        reason = getFirstNonNullElement(args);
     }
-
 
     /**
      * execute this operation, or throw a remote exception
      *
-     * @throws java.rmi.RemoteException
+     * @throws RemoteException
      */
     public void execute() throws RemoteException {
-        undeploy(uri, reason);
+        ApplicationStatusType status = lookupApplicationStatus(uri);
+        out.println("uri:    " + status.getReference());
+        out.println("name:   " + status.getName());
+        out.println("status: " + status.getState());
+        out.println("info: " + status.getStateInfo());
+        UnboundedXMLOtherNamespace extendedState = status.getExtendedState();
+        if (extendedState != null) {
+            MessageElement[] any = extendedState.get_any();
+            for (int i = 0; i < any.length; i++) {
+                String s = any[i].toString();
+                out.println(s);
+            }
+        }
     }
+
 
     /**
      * entry point for this command line
@@ -74,12 +73,12 @@ public class Undeploy extends ConsoleOperation {
 
     public static boolean innerMain(String[] args) {
         ServerBinding server;
-        Undeploy operation;
+        ConsoleOperation operation;
         boolean success = false;
         final PrintWriter pw = new PrintWriter(System.out);
         try {
             server = extractBindingFromCommandLine(args);
-            operation = new Undeploy(server, pw, args);
+            operation = new ApplicationStatus(server, pw, args);
             success = operation.doExecute();
         } catch (Throwable e) {
             processThrowableInMain(e, pw);
@@ -88,4 +87,5 @@ public class Undeploy extends ConsoleOperation {
         pw.flush();
         return success;
     }
+
 }

@@ -42,7 +42,7 @@ import java.util.Properties;
 
 public class Options {
 
-    List /* OptionType */ options = new LinkedList();
+    private List /* OptionType */ options = new LinkedList();
 
     public OptionMapType toOptionMap() {
         final OptionMapType map = new OptionMapType();
