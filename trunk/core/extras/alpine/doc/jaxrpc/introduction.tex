@@ -7,16 +7,24 @@ characterise them as follows:
 
 \begin{enumerate}
 \item \textbf{simplicity}: It is intended to be easy to work with.
-\item \textbf{interoperability}: It is more interoperable than binary predecessors
-\item \textbf{XML-centric}: Built on XML, and intended to integrate
-with XML-based technologies.
-\item \textbf{extensibility}: The envelope/header/body structure allows extra data to be attached to a
-request, potentially without breaking existing systems.
+
+\item \textbf{interoperability}: It is more interoperable than binary
+predecessors
+
+\item \textbf{XML-centric}: Built on XML, and intended to integrate with
+XML-based technologies.
+
+\item \textbf{extensibility}: The envelope/header/body structure allows extra
+data to be attached to a request, potentially without breaking existing systems.
+
 \item \textbf{self-describing}: Messages can contain type definitions alongside
 data, and provide human readable names.
-\item \textbf{flexibility}: Participants can handle variable amounts of
-incoming data.
+
+\item \textbf{flexibility}: Participants can handle variable amounts of incoming
+data.
+
 \item \textbf{long-haul}: It is designed to work through firewalls, over HTTP.
+
 \item \textbf{loosely-coupled}: Participants are not expected to share
 implementation code.
 \end{enumerate}
@@ -27,12 +35,11 @@ desiderata against which any SOAP technology should be judged.
 \subsection{SOAP in Java}
 \label{intro:java}
 
-Communication with SOAP can be viewed as XML-based remote procedure
-calls, or as a way of submitting XML documents to remote URLs
-(optionally eliciting responses in the form of XML documents). These
-two different perspectives represent the RPC-centric and
-message-centric viewpoints. In Java, the RPC-centric model has become
-the primary model of SOAP APIs.
+Communication with SOAP can be viewed as XML-based remote procedure calls, or as
+a way of submitting XML documents to remote URLs (optionally eliciting responses
+in the form of XML documents). These two different perspectives represent the
+RPC-centric and message-centric viewpoints. In Java, the RPC-centric model has
+become the primary model of SOAP APIs.
 
 The Java APIs representing the two different underlying perspectives
 are JAX-RPC\footnote{Java API for XML-based RPC}
@@ -43,7 +50,7 @@ are JAX-RPC\footnote{Java API for XML-based RPC}
 \label{intro:jaxm}
 
 JAXM was written to support both basic SOAP, and more complex
-scenarious like asynchronous ebXML message exchange over SOAP. This
+scenarios like asynchronous ebXML message exchange over SOAP. This
 flexibility introduces significant extra complexity to the design.
 Over time, the ebXML focus of JAXM has declined, while the API itself
 has been renamed SAAJ\footnote{SOAP with Attachments API for Java}
@@ -59,7 +66,7 @@ headers, body and any binary attachments.
 JAXM does not provide significant transport support: the primary
 method of receiving JAXM messages is to implement and deploy an HTTP
 servlet.  The sole method of sending a message is to ask a
-\verb|SOAPConnectionFactory| for a \verb|SOAPConnection| instance, and
+{\tt SOAPConnectionFactory} for a {\tt SOAPConnection} instance, and
 then make a blocking call of the endpoint.
 
 JAXM is an orphan specification. If ebXML had taken off, perhaps it
@@ -70,17 +77,20 @@ with SOAP in Java.
 \subsubsection{JAX-RPC}
 \label{intro:jax-rpc}
 
-In JAX-RPC, all the details of how a message was encoded are hidden,
-and the developer works with Java objects created automatically from
-the XML data using a semi-standardised mapping process.Java classes
-can be automatically turned into SOAP endpoints, with each public
-method in the class exported as a {\tt SOAPAction}; an operation with
-a request message and a response message. The message structure is
-described in a WSDL file, which can be hand-written, or automatically
-extracted from the Java classes through introspection. 
+The current edition of the JAX-RPC specification is version1.1; this
+is the version which is under discussion. We will look at JAX-RPC2.0 in 
+ref{objections:implications:future}
+
+In JAX-RPC, all the details of how a message was encoded are hidden, the
+developer works with Java objects created automatically from the XML data using
+a semi-standardised mapping process. Java classes can be automatically turned
+into SOAP endpoints, with each public method in the class exported as an
+operation with a request message and a response message. The message structure
+is described in a WSDL file, which can be hand-written, or automatically
+extracted from the Java classes through introspection.
 
 Client side proxy classes can be generated from the WSDL files, proxy
-classes which again provide a method for every {\tt SOAPAction}. In
+classes which again provide a method for every operation the service supports. In
 Java-Java communications, the result is that methods called on the
 proxy class result in the passing of the method parameters to remote
 methods on an instance of the implementation class, a behaviour that
@@ -100,10 +110,10 @@ example Apache Axis \cite{apache:axis}), and by commercial vendors
 like Sun, IBM and BEA. These SOAP toolkits do all implement the
 appropriate version of JAXM/SAAJ to go alongside the RPC model, but
 this feature is neither broadly promoted nor used. All the
-\emph{evangelisation} of SOAP focuses on JAXRPC, as do most of the
+\emph{evangelisation} of SOAP focuses on JAX-RPC, as do most of the
 examples in the vendors' documentation.
 
-The bias is such that, for Java development, JAXRPC \emph{is} SOAP. 
+The bias is such that, for Java development, JAX-RPC \emph{is} SOAP. 
 
 \subsection{The Hard Lessons of Service Implementation}
 \label{intro:experience}
@@ -119,9 +129,9 @@ applications to a grid fabric.
 This service was defined in a ``pure way'', by writing the XSD and
 WSDL files first. This approach is believed to aid in creating a
 platform-independent system, and represents current best
-practice. However, the XSD file for the service messages is
-approximately 2000 lines, of which seventy-five percent is either
-comment or XSD annotations. That it takes so many lines to describe a
+practise. However, the XSD file for the service messages is
+approximately 2000 lines, including all the comments needed to make it
+comprehensible. That it takes so many lines to describe a
 relatively simple service is clearly one reason why this approach,
 despite its superiority of output, is so unpopular.
 

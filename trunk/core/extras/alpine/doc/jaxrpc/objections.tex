@@ -4,8 +4,8 @@
 \subsection{The Object/XML Impedance Mismatch}
 \label{objections:o-x}
 
-JAX-RPC attempts to turn an XML document into Java classes, using the
-type information attached to nodes. This is distinct from the kind of
+JAX-RPC attempts to turn an XML document into Java classes, using service
+specific mapping information. This is distinct from the kind of
 mapping performed by DOM implementations, in that the classes are
 ``serialised'' from the XML tree, not merely created to represent it
 (it is a semantic rather than syntactic mapping). This
@@ -37,6 +37,7 @@ children and the conversion is complete. If only it were so
 straightforward. There is a fundamental difference between the type
 systems of XML (especially that of XML Schema) and that of Java, which
 makes any mapping both complex and brittle.
+
 
 \subsubsection{Binding XML Elements to Java Classes}
 \label{objections:o-x:xml-classes}
@@ -71,6 +72,10 @@ The actual result is going to be a simple class of type {\tt String}:
 all restriction information will be lost in the transformation from
 XML Schema to Java. This is a fundamental difference, and one which
 would appear to remain intractable except in special cases.
+
+Note that XML Schema offers other type extension mechanisms, such as
+substitution and derivation. These mechanism have similar issues with mapping
+to the inheritance and type model of Java. 
 
 \subsubsection{Mapping XML Names to Java Identifiers}
 \label{objections:o-x:names}
@@ -137,7 +142,7 @@ could reorder the values, without the code detecting a change.
 
 Some Java types are by nature explicitly unportable. One would not
 expect to be able to have a SOAP runtime serialise a database
-connection instance and have it reconsituted in working order at the
+connection instance and have it reconstituted in working order at the
 far end. One might hope that a {\tt java.util.Hashtable} could be
 translated into some structure that could be turned into a
 platform-specific equivalent at the far end. But surely a {\tt
@@ -163,6 +168,44 @@ time\_t} format, as our time representation. This is no longer human
 readable, but it works\footnote{It violates the spirit (if not the
 letter) of SOAP's aim to be self-describing, however.}.
 
+\subsubsection{Serialising a Graph of Objects}
+\label{objections:o-x:graphs}
+
+XML is a hierarchical data structure, and can only describe trees or lists 
+or lists of data. Java classes almost invariably refer to other objects, often 
+creating cyclic graphs of objects. If such a cyclic graph is to be mapped into XML,
+the mapping infrastructure must recognise the cycle, otherwise the mapping would
+hang in an endless loop. Once the cycle is recognised, it must be addressed. The
+options appear to be
+\begin{enumerate}
+\item signal an error
+\item insert cross references into the XML message, for processing by the mapper
+at the destination.
+\item break the graph by duplicating content in the XML
+\item insert explicit relationship information into the message 
+\end{enumerate}
+
+The only one of these solutions which seamlessly marshals cyclic graphs of
+objects is option two: cross references in the XML. The SOAP solution for this
+is SOAP Section 5 encoding, as documented in \cite{spec:SOAP1.1}. This linking
+mechanism is only supported in rpc/encoded messages; the
+document/literal message format does not support it. 
+
+JAX-RPC was originally written for rpc/encoded, but the alternate
+representation, document/literal, is broadly perceived as a better
+representation for other reasons, specifically its superior flexibility. There
+is no way to marshal a cyclic graph into a ``doc/lit'' message without custom
+code. 
+
+This problem is covered in detail in ``Effective Enterprise Java'' 
+\cite{neward:EEJ}, where it is termed \emph{the object-hierarchical impedance
+mismatch}. It is not a specific flaw with JAX-RPC per-se, as any technology that
+attempts to map between XML to a cyclic object graph suffers from the same
+problem.  
+
+
+
+
 \subsubsection{XML Metadata and Namespaces}
 \label{objections:o-x:namespaces}
 
@@ -174,7 +217,7 @@ and Java classes.
 The problem is essentially as follows: each node in an XML message can
 have attached to it a namespace. There is no related construct in Java
 which can model this accurately. The choice that is normally made is
-to model it innaccurately by package names (mapping namespaces to Java
+to model it inaccurately by package names (mapping namespaces to Java
 packages provides many of the problem discussed in section
 \ref{objections:o-x:names}). 
 
@@ -225,7 +268,7 @@ their ability to interoperate with general clients.
 
 JAX-RPC and JAXM are two different views of the world. What does JAX-RPC
 do when it encounters a piece of random XML in a message? It creates a
-JAXM {\tt Node} to describe that part of the tree.
+SAAJ {\tt Node} to describe that part of the tree.
 
 From that point on, the tree below the node is permanently isolated
 from the JAX-RPC model: the developer has sailed off the edge of the
@@ -241,7 +284,7 @@ to its being more extensible and less brittle than its predecessors.
 \subsubsection{Fault processing}
 \label{objections:soap-not-rmi:faults}
 
-JAX-RPC tries to marshall Java faults over the network in such a way
+JAX-RPC tries to marshal Java faults over the network in such a way
 that they can be reconstituted at the far end into the same fault.
 This is a somewhat complex process to manage, as the class name of the
 fault must be exchanged as the fault code. Since faults are often
@@ -253,7 +296,7 @@ name\footnote{This implicitly requires code to be built with debugging
 information, so that the bytecode can be analysed to determine
 parameter names.}.
 
-We believe that attempting to seamlessly marshall faults is a mistaken
+We believe that attempting to seamlessly marshal faults is a mistaken
 approach.  By propagating the still controversial ``declare all
 possible faults'' rule of Java into remote interfaces, it exposes
 platform implementation details. If a service could only raise a
@@ -273,35 +316,43 @@ another capability of SOAP's which JAX-RPC fails to deliver upon.
 \subsection{SOAP is not just RPC}
 \label{objections:soap-not-just-rmi}
 
-SOAP's parentage includes XML-RPC \cite{winer:xmlrpc} and indirectly
-COM/DCOM \cite{dbox:com}. It was clearly designed at its outset to be
-a form of remote procedure call in XML, over HTTP. Over time, the
-world-view that lead to that choice has changed. Though it is often
-presented as a form of RPC, it is coming to be seen that it is more
-powerful when viewed as a system where arbitrary XML documents are
-exchanged between parties, potentially asynchronously, and potentially
-via intermediaries.
+SOAP's parentage includes XML-RPC \cite{winer:xmlrpc} and indirectly COM/DCOM
+and CORBA \cite{dbox:com, vinoski:CORBA}. It was clearly designed at its outset
+to be a form of remote procedure call in XML, over HTTP. Over time, the
+world-view that lead to that choice has changed. Though it is often presented as
+a form of RPC, it is coming to be seen that it is more powerful when viewed as a
+system where arbitrary XML documents are exchanged between parties, potentially
+asynchronously, and potentially via intermediaries.
 
 In this world, the programming paradigms that seemed appropriate for
 an RPC infrastructure look out of place. On a fast network, RPC
 invocation is often a good choice, as other models of communication
-are harder to code, and their benefits are not readily apparent. When
-we begin to work over long-haul connections, however, or with large
-content (eg fifteen megabyte attachments), the limitations of RPC
+are harder to code, and their benefits are not readily apparent. A complex
+communication can be modelled in a few lines of code, rather than a state
+machine, and the synchronous nature of the communication makes it easier to
+to build a model of the state of the remote system.  
+
+When we begin to work over long-haul connections, however, or with large
+content (e.g.\ fifteen megabyte attachments), the limitations of RPC
 become clear.
 
-The greatest of these is that RPC is implicity synchronous. Although
+The greatest of these is that RPC is synchronous. Although
 asynchronous behaviours can, with some difficulty, be introduced, this
 is not the natural way for RPC to behave. As content becomes larger
 and the network latency increases, the problems posed by synchronous
-calls become much more acute.
+calls become much more acute. 
 
 Currently, our only option is to split network communication into a
 separate thread from the rest of the program. While this works, it
 provides the programmer no way to give the user effective feedback or
 control over the communications. There is no way to receive progress
 notifications or cancel an active call, even though the underlying
-transport code invariably permits such features.
+transport code invariably permits such features. This has caused problems when
+one of the authors wrote a GUI front end to a service that could accept 15-30MB
+CAD files: while multithreading could keep the UI responsive, there was no way
+to present an upload progress indicator or offer a cancel button. These are both
+features one expects in a Web Browser, and which one would expect in a Web
+Service client.
 
 Again, following our principle that SOAP technologies should
 attempt to work to the same goals as SOAP itself, we note that SOAP
@@ -318,7 +369,7 @@ with RPC invocation: it tries to make the communications look like
 Java RMI. Java's RMI system is a simple and effective mechanism for
 connecting Java classes running on different machines. It is an
 IDL-free communication mechanism, which relies on introspection to
-create proxy classes and to marshall classes. It works because the
+create proxy classes and to marshal classes. It works because the
 systems at both ends are Java, usually different pieces of a single
 larger application. Even then, it works best if both ends are running
 the same version of all classes.
@@ -328,12 +379,12 @@ serialised and sent over a network connection. Exceptions are just
 another type of object, and so too can be sent over the wire. There is
 no need for an IDL, as Java interface declarations can perform much of
 the same role. And as the recipient is a remote object, state is
-automatic.  One can even keep code synchronized by using a special
+automatic.  One can even keep code synchronised by using a special
 class loader, one that fetches code from jointly-accessible URLs.
 
 JAX-RPC tries to reuse many of the programming patterns of RMI. For
 example, the runtime will attempt to serialise classes marked as
-{\tt Serialisable}, ignoring those fields marked as
+{\tt Serializable}, ignoring those fields marked as
 {\tt transient}. It will even serialise complex compound objects where
 possible. The user appears to have a reference to something like an
 object, though one that represents the current conversation with an
