@@ -131,7 +131,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
       final JCheckBoxMenuItem jCheckBoxMenuItemShowRootProcessPanel = new JCheckBoxMenuItem();
       String infoConnection = ("sfManagementConsole connecting to " +
             hostname + ":" + port);
-      System.out.print(infoConnection);
+      Logger.log(infoConnection);
       nameDisplay = nameDisplay + " [" + "sfManagementConsole connected to " +
             hostname + ":" + port + "]";
 
@@ -168,8 +168,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
                         Logger.log(ex);
 //                        System.err.println();
 //                        ex.printStackTrace();
-                        exitWith("Error in SFDeployDisplay.refresh():" +
-                              ex);
+                        exitWith("Error in SFDeployDisplay.refresh():" + ex);
                      }
                   }
                }
