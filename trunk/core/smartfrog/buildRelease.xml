@@ -98,7 +98,7 @@ To Be Written
     <echo message="         Ex. cvs tag release3_01_003_alpha "/>
     <echo message=" "/>
     <echo message="  5. Clean cheout with tag: "/>
-    <echo message="         Ex. cvs checkout -r release3_01_001_alpha CVSROOT  "/>
+    <echo message="         Ex. cvs checkout -r release3_02_000_alpha core"/>
     <echo message=" "/>
     <echo message="  6. Build new release: "/>
     <echo message="         Go to fresh module directory and run:"/>
