@@ -29,8 +29,6 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import org.smartfrog.SFSystem;
-//import org.smartfrog.sfcore.common.Context;
-//import org.smartfrog.sfcore.common.ContextImpl;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.SmartFrogCoreProperty;
 import org.smartfrog.sfcore.common.OrderedHashtable;
@@ -50,6 +48,7 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.security.SFClassLoader;
+
 
 import sun.misc.Signal;
 import sun.misc.SignalHandler;
@@ -386,12 +385,39 @@ public class SFProcess implements MessageKeys {
         // @TODO fix after refactoring ProcessCompound.
         //deployDefaultProcessDescriptions((ProcessCompound)processCompound);
 
-
         return processCompound;
     }
 
 
 
+    /**
+     * Resets the root process compound
+     * @param reference of terminatorCompleteName
+     * @return new root process compound
+     *
+     * @throws SmartFrogException if failed to deploy process compound, the root process compound didn't exist or ir the local process compound is not a root process compound
+     *
+     *  @ TODO: test it!
+     */
+    public static synchronized ProcessCompound resetRootProcessCompound(Reference terminatorCompleteName)
+        throws SmartFrogException,RemoteException {
+        if ((processCompound != null)&& processCompound.sfIsRoot()) {
+            //Terminate process compound but without system exit
+            processCompound.systemExitOnTermination(false);
+            TerminationRecord termR = new TerminationRecord("normal",
+                   "Restarting ProcessCompound: "+
+                    processCompound.sfCompleteName(), terminatorCompleteName);
+                processCompound.sfAddAttribute("sfSyncTerminate",new Boolean(true));
+                processCompound.sfTerminate(termR);
+                return deployProcessCompound();
+        }
+        if (processCompound == null) {
+           throw new SmartFrogRuntimeException ("Process Compound cannot be reset: is null");
+        }else {
+            throw new SmartFrogRuntimeException(
+                "Process Compound cannot be reset");
+        }
+    }
 
 
     /**
@@ -527,5 +553,6 @@ public class SFProcess implements MessageKeys {
         }
         return target;
     }
+
 
 }
