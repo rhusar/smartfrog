@@ -108,7 +108,7 @@ public interface ComponentDescription extends Copying, ReferenceResolver, Refere
      *
      * @see #setContext
      */
-    public Context getContext();
+    public Context sfContext();
 
     /**
      * Sets the context for this description.
@@ -128,7 +128,7 @@ public interface ComponentDescription extends Copying, ReferenceResolver, Refere
      *
      * @see #setParent
      */
-    public ComponentDescription getParent();
+    public ComponentDescription sfParent();
 
     /**
      * Sets parent for this component.

@@ -297,7 +297,7 @@ public class SFProcess implements MessageKeys {
                 name = key.substring(SmartFrogCoreProperty.defaultDescPropBase.length());
                 //SFSystem.deployFromURL(url,name, comp);
                 ComponentDescription cd = ComponentDescriptionImpl.sfComponentDescription(url);
-                compDesc.getContext().put(name,cd);
+                compDesc.sfAddAttribute(name,cd); //.getContext().put(name,cd);
             }
         }
     }

@@ -49,7 +49,7 @@ public class Assertions extends BasePredicate implements PhaseAction {
         String description = "";
 
         ref = component.sfCompleteName();
-        ComponentDescription parent = (ComponentDescription) component.getParent();
+        ComponentDescription parent = (ComponentDescription) component.sfParent();
 
 
         for (Enumeration keys = context.keys(); keys.hasMoreElements();) {

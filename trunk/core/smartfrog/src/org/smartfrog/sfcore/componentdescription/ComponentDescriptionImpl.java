@@ -110,7 +110,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
         }
 
         Reference r = parent.sfCompleteName();
-        Object name = parent.getContext().keyFor(this);
+        Object name = parent.sfAttributeKeyFor(this);
 
         if (name != null) {
             r.addElement(ReferencePart.here(name));
@@ -186,7 +186,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      *
      * @see #setContext
      */
-    public Context getContext() {
+    public Context sfContext() {
         return context;
     }
 
@@ -197,7 +197,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      *
      * @return old context
      *
-     * @see #getContext
+     * @see #sfContext
      */
     public Context setContext(Context cxt) {
         Context oc = context;
@@ -213,7 +213,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      *
      * @see #setParent
      */
-    public ComponentDescription getParent() {
+    public ComponentDescription sfParent() {
         return parent;
     }
 
@@ -272,7 +272,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * @return context value for id or null if none
      */
     public Object sfResolveId(Object id) {
-        return getContext().get(id);
+        return sfContext().get(id);
     }
 
     /**
@@ -281,7 +281,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * @return parent or null if no parent
      */
     public ReferenceResolver sfResolveParent() {
-        return getParent();
+        return sfParent();
     }
 
     /**
@@ -330,7 +330,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
         res.setEager(eager);
 
         for (Enumeration e = context.keys(); e.hasMoreElements();) {
-            Object value = res.getContext().get(e.nextElement());
+            Object value = res.sfContext().get(e.nextElement());
 
             if (value instanceof ComponentDescription) {
                 ((ComponentDescription) value).setParent(res);
@@ -441,10 +441,10 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
             ComponentDescription compVal = (ComponentDescription) value;
             ps.write("extends " + (compVal.getEager() ? "" : "LAZY "));
 
-            if (compVal.getContext().size() > 0) {
+            if (compVal.sfContext().size() > 0) {
                 ps.write(" {\n");
                 compVal.writeContextOn(ps, indent + 1,
-                    compVal.getContext().keys());
+                    compVal.sfContext().keys());
                 tabPad(ps, indent);
                 ps.write('}');
             } else {
@@ -676,7 +676,11 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
                   }
                 }
                 String cxtKey = key.substring(startWith.length());
-                compDesc.getContext().put(cxtKey, value);
+                try {
+                  compDesc.sfAddAttribute(cxtKey, value);
+                } catch (SmartFrogRuntimeException ex1) {
+                   //Logger.log(ex1);
+                }
             }
         }
         return compDesc;

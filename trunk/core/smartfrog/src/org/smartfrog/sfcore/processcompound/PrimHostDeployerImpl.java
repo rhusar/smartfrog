@@ -79,8 +79,8 @@ public class PrimHostDeployerImpl extends PrimDeployerImpl {
             return SFProcess.getProcessCompound();
         } catch (java.net.UnknownHostException unhex){
                 Object name = null;
-                if (target.getContext().containsKey(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME)) {
-                    name =target.getContext().get(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME);
+                if (target.sfContext().containsKey(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME)) {
+                    name =target.sfResolveId(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME);
                 }
                 throw new SmartFrogDeploymentException (refProcessHost,null,name,target,null,"Unknown host: "+hostname, unhex, hostname);
         }

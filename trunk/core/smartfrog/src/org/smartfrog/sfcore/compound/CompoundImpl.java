@@ -138,8 +138,9 @@ public class CompoundImpl extends PrimImpl implements Compound {
             // It will build source recursively
             Reference newRef =new Reference();
             if (name==null) {
-                if (cmp.getContext().containsKey(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME))
-                    name =cmp.getContext().get(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME);
+                //@todo review methods for compDesc
+                if (cmp.sfContext().containsKey(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME))
+                    name =cmp.sfContext().get(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME);
                 try {
                     newRef = parent.sfCompleteName();
                 } catch (Exception ex){

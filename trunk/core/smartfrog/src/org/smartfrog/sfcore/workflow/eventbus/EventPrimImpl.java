@@ -140,7 +140,7 @@ public class EventPrimImpl extends PrimImpl implements EventRegistration,
         /* find local registrations and register them */
         ComponentDescription sends = (ComponentDescription)
                                             sfResolve(sendRef);
-        Context scxt = sends.getContext();
+        Context scxt = sends.sfContext();
 
         for (Enumeration e = scxt.keys(); e.hasMoreElements();) {
             Object k = e.nextElement();
@@ -152,7 +152,7 @@ public class EventPrimImpl extends PrimImpl implements EventRegistration,
         /* find own registrations, and register remotely */
         ComponentDescription regs = (ComponentDescription)
                                             sfResolve(receiveRef);
-        Context rcxt = regs.getContext();
+        Context rcxt = regs.sfContext();
 
         for (Enumeration e = rcxt.keys(); e.hasMoreElements();) {
             Object k = e.nextElement();

@@ -86,7 +86,7 @@ public class PrimDeployerImpl implements ComponentDeployer, MessageKeys {
             // deploy component after wiping out the parentage of any
             // descriptions in the context. Prim is not a valid parent, so
             // lose the parent baggage
-            cxt = target.getContext();
+            cxt = target.sfContext();
 
             for (Enumeration e = cxt.keys(); e.hasMoreElements();) {
                 Object value = cxt.get(e.nextElement());
@@ -160,16 +160,16 @@ public class PrimDeployerImpl implements ComponentDeployer, MessageKeys {
             throw resex;
         } catch (java.lang.ClassCastException ccex){
             Object name = null;
-            if (target.getContext().containsKey(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME)) {
-                name =target.getContext().get(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME);
+            if (target.sfContext().containsKey(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME)) {
+                name =target.sfResolveId(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME);
             }
             throw new SmartFrogDeploymentException (refClass,null,name,target,
               null,"Wrong class when resolving '"+refClass+ "': '"
               +obj+"' ("+obj.getClass().getName()+")" , ccex, targetCodeBase);
         } catch (java.lang.ClassNotFoundException cnfex){
             Object name = null;
-            if (target.getContext().containsKey(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME)) {
-                name =target.getContext().get(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME);
+            if (target.sfContext().containsKey(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME)) {
+                name =target.sfResolveId(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME);
             }
             throw new SmartFrogDeploymentException (refClass,null,name,target,null,"Class not found", cnfex, targetCodeBase);
         }
@@ -202,7 +202,11 @@ public class PrimDeployerImpl implements ComponentDeployer, MessageKeys {
         if (params != null) {
             for (Enumeration e = params.keys(); e.hasMoreElements();) {
                 Object key = e.nextElement();
-                target.getContext().put(key, params.get(key));
+                try {
+                  target.sfAddAttribute(key, params.get(key));
+                } catch (SmartFrogRuntimeException ex) {
+                  throw (SmartFrogDeploymentException)SmartFrogDeploymentException.forward(ex);
+                }
             }
         }
         return deploy(parent);

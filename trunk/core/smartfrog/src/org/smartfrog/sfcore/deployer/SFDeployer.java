@@ -131,21 +131,21 @@ public class SFDeployer implements MessageKeys {
         } catch (NoSuchMethodException nsmetexcp) {
             throw new SmartFrogDeploymentException(MessageUtil.formatMessage(
                     MSG_METHOD_NOT_FOUND, className, "getConstructor()"),
-                nsmetexcp, null, component.getContext());
+                nsmetexcp, null, component.sfContext());
         } catch (ClassNotFoundException cnfexcp) {
             throw new SmartFrogDeploymentException(MessageUtil.formatMessage(
-                    MSG_CLASS_NOT_FOUND, className), cnfexcp, null, component.getContext());
+                    MSG_CLASS_NOT_FOUND, className), cnfexcp, null, component.sfContext());
         } catch (InstantiationException instexcp) {
             throw new SmartFrogDeploymentException(MessageUtil.formatMessage(
-                    MSG_INSTANTIATION_ERROR, className), instexcp, null, component.getContext());
+                    MSG_INSTANTIATION_ERROR, className), instexcp, null, component.sfContext());
         } catch (IllegalAccessException illaexcp) {
             throw new SmartFrogDeploymentException(MessageUtil.formatMessage(
                     MSG_ILLEGAL_ACCESS, className, "newInstance()"), illaexcp,
-                null, component.getContext());
+                null, component.sfContext());
         } catch (InvocationTargetException intarexcp) {
             throw new SmartFrogDeploymentException(MessageUtil.formatMessage(
                     MSG_INVOCATION_TARGET, className), intarexcp,
-                null, component.getContext());
+                null, component.sfContext());
         }
     }
 }
