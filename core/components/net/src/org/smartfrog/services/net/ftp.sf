@@ -63,5 +63,6 @@ FTPClient extends Compound {
         // two possible values are "ascii" and "binary"
         //transferMode "binary";
         transferMode "ascii";
+        shouldTerminate true;
     }
 }
