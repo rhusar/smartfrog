@@ -26,6 +26,7 @@ import org.smartfrog.sfcore.common.MessageKeys;
 import org.smartfrog.sfcore.common.MessageUtil;
 import org.smartfrog.sfcore.common.OptionSet;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
+import org.smartfrog.sfcore.common.SmartFrogCoreProperty;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.sfcore.processcompound.SFProcess;
@@ -67,28 +68,6 @@ public class SFSystem implements MessageKeys {
     /** A flag that ensures only one system initialization. */
     private static boolean alreadySystemInit = false;
 
-    /**
-     * Base for all smartfrog properties. All properties looked up by classes
-     * in SmartFrog use this as a base, add the package name and then the
-     * property id to look up
-     */
-    public static final String propBase = "org.smartfrog.";
-
-    /** Property name for class name for standard output stream. */
-    public static final String propOutStreamClass = propBase +
-        "outStreamClass";
-
-    /** Property name for class name for standard error stream. */
-    public static final String propErrStreamClass = propBase +
-        "errStreamClass";
-
-    /** Property name for ini file to read at start-up. */
-    public static final String iniFile = propBase + "iniFile";
-
-
-    /** Property name for logging stackTrace during exceptions. */
-    public static final String propLogStackTrace = propBase +
-        "logger.logStackTrace";
 
     /**
      * value of the errror code returned during a failed exit
@@ -132,7 +111,7 @@ public class SFSystem implements MessageKeys {
      * ini file
      */
     public static void readPropertiesFromIniFile() throws SmartFrogException {
-        String source = System.getProperty(iniFile);
+        String source = System.getProperty(SmartFrogCoreProperty.iniFile);
 
         if (source != null) {
             InputStream iniFileStream = getInputStreamForResource(source);
@@ -173,7 +152,7 @@ public class SFSystem implements MessageKeys {
      * updates Logger with the value to enable stack tracing.
      */
     public static void readPropertyLogStackTrace() {
-        String source = System.getProperty(propLogStackTrace);
+        String source = System.getProperty(SmartFrogCoreProperty.propLogStackTrace);
         if ((source != null)&&(source.equals("true"))) {
             Logger.logStackTrace = true;
             Logger.log(MessageUtil.
@@ -190,8 +169,8 @@ public class SFSystem implements MessageKeys {
      * @exception SmartFrogException failed to create or set output/error streams
      */
     public static void setOutputStreams() throws SmartFrogException {
-        String outClass = SFSystem.getProperty(propOutStreamClass);
-        String errClass = SFSystem.getProperty(propErrStreamClass);
+        String outClass = SFSystem.getProperty(SmartFrogCoreProperty.propOutStreamClass);
+        String errClass = SFSystem.getProperty(SmartFrogCoreProperty.propErrStreamClass);
 
         try {
             if (errClass != null) {
