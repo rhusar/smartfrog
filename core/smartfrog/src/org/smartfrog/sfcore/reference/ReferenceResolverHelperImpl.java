@@ -9,7 +9,7 @@ import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.common.SFNull;
 import org.smartfrog.sfcore.prim.Prim;
-
+import java.io.File;
 
  public abstract class ReferenceResolverHelperImpl extends Object  {
     protected ReferenceResolverHelperImpl() {
@@ -608,6 +608,48 @@ import org.smartfrog.sfcore.prim.Prim;
                                     this.sfCompleteNameSafe()
                                     , referenceObj , referenceObj.getClass().toString()
                                     , "java.util.Vector to String[]");
+            }
+        } catch (SmartFrogResolutionException e) {
+            if ((mandatory) || (illegalClassType)) {
+                throw e;
+            }
+        }
+
+        return defaultValue;
+    }
+
+    /**
+     * Resolves given reference. Utility method to resolve an attribute with a
+     * String value and returns a File
+     *
+     * @param reference reference
+     * @param defaultValue File default value that is returned when reference
+     *        is not found and it is not mandatory
+     * @param mandatory boolean that indicates if this attribute must be
+     *        present in the description. If it is mandatory and not found it
+     *        triggers a SmartFrogResolutionException
+     *
+     * @return File for attribute value, null if SFNull is found or defaultValue if not found
+     *
+     * @throws SmartFrogResolutionException illegal reference or reference
+     * not resolvable
+     */
+    public File sfResolve(Reference reference, File defaultValue,
+        boolean mandatory) throws SmartFrogResolutionException {
+        boolean illegalClassType = false;
+
+        try {
+            Object referenceObj = sfResolve(reference, 0);
+            if (referenceObj instanceof SFNull) {return null;}
+
+            if (referenceObj instanceof String) {
+                return new File(((String) referenceObj).toString());
+            } else {
+                illegalClassType = true;
+                throw SmartFrogResolutionException.illegalClassType(reference,
+                                    this.sfCompleteNameSafe()
+                                    , referenceObj , referenceObj.getClass().toString()
+                                    , "java.io.File");
             }
         } catch (SmartFrogResolutionException e) {
             if ((mandatory) || (illegalClassType)) {
@@ -1223,6 +1265,27 @@ import org.smartfrog.sfcore.prim.Prim;
      *
      */
     public String[] sfResolve(String referencePart, String[] defaultValue,
+        boolean mandatory) throws SmartFrogResolutionException {
+        return sfResolve(new Reference(referencePart), defaultValue, mandatory);
+    }
+    /**
+     * Resolves a referencePart given a String and gets a File. Utility method
+     * to resolve an attribute with a String value returning a File.
+     *
+     * @param referencePart string field reference
+     * @param defaultValue File default value that is returned when reference
+     *        is not found and it is not mandatory
+     * @param mandatory boolean that indicates if this attribute must be
+     *        present in the description. If it is mandatory and not found it
+     *        triggers a SmartFrogResolutionException
+     *
+     * @return java.io.File for attribute value, null if SFNull is found or defaultValue if not found
+     *
+     * @throws SmartFrogResolutionException illegal reference or reference
+     * not resolvable
+     *
+     */
+    public File sfResolve(String referencePart, File defaultValue,
         boolean mandatory) throws SmartFrogResolutionException {
         return sfResolve(new Reference(referencePart), defaultValue, mandatory);
     }
