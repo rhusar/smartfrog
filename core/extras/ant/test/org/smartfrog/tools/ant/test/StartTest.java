@@ -120,7 +120,7 @@ public class StartTest extends TaskTestBase {
     public void testRunFile() {
         executeTarget("testRunFile");
         assertInLog("failed to deploy 'app' component");
-        assertInLog("Reference not found, Unresolved Reference: sfClass");
+        assertInLog("Reference not found, Unresolved Reference: HERE sfClass");
         assertInLog("SmartFrog [rootProcess] dead");
     }
 

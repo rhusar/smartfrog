@@ -50,26 +50,6 @@ public class RunApplicationTask extends DeployingTaskBase {
         return "sf-run";
     }
 
-//    /**
-//     * deploy the applications listed by creating a -a app descriptor list
-//     * on the command line
-//     */
-//    public void deployApplications() {
-//        Iterator it=applications.iterator();
-//        while (it.hasNext()) {
-//            Application application = (Application) it.next();
-//            application.validate();
-//              addArg("-a");
-//              addArg(application.getName()+":" //NAME
-//                    +"DEPLOY"+":"              //Action: DEPLOY,TERMINATE,DETACH,DETaTERM
-//                    +application.getDescriptor()+":"                    //URL
-//                    +""+":"              // sfConfig or empty
-//                    +""+":"              // host -> EMPTY to run App without
-//                                         // deploying onto rootProcess
-//                    +"");                // subprocess
-//        }
-//    }
-
 
     /**
      * run a task
