@@ -133,22 +133,26 @@ public class SFParse implements MessageKeys {
 
             phaseList = top.sfGetPhases();
             String phase;
+
             for (Enumeration e = phaseList.elements(); e.hasMoreElements(); ) {
                 phase = (String) e.nextElement();
                 try {
-                  top = top.sfResolvePhase(phase);
-                  if (opts.verbose && !opts.quiet) {
-                    printPhase(phase, top.toString());
-                  }
-                  report.add("   "+ phase +" phase: OK");
+                    if (phase.equals("predicate")&& (opts.description)) {
+                       top = top.sfResolvePhase("description");
+                       printDescription(top,"stdout_txt");
+                    } else {
+                        top = top.sfResolvePhase(phase);
+                        if (opts.verbose&&!opts.quiet) {
+                            printPhase(phase, top.toString());
+                        }
+                        report.add("   "+phase+" phase: OK");
+                    }
                 } catch (Exception ex) {
                   //report.add("   "+ phase +" phase: "+ex.getMessage());
                   report.add("   "+ phase +" phase: FAILED!");
                   throw ex;
                 }
             }
-
-            printDescription(top,"stdout_txt");
             parseTime=System.currentTimeMillis()-parseTime;
             //org.smartfrog.sfcore.common.Logger.log(" * "+fileUrl +" parsed in "+ parseTime + " millisecs.");
             report .add(", parsed in "+ (parseTime) + " millisecs.");
@@ -330,22 +334,24 @@ public class SFParse implements MessageKeys {
     * @param top the phases to be printed
     * @param format the presentation format
     */
-    private static void printDescription(Phases top, String format) {
-        //@TODO: add different formats like html, xhtml, pdf , txt, ...
-        try {
-             if ( !opts.quiet) {
-                 if (opts.verbose) Logger.log(
-                  "******************** component description *********************");
-                if (opts.description) {
-                Logger.log("Description of sfConfig component\n\n");
-                top.sfResolvePhase("description");
-                } else
-                Logger.log(top.sfAsComponentDescription().toString());
-              }
-        } catch (Exception ex){
-             Logger.log(ex);
-        }
-    }
+   private static void printDescription(Phases top, String format) {
+       //@TODO: add different formats like html, xhtml, pdf , txt, ...
+       try {
+           if (!opts.quiet) {
+               if (opts.verbose)
+                   Logger.log(
+                       "******************** component description *********************");
+               if (opts.description) {
+                   Logger.log("Description of sfConfig component\n\n");
+                   top.sfResolvePhase("description");
+                   Logger.log(top.sfAsComponentDescription().toString());
+               } else
+                   Logger.log(top.sfAsComponentDescription().toString());
+           }
+       } catch (Exception ex) {
+           Logger.log(ex);
+       }
+   }
 
    /**
     *  Prints the total parsing report.
