@@ -82,8 +82,8 @@ public class ActionDeploy extends ConfigurationAction {
 
            } else if ((parent!=null)&&(parent instanceof Compound)&&(appName==null)){
              //From ProcessCompoundImpl. Creates  name for unnamed components...
-             appName = SmartFrogCoreKeys.SF_UNNAMED + (new Date()).getTime() + "_" +
-                ProcessCompoundImpl.registrationNumber++;
+//             appName = SmartFrogCoreKeys.SF_UNNAMED + (new Date()).getTime() + "_" +
+//                ProcessCompoundImpl.registrationNumber++;
 
           }
           // This is needed so that the root component is properly named
@@ -176,25 +176,26 @@ public class ActionDeploy extends ConfigurationAction {
        Reference ref = null;
        //Placement
        if (name !=null) {
-         if (name.endsWith(":")){
-            ref = Reference.fromString(name.substring(0,name.length()-1));
-            parent = (Prim) targetP.sfResolve(ref);
-            name = null;
-         }  else {
-           ref = Reference.fromString(name);
-           if (ref.size() > 1) {
-             ReferencePart refPart = ref.lastElement();
-             name = refPart.toString();
-             name = name.substring(
-                 name.lastIndexOf(HereReferencePart.HERE + " ") +
-                 HereReferencePart.HERE.length() + 1);
-             ref.removeElement(refPart);
-             parent = (Prim) targetP.sfResolve(ref);
-           }
+          try {
+            ref = Reference.fromString(name);
+          }
+          catch (SmartFrogResolutionException ex) {
+             throw new SmartFrogResolutionException (null,targetP.sfCompleteName(),
+                 MessageUtil.formatMessage(MessageKeys.MSG_ILLEGAL_REFERENCE)
+                 +" when parsing '"+name+"'");
+          }
+
+         if (ref.size() > 1) {
+           ReferencePart refPart = ref.lastElement();
+           name = refPart.toString();
+           name = name.substring(
+               name.lastIndexOf(HereReferencePart.HERE + " ") +
+               HereReferencePart.HERE.length() + 1);
+           ref.removeElement(refPart);
+           parent = (Prim) targetP.sfResolve(ref);
          }
        }
-        //System.out.println("Parent: "+parent.toString()+" for "+name);
-        Prim prim = Deploy(configuration.getUrl(),
+       Prim prim = Deploy(configuration.getUrl(),
                            name,
                            parent,
                            targetP,
