@@ -8,17 +8,19 @@ stack for Java, by the name of \emph{Alpine}.
 \label{alpine:manifesto}
 
 Our goal is to create a SOAP stack that is easy to use, robust, and
-maintainable. In order to do this, we are adopting an XML centric approach.
-Alpine will make no attempt to map between XML and custom Java classes, instead
-providing access to the SOAP messages using modern Java XML classes. By avoiding
-O/X mapping we greatly decrease the volume and complexity of our code. Some may
-argue this will make Alpine more difficult to use, but experience shows us that
-simpler systems are typically more straightforward to work with, as they react
-in more predictable ways.
+maintainable. In order to do this, we are adopting an XML centric
+approach. Alpine will make no attempt to map between XML and custom Java
+classes, instead providing access to the SOAP messages using modern XML
+support libraries, librarie that make it easy to navigate an XML
+document. By avoiding O/X mapping we greatly decrease the volume and
+complexity of our code. Some may argue this will make Alpine more
+difficult to use, but experience shows us that simpler systems are
+typically more straightforward to work with, as they react in more
+predictable ways.
 
 If a WSDL description of an Alpine-hosted service is required, the
 user will be required to write it: as we concluded in section
-\ref{objections:o-x:wsdl-gen} generating WSDL from Java introduces
+\ref{objections:wsdl-gen} generating WSDL from Java introduces
 unwanted implementation dependencies and hampers interoperability.
 
 What will Alpine consist of then? With so much stripped out, a SOAP
@@ -50,8 +52,8 @@ The full design goals are as follows:
 \item Take advantage of as much leading edge infrastructure as we can
 \item Adopt the the handler chain pattern of Axis/JAX-RPC
 \item Target SOAP1.2 (POST) only, WS-I 1.1
-\item Document/literal only
-\item Runs Server-side, client-side, and as an intermediary. 
+\item Document/literal only, not rpc/encoded
+\item Run server-side, client-side, and as an intermediary. 
 \item No support for JAX-RPC or JAX-M/SAAJ APIs.
 \item Configurable only procedurally -or through JMX.
 \item Permit dynamic handler chain configuration during message processing.
@@ -135,3 +137,22 @@ With Alpine, we hope to avoid reaching a similar situation, where a
 small core of developers maintain a codebase for a much larger user
 base, for whom the operation of the stack is essentially ``black
 magic''. 
+
+\subsection{The implications of Alpine}
+
+If Alpine succeeds, it will be a SOAP stack that requires advanced knowledge of
+XML before it can be used. This would seem a barrier to the success of
+the tool, and it may be so. Unlike commercial SOAP vendors, we have no
+fiscal benefit in making our product broadly usable. What we will do is
+have a SOAP implementation that all users should be able to maintain.
+Furthermore, we believe that a good understanding of XML is needed for
+any robust web service, and by forcing developers to acquire that skill
+early on, we avoid them having to learn it just before their shipping deadlines
+are missed. 
+
+This may seem somewhat ruthless: to deny the right to write web
+services to developers who are and wish to remain ignorant of XML.
+However, we have to ask: \emph{if they do not want to know XML, why are
+they writing Web Services?}. If the developers want to use a less portable,
+more brittle, remote method invocation system, they would be better off
+using a stable technology such as Java RMI or CORBA.
