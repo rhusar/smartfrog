@@ -1,6 +1,6 @@
 release 3.04.0014_beta
 ----------------------
-2004-Dec-22 Release date
+2005-Jan-03 Release date
 2004-Dec-20 Mod: Improved method to register and deregister with ProcessCompound 
 2004-Dec-20 Add: New message: "MSG_PARENT_LOCATION_FAILED" to ErrorMessage Bundle
 2004-Dec-20 Mod: Methods simplified in DefaultRootLocator
