@@ -22,6 +22,7 @@ package org.smartfrog.services.os.java;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogInitException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.utils.PlatformHelper;
 import org.smartfrog.services.os.runshell.RunShellImpl;
 
 import java.rmi.RemoteException;
@@ -38,7 +39,10 @@ import java.io.File;
 
 public class RunJavaImpl extends RunShellImpl implements RunJava {
 
+    PlatformHelper platform;
+
     public RunJavaImpl() throws RemoteException {
+        platform = PlatformHelper.getLocalPlatform();
     }
 
     /**
@@ -52,10 +56,8 @@ public class RunJavaImpl extends RunShellImpl implements RunJava {
         String classname=null;
         String jar=null;
         classname=sfResolve(varClassname,classname,false);
-        jar= sfResolve(varJarFile, jar, false);
-        if(jar==null && classname==null ) {
-            throw new SmartFrogInitException("One of "+varClassname+" and "+varJarFile+" must be supplied");
-        }
+        jar= platform.convertFilename(sfResolve(varJarFile, jar, false));
+
         Vector environment = (Vector) sfResolve(varEnvironment, (Vector) null, false);
         Vector flatEnv = flatten(environment, null, "=", null);
 
@@ -80,17 +82,22 @@ public class RunJavaImpl extends RunShellImpl implements RunJava {
         }
 
         //classpath setup
-        String classpath=buildClasspath(true,File.pathSeparator);
-        args.add("-classpath");
-        args.add(classpath);
+        String classpath=buildClasspath(false);
+        if(classpath!=null) {
+            args.add("-classpath");
+            args.add(classpath);
+        }
 
         //endorsed dirs
-        String endorsedDirs=buildEndorsedDirs(File.pathSeparator);
+        String endorsedDirs=buildEndorsedDirs();
         if(endorsedDirs!=null) {
             args.add("-Djava.endorsed.dirs="+endorsedDirs);
         }
 
         //set the classname or jar to run
+        if (jar == null && classname == null) {
+            throw new SmartFrogInitException("One of " + varClassname + " and " + varJarFile + " must be supplied");
+        }
         if(classname!=null) {
             args.add(classname);
         } else {
@@ -169,41 +176,63 @@ public class RunJavaImpl extends RunShellImpl implements RunJava {
     /**
      * recursive support for classpaths, lets us cross reference more easily.
      * @param mandatory
-     * @param separator
      * @return
      * @throws SmartFrogResolutionException
      * @throws RemoteException
      */
-    String buildClasspath(boolean mandatory,String separator) throws SmartFrogResolutionException, RemoteException {
+    String buildClasspath(boolean mandatory) throws SmartFrogResolutionException, RemoteException {
         Vector classpathV=(Vector)sfResolve(varClasspath,(Vector)null,mandatory);
-        String path=makePath(classpathV, separator);
+        if(classpathV==null) {
+            return null;
+        }
+        String path=makePath(classpathV);
         return path;
     }
 
-    String buildEndorsedDirs(String separator) throws SmartFrogResolutionException, RemoteException {
+    String buildEndorsedDirs() throws SmartFrogResolutionException, RemoteException {
         Vector pathV = (Vector) sfResolve(varEndorsedDirs, (Vector) null, false);
         if(pathV==null) {
             return null;
         }
-        String path = makePath(pathV, separator);
+        Vector classpathFlat=recursivelyFlatten(pathV);
+        Iterator entries=classpathFlat.iterator();
+        StringBuffer result= new StringBuffer();
+        while (entries.hasNext()) {
+            Object entry = (Object) entries.next();
+            String dirname=entry.toString();
+            //turn this into a directory if it is a file
+            dirname=platform.convertFilename(dirname);
+            File file=new File(dirname);
+            if(file.exists() && file.isFile()) {
+                String dir=file.getParent();
+                if(dir!=null) {
+                    dirname=dir;
+                } else {
+                    //there is no parent dir. what to do?
+                }
+            }
+            result.append(dirname);
+            result.append(platform.getPathSeparator());
+        }
+        String path = result.toString();
         return path;
     }
 
     /**
      * turn a path vector into a flat path string; use the given separator
      * @param pathVector
-     * @param separator
      * @return
      */
-    private String makePath(Vector pathVector, String separator) {
+    private String makePath(Vector pathVector) {
         Vector classpathFlat=recursivelyFlatten(pathVector);
         Iterator entries=classpathFlat.iterator();
         StringBuffer result= new StringBuffer();
         while (entries.hasNext()) {
-            Object o = (Object) entries.next();
-            String s=o.toString();
-            result.append(s);
-            result.append(separator);
+            Object entry = (Object) entries.next();
+            String file=entry.toString();
+            file= platform.convertFilename(file);
+            result.append(file);
+            result.append(platform.getPathSeparator());
         }
         return result.toString();
     }
