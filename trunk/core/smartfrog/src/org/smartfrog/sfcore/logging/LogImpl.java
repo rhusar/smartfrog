@@ -112,7 +112,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
     public LogImpl (String name){
         //@TODO: load the default class from a SF definition
         // Similar for default deployer.
-        localLog=new LogToErr(name,LOG_LEVEL_ALL);
+        localLog=new LogToErr(name,this.LOG_LEVEL_INFO);
         logName = name;
     }
 
