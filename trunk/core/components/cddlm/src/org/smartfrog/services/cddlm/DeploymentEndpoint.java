@@ -119,16 +119,21 @@ public class DeploymentEndpoint extends SmartfrogHostedEndpoint {
      * @throws AxisFault
      */
     private String deployThroughSFSystem(String hostname, String application,
-                                         String url) throws AxisFault {
+                                         String url,
+                                         String subprocess,
+                                         ) throws AxisFault {
         try {
-            ConfigurationDescriptor config = new ConfigurationDescriptor(
-                    application, url);
-            config.setHost(hostname);
-            config.setActionType(ConfigurationDescriptor.Action.DEPLOY);
+<<<<<<< DeploymentEndpoint.java
+            ConfigurationDescriptor deploy=new ConfigurationDescriptor(application,url);
+            deploy.setHost(hostname);
+            deploy.setActionType(ConfigurationDescriptor.Action.DEPLOY);
+            if(subprocess!=null) {
+                deploy.setSubProcess(subprocess);
+            }
             log.info("Deploying " + url + " to " + hostname);
             //deploy, throwing an exception if we cannot
-            config.execute(SFProcess.getProcessCompound());
-            SFSystem.runConfigurationDescriptor(config, true);
+            deploy.execute(SFProcess.getProcessCompound());
+            SFSystem.runConfigurationDescriptor(deploy,true);
 
             //SFSystem.deployAComponent(hostname,url,application,remote);
             return "urn://" + hostname + "/" + application;
