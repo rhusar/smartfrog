@@ -29,6 +29,7 @@ package org.smartfrog.services.comm.slp.messages;
 import org.smartfrog.services.comm.slp.ServiceLocationException;
 import org.smartfrog.services.comm.slp.util.SLPOutputStream;
 import org.smartfrog.services.comm.slp.util.SLPInputStream;
+import org.smartfrog.services.comm.slp.util.SLPUtil;
 
 import java.util.Iterator;
 import java.util.Vector;
@@ -62,7 +63,7 @@ public class SLPSrvTypeRplyMessage extends SLPMessageHeader {
     public SLPSrvTypeRplyMessage() {
         super(SLPMSG_SRVTYPE_REPLY);
         errorCode = 0;
-        serviceTypes = new Vector();
+        serviceTypes = null;
         serviceTypesStr = "";
     }
     
@@ -82,8 +83,7 @@ public class SLPSrvTypeRplyMessage extends SLPMessageHeader {
         }
         
         // create string representation of vector.
-        serviceTypesStr = serviceTypes.toString();
-        serviceTypesStr = serviceTypesStr.substring(1, serviceTypesStr.length()-1);
+        serviceTypesStr = SLPUtil.vectorToString(serviceTypes);
         
         // length
         length += 4; // error + length of service-type list.
@@ -126,10 +126,7 @@ public class SLPSrvTypeRplyMessage extends SLPMessageHeader {
         }
         
         // create service type vector.
-        String s[] = serviceTypesStr.split(",");
-        for(int i=0; i<s.length; i++) {
-            serviceTypes.add(s[i]);
-        }
+        serviceTypes = SLPUtil.stringToVector(serviceTypesStr);
     }
     
     /** Returns the error code */

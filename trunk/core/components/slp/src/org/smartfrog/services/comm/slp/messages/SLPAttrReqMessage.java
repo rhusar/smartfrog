@@ -94,12 +94,10 @@ public class SLPAttrReqMessage extends SLPMessageHeader {
         SPI = "";
         
         // create scope string...
-        scopeStr = scopes.toString();
-        scopeStr = scopeStr.substring(1, scopeStr.length()-1);
+        scopeStr = SLPUtil.vectorToString(scopes);
         
         // create taglist string
-        tagList = tags.toString();
-        tagList = tagList.substring(1, tagList.length()-1);
+        tagList = SLPUtil.vectorToString(tags);
         
         // calculate length...
         length += 5; // length fields
@@ -149,7 +147,7 @@ public class SLPAttrReqMessage extends SLPMessageHeader {
         }
         
         // create scope vector...
-        scopes = SLPUtil.parseScopes(scopeStr);
+        scopes = SLPUtil.stringToVector(scopeStr);
         
         // create tag vector
         tags = SLPUtil.parseTags(tagList);

@@ -41,7 +41,7 @@ public class SFSlpObjectAdvertiserImpl extends SFSlpAdvertiserImpl implements Pr
     protected Object toAdvertise = null;
     
     public SFSlpObjectAdvertiserImpl() throws RemoteException {
-        
+        super();
     }
     
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {

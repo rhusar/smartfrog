@@ -82,8 +82,7 @@ public class SLPSrvTypeReqMessage extends SLPMessageHeader {
         PRList = "";
         namingAuth = na;
         scopes = s;
-        scopeStr = s.toString();
-        scopeStr = scopeStr.substring(1, scopeStr.length()-1);
+        scopeStr = SLPUtil.vectorToString(scopes);
         
         // calculate length
         length += 6; // constant length fields.
@@ -125,7 +124,7 @@ public class SLPSrvTypeReqMessage extends SLPMessageHeader {
         }
         
         // create scope vector
-        scopes = SLPUtil.parseScopes(scopeStr);
+        scopes = SLPUtil.stringToVector(scopeStr);
     }
     
     /** Returns the previous responders list */

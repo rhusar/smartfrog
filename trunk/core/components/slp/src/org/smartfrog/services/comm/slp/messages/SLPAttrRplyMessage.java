@@ -76,8 +76,7 @@ public class SLPAttrRplyMessage extends SLPMessageHeader {
         super(SLPMSG_ATTRRPLY, lang);
         errorCode = 0;
         attributes = attrs;
-        attributeStr = attributes.toString();
-        attributeStr = attributeStr.substring(1, attributeStr.length()-1);
+        attributeStr = SLPUtil.createAttributeString(attributes);
         authBlocks = new Vector();
         
         // calculate length

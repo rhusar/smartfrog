@@ -40,7 +40,7 @@ public class SFSlpProcessCompoundAdvertiserImpl extends SFSlpAdvertiserImpl
     implements Prim, SFSlpProcessCompoundAdvertiser {
     
     public SFSlpProcessCompoundAdvertiserImpl() throws RemoteException {
-        
+        super();
     }
     
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {

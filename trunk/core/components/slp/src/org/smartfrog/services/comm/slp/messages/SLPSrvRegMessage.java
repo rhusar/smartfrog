@@ -118,7 +118,7 @@ public class SLPSrvRegMessage extends SLPMessageHeader {
         attrAuths = new Vector();
         
         // create String representations...
-        scopeStr = scopes.toString().substring(1, scopes.toString().length()-1);
+        scopeStr = SLPUtil.vectorToString(scopes);
         serviceType = url.getServiceType().toString();
         
         // create a String representation of the attributes...
@@ -202,7 +202,7 @@ public class SLPSrvRegMessage extends SLPMessageHeader {
         
         // create scope vector.
         if(!scopeStr.equals("")) {
-            scopes = SLPUtil.parseScopes(scopeStr);
+            scopes = SLPUtil.stringToVector(scopeStr);
         }
         
         // create attribute vector...

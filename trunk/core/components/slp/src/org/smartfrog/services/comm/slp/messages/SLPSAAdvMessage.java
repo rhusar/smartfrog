@@ -102,9 +102,7 @@ public class SLPSAAdvMessage extends SLPMessageHeader {
         authBlocks = new Vector();
         
         // create strings
-        scopeStr = scopes.toString();
-        scopeStr = scopeStr.substring(1, scopeStr.length()-1);
-        
+        scopeStr = SLPUtil.vectorToString(scopes);
         attributeStr = SLPUtil.createAttributeString(attributes);
         
         // calculate length
@@ -157,7 +155,7 @@ public class SLPSAAdvMessage extends SLPMessageHeader {
         }
         
         // create scope vector
-        scopes = SLPUtil.parseScopes(scopeStr);
+        scopes = SLPUtil.stringToVector(scopeStr);
         
         // create attribute vector...
         attributes = SLPUtil.parseAttributes(attributeStr);

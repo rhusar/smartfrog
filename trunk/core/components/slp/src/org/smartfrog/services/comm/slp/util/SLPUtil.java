@@ -100,6 +100,16 @@ public class SLPUtil {
     }
     
     /**
+        Converts a Vector to a String-list.
+        [1,2] => "1, 2"
+    */
+    public static String vectorToString(Vector v) {
+        String s = v.toString();
+        s = s.substring(1, s.length()-1); // remove [ and ]
+        return s;
+    }
+    
+    /**
         Extracts the attributes from the given String.
         @param attrString The string containing the attributes.
         @return A vector of ServiceAttribute objects
@@ -140,15 +150,14 @@ public class SLPUtil {
     }
     
     /**
-        Parses the given string and returns a Vector of scope names.
-        @param scopeStr The String to parse.
-        @return A Vector of the listed scope names.
+        Converts a string-list into a Vector
+        @param str The String to parse.
         @exception ServiceLocationException if there is an error parsing the String.
     */
-    public static Vector parseScopes(String scopeStr) throws ServiceLocationException {
+    public static Vector stringToVector(String str) throws ServiceLocationException {
         Vector toReturn = new Vector();
-        if(!scopeStr.equals("")) {
-            String s[] = scopeStr.split(",");
+        if(!str.equals("")) {
+            String s[] = str.split(",");
             for(int i=0; i<s.length; i++) {
                 toReturn.add(s[i]);
             }

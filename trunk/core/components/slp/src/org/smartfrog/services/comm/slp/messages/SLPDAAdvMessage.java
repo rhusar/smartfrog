@@ -91,10 +91,7 @@ public class SLPDAAdvMessage extends SLPMessageHeader {
     private Vector attributes;
     
     private Vector authBlocks;
-    /**
-        Creates a new, empty, SLPDAAdvMessage
-    */
-    
+       
     private String urlStr;
     private String attributeStr;
     private String scopeStr;
@@ -146,7 +143,7 @@ public class SLPDAAdvMessage extends SLPMessageHeader {
         
         // strings...
         urlStr = url.toString();
-        scopeStr = scopes.toString().substring(1, scopes.toString().length()-1);
+        scopeStr = SLPUtil.vectorToString(scopes);
         // create a String representation of the attributes...
         attributeStr = SLPUtil.createAttributeString(attributes);
         
@@ -255,7 +252,7 @@ public class SLPDAAdvMessage extends SLPMessageHeader {
                 
         // create scope vector
         if(scopeLen != 0) {
-            scopes = SLPUtil.parseScopes(scopeList);
+            scopes = SLPUtil.stringToVector(scopeList);
         }
         // create attr. list
         if(attrLen != 0) {

@@ -147,7 +147,7 @@ public class UserAgent extends SLPAgent implements Locator, SlpUdpCallback {
     }
     
     // find service types
-    public synchronized ServiceLocationEnumeration findServiceTypes(
+    public ServiceLocationEnumeration findServiceTypes(
                                                        String NA,
                                                        Vector scopes)
     throws ServiceLocationException {
@@ -170,10 +170,9 @@ public class UserAgent extends SLPAgent implements Locator, SlpUdpCallback {
     }
     
     /**
-     Not implemented.
-     Will throw an exception and exit
+        
      */
-     public synchronized ServiceLocationEnumeration findAttributes(
+     public ServiceLocationEnumeration findAttributes(
                                                      ServiceType type,
                                                      Vector scopes,
                                                      Vector attrIds)
@@ -183,10 +182,9 @@ public class UserAgent extends SLPAgent implements Locator, SlpUdpCallback {
     }
     
      /**
-     Not implemented.
-      Will throw an exception and exit
+        
       */
-    public synchronized ServiceLocationEnumeration findAttributes(
+    public ServiceLocationEnumeration findAttributes(
                                                      ServiceURL url,
                                                      Vector scopes,
                                                      Vector attrIds)
@@ -208,7 +206,6 @@ public class UserAgent extends SLPAgent implements Locator, SlpUdpCallback {
     private boolean recvSrvReply(SLPSrvRplyMessage msg, 
                              SLPInputStream sis, 
                              ServiceLocationEnumeration results) throws ServiceLocationException {
-        //System.out.println("UserAgent -> Received reply");
         msg.fromInputStream(sis);
                                  
         boolean complete = true;
@@ -294,7 +291,6 @@ public class UserAgent extends SLPAgent implements Locator, SlpUdpCallback {
     }
     
     protected DAInfo recvDAAdvert(SLPInputStream sis) throws ServiceLocationException {
-        System.out.println("UA: Received DAAdvert");
         DAInfo newDA = super.recvDAAdvert(sis);
         if(newDA != null && userSelectableScopes) {
             // Add the scopes supported by the DA to our list of known scopes.
@@ -312,7 +308,6 @@ public class UserAgent extends SLPAgent implements Locator, SlpUdpCallback {
         SLPSAAdvMessage msg = new SLPSAAdvMessage();
         msg.fromInputStream(sis);
         
-        System.out.println("UA -> Received SAAdvert");
         writeLog(msg.toString());
         
         // add scopes...
@@ -353,10 +348,9 @@ public class UserAgent extends SLPAgent implements Locator, SlpUdpCallback {
      /**
      Handles incoming multicast messages.
       This is called by the receive callback when a message is received on the
-      fabricClient litening to the multicast address.
+      SlpUdpClient litening to the multicast address.
       */
     public SLPMessageHeader handleNonReplyMessage(int function, SLPInputStream sis, boolean isUDP) throws ServiceLocationException {
-        //System.out.println("UserAgent -> Incoming multicast message");
         switch(function) {
             case SLPMessageHeader.SLPMSG_DAADV:
                 recvDAAdvert(sis);
@@ -373,11 +367,9 @@ public class UserAgent extends SLPAgent implements Locator, SlpUdpCallback {
       */
     public boolean handleReplyMessage(int function, SLPInputStream sis,
                                          ServiceLocationEnumeration results) throws ServiceLocationException {
-        //System.out.println("UserAgent -> Incoming unicast message");
         switch(function) {
             case SLPMessageHeader.SLPMSG_SRVRPLY:
                 return recvSrvReply(new SLPSrvRplyMessage(), sis, results);
-                //break;
             case SLPMessageHeader.SLPMSG_SRVTYPE:
                 return recvSrvTypeReply(new SLPSrvTypeRplyMessage(), sis, results);
             case SLPMessageHeader.SLPMSG_ATTRRPLY:
@@ -430,17 +422,6 @@ public class UserAgent extends SLPAgent implements Locator, SlpUdpCallback {
         }
         
         return SLPUtil.findCommonScopes(supportedScopes, scopes);
-        /*
-        Vector toReturn = new Vector();
-        Iterator iter = scopes.iterator();
-        while(iter.hasNext()) {
-            Object o = iter.next();
-            if(supportedScopes.contains(o)) {
-                toReturn.add(o);
-            }
-        }
-        return toReturn;
-         */
     }
     
     private void sendRequest(SLPMessageHeader request, 
@@ -462,17 +443,14 @@ public class UserAgent extends SLPAgent implements Locator, SlpUdpCallback {
                 da = (DAInfo)iter.next();
                 
                 if(da.getHost().equals(CONFIG_SLP_MC_ADDR)) {
-                    //System.out.println("UserAgent -> Sending multicast");
                     request.setFlags(SLPMessageHeader.FLAG_MCAST);
                     ms.sendSLPMessage(request, 
                                       da.getHost(), da.getPort(), CONFIG_MC_MAX,
                                       unicastCommunicator);
                 }
                 else {
-                    //System.out.println("UserAgent -> Sending to DA");
                     // If the DA is down, we should try to find another DA supporting
                     // the wanted scopes, or in the worst case use multicast...
-                    // Currently the we go directly do multicast if a DA is down
                     try {
                         ms.sendSLPMessage(request, 
                                           da.getHost(), da.getPort(), CONFIG_RETRY_MAX,
@@ -480,15 +458,7 @@ public class UserAgent extends SLPAgent implements Locator, SlpUdpCallback {
                     }catch(ServiceLocationException se) {
                         if(se.getErrorCode() == ServiceLocationException.DA_NOT_AVAILABLE) {
                             DAs.remove(da.getHost());
-                            // do multicast...
-                            // Should try to find another DA before going multicast...
-                            /*
-                             DAInfo mc = new DAInfo(CONFIG_SLP_MC_ADDR, CONFIG_SLP_PORT);
-                             if(!receivers.contains(mc)) {
-                                 additional = mc;
-                             }
-                             */
-                            
+                                                        
                             // find another DA (or DAs)...
                             additional = findReceivers(da.getScopes());
                             for(Iterator it = additional.iterator(); it.hasNext(); ) {
@@ -511,10 +481,10 @@ public class UserAgent extends SLPAgent implements Locator, SlpUdpCallback {
         }
     }
     
-    public synchronized ServiceLocationEnumeration findAttributes(
-                                                                  String url,
-                                                                  Vector scopes,
-                                                                  Vector attrIds)
+    public ServiceLocationEnumeration findAttributes(
+                                                     String url,
+                                                     Vector scopes,
+                                                     Vector attrIds)
     throws ServiceLocationException {
         ServiceLocationEnumeration results = new ServiceAttributeEnumeration();
         
