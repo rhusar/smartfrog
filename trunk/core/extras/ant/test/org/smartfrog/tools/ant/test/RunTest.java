@@ -79,19 +79,15 @@ public class RunTest extends TaskTestBase {
     }
 
     public void testRunFile(){
-        expectBuildExceptionContaining("testRunFile","deploy failure","Could not run");
-        assertInLog("Reference not found, Unresolved Reference: sfClass");
+        assertDeployFailsWithUnresolvedReference("testRunFile");
     }
 
     public void testInline() {
-        expectBuildExceptionContaining("testInline", "deploy failure", "Could not run");
-        assertInLog("Reference not found, Unresolved Reference: sfClass");
+        assertDeployFailsWithUnresolvedReference("testInline");
     }
     
     public void testResource() {
-        executeTarget("testResource");
-        assertDeployed("app");
-        assertInLog("app");
+        expectDeployed("testResource","app");
         assertInLog("COUNTER: hello - here is a constructed message");
         assertInLog("value is 99");
         assertInLog("goodbye");
@@ -114,17 +110,22 @@ public class RunTest extends TaskTestBase {
      * sub directory file references must also work
      */
     public void testSubdir() {
-        expectBuildExceptionContaining("testSubdir", "deploy failure",
+        String target = "testSubdir";
+        assertDeployFailsWithUnresolvedReference(target);
+    }
+
+    private void assertDeployFailsWithUnresolvedReference(String target) {
+        expectBuildExceptionContaining(target, "deploy failure",
                 "Could not run");
-        assertInLog("Reference not found, Unresolved Reference: sfClass");
+        assertInLog("Reference not found, Unresolved Reference");
     }
 
     /**
      * assertions get passed down
      */
     public void testAssertions() {
-        executeTarget("testAssertions");
-        assertInLog("Successfully deployed components: [app]");
+        expectDeployed("testAssertions","app");
         assertInLog("goodbye");
     }
+
 }

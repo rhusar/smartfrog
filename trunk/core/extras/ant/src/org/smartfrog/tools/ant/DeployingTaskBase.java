@@ -92,12 +92,13 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
      * on the command line
      */
     public void deployApplications() {
+        verifyHostDefined();
         Iterator it=applications.iterator();
         while (it.hasNext()) {
             Application application = (Application) it.next();
             application.validate();
-              addArg("-a");
-              addArg(application.getName()+":" //NAME
+            addArg("-a");
+            addArg(application.getName()+":" //NAME
                     +"DEPLOY"+":"              //Action: DEPLOY,TERMINATE,DETACH,DETaTERM
                     +application.getDescriptor()+":"                    //URL
                     +""+":"                    // sfConfig or empty
@@ -130,6 +131,9 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
          */
         private String descriptor;
 
+        /**
+         * text of an application
+         */
         private String text;
 
         /**
@@ -168,6 +172,9 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
             return descriptor;
         }
 
+        /**
+         * validate the descriptor
+         */
         public void validate() {
             if(name==null) {
                 throw new BuildException("no application name");

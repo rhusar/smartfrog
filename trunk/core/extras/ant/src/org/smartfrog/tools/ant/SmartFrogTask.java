@@ -55,6 +55,8 @@ public abstract class SmartFrogTask extends TaskBase {
 
     public void init() throws BuildException {
         smartfrog = getBaseJavaTask();
+        setFailOnError(true);
+        setTimeout(DEFAULT_TIMEOUT_VALUE);
     }
 
 
@@ -163,6 +165,7 @@ public abstract class SmartFrogTask extends TaskBase {
      * @param host
      */
     public void setHost(String host) {
+        log("setting host to "+host, Project.MSG_DEBUG);
         this.host = host;
     }
 
@@ -491,9 +494,9 @@ public abstract class SmartFrogTask extends TaskBase {
      * @throws org.apache.tools.ant.BuildException
      *          if a host is defined
      */
-    protected void checkNoHost() {
+    protected void verifyHostUndefined() {
         if (host != null && host.length() > 0) {
-            throw new BuildException("host cannot be set on this task");
+            throw new BuildException("host cannot be set on this task; it is set to "+host);
         }
     }
 
@@ -505,8 +508,19 @@ public abstract class SmartFrogTask extends TaskBase {
         if(timeout>0) {
             smartfrog.setTimeout(new Long(timeout));
         } else {
-            //no valid timeout; ignore it. 
+            //no valid timeout; ignore it.
             smartfrog.setTimeout(null);
+        }
+    }
+
+    /**
+     * verify that the host is defined; assert if it is not set
+     * @throws org.apache.tools.ant.BuildException
+     *          if a host is undefined
+     */
+    protected void verifyHostDefined() {
+        if(getHost()==null) {
+            throw new BuildException("host is undefined");
         }
     }
 
