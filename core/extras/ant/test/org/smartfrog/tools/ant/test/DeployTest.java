@@ -21,6 +21,9 @@
 
 package org.smartfrog.tools.ant.test;
 
+import org.smartfrog.tools.ant.DeployingTaskBase;
+import org.smartfrog.tools.ant.StartApplication;
+
 /**
  * Test deployment
  * @author steve loughran
@@ -53,7 +56,7 @@ public class DeployTest extends TaskTestBase {
 
     public void testNoParams() {
         expectBuildExceptionContaining("testNoParams", "no parameters",
-                "No applications declared");
+                DeployingTaskBase.ERROR_NO_APPLICATIONS_DECLARED);
     }
 
     /**
@@ -62,27 +65,27 @@ public class DeployTest extends TaskTestBase {
      */
     public void testNoFailure() {
         expectBuildExceptionContaining("testNoFailure", "no parameters",
-                "No applications declared");
+                DeployingTaskBase.ERROR_NO_APPLICATIONS_DECLARED);
     }
 
     public void testEmptyApplication() {
         expectBuildExceptionContaining("testEmptyApplication", "anon app",
-                "no application name");
+                DeployingTaskBase.Application.ERROR_NO_APPLICATION_NAME);
     }
 
     public void testAnonApplication() {
         expectBuildExceptionContaining("testAnonApplication", "anon app",
-                "no application name");
+                DeployingTaskBase.Application.ERROR_NO_APPLICATION_NAME);
     }
 
     public void testDatalessApplication() {
         expectBuildExceptionContaining("testDatalessApplication", "no descriptor",
-                "no descriptor provided");
+                DeployingTaskBase.Application.ERROR_NO_APPLICATION_DESCRIPTOR);
     }
 
     public void testBadFile() {
         expectBuildExceptionContaining("testBadFile", "missing file",
-                "missing-file.sf does not exist");
+                DeployingTaskBase.Application.ERROR_FILE_NOT_FOUND);
     }
 /*
 [sf-deploy] Unable to locate IP address of the host: no-such-hostname
@@ -90,7 +93,7 @@ public class DeployTest extends TaskTestBase {
 */
     public void testBadHost() {
         expectBuildExceptionContaining("testBadHost", "unknown host",
-                "Could not deploy");
+                StartApplication.ERROR_COULD_NOT_DEPLOY);
         assertInLog("Unable to locate IP address of the host: no-such-hostname");
         //assertInLog("java.net.UnknownHostException: no-such-hostname");
     }
@@ -106,7 +109,7 @@ public class DeployTest extends TaskTestBase {
      [sf-deploy] 	java.net.ConnectException: Connection refused: connect
      */
     public void testRunFile() {
-        expectBuildExceptionContaining("testRunFile", "deploy failure", "Could not deploy");
+        expectBuildExceptionContaining("testRunFile", "deploy failure", StartApplication.ERROR_COULD_NOT_DEPLOY);
         assertNoConnectionToLocalhost();
     }
 
@@ -122,7 +125,8 @@ public class DeployTest extends TaskTestBase {
     }
 
     public void testResource() {
-        expectBuildExceptionContaining("testResource", "deploy failure", "Could not deploy");
+        expectBuildExceptionContaining("testResource", "deploy failure",
+                StartApplication.ERROR_COULD_NOT_DEPLOY);
         assertNoConnectionToLocalhost();
     }
 
@@ -153,7 +157,7 @@ public class DeployTest extends TaskTestBase {
 
     public void testInline() {
         expectBuildExceptionContaining("testInline", "deploy failure",
-                "Could not deploy");
+                StartApplication.ERROR_COULD_NOT_DEPLOY);
         assertNoConnectionToLocalhost();
     }
 

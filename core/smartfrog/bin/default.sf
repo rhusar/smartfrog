@@ -45,7 +45,7 @@ DefaultDisplay extends  Display {
 };
 
 DefaultLog extends LogToFile{
-    path ".";
+    path PROPERTY java.io.tmpdir;
     fileName "standardLog";
     fileExtension ".displayLog";
 }

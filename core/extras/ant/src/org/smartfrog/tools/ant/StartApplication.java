@@ -40,6 +40,7 @@ import org.apache.tools.ant.BuildException;
  * a suitable URL from a file reference.
  */
 public class StartApplication extends DeployingTaskBase {
+    public static final String ERROR_COULD_NOT_DEPLOY = "Could not deploy";
 
     public void init() throws BuildException {
         super.init();
@@ -58,7 +59,7 @@ public class StartApplication extends DeployingTaskBase {
         checkApplicationsDeclared();
         deployApplications();
         addExitFlag();
-        execSmartFrog("Could not deploy");
+        execSmartFrog(ERROR_COULD_NOT_DEPLOY);
     }
 
 

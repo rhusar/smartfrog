@@ -34,6 +34,7 @@ public class StopApplication extends SmartFrogTask {
      * name of an app
      */
     protected String application;
+    public static final String ERROR_FAILED_TO_TERMINATE = "failed to terminate ";
 
     public StopApplication() {
     }
@@ -77,7 +78,7 @@ public class StopApplication extends SmartFrogTask {
         addApplicationCommand("-a", terminateCommand);
         //addApplicationCommand("-t",application);
         addExitFlag();
-        execSmartFrog("failed to terminate " + getApplication());
+        execSmartFrog(ERROR_FAILED_TO_TERMINATE + getApplication());
     }
 
 

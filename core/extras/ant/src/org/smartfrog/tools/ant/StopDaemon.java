@@ -34,6 +34,7 @@ import org.apache.tools.ant.BuildException;
  * @ant.task category="SmartFrog" name="sf-stopdaemon"
  */
 public class StopDaemon extends SmartFrogTask {
+    public static final String ERROR_FAILED_TO_TERMINATE = "failed to terminate ";
 
     public StopDaemon() {
     }
@@ -57,7 +58,7 @@ public class StopDaemon extends SmartFrogTask {
         String terminateCommand = SmartFrogJVMProperties.ROOT_PROCESS + ":TERMINATE:::" + getHost() + ":";
         addApplicationCommand("-a", terminateCommand);
         addExitFlag();
-        execSmartFrog("failed to terminate " + SmartFrogJVMProperties.ROOT_PROCESS);
+        execSmartFrog(ERROR_FAILED_TO_TERMINATE + SmartFrogJVMProperties.ROOT_PROCESS);
     }
 
 

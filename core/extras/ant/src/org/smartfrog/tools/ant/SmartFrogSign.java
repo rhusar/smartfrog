@@ -46,7 +46,8 @@ public class SmartFrogSign extends TaskBase {
      * our security holder
      */
     private SecurityHolder securityHolder = new SecurityHolder();
-
+    public static final String ERROR_NO_SECURITY_SETTINGS = "No security settings provided";
+    public static final String ERROR_COULD_NOT_APPLY_SETTINGS = "Could not apply security settings with ";
 
 
     /**
@@ -119,12 +120,12 @@ public class SmartFrogSign extends TaskBase {
     public void execute() throws BuildException {
         Security sec = securityHolder.getSecurity(this);
         if (sec == null) {
-            throw new BuildException("No security settings provided");
+            throw new BuildException(ERROR_NO_SECURITY_SETTINGS);
         }
         try {
             sec.applySecuritySettings(signer);
         } catch (IOException e) {
-            throw new BuildException("Could not apply security settings with "
+            throw new BuildException(ERROR_COULD_NOT_APPLY_SETTINGS
                     +sec.toString(),e);
         }
         signer.execute();

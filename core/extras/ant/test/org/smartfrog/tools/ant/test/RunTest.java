@@ -19,6 +19,8 @@
  */
 package org.smartfrog.tools.ant.test;
 
+import org.smartfrog.tools.ant.DeployingTaskBase;
+
 /**
  * @author steve loughran
  *         created 27-Feb-2004 16:37:55
@@ -41,7 +43,7 @@ public class RunTest extends TaskTestBase {
 
     public void testNoParams() {
         expectBuildExceptionContaining("testNoParams", "no parameters",
-                "No applications declared");
+                DeployingTaskBase.ERROR_NO_APPLICATIONS_DECLARED);
     }
     /**
      * failonerror is not deemed to affect the no apps configuration,
@@ -49,27 +51,27 @@ public class RunTest extends TaskTestBase {
      */
     public void testNoFailure() {
         expectBuildExceptionContaining("testNoFailure", "no parameters",
-                "No applications declared");
+                DeployingTaskBase.ERROR_NO_APPLICATIONS_DECLARED);
     }
 
     public void testEmptyApplication() {
         expectBuildExceptionContaining("testEmptyApplication", "anon app",
-                "no application name");
+                DeployingTaskBase.Application.ERROR_NO_APPLICATION_NAME);
     }
 
     public void testAnonApplication() {
         expectBuildExceptionContaining("testAnonApplication", "anon app",
-                "no application name");
+                DeployingTaskBase.Application.ERROR_NO_APPLICATION_NAME);
     }
 
     public void testDatalessApplication() {
         expectBuildExceptionContaining("testDatalessApplication", "no descriptor",
-                "no descriptor provided");
+                DeployingTaskBase.Application.ERROR_NO_APPLICATION_DESCRIPTOR);
     }
 
     public void testBadFile() {
         expectBuildExceptionContaining("testBadFile", "missing file",
-                "missing-file.sf does not exist");
+                DeployingTaskBase.Application.ERROR_FILE_NOT_FOUND);
     }
 
 

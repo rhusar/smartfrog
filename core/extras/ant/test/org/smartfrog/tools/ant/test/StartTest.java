@@ -20,6 +20,8 @@
 package org.smartfrog.tools.ant.test;
 
 import org.apache.tools.ant.BuildException;
+import org.smartfrog.tools.ant.PropertyFile;
+import org.smartfrog.tools.ant.DeployingTaskBase;
 
 /**
  * This test tests the daemon starting.
@@ -106,22 +108,23 @@ public class StartTest extends TaskTestBase {
 
     public void testEmptyApplication() {
         expectBuildExceptionContaining("testEmptyApplication", "anon app",
-                "no application name");
+                DeployingTaskBase.Application.ERROR_NO_APPLICATION_NAME);
+
     }
 
     public void testAnonApplication() {
         expectBuildExceptionContaining("testAnonApplication", "anon app",
-                "no application name");
+                DeployingTaskBase.Application.ERROR_NO_APPLICATION_NAME);
     }
 
     public void testDatalessApplication() {
         expectBuildExceptionContaining("testDatalessApplication", "no descriptor",
-                "no descriptor provided");
+                DeployingTaskBase.Application.ERROR_NO_APPLICATION_DESCRIPTOR);
     }
 
     public void testBadFile() {
         expectBuildExceptionContaining("testBadFile", "missing file",
-                "missing-file.sf does not exist");
+                DeployingTaskBase.Application.ERROR_FILE_NOT_FOUND);
     }
 
     public void testRunFile() {
@@ -144,5 +147,24 @@ public class StartTest extends TaskTestBase {
 
     private void assertTerminationInLog() {
         assertInLog("SmartFrog [rootProcess] dead");
+    }
+
+    public void testEmptyPropertyFile() {
+        expectBuildExceptionContaining("testEmptyPropertyFile",
+                "empty propertyFile",
+                PropertyFile.ERROR_NO_FILE_ATTRIBUTE);
+    }
+
+    public void testMissingNonOptionalPropertyFile() {
+        expectBuildExceptionContaining("testMissingNonOptionalPropertyFile",
+                "empty propertyFile",
+                PropertyFile.ERROR_FILE_NOT_FOUND);
+    }
+    public void testMissingOptionalPropertyFile() {
+        executeTarget("testMissingOptionalPropertyFile");
+    }
+
+    public void testValidPropertyFile() {
+        executeTarget("testValidPropertyFile");
     }
 }

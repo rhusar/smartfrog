@@ -31,6 +31,7 @@ import org.apache.tools.ant.BuildException;
  * @ant.task category="SmartFrog" name="sf-run"
  */
 public class RunApplicationTask extends DeployingTaskBase {
+    public static final String ERROR_COULD_NOT_RUN = "Could not run";
 
     public RunApplicationTask() {
     }
@@ -56,7 +57,7 @@ public class RunApplicationTask extends DeployingTaskBase {
         checkApplicationsDeclared();
         deployApplications();
         addExitFlag();
-        execSmartFrog("Could not run");
+        execSmartFrog(ERROR_COULD_NOT_RUN);
     }
 
 

@@ -153,6 +153,7 @@ public abstract class SmartFrogTask extends TaskBase {
      */
     private long timeout=DEFAULT_TIMEOUT_VALUE;
 
+
     /**
      * add a file to the list
      *
@@ -171,6 +172,14 @@ public abstract class SmartFrogTask extends TaskBase {
         sourceFiles.add(url);
     }
 
+
+    /**
+     * add a property file to the JVM
+     * @param propFile
+     */
+    public void addConfiguredPropertyFile(PropertyFile propFile) {
+        propFile.addPropertiesToJvm(smartfrog);
+    }
 
     /**
      * set the hostname to deploy to (optional, defaults to localhost)
