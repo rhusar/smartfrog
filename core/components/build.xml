@@ -138,9 +138,16 @@ component.path :=
         antfile="build.xml"
         inheritall ="false" inheritrefs="false"/>
     </presetdef>
-    
+  
+	<presetdef name="delegateBuild">
+      <subant buildpathref="component.path"
+        antfile="buildRelease.xml"
+        inheritall ="false" inheritrefs="false"/>
+    </presetdef>
+
   </target>
   
+
   <target name="clean" depends="init, clean-dist"
     description="clean all projects">
     <delegate target="clean"/>
@@ -169,7 +176,15 @@ component.path :=
   <target name="diag2" depends="init"
     description="diagnostics">
     <delegate target="diag2"/>
-  </target>  
+  </target>
+
+
+	<target name="buildrelease" depends ="init" description="buildRelease fopr all components" >
+	  <delegateBuild target="maybe-buildrelease"/>
+	</target>
+
+
+
 
   <!-- =================================================================== -->
   <!-- clean jdocs                                                               -->
@@ -442,7 +457,7 @@ component.path :=
   <!-- =================================================================== -->
   <!--  Release                                                            -->
   <!-- =================================================================== -->
-  <target name="release"  depends="clean, dist, initdist, copybuild, copybins, copylibs, copydocs, copycomponents, srczip, jdocs, generatedoc " description="Creates clean new release">
+  <target name="release"  depends="clean, dist, initdist, copybuild, copybins, copylibs, copydocs, copycomponents, srczip, generatedoc, buildrelease " description="Creates clean new release">
 	  <copy tofile="${dist.dir}/build.xml" file="releaseBuild.xml"/>
   </target>
 
