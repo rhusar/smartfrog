@@ -35,9 +35,13 @@ public class SequenceTest extends SmartFrogTestBase {
         super(s);
     }
     public void testComponentFailureInSequence() throws Throwable {
-        deployExpectingException(FILES+"testSequence.sf",
-                "sequencefail",
-                "SmartFrogLifecycleException",
-                "Class not found");
+        //This does not apply any more. It does not throw exception,
+        // it does proper termination of the component. The termination record
+        //should notify thre right reason class not found.
+//        deployExpectingException(FILES+"testSequence.sf",
+//                "sequencefail",
+//                "SmartFrogDeploymentException",
+//                "Class not found");
+        this.deployExpectingSuccess(FILES+"testSequence.sf","sequencefail");
     }
 }
