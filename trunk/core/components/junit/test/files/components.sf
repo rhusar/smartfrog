@@ -22,19 +22,28 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/predicates.sf"
 #include "/org/smartfrog/services/junit/components.sf"
 
+sfCodeBase PROPERTY org.smartfrog.codebase;
+
 
 /**
  * base for our tests
  */
 TestBase extends JUnitTestSuite {
+
     package "org.smartfrog.services.junit.test.targets";
 }
 
+/**
+ * local junit tests
+ */
+LocalJUnitTestRunner extends TestRunner {
+//    sfCodeBase PROPERTY org.smartfrog.codebase
+}
 
 /**
  * listen to a buffer
  */
-BufferingTestRunner extends TestRunner {
+BufferingTestRunner extends LocalJUnitTestRunner {
     //buffer the results
     listener extends BufferingListener;
 }
@@ -43,7 +52,7 @@ BufferingTestRunner extends TestRunner {
  * log to an XML file
  */
 
-XmlTestRunner extends TestRunner {
+XmlTestRunner extends LocalJUnitTestRunner {
     //TODO
 }
 
@@ -51,7 +60,7 @@ XmlTestRunner extends TestRunner {
  * This is the base for all our tests.
  */
 
-testAll extends TestRunner {
+testAll extends LocalJUnitTestRunner {
 
     mostTests extends MostTests;
 }

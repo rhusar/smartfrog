@@ -32,23 +32,22 @@ import org.smartfrog.sfcore.utils.ComponentHelper;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.regex.Pattern;
-import java.net.UnknownHostException;
-
 
 
 /**
- * Implementation of the Junit test suite component.
- * This is where tests are actually run; we bring up Junit internally and run it here
- * created 14-May-2004 15:14:23
+ * Implementation of the Junit test suite component. This is where tests are
+ * actually run; we bring up Junit internally and run it here created
+ * 14-May-2004 15:14:23
  */
 
-public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite, junit.framework.TestListener {
+public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
+        junit.framework.TestListener {
 
     private Log log;
 
@@ -82,7 +81,6 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite, juni
     public JUnitTestSuiteImpl() throws RemoteException {
         helper = new ComponentHelper(this);
     }
-
 
 
     public boolean getIf() throws RemoteException {
@@ -121,7 +119,8 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite, juni
      *                                  error while deploying
      * @throws java.rmi.RemoteException In case of network/rmi error
      */
-    public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
+    public synchronized void sfDeploy() throws SmartFrogException,
+            RemoteException {
         super.sfDeploy();
         log = helper.getLogger();
     }
@@ -134,44 +133,52 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite, juni
      *                                  failure while starting
      * @throws java.rmi.RemoteException In case of network/rmi error
      */
-    public synchronized void sfStart() throws SmartFrogException, RemoteException {
+    public synchronized void sfStart() throws SmartFrogException,
+            RemoteException {
         super.sfStart();
         readConfiguration();
         //runTests();
     }
 
-    protected void readConfiguration() throws SmartFrogException, RemoteException {
-        ifValue=sfResolve(ATTR_IF,ifValue,false);
-        unlessValue=sfResolve(ATTR_UNLESS,unlessValue,false);
-        classes = flattenStringList((List)sfResolve(ATTR_CLASSES,classes,false),ATTR_CLASSES);
+    protected void readConfiguration() throws SmartFrogException,
+            RemoteException {
+        ifValue = sfResolve(ATTR_IF, ifValue, false);
+        unlessValue = sfResolve(ATTR_UNLESS, unlessValue, false);
+        classes =
+                flattenStringList((List) sfResolve(ATTR_CLASSES,
+                        classes,
+                        false),
+                        ATTR_CLASSES);
 
         //package attribute names a package
-        packageValue = sfResolve(ATTR_PACKAGE,packageValue,false);
-        if(packageValue==null) {
-            packageValue="";
+        packageValue = sfResolve(ATTR_PACKAGE, packageValue, false);
+        if (packageValue == null) {
+            packageValue = "";
         } else {
             //add a dot at the end if we need it
-            if(packageValue.length()>0 && packageValue.charAt(packageValue.length()-1)!='.') {
-                packageValue= packageValue+'.';
+            if (packageValue.length() > 0 &&
+                    packageValue.charAt(packageValue.length() - 1) != '.') {
+                packageValue = packageValue + '.';
             }
         }
         buildClassList();
         try {
-            hostname=java.net.InetAddress.getLocalHost().getHostName();
+            hostname = java.net.InetAddress.getLocalHost().getHostName();
         } catch (UnknownHostException e) {
-            hostname="localhost";
+            hostname = "localhost";
         }
         //name
-        suitename=sfResolve(ATTR_NAME,(String)null,true);
+        suitename = sfResolve(ATTR_NAME, (String) null, true);
+        log("Running test suite " + suitename + " on host " + hostname);
     }
 
     /**
-     * build the list of classes to run.
-     * At this point the list is already flat.
+     * build the list of classes to run. At this point the list is already
+     * flat.
      */
     protected void buildClassList() {
         testClasses = new HashMap();
-        Iterator it=classes.iterator();
+        Iterator it = classes.iterator();
         while (it.hasNext()) {
             String testclass = (String) it.next();
             addTest(testclass);
@@ -180,32 +187,35 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite, juni
 
     /**
      * add a test to the list , prepending the package
+     *
      * @param classname
      */
     private void addTest(String classname) {
-        String fullname=packageValue+classname;
+        String fullname = packageValue + classname;
 
-        if(testClasses.get(fullname)==null) {
-            log.debug("adding test "+ fullname);
+        if (testClasses.get(fullname) == null) {
+            log.debug("adding test " + fullname);
             testClasses.put(fullname, fullname);
         }
     }
 
     /**
-     * flatten a string list, validating type as we go. recurses as much as we need to.
-     * At its most efficient if no flattening is needed.
+     * flatten a string list, validating type as we go. recurses as much as we
+     * need to. At its most efficient if no flattening is needed.
+     *
      * @param src
      * @param name
      * @return
      * @throws SmartFrogInitException
      */
-    private List flattenStringList(final List src,String name) throws SmartFrogInitException {
-        List dest=new ArrayList(src.size());
+    private List flattenStringList(final List src, String name)
+            throws SmartFrogInitException {
+        List dest = new ArrayList(src.size());
         Iterator index = src.iterator();
         while (index.hasNext()) {
             Object element = (Object) index.next();
             if (element instanceof List) {
-                dest.addAll(flattenStringList((List)element,name));
+                dest.addAll(flattenStringList((List) element, name));
             } else if (!(element instanceof String)) {
                 throw new SmartFrogInitException("An element in "
                         + name + " is not string: " + element.toString());
@@ -215,29 +225,38 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite, juni
         return dest;
     }
 
+    private void log(String message) {
+        log.info(message);
+    }
+
     /**
-     * run the test
-     * bail out if we were interrupted.
+     * run the test bail out if we were interrupted.
+     *
      * @return true iff all tests passed
      * @throws java.rmi.RemoteException
      */
     public boolean runTests() throws RemoteException, SmartFrogException {
-        if(configuration==null || getListener()==null) {
-            throw new SmartFrogException("TestSuite has not been configured yet");
+        if (configuration == null || getListener() == null) {
+            throw new SmartFrogException(
+                    "TestSuite has not been configured yet");
         }
 
-        if(!getIf() || getUnless()) {
-            log.debug("Skipping test as conditions preclude it");
+
+        if (!getIf() || getUnless()) {
+            log("Skipping test as conditions preclude it");
             return true;
         }
 
         //bind to our listener
-        listener=configuration.getListenerFactory().listen(hostname,suitename,System.currentTimeMillis());
+        listener =
+                configuration.getListenerFactory().listen(hostname,
+                        suitename,
+                        System.currentTimeMillis());
 
         //now run all the tests
         try {
-            boolean failed=false;
-            Iterator it= testClasses.keySet().iterator();
+            boolean failed = false;
+            Iterator it = testClasses.keySet().iterator();
             while (it.hasNext()) {
                 String classname = (String) it.next();
                 try {
@@ -250,13 +269,13 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite, juni
                 } catch (InvocationTargetException e) {
                     throw SmartFrogException.forward(e);
                 }
-                if(Thread.currentThread().isInterrupted()) {
+                if (Thread.currentThread().isInterrupted()) {
                     log.debug("Interrupted test thread");
                     return false;
                 }
                 updateResultAttributes(true);
                 failed = !stats.isSuccessful();
-                if(failed && !configuration.getKeepGoing()) {
+                if (failed && !configuration.getKeepGoing()) {
                     return false;
                 }
             }
@@ -273,27 +292,30 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite, juni
     }
 
     /**
-     * write all our state to the results
-     * order it so that we set the finished last
+     * write all our state to the results order it so that we set the finished
+     * last
      */
-    private void updateResultAttributes(boolean finished) throws SmartFrogRuntimeException, RemoteException {
-        stats.updateResultAttributes(this,finished);
+    private void updateResultAttributes(boolean finished)
+            throws SmartFrogRuntimeException, RemoteException {
+        stats.updateResultAttributes(this, finished);
     }
 
     /**
      * test a single class
+     *
      * @param classname
      * @throws ClassNotFoundException
      * @throws IllegalAccessException
      * @throws InvocationTargetException
      */
-    private void testSingleClass(String classname) throws ClassNotFoundException, IllegalAccessException,
+    private void testSingleClass(String classname)
+            throws ClassNotFoundException, IllegalAccessException,
             InvocationTargetException {
-        log.debug("testing "+classname);
+        log("testing " + classname);
         Test tests;
-        Class clazz=loadTestClass(classname);
-        tests=extractTest(clazz);
-        TestResult result=new TestResult();
+        Class clazz = loadTestClass(classname);
+        tests = extractTest(clazz);
+        TestResult result = new TestResult();
         result.addListener(this);
         tests.run(result);
     }
@@ -306,20 +328,23 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite, juni
      * @return
      * @throws ClassNotFoundException
      */
-    private Class loadTestClass(String classname) throws ClassNotFoundException {
+    private Class loadTestClass(String classname)
+            throws ClassNotFoundException {
         //Class.forName(classname);
-        Class clazz=SFClassLoader.forName(classname);
+        Class clazz = SFClassLoader.forName(classname);
         return clazz;
     }
 
     /**
      * get the tests from the class, either as a suite or as introspected tests
+     *
      * @param clazz
      * @return the test
      * @throws IllegalAccessException
      * @throws InvocationTargetException
      */
-    private Test extractTest(Class clazz) throws IllegalAccessException, InvocationTargetException {
+    private Test extractTest(Class clazz) throws IllegalAccessException,
+            InvocationTargetException {
         //todo: verify that the class implements test or testsuite
         try {
             // check if there is a suite method
@@ -333,6 +358,7 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite, juni
 
     /**
      * get our listener
+     *
      * @return
      */
     public TestListener getListener() {
@@ -344,7 +370,7 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite, juni
      */
     public void addError(Test test, Throwable throwable) {
         stats.incErrors();
-        TestInfo info=new TestInfo(test,throwable);
+        TestInfo info = new TestInfo(test, throwable);
         try {
             getListener().addError(info);
         } catch (RemoteException e) {
@@ -356,10 +382,11 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite, juni
 
     /**
      * ignore a remote fault by logging it
+     *
      * @param e
      */
     private void IgnoreRemoteFault(Exception e) {
-        log.warn("ignoring",e);
+        log.warn("ignoring", e);
     }
 
     /**
