@@ -28,7 +28,7 @@ public abstract class ScriptRun
     static final int STATE_STARTED = 2;
     static final int STATE_PROCESSING = 3;
 
-    long ID = -1;
+    private long ID = -1;
 
     public ScriptRun( long ID)
     {
@@ -39,4 +39,11 @@ public abstract class ScriptRun
     public abstract void startScriptRunner( long ID, String name, Cmd cmd ) throws Exception;
     public abstract void stopScriptRunner( long ID) throws Exception;
 
+    public long getID() {
+        return ID;
+    }
+
+    public void setID(long ID) {
+        this.ID = ID;
+    }
 }

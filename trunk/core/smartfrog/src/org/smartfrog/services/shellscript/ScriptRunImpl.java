@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 1998-2005 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -37,7 +37,6 @@ public class ScriptRunImpl  extends ScriptRun {
   private RunProcessImpl runProcess = null;
 
   private int state = STATE_INACTIVE;
-  private long ID = -1;
 
   private String hostName = null;
 
@@ -48,7 +47,7 @@ public class ScriptRunImpl  extends ScriptRun {
     dateFormatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss:SSS zzz");
   }
 
-  java.lang.Runtime runtime = null;
+  Runtime runtime = null;
 
   private LogSF sfLog = LogFactory.sfGetProcessLog(); //Temp log until getting its own.
 
@@ -72,11 +71,11 @@ public class ScriptRunImpl  extends ScriptRun {
 
   }
 
-  public synchronized void stop() {
+    public synchronized void stop() {
     if (runProcess != null) {
       runProcess.kill();
       runProcess = null;
-      ID = -1;
+      setID(-1);
     }
   }
 
@@ -129,7 +128,7 @@ public class ScriptRunImpl  extends ScriptRun {
       return;
     }
 
-    this.ID = ID;
+    this.setID(ID);
 
     try {
       runProcess = new RunProcessImpl (ID, name, cmd);
@@ -147,7 +146,7 @@ public class ScriptRunImpl  extends ScriptRun {
   public synchronized void stopScriptRunner(long ID) {
     String message = null;
 
-    if (this.ID != ID) {
+    if (this.getID() != ID) {
       message = "It is not processing  ID: " + ID;
     }
     if (message != null) {
@@ -161,7 +160,7 @@ public class ScriptRunImpl  extends ScriptRun {
     } else {
       runProcess.kill();
       runProcess = null;
-      this.ID = -1;
+      this.setID(-1);
     }
   }
 
