@@ -38,6 +38,7 @@ import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.common.*;
 
 
 /**
@@ -196,15 +197,20 @@ public class SFMCastClientImpl extends PrimImpl implements Prim, SFMCastClient,
             //sock.send(sendReply);
             //log("run","replaySent to " + packetCount);
             // Add packet to data set
-            if (o instanceof InetAddress) {
-                cd.getContext().put(((InetAddress)o).getCanonicalHostName(), o);
-            } else {
-                cd.getContext().put(o.toString(), o);
+            try {
+              if (o instanceof InetAddress) {
+                cd.sfReplaceAttribute( ( (InetAddress) o).getCanonicalHostName(),
+                                      o);
+              } else {
+                cd.sfReplaceAttribute(o.toString(), o);
+              }
+              //this.sfReplaceAttribute(this.ATR_SERVERS,cd);
+            } catch (SmartFrogRuntimeException ex1) {
+               Logger.log(ex1);
             }
-            //this.sfReplaceAttribute(this.ATR_SERVERS,cd);
             try {
               Vector v = new Vector();
-              for (Enumeration h = cd.getContext().keys();
+              for (Enumeration h = cd.sfContext().keys();
                   h.hasMoreElements(); ) {
                     v.add(h.nextElement());
               }
