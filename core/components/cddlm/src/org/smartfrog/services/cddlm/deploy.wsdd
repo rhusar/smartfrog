@@ -10,17 +10,11 @@
     xmlns="http://xml.apache.org/axis/wsdd/"
     xmlns:java="http://xml.apache.org/axis/wsdd/providers/java">
 
-  <!-- Services from zorro WSDL service -->
-
   <service name="cddlm" style="wrapped" >
       <parameter name="wsdlTargetNamespace" value="http://smartfrog.org/cddlm"/>
       <parameter name="className" value="org.smartfrog.services.cddlm.DeploymentEndpoint"/>
       <parameter name="allowedMethods" value="*"/>
-<!--
-      <parameter name="wsdlPortType" value="zorroPortType"/>
-      <parameter name="wsdlServiceElement" value="deployment"/>
-      <parameter name="wsdlServicePort" value="zorroPort"/>
--->
+
 
   </service>
 </deployment>

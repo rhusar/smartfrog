@@ -1,34 +1,28 @@
 package org.smartfrog.services.jetty;
 
-import java.rmi.RemoteException;
-
-import org.smartfrog.SFSystem;
+import org.mortbay.http.HashUserRealm;
+import org.mortbay.http.HttpServer;
+import org.mortbay.http.NCSARequestLog;
+import org.mortbay.http.SocketListener;
+import org.mortbay.http.ajp.AJP13Listener;
+import org.mortbay.http.handler.DumpHandler;
+import org.mortbay.http.handler.ForwardHandler;
+import org.mortbay.http.handler.HTAccessHandler;
+import org.mortbay.http.handler.ResourceHandler;
+import org.mortbay.jetty.servlet.AbstractSessionManager;
+import org.mortbay.jetty.servlet.ServletHandler;
+import org.mortbay.jetty.servlet.ServletHolder;
+import org.mortbay.jetty.servlet.ServletHttpContext;
+import org.mortbay.jetty.servlet.WebApplicationContext;
+import org.mortbay.util.MultiException;
 import org.smartfrog.sfcore.common.Logger;
+import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.mortbay.http.HttpServer;
-import org.mortbay.http.SocketListener;
-import org.mortbay.http.ajp.AJP13Listener;
-import org.mortbay.jetty.servlet.ServletHttpContext;
-import org.mortbay.jetty.servlet.WebApplicationContext;
-import org.mortbay.jetty.servlet.Holder;
-import org.mortbay.jetty.servlet.ServletHolder;
-import org.mortbay.jetty.servlet.ServletHandler;
-import org.mortbay.jetty.servlet.AbstractSessionManager;
-import org.mortbay.jetty.servlet.SessionManager;
-import org.mortbay.http.HttpContext;
-import org.mortbay.http.handler.ResourceHandler;
-import org.mortbay.http.handler.ForwardHandler;
-import org.mortbay.http.handler.HTAccessHandler;
-import org.mortbay.http.handler.DumpHandler;
-import org.mortbay.http.HashUserRealm;
-import org.mortbay.http.BasicAuthenticator;
-import org.mortbay.http.SecurityConstraint;
-import org.mortbay.http.NCSARequestLog;
-import org.mortbay.util.MultiException;
+
+import java.rmi.RemoteException;
 
 /**
  * A wrapper for a Jetty http server.
@@ -94,34 +88,30 @@ public class SFJetty extends PrimImpl implements Prim {
    * Deploy the SFJetty component
    */
   public void sfDeploy() throws SmartFrogException, RemoteException {
-    try {
-    super.sfDeploy();
-    server = new HttpServer();
-    jettyhome = sfResolve(jettyhomeRef,".",false);
-    listenerPort = sfResolve(listenerPortRef,8080,false);
-    ajplistenerPort = sfResolve(ajplistenerPortRef,8009,false);
-    rootcontextPath = sfResolve(rootcontextPathRef, "/", false);
-    democontextPath = sfResolve(democontextPathRef, "/jetty", false);
-    testcontextPath = sfResolve(testcontextPathRef, "/cvs", false);
-    examplescontextPath = sfResolve(examplescontextPathRef, "/examples", false);
-   // rootclassPath = sfResolve(rootclassPathRef, "C:\\jetty\\Jetty-4.2.18\\demo\\webapps\\WEB-INF\\classses", false);
-    rootwebApp = sfResolve(rootwebAppRef, jettyhome + "\\demo\\webapps\\root", false);
-    demowebApp = sfResolve(demowebAppRef, jettyhome + "\\demo\\webapps\\jetty", false);
-    testApp = sfResolve(testAppRef, "D:\\cvs\\forge", false);
-    exampleswebApp = sfResolve(exampleswebAppRef, jettyhome + "\\demo\\webapps\\examples", false);
-   // examplesclassPath = sfResolve(examplesclassPathRef, "C:\\jetty\\Jetty-4.2.18\\demo\\webapps\\examples\\WEB-INF\\classses", false);
-    demo_contextPath = sfResolve(demo_contextPathRef, "/demo", false);
-    demo_resourceBase = sfResolve(demo_resourceBaseRef, jettyhome + "\\demo\\docRoot",false);
-    demo_classPath = sfResolve(demo_classPathRef, jettyhome + "\\demo\\servlets", false);
-    javadoccontextPath = sfResolve(democontextPathRef, "/javadoc", false);
-    javadocresourceBase = sfResolve(javadocresourceBaseRef, jettyhome + "\\javadoc",false);
-    cgicontextPath = sfResolve(democontextPathRef, "/cgi-bin", false);
-    cgiresourceBase = sfResolve(javadocresourceBaseRef, jettyhome + "\\cgi-bin",false);
-    configureHttpServer();
-    } catch (Exception ex){ 
-       ex.printStackTrace();
-    }
-   
+      super.sfDeploy();
+      server = new HttpServer();
+      jettyhome = sfResolve(jettyhomeRef, ".", false);
+      listenerPort = sfResolve(listenerPortRef, 8080, false);
+      ajplistenerPort = sfResolve(ajplistenerPortRef, 8009, false);
+      rootcontextPath = sfResolve(rootcontextPathRef, "/", false);
+      democontextPath = sfResolve(democontextPathRef, "/jetty", false);
+      testcontextPath = sfResolve(testcontextPathRef, "/cvs", false);
+      examplescontextPath = sfResolve(examplescontextPathRef, "/examples", false);
+      // rootclassPath = sfResolve(rootclassPathRef, "C:\\jetty\\Jetty-4.2.18\\demo\\webapps\\WEB-INF\\classses", false);
+      rootwebApp = sfResolve(rootwebAppRef, jettyhome + "\\demo\\webapps\\root", false);
+      demowebApp = sfResolve(demowebAppRef, jettyhome + "\\demo\\webapps\\jetty", false);
+      testApp = sfResolve(testAppRef, "D:\\cvs\\forge", false);
+      exampleswebApp = sfResolve(exampleswebAppRef, jettyhome + "\\demo\\webapps\\examples", false);
+      // examplesclassPath = sfResolve(examplesclassPathRef, "C:\\jetty\\Jetty-4.2.18\\demo\\webapps\\examples\\WEB-INF\\classses", false);
+      demo_contextPath = sfResolve(demo_contextPathRef, "/demo", false);
+      demo_resourceBase = sfResolve(demo_resourceBaseRef, jettyhome + "\\demo\\docRoot", false);
+      demo_classPath = sfResolve(demo_classPathRef, jettyhome + "\\demo\\servlets", false);
+      javadoccontextPath = sfResolve(democontextPathRef, "/javadoc", false);
+      javadocresourceBase = sfResolve(javadocresourceBaseRef, jettyhome + "\\javadoc", false);
+      cgicontextPath = sfResolve(democontextPathRef, "/cgi-bin", false);
+      cgiresourceBase = sfResolve(javadocresourceBaseRef, jettyhome + "\\cgi-bin", false);
+      configureHttpServer();
+
   }
 
    /**
@@ -144,9 +134,9 @@ public class SFJetty extends PrimImpl implements Prim {
 /**
  * Configure the http server
  */
-  public void configureHttpServer() {
+  public void configureHttpServer() throws SmartFrogException {
     try {
-   
+
     listener.setPort(listenerPort);
     server.addListener(listener);
     ajplistener.setPort(ajplistenerPort);
@@ -231,8 +221,9 @@ public class SFJetty extends PrimImpl implements Prim {
     String[] paths = {"/jetty/images/*", "/demo/images/*","*.css"};
     requestlog.setIgnorePaths(paths);
     server.setRequestLog(requestlog);
-   } catch (Exception ioex) {
-	    ioex.printStackTrace();
+   } catch (Exception ex) {
+        //lots of different things get thrown here
+	    throw SmartFrogException.forward(ex);
    }
   }
 

@@ -93,7 +93,7 @@ public class LivenessPageChecker implements LivenessPage {
     /**
      * our log
      */
-    Logger log;
+    protected Logger log;
 
     /**
      * create a new liveness page

@@ -71,6 +71,7 @@ public class StartDaemon extends DeployingTaskBase {
     public void setSpawn(boolean spawn) {
         this.spawn = spawn;
         setFailOnError(false);
+        setTimeout(0);
     }
 
     /**
@@ -97,7 +98,7 @@ public class StartDaemon extends DeployingTaskBase {
                     Project.MSG_VERBOSE);
         }
 
-        execSmartfrog("failed to start the smartfrog daemon");
+        execSmartFrog("failed to start the smartfrog daemon");
         if (spawn) {
             //when spawning output gets lost, so we print something here
             log("Standalone SmartFrog daemon started");
