@@ -217,7 +217,7 @@
     <macrodef name="copy-useful-files">
      <attribute name="src"/>
      <attribute name="dest"/>
-     <attribute name="pattern" default="**/*.ini,**/*.xml,**/*.dtd,**/*.xsd,**/*.sf,**/*.properties,**/*.wsdd" />
+     <attribute name="pattern" default="**/*.ini,**/*.xml,**/*.dtd,**/*.xsd,**/*.sf,**/*.properties,**/*.wsdd,**/*.cdl" />
      <sequential>
        <echo level="verbose">copying @{pattern} from @{src} to @{dest}</echo>
        <copy todir="@{dest}">
@@ -479,15 +479,43 @@
   <!-- another name for rmi -->
   <target name="compile-RMI" depends="rmi" />
   
+  
+  <!-- ========================================================== -->
+  <!-- this is an override point -->
+  <!-- compile everything, copy useful files over-->
+  <!-- ========================================================== -->
+  <target name="compile-tests"
+      depends="package">
+      <depend srcdir="${test.dir}"
+          destdir="${test.classes.dir}"
+          cache="${build.test.dir}/depends"
+          closure="yes"/>
+      <sf-javac
+          classpathref="run.classpath"
+          srcdir="${test.dir}"
+          destdir="${test.classes.dir}"
+          />
+      <copy-useful-files src="${src.dir}" dest="${build.classes.dir}"/>
+  </target>  
+
+
   <!-- ========================================================== -->
   <!-- this is an override point -->
   <!-- create the jar ${target.jar}-->
   <!-- ========================================================== -->
-  <target name="dist" depends="compile,rmi"
+  <target name="package" depends="compile,rmi"
       description="create the jar files">
       <jar destfile="${target.jar}" 
         basedir="${build.classes.dir}" 
         includes="**/*"/>
+  </target>  
+  
+  <!-- ========================================================== -->
+  <!-- this is an override point -->
+  <!-- everything for distribution -->
+  <!-- ========================================================== -->
+  <target name="dist" depends="package">
+
   </target>    
     
  
