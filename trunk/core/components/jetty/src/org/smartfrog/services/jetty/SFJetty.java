@@ -26,9 +26,12 @@ import org.mortbay.util.MultiException;
 public class SFJetty extends CompoundImpl implements JettyIntf {
 
     protected Reference jettyhomeRef = new Reference(JETTY_HOME);
+    Reference serverNameRef = new Reference(SERVER);
  
   /**  Jetty home path */
   protected String jettyhome;
+
+  String serverName = null;
   
   /** The Http server */
   HttpServer server;
@@ -46,10 +49,11 @@ public class SFJetty extends CompoundImpl implements JettyIntf {
   public void sfDeploy() throws SmartFrogException, RemoteException {
     try {
 	   server = new HttpServer();
+	   serverName = sfResolve(serverNameRef, serverName, true);
 	   ProcessCompound process = SFProcess.getProcessCompound();
-	   process.sfAddAttribute(JETTY_SERVER, server);
+	   process.sfAddAttribute(serverName, server);
 	   jettyhome = sfResolve(jettyhomeRef,jettyhome,true);
-           process.sfAddAttribute("Jetty Home", jettyhome);
+           process.sfAddAttribute(jettyhome, jettyhome);
 	   configureHttpServer();
            super.sfDeploy();
            
