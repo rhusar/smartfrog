@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <xsd:schema elementFormDefault="qualified"
-	targetNamespace="http://gridforum.org/cddlm/serviceAPI/types/2004/07/30"
-      xmlns:types="http://gridforum.org/cddlm/serviceAPI/types/2004/07/30"
-            xmlns="http://gridforum.org/cddlm/serviceAPI/types/2004/07/30"
-        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-        xmlns:wsa="http://schemas.xmlsoap.org/ws/2003/03/addressing"
->
-<!--
-xmlns:jsdl="http://www.gridforum.org/JSDL"
-xmlns:wsbf="http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseFaults"
-  -->
+  targetNamespace="http://gridforum.org/cddlm/serviceAPI/types/2004/07/30"
+  xmlns:types="http://gridforum.org/cddlm/serviceAPI/types/2004/07/30"
+  xmlns="http://gridforum.org/cddlm/serviceAPI/types/2004/07/30"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns:wsa="http://schemas.xmlsoap.org/ws/2003/03/addressing"
+  >
+  <!--
+  xmlns:jsdl="http://www.gridforum.org/JSDL"
+  xmlns:wsbf="http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseFaults"
+    -->
   <!-- ============================================================= -->
   <xsd:annotation>
-  <xsd:documentation>
+    <xsd:documentation>
   
     This is the XSD describing the types of the CDDLM service API
 
@@ -28,7 +28,7 @@ xmlns:wsbf="http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseFaults"
     RFC 2119.
     http://www.ietf.org/rfc/rfc2119.txt
 
-  </xsd:documentation>
+    </xsd:documentation>
   </xsd:annotation>
   <!-- ============================================================= -->
 
@@ -41,9 +41,9 @@ xmlns:wsbf="http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseFaults"
     namespace="http://schemas.xmlsoap.org/ws/2003/03/addressing"
     schemaLocation="ws-addressing.xsd"/>
 
- <!-- <xsd:import
-    namespace="http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseFaults"
-    schemaLocation="WS-BaseFaults.xsd"/> -->
+  <!-- <xsd:import
+     namespace="http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseFaults"
+     schemaLocation="WS-BaseFaults.xsd"/> -->
 
   <!-- ============================================================= -->
   <!-- END IMPORTS -->
@@ -113,11 +113,11 @@ xmlns:wsbf="http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseFaults"
   -->
   <!-- ============================================================= -->
   <xsd:simpleType name="applicationNameType">
-      <xsd:annotation>
-        <xsd:documentation>
+    <xsd:annotation>
+      <xsd:documentation>
         This is the policy for the naming of applications
-        </xsd:documentation>
-      </xsd:annotation>
+      </xsd:documentation>
+    </xsd:annotation>
     <xsd:restriction base="xsd:NCName"/>
   </xsd:simpleType>
 
@@ -128,11 +128,11 @@ xmlns:wsbf="http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseFaults"
   <!-- ============================================================= -->
 
   <xsd:simpleType name="applicationReferenceType">
-      <xsd:annotation>
-        <xsd:documentation>
+    <xsd:annotation>
+      <xsd:documentation>
         This is the policy for the naming of applications
-        </xsd:documentation>
-      </xsd:annotation>
+      </xsd:documentation>
+    </xsd:annotation>
     <xsd:restriction base="xsd:anyURI"/>
   </xsd:simpleType>
 
@@ -142,13 +142,13 @@ xmlns:wsbf="http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseFaults"
        files to be used as a source of data -->
   <!-- ============================================================= -->
   <xsd:simpleType name="remoteDescriptorType">
-      <xsd:annotation>
-        <xsd:documentation>
+    <xsd:annotation>
+      <xsd:documentation>
         Descriptors can also be URLs.
         We extend the URI type in case of future needs to add attributes such as
         authentication information.
-        </xsd:documentation>
-      </xsd:annotation>
+      </xsd:documentation>
+    </xsd:annotation>
     <xsd:restriction base="xsd:anyURI"/>
   </xsd:simpleType>
 
@@ -210,8 +210,8 @@ xmlns:wsbf="http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseFaults"
       </xsd:documentation>
     </xsd:annotation>
     <xsd:choice>
-      <xsd:element name="source" type="xsd:anyURI"  />
-      <xsd:element name="data" >
+      <xsd:element name="source" type="xsd:anyURI"/>
+      <xsd:element name="data">
         <xsd:complexType>
           <xsd:sequence>
             <xsd:any processContents="lax" namespace="##other"/>
@@ -254,10 +254,10 @@ xmlns:wsbf="http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseFaults"
       URL information
       </xsd:documentation>
     </xsd:annotation>
-      <xsd:choice>
-        <xsd:element name="name" type="types:applicationNameType"/>
-        <xsd:element name="reference" type="types:applicationReferenceType"/>
-      </xsd:choice>
+    <xsd:choice>
+      <xsd:element name="name" type="types:applicationNameType"/>
+      <xsd:element name="reference" type="types:applicationReferenceType"/>
+    </xsd:choice>
   </xsd:complexType>
 
 
@@ -279,13 +279,13 @@ xmlns:wsbf="http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseFaults"
       </xsd:documentation>
     </xsd:annotation>
     <xsd:choice>
-      <xsd:element name="string" type="xsd:string" />
-      <xsd:element name="integer" type="xsd:integer" />
-      <xsd:element name="boolean" type="xsd:boolean" />
-      <xsd:element name="xml" type="types:unboundedXMLAnyNamespace" />
+      <xsd:element name="string" type="xsd:string"/>
+      <xsd:element name="integer" type="xsd:integer"/>
+      <xsd:element name="boolean" type="xsd:boolean"/>
+      <xsd:element name="xml" type="types:unboundedXMLAnyNamespace"/>
     </xsd:choice>
-    <xsd:attribute name="name" type="xsd:anyURI" use="required" />
-    <xsd:attribute name="mustUnderstand" type="xsd:boolean" use="optional" default="false" />
+    <xsd:attribute name="name" type="xsd:anyURI" use="required"/>
+    <xsd:attribute name="mustUnderstand" type="xsd:boolean" use="optional" default="false"/>
   </xsd:complexType>
 
   <!-- ============================================================= -->
@@ -369,8 +369,8 @@ xmlns:wsbf="http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseFaults"
           </xsd:annotation>
           <xsd:sequence>
             <xsd:element name="name" type="xsd:string"/>
-            <xsd:element name="version" type="xsd:string" />
-            <xsd:element name="namespace" type="xsd:anyURI" />
+            <xsd:element name="version" type="xsd:string"/>
+            <xsd:element name="namespace" type="xsd:anyURI"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -385,7 +385,7 @@ xmlns:wsbf="http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseFaults"
     </xsd:annotation>
     <xsd:sequence>
       <xsd:element name="callback" minOccurs="1" maxOccurs="unbounded"
-          type="xsd:string">
+        type="xsd:string">
       </xsd:element>
     </xsd:sequence>
   </xsd:complexType>
@@ -405,7 +405,7 @@ xmlns:wsbf="http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseFaults"
           </xsd:documentation>
         </xsd:annotation>
       </xsd:element>
- 
+
       <xsd:element name="build" type="xsd:string">
         <xsd:annotation>
           <xsd:documentation>
@@ -413,13 +413,13 @@ xmlns:wsbf="http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseFaults"
           </xsd:documentation>
         </xsd:annotation>
       </xsd:element>
- 
+
       <xsd:element name="home" type="xsd:anyURI">
-      <xsd:annotation>
-        <xsd:documentation>
+        <xsd:annotation>
+          <xsd:documentation>
         URL to a page providing support and docs for the server
-        </xsd:documentation>
-      </xsd:annotation>
+          </xsd:documentation>
+        </xsd:annotation>
       </xsd:element>
 
       <xsd:element name="diagnostics" type="types:unboundedXMLAnyNamespace" minOccurs="0">
@@ -433,7 +433,7 @@ xmlns:wsbf="http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseFaults"
 
     </xsd:sequence>
   </xsd:complexType>
-  
+
   <xsd:complexType name="staticServerStatusType">
     <xsd:annotation>
       <xsd:documentation>
@@ -442,13 +442,13 @@ xmlns:wsbf="http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseFaults"
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-      <xsd:element name="server" type="types:serverInformationType" />
-      <xsd:element name="languages" type="types:languageListType" />
-      <xsd:element name="callbacks" type="types:callbackListType" />
+      <xsd:element name="server" type="types:serverInformationType"/>
+      <xsd:element name="languages" type="types:languageListType"/>
+      <xsd:element name="callbacks" type="types:callbackListType"/>
     </xsd:sequence>
   </xsd:complexType>
 
-  <xsd:complexType name="dynamicServerStatusType" >
+  <xsd:complexType name="dynamicServerStatusType">
     <xsd:annotation>
       <xsd:documentation>
         Dynamic status contents are undefined; service is free to provide
@@ -504,8 +504,8 @@ xmlns:wsbf="http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseFaults"
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-      <xsd:element name="state" type="types:lifecycleStateEnum" />
-      <xsd:element name="stateInfo" type="xsd:string"  />
+      <xsd:element name="state" type="types:lifecycleStateEnum"/>
+      <xsd:element name="stateInfo" type="xsd:string"/>
       <xsd:element name="extendedState" minOccurs="0" type="types:unboundedXMLOtherNamespace"/>
     </xsd:sequence>
   </xsd:complexType>
@@ -514,7 +514,7 @@ xmlns:wsbf="http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseFaults"
   <!-- ============================================================= -->
   <!-- list of application is used for enumerating running applications -->
   <!-- ============================================================= -->
-  
+
   <xsd:complexType name="applicationReferenceListType">
     <xsd:annotation>
       <xsd:documentation>
@@ -557,31 +557,31 @@ xmlns:wsbf="http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseFaults"
           are referred to in the deployment_options map.
         </xsd:documentation>
       </xsd:annotation>
-     <xsd:sequence>
-      <xsd:element name="jsdl" type="types:jsdlType">
-        <xsd:annotation>
-          <xsd:documentation>
-          </xsd:documentation>
-        </xsd:annotation>
-      </xsd:element>
+      <xsd:sequence>
+        <xsd:element name="jsdl" type="types:jsdlType">
+          <xsd:annotation>
+            <xsd:documentation>
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
 
-      <xsd:element name="name" type="types:applicationNameType"/>
-      <xsd:element name="descriptor" type="types:deploymentDescriptorType"/>
-      <xsd:element name="callback" type="types:callbackInformationType" minOccurs="0"/>
-      <xsd:element name="options" type="types:optionMapType" minOccurs="0">
-        <xsd:annotation>
-          <xsd:documentation>
+        <xsd:element name="name" type="types:applicationNameType"/>
+        <xsd:element name="descriptor" type="types:deploymentDescriptorType"/>
+        <xsd:element name="callback" type="types:callbackInformationType" minOccurs="0"/>
+        <xsd:element name="options" type="types:optionMapType" minOccurs="0">
+          <xsd:annotation>
+            <xsd:documentation>
           This is for optional deployment options.
-          </xsd:documentation>
-        </xsd:annotation>
-      </xsd:element>
-     </xsd:sequence>
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+      </xsd:sequence>
     </xsd:complexType>
-   </xsd:element>
+  </xsd:element>
 
-   <!-- ============================================================= -->
-   <!-- ============================================================= -->
-   <xsd:element name="deployResponse">
+  <!-- ============================================================= -->
+  <!-- ============================================================= -->
+  <xsd:element name="deployResponse">
     <xsd:complexType>
       <xsd:annotation>
         <xsd:documentation>
@@ -590,86 +590,86 @@ xmlns:wsbf="http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseFaults"
         for future references.
         </xsd:documentation>
       </xsd:annotation>
-     <xsd:sequence>
-      <xsd:element name="applicationReference" type="types:applicationReferenceType"/>
-     </xsd:sequence>
+      <xsd:sequence>
+        <xsd:element name="applicationReference" type="types:applicationReferenceType"/>
+      </xsd:sequence>
     </xsd:complexType>
-   </xsd:element>
+  </xsd:element>
 
-   <!-- ============================================================= -->
-   <!-- ============================================================= -->
-   <xsd:element name="undeployRequest" >
+  <!-- ============================================================= -->
+  <!-- ============================================================= -->
+  <xsd:element name="undeployRequest">
     <xsd:complexType>
       <xsd:annotation>
         <xsd:documentation>
           Request to terminate an application.
         </xsd:documentation>
       </xsd:annotation>
-     <xsd:sequence>
-      <xsd:element name="application" type="types:applicationReferenceType"/>
-      <xsd:element name="reason" type="xsd:string"/>
-     </xsd:sequence>
+      <xsd:sequence>
+        <xsd:element name="application" type="types:applicationReferenceType"/>
+        <xsd:element name="reason" type="xsd:string"/>
+      </xsd:sequence>
     </xsd:complexType>
-   </xsd:element>
-
-   <!-- ============================================================= -->
-   <!-- there isnt really much to say here -->
-   <!-- ============================================================= -->
-   <xsd:element name="undeployResponse" type="xsd:boolean" >
-   </xsd:element>
+  </xsd:element>
 
   <!-- ============================================================= -->
+  <!-- there isnt really much to say here -->
   <!-- ============================================================= -->
-
-   <xsd:element name="serverStatusRequest" type="emptyElementType"/>
+  <xsd:element name="undeployResponse" type="xsd:boolean">
+  </xsd:element>
 
   <!-- ============================================================= -->
   <!-- ============================================================= -->
-   <xsd:element name="serverStatusResponse" type="types:serverStatusType" >
-   </xsd:element>
+
+  <xsd:element name="serverStatusRequest" type="emptyElementType"/>
 
   <!-- ============================================================= -->
   <!-- ============================================================= -->
-   <xsd:element name="applicationStatusRequest">
-      <xsd:annotation>
-        <xsd:documentation>
+  <xsd:element name="serverStatusResponse" type="types:serverStatusType">
+  </xsd:element>
+
+  <!-- ============================================================= -->
+  <!-- ============================================================= -->
+  <xsd:element name="applicationStatusRequest">
+    <xsd:annotation>
+      <xsd:documentation>
         Request the status of an individual application
-        </xsd:documentation>
-      </xsd:annotation>
+      </xsd:documentation>
+    </xsd:annotation>
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="application" type="types:applicationReferenceType"/>
       </xsd:sequence>
     </xsd:complexType>
-   </xsd:element>
+  </xsd:element>
 
-   <xsd:element name="applicationStatusResponse" type="types:applicationStatusType" >
-   </xsd:element>
+  <xsd:element name="applicationStatusResponse" type="types:applicationStatusType">
+  </xsd:element>
 
   <!-- ============================================================= -->
   <!-- ============================================================= -->
-   <xsd:element name="lookupApplicationRequest">
-      <xsd:annotation>
-        <xsd:documentation>
+  <xsd:element name="lookupApplicationRequest">
+    <xsd:annotation>
+      <xsd:documentation>
         Look up an application: pass in the name and get a reference back
         (or an error, if there is no such application or security prevents
          the caller seeing it)
-        </xsd:documentation>
-      </xsd:annotation>
+      </xsd:documentation>
+    </xsd:annotation>
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="application" type="types:applicationNameType"/>
       </xsd:sequence>
     </xsd:complexType>
-   </xsd:element>
+  </xsd:element>
 
-   <xsd:element name="lookupApplicationResponse" type="types:applicationReferenceType" >
-   </xsd:element>
+  <xsd:element name="lookupApplicationResponse" type="types:applicationReferenceType">
+  </xsd:element>
 
   <!-- ============================================================= -->
   <!-- list applications request/response -->
   <!-- ============================================================= -->
-  
+
   <xsd:element name="listApplicationsRequest" type="types:emptyElementType">
     <xsd:annotation>
       <xsd:documentation>
@@ -679,9 +679,9 @@ xmlns:wsbf="http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseFaults"
       </xsd:documentation>
     </xsd:annotation>
   </xsd:element>
-  
-  <xsd:element name="listApplicationsResponse" 
-    type="types:applicationReferenceListType" >
+
+  <xsd:element name="listApplicationsResponse"
+    type="types:applicationReferenceListType">
     <xsd:annotation>
       <xsd:documentation>
         List of running applications
@@ -693,38 +693,38 @@ xmlns:wsbf="http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseFaults"
   <!-- ============================================================= -->
   <!-- callback event message -->
   <!-- ============================================================= -->
-   <xsd:element name="lifecycleEventCallbackRequest">
-   <xsd:complexType >
-    <xsd:annotation>
-      <xsd:documentation>
+  <xsd:element name="lifecycleEventCallbackRequest">
+    <xsd:complexType>
+      <xsd:annotation>
+        <xsd:documentation>
         This is the message which gets sent after a state change
         to a listening endpoint
-      </xsd:documentation>
-    </xsd:annotation>
-    <xsd:sequence>
-      <xsd:element name="identifier" type="xsd:string" />
-      <xsd:element name="applicationReference" type="types:applicationReferenceType" />
-      <xsd:element name="status" type="types:applicationStatusType" />
-<!--      <xsd:element name="BaseFault" type="wsbf:BaseFaultType" minOccurs="0"/>-->
-    </xsd:sequence>
-   </xsd:complexType>
+        </xsd:documentation>
+      </xsd:annotation>
+      <xsd:sequence>
+        <xsd:element name="identifier" type="xsd:string"/>
+        <xsd:element name="applicationReference" type="types:applicationReferenceType"/>
+        <xsd:element name="status" type="types:applicationStatusType"/>
+        <!--      <xsd:element name="BaseFault" type="wsbf:BaseFaultType" minOccurs="0"/>-->
+      </xsd:sequence>
+    </xsd:complexType>
   </xsd:element>
 
-   <xsd:element name="lifecycleEventCallbackResponse" type="xsd:boolean" >
-     <xsd:annotation>
-       <xsd:documentation>
+  <xsd:element name="lifecycleEventCallbackResponse" type="xsd:boolean">
+    <xsd:annotation>
+      <xsd:documentation>
          Return false if you wish to cease to receive notification events.
          Return true if you wish to continue to receive events.
          The sender must not view failure to send as a reason to stop
          sending messages, as these may be transient.
-       </xsd:documentation>
-     </xsd:annotation>
-   </xsd:element>
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
 
 
   <!-- ============================================================= -->
   <!-- end schema-->
   <!-- ============================================================= -->
 
-  </xsd:schema>
+</xsd:schema>
   

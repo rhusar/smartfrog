@@ -31,7 +31,7 @@ import java.rmi.RemoteException;
  * created Aug 4, 2004 4:26:22 PM
  */
 
-public class LookupApplicationProcessor  extends Processor {
+public class LookupApplicationProcessor extends Processor {
     /**
      * log
      */

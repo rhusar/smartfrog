@@ -20,7 +20,6 @@
 package org.smartfrog.services.cddlm.api;
 
 import org.apache.axis.types.URI;
-import org.smartfrog.services.cddlm.generated.api.types.ApplicationReferenceListType;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -36,7 +35,7 @@ import java.util.Set;
 
 public class JobRepository implements Map {
 
-    HashMap jobs= new HashMap();
+    HashMap jobs = new HashMap();
 
     public void clear() {
         jobs.clear();
@@ -100,11 +99,12 @@ public class JobRepository implements Map {
 
     /**
      * lookup by uri
+     *
      * @param uri job uri
      * @return
      */
     public JobState lookup(URI uri) {
-        return (JobState)get(uri.toString());
+        return (JobState) get(uri.toString());
     }
 
     public void remove(URI uri) {
@@ -117,6 +117,7 @@ public class JobRepository implements Map {
 
     /**
      * list all the jobs
+     *
      * @return
      */
     public URI[] listJobs() {

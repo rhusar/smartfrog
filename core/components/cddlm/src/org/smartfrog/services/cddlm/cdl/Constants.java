@@ -34,15 +34,15 @@ public class Constants {
     private Constants() {
     }
 
-    public static final String CDL_NAMESPACE="http://gridforge.org/cddlm/xml/2004/07/30/";
+    public static final String CDL_NAMESPACE = "http://gridforge.org/cddlm/xml/2004/07/30/";
 
     public static final String CDL_API_NAMESPACE = "http://gridforum.org/cddlm/serviceAPI/api/2004/07/30";
 
-    public static final String CDL_ELT_CDL="cdl";
+    public static final String CDL_ELT_CDL = "cdl";
 
-    public static final String XPATH_URI="http://www.w3.org/TR/1999/REC-xpath-19991116";
+    public static final String XPATH_URI = "http://www.w3.org/TR/1999/REC-xpath-19991116";
 
-    public static final String SMARTFROG_NAMESPACE= "http://gridforge.org/cddlm/smartfrog/2004/07/30";
+    public static final String SMARTFROG_NAMESPACE = "http://gridforge.org/cddlm/smartfrog/2004/07/30";
 
-    public static final String ANT_NAMESPACE="http://ant.apache.org/xsd/1.7";
+    public static final String ANT_NAMESPACE = "http://ant.apache.org/xsd/1.7";
 }

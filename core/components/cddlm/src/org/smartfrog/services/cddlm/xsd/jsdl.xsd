@@ -1,49 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
-      targetNamespace="http://www.gridforum.org/JSDL" 
-                xmlns="http://www.gridforum.org/JSDL" 
-   elementFormDefault="qualified">
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  targetNamespace="http://www.gridforum.org/JSDL"
+  xmlns="http://www.gridforum.org/JSDL"
+  elementFormDefault="qualified">
 
-<!--=====================================================================-->
-<!-- The Extends mechanism - rough copy                                  -->
-<!--=====================================================================-->
+  <!--=====================================================================-->
+  <!-- The Extends mechanism - rough copy                                  -->
+  <!--=====================================================================-->
 
   <xsd:element name="Extend">
     <xsd:complexType>
       <xsd:simpleContent>
         <xsd:extension base="xsd:string">
-          <xsd:attribute name="name" type="xsd:string" />
+          <xsd:attribute name="name" type="xsd:string"/>
         </xsd:extension>
       </xsd:simpleContent>
     </xsd:complexType>
   </xsd:element>
 
-<!--=====================================================================-->
-<!-- The core document -->
-<!-- In this section we define the main Sections and the way to extend   -->
-<!-- this. -->
-<!--=====================================================================-->
+  <!--=====================================================================-->
+  <!-- The core document -->
+  <!-- In this section we define the main Sections and the way to extend   -->
+  <!-- this. -->
+  <!--=====================================================================-->
 
   <xsd:element name="job">
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element ref="JobIdentification"
-             minOccurs="0" maxOccurs="1" />
+          minOccurs="0" maxOccurs="1"/>
         <xsd:element ref="Resource"
-             minOccurs="0" maxOccurs="1" />
+          minOccurs="0" maxOccurs="1"/>
         <xsd:element ref="Environment"
-             minOccurs="0" maxOccurs="1" />
+          minOccurs="0" maxOccurs="1"/>
         <xsd:element ref="SoftwareRequirements"
-             minOccurs="0" maxOccurs="1" />
+          minOccurs="0" maxOccurs="1"/>
         <xsd:element ref="Application"
-             minOccurs="0" maxOccurs="1" />
+          minOccurs="0" maxOccurs="1"/>
         <xsd:element ref="DataAttributes"
-             minOccurs="0" maxOccurs="1" />
+          minOccurs="0" maxOccurs="1"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
 
-<!--========================================================================-->
+  <!--========================================================================-->
 
   <xsd:element name="Application">
     <xsd:complexType>
@@ -72,7 +72,7 @@
     <xsd:complexType>
       <xsd:simpleContent>
         <xsd:extension base="xsd:string">
-          <xsd:attribute name="type" type="xsd:string" />
+          <xsd:attribute name="type" type="xsd:string"/>
         </xsd:extension>
       </xsd:simpleContent>
     </xsd:complexType>
@@ -91,7 +91,7 @@
     </xsd:complexType>
   </xsd:element>
 
-<!--=======================================================================-->
+  <!--=======================================================================-->
 
   <xsd:element name="JobIdentification">
     <xsd:complexType>
@@ -107,7 +107,7 @@
         <xsd:element name="JobCategory" type="xsd:string"
           minOccurs="0" maxOccurs="1"/>
         <xsd:element ref="Extend"
-          minOccurs="0" maxOccurs="unbounded" />
+          minOccurs="0" maxOccurs="unbounded"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -117,7 +117,7 @@
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element ref="User"
-          minOccurs="1" maxOccurs="unbounded" />
+          minOccurs="1" maxOccurs="unbounded"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -128,8 +128,8 @@
       <xsd:attribute name="group" type="xsd:string"/>
     </xsd:complexType>
   </xsd:element>
-    
-<!--========================================================================-->
+
+  <!--========================================================================-->
 
   <xsd:element name="SecurityAttributes">
     <xsd:complexType>
@@ -140,7 +140,7 @@
     </xsd:complexType>
   </xsd:element>
 
-<!--========================================================================-->
+  <!--========================================================================-->
 
   <xsd:element name="SchedulingAttributes">
     <xsd:complexType>
@@ -151,7 +151,7 @@
     </xsd:complexType>
   </xsd:element>
 
-<!--========================================================================-->
+  <!--========================================================================-->
 
   <xsd:element name="Environment">
     <xsd:complexType>
@@ -159,7 +159,7 @@
         <xsd:element ref="EnvironmentVariable"
           minOccurs="0" maxOccurs="unbounded"/>
         <xsd:element ref="HostSpecificEnvironment"
-          minOccurs="0" maxOccurs="unbounded" />
+          minOccurs="0" maxOccurs="unbounded"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -168,9 +168,9 @@
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element ref="EnvironmentVariable"
-          minOccurs="1" maxOccurs="unbounded" />
+          minOccurs="1" maxOccurs="unbounded"/>
       </xsd:sequence>
-      <xsd:attribute name="name" type="xsd:string" />
+      <xsd:attribute name="name" type="xsd:string"/>
     </xsd:complexType>
   </xsd:element>
 
@@ -178,13 +178,13 @@
     <xsd:complexType>
       <xsd:simpleContent>
         <xsd:extension base="xsd:string">
-          <xsd:attribute name="name" type="xsd:string" />
+          <xsd:attribute name="name" type="xsd:string"/>
         </xsd:extension>
       </xsd:simpleContent>
     </xsd:complexType>
-  </xsd:element> 
+  </xsd:element>
 
-<!--========================================================================-->
+  <!--========================================================================-->
 
   <xsd:element name="SoftwareRequirements">
     <xsd:complexType>
@@ -198,7 +198,7 @@
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
-  
+
   <xsd:element name="OperatingSystem">
     <xsd:complexType>
       <xsd:sequence>
@@ -208,8 +208,8 @@
           minOccurs="0" maxOccurs="unbounded"/>
       </xsd:sequence>
     </xsd:complexType>
-  </xsd:element> 
-  
+  </xsd:element>
+
   <xsd:element name="Limits">
     <xsd:complexType>
       <xsd:sequence>
@@ -227,14 +227,14 @@
           minOccurs="0" maxOccurs="unbounded"/>
       </xsd:sequence>
     </xsd:complexType>
-  </xsd:element> 
-<!--========================================================================-->
+  </xsd:element>
+  <!--========================================================================-->
 
   <xsd:element name="Resource">
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element ref="Architecture"
-          minOccurs="0" maxOccurs="1" />
+          minOccurs="0" maxOccurs="1"/>
         <xsd:element ref="HostType"
           minOccurs="0" maxOccurs="unbounded"/>
         <xsd:element ref="Network"
@@ -248,7 +248,7 @@
         <xsd:element name="ExclusiveExecution" type="xsd:boolean"
           minOccurs="0" maxOccurs="1"/>
         <xsd:element name="ProcessTopology" type="xsd:string"
-          minOccurs="0" maxOccurs="unbounded" />
+          minOccurs="0" maxOccurs="unbounded"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
@@ -257,33 +257,33 @@
     <xsd:complexType>
       <xsd:simpleContent>
         <xsd:extension base="xsd:string">
-          <xsd:attribute name="name" type="xsd:string" />
-          <xsd:attribute name="size" type="xsd:string" />
+          <xsd:attribute name="name" type="xsd:string"/>
+          <xsd:attribute name="size" type="xsd:string"/>
         </xsd:extension>
       </xsd:simpleContent>
     </xsd:complexType>
   </xsd:element>
-  
+
   <xsd:element name="HostType">
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="HostName" type="xsd:string"
-          minOccurs="0" maxOccurs="unbounded" />
+          minOccurs="0" maxOccurs="unbounded"/>
         <xsd:element ref="Architecture"
-          minOccurs="0" maxOccurs="1" />
+          minOccurs="0" maxOccurs="1"/>
         <xsd:element ref="Network"
-          minOccurs="0" maxOccurs="unbounded" />
+          minOccurs="0" maxOccurs="unbounded"/>
         <xsd:element ref="FileSystem"
-          minOccurs="0" maxOccurs="unbounded" />
+          minOccurs="0" maxOccurs="unbounded"/>
         <xsd:element name="TempSpace" type="xsd:string"
-          minOccurs="0" maxOccurs="unbounded" />
+          minOccurs="0" maxOccurs="unbounded"/>
         <xsd:element name="SwapSpace" type="xsd:string"
-          minOccurs="0" maxOccurs="unbounded" />
+          minOccurs="0" maxOccurs="unbounded"/>
         <xsd:element name="ExclusiveExecution" type="xsd:string"
-          minOccurs="0" maxOccurs="1" />
+          minOccurs="0" maxOccurs="1"/>
       </xsd:sequence>
-        <xsd:attribute name="name" type="xsd:string" />
-        <xsd:attribute name="description" type="xsd:string" />
+      <xsd:attribute name="name" type="xsd:string"/>
+      <xsd:attribute name="description" type="xsd:string"/>
     </xsd:complexType>
   </xsd:element>
 
@@ -301,7 +301,7 @@
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
-  
+
   <xsd:element name="Network">
     <xsd:complexType>
       <xsd:sequence>
@@ -315,18 +315,18 @@
     </xsd:complexType>
   </xsd:element>
 
-<!--========================================================================-->
+  <!--========================================================================-->
 
   <xsd:element name="DataAttributes">
     <xsd:complexType>
-    <xsd:sequence>
-      <xsd:element ref="File"
-           minOccurs="0" maxOccurs="unbounded"/>
-    </xsd:sequence>
-  </xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="File"
+          minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:sequence>
+    </xsd:complexType>
   </xsd:element>
 
-<!--========================================================================-->
+  <!--========================================================================-->
 
   <xsd:element name="File">
     <xsd:complexType>
@@ -344,7 +344,7 @@
           </xsd:choice>
         </xsd:sequence>
         <xsd:element name="CreationFlag" type="xsd:string"
-          minOccurs="0" maxOccurs="1" />
+          minOccurs="0" maxOccurs="1"/>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>

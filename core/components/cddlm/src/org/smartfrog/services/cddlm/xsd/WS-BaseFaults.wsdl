@@ -10,28 +10,28 @@
        The University of Chicago 2003, 2004. All Rights Reserved. 
 -->
 <wsdl:definitions name="BaseFaults"
-  xmlns="http://schemas.xmlsoap.org/wsdl/" 
+  xmlns="http://schemas.xmlsoap.org/wsdl/"
   xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
-  xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns:wsbf=
-      "http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseFaults" 
+  "http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseFaults"
   targetNamespace=
-      "http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseFaults">
+  "http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseFaults">
 
-<!-- ===================== Types Definitions ====================== -->             
+  <!-- ===================== Types Definitions ====================== -->
   <wsdl:types>
-     <xsd:schema >
-         <xsd:import 
-           namespace=
-           "http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseFaults" 
-           schemaLocation=
-     "./WS-BaseFaults.xsd"/>
-     </xsd:schema>
+    <xsd:schema>
+      <xsd:import
+        namespace=
+        "http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseFaults"
+        schemaLocation=
+        "./WS-BaseFaults.xsd"/>
+    </xsd:schema>
   </wsdl:types>
-  
-  <wsdl:message name="BaseFaultMessage" >
-    <wsdl:part name="Fault" element="wsbf:BaseFault" />
-  </wsdl:message>        
+
+  <wsdl:message name="BaseFaultMessage">
+    <wsdl:part name="Fault" element="wsbf:BaseFault"/>
+  </wsdl:message>
 </wsdl:definitions>
 

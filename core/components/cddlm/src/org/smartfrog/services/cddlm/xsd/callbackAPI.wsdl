@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<wsdl:definitions 
-	targetNamespace="http://gridforum.org/cddlm/serviceAPI/callbacks/2004/07/30" 
-        xmlns="http://gridforum.org/cddlm/serviceAPI/callbacks/2004/07/30" 
-	xmlns:types="http://gridforum.org/cddlm/serviceAPI/types/2004/07/30"
-	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" 
-	xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" 
+<wsdl:definitions
+  targetNamespace="http://gridforum.org/cddlm/serviceAPI/callbacks/2004/07/30"
+  xmlns="http://gridforum.org/cddlm/serviceAPI/callbacks/2004/07/30"
+  xmlns:types="http://gridforum.org/cddlm/serviceAPI/types/2004/07/30"
+  xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+  xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/"
   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
   >
   
   <!-- ============================================================= -->
-<wsdl:documentation >  
+  <wsdl:documentation>
     This is the WSDL Describing the simple callback service API that
     a caller must use if it wishes to receive notification callbacks
     on a non-WS-Notification system.
@@ -25,16 +25,16 @@
     "OPTIONAL" in this document are to be interpreted as described in
     RFC 2119.
     http://www.ietf.org/rfc/rfc2119.txt
-      
-</wsdl:documentation>
+
+  </wsdl:documentation>
      
   <!-- ============================================================= -->
   <!-- BEGIN IMPORTS -->
   <!-- ============================================================= -->
-  
- <!-- import the types -->
- <wsdl:import 
-    namespace="http://gridforum.org/cddlm/serviceAPI/types/2004/07/30" 
+
+  <!-- import the types -->
+  <wsdl:import
+    namespace="http://gridforum.org/cddlm/serviceAPI/types/2004/07/30"
     location="deployAPIschema.xsd"/>
 
 
@@ -42,50 +42,50 @@
   <!-- begin WSDL message types-->
   <!-- ============================================================= -->
 
- <wsdl:message name="callbackRequest">
-  <wsdl:part name="callback" element="types:lifecycleEventCallbackRequest" />
- </wsdl:message>
- 
- <wsdl:message name="callbackResponse">
-  <wsdl:part name="response" element="types:lifecycleEventCallbackResponse" />
- </wsdl:message> 
+  <wsdl:message name="callbackRequest">
+    <wsdl:part name="callback" element="types:lifecycleEventCallbackRequest"/>
+  </wsdl:message>
+
+  <wsdl:message name="callbackResponse">
+    <wsdl:part name="response" element="types:lifecycleEventCallbackResponse"/>
+  </wsdl:message>
  
   <!-- ============================================================= -->
   <!-- begin WSDL operations -->
   <!-- ============================================================= -->
-  
 
- <wsdl:portType name="DeploymentCallbackEndpoint">
- 
-  <!-- deploy -->
-  <wsdl:operation name="callback">
-   <wsdl:input message="callbackRequest" name="callbackRequest"/>
-   <wsdl:output message="callbackResponse" name="callbackRequest"/>
-  </wsdl:operation>
-</wsdl:portType>
+
+  <wsdl:portType name="DeploymentCallbackEndpoint">
+
+    <!-- deploy -->
+    <wsdl:operation name="callback">
+      <wsdl:input message="callbackRequest" name="callbackRequest"/>
+      <wsdl:output message="callbackResponse" name="callbackRequest"/>
+    </wsdl:operation>
+  </wsdl:portType>
  
  
   <!-- ============================================================= -->
   <!-- Bind WSDL to doc/lit SOAP1.2 -->
   <!-- ============================================================= -->
- 
- <wsdl:binding name="DeploymentCallbackSoapBinding" type="DeploymentCallbackEndpoint">
- 
-  <wsdlsoap:binding style="document" 
-    transport="http://schemas.xmlsoap.org/soap/http"/>
-    
+
+  <wsdl:binding name="DeploymentCallbackSoapBinding" type="DeploymentCallbackEndpoint">
+
+    <wsdlsoap:binding style="document"
+      transport="http://schemas.xmlsoap.org/soap/http"/>
+
     <!-- deploy -->
-  <wsdl:operation name="callback">
-    <wsdlsoap:operation soapAction=""/>
-    <wsdl:input name="callbackRequest">
-      <wsdlsoap:body use="literal"/>
-    </wsdl:input>
-    <wsdl:output name="callbackRequest">
-      <wsdlsoap:body use="literal"/>
-    </wsdl:output>
-  </wsdl:operation>
-  
-</wsdl:binding>
+    <wsdl:operation name="callback">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="callbackRequest">
+        <wsdlsoap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="callbackRequest">
+        <wsdlsoap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+
+  </wsdl:binding>
 
   <!-- ============================================================= -->
   <!-- end WSDL definitions-->

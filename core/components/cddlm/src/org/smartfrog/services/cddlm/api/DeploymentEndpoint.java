@@ -39,18 +39,18 @@ import java.rmi.RemoteException;
  * created Aug 4, 2004 9:49:56 AM
  */
 
-public class DeploymentEndpoint extends SmartFrogHostedEndpoint implements org.smartfrog.services.cddlm.generated.api.endpoint.DeploymentEndpoint {
+public class DeploymentEndpoint extends SmartFrogHostedEndpoint
+        implements org.smartfrog.services.cddlm.generated.api.endpoint.DeploymentEndpoint {
 
     /**
      * log for everything other than operations
      */
-    private static Log log=LogFactory.getLog(DeploymentEndpoint.class);
+    private static Log log = LogFactory.getLog(DeploymentEndpoint.class);
 
     /**
      * log just for operational data
      */
-    private static Log operations = LogFactory.getLog(DeploymentEndpoint.class.getName()+".OPERATIONS");
-
+    private static Log operations = LogFactory.getLog(DeploymentEndpoint.class.getName() + ".OPERATIONS");
 
 
     public _deployResponse deploy(_deployRequest deploy)
@@ -78,15 +78,13 @@ public class DeploymentEndpoint extends SmartFrogHostedEndpoint implements org.s
         try {
             operations.info("entering serverStatus");
             ServerStatusProcessor serverStatusProcessor = new ServerStatusProcessor(this);
-            return  serverStatusProcessor.serverStatus(serverStatus);
-        }
-        finally {
+            return serverStatusProcessor.serverStatus(serverStatus);
+        } finally {
             operations.info("exiting serverStatus");
         }
     }
 
-    public ApplicationStatusType applicationStatus(
-            _applicationStatusRequest applicationStatus)
+    public ApplicationStatusType applicationStatus(_applicationStatusRequest applicationStatus)
             throws RemoteException {
         try {
             operations.info("entering lookupApplication");

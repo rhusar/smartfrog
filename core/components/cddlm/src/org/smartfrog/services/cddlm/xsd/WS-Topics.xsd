@@ -13,90 +13,90 @@
               
 -->
 
-<xsd:schema 
-  xmlns="http://www.w3.org/2001/XMLSchema" 
-  xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+<xsd:schema
+  xmlns="http://www.w3.org/2001/XMLSchema"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns:wsa="http://schemas.xmlsoap.org/ws/2003/03/addressing"
-  xmlns:wsp="http://schemas.xmlsoap.org/ws/2002/12/policy" 
+  xmlns:wsp="http://schemas.xmlsoap.org/ws/2002/12/policy"
   xmlns:wsrp=
-    "http://www.ibm.com/xmlns/stdwip/web-services/WS-ResourceProperties"
+  "http://www.ibm.com/xmlns/stdwip/web-services/WS-ResourceProperties"
   xmlns:wsnt=
-    "http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseNotification" 
+  "http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseNotification"
   xmlns:wstop=
-    "http://www.ibm.com/xmlns/stdwip/web-services/WS-Topics"
+  "http://www.ibm.com/xmlns/stdwip/web-services/WS-Topics"
   targetNamespace=
-    "http://www.ibm.com/xmlns/stdwip/web-services/WS-Topics"   
-  elementFormDefault="qualified"  attributeFormDefault="unqualified">
+  "http://www.ibm.com/xmlns/stdwip/web-services/WS-Topics"
+  elementFormDefault="qualified" attributeFormDefault="unqualified">
 
-<!-- ======================== Imports  ============================ -->
-  
-  <xsd:import namespace=
-    "http://www.ibm.com/xmlns/stdwip/web-services/WS-ResourceProperties" 
-              schemaLocation= 
-  "http://www-106.ibm.com/developerworks/webservices/library/ws-resource/WS-ResourceProperties.xsd" 
-  /> 
-  <xsd:import namespace=
-    "http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseNotification" 
-              schemaLocation= 
-  "../WS-BaseNotification/WS-BaseNotification.1.xsd" 
-  /> 
+  <!-- ======================== Imports  ============================ -->
 
-<!-- =============== utility type definitions  ==================== -->
+  <xsd:import namespace=
+    "http://www.ibm.com/xmlns/stdwip/web-services/WS-ResourceProperties"
+    schemaLocation=
+    "http://www-106.ibm.com/developerworks/webservices/library/ws-resource/WS-ResourceProperties.xsd"
+    />
+  <xsd:import namespace=
+    "http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseNotification"
+    schemaLocation=
+    "../WS-BaseNotification/WS-BaseNotification.1.xsd"
+    />
+
+  <!-- =============== utility type definitions  ==================== -->
   <xsd:complexType name="Documentation" mixed="true">
     <xsd:sequence>
-      <xsd:any processContents="lax" minOccurs="0" 
-               maxOccurs="unbounded" namespace="##any"/>
+      <xsd:any processContents="lax" minOccurs="0"
+        maxOccurs="unbounded" namespace="##any"/>
     </xsd:sequence>
   </xsd:complexType>
 
-  <xsd:complexType name="ExtensibleDocumented" abstract="true" 
-                   mixed="false">
+  <xsd:complexType name="ExtensibleDocumented" abstract="true"
+    mixed="false">
     <xsd:sequence>
-      <xsd:element name="documentation" type="wstop:Documentation" 
-                   minOccurs="0" />
+      <xsd:element name="documentation" type="wstop:Documentation"
+        minOccurs="0"/>
     </xsd:sequence>
-    <xsd:anyAttribute namespace="##other" processContents="lax" />
+    <xsd:anyAttribute namespace="##other" processContents="lax"/>
   </xsd:complexType>
 
-<!-- ================== Topic-Space Related  ====================== -->   
+  <!-- ================== Topic-Space Related  ====================== -->
   <xsd:complexType name="TopicSpaceType">
     <xsd:complexContent>
-       <xsd:extension base="wstop:ExtensibleDocumented">
-         <xsd:sequence>
-           <xsd:element name="Topic" type="wstop:TopicType" 
-                        minOccurs="0" maxOccurs="unbounded"/>
-           <xsd:any namespace="##other" 
-                    minOccurs="0" maxOccurs="unbounded" 
-                    processContents="lax"/>
-         </xsd:sequence>
-         <xsd:attribute name="name" type="xsd:NCName"/>
-         <xsd:attribute name="targetNamespace" type="xsd:anyURI" 
-                        use="required"/>
-       </xsd:extension>
-     </xsd:complexContent> 
-   </xsd:complexType>
+      <xsd:extension base="wstop:ExtensibleDocumented">
+        <xsd:sequence>
+          <xsd:element name="Topic" type="wstop:TopicType"
+            minOccurs="0" maxOccurs="unbounded"/>
+          <xsd:any namespace="##other"
+            minOccurs="0" maxOccurs="unbounded"
+            processContents="lax"/>
+        </xsd:sequence>
+        <xsd:attribute name="name" type="xsd:NCName"/>
+        <xsd:attribute name="targetNamespace" type="xsd:anyURI"
+          use="required"/>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
 
   <xsd:element name="TopicSpace" type="wstop:TopicSpaceType">
     <xsd:unique name="rootTopicUniqueness">
       <xsd:selector xpath="wstop:Topic"/>
-        <xsd:field xpath="@name"/>
+      <xsd:field xpath="@name"/>
     </xsd:unique>
   </xsd:element>
-  
-<!-- ===================== Topic Related  ========================= -->   
+
+  <!-- ===================== Topic Related  ========================= -->
 
   <xsd:group name="NonAliasTopicDefinition">
     <xsd:sequence>
-      <xsd:element name="MessagePattern" 
-                   type="wsrp:QueryExpressionType" 
-                   minOccurs="0" maxOccurs="1" />
-      <xsd:element name="Topic" type="wstop:TopicType" 
-                   minOccurs="0" maxOccurs="unbounded">
-         <xsd:unique name="childTopicUniqueness">
-           <xsd:selector xpath="wstop:topic"/>
-           <xsd:field xpath="@name"/>
-         </xsd:unique>
+      <xsd:element name="MessagePattern"
+        type="wsrp:QueryExpressionType"
+        minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="Topic" type="wstop:TopicType"
+        minOccurs="0" maxOccurs="unbounded">
+        <xsd:unique name="childTopicUniqueness">
+          <xsd:selector xpath="wstop:topic"/>
+          <xsd:field xpath="@name"/>
+        </xsd:unique>
       </xsd:element>
     </xsd:sequence>
   </xsd:group>
@@ -106,13 +106,13 @@
       <xsd:extension base="wstop:ExtensibleDocumented">
         <xsd:sequence>
           <xsd:choice>
-            <xsd:element name="AliasRef" 
-                         type="wsnt:TopicExpressionType"
-                         minOccurs="1" maxOccurs="1" />
-            <xsd:group ref="wstop:NonAliasTopicDefinition" />
+            <xsd:element name="AliasRef"
+              type="wsnt:TopicExpressionType"
+              minOccurs="1" maxOccurs="1"/>
+            <xsd:group ref="wstop:NonAliasTopicDefinition"/>
           </xsd:choice>
-          <xsd:any namespace="##other" minOccurs="0" 
-                                       maxOccurs="unbounded"/>
+          <xsd:any namespace="##other" minOccurs="0"
+            maxOccurs="unbounded"/>
         </xsd:sequence>
         <xsd:attribute name="name" use="required" type="xsd:NCName"/>
         <xsd:attribute name="messageTypes" default="xsd:any">
@@ -120,14 +120,14 @@
             <xsd:list itemType="xsd:QName"/>
           </xsd:simpleType>
         </xsd:attribute>
-        <xsd:attribute name="final" type="xsd:boolean" 
-                                     default="false"/>
+        <xsd:attribute name="final" type="xsd:boolean"
+          default="false"/>
       </xsd:extension>
-    </xsd:complexContent>  
+    </xsd:complexContent>
   </xsd:complexType>
 
-<!-- ================ Topic Expression Related  =================== -->   
-  
+  <!-- ================ Topic Expression Related  =================== -->
+
   <xsd:simpleType name="FullTopicPathExpression">
     <xsd:restriction base="xsd:token">
       <xsd:annotation>
@@ -140,7 +140,7 @@
                         
         </xsd:documentation>
       </xsd:annotation>
-      <xsd:pattern value= 
+      <xsd:pattern value=
          "([\i-[:]][\c-[:]]*:)?(//)?([\i-[:]][\c-[:]]*|\*)((/|//)([\i-[:]][\c-[:]]*|\*|[.]))*(\|([\i-[:]][\c-[:]]*:)?(//)?([\i-[:]][\c-[:]]*|\*)((/|//)([\i-[:]][\c-[:]]*|\*|[.]))*)*">
       </xsd:pattern>
     </xsd:restriction>
@@ -158,7 +158,7 @@
         </xsd:documentation>
       </xsd:annotation>
       <xsd:pattern value=
-"(( [\i-[:]][\c-[:]]*:)? [\i-[:]][\c-[:]]*)(/ [\i-[:]][\c-[:]]*)*" >
+"(( [\i-[:]][\c-[:]]*:)? [\i-[:]][\c-[:]]*)(/ [\i-[:]][\c-[:]]*)*">
       </xsd:pattern>
     </xsd:restriction>
   </xsd:simpleType>
@@ -172,7 +172,7 @@
                         
         </xsd:documentation>
       </xsd:annotation>
-      <xsd:pattern value="([\i-[:]][\c-[:]]*:)?( [\i-[:]][\c-[:]]*)" >
+      <xsd:pattern value="([\i-[:]][\c-[:]]*:)?( [\i-[:]][\c-[:]]*)">
       </xsd:pattern>
     </xsd:restriction>
   </xsd:simpleType>

@@ -52,11 +52,12 @@ public class CdlDocument {
 
     /**
      * validity test
+     *
      * @return
      */
     public boolean isValid() {
         //TODO
-        return document!=null;
+        return document != null;
     }
 
     public Document getDocument() {
@@ -72,19 +73,18 @@ public class CdlDocument {
     }
 
     public int getErrorColumn() {
-        return exception==null?0:exception.getColumnNumber();
+        return exception == null ? 0 : exception.getColumnNumber();
     }
 
     public void throwAnyException() throws ParsingException {
-        if (exception!=null) {
+        if ( exception != null ) {
             throw exception;
         }
     }
 
 
-
-    public void assertTrue(String message,boolean test ) throws CdlParsingException {
-        if(test==false) {
+    public void assertTrue(String message, boolean test) throws CdlParsingException {
+        if ( test == false ) {
             throw new CdlParsingException(message);
         }
     }
@@ -92,13 +92,13 @@ public class CdlDocument {
     public void validateRootElement() throws CdlParsingException {
         Element root = document.getRootElement();
         String uri = root.getNamespaceURI();
-        assertTrue(ERROR_WRONG_NAMESPACE,Constants.CDL_NAMESPACE.equals(uri));
+        assertTrue(ERROR_WRONG_NAMESPACE, Constants.CDL_NAMESPACE.equals(uri));
         assertTrue(ERROR_WRONG_ROOT_ELEMENT, Constants.CDL_ELT_CDL.equals(root.getLocalName()));
-        Attribute pathLangAttr = root.getAttribute("pathlanguage",Constants.CDL_NAMESPACE);
-        if(pathLangAttr!=null) {
+        Attribute pathLangAttr = root.getAttribute("pathlanguage", Constants.CDL_NAMESPACE);
+        if ( pathLangAttr != null ) {
             assertTrue(ERROR_NO_PATHLANGUAGE, pathLangAttr != null);
-            String language=pathLangAttr.getValue();
-            assertTrue(ERROR_BAD_PATHLANGUAGE,Constants.XPATH_URI.equals(language));
+            String language = pathLangAttr.getValue();
+            assertTrue(ERROR_BAD_PATHLANGUAGE, Constants.XPATH_URI.equals(language));
         }
     }
 

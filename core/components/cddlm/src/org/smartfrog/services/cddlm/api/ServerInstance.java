@@ -21,12 +21,12 @@
 
 package org.smartfrog.services.cddlm.api;
 
-import org.smartfrog.services.cddlm.generated.api.types.StaticServerStatusType;
-import org.smartfrog.services.cddlm.generated.api.types.ServerInformationType;
-import org.smartfrog.services.cddlm.generated.api.types._languageListType_language;
-import org.smartfrog.services.cddlm.generated.api.types.LanguageListType;
-import org.smartfrog.services.cddlm.generated.api.types.CallbackListType;
 import org.apache.axis.types.URI;
+import org.smartfrog.services.cddlm.generated.api.types.CallbackListType;
+import org.smartfrog.services.cddlm.generated.api.types.LanguageListType;
+import org.smartfrog.services.cddlm.generated.api.types.ServerInformationType;
+import org.smartfrog.services.cddlm.generated.api.types.StaticServerStatusType;
+import org.smartfrog.services.cddlm.generated.api.types._languageListType_language;
 
 /**
  * This is a server instance
@@ -45,8 +45,8 @@ public class ServerInstance {
     private JobRepository jobs;
 
     public ServerInstance() {
-        staticStatus=createStaticStatusInfo();
-        jobs=new JobRepository();
+        staticStatus = createStaticStatusInfo();
+        jobs = new JobRepository();
     }
 
     public StaticServerStatusType getStaticServerStatus() {
@@ -63,20 +63,20 @@ public class ServerInstance {
 
         //languages
         //creating the array before sending
-        _languageListType_language[] list=new _languageListType_language[Constants.LANGUAGES.length/3];
-        int counter=0;
-        for(int i=0;i+2<Constants.LANGUAGES.length;i+=3) {
+        _languageListType_language[] list = new _languageListType_language[Constants.LANGUAGES.length / 3];
+        int counter = 0;
+        for ( int i = 0; i + 2 < Constants.LANGUAGES.length; i += 3 ) {
             String name = Constants.LANGUAGES[i];
-            String version = Constants.LANGUAGES[i+1];
-            URI namespace = Processor.makeURI(Constants.LANGUAGES[i+2]);
-            list[counter++]=new _languageListType_language(name,
+            String version = Constants.LANGUAGES[i + 1];
+            URI namespace = Processor.makeURI(Constants.LANGUAGES[i + 2]);
+            list[counter++] = new _languageListType_language(name,
                     version,
                     namespace);
         }
         LanguageListType languages = new LanguageListType(list);
 
         //callbacks are easy
-        CallbackListType callbacks=new CallbackListType(Constants.CALLBACKS);
+        CallbackListType callbacks = new CallbackListType(Constants.CALLBACKS);
 
         StaticServerStatusType staticStatus;
         staticStatus = new StaticServerStatusType(serverInfo,
@@ -91,11 +91,12 @@ public class ServerInstance {
 
     /**
      * get the current instance; creating it if needed
+     *
      * @return
      */
     public static ServerInstance currentInstance() {
-        if(instance==null) {
-            instance=new ServerInstance();
+        if ( instance == null ) {
+            instance = new ServerInstance();
         }
         return instance;
     }

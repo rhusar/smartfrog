@@ -47,8 +47,8 @@ public class UndeployProcessor extends Processor {
     }
 
     public boolean undeploy(_undeployRequest undeploy) throws RemoteException {
-        String application=extractApplicationFromURI(undeploy.getApplication());
-        if (isEmpty(application)) {
+        String application = extractApplicationFromURI(undeploy.getApplication());
+        if ( isEmpty(application) ) {
             throw new AxisFault(Constants.ERROR_NO_APPLICATION);
         }
         try {

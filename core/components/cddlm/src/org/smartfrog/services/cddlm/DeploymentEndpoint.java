@@ -54,7 +54,7 @@ public class DeploymentEndpoint extends SmartFrogHostedEndpoint {
      * constructor sets up the log
      */
     public DeploymentEndpoint() {
-        log=LogFactory.getOwnerLog(getOwner(), this);
+        log = LogFactory.getOwnerLog(getOwner(), this);
     }
 
     protected final static String[] languages = {
@@ -79,8 +79,8 @@ public class DeploymentEndpoint extends SmartFrogHostedEndpoint {
      * @throws AxisFault
      */
     protected void verifySupported(String language) throws AxisFault {
-        for (int i = 0; i < languages.length; i++) {
-            if (languages[i].equalsIgnoreCase(language)) {
+        for ( int i = 0; i < languages.length; i++ ) {
+            if ( languages[i].equalsIgnoreCase(language) ) {
                 return;
             }
         }
@@ -95,34 +95,32 @@ public class DeploymentEndpoint extends SmartFrogHostedEndpoint {
      * @param descriptor
      * @throws AxisFault
      */
-    public String deploy(
-            String Jsdl,
-            String language, 
-            String hostname, 
-            String application,
-            String descriptor,
-            String callbackType,
-            String callbackData,
-            boolean synchronous
-            ) throws IOException {
+    public String deploy(String Jsdl,
+                         String language,
+                         String hostname,
+                         String application,
+                         String descriptor,
+                         String callbackType,
+                         String callbackData,
+                         boolean synchronous) throws IOException {
         verifySupported(language);
-        File tempFile=File.createTempFile("deploy",".txt");
+        File tempFile = File.createTempFile("deploy", ".txt");
         OutputStream out = null;
         try {
             //save the descriptor to a file
-            out=new BufferedOutputStream(new FileOutputStream(tempFile));
-            PrintWriter pw=new PrintWriter(out);
+            out = new BufferedOutputStream(new FileOutputStream(tempFile));
+            PrintWriter pw = new PrintWriter(out);
             pw.write(descriptor);
             pw.flush();
             pw.close();
             out.close();
-            out=null;
+            out = null;
             //get a file: url
-            String url=tempFile.toURI().toURL().toExternalForm();
+            String url = tempFile.toURI().toURL().toExternalForm();
             //deploy it
             return deployThroughActions(hostname, application, url, null);
         } finally {
-            if(out!=null) {
+            if ( out != null ) {
                 try {
                     out.close();
                 } finally {
@@ -152,6 +150,7 @@ public class DeploymentEndpoint extends SmartFrogHostedEndpoint {
 
     /**
      * set the hostname
+     *
      * @param hostname
      * @return
      */
@@ -165,6 +164,7 @@ public class DeploymentEndpoint extends SmartFrogHostedEndpoint {
 
     /**
      * validate our deploy parameters and throw a fault if they are invalid
+     *
      * @param language
      * @param application
      * @param url
@@ -174,24 +174,25 @@ public class DeploymentEndpoint extends SmartFrogHostedEndpoint {
     private void validateDeploymentParameters(String language, String application, String url, String hostname)
             throws AxisFault {
         verifySupported(language);
-        if(isEmpty(application)) {
+        if ( isEmpty(application) ) {
             throw new AxisFault("Application is not specified");
         }
         if ( isEmpty(url) ) {
             throw new AxisFault("url is not specified");
         }
-        if ( isEmpty(hostname)) {
+        if ( isEmpty(hostname) ) {
             throw new AxisFault("hostname is not specified");
         }
     }
 
     /**
      * test for a parameter being null or zero length
+     *
      * @param param string to test
      * @return true iff it is empty
      */
     private boolean isEmpty(String param) {
-        return param==null || param.length()==0;
+        return param == null || param.length() == 0;
     }
 
     /**
@@ -205,19 +206,18 @@ public class DeploymentEndpoint extends SmartFrogHostedEndpoint {
      */
     private String deployThroughSFSystem(String hostname, String application,
                                          String url,
-                                         String subprocess
-                                         ) throws AxisFault {
+                                         String subprocess) throws AxisFault {
         try {
-            ConfigurationDescriptor deploy=new ConfigurationDescriptor(application,url);
+            ConfigurationDescriptor deploy = new ConfigurationDescriptor(application, url);
             deploy.setHost(hostname);
             deploy.setActionType(ConfigurationDescriptor.Action.DEPLOY);
-            if(subprocess!=null) {
+            if ( subprocess != null ) {
                 deploy.setSubProcess(subprocess);
             }
             log.info("Deploying " + url + " to " + hostname);
             //deploy, throwing an exception if we cannot
             deploy.execute(SFProcess.getProcessCompound());
-            SFSystem.runConfigurationDescriptor(deploy,true);
+            SFSystem.runConfigurationDescriptor(deploy, true);
 
             //SFSystem.deployAComponent(hostname,url,application,remote);
             return "urn://" + hostname + "/" + application;
@@ -242,15 +242,14 @@ public class DeploymentEndpoint extends SmartFrogHostedEndpoint {
                                         String url,
                                         String[] codebase) throws AxisFault {
         try {
-            assert hostname!=null;
-            assert application!=null;
-            assert url!=null;
-            ConfigurationDescriptor config = new ConfigurationDescriptor(
-                    application, url);
+            assert hostname != null;
+            assert application != null;
+            assert url != null;
+            ConfigurationDescriptor config = new ConfigurationDescriptor(application, url);
             config.setHost(hostname);
             config.setActionType(ConfigurationDescriptor.Action.DEPLOY);
             log.info("Deploying " + url + " to " + hostname + "as " + application);
-            if (codebase != null) {
+            if ( codebase != null ) {
                 log.warn("codebase is not yet supported");
             }
             //deploy, throwing an exception if we cannot
@@ -283,7 +282,7 @@ public class DeploymentEndpoint extends SmartFrogHostedEndpoint {
     public void terminate(String hostname, String application) throws AxisFault {
 
         hostname = patchHostname(hostname);
-        if(isEmpty(application)) {
+        if ( isEmpty(application) ) {
             throw new AxisFault("application is undefined");
         }
         try {
@@ -294,7 +293,7 @@ public class DeploymentEndpoint extends SmartFrogHostedEndpoint {
             log.info("Undeploying " + application + " on " + hostname);
             //deploy, throwing an exception if we cannot
             final ProcessCompound processCompound = SFProcess.getProcessCompound();
-            assert processCompound!=null;
+            assert processCompound != null;
             config.execute(processCompound);
             Object targetC = config.execute(null);
             //TODO: act on the target

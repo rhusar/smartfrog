@@ -37,7 +37,7 @@ public class ApplicationStatusProcessor extends Processor {
     public ApplicationStatusType applicationStatus(_applicationStatusRequest applicationStatus)
             throws RemoteException {
         org.apache.axis.types.URI reference = applicationStatus.getApplication();
-        String application=extractApplicationFromURI(reference);
+        String application = extractApplicationFromURI(reference);
         assert !isEmpty(application);
         throwNotImplemented();
         return null;
