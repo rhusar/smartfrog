@@ -25,6 +25,8 @@ import org.smartfrog.sfcore.common.SmartFrogCompilationException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.reference.Reference;
 
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
+
 /**
   * A SmartFrogCompileResolutionException is thrown when an irrecoverable
   * resolution error occurs while compilation.

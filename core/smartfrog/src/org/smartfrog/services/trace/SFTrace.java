@@ -28,6 +28,7 @@ import org.smartfrog.services.display.PrintMsgInt;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimHook;
 import org.smartfrog.sfcore.prim.PrimImpl;
@@ -92,7 +93,7 @@ public class SFTrace extends PrimImpl implements Prim {
 
             try {
                 rootLocatorPort = SFProcess.getProcessCompound()
-                                           .sfResolve("sfRootLocatorPort")
+                                           .sfResolve(SmartFrogCoreKeys.SF_ROOT_LOCATOR_PORT)
                                            .toString();
             } catch (Exception ex) {
                 //TODO
@@ -198,7 +199,7 @@ public class SFTrace extends PrimImpl implements Prim {
                 "org.smartfrog.sfcore.processcompound.sfProcessName");
 
         if (value == null) {
-            return "ROOT";
+            return SmartFrogCoreKeys.SF_ROOT;
         } else {
             return value;
         }

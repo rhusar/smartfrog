@@ -20,6 +20,7 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.processcompound;
 
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.reference.Reference;
@@ -35,7 +36,7 @@ import org.smartfrog.sfcore.reference.Reference;
 public class PrimProcessDeployerImpl extends PrimHostDeployerImpl {
     /** Efficiency holder for sfProcessName reference. */
     protected static final Reference refProcessName = new Reference(
-                "sfProcessName");
+                SmartFrogCoreKeys.SF_PROCESS_NAME);
 
     /**
      * Constructs PrimHostDeployerImpl object with component description.
@@ -47,7 +48,7 @@ public class PrimProcessDeployerImpl extends PrimHostDeployerImpl {
     }
 
     /**
-     * Returns the process compound with a particular process name. 
+     * Returns the process compound with a particular process name.
      * @return process compound on host with name
      *
      * @throws Exception if failed to find process compound

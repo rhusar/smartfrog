@@ -29,6 +29,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Enumeration;
 import java.util.Vector;
 
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.MessageKeys;
 import org.smartfrog.sfcore.common.MessageUtil;
@@ -48,7 +49,7 @@ import org.smartfrog.sfcore.security.SFClassLoader;
  */
 public class ComponentDescriptionImpl implements Serializable, Cloneable,
     ComponentDescription, MessageKeys {
-    
+
     /**
      * Name of default deployer.
      */
@@ -266,7 +267,7 @@ public class ComponentDescriptionImpl implements Serializable, Cloneable,
 
         return res;
     }
-    
+
     /**
      * Gets the cloen of the ComponentDescription.
      * @return cloned object
@@ -331,7 +332,7 @@ public class ComponentDescriptionImpl implements Serializable, Cloneable,
      * @see org.smartfrog.sfcore.processcompound.PrimProcessDeployerImpl
      */
     protected ComponentDeployer getDeployer() throws SmartFrogException {
-        String className = (String) sfResolveId("sfDeployerClass");
+        String className = (String) sfResolveId(SmartFrogCoreKeys.SF_DEPLOYER_CLASS);
 
         if (className == null) {
             className = DEFAULT_DEPLOYER;

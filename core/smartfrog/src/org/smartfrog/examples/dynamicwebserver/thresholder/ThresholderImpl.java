@@ -28,6 +28,7 @@ import org.smartfrog.examples.dynamicwebserver.balancer.Balancer;
 import org.smartfrog.examples.dynamicwebserver.gui.graphpanel.DataSource;
 import org.smartfrog.examples.dynamicwebserver.logging.LogWrapper;
 import org.smartfrog.examples.dynamicwebserver.logging.Logger;
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.ContextImpl;
 import org.smartfrog.sfcore.common.SmartFrogException;
@@ -47,7 +48,7 @@ import org.smartfrog.sfcore.reference.ReferencePart;
  */
 
 public class ThresholderImpl extends CompoundImpl implements Thresholder,
-    Compound {
+    Compound, SmartFrogCoreKeys  {
     int upperThreshold;
     int lowerThreshold;
     int pollFrequency;
@@ -256,7 +257,7 @@ public class ThresholderImpl extends CompoundImpl implements Thresholder,
                 String server = (String) servers.elementAt(currentInstances);
 
                 Context instanceContext = new ContextImpl();
-                instanceContext.put("sfProcessHost", server);
+                instanceContext.put(this.SF_PROCESS_HOST, server);
 
                 logger.logOptional(name, "instance being created");
                 deployed = sfDeployComponentDescription(componentNamePrefix +

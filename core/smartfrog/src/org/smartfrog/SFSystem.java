@@ -33,6 +33,8 @@ import java.util.Vector;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
+
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.ContextImpl;
 import org.smartfrog.sfcore.common.Logger;
@@ -412,10 +414,10 @@ public class SFSystem implements MessageKeys {
             } catch (ClassCastException cce) {
                 errorTermination = true;
                 try {
-                    if (term.equals("rootProcess")) {
+                    if (term.equals(SmartFrogCoreKeys.SF_ROOT_PROCESS)) {
                         ((Prim) target.sfResolve((Reference) target.
                                 sfResolveHere(term))).
-                                    sfTerminate(new TerminationRecord("normal",
+                                    sfTerminate(new TerminationRecord(TerminationRecord.NORMAL,
                                     "External Management Action", targetName));
                     }
                 } catch (Exception ex) {
@@ -853,7 +855,8 @@ public class SFSystem implements MessageKeys {
                 case ConfigurationDescriptor.Action.DETaTERM:
                     {
                     String name = targetC.sfCompleteName().toString();
-                    targetC.sfDetachAndTerminate(new TerminationRecord("normal",
+                    targetC.sfDetachAndTerminate(new TerminationRecord(
+                            TerminationRecord.NORMAL,
                             "External Management Action",
                             targetP.sfCompleteName()));
                     cfgDesc.setSuccessfulResult();
@@ -864,7 +867,8 @@ public class SFSystem implements MessageKeys {
                    {
                        try {
                            String name = targetC.sfCompleteName().toString();
-                           targetC.sfTerminate(new TerminationRecord("normal",
+                           targetC.sfTerminate(new TerminationRecord(
+                               TerminationRecord.NORMAL,
                                "External Management Action",
                                targetP.sfCompleteName()));
                         //Logger.log("- Terminated: "+name);
@@ -972,7 +976,7 @@ public class SFSystem implements MessageKeys {
                 String name = "";
                 try {
                     if (rootProcess != null) {
-                        name = rootProcess.sfResolve("sfProcessName", name, false);
+                        name = rootProcess.sfResolve(SmartFrogCoreKeys.SF_PROCESS_NAME, name, false);
                     }
                 } catch (Exception ex) {
                     //ignore.
@@ -1028,7 +1032,7 @@ public class SFSystem implements MessageKeys {
 
         // Add boot time
         try {
-            process.sfAddAttribute("sfBootDate", new Date(System.currentTimeMillis()));
+            process.sfAddAttribute(SmartFrogCoreKeys.SF_BOOT_DATE, new Date(System.currentTimeMillis()));
         } catch (RemoteException swallowed) {
         }
 

@@ -27,6 +27,7 @@ import java.util.Properties;
 import java.util.Vector;
 
 import org.smartfrog.SFSystem;
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.MessageKeys;
 import org.smartfrog.sfcore.common.MessageUtil;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
@@ -73,7 +74,7 @@ public class SFProcess implements MessageKeys {
      * Reference to root locator class.
      */
     protected static final Reference refRootLocatorClass = new Reference(
-                "sfRootLocatorClass");
+                SmartFrogCoreKeys.SF_ROOT_LOCATOR_CLASS);
 
     /**
      * Reference to process compound.

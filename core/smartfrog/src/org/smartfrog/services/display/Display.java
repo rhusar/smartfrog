@@ -64,6 +64,7 @@ import javax.swing.WindowConstants;
 import javax.swing.event.DocumentEvent;
 import javax.swing.text.Document;
 
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
@@ -194,7 +195,7 @@ public class Display extends JFrame implements ActionListener, KeyListener {
 
    /**
     * Constructs Display object with title.
-    *    
+    *
     * @param  title  Title of the display window
     */
    public Display(String title) throws Exception{
@@ -744,7 +745,7 @@ public class Display extends JFrame implements ActionListener, KeyListener {
 
 
    /**
-    * Resets the screen file. 
+    * Resets the screen file.
     *
     *@param  directory  directory
     */
@@ -772,7 +773,7 @@ public class Display extends JFrame implements ActionListener, KeyListener {
    /**
     * Interface method
     *
-    *@param  e  action event 
+    *@param  e  action event
     */
    void jMenuItemExit_actionPerformed(ActionEvent e) {
       exit();
@@ -805,15 +806,15 @@ public class Display extends JFrame implements ActionListener, KeyListener {
                   (((SFDisplay)this.sfObj).sfProcessName!=null)) {
                   try {
                       String prs =null;
-                      prs = this.sfObj.sfResolve("sfProcess", prs , false);
+                      prs = this.sfObj.sfResolve(SmartFrogCoreKeys.SF_PROCESS, prs , false);
                       System.out.println("Trying to terminate: "+ prs);
                       java.net.InetAddress address = null;
-                      address = this.sfObj.sfResolve("sfHost" ,  address , 
+                      address = this.sfObj.sfResolve(SmartFrogCoreKeys.SF_HOST ,  address ,
                       false);
-                      if (prs.equals("rootProcess")){
+                      if (prs.equals(SmartFrogCoreKeys.SF_ROOT_PROCESS)){
                           //Terminating main daemon
                           try {
-                              TerminationRecord tr = new TerminationRecord("normal",
+                              TerminationRecord tr = new TerminationRecord(TerminationRecord.NORMAL,
                                           "sfDaemon display closed",  null);
                               System.out.println("Terminating Daemon");
                              new TerminatorThread (((Prim)SFProcess.
@@ -1060,7 +1061,7 @@ public class Display extends JFrame implements ActionListener, KeyListener {
 
          try {
             port = this.sfObj.sfResolve(new Reference(
-                  "sfRootLocatorPort"), port, false);
+                 SmartFrogCoreKeys.SF_ROOT_LOCATOR_PORT ), port, false);
          } catch (SmartFrogResolutionException rex) {
          }
 
@@ -1115,7 +1116,7 @@ public class Display extends JFrame implements ActionListener, KeyListener {
     *@param defaultValue default value
     *@return formatted string
     */
-   private String modalOptionDialog(String title, String message, 
+   private String modalOptionDialog(String title, String message,
            String defaultValue) {
      String s = (String) JOptionPane.showInputDialog(
          this,
@@ -1137,7 +1138,7 @@ public class Display extends JFrame implements ActionListener, KeyListener {
 
    /**
     *Prepares a dialog box.
-    * 
+    *
     *
     *@param  frame       JFrame
     *@param  modal       boolean indicator for modal
@@ -1258,7 +1259,7 @@ public class Display extends JFrame implements ActionListener, KeyListener {
    /**
     *  Widjets initialization
     *
-    *@throws  Exception  If unable to initialize 
+    *@throws  Exception  If unable to initialize
     */
    private void jbInit() throws Exception {
       documentScreen = screen.getDocument();
@@ -1673,7 +1674,7 @@ class Display_jMenuItemInfoProp_actionAdapter
    /**
     *  Constructs for the Display_jMenuItemInfoProp_actionAdapter object
     *
-    *@param  adaptee  Display object 
+    *@param  adaptee  Display object
     */
    Display_jMenuItemInfoProp_actionAdapter(Display adaptee) {
       this.adaptee = adaptee;

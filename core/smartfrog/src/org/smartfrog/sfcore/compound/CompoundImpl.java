@@ -25,6 +25,7 @@ import java.util.Enumeration;
 import java.util.Vector;
 
 import org.smartfrog.SFSystem;
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.MessageUtil;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
@@ -125,13 +126,13 @@ public class CompoundImpl extends PrimImpl implements Compound {
             // It will build source recursively
             Reference newRef =new Reference();
             if (name==null) {
-                if (cmp.getContext().containsKey("sfProcessComponentName"))
-                    name =cmp.getContext().get("sfProcessComponentName");
-                try { 
+                if (cmp.getContext().containsKey(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME))
+                    name =cmp.getContext().get(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME);
+                try {
                     newRef = parent.sfCompleteName();
                 } catch (Exception ex){
                     // LOG ex
-                }  
+                }
             }
             if ((dex.get(dex.OBJECT_NAME))!=null) {
                 newRef.addElement (ReferencePart.here(name));
@@ -262,7 +263,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         try {
-            Object st = sfResolveId("sfSyncTerminate");
+            Object st = sfResolveId(SmartFrogCoreKeys.SF_SYNC_TERMINATE);
 
             if (st == null) {
                 sfSyncTerminate = false;
@@ -283,7 +284,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
                         String name = "";
                         try {name =((Prim)elem).sfCompleteName().toString();} catch (Exception ex) {};
                         SmartFrogLifecycleException sflex = SmartFrogLifecycleException.sfDeploy(name ,thr,null);
-                        sflex.add(sflex.DATA,"Failed object class: "+((Prim) elem).sfResolve("sfClass","",false));
+                        sflex.add(sflex.DATA,"Failed object class: "+((Prim) elem).sfResolve(SmartFrogCoreKeys.SF_CLASS,"",false));
                         throw sflex;
                     }
                 }
@@ -316,7 +317,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
                         String name = "";
                         try {name =((Prim)elem).sfCompleteName().toString();} catch (Exception ex) {};
                         SmartFrogLifecycleException sflex = SmartFrogLifecycleException.sfStart(name ,thr,null);
-                        sflex.add(sflex.DATA,"Failed object class: "+((Prim) elem).sfResolve("sfClass","",false));
+                        sflex.add(sflex.DATA,"Failed object class: "+((Prim) elem).sfResolve(SmartFrogCoreKeys.SF_CLASS,"",false));
                         throw sflex;
                     }
                 }
@@ -468,7 +469,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
          * Termination record.
          */
         private TerminationRecord record;
-        
+
         /**
          * Constructs TerminateCall with component and termination record.
          */
@@ -497,7 +498,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
          * Reference to component.
          */
         private Prim prim;
-        
+
         /**
          * Reference to dump.
          */

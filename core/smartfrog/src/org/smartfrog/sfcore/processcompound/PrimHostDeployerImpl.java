@@ -22,6 +22,7 @@ package org.smartfrog.sfcore.processcompound;
 
 import java.net.InetAddress;
 
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
@@ -42,11 +43,11 @@ import org.smartfrog.sfcore.reference.Reference;
 public class PrimHostDeployerImpl extends PrimDeployerImpl {
     /** Efficiency holder of sfProcessHost attribute. */
     protected static final Reference refProcessHost =
-        new Reference("sfProcessHost");
+        new Reference(SmartFrogCoreKeys.SF_PROCESS_HOST);
 
     /** Efficiency holder of sfRootLocatorPort attribute. */
     protected static final Reference refRootLocatorPort =
-        new Reference("sfRootLocatorPort");
+        new Reference(SmartFrogCoreKeys.SF_ROOT_LOCATOR_PORT);
 
     /**
      * Constructs the PrimHostDeployerImpl with ComponentDescription.
@@ -79,8 +80,8 @@ public class PrimHostDeployerImpl extends PrimDeployerImpl {
             return SFProcess.getProcessCompound();
         } catch (java.net.UnknownHostException unhex){
                 Object name = null;
-                if (target.getContext().containsKey("sfProcessComponentName")) {
-                    name =target.getContext().get("sfProcessComponentName");
+                if (target.getContext().containsKey(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME)) {
+                    name =target.getContext().get(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME);
                 }
                 throw new SmartFrogDeploymentException (this.refProcessHost,null,name,target,null,"Unknown host: "+hostname, unhex, hostname);
         }

@@ -25,6 +25,7 @@ import java.util.Vector;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 
 
 /**
@@ -49,7 +50,7 @@ public class BrowseTreeModelSF implements TreeModel {
      *  Constructor for the BrowseTreeModelSF object.
      */
     public BrowseTreeModelSF() {
-        entry = new BrowserEntry("ROOT");
+        entry = new BrowserEntry(SmartFrogCoreKeys.SF_ROOT);
         listeners = new Vector();
     }
 
