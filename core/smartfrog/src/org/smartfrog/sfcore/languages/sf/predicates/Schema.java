@@ -35,12 +35,12 @@ import org.smartfrog.sfcore.reference.ReferencePart;
 public class Schema extends BasePredicate implements PhaseAction {
 
     Reference ref;
-    
+
     /**
      * Schema description attribute.
      */
     private String schemaDescription = "sfSchemaDescription";
-    
+
     /**
      * Optional reference.
      */
@@ -49,7 +49,7 @@ public class Schema extends BasePredicate implements PhaseAction {
      * Binding reference.
      */
     private Reference bindingRef = new Reference(ReferencePart.here("binding"));
-    
+
     /**
      * Class reference.
      */
@@ -138,7 +138,8 @@ public class Schema extends BasePredicate implements PhaseAction {
                                errorString + "non-reference value found for lazy attribute " + name,
                                null, ref, "predicate", null
                             );
-                    else if (!(valueClass.equals("anyClass") || valueClass.equals(testvalueClass)))
+//                    else if (!(valueClass.equals("anyClass") || valueClass.equals(testvalueClass)))
+                      else if (!(valueClass.equals("anyClass")) && !(java.lang.Class.forName(valueClass).isAssignableFrom(testvalue.getClass())))
                         throw new SmartFrogCompileResolutionException (
                                errorString + "wrong class found for attribute " + name + " (" + description + "), expected: " + valueClass + ", found: " + testvalueClass,
                                null, ref, "predicate", null
