@@ -39,7 +39,7 @@ import org.smartfrog.sfcore.processcompound.SFProcess;
  * methods of the components.
  */
 public class SFTrace extends PrimImpl implements Prim {
-    /** Counter for message printing. */    
+    /** Counter for message printing. */
     static long counter = 0;
     /** PrintMsgInt object. */
     PrintMsgInt printMsgImp = null;
@@ -64,20 +64,20 @@ public class SFTrace extends PrimImpl implements Prim {
     SfTerminateWithTracer sfTerminateWithTracer = new SfTerminateWithTracer();
 
     /**
-     * Constructor. 
+     * Constructor.
      *
      * @throws RemoteException in case of network/rmi error
-     */ 
+     */
     public SFTrace() throws RemoteException {
     }
 
-    /** 
+    /**
      * Deploys the component.
      *
      * @throws SmartFrogException in case of error while deploying
      * @throws RemoteException in case of network/rmi error
-     */ 
-    public synchronized void sfDeploy() throws SmartFrogException, 
+     */
+    public synchronized void sfDeploy() throws SmartFrogException,
     RemoteException {
         super.sfDeploy();
 
@@ -228,10 +228,10 @@ public class SFTrace extends PrimImpl implements Prim {
 
     /**
      * Starts the component.
-     * 
+     *
      * @throws SmartFrogException in case of error in starting
      * @throws RemoteException in case of network/rmi error
-     */ 
+     */
     public synchronized void sfStart() throws SmartFrogException,
     RemoteException {
         super.sfStart();
@@ -240,8 +240,8 @@ public class SFTrace extends PrimImpl implements Prim {
     /**
      * Terminate the component.
      *
-     * @param t TerminationRecord object
-     */ 
+     * @param r TerminationRecord object
+     */
     public synchronized void sfTerminateWith(TerminationRecord r) {
         try {
             sfDeployHooks.removeHook(sfDeployTracer);
@@ -260,7 +260,7 @@ public class SFTrace extends PrimImpl implements Prim {
      * @param msg message
      * @param tag tag
      * @param date date
-     */ 
+     */
     private void printMsgPhase(String msg, String tag, Date date) {
         if (msg.equals("")) {
             msg = "ROOT[" + rootLocatorPort + "]";
@@ -276,7 +276,7 @@ public class SFTrace extends PrimImpl implements Prim {
      *
      * @param msg message
      * @param date date
-     */ 
+     */
     private void printMsgDeploy(String msg, Date date) {
         printMsgPhase(msg, "DEPLOYING", date);
     }
@@ -286,7 +286,7 @@ public class SFTrace extends PrimImpl implements Prim {
      *
      * @param msg message
      * @param date date
-     */ 
+     */
     private void printMsgStart(String msg, Date date) {
         printMsgPhase(msg, "STARTING", date);
     }
@@ -297,7 +297,7 @@ public class SFTrace extends PrimImpl implements Prim {
      * @param msg message
      * @param terminationmsg termination message
      * @date date
-     */ 
+     */
     private void printMsgTerminate(String msg, String terminationMsg, Date date) {
         printMsgPhase(msg, "TERMINATED (" + terminationMsg + ")", date);
     }
@@ -307,7 +307,7 @@ public class SFTrace extends PrimImpl implements Prim {
      *
      * @param msg message
      * @param date date
-     */ 
+     */
     private void printMsg(String msg, Date date) {
         if (date == null) date =  new Date(System.currentTimeMillis());
         try {
@@ -353,7 +353,7 @@ public class SFTrace extends PrimImpl implements Prim {
      * @param terminationRecord TerminationRecord object
      *
      * @throws SamrtFrogException in case of any error
-     */     
+     */
         public void sfHookAction(Prim prim, TerminationRecord terminationRecord)
             throws SmartFrogException {
             Date date = new Date(System.currentTimeMillis());
@@ -376,7 +376,7 @@ public class SFTrace extends PrimImpl implements Prim {
      * @param terminationRecord TerminationRecord object
      *
      * @throws SamrtFrogException in case of any error
-     */     
+     */
         public void sfHookAction(Prim prim, TerminationRecord terminationRecord)
             throws SmartFrogException {
             Date date = new Date(System.currentTimeMillis());
@@ -400,7 +400,7 @@ public class SFTrace extends PrimImpl implements Prim {
      * @param terminationRecord TerminationRecord object
      *
      * @throws SamrtFrogException in case of any error
-     */     
+     */
         public void sfHookAction(Prim prim, TerminationRecord terminationRecord)
             throws SmartFrogException {
             Date date = new Date(System.currentTimeMillis());

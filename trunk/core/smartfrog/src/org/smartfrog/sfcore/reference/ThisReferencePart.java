@@ -36,14 +36,13 @@ public class ThisReferencePart extends ReferencePart {
     /**
      * Constructs HereReferencePart with a here part.
      *
-     * @param v value for here part
      */
     public ThisReferencePart() {
     }
 
     /**
      * Returns a string representation of the reference part.
-     * Implements abstract method ReferencePart.toString. 
+     * Implements abstract method ReferencePart.toString.
      * @return stringified reference part
      */
     public String toString() {
