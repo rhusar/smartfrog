@@ -154,12 +154,11 @@ public class ConfigurationDescriptorDeployTest extends SmartFrogTestBase impleme
         protected Prim deployExpectingSuccess2(String sfact, String testDescription)
                                                         throws Exception,Throwable {
             testDescription = "- Test description: \n   "+testDescription+" -  \n";
-            System.out.println("\n"+testDescription);
             ConfigurationDescriptor cfgDesc = new ConfigurationDescriptor(sfact);
             try {
                 startSmartFrog();
                 Object deployedApp = SFSystem.runConfigurationDescriptor(cfgDesc,true);
-
+                System.out.println("\n"+testDescription+"\n    "+cfgDesc.toString("\n    "));
                 if (deployedApp instanceof Prim) {
                     return ((Prim) deployedApp);
                 } else if (deployedApp instanceof ConfigurationDescriptor) {
@@ -170,6 +169,7 @@ public class ConfigurationDescriptorDeployTest extends SmartFrogTestBase impleme
                     }
                 }
             } catch (Throwable throwable) {
+                System.out.println("\n"+testDescription+"\n    "+cfgDesc.toString("\n    "));
                 logChainedException(throwable);
                 throw throwable;
             }
@@ -189,16 +189,16 @@ public class ConfigurationDescriptorDeployTest extends SmartFrogTestBase impleme
            String description = "testurlTest02("+sfact+")";
            deployExpectingSuccess2(sfact,description);
         }
-//        public void testurlTest03 ()throws Throwable{
-//           String sfact = urlTest03;
-//           String description = "testurlTest03("+sfact+")";
-//           this.deployExpectingSuccess(sfact,description);
-//        }
-//        public void testurlTest04 ()throws Throwable{
-//           String sfact = urlTest04;
-//           String description = "testurlTest04("+sfact+")";
-//           this.deployExpectingSuccess(sfact,description);
-//        }
+        public void testurlTest03 ()throws Throwable{
+           String sfact = urlTest03;
+           String description = "testurlTest03("+sfact+")";
+           deployExpectingSuccess2(sfact,description);
+        }
+        public void testurlTest04 ()throws Throwable{
+           String sfact = urlTest04;
+           String description = "testurlTest04("+sfact+")";
+           deployExpectingSuccess2(sfact,description);
+        }
         public void testurlTest05 ()throws Throwable{
            String sfact = urlTest05;
            String description = "testurlTest05("+sfact+")";
@@ -209,73 +209,84 @@ public class ConfigurationDescriptorDeployTest extends SmartFrogTestBase impleme
            String description = "testurlTest06("+sfact+")";
            deployExpectingSuccess2(sfact,description);
         }
-//        public void testurlTest07 ()throws Throwable{
-//           String sfact = urlTest07;
-//           String description = "testurlTest07("+sfact+")";
-//           this.deployExpectingSuccess(sfact,description);
-//        }
-//        public void testurlTest07b ()throws Throwable{
-//           String sfact = urlTest07b;
-//           String description = "testurlTest07b("+sfact+")";
-//           this.deployExpectingSuccess(sfact,description);
-//        }
+        public void testurlTest07 ()throws Throwable{
+           String sfact = urlTest07;
+           String description = "testurlTest07("+sfact+")";
+           deployExpectingSuccess2(sfact,description);
+        }
 
-//        public void testurlTest08 ()throws Throwable{
-//           String sfact = urlTest08;
-//           String description = "testurlTest08("+sfact+")";
-//           this.deployExpectingSuccess(sfact,description);
-//        }
-//        public void testurlTest09 ()throws Throwable{
-//           String sfact = urlTest09;
-//           String description = "testurlTest09("+sfact+")";
-//           this.deployExpectingSuccess(sfact,description);
-//        }
+
+        public void testurlTest08 ()throws Throwable{
+           String sfact = urlTest08;
+           String description = "testurlTest08("+sfact+")";
+           deployExpectingSuccess2(sfact,description);
+        }
+        public void testurlTest09 ()throws Throwable{
+           String sfact = urlTest09;
+           String description = "testurlTest09("+sfact+")";
+           deployExpectingSuccess2(sfact,description);
+        }
+
+        public void testurlTest09b ()throws Throwable{
+           String sfact = urlTest07b;
+           String description = "testurlTest07b("+sfact+")";
+           deployExpectingSuccess2(sfact,description);
+        }
+
         public void testurlTest10 ()throws Throwable{
            String sfact = urlTest10;
            String description = "testurlTest10("+sfact+")";
            deployExpectingSuccess2(sfact,description);
         }
-//        public void testurlTest11 ()throws Throwable{
-//           String sfact = urlTest11;
-//           String description = "testurlTest11("+sfact+")";
-//           this.deployExpectingSuccess(sfact,description);
+        public void testurlTest11 ()throws Throwable{
+           String sfact = urlTest11;
+           String description = "testurlTest11("+sfact+")";
+           deployExpectingSuccess2(sfact,description);
+        }
+
+// 12 and 12b cannot be run when 7 is.
+//        public void testurlTest12 ()throws Throwable{
+//           String sfact = urlTest12;
+//           String description = "testurlTest12("+sfact+")";
+//           deployExpectingSuccess2(sfact,description);
 //        }
+//
 //        public void testurlTest12b ()throws Throwable{
 //           String sfact = urlTest12b;
-//           String description = "testurlTest15b("+sfact+")";
-//           this.deployExpectingSuccess(sfact,description);
+//           String description = "testurlTest12b("+sfact+")";
+//           deployExpectingSuccess2(sfact,description);
 //        }
 
 //        public void testurlTest13 ()throws Throwable{
 //           String sfact = urlTest13;
 //           String description = "testurlTest13("+sfact+")";
-//           this.deployExpectingSuccess(sfact,description);
+//           deployExpectingSuccess2(sfact,description);
 //        }
 //        public void testurlTest14 ()throws Throwable{
 //           String sfact = urlTest14;
 //           String description = "testurlTest14("+sfact+")";
-//           this.deployExpectingSuccess(sfact,description);
+//           deployExpectingSuccess2(sfact,description);
 //        }
 //
 //        public void testurlTest15 ()throws Throwable{
 //           String sfact = urlTest15;
 //           String description = "testurlTest15("+sfact+")";
-//           this.deployExpectingSuccess(sfact,description);
+//           deployExpectingSuccess2(sfact,description);
 //        }
-
+//
 
         // This one has to be the last successful test. It terminates the
         // daemon
 //        public void testurlTest100 ()throws Throwable{
 //           String sfact = urlTest100;
 //           String description = "testurlTest12("+sfact+")";
-//           this.deployExpectingSuccess(sfact,description);
+//           deployExpectingSuccess2(sfact,description);
 //        }
 
 //        public void testurlTest16 ()throws Throwable{
 //           String sfact = urlTest16;
 //           String description = "("+sfact+")";
-//           this.deployExpectingSuccess(sfact,description);
+//           deployExpectingSuccess2(sfact,description);
 //        }
 
 }
