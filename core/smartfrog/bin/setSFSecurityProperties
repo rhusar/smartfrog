@@ -16,7 +16,7 @@ if ! test $SFHOSTNAME; then export SFHOSTNAME=host1; fi
 # -- Security properties --
 export SFSECURITY="-Djava.security.policy==$SFPRIVATE/sf.policy -Djava.security.manager -Dorg.smartfrog.sfcore.security.keyStoreName=$SFPRIVATE/$SFHOSTNAME/mykeys.st -Dorg.smartfrog.sfcore.security.propFile=$SFPRIVATE/$SFHOSTNAME/SFSecurity.properties"
 
-# -- default.ini and default.sf with security. This files need to be inside a jar file--
+# -- default.ini and default.sf with security. These files need to be inside a jar file--
 export SFDEFAULTINI="-Dorg.smartfrog.iniFile=org/smartfrog/default.ini"
 export SFDEFAULTSF="-Dorg.smartfrog.sfcore.processcompound.sfDefault.sfDefault=org/smartfrog/default.sf"
 

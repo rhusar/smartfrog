@@ -4,7 +4,7 @@ if [ -z $1 ] ; then
    echo "Insufficient arguments to use sfTerminate"
    echo "Usage: sfTerminate HostName ComponentName"
 exit
-fi 
+fi
 if [ $# -eq 1 ] && [ $1 == "-?" ];then
    echo "Usage: sfTerminate HostName ComponentName"
    exit
@@ -12,10 +12,10 @@ elif [ $# -ne 2 ];then
    echo "Insufficient arguments to use sfTerminate"
    echo "Usage: sfTerminate HostName ComponentName"
    exit
-fi 
+fi
 #for i in $SFHOME/lib/*.jar; do CLASSPATH=$i:$CLASSPATH; done
 #export CLASSPATH
 
 . $SFHOME/bin/setSFProperties
 
-java org.smartfrog.SFSystem -a $2:TERMINATE:::$1: -e
+java $SFCMDPARAMETERS org.smartfrog.SFSystem -a $2:TERMINATE:::$1: -e
