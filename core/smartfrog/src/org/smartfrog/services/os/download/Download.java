@@ -31,6 +31,8 @@ import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.security.SFClassLoader;
+import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.logging.LogFactory;
 
 /**
  * Defines the Downloader class. It downloads the data from a given url.
@@ -60,7 +62,7 @@ public class Download extends PrimImpl implements Prim {
     public synchronized void sfStart() throws SmartFrogException, 
     RemoteException {
         super.sfStart();
-
+	LogSF log=LogFactory.getLog(this);
         String url = "NOT YET SET";
         String localFile = "NOT YET SET";
 
@@ -100,9 +102,10 @@ public class Download extends PrimImpl implements Prim {
 
             new Thread(terminator).start();
         } catch (Exception e) {
-            System.out.println("error in downloading of url " + url + " to " +
-                localFile);
-
+	    String errStr="error in downloading of url " + url + " to " + 
+		    localFile;
+    	     if(log.isErrorEnabled())
+		 log.error(errStr);    
             //e.printStackTrace();
             //TODO : Need to be revisited
             throw new SmartFrogLifecycleException(e, this);
