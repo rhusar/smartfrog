@@ -37,6 +37,6 @@ org/smartfrog/services/filesystem/TouchFile.class
 org/smartfrog/services/filesystem/MkdirImpl.class
 org/smartfrog/services/www/LivenessPageComponent.class
 org/smartfrog/services/filesystem/replacevar/SFReplaceFileVar.class
-
+org/smartfrog/services/utils/setproperty/SFSetPropertyImpl.class
 
 
