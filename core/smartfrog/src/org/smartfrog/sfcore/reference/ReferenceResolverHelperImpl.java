@@ -7,6 +7,7 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.compound.Compound;
+import org.smartfrog.sfcore.common.SFNull;
 import org.smartfrog.sfcore.prim.Prim;
 
 
@@ -491,7 +492,7 @@ import org.smartfrog.sfcore.prim.Prim;
      *        present in the description. If it is mandatory and not found it
      *        triggers a SmartFrogResolutionException
      *
-     * @return String for attribute value or defaultValue if not found
+     * @return String for attribute value, null if SFNull is found or defaultValue if not found
      *
      * @throws SmartFrogResolutionException illegal reference or reference
      * not resolvable
@@ -503,6 +504,7 @@ import org.smartfrog.sfcore.prim.Prim;
 
         try {
             Object referenceObj = sfResolve(reference, 0);
+            if (referenceObj instanceof SFNull) {return null;}
 
             if (referenceObj instanceof String) {
                 return (((String) referenceObj).toString());
@@ -533,7 +535,7 @@ import org.smartfrog.sfcore.prim.Prim;
      *        present in the description. If it is mandatory and not found it
      *        triggers a SmartFrogResolutionException
      *
-     * @return Vector for attribute value or defaultValue if not found
+     * @return Vector for attribute value, null if SFNull is found or defaultValue if not found
      *
      * @throws SmartFrogResolutionException illegal reference or reference
      * not resolvable
@@ -545,6 +547,7 @@ import org.smartfrog.sfcore.prim.Prim;
 
         try {
             Object referenceObj = sfResolve(reference, 0);
+            if (referenceObj instanceof SFNull) {return null;}
 
             if (referenceObj instanceof Vector) {
                 return (((Vector) referenceObj));
@@ -575,7 +578,7 @@ import org.smartfrog.sfcore.prim.Prim;
      *        present in the description. If it is mandatory and not found it
      *        triggers a SmartFrogResolutionException
      *
-     * @return String[] for attribute value or defaultValue if not found
+     * @return String[] for attribute value, null if SFNull is found or defaultValue if not found
      *
      * @throws SmartFrogResolutionException illegal reference or reference
      * not resolvable
@@ -587,6 +590,7 @@ import org.smartfrog.sfcore.prim.Prim;
 
         try {
             Object referenceObj = sfResolve(reference, 0);
+            if (referenceObj instanceof SFNull) {return null;}
 
             if (referenceObj instanceof Vector) {
                 String[] array = null;
@@ -626,7 +630,7 @@ import org.smartfrog.sfcore.prim.Prim;
      *        present in the description. If it is mandatory and not found it
      *        triggers a SmartFrogResolutionException
      *
-     * @return SmartFrog ComponentDescription for attribute value or
+     * @return SmartFrog ComponentDescription for attribute value, null if SFNull is found or
      *         defaultValue if not found
      *
      * @throws SmartFrogResolutionException illegal reference or reference
@@ -640,6 +644,7 @@ import org.smartfrog.sfcore.prim.Prim;
 
         try {
             Object referenceObj = sfResolve(reference, 0);
+            if (referenceObj instanceof SFNull) {return null;}
 
             if (referenceObj instanceof ComponentDescription) {
                 return ((ComponentDescription) referenceObj);
@@ -671,7 +676,7 @@ import org.smartfrog.sfcore.prim.Prim;
      *        present in the description. If it is mandatory and not found it
      *        triggers a SmartFrogResolutionException
      *
-     * @return SmartFrog Reference for attribute value or defaultValue if not
+     * @return SmartFrog Reference for attribute value, null if SFNull is found or defaultValue if not
      *         found
      *
      * @throws SmartFrogResolutionException illegal reference or reference
@@ -684,6 +689,7 @@ import org.smartfrog.sfcore.prim.Prim;
 
         try {
             Object referenceObj = sfResolve(reference, 0);
+            if (referenceObj instanceof SFNull) {return null;}
 
             if (referenceObj instanceof Reference) {
                 return ((Reference) referenceObj);
@@ -715,7 +721,7 @@ import org.smartfrog.sfcore.prim.Prim;
      *        present in the description. If it is mandatory and not found it
      *        triggers a SmartFrogResolutionException
      *
-     * @return SmartFrog Prim for attribute value or defaultValue if not
+     * @return SmartFrog Prim for attribute value, null if SFNull is found or defaultValue if not
      *         found
      *
      * @throws SmartFrogResolutionException illegal reference or reference
@@ -728,6 +734,7 @@ import org.smartfrog.sfcore.prim.Prim;
 
         try {
             Object referenceObj = sfResolve(reference, 0);
+            if (referenceObj instanceof SFNull) {return null;}
 
             if (referenceObj instanceof Prim) {
                 return ((Prim) referenceObj);
@@ -759,7 +766,7 @@ import org.smartfrog.sfcore.prim.Prim;
      *        present in the description. If it is mandatory and not found it
      *        triggers a SmartFrogResolutionException
      *
-     * @return SmartFrog Compound for attribute value or defaultValue if not
+     * @return SmartFrog Compound for attribute value, null if SFNull is found or defaultValue if not
      *         found
      *
      * @throws SmartFrogResolutionException illegal reference or reference
@@ -772,6 +779,7 @@ import org.smartfrog.sfcore.prim.Prim;
 
         try {
             Object referenceObj = sfResolve(reference, 0);
+            if (referenceObj instanceof SFNull) {return null;}
 
             if (referenceObj instanceof Compound) {
                 return ((Compound) referenceObj);
@@ -803,7 +811,7 @@ import org.smartfrog.sfcore.prim.Prim;
      *        present in the description. If it is mandatory and not found it
      *        triggers a SmartFrogResolutionException
      *
-     * @return java.net.InetAddress for attribute value or defaultValue if not
+     * @return java.net.InetAddress for attribute value, null if SFNull is found or defaultValue if not
      *         found
      *
      * @throws SmartFrogResolutionException illegal reference or reference
@@ -817,6 +825,7 @@ import org.smartfrog.sfcore.prim.Prim;
 
         try {
             Object referenceObj = sfResolve(reference, 0);
+            if (referenceObj instanceof SFNull) {return null;}
 
             if (referenceObj instanceof java.net.InetAddress) {
                 return ((java.net.InetAddress) referenceObj);
@@ -856,7 +865,7 @@ import org.smartfrog.sfcore.prim.Prim;
      *        present in the description. If it is mandatory and not found it
      *        triggers a SmartFrogResolutionException
      *
-     * @return java Object for attribute value or defaultValue if not
+     * @return java Object for attribute value, null if SFNull is found or defaultValue if not
      *         found
      *
      * @throws SmartFrogResolutionException illegal reference or reference
@@ -868,6 +877,7 @@ import org.smartfrog.sfcore.prim.Prim;
         boolean illegalClassType = false;
         try {
             Object referenceObj = sfResolve(reference, 0);
+            if (referenceObj instanceof SFNull) {return null;}
             if ((defaultValue==null) || ( defaultValue.getClass().isAssignableFrom(referenceObj.getClass()))) {
                 return (referenceObj);
             } else {
@@ -1109,7 +1119,7 @@ import org.smartfrog.sfcore.prim.Prim;
      *        present in the description. If it is mandatory and not found it
      *        triggers a SmartFrogResolutionException
      *
-     * @return String for attribute value or defaultValue if not found
+     * @return String for attribute value, null if SFNull is found or defaultValue if not found
      *
      * @throws SmartFrogResolutionException illegal reference or reference
      * not resolvable
@@ -1130,7 +1140,7 @@ import org.smartfrog.sfcore.prim.Prim;
      *        present in the description. If it is mandatory and not found it
      *        triggers a SmartFrogResolutionException
      *
-     * @return Vector for attribute value or defaultValue if not found
+     * @return Vector for attribute value, null if SFNull is found or defaultValue if not found
      *
      * @throws SmartFrogResolutionException illegal reference or reference
      * not resolvable
@@ -1153,7 +1163,7 @@ import org.smartfrog.sfcore.prim.Prim;
      *        present in the description. If it is mandatory and not found it
      *        triggers a SmartFrogResolutionException
      *
-     * @return String[] for attribute value or defaultValue if not found
+     * @return String[] for attribute value, null if SFNull is found or defaultValue if not found
      *
      * @throws SmartFrogResolutionException illegal reference or reference
      * not resolvable
@@ -1176,7 +1186,7 @@ import org.smartfrog.sfcore.prim.Prim;
      *        present in the description. If it is mandatory and not found it
      *        triggers a SmartFrogResolutionException
      *
-     * @return ComponentDescription for attribute value or defaultValue if not
+     * @return ComponentDescription for attribute value, null if SFNull is found or defaultValue if not
      *         found
      *
      * @throws SmartFrogResolutionException illegal reference or reference
@@ -1201,7 +1211,7 @@ import org.smartfrog.sfcore.prim.Prim;
      *        present in the description. If it is mandatory and not found it
      *        triggers a SmartFrogResolutionException
      *
-     * @return Reference for attribute value or defaultValue if not found
+     * @return Reference for attribute value, null if SFNull is found or defaultValue if not found
      *
      * @throws SmartFrogResolutionException illegal reference or reference
      * not resolvable
@@ -1224,7 +1234,7 @@ import org.smartfrog.sfcore.prim.Prim;
      *        present in the description. If it is mandatory and not found it
      *        triggers a SmartFrogResolutionException
      *
-     * @return Prim for attribute value or defaultValue if not found
+     * @return Prim for attribute value, null if SFNull is found or defaultValue if not found
      *
      * @throws SmartFrogResolutionException illegal reference or reference
      * not resolvable
@@ -1248,7 +1258,7 @@ import org.smartfrog.sfcore.prim.Prim;
      *        present in the description. If it is mandatory and not found it
      *        triggers a SmartFrogResolutionException
      *
-     * @return Compound for attribute value or defaultValue if not found
+     * @return Compound for attribute value, null if SFNull is found or defaultValue if not found
      *
      * @throws SmartFrogResolutionException illegal reference or reference
      * not resolvable
@@ -1271,7 +1281,7 @@ import org.smartfrog.sfcore.prim.Prim;
      *        present in the description. If it is mandatory and not found it
      *        triggers a SmartFrogResolutionException
      *
-     * @return Reference for attribute value or defaultValue if not found
+     * @return Reference for attribute value, null if SFNull is found or defaultValue if not found
      *
      * @throws SmartFrogResolutionException illegal reference or reference
      * not resolvable
@@ -1295,7 +1305,7 @@ import org.smartfrog.sfcore.prim.Prim;
      *        present in the description. If it is mandatory and not found it
      *        triggers a SmartFrogResolutionException
      *
-     * @return Reference for attribute value or defaultValue if not found
+     * @return Reference for attribute value, null if SFNull is found or defaultValue if not found
      *
      * @throws SmartFrogResolutionException illegal reference or reference
      * not resolvable
