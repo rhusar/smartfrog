@@ -1,30 +1,28 @@
 #!/bin/sh
 
-# general properties
-export SERVER=localhost:8080
-# Please edit codebase if you have any other jar file in webserver 
-export CODEBASE="http://$SERVER/sfExamples.jar" 
- 
-export SFLIBPATH=$SFHOME/lib 
 #------------------------------------------------------
 # SF ENV PROPERTIES  - Please edit with your preferences
 # ------------------------------------------------------
+
+# -- User libs directory --
 #export SFUSERHOME=$SFHOME/mylibs
 
-if ! test $SFDEFAULTINI; then
-    export SFDEFAULTINI="-Dorg.smartfrog.iniFile=org/smartfrog/default.ini"
-fi
-if ! test $SFDEFAULTSF; then
-    export SFDEFAULTSF="-Dorg.smartfrog.sfcore.processcompound.sfDefault.sfDefault=org/smartfrog/default.sf"
-fi
-#if ! test $SFSECURITY;then
-#export SFSECURITY="-Djava.security.policy==$SFHOME/private/sf.policy -Djava.security.manager -Dorg.smartfrog.sfcore.security.keyStoreName=$SFHOME/private/mykeys.st -Dorg.smartfrog.sfcore.security.propFile=$SFHOME/private/SFSecurity.properties"
-#fi
-# if ! test $SFCODEBASE;then
-#	export SFCODEBASE="-Dorg.smartfrog.codebase=$CODEBASE"
-#fi
+# -- default.ini and default.sf without security --
+export SFDEFAULTINI="-Dorg.smartfrog.iniFile=$SFHOME/bin/default.ini"
+export SFDEFAULTSF="-Dorg.smartfrog.sfcore.processcompound.sfDefault.sfDefault=$SFHOME/bin/default.sf"
 
-# ------------------------------------------------------
+# -- Dynamic classloading: CODEBASE --
+# export SERVER=localhost:8080
+# export CODEBASE="http://$SERVER/sfExamples.jar" 
+# export SFCODEBASE="-Dorg.smartfrog.codebase=$CODEBASE" 
+
+# -- Security properties --
+#export SFSECURITY="-Djava.security.policy==$SFHOME/private/sf.policy -Djava.security.manager -Dorg.smartfrog.sfcore.security.keyStoreName=$SFHOME/private/mykeys.st -Dorg.smartfrog.sfcore.security.propFile=$SFHOME/private/SFSecurity.properties"
+#export SFDEFAULTINI="-Dorg.smartfrog.iniFile=org/smartfrog/default.ini"
+#export SFDEFAULTSF="-Dorg.smartfrog.sfcore.processcompound.sfDefault.sfDefault=org/smartfrog/default.sf"
+
+# -------------------End user properties---------------
+
 
 if test "$SFSECURITY"; then
  	export SFCMDPARAMETERS="$SFCMDPARAMETERS $SFSECURITY"
@@ -40,6 +38,7 @@ if test "$SFSECURITY"; then
 	export SFLIBPATH=$SFHOME/signedLib
 fi
 
+export SFLIBPATH=$SFHOME/lib 
 for i in $SFLIBPATH/*.jar; do CLASSPATH=$i:$CLASSPATH; done
 export CLASSPATH
 
