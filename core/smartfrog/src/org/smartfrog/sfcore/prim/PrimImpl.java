@@ -981,13 +981,13 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
      * @throws RemoteException for consistency with the {@link Liveness} interface
      */
     public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
-	if (sflog().isTraceEnabled()) {
+	if (Logger.logLiveness &&(sflog().isTraceEnabled())) {
 	    sflog().trace("ping received from " + source + ": in " + sfCompleteNameSafe() + ", counter " + sfLivenessCount);
 	}
 
 	if (sfIsTerminated) {
-	    if (sflog().isTraceEnabled()) {
-		sflog().trace("ping returning that am terminated : in " + sfCompleteNameSafe());
+	    if (Logger.logLiveness &&(sflog().isTraceEnabled())) {
+		sflog().trace("ping returning that I am terminated : in " + sfCompleteNameSafe());
 	    }
 	    throw new SmartFrogLivenessException(COMPONENT_TERMINATED_MESSAGE);
 	}
@@ -1005,7 +1005,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
 	boolean fail = false;
 	synchronized (this) {
 	    if (source.equals(sfParent)) {
-		if (sflog().isTraceEnabled()) {
+		if (Logger.logLiveness &&(sflog().isTraceEnabled())) {
 		    sflog().trace("parent ping received - resetting counter: in " + sfCompleteNameSafe());
 		}
 		sfLivenessCount = sfLivenessFactor;
