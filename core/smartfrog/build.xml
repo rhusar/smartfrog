@@ -153,8 +153,6 @@ Please go though the installation guide and install ant. Reference URL:http://an
     <mkdir dir="${dist}/${private}"/>
     <mkdir dir="${dist}/${signedLib}"/>
     <mkdir dir="${dist}/${src}"/>
-    <!--mkdir dir="${dist}/${redist}"/ -->
-    <mkdir dir="${dist}/help"/>
   </target>
 
   <!-- =================================================================== -->
@@ -306,18 +304,6 @@ Please go though the installation guide and install ant. Reference URL:http://an
   <!-- =================================================================== -->
   <!--                                                                     -->
   <!-- =================================================================== -->
-  <target name="copyHelp" depends="initdist">
-    <copy todir="${dist}/help">
-      <fileset dir="${docs}">
-        <include name="help.htm" />
-        <include name="logo.png" />
-      </fileset>
-    </copy>
-  </target>
-
-  <!-- =================================================================== -->
-  <!--                                                                     -->
-  <!-- =================================================================== -->
   <target name="copyexamples" depends="initdist">
     <copy todir="${dist}/${src}">
       <fileset dir="${src}">
@@ -436,7 +422,7 @@ Please go though the installation guide and install ant. Reference URL:http://an
   <!-- =================================================================== -->
   <!--  DIST                                                               -->
   <!-- =================================================================== -->
-  <target name="dist" depends="build,initdist,jars,copylibs,copybins,copyPrivate,copydocs, copyexamples, copyHelp,copyTestCA,buildSetup, sfParseTest" description="Prepares distribution package">
+  <target name="dist" depends="build,initdist,jars,copylibs,copybins,copyPrivate,copydocs, copyexamples,copyTestCA,buildSetup, sfParseTest" description="Prepares distribution package">
   </target>
 
   <!-- =================================================================== -->
