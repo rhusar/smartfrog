@@ -502,7 +502,12 @@ public abstract class SmartFrogTask extends TaskBase {
      * @param timeout
      */
     public void setTimeout(long timeout) {
-        smartfrog.setTimeout(new Long(timeout));
+        if(timeout>0) {
+            smartfrog.setTimeout(new Long(timeout));
+        } else {
+            //no valid timeout; ignore it. 
+            smartfrog.setTimeout(null);
+        }
     }
 
     /**
