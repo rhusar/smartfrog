@@ -427,6 +427,8 @@ public class SFProcess implements MessageKeys {
         Vector phases = new Vector();
         phases.add("type");
         phases.add("link");
+        phases.add("function");
+        phases.add("predicate");
         return ComponentDescriptionImpl.sfComponentDescription(urlProcessCompound, phases, refProcessCompound);
     }
 
