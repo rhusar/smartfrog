@@ -32,14 +32,17 @@ For more information: www.smartfrog.org
  */
 
 #include "/org/smartfrog/services/cddlm/components.sf"
-
+#include "/org/smartfrog/services/filesystem/components.sf"
 
 //jetty
 #include "org/smartfrog/services/jetty/components.sf";
 
 sfConfig extends Compound {
 
-    host "localhost"
+
+    axishome LAZY PROPERTY axis.home;
+
+    host "localhost";
 
     port 5050;
 
@@ -57,77 +60,48 @@ sfConfig extends Compound {
 
 
     //fetch the WSDL every so often, just to see that we are happy
+    /*
     wsdlFetch extends FetchCddlmWSDL {
         port PARENT:port;
     }
+    */
 
     cddlmService extends CddlmService {
         port PARENT:port;
     }
 
-    adminServer extends HttpServerAdmin {
-     httpserverHost PARENT:host; // mandatory
-    }
+
+    /*
+     deploy axis on jetty
+     */
+    JettyServer extends CoreJettyServer {
+
+        serverName "axis";
+
+        serverHost host;
+
+        jettyhome axishome;
+
+        listeners extends Compound {
+            jetty extends JettyListener {
+                serverPort port;
+            }
+        }
+
+        warFile extends LAZY File {
+            dir axishome;
+            filename "axis.war";
+        }
 
 
-    JettyServer extends HttpServer {
-        jettyhome ROOT:jetty_home;
-        serverHost PARENT:host;
-
-        contexts  "";
-        listeners "";
 
         AxisWebApp extends JettyWebApplication {
-            webApp (axishome ++ "") 
-
-            "axis.war";
-            contextPath "axis"
+            webApp LAZY warFile:absolutePath;
+            contextPath "axis";
+            server "axis";
         }
 
     }
 
-
-
 }
 
-
-/**
- * Specify the jetty home path here
- */
- //no: set this as a property when you deploy!
- //jetty_home "C:\\jetty\\Jetty-4.2.18";
-
-A extends Prim {
- sfClass "org.smartfrog.services.jetty.contexts.Servlet";
- contextPath "/test";
- resourceBase ("D:\\cvs");
-}
-
-sfConfig extends Compound {
-
-}
-
-
-/**
- * Specify the jetty home path here
- */
-jetty_home "C:\\jetty\\Jetty-4.2.18";
-
-A extends Prim {
- sfClass "org.smartfrog.services.jetty.contexts.Servlet";
- contextPath "/test";
- resourceBase ("D:\\cvs");
-}
-
-sfConfig extends Compound {
-     adminServer extends HttpServerAdmin {
-         httpserverHost "localhost"; // mandatory
-     }
-     httpServer extends HttpServer {
-      jettyhome ROOT:jetty_home; // mandatory
-      serverHost "localhost"; //mandatory
-      contexts extends Contexts{
-         -- extends A;
-      }
-    }
-}
