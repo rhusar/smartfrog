@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 1998-2005 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -28,7 +28,7 @@ public class Version {
     private final static String name=        "SmartFrog";
     private final static String majorRelease="3";
     private final static String minorRelease="04";
-    private final static String build=       "015"; // odd numbers are development versions
+    private final static String build=       "017"; // odd numbers are development versions
     private final static String status=      "beta"; //alpha, beta, stable
 
     /** The version String for the SmartFrog system. */
@@ -37,7 +37,7 @@ public class Version {
 
 
     /** The copyright String for the SmartFrog system. */
-    public final static String copyright = "(C) Copyright 1998-2004 Hewlett-Packard Development Company, LP";
+    public final static String copyright = "(C) Copyright 1998-2005 Hewlett-Packard Development Company, LP";
 
     private Version(){
     }
