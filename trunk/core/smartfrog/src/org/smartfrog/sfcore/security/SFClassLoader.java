@@ -240,7 +240,7 @@ public class SFClassLoader {
         if (in != null) {
             return in;
         } else {
-            // We want the caller to keep trying... 
+            // We want the caller to keep trying...
             throw new ClassNotFoundException("SFClassLoader::getURLAsStream cannot find " +
                 resourceURL);
         }
@@ -274,7 +274,7 @@ public class SFClassLoader {
             int readBytes = 0;
 
             while (readBytes != numBytes) {
-                // Sometimes the read returns early... 
+                // Sometimes the read returns early...
                 readBytes += in.read(resourceBytes, readBytes,
                     numBytes - readBytes);
             }
@@ -465,12 +465,16 @@ public class SFClassLoader {
 
         } catch (LinkageError e) {
             //we found the class, but could not handle it
-            throw e;
-        } catch (Exception e) {
+            // We try next class loader throw e;
+            if (debug != null) {
+                debug.println(msg + " found "+name+" in " + codebase +
+                    " getting exception " + e.getMessage());
+            }
+        } catch (Throwable e) {
             //ClassNotFound or IOException
             // Not valid, continuing ...
             if (debug != null) {
-                debug.println(msg + " cannot find object in " + codebase +
+                debug.println(msg + " cannot find "+name+" in " + codebase +
                     " getting exception " + e.getMessage());
             }
 
