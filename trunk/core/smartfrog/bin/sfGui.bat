@@ -10,7 +10,7 @@ if defined SFHOME goto continue1
   cd ..
 :continue1
 
-CALL %SFHOME%\bin\SFGuiCFG.bat
+CALL "%SFHOME%\bin\SFGuiCFG.bat"
 
 
 
@@ -21,7 +21,7 @@ if not defined srcDir set srcDir=%SFHOME%\examples\clasess
 rem set JAVA_HEAP_SIZE=64
 
 
-call %SFHOME%\bin\setSFProperties
+call "%SFHOME%\bin\setSFProperties"
 
 if defined srcDir set CLASSPATH=./lib/jdatastore.license;%srcDir%;%classpath%
 
