@@ -129,18 +129,18 @@ public abstract class SmartfrogTestBase extends TestCase {
                     + " but got an instance of " + deployedApp);
         } catch (SmartFrogException fault) {
             String message = fault.getMessage();
-            assertContains(message, searchString);
+            assertContains(message, searchString, cfgDesc.statusString());
             if (containedExceptionName!=null) {
                 Throwable cause = fault.getCause();
                 assertNotNull("expected throwable of type "
                         +containedExceptionName,
                         cause);
                 //verify the name
-                assertThrowableNamed(cause, containedExceptionName);
+                assertThrowableNamed(cause, containedExceptionName, cfgDesc.statusString());
                 //verify the contained text
                 if (containedExceptionText!=null) {
                     String m2 = cause.getMessage();
-                    assertContains(m2, containedExceptionText);
+                    assertContains(m2, containedExceptionText,cfgDesc.statusString() );
                 }
 
             }
@@ -152,9 +152,22 @@ public abstract class SmartfrogTestBase extends TestCase {
      * @param thrown
      * @param name
      */
-    public void assertThrowableNamed(Throwable thrown,String name) {
-        assertContains(thrown.getClass().getName(),name);
+    public void assertThrowableNamed(Throwable thrown,String name, String cfgDescMsg) {
+        assertContains(thrown.getClass().getName(),name, cfgDescMsg);
     }
+
+    /**
+     * assert that a string contains a substring
+     * @param source
+     * @param substring
+     * @param cfgDescMsg
+     */
+    public void assertContains(String source, String substring, String cfgDescMsg) {
+        assertNotNull("No string to look for ["+substring+"]",source);
+        assertTrue("Did not find ["+substring+"] in ["+source+"]"+"\n, Result:"+cfgDescMsg,
+                source.indexOf(substring)>=0);
+    }
+
 
     /**
      * assert that a string contains a substring
@@ -162,10 +175,9 @@ public abstract class SmartfrogTestBase extends TestCase {
      * @param substring
      */
     public void assertContains(String source, String substring) {
-        assertNotNull("No string to look for ["+substring+"]",source);
-        assertTrue("Did not find ["+substring+"] in ["+source+"]",
-                source.indexOf(substring)>=0);
+       assertContains(source,substring,"");
     }
+
 
     public File getClassesDir() {
         return classesDir;
