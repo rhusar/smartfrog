@@ -156,7 +156,7 @@ public class SFLoggerImpl extends PrimImpl implements SFLogger {
      *
      * @param msg
      * @throws java.rmi.RemoteException
-     * @see #isDebugEnabled()
+     * @see #isDebug()
      */
 
 
@@ -170,7 +170,7 @@ public class SFLoggerImpl extends PrimImpl implements SFLogger {
      * @return
      * @throws java.rmi.RemoteException
      */
-    public boolean isDebugEnabled() throws RemoteException {
+    public boolean isDebug() throws RemoteException {
         return logger.isLoggable(Level.FINE);
     }
 }
