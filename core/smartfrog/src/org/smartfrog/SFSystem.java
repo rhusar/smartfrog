@@ -20,45 +20,29 @@ For more information: www.smartfrog.org
 
 package org.smartfrog;
 
+import org.smartfrog.sfcore.common.ConfigurationDescriptor;
+import org.smartfrog.sfcore.common.Logger;
+import org.smartfrog.sfcore.common.MessageKeys;
+import org.smartfrog.sfcore.common.MessageUtil;
+import org.smartfrog.sfcore.common.OptionSet;
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.processcompound.ProcessCompound;
+import org.smartfrog.sfcore.processcompound.SFProcess;
+import org.smartfrog.sfcore.security.SFClassLoader;
+import org.smartfrog.sfcore.security.SFGeneralSecurityException;
+import org.smartfrog.sfcore.security.SFSecurity;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
-import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.rmi.ConnectException;
 import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.Enumeration;
-import java.util.Vector;
 import java.util.Properties;
-import java.util.StringTokenizer;
-
-
-import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
-import org.smartfrog.sfcore.common.Context;
-import org.smartfrog.sfcore.common.ContextImpl;
-import org.smartfrog.sfcore.common.Logger;
-import org.smartfrog.sfcore.common.MessageKeys;
-import org.smartfrog.sfcore.common.MessageUtil;
-import org.smartfrog.sfcore.common.OptionSet;
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogInitException;
-import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
-import org.smartfrog.sfcore.common.SmartFrogParseException;
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
-import org.smartfrog.sfcore.parser.Phases;
-import org.smartfrog.sfcore.parser.SFParser;
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.processcompound.ProcessCompound;
-import org.smartfrog.sfcore.processcompound.SFProcess;
-import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.security.SFClassLoader;
-import org.smartfrog.sfcore.security.SFSecurity;
-import org.smartfrog.sfcore.common.ConfigurationDescriptor;
-import org.smartfrog.sfcore.security.*;
+import java.util.Vector;
 
 
 /**
@@ -124,7 +108,7 @@ public class SFSystem implements MessageKeys {
         String res = System.getProperty(key, def);
 
         if (res == null) {
-            return res = def;
+            return def;
         }
 
         return res;
@@ -203,7 +187,7 @@ public class SFSystem implements MessageKeys {
      * specified in system properties. Uses System.setErr and setOut to set
      * the <b>PrintStream</b>s which form stderr and stdout
      *
-     * @exception Exception failed to create or set output/error streams
+     * @exception SmartFrogException failed to create or set output/error streams
      */
     public static void setOutputStreams() throws SmartFrogException {
         String outClass = SFSystem.getProperty(propOutStreamClass);
@@ -285,7 +269,7 @@ public class SFSystem implements MessageKeys {
 
     /**
      * Runs a configuration descripor trapping any possible exception
-     * @param cfgDescs Vector of ConfigurationDescriptors
+     * @param cfgDesc Vector of ConfigurationDescriptors
      * @see ConfigurationDescriptor
      */
     public static Object runConfigurationDescriptor (ConfigurationDescriptor cfgDesc) {
