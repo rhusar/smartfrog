@@ -26,6 +26,17 @@ append extends {
    phase.function "org.smartfrog.sfcore.languages.sf.functions.Append";
 }
 
+
+
+
+
+plus extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.functions.Plus";
+}
+
+
+
+
 concat extends {
     phase.function "org.smartfrog.sfcore.languages.sf.functions.Concatenate";
 }
@@ -34,6 +45,10 @@ formatString extends {
     phase.function "org.smartfrog.sfcore.languages.sf.functions.Format";
 }
 
+
+
+
+
 sum extends {
     phase.function "org.smartfrog.sfcore.languages.sf.functions.Sum";
 }
@@ -41,6 +56,64 @@ sum extends {
 product extends {
     phase.function "org.smartfrog.sfcore.languages.sf.functions.Product";
 }
+
+minus extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.functions.Minus";
+}
+
+divide extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.functions.Divide";
+}
+
+
+
+
+and extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.functions.And";
+}
+
+or extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.functions.Or";
+}
+
+not extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.functions.Not";
+}
+
+
+GE extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.functions.GE";
+}
+
+LE extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.functions.LE";
+}
+
+GT extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.functions.GT";
+}
+
+LT extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.functions.LT";
+}
+
+EQ extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.functions.EQ";
+}
+
+NE extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.functions.NE";
+}
+
+
+
+ifThenElse extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.functions.IfThenElse";
+}
+
+
+
+
 
 next extends {
     phase.function "org.smartfrog.sfcore.languages.sf.functions.Next";
@@ -58,3 +131,7 @@ userinput extends {
     phase.function "org.smartfrog.sfcore.languages.sf.functions.UserInput";
 }
 
+
+userinput extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.functions.UserInput";
+}
