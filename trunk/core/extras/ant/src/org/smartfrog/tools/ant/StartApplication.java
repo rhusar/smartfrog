@@ -38,7 +38,7 @@ public class StartApplication extends DeployingTaskBase {
     }
 
     /**
-     * starting the smartfrog is a a mapper to -h %1 -n %2 %3 -e
+     * starting smartfrog
      * @throws BuildException
      */
     public void execute() throws BuildException {

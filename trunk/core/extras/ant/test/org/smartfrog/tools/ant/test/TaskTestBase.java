@@ -132,9 +132,15 @@ public abstract class TaskTestBase extends BuildFileTest {
         assertInLog("Successfully deployed: '"+appname+"'");
     }
 
+    /**
+     * this test is used by both run and deploy tests, where the failure
+     * strings are slightly different, "Could not run" vs "Could not deploy".
+     * So when testing, we only check a bit of the string
+     * @param target
+     */
     protected void assertDeployFailsWithUnresolvedReference(String target) {
         expectBuildExceptionContaining(target, "deploy failure",
-                "Could not run");
+                "Could not");
         assertInLog("Reference not found, Unresolved Reference");
     }
 

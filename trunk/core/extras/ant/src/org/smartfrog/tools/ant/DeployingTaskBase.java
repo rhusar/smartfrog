@@ -20,27 +20,26 @@
 package org.smartfrog.tools.ant;
 
 import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.util.FileUtils;
 
-import java.io.File;
 import java.io.BufferedOutputStream;
-import java.io.OutputStream;
+import java.io.File;
 import java.io.FileOutputStream;
-import java.io.PrintWriter;
-import java.io.OutputStreamWriter;
-import java.io.FileNotFoundException;
-import java.io.UnsupportedEncodingException;
 import java.io.IOException;
-import java.util.List;
-import java.util.LinkedList;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Iterator;
-import java.nio.charset.Charset;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * This class is used as an extended base for those tasks that do deployment, as it supports
  * declaring of applications as nested elements.
- * @author steve loughran
  *         created 27-Feb-2004 15:27:47
  */
 
@@ -51,6 +50,12 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
      * list of applications
      */
     protected List applications=new LinkedList();
+
+
+    /**
+     * codebase string
+     */
+    protected List codebase = new LinkedList();
 
     /**
      * add a new application to the list.
@@ -93,6 +98,7 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
      */
     public void deployApplications() {
         verifyHostDefined();
+        setupCodebase();
         Iterator it=applications.iterator();
         while (it.hasNext()) {
             Application application = (Application) it.next();
@@ -105,6 +111,27 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
                     +getHost()+":"              // host
                     +"");                // subprocess
 
+        }
+    }
+
+    /**
+     * Add a new codebase element to the current set. The URLs of the codebase
+     * will be visible to the deploying app.
+     * @param codebaseEntry a new codebase entry
+     */
+    public void addCodebase(Codebase codebaseEntry) {
+        if(codebase==null) {
+            codebase=new LinkedList();
+        }
+        codebase.add(codebaseEntry);
+    }
+
+    private void setupCodebase() {
+        if (codebase != null && !codebase.isEmpty()) {
+            //add the codebase for extra stuff
+            String codelist = Codebase.getCodebaseString(codebase);
+            log("Codebase set to " + codelist, Project.MSG_VERBOSE);
+            addSmartfrogProperty("org.smartfrog.codebase", codelist);
         }
     }
 
@@ -217,6 +244,90 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
             }
 
         }
+    }
+    /**
+     * this contains information pointing to the location of code.
+     * It can either be a URL or a file path to a Java file.
+     */
+    public static class Codebase {
+
+        /**
+         * location of a JAR file
+         */
+        private String location;
+
+        /**
+         * the URL of the JAR file
+         *
+         * @param url
+         */
+        public void setURL(String url) {
+            location = url;
+        }
+
+        /**
+         * provide a URL. This is for the convenience of programmatic access, not
+         * ant build files
+         *
+         * @param url
+         */
+        public void setURL(URL url) {
+            location = url.toExternalForm();
+        }
+
+        /**
+         * name a JAR file for addition to the path
+         * The path must be visible to the server process(es) at this location,
+         * which means it is either on a shared filestore, or you are only
+         * deploying to a local daemon.
+         * @param file
+         */
+        public void setFile(File file) {
+            if (!file.exists()) {
+                throw new BuildException("Not found :" + file);
+            }
+            if (file.isDirectory()) {
+                throw new BuildException("Not a JAR file :" + file);
+            }
+            try {
+                setURL(file.toURL());
+            } catch (MalformedURLException e) {
+                throw new BuildException(e);
+            }
+        }
+
+        /**
+         * get the location
+         *
+         * @return
+         */
+        public String getLocation() {
+            return location;
+        }
+
+        /**
+         * take a list of codebase elements and then turn them into a string
+         *
+         * @param codebases
+         * @return
+         */
+        public static String getCodebaseString(List codebases) {
+            StringBuffer results = new StringBuffer();
+            Iterator it = codebases.iterator();
+            while (it.hasNext()) {
+                Codebase codebase = (Codebase) it.next();
+                String l = codebase.getLocation();
+                if (l == null) {
+                    throw new BuildException("Undefined codebase");
+                }
+                results.append(l);
+                //space separated options here
+                results.append(' ');
+            }
+            return new String(results);
+        }
+
+
     }
 
 }
