@@ -33,6 +33,7 @@ import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.deployer.SFDeployer;
 import org.smartfrog.sfcore.prim.Dump;
@@ -115,8 +116,16 @@ public class CompoundImpl extends PrimImpl implements Compound {
             // try to deploy
             Prim result = SFDeployer.deploy(cmp, null, parent, parms);
 
-            if ((parent != null) && (name != null)) {
-                parent.sfReplaceAttribute(name, result);
+            if (parent != null){
+                if (name != null) {
+                  parent.sfReplaceAttribute(name, result);
+                } else {
+                    //@TODO - Review after refactoring ProcessCompound
+                    //This should throw an excetion when a
+                    //component is registered without a name
+                    //in a processcompound, but compound should not know anything
+                    //about processcompound
+                }
             }
             return result;
         } catch (SmartFrogDeploymentException dex) {
@@ -173,10 +182,13 @@ public class CompoundImpl extends PrimImpl implements Compound {
      *
      * @return true if child is removed successfully else false
      */
-    public boolean sfRemoveChild(Liveness target) {
+    public boolean sfRemoveChild(Liveness target) throws SmartFrogRuntimeException, RemoteException  {
         boolean res = sfChildren.removeElement(target);
-        sfRemoveAttribute(sfAttributeKeyFor(target));
-
+        try {
+          sfRemoveAttribute(sfAttributeKeyFor(target));
+        } catch (SmartFrogRuntimeException ex) {
+          //Ignore: it happens when attribute does not exist
+        }
         return res;
     }
 
@@ -211,7 +223,9 @@ public class CompoundImpl extends PrimImpl implements Compound {
      *
      * @return Reference to removed object
      */
-    public synchronized Object sfRemoveAttribute(Object key) {
+    public synchronized Object sfRemoveAttribute(Object key)
+        throws SmartFrogRuntimeException, RemoteException {
+
         Object res = super.sfRemoveAttribute(key);
 
         if (res instanceof Liveness) {

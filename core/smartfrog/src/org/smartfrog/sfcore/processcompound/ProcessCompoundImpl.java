@@ -222,7 +222,6 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
 
             if (parent == null) {
                 result = super.sfDeployComponentDescription(name, this, cmp, parms);
-
                 // TODO: take care when user calls it
                 result.sfDetach();
             } else {
@@ -338,7 +337,15 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
      * @param comp component that terminated
      */
     public void sfTerminatedWith(TerminationRecord rec, Prim comp) {
-    sfRemoveAttribute(sfAttributeKeyFor(comp));
+      try {
+        sfRemoveAttribute(sfAttributeKeyFor(comp));
+      }
+      catch (RemoteException ex) {
+        Logger.logQuietly(ex);
+      }
+      catch (SmartFrogRuntimeException ex) {
+        Logger.logQuietly(ex);
+      }
     }
 
     /**

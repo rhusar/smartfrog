@@ -36,6 +36,7 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.common.TerminatorThread;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.compound.Compound;
@@ -247,9 +248,23 @@ public class PrimImpl extends Object implements Prim, MessageKeys {
      * @param value value of attribute
      *
      * @return added attribute if non-existent or null otherwise
+     *
+     * @throws SmartFrogRuntimeException when name or value are null
      */
-    public synchronized Object sfAddAttribute(Object name, Object value) {
+    public synchronized Object sfAddAttribute(Object name, Object value)
+        throws SmartFrogRuntimeException, RemoteException {
         if ((name == null) || (value == null)) {
+          if (name == null) {
+              throw new SmartFrogRuntimeException(
+              MessageUtil.formatMessage(MSG_NULL_DEF_METHOD, "'name'",
+                                        "sfAddAttribute"), this);
+          }
+          if (value == null) {
+              throw new SmartFrogRuntimeException(
+              MessageUtil.formatMessage(MSG_NULL_DEF_METHOD, "'value'",
+                                        "sfAddAttribute"), this);
+          }
+
             return null;
         }
 
@@ -268,9 +283,18 @@ public class PrimImpl extends Object implements Prim, MessageKeys {
      * @param name of attribute to be removed
      *
      * @return removed attribute value if successfull or null if not
+     *
+     * @throws SmartFrogRuntimeException when name is null
      */
-    public synchronized Object sfRemoveAttribute(Object name) {
+    public synchronized Object sfRemoveAttribute(Object name)
+        throws SmartFrogRuntimeException, RemoteException {
         if (name == null) {
+          if (name == null) {
+              throw new SmartFrogRuntimeException(
+              MessageUtil.formatMessage(MSG_NULL_DEF_METHOD, "'name'",
+                                        "sfRemoveAttribute"), this);
+          }
+
             return null;
         }
 
@@ -285,9 +309,23 @@ public class PrimImpl extends Object implements Prim, MessageKeys {
      * @param value value to add or replace
      *
      * @return the old value if present, null otherwise
+     *
+     * @throws SmartFrogRuntimeException when name or value are null
      */
-    public synchronized Object sfReplaceAttribute(Object name, Object value) {
+    public synchronized Object sfReplaceAttribute(Object name, Object value)
+        throws SmartFrogRuntimeException, RemoteException {
         if ((name == null) || (value == null)) {
+            if (name == null) {
+                throw new SmartFrogRuntimeException(
+                MessageUtil.formatMessage(MSG_NULL_DEF_METHOD, "'name'",
+                                          "sfReplaceAttribute"), this);
+            }
+            if (value == null) {
+                throw new SmartFrogRuntimeException(
+                MessageUtil.formatMessage(MSG_NULL_DEF_METHOD, "'value'",
+                                          "sfReplaceAttribute"), this);
+            }
+
             return null;
         }
 

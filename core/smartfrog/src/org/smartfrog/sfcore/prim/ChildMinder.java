@@ -23,6 +23,7 @@ package org.smartfrog.sfcore.prim;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.Enumeration;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 
 
 /**
@@ -37,7 +38,7 @@ public interface ChildMinder extends Remote {
      *
      * @param child child to add
      *
-     * @throws RemoteException In case of Remote/nework error   
+     * @throws RemoteException In case of Remote/nework error
      */
     public void sfAddChild(Liveness child) throws RemoteException;
 
@@ -48,9 +49,9 @@ public interface ChildMinder extends Remote {
      *
      * @return Status of child removal
      *
-     * @throws RemoteException In case of Remote/nework error   
+     * @throws RemoteException In case of Remote/nework error
      */
-    public boolean sfRemoveChild(Liveness child) throws RemoteException;
+    public boolean sfRemoveChild(Liveness child) throws SmartFrogRuntimeException, RemoteException;
 
     /**
      * Request whether implementor contains a given child.
@@ -58,8 +59,8 @@ public interface ChildMinder extends Remote {
      * @param child child to check for
      *
      * @return true is child is present else false
-     * 
-     * @throws RemoteException In case of Remote/nework error   
+     *
+     * @throws RemoteException In case of Remote/nework error
      */
     public boolean sfContainsChild(Liveness child) throws RemoteException;
 
@@ -68,7 +69,7 @@ public interface ChildMinder extends Remote {
      *
      * @return enumeration over children
      *
-     * @throws RemoteException In case of Remote/nework error   
+     * @throws RemoteException In case of Remote/nework error
      */
     public Enumeration sfChildren() throws RemoteException;
 }
