@@ -111,7 +111,7 @@ For more information: www.smartfrog.org
     </copy>   
 		 <copy todir = "${dist.src.dir}">
         <fileset dir ="${src.dir}">
-		  <include name="**/example*"/>
+		  <include name="**/examples/**"/>
 		</fileset>
     </copy>   
 	</target>
