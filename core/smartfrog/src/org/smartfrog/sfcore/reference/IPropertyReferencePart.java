@@ -30,9 +30,12 @@ import org.smartfrog.sfcore.common.SmartFrogResolutionException;
  * having this part in the middle of a reference does NOT make sense!
  *
  */
-public class IPropertyReferencePart extends HereReferencePart {
+public class IPropertyReferencePart extends ReferencePart {
     /** Base string representation of this part (PROPERTY). */
     public static final String IPROPERTY = "IPROPERTY";
+
+
+    public Object value;
 
     /**
      * Constructs IPropertyReferencePart with a property.
@@ -59,8 +62,22 @@ public class IPropertyReferencePart extends HereReferencePart {
      * @return hash code for part
      */
     public int hashCode() {
-        return IPROPERTY.hashCode() + super.hashCode();
+        return IPROPERTY.hashCode() + value.hashCode();
     }
+
+    /**
+     * Compares this reference part with another one. Equality means that the
+     * type and value are equal
+     *
+     * @param refPart to be compared to
+     *
+     * @return true if equal, false if not
+     */
+    public boolean equals(Object refPart) {
+        return refPart.getClass().equals(this.getClass()) &&
+        ((IPropertyReferencePart) refPart).value.equals(value);
+    }
+
 
     /**
      * Resolves this reference part using the reference resolver. The
