@@ -1,14 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <wsdl:definitions 
 	targetNamespace="http://gridforum.org/cddlm/serviceAPI/callbacks/2004/07/30" 
-  xmlns:types="http://gridforum.org/cddlm/serviceAPI/types/2004/07/30"
-	xmlns:api="http://gridforum.org/cddlm/serviceAPI/2004/07/30" 
+        xmlns="http://gridforum.org/cddlm/serviceAPI/callbacks/2004/07/30" 
+	xmlns:types="http://gridforum.org/cddlm/serviceAPI/types/2004/07/30"
 	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" 
 	xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" 
   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-  xmlns:cdl="urn:cddlm/xml/0.1"
-  xmlns:wsa="http://schemas.xmlsoap.org/ws/2003/03/addressing"
-  xmlns:jsdl="http://www.gridforum.org/JSDL"
   >
   
   <!-- ============================================================= -->
@@ -38,7 +35,7 @@
  <!-- import the types -->
  <import 
     namespace="http://gridforum.org/cddlm/serviceAPI/types/2004/07/30" 
-    schemaLocation="deployAPIschema.xsd"/>
+    location="deployAPIschema.xsd"/>
 
 
   <!-- ============================================================= -->
@@ -46,11 +43,11 @@
   <!-- ============================================================= -->
 
  <wsdl:message name="callbackRequest">
-  <wsdl:part name="callback" element="types:LifecycleEventCallbackRequest" />
+  <wsdl:part name="callback" element="types:lifecycleEventCallbackRequest" />
  </wsdl:message>
  
  <wsdl:message name="callbackResponse">
-  <wsdl:part name="response" element="types:LifecycleEventCallbackResponse" />
+  <wsdl:part name="response" element="types:lifecycleEventCallbackResponse" />
  </wsdl:message> 
  
   <!-- ============================================================= -->
@@ -62,8 +59,8 @@
  
   <!-- deploy -->
   <wsdl:operation name="callback">
-   <wsdl:input message="api:callbackRequest" name="callbackRequest"/>
-   <wsdl:output message="api:callbackResponse" name="callbackRequest"/>
+   <wsdl:input message="callbackRequest" name="callbackRequest"/>
+   <wsdl:output message="callbackResponse" name="callbackRequest"/>
   </wsdl:operation>
 </wsdl:portType>
  
