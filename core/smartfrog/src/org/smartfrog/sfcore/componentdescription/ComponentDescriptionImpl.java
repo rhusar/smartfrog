@@ -46,6 +46,7 @@ import org.smartfrog.sfcore.parser.Phases;
 import org.smartfrog.sfcore.parser.SFParser;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.common.SmartFrogContextException;
+import org.smartfrog.sfcore.reference.ReferenceResolverHelperImpl;
 import java.rmi.RemoteException;
 import java.io.InputStream;
 
@@ -55,7 +56,7 @@ import java.io.InputStream;
  * need to respect the ordering and copying requirements imposed by
  * Components.
  */
-public class ComponentDescriptionImpl implements Serializable, Cloneable,
+public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implements Serializable, Cloneable,
     ComponentDescription, MessageKeys {
 
 
@@ -82,6 +83,20 @@ public class ComponentDescriptionImpl implements Serializable, Cloneable,
         this.eager = eager;
     }
 
+
+    /**
+     * Returns the complete name for this ComponentDescription and does not throw
+     * any exception. If an exception is thrown it will return a new empty reference.
+     *
+     * @return reference of attribute names to this component or an empty reference
+     *
+     */
+    public Reference sfCompleteNameSafe(){
+       return sfCompleteName();
+    }
+
+
+
     /**
      * Gets the complete name for this description. This gives a reference from
      * the root component to this description. If the parent does not know
@@ -89,12 +104,12 @@ public class ComponentDescriptionImpl implements Serializable, Cloneable,
      *
      * @return complete name for this component
      */
-    public Reference getCompleteName() {
+    public Reference sfCompleteName() {
         if (parent == null) {
             return new Reference();
         }
 
-        Reference r = parent.getCompleteName();
+        Reference r = parent.sfCompleteName();
         Object name = parent.getContext().keyFor(this);
 
         if (name != null) {

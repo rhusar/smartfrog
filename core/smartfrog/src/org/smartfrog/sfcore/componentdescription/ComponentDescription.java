@@ -98,7 +98,7 @@ public interface ComponentDescription extends Copying, ReferenceResolver {
      *
      * @return reference for complete name of description
      */
-    public Reference getCompleteName();
+    public Reference sfCompleteName();
 
     /**
      * Gets the context for this description.
