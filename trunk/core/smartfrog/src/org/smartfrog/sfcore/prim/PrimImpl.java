@@ -971,7 +971,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
 		}
 		sfLivenessCount = sfLivenessFactor;
 	    } else if ((sfLivenessSender != null) &&
-		       source.equals(sfLivenessSender) && 
+		       source.equals(sfLivenessSender) &&
 		       (sfLivenessCount-- <= 0)) {
 		fail = true;
 	    }
@@ -1168,4 +1168,25 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     public void sfParentageChanged() throws RemoteException{
        sfCompleteName=null;
     }
+
+    /** Returns value of flag indicating if this component has been terminated. */
+    public boolean sfIsTerminated() {
+        return sfIsTerminated;
+    }
+
+    /** Returns value of flag indicating if this component is terminating. */
+    public boolean sfIsTerminating() {
+        return sfIsTerminating;
+    }
+
+    /** Returns value of flag indicating if this component has been deployed. */
+    public boolean sfIsDeployed() {
+        return sfIsDeployed;
+    }
+
+    /** Returns value of flag indicating if this component has been started. */
+    public boolean sfIsStarted() {
+        return sfIsStarted;
+    }
+
 }
