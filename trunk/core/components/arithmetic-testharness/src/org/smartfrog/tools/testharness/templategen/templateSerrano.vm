@@ -156,14 +156,12 @@ Scheduler extends SchedulerCompound {
 //          startAtt_90b ATTRIB httpCodebase;
 #end
 #end
-          startAtt_17 "org.smartfrog.SFSystem";
-          startAtt_18 "-h";
-          startAtt_19 "localhost";//ATTRIB sfProcessHost;
-          startAtt_20 "-n";
-          startAtt_21 "sfConfig";
-          startAtt_22 ATTRIB appName;
-          startAtt_23 "-e";
-          startAtt_24 "";
+		  startAtt_17 "org.smartfrog.SFSystem";
+          startAtt_18 "-a";
+          startAtt_19a "sfConfig:DEPLOY:";
+          startAtt_19b (ATTRIB appName ++ "::" ++ ATTRIB sfProcessHost ++ ":");
+		  startAtt_21 "-e";
+          startAtt_22 "";
         }                
       }
 
