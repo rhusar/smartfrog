@@ -42,7 +42,6 @@ public class CdlDocument {
 
     public CdlDocument(Document doc) throws CdlParsingException {
         this.document = doc;
-        validate();
     }
 
     public CdlDocument(ParsingException exception) {

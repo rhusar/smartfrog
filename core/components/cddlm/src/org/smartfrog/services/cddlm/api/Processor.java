@@ -44,6 +44,9 @@ import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
 
 import javax.xml.namespace.QName;
+import javax.xml.rpc.server.ServiceLifecycle;
+import javax.xml.rpc.server.ServletEndpointContext;
+import javax.xml.rpc.ServiceException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.net.MalformedURLException;
@@ -62,7 +65,12 @@ public class Processor {
         this.owner = owner;
     }
 
+    /**
+     * our owner
+     */
     private SmartFrogHostedEndpoint owner;
+
+
 
     public SmartFrogHostedEndpoint getOwner() {
         return owner;
@@ -71,6 +79,8 @@ public class Processor {
     public void setOwner(SmartFrogHostedEndpoint owner) {
         this.owner = owner;
     }
+
+
 
     /**
      * make a URI.
@@ -362,4 +372,6 @@ public class Processor {
         }
         return l;
     }
+
+
 }

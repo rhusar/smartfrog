@@ -31,6 +31,8 @@ import org.smartfrog.services.cddlm.engine.ServerInstance;
 import org.smartfrog.services.cddlm.generated.api.types.DeploymentDescriptorType;
 import org.smartfrog.services.cddlm.generated.api.types._deployRequest;
 import org.smartfrog.services.cddlm.generated.api.types._deployResponse;
+import org.smartfrog.services.cddlm.cdl.CdlDocument;
+import org.smartfrog.services.cddlm.cdl.CdlParser;
 import org.smartfrog.sfcore.common.ConfigurationDescriptor;
 import org.smartfrog.sfcore.prim.Prim;
 
@@ -151,10 +153,15 @@ public class DeployProcessor extends Processor {
      */
     private boolean deployCDL() throws AxisFault {
         MessageElement descriptorElement = job.getDescriptor();
+        if(descriptorElement==null) {
+            throw raiseBadArgumentFault("No descriptor element");
+        }
+        CdlDocument document;
         try {
-            ServerInstance.currentInstance()
-                    .getCdlParser()
-                    .parseMessageElement(descriptorElement);
+            CdlParser parser = ServerInstance.currentInstance()
+                                            .getCdlParser();
+            assert parser!=null;
+            document = parser.parseMessageElement(descriptorElement);
         } catch (Exception e) {
             throw translateException(e);
         }
@@ -163,6 +170,7 @@ public class DeployProcessor extends Processor {
             return false;
         }
         //deploy but do nothing with it.
+        job.setCdlDocument(document);
         return true;
     }
 

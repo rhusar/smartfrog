@@ -45,12 +45,23 @@ import org.smartfrog.services.cddlm.generated.api.types._languageListType_langua
 import org.smartfrog.services.cddlm.generated.api.types._lookupApplicationRequest;
 import org.smartfrog.services.cddlm.generated.api.types._serverStatusRequest;
 import org.smartfrog.services.cddlm.generated.api.types._undeployRequest;
+import org.smartfrog.services.cddlm.cdl.XomAxisHelper;
+import org.smartfrog.services.cddlm.cdl.CdlDocument;
+import org.smartfrog.services.cddlm.cdl.CdlParser;
+import org.smartfrog.services.cddlm.cdl.ResourceLoader;
+import org.w3c.dom.DOMImplementation;
+import org.xml.sax.SAXException;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.rmi.RemoteException;
+
+import nu.xom.Document;
+import nu.xom.ParsingException;
+
+import javax.xml.parsers.ParserConfigurationException;
 
 /**
  * base class for console operations created Aug 31, 2004 4:44:30 PM
@@ -277,6 +288,13 @@ public abstract class ConsoleOperation {
         return descriptor;
     }
 
+
+    /**
+     * wrap the element parameter in a MessageElement[] array and then
+     * hand off to {@link #createDescriptorWithXML(MessageElement[])}
+     * @param element
+     * @return a deployment descriptor for use in a request
+     */
     public DeploymentDescriptorType createDescriptorWithXML(
             MessageElement element) {
         MessageElement any[] = new MessageElement[1];
@@ -285,6 +303,11 @@ public abstract class ConsoleOperation {
         return descriptor;
     }
 
+    /**
+     * fill the descriptor element with some attached XML
+     * @param any an array of data. The size of the array should be 1 for correct operation.
+     * @return a deployment descriptor for use in a request
+     */
     public DeploymentDescriptorType createDescriptorWithXML(
             MessageElement[] any) {
         DeploymentDescriptorType descriptor = new DeploymentDescriptorType();
@@ -294,6 +317,25 @@ public abstract class ConsoleOperation {
         return descriptor;
     }
 
+
+    /**
+     * jump through hoops to turn a Xom document into a descriptor
+     * @param xom
+     * @return
+     * @throws ParserConfigurationException
+     */
+    public DeploymentDescriptorType createDescriptorWithXom(nu.xom.Document xom)
+            throws ParserConfigurationException {
+        DOMImplementation impl = XomAxisHelper.loadDomImplementation();
+        MessageElement messageElement = XomAxisHelper.convert(xom, impl);
+        return createDescriptorWithXML(messageElement);
+    }
+
+    /**
+     * wrap a smartfrog text file into a message element and process it
+     * @param source
+     * @return
+     */
     public MessageElement createSmartfrogMessageElement(String source) {
         MessageElement element = new MessageElement(
                 Constants.SMARTFROG_NAMESPACE,
@@ -304,6 +346,23 @@ public abstract class ConsoleOperation {
         Text text = new Text(source);
         element.appendChild(text);
         return element;
+    }
+
+    /**
+     * load a resource, make a CDL descriptor from it. The file can be validated before sending
+     * @param resource
+     * @return
+     */
+    public DeploymentDescriptorType createDescriptorFromCdlResource(String resource,
+            boolean validate) throws SAXException, IOException,
+            ParsingException, ParserConfigurationException {
+        ResourceLoader loader = new ResourceLoader(this.getClass());
+        CdlParser parser = new CdlParser(loader, validate);
+        CdlDocument cdlDoc=parser.parseResource(resource);
+        if(validate) {
+            cdlDoc.validate();
+        }
+        return createDescriptorWithXom(cdlDoc.getDocument());
     }
 
 
