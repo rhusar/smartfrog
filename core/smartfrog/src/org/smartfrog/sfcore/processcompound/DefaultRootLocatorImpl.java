@@ -69,7 +69,9 @@ public class DefaultRootLocatorImpl implements RootLocator, MessageKeys {
         throws SmartFrogException, RemoteException {
         // TODO: check for class cast exception
         if (registryPort == -1) {
-            registryPort = ((Number) c.sfResolveId(SmartFrogCoreKeys.SF_ROOT_LOCATOR_PORT)).intValue();
+            //TODO: This is a troublespot. move to sfResolveID or otherwise fix.
+            Number port = ((Number) c.sfResolve(SmartFrogCoreKeys.SF_ROOT_LOCATOR_PORT));
+            registryPort = port.intValue();
         }
 
         return registryPort;

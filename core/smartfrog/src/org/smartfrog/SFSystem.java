@@ -413,7 +413,7 @@ public class SFSystem implements MessageKeys {
                 target = (ProcessCompound)target.sfResolveHere(subProcess);
             }
         } catch (Exception ex) {
-                SmartFrogException.forward(ex);
+                throw SmartFrogException.forward(ex);
         }
         return target;
     }
@@ -465,7 +465,7 @@ public class SFSystem implements MessageKeys {
     /**
      * exit with an error code that depends on the status of the execution
      *
-     * @param status
+     * @param somethingFailed flag to indicate trouble
      */
     private static void exitWithStatus(boolean somethingFailed) {
         if(somethingFailed) {
@@ -494,6 +494,7 @@ public class SFSystem implements MessageKeys {
 
     public static Object runConfigurationDescriptor (ConfigurationDescriptor cfgDesc) {
         try {
+            //return runConfigurationDescriptor(cfgDesc, false);
             return runConfigurationDescriptor(cfgDesc, false);
         } catch (SmartFrogException ex) {
             Logger.logQuietly(ex);
@@ -501,7 +502,50 @@ public class SFSystem implements MessageKeys {
         return null;
     }
 
-    public static Object runConfigurationDescriptor(
+
+    public static Object runConfigurationDescriptor(ConfigurationDescriptor configuration,
+                                                    boolean throwException) throws SmartFrogException {
+        //return runConfigurationDescriptorOld(configuration,throwException);
+        return runConfigurationDescriptorNew(configuration, throwException);
+
+    }
+    /**
+     * run whatever action is configured
+     * @param configuration
+     * @param throwException
+     * @return
+     * @throws SmartFrogException
+     */
+    public static Object runConfigurationDescriptorNew(ConfigurationDescriptor configuration,
+                                                    boolean throwException) throws SmartFrogException {
+
+        try {
+            initSystem();
+            Object targetC=configuration.execute(null);
+            return targetC;
+
+        } catch (Throwable thrown) {
+            if (configuration.resultException == null) {
+                configuration.setResult(ConfigurationDescriptor.Result.FAILED, null,
+                        thrown);
+            } else {
+                Logger.logQuietly(thrown);
+            }
+            if (throwException) {
+                throw SmartFrogException.forward(thrown);
+            }
+        }
+        return configuration;
+    }
+
+    /**
+     * this is the old configuration descriptor runner
+     * @param cfgDesc
+     * @param throwException
+     * @return
+     * @throws SmartFrogException
+     */
+    public static Object runConfigurationDescriptorOld(
         ConfigurationDescriptor cfgDesc,
         boolean throwException) throws SmartFrogException {
 
