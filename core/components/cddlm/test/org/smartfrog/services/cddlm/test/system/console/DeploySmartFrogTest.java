@@ -21,30 +21,44 @@
 
 package org.smartfrog.services.cddlm.test.system.console;
 
-import org.cddlm.client.generated.api.types.DeploymentDescriptorType;
-import org.cddlm.client.generated.api.types.ApplicationStatusType;
-import org.cddlm.client.generated.api.types.LifecycleStateEnum;
 import org.apache.axis.types.URI;
+import org.cddlm.client.generated.api.types.DeploymentDescriptorType;
 import org.smartfrog.services.cddlm.generated.faults.FaultCodes;
 
-import java.rmi.RemoteException;
-
 /**
- * Date: 06-Sep-2004
- * Time: 21:57:39
+ * Date: 06-Sep-2004 Time: 21:57:39
  */
 public class DeploySmartFrogTest extends DeployingTestBase {
 
     public void testDeployAndUndeploy() throws Exception {
         String name = "simple";
-        URI uri =null;
-        DeploymentDescriptorType dt = operation.createSmartFrogDescriptor(DeploySmartFrogTest.SIMPLE_DESCRIPTOR);
-        uri= deploy(name, dt, null, null);
+        URI uri = null;
+        DeploymentDescriptorType dt = operation.createSmartFrogDescriptor(
+                DeploySmartFrogTest.SIMPLE_DESCRIPTOR);
+        uri = deploy(name, dt, null, null);
         //now test a lookup
         String stateName = FaultCodes.STATE_RUNNING;
         assertInState(uri, stateName);
+        final boolean result = undeploy(uri);
+        assertTrue("undeploy returned false",
+                result);
+
+    }
+
+    public void testDeployTwice() throws Exception {
+        String name = "simple";
+        URI uri = null;
+        DeploymentDescriptorType dt = operation.createSmartFrogDescriptor(
+                DeploySmartFrogTest.SIMPLE_DESCRIPTOR);
+        uri = deploy(null, dt, null, null);
+        URI uri2 = deploy(null, dt, null, null);
+        //now test a lookup
+        assertDeployed(uri);
+        assertDeployed(uri2);
+        boolean result = undeploy(uri);
+        result = result & undeploy(uri2);
         assertTrue("undeloy returned false",
-                operation.undeploy(uri, "end test"));
+                result);
 
     }
 

@@ -23,7 +23,6 @@ import nu.xom.Builder;
 import nu.xom.Document;
 import org.apache.axis.AxisFault;
 import org.apache.axis.message.MessageElement;
-import org.apache.axis.types.NCName;
 import org.apache.axis.types.URI;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -86,7 +85,7 @@ public class Processor {
     }
 
     private static URI makeRuntimeException(String url,
-                                            URI.MalformedURIException e) {
+            URI.MalformedURIException e) {
         log.error("url", e);
         throw new RuntimeException(url, e);
     }
@@ -109,37 +108,13 @@ public class Processor {
      */
     public static URI makeURIFromApplication(String application) {
         try {
-            return new URI(Constants.SMARTFROG_SCHEMA, application);
+            assert application != null;
+            return new URI("http", "localhost/" + application);
         } catch (URI.MalformedURIException e) {
             return makeRuntimeException(application, e);
         }
     }
 
-    /**
-     * turn an application into a valid URI
-     *
-     * @param application
-     * @return a URI that can be used as a reference
-     * @throws RuntimeException if the URL was malformed
-     */
-    public static URI makeURIFromApplication(NCName application) {
-        return makeURIFromApplication(application.toString());
-    }
-
-    /**
-     * turn an application in
-     *
-     * @param uri
-     * @return
-     * @throws org.apache.axis.AxisFault if the URI was invalid.
-     */
-    public static String extractApplicationFromURI(URI uri) throws AxisFault {
-        if (!Constants.SMARTFROG_SCHEMA.equals(uri.getScheme())) {
-            throw new AxisFault(Constants.ERROR_INVALID_SCHEMA + uri);
-        }
-        String application = uri.getSchemeSpecificPart();
-        return application;
-    }
 
     /**
      * look up a job in the repository
@@ -149,11 +124,22 @@ public class Processor {
      * @throws AxisFault if there is no such job
      */
     public JobState lookupJob(URI jobURI) throws AxisFault {
-        JobRepository jobs = ServerInstance.currentInstance().getJobs();
-        JobState jobState = jobs.lookup(jobURI);
+        JobState jobState = lookupJobNonFaulting(jobURI);
         if (jobState == null) {
             throw raiseNoSuchApplicationFault(jobURI.toString());
         }
+        return jobState;
+    }
+
+    /**
+     * map from URI to job
+     *
+     * @param jobURI seach uri
+     * @return job or null for no match
+     */
+    public JobState lookupJobNonFaulting(URI jobURI) {
+        JobRepository jobs = ServerInstance.currentInstance().getJobs();
+        JobState jobState = jobs.lookup(jobURI);
         return jobState;
     }
 
@@ -188,7 +174,7 @@ public class Processor {
      * @return a fault ready to throw
      */
     public static AxisFault raiseFault(QName code, String message,
-                                       Throwable thrown) {
+            Throwable thrown) {
         AxisFault fault = new AxisFault();
         fault.setFaultCode(code);
         fault.setFaultReason(message);
@@ -234,7 +220,7 @@ public class Processor {
      * @throws org.apache.axis.AxisFault
      */
     protected Document parseMessageFragment(MessageElement element,
-                                            final String message)
+            final String message)
             throws AxisFault {
         Document doc;
         try {

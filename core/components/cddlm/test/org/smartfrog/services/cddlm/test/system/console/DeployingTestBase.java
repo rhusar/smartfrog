@@ -21,23 +21,23 @@
 
 package org.smartfrog.services.cddlm.test.system.console;
 
+import org.apache.axis.AxisFault;
+import org.apache.axis.types.URI;
+import org.cddlm.client.console.ConsoleOperation;
 import org.cddlm.client.console.Deploy;
 import org.cddlm.client.console.Options;
-import org.cddlm.client.console.ConsoleOperation;
-import org.cddlm.client.generated.api.types.DeploymentDescriptorType;
-import org.cddlm.client.generated.api.types._deploymentDescriptorType_data;
-import org.cddlm.client.generated.api.types.CallbackInformationType;
 import org.cddlm.client.generated.api.types.ApplicationStatusType;
+import org.cddlm.client.generated.api.types.CallbackInformationType;
+import org.cddlm.client.generated.api.types.DeploymentDescriptorType;
 import org.cddlm.client.generated.api.types.LifecycleStateEnum;
-import org.apache.axis.types.URI;
-import org.apache.axis.AxisFault;
+import org.cddlm.client.generated.api.types._deploymentDescriptorType_data;
+import org.smartfrog.services.cddlm.generated.faults.FaultCodes;
 
 import javax.xml.namespace.QName;
 import java.rmi.RemoteException;
 
 /**
- * Date: 06-Sep-2004
- * Time: 22:27:16
+ * Date: 06-Sep-2004 Time: 22:27:16
  */
 public abstract class DeployingTestBase extends ConsoleTestBase {
     protected Deploy operation;
@@ -64,11 +64,13 @@ public abstract class DeployingTestBase extends ConsoleTestBase {
 
     /**
      * assert a descriptor contains the text
+     *
      * @param dt
      * @param search
      * @throws Exception
      */
-    protected void assertInDescriptor(DeploymentDescriptorType dt, String search)
+    protected void assertInDescriptor(DeploymentDescriptorType dt,
+            String search)
             throws Exception {
         _deploymentDescriptorType_data data = dt.getData();
         assertNotNull("data null", data);
@@ -80,8 +82,8 @@ public abstract class DeployingTestBase extends ConsoleTestBase {
     }
 
     protected URI deploy(String name,
-                       DeploymentDescriptorType descriptor,
-                       Options options, CallbackInformationType callback)
+            DeploymentDescriptorType descriptor,
+            Options options, CallbackInformationType callback)
             throws RemoteException {
         URI uri = operation.deploy(name, descriptor, options, callback);
         assertNotNull("uri", uri);
@@ -100,10 +102,10 @@ public abstract class DeployingTestBase extends ConsoleTestBase {
      * @throws java.rmi.RemoteException
      */
     protected void deployExpectingFault(final String name,
-                                      DeploymentDescriptorType dd,
-                                      final Options options,
-                                      CallbackInformationType callback, final QName fault,
-                                      final String text)
+            DeploymentDescriptorType dd,
+            final Options options,
+            CallbackInformationType callback, final QName fault,
+            final String text)
             throws RemoteException {
         try {
             URI uri = deploy(name, dd, options, callback);
@@ -114,15 +116,32 @@ public abstract class DeployingTestBase extends ConsoleTestBase {
 
     /**
      * assert that an app exists and is in the named state
+     *
      * @param uri
      * @param stateName
      * @throws RemoteException
      */
-    public void assertInState(URI uri, String stateName) throws RemoteException {
+    public void assertInState(URI uri, String stateName)
+            throws RemoteException {
         ApplicationStatusType status = operation.lookupApplicationStatus(uri);
-        assertNotNull("app status of "+uri,status);
+        assertNotNull("app status of " + uri, status);
         LifecycleStateEnum state = status.getState();
         String currentState = state.getValue();
         assertEquals(stateName, currentState);
-        }
+    }
+
+    /**
+     * undeploy something
+     *
+     * @param uri
+     * @return
+     * @throws RemoteException
+     */
+    public boolean undeploy(URI uri) throws RemoteException {
+        return operation.undeploy(uri, "end test");
+    }
+
+    public void assertDeployed(URI uri) throws RemoteException {
+        assertInState(uri, FaultCodes.STATE_RUNNING);
+    }
 }

@@ -418,6 +418,12 @@
   </target>
 
   <!-- ========================================================== -->
+  <!-- create all the wsdl. useful when there is a change -->
+  <!-- ========================================================== -->
+  <target name="wsdl" depends="server-wsdl,client-wsdl"
+    description="create client and server WSDL"/>
+
+  <!-- ========================================================== -->
   <!-- generate Dotnet client -->
   <!-- for .NET only, not mono, as mono's WSDL is not up to the job, yet -->
   <!-- ========================================================== -->

@@ -19,21 +19,17 @@
  */
 package org.smartfrog.services.cddlm.test.system.console;
 
-import org.apache.axis.AxisFault;
 import org.apache.axis.message.MessageElement;
 import org.apache.axis.types.URI;
-import org.cddlm.client.console.Deploy;
 import org.cddlm.client.console.Options;
 import org.cddlm.client.generated.api.types.CallbackEnum;
 import org.cddlm.client.generated.api.types.CallbackInformationType;
 import org.cddlm.client.generated.api.types.DeploymentDescriptorType;
 import org.cddlm.client.generated.api.types.OptionMapType;
 import org.cddlm.client.generated.api.types.OptionType;
-import org.cddlm.client.generated.api.types._deploymentDescriptorType_data;
 import org.smartfrog.services.cddlm.cdl.ResourceLoader;
 import org.smartfrog.services.cddlm.generated.faults.FaultCodes;
 
-import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.io.InputStream;
 import java.rmi.RemoteException;
@@ -61,9 +57,8 @@ public class DeployTest extends DeployingTestBase {
     }
 
 
-
     public void testEmptyDeploy() throws Exception {
-        deployExpectingFault("broken",
+        deployExpectingFault(null,
                 null,
                 null,
                 null,
@@ -74,7 +69,7 @@ public class DeployTest extends DeployingTestBase {
     public void testBrokenDeploy() throws IOException {
         DeploymentDescriptorType dd = operation.createSmartFrogDescriptor(
                 DeploySmartFrogTest.BROKEN_DESCRIPTOR);
-        deployExpectingFault("broken",
+        deployExpectingFault(null,
                 dd,
                 null,
                 null,
@@ -87,7 +82,7 @@ public class DeployTest extends DeployingTestBase {
                 DeploySmartFrogTest.SIMPLE_DESCRIPTOR);
         me.setNamespaceURI("http://invalid.example.org");
         DeploymentDescriptorType dd = operation.createDescriptorWithXML(me);
-        deployExpectingFault("unsupported",
+        deployExpectingFault(null,
                 dd,
                 null,
                 null,
@@ -106,7 +101,7 @@ public class DeployTest extends DeployingTestBase {
         me.removeAttribute("version");
         me.setAttribute(me.getNamespaceURI(), "version", "1.7");
         DeploymentDescriptorType dd = operation.createDescriptorWithXML(me);
-        deployExpectingFault("unsupportedVersion",
+        deployExpectingFault(null,
                 dd,
                 null,
                 null, FaultCodes.FAULT_UNSUPPORTED_LANGUAGE,
@@ -124,7 +119,7 @@ public class DeployTest extends DeployingTestBase {
                 DeploySmartFrogTest.SIMPLE_DESCRIPTOR);
         me.removeAttribute("version");
         DeploymentDescriptorType dd = operation.createDescriptorWithXML(me);
-        deployExpectingFault("UndefinedVersion",
+        deployExpectingFault(null,
                 dd,
                 null,
                 null,
@@ -142,7 +137,7 @@ public class DeployTest extends DeployingTestBase {
         callback.setType(CallbackEnum.fromValue("ws-eventing"));
         DeploymentDescriptorType dd = operation.createSmartFrogDescriptor(
                 DeploySmartFrogTest.SIMPLE_DESCRIPTOR);
-        deployExpectingFault("UndefinedVersion",
+        deployExpectingFault(null,
                 dd,
                 null,
                 callback,
@@ -156,7 +151,8 @@ public class DeployTest extends DeployingTestBase {
                 new URI("http://localhost/1"), true);
         assertTrue(option.isMustUnderstand());
         option =
-        options.createNamedOption(new URI("http://localhost/2"), false);
+                options.createNamedOption(new URI("http://localhost/2"),
+                        false);
         assertFalse(option.isMustUnderstand());
         OptionMapType map = options.toOptionMap();
         assertEquals("map size is two", 2, map.getOption().length);
@@ -183,7 +179,7 @@ public class DeployTest extends DeployingTestBase {
                 true);
         DeploymentDescriptorType dd = operation.createSmartFrogDescriptor(
                 DeploySmartFrogTest.SIMPLE_DESCRIPTOR);
-        deployExpectingFault("testNotUnderstoodOption",
+        deployExpectingFault(null,
                 dd,
                 options,
                 null,
@@ -201,13 +197,15 @@ public class DeployTest extends DeployingTestBase {
         options.addOption(new URI("http://localhost/ignored"), "test", false);
         DeploymentDescriptorType dd = operation.createSmartFrogDescriptor(
                 DeploySmartFrogTest.SIMPLE_DESCRIPTOR);
-        URI uri = deploy("testIgnoredHeader", dd, options, null);
+        URI uri = deploy(null, dd, options, null);
+        undeploy(uri);
     }
 
 
     public void testDeployInvalidURL() throws Exception {
         DeploymentDescriptorType descriptor = new DeploymentDescriptorType();
         descriptor.setSource(new URI("http://localhost/invalid.sf"));
-        deploy("invalid", descriptor, null, null);
+        URI uri = deploy(null, descriptor, null, null);
+        undeploy(uri);
     }
 }
