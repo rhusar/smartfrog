@@ -130,12 +130,12 @@ public class SmartFrogLivenessException extends SmartFrogRuntimeException {
         if (sfObject == null) return;
         super.init(sfObject);
         try {
-           add(this.REFERENCE,sfObject.sfCompleteName());
+           add(REFERENCE,sfObject.sfCompleteName());
         } catch (RemoteException rex){
             //ignore
         }
         try {
-           add(this.REFERENCE,sfObject.sfCompleteName());
+           add(REFERENCE,sfObject.sfCompleteName());
         } catch (RemoteException rex){
             //ignore
         }
