@@ -25,14 +25,6 @@ import junit.framework.TestCase;
 import org.smartfrog.test.SmartFrogTestBase;
 import org.smartfrog.sfcore.parser.Phases;
 import org.smartfrog.sfcore.common.SmartFrogException;
-/*import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.security.SFClassLoader;
-import org.smartfrog.sfcore.common.MessageUtil;
-import org.smartfrog.sfcore.common.SmartFrogParseException;
-import org.smartfrog.sfcore.common.MessageKeys;
-import org.smartfrog.sfcore.parser.SFParser;
-import java.io.*;
-import java.net.*;*/
 
 /**
  * JUnit test class for test cases for "schemas" example
