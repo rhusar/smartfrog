@@ -31,6 +31,7 @@ org/smartfrog/services/utils/concat/SFConcatImpl.class
 org/smartfrog/services/utils/logtofile/SFLogToFile.class
 org/smartfrog/services/comm/mcast/SFMCastClientImpl.class
 org/smartfrog/services/comm/mcast/SFMCastServerImpl.class
+org/smartfrog/services/filesystem/FileImpl.class
 org/smartfrog/services/filesystem/TempFileImpl.class
 org/smartfrog/services/filesystem/TouchFile.class
 org/smartfrog/services/filesystem/MkdirImpl.class
