@@ -494,7 +494,7 @@ public class ConfigurationDescriptor implements MessageKeys{
      */
     public ConfigurationDescriptor (String name, String url,int actionType,
                                     String deployReference ,String host, String subProcess)
-            throws SmartFrogInitException{
+            throws SmartFrogInitException, SmartFrogResolutionException {
 
         this.setActionType(actionType);
         this.setUrl(url);
@@ -525,12 +525,13 @@ public class ConfigurationDescriptor implements MessageKeys{
      * @see Reference
      * @param reference
      */
-    public void setDeployReference(String reference){
+    public void setDeployReference(String reference) throws SmartFrogResolutionException{
 
         if (reference.trim().equals("")){
             return;
         }
-        this.getOptions().put(SF1Options.SFCONFIGREF, new Reference (reference));
+         this.getOptions().put(SF1Options.SFCONFIGREF,
+                                  Reference.fromString(reference));
     }
 
     /**
