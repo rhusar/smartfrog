@@ -52,6 +52,7 @@ import org.smartfrog.sfcore.security.SFSecurity;
 import org.smartfrog.sfcore.security.SFSecurityProperties;
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.ContextImpl;
+import org.smartfrog.sfcore.common.TerminatorThread;
 
 
 
@@ -346,7 +347,12 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
         }
     }
 
-
+    /**
+     *
+     * @param comp
+     * @throws SmartFrogException if fail deployment
+     * @throws RemoteException In case of Remote/nework error
+     */
     private void deployDefaultProcessDescriptions(ProcessCompound comp)
         throws SmartFrogException, RemoteException {
         Properties props = System.getProperties();
@@ -368,11 +374,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
                     nameContext.put(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME, name);
                     ComponentDescription cd = ComponentDescriptionImpl.
                         sfComponentDescription(url.trim());
-                    // Parent is null: default descriptions are root components
-                    p = comp.sfDeployComponentDescription(null, null, cd,
-                        nameContext);
-                    p.sfDeploy();
-                    p.sfStart();
+                    p = sfCreateNewApp(cd, nameContext);
                 }
             }
 
@@ -457,8 +459,117 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
             } catch (Throwable thr){
             }
             System.exit(0);
+            // Runtime.getRuntime().halt(0);
         }
     }
+
+    /**
+     * Iterates over children telling each of them to terminate quietly with
+     * given status. It iterates from the last one created to the first
+     * one.
+     *
+     * @param status status to terminate with
+     */
+    protected void sfSyncTerminateWith(TerminationRecord status) {
+        // Terminate legitimate children except subProc
+        for (int i = sfChildren.size()-1; i>=0; i--) {
+          try {
+            Prim child = (Prim) sfChildren.elementAt(i);
+            if ((!(child instanceof ProcessCompound))
+                &&(child.sfParent()== null)) {
+              //Logger.log("SynchTerminate sent to legitimate: "+ child.sfCompleteName());
+              (child).sfTerminateQuietlyWith(status);
+            }
+          } catch (Exception ex) {
+            //@TODO: Log
+            Logger.logQuietly(ex);
+            // ignore
+          }
+        }
+        // Terminate illegitimate children except subProc
+        for (int i = sfChildren.size()-1; i>=0; i--) {
+          try {
+            Prim child = (Prim) sfChildren.elementAt(i);
+            if ((! (child instanceof ProcessCompound))){
+              //Logger.log("SynchTerminate sent to illegitimate: "+ child.sfCompleteName());
+              //Full termination notifiying its parent
+              (child).sfTerminate(status);
+            }
+          } catch (Exception ex) {
+            //@TODO: Log
+            Logger.logQuietly(ex);
+            // ignore
+          }
+        }
+        // Terminate subprocesses
+        for (int i = sfChildren.size()-1; i>=0; i--) {
+          try {
+            Prim child = (Prim) sfChildren.elementAt(i);
+            //Logger.log("SynchTerminate sent to : "+ child.sfCompleteName());
+            (child).sfTerminateQuietlyWith(status);
+          } catch (Exception ex) {
+            //@TODO: Log
+            Logger.logQuietly(ex);
+            // ignore
+          }
+        }
+    }
+
+    /**
+     * Terminate children asynchronously using a seperate thread for each call.
+     * It iterates from the last one created to the first one.
+     *
+     * @param status status to terminate with
+     */
+    protected void sfASyncTerminateWith(TerminationRecord status) {
+        // Terminate legitimate children except subProc
+        for (int i = sfChildren.size()-1; i>=0; i--) {
+          try {
+            Prim child = (Prim) sfChildren.elementAt(i);
+            if ((! (child instanceof ProcessCompound))&&(child.sfParent()==null)) {
+              //Logger.log("ASynchTerminate sent to legitimate: "+ child.sfCompleteName());
+              //Deprecated: new TerminateCall( child, status,true);
+              (new TerminatorThread(child,status).quietly()).start();
+            }
+          } catch (Exception ex) {
+            //@TODO: Log
+            Logger.logQuietly(ex);
+            // ignore
+          }
+        }
+        // Terminate illegitimate children except subProc
+        for (int i = sfChildren.size()-1; i>=0; i--) {
+          try {
+            Prim child = (Prim) sfChildren.elementAt(i);
+            if ((! (child instanceof ProcessCompound))){
+              //Full termination notifiying its parent
+              //Logger.log("ASynchTerminate sent to (illegitimate): "+ child.sfCompleteName());
+              //Deprecated: new TerminateCall( child, status,false);
+              (new TerminatorThread(child,status)).start();
+            }
+          } catch (Exception ex) {
+            //@TODO: Log
+            Logger.logQuietly(ex);
+            // ignore
+          }
+        }
+        // Terminate subprocesses
+        for (int i = sfChildren.size()-1; i>=0; i--) {
+          try {
+            Prim child = (Prim) sfChildren.elementAt(i);
+            //Logger.log("ASynchTerminate sent to: "+ child.sfCompleteName());
+            //Deprecated: new TerminateCall( child, status,true);
+            (new TerminatorThread(child,status).quietly()).start();
+          } catch (Exception ex) {
+            //@TODO: Log
+            Logger.logQuietly(ex);
+            // ignore
+          }
+        }
+
+    }
+
+
 
     /**
      * Sets whether or not the ProcessCompound should terminate the JVM on
@@ -948,4 +1059,50 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
             }
         }
     }
+
+//    Deprecated: Replaced with common/TerminatorThread
+//    /**
+//     * Implements an asynchronous sfTerminateQuietlyWith call
+//     */
+//    private class TerminateCall implements Runnable {
+//        /**
+//         * Reference to component.
+//         */
+//        private Prim target;
+//
+//        /**
+//         * Termination record.
+//         */
+//        private TerminationRecord record;
+//
+//        /**
+//         * Type of termination.
+//         */
+//        private boolean quiet;
+//
+//
+//        /**
+//         * Constructs TerminateCall with component and termination record.
+//         */
+//        public TerminateCall(Prim target, TerminationRecord record, boolean quiet) {
+//            this.target = target;
+//            this.record = record;
+//            this.quiet = quiet;
+//            (new Thread(this)).start();
+//        }
+//        /**
+//         * Runs the thread.
+//         */
+//        public void run() {
+//            try {
+//               if (quiet)
+//                target.sfTerminateQuietlyWith(record);
+//               else
+//                 target.sfTerminate(record);
+//            } catch (Exception remex) {
+//                // ignore
+//            }
+//        }
+//    }
+
 }
