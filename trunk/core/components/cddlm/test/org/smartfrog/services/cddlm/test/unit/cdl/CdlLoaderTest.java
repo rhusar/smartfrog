@@ -116,4 +116,5 @@ public class CdlLoaderTest extends TestCase {
         assertInvalid("wrong_root_elt_type.cdl", CdlDocument.ERROR_WRONG_ROOT_ELEMENT);
     }
 
+
 }
