@@ -25,7 +25,7 @@ issue is the exception, rather than the rule.
 \end{enumerate}
 
 IDLs have many advantages for creating interoperable systems, yet the
-generally accepted practice for working with JAX-RPC discards all
+generally accepted practise for working with JAX-RPC discards all
 these notions. Instead of generating implementation classes from the
 WSDL, the WSDL is often generated from the implementation classes,
 using Java's Reflection API. We shall term this process
@@ -61,7 +61,7 @@ invoke the service.
 \item
 
 Not enough people have been hand-generating WSDL for the WSDL-to-Java
-side of the toolchain to be broadly tested as well as it should.
+side of the tool-chain to be broadly tested as well as it should.
 
     
 \end{itemize}
@@ -72,7 +72,7 @@ of portability and interface stability, web service developers are not
 pushed in this direction.
 
 One of the underlying causes of this has to be the sheer complexity of
-XML Schema and WSDL. The XSD type system bears minimal resemblence to
+XML Schema and WSDL. The XSD type system bears minimal resemblance to
 that of current object oriented languages, and WSDL itself is
 over-verbose and under-readable. As evidence of this, consider the
 broad variety of products that aim to make authoring XSD and WSDL
@@ -86,11 +86,18 @@ documentation. This would appear to be sub-optimal, yet REST is
 growing in popularity, despite (or perhaps because of) the lack of
 WSDL integration.
 
-Returning to the desiderata for SOAP, a WSDL-last process sacrifies
+Returning to the desiderata for SOAP, a WSDL-last process sacrifice
 interoperability for ease of service development. Perhaps WSDL is not
 the appropriate language for describing SOAP services; we are certainly
 not enthused about it. Yet the sole solution being advocated is not a
 major undertaking to fix WSDL's core flaws; it is to continue to
 encourage developers to hand over to their SOAP stacks the challenge of
 deriving a stable and portable service interface from the inherently
-unstable and unportable sevice implementation.
+unstable and unportable service implementation.
+
+We are not proposing any changes to WSDL, merely mourning the fact that its
+over-complexity discourages wsdl-first, contract-driven development more
+aggressively than any IDL ever did. We do observe that once the type
+declarations of a service have been moved into their own document, WSDL becomes
+much more manageable. This is a pattern of service definition which we strongly
+encourage. 
