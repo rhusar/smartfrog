@@ -15,7 +15,7 @@ set SERVER=localhost:8080
 rem Please edit codebase if you have any other jar file in webserver 
 set CODEBASE="http://%SERVER%/sfExamples.jar" 
 
-java -Djava.security.manager -Djava.security.policy==%SFHOME%\private\sf.policy -Dorg.smartfrog.sfcore.security.keyStoreName=%SFPRIVATE%\mykeys.st -Dorg.smartfrog.sfcore.security.propFile=%SFPRIVATE%\SFSecurity.properties -Dorg.smartfrog.codebase=%CODEBASE% -Dorg.smartfrog.sfcore.processcompound.sfProcessName=rootProcess  org.smartfrog.SFSystem %1 %2 %3 %4 %5 %6 %7 %8 %9
+java -Djava.security.manager -Djava.security.policy==%SFHOME%\private\sf.policy -Dorg.smartfrog.sfcore.security.keyStoreName=%SFPRIVATE%\mykeys.st -Dorg.smartfrog.sfcore.security.propFile=%SFPRIVATE%\SFSecurity.properties -Dorg.smartfrog.codebase=%CODEBASE% -Dorg.smartfrog.sfcore.processcompound.sfProcessName=rootProcess -Dorg.smartfrog.iniFile=org/smartfrog/default.ini -Dorg.smartfrog.sfcore.processcompound.sfDefault.sfDefault=org/smartfrog/default.sf org.smartfrog.SFSystem %1 %2 %3 %4 %5 %6 %7 %8 %9
 
 
 endlocal
