@@ -87,13 +87,12 @@ For more information: www.smartfrog.org
     <property name="junit.project" location="junit" />
     <property name="logger.project" location="logger" />
     <property name="net.project" location="net" />
-    <property name="releasetest.project" location="releasetest" />
     <property name="scripting.project" location="scripting" />
     <property name="sfcoreloggers.project" location="sfcoreloggers" />
     <property name="ssh.project" location="ssh" />
     <property name="slp.project" location="slp" />
     <property name="utils.project" location="utils" />
-    <property name="xml.project" location="xml" />
+    <property name="releasetest.project" location="releasetest" />
         
     <!--where the files for release will go-->
     <property name="bin" value="bin"/>
@@ -122,12 +121,10 @@ For more information: www.smartfrog.org
       <pathelement location="${ssh.project}"/>
       <pathelement location="${net.project}"/>
       <pathelement location="${emailer.project}"/>
-      <pathelement location="${jetty.project}"/>
+       <pathelement location="${jetty.project}"/>
       <pathelement location="${slp.project}"/>
       <pathelement location="${scripting.project}"/>
       <pathelement location="${sfcoreloggers.project}"/>
-      <pathelement location="${junit.project}"/>
-      <pathelement location="${xml.project}"/>
     <!--pathelement location="${arithmetic-testharness.project}"/-->
       <!--pathelement location="${junit.project}"/-->
       <!--pathelement location="${cddlm.project}"/-->
@@ -207,13 +204,15 @@ For more information: www.smartfrog.org
    <!-- =================================================================== -->
   <!-- Initialization target                                               -->
   <!-- =================================================================== -->
-  <target name="initjdocs" depends="init-common">
+  <target name="initjdocs">
     <tstamp/>
     <property name="Name.System" value="SmartFrog"/>
-    <property name="Name.Company" value="(C) Copyright 1998-2005 Hewlett-Packard Development Company, LP"/>
+    <property name="Name.Company" value="(C) Copyright 1998-2004 Hewlett-Packard Development Company, LP"/>
     <property name="version" value="COMPONENTS"/>
     <property name="Version" value="1.00.000_beta"/>
-    <property name="year" value="2005"/>
+    <property name="year" value="2004"/>
+    <property name="javac.java.version" value="1.4" />
+    <echo level="verbose"/>
   </target>
 
   <!-- =================================================================== -->
@@ -241,7 +240,6 @@ For more information: www.smartfrog.org
        <!--pathelement path="${cddlm.project}/${src}"/-->
        <pathelement path="${emailer.project}/${src}"/>
        <pathelement path="${jetty.project}/${src}"/>
-       <pathelement path="${junit.project}/${src}"/>
        <pathelement path="${logger.project}/${src}"/>
        <pathelement path="${net.project}/${src}"/>
        <pathelement path="${scripting.project}/${src}"/>
@@ -249,7 +247,6 @@ For more information: www.smartfrog.org
        <pathelement path="${slp.project}/${src}"/>
        <pathelement path="${ssh.project}/${src}"/>
        <pathelement path="${utils.project}/${src}"/>
-       <pathelement path="${xml.project}/${src}"/>
       </sourcepath>     
       <group title="SmartFrog Component Packages" packages="org.smartfrog.*"/>
     </javadoc>
@@ -288,7 +285,6 @@ For more information: www.smartfrog.org
 
     <copybuild project="${emailer.project}" />
     <copybuild project="${jetty.project}" />
-    <copybuild project="${junit.project}" />
     <copybuild project="${logger.project}" />
     <copybuild project="${net.project}" />
     <copybuild project="${scripting.project}" />
@@ -296,7 +292,6 @@ For more information: www.smartfrog.org
     <copybuild project="${slp.project}"  />
     <copybuild project="${ssh.project}" />
     <copybuild project="${utils.project}" />
-    <copybuild project="${xml.project}" />
 
   </target>
     
@@ -319,7 +314,6 @@ For more information: www.smartfrog.org
 
     <copybins project="${emailer.project}" />
     <copybins project="${jetty.project}" />
-    <copybins project="${junit.project}" />
     <copybins project="${logger.project}" />
     <copybins project="${net.project}" />
     <copybins project="${scripting.project}" />
@@ -327,7 +321,6 @@ For more information: www.smartfrog.org
     <copybins project="${slp.project}"  />
     <copybins project="${ssh.project}" />
     <copybins project="${utils.project}" />
-    <copybins project="${xml.project}" />
 
   </target>
   
@@ -350,7 +343,6 @@ For more information: www.smartfrog.org
 
     <copylibs project="${emailer.project}" />
     <copylibs project="${jetty.project}" />
-    <!-- <copybins project="${junit.project}" /> -->
     <copylibs project="${logger.project}" />
     <copylibs project="${net.project}" />
     <copylibs project="${scripting.project}" />
@@ -358,7 +350,6 @@ For more information: www.smartfrog.org
     <copylibs project="${slp.project}"  />
     <copylibs project="${ssh.project}" />
     <copylibs project="${utils.project}" />
-    <!-- <copybins project="${xml.project}" /> -->
 
   </target>
 
@@ -412,7 +403,6 @@ For more information: www.smartfrog.org
 
     <copydocs project="${emailer.project}" />
     <copydocs project="${jetty.project}" />
-    <copydocs project="${junit.project}" />
     <copydocs project="${logger.project}" />
     <copydocs project="${net.project}" />
     <copydocs project="${scripting.project}" />
@@ -420,7 +410,6 @@ For more information: www.smartfrog.org
     <copydocs project="${slp.project}" />
     <copydocs project="${ssh.project}" />
     <copydocs project="${utils.project}" />
-    <copydocs project="${xml.project}" />
   </target>
 
   <!-- =================================================================== -->
@@ -441,11 +430,7 @@ For more information: www.smartfrog.org
         <include name="**/**"/>
         <exclude name="**/*.dfPackage"/>
       </zipfileset>
-<!--       <zipfileset dir="${junit.project}/${dist.src.dir}">
-        <include name="**/**"/>
-        <exclude name="**/*.dfPackage"/>
-      </zipfileset>      
- -->      <zipfileset dir="${logger.project}/${dist.src.dir}">
+      <zipfileset dir="${logger.project}/${dist.src.dir}">
         <include name="**/**"/>
         <exclude name="**/*.dfPackage"/>
       </zipfileset>
@@ -473,11 +458,7 @@ For more information: www.smartfrog.org
         <include name="**/**"/>
         <exclude name="**/*.dfPackage"/>
       </zipfileset>
-<!--       <zipfileset dir="${xml.project}/${dist.src.dir}">
-        <include name="**/**"/>
-        <exclude name="**/*.dfPackage"/>
-      </zipfileset>      
- -->    </zip>
+    </zip>
   </target>
 
 <!-- =================================================================== -->
