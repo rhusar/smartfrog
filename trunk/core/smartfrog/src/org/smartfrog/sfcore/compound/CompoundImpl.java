@@ -28,6 +28,7 @@ import org.smartfrog.sfcore.common.TerminatorThread;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.SmartFrogCoreProperty;
 import org.smartfrog.sfcore.common.Context;
+import org.smartfrog.sfcore.common.ContextImpl;
 import org.smartfrog.sfcore.common.MessageUtil;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
@@ -43,6 +44,7 @@ import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferencePart;
+
 
 
 /**
@@ -119,7 +121,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
                             name, cmp, parms,MessageUtil.
                                 formatMessage(MSG_NON_REP_ATTRIB, name), null,null);
             }
-            // try to deploy
+
             if (sflog().isTraceEnabled()){
               StringBuffer message = new StringBuffer();
               try {
@@ -145,6 +147,8 @@ public class CompoundImpl extends PrimImpl implements Compound {
               }
               sflog().trace(message.toString());
             }
+
+            // try to deploy
             Prim result = SFDeployer.deploy(cmp, null, parent, parms);
 
             if (parent != null){
@@ -213,7 +217,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
     }
 
     /**
-     * A high-level component deployment method - creates a child of this
+     * A high-level component deployment method - creates a child of 'parent'
      * Compound, running it through its entire lifecycle. This is the preferred way
      * of creating new child components of a Compound. The method is safe against
      * multiple calls of lifecycle.
@@ -231,64 +235,109 @@ public class CompoundImpl extends PrimImpl implements Compound {
      */
     public Prim sfCreateNewChild(Object name, Prim parent, ComponentDescription cmp, Context parms)
         throws RemoteException, SmartFrogDeploymentException {
-    Prim comp = null;
-    try {
-        synchronized (parent) {
-        if (!sfIsTerminated) {
+      Prim comp = null;
+
+      //component used to guard the double lifecycle called. Usually the parent but if no parent
+      // the the local ProcessCompound is used.
+      Prim phasedComp = parent;
+      if (phasedComp == null) {
+        phasedComp = org.smartfrog.sfcore.processcompound.SFProcess.getProcessCompound();
+      }
+
+      if (parms == null) parms = new ContextImpl();
+      try {
+
+//          // the parentage is made null and it is registered as an attribute, not a
+//          // child, so it is a root component and starts is own liveness
+//
+//          // @TODO review this. Compound should not know anything about ProcessCompound!
+//          if ((parent!=null)&&(parent instanceof org.smartfrog.sfcore.processcompound.ProcessCompound)){
+//              // This component will be a root component <> App
+//              parent=null;
+//          }
+//
+
+        // This is needed so that the root component is properly named
+        // when registering with the ProcessCompound
+        if ((parent==null)&&(name!=null)) parms.put(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME, name);
+
+        //synchronized (this) {
+        if (!phasedComp.sfIsTerminated()) {
             if (sflog().isTraceEnabled()) {
                 try {
-                    sflog().trace("Creating new Child for: "+
-                                  parent.sfCompleteName()+", with description: "+
-                                  cmp.toString()+", and parameters: "+parms);
+                  if (parent!=null) {
+                    sflog().trace("Creating new child '"+name+"' for: " + parent.sfCompleteName() + ", with description: " +  cmp.toString() + ", and parameters: " + parms);
+                  } else {
+                    sflog().trace("Creating new application: " + name + ", with description: " +  cmp.toString() + ", and parameters: " + parms);
+                  }
                 } catch (Exception ex1) {
                     sflog().trace(ex1.toString());
                 }
             }
             comp = sfDeployComponentDescription(name, parent, cmp, parms);
             // it is now a child, so need to guard against double calling of lifecycle...
-            if (sfIsDeployed) {
+            if (phasedComp.sfIsDeployed()) {
                 try {
                     comp.sfDeploy();
-                } catch (Exception ex) {
-                   throw SmartFrogLifecycleException.sfDeploy("Failed to create a new child.",ex,this);
+                } catch (Throwable thr) {
+                  if (thr instanceof SmartFrogLifecycleException){
+                      throw (SmartFrogLifecycleException) SmartFrogLifecycleException.forward(thr);
+                  }
+                  throw SmartFrogLifecycleException.sfDeploy("Failed to create a new child.",thr,this);
                 }
             } // otherwise let the deploy of this component do it...
-            if (sfIsStarted) {
+            if (phasedComp.sfIsStarted()) {
                 try {
                     comp.sfStart(); // otherwise let the start of this component do it...
-                } catch (Exception ex) {
-                   throw SmartFrogLifecycleException.sfStart("Failed to create a new child.",ex,this);
+                } catch (Throwable thr) {
+                  if (thr instanceof SmartFrogLifecycleException){
+                      throw (SmartFrogLifecycleException) SmartFrogLifecycleException.forward(thr);
+                  }
+                  throw SmartFrogLifecycleException.sfStart("Failed to create a new child.",thr,this);
                 }
             }
-        }
-        }
+        } // end of is terminated
+      //} // end of synchronized
     } catch (Exception e) {
         if ( comp != null ) {
-            try {
-                comp.sfDetachAndTerminate(TerminationRecord.abnormal("error during deployment" + e.getMessage(),
-                        sfCompleteName()));
-            } catch (Exception ex) {
-                //log
-                ignoreThrowable("during termination", ex);
-            }
+          Reference compName = null;
+          try {
+              compName = comp.sfCompleteName();
+          } catch (Throwable thr) {
+          }
+          try {
+              if (parent != null) {
+                comp.sfDetachAndTerminate(TerminationRecord.abnormal("Deployment Failure: " + e.getMessage(), compName,e));
+              } else {
+                comp.sfTerminate(TerminationRecord.abnormal( "Deployment Failure: " + e.getMessage(), compName,e));
+              }
+          } catch (Exception ex) {
+              //log
+              ignoreThrowable("Could not terminate", ex);
+          }
         }
         throw (SmartFrogDeploymentException) SmartFrogDeploymentException.forward(e);
     }
+
     if (sflog().isTraceEnabled()) {
-        try {
-            sflog().trace("New child created: "+comp.sfCompleteName()+ " ");
-        } catch (Exception ex1) {
-            sflog().trace(ex1.toString());
+      try {
+        if (parent!=null){
+          sflog().trace("New child created: " + comp.sfCompleteName() + " ");
+        } else {
+          sflog().trace("New application created: " + comp.sfCompleteName() + " ");
         }
+      } catch (Exception ex1) {
+        sflog().trace(ex1.toString());
+      }
     }
     return comp;
-    }
-
+  }
     /**
      * A high-level component deployment method - creates an app
      * , running it through its entire lifecycle. This is the preferred way
      * of creating new app.
      *
+     * @param name name for the new application
      * @param cmp compiled component to deploy and start
      * @param parms parameters for description
      *
@@ -298,51 +347,52 @@ public class CompoundImpl extends PrimImpl implements Compound {
      * component
      * @exception RemoteException In case of Remote/nework error
      */
-    public Prim sfCreateNewApp(ComponentDescription cmp, Context parms)
+    public Prim sfCreateNewApp(String name, ComponentDescription cmp, Context parms)
         throws RemoteException, SmartFrogDeploymentException {
-        Prim comp = null;
-        try {
-            if (sflog().isTraceEnabled()) {
-                try {
-                    sflog().trace("Creating new application from: "+sfCompleteNameSafe()+", with description: "+ cmp+", and parameters: "+parms);
-                } catch (Exception ex1) {
-                    sflog().trace(ex1.toString());
-                }
-            }
-            comp = sfDeployComponentDescription(null, null, cmp, parms);
-
-            try {
-                comp.sfDeploy();
-            } catch (Exception ex) {
-                throw SmartFrogLifecycleException.sfDeploy("Failed to create a new app.", ex, this);
-            }
-
-            try {
-                comp.sfStart(); // otherwise let the start of this component do it...
-            } catch (Exception ex) {
-                throw SmartFrogLifecycleException.sfStart("Failed to create a new app.", ex, this);
-            }
-
-        } catch (Exception e) {
-            if ( comp != null ) {
-                try {
-                    comp.sfTerminate(TerminationRecord.abnormal("error during deployment" + e.getMessage(),
-                            sfCompleteName()));
-                } catch (Exception ex) {
-                    //log
-                    ignoreThrowable("could not terminate", ex);
-                }
-            }
-            throw (SmartFrogDeploymentException) SmartFrogDeploymentException.forward(e);
-        }
-        if (sflog().isTraceEnabled()) {
-            try {
-                sflog().trace("New App created: "+comp.sfCompleteName()+ " by "+sfCompleteNameSafe());
-            } catch (Exception ex1) {
-                sflog().trace(ex1.toString());
-            }
-        }
-        return comp;
+//        Prim comp = null;
+//        try {
+//            if (sflog().isTraceEnabled()) {
+//                try {
+//                    sflog().trace("Creating new application from: "+sfCompleteNameSafe()+", with description: "+ cmp+", and parameters: "+parms);
+//                } catch (Exception ex1) {
+//                    sflog().trace(ex1.toString());
+//                }
+//            }
+//            comp = sfDeployComponentDescription(null, null, cmp, parms);
+//
+//            try {
+//                comp.sfDeploy();
+//            } catch (Exception ex) {
+//                throw SmartFrogLifecycleException.sfDeploy("Failed to create a new app.", ex, this);
+//            }
+//
+//            try {
+//                comp.sfStart(); // otherwise let the start of this component do it...
+//            } catch (Exception ex) {
+//                throw SmartFrogLifecycleException.sfStart("Failed to create a new app.", ex, this);
+//            }
+//
+//        } catch (Exception e) {
+//            if ( comp != null ) {
+//                try {
+//                    comp.sfTerminate(TerminationRecord.abnormal("error during deployment" + e.getMessage(),
+//                            sfCompleteName()));
+//                } catch (Exception ex) {
+//                    //log
+//                    ignoreThrowable("could not terminate", ex);
+//                }
+//            }
+//            throw (SmartFrogDeploymentException) SmartFrogDeploymentException.forward(e);
+//        }
+//        if (sflog().isTraceEnabled()) {
+//            try {
+//                sflog().trace("New App created: "+comp.sfCompleteName()+ " by "+sfCompleteNameSafe());
+//            } catch (Exception ex1) {
+//                sflog().trace(ex1.toString());
+//            }
+//        }
+//        return comp;
+        return this.sfCreateNewChild(name, null, cmp, parms);
     }
 
 
@@ -482,7 +532,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
                     } catch (Throwable thr){
                         String name = "";
                         try {name =((Prim)elem).sfCompleteName().toString();} catch (Exception ex) {};
-                        SmartFrogLifecycleException sflex = SmartFrogLifecycleException.sfDeploy(name ,thr,(Prim)this);
+                        SmartFrogLifecycleException sflex = SmartFrogLifecycleException.sfDeploy(name ,thr,null);
                         String classFailed = ((Prim) elem).sfResolve(SmartFrogCoreKeys.SF_CLASS,"",false);
                         sflex.add(SmartFrogLifecycleException.DATA,
                                 "Failed object class: "+ classFailed);
@@ -516,7 +566,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
                     } catch (Throwable thr){
                         String name = "";
                         try {name =((Prim)elem).sfCompleteName().toString();} catch (Exception ex) {};
-                        SmartFrogLifecycleException sflex = SmartFrogLifecycleException.sfStart(name ,thr,this);
+                        SmartFrogLifecycleException sflex = SmartFrogLifecycleException.sfStart(name ,thr,null);
                         sflex.add(SmartFrogLifecycleException.DATA,
                                 "Failed object class: "+((Prim) elem).sfResolve(SmartFrogCoreKeys.SF_CLASS,"",false));
                         throw sflex;

@@ -380,11 +380,13 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
                     // is started.
                     url = (String)props.get(key);
                     name = key.substring(SmartFrogCoreProperty.defaultDescPropBase.length());
-                    nameContext = new ContextImpl();
-                    nameContext.put(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME, name);
-                    ComponentDescription cd = ComponentDescriptionImpl.
-                        sfComponentDescription(url.trim());
-                    p = sfCreateNewApp(cd, nameContext);
+
+// No needed any more with sfCreateNewApp
+//                    nameContext = new ContextImpl();
+//                    nameContext.put(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME, name);
+
+                    ComponentDescription cd = ComponentDescriptionImpl.sfComponentDescription(url.trim());
+                    p = sfCreateNewApp(name, cd, nameContext);
                 }
             }
 
@@ -694,8 +696,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
                 if (this.sfProcessName()==null) {
                     // Process created when using sfDeployFrom (use by sfStart &
                     //  sfRun)
-                    r.addElement(ReferencePart.here(SmartFrogCoreKeys.
-                        SF_RUN_PROCESS));
+                    r.addElement(ReferencePart.here(SmartFrogCoreKeys.SF_RUN_PROCESS));
                 } else {
                     r.addElement(ReferencePart.here(this.sfProcessName()));
                 }
@@ -754,7 +755,6 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
         if (!sfChildren.contains(comp)) {
             sfAddChild(comp);
         }
-
         return compName;
     }
 

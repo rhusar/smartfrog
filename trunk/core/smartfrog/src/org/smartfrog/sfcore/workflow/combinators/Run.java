@@ -68,7 +68,7 @@ public class Run extends EventCompoundImpl implements Compound {
 
     /**
      * Reads component's attributes
-     * @throws SmartFrogResolutionException In case of error while resolving 
+     * @throws SmartFrogResolutionException In case of error while resolving
      * attributes
      * @throws RemoteException In case of RMI or network failure.
      */
@@ -112,7 +112,7 @@ public class Run extends EventCompoundImpl implements Compound {
             if (parent != null) {
                 comp = parent.sfCreateNewChild(asName, action, null);
             } else {
-                comp = sfCreateNewApp(action, null);
+                comp = sfCreateNewApp(asName,action, null);
 	    }
         } catch (Throwable e) {
             if (comp != null) {
