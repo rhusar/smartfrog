@@ -68,7 +68,7 @@ public class Version {
             ComponentDescription classComponentDescription = ComponentDescriptionImpl.
                 getClassComponentDescription(this, false, null);
 
-            name = classComponentDescription.sfResolve(ATR_NAME, name , true);
+            name = classComponentDescription.sfResolve(ATR_NAME, name , false);
             majorRelease = classComponentDescription.sfResolve(ATR_MAJOR_RELEASE, majorRelease , false);
             minorRelease = classComponentDescription.sfResolve(ATR_MINOR_RELEASE, minorRelease , false);
             build = classComponentDescription.sfResolve(ATR_BUILD, build , false);
