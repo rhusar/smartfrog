@@ -37,6 +37,7 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 ArrayCompound extends Compound {
         sfClass "org.smartfrog.examples.arraycompound.ArrayCompoundImpl";
         parent LAZY THIS;
+        //parent LAZY NULL; //To create an application instead of a child
         hosts [];
         template extends LAZY Compound {}
 }

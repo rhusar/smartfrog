@@ -412,7 +412,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * resolution confusion. Resolution data object reference is copied if it
      * implements the Copying interface, otherwise the pointer is shared with
      * the copy.
-     *
+     * Note: Use "copy", not clone, to deploy more than one component using the same ComponentDescription
      * @return copy of component
      */
     public Object copy() {
@@ -434,7 +434,8 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
     }
 
     /**
-     * Gets the cloen of the ComponentDescription.
+     * Gets the clone of the ComponentDescription.
+     * Note: Use "copy" to deploy more than one component using the same ComponentDescription
      * @return cloned object
      */
     public Object clone() {

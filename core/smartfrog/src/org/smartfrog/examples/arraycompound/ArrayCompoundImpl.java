@@ -44,6 +44,7 @@ import java.text.SimpleDateFormat;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.ContextImpl;
+import org.smartfrog.sfcore.common.SFNull;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.compound.CompoundImpl;
@@ -116,8 +117,21 @@ public class ArrayCompoundImpl extends CompoundImpl implements Compound, ArrayCo
         Prim p = null;
         try {
             Context sfHostContext = new ContextImpl();
-            sfHostContext.sfAddAttribute("sfProcessHost", hostname);
-            p = this.sfCreateNewChild(hostname,parent, (ComponentDescription) ((ComponentDescriptionImpl)template).clone(), sfHostContext);
+            sfHostContext.sfAddAttribute(org.smartfrog.sfcore.common.SmartFrogCoreKeys.SF_PROCESS_HOST, hostname);
+            //Create a new copy of the description!
+            ComponentDescription newcd = (ComponentDescription)((ComponentDescriptionImpl)template).copy();
+            if (parent == null){
+              if (sflog().isDebugEnabled()) {
+                  sfHostContext.sfAddAttribute(org.smartfrog.sfcore.common.SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME,"app-"+hostname.toString());
+                  sflog().debug("Creating new app: "+ hostname +":'"+parent.sfCompleteName()+"'");
+              }
+              p = this.sfCreateNewApp(newcd , sfHostContext);
+            } else {
+              if (sflog().isDebugEnabled()) {
+                  sflog().debug("Creating new child: "+ hostname +":'"+parent.sfCompleteName()+"'");
+              }
+              p = this.sfCreateNewChild("ch-"+hostname, parent,newcd, sfHostContext);
+            }
         } catch (Exception e) {
             if (sflog().isErrorEnabled()) {
                 sflog().error("deployTemplate: "+hostname, e);
@@ -144,7 +158,14 @@ public class ArrayCompoundImpl extends CompoundImpl implements Compound, ArrayCo
              //True to Get exception thown!
              template = sfResolve(ATR_TEMPLATE, template, true);
              hosts    = sfResolve(ATR_HOSTS, hosts, true);
-             parent   = sfResolve(ATR_PARENT, parent, false);
+             Object parentObj = sfResolve(ATR_PARENT, parent, false);
+             if (parentObj instanceof SFNull) {
+               parent = null;
+             } else {
+               // re-resolve to get a compound
+               // slow but god error messaging
+               parent =  sfResolve(ATR_PARENT, parent, false);
+             }
         } catch (SmartFrogResolutionException e) {
             if (sflog().isErrorEnabled()) {
                 sflog().error("Failed to read mandatory attribute: "+
