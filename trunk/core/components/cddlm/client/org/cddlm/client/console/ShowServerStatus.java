@@ -46,7 +46,7 @@ public class ShowServerStatus extends ConsoleOperation {
      *
      * @throws java.rmi.RemoteException
      */
-    protected void execute() throws RemoteException {
+    public void execute() throws RemoteException {
         CddlmSoapBindingStub stub;
         stub = getStub();
         DeploymentEndpoint deployer = stub;
