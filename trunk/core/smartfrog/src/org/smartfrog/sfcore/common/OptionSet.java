@@ -57,17 +57,17 @@ public class OptionSet {
         "           -a counterEx:DEPLOY:org/.../example.sf:sfConfig:localhost:process" + "\n" +
         "       ex. Terminate local sfDaemon - " + "\n" +
         "           -a rootProcess:TERMINATE:::localhost:" + "\n" +"\n" +
-        "       Format for URL_DESCRIPTOR: " +"name:ACTION:url:sfConfig:HOST:PROCESS\n" +
+        "       Format for URL_DESCRIPTOR: " +"name:ACTION:SFREF:sfConfig:HOST:PROCESS\n" +
         "           - name: name where to apply ACTION \n" +
         "              ex. foo\n" +
         "              ex. \"HOST localhost:foo\"\n" +
         "          - ACTION: possible actions: DEPLOY, TERMINATE, DETACH, DETaTERM\n" +
-        "          - url: description used by ACTION\n" +
+        "          - SFREF: description used by ACTION\n" +
         "              ex. /home/sf/foo.sf\n" +
-        "              ex. c:\\sf\\foo.sf\n" +
+        "              ex. \"c:\\sf\\foo.sf\"\n" +
         "          - target: component description name to use with action. It can be empty\n" +
         "              ex: foo\n" +
-        "              ex: fist:foo\n" +
+        "              ex: \"fist:foo\"\n" +
         "              note: sfConfig cannot be use with DEPLOY!\n" +
         "          - HOST: host name or IP where to apply ACTION. When empty it assumes localhost.\n" +
         "              ex: localhost\n" +
