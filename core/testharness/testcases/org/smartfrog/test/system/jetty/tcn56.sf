@@ -9,7 +9,7 @@
 /**
  * Specify the jetty home path here
  */
-jetty_home PROPERTY jetty.home;
+jetty_home LAZY PROPERTY jetty.home;
 //jetty_home "C:\\Jetty-4.2.18";
 
 sfConfig extends Compound {
