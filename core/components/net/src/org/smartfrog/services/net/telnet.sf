@@ -20,27 +20,41 @@ For more information: www.smartfrog.org
 
 #include "org/smartfrog/components.sf"
 #include "org/smartfrog/services/net/password.sf"
+#include "/org/smartfrog/predicates.sf"
 
 /**
  */
+TelnetSchema extends Schema {
+	host extends String;
+	username extends String;
+	commands extends Vector;
+	cmdsFailureMsgs extends OptionalVector;
+	timeout extends OptionalInteger;
+	shellPrompt extends OptionalString;
+	port extends OptionalInteger;
+	logFile extends OptionalString;
+	shouldTerminate extends Boolean;
+}
+
 
 TelnetSession extends Compound {
     PasswordProvider extends Password {
     }
     Telnet extends Prim{
         sfClass "org.smartfrog.services.net.TelnetImpl";
+	telnetSchema extends TelnetSchema;
         /* ========================================================
          * Mandatory attributes 
          *=========================================================
          */
         // host name
-        host "ebnt171.india.hp.com";
+        //host "ebnt171.india.hp.com";
         
         // login name in remote FTP server
-        username "ashish";
+        //username "ashish";
 
         // write comma separated commands in the order of execution
-        commands [];
+        //commands [];
         // expected failure message for the commands 
         // Note: error message should be in same order of commands
         cmdsFailureMsgs [];

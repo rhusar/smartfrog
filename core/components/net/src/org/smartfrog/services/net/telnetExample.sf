@@ -23,12 +23,13 @@ For more information: www.smartfrog.org
 
 sfConfig extends Compound {
     sampleTelnet extends TelnetSession {
-        Telnet:commands ["cd /home/ashish/cvs",
-                  "mkdir may13",
-                   "sfDaemon &",
-                   "lll" 
+	PasswordProvider:passwordFile "D:\\cvs\\forge\\passwd.txt";
+	Telnet:commands ["cd /home/ritu/cvs",
+                  "mkdir test",
+                   "ll" 
                  ];
-        // optional log file for the telnet session
-        Telnet:logFile "spy.log";
+            Telnet:host "ebnt171.india.hp.com";
+            Telnet:username "ritu";
+            Telnet:logFile "spy.log";
     }
 }

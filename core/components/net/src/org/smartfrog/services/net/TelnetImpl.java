@@ -223,9 +223,9 @@ public class TelnetImpl extends PrimImpl implements Telnet,
         pwdProvider = (PasswordProvider) sfResolve(pwdProviderRef);
         password = pwdProvider.getPassword();
         commandsList = sfResolve(COMMANDS, commandsList, true);
-        cmdsFailureMsgs = sfResolve(CMDS_FAILURE_MSGS, cmdsFailureMsgs, false);
 
         //optional attributes
+        cmdsFailureMsgs = sfResolve(CMDS_FAILURE_MSGS, cmdsFailureMsgs, false);
         port = sfResolve(PORT, port, false);
         timeout = sfResolve(TIMEOUT, timeout, false);
         shellPrompt = sfResolve(SHELL_PROMPT, shellPrompt, false);

@@ -19,6 +19,7 @@ For more information: www.smartfrog.org
 */
 
 #include "org/smartfrog/components.sf"
+#include "org/smartfrog/predicates.sf"
 #include "org/smartfrog/services/net/password.sf"
 
 /**
@@ -26,6 +27,15 @@ For more information: www.smartfrog.org
  * ascii and binary files.
  * Default transfer mode is ascii.
  */
+FTPSchema extends Schema {	
+	ftpHost extends String;
+	username extends String;
+	localFiles extends Vector;
+	remoteFiles extends Vector;
+	transferType extends OptionalString;
+	transferMode extends OptionalString;
+	shouldTerminate extends Boolean;
+}
 
 FTPClient extends Compound {
     PasswordProvider extends Password {
@@ -36,22 +46,23 @@ FTPClient extends Compound {
          *=========================================================
          */
         sfClass "org.smartfrog.services.net.FTPClientImpl";
+	ftpSchema extends FTPSchema;
         
         // name of FTP host
-        ftpHost "ebnt171.india.hp.com";
+        //ftpHost "ebnt171.india.hp.com";
         
         // login name in remote FTP server
-        username "ashish";
+        //username "ashish";
 
         // reference to password provider
         passwordProvider LAZY PARENT:PasswordProvider;
 
         // vector of local files 
-        localFiles ["e:\\temp\\one.txt","e:\\temp\\two.txt"];
+        //localFiles ["e:\\temp\\one.txt","e:\\temp\\two.txt"];
 
         // vector of remote files corresponding to local files.
-        remoteFiles ["/home/ashish/tmp/one.txt",
-                     "/home/ashish/tmp/two.txt"];
+        //remoteFiles ["/home/ashish/tmp/one.txt",
+         //            "/home/ashish/tmp/two.txt"];
         /* ========================================================
          * Optional attributes 
          *=========================================================
