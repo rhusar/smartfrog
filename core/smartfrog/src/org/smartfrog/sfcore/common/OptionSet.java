@@ -167,6 +167,12 @@ public class OptionSet {
         }
     }
 
+    /**
+     * Reads all the lines of a file an tries to parse them as SFACT.
+     * It ignores empty lines or lines starting with # or double "//"
+     * @param fileURL
+     * @throws SmartFrogException
+     */
     private void readCfgDescriptorsFile(String fileURL) throws SmartFrogException{
         String line;
         LineNumberReader file=null;
@@ -179,16 +185,22 @@ public class OptionSet {
             //lines to the Vector
             while ( (line = file.readLine()) != null) {
                try {
-                   if (line.trim().length()>0){
+                   line=line.trim();
+                   if (line.length()>0){
                      //Logger.log(" Reading and Creating: "+line);
-                     this.cfgDescriptors.add(new ConfigurationDescriptor(line));
+                     if (!(line.startsWith("#"))&&!(line.startsWith("//"))){
+                       this.cfgDescriptors.add(new ConfigurationDescriptor(line));
                      //Logger.log(" result: " + this.cfgDescriptors.lastElement().toString());
+                     } else {
+                       //Ignore
+                       //Logger.log("line ignored: " + line);
+                     }
                    }
-               } catch (SmartFrogInitException ex){Logger.log(ex);}
+               } catch (SmartFrogInitException ex){Logger.logQuietly(ex);}
             }
         }  catch (Exception e) {
             Logger.log(e);
-                throw SmartFrogException.forward(e);
+            throw SmartFrogException.forward(e);
         } finally {
             try {
                 file.close();
