@@ -51,6 +51,7 @@ import org.smartfrog.sfcore.security.SFClassLoader;
 
 import sun.misc.Signal;
 import sun.misc.SignalHandler;
+import org.smartfrog.sfcore.common.*;
 
 
 /**
@@ -499,9 +500,22 @@ public class SFProcess implements MessageKeys {
                         getRootProcessCompound(host);
             }
             if (subProcess != null) {
-                target = (ProcessCompound) target.sfResolveHere(subProcess);
+                try {
+                  try {
+                    target = (ProcessCompound) target.sfResolveHere(subProcess); //target.sfResolveHere(subProcess);
+                  }
+                  catch (java.lang.ClassCastException thr) {
+                    throw SmartFrogResolutionException.illegalClassType(
+                        Reference.fromString(subProcess),
+                        target.sfCompleteName(),
+                        target.sfResolve(subProcess).getClass().getName(),
+                        "ProcessCompound");
+                  }
+                } catch (Exception ex){
+                  throw new SmartFrogException("Error selecting target process '"+subProcess+"' in '"+target.sfCompleteName()+"'",ex);
+                }
             }
-        } catch (Exception ex) {
+        } catch (Throwable ex) {
             throw SmartFrogException.forward(ex);
         }
         return target;
