@@ -27,6 +27,7 @@ import java.util.Iterator;
 
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.Copying;
+import org.smartfrog.sfcore.common.PrettyPrinting;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferenceResolver;
@@ -42,7 +43,7 @@ import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
  * Components.
  * @see Copying
  */
-public interface ComponentDescription extends Copying, ReferenceResolver, ReferenceResolverHelper {
+public interface ComponentDescription extends PrettyPrinting, Copying, ReferenceResolver, ReferenceResolverHelper {
 
     /**
      * Add an attribute to the component description context. Values should be
@@ -252,17 +253,6 @@ public interface ComponentDescription extends Copying, ReferenceResolver, Refere
      */
     public void writeOn(Writer w) throws IOException;
 
-    /**
-     * Writes description indented at depth on writer.
-     *
-     * @param w print writer to use
-     * @param depth indent level
-     * @param keys enumeation over the keys of the context to write out
-     *
-     * @exception IOException failure while writing
-     */
-    public void writeContextOn(Writer w, int depth, Enumeration keys)
-        throws IOException;
 
     /**
      * Visit every node in the tree, applying an action to that node. The nodes

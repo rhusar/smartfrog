@@ -31,6 +31,7 @@ import java.util.Properties;
 
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.Context;
+import org.smartfrog.sfcore.common.PrettyPrinting;
 import org.smartfrog.sfcore.common.SmartFrogContextException;
 import org.smartfrog.sfcore.common.MessageKeys;
 import org.smartfrog.sfcore.common.MessageUtil;
@@ -62,7 +63,7 @@ import java.io.InputStream;
  * Components.
  */
 public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implements Serializable, Cloneable,
-    ComponentDescription, MessageKeys {
+    ComponentDescription, MessageKeys, PrettyPrinting {
 
 
     /** Context of attributes (key value pairs). */
@@ -514,7 +515,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
         StringWriter sw = new StringWriter();
 
         try {
-            writeOn(sw);
+            context.writeOn(sw);
         } catch (IOException ioex) {
             // ignore should not happen
         }
@@ -532,123 +533,31 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * @throws IOException failure while writing
      */
     public void writeOn(Writer ps) throws IOException {
-        writeContextOn(ps, 0, context.keys());
+	writeOn(ps, 0);
     }
 
     /**
-     * Writes the context on a writer.
+     * Writes this component description on a writer. Used by toString. Should
+     * be used instead of toString to write large descriptions to file, since
+     * memory can become a problem given the LONG strings created
      *
      * @param ps writer to write on
-     * @param indent level
-     * @param keys enumeation over the keys of the context to write out
+     * @param indent the indent to use for printing offset
      *
      * @throws IOException failure while writing
      */
-    public void writeContextOn(Writer ps, int indent, Enumeration keys)
-        throws IOException {
-        while (keys.hasMoreElements()) {
-            Object key = keys.nextElement();
-            Object value = context.get(key);
-            tabPad(ps, indent);
-            writeKeyOn(ps, indent, key);
-            ps.write(' ');
-            writeValueOn(ps, indent, value);
-            ps.write('\n');
-        }
+    public void writeOn(Writer ps, int indent) throws IOException {
+	ps.write("extends " + (getEager() ? "" : "LAZY "));
+	
+	if (context.size() > 0) {
+	    ps.write(" {\n");
+	    context.writeOn(ps, indent+1);
+	    tabPad(ps, indent); ps.write('}');
+	} else {
+	    ps.write(';');
+	}
     }
 
-    /**
-     * Writes given attribute key on a writer.
-     *
-     * @param ps writer to write on
-     * @param indent indent level
-     * @param key key to stringify
-     *
-     * @throws IOException failure while writing
-     */
-    protected void writeKeyOn(Writer ps, int indent, Object key)
-        throws IOException {
-        ps.write(key.toString());
-    }
-
-    /**
-     * Writes a given value on a writer. Recognizes descriptions, strings and
-     * vectors of basic values and turns them into string representation.
-     * Default is to turn into string using normal toString() call
-     *
-     * @param ps writer to write on
-     * @param indent indent level
-     * @param value value to stringify
-     *
-     * @throws IOException failure while writing
-     */
-    protected void writeValueOn(Writer ps, int indent, Object value)
-        throws IOException {
-        if (value instanceof ComponentDescription) {
-            ComponentDescription compVal = (ComponentDescription) value;
-            ps.write("extends " + (compVal.getEager() ? "" : "LAZY "));
-
-            if (compVal.sfContext().size() > 0) {
-                ps.write(" {\n");
-                compVal.writeContextOn(ps, indent + 1,
-                    compVal.sfContext().keys());
-                tabPad(ps, indent);
-                ps.write('}');
-            } else {
-                ps.write(';');
-            }
-        } else {
-            writeBasicValueOn(ps, indent, value);
-            ps.write(';');
-        }
-    }
-
-    /**
-     * Writes a given value on a writer. Recognizes descriptions, strings and
-     * vectors of basic values and turns them into string representation.
-     * Default is to turn into string using normal toString() call
-     *
-     * @param ps writer to write on
-     * @param indent indent level
-     * @param value value to stringify
-     *
-     * @throws IOException failure while writing
-     */
-    protected void writeBasicValueOn(Writer ps, int indent, Object value)
-        throws IOException {
-        if (value instanceof String) {
-            ps.write("\"" + unfixEscapes((String)value) + "\"");
-        } else if (value instanceof Vector) {
-            ps.write("[|");
-
-            for (Enumeration e = ((Vector) value).elements();
-                    e.hasMoreElements();) {
-                writeBasicValueOn(ps, indent, e.nextElement());
-
-                if (e.hasMoreElements()) {
-                    ps.write(", ");
-                }
-            }
-
-            ps.write("|]");
-        } else if (value instanceof Long) {
-            ps.write(value.toString() + 'L');
-        } else if (value instanceof Double) {
-            ps.write(value.toString() + 'D');
-        } else {
-            ps.write(value.toString());
-        }
-    }
-
-    private String unfixEscapes(String s) {
-        s = s.replaceAll("\\\\", "\\\\\\\\");
-        s = s.replaceAll("\n", "\\\\n");
-        s = s.replaceAll("\t", "\\\\t");
-        s = s.replaceAll("\b", "\\\\b");
-        s = s.replaceAll("\r", "\\\\r");
-        s = s.replaceAll("\f", "\\\\f");
-        return s;
-    }
 
     /**
      * Internal method to pad out a writer.
@@ -660,7 +569,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      */
     protected void tabPad(Writer ps, int amount) throws IOException {
         for (int i = 0; i < amount; i++)
-            ps.write('\t');
+            ps.write("  ");
     }
 
     /**

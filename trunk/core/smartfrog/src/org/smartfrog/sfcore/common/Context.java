@@ -32,7 +32,7 @@ import java.io.Serializable;
  *
  * @see Copying
  */
-public interface Context extends Copying, Serializable {
+public interface Context extends PrettyPrinting, Copying, Serializable {
     /**
      * Returns true if the context contains value.
      * Deprecated: replaced by sfContainsValue()
