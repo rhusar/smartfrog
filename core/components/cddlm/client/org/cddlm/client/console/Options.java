@@ -68,7 +68,7 @@ public class Options {
     public void addOption(URI name, MessageElement[] xml,
             boolean mustUnderstand) {
         UnboundedXMLAnyNamespace value = new UnboundedXMLAnyNamespace(xml);
-        createNamedOption(name, mustUnderstand).setXml(value);
+        createNamedOption(name, mustUnderstand).setData(value);
     }
 
     /**

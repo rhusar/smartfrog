@@ -167,7 +167,7 @@ public class OptionProcessor extends Processor {
      * @throws AxisFault
      */
     private void processPropertiesOption(OptionType option) throws AxisFault {
-        UnboundedXMLAnyNamespace xml = option.getXml();
+        UnboundedXMLAnyNamespace xml = option.getData();
         MessageElement[] contents = xml.get_any();
         if (contents.length > 1) {
             throw raiseBadPropertiesData();
@@ -199,7 +199,7 @@ public class OptionProcessor extends Processor {
      * @throws AxisFault
      */
     private static void assertNoXml(OptionType option) throws AxisFault {
-        if (option.getXml() != null) {
+        if (option.getData() != null) {
             raiseBadArgumentFault("No XML allowed in " + option.getName());
         }
     }
