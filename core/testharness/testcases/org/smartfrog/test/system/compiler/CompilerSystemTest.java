@@ -41,9 +41,18 @@ public class CompilerSystemTest extends SmartfrogTestBase {
         deployExpectingException(FILES+"tcn5.sf",
                 "tcn5",
                 "SmartFrogDeploymentException",
-                "failed to deploy",
+                "failed to deploy 'tcn5' component.",
+                "java.lang.ClassCastException",
+                null);
+    }
+
+    public void testCaseTCN47() throws Exception {
+        deployExpectingException(FILES+"tcn47.sf",
+                "tcn47",
+                "SmartFrogDeploymentException",
+                "FAILED when trying DEPLOY",
                 "org.smartfrog.sfcore.common.SmartFrogResolutionException",
-                "Reference not found");
+                "The result is not a ComponentDescription");
     }
 
     public void testCaseTCN6() throws Exception {
@@ -73,7 +82,7 @@ public class CompilerSystemTest extends SmartfrogTestBase {
         deployExpectingException(FILES + "tcn9.sf",
                 "tcn9",
                 "SmartFrogLifecycleException",
-                "failed to deploy",
+                "FAILED when trying DEPLOY ",
                 "java.lang.ClassNotFoundException",
                 "Cannot find org.smartfrog.test.system.compiler.PrinterImpl");
     }
@@ -91,7 +100,7 @@ public class CompilerSystemTest extends SmartfrogTestBase {
                 "SmartFrogCompileResolutionException",
                 "Unresolved Reference");
     }
-    
+
     public void testCaseTCN24() throws Exception {
         deployExpectingException(FILES + "tcn24.sf",
                 "tcn24",
@@ -108,7 +117,7 @@ public class CompilerSystemTest extends SmartfrogTestBase {
                 "SmartFrogResolutionException",
                 "Reference not found");
     }
-    
+
     public void testCaseTCN26() throws Exception {
         deployExpectingException(FILES + "tcn26.sf",
                 "tcn26",
@@ -125,7 +134,7 @@ public class CompilerSystemTest extends SmartfrogTestBase {
         deployExpectingException(FILES + "tcn28.sf",
                 "tcn28",
                 "SmartFrogDeploymentException",
-                "failed to deploy",
+                "failed to deploy 'tcn28' component",
                 "SmartFrogResolutionException",
                 "Reference not found");
     }

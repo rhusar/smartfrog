@@ -119,32 +119,65 @@ public abstract class SmartfrogTestBase extends TestCase {
             RemoteException, UnknownHostException, SFGeneralSecurityException {
         startSmartFrog();
         ConfigurationDescriptor cfgDesc =
-                new ConfigurationDescriptor(appName, testURL,
-                        ConfigurationDescriptor.Action.
-                DEPLOY, hostname, null);
+             new ConfigurationDescriptor(appName
+                                       , testURL,
+                 ConfigurationDescriptor.Action.DEPLOY
+                                       , hostname
+                                       , null);
         Object deployedApp = null;
         try {
-            deployedApp = SFSystem.runConfigurationDescriptor(cfgDesc,true);
-            fail("We expected an exception here:" + exceptionName
-                    + " but got an instance of " + deployedApp);
-        } catch (SmartFrogException fault) {
-            String message = fault.getMessage();
-            assertContains(message, searchString, cfgDesc.statusString());
-            if (containedExceptionName!=null) {
-                Throwable cause = fault.getCause();
-                assertNotNull("expected throwable of type "
-                        +containedExceptionName,
-                        cause);
-                //verify the name
-                assertThrowableNamed(cause, containedExceptionName, cfgDesc.statusString());
-                //verify the contained text
-                if (containedExceptionText!=null) {
-                    String m2 = cause.getMessage();
-                    assertContains(m2, containedExceptionText,cfgDesc.statusString() );
+            //Deploy and don't throw exception. Exception will be contained
+            // in a ConfigurationDescriptor.
+            deployedApp = SFSystem.runConfigurationDescriptor(cfgDesc,false);
+            if ((deployedApp instanceof ConfigurationDescriptor) &&
+                (((ConfigurationDescriptor)deployedApp).resultException!=null)){
+                Throwable thr = ((ConfigurationDescriptor)deployedApp).resultException;
+                assertContains(cfgDesc.statusString(), searchString);
+                if (containedExceptionName!=null) {
+                    Throwable cause = thr.getCause();
+                    assertNotNull("expected throwable of type "
+                                   +containedExceptionName,
+                                   cause);
+                    //verify the name
+                    assertThrowableNamed(cause,
+                                         containedExceptionName,
+                                         cfgDesc.statusString());
+                    if (containedExceptionText!=null) {
+                        assertContains(cause.getMessage(),
+                                       containedExceptionText,
+                                       cfgDesc.statusString());
+                    }
                 }
 
+            } else {
+                fail("We expected an exception here:"+exceptionName
+                     +" but got this result "+deployedApp.toString());
             }
-        }
+         } catch (Exception fault) {
+            fail(fault.toString());
+         }
+//            String message;
+//            if (deployedApp instanceof ConfigurationDescriptor) {
+//               message = ((ConfigurationDescriptor)deployedApp).statusString();
+//            } else {
+//               message = fault.toString();
+//            }
+//            assertContains(message, searchString, cfgDesc.statusString());
+//            if (containedExceptionName!=null) {
+//                Throwable cause = fault.getCause();
+//                assertNotNull("expected throwable of type "
+//                        +containedExceptionName,
+//                        cause);
+//                //verify the name
+//                assertThrowableNamed(cause, containedExceptionName, cfgDesc.statusString());
+//                //verify the contained text
+//                if (containedExceptionText!=null) {
+//                    String m2 = cause.getMessage();
+//                    assertContains(m2, containedExceptionText,cfgDesc.statusString() );
+//                }
+//
+//            }
+//        }
     }
 
     /**
@@ -209,8 +242,11 @@ public abstract class SmartfrogTestBase extends TestCase {
     protected Prim deployExpectingSuccess(String testURL, String appName)
                                                     throws Exception,Throwable {
         ConfigurationDescriptor cfgDesc =
-                new ConfigurationDescriptor(appName, testURL,
-                        ConfigurationDescriptor.Action.DEPLOY, hostname, null);
+                new ConfigurationDescriptor(appName,
+                                            testURL,
+                    ConfigurationDescriptor.Action.DEPLOY,
+                                            hostname,
+                                            null);
         try {
             startSmartFrog();
             Object deployedApp = SFSystem.runConfigurationDescriptor(cfgDesc,true);
