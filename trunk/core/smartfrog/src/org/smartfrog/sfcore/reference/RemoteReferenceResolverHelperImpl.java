@@ -8,10 +8,11 @@ import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.prim.Prim;
+import java.rmi.RemoteException;
 
 
- public abstract class ReferenceResolverHelperImpl extends Object  {
-    protected ReferenceResolverHelperImpl() {
+ public abstract class RemoteReferenceResolverHelperImpl extends Object  {
+    protected RemoteReferenceResolverHelperImpl() {
     }
 
 
@@ -39,10 +40,10 @@ import org.smartfrog.sfcore.prim.Prim;
      * @return resolved reference
      *
      * @throws SmartFrogResolutionException occurred while resolving
-     *
+     * @throws RemoteException In case of network/rmi error
      */
     public abstract Object sfResolve(Reference r)
-        throws SmartFrogResolutionException;
+        throws SmartFrogResolutionException, RemoteException;
 
 
     /**
@@ -55,10 +56,10 @@ import org.smartfrog.sfcore.prim.Prim;
      * @return resolved reference
      *
      * @throws SmartFrogResolutionException error occurred while resolving
-     *
+     * @throws RemoteException In case of network/rmi error
      */
     public abstract Object sfResolve(Reference r, int index)
-        throws SmartFrogResolutionException;
+        throws SmartFrogResolutionException, RemoteException;
 
 
 //************************************************************************************
@@ -77,9 +78,9 @@ import org.smartfrog.sfcore.prim.Prim;
      *
      * @throws SmartFrogResolutionException illegal reference or reference
      * not resolvable
-     *
+     * @throws RemoteException In case of network/rmi error
      */
-    public Object sfResolve(String referencePart) throws SmartFrogResolutionException {
+    public Object sfResolve(String referencePart) throws SmartFrogResolutionException, RemoteException {
         return sfResolve(new Reference(referencePart));
     }
 
@@ -95,9 +96,9 @@ import org.smartfrog.sfcore.prim.Prim;
      *
      * @throws SmartFrogResolutionException illegal reference or reference
      * not resolvable
-     *
+     * @throws RemoteException In case of network/rmi error
      */
-    public Object sfResolveWithParser(String reference) throws SmartFrogResolutionException {
+    public Object sfResolveWithParser(String reference) throws SmartFrogResolutionException, RemoteException {
         return sfResolve(Reference.fromString(reference));
     }
 
@@ -116,10 +117,10 @@ import org.smartfrog.sfcore.prim.Prim;
      *
      * @throws SmartFrogResolutionException illegal reference or reference
      * not resolvable
-     *
+     * @throws RemoteException In case of network/rmi error
      */
     public Object sfResolve(Reference reference, boolean mandatory)
-            throws SmartFrogResolutionException{
+            throws SmartFrogResolutionException, RemoteException{
         try {
             Object referenceObj = sfResolve(reference, 0);
             return (referenceObj);
@@ -144,10 +145,10 @@ import org.smartfrog.sfcore.prim.Prim;
      *
      * @throws SmartFrogResolutionException illegal reference or reference
      * not resolvable
-     *
+     * @throws RemoteException In case of network/rmi error
      */
     public Object sfResolve(String referencePart, boolean mandatory)
-        throws SmartFrogResolutionException {
+        throws SmartFrogResolutionException, RemoteException {
         return sfResolve(new Reference(referencePart), mandatory);
     }
 
@@ -166,10 +167,10 @@ import org.smartfrog.sfcore.prim.Prim;
      *
      * @throws SmartFrogResolutionException illegal reference or reference
      * not resolvable
-     *
+     * @throws RemoteException In case of network/rmi error
      */
     public boolean sfResolve(Reference reference, boolean defaultValue,
-        boolean mandatory) throws SmartFrogResolutionException {
+        boolean mandatory) throws SmartFrogResolutionException, RemoteException {
         boolean illegalClassType = false;
 
         try {
@@ -206,10 +207,10 @@ import org.smartfrog.sfcore.prim.Prim;
      *
      * @throws SmartFrogResolutionException illegal reference or reference
      * not resolvable
-     *
+     * @throws RemoteException In case of network/rmi error
      */
     public int sfResolve(Reference reference, int defaultValue, boolean mandatory)
-        throws SmartFrogResolutionException {
+        throws SmartFrogResolutionException, RemoteException {
         boolean illegalClassType = false;
 
         try {
@@ -248,10 +249,10 @@ import org.smartfrog.sfcore.prim.Prim;
      *
      * @throws SmartFrogResolutionException illegal reference or reference
      * not resolvable or resolved value &lt; minValue or &gt; maxValue
-     *
+     * @throws RemoteException In case of network/rmi error
      */
     public int sfResolve(Reference reference, int defaultValue,Integer minValue, Integer maxValue, boolean mandatory)
-        throws SmartFrogResolutionException {
+        throws SmartFrogResolutionException, RemoteException {
         int value = sfResolve(reference, defaultValue, mandatory);
         if ((minValue!=null)&&(value<minValue.intValue()))
             throw new SmartFrogResolutionException(reference, this.sfCompleteNameSafe(), "Error: sfResolved int '"+value+"' < '"+minValue+"'(minValue)");
@@ -275,10 +276,10 @@ import org.smartfrog.sfcore.prim.Prim;
      *
      * @throws SmartFrogResolutionException illegal reference or reference
      * not resolvable
-     *
+     * @throws RemoteException In case of network/rmi error
      */
     public long sfResolve(Reference reference, long defaultValue, boolean mandatory)
-        throws SmartFrogResolutionException {
+        throws SmartFrogResolutionException, RemoteException {
         boolean illegalClassType = false;
 
         try {
@@ -317,10 +318,10 @@ import org.smartfrog.sfcore.prim.Prim;
      *
      * @throws SmartFrogResolutionException illegal reference or reference
      * not resolvable or resolved value &lt; minValue or &gt; maxValue
-     *
+     * @throws RemoteException In case of network/rmi error
      */
     public long sfResolve(Reference reference, long defaultValue, Long minValue, Long maxValue, boolean mandatory)
-        throws SmartFrogResolutionException {
+        throws SmartFrogResolutionException, RemoteException {
         long value = sfResolve(reference, defaultValue, mandatory);
         if ((minValue!=null)&&(value<minValue.longValue()))
             throw new SmartFrogResolutionException(reference, this.sfCompleteNameSafe(), "Error: sfResolved long '"+value+"' < '"+minValue+"'(minValue)");
@@ -343,10 +344,10 @@ import org.smartfrog.sfcore.prim.Prim;
      *
      * @throws SmartFrogResolutionException illegal reference or reference
      * not resolvable
-     *
+     * @throws RemoteException In case of network/rmi error
      */
     public float sfResolve(Reference reference, float defaultValue, boolean mandatory)
-        throws SmartFrogResolutionException {
+        throws SmartFrogResolutionException, RemoteException {
         boolean illegalClassType = false;
 
         try {
@@ -385,10 +386,10 @@ import org.smartfrog.sfcore.prim.Prim;
      *
      * @throws SmartFrogResolutionException illegal reference or reference
      * not resolvable or resolved value &lt; minValue or &gt; maxValue
-     *
+     * @throws RemoteException In case of network/rmi error
      */
     public float sfResolve(Reference reference, float defaultValue, Float minValue, Float maxValue, boolean mandatory)
-        throws SmartFrogResolutionException {
+        throws SmartFrogResolutionException, RemoteException {
         float value = sfResolve(reference, defaultValue, mandatory);
         if ((minValue!=null)&&(value<minValue.floatValue()))
             throw new SmartFrogResolutionException(reference, this.sfCompleteNameSafe(), "Error: sfResolved float '"+value+"' < '"+minValue+"'(minValue)");
@@ -412,10 +413,10 @@ import org.smartfrog.sfcore.prim.Prim;
      *
      * @throws SmartFrogResolutionException illegal reference or reference
      * not resolvable
-     *
+     * @throws RemoteException In case of network/rmi error
      */
     public double sfResolve(Reference reference, double defaultValue, boolean mandatory)
-        throws SmartFrogResolutionException {
+        throws SmartFrogResolutionException, RemoteException {
         boolean illegalClassType = false;
 
         try {
@@ -456,10 +457,10 @@ import org.smartfrog.sfcore.prim.Prim;
      *
      * @throws SmartFrogResolutionException illegal reference or reference
      * not resolvable or resolved value &lt; minValue or &gt; maxValue
-     *
+     * @throws RemoteException In case of network/rmi error
      */
     public double sfResolve(Reference reference, double defaultValue, Double minValue, Double maxValue, boolean mandatory)
-        throws SmartFrogResolutionException {
+        throws SmartFrogResolutionException, RemoteException {
         double value = sfResolve(reference, defaultValue, mandatory);
         if ((minValue!=null)&&(value<minValue.doubleValue()))
             throw new SmartFrogResolutionException(reference, this.sfCompleteNameSafe(), "Error: sfResolved double '"+value+"' < '"+minValue+"'(minValue)");
@@ -483,10 +484,10 @@ import org.smartfrog.sfcore.prim.Prim;
      *
      * @throws SmartFrogResolutionException illegal reference or reference
      * not resolvable
-     *
+     * @throws RemoteException In case of network/rmi error
      */
     public String sfResolve(Reference reference, String defaultValue,
-        boolean mandatory) throws SmartFrogResolutionException {
+        boolean mandatory) throws SmartFrogResolutionException, RemoteException {
         boolean illegalClassType = false;
 
         try {
@@ -523,10 +524,10 @@ import org.smartfrog.sfcore.prim.Prim;
      *
      * @throws SmartFrogResolutionException illegal reference or reference
      * not resolvable
-     *
+     * @throws RemoteException In case of network/rmi error
      */
     public Vector sfResolve(Reference reference, Vector defaultValue,
-        boolean mandatory) throws SmartFrogResolutionException {
+        boolean mandatory) throws SmartFrogResolutionException, RemoteException {
         boolean illegalClassType = false;
 
         try {
@@ -563,10 +564,10 @@ import org.smartfrog.sfcore.prim.Prim;
      *
      * @throws SmartFrogResolutionException illegal reference or reference
      * not resolvable
-     *
+     * @throws RemoteException In case of network/rmi error
      */
     public String[] sfResolve(Reference reference, String[] defaultValue,
-        boolean mandatory) throws SmartFrogResolutionException {
+        boolean mandatory) throws SmartFrogResolutionException, RemoteException {
         boolean illegalClassType = false;
 
         try {
@@ -613,11 +614,11 @@ import org.smartfrog.sfcore.prim.Prim;
      *
      * @throws SmartFrogResolutionException illegal reference or reference
      * not resolvable
-     *
+     * @throws RemoteException In case of network/rmi error
      */
     public ComponentDescription sfResolve(Reference reference,
         ComponentDescription defaultValue, boolean mandatory)
-        throws SmartFrogResolutionException {
+        throws SmartFrogResolutionException, RemoteException {
         boolean illegalClassType = false;
 
         try {
@@ -656,10 +657,10 @@ import org.smartfrog.sfcore.prim.Prim;
      *
      * @throws SmartFrogResolutionException illegal reference or reference
      * not resolvable
-     *
+     * @throws RemoteException In case of network/rmi error
      */
     public Reference sfResolve(Reference reference, Reference defaultValue,
-        boolean mandatory) throws SmartFrogResolutionException {
+        boolean mandatory) throws SmartFrogResolutionException, RemoteException {
         boolean illegalClassType = false;
 
         try {
@@ -698,10 +699,10 @@ import org.smartfrog.sfcore.prim.Prim;
      *
      * @throws SmartFrogResolutionException illegal reference or reference
      * not resolvable
-     *
+     * @throws RemoteException In case of network/rmi error
      */
     public Prim sfResolve(Reference reference, Prim defaultValue,
-        boolean mandatory) throws SmartFrogResolutionException {
+        boolean mandatory) throws SmartFrogResolutionException, RemoteException {
         boolean illegalClassType = false;
 
         try {
@@ -740,10 +741,10 @@ import org.smartfrog.sfcore.prim.Prim;
      *
      * @throws SmartFrogResolutionException illegal reference or reference
      * not resolvable
-     *
+     * @throws RemoteException In case of network/rmi error
      */
     public Compound sfResolve(Reference reference, Compound defaultValue,
-        boolean mandatory) throws SmartFrogResolutionException {
+        boolean mandatory) throws SmartFrogResolutionException, RemoteException {
         boolean illegalClassType = false;
 
         try {
@@ -782,11 +783,11 @@ import org.smartfrog.sfcore.prim.Prim;
      *
      * @throws SmartFrogResolutionException illegal reference or reference
      * not resolvable
-     *
+     * @throws RemoteException In case of network/rmi error
      */
     public java.net.InetAddress sfResolve(Reference reference,
         java.net.InetAddress defaultValue, boolean mandatory)
-        throws SmartFrogResolutionException {
+        throws SmartFrogResolutionException, RemoteException {
         boolean illegalClassType = false;
 
         try {
@@ -833,10 +834,10 @@ import org.smartfrog.sfcore.prim.Prim;
      *
      * @throws SmartFrogResolutionException illegal reference or reference
      * not resolvable
-     *
+     * @throws RemoteException In case of network/rmi error
      */
     public Object sfResolve(Reference reference, Object defaultValue,
-        boolean mandatory) throws SmartFrogResolutionException{
+        boolean mandatory) throws SmartFrogResolutionException, RemoteException{
         boolean illegalClassType = false;
         try {
             Object referenceObj = sfResolve(reference, 0);
@@ -870,10 +871,10 @@ import org.smartfrog.sfcore.prim.Prim;
      *
      * @throws SmartFrogResolutionException illegal reference or reference
      * not resolvable
-     *
+     * @throws RemoteException In case of network/rmi error
      */
     public boolean sfResolve(String referencePart, boolean defaultValue,
-        boolean mandatory) throws SmartFrogResolutionException {
+        boolean mandatory) throws SmartFrogResolutionException, RemoteException {
         return sfResolve(new Reference(referencePart), defaultValue, mandatory);
     }
 
@@ -892,10 +893,10 @@ import org.smartfrog.sfcore.prim.Prim;
      *
      * @throws SmartFrogResolutionException illegal reference or reference
      * not resolvable
-     *
+     * @throws RemoteException In case of network/rmi error
      */
     public int sfResolve(String referencePart, int defaultValue, boolean mandatory)
-        throws SmartFrogResolutionException {
+        throws SmartFrogResolutionException, RemoteException {
         return sfResolve(new Reference(referencePart), defaultValue, mandatory);
     }
 
@@ -916,10 +917,10 @@ import org.smartfrog.sfcore.prim.Prim;
      *
      * @throws SmartFrogResolutionException illegal reference or reference
      * not resolvable or resolved value &lt; minValue or &gt; maxValue
-     *
+     * @throws RemoteException In case of network/rmi error
      */
     public int sfResolve(String referencePart, int defaultValue,Integer minValue,Integer maxValue, boolean mandatory)
-        throws SmartFrogResolutionException {
+        throws SmartFrogResolutionException, RemoteException {
         return sfResolve(new Reference(referencePart), defaultValue, minValue, maxValue, mandatory);
     }
 
@@ -939,10 +940,10 @@ import org.smartfrog.sfcore.prim.Prim;
      *
      * @throws SmartFrogResolutionException illegal reference or reference
      * not resolvable
-     *
+     * @throws RemoteException In case of network/rmi error
      */
     public long sfResolve(String referencePart, long defaultValue, boolean mandatory)
-        throws SmartFrogResolutionException {
+        throws SmartFrogResolutionException, RemoteException {
         return sfResolve(new Reference(referencePart), defaultValue, mandatory);
     }
 
@@ -964,10 +965,10 @@ import org.smartfrog.sfcore.prim.Prim;
      *
      * @throws SmartFrogResolutionException illegal reference or reference
      * not resolvable or resolved value &lt; minValue or &gt; maxValue
-     *
+     * @throws RemoteException In case of network/rmi error
      */
     public long sfResolve(String referencePart, long defaultValue, Long minValue, Long maxValue, boolean mandatory)
-        throws SmartFrogResolutionException {
+        throws SmartFrogResolutionException, RemoteException {
         return sfResolve(new Reference(referencePart), defaultValue, minValue, maxValue, mandatory);
     }
     /**
@@ -985,10 +986,10 @@ import org.smartfrog.sfcore.prim.Prim;
      *
      * @throws SmartFrogResolutionException illegal reference or reference
      * not resolvable
-     *
+     * @throws RemoteException In case of network/rmi error
      */
     public float sfResolve(String referencePart, float defaultValue, boolean mandatory)
-        throws SmartFrogResolutionException {
+        throws SmartFrogResolutionException, RemoteException {
         return sfResolve(new Reference(referencePart), defaultValue, mandatory);
     }
 
@@ -1009,10 +1010,10 @@ import org.smartfrog.sfcore.prim.Prim;
      *
      * @throws SmartFrogResolutionException illegal reference or reference
      * not resolvable or resolved value &lt; minValue or &gt; maxValue
-     *
+     * @throws RemoteException In case of network/rmi error
      */
     public float sfResolve(String referencePart, float defaultValue,Float minValue,Float maxValue, boolean mandatory)
-        throws SmartFrogResolutionException {
+        throws SmartFrogResolutionException, RemoteException {
         return sfResolve(new Reference(referencePart), defaultValue, minValue, maxValue, mandatory);
     }
 
@@ -1032,10 +1033,10 @@ import org.smartfrog.sfcore.prim.Prim;
      *
      * @throws SmartFrogResolutionException illegal reference or reference
      * not resolvable
-     *
+     * @throws RemoteException In case of network/rmi error
      */
     public double sfResolve(String referencePart, double defaultValue, boolean mandatory)
-        throws SmartFrogResolutionException {
+        throws SmartFrogResolutionException, RemoteException {
         return sfResolve(new Reference(referencePart), defaultValue, mandatory);
     }
 
@@ -1057,10 +1058,10 @@ import org.smartfrog.sfcore.prim.Prim;
      *
      * @throws SmartFrogResolutionException illegal reference or reference
      * not resolvable or resolved value &lt; minValue or &gt; maxValue
-     *
+     * @throws RemoteException In case of network/rmi error
      */
     public double sfResolve(String referencePart, double defaultValue, Double minValue, Double maxValue, boolean mandatory)
-        throws SmartFrogResolutionException {
+        throws SmartFrogResolutionException, RemoteException {
         return sfResolve(new Reference(referencePart), defaultValue, minValue, maxValue, mandatory);
     }
 
@@ -1079,10 +1080,10 @@ import org.smartfrog.sfcore.prim.Prim;
      *
      * @throws SmartFrogResolutionException illegal reference or reference
      * not resolvable
-     *
+     * @throws RemoteException In case of network/rmi error
      */
     public String sfResolve(String referencePart, String defaultValue,
-        boolean mandatory) throws SmartFrogResolutionException {
+        boolean mandatory) throws SmartFrogResolutionException, RemoteException {
         return sfResolve(new Reference(referencePart), defaultValue, mandatory);
     }
 
@@ -1100,10 +1101,10 @@ import org.smartfrog.sfcore.prim.Prim;
      *
      * @throws SmartFrogResolutionException illegal reference or reference
      * not resolvable
-     *
+     * @throws RemoteException In case of network/rmi error
      */
     public Vector sfResolve(String referencePart, Vector defaultValue,
-        boolean mandatory) throws SmartFrogResolutionException {
+        boolean mandatory) throws SmartFrogResolutionException, RemoteException {
         return sfResolve(new Reference(referencePart), defaultValue, mandatory);
     }
 
@@ -1123,10 +1124,10 @@ import org.smartfrog.sfcore.prim.Prim;
      *
      * @throws SmartFrogResolutionException illegal reference or reference
      * not resolvable
-     *
+     * @throws RemoteException In case of network/rmi error
      */
     public String[] sfResolve(String referencePart, String[] defaultValue,
-        boolean mandatory) throws SmartFrogResolutionException {
+        boolean mandatory) throws SmartFrogResolutionException, RemoteException {
         return sfResolve(new Reference(referencePart), defaultValue, mandatory);
     }
 
@@ -1147,11 +1148,11 @@ import org.smartfrog.sfcore.prim.Prim;
      *
      * @throws SmartFrogResolutionException illegal reference or reference
      * not resolvable
-     *
+     * @throws RemoteException In case of network/rmi error
      */
     public ComponentDescription sfResolve(String referencePart,
         ComponentDescription defaultValue, boolean mandatory)
-        throws SmartFrogResolutionException {
+        throws SmartFrogResolutionException, RemoteException {
         return sfResolve(new Reference(referencePart), defaultValue, mandatory);
     }
 
@@ -1171,10 +1172,10 @@ import org.smartfrog.sfcore.prim.Prim;
      *
      * @throws SmartFrogResolutionException illegal reference or reference
      * not resolvable
-     *
+     * @throws RemoteException In case of network/rmi error
      */
     public Reference sfResolve(String referencePart, Reference defaultValue,
-        boolean mandatory) throws SmartFrogResolutionException {
+        boolean mandatory) throws SmartFrogResolutionException, RemoteException {
         return sfResolve(new Reference(referencePart), defaultValue, mandatory);
     }
 
@@ -1194,10 +1195,10 @@ import org.smartfrog.sfcore.prim.Prim;
      *
      * @throws SmartFrogResolutionException illegal reference or reference
      * not resolvable
-     *
+     * @throws RemoteException In case of network/rmi error
      */
     public Prim sfResolve(String referencePart, Prim defaultValue,
-        boolean mandatory) throws SmartFrogResolutionException {
+        boolean mandatory) throws SmartFrogResolutionException, RemoteException {
         return sfResolve(new Reference(referencePart), defaultValue, mandatory);
     }
 
@@ -1218,10 +1219,10 @@ import org.smartfrog.sfcore.prim.Prim;
      *
      * @throws SmartFrogResolutionException illegal reference or reference
      * not resolvable
-     *
+     * @throws RemoteException In case of network/rmi error
      */
     public Compound sfResolve(String referencePart, Compound defaultValue,
-        boolean mandatory) throws SmartFrogResolutionException {
+        boolean mandatory) throws SmartFrogResolutionException, RemoteException {
         return sfResolve(new Reference(referencePart), defaultValue, mandatory);
     }
 
@@ -1241,11 +1242,11 @@ import org.smartfrog.sfcore.prim.Prim;
      *
      * @throws SmartFrogResolutionException illegal reference or reference
      * not resolvable
-     *
+     * @throws RemoteException In case of network/rmi error
      */
     public java.net.InetAddress sfResolve(String referencePart,
         java.net.InetAddress defaultValue, boolean mandatory)
-        throws SmartFrogResolutionException {
+        throws SmartFrogResolutionException, RemoteException {
         return sfResolve(new Reference(referencePart), defaultValue, mandatory);
     }
 
@@ -1265,11 +1266,11 @@ import org.smartfrog.sfcore.prim.Prim;
      *
      * @throws SmartFrogResolutionException illegal reference or reference
      * not resolvable
-     *
+     * @throws RemoteException In case of network/rmi error
      */
     public Object sfResolve(String referencePart,
         Object defaultValue, boolean mandatory)
-        throws SmartFrogResolutionException {
+        throws SmartFrogResolutionException, RemoteException {
         return sfResolve(new Reference(referencePart), defaultValue, mandatory);
     }
 }
