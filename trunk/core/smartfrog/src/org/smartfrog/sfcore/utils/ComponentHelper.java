@@ -24,10 +24,14 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.logging.LogFactory;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
+import org.smartfrog.sfcore.security.SFClassLoader;
 
 import java.rmi.RemoteException;
 import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.io.InputStream;
 
 /**
  * Contains methods for helping components; a factoring out of common functionality.
@@ -113,7 +117,7 @@ public class ComponentHelper {
      *
      * @return reference of attribute names to this component or an empty reference
      */
-    public Reference completeNameSafe(Prim owner) {
+    public Reference completeNameSafe() {
         Reference ref=completeNameOrNull();
         if(ref==null) {
             return new Reference();
@@ -130,7 +134,7 @@ public class ComponentHelper {
      *
      * @return reference of attribute names to this component or an empty reference
      */
-    public static Reference completeNameSafeStatic(Prim owner) {
+    public static Reference completeNameSafe(Prim owner) {
         try {
             return owner.sfCompleteName();
         } catch (Throwable thr) {
@@ -138,4 +142,24 @@ public class ComponentHelper {
             return new Reference();
         }
     }
+
+    /**
+     * load a resource using the classpath of the component
+     * at question.
+     *
+     * @param resourcename name of resource on the classpath
+     * @return an input stream if the resource was found and loaded
+     * @throws SmartFrogException if the resource is not on the classpath
+     */
+    public InputStream loadResource(String resourcename)
+            throws SmartFrogException, RemoteException {
+        String targetCodeBase = (String) owner.sfResolve(SmartFrogCoreKeys.SF_CODE_BASE);
+
+        InputStream in = SFClassLoader.getResourceAsStream(resourcename, targetCodeBase, true);
+        if (in == null) {
+            throw new SmartFrogException("Not found: " + resourcename);
+        }
+        return in;
+    }
+
 }

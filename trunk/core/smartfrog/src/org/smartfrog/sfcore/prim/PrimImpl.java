@@ -1618,7 +1618,7 @@ public class PrimImpl extends Object implements Prim, MessageKeys {
      *
      */
     public Reference sfCompleteNameSafe() {
-       return ComponentHelper.completeNameSafeStatic(this);
+       return ComponentHelper.completeNameSafe(this);
     }
     
 
