@@ -40,7 +40,7 @@ public class OptionSet {
 
     /** Usage string for SFSystem. */
     public String usage = "\n" +
-        " Usage: java -D... org.smartfrog.SFSystem [-h HOST_NAME [-p PROCESS_NAME]] (-t NAME)* (-c URL | -n NAME URL)* [-e]\n" +
+        " Usage: java -D... org.smartfrog.SFSystem [-h HOST_NAME [-p PROCESS_NAME]] (-t NAME)* (-d NAME)* (-c URL | -n NAME URL)* [-e]\n" +
         "    or: java -D... org.smartfrog.SFSystem -?";
 
     /** Help string for SFSystem. */
@@ -52,6 +52,8 @@ public class OptionSet {
         "                    in the sfDaemon where it is deployed" + "\n" +
         "                    (-p must be accompanied by -h)" + "\n" +
         "    -t NAME:        terminates the application named by 'NAME'" +
+        "\n" +
+        "    -d NAME:        detaches the component named by 'NAME' from the SmartFrog system and then terminates it" +
         "\n" +
         "    -c URL:         to deploy up the SF text at 'URL' using a random name" +
         "\n" +
@@ -76,6 +78,9 @@ public class OptionSet {
 
     /** Vector for named applications given as -t options on the commandline. */
     public Vector terminations = new Vector();
+    
+    /** Vector for named applications given as -d options on the commandline. */
+    public Vector detaching = new Vector();
 
     /** Vector for applications to be deployed. */
     public Vector configs = new Vector();
@@ -133,6 +138,10 @@ public class OptionSet {
 
                     case 't':
                         terminations.add(args[++i]);
+
+                        break;
+                    case 'd':
+                        detaching.add(args[++i]);
 
                         break;
 
