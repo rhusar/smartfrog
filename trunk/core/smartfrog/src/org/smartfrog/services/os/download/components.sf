@@ -24,7 +24,7 @@ For more information: www.smartfrog.org
 #include "org/smartfrog/services/os/runshell/components.sf"
 
 Downloader extends Prim {
-    sfClass "org.smartfrog.services.os.download.Download";
+    sfClass "org.smartfrog.services.os.download.DownloadImpl";
     sfExport false;
     url "system.tar";            // set this to the URL to download
     blocksize 1024;
