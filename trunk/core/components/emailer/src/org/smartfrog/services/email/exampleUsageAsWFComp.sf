@@ -39,9 +39,10 @@ Example extends Sequence {
         mailer extends Emailer {
                 // mail will be send when mailer executes as part of work-flow
                 runAsWorkFlowComponent true; 
-                to "xyz@india.hp.com";
+                to "awasthi@india.hp.com";
                 message "This is a test message \n thanks";
                 subject "SF Emailer Test";
+                smtpHost "SMTP.india.hp.com";     // SMTP host name
 
                 // vector of attachments each element is relative or 
                 // absolute path to files 
