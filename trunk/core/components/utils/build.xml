@@ -38,6 +38,11 @@ For more information: www.smartfrog.org
   <!-- for diagnostics of ant/subant interaction -->
 <!--  <echo>base dir ${basedir}</echo> -->
     <property name="Name.System" value="sfinstaller"/>
+
+<!-- =================================================================== -->
+  <!--   init                                                             -->
+  <!-- =================================================================== -->
+
   <target name="init" depends="init-standard-output-dirs,use-smartfrog-tasks">
 	 
 	  <tstamp/>
@@ -76,8 +81,7 @@ For more information: www.smartfrog.org
            Footer="${Name.System} ${version} ${Version}"
            doctitle="${Name.System}"
            bottom="${Name.Company}"
-           source="${javac.runtime.target}"
-           >
+           source="${javac.runtime.target}">
       <group title="SmartFrog Packages" packages="org.smartfrog.*"/>
       <classpath>
           <fileset dir="${smartfrog.dist.lib.dir}">
@@ -91,4 +95,17 @@ For more information: www.smartfrog.org
 
   </target>
 
+<!-- ========================================================== -->
+  <!-- create the jar -->
+  <!-- ========================================================== -->
+	<target name="dist" depends="common.dist" description="create the jar files">
+	 <copy todir = "${dist.doc.dir}">
+        <fileset dir ="${doc.dir}" />
+    </copy>   
+	<!--copy todir = "${dist.src.dir}">
+        <fileset dir ="${src.dir}">
+		  <include name="**/example*"/>
+		</fileset>
+    </copy-->   
+	</target>
 </project>
