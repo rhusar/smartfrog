@@ -1031,11 +1031,16 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
             }
         }
 
+        String failureMsg="";
+        if (failure!=null){
+          failureMsg = " (Failure: "+failure.getMessage()+")";
+        }
+
         if (myName != null) {
             sfTerminate(TerminationRecord.abnormal("Liveness Send Failure in " +
-                    myName, targetName, failure));
+                    myName + " when calling " +targetName + failureMsg , targetName, failure));
         } else {
-            sfTerminate(TerminationRecord.abnormal("Liveness Send Failure",
+            sfTerminate(TerminationRecord.abnormal("Liveness Send Failure"+ " when calling " +targetName + failureMsg,
                     targetName, failure));
         }
     }
