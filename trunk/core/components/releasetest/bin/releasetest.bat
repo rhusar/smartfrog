@@ -38,8 +38,8 @@ echo "Chaging dir to jnit dir"
 cd %INSTALL_DIR%\%JUNIT_RELEASE%
 mv extras %INSTALL_DIR%
 mv common.xml %INSTALL_DIR%
-cd %INSTALL_DIR%\extras\ant
-call %ANT_HOME%\bin\ant.bat
+rem cd %INSTALL_DIR%\extras\ant
+rem call %ANT_HOME%\bin\ant.bat
 cd %INSTALL_DIR%\%JUNIT_RELEASE%
 echo "Going to execute testcases in test harness"
 call ant.bat
