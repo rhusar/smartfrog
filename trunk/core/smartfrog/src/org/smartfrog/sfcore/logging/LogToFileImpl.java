@@ -82,7 +82,9 @@ public class LogToFileImpl extends LogToErrImpl implements LogToFile {
         }
         fullLogFileName.append(path);
 
-        fullLogFileName.append(logName.replace(':','_'));
+        String fixedName = correctFilename(logName);
+
+        fullLogFileName.append(fixedName);
 
         if (datedName){
             /** Used to format times in filename */
@@ -93,6 +95,25 @@ public class LogToFileImpl extends LogToErrImpl implements LogToFile {
         }
         // add the extension
         return new File(fullLogFileName.toString()+"."+fileExtension);
+    }
+
+    private String correctFilename(String filename) {
+        final int length = filename.length();
+        StringBuffer buffer=new StringBuffer(length);
+        for(int i=0;i<length;i++) {
+            char c= filename.charAt(i);
+            switch(c) {
+                case ':':
+                    buffer.append('_');
+                    break;
+                case '"':
+                    //remove these
+                    break;
+                default:
+                    buffer.append(c);
+            }
+        }
+        return new String(buffer);
     }
 
     /**
