@@ -32,10 +32,7 @@ import java.io.InputStream;
 
 import org.xml.sax.helpers.XMLReaderFactory;
 import org.xml.sax.XMLReader;
-import org.xml.sax.SAXNotSupportedException;
-import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXException;
-import org.apache.xml.resolver.tools.CatalogResolver;
 
 /**
  * JDom based utility to parse CDL files. created Jul 1, 2004 1:49:31 PM

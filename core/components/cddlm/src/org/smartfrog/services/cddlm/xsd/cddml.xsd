@@ -177,9 +177,12 @@
   <!-- BEGIN COMPLEX TYPES -->
   <!-- ============================================================= -->
 
+    <!-- the property list type is lax wrt parsing; anything goes in this
+          section, even when the rest is strict -->
   <xsd:complexType name="propertyListType">
     <xsd:sequence>
-      <xsd:any minOccurs="0"/>
+        <!-- namespace="##other" -->
+      <xsd:any  processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
   </xsd:complexType>
 
@@ -224,6 +227,8 @@
         </xsd:documentation>
       </xsd:annotation>
       </xsd:attribute>
+        <!-- let people stick on other attributes as needed -->
+    <xsd:anyAttribute namespace="##other" processContents="lax"/>
     </xsd:complexType>
   </xsd:element>
 

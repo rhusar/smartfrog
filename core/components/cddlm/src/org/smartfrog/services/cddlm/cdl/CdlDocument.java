@@ -21,6 +21,8 @@ package org.smartfrog.services.cddlm.cdl;
 
 import nu.xom.Document;
 import nu.xom.ParsingException;
+import nu.xom.Element;
+import nu.xom.Attribute;
 
 /**
  * This represents a parsed CDL document, or an error caused during parsing.
@@ -29,18 +31,24 @@ import nu.xom.ParsingException;
 
 public class CdlDocument {
 
-    private Document doc;
+    private Document document;
 
     private ParsingException exception;
+    public static final String ERROR_WRONG_NAMESPACE = "Document is not in CDL namespace";
+    public static final String ERROR_WRONG_ROOT_ELEMENT = "Root element is not 'cdl'";
+    public static final String ERROR_BAD_PATHLANGUAGE = "unsupported path language";
+    public static final String ERROR_NO_PATHLANGUAGE = "pathlanguage attribute not found";
 
 
-    public CdlDocument(Document doc) {
-        this.doc = doc;
+    public CdlDocument(Document doc) throws CdlParsingException {
+        this.document = doc;
+        validate();
     }
 
     public CdlDocument(ParsingException exception) {
         this.exception = exception;
     }
+
 
     /**
      * validity test
@@ -48,11 +56,11 @@ public class CdlDocument {
      */
     public boolean isValid() {
         //TODO
-        return doc!=null;
+        return document!=null;
     }
 
-    public Document getDoc() {
-        return doc;
+    public Document getDocument() {
+        return document;
     }
 
     public ParsingException getException() {
@@ -71,5 +79,35 @@ public class CdlDocument {
         if (exception!=null) {
             throw exception;
         }
+    }
+
+
+
+    public void assertTrue(String message,boolean test ) throws CdlParsingException {
+        if(test==false) {
+            throw new CdlParsingException(message);
+        }
+    }
+
+    public void validateRootElement() throws CdlParsingException {
+        Element root = document.getRootElement();
+        String uri = root.getNamespaceURI();
+        assertTrue(ERROR_WRONG_NAMESPACE,Constants.CDL_NAMESPACE.equals(uri));
+        assertTrue(ERROR_WRONG_ROOT_ELEMENT, Constants.CDL_ELT_CDL.equals(root.getLocalName()));
+        Attribute pathLangAttr = root.getAttribute("pathlanguage",Constants.CDL_NAMESPACE);
+        if(pathLangAttr!=null) {
+            assertTrue(ERROR_NO_PATHLANGUAGE, pathLangAttr != null);
+            String language=pathLangAttr.getValue();
+            assertTrue(ERROR_BAD_PATHLANGUAGE,Constants.XPATH_URI.equals(language));
+        }
+    }
+
+    /**
+     * this routine encodes all the logic around the validity fo the scham
+     *
+     * @throws CdlParsingException
+     */
+    public void validate() throws CdlParsingException {
+        validateRootElement();
     }
 }

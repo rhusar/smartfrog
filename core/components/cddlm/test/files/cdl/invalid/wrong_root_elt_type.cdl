@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<!-- this is not a valid CDL document -->
+ <!-- the root element is of the wrong type -->
+<cdl:types xmlns:cdl="urn:cddlm/xml/0.1"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    >
+</cdl:types>
