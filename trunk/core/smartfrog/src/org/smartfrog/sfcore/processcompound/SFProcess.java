@@ -335,6 +335,8 @@ public class SFProcess implements MessageKeys {
 
         processCompound = (ProcessCompound) startComponent(deployComponent(descr));
 
+        deployDefaultProcessDescriptions(processCompound);
+
         return processCompound;
     }
 
