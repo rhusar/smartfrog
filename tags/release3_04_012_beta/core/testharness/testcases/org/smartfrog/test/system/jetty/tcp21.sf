@@ -1,0 +1,27 @@
+#include "org/smartfrog/components.sf";
+#include "org/smartfrog/services/jetty/components.sf";
+
+/** 
+ * This is an example of jetty component
+ */
+
+
+/**
+ * Specify the jetty home path here
+ */
+jetty_home LAZY PROPERTY jetty.home;
+//jetty_home "C:\\Jetty-4.2.18";
+
+sfConfig extends Compound {
+    server extends CoreJettyServer {
+      jettyhome ROOT:jetty_home; // mandatory
+      serverHost "localhost"; //mandatory
+      contexts extends Contexts;
+        list1 extends JettyListener {
+            listenerPort 8012;
+            serverHost "localhost";
+            server LAZY server1;
+      }
+    }
+}
+
