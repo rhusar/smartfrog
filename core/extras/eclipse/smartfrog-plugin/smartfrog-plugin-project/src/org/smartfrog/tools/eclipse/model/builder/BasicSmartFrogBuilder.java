@@ -49,7 +49,7 @@ import java.io.File;
  * Use rmic compiler to build the RMI classes.
  */
 public class BasicSmartFrogBuilder {
-    private static final String DESTINATION_OPTION = "-d "; //$NON-NLS-1$
+    private static final String DESTINATION_OPTION = "-d"; //$NON-NLS-1$
 
     private static final String REMOTE_INTERFACE = "Remote"; //$NON-NLS-1$
 
@@ -151,14 +151,16 @@ public class BasicSmartFrogBuilder {
 
         String rmiLocation = SmartFrogPreferencePage.getRmiLocation();
         try {
-            String cmd = SmartFrogPreferencePage.getRmiLocation()
-                    + ISmartFrogConstants.FILE_SEPARATOR + "rmic" //$NON-NLS-1$
-                    + ISmartFrogConstants.WHITE_SPACE + "-classpath " //$NON-NLS-1$
-                    + mClassPath + Util.getClassSeparator() + binDir
-                    + ISmartFrogConstants.WHITE_SPACE + DESTINATION_OPTION
-                    + binDir + ISmartFrogConstants.WHITE_SPACE + fileStr + ""; //$NON-NLS-1$
-
-            Process mProcess = Runtime.getRuntime().exec(cmd, null,
+                        
+            String cmds[] = new String[6];
+            cmds[0]=  SmartFrogPreferencePage.getRmiLocation()
+            + ISmartFrogConstants.FILE_SEPARATOR + "rmic" ;
+            cmds[1] = "-classpath";
+            cmds[2] = mClassPath + Util.getClassSeparator() + binDir; 
+            cmds[3] = DESTINATION_OPTION;
+            cmds[4] = binDir ;
+            cmds[5] = fileStr;
+            Process mProcess = Runtime.getRuntime().exec(cmds, null,
                     new File(workDir + "/src")); //$NON-NLS-1$
             ( new StreamGobbler(mProcess.getInputStream(), "builder:ERROR") ).start(); //$NON-NLS-1$
             ( new StreamGobbler(mProcess.getErrorStream(), "builder:OUTPUT") ).start(); //$NON-NLS-1$

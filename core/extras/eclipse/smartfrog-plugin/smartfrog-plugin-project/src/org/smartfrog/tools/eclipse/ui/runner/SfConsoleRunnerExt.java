@@ -34,24 +34,28 @@ class SfConsoleRunnerExt
 {
     public void run()
     {
-        String cmdStart = createCmd();
+        String cmdStart[] = createCmd();
 
         executeCmd(cmdStart);
     }
 
-    private String createCmd()
+    private String[] createCmd()
     {
         String batchDir = "bin"; //$NON-NLS-1$
-        String dir = SmartFrogPreferencePage.getSmartFrogLocation() +
+        String dir =   SmartFrogPreferencePage.getSmartFrogLocation() +
             ISmartFrogConstants.FILE_SEPARATOR + batchDir +
-            ISmartFrogConstants.FILE_SEPARATOR;
+            ISmartFrogConstants.FILE_SEPARATOR ;
 
-        String cmdStart = CMD_SFMANAGEMENT_CONSOLE;
+        String cmdGeneral[] = getCommandGeneralArray();
 
-        String cmdGeneral = getCommandGeneral();
 
-        cmdStart = cmdGeneral + ISmartFrogConstants.WHITE_SPACE + dir + cmdStart;
-
-        return cmdStart;
+        String cmds[] = new String[cmdGeneral.length+1];
+        for (int i=0;  i < cmdGeneral.length; i++)
+        {
+        	cmds[i] = cmdGeneral[i];
+        }
+        cmds[cmdGeneral.length]=  dir + CMD_SFMANAGEMENT_CONSOLE ;
+        	
+        return cmds;
     }
 }

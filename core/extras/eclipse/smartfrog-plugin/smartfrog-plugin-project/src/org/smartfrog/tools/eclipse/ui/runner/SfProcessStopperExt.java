@@ -54,7 +54,7 @@ class SfProcessStopperExt
      */
     public void run()
     {
-        String cmdStart = createCmd();
+        Object cmdStart = createCmd();
 
         if (null == cmdStart) {
             ExceptionHandler.handleInSWTThread(
@@ -62,7 +62,16 @@ class SfProcessStopperExt
                     Messages.getString("SfProcessStopperExt.error.notProcessException") + mProcessName), //$NON-NLS-1$
                 Messages.getString("SfProcessStopperExt.error.noProcess"), null); //$NON-NLS-1$
         } else {
-            executeCmd(cmdStart);
+        	if (cmdStart instanceof String)
+        	{
+        		executeCmd((String)cmdStart);
+        	} 
+
+        	if (cmdStart instanceof String[])
+        	{
+        		executeCmd((String[])cmdStart);
+        	} 
+
         }
     }
 
@@ -70,15 +79,15 @@ class SfProcessStopperExt
      * 
      * @return look up the stop command with the process name
      */
-    private String createCmd()
+    private Object createCmd()
     {
-        String cmd = null;
+    	Object cmd = null;
 
         InfoProcess process = MngProcess.getInstance().deleteProcess(
                 mProcessName);
 
         if (null != process) {
-            cmd = process.getCmdStop();
+            cmd = process.getCmdStopObj();
         }
 
         return cmd;

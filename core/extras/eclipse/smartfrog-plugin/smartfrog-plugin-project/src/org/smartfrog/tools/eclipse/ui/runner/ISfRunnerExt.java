@@ -46,24 +46,24 @@ abstract class ISfRunnerExt
         "-Dorg.smartfrog.sfcore.processcompound.sfDefault.sfDefault="; //$NON-NLS-1$
 
     protected String mSfDaemonDefIniFile =
-        SmartFrogPreferencePage.getSmartFrogLocation() + ISmartFrogConstants.FILE_SEPARATOR +"bin" + ISmartFrogConstants.FILE_SEPARATOR +"default.ini"; //$NON-NLS-1$
+    	 SmartFrogPreferencePage.getSmartFrogLocation() + ISmartFrogConstants.FILE_SEPARATOR +"bin" + ISmartFrogConstants.FILE_SEPARATOR +"default.ini" ; //$NON-NLS-1$
 
     protected String mSfDaemonDefSFFile =
-        SmartFrogPreferencePage.getSmartFrogLocation() + ISmartFrogConstants.FILE_SEPARATOR +"bin" + ISmartFrogConstants.FILE_SEPARATOR +"default.sf"; //$NON-NLS-1$
+    	SmartFrogPreferencePage.getSmartFrogLocation() + ISmartFrogConstants.FILE_SEPARATOR +"bin" + ISmartFrogConstants.FILE_SEPARATOR +"default.sf" ; //$NON-NLS-1$
 
     //"sfDaemon";
     protected final static String SfDaemonFile =
-        SmartFrogPreferencePage.getSmartFrogLocation() + ISmartFrogConstants.FILE_SEPARATOR + "bin" +ISmartFrogConstants.FILE_SEPARATOR +"daemon.sf"; //$NON-NLS-1$
+    	 SmartFrogPreferencePage.getSmartFrogLocation() + ISmartFrogConstants.FILE_SEPARATOR + "bin" +ISmartFrogConstants.FILE_SEPARATOR +"daemon.sf" ; //$NON-NLS-1$
 
     protected final static String CMD_AddSecurity = "security"; //$NON-NLS-1$
 
     protected final static String SfSystemClass = "org.smartfrog.SFSystem"; //$NON-NLS-1$
 
-    protected final static String JAVA = SmartFrogPreferencePage.getRmiLocation() + ISmartFrogConstants.FILE_SEPARATOR +"java"; //$NON-NLS-1$
+    protected final static String JAVA =  SmartFrogPreferencePage.getRmiLocation() + ISmartFrogConstants.FILE_SEPARATOR +"java" ; //$NON-NLS-1$
     protected static final String CMD_SFMANAGEMENT_CONSOLE =
         "sfManagementConsole"; //$NON-NLS-1$
 
-    protected static final String CMD_SFPROCESS_START = "sfStart"; //$NON-NLS-1$
+    protected static final String CMD_SFPROCESS_START = "smartfrog"; //$NON-NLS-1$
 
     protected static final String CMD_SFPROCESS_TERMINATE = "sfTerminate"; //$NON-NLS-1$
 
@@ -117,5 +117,49 @@ abstract class ISfRunnerExt
         }
 
         return cmdGeneral;
+    }
+    
+    
+    /**
+     * return the command name in different OS
+     * @return
+     */
+    protected String[] getCommandGeneralArray()
+    {
+    	String cmds[] = null;
+        String osName = System.getProperty("os.name"); //$NON-NLS-1$
+
+        if (osName.equals("Windows 2000") || osName.equals("Windows NT") || //$NON-NLS-1$ //$NON-NLS-2$
+                osName.equals("Windows XP")) { //$NON-NLS-1$
+        	cmds = new String[2];
+        	cmds[0] = "cmd.exe";
+        	cmds[1]= "/C";
+
+            //            if (this.securityCheckBox.isSelected()) {
+            //               dir = dir + cmdAddSecurity + "\\" ;
+            //               cmdStop = dir + cmdAddSecurity + "\\" ;
+            //            }
+
+        } else if (osName.equals("Windows 95") || osName.equals("Windows 98")) { //$NON-NLS-1$ //$NON-NLS-2$
+        	cmds = new String[2];
+        	cmds[0] = "command.exe";
+        	cmds[1]= "/C";
+
+            //            if (this.securityCheckBox.isSelected()) {
+            //               dir = dir + cmdAddSecurity + "\\" ;
+            //               cmdStop = dir + cmdAddSecurity + "\\" ;
+            //            }
+        } else {
+            cmds = new String[1];
+        	cmds[0] = "bash";
+
+
+            //            if (this.securityCheckBox.isSelected()) {
+            //               dir = dir + cmdAddSecurity + "/" ;
+            //               cmdStop = dir + cmdAddSecurity + "/" ;
+            //            }
+        }
+
+        return cmds;
     }
 }

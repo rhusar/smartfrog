@@ -28,9 +28,9 @@ public class InfoProcess {
     private String workDir=null;
     private String processName=null;
     private String host = "127.0.0.1"; //$NON-NLS-1$
-    private String startCmd=null;
+    private Object startCmd=null;
     private String startAtt=""; //$NON-NLS-1$
-    private String stopCmd=null;
+    private Object stopCmd=null;
     private String stopAtt=""; //$NON-NLS-1$
     private String[] envProp=null;
     private boolean autoReStart=false;
@@ -48,7 +48,7 @@ public class InfoProcess {
       //System.out.println("Infoprocess New...: "+this.toString());
      }
 
-    public InfoProcess(String processName, String startCmd, String stopCmd, String workDir) {
+    public InfoProcess(String processName, Object startCmd, Object stopCmd, String workDir) {
         this.processName=processName;
         this.startCmd=startCmd;
         this.stopCmd = stopCmd;
@@ -130,6 +130,9 @@ public class InfoProcess {
       return (stopCmd+" "+stopAtt); //$NON-NLS-1$
     }
 
+    public Object getCmdStopObj(){
+        return stopCmd;
+      }
 
     public String getCmd(){
       return ("StartCmd: "+startCmd+" "+startAtt+" ¦ "+"StopCmd: "+stopCmd+" "+stopAtt); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
