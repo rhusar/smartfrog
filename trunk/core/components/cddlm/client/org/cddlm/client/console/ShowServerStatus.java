@@ -97,7 +97,7 @@ public class ShowServerStatus extends ConsoleOperation {
             operation = new ShowServerStatus(server, pw);
             success = operation.doExecute();
         } catch (Throwable e) {
-            e.printStackTrace(System.err);
+            processThrowableInMain(e, pw);
             success = false;
         }
         pw.flush();

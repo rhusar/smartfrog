@@ -23,9 +23,8 @@ package org.smartfrog.services.cddlm.test.system.console;
 
 import org.apache.axis.AxisFault;
 import org.apache.axis.types.URI;
-import org.cddlm.client.console.Undeploy;
 import org.cddlm.client.console.ConsoleOperation;
-import org.smartfrog.services.cddlm.generated.api.DeployApiConstants;
+import org.cddlm.client.console.Undeploy;
 import org.smartfrog.services.cddlm.generated.api.DeployApiConstants;
 
 /**
@@ -57,7 +56,9 @@ public class UndeployTest extends ConsoleTestBase {
         try {
             operation.undeploy(new URI(INVALID_URI), "termination");
         } catch (AxisFault e) {
-            assertFaultMatches(e, DeployApiConstants.FAULT_NO_SUCH_APPLICATION, null);
+            assertFaultMatches(e,
+                    DeployApiConstants.FAULT_NO_SUCH_APPLICATION,
+                    null);
         }
     }
 
@@ -65,8 +66,37 @@ public class UndeployTest extends ConsoleTestBase {
         try {
             operation.undeploy(new URI(INVALID_URI), null);
         } catch (AxisFault e) {
-            assertFaultMatches(e, DeployApiConstants.FAULT_NO_SUCH_APPLICATION, null);
+            assertFaultMatches(e,
+                    DeployApiConstants.FAULT_NO_SUCH_APPLICATION,
+                    null);
         }
     }
+
+    public void testExecute() throws Exception {
+        try {
+            String args[] = new String[1];
+            args[0] = INVALID_URI;
+            operation = new Undeploy(getBinding(), getOut(), args);
+            operation.execute();
+
+        } catch (AxisFault e) {
+            assertFaultMatches(e,
+                    DeployApiConstants.FAULT_NO_SUCH_APPLICATION,
+                    null);
+        }
+    }
+
+    public void testExecute2() throws Exception {
+        try {
+            operation.setUri(new URI(INVALID_URI));
+            operation.execute();
+
+        } catch (AxisFault e) {
+            assertFaultMatches(e,
+                    DeployApiConstants.FAULT_NO_SUCH_APPLICATION,
+                    null);
+        }
+    }
+
 
 }

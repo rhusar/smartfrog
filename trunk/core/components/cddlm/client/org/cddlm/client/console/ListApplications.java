@@ -79,7 +79,7 @@ public class ListApplications extends ConsoleOperation {
             operation = new ListApplications(server, pw);
             success = operation.doExecute();
         } catch (Throwable e) {
-            e.printStackTrace(System.err);
+            processThrowableInMain(e, pw);
             success = false;
         }
         pw.flush();

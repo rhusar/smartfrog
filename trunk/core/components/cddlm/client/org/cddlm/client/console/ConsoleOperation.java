@@ -429,4 +429,34 @@ public abstract class ConsoleOperation {
     }
 
 
+    /**
+     * print out a fault
+     *
+     * @param exception
+     */
+    public static void processThrowableInMain(Throwable exception,
+            PrintWriter out) {
+        if (exception instanceof BadCommandLineException) {
+            out.println(exception.getMessage());
+        } else {
+            exception.printStackTrace(out);
+        }
+    }
+
+    /**
+     * get the first non null element; set it to null
+     *
+     * @param args
+     * @return null for no match
+     */
+    public static String getFirstNonNullElement(final String args[]) {
+        for (int i = 0; i < args.length; i++) {
+            if (args[i] != null) {
+                String elt = args[i];
+                args[i] = null;
+                return elt;
+            }
+        }
+        return null;
+    }
 }
