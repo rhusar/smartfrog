@@ -129,7 +129,7 @@ public abstract class TaskTestBase extends BuildFileTest {
 
     protected void expectDeployed(String target,String appname) {
         executeTarget(target);
-        assertInLog("Successfully deployed: '"+appname+"'");
+        assertInLog(":sfRunProcess:"+appname);
     }
 
     /**
@@ -142,6 +142,26 @@ public abstract class TaskTestBase extends BuildFileTest {
         expectBuildExceptionContaining(target, "deploy failure",
                 "Could not");
         assertInLog("Reference not found, Unresolved Reference");
+    }
+
+    /**
+     * assert that a property contains a string
+     * @param property name of property to look for
+     * @param contains what to search for in the string
+     */
+    protected void assertPropertyContains(String property,String contains) {
+        String result = getProperty(property);
+
+        assertTrue(result!=null && result.indexOf(contains)>=0);
+    }
+
+    /**
+     * get a property from the project
+     * @param property
+     * @return
+     */
+    protected String getProperty(String property) {
+        return project.getProperty(property);
     }
 
 }
