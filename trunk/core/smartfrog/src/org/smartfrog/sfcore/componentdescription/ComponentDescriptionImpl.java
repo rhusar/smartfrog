@@ -218,7 +218,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * @return iterator
      */
     public  Iterator sfAttributes() {
-        return context.sfValues();
+        return context.sfAttributes();
     }
 
     /**
