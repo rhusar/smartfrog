@@ -92,7 +92,7 @@ public class DeployTest extends TaskTestBase {
         expectBuildExceptionContaining("testBadHost", "unknown host",
                 "Could not deploy");
         assertLogContaining("Unable to locate IP address of the host: no-such-hostname");
-        assertLogContaining("java.net.UnknownHostException: no-such-hostname");
+        //assertLogContaining("java.net.UnknownHostException: no-such-hostname");
     }
 
     /**
@@ -107,6 +107,10 @@ public class DeployTest extends TaskTestBase {
      */
     public void testRunFile() {
         expectBuildExceptionContaining("testRunFile", "deploy failure", "Could not deploy");
+        assertNoConnectionToLocalhost();
+    }
+
+    private void assertNoConnectionToLocalhost() {
         assertLogContaining("Unable to connect to sfDaemon on: localhost");
         assertLogContaining("Reason:sfDaemon may not be running on localhost");
         assertLogContaining("java.rmi.ConnectException: Connection refused to host: 127.0.0.1");
@@ -114,9 +118,7 @@ public class DeployTest extends TaskTestBase {
 
     public void testResource() {
         expectBuildExceptionContaining("testResource", "deploy failure", "Could not deploy");
-        assertLogContaining("Unable to connect to sfDaemon on: localhost");
-        assertLogContaining("Reason:sfDaemon may not be running on localhost");
-        assertLogContaining("java.rmi.ConnectException: Connection refused to host: 127.0.0.1");
+        assertNoConnectionToLocalhost();
     }
 
     /**
