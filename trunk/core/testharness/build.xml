@@ -38,8 +38,15 @@ For more information: www.smartfrog.org
 
   You can enable/disable unit tests by setting unit.tests to true or false;
   system tests by setting system.tests to true or false. By default both are enabled.
+  
+  Do not run the system tests outside a secure environment, unless
+  you are running a daemon that is secure. 
 
-  This
+  The target "dist" creates a jar file in the dist/lib directory,
+  that contains all the utility classes needed to deploy smartfrog
+  programs as part of a unit test system. It is designed to be reusable
+  when testing other components. 
+  
 
 </description>
 
@@ -54,8 +61,6 @@ For more information: www.smartfrog.org
 
   <!-- Import common stuff -->
   <import file="${root.dir}/common.xml"/>
-
-
 
 
   <!-- turn on the tests. If you dont want this, set one (or both) to false)  in the unit tests-->
@@ -232,22 +237,55 @@ For more information: www.smartfrog.org
     description="compile and run all the tests"
     />
 
+  <!-- ========================================================== -->
+  <!-- shortcut for testing -->
+  <!-- ========================================================== -->
   <target name="smartfrog-dist"
-    depends="init"
+    depends="init-common"
     >
-    <ant dir="../smartfrog" target="dist" inheritall="false"/>
+    <ant dir="${smartfrog.home}" target="dist" inheritall="false"/>
   </target>
 
+  <!-- ========================================================== -->
+  <!-- shortcut for development -->
+  <!-- ========================================================== -->
   <target name="buildtest"
     depends="smartfrog-dist,test"
     description="compile the distribution, compile and run all the tests"
     />
- <target name="jar" depends="compile-tests" description="creates the jar file for the test cases">
-  <!-- Create sfTestCases.jar file -->
-    <jar jarfile="${root.dir}/smartfrog/dist/lib/sfTestCases.jar"
+    
+  <!-- ========================================================== -->
+  <!-- creates a jar and sticks it into the smartfrog dist library -->
+  <!-- this contains only the tests not the utility classes -->  
+  <!-- ========================================================== -->
+   <target name="jar" depends="compile-tests" 
+    description="creates the jar file for the test cases">
+    <!-- Create sfTestCases.jar file -->
+    <property name="testcases.jar" value="sfTestCases.jar"/>
+    <property name="testcases.jar.dist.dir" 
+      location="${smartfrog.dist.lib.dir}"/>
+    <property name="testcases.jar.file" 
+      location="${testcases.jar.dist.dir}/${testcases.jar}"/>
+    <jar jarfile="${testcases.jar.file}"
          basedir="${test.classes.dir}"
          includes="**/system/**, **/unit/**" >
     </jar>
 </target>
+
+  <!-- ========================================================== -->
+  <!-- create a redistributable testharness jar file -->
+  <!-- this contains only the test utility classes, not the tests -->
+  <!-- ========================================================== -->
+  <target name="dist" depends="compile-tests" 
+    description="creates the jar file for the testharness">
+    
+    <property name="testharness.core.jar" value="smartfrog-testharness.jar"/>
+    <property name="testharness.core.jar.file" 
+      location="${dist.lib.dir}/${testharness.core.jar}"/>
+    
+    <jar jarfile="${testharness.core.jar.file}"
+         basedir="${test.classes.dir}"
+         includes="org/smartfrog/test/*" />
+ </target>
 
 </project>

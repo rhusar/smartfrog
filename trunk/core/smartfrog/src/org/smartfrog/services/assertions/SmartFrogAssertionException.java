@@ -17,7 +17,7 @@
  For more information: www.smartfrog.org
 
  */
-package org.cddlm.components;
+package org.smartfrog.services.assertions;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;

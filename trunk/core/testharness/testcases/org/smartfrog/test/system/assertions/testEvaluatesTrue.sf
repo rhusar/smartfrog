@@ -18,20 +18,20 @@ For more information: www.smartfrog.org
 
 */
 
-/*
- this declares useful CDDLM components
- */
+#include "org/smartfrog/services/assertions/components.sf"
+
+#include "org/smartfrog/test/system/assertions/components.sf"
 
 
+sfConfig extends Compound {
 
- /**
-  * Include the core smartfrog components.
-  */
-#include "/org/smartfrog/components.sf"
-#include "/org/smartfrog/predicates.sf"
+    boolValue extends BooleanValues {
+        value true;
+    }
 
-/*
- * now include the CDDLM components
- */
-#include "/org/cddlm/components/platformInformation.sf"
-#include "/org/cddlm/components/livenessPage.sf"
+    asserts extends Assert {
+        reference boolValue;
+        evaluatesTrue "getTrue";
+        evaluatesFalse "getFalse";
+    }
+}

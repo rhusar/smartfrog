@@ -12,7 +12,7 @@
  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  For more information: www.smartfrog.org
  */
-package org.cddlm.components;
+package org.smartfrog.services.assertions;
 
 import java.rmi.Remote;
 
@@ -35,4 +35,5 @@ public interface Assert extends Remote {
     public static final String REFERENCE = "reference";
     public static final String EVALUATES_TRUE = "evaluatesTrue";
     public static final String EVALUATES_FALSE = "evaluatesFalse";
+    
 }

@@ -1,3 +1,4 @@
+org/smartfrog/test/system/assertions/BooleanValuesImpl.class
 org/smartfrog/test/system/cleanup/Comp1.class
 org/smartfrog/test/system/cleanup/Comp2.class
 org/smartfrog/test/system/GeneratorImpl.class
