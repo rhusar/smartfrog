@@ -39,7 +39,7 @@ Example extends Sequence {
         mailer extends Emailer {
                 // mail will be send when mailer executes as part of work-flow
                 runAsWorkFlowComponent true; 
-                to "awasthi@india.hp.com";
+                to "xyz@india.hp.com";
                 message "This is a test message \n thanks";
                 subject "SF Emailer Test";
 
