@@ -125,8 +125,7 @@ To use: ant -f buildRelease release
   <target name="allrelease" depends="init, initrelease">
 	 
     <zip destfile="../releases/${Name.System}.${version}.${DSTAMP}_ALL.zip">
-       <zipfileset dir="." prefix="${Name.System}.${version}">
-	<include name="../common.xml"/>
+	    <zipfileset dir="." prefix="${Name.System}.${version}/components">
 	<include name="emailer/**"/>
 	<include name="jetty/**"/>
 	<include name="logger/**"/>
@@ -153,12 +152,14 @@ To use: ant -f buildRelease release
         <exclude name="**/Cvs" />
         <exclude name="**/.#*" />
         <exclude name="**/*.*~" />
-       </zipfileset>
+   </zipfileset>
+   <zipfileset dir=".." prefix="${Name.System}.${version}">
+	<include name="**/common.xml"/>
+   </zipfileset>
    </zip>
 
     <tar tarfile="../releases/${Name.System}.${version}.${DSTAMP}_ALL.tar">
-      <tarfileset dir="." prefix="${Name.System}.${version}">
-	<include name="../common.xml"/>
+	    <tarfileset dir="." prefix="${Name.System}.${version}/components">
 	<include name="emailer/**"/>
 	<include name="jetty/**"/>
 	<include name="logger/**"/>
@@ -185,7 +186,10 @@ To use: ant -f buildRelease release
         <exclude name="**/Cvs" />
         <exclude name="**/.#*" />
         <exclude name="**/*.*~" />
-      </tarfileset>
+    </tarfileset>
+    <tarfileset dir=".." prefix="${Name.System}.${version}">
+	<include name="**/common.xml"/>
+    </tarfileset>
   </tar>
   
   <gzip src="../releases/${Name.System}.${version}.${DSTAMP}_ALL.tar" zipfile="../releases/${Name.System}.${version}.${DSTAMP}_ALL.tar.gz"/>
