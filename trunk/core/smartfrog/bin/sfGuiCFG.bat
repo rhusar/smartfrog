@@ -1,9 +1,9 @@
 echo off
 rem ----To customize for each particular user ---------
-rem set SFHOME=D:\cvs\core\smartfrog\dist\
-rem set JAVA_HOME=D:\java\jdk\jdk1.4.2_03\
-rem set SFUSERHOME=D:\cvs\dist\lib
-rem set srcDir=D:\cvs\\core\smartfrog\src
+rem set SFHOME=D:\cvs\SmartFrog\core\smartfrog\dist\
+rem set JAVA_HOME=D:\jdk\
+rem set SFUSERHOME=D:\cvs\USER\dist\lib
+rem set srcDir=D:\cvs\SmartFrog\core\smartfrog\src
 rem ---------------------------------------------------
 
 rem -----------------Config parameters for SFGui---------
@@ -14,8 +14,8 @@ rem cmdSFDaemon=-Dorg.smartfrog.sfcore.processcompound.sfProcessName=
 rem SFDaemonProcessName=rootProcess
 rem SFDaemonDefIniFile=./bin/default.ini
 rem SFDaemonDefSFFile=./bin/default.sf
-rem cmdSFStart=sfStart
-rem cmdSFStop=sfTerminate
+rem cmdSFStart=DEPLOY
+rem cmdSFStop=TERMINATE
 rem suffixSecureScrip=security
 rem cmdBrowserURL=http://127.0.0.1:8080/
 rem cmdBrowserWin=explorer
