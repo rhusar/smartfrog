@@ -156,7 +156,10 @@ public class AssertComponent extends PrimImpl implements Assert {
         super.sfPing(source);
 
         try {
-            checkAssertions();
+            boolean checkOnLiveness = sfResolve(CHECK_ON_LIVENESS, true, false);
+            if(checkOnLiveness) {
+                checkAssertions();
+            }
         } catch (RemoteException e) {
             throw new SmartFrogLivenessException(e);
         } catch (SmartFrogLivenessException e) {
@@ -191,6 +194,9 @@ public class AssertComponent extends PrimImpl implements Assert {
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        checkAssertions();
+        boolean checkOnStartup=sfResolve(CHECK_ON_STARTUP, true, false);
+        if(checkOnStartup) {
+            checkAssertions();
+        }
     }
 }

@@ -24,5 +24,6 @@ For more information: www.smartfrog.org
 value true;
 
 sfConfig extends Assert {
+    checkOnStartup false;
     isFalse LAZY value ;
 }
