@@ -47,21 +47,30 @@
   <!-- ========================================================== -->
   <!-- ========================================================== -->
   <target name="init" depends="init-standard-output-dirs,use-smartfrog-tasks">
-    <property name="war.name" value="sfwebstart.war" />
-    <property name="war.file" location="${dist.dir}/${war.name}" />
+    <property name="war.name" value="sfwebstart.war"/>
+    <property name="war.file" location="${dist.dir}/${war.name}"/>
     <property name="web.dir" location="web"/>
     <property name="web-inf.dir" location="${web.dir}/WEB-INF"/>
     <property name="war.dir" location="${build.dir}/${war.name}"/>
     <property name="web.xml" location="${web-inf.dir}/web.xml"/>
+
+    <!-- deploy information -->
+    <property name="deploy.sf"
+      value="${src.dir}/host-on-jetty.sf"/>
+
+    <property name="deploy.host" value="localhost"/>
+    <property name="application.name" value="webstart"/>
+    <!--    <property name="default.ini" location="test/files/default.ini"/>
+        <property name="default.sf" location="test/files/default.sf"/>-->
   </target>
 
   <target name="makewar" depends="compile"
-    description="make the war file" >
+    description="make the war file">
     <war destfile="${war.file}"
-        webxml="${web.xml}"
-        update="true" >
+      webxml="${web.xml}"
+      update="true">
       <!-- web resources in webapp -->
-      <fileset dir="${web.dir}" excludes="WEB-INF/web.xml" />
+      <fileset dir="${web.dir}" excludes="WEB-INF/web.xml"/>
       <!--pull in the smartfrog redistributables -->
       <zipfileset prefix="download" dir="${smartfrog.dist.lib.dir}">
         <include name="**/*.jar"/>
@@ -73,10 +82,37 @@
 
 
   <target name="postwar" depends="makewar"
-    description="expand the war file" >
-    <unwar src="${war.file}" dest="${war.dir}" />
+    description="expand the war file">
+    <unwar src="${war.file}" dest="${war.dir}"/>
   </target>
 
   <target name="default" depends="postwar"
-  description="make the WAR" />
- </project>
+    description="make the WAR"/>
+
+
+
+  <!-- ========================================================== -->
+  <!-- deploy; requires a host -->
+  <!-- ========================================================== -->
+  <target name="deploy" depends="makewar,undeploy,start-daemon-if-needed"
+    description="deploy">
+    <sf-deploy classpathref="exec.classpath"
+      logStackTraces="true"
+      host="${deploy.host}"
+      >
+      <application
+        name="${application.name}"
+        file="${deploy.sf}"/>
+    </sf-deploy>
+  </target>
+
+  <!-- ========================================================== -->
+  <!-- undeploy the application if it is running -->
+  <!-- ========================================================== -->
+  <target name="undeploy" depends="init"
+    description="undeploy the application if it is running">
+    <sf-undeploy host="${deploy.host}" application="${application.name}"
+      failonerror="false"/>
+  </target>
+
+</project>
