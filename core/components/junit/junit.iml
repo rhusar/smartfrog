@@ -17,6 +17,7 @@
     <orderEntry type="library" name="Log4J" level="application" />
     <orderEntry type="library" name="commons-discovery" level="application" />
     <orderEntry type="library" name="Commons-logging" level="application" />
+    <orderEntry type="module" module-name="testharness" />
   </component>
 </module>
 

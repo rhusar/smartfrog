@@ -24,6 +24,7 @@ import junit.framework.Test;
 import junit.framework.TestResult;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogInitException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.security.SFClassLoader;
@@ -61,14 +62,11 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite, juni
 
     private String packageValue;
 
-    private List excludesList;
-
-    private HashMap excludesMap;
-
     private RunnerConfiguration configuration;
 
     private int errors = 0;
     private int failures = 0;
+    private int testsStarted = 0;
     private int testsRun = 0;
 
 
@@ -139,8 +137,8 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite, juni
     }
 
     protected void readConfiguration() throws SmartFrogException, RemoteException {
-        ifValue=sfResolve(ATTRIBUTE_IF,ifValue,false);
-        unlessValue=sfResolve(ATTRIBUTE_UNLESS,unlessValue,false);
+        ifValue=sfResolve(ATTR_IF,ifValue,false);
+        unlessValue=sfResolve(ATTR_UNLESS,unlessValue,false);
         classes = flattenStringList((List)sfResolve(ATTR_CLASSES,classes,false),ATTR_CLASSES);
 
         //package attribute names a package
@@ -180,9 +178,6 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite, juni
             testClasses.put(fullname, fullname);
         }
     }
-
-
-
 
     /**
      * flatten a string list, validating type as we go. recurses as much as we need to.
@@ -230,6 +225,7 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite, juni
             String classname = (String) it.next();
             try {
                 testSingleClass(classname);
+                updateResultAttributes(false);
             } catch (ClassNotFoundException e) {
                 throw SmartFrogException.forward(e);
             } catch (IllegalAccessException e) {
@@ -241,6 +237,7 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite, juni
                 log.debug("Interrupted test thread");
                 return false;
             }
+            updateResultAttributes(true);
             failed = failures > 0 || errors > 0;
             if(failed && !configuration.getKeepGoing()) {
                 return false;
@@ -249,6 +246,17 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite, juni
         return !failed;
     }
 
+    /**
+     * write all our state to the results
+     * order it so that we set the finished last
+     */
+    private void updateResultAttributes(boolean finished) throws SmartFrogRuntimeException, RemoteException {
+        sfReplaceAttribute(ATTR_ERRORS, new Integer(errors));
+        sfReplaceAttribute(ATTR_FAILURES,new Integer(failures));
+        sfReplaceAttribute(ATTR_TESTS, new Integer(testsRun));
+        sfReplaceAttribute(ATTR_SUCCESSFUL, Boolean.valueOf(errors == 0 && failures == 0));
+        sfReplaceAttribute(ATTR_FINISHED, Boolean.valueOf(finished));
+    }
 
     /**
      * test a single class
@@ -257,7 +265,7 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite, juni
      * @throws IllegalAccessException
      * @throws InvocationTargetException
      */
-    void testSingleClass(String classname) throws ClassNotFoundException, IllegalAccessException,
+    private void testSingleClass(String classname) throws ClassNotFoundException, IllegalAccessException,
             InvocationTargetException {
         log.debug("testing "+classname);
         Test tests;
@@ -305,7 +313,7 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite, juni
      * get our listener
      * @return
      */
-    TestListener getListener() {
+    public TestListener getListener() {
         return configuration.getListener();
     }
 
@@ -360,6 +368,7 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite, juni
      * A test started.
      */
     public void startTest(Test test) {
+        testsStarted++;
         TestInfo info = new TestInfo(test);
         try {
             getListener().startTest(info);

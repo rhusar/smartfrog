@@ -32,12 +32,12 @@ import java.util.List;
  */
 
 
-public interface TestSuite extends Remote {
+public interface TestSuite extends Remote, TestResultAttributes  {
 
-    public static final String ATTRIBUTE_IF = "if";
-    public static final String ATTRIBUTE_UNLESS = "unless";
+    public String ATTR_IF = "if";
+    public String ATTR_UNLESS = "unless";
 
-
+    //read only properties
     /**
      * bind to the configuration. A null parameter means 'stop binding'
      * @param configuration

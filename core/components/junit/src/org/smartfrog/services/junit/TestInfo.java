@@ -198,4 +198,19 @@ public class TestInfo implements Serializable,Cloneable {
         return cloned;
     }
 
+    /**
+     * cloning, without the possiblity of failing
+     * @return a duplicate instance
+     */
+    public TestInfo duplicate() {
+        try {
+            TestInfo cloned = (TestInfo) clone();
+            return cloned;
+        } catch (CloneNotSupportedException e) {
+            //impossible
+            //but we turn into a runtime exception
+            throw new RuntimeException(e);
+        }
+    }
+
 }

@@ -34,7 +34,7 @@ import java.util.ArrayList;
  * Date: 27-Jun-2004
  * Time: 21:26:28
  */
-public class BufferingListenerComponent  extends PrimImpl implements TestListener{
+public class BufferingListenerComponent  extends PrimImpl implements BufferingListener {
 
     public BufferingListenerComponent() throws RemoteException {
     }
@@ -62,7 +62,7 @@ public class BufferingListenerComponent  extends PrimImpl implements TestListene
     /**
      * An error occurred.
      */
-    public void addError(TestInfo test) throws RemoteException {
+    public synchronized void addError(TestInfo test) throws RemoteException {
         TestInfo cloned = cloneTestInfo(test);
         errors.add(cloned);
     }
@@ -86,7 +86,7 @@ public class BufferingListenerComponent  extends PrimImpl implements TestListene
     /**
      * A failure occurred.
      */
-    public void addFailure(TestInfo test) throws RemoteException {
+    public synchronized void addFailure(TestInfo test) throws RemoteException {
         TestInfo cloned = cloneTestInfo(test);
         failures.add(cloned);
     }
@@ -94,7 +94,7 @@ public class BufferingListenerComponent  extends PrimImpl implements TestListene
     /**
      * A test ended.
      */
-    public void endTest(TestInfo test) throws RemoteException {
+    public synchronized void endTest(TestInfo test) throws RemoteException {
         TestInfo cloned = cloneTestInfo(test);
         ends.add(cloned);
     }
@@ -102,9 +102,107 @@ public class BufferingListenerComponent  extends PrimImpl implements TestListene
     /**
      * A test started.
      */
-    public void startTest(TestInfo test) throws RemoteException {
+    public synchronized void startTest(TestInfo test) throws RemoteException {
         TestInfo cloned = cloneTestInfo(test);
         starts.add(cloned);
+    }
+
+    /**
+     * get the number of errors
+     *
+     * @return
+     * @throws java.rmi.RemoteException
+     */
+    public synchronized int getErrorCount() throws RemoteException {
+        return errors.size();
+    }
+
+    /**
+     * get the error at that point in the list
+     *
+     * @param entry
+     * @return a copy of the error
+     * @throws java.rmi.RemoteException
+     * @throws IndexOutOfBoundsException if the entry is out of range
+     */
+    public synchronized TestInfo getErrorInfo(int entry) throws RemoteException, IndexOutOfBoundsException {
+        return ((TestInfo) errors.get(entry)).duplicate();
+    }
+
+    /**
+     * get the number of starts
+     *
+     * @return
+     * @throws java.rmi.RemoteException
+     */
+    public synchronized int getStartCount() throws RemoteException {
+        return starts.size();
+    }
+
+    /**
+     * get the starts at that point in the list
+     *
+     * @param entry the list entry beginning at zero
+     * @return a copy of the info
+     * @throws java.rmi.RemoteException
+     * @throws IndexOutOfBoundsException if the entry is out of range
+     */
+    public synchronized TestInfo getStartInfo(int entry) throws RemoteException, IndexOutOfBoundsException {
+        return ((TestInfo)starts.get(entry)).duplicate();
+    }
+
+    /**
+     * get the number of end
+     *
+     * @return
+     * @throws java.rmi.RemoteException
+     */
+    public synchronized int getEndCount() throws RemoteException {
+        return ends.size();
+    }
+
+    /**
+     * get the end at that point in the list
+     *
+     * @param entry the list entry beginning at zero
+     * @return a copy of the info
+     * @throws java.rmi.RemoteException
+     * @throws IndexOutOfBoundsException if the entry is out of range
+     */
+    public TestInfo getEndInfo(int entry) throws RemoteException, IndexOutOfBoundsException {
+        return ((TestInfo) ends.get(entry)).duplicate();
+    }
+
+    /**
+     * get the number of failures
+     *
+     * @return
+     * @throws java.rmi.RemoteException
+     */
+    public int getFailureCount() throws RemoteException {
+        return failures.size();
+    }
+
+    /**
+     * get the failures at that point in the list
+     *
+     * @param entry the list entry beginning at zero
+     * @return a copy of the info
+     * @throws java.rmi.RemoteException
+     * @throws IndexOutOfBoundsException if the entry is out of range
+     */
+    public TestInfo getFailureInfo(int entry) throws RemoteException, IndexOutOfBoundsException {
+        return ((TestInfo) failures.get(entry)).duplicate();
+    }
+
+    /**
+     * returns true iff all tests passed
+     *
+     * @return test success flag
+     * @throws java.rmi.RemoteException
+     */
+    public boolean testsWereSuccessful() throws RemoteException {
+        return getFailureCount()==0 && getErrorCount()==0;
     }
 
 

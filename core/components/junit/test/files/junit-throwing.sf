@@ -37,7 +37,7 @@ sfConfig extends TestRunner {
     //run the rigged tests
     tests extends JUnitTestSuite {
         package "org.smartfrog.services.junit.test.targets";
-        classes ["SuccessTest"];
+        classes ["ThrowingTest"];
         if true;
     }
 

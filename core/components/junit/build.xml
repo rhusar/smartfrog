@@ -30,9 +30,6 @@ For more information: www.smartfrog.org
    <!-- override point -->
   <property file="build.properties" />
 
-  <!-- this component keeps its test files in a different place from the 
-       rest, for historical reasons (i.e. it is nothing but test) -->  
-  <property name="test.src.dir" location="testcases" />
   
   <property name="root.dir" location="../.."  />
     <!-- Import common stuff -->
@@ -41,22 +38,37 @@ For more information: www.smartfrog.org
   
   <!-- ========================================================== -->
   <!-- ========================================================== -->
-  <target name="init" depends="init-standard-output-dirs,use-smartfrog-tasks">
+  <target name="init" 
+    depends="init-standard-output-dirs,use-smartfrog-tasks,use-smartfrog-testharness">
           
-    <property name="deploy.sf" value="org/smartfrog/services/junit/example.sf" />
+    <property name="deploy.sf" value="test/files/success.sf" />
     
     <property name="default.ini" location="test/files/default.ini"/>
     <property name="default.sf" location="test/files/default.sf"/>
 
     <path id="compile.classpath">
       <path refid="smartfrog.classpath"/>
-      <fileset file="${ant.home}/lib/junit.jar"/>
+      <pathelement location="${junit.jar}"/>
+    </path>
+    
+    <path id="exec.classpath">
+      <path refid="compile.classpath"/>
+      <pathelement location="${build.classes.dir}"/>
+    </path>    
+
+    <path id="tests.compile.classpath">
+      <path refid="exec.classpath"/>
+      <pathelement location="${testharness.jar}"/>
+    </path>
+   
+    <path id="tests.run.classpath">
+      <path refid="tests.compile.classpath"/>
+      <pathelement location="${test.classes.dir}"/>
     </path>
 
     <path id="run.classpath">
-      <path refid="smartfrog.classpath"/>
-      <fileset file="${ant.home}/lib/junit.jar"/>
-    </path>    
+      <path refid="tests.run.classpath"/>
+    </path>
     
   </target>
     
@@ -77,7 +89,7 @@ For more information: www.smartfrog.org
   <!-- ========================================================== -->
   <!-- deploy; requires a host -->
   <!-- ========================================================== -->
-  <target name="deploy" depends="parse,dist" 
+  <target name="deploy" depends="dist" 
     description="deploy">
      <property name="deploy.host" value="localhost"/>
       <sf-deploy classpathref="run.classpath"
@@ -89,5 +101,68 @@ For more information: www.smartfrog.org
       </sf-deploy>
   </target>  
 
+  <!-- ========================================================== -->
+  <!-- compile the tests -->
+  <!-- ========================================================== -->
+  <target name="compile-tests" 
+      depends="dist,use-smartfrog-testharness">
+      <!-- set up a new path with the tasks and testutil -->
+    <property name="test.src.dir" location="test/files"/>
+    <sf-javac-with-ant 
+      srcdir="${test.src.dir}"
+      destdir="${test.classes.dir}"
+      classpathref="tests.compile.classpath"
+      >
+    </sf-javac-with-ant>
+    <copy-useful-files src="${test.src.dir}" dest="${test.classes.dir}" />
+  </target>
+  
+  <!-- ========================================================== -->
+  <!-- system tests -->
+  <!-- ========================================================== -->
+  <target name="system-tests" depends="dist,compile-tests"
+      description="run system tests"
+      if="system.tests.enabled">
+      <parallel>
+
+        <!-- first thread runs the daemon -->
+        <sequential>
+          <antcall target="start-daemon-if-needed"/>
+        </sequential>
+
+        <!-- this is the next thread -->
+        <sequential>
+
+        <!--
+          wait ten seconds for the harness to start
+          without this the first tests will fail as there is no
+          sf daemon around
+        -->
+        <sf-waitfordaemon maxwait="10" timeoutproperty="daemon.missing"/>
+        <fail if="daemon.missing">No daemon</fail>
+        <sf-junit
+           errorProperty="test.failed"
+           failureProperty="test.failed"
+           >
+          <classpath>
+            <path refid="tests.run.classpath"/>
+            <pathelement location="${test.classes.dir}"/>
+          </classpath>
+          <!-- #Test case isolation technique -->
+          <test name="${testcase}" if="testcase"/>
+          <batchtest todir="${test.data.dir}" unless="testcase" >
+            <!-- bulk test case -->
+            <fileset dir="${test.classes.dir}">
+              <include name="org/smartfrog/services/junit/test/*Test.class" />
+           </fileset>
+          </batchtest>
+        </sf-junit>
+
+        <!-- conditionally stop the daemon -->
+        <antcall target="stop-daemon-if-started"/>
+        <!-- end the test thread -->
+      </sequential>
+    </parallel>
+  </target>
   
 </project>
