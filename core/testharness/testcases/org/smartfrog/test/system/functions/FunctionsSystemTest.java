@@ -21,12 +21,15 @@
 
 package org.smartfrog.test.system.functions;
 
-import org.smartfrog.test.SmartfrogTestBase;
+import java.util.Vector;
+import java.util.Calendar;
 
+import org.smartfrog.test.SmartfrogTestBase;
+import org.smartfrog.sfcore.prim.Prim;
 
 
 /**
- * JUnit test class for compiler/parser functional tests.
+ * JUnit test class for functions provided by SmartFrog framework.
  */
 public class FunctionsSystemTest extends SmartfrogTestBase {
 
@@ -49,5 +52,156 @@ public class FunctionsSystemTest extends SmartfrogTestBase {
                 "tcn32",
                 "SmartFrogCompileResolutionException",
                 "Unresolved Reference");
+    }
+    
+    public void testCaseTCN33() throws Exception {
+        String expected = "Unable to connect to host remoteHost.india.hp.com"+
+           "at port 50002 This would not work";
+        try {
+            Prim appl = deployExpectingSuccess(FILES + "tcn33.sf", "tcn33");
+            assertNotNull(appl);
+            String actual = (String) (appl.sfResolve("message"));
+            assertFalse(expected.equals(actual));
+        }catch (Exception ex) {
+            fail(ex.getMessage());
+        }
+    }
+    /**
+     * Tests "cancat" function.
+     */
+    public void testCaseTCP9() throws Exception {
+        try {
+            Prim appl = deployExpectingSuccess(FILES + "tcp9.sf", "tcp9");
+            assertNotNull(appl);
+            String message = (String) (appl.sfResolve("message"));
+            assertContains(message, "Hello World");
+        }catch (Exception ex) {
+            fail(ex.getMessage());
+        }
+    }
+    /**
+     * Tests "vector" function.
+     */
+    public void testCaseTCP10() throws Exception {
+        Vector expected = new Vector();
+        expected.add("Macgrath");
+        expected.add("Hayden");
+        expected.add("Ponting");
+        try {
+            Prim appl = deployExpectingSuccess(FILES + "tcp10.sf", "tcp10");
+            assertNotNull(appl);
+            Vector actual = (Vector) (appl.sfResolve("administrators"));
+            assertNotNull("Did not find the value", actual);
+            assertEquals(expected, actual);
+        }catch (Exception ex) {
+            fail(ex.getMessage());
+        }
+    }
+    /**
+     * Tests "append" function.
+     */
+    public void testCaseTCP11() throws Exception {
+        Vector expected = new Vector();
+        expected.add("This is a test for the append function");
+        expected.add("provided by");
+        expected.add("smartfrog framework");
+        try {
+            Prim appl = deployExpectingSuccess(FILES + "tcp11.sf", "tcp11");
+            assertNotNull(appl);
+            Vector actual = (Vector) (appl.sfResolve("logMessage"));
+            assertEquals(expected, actual);
+        }catch (Exception ex) {
+            fail(ex.getMessage());
+        }
+    }
+    /**
+     * Tests "formatString" function.
+     */
+    public void testCaseTCP12() throws Exception {
+        String expected = "Unable to connect to host remoteHost.india.hp.com "+
+                                                    "at port 50002";
+        try {
+            Prim appl = deployExpectingSuccess(FILES + "tcp12.sf", "tcp12");
+            assertNotNull(appl);
+            String actual = (String) (appl.sfResolve("message"));
+            assertContains(expected, actual);
+        }catch (Exception ex) {
+            fail(ex.getMessage());
+        }
+    }
+    /**
+     * Tests "sum" function.
+     */
+    public void testCaseTCP13() throws Exception {
+        String expected = "value is 99\n";
+        try {
+            Prim appl = deployExpectingSuccess(FILES + "tcp13.sf", "tcp13");
+            assertNotNull(appl);
+            String actual = (String) (appl.sfResolve("base"));
+            assertContains(expected, actual);
+        }catch (Exception ex) {
+            fail(ex.getMessage());
+        }
+    }
+    /**
+     * Tests "product" function.
+     */
+    public void testCaseTCP14() throws Exception {
+        Integer expected = new Integer(1000);
+        try {
+            Prim appl = deployExpectingSuccess(FILES + "tcp14.sf", "tcp14");
+            assertNotNull(appl);
+            Integer actual = (Integer) (appl.sfResolve("test"));
+            assertEquals(expected, actual);
+        }catch (Exception ex) {
+            fail(ex.getMessage());
+        }
+    }
+    /**
+     * Tests "random" function.
+     */
+    public void testCaseTCP15() throws Exception {
+        int min = 1;
+        int max = 6;
+        try {
+            Prim appl = deployExpectingSuccess(FILES + "tcp15.sf", "tcp15");
+            assertNotNull(appl);
+            Integer actual = (Integer) (appl.sfResolve("throw1"));
+            assertNotNull(actual);
+            assertTrue((min<=actual.intValue()) && (actual.intValue()<=max));
+        }catch (Exception ex) {
+            fail(ex.getMessage());
+        }
+    }
+    /**
+     * Tests "random" function.
+     */
+    public void testCaseTCP16() throws Exception {
+        try {
+            Prim appl = deployExpectingSuccess(FILES + "tcp16.sf", "tcp16");
+            assertNotNull(appl);
+            Integer seq1 = (Integer) (appl.sfResolve("sequence1"));
+            Integer seq2 = (Integer) (appl.sfResolve("sequence2"));
+            assertNotNull(seq1);
+            assertNotNull(seq2);
+            assertTrue( (seq2.intValue()- seq1.intValue()) == 1);
+        }catch (Exception ex) {
+            fail(ex.getMessage());
+        }
+    }
+    /**
+     * Tests "date" function.
+     */
+    public void testCaseTCP17() throws Exception {
+        Calendar dt = Calendar.getInstance();
+        String expected = dt.getTime().toString();
+        try {
+            Prim appl = deployExpectingSuccess(FILES + "tcp17.sf", "tcp17");
+            assertNotNull(appl);
+            String actual = (String)(appl.sfResolve("today"));
+            assertContains(expected, actual);
+        }catch (Exception ex) {
+            fail(ex.getMessage());
+        }
     }
 }
