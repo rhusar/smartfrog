@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="testHarness" default="help-test">
+<project name="testHarness" default="test">
 
 <!--
 /** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
@@ -22,16 +22,156 @@ For more information: www.smartfrog.org
 
 */
 -->
-<target name="createtestharness" description="Compiles and Prepares test harness">
-    <echo message= "Test Harness is not available yet"></echo>
-</target>
 
-<target name="help-test">
-<echo>  This is the intended site of the test harness.</echo>
-</target>
+<description>
+  This is the build file for the test harness for smartfrog.
+  It depends on smartfrog being built in the directory tree
+  ../smartfrog (override smartfrog.home to change),
+  and with ../smartfrog/dist/lib/smartfrog.jar existing. 
+  It also needs junit3.8 or later in ANT_HOME/lib,
+  and a recent copy of Xalan to turn the XML Reports into HTML.
+  These reports are all placed in build/test/reports, incidentally.
+  
+  To run just one test, run the test target with the testcase property set to
+  the full name of the test, e.g. 
+    -Dtestcase=org.smartfrog.test.unit.core.coreTest
+  
+</description>
 
+   <!-- override point -->
+  <property file="build.properties" />
+  <property environment="env" />
+  
+  <property name="build.dir" location="build"/>
+  <property name="test.dir" location="${build.dir}/test"/>
+  <property name="test.classes.dir" location="${test.dir}/classes"/>
+  <property name="test.data.dir" location="${test.dir}/data"/>
+  <property name="test.datafiles.dir" location="test/files"/>
+  <property name="test.reports.dir" location="${test.dir}/reports"/>
+  <property name="test.src.dir" location="testcases" />
+  <property name="test.smartfrog.classesdir" location="${test.classes.dir}"/>
+      
+  <!-- 
+       here we define where the smartfrog libraries live.
+       this is correct for the sforge CVS repository; to work with the older
+       taka CVS repository, you must have checked out the smartfrog module with
+       the name 'smartfrog'.
+       To run tests against smartfrog in a different location, override
+       this on the commandline or in build.properties
+       -->
+  <property name="smartfrog.home" location="../smartfrog"/>
+  <property name="dist.dir" location="${smartfrog.home}/dist"/>
+  <property name="dist.lib.dir" location="${dist.dir}/lib"/>
+  
+  <!-- Compile options for Smartfrog Release -->
+  <property name="javac.debug.mode" value="on"/> <!-- turn on compile -g -->
+  <property name="javac.debug.level" value="lines,vars,source" />
+  <property name="javac.runtime.target" value="1.4" />
 
-<target name="test" description="run the tests, fail on error">
-</target>
+  
+  <!-- the compile time path -->
+  <path id="compile.classpath">
+    <fileset dir="${dist.lib.dir}" includes="**/*.jar"/>
+  </path>  
 
+  <path id="test.classpath">
+    <path refid="compile.classpath"/>
+    <pathelement location="${test.classes.dir}"/>
+  </path>  
+  
+  
+  <!-- ========================================================== -->
+  <!-- Test settings                                              -->
+  <!-- ========================================================== -->
+  
+  <target name="init" >
+    <mkdir dir="${test.dir}" />
+    <mkdir dir="${test.classes.dir}" />
+    <mkdir dir="${test.data.dir}" />
+    <mkdir dir="${test.datafiles.dir}" />
+    <mkdir dir="${test.reports.dir}" />
+    <mkdir dir="${test.src.dir}"  />
+  </target>
+
+  <target name="clean" description="clean up the test directories only">
+    <delete dir="${test.dir}" />    
+  </target>
+  
+  <target name="verify-smartfrog" >
+    <available 
+      classname="org.smartfrog.SFSystem" 
+      classpathref="compile.classpath" 
+      property="sfSystem.present"/>
+    <fail unless="sfSystem.present">
+      Smartfrog entry point not found in ${dist.lib.dir}
+    </fail>
+  </target>
+  
+  <!-- compile the tests -->
+  <target name="compile-tests" depends="verify-smartfrog,init">
+    <depend srcdir="${test.src.dir}"
+      destdir="${test.classes.dir}"
+      cache="${test.dir}/testdepends"
+      closure="yes"/>
+    <javac
+      debug="true"
+      debuglevel="lines,vars,source"
+      srcdir="${test.src.dir}"
+      includes="**/*.java"
+      includeAntRuntime="true"
+      destdir="${test.classes.dir}"
+      target="1.4"
+      source="1.4"
+      classpathref="compile.classpath"
+      />
+    <copy todir="${test.classes.dir}">
+      <fileset dir="${test.src.dir}"
+        includes="**/*.xml,**/*.dtd,**/*.xsd,**/*.sf,**/*.properties" />
+    </copy>
+  </target>
+
+  <!-- run the tests -->
+  <target name="run-tests" depends="compile-tests"
+    description="run unit tests">
+    <junit printsummary="no"
+           errorProperty="test.failed"
+           failureProperty="test.failed"
+           fork="true"
+           includeantruntime="true">
+        <sysproperty key="test.smartfrog.classesdir"
+            value="${test.smartfrog.classesdir}" />
+        <jvmarg value="-enableassertions"/>
+      <classpath>
+        <path refid="compile.classpath"/>
+        <pathelement location="${test.classes.dir}"/>
+      </classpath>
+      <!-- #Tests take system property parameters -->
+      <!-- #Formatters for capture and display -->
+      <formatter type="xml"/>
+      <formatter type="brief" usefile="false"/>
+      <!-- #Test case isolation technique -->
+      <test name="${testcase}" if="testcase"/>
+      <batchtest todir="${test.data.dir}" unless="testcase">
+        <!-- bulk test case -->
+        <fileset dir="${test.classes.dir}">
+          <include name="**/*Test.class" />
+       </fileset>
+      </batchtest>
+    </junit>
+    
+    <!-- do it -->
+    <junitreport todir="${test.data.dir}">
+      <fileset dir="${test.data.dir}">
+        <include name="TEST-*.xml"/>
+      </fileset>
+      <report format="frames" todir="${test.reports.dir}"/>
+    </junitreport>
+    <fail if="test.failed">Unit tests failed see ${test.reports.dir}</fail>
+
+  </target>
+
+  <target name="test" 
+    depends="run-tests"
+    description="compile and run all the tests"
+    />
 </project>
