@@ -145,6 +145,13 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
 
       if (org.smartfrog.services.display.WindowUtilities.areGraphicsAvailable()) {
          newDisplay = new Display(nameDisplay, null);
+
+         String imagesPath = SFDeployDisplay.class.getPackage().getName()+".";
+         imagesPath=imagesPath.replace('.','/');
+         imagesPath=imagesPath+"frogb.gif";
+         newDisplay.setIconImage(Display.createImage(imagesPath));
+
+
          newDisplay.setShouldSystemExit(shouldSystemExit);
          newDisplay.setVisible(false);
          newDisplay.setSize(width, height);

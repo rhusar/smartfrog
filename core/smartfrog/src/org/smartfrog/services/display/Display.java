@@ -73,6 +73,8 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.processcompound.SFProcess;
 import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.SFSystem;
+import java.awt.Image;
 /**
  *  Multiuse Simple display object. It is possible to start / stop the data
  *  producer.
@@ -1261,6 +1263,12 @@ public class Display extends JFrame implements ActionListener, KeyListener {
     *@throws  Exception  If unable to initialize
     */
    private void jbInit() throws Exception {
+
+      String imagesPath = Display.class.getPackage().getName()+".";
+      imagesPath=imagesPath.replace('.','/');
+      imagesPath=imagesPath+"frog.gif";
+      this.setIconImage(createImage(imagesPath));
+
       documentScreen = screen.getDocument();
       this.getContentPane().setLayout(gridBagLayout1);
       stopResume.setText("stop");
@@ -1362,6 +1370,18 @@ public class Display extends JFrame implements ActionListener, KeyListener {
       mainToolBar.add(stopResume, null);
    }
 
+
+   public static Image createImage(String imagesPath) {
+       try {
+           byte imageData[] =  SFSystem.getByteArrayForResource(imagesPath);
+           Image img = java.awt.Toolkit.getDefaultToolkit().createImage(imageData, 0, imageData.length);
+           return img;
+       } catch (Exception e) {
+           //ignore
+           e.printStackTrace();
+       }
+       return null;
+    }
 
    /**
     *Initializes with custom details.
