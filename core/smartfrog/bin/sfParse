@@ -15,5 +15,5 @@ elif test "$SFSECURITY" && ! test "$SFCODEBASE"; then
 elif test "$SFCODEBASE" && test "$SFSECURITY"; then
         java "$SFDEFAULTINI" "$SFCODEBASE" $SFSECURITY org.smartfrog.SFParse "$@"
 else
-        java "$SFDEFAULTINI" "$SFCODEBASE" org.smartfrog.SFParse "$@"
+        java "$SFDEFAULTINI" org.smartfrog.SFParse "$@"
 fi
