@@ -11,23 +11,39 @@
  */
 jetty_home "C:\\jetty\\Jetty-4.2.18";
 
-server "Jetty Server";
-
-A extends JettyServletContext {
- contextPath "/test";
- resourceBase ("D:\\cvs");
- server ROOT:server;
-}
+server1 "Jetty Server 1";
+server2 "Jetty Server 2";
 
 sfConfig extends Compound {
-     adminServer extends HttpServerAdmin {
+   adminServer extends HttpServerAdmin {
          httpserverHost "localhost"; // mandatory
-     } 
-     httpServer extends HttpServer {
+         listenerPort 8081; // mandatory
+   } 
+   server1 extends HttpServer {
       jettyhome ROOT:jetty_home; // mandatory
       serverHost "localhost"; //mandatory
-      contexts extends Contexts{
-         -- extends A;
-      }
-    }
+      server ROOT:server1; // mandatory
+   }
+   server2 extends HttpServer {
+      jettyhome ROOT:jetty_home; // mandatory
+      serverHost "localhost"; //mandatory
+      server ROOT:server2; // mandatory
+      listeners extends Listeners { 
+          Listener1 ATTRIB list1;
+          Listener2 ATTRIB list2;
+       }
+   }    
+}
+
+list1 extends JettyListener {
+       listenerPort 8082;
+       serverHost "localhost";
+       server ROOT:server2;
+}
+
+list2 extends JettyListener {
+ 	sfClass "org.smartfrog.services.jetty.listeners.AJPlistener";
+        listenerPort 8010;
+        serverHost "localhost";
+        server ROOT:server2;
 }
