@@ -23,7 +23,11 @@ package org.smartfrog.services.cddlm.test.unit.cdl;
 import junit.framework.TestCase;
 import org.smartfrog.services.cddlm.cdl.CdlParser;
 import org.smartfrog.services.cddlm.cdl.ResourceLoader;
+import org.smartfrog.services.cddlm.cdl.CdlDocument;
 import nu.xom.Document;
+import nu.xom.ParsingException;
+
+import java.io.IOException;
 
 /**
  * Junit test cause
@@ -33,17 +37,16 @@ import nu.xom.Document;
 public class CdlLoaderTest extends TestCase {
 
     CdlParser laxParser;
-    CdlParser strictParser;
+    CdlParser parser;
 
-    private final static String RESOURCES="org/smartfrog/services/cddlm/test/unit/cdl/";
+    private final static String RESOURCES="files/cdl/";
+    private final static String INVALID_RESOURCES = RESOURCES+"invalid/";
+    private final static String VALID_RESOURCES = RESOURCES + "valid/";
 
     private final static String VALID_CDL[]= {
-        "webserver.cdl"
+        "minimal.cdl"
     };
 
-    private final static String INVALID_CDL[] = {
-        "webserver.cdl"
-    };
 
     public CdlLoaderTest(String test) {
         super(test);
@@ -55,7 +58,7 @@ public class CdlLoaderTest extends TestCase {
     protected void setUp() throws Exception {
         ResourceLoader loader=new ResourceLoader(this.getClass());
         laxParser=new CdlParser(loader,false);
-        strictParser = new CdlParser(loader, true);
+        parser = new CdlParser(loader, false);
     }
 
     /**
@@ -65,18 +68,52 @@ public class CdlLoaderTest extends TestCase {
     protected void tearDown() throws Exception {
     }
 
-    public void testValidOnLax() throws Exception {
+    public void testValid() throws Exception {
         Document doc;
         for(int i=0;i<VALID_CDL.length;i++) {
-            laxParser.parseResource(RESOURCES + VALID_CDL[i]);
+            assertValid(VALID_CDL[i]);
         }
     }
 
-    public void testInvalidOnLax() throws Exception {
-        Document doc;
-        for ( int i = 0; i < INVALID_CDL.length; i++ ) {
-            laxParser.parseResource(RESOURCES + INVALID_CDL[i]);
+
+    protected void assertInvalid(String filename,String text) throws IOException, ParsingException {
+        try {
+            loading(filename);
+            CdlDocument doc=parser.parseResource(INVALID_RESOURCES+filename);
+        } catch (ParsingException e) {
+            if(text!=null) {
+                if(e.getMessage().indexOf(text)<0) {
+                    throw e;
+                }
+            }
         }
+    }
+
+    private void loading(String filename) {
+        System.out.println(filename);
+    }
+
+    protected void assertValid(String filename) throws IOException, ParsingException {
+        CdlDocument doc;
+        loading(filename);
+        doc=parser.parseResource(VALID_RESOURCES+filename);
+    }
+
+    public void testWrongDocNamespace() throws Exception {
+        assertInvalid("wrong_doc_namespace.cdl",CdlDocument.ERROR_WRONG_NAMESPACE);
+    }
+
+
+    public void testUnsupportedPathLanguage() throws Exception {
+        assertInvalid("unsupported_pathlanguage.cdl", CdlDocument.ERROR_BAD_PATHLANGUAGE);
+    }
+
+    public void testWrongEltOrder() throws Exception {
+        assertInvalid("wrong_elt_order.cdl", null);
+    }
+
+    public void testWrongRootEltType() throws Exception {
+        assertInvalid("wrong_root_elt_type.cdl", CdlDocument.ERROR_WRONG_ROOT_ELEMENT);
     }
 
 }

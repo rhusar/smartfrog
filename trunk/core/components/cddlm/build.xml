@@ -99,7 +99,7 @@
        for better diagnostic messages on failure (see assert-prerequisites) 
        -->
   <!-- ========================================================== -->
-  <target name="verify-prerequisites" depends="init">
+  <target name="verify-prerequisites" depends="common.verify-prerequisites">
         <!-- check for axis. Because we pull in system classes too (the default),
              if axis is on the classpath it gets used, even if axis.lib.dir is unset
              -->
