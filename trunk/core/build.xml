@@ -50,7 +50,7 @@ For more information: www.smartfrog.org
   <!-- =================================================================== -->
   <!-- ant distribution                                                    -->
   <!-- =================================================================== -->
-  
+
   <target name="tasks" depends="init" description="ant tasks">
     <ant dir="${ant.project}" target="dist" inheritAll="false" />
   </target>
@@ -58,10 +58,10 @@ For more information: www.smartfrog.org
   <!-- =================================================================== -->
   <!-- main distribution                                                    -->
   <!-- =================================================================== -->
-  
+
   <target name="dist" depends="main-dist" description="distributables">
   </target>
-  
+
 
   <!-- =================================================================== -->
   <!-- test in the ant project                                            -->
@@ -77,11 +77,11 @@ For more information: www.smartfrog.org
     <ant dir="${main.project}" target="sfParseTest" inheritAll="false" />
   </target>
 
-  
+
   <!-- =================================================================== -->
   <!-- test in the harness                                                 -->
   <!-- =================================================================== -->
-  <target name="test-testharness" depends="init,tasks" 
+  <target name="test-testharness" depends="init,tasks"
     description="test in test harness; only run system tests">
     <ant dir="${test.project}" target="test" inheritAll="false" >
       <!-- <property name="system.tests" value="false" /> -->
@@ -126,6 +126,7 @@ For more information: www.smartfrog.org
       <property name="cruise.dist.dir" location="${cruise.main.project}/dist"/>
       <property name="cruise.config.file" location="cruisecontrol.xml"/>
       <property name="cruise.control.port" value="7999"/>
+      <property name="cruise.control.rmiport" value="7998"/>
     </target>
 
   <!-- =================================================================== -->
@@ -193,6 +194,8 @@ For more information: www.smartfrog.org
       <arg file="${cruise.config.file}"/>
       <arg value="-port"/>
       <arg value="${cruise.control.port}"/>
+      <arg value="-rmiport"/>
+      <arg value="${cruise.control.rmiport}"/>
     </java>
    </target>
 
@@ -204,18 +207,18 @@ For more information: www.smartfrog.org
             <arg line="site:generate" />
         </exec>
     </target>
-    
-    
+
+
 
 <!-- =================================================================== -->
 <!-- Gump target for distribution -->
 <!-- =================================================================== -->
   <target name="gump-dist" depends="dist" />
-  
+
 <!-- =================================================================== -->
 <!-- Gump best practises say unit tests only -->
 <!-- =================================================================== -->
   <target name="gump-test" depends="test" />
-  
-  
+
+
 </project>
