@@ -84,6 +84,7 @@ For more information: www.smartfrog.org
     <property name="ssh.project" location="ssh" />
     <property name="slp.project" location="slp" />
     <property name="utils.project" location="utils" />
+    <property name="releasetest.project" location="releasetest" />
   
     <!-- this is where dependency logic is imposed
          the path must be ordered such that dependent projects
@@ -100,6 +101,7 @@ For more information: www.smartfrog.org
       <pathelement location="${junit.project}"/>
       <pathelement location="${jetty.project}"/>
       <pathelement location="${cddlm.project}"/>
+      <pathelement location="${releasetest.project}"/>
       <!--
       <pathelement location="${slp.project}"/>
       
