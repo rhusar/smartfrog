@@ -81,6 +81,7 @@ For more information: www.smartfrog.org
     <property name="junit.project" location="junit" />
     <property name="logger.project" location="logger" />
     <property name="net.project" location="net" />
+    <property name="scripting.project" location="scripting" />
     <property name="ssh.project" location="ssh" />
     <property name="slp.project" location="slp" />
     <property name="utils.project" location="utils" />
@@ -106,6 +107,7 @@ For more information: www.smartfrog.org
       <pathelement location="${slp.project}"/>
       
       -->
+      <!--pathelement location="${scripting.project}"/-->
     </path>
     <property name="component.path.asproperty"
       refid="component.path"/>
@@ -122,7 +124,7 @@ component.path :=
     
   </target>
   
-  <target name="clean" depends="init"
+  <target name="clean" depends="init, clean-jdocs"
     description="clean all projects">
     <delegate target="clean"/>
   </target>
@@ -150,6 +152,77 @@ component.path :=
     description="diagnostics">
     <delegate target="diag2"/>
   </target>  
+
+  <!-- =================================================================== -->
+  <!-- clean jdocs                                                               -->
+  <!-- =================================================================== -->
+  <target name="clean-jdocs" description="Cleans the jdocs directory">
+    <delete dir="jdocs"/>
+  </target>
+  
+   <!-- =================================================================== -->
+  <!-- Initialization target                                               -->
+  <!-- =================================================================== -->
+  <target name="initdist">
+    <tstamp/>
+    <property name="Name.System" value="SmartFrog"/>
+    <property name="Name.Company" value="(C) Copyright 1998-2004 Hewlett-Packard Development Company, LP"/>
+    <property name="version" value="COMPONENTS"/>
+    <property name="Version" value="3.04.004.beta"/>
+    <property name="year" value="2004"/>
+    <property name="jdocs.dir" value="jdocs"/>
+    <property name="src" value="src"/>
+    <property name="javac.java.version" value="1.4" />
+    <echo level="verbose"/>
+  </target>
+
+  <!-- =================================================================== -->
+  <!--   JDocs                                                             -->
+  <!-- =================================================================== -->
+  <target name="jdocs" depends="init, initdist" description="Generates the API documentation">
+    <!--  Java Docs for all                                                -->
+    <echo message=""/>
+    <echo message="------------------------------------------------------------------------"/>
+    <echo message="  Creating Java Docs for ${Name.System} ${version} [${jdocs.dir}]"/>
+    <echo message="------------------------------------------------------------------------"/>
+    <mkdir dir="${jdocs.dir}"/>
+    <javadoc packagenames="org.*"
+             destdir="${jdocs.dir}"
+             author="true"
+             version="true"
+             use="true"
+             windowtitle="${Name.System}"
+             Header="${Name.System} ${Version}"
+             Footer="${Name.System} ${version} ${Version}"
+             doctitle="${Name.System}"
+             bottom="${Name.Company}"
+             source="${javac.java.version}"
+	     >
+	   <sourcepath> 
+		   <pathelement path="${arithmetic-testharness.project}/${src}"/>
+		   <pathelement path="${cddlm.project}/${src}"/>
+		   <pathelement path="${emailer.project}/${src}"/>
+		   <pathelement path="${jetty.project}/${src}"/>
+		   <pathelement path="${junit.project}/${src}"/>
+		   <pathelement path="${logger.project}/${src}"/>
+		   <pathelement path="${net.project}/${src}"/>
+		   <pathelement path="${releasetest.project}/${src}"/>
+		   <pathelement path="${scripting.project}/${src}"/>
+		   <pathelement path="${slp.project}/${src}"/>
+		   <pathelement path="${ssh.project}/${src}"/>
+		   <pathelement path="${utils.project}/${src}"/>
+	    </sourcepath>     
+      <group title="SmartFrog Component Packages" packages="org.smartfrog.*"/>
+    </javadoc>
+
     
+  </target> 
+  
+  <!-- =================================================================== -->
+  <!--  Release                                                            -->
+  <!-- =================================================================== -->
+  <target name="release"  depends="clean, dist, jdocs" description="Creates clean new release">
+  </target>
+
   <target name="default" depends="dist"/>
 </project>
