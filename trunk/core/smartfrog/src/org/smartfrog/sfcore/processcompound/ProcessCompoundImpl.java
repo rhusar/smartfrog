@@ -193,9 +193,9 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
 
         try {
             root = SFProcess.getRootLocator().getRootProcessCompound(null,
-                    ((Number) sfResolveId(SmartFrogCoreKeys.SF_ROOT_LOCATOR_PORT)).intValue());
+                    ((Number) sfResolveHere(SmartFrogCoreKeys.SF_ROOT_LOCATOR_PORT,false)).intValue());
         } catch (Throwable t){
-            throw (SmartFrogRuntimeException)SmartFrogRuntimeException.forward(t);
+            throw (SmartFrogRuntimeException)SmartFrogRuntimeException.forward("ProcessCompoundImpl.sfLocateParent()",t);
         }
         return root;
     }
@@ -264,7 +264,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
             sfContext = cxt;
 
             // find name for this process. If found, get parent
-            sfProcessName = (String) sfResolveId(SmartFrogCoreKeys.SF_PROCESS_NAME);
+            sfProcessName = (String) sfResolveHere(SmartFrogCoreKeys.SF_PROCESS_NAME,false);
 
             if (sfProcessName != null) {
                 if (sfProcessName.equals(SmartFrogCoreKeys.SF_ROOT_PROCESS)) {
@@ -317,7 +317,6 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
     public synchronized void sfStart() throws SmartFrogException,
         RemoteException {
         super.sfStart();
-
         //Set itself as single instance of process compound for this process
         try {
             SFProcess.setProcessCompound(this);
@@ -345,6 +344,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
             throw new SmartFrogRuntimeException(MSG_FAILED_TO_CONTACT_PARENT,
                                                 rex, this);
         }
+        if ((log!=null)&&(log.isTraceEnabled())) log.trace("Started ProcessCompound '"+sfProcessName+"'");
     }
 
     /**
@@ -665,8 +665,10 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
 
             try {
                 // read sfHost attribute. Faster that using sfDeployedHost().
-                canonicalHostName = ((java.net.InetAddress)sfResolveId(
-                    canonicalHostName)).getCanonicalHostName();
+                canonicalHostName = ((java.net.InetAddress)sfResolveHere(
+                    canonicalHostName,false)).getCanonicalHostName();
+            } catch (SmartFrogResolutionException srex){
+              //@todo log ignore.
             } catch (NullPointerException exSfHost) {
                 canonicalHostName = this.sfDeployedHost().getCanonicalHostName();
             }
@@ -837,12 +839,11 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
     public ProcessCompound sfResolveProcess(Object name) throws Exception {
         ProcessCompound pc = null;
 
-        if (sfParent() == null) { // am the root
-
+        if (sfParent() == null) { // I am the root
             try {
-                pc = (ProcessCompound) sfResolve(new Reference(
-                            new HereReferencePart(name)));
+                pc = (ProcessCompound) sfResolve(new Reference(new HereReferencePart(name)));
             } catch (SmartFrogResolutionException e) {
+                if (log.isTraceEnabled()) log.trace(" Creating a new ProcessCompound: "+ name.toString());
                 pc = addNewProcessCompound(name);
             }
         } else { // am a child process - find in the parent
@@ -875,20 +876,19 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
         // Check if process creation is allowed
         boolean allowProcess;
 
-        Object ap = sfResolveHere(SmartFrogCoreKeys.SF_PROCESS_ALLOW);
+        Object ap = sfResolveHere(SmartFrogCoreKeys.SF_PROCESS_ALLOW,false);
 
         if (ap == null) {
             allowProcess = false;
         } else if (ap instanceof String) {
-            allowProcess = Boolean.valueOf((String) ap).booleanValue() &&
-                sfIsRoot;
+            allowProcess = Boolean.valueOf((String) ap).booleanValue() && sfIsRoot;
         } else {
             allowProcess = ((Boolean) ap).booleanValue() && sfIsRoot;
         }
 
         if (!allowProcess) {
             throw SmartFrogResolutionException.generic(sfCompleteName(),
-                "Not allowed to create process");
+                "Not allowed to create process '"+ name.toString()+"'");
         }
 
         // Locate timeout
@@ -955,7 +955,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
 
         String[] runCmdArray = new String[runCmd.size()];
         runCmd.copyInto(runCmdArray);
-
+        if ((log!=null)&& log.isTraceEnabled()) log.trace("startProcess.runCmd: "+runCmd.toString());
         return Runtime.getRuntime().exec(runCmdArray);
     }
 

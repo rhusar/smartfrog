@@ -57,7 +57,7 @@ public class HereReferencePart extends ReferencePart {
 
     /**
      * Returns a string representation of the reference part.
-     * Implements abstract method ReferencePart.toString. 
+     * Implements abstract method ReferencePart.toString.
      * @return stringified reference part
      */
     public String toString() {
@@ -69,17 +69,17 @@ public class HereReferencePart extends ReferencePart {
     }
 
     /**
-     * Return a string which is a representation of the reference part in a reference in the 
+     * Return a string which is a representation of the reference part in a reference in the
      * index position given.
      *
      * @param index the position in the reference
      * @return the representation
      */
     public String toString(int index) {
-	if (index == 0)
-	    return HERE + ' ' + value.toString();
-	else
-	    return value.toString();
+    if (index == 0)
+        return HERE + ' ' + value.toString();
+    else
+        return value.toString();
     }
 
     /**
@@ -119,7 +119,7 @@ public class HereReferencePart extends ReferencePart {
     public Object resolve(ReferenceResolver rr, Reference r, int index)
         throws SmartFrogResolutionException {
         // Find here
-        Object result = rr.sfResolveId(value);
+        Object result = rr.sfResolveHere(value,false);
 
         if (result == null) {
             throw SmartFrogResolutionException.notFound(r, null);
@@ -155,7 +155,7 @@ public class HereReferencePart extends ReferencePart {
         throws SmartFrogResolutionException {
         try {
             // Find here
-            Object result = rr.sfResolveId(value);
+            Object result = rr.sfResolveHere(value,false);
 
             if (result == null) {
                 throw SmartFrogResolutionException.notFound(r, null);

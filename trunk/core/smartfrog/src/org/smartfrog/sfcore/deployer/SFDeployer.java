@@ -113,7 +113,7 @@ public class SFDeployer implements MessageKeys {
      * @see org.smartfrog.sfcore.processcompound.PrimProcessDeployerImpl
      */
     protected static ComponentDeployer getDeployer(ComponentDescription component) throws SmartFrogException {
-        String className = (String) component.sfResolveId(SmartFrogCoreKeys.SF_DEPLOYER_CLASS);
+        String className = (String) component.sfResolveHere(SmartFrogCoreKeys.SF_DEPLOYER_CLASS,false);
 
         if (className == null) {
             className = DEFAULT_DEPLOYER;

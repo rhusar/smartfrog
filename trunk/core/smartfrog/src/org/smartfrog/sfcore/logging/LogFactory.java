@@ -5,6 +5,7 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLogException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 
 import java.rmi.RemoteException;
 import java.util.Hashtable;
@@ -28,8 +29,7 @@ public  class LogFactory {
      * @return a new log.
      * @throws SmartFrogLogException when something went wrong with getting a log
      */
-    public static LogSF getLog(Prim prim)
-            throws SmartFrogLogException
+    public static synchronized LogSF getLog(Prim prim) throws SmartFrogLogException
     {
         LogSF log=null;
         try {
@@ -56,15 +56,15 @@ public  class LogFactory {
      * @return a log from cache or new.
      *
      */
-    public static LogSF getLog(String name)
+    public static synchronized LogSF getLog(String name)
     {
-        LogSF log=null;
-        log = (LogSF)loggers.get(name);
+        LogSF log  = (LogSF)loggers.get(name);
         if (log!=null) {
             return log;
         }
         log = (LogSF)(new LogImpl(name));
         loggers.put(name, log);
+        if ((log!=null)&&log.isTraceEnabled()) log.trace("New log created: "+ name);
         return log;
     }
 
@@ -122,7 +122,11 @@ public  class LogFactory {
      *  instance cannot be returned
      */
     public static LogSF getProcessLog() {
-       return getLog (SmartFrogCoreKeys.SF_CORE_LOG);
+       LogSF log =  getLog ((String)SmartFrogCoreKeys.SF_CORE_LOG);
+       if ((log!=null)&&log.isTraceEnabled()) log.trace("getProcessLog()");
+       /* LogImpl uses ComponentDescription and it needs to enable its log only when that is available */
+       ComponentDescriptionImpl.initLog(log);
+       return log;
     }
 
 

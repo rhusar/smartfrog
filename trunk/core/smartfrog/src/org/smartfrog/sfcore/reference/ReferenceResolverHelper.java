@@ -41,6 +41,20 @@ import org.smartfrog.sfcore.prim.Prim;
 public interface ReferenceResolverHelper {
 
     /**
+     * Find an attribute in this context.
+     *
+     * @param name attribute key to resolve
+     * @param mandatory boolean that indicates if this attribute must be
+     *        present in the description. If it is mandatory and not found it
+     *        throws a SmartFrogResolutionException
+     *
+     * @return Object value for attribute
+     *
+     * @throws SmartFrogResolutionException failed to find attribute
+     */
+    public Object sfResolveHere(Object name, boolean mandatory) throws SmartFrogResolutionException;
+
+    /**
      * Useful method since references are generally built up from strings. This
      * will translate the string into a reference with a single part and
      * resolve it. If the reference is illegal (ie. not parseable) a
@@ -77,14 +91,13 @@ public interface ReferenceResolverHelper {
      * @param reference reference
      * @param mandatory boolean that indicates if this attribute must be
      *        present in the description. If it is mandatory and not found it
-     *        triggers a SmartFrogResolutionException
+     *        thows a SmartFrogResolutionException
      *
      * @return java Object for attribute value or null if not
      *         found
      *
      * @throws SmartFrogResolutionException if invalid reference of reference
      * not resolvable
-     * @throws RemoteException if there is any network/rmi error
      */
     public Object sfResolve(Reference reference, boolean mandatory)
             throws SmartFrogResolutionException;
@@ -103,7 +116,6 @@ public interface ReferenceResolverHelper {
      *
      * @throws SmartFrogResolutionException if invalid reference of reference
      * not resolvable
-     * @throws RemoteException if there is any network/rmi error
      */
     public Object sfResolve(String referencePart, boolean mandatory)
              throws SmartFrogResolutionException;
@@ -123,7 +135,7 @@ public interface ReferenceResolverHelper {
      *
      * @throws SmartFrogResolutionException if invalid reference of reference
      * not resolvable
-     * @throws RemoteException if there is any network/rmi error
+
      */
     public boolean sfResolve(Reference reference, boolean defaultValue,
         boolean mandatory) throws SmartFrogResolutionException;
@@ -143,7 +155,7 @@ public interface ReferenceResolverHelper {
      *
      * @throws SmartFrogResolutionException if invalid reference of reference
      * not resolvable
-     * @throws RemoteException if there is any network/rmi error
+
      */
     public int sfResolve(Reference reference, int defaultValue, boolean mandatory)
         throws SmartFrogResolutionException;
@@ -165,7 +177,7 @@ public interface ReferenceResolverHelper {
      * @throws SmartFrogResolutionException if invalid reference of reference
      * not resolvable or resolve value &lt;minValue or resolveValue
      * &gt;maxValue
-     * @throws RemoteException if there is any network/rmi error
+
      */
     public int sfResolve(Reference reference, int defaultValue, Integer minValue, Integer maxValue, boolean mandatory)
         throws SmartFrogResolutionException;
@@ -185,7 +197,7 @@ public interface ReferenceResolverHelper {
      *
      * @throws SmartFrogResolutionException if invalid reference of reference
      * not resolvable
-     * @throws RemoteException if there is any network/rmi error
+
      */
 
     public long sfResolve(Reference reference, long defaultValue, boolean mandatory)
@@ -209,7 +221,7 @@ public interface ReferenceResolverHelper {
      * @throws SmartFrogResolutionException if invalid reference of reference
      * not resolvable or resolve value &lt;minValue or resolveValue
      * &gt;maxValue
-     * @throws RemoteException if there is any network/rmi error
+
      */
 
     public long sfResolve(Reference reference, long defaultValue, Long minValue, Long maxValue, boolean mandatory)
@@ -230,7 +242,7 @@ public interface ReferenceResolverHelper {
      *
      * @throws SmartFrogResolutionException if invalid reference of reference
      * not resolvable
-     * @throws RemoteException if there is any network/rmi error
+
      */
 
     public float sfResolve(Reference reference, float defaultValue, boolean mandatory)
@@ -254,7 +266,7 @@ public interface ReferenceResolverHelper {
      * @throws SmartFrogResolutionException if invalid reference of reference
      * not resolvable or resolve value &lt;minValue or resolveValue
      * &gt;maxValue
-     * @throws RemoteException if there is any network/rmi error
+
      */
 
     public float sfResolve(Reference reference, float defaultValue, Float minValue, Float maxValue, boolean mandatory)
@@ -276,7 +288,7 @@ public interface ReferenceResolverHelper {
      * @throws SmartFrogResolutionException if invalid reference of reference
      * not resolvable or resolve value &lt;minValue or resolveValue
      * &gt;maxValue
-     * @throws RemoteException if there is any network/rmi error
+
      */
 
     public double sfResolve(Reference reference, double defaultValue, boolean mandatory)
@@ -300,7 +312,7 @@ public interface ReferenceResolverHelper {
      * @throws SmartFrogResolutionException if invalid reference of reference
      * not resolvable or resolve value &lt;minValue or resolveValue
      * &gt;maxValue
-     * @throws RemoteException if there is any network/rmi error
+
      */
 
     public double sfResolve(Reference reference, double defaultValue, Double minValue, Double maxValue, boolean mandatory)
@@ -321,7 +333,7 @@ public interface ReferenceResolverHelper {
      *
      * @throws SmartFrogResolutionException if invalid reference of reference
      * not resolvable
-     * @throws RemoteException if there is any network/rmi error
+
      */
     public String sfResolve(Reference reference, String defaultValue,
         boolean mandatory) throws SmartFrogResolutionException;
@@ -341,7 +353,7 @@ public interface ReferenceResolverHelper {
      *
      * @throws SmartFrogResolutionException if invalid reference of reference
      * not resolvable
-     * @throws RemoteException if there is any network/rmi error
+
      */
     public Vector sfResolve(Reference reference, Vector defaultValue,
         boolean mandatory) throws SmartFrogResolutionException;
@@ -361,7 +373,7 @@ public interface ReferenceResolverHelper {
      *
      * @throws SmartFrogResolutionException if invalid reference of reference
      * not resolvable
-     * @throws RemoteException if there is any network/rmi error
+
      */
     public String[] sfResolve(Reference reference, String[] defaultValue,
         boolean mandatory) throws SmartFrogResolutionException;
@@ -383,7 +395,7 @@ public interface ReferenceResolverHelper {
      *
      * @throws SmartFrogResolutionException if invalid reference of reference
      * not resolvable
-     * @throws RemoteException if there is any network/rmi error
+
      */
     public java.net.InetAddress sfResolve(Reference reference,
         java.net.InetAddress defaultValue, boolean mandatory)
@@ -406,7 +418,7 @@ public interface ReferenceResolverHelper {
      *
      * @throws SmartFrogResolutionException if invalid reference of reference
      * not resolvable
-     * @throws RemoteException if there is any network/rmi error
+
      */
     public ComponentDescription sfResolve(Reference reference,
         ComponentDescription defaultValue, boolean mandatory)
@@ -429,7 +441,7 @@ public interface ReferenceResolverHelper {
      *
      * @throws SmartFrogResolutionException if invalid reference of reference
      * not resolvable
-     * @throws RemoteException if there is any network/rmi error
+
      */
     public Reference sfResolve(Reference reference, Reference defaultValue,
         boolean mandatory) throws SmartFrogResolutionException;
@@ -451,7 +463,7 @@ public interface ReferenceResolverHelper {
      *
      * @throws SmartFrogResolutionException if invalid reference of reference
      * not resolvable
-     * @throws RemoteException if there is any network/rmi error
+
      */
     public Prim sfResolve(Reference reference, Prim defaultValue,
         boolean mandatory) throws SmartFrogResolutionException;
@@ -473,7 +485,7 @@ public interface ReferenceResolverHelper {
      *
      * @throws SmartFrogResolutionException if invalid reference of reference
      * not resolvable
-     * @throws RemoteException if there is any network/rmi error
+
      */
     public Compound sfResolve(Reference reference, Compound defaultValue,
         boolean mandatory) throws SmartFrogResolutionException;
@@ -493,7 +505,7 @@ public interface ReferenceResolverHelper {
      *
      * @throws SmartFrogResolutionException if invalid reference of reference
      * not resolvable
-     * @throws RemoteException if there is any network/rmi error
+
      */
     public Object sfResolve(Reference reference, Object defaultValue,
         boolean mandatory) throws SmartFrogResolutionException;
@@ -513,7 +525,7 @@ public interface ReferenceResolverHelper {
      *
      * @throws SmartFrogResolutionException if invalid reference of reference
      * not resolvable
-     * @throws RemoteException if there is any network/rmi error
+
      */
     public boolean sfResolve(String referencePart, boolean defaultValue,
         boolean mandatory) throws SmartFrogResolutionException;
@@ -533,7 +545,7 @@ public interface ReferenceResolverHelper {
      *
      * @throws SmartFrogResolutionException if invalid reference of reference
      * not resolvable
-     * @throws RemoteException if there is any network/rmi error
+
      */
     public int sfResolve(String referencePart, int defaultValue, boolean mandatory)
         throws SmartFrogResolutionException;
@@ -556,7 +568,7 @@ public interface ReferenceResolverHelper {
      * @throws SmartFrogResolutionException if invalid reference of reference
      * not resolvable or resolve value &lt;minValue or resolveValue
      * &gt;maxValue
-     * @throws RemoteException if there is any network/rmi error
+
      */
     public int sfResolve(String referencePart, int defaultValue, Integer minValue, Integer maxValue, boolean mandatory)
         throws SmartFrogResolutionException;
@@ -577,7 +589,7 @@ public interface ReferenceResolverHelper {
      *
      * @throws SmartFrogResolutionException if invalid reference of reference
      * not resolvable
-     * @throws RemoteException if there is any network/rmi error
+
      */
     public long sfResolve(String referencePart, long defaultValue, boolean mandatory)
         throws SmartFrogResolutionException;
@@ -601,7 +613,7 @@ public interface ReferenceResolverHelper {
      * @throws SmartFrogResolutionException if invalid reference of reference
      * not resolvable or resolve value &lt;minValue or resolveValue
      * &gt;maxValue
-     * @throws RemoteException if there is any network/rmi error
+
      */
     public long sfResolve(String referencePart, long defaultValue, Long minValue, Long maxValue, boolean mandatory)
         throws SmartFrogResolutionException;
@@ -621,7 +633,7 @@ public interface ReferenceResolverHelper {
      * @throws SmartFrogResolutionException if invalid reference of reference
      * not resolvable or resolve value &lt;minValue or resolveValue
      * &gt;maxValue
-     * @throws RemoteException if there is any network/rmi error
+
      */
     public float sfResolve(String referencePart, float defaultValue, boolean mandatory)
         throws SmartFrogResolutionException;
@@ -644,7 +656,7 @@ public interface ReferenceResolverHelper {
      * @throws SmartFrogResolutionException if invalid reference of reference
      * not resolvable or resolve value &lt;minValue or resolveValue
      * &gt;maxValue
-     * @throws RemoteException if there is any network/rmi error
+
      */
     public float sfResolve(String referencePart, float defaultValue, Float minValue, Float maxValue, boolean mandatory)
         throws SmartFrogResolutionException;
@@ -666,7 +678,7 @@ public interface ReferenceResolverHelper {
      * @throws SmartFrogResolutionException if invalid reference of reference
      * not resolvable or resolve value &lt;minValue or resolveValue
      * &gt;maxValue
-     * @throws RemoteException if there is any network/rmi error
+
      */
     public double sfResolve(String referencePart, double defaultValue, boolean mandatory)
         throws SmartFrogResolutionException;
@@ -690,7 +702,7 @@ public interface ReferenceResolverHelper {
      * @throws SmartFrogResolutionException if invalid reference of reference
      * not resolvable or resolve value &lt;minValue or resolveValue
      * &gt;maxValue
-     * @throws RemoteException if there is any network/rmi error
+
      */
     public double sfResolve(String referencePart, double defaultValue, Double minValue, Double maxValue, boolean mandatory)
         throws SmartFrogResolutionException;
@@ -711,7 +723,7 @@ public interface ReferenceResolverHelper {
      * @throws SmartFrogResolutionException if invalid reference of reference
      * not resolvable or resolve value &lt;minValue or resolveValue
      * &gt;maxValue
-     * @throws RemoteException if there is any network/rmi error
+
      */
     public String sfResolve(String referencePart, String defaultValue,
         boolean mandatory) throws SmartFrogResolutionException;
@@ -731,7 +743,7 @@ public interface ReferenceResolverHelper {
      *
      * @throws SmartFrogResolutionException if invalid reference of reference
      * not resolvable
-     * @throws RemoteException if there is any network/rmi error
+
      */
     public Vector sfResolve(String referencePart, Vector defaultValue,
         boolean mandatory) throws SmartFrogResolutionException;
@@ -751,7 +763,7 @@ public interface ReferenceResolverHelper {
      *
      * @throws SmartFrogResolutionException if invalid reference of reference
      * not resolvable
-     * @throws RemoteException if there is any network/rmi error
+
      */
     public String[] sfResolve(String referencePart, String[] defaultValue,
         boolean mandatory) throws SmartFrogResolutionException;
@@ -773,7 +785,7 @@ public interface ReferenceResolverHelper {
      *
      * @throws SmartFrogResolutionException if invalid reference of reference
      * not resolvable
-     * @throws RemoteException if there is any network/rmi error
+
      */
     public java.net.InetAddress sfResolve(String referencePart,
         java.net.InetAddress defaultValue, boolean mandatory)
@@ -796,7 +808,7 @@ public interface ReferenceResolverHelper {
      *
      * @throws SmartFrogResolutionException if invalid reference of reference
      * not resolvable
-     * @throws RemoteException if there is any network/rmi error
+
      */
     public ComponentDescription sfResolve(String referencePart,
         ComponentDescription defaultValue, boolean mandatory)
@@ -817,7 +829,7 @@ public interface ReferenceResolverHelper {
      *
      * @throws SmartFrogResolutionException if invalid reference of reference
      * not resolvable
-     * @throws RemoteException if there is any network/rmi error
+
      */
     public Reference sfResolve(String referencePart, Reference defaultValue,
         boolean mandatory) throws SmartFrogResolutionException;
@@ -837,7 +849,7 @@ public interface ReferenceResolverHelper {
      *
      * @throws SmartFrogResolutionException if invalid reference of reference
      * not resolvable
-     * @throws RemoteException if there is any network/rmi error
+
      */
     public Prim sfResolve(String referencePart, Prim defaultValue,
         boolean mandatory) throws SmartFrogResolutionException;
@@ -857,7 +869,7 @@ public interface ReferenceResolverHelper {
      *
      * @throws SmartFrogResolutionException if invalid reference of reference
      * not resolvable
-     * @throws RemoteException if there is any network/rmi error
+
      */
     public Compound sfResolve(String referencePart, Compound defaultValue,
         boolean mandatory) throws SmartFrogResolutionException;
@@ -878,7 +890,7 @@ public interface ReferenceResolverHelper {
      *
      * @throws SmartFrogResolutionException if invalid reference of reference
      * not resolvable
-     * @throws RemoteException if there is any network/rmi error
+
      */
     public Object sfResolve(String referencePart, Object defaultValue,
         boolean mandatory) throws SmartFrogResolutionException;

@@ -78,12 +78,6 @@ public class LogToFileImpl extends LogToErrImpl implements LogToFile {
 //        } catch (SmartFrogException ex) {
 //           this.warn(ex.toString());
 //        }
-//        try {
-//          readSFAttributes();
-//        } catch (SmartFrogException ex1) {
-//           this.error("",ex1);
-//        }
-
         PrintStream out=null;
         try {
            logFile = createFile(logFileExtension);
@@ -100,6 +94,9 @@ public class LogToFileImpl extends LogToErrImpl implements LogToFile {
             } catch (Exception ex1) {
                 ex1.printStackTrace();
             }
+        }
+        if (isTraceEnabled() && this.getClass().toString().endsWith("LogToFileImpl")) {
+            trace(this.getClass().toString()+" '"+name+"' using ComponentDescription:\n"+classComponentDescription.toString());
         }
 //        setLevel(initialLogLevel.intValue());
     }
@@ -152,7 +149,8 @@ public class LogToFileImpl extends LogToErrImpl implements LogToFile {
             fullLogFileName.append(dateFileNameFormatter.format(new Date()));
         }
         // add the extension
-        return new File(fullLogFileName.toString()+"."+fileExtension);
+        //System.out.println("**********LogToFileImpl::createFile : "+fullLogFileName.toString()+"."+fileExtension);
+        return new File( fullLogFileName.toString()+"."+fileExtension);
     }
 
     private String correctFilename(String filename) {

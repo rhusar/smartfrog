@@ -112,7 +112,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
             ComponentDescription cmp, Context parms) throws SmartFrogDeploymentException {
         // check for attribute already named like given name
         try {
-            Object res = ((parent == null) || (name == null)) ? null: sfResolveId(name);
+            Object res = ((parent == null) || (name == null)) ? null: sfResolveHere(name,false);
 
             if ((res != null) && !(res instanceof ComponentDescription)) {
                 throw new SmartFrogDeploymentException(null, parent.sfCompleteName() ,

@@ -71,6 +71,8 @@ public class SFSystem implements MessageKeys {
     /** A flag that ensures only one system initialization. */
     private static boolean alreadySystemInit = false;
 
+    /** Core Log  */
+    private static  LogSF log = null;
 
     /**
      * value of the errror code returned during a failed exit
@@ -146,8 +148,9 @@ public class SFSystem implements MessageKeys {
             sysProps.put(key, props.get(key));
         }
         System.setProperties(sysProps);
-        if (LogFactory.getProcessLog().isTraceEnabled()){
-            LogFactory.getProcessLog().trace("New system properties: " +sysProps.toString());
+        if (log==null) log=LogFactory.getProcessLog();
+        if (log.isTraceEnabled()){
+            log.trace("New system properties: " +sysProps.toString());
         }
     }
 
@@ -308,7 +311,12 @@ public class SFSystem implements MessageKeys {
         try {
             initSystem();
         } catch (Exception ex) {
-            ex.printStackTrace();
+            if (log==null) log=LogFactory.getProcessLog();
+            try {
+                if (log.isErrorEnabled()) {
+                    log.error(ex);
+                }
+            } catch (Exception ex1) {ex1.printStackTrace();}
             exitWithError();
         }
 
@@ -454,12 +462,12 @@ public class SFSystem implements MessageKeys {
             SFSecurity.initSecurity();
             // Read init properties
             readPropertiesFromIniFile();
+            if (log==null) log=LogFactory.getProcessLog();
             // Notify status of Security
             if (!SFSecurity.isSecurityOn()){
-                LogSF log=LogFactory.getLog("SFSecurityLog");
-                if (log.isWarnEnabled()) log.warn("SmartFrog security is NOT active");
+                if (log.isWarnEnabled())
+                  log.warn("SmartFrog security is NOT active");
             }
-
             // Set stackTracing
             readPropertyLogStackTrace();
 

@@ -77,7 +77,7 @@ public class DefaultRootLocatorImpl implements RootLocator, MessageKeys {
         try {
             if (registryPort==-1) {
                 Number port = ((Number)c.sfResolveHere(SmartFrogCoreKeys.
-                    SF_ROOT_LOCATOR_PORT));
+                    SF_ROOT_LOCATOR_PORT,false));
                 if (port==null) {
                     throw new SmartFrogResolutionException(
                         "Unable to locate registry port from ", c);

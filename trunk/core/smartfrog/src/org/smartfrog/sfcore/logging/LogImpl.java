@@ -149,7 +149,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
     public LogImpl (String name){
         //@TODO: improve error protection
         //@TODO: read configuration parameters from component description also localLog has to be configured
-
+        logName = name;
         try {
             //Check Class and read configuration...including system.properties
             classComponentDescription = getClassComponentDescription(this, true);
@@ -164,10 +164,11 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
                                    , getSfCodeBase(classComponentDescription));
         } catch (Exception ex ){
             localLog=new LogToFileImpl(name,new Integer(currentLogLevel));
-            if (localLog.isWarnEnabled()) localLog.warn("Error init localLog for LogImpl",ex);
+            if (localLog.isWarnEnabled()) localLog.warn("Error during init of localLog for LogImpl. Using Default (LogToFile)",ex);
         }
-        if (localLog.isTraceEnabled()) localLog.trace(classComponentDescription.toString());
-        logName = name;
+        if (localLog.isTraceEnabled()) {
+            localLog.trace("Log '"+name+"' using ComponentDescription:\n"+classComponentDescription.toString());
+        }
     }
 
 
@@ -279,6 +280,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
         if (localLog instanceof LogLevel){
            ((LogLevel)localLog).setLevel(currentLogLevel);
         }
+        if (isTraceEnabled()) this.trace("setLogLevel()="+this.currentLogLevel);
     }
 
     /**

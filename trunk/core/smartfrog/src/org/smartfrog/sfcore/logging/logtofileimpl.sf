@@ -18,10 +18,10 @@ For more information: www.smartfrog.org
 
 */
 
-#include "org/smartfrog/sfcore/logging/logtoerrimpl.sf" 
+#include "org/smartfrog/sfcore/logging/logtoerrimpl.sf"
 
 LogToFileImpl extends  LogToErrImpl {
-  path "julio";
+  path PROPERTY java.io.tmpdir; //".";
   logFileExtension "logJ";
   useDatedFileName true;
   redirectSystemOutputs false;

@@ -63,6 +63,7 @@ import java.rmi.RemoteException;
 
 
 //************************************************************************************
+
     /**
      * Resolves a referencePart given a string. Utility method to auto-convert
      * from string to reference.

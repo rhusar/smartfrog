@@ -161,7 +161,7 @@ public class PrimDeployerImpl implements ComponentDeployer, MessageKeys {
         } catch (java.lang.ClassCastException ccex){
             Object name = null;
             if (target.sfContext().containsKey(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME)) {
-                name =target.sfResolveId(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME);
+                name =target.sfResolveHere(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME,false);
             }
             throw new SmartFrogDeploymentException (refClass,null,name,target,
               null,"Wrong class when resolving '"+refClass+ "': '"
@@ -169,7 +169,7 @@ public class PrimDeployerImpl implements ComponentDeployer, MessageKeys {
         } catch (java.lang.ClassNotFoundException cnfex){
             Object name = null;
             if (target.sfContext().containsKey(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME)) {
-                name =target.sfResolveId(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME);
+                name =target.sfResolveHere(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME,false);
             }
             throw new SmartFrogDeploymentException (refClass,null,name,target,null,"Class not found", cnfex, targetCodeBase);
         }

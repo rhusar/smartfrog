@@ -149,6 +149,9 @@ public class LogToErrImpl implements LogToErr, Log, LogMessage, LogLevel, Serial
         } catch (SmartFrogException ex) {
            this.warn(ex.toString());
         }
+        if (isTraceEnabled() && this.getClass().toString().endsWith("LogToErrImpl")) {
+            trace(this.getClass().toString()+" '"+name+"' using ComponentDescription:\n"+classComponentDescription.toString());
+        }
         try {
           readSFAttributes();
         } catch (SmartFrogException ex1) {
@@ -169,7 +172,6 @@ public class LogToErrImpl implements LogToErr, Log, LogMessage, LogLevel, Serial
      */
     protected void readSFAttributes() throws SmartFrogException {
         if (classComponentDescription==null) return;
-
         //Optional attributes.
         try {
           showLogName =    classComponentDescription.sfResolve(ATR_SHOW_LOG_NAME,showLogName, false);
@@ -181,12 +183,13 @@ public class LogToErrImpl implements LogToErr, Log, LogMessage, LogLevel, Serial
         } catch (Exception sex){
            this.warn("",sex);;
         }
-
+        DateFormat newDateFormatter = null;
         try{
-          dateFormatter= new SimpleDateFormat(classComponentDescription.sfResolve
+          newDateFormatter= new SimpleDateFormat(classComponentDescription.sfResolve
              (ATR_DATE_FORMAT,"yyyy/MM/dd HH:mm:ss:SSS zzz",false));
+          dateFormatter=newDateFormatter;
         } catch (Exception ex){
-           this.err("dateFormatter",ex);
+           if (this.isErrorEnabled())  this.error("dateFormatter",ex);
         }
 
     }

@@ -142,7 +142,7 @@ public interface Context extends Copying {
     public Object clone();
 
 
-   // Special methods thet thwo exception when something does not work
+   // Special methods that throw exception when something does not work
    /**
      * Add an attribute to context. Values should be
      * marshallable types if they are to be referenced remotely at run-time.
@@ -195,6 +195,17 @@ public interface Context extends Copying {
      */
     public Object sfReplaceAttribute(Object name, Object value)
         throws SmartFrogContextException;
+
+    /**
+     * Find an attribute in this context.
+     *
+     * @param name attribute key to resolve
+     *
+     * @return Object Reference
+     *
+     * @throws SmartFrogResolutionException failed to find attribute
+     */
+    public Object sfResolveAttribute (Object name) throws SmartFrogContextException;
 
 
 }
