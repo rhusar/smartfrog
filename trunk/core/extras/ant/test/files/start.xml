@@ -7,8 +7,8 @@
  command line invocation
 
 
-ant -lib ../../build/dist/lib/smartfrog-tasks.jar -lib ../../../../smartfrog/dist/lib/smartfrog.jar -lib ../../../../smartfrog/dist/lib/sfExamples.jar -f start.xml testResource
-ant -lib ..\..\build\dist\lib\smartfrog-tasks.jar -lib ..\..\..\..\smartfrog\dist\lib\smartfrog.jar -lib ..\..\..\..\smartfrog\dist\lib\sfExamples.jar -f start.xml testResource
+ant -lib ../../build/dist/lib/sf-tasks.jar -lib ../../../../smartfrog/dist/lib/smartfrog.jar -lib ../../../../smartfrog/dist/lib/sfExamples.jar -f start.xml testResource
+ant -lib ..\..\build\dist\lib\sf-tasks.jar -lib ..\..\..\..\smartfrog\dist\lib\smartfrog.jar -lib ..\..\..\..\smartfrog\dist\lib\sfExamples.jar -f start.xml testResource
 </description>
 
   <import file="test-common.xml" />

@@ -189,15 +189,8 @@ public class Security extends DataType {
      * verifies that attributes are free if the references are set
      */
     private void validateReferencesAndAttributes() {
-        if(getRefid()!=null) {
-            boolean attrs=false;
-            attrs = keystore!=null;
-            attrs |= policyFile!=null;
-            attrs |= securityProperties!=null;
-            attrs |= alias != null;
-            if(attrs) {
-                throw new BuildException(ERROR_REFID_EXCLUSIVE);
-            }
+        if(getRefid()!=null && !isEmpty()) {
+            throw new BuildException(ERROR_REFID_EXCLUSIVE);
         }
     }
 
