@@ -310,22 +310,32 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
      * @throws SmartFrogException failed to start compound
      * @throws RemoteException In case of Remote/nework error
      */
-    public synchronized void sfStart() throws SmartFrogException, RemoteException {
-    super.sfStart();
+    public synchronized void sfStart() throws SmartFrogException,
+        RemoteException {
+        super.sfStart();
 
-    // the last act is to inform the root process compound that the
-    // subprocess is now ready for action - only done if not the root
-    try {
-        if (!sfIsRoot()) {
-        ProcessCompound parent = sfLocateParent();
-        if (parent != null) {
-            parent.sfNotifySubprocessReady(sfProcessName);
+        //Set itself as single instance of process compound for this process
+        try {
+            SFProcess.setProcessCompound(this);
+        } catch (Exception ex) {
+            throw SmartFrogException.forward(ex);
         }
+
+
+
+        // the last act is to inform the root process compound that the
+        // subprocess is now ready for action - only done if not the root
+        try {
+            if (!sfIsRoot()) {
+                ProcessCompound parent = sfLocateParent();
+                if (parent!=null) {
+                    parent.sfNotifySubprocessReady(sfProcessName);
+                }
+            }
+        } catch (RemoteException rex) {
+            throw new SmartFrogRuntimeException(MSG_FAILED_TO_CONTACT_PARENT,
+                                                rex, this);
         }
-    } catch (RemoteException rex) {
-        throw new SmartFrogRuntimeException(MSG_FAILED_TO_CONTACT_PARENT,
-                        rex, this);
-    }
     }
 
     /**
