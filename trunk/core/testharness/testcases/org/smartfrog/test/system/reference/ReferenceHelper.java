@@ -30,6 +30,8 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
+import org.smartfrog.sfcore.processcompound.ProcessCompound;
+import org.smartfrog.sfcore.processcompound.SFProcess;
 
 
 /**
@@ -67,9 +69,11 @@ public class ReferenceHelper extends PrimImpl implements Prim{
         }else if (tcName.equals("tcn42")) {
             int intAttr = sfResolve("intAttr", 8, new Integer(5), 
                                             new Integer (9), true);
-        }
-        
-        
+        }else if (tcName.equals("tcn62")) {
+            int integer = ((Integer)sfResolve("integer1")).intValue();
+	}else if (tcName.equals("tcn63")) {
+            String name = sfResolve("name1",true).toString();
+	}
     }
 
     /**
