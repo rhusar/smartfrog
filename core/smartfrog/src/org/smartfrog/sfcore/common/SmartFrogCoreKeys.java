@@ -26,151 +26,158 @@ package org.smartfrog.sfcore.common;
 public interface SmartFrogCoreKeys {
 
     /**
-     * SmartFrog core key:
+     * Attribute used to determine the host to use to
+     * locate the root process compound on that host
+     * @see PrimHostDeployerImpl
      */
     public final static String SF_PROCESS_HOST = "sfProcessHost";
 
     /**
-     * SmartFrog core key:
+     * Attribute used to determine the process/subprocess name where a component runs
      */
     public final static String SF_PROCESS = "sfProcess";
 
 
+
     /**
-    * SmartFrog core key:
-    */
+     * Attribute used to name a process/subprocess
+     */
     public final static String SF_PROCESS_NAME = "sfProcessName";
 
-
     /**
-     * SmartFrog core key:
+     * Attribute eued to name a component
      */
     public final static String SF_PROCESS_COMPONENT_NAME = "sfProcessComponentName";
 
-
     /**
-     * SmartFrog core key:
-     */
-    public final static String SF_ROOT_PROCESS = "rootProcess";
-    /**
-     * SmartFrog core key:
-     */
-    public final static String SF_ROOT = "ROOT";
-
-    /**
-     * SmartFrog core key:
+     * Registry port used by the rootProcess daemon
      */
     public final static String SF_ROOT_LOCATOR_PORT = "sfRootLocatorPort";
 
     /**
-     * SmartFrog core key:
+     * Attribute with garbage collection time out for SubProcesses
      */
     public final static String SF_SUBPROCESS_GC_TIMEOUT = "sfSubprocessGCTimeout";
 
     /**
-     * SmartFrog core key:
+     * Used to determine the host address where a component runs
      */
     public final static String SF_HOST = "sfHost";
 
     /**
-     * SmartFrog core key:
-     */
-    public final static String SF_RUN_PROCESS = "sfRunProcess";
-
-    /**
-     * SmartFrog core key:
-     */
-    public final static String SF_UNNAMED = "unnamed_";
-
-
-    /**
-     * SmartFrog core key:
+     * Attribute used to define if subProcesses can be used
      */
     public final static String SF_PROCESS_ALLOW ="sfProcessAllow";
 
     /**
-     * SmartFrog core key:
+     * Attribute with subprocess deployment timeout
      */
     public final static String SF_PROCESS_TIMEOUT ="sfProcessTimeout";
 
     /**
-     * SmartFrog core key:
+     *  Attribute that holds the process java start command
      */
     public final static String SF_PROCESS_JAVA ="sfProcessJava";
 
     /**
-     * SmartFrog core key:
+     * Attribute that holds the class name for subprocesses
      */
     public final static String SF_PROCESS_CLASS ="sfProcessClass";
 
     /**
-     * SmartFrog core key:
+     * Attribute that holds the class name for deployer
      */
     public final static String SF_DEPLOYER_CLASS ="sfDeployerClass";
 
     /**
-     * SmartFrog core key:
+     * Attribute that determines asynchronous or synchronous termination
+     * of compound
+     * @see CompoundImpl
      */
     public final static String SF_SYNC_TERMINATE = "sfSyncTerminate";
 
     /**
-     * SmartFrog core key:
+     * Attribute that holds the class that implements a component
      */
     public final static String SF_CLASS="sfClass";
 
     /**
-     * SmartFrog core key:
+     * Attributed that determines the resolution root of a SmartFrog description
      */
     public final static String SF_CONFIG="sfConfig";
 
 
     /**
-     * SmartFrog core key:
+     * Attrituted that determines the definition of a schema
      */
     public final static String SF_SCHEMA_DESCRIPTION="sfSchemaDescription";
 
     /**
-     * SmartFrog core key:
+     * Attribute that defines the codebase for a component
      */
     public final static String SF_CODE_BASE = "sfCodeBase";
 
 
     /**
-     * SmartFrog core key:
+     * Attribute that defines how often to send liveness in seconds.
      */
     public final static String SF_LIVENESS_DELAY= "sfLivenessDelay";
 
     /**
-     * SmartFrog core key:
+     * Attribute that defines how many multiples of livenss delay to wait
+     * till a liveness failure of the parent is declared
      */
     public final static String SF_LIVENESS_FACTOR="sfLivenessFactor";
 
     /**
-     * SmartFrog core key:
+     * Attribute that defines if a component has to accept remote method calls
      */
     public final static String SF_EXPORT="sfExport";
 
     /**
-     * SmartFrog core key:
+     * Attribute that defines the root locator class
      */
     public final static String SF_ROOT_LOCATOR_CLASS = "sfRootLocatorClass";
 
+    /**
+     * Attribute that hold the boot time of the root process daemon
+     */
+    public final static String SF_BOOT_DATE = "sfBootDate";
+
+
+
+    // Strings used to name certain things in the framework
 
     /**
-     * SmartFrog core key:
+     * Name used to name root process
+     */
+    public final static String SF_ROOT_PROCESS = "rootProcess";
+
+    /**
+     * Name used to refer to the root reference in a particular hierachy of
+     * components or description
+     */
+    public final static String SF_ROOT = "ROOT";
+
+    /**
+     * Name used to name a root process deployed without registry
+     */
+    public final static String SF_RUN_PROCESS = "sfRunProcess";
+
+    /**
+     * Name used to prefix the name of unamed deployments
+     */
+    public final static String SF_UNNAMED = "unnamed_";
+
+    /**
+     * Name to name a deploy phase failure
      */
     public final static String SF_DEPLOY_FAILURE = "sfDeployFailure";
 
     /**
-     * SmartFrog core key:
+     * Name to name a start phase failure
      */
     public final static String SF_START_FAILURE = "sfStartFailure";
-
-    /**
-     * SmartFrog core key:
-     */
-    public final static String SF_BOOT_DATE = "sfBootDate";
-
 
 
 }
