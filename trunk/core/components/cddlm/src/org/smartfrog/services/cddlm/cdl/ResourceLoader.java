@@ -29,7 +29,10 @@ import java.io.InputStream;
 import java.rmi.RemoteException;
 
 /**
- * This is something that can hand off resource loading to the created Jul 1,
+ * This is something that can hand off resource loading to whatever does
+ * loading.
+ * created Jul 1,
+ *
  * 2004 4:44:38 PM
  */
 
@@ -47,8 +50,9 @@ public class ResourceLoader {
     }
 
     public ResourceLoader(Class clazz) {
-        loader = clazz.getClassLoader();
+        this(clazz.getClassLoader());
     }
+
 
     /**
      * load with a given codebase; goes through the smartfrog loader.

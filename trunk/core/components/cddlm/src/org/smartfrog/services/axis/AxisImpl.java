@@ -28,8 +28,6 @@ import org.apache.axis.deployment.wsdd.WSDDDeployment;
 import org.apache.axis.deployment.wsdd.WSDDDocument;
 import org.apache.axis.transport.http.SimpleAxisServer;
 import org.apache.axis.utils.XMLUtils;
-import org.jdom.JDOMException;
-import org.jdom.output.DOMOutputter;
 import org.smartfrog.services.cddlm.DeploymentEndpoint;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
@@ -296,7 +294,8 @@ public class AxisImpl extends PrimImpl implements Axis {
      *
      * @param wsdd
      */
-    public void registerWSDDDocument(org.jdom.Document wsdd) throws SmartFrogException {
+    /*
+    public void registerWSDDDocument(Document wsdd) throws SmartFrogException {
         DOMOutputter outputter = new DOMOutputter();
         try {
             Document DomDoc = outputter.output(wsdd);
@@ -308,7 +307,7 @@ public class AxisImpl extends PrimImpl implements Axis {
             throw SmartFrogException.forward(e);
         }
     }
-
+    */
     /**
      * this is an override point for subcomponents. The usual aim is to check the
      * type of parts being deployed, and so be fussier than a classic Compound instance.
