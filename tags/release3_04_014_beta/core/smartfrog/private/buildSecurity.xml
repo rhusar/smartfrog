@@ -1,0 +1,253 @@
+<!--
+/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+-->
+
+<!-- CHANGE THESE PASSWORDS NOW!!! -->
+  <property name="defaultCAPassword" value="pleasechange2"/>
+
+<!-- CA related properties -->
+  <property name="dist.testCA.dir" location="testCA"/>
+  <property name="dist.dir" location="."/>
+  <property name="dist.signedLib.dir" location="signedLib"/>
+  <property name="disttestCA" value="${dist.testCA.dir}"/>
+<!-- dist.dir and others are set by surrounding build.xml -->
+<!--   <property name="disttestCA" value="${dist.testCA.dir}"/>
+  <property name="dist.private.dir" value="${dist.dir}/${private}"/>
+  <property name="distsignedLib" value="${dist.signedLib.dir}"/>
+  <property name="distlib" value="${dist.lib.dir}"/>
+ -->
+  <property name="CAFromPrivate" value="ca"/>
+
+  <!-- REVISIT if the private dir is already defined, this assigment is harmless.
+    if it is unassigned, it takes.-->
+  <property name="dist.private.dir" value="${dist.dir}/${private}"/>
+  <property name="dist.lib.dir" location="lib"/>
+
+  <property name="CA" location="${dist.private.dir}/${CAFromPrivate}"/>
+  <property name="CAsubdir" value="demoCA"/>
+
+
+  <property name="defaultKeyStore" value="mykeys.st"/>
+  <property name="defaultCodeSignerCAKeyStore" value="codesigner.st"/>
+  <property name="defaultPolicyName" value="sf.policy"/>
+
+  <property name="defaultSecProp" value="SFSecurity.properties"/>
+
+  <property name="aliasCSKey" value="sfcodesigner"/>
+  <property name="aliasCommunityKey" value="sfcommunity"/>
+  <property name="aliasSelfKey" value="self"/>
+  <property name="randomFile" value=".rnd"/>
+  <property name="tempPasswdFile" value="passwd"/>
+  <property name="hostDirPrefix" value="host"/>
+
+
+<!-- 1 CA build related tasks -->
+
+<!-- 1.1 creating a new CA from scratch -->
+
+<target name="initCommunityCA">
+    <!-- Configure some setup files -->
+    <mkdir dir="${CA}/${CAsubdir}"/>
+    <mkdir dir="${CA}/${CAsubdir}/newcerts"/>
+    <touch file="${CA}/${CAsubdir}/index.txt"/>
+    <echo message="01" file="${CA}/${CAsubdir}/serial"/>
+
+    <!-- Generate some random data using /dev/urandom in linux/ -->
+    <exec dir="${CA}" executable="openssl">
+    <arg line="rand  -rand ${randomFile} -out ${randomFile} 64"/>
+    </exec>
+
+    <!-- Generare CA keys. -->
+    <exec dir="${CA}" executable="openssl">
+    <arg line="genrsa  -rand ${randomFile} -passout pass:${defaultCAPassword} -des3 -out ca.key 1024"/>
+    </exec>
+
+    <!-- Generare a selfsigned certificate for the CA -->
+    <exec dir="${CA}" executable="openssl">
+     <arg line="req -config openssl.cnf -new -x509 -passin pass:${defaultCAPassword} -days 365 -key ca.key -out cacert.pem"/>
+    </exec>
+    <copy file="${CA}/cacert.pem" todir="${CA}/${CAsubdir}"/>
+</target>
+
+<target name="initCodeSignerCA">
+  <!-- First generate new keys  -->
+  <genkey alias="${aliasSelfKey}"
+          keystore="${CA}/${defaultCodeSignerCAKeyStore}"
+          keyalg="RSA"
+          storepass="${defaultCAPassword}"
+          dname="CN=sfCodeSigner, OU=HPL, O=HP, C=UK"/>
+
+  <!-- Export self-signed certificate -->
+   <exec dir="${CA}" executable="keytool">
+    <arg line="-keystore ${defaultCodeSignerCAKeyStore} -export -alias ${aliasSelfKey} -storepass ${defaultCAPassword} -file codesigner.cer"/>
+   </exec>
+</target>
+
+
+<target name="touchLibs">
+  <!-- force that libraries will get signed in a build -->
+  <touch>
+      <fileset dir="${dist.lib.dir}" includes="**/*.jar" />
+  </touch>
+</target>
+
+<target name="initCA" depends="cleanCA,initCodeSignerCA,initCommunityCA,touchLibs">
+</target>
+
+
+<!-- 1.2 Signing a jar file -->
+<target name="signjarbuild">
+   <signjar jar="${jarname}"
+            alias="${aliasSelfKey}"
+            keystore="${CA}/${defaultCodeSignerCAKeyStore}"
+            signedjar="${signedjarname}"
+            storepass="${defaultCAPassword}"/>
+</target>
+
+<!-- 1.3.2 Sets a random password in the property defaultPassword -->
+<target name="randomPasswd" >
+  <!-- First generate a file with random characters -->
+  <exec dir="${dist.private.dir}" executable="openssl">
+    <arg line="rand -out ${tempPasswdFile} -base64 15"/>
+  </exec>
+  <!-- Second generate a property file with it-->
+  <echo message="defaultPassword=" file="${dist.private.dir}/header.txt"/>
+  <concat destfile = "${dist.private.dir}/${tempPasswdFile}.properties">
+    <filelist dir="${dist.private.dir}"
+        files="header.txt,${tempPasswdFile}"/>
+  </concat>
+
+
+  <!-- Read property file -->
+     <property file="${dist.private.dir}/${tempPasswdFile}.properties"/>
+  <!-- Clean up -->
+     <delete file="${dist.private.dir}/${tempPasswdFile}.properties"/>
+     <delete file="${dist.private.dir}/${tempPasswdFile}"/>
+     <delete file="${dist.private.dir}/header.txt"/>
+</target>
+
+<!-- 1.4 Initialize security credentials for new daemon -->
+<target name="newDaemon" depends="randomPasswd">
+  <!-- Clean old key store, init timestamp -->
+  <tstamp>
+   <format property="suffix" pattern="mmss"/>
+  </tstamp>
+  <tstamp>
+   <format property="Unique" pattern="yyyymmddhhmmss"/>
+  </tstamp>
+  <property name="daemonFromPrivate" value="${hostDirPrefix}${suffix}"/>
+  <property name="daemonDir" location="${dist.private.dir}/${hostDirPrefix}${suffix}"/>
+  <mkdir dir="${daemonDir}"/>
+
+  <!-- First generate new keys -->
+  <genkey alias="${aliasSelfKey}" keystore="${daemonDir}/${defaultKeyStore}"
+          keyalg="RSA"
+          storepass="${defaultPassword}"
+          dname="CN=SmartFrog${Unique}, OU=HPL, O=HP, C=UK"/>
+
+  <!-- Generate request for certificate -->
+   <exec dir="${dist.private.dir}" executable="keytool">
+   <arg line="-keystore ${daemonFromPrivate}/${defaultKeyStore} -certreq -alias ${aliasSelfKey} -storepass ${defaultPassword} -file ${CAFromPrivate}/client.crs"/>
+   </exec>
+
+  <!-- Get the CA to sign it -->
+  <exec dir="${CA}" executable="openssl">
+    <arg line="ca -config openssl.cnf -batch -in client.crs -out client.crs.pem -keyfile ca.key -key ${defaultCAPassword} "/>
+  </exec>
+
+  <!-- Change format to DER-->
+  <exec dir="${CA}" executable="openssl">
+    <arg line="x509 -in client.crs.pem -out client.crs.der -outform DER "/>
+  </exec>
+
+  <!-- Add public of Community CA to Root of Trust -->
+  <exec dir="${dist.private.dir}" executable="keytool">
+    <arg line="-keystore ${daemonFromPrivate}/${defaultKeyStore} -alias ${aliasCommunityKey} -import -noprompt -storepass ${defaultPassword} -file ${CAFromPrivate}/${CAsubdir}/cacert.pem"/>
+  </exec>
+
+  <!-- Add certificate to my keys storage -->
+  <exec dir="${dist.private.dir}" executable="keytool">
+    <arg line="-storepass ${defaultPassword} -keystore ${daemonFromPrivate}/${defaultKeyStore} -alias ${aliasSelfKey} -import -file ${CAFromPrivate}/client.crs.der"/>
+  </exec>
+
+  <!-- Add public of CodeSigner CA to Root of Trust -->
+  <exec dir="${dist.private.dir}" executable="keytool">
+    <arg line="-keystore ${daemonFromPrivate}/${defaultKeyStore} -alias ${aliasCSKey} -import -noprompt -storepass ${defaultPassword} -file ${CAFromPrivate}/codesigner.cer"/>
+  </exec>
+
+  <!-- Create ad-hoc security properties file -->
+  <copy file="${dist.private.dir}/${defaultSecProp}" tofile="${daemonDir}/${defaultSecProp}"/>
+  <propertyfile file="${daemonDir}/${defaultSecProp}">
+     <entry key="org.smartfrog.sfcore.security.keyStorePassword" value="${defaultPassword}"/>
+  </propertyfile>
+
+</target>
+
+<!-- 1.5 Clean all the CA stuff -->
+
+<target name="cleanCA" description=" Cleans the Certificate Authority">
+    <delete  dir="${CA}/${CAsubdir}"/>
+    <delete file="${CA}/cacert.pem"/>
+    <delete file="${CA}/codesigner.cer"/>
+    <delete file="${CA}/codesigner.st"/>
+    <delete file="${CA}/ca.key"/>
+    <delete file="${CA}/client.crs"/>
+    <delete file="${CA}/client.crs.der"/>
+    <delete includeEmptyDirs="true">
+      <fileset dir="${dist.private.dir}" includes="host*/*"/>
+      <fileset dir="${dist.private.dir}" includes="host*"/>
+    </delete>
+    <delete file="${CA}/client.crs.pem"/>
+</target>
+
+<!-- 1.6 Dummy CA initialization when openssl is not available -->
+<target name="dummyInitCA" depends="cleanCA,touchLibs" description="Initialise a dummy CA">
+   <copy todir="${dist.private.dir}">
+     <fileset dir="${disttestCA}">
+     <include name = "host*/*" />
+     </fileset>
+    </copy>
+    <copy file="${disttestCA}/${defaultCodeSignerCAKeyStore}"
+           todir="${CA}" />
+</target>
+
+
+<!-- 1.7 Sign jars, need to edit to change what is signed -->
+ <target name="signJars">
+    <antcall target="signjarbuild">
+      <param name="jarname" value="${dist.lib.dir}/smartfrog.jar"/>
+      <param name="signedjarname" value="${dist.signedLib.dir}/smartfrog.jar"/>
+    </antcall>
+
+    <antcall target="signjarbuild">
+      <param name="jarname" value="${dist.lib.dir}/sfExamples.jar"/>
+      <param name="signedjarname" value="${dist.signedLib.dir}/sfExamples.jar"/>
+    </antcall>
+
+    <antcall target="signjarbuild">
+      <param name="jarname" value="${dist.lib.dir}/sfServices.jar"/>
+      <param name="signedjarname" value="${dist.signedLib.dir}/sfServices.jar"/>
+  </antcall>
+
+  <!-- don't sign those considered insecure, or not required -->
+  <!--
+  -->
+</target>

@@ -1,0 +1,46 @@
+#include "org/smartfrog/functions.sf";
+/**
+ * Creates a button in a frame which executes arbitrary code when clicked, 
+ * The default behaviour is to terminate the component abnormally. 
+ * The button text, the size, and of course the executed code may be changed
+ */
+Button extends ScriptPrim {
+	buttonName "My Button";
+	width 200; 
+	height 100;
+	code ## prim.sfTerminate(org.smartfrog.sfcore.prim.TerminationRecord.abnormal("Killed by Click",null));
+		// change this code to whatever you want, 
+                // (System.out.println("Button Pressed: " + e); for example)
+		// this default code terminates the component 
+ 		// when the button is pressed...
+		// 
+		// e is the java.awt.Event object
+	     #;
+
+	attributesAsVariables true;
+	actionListenerScript extends concat{
+		beginScript ##
+			import java.awt.event.ActionListener;
+				actionPerformed( e ) {
+			#;
+		actionExecuted PARENT:code;
+		endScript ##
+			}
+			return (ActionListener)this;
+			#;
+	}
+	sfDeployCode ##
+		JButton button = new JButton(buttonName);
+        	button.addActionListener((ActionListener) prim.eval(actionListenerScript));
+		JFrame f = new JFrame(prim.sfCompleteName().toString());
+		prim.interpreter.set("f",f);
+        	f.getContentPane().add( button );
+		f.setSize(width.intValue() , height.intValue());
+        	f.show();
+	#;
+	sfTerminateWithCode ##
+		f.removeAll();
+		f.dispose();
+        #;
+		
+}
