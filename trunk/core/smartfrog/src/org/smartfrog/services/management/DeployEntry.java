@@ -384,6 +384,7 @@ public class DeployEntry implements Entry {
                     index++;
                   }
                 } catch (Exception ex1) {
+                  data[index++][0] = "Error:"+ex1.toString();
                   ex1.printStackTrace();
                 }
             }
