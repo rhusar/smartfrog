@@ -317,10 +317,13 @@
    <touch file="${soapapi.touch.file}"/>
   </target>
   
+  <!-- yes, they really cant spell parseable -->
    <target name="dotnet-client-wsdl" depends="init-soap">
      <wsdltodotnet srcFile="${deploymentAPI.wsdl}"
       destFile="${soap.dotnet.proxy.class}"
-      extraoptions="/parsableerrors /protocol:SOAP12"/>
+      extraoptions="/parsableerrors"
+      />
+      <!-- extraoptions="/protocol:SOAP12" -->
    </target>
 
     <!-- ========================================================== -->
