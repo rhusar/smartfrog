@@ -29,6 +29,11 @@ import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.security.SFClassLoader;
 import org.smartfrog.sfcore.utils.ComponentHelper;
+<<<<<<< TestSuiteComponent.java
+import org.smartfrog.sfcore.security.SFClassLoader;
+import org.smartfrog.sfcore.logging.Log;
+=======
+>>>>>>> 1.4
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
