@@ -11,4 +11,11 @@ exit
 fi 
 for i in $SFHOME/lib/*.jar; do CLASSPATH=$i:$CLASSPATH; done
 export CLASSPATH
-java -Dorg.smartfrog.iniFile=$SFHOME/bin/default.ini org.smartfrog.SFSystem -a :DEPLOY:$1::: $2
+
+. $SFHOME/bin/setSFProperties
+
+if test $SFDEFAULTiSF; then
+	export SFCMDPARAMETERS="$SFCMDPARAMETERS $SFDEFAULTSF"
+fi
+
+java $SFCMDPARAMETERS org.smartfrog.SFSystem -a :DEPLOY:$1::: $2
