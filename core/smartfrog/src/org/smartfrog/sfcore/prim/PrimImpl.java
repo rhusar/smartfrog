@@ -781,6 +781,10 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
         }
     }
 
+
+
+    protected final Object termLock = new Object();
+
     /**
      * Notifies a component that this component has terminated through
      * sfTerminatedWith and calls the local hook (sfTerminateWith).
@@ -788,9 +792,19 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
      * @param status termination status
      * @param comp component to notify of termination
      */
+
     protected void terminateNotifying(TerminationRecord status, Prim comp) {
         // Provide ID to termination record
         // Note that it uses the name of the first component terminated not the actual caller id.
+
+	// protect aganist two callers invoing this
+        //  can't synchronize of "this" as it can cause deqdlock in sync termination
+        synchronized (termLock) {
+            if (sfIsTerminating || sfIsTerminated) {
+                return;
+            }
+            sfIsTerminating = true;
+        }
 
         if (status.id == null) {
             try {
@@ -805,13 +819,6 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
                     //ignore
                 }
             }
-        }
-
-        synchronized (this) {
-            if (sfIsTerminating || sfIsTerminated) {
-                return;
-            }
-            sfIsTerminating = true;
         }
 
         try {

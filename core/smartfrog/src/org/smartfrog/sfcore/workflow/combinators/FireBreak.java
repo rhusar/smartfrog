@@ -51,7 +51,7 @@ import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
  * may be passed to Parallel.
  * </p>
  */
-public class Container extends EventCompoundImpl implements Compound {
+public class FireBreak extends EventCompoundImpl implements Compound {
     static Reference actionsRef = new Reference("actions");
     Context actions;
     Enumeration actionKeys;
@@ -62,7 +62,7 @@ public class Container extends EventCompoundImpl implements Compound {
      *
      * @throws java.rmi.RemoteException In case of network or RMI failure.
      */
-    public Container() throws java.rmi.RemoteException {
+    public FireBreak() throws java.rmi.RemoteException {
         super();
     }
 
@@ -136,7 +136,7 @@ public class Container extends EventCompoundImpl implements Compound {
     public void sfTerminatedWith(TerminationRecord status, Prim comp) {
         if (sfContainsChild(comp)) {
             try {
-		sfRemoveChild(comp);
+		sfDetachAndTerminate(status);
             } catch (Exception e) {
                 Logger.log(this.sfCompleteNameSafe()+" - error handling child termination ",e );
             }
@@ -160,11 +160,7 @@ public class Container extends EventCompoundImpl implements Compound {
 	    super.sfLivenessFailure(source, target, failure);
 	} else {
 	    try {
-		((Prim)target).sfTerminate(TerminationRecord.abnormal("liveness error", sfCompleteNameSafe(),  failure));
-	    } catch (Exception e) { // expected since it is supposedly dead
-	    }
-	    try {
-		sfRemoveChild((Prim)target);
+		sfDetachAndTerminate(TerminationRecord.abnormal("liveness error", sfCompleteNameSafe(),  failure));
 	    } catch (Exception e) {
 	    }
 	}

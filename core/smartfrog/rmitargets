@@ -12,6 +12,7 @@ org/smartfrog/sfcore/workflow/components/EventCounter.class
 org/smartfrog/sfcore/workflow/combinators/DetachingCompoundImpl.class
 org/smartfrog/sfcore/workflow/combinators/Parallel.class
 org/smartfrog/sfcore/workflow/combinators/Container.class
+org/smartfrog/sfcore/workflow/combinators/FireBreak.class
 org/smartfrog/sfcore/workflow/combinators/Sequence.class
 org/smartfrog/sfcore/workflow/combinators/Try.class
 org/smartfrog/sfcore/workflow/combinators/Retry.class
