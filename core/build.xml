@@ -44,6 +44,12 @@ For more information: www.smartfrog.org
     <ant dir="${main.dir}" target="sfParseTest" inheritAll="false" />
   </target>
 
+  <!-- =================================================================== -->
+  <!-- build a distribution                                                -->
+  <!-- =================================================================== -->
+  <target name="clean" depends="init" description="clean up">
+    <ant dir="${main.dir}" target="clean" inheritAll="false" />
+  </target>  
   
   <!-- =================================================================== -->
   <!-- any common initialisations                                          -->
@@ -114,7 +120,7 @@ For more information: www.smartfrog.org
   <!-- Override any of the properties to change location of cruise control -->
   <!-- =================================================================== -->
   <target name="cruise" depends="cc-init" description="run cruise control">
-    <property name="cruise.base.dir" location="../.." />
+    <property name="cruise.base.dir" location="toplevel.dir" />
     <property name="cruise.main.dir" location="${cruise.base.dir}/main"/>
     <property name="cruise.lib.dir" location="${cruise.main.dir}/lib"/>
     <property name="cruise.dist.dir" location="${cruise.main.dir}/dist"/>

@@ -44,14 +44,14 @@
        
         <!-- email assumes that localhost is an SMTP server -->
       <email
-        buildresultsurl="http://chamonix.hpl.hp.com:8080/cruisecontrol/buildresults.jsp"
+        buildresultsurl="http://serrano.hpl.hp.com:8080/cruisecontrol/buildresults.jsp"
         mailhost="localhost"
         returnname="CruiseControl Automated Mailer"
                     returnaddress="smartfrog@sf.net" 
         defaultsuffix="@sf.net"
         reportsuccess="false" 
         spamwhilebroken="true"
-        skipusers="false"
+        skipusers="true"
         subjectprefix="[CC-SmartFrog]" 
         >
         </email>
