@@ -289,13 +289,24 @@
   </target>
 
   <!-- ========================================================== -->
-  <!-- conditionally start the daemon if one was not found already  -->
+  <!-- conditionally start the daemon if one was not found already-->
   <!-- ========================================================== -->
   <target name="start-daemon-if-needed" 
     depends="use-smartfrog-tasks,probe-local-daemon"
     unless="local.daemon.running">
       <sf-startdaemon  />
   </target>
+  
+  <!-- ========================================================== -->
+  <!-- conditionally start the daemon if one was not found already-->
+  <!-- and do not complain if it could not start (or execution timed out) -->
+  <!-- ========================================================== -->
+  <target name="start-daemon-if-needed-no-failonerror" 
+    depends="use-smartfrog-tasks,probe-local-daemon"
+    unless="local.daemon.running">
+      <sf-startdaemon  failonerror="false"/>
+  </target>
+  
   
   <!-- ========================================================== -->
   <!-- this is the counterpoint to start-daemon-if-needed 

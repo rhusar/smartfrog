@@ -166,7 +166,7 @@ For more information: www.smartfrog.org
 
       <!-- first thread runs the daemon -->
       <sequential>
-        <antcall target="start-daemon-if-needed"/>
+        <antcall target="start-daemon-if-needed-no-failonerror"/>
       </sequential>
 
       <!-- this is the next thread -->
