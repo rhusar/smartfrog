@@ -36,10 +36,14 @@ import org.apache.tools.ant.BuildException;
 public class StopDaemon extends SmartFrogTask {
 
     public StopDaemon() {
+   }
+
+    public void init() throws BuildException {
+        super.init();
         setHost("localhost");
         setFailOnError(true);
         setTimeout(DEFAULT_TIMEOUT_VALUE);
-   }
+    }
 
     /**
      * execution logic
