@@ -19,9 +19,9 @@
  */
 package org.smartfrog.tools.ant;
 
-import org.apache.tools.ant.Task;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
+import org.apache.tools.ant.Task;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -30,6 +30,7 @@ import java.net.MalformedURLException;
  * This task takes a file and turns it into a URL, which it then assigns
  * to a property. This is a way of getting file: URLs into an inline
  * SmartFrog deployment descriptor.
+ *
  * @ant.task category="SmartFrog" name="sf-tourl"
  */
 
@@ -47,6 +48,7 @@ public class ToUrlTask extends Task {
 
     /**
      * set the name of a property to fill with the URL
+     *
      * @param property
      */
     public void setProperty(String property) {
@@ -55,6 +57,7 @@ public class ToUrlTask extends Task {
 
     /**
      * the name of a file to be converted into a URL
+     *
      * @param file
      */
     public void setFile(File file) {
@@ -83,7 +86,7 @@ public class ToUrlTask extends Task {
             //create the URL
             String url = file.toURI().toURL().toExternalForm();
             //set the property
-            log("Setting "+property+" to URL "+url,Project.MSG_VERBOSE);
+            log("Setting " + property + " to URL " + url, Project.MSG_VERBOSE);
             getProject().setNewProperty(property, url);
         } catch (MalformedURLException e) {
             throw new BuildException("Could not convert " + file, e);

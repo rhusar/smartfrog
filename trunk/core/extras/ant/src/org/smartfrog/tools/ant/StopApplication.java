@@ -25,6 +25,7 @@ import org.apache.tools.ant.BuildException;
  * Undeploy any smartfrog application from a running daemon.
  * By default this target raises an error when the application cannot be stopped, and has a timeout
  * set to the standard default value. {@link SmartFrogTask#DEFAULT_TIMEOUT_VALUE}.
+ *
  * @ant.task category="SmartFrog" name="sf-undeploy"
  */
 public class StopApplication extends SmartFrogTask {
@@ -57,6 +58,7 @@ public class StopApplication extends SmartFrogTask {
     public void setApplication(String application) {
         this.application = application;
     }
+
     /**
      * execution logic
      *
@@ -66,25 +68,18 @@ public class StopApplication extends SmartFrogTask {
     public void execute() throws BuildException {
         setStandardSmartfrogProperties();
         verifyApplicationName(application);
-        String terminateCommand = application+":"    //NAME
-              +"TERMINATE"+":"   //Action: DEPLOY,TERMINATE,DETACH,DETaTERM
-              +""+":"            //URL
-              +""+":"            // sfConfig or empty
-              +getHost()+":"          // host
-              +"";              // subprocess
+        String terminateCommand = application + ":"    //NAME
+                + "TERMINATE" + ":"   //Action: DEPLOY,TERMINATE,DETACH,DETaTERM
+                + "" + ":"            //URL
+                + "" + ":"            // sfConfig or empty
+                + getHost() + ":"          // host
+                + "";              // subprocess
         addApplicationCommand("-a", terminateCommand);
         //addApplicationCommand("-t",application);
         addExitFlag();
-        execSmartfrog("failed to terminate "+getApplication());
+        execSmartfrog("failed to terminate " + getApplication());
     }
 
-    /**
-     * get the title string used to name a task
-     *
-     * @return the name of the task
-     */
-    protected String getTaskTitle() {
-        return "sf-undeploy";
-    }
+
 
 }

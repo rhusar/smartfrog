@@ -41,15 +41,6 @@ public class RunApplicationTask extends DeployingTaskBase {
         setTimeout(0);
     }
 
-    /**
-     * get the title string used to name a task
-     *
-     * @return the name of the task
-     */
-    protected String getTaskTitle() {
-        return "sf-run";
-    }
-
 
     /**
      * run a task

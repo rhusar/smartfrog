@@ -21,64 +21,148 @@
 
 package org.smartfrog.tools.ant;
 
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Project;
+import org.apache.tools.ant.taskdefs.SignJar;
 import org.apache.tools.ant.types.DataType;
 import org.apache.tools.ant.types.Reference;
-import org.apache.tools.ant.types.Assertions;
-import org.apache.tools.ant.Project;
-import org.apache.tools.ant.BuildException;
 
 import java.io.File;
 
 /**
  * This is a datatype for the smartfrog tasks, one that
- * takes security settings
- *         Date: 19-Apr-2004
- *         Time: 16:46:05
+ * takes security settings. It also contains the code to define those settings
+ * on the commandline.
+ * Date: 19-Apr-2004
+ * Time: 16:46:05
  */
 public class Security extends DataType {
 
     private File keystore;
-    private File passfile;
-    private String password;
+    private File passFile;
+    private File policyFile;
 
     public File getKeystore() {
         return keystore;
     }
 
+    /**
+     * set the name of a keyword store
+     *
+     * @param keystore
+     */
     public void setKeystore(File keystore) {
         this.keystore = keystore;
     }
 
-    public File getPassfile() {
-        return passfile;
+    public File getPassFile() {
+        return passFile;
     }
 
-    public void setPassfile(File passfile) {
-        this.passfile = passfile;
+    /**
+     * name a properties file containing the passwords in the syntax
+     * org.smartfrog.sfcore.security.keyStorePassword=MkgzZVm9tyPdn77aWR54
+     * org.smartfrog.sfcore.security.activate=true
+     *
+     * @param passFile
+     */
+    public void setPassFile(File passFile) {
+        this.passFile = passFile;
     }
 
-    public String getPassword() {
-        return password;
+
+    public File getPolicyFile() {
+        return policyFile;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    /**
+     * set a policy file containing security policy information.
+     * Optional.
+     * @param policyFile
+     */
+    public void setPolicyFile(File policyFile) {
+        this.policyFile = policyFile;
     }
 
     /**
      * take a reference in a project and resolve it.
+     *
      * @param project
      * @param reference
-     * @return the security object we were referrring to. 
+     * @return the security object we were referrring to.
      * @throws BuildException if the reference is to an unsupported type.
      */
-    public static Security resolveReference(Project project,Reference reference) {
-        assert project!=null;
-        assert reference!=null;
+    public static Security resolveReference(Project project,
+                                            Reference reference) {
+        assert project != null;
+        assert reference != null;
         Object o = reference.getReferencedObject(project);
         if (!(o instanceof Security)) {
             throw new BuildException("reference is of wrong type");
         }
         return (Security) o;
+    }
+
+    /**
+     * assert that a file must exist and be readable
+     *
+     * @param file name of file
+     * @param role role for error message
+     * @throws BuildException if it doesn't
+     */
+    protected void assertValidFile(File file, String role) {
+        if (file == null) {
+            throw new BuildException(role + " file is not defined");
+        }
+        String pretext = role + " file " + file;
+        if (!file.exists()) {
+            throw new BuildException(pretext + " does not exist");
+        }
+        if (!file.isFile()) {
+            throw new BuildException(pretext + " is not a file");
+        }
+        if (!file.canRead()) {
+            throw new BuildException(pretext + " is not readable");
+        }
+    }
+
+    /**
+     * validate the settings.
+     */
+    public void validate() {
+        assertValidFile(keystore, "Keystore");
+        assertValidFile(passFile, "PassFile");
+        if(policyFile!=null) {
+            assertValidFile(policyFile, "PolicyFile");
+        }
+    }
+
+    /**
+     * apply whatever security settings are needed for a daemon.
+     */
+    public void applySecuritySettings(SmartFrogTask task) {
+        validate();
+        task.addJVMProperty("org.smartfrog.sfcore.security.keyStoreName",
+                keystore.getAbsolutePath());
+        task.addJVMProperty("org.smartfrog.sfcore.security.propFile",
+                passFile.getAbsolutePath());
+        task.defineJVMArg("-Djava.security.manager");
+        //the extra equals in the assignment forces it to overide all others
+        if (policyFile != null) {
+            task.defineJVMArg("-Djava.security.policy=="
+                    + policyFile.getAbsolutePath());
+        }
+    }
+
+
+    /**
+     * apply whatever settings are needed for signing a jar file
+     * @param signJar task to configure
+     */
+    public void applySecuritySettings(SignJar signJar) {
+        validate();
+        signJar.setKeystore(keystore.getAbsolutePath());
+        //todo: get the pass in. 
+        signJar.setKeypass("");
     }
 }

@@ -21,11 +21,10 @@
 
 package org.smartfrog.tools.ant;
 
-import org.smartfrog.tools.ant.Security;
-import org.apache.tools.ant.types.Reference;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
-import org.apache.tools.ant.taskdefs.Java;
+import org.apache.tools.ant.taskdefs.SignJar;
+import org.apache.tools.ant.types.Reference;
 
 /**
  * Holder class for security for any task that needs it. This
@@ -33,7 +32,7 @@ import org.apache.tools.ant.taskdefs.Java;
  * to {@link #addSecurity(org.smartfrog.tools.ant.Security)} amd
  * {@link #setSecurityRef(org.apache.tools.ant.types.Reference)}.
  * Call {@link #getSecurity(org.apache.tools.ant.Task)} to get the
- * security reference.  
+ * security reference.
  * Date: 19-Apr-2004
  * Time: 17:11:46
  */
@@ -73,14 +72,15 @@ public class SecurityHolder {
 
     /**
      * get any security options for this task
+     *
      * @param owner owner task
      * @return a security object or null for none defined
      */
     public Security getSecurity(Task owner) {
-        if(security!=null) {
+        if (security != null) {
             return security;
         }
-        if(securityRef!=null) {
+        if (securityRef != null) {
             return Security.resolveReference(owner.getProject(), securityRef);
         }
         return null;
@@ -89,9 +89,15 @@ public class SecurityHolder {
     /**
      * apply whatever security settings are needed
      */
-    public void addSecurityProperties(SmartFrogTask task) {
-        Security sec=getSecurity(task);
-        task.addSmartfrogProperty("","");
+    public boolean applySecuritySettings(SmartFrogTask task) {
+        Security sec = getSecurity(task);
+        if (sec == null) {
+            return false;
+        }
+        //hand off to the task
+        sec.applySecuritySettings(task);
+        return true;
 
     }
+
 }

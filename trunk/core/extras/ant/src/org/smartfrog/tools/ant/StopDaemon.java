@@ -29,14 +29,14 @@ import org.apache.tools.ant.BuildException;
  * named 'rootProcess'.
  * By default this target raises an error when the application cannot be stopped, and has a timeout
  * set to the standard default value. {@link SmartFrogTask#DEFAULT_TIMEOUT_VALUE}.
+ *
  * @author steve loughran
  * @ant.task category="SmartFrog" name="sf-stopdaemon"
- *
  */
 public class StopDaemon extends SmartFrogTask {
 
     public StopDaemon() {
-   }
+    }
 
     public void init() throws BuildException {
         super.init();
@@ -54,18 +54,11 @@ public class StopDaemon extends SmartFrogTask {
     public void execute() throws BuildException {
         setStandardSmartfrogProperties();
         verifyHostDefined();
-        String terminateCommand = ROOT_PROCESS + ":TERMINATE:::"+getHost()+ ":";
+        String terminateCommand = ROOT_PROCESS + ":TERMINATE:::" + getHost() + ":";
         addApplicationCommand("-a", terminateCommand);
         addExitFlag();
         execSmartfrog("failed to terminate " + ROOT_PROCESS);
     }
 
-    /**
-     * get the title string used to name a task
-     *
-     * @return the name of the task
-     */
-    protected String getTaskTitle() {
-        return "sf-stopdaemon";
-    }
+
 }
