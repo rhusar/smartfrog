@@ -28,10 +28,10 @@ import org.smartfrog.services.cddlm.generated.api.types.ServerInformationType;
 import org.smartfrog.services.cddlm.generated.api.types.StaticServerStatusType;
 import org.smartfrog.services.cddlm.generated.api.types._languageListType_language;
 
+import java.math.BigInteger;
+
 /**
- * This is a server instance
- * Date: 10-Aug-2004
- * Time: 22:13:26
+ * This is a server instance Date: 10-Aug-2004 Time: 22:13:26
  */
 public class ServerInstance {
 
@@ -60,12 +60,15 @@ public class ServerInstance {
         serverInfo.setHome(Processor.makeURI(Constants.SMARTFROG_HOMEPAGE));
         serverInfo.setDiagnostics(null);
         serverInfo.setBuild(Constants.CVS_INFO);
+        serverInfo.setLocation("unknown");
+        serverInfo.setTimezoneUTCOffset(new BigInteger("0"));
 
         //languages
         //creating the array before sending
-        _languageListType_language[] list = new _languageListType_language[Constants.LANGUAGES.length / 3];
+        _languageListType_language[] list = new _languageListType_language[Constants.LANGUAGES.length /
+                3];
         int counter = 0;
-        for ( int i = 0; i + 2 < Constants.LANGUAGES.length; i += 3 ) {
+        for (int i = 0; i + 2 < Constants.LANGUAGES.length; i += 3) {
             String name = Constants.LANGUAGES[i];
             String version = Constants.LANGUAGES[i + 1];
             URI namespace = Processor.makeURI(Constants.LANGUAGES[i + 2]);
@@ -95,7 +98,7 @@ public class ServerInstance {
      * @return
      */
     public static ServerInstance currentInstance() {
-        if ( instance == null ) {
+        if (instance == null) {
             instance = new ServerInstance();
         }
         return instance;

@@ -22,21 +22,18 @@
 package org.smartfrog.services.cddlm.test.system.console;
 
 import junit.framework.TestCase;
-import org.cddlm.client.common.ServerBinding;
 import org.cddlm.client.common.Constants;
+import org.cddlm.client.common.ServerBinding;
 
-import java.net.URL;
 import java.io.IOException;
-import java.io.StringWriter;
-import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.net.URL;
 
 /**
- * base class for tests
- * Date: 01-Sep-2004
- * Time: 10:52:46
+ * base class for tests Date: 01-Sep-2004 Time: 10:52:46
  */
-public class ConsoleTestBase extends TestCase {
+public abstract class ConsoleTestBase extends TestCase {
 
     public static final String PREFIX = "target.";
 
@@ -48,13 +45,13 @@ public class ConsoleTestBase extends TestCase {
 
     private ServerBinding binding;
 
-    private StringWriter outputWriter=new StringWriter();
+    private StringWriter outputWriter = new StringWriter();
 
-    private PrintWriter out=new PrintWriter(outputWriter,true);
+    private PrintWriter out = new PrintWriter(outputWriter, true);
 
     /**
-     * extract info from the JVM, or use defaults, to
-     * set up our binding to the world.
+     * extract info from the JVM, or use defaults, to set up our binding to the
+     * world.
      *
      * @throws IOException
      */
@@ -64,7 +61,7 @@ public class ConsoleTestBase extends TestCase {
         String path = getTestProperty(PATH, Constants.DEFAULT_PATH);
         String portName = getTestProperty(PORT, null);
         int port = Constants.DEFAULT_SERVICE_PORT;
-        if ( portName != null ) {
+        if (portName != null) {
             port = Integer.parseInt(portName);
         }
         URL url = new URL("http", host, port, path);
@@ -75,13 +72,14 @@ public class ConsoleTestBase extends TestCase {
     }
 
     /**
-     * get any test property; these are (currently) extracted from the JVM props
+     * get any test property; these are (currently) extracted from the JVM
+     * props
      *
      * @param property
      * @param defaultValue
      * @return
      */
-    public static final String getTestProperty(String property, String defaultValue) {
+    public static String getTestProperty(String property, String defaultValue) {
         return System.getProperty(property, defaultValue);
     }
 
@@ -92,17 +90,17 @@ public class ConsoleTestBase extends TestCase {
      * @return
      * @throws RuntimeException if the property was not found
      */
-    public static final String getRequiredTestProperty(String property) {
+    public static String getRequiredTestProperty(String property) {
         String result = getTestProperty(property, null);
-        if ( result == null ) {
+        if (result == null) {
             throw new RuntimeException("Property " + property + " was not set");
         }
         return result;
     }
 
     /**
-     * Sets up the fixture, for example, open a network connection.
-     * This method is called before a test is executed.
+     * Sets up the fixture, for example, open a network connection. This method
+     * is called before a test is executed.
      */
     protected void setUp() throws Exception {
         super.setUp();
@@ -115,6 +113,7 @@ public class ConsoleTestBase extends TestCase {
 
     /**
      * get the output buffer
+     *
      * @return
      */
     public String getOutputBuffer() {
@@ -125,4 +124,10 @@ public class ConsoleTestBase extends TestCase {
     public ServerBinding getBinding() {
         return binding;
     }
+
+    protected static void assertNotEmpty(String message, String value) {
+        assertTrue(message, value != null);
+        assertTrue(message, value.length() > 0);
+    }
+
 }

@@ -47,22 +47,35 @@ public class ShowServerStatus extends ConsoleOperation {
      * @throws java.rmi.RemoteException
      */
     public void execute() throws RemoteException {
+        ServerStatusType status = getStatus();
+        StaticServerStatusType statInfo = status.get_static();
+        DynamicServerStatusType dynInfo = status.getDynamic();
+        ServerInformationType serverInfo = statInfo.getServer();
+        out.println("server :" +
+                serverInfo.getName() +
+                " at " +
+                serverInfo.getLocation());
+        out.println("UTC offset " + serverInfo.getTimezoneUTCOffset());
+        out.println("Build " + serverInfo.getBuild());
+        String callbacks[] = statInfo.getCallbacks().getCallback();
+        out.println("Callbacks: " + callbacks.length + " :-");
+        out.println();
+
+    }
+
+    /**
+     * get the status
+     *
+     * @return
+     * @throws RemoteException
+     */
+    public ServerStatusType getStatus() throws RemoteException {
         CddlmSoapBindingStub stub;
         stub = getStub();
         DeploymentEndpoint deployer = stub;
         _serverStatusRequest request = new _serverStatusRequest();
         ServerStatusType status = stub.serverStatus(request);
-        StaticServerStatusType statInfo = status.get_static();
-        DynamicServerStatusType dynInfo = status.getDynamic();
-        ServerInformationType serverInfo = statInfo.getServer();
-        out.println(
-                "server :" +
-                serverInfo.getName() +
-                " at " +
-                serverInfo.getLocation());
-        out.println("UTC offset " + serverInfo.getTimezoneUTCOffset());
-        out.println("build " + serverInfo.getBuild());
-
+        return status;
     }
 
 
