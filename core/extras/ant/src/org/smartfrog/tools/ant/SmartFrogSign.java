@@ -157,6 +157,7 @@ public class SmartFrogSign extends TaskBase {
         }
         if(sec.isEmpty()) {
             log(MESSAGE_EMPTY_SECURITY);
+            return;
         }
         try {
             sec.applySecuritySettings(signer);
