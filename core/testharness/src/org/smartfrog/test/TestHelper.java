@@ -48,7 +48,7 @@ public class TestHelper {
      * @param defaultValue
      * @return
      */
-    public static final String getTestProperty(String property, String defaultValue) {
+    public static String getTestProperty(String property, String defaultValue) {
         return System.getProperty(property, defaultValue);
     }
 
@@ -58,7 +58,7 @@ public class TestHelper {
      * @return
      * @throws RuntimeException if the property was not found
      */
-    public static final String getRequiredTestProperty(String property) {
+    public static String getRequiredTestProperty(String property) {
         String result = getTestProperty(property, null);
         if (result == null) {
             throw new RuntimeException("Property " + property + " was not set");
