@@ -6,7 +6,8 @@
  * running jetty server
  */ 
 
-server "Jetty Server";
+server1 "Jetty Server 1";
+server2 "Jetty Server 2";
 
 context extends JettyServletContext {
  contextPath "/test2";
@@ -21,9 +22,9 @@ listener extends JettyListener {
 
 sfConfig extends Compound {
       newlistener extends listener {
-        server ROOT:server;
+        server ROOT:server1;
       }
       newcontext extends context {
-        server ROOT:server;
+        server ROOT:server2;
      }
 }
