@@ -756,7 +756,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     }
 
     /**
-     * Provides hook for subclasses to implement usefull termination behavior.
+     * Provides hook for subclasses to implement useful termination behavior.
      * Deregisters component from local process compound (if ever registered)
      * @param status termination status
      */
