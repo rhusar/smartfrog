@@ -21,13 +21,16 @@ package org.smartfrog.services.junit;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogInitException;
+import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.compound.CompoundImpl;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.TerminationRecord;
 
 import java.rmi.RemoteException;
 import java.util.Enumeration;
 import java.util.logging.Logger;
+import java.util.logging.Level;
 
 /**
  * This is the test runner.
@@ -35,10 +38,25 @@ import java.util.logging.Logger;
  * created 15-Apr-2004 15:44:41
  */
 
-public class TestRunnerComponent extends CompoundImpl implements TestRunner {
+public class TestRunnerComponent extends CompoundImpl implements TestRunner, Runnable
+ {
 
     private Logger log;
     private ComponentHelper helper;
+    /**
+     * a cached exception that is thrown on a liveness failure
+     */
+    private Throwable cachedException = null;
+    /**
+     * flag set when the tests are finished
+     */
+    private boolean finished=false;
+
+    private boolean failOnError=true;
+
+    private int threadPriority=Thread.NORM_PRIORITY;
+
+    private Thread worker=null;
 
     public TestRunnerComponent() throws RemoteException {
         helper = new ComponentHelper(this);
@@ -60,6 +78,10 @@ public class TestRunnerComponent extends CompoundImpl implements TestRunner {
     private void validate() throws SmartFrogInitException {
         if (configuration.getFork() == true) {
             throw new SmartFrogInitException("forking is not yet implemented");
+        }
+        if(threadPriority<Thread.MIN_PRIORITY || threadPriority>Thread.MAX_PRIORITY) {
+            throw new SmartFrogInitException(ATTR_THREAD_PRIORITY+" is out of range -must be within "
+                    +Thread.MIN_PRIORITY+" and " +Thread.MAX_PRIORITY);
         }
     }
 
@@ -90,28 +112,86 @@ public class TestRunnerComponent extends CompoundImpl implements TestRunner {
             RemoteException {
         //this will deploy all our children, including the test suites
         super.sfStart();
-        Object o = sfResolve(ATTRIBUTE_LISTENER, configuration.getListener(), true);
+        Object o = sfResolve(ATTR_LISTENER, configuration.getListener(), true);
         if (!(o instanceof TestListener)) {
-            throw new SmartFrogException("The attribute " + ATTRIBUTE_LISTENER
+            throw new SmartFrogException("The attribute " + ATTR_LISTENER
                     + "must refer to an implementation of TestListener");
         }
         configuration.setListener((TestListener) o);
-        configuration.setFork(sfResolve(ATTRIBUTE_FORK, configuration.getFork(), false));
-        configuration.setKeepGoing(sfResolve(ATTRIBUTE_KEEPGOING, configuration.getKeepGoing(), false));
+        configuration.setFork(sfResolve(ATTR_FORK, configuration.getFork(), false));
+        configuration.setKeepGoing(sfResolve(ATTR_KEEPGOING, configuration.getKeepGoing(), false));
+        failOnError=sfResolve(ATTR_FAILONERROR,failOnError,false);
+        threadPriority=sfResolve(ATTR_THREAD_PRIORITY,threadPriority,false);
         validate();
-        //TODO: execute the tests in all the suites attached to this class
+        //execute the tests in all the suites attached to this class
+
+        worker = new Thread(this);
+        worker.setName("tester");
+        worker.setPriority(threadPriority);
+        worker.start();
     }
 
-    protected void runAllTests() throws SmartFrogException, RemoteException {
+    /**
+     * Implements ping for a compound. A compound extends prim functionality by
+     * pinging each of its children, any failure to do so will call
+     * sfLivenessFailure with the compound as source and the errored child as
+     * target. The exception that ocurred is also passed in. This check is
+     * only done if the source is non-null and if the source is the parent (if
+     * parent exists). If there is no parent and the source is non-null the
+     * check is still done.
+     *
+     * @param source source of ping
+     * @throws org.smartfrog.sfcore.common.SmartFrogLivenessException
+     *          liveness failed
+     */
+    public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
+        //check the substuff
+        super.sfPing(source);
+        //then look to see if we had a failure with our tests
+        if (failOnError && isFinished() && getCachedException() != null) {
+            SmartFrogLivenessException.forward(getCachedException());
+        }
+    }
+
+
+    /**
+     * Performs the compound termination behaviour. Based on sfSyncTerminate
+     * flag this gets forwarded to sfSyncTerminate or sfASyncTerminateWith
+     * method. Terminates children before self.
+     *
+     * @param status termination status
+     */
+    public synchronized void sfTerminateWith(TerminationRecord status) {
+        super.sfTerminateWith(status);
+        if(worker.isAlive()) {
+            worker.interrupt();
+        }
+    }
+
+    /**
+     * run all the tests;
+     * break out (between suites) if we are interrupted.
+     * @return
+     * @throws SmartFrogException
+     * @throws RemoteException
+     */
+    public boolean runTests() throws SmartFrogException, RemoteException {
+
+        boolean successful=true;
         Enumeration e=sfChildren();
         while (e.hasMoreElements()) {
             Object o = (Object) e.nextElement();
             if(o instanceof TestSuite) {
                 TestSuite suiteComponent=(TestSuite) o;
                 suiteComponent.bind(getConfiguration());
-                suiteComponent.runTests();
+                successful &=suiteComponent.runTests();
+                //break out if the thread is interrupted
+                if(Thread.currentThread().isInterrupted()) {
+                    return false;
+                }
             }
         }
+        return successful;
     }
 
     public TestListener getListener() {
@@ -122,6 +202,7 @@ public class TestRunnerComponent extends CompoundImpl implements TestRunner {
     public void setListener(TestListener listener) {
         configuration.setListener(listener);
     }
+
 
     public boolean getKeepGoing() {
         return configuration.getKeepGoing();
@@ -142,5 +223,43 @@ public class TestRunnerComponent extends CompoundImpl implements TestRunner {
 
     public RunnerConfiguration getConfiguration() {
         return configuration;
+    }
+
+
+    /**
+     * this is a thread entry point; runs the tests in a new thread.
+     *
+     * @see Thread#run()
+     */
+    public void run() {
+        setFinished(false);
+        try {
+            if(!runTests()) {
+                throw new SmartFrogException("Tests Failed");
+            }
+        } catch (RemoteException e) {
+            setCachedException(e);
+        } catch (SmartFrogException e) {
+            setCachedException(cachedException);
+        }
+        setFinished(true);
+    }
+
+
+
+    public synchronized Throwable getCachedException() {
+        return cachedException;
+    }
+
+    public synchronized void setCachedException(Throwable cachedException) {
+        this.cachedException = cachedException;
+    }
+
+    public synchronized boolean isFinished() {
+        return finished;
+    }
+
+    public synchronized void setFinished(boolean finished) {
+        this.finished = finished;
     }
 }

@@ -45,7 +45,7 @@ For more information: www.smartfrog.org
   <target name="init" depends="init-standard-output-dirs,use-smartfrog-tasks">
           
     <property name="target.jar" location="${dist.lib.dir}/smartfrog-junit.jar" />
-    <property name="deploy.sf" value="org/smartfrog/services/junit/junit.sf" />
+    <property name="deploy.sf" value="org/smartfrog/services/junit/example.sf" />
     
     <property name="default.ini" location="test/files/default.ini"/>
     <property name="default.sf" location="test/files/default.sf"/>
@@ -105,9 +105,14 @@ For more information: www.smartfrog.org
   <!-- ========================================================== -->
   <!-- parse the file -->
   <!-- ========================================================== -->
-  <target name="parse" depends="init" 
+  <target name="parse" depends="init,dist" 
     description="parse the cddlm descriptor">
-    <sf-parse verbose="true" file="${src.dir}/${deploy.sf}"/>
+        <sf-parse quiet="true">
+            <classpath path="${target.jar}"/>
+            <source dir="${build.classes.dir}"
+                includes="org/smartfrog/services/**/*.sf">
+            </source>
+        </sf-parse>    
   </target>
 
   <!-- ========================================================== -->
@@ -128,7 +133,7 @@ For more information: www.smartfrog.org
   <!-- deploy; requires a host -->
   <!-- ========================================================== -->
   <target name="deploy" depends="parse,dist" 
-    description="parse the cddlm descriptor">
+    description="deploy">
      <property name="deploy.host" value="localhost"/>
       <sf-deploy classpathref="run.classpath"
         logStackTraces="true"
