@@ -20,6 +20,7 @@
 package org.smartfrog.tools.ant.test;
 
 import org.smartfrog.tools.ant.DeployingTaskBase;
+import org.smartfrog.tools.ant.PropertyFile;
 
 /**
  * @author steve loughran
@@ -124,4 +125,24 @@ public class RunTest extends TaskTestBase {
         assertInLog("goodbye");
     }
 
+    public void testEmptyPropertyFile() {
+        expectBuildExceptionContaining("testEmptyPropertyFile",
+                "empty propertyFile",
+                PropertyFile.ERROR_NO_FILE_ATTRIBUTE);
+    }
+
+    public void testMissingNonOptionalPropertyFile() {
+        expectBuildExceptionContaining("testMissingNonOptionalPropertyFile",
+                "empty propertyFile",
+                PropertyFile.ERROR_FILE_NOT_FOUND);
+    }
+
+    public void testMissingOptionalPropertyFile() {
+        expectDeployed("testMissingOptionalPropertyFile", "app");
+        executeTarget("testMissingOptionalPropertyFile");
+    }
+
+    public void testValidPropertyFile() {
+        expectDeployed("testValidPropertyFile","app");
+    }
 }
