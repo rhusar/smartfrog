@@ -158,7 +158,7 @@ For more information: www.smartfrog.org
     <!-- Cruise control test suite                                    -->
     <!-- =================================================================== -->
     <target name="cc-test"
-        depends="test"/>
+        depends="test-main,test-testharness,test-ant"/>
 
   <!-- =================================================================== -->
   <!-- full clean Cruise Control build                                     -->
