@@ -1,9 +1,11 @@
-echo off
+@echo off
 
 rem general properties
 set SERVER=localhost:8080
 rem Please edit codebase if you have any other jar file in webserver 
 set CODEBASE="http://%SERVER%/sfExamples.jar" 
+
+set SFLIBPATH=%SFHOME%\lib
 
 rem ------------------------------------------------------
 rem SF ENV PROPERTIES  - Please edit with your preferences
@@ -16,12 +18,12 @@ rem if not defined SFCODEBASE set SFCODEBASE=-Dorg.smartfrog.codebase=%CODEBASE%
 
 rem ------------------------------------------------------
 
-rem set SFCMDPARAMETERS=
-
 if defined SFSECURITY   set SFCMDPARAMETERS=%SFCMDPARAMETERS% %SFSECURITY%
 if defined SFDEFAULTINI set SFCMDPARAMETERS=%SFCMDPARAMETERS% %SFDEFAULTINI%
 if defined SFCODEBASE   set SFCMDPARAMETERS=%SFCMDPARAMETERS% %SFCODEBASE%
 
-if not defined SFSECURITY call "%SFHOME%\bin\setClassPath" 
-if defined SFSECURITY call "%SFHOME%\bin\setsecurityClassPath" 
+if defined SFSECURITY set SFLIBPATH=%SFHOME%\signedLib
+
+call "%SFHOME%\bin\setClassPath"
+
 
