@@ -230,6 +230,7 @@ public class CounterImpl extends PrimImpl implements Prim, Counter, Runnable {
             while (limit >= counter) {
                 //System.out.println("COUNTER: " + message + " " + counter);
                 String messageSt = ("COUNTER: " + message + " " + counter);
+                System.out.println(messageSt.toString());
                 logApp.out(messageSt);
                 logCore.info(messageSt);
                 logApp.info(messageSt);
@@ -265,7 +266,8 @@ public class CounterImpl extends PrimImpl implements Prim, Counter, Runnable {
                     format(new Date())));
             msg.append ("]> ");
             msg.append (message);
-            logCore.error(msg.toString()+"\n");
+            if (logCore.isErrorEnabled()) logCore.error(msg.toString()+"\n");
+            System.err.println(msg.toString());
         }
     }
 
@@ -286,7 +288,7 @@ public class CounterImpl extends PrimImpl implements Prim, Counter, Runnable {
             msg.append ("]> ");
             msg.append (message);
             System.out.println(msg.toString());
-            logCore.info(msg.toString()+"\n");
+            if (logCore.isInfoEnabled()) logCore.info(msg.toString()+"\n");
         }
     }
 
@@ -308,7 +310,10 @@ public class CounterImpl extends PrimImpl implements Prim, Counter, Runnable {
             msg.append (message);
 //            msg.append("\n StackTrace: ");
 //            msg.append(exception.getStackTrace().toString());
-            logCore.error(msg.toString()+"\n",exception);
+             if (logCore.isErrorEnabled())  logCore.error(msg.toString()+"\n",exception);
+            msg.append("\n StackTrace: ");
+            msg.append(exception.getStackTrace().toString());
+            System.err.println(msg.toString());
         }
     }
 }
