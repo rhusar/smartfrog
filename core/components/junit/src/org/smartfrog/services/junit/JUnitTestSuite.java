@@ -29,8 +29,5 @@ public interface JUnitTestSuite extends TestSuite {
 
 
     static final String ATTR_CLASSES = "classes";
-    static final String ATTR_SUBPACKAGES = "subpackages";
     static final String ATTR_PACKAGE = "package";
-    static final String ATTR_EXCLUDES = "excludes";
-    static final String ATTR_PATTERN = "pattern";
 }
