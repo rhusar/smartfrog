@@ -325,4 +325,11 @@
     <sf-stopdaemon failonerror="false" />
   </target> 
   
+
+  <target name="printenv"
+    depends="init-common"
+    description="print the current environment">
+    <echoproperties/>
+  </target> 
+  
 </project>   
