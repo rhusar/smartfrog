@@ -22,6 +22,7 @@ package org.smartfrog.sfcore.workflow.components;
 
 import java.rmi.RemoteException;
 
+import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.compound.Compound;
@@ -37,6 +38,7 @@ import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
  * Attributes are documented in onEvent.sf
  */
 public class OnEvent extends EventCompoundImpl implements Compound {
+
     /**
      * Constructs OnEvent.
      *
@@ -63,9 +65,8 @@ public class OnEvent extends EventCompoundImpl implements Compound {
                 act = (ComponentDescription) sfResolve(name);
             }
 
-            Prim comp = sfDeployComponentDescription(name+"_actionRunning", this, act, null);
-            comp.sfDeploy();
-            comp.sfStart();
+	    sfCreateNewChild(name+"_actionRunning", act, null);
+
         } catch (Exception e) {
             sfTerminate(TerminationRecord.abnormal(
                     "error in event handler for event " + event, null));
