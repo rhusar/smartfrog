@@ -172,35 +172,48 @@ public class ActionDeploy extends ConfigurationAction {
     public Object execute(ProcessCompound targetP, ConfigurationDescriptor configuration)
        throws SmartFrogException, RemoteException {
        Prim parent = null;
-       String name = configuration.getName();
+       String name = null;
        Reference ref = null;
-       //Placement
-       if (name !=null) {
-          try {
-            ref = Reference.fromString(name);
-          }
-          catch (SmartFrogResolutionException ex) {
-             throw new SmartFrogResolutionException (null,targetP.sfCompleteName(),
-                 MessageUtil.formatMessage(MessageKeys.MSG_ILLEGAL_REFERENCE)
-                 +" when parsing '"+name+"'");
-          }
+       Prim prim=null;
+       try {
+           name = configuration.getName();
+           //Placement
+           if (name!=null) {
+               try {
+                   ref = Reference.fromString(name);
+               } catch (SmartFrogResolutionException ex) {
+                   throw new SmartFrogResolutionException(null,
+                       targetP.sfCompleteName(),
+                       MessageUtil.formatMessage(MessageKeys.
+                                                 MSG_ILLEGAL_REFERENCE)
+                       +" when parsing '"+name+"'");
+               }
 
-         if (ref.size() > 1) {
-           ReferencePart refPart = ref.lastElement();
-           name = refPart.toString();
-           name = name.substring(
-               name.lastIndexOf(HereReferencePart.HERE + " ") +
-               HereReferencePart.HERE.length() + 1);
-           ref.removeElement(refPart);
-           parent = (Prim) targetP.sfResolve(ref);
-         }
+               if (ref.size()>1) {
+                   ReferencePart refPart = ref.lastElement();
+                   name = refPart.toString();
+                   name = name.substring(
+                       name.lastIndexOf(HereReferencePart.HERE+" ")+
+                       HereReferencePart.HERE.length()+1);
+                   ref.removeElement(refPart);
+                   parent = (Prim)targetP.sfResolve(ref);
+               }
+           }
+
+           prim = Deploy(configuration.getUrl(),
+                              name,
+                              parent,
+                              targetP,
+                              configuration.getContext(),
+                              configuration.getDeployReference());
+
+       } catch (SmartFrogException sex){
+            configuration.setResult(ConfigurationDescriptor.Result.FAILED,null,sex);
+            throw sex;
+        } catch (RemoteException rex){
+            configuration.setResult(ConfigurationDescriptor.Result.FAILED,null,rex);
+            throw rex;
        }
-       Prim prim = Deploy(configuration.getUrl(),
-                           name,
-                           parent,
-                           targetP,
-                           configuration.getContext(),
-                           configuration.getDeployReference());
         configuration.setSuccessfulResult();
         return prim;
     }

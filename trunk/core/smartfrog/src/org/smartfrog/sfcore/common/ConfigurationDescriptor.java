@@ -719,16 +719,22 @@ public class ConfigurationDescriptor implements MessageKeys{
      */
     public Object execute(ProcessCompound targetProcess) throws SmartFrogException,
             RemoteException {
-
-        if(action ==null) {
-            throw new SmartFrogInitException("No valid action");
+        try {
+            if (action==null) {
+                throw new SmartFrogInitException("No valid action");
+            }
+            if (targetProcess==null) {
+                resultObject = action.execute(this);
+            } else {
+                resultObject = action.execute(targetProcess, this);
+            }
+        } catch (SmartFrogException sex){
+             this.setResult(ConfigurationDescriptor.Result.FAILED,null,sex);
+             throw sex;
+         } catch (RemoteException rex){
+             this.setResult(ConfigurationDescriptor.Result.FAILED,null,rex);
+             throw rex;
         }
-        if(targetProcess==null) {
-            resultObject= action.execute(this);
-        } else {
-            resultObject= action.execute(targetProcess,this);
-        }
-
         return resultObject;
     }
 
