@@ -444,6 +444,40 @@
   </target>  
   
   <!-- ========================================================== -->
+  <!-- set up an HTTP proxy -->
+  <!-- there is a bit of a problem here for laptops whose proxy varies from
+  location to location; we are ignoring that for now. -->
+  <!-- ========================================================== -->
+  
+  <target name="init-web-proxy" if="http.proxy.host" depends="init">
+    <property name="http.proxy.port" value="80" />
+    <property name="http.proxy.user" value="" />
+    <property name="http.proxy.password" value="" />
+    <setproxy 
+      proxyhost="${http.proxy.host}"
+      proxyport="${http.proxy.port}"
+      proxyuser="${http.proxy.user}"
+      proxypassword="${http.proxy.password}"
+      />
+  </target>
+
+  <!-- ========================================================== -->
+  <!-- set up a socks proxy -->
+  <!-- ========================================================== -->
+  <target name="init-socks-proxy" if="socks.proxy.host" depends="init">
+    <property name="socks.proxy.port" value="1080" />
+    <setproxy 
+      socksproxyhost="${socks.proxy.host}"
+      socksproxyport="${socks.proxy.port}"
+      />
+  </target>  
+
+  <!-- ========================================================== -->
+  <!-- conditionally initialise socks or web proxy, if configured --> 
+  <!-- ========================================================== -->
+  <target name="init-proxy" depends="init-web-proxy,init-socks-proxy"/>
+  
+  <!-- ========================================================== -->
   <!-- location of testharness; create a relevant path -->
   <!-- ========================================================== -->
   
@@ -579,14 +613,22 @@
   </target>  
 
 
-
+  <!-- ========================================================== -->
+  <!-- this is an override point -->
+  <!-- it does nothing but declare all the dependencies for compilation -->
+  <!-- anything that overrides compile can declare a dependency on this -->
+  <!-- target to get its dependencies right -->
+  <!-- ========================================================== -->
+  <target name="pre-compile"
+      depends="init,declare-classpaths,assert-smartfrog,assert-prerequisites">
+  </target>
   
   <!-- ========================================================== -->
   <!-- this is an override point -->
   <!-- compile everything, copy useful files over-->
   <!-- ========================================================== -->
   <target name="compile"
-      depends="init,declare-classpaths,assert-smartfrog,assert-prerequisites">
+      depends="pre-compile">
       <depend srcdir="${src.dir}"
           destdir="${build.classes.dir}"
           cache="${build.dir}/depends"
