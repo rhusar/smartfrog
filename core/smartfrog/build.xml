@@ -213,10 +213,10 @@ relevant JAR files into the javacc subdirectory
   <!-- =================================================================== -->
   <target name="compile" depends="initbuild,createParser" description="Compiles the contributed source code">
     <!-- use better dependency logic -->
-    <depend srcdir="${src.dir}"
+<!--     <depend srcdir="${src.dir}"
       destdir="${build.classes.dir}"
       cache="${build}/testdepends"
-      closure="yes"/>
+      closure="yes"/> -->
 
     <!-- Compile the java code -->
     <javac
