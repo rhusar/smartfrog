@@ -27,7 +27,15 @@ import org.eclipse.swt.widgets.Shell;
 import org.smartfrog.tools.eclipse.model.ISmartFrogConstants;
 import org.smartfrog.tools.eclipse.model.SmartFrogProjectUtil;
 import org.smartfrog.tools.eclipse.model.Util;
+//import org.eclipse.jdt.core.JavaModelException;
 
+/**import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.jdt.core.IClasspathEntry;
+import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.JavaCore;*/
+
+import org.smartfrog.tools.eclipse.SmartFrogPlugin;
 /**
  * Launch a local SmartFrog Daemon
  */
@@ -53,12 +61,28 @@ class SfDaemonRunnerExt
     
     public void run()
     {
-    	
+ 	/*try {
+            IProject project = mSelectedIFile.getProject();
+	    IJavaProject jproject = JavaCore.create(project);
+	    IClasspathEntry[] nclasspath = jproject.getRawClasspath();	
+	    StringBuffer sb = new StringBuffer(mClassPath);
+	    for ( int i=0; i < nclasspath.length; i++) {
+		sb.append(Util.getClassSeparator());
+	    	IPath path = nclasspath[i].getPath();
+		sb.append(path.toOSString());
+	    }
+
+	  mClassPath = sb.toString();
+
+	} catch (JavaModelException ex){
+		throw ex;
+	}*/	
     	
     	String classpath = SmartFrogProjectUtil.getbinPathName(mSelectedIFile);
     	if (null == classpath)
     	    return;
-    	classpath = classpath + Util.getClassSeparator()+mClassPath ;
+    	//classpath = classpath + Util.getClassSeparator()+mClassPath ;
+    	classpath = classpath + Util.getClassSeparator()+ mClassPath + SmartFrogPlugin.getmClassPath(mSelectedIFile) ;
 //        String cmd = JAVA + ISmartFrogConstants.WHITE_SPACE
 //        + "-cp " + classpath + ISmartFrogConstants.WHITE_SPACE //$NON-NLS-1$
 //        + SfDaemonDefIniFileProperty+ mSfDaemonDefIniFile + ISmartFrogConstants.WHITE_SPACE
