@@ -85,6 +85,10 @@ public class Version {
     public static String versionString(){
         //init();
         if (!initialized) new Version();
+        String newStatus=null;
+        if (!status.trim().equals("")){
+            newStatus="_"+status;
+        } else newStatus="";
         return name+" "+majorRelease+"."+minorRelease+"."+build+"_"+status;
     }
 

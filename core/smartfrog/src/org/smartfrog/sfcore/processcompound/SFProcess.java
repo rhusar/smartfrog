@@ -47,6 +47,7 @@ import java.util.Vector;
 import java.rmi.ConnectException;
 import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.logging.LogFactory;
+import org.smartfrog.Version;
 
 
 /**
@@ -402,6 +403,8 @@ public class SFProcess implements MessageKeys {
         // addDefaultProcessDescriptions will replace all this code.
         // @TODO fix after refactoring ProcessCompound.
         //deployDefaultProcessDescriptions((ProcessCompound)processCompound);
+
+        processCompound.sfAddAttribute(SmartFrogCoreKeys.SF_VERSION,Version.versionString());
 
         return processCompound;
     }
