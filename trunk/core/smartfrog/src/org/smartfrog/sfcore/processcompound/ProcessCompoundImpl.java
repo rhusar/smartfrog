@@ -82,8 +82,9 @@ import org.smartfrog.sfcore.security.SFSecurityProperties;
  */
 public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound,
     MessageKeys {
+
     /** A number used to generate a unique ID for registration */
-    static long registrationNumber = 0;
+    public  static long registrationNumber = 0;
 
     /** Name of this processcompound. If one is present it is a subprocess. */
     protected String sfProcessName = null;
