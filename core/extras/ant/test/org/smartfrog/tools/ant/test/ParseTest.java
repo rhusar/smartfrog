@@ -19,7 +19,7 @@
  */
 
 
-package org.smartfrog.tools.ant;
+package org.smartfrog.tools.ant.test;
 
 /**
  * Test the parser

@@ -18,9 +18,10 @@
 
  */
 
-package org.smartfrog.tools.ant;
+package org.smartfrog.tools.ant.test;
 
 import junit.framework.TestCase;
+import org.smartfrog.tools.ant.test.TaskTestBase;
 
 /**
  * Junit test cause

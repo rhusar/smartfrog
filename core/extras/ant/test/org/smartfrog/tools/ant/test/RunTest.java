@@ -17,7 +17,7 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.tools.ant;
+package org.smartfrog.tools.ant.test;
 
 /**
  * @author steve loughran
