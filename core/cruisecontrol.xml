@@ -23,7 +23,7 @@
     </modificationset>
 
     <!-- the interval is seconds -->
-    <schedule interval="2000">
+    <schedule interval="2400">
       <ant target="cc-full" antscript="ant" useLogger="true" />
       <!--
       <maven mavenscript="/home/cruise/maven/bin/maven"
