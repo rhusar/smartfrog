@@ -52,11 +52,6 @@ public class CddlmCallbackRaiser extends CallbackRaiser {
      */
     private static final Log log = LogFactory.getLog(CddlmCallbackRaiser.class);
 
-    /**
-     * how long we generally sleep.
-     */
-    private static final int DEMO_SLEEP_TIME_IN_SECONDS = 3;
-
 
     public CddlmCallbackRaiser(URI application, URL callbackURL, String identifier) {
         this.application = application;
@@ -76,16 +71,14 @@ public class CddlmCallbackRaiser extends CallbackRaiser {
      */
     public void raiseLifecycleEvent(JobState job, Prim object,
             SmartFrogException sfe)  {
-        ServerInstance server = ServerInstance.currentInstance();
-        _lifecycleEventCallbackRequest event = new _lifecycleEventCallbackRequest();
-        event.setApplicationReference(application);
-        event.setIdentifier(identifier);
-        ApplicationStatusType status = job.createApplicationStatus();
-        event.setStatus(status);
-        event.setTimestamp(BigInteger.valueOf(System.currentTimeMillis()/1000));
+        _lifecycleEventCallbackRequest event = job.createLifecycleEventMessage();
+        log.info("queuing " +
+                event.getStatus().getState() +
+                " event to " +
+                callbackURL);
         NotificationAction action = new NotificationAction(callbackURL,
                 event);
-        log.info("queuing "+status.getState()+" event to "+callbackURL);
+        ServerInstance server = ServerInstance.currentInstance();
         server.queue(action);
     }
 

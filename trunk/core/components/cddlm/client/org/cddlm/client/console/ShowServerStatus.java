@@ -71,7 +71,7 @@ public class ShowServerStatus extends ConsoleOperation {
                     +
                     "/" +
                     language.getVersion()
-                    + " ::= " + language.getNamespace());
+                    + " ::= " + language.getUri());
         }
         out.println();
         String options[] = statInfo.getOptions().getItem();

@@ -36,6 +36,7 @@ import org.smartfrog.services.cddlm.generated.api.types.LifecycleStateEnum;
 import org.smartfrog.services.cddlm.generated.api.types._deployRequest;
 import org.smartfrog.services.cddlm.generated.api.types.UnboundedXMLOtherNamespace;
 import org.smartfrog.services.cddlm.generated.api.types.CallbackInformationType;
+import org.smartfrog.services.cddlm.generated.api.types._lifecycleEventCallbackRequest;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.xml.sax.SAXException;
@@ -48,6 +49,7 @@ import java.rmi.RemoteException;
 import java.util.List;
 import java.util.LinkedList;
 import java.io.IOException;
+import java.math.BigInteger;
 
 import nu.xom.ParsingException;
 
@@ -114,7 +116,7 @@ public class JobState {
      * a deployment descriptor
      */
 
-    private MessageElement descriptor;
+    private MessageElement descriptorBody;
 
     /**
      * CDL document; will be null for a CDL file
@@ -160,6 +162,11 @@ public class JobState {
     private CallbackInformationType callbackInformation;
 
     /**
+     * callback sequence counter
+     */
+    private int callbackSequenceID=0;
+
+    /**
      * enter terminated state
      */
     private TerminationRecord terminationRecord;
@@ -194,6 +201,7 @@ public class JobState {
         callbackType = null;
         callbackURL = null;
         callbackInformation = null;
+        resetSequenceCounter();
     }
 
     public CallbackInformationType getCallbackInformation() {
@@ -229,8 +237,8 @@ public class JobState {
      *
      * @return
      */
-    public MessageElement getDescriptor() {
-        return descriptor;
+    public MessageElement getDescriptorBody() {
+        return descriptorBody;
     }
 
     /**
@@ -284,20 +292,28 @@ public class JobState {
             name = options.getName();
         }
         DeploymentDescriptorType descriptorType = request.getDescriptor();
-        if (descriptorType != null && descriptorType.getData() != null) {
-
-            MessageElement[] messageElements = descriptorType.getData()
-                    .get_any();
-            if (messageElements.length != 1) {
-                throw Processor.raiseBadArgumentFault(
-                        Processor.WRONG_MESSAGE_ELEMENT_COUNT);
+        if (descriptorType != null ) {
+            //extract language from descriptor
+            URI languageURI = descriptorType.getLanguage();
+            if(languageURI==null) {
+                throw Processor.raiseBadArgumentFault(Processor.ERROR_NO_LANGUAGE_DECLARED);
             }
+            languageName = languageURI.toString();
+            language = Processor.determineLanguage(languageName);
 
-            descriptor = messageElements[0];
-            descriptor.getNamespaceURI();
-            QName qname = descriptor.getQName();
-            languageName = qname.toString();
-            language = Processor.determineLanguage(qname);
+            //now extract body from message
+            if(descriptorType.getBody() != null) {
+                MessageElement[] messageElements = descriptorType.getBody()
+                        .get_any();
+                if (messageElements.length != 1) {
+                    throw Processor.raiseBadArgumentFault(
+                            Processor.ERROR_WRONG_MESSAGE_ELEMENT_COUNT);
+                }
+
+                descriptorBody = messageElements[0];
+            }
+            descriptorBody.getNamespaceURI();
+            QName qname = descriptorBody.getQName();
         }
 
     }
@@ -510,4 +526,36 @@ public class JobState {
     }
 
 
+    /**
+     * get the next sequence counter; every call will be different.
+     * @return
+     */
+    public synchronized int getNextSequenceNumber() {
+        return ++callbackSequenceID;
+    }
+
+    /**
+     * reset the sequence ID counter
+     */
+    public synchronized void resetSequenceCounter() {
+        callbackSequenceID=0;
+    }
+
+    /**
+     * create a lifecycle event message, all filled in with:
+     * URI, callback identifier, timestamp, status, sequence ID
+     * @return
+     */
+    public _lifecycleEventCallbackRequest createLifecycleEventMessage() {
+        ServerInstance server = ServerInstance.currentInstance();
+        _lifecycleEventCallbackRequest event = new _lifecycleEventCallbackRequest();
+        event.setApplicationReference(uri);
+        event.setIdentifier(callbackIdentifier);
+        event.setSequenceID(BigInteger.valueOf(getNextSequenceNumber()));
+        event.setTimestamp(BigInteger.valueOf(System.currentTimeMillis() /
+                1000));
+        ApplicationStatusType status = createApplicationStatus();
+        event.setStatus(status);
+        return event;
+    }
 }

@@ -101,16 +101,15 @@ public class DeployProcessor extends Processor {
         if (dd == null) {
             throw raiseBadArgumentFault("missing deployment descriptor");
         }
-        URI source = dd.getSource();
+        URI remoteReference = dd.getReference();
         //this is our URI
         URI applicationReference = job.getUri();
         boolean deployed = false;
-        if (source != null) {
+        if (remoteReference != null) {
             throwNotImplemented();
         } else {
             //here we deploy inline
             deployed = determineLanguageAndDeploy(job);
-
         }
         //add the job state to the store
         if (deployed) {
@@ -155,7 +154,7 @@ public class DeployProcessor extends Processor {
      * @todo implement
      */
     private boolean deployCDL() throws AxisFault {
-        MessageElement descriptorElement = job.getDescriptor();
+        MessageElement descriptorElement = job.getDescriptorBody();
         if (descriptorElement == null) {
             throw raiseBadArgumentFault(ERROR_NO_DESCRIPTOR);
         }
@@ -198,7 +197,7 @@ public class DeployProcessor extends Processor {
      */
     private boolean deploySmartFrog()
             throws AxisFault {
-        MessageElement descriptorElement = job.getDescriptor();
+        MessageElement descriptorElement = job.getDescriptorBody();
         String applicationName = job.getName();
         String version = descriptorElement.getAttributeNS(
                 descriptorElement.getNamespaceURI(), "version");
