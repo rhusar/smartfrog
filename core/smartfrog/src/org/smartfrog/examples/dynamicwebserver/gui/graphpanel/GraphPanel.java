@@ -35,12 +35,12 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 
+import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.logging.LogFactory;
+
 import javax.swing.JPanel;
 
-
 import org.smartfrog.SFSystem;
-import java.io.DataInputStream;
-import java.io.ByteArrayOutputStream;
 
 /**
  * A panel to display a graph. It uses two arrays, one for x axis, a second one
@@ -48,6 +48,8 @@ import java.io.ByteArrayOutputStream;
  */
 public class GraphPanel extends JPanel implements ComponentListener,
     KeyListener {
+    /** Log for this class, created using class name*/
+    LogSF log = LogFactory.getLog(this.getClass().getName());
     // The xAxis & yAxis dimension.
     public final static int xAxis = 0;
 
@@ -230,26 +232,14 @@ public class GraphPanel extends JPanel implements ComponentListener,
 
     public Image createImage(String SFURL) {
         try {
-            DataInputStream iStrm = new DataInputStream(SFSystem.getInputStreamForResource(SFURL));
-
-            byte imageData[];
-            ByteArrayOutputStream bStrm = new ByteArrayOutputStream();
-
-            int ch;
-
-            while ((ch = iStrm.read())!=-1) {
-                bStrm.write(ch);
-            }
-
-            imageData = bStrm.toByteArray();
-            bStrm.close();
-
+            byte imageData[] =  SFSystem.getByteArrayForResource(SFURL);
             Image img = java.awt.Toolkit.getDefaultToolkit().createImage(imageData, 0, imageData.length);
 
             return img;
         } catch (Exception e) {
-            // @todo Log
-            System.out.println("Warning (GrapPanel:createImage): "+e.getMessage());
+            if (log.isWarnEnabled()){
+               log.warn("Resulting image will be null",e);
+            }
         }
         return null;
     }
