@@ -24,8 +24,18 @@ package org.smartfrog;
  * Version class provides version and copyright strings for SmartFrog System.
  */
 public class Version {
+
+    private final static String name=        "SmartFrog";
+    private final static String majorRelease="3";
+    private final static String minorRelease="20";
+    private final static String build=       "000";
+    private final static String status=      "alpha"; //alpha, beta, final
+
     /** The version String for the SmartFrog system. */
-    public final static String versionString = "SmartFrog 3.01.003_alpha";
+    public final static String versionString =
+                    name+" "+majorRelease+"."+minorRelease+"."+build+"_"+status;
+
+
     /** The copyright String for the SmartFrog system. */
     public final static String copyright = "(C) Copyright 1998-2004 Hewlett-Packard Development Company, LP";
 
