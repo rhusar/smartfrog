@@ -507,6 +507,14 @@ public class SFSystem implements MessageKeys {
     }
 
     /**
+     * test for the system being initialised already
+     * @return true if we have already initialised the system
+     */
+    public static boolean isSmartfrogInit() {
+        return alreadySystemInit;
+    }
+
+    /**
      * Gets input stream for the given resource. Throws exception if stream is
      * null.
      * @param resourceSFURL Name of the resource. SF url valid.

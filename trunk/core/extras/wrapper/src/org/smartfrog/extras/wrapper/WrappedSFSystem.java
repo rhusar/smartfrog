@@ -152,6 +152,10 @@ public class WrappedSFSystem extends SFSystem implements Runnable {
      * @return true if we were successful
      */
     public boolean waitTillStopped(long seconds) {
+        if(thread==null) {
+            //implicitly halted
+            return true;
+        }
         try {
             if (seconds == 0) {
                 thread.join();
