@@ -21,6 +21,7 @@ For more information: www.smartfrog.org
 package org.smartfrog.sfcore.languages.sf;
 
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
 
 /**
  * Defines the methods for different phases.
