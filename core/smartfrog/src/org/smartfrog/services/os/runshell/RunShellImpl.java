@@ -154,10 +154,10 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
     boolean printStack = false;
 
     /** log */
-    Log log;
+    private Log log;
 
     /** helper */
-    ComponentHelper helper;
+    private ComponentHelper helper;
 
     /**
      *  Constructor.

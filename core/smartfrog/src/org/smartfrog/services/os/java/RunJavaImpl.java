@@ -23,6 +23,8 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogInitException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.utils.PlatformHelper;
+import org.smartfrog.sfcore.utils.ComponentHelper;
+import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.services.os.runshell.RunShellImpl;
 
 import java.rmi.RemoteException;
@@ -40,9 +42,23 @@ import java.io.File;
 public class RunJavaImpl extends RunShellImpl implements RunJava {
 
     private PlatformHelper platform;
+    /**
+     * a log
+     */
+    private Log log;
 
     public RunJavaImpl() throws RemoteException {
         platform = PlatformHelper.getLocalPlatform();
+    }
+
+    /**
+     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     *                                  deployment failure
+     * @throws java.rmi.RemoteException In case of network/rmi error
+     */
+    public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
+        super.sfDeploy();
+        log = sfGetApplicationLog();
     }
 
     /**
@@ -51,6 +67,7 @@ public class RunJavaImpl extends RunShellImpl implements RunJava {
      * the superclass afterwards
      */
     protected void readSFAttributes() throws SmartFrogException, RemoteException {
+        final boolean debugEnabled = log.isDebugEnabled();
         Vector args=new Vector();
         //get classname and classpath and verify that one is defined
         String classname=null;
@@ -75,14 +92,20 @@ public class RunJavaImpl extends RunShellImpl implements RunJava {
 
         //assertions
         if(assertions!=null && assertions.booleanValue()) {
+            log.debug("enable application assertions");
             args.add("-ea:...");
         }
         if (sysAssertions != null && sysAssertions.booleanValue()) {
+            log.debug("enable system assertions");
             args.add("-esa");
         }
 
         //classpath setup
         String classpath=buildClasspath(false);
+        if ( debugEnabled ) {
+            log.debug("classpath=" + classpath!=null?classpath:"(empty)");
+        }
+
         if(classpath!=null) {
             args.add("-classpath");
             args.add(classpath);
@@ -91,6 +114,9 @@ public class RunJavaImpl extends RunShellImpl implements RunJava {
         //endorsed dirs
         String endorsedDirs=buildEndorsedDirs();
         if(endorsedDirs!=null) {
+            if(debugEnabled) {
+                log.debug("endorsed dirs="+ endorsedDirs);
+            }
             args.add("-Djava.endorsed.dirs="+endorsedDirs);
         }
 
@@ -99,8 +125,14 @@ public class RunJavaImpl extends RunShellImpl implements RunJava {
             throw new SmartFrogInitException("One of " + varClassname + " and " + varJarFile + " must be supplied");
         }
         if(classname!=null) {
+            if ( debugEnabled ) {
+                log.debug("classname=" + classname);
+            }
             args.add(classname);
         } else {
+            if ( debugEnabled ) {
+                log.debug("running jar =" + jar);
+            }
             args.add("-jar");
             args.add(jar);
         }
@@ -115,7 +147,11 @@ public class RunJavaImpl extends RunShellImpl implements RunJava {
 
         //and verify that the shell command is not empty
         String javacmd=sfResolve(varShellCommand,(String)null,true);
+        if ( debugEnabled ) {
+            log.debug("final command ="+javacmd);
+        }
 
+        //now invoke our superclass; this relies on 
         super.readSFAttributes();
     }
 
@@ -180,7 +216,7 @@ public class RunJavaImpl extends RunShellImpl implements RunJava {
      * @throws SmartFrogResolutionException
      * @throws RemoteException
      */
-    String buildClasspath(boolean mandatory) throws SmartFrogResolutionException, RemoteException {
+    private String buildClasspath(boolean mandatory) throws SmartFrogResolutionException, RemoteException {
         Vector classpathV=(Vector)sfResolve(varClasspath,(Vector)null,mandatory);
         if(classpathV==null) {
             return null;
@@ -189,9 +225,20 @@ public class RunJavaImpl extends RunShellImpl implements RunJava {
         return path;
     }
 
-    String buildEndorsedDirs() throws SmartFrogResolutionException, RemoteException {
+    /**
+     * build the endorsed dirs system
+     * @return
+     * @throws SmartFrogResolutionException
+     * @throws RemoteException
+     */
+    private String buildEndorsedDirs() throws SmartFrogResolutionException, RemoteException {
+        final boolean debugEnabled = log.isDebugEnabled();
+        log.debug("building endorsed directory parameter");
         Vector pathV = (Vector) sfResolve(varEndorsedDirs, (Vector) null, false);
         if(pathV==null) {
+            if(debugEnabled ) {
+                log.debug(varEndorsedDirs+" is unset");
+            }
             return null;
         }
         Vector classpathFlat=recursivelyFlatten(pathV);
@@ -200,15 +247,23 @@ public class RunJavaImpl extends RunShellImpl implements RunJava {
         while (entries.hasNext()) {
             Object entry = (Object) entries.next();
             String dirname=entry.toString();
+            dirname = platform.convertFilename(dirname);
+            if(debugEnabled) {
+                log.debug("endorsed dir/file = "+dirname);
+            }
             //turn this into a directory if it is a file
-            dirname=platform.convertFilename(dirname);
             File file=new File(dirname);
             if(file.exists() && file.isFile()) {
-                String dir=file.getParent();
-                if(dir!=null) {
-                    dirname=dir;
+                String parentDir=file.getParent();
+                if(parentDir!=null) {
+                    if ( debugEnabled ) {
+                        log.debug("extracted parent dir "+parentDir);
+                    }
+                    dirname=parentDir;
                 } else {
                     //there is no parent dir. what to do?
+                    log.warn("No parent directory for "+dirname
+                            +" cannot add it to the endorsed directory list");
                 }
             }
             result.append(dirname);
@@ -237,6 +292,13 @@ public class RunJavaImpl extends RunShellImpl implements RunJava {
         return result.toString();
     }
 
+    /**
+     * recursive flattening of the incoming collection.
+     * self-referential objects will loop forever.
+     * @param in something to iterate over
+     * @return a vector containing everything in the collection, apart from
+     * collection objects, which are themselves flattened.
+     */
     private Vector recursivelyFlatten(Collection in) {
         Vector flat=new Vector(in.size());
         Iterator flattener=in.iterator();
@@ -244,7 +306,6 @@ public class RunJavaImpl extends RunShellImpl implements RunJava {
             Object o = (Object) flattener.next();
             if(o instanceof Collection) {
                 Collection c=(Collection)o;
-                //todo
                 Vector v=recursivelyFlatten(c);
                 flat.addAll(v);
             } else {
