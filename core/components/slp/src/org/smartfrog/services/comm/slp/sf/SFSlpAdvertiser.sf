@@ -51,8 +51,8 @@ SFSlpAdvertiser extends Prim {
 	slp_config_sflog ATTRIB SFSlpConfiguration:slp_config_sflog;
 
     // service to advertise
-    serviceType ""; // e.g. service:http
-    toAdvertise ""; // the thing to advertise
+    //serviceType ""; // e.g. service:http
+    //toAdvertise ""; // the thing to advertise
     serviceLifetime -1; // a positive integer, or -1 to indicate a permanent lifetime
     serviceAttributes []; // Vector of service attributes
                             // example: [["s1a1", "s1a1v1", "s1a1v2"], ["s1a2", "s1a2v1"]];

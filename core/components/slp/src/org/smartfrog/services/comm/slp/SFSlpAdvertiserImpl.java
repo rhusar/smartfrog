@@ -81,6 +81,9 @@ public class SFSlpAdvertiserImpl extends PrimImpl implements Prim, SFSlpAdvertis
         
         // get properties for the service to advertise.
         toAdvertise = sfContext().get("toAdvertise"); //sfResolve(toAdvertiseRef);
+		if(toAdvertise == null) {
+			throw new SmartFrogException("SLP: Could not find 'toAdvertise' attribute");
+		}
         serviceType = (String)sfResolve(serviceTypeRef);
         serviceAttributes = (Vector)sfResolve(serviceAttributeRef);
         serviceLifetime = ((Integer)sfResolve(serviceLifetimeRef)).intValue();
