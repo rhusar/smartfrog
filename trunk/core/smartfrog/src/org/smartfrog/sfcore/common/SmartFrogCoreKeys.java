@@ -30,7 +30,7 @@ public interface SmartFrogCoreKeys {
      * locate the root process compound on that host.
      *
      * Value {@value}
-     * @see PrimHostDeployerImpl
+     * @see org.smartfrog.sfcore.processcompound.PrimHostDeployerImpl
      */
     public final static String SF_PROCESS_HOST = "sfProcessHost";
 
