@@ -431,7 +431,8 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
         }
     }
 
-    public synchronized void sfPing(Object source) throws SmartFrogLivenessException {
+    public synchronized void sfPing(Object source) 
+            throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
 
         if (gcTimeout == -1) {
