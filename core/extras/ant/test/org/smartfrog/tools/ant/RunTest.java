@@ -83,6 +83,11 @@ public class RunTest extends TaskTestBase {
         assertLogContaining("Reference not found, Unresolved Reference: sfClass");
     }
 
+    public void testInline() {
+        expectBuildExceptionContaining("testInline", "deploy failure", "Could not run");
+        assertLogContaining("Reference not found, Unresolved Reference: sfClass");
+    }
+    
     public void testResource() {
         executeTarget("testResource");
         assertLogContaining("Successfully deployed components: [app]");

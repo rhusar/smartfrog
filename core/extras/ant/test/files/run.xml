@@ -92,4 +92,20 @@ ant -lib ../../build/dist/lib/smartfrog-tasks.jar -lib ../../../../smartfrog/dis
       </sf-run>
     </target> 
     
+    <target name="testInline">
+    <property name="port" value="8080"/>
+      <sf-run >
+        <application name="app">
+#include "org/smartfrog/components.sf"
+
+Server extends Prim {
+	port ${port};
+}
+
+sfConfig extends Server{
+}        
+        </application>
+      </sf-run>
+    </target>
+    
 </project>      
