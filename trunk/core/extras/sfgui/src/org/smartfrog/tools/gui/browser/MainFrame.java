@@ -79,7 +79,7 @@ public class MainFrame extends JFrame implements ActionListener {
    /**
     *  Description of the Field
     */
-   public final static String version = "v0.7 r12";
+   public final static String version = "v0.7 r14";
    // This has to  be done properly !!!!!!!!!!!!!!! no static. Because of crap log.
    static PrintStream msg = System.out;
    static JLabel statusBar = new JLabel();
@@ -1503,8 +1503,8 @@ public class MainFrame extends JFrame implements ActionListener {
          //linux
          cmd = "java" + " "
                 + "-cp \"" + classpath + "\" "
-                + sfDaemonDefIniFileProperty+ "\""+sfDaemonDefIniFile +"\""+ " "
-                + sfDaemonDefSFFileProperty +"\""+ sfDaemonDefSFFile +"\""+ " "
+                + sfDaemonDefIniFileProperty+ ""+sfDaemonDefIniFile +""+ " "
+                + sfDaemonDefSFFileProperty +""+ sfDaemonDefSFFile +""+ " "
                 + cmdSFDaemon + "" + sfDaemonProcessName + " "
                 + this.sfSystemClass
                 + "";
