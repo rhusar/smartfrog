@@ -54,7 +54,7 @@ public class WebApplication extends PrimImpl implements JettyWebApplicationConte
    */ 
    public void sfDeploy() throws SmartFrogException, RemoteException {
        super.sfDeploy();
-       server = jettyHelper.findJettyServer(true);
+       server = jettyHelper.bindToServer();
        jettyhome = jettyHelper.findJettyHome();
        /* no, doesnt work w/ resolveID
        jettyhome = FileImpl.lookupAbsolutePath(this, JettyIntf.JETTY_HOME,
@@ -88,7 +88,7 @@ public class WebApplication extends PrimImpl implements JettyWebApplicationConte
    */
    public void sfStart() throws SmartFrogException, RemoteException {
 	   super.sfStart();
-           addcontext(contextPath,webApp,requestId);
+       addcontext(contextPath,webApp,requestId);
 	   server.addContext(context);
 	   try {
 		   context.start();
@@ -101,26 +101,21 @@ public class WebApplication extends PrimImpl implements JettyWebApplicationConte
    * Termination phase
    */
    public void sfTerminateWith(TerminationRecord status) {
-	   try{
-		  context.stop();
-	   } catch(Exception ex){
-		  Logger.log(" Interrupted on WebApplicationContext termination ",ex);
-	  }
-	   server.removeContext(context);
-           super.sfTerminateWith(status);
+       jettyHelper.terminateContext(context);
+       super.sfTerminateWith(status);
    }
   
    /**
    * Add the context to the http server
    * @exception  RemoteException In case of network/rmi error 
    */ 
-   public void addcontext(String contextpath, String webApp, boolean requestId) 
-   throws RemoteException{
-	  context.setContextPath(contextPath);
-	  context.setWAR(webApp);
-	  ServletHandler servlethandler = context.getServletHandler();
-          AbstractSessionManager sessionmanager = (AbstractSessionManager)
-		  servlethandler.getSessionManager();
-          sessionmanager.setUseRequestedId(requestId);
+   public void addcontext(String contextpath, String webApp, boolean requestId)
+           throws RemoteException {
+       context.setContextPath(contextPath);
+       context.setWAR(webApp);
+       ServletHandler servlethandler = context.getServletHandler();
+       AbstractSessionManager sessionmanager = (AbstractSessionManager)
+               servlethandler.getSessionManager();
+       sessionmanager.setUseRequestedId(requestId);
    } 
 }

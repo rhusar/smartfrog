@@ -25,11 +25,14 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.common.Logger;
 import org.smartfrog.sfcore.processcompound.SFProcess;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.services.jetty.contexts.ServletContextIntf;
 import org.mortbay.http.HttpServer;
 import org.mortbay.http.HttpHandler;
+import org.mortbay.http.HttpListener;
+import org.mortbay.http.HttpContext;
 import org.mortbay.jetty.servlet.ServletHttpContext;
 
 import java.rmi.RemoteException;
@@ -46,10 +49,20 @@ public class JettyHelper {
      */
     Prim owner;
 
+    HttpServer httpServer;
+
     Reference serverNameRef = new Reference(JettyIntf.SERVER);
 
     public JettyHelper(Prim owner) {
         this.owner = owner;
+    }
+
+    /**
+     * bind to the server, cache it
+     */
+    public HttpServer bindToServer() throws SmartFrogException, RemoteException {
+        httpServer=findJettyServer(true);
+        return httpServer;
     }
 
     /**
@@ -132,9 +145,85 @@ public class JettyHelper {
 
     }
 
+    /**
+     * add a handler to the server
+     * @param handler
+     * @throws SmartFrogException
+     * @throws RemoteException
+     */
     public void addHandler(HttpHandler handler) throws SmartFrogException, RemoteException{
         ServletHttpContext context=getServletContext(true);
         context.addHandler(handler);
-
     }
+
+    /**
+     * add a listener to the server
+     * @param listener
+     */
+    public void addListener(HttpListener listener)  {
+        httpServer.addListener(listener);
+    }
+
+    /**
+     * add a listener, then start it
+     * @param listener
+     * @throws SmartFrogException
+     */
+    public void addAndStartListener(HttpListener listener) throws SmartFrogException {
+        addListener(listener);
+        try {
+            listener.start();
+        } catch (Exception ex) {
+            throw SmartFrogException.forward(ex);
+        }
+    }
+
+    public void removeListener(HttpListener listener) {
+        if(httpServer!=null) {
+            httpServer .removeListener(listener);
+        }
+    }
+
+    /**
+     * get the server
+     * @return server or null if unbound.
+     */
+    public HttpServer getServer() {
+        return httpServer;
+    }
+
+
+
+    /**
+     * terminate a context log failures but do not throw anything
+     * @param context
+     */
+    public void terminateContext(HttpContext context) {
+        if ( context != null ) {
+            try {
+                context.stop();
+            } catch (Exception ex) {
+                Logger.log(" Interrupted on context termination ", ex);
+            }
+            if ( httpServer != null ) {
+                httpServer.removeContext(context);
+            }
+        }
+    }
+
+    /**
+     * terminate a listener; log trouble but continue
+     * @param listener
+     */
+    public void terminateListener(HttpListener listener) {
+        if ( listener != null ) {
+            try {
+                listener.stop();
+            } catch (Exception ex) {
+                Logger.log(" Interrupted on listener termination ", ex);
+            }
+            removeListener(listener);
+        }
+    }
+
 }

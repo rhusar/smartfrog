@@ -13,6 +13,7 @@ import org.mortbay.http.HttpServer;
 import org.mortbay.http.ajp.AJP13Listener;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.services.jetty.JettyHelper;
 
 /**
  * AJPlistener class for AJPListener for jetty server.
@@ -32,10 +33,8 @@ public class AJPlistener extends PrimImpl implements Listener {
 
   AJP13Listener listener = null;
 
-  ProcessCompound process = null;
+    protected JettyHelper jettyHelper = new JettyHelper(this);
 
-  HttpServer server = null;
-       
   /** Standard RMI constructor */
   public AJPlistener() throws RemoteException {
 	  super();
@@ -60,20 +59,16 @@ public class AJPlistener extends PrimImpl implements Listener {
    * @exception  RemoteException In case of network/rmi error 
    */
   public void sfStart() throws SmartFrogException, RemoteException {
-	  super.sfStart();      
-          addlistener(listenerPort, serverHost);
+	  super.sfStart();
+      jettyHelper.bindToServer();
+      addlistener(listenerPort, serverHost);
   }
      
   /**
    * Termination phase
    */
   public void sfTerminateWith(TerminationRecord status) {
-	  try{
-		  listener.stop();
-	  } catch(Exception ex){
-		  Logger.log(" Interrupted on AJPlistener termination " + ex);
-	  }
-	  server.removeListener(listener);
+      jettyHelper.terminateListener(listener);
 	  super.sfTerminateWith(status);
   } 
   
@@ -85,16 +80,9 @@ public class AJPlistener extends PrimImpl implements Listener {
   SmartFrogException, RemoteException {
 	  try {
 		  listener = new AJP13Listener(); 
-	          listener.setPort(listenerPort);
-	          listener.setHost(serverHost);
-		  process = SFProcess.getProcessCompound();
-		  server = (HttpServer)process.sfResolveId(serverName); 
-	          server.addListener(listener);
-		  try{
-			  listener.start();
-		  } catch(Exception ex){
-			  throw SmartFrogException.forward(ex);
-		  }
+          listener.setPort(listenerPort);
+          listener.setHost(serverHost);
+          jettyHelper.addAndStartListener(listener);
 	  } catch (UnknownHostException unex) {
 		   throw SmartFrogException.forward(unex);	
 	  }
