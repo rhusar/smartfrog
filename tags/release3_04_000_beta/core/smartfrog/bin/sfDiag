@@ -1,0 +1,30 @@
+#! /bin/sh
+if ! test $SFHOME; 
+then 
+    SFHOME="$PWD";
+    echo SFHOME undefined, 
+    echo using $SFHOME ;
+else
+    echo SFHOME is set to $SFHOME;
+fi
+for i in $SFHOME/lib/*.jar; 
+    do CLASSPATH="$i:$CLASSPATH"; 
+done
+
+echo CLASSPATH is "$CLASSPATH"
+iniFile="$SFHOME/bin/default.ini"
+if [ -f "$iniFile" ] ; then
+    echo iniFile=$iniFile
+else
+    echo MISSING: iniFile=$iniFile 
+fi
+
+iniSFFile="$SFHOME/bin/default.sf"
+if [ -f "$iniSFFile" ] ; then
+    echo iniSFFile="$iniSFFile"
+else
+    echo MISSING iniSFFile="$iniSFFile" 
+fi
+
+
+
