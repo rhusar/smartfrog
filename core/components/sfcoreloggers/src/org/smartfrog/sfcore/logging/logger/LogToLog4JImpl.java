@@ -28,6 +28,7 @@ import org.smartfrog.sfcore.logging.LogLevel;
 import org.smartfrog.sfcore.logging.LogMessage;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogLogException;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 
@@ -40,8 +41,10 @@ import javax.xml.parsers.*;
 
 /**
  */
-public class LogToLog4JImpl implements LogToLog4J, Log, LogMessage, LogLevel,
-    Serializable {
+public class LogToLog4JImpl implements LogToLog4J, Log, LogMessage, LogLevel, Serializable {
+
+    public static final String[]LOG4J_LEVELS =
+           {"ALL","DEBUG","DEBUG","INFO","WARN","ERROR","FATAL","OFF"};
 
 //Configuration for LogImpl class
   protected ComponentDescription classComponentDescription = null;
@@ -60,8 +63,7 @@ public class LogToLog4JImpl implements LogToLog4J, Log, LogMessage, LogLevel,
   /** The LogToLog4J class name. */
   private static final String clazz = LogImpl.class.getName();
 
-  java.net.URL configuratorURL = null;
-  String configuratorString = null;
+  Object configuratorURL = null;
   boolean configureAndWatch = false;
   long configureAndWatchDelay = 60 * 1000;
 
@@ -79,7 +81,7 @@ public class LogToLog4JImpl implements LogToLog4J, Log, LogMessage, LogLevel,
    * @param name log name
    * @param initialLogLevel level to log at
    */
-  public LogToLog4JImpl(String name, Integer initialLogLevel) {
+  public LogToLog4JImpl(String name, Integer initialLogLevel) throws Exception {
     this(name, initialLogLevel, System.out);
   }
 
@@ -91,122 +93,130 @@ public class LogToLog4JImpl implements LogToLog4J, Log, LogMessage, LogLevel,
    * @param out output stream to log to
    */
 
-  public LogToLog4JImpl(String name, Integer initialLogLevel, PrintStream out) {
-    setOutstream(out);
-    assert name != null;
-    logName = name;
-    if (logger == null) {
-      logger = Logger.getLogger(name);
-    }
-    setLevel(initialLogLevel.intValue());
-    //Initial configurator to get output in case of failures
-    org.apache.log4j.BasicConfigurator.configure();
-    //Check Class and read configuration...including system.properties
+  public LogToLog4JImpl(String name, Integer initialLogLevel, PrintStream out) throws Exception{
     try {
-      classComponentDescription = LogImpl.getClassComponentDescription(this, true);
-    } catch (SmartFrogException ex) {
-      if (isWarnEnabled()) this.warn(ex.toString());
-    }
-    if (isTraceEnabled() &&
-        this.getClass().toString().endsWith("LogToLog4JImpl")) {
-      trace(this.getClass().toString() + " '" + name +
-            "' using ComponentDescription:\n" +
-            classComponentDescription.toString());
-    }
-    try {
-      readSFAttributes();
-    } catch (SmartFrogException ex1) {
-      if (isErrorEnabled()) this.error("", ex1);
-    }
-
-    if (configuratorURL != null) {
-      try {
-        if (configureAndWatch) {
-          if (isWarnEnabled()) {
-            this.warn(
-                "LogToLog4JImpl: ConfigureAndWatch not available with URL (" +
-                configuratorURL.toString() + ")");
-          }
-        }
-        if (configuratorURL.getFile().endsWith(".xml")) {
-          //Initial configurator is removed
-          org.apache.log4j.BasicConfigurator.resetConfiguration();
-          org.apache.log4j.xml.DOMConfigurator.configure(configuratorURL);
-          if (isTraceEnabled()) {
-            this.out(
-                "LogToLog4JImpl: Using Log4J.xml.DOMConfigurator with URL " +
-                configuratorURL.toString());
-          }
-        } else {
-          //Initial configurator is removed
-          org.apache.log4j.BasicConfigurator.resetConfiguration();
-          org.apache.log4j.PropertyConfigurator.configure(configuratorURL);
-          if (isTraceEnabled()) {
-            this.out("LogToLog4JImpl: Using Log4J.PropertyConfigurator with URL " + configuratorURL.toString());
-          }
-        }
-      } catch (FactoryConfigurationError ex2) {
-        if (isErrorEnabled()) {
-          this.err("", ex2);
-        }
+      setOutstream(out);
+      assert name!=null;
+      logName = name;
+      if (logger==null) {
+          logger = Logger.getLogger(name);
       }
+      setLevel(initialLogLevel.intValue());
+      //Initial configurator to get output in case of failures
+      org.apache.log4j.BasicConfigurator.configure();
+      //Check Class and read configuration...including system.properties
+      try {
+          classComponentDescription = LogImpl.getClassComponentDescription(this, true);
+          if (isTraceEnabled()&& this.getClass().toString().endsWith("LogToLog4JImpl")) {
+              trace(this.getClass().toString()+" '"+name+ "' using ComponentDescription:\n"+ classComponentDescription.toString());
+          }
+      } catch (SmartFrogException ex) {
+          if (isWarnEnabled())this.warn(ex.toString());
+          throw ex;
+      }
+
+      readSFAttributes();
+      configureLog4JLogger(configuratorURL);
+
+         //System.out.println(" Hey: initLevel: "+initialLogLevel+" : logger "+getLevel());
+
+      // Set initial log level after reading configuration to the lowest one
+      // the most verbose of the two
+      if (getLevel()>=initialLogLevel.intValue()) {
+          setLevel(initialLogLevel.intValue());
+      }
+
+         //System.out.println(" Final level: "+ getLevel());
+
+      if (isDebugEnabled()) {
+          this.debug("LogToLog4JImpl logger: "+ logger.getName() +" ("+logger.getEffectiveLevel().toString()+") with configuration "+ configuratorURL);
+      }
+    } catch (Exception ex1) {
+      if (isErrorEnabled()) this.error("", ex1);
+      throw ex1;
+    }
+  }
+
+  private void configureLog4JLogger(Object configuratorURL) {
+
+      if (configuratorURL==null) {
+          if (isErrorEnabled()) {
+              this.error("LogToLog4JImpl: Failed to find configuration. Using Log4J.BasicConfigurator");
+          }
+          return;
+      }
+
+      if (configuratorURL instanceof java.net.URL) {
+          try {
+              if (configureAndWatch) {
+                  if (isWarnEnabled()) {
+                      this.warn("LogToLog4JImpl: ConfigureAndWatch not available with URL (" + configuratorURL.toString() + ")");
+                  }
+              }
+              if (((java.net.URL) configuratorURL).getFile().endsWith(".xml")) {
+                  //Initial configurator is removed
+                  org.apache.log4j.BasicConfigurator.resetConfiguration();
+                  org.apache.log4j.xml.DOMConfigurator.configure((java.net.
+                          URL) configuratorURL);
+                  if (isTraceEnabled()) {
+                      this.out("LogToLog4JImpl: Using Log4J.xml.DOMConfigurator with URL " + configuratorURL.toString());
+                  }
+              } else {
+                  //Initial configurator is removed
+                  org.apache.log4j.BasicConfigurator.resetConfiguration();
+                  org.apache.log4j.PropertyConfigurator.configure((java.net.URL) configuratorURL);
+                  if (isTraceEnabled()) {
+                      this.out("LogToLog4JImpl: Using Log4J.PropertyConfigurator with URL " + configuratorURL.toString());
+                  }
+              }
+          } catch (FactoryConfigurationError ex2) {
+              if (isErrorEnabled()) {
+                  this.err("", ex2);
+              }
+          }
 //      } else if (configuratorURL.getFile().endsWith(".sf")) {
 //      we don't have a sf configurator yet.
-    } else if (configuratorString != null) {
-      try {
-        if (configuratorString.endsWith(".xml")) {
-          //Initial configurator is removed
-          org.apache.log4j.BasicConfigurator.resetConfiguration();
-          if (!configureAndWatch) {
-            org.apache.log4j.xml.DOMConfigurator.configure(configuratorString);
-            if (isTraceEnabled()) {
-              this.out("LogToLog4JImpl: Using Log4J.xml.DOMConfigurator with " +
-                       configuratorString);
-            }
-          } else {
-            org.apache.log4j.xml.DOMConfigurator.configureAndWatch(configuratorString, configureAndWatchDelay);
-            if (isTraceEnabled()) {
-              this.out("LogToLog4JImpl: Using Log4J.xml.DOMConfigurator with " +
-                       configuratorString + " and watch every " +
-                       configureAndWatchDelay + "ms");
-            }
+      } else if (configuratorURL instanceof String) {
+          try {
+              if (((String) configuratorURL).endsWith(".xml")) {
+                  //Initial configurator is removed
+                  org.apache.log4j.BasicConfigurator.resetConfiguration();
+                  if (!configureAndWatch) {
+                      org.apache.log4j.xml.DOMConfigurator.configure((String)configuratorURL);
+                      if (isTraceEnabled()) {
+                          this.out("LogToLog4JImpl: Using Log4J.xml.DOMConfigurator with " + (String) configuratorURL);
+                      }
+                  } else {
+                      org.apache.log4j.xml.DOMConfigurator.configureAndWatch((String) configuratorURL, configureAndWatchDelay);
+                      if (isTraceEnabled()) {
+                          this.out("LogToLog4JImpl: Using Log4J.xml.DOMConfigurator with " + configuratorURL + " and watch every " + configureAndWatchDelay + "ms");
+                      }
+                  }
+              } else {
+                  //Initial configurator is removed
+                  org.apache.log4j.BasicConfigurator.resetConfiguration();
+                  if (!configureAndWatch) {
+                      org.apache.log4j.PropertyConfigurator.configure((String)configuratorURL);
+                      if (isTraceEnabled()) {
+                          this.out("LogToLog4JImpl: Using Log4J.PropertyConfigurator with " + configuratorURL);
+                      }
+                  } else {
+                      org.apache.log4j.PropertyConfigurator.configureAndWatch((String) configuratorURL, configureAndWatchDelay);
+                      if (isTraceEnabled()) {
+                          this.out("LogToLog4JImpl: Using Log4J.PropertyConfigurator with " + configuratorURL + " and watch every " + configureAndWatchDelay + "ms");
+                      }
+                  }
+              }
+          } catch (FactoryConfigurationError ex3) {
+              if (isErrorEnabled()) {
+                  this.err("", ex3);
+              }
           }
-        } else {
-          //Initial configurator is removed
-          org.apache.log4j.BasicConfigurator.resetConfiguration();
-          if (!configureAndWatch) {
-            org.apache.log4j.PropertyConfigurator.configure(configuratorString);
-            if (isTraceEnabled()) {
-              this.out("LogToLog4JImpl: Using Log4J.PropertyConfigurator with " +
-                       configuratorString);
-            }
-          } else {
-            org.apache.log4j.PropertyConfigurator.configureAndWatch(configuratorString, configureAndWatchDelay);
-            if (isTraceEnabled()) {
-              this.out("LogToLog4JImpl: Using Log4J.PropertyConfigurator with " +
-                       configuratorString + " and watch every " +
-                       configureAndWatchDelay + "ms");
-            }
+      } else {
+          if (isWarnEnabled()) {
+              this.warn("LogToLog4JImpl: Using Log4J.BasicConfigurator");
           }
-        }
-      } catch (FactoryConfigurationError ex3) {
-        if (isErrorEnabled()) {
-          this.err("", ex3);
-        }
       }
-    } else {
-      if (isTraceEnabled()) {
-        this.out("LogToLog4JImpl: Using Log4J.BasicConfigurator");
-      }
-    }
-    // Set initial log level after reading configuration to the lowest one
-    // the most verbose of the two
-    if (logger.getLevel().toInt() >= initialLogLevel.intValue()) {
-      setLevel(initialLogLevel.intValue());
-    }
-    if (isTraceEnabled()) {
-        this.trace("LogToLog4JImpl logger: "+ logger.toString() +"("+logger.getLevel().toString()+")");
-    }
   }
 
   /**
@@ -215,22 +225,42 @@ public class LogToLog4JImpl implements LogToLog4J, Log, LogMessage, LogLevel,
    * @exception  SmartFrogException error while reading attributes
    */
   protected void readSFAttributes() throws SmartFrogException {
-    if (classComponentDescription == null) {
-      return;
-    }
-    //Optional attributes.
     try {
-      configuratorURL = (java.net.URL)classComponentDescription.sfResolve(ATR_CONFIGURATOR_FILE, configuratorURL, true);
-    } catch (SmartFrogException sex) {
-      if (isTraceEnabled()) {
-        trace("Failed to use URL (" + sex.toString() + ")");
-      }
-      configuratorString = classComponentDescription.sfResolve( ATR_CONFIGURATOR_FILE, configuratorString, true);
+        if (classComponentDescription==null) {
+            return;
+        }
+        try {
+            java.net.URL url = null;
+            configuratorURL = (java.net.URL)classComponentDescription.sfResolve(ATR_CONFIGURATOR_FILE, url, true);
+        } catch (SmartFrogException sex) {
+            //if it is not a URL or not present then try againg with a String attribute.
+            configuratorURL = classComponentDescription.sfResolve(ATR_CONFIGURATOR_FILE, configuratorURL, false);
+        }
+        /**
+         * if sf attritute ATR_CONFIGURATOR_FILE not defined, it will try to use the system.property log4j.configuarion
+         */
+        if (configuratorURL==null) {
+            //Optional attributes.
+            configuratorURL = System.getProperty("log4j.configuration");
+            System.out.println("ConfiguURL4 "+configuratorURL);
+            try {
+                configuratorURL = new java.net.URL((String)configuratorURL);
+                System.out.println("ConfiguURL5 "+configuratorURL);
+            } catch (Exception ex) {
+                //ignore
+                //ex.printStackTrace();
+            }
+        }
+
+        configureAndWatch = classComponentDescription.sfResolve( ATR_CONFIGURE_AND_WATCH, configureAndWatch, false);
+        double delay = Double.longBitsToDouble(configureAndWatchDelay);
+
+        delay = (classComponentDescription.sfResolve(ATR_CONFIGURE_AND_WATCH_DELAY, delay, false));
+        configureAndWatchDelay = (long)delay;
+
+    } catch (Exception ex1) {
+        throw (SmartFrogLogException)SmartFrogLogException.forward(ex1);
     }
-    configureAndWatch = classComponentDescription.sfResolve( ATR_CONFIGURE_AND_WATCH, configureAndWatch, false);
-    double delay = Double.longBitsToDouble(configureAndWatchDelay);
-    delay = (classComponentDescription.sfResolve(ATR_CONFIGURE_AND_WATCH_DELAY, delay, false));
-    configureAndWatchDelay = (long) delay;
   }
 
   /**
@@ -248,14 +278,25 @@ public class LogToLog4JImpl implements LogToLog4J, Log, LogMessage, LogLevel,
    * @param currentLogLevel new logging level
    */
   public void setLevel(int currentLogLevel) {
-    logger.setLevel( (Level) Level.toLevel(currentLogLevel));
+    logger.setLevel((Level)Level.toLevel(LOG4J_LEVELS[currentLogLevel]));
   }
 
   /**
    * <p> Get logging level. </p>
    */
   public int getLevel() {
-    return logger.getLevel().toInt();
+    Level levelLog4J = logger.getEffectiveLevel();
+    if (levelLog4J==null) return 0; //ALL
+    int i =0;
+    int level =0;
+    while (i<LOG4J_LEVELS.length){
+        if (((String)LOG4J_LEVELS[i]).equals(levelLog4J.toString())){
+            level=i;
+            break;
+        }
+        i++;
+    }
+    return level;
   }
 
 // -------------------------------------------------------- Log Implementation
