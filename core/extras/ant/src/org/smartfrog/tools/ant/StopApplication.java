@@ -20,6 +20,39 @@
 package org.smartfrog.tools.ant;
 
 import org.apache.tools.ant.Task;
+import org.apache.tools.ant.BuildException;
 
+/**
+ * unload any smartfrog application
+ */
 public class StopApplication extends SmartFrogTask {
+
+    public StopApplication() {
+        setHostname("localhost");
+        setFailOnError(true);
+    }
+
+    /**
+     * execution logic
+     *
+     * @throws org.apache.tools.ant.BuildException
+     *
+     */
+    public void execute() throws BuildException {
+        setStandardSmartfrogProperties();
+        addHostname();
+        addApplicationName("-t");
+        addExitFlag();
+        execSmartfrog("failed to terminate "+getApplicationName());
+    }
+
+    /**
+     * get the title string used to name a task
+     *
+     * @return the name of the task
+     */
+    protected String getTaskTitle() {
+        return "sf-undeploy";
+    }
+
 }

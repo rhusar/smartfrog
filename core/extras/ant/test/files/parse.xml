@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<project name="parse">
+
+<description>
+ Tests for the parse. 
+ 
+ command line invocation
+ ant -lib ..\..\build\dist\lib\smartfrog-tasks.jar -f parse.xml testNoop 
+</description>
+
+    <echo level="verbose">
+    java.class.path=${java.class.path}
+    </echo>
+    <typedef 
+      resource="org/smartfrog/tools/ant/tasks.properties"
+      />
+    <presetdef name="parse">
+      <sf-parse>
+      <classpath>
+       <pathelement path="${java.class.path}"/>
+      </classpath>
+      </sf-parse>
+    </presetdef>
+
+  <target name="testNoop">
+    <parse/>
+  </target>
+    
+  <target name="testValid1">
+    <parse>
+      <source file="valid.sf"/>
+    </parse>
+  </target>
+
+  <target name="testValid2">
+    <parse 
+      file="valid.sf"/>
+  </target>
+
+  <target name="testInvalid">
+    <parse 
+      file="invalid.sf"/>
+  </target>
+
+  <target name="testMissingFile">
+    <parse 
+      file="nonexistent-file.sf"/>
+  </target>  
+  
+  <target name="testTwoFiles">
+    <parse>
+      <source dir="." includes="*id.sf"/>
+    </parse>
+  </target>
+
+  <target name="testVerbose">
+    <parse verbose="true"
+      file="valid.sf"/>
+  </target>
+
+  <target name="testQuiet">
+    <parse quiet="true"
+      file="valid.sf"/>
+  </target>
+
+  <target name="testVerboseQuiet">
+    <parse quiet="true" verbose="true"
+      file="valid.sf"/>
+  </target>
+  
+</project> 
