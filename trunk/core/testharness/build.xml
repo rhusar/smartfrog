@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="testHarness" default="test">
+<project name="testharness" default="test">
 
 <!--
 /** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
@@ -62,6 +62,8 @@ For more information: www.smartfrog.org
   <!-- Import common stuff -->
   <import file="${root.dir}/common.xml"/>
 
+  <!-- pre-init overrides -->
+  <property name="jarfile.name" value="smartfrog-testharness.jar"/>
 
   <!-- ========================================================== -->
   <!-- Test settings                                              -->
