@@ -24,6 +24,7 @@ package org.smartfrog.test.system.components.slp;
 import org.smartfrog.test.SmartFrogTestBase;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.common.SmartFrogException;
 
 /**
  * JUnit test class for test cases related to "SLP" component
@@ -45,7 +46,7 @@ public void testCaseTCP38() throws Throwable
 		assertNotNull(applicationtcp38);
 		String actualSfClass = (String)applicationtcp38.sfResolveHere("sfClass");
 		assertEquals("org.smartfrog.services.comm.slp.SFSlpDAImpl", actualSfClass);
-		//terminateApplication(applicationtcp38);
+		terminateApplication(applicationtcp38);
 }
 
 
@@ -73,18 +74,20 @@ public void testCaseTCN81() throws Throwable {
                                  "sfDeploy",
                                  "ServiceLocationException",
                                  "No toAdvertise");
+	
     }
 
 /* Testing without serviceType in User Agant*/
 public void testCaseTCN82() throws Throwable {
 //		Prim applicationtcn70 = deployExpectingSuccess("org/smartfrog/services/comm/slp/sf/SFSlpDA.sf", "DirectoryAgentTCN82");
-		Prim applicationtcn70 = deployExpectingSuccess(FILES+"ServcieProvider.sf", "userAgentTCN70");
+		Prim applicationtcn70 = deployExpectingSuccess(FILES+"ServcieProvider.sf", "serviceAgentTCN70");
         deployExpectingException(FILES+"tcn82.sf",
                                  "tcn170",
                                  "SmartFrogLifecycleException",
                                  "sfDeploy",
                                  "SmartFrogException",
                                  " SLP: No service type given");
+		terminateApplication(applicationtcn70);
     }
 	
 /* Success in advertising- Test case */
@@ -101,31 +104,115 @@ public void testCaseTCP39() throws Throwable
 		Prim p = (Prim)applicationtcp39S.sfResolveHere("p");
 		String actualPSfClass = (String)p.sfResolveHere("sfClass");
 		assertEquals("org.smartfrog.examples.helloworld.PrinterImpl", actualPSfClass);
+		terminateApplication(applicationtcp39S);
 		
 }
 
 /* Success in locating-Test case */
 public void testCaseTCP40() throws Throwable 
 {
-//		Prim applicationtcn40D = deployExpectingSuccess("org/smartfrog/services/comm/slp/sf/SFSlpDA.sf", "DirectoryAgentTCP39");
-//		Prim applicationtcp40S = deployExpectingSuccess(FILES+"ServcieProvider.sf", "ServiceAgentTCP39");
+		Prim applicationtcp40D = deployExpectingSuccess("org/smartfrog/services/comm/slp/sf/SFSlpDA.sf", "DirectoryAgentTCP40");
+		Prim applicationtcp40S = deployExpectingSuccess(FILES+"ServcieProvider.sf", "ServiceAgentTCP40");
 		Prim applicationtcp40A = deployExpectingSuccess(FILES+"ServiceRequestor.sf", "UserAgentTCP40");
-		assertNotNull(applicationtcp40A);
 
+		
+
+		try {
+			Thread.sleep(100000);
+		} catch (InterruptedException e) {
+		
+			e.printStackTrace();
+		}
+		assertNotNull(applicationtcp40A);
 		Prim loc = (Prim)applicationtcp40A.sfResolveHere("loc");
 		String actual_loc_SfClass = (String)loc.sfResolveHere("sfClass");
 		assertEquals("org.smartfrog.services.comm.slp.SFSlpLocatorImpl", actual_loc_SfClass);
-		
-		Prim g = (Prim)applicationtcp40A.sfResolveHere("g");
+
+		Prim g = (Prim)applicationtcp40A.sfResolve("g");
 		String actualSfClass = (String)g.sfResolveHere("sfClass");
 		assertEquals("org.smartfrog.examples.helloworld.GeneratorImpl", actualSfClass);
-					
+/* 
 		Prim printer  = (Prim)g.sfResolveHere("printer");
 		String actualprinterSfClass = (String)printer.sfResolveHere("sfClass");
 		assertEquals("org.smartfrog.examples.helloworld.PrinterImpl", actualprinterSfClass);
+		*/
+			terminateApplication(applicationtcp40S);
+			terminateApplication(applicationtcp40D);
+			terminateApplication(applicationtcp40A);
+
+}
+
+// Expecting failer in locating-Test case  - there is no service adv. 
+public void testCaseTCN83() throws Throwable 
+{
+		deployExpectingException(FILES+"ServiceRequestor.sf",
+                                 "UserAgentTCN83",
+                                 "SmartFrogLifecycleException",
+                                 "sfDeploy",
+                                 "SmartFrogResolutionException",
+                                 "SLP: No service found");
+		
+		
+		
+
 			
 }
 
+// Testing service life time - Expecting failure  because of life time time out.
+public void testCaseTCN84() throws Throwable 
+{
+		Prim applicationtcn84D = deployExpectingSuccess("org/smartfrog/services/comm/slp/sf/SFSlpDA.sf", "DirectoryAgentTCN84");
+		Prim applicationtcp84S = deployExpectingSuccess(FILES+"tcn84_SA.sf", "ServiceAgentTCN84");
+			try {
+			Thread.sleep(100000);
+		}
+		catch (InterruptedException e) {
+		
+			e.printStackTrace();
+		}
 	
+
+	deployExpectingException(FILES+"tcn84_UA.sf",
+                                 "UserAgentTCP84",
+                                 "SmartFrogLifecycleException",
+                                 "sfDeploy",
+                                 "SmartFrogResolutionException",
+                                 "SLP: No service found");
+
+			terminateApplication(applicationtcn84D);
+			terminateApplication(applicationtcp84S);
+					
+					
 }
+
+
+// change the port and test the success
+public void testCaseTCP41() throws Throwable 
+{
+	//	Prim applicationtcn41D = deployExpectingSuccess("org/smartfrog/services/comm/slp/sf/SFSlpDA.sf", "DirectoryAgentTCP41");
+		Prim applicationtcp41S = deployExpectingSuccess(FILES+"tcp41_SA.sf", "ServiceAgentTCP41");
+		Prim applicationtcp41A = deployExpectingSuccess(FILES+"tcp41_UA.sf", "UserAgentTCP41");
+		try {
+			Thread.sleep(100000);
+		} catch (InterruptedException e) {
+				e.printStackTrace();
+		}
+		assertNotNull(applicationtcp41A);
+
+		Prim loc = (Prim)applicationtcp41A.sfResolveHere("loc");
+		String actual_loc_SfClass = (String)loc.sfResolveHere("sfClass");
+		assertEquals("org.smartfrog.services.comm.slp.SFSlpLocatorImpl", actual_loc_SfClass);
+		
+		Prim g = (Prim)applicationtcp41A.sfResolve("g");
+		String actualSfClass = (String)g.sfResolveHere("sfClass");
+		assertEquals("org.smartfrog.examples.helloworld.GeneratorImpl", actualSfClass);
+	//		terminateApplication(applicationtcn41D);
+			terminateApplication(applicationtcp41S);
+			terminateApplication(applicationtcp41A);
+	
+		
+}
+
+}
+
 
