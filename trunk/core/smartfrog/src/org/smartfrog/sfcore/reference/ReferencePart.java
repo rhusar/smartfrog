@@ -77,6 +77,16 @@ public abstract class ReferencePart implements Copying, Cloneable, Serializable 
     }
 
     /**
+     * Creates a reference part to the containing component.
+     *
+     * @return reference part
+     */
+    public static ReferencePart thisref() {
+        return new ThisReferencePart();
+    }
+
+
+    /**
      * Creates a property part which resolves to a system property.
      *
      * @param s id of attribute
