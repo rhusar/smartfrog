@@ -224,6 +224,7 @@ public class SFProcess implements MessageKeys {
         }
     }
 
+     private static boolean processCompoundTerminated = false;
     /**
      * Deploys the local process compound, if not already there
      *
@@ -233,22 +234,37 @@ public class SFProcess implements MessageKeys {
      */
     public static ProcessCompound deployProcessCompound()
         throws Exception {
+
         if (processCompound != null) {
             return processCompound;
         }
+
         Signal.handle(new Signal("INT"), new SignalHandler () {
+
             public void handle(Signal sig) {
-                try {
-                    Logger.log(
-                        "Going to terminate the daemon gracefully!!");
-                    processCompound.sfTerminate(new TerminationRecord(
+                if (!processCompoundTerminated) {
+                    processCompoundTerminated = true;
+                    if (processCompound != null) {
+                        try {
+                            Logger.log(
+                                "Terminating sfDaemon gracefully!!");
+                            processCompound.sfTerminate(new TerminationRecord(
                                 TerminationRecord.NORMAL,
                                 "sfDaemon forced to terminate ",
-                                 ((Prim)processCompound).sfCompleteName()));
-                }catch (RemoteException re) {
-                    Logger.log(re);
-                    //log and ignore
-                }
+                                ( (Prim) processCompound).sfCompleteName()));
+                        }
+                        catch (RemoteException re) {
+                            Logger.log(re);
+                            //log and ignore
+                        }
+                        catch (Throwable thr) {
+                            Logger.log(thr);
+                        }
+                    }
+               }else {
+                   Logger.log("sfDaemon killed!");
+                   System.exit(0);
+               }
             }
         });
 
