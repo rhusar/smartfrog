@@ -203,7 +203,7 @@ public class LogImplAsyncWrapper implements LogSF {
      * @param message log this message
      */
     public void ignore(Object message) {
-        queue(logImpl.TRACE_O, new Object[]{"IGNORE- "+message.toString()});
+        queue(LogImpl.TRACE_O, new Object[]{"IGNORE- "+message.toString()});
     }
 
 
@@ -214,7 +214,7 @@ public class LogImplAsyncWrapper implements LogSF {
      * @param t log this cause
      */
     public void ignore(Object message, Throwable t) {
-        queue(logImpl.TRACE_O_T,new Object[]{"IGNORE - "+message.toString(),t});
+        queue(LogImpl.TRACE_O_T,new Object[]{"IGNORE - "+message.toString(),t});
     }
 
 
@@ -245,7 +245,7 @@ public class LogImplAsyncWrapper implements LogSF {
      * @param message log this message
      */
     public void trace(Object message) {
-        queue(logImpl.TRACE_O,new Object[]{message});
+        queue(LogImpl.TRACE_O,new Object[]{message});
     }
 
 
@@ -256,7 +256,7 @@ public class LogImplAsyncWrapper implements LogSF {
      * @param t log this cause
      */
     public void trace(Object message, Throwable t) {
-        queue(logImpl.TRACE_O_T,new Object[]{message,t});
+        queue(LogImpl.TRACE_O_T,new Object[]{message,t});
     }
 
 
@@ -287,7 +287,7 @@ public class LogImplAsyncWrapper implements LogSF {
      * @param message log this message
      */
     public void debug(Object message) {
-        queue(logImpl.DEBUG_O,new Object[]{message});
+        queue(LogImpl.DEBUG_O,new Object[]{message});
     }
 
 
@@ -298,7 +298,7 @@ public class LogImplAsyncWrapper implements LogSF {
      * @param t log this cause
      */
     public void debug(Object message, Throwable t) {
-        queue(logImpl.DEBUG_O,new Object[]{message,t});
+        queue(LogImpl.DEBUG_O,new Object[]{message,t});
     }
 
 
@@ -329,7 +329,7 @@ public class LogImplAsyncWrapper implements LogSF {
      * @param message log this message
      */
     public void info(Object message) {
-        queue(logImpl.INFO_O,new Object[]{message});
+        queue(LogImpl.INFO_O,new Object[]{message});
     }
 
 
@@ -340,7 +340,7 @@ public class LogImplAsyncWrapper implements LogSF {
      * @param t log this cause
      */
     public void info(Object message, Throwable t) {
-        queue(logImpl.INFO_O,new Object[]{message,t});
+        queue(LogImpl.INFO_O,new Object[]{message,t});
     }
 
 
@@ -371,7 +371,7 @@ public class LogImplAsyncWrapper implements LogSF {
      * @param message log this message
      */
     public void warn(Object message) {
-        queue(logImpl.WARN_O,new Object[]{message});
+        queue(LogImpl.WARN_O,new Object[]{message});
     }
 
 
@@ -382,7 +382,7 @@ public class LogImplAsyncWrapper implements LogSF {
      * @param t log this cause
      */
     public void warn(Object message, Throwable t) {
-        queue(logImpl.WARN_O,new Object[]{message,t});
+        queue(LogImpl.WARN_O,new Object[]{message,t});
     }
 
 
@@ -413,7 +413,7 @@ public class LogImplAsyncWrapper implements LogSF {
      * @param message log this message
      */
     public void error(Object message) {
-        queue(logImpl.ERROR_O,new Object[]{message});
+        queue(LogImpl.ERROR_O,new Object[]{message});
     }
 
 
@@ -424,7 +424,7 @@ public class LogImplAsyncWrapper implements LogSF {
      * @param t log this cause
      */
     public void error(Object message, Throwable t) {
-        queue(logImpl.ERROR_O,new Object[]{message,t});
+        queue(LogImpl.ERROR_O,new Object[]{message,t});
     }
 
 
@@ -455,7 +455,7 @@ public class LogImplAsyncWrapper implements LogSF {
      * @param message log this message
      */
     public void fatal(Object message) {
-        queue(logImpl.FATAL_O,new Object[]{message});
+        queue(LogImpl.FATAL_O,new Object[]{message});
     }
 
 
@@ -466,7 +466,7 @@ public class LogImplAsyncWrapper implements LogSF {
      * @param t log this cause
      */
     public void fatal(Object message, Throwable t) {
-        queue(logImpl.FATAL_O,new Object[]{message,t});
+        queue(LogImpl.FATAL_O,new Object[]{message,t});
     }
 
 
