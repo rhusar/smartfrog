@@ -56,7 +56,7 @@ To Be Written
 	<property name="Name.Framework" value="SmartFrog"/>
      <property name="Name.System" value="Emailer"/>
     <property name="Name.Company" value="(C) Copyright 1998-2004 Hewlett-Packard Development Company, LP"/>
-    <property name="version" value="3.04.004.beta"/>
+    <property name="version" value="1.00.000"/>
     <property name="year" value="2004"/>
 
 	<echo message=""/>
@@ -186,7 +186,7 @@ To Be Written
     <zip destfile="releases/${Name.System}.${version}.${DSTAMP}_ALL.zip">
        <zipfileset dir="." prefix="${Name.System}.${version}">
         <include name="bin/**"/>
-        <include name="docs/emailer_readme*"/>
+        <include name="doc/emailer_readme*"/>
         <include name="lib/**"/>
         <include name="src/**"/>
         <include name="build.xml"/>
@@ -250,7 +250,7 @@ To Be Written
 		<include name="bin/**/*.sf"/>
         <include name="bin/**/*.bat"/>
         <include name="bin/**/*.ini"/>
-		<include name="docs/emailer_readme*"/>
+		<include name="doc/emailer_readme*"/>
         <include name="lib/**"/>
         <include name="src/**"/>
         <include name="build.xml"/>
