@@ -4,23 +4,31 @@
 \subsection{The O/X Mapping Problem}
 \label{objections:o-x}
 
-O/X mapping\footnote{Object-XML mapping} attempts to turn an XML
+JAX-RPC attempts to turn an XML
 document into Java classes derived from the type information attached to
 nodes. This is distinct from the type of mapping performed by DOM
 implementations, in that the classes are ``serialised'' from the XML
 tree, not merely created to represent it (it is a semantic rather than
-syntactic mapping). O/X mapping is an essential part of JAX-RPC,
+syntactic mapping). This serialization/deserialization is an essential part of JAX-RPC,
 allowing method calls to be translated into SOAP requests, and responses
 translated back into Java objects.
 
-We chose the term \emph{O/X mapping problem} to emphasise the
+We believe that the term \emph{serialization} downplays the nature of
+the problem, likening it to the more tractable problem of creating a
+non-portable persistence format for a class. 
+
+We prefer to use the term \emph{O/X mapping} to emphasise the
 similarities it has with the heavily studied O/R mapping
 problem\footnote{ \emph{"Object-relational mapping is the Vietnam of
 Computer Science"} - Ted Neward. He means that it's a problem you can
 never declare victory over, merely invest more and more effort in to
 get deeper into the quagmire.
 %{\small \tt http://www.neward.net/ted/weblog/index.jsp?date=20041003#1096871640048}
-}.  There is less experience in mapping between XML and objects, and
+}. 
+Over a decade has been spent trying to map between records in 
+relational databases and language-level objects, and there is still no
+sign of an ideal solution.  
+There is significantly less experience in mapping between XML and objects, and
 rather than drawing on the experiences of the many failed attempts at
 O/R mapping, O/X mapping technologies appear destined to share a
 similar evolution.
@@ -68,12 +76,42 @@ mean that mappings, if achieved, will always be unstable. Some of the
 enumeration discussion below could migrate in here, but the
 enumeration discussion doesn't perhaps go far enough.}
 
-\subsubsection{Mapping XML QNames to Java Identifiers}
+\subsubsection{Mapping XML Names to Java Identifiers}
 \label{objections:o-x:names}
 
-\todo{Need to discuss the particular difficulties involved in mapping
-XML QNames to Java identifiers, this will set the scene for the
-following discussion of enumerations}.
+
+Not all XML names can be turned into Java identifiers. 
+XML names must begin with a letter in one of many Unicode languages,
+an ideograph or a an underscore (``\_'') . They can be followed by any of the same
+characters, and also a hyphen ``-'' or a full stop ``.''. Some examples
+are: \verb|schr\"odinger|, \verb|_unknown.type-set|, and \verb|String|.
+
+Java identifiers are almost a proper subset of XML names
+\footnote{As XML names beginning in "xml" (any case) are reserved},
+which means that the system needs to map from the XML names to valid
+class and package names, package names being derived from namespace URLs
+if not overridden. This naming is inordinately complex. When a new version
+of Java is released, the mapping logic needs to be updated to add new
+reserved works (such as \verb|assert| and \verb|enum|), else the
+generated code will no longer compile in the enhanced language. Such an
+upgrade will break any existing code that linked to classes using these
+names. 
+
+\subsubsection{Extension by Restriction}
+\label{objections:o-x:validation}
+
+XML is radically different from OO languages in that one can extend
+a type and remove features of the type in the process. 
+
+This is completely at odds with classes in conventional languages,
+where the act of subclassing results in a subclass that retains all the
+attributes of the superclass.
+
+This is a fundamental difference, and one which would appear to remain
+intractible except in special cases that are addressed on a case by case
+basis.
+
+\subsubsection{Enumerations}
 
 One specific example that deserves special mention is how
 \verb$xsd:enumeration$ declarations are mapped to Java. Prior to
@@ -82,11 +120,11 @@ workarounds were developed. The JAX-RPC solution is that of a common
 pattern: to declare a class with a public static instance representing
 a valid enumeration value. The WSDL to Java code generates such a
 class, with the name of each static class taken from the name of each
-value in the enumeration.
+value in the enumeration. 
 
 This is a simple example of how O/X mapping should work. Except, what if the
-value of the one of the enumeration types is a reserved word, such as in the
-lifecycle state machine we wrote:
+value of the one of the enumeration types is a reserved word?
+Take the lifecycle state machine we have:
 
 \begin{verbatim}
 <xsd:simpleType name="lifecycleStateEnum">
@@ -100,13 +138,115 @@ lifecycle state machine we wrote:
 </xsd:simpleType>
 \end{verbatim}
 
-One element in the enumeration is reserved, \verb|null|, so the
-enumeration must now enumerate all states as \verb|value1|,
-\verb|value2|, and so on, for the entire list. This means the
-enumeration names in the Java source no longer contains any value at
-all, other than the position number in the set. This is inordinately
-brittle, as any change to the enumeration could reorder the values,
-without the code detecting a change.
+One element in the enumeration is reserved, \verb|null|. The JAX-RPC
+specification states that the implementation must must now enumerate all
+states as \verb|value1|, \verb|value2|, and so on, for the entire list.
+This means the enumeration names in the Java source no longer contains
+any value at all, other than the position number in the set. This is
+inordinately brittle, as any change to the enumeration could reorder the
+values, without the code detecting a change.
+
+
+\subsubsection{Unportable types}
+\label{objections:o-x:types}
+
+Some Java types are explicitly unportable. One would not expect to be
+able to have a SOAP runtime serialize a database connection instance and
+have it read at the far end. One would hope that a hashtable could be
+translated to a structure that would be turned into a platform-specific
+equivalent at the far end. Yet surely, surely, a \verb|java.util.Calendar|
+object could be sent over the wire, as it maps so well to the
+\verb|xsd:dateTime| type in XML schema.
+
+Certainly we can send such times. They are readable on the wire, and
+they get mapped into whatever a platform has at the far end to represent
+time. Unfortunately, due to differences in expectations between Java and
+.NET date/time classes, we can not guarantee that the same time will be
+received at the far end. If both client and server are in the UTC time
+zone all works well, but if either of them are in a different location,
+hours appear to get added or removed. Clearly a different expectation
+regarding time processing is taking place. 
+
+Our service API uses UTC seconds since 1/1/1970, the classic \verb|time_t|
+format, as our time representation. This is no longer human readable,
+but it works. 
+
+\subsubsection{Message validation}
+\label{objections:o-x:validation}
+
+
+When a message is received, the serialized form is generated and passed
+to the handlers for processing. What does not take place is any
+validation of the incoming XML against the schema. In particular, any
+restrictions on the number of times an item is required are not checked.
+
+This forces the implementation code to follow one of two paths.
+Firstly, it could ignore the problem. If the client code and functianal
+tests do not generate invalid messages --as is likely if they are also
+all written in JAX-RPC-- then the problem not be noticed. It will only
+surface when a third party attempts to use the service.
+Secondly, the developers could write the procedural logic to verify that
+the java classes representing the deserialized message have a structure
+that matches the expectations of the schema. This requires an
+understanding of the schema, knowledge of the serialization mapping and
+potential troublespots,  the willingness to write the tests to validate
+this extra logic, and most of all, time. 
+
+We suspect that most services err on the side of ignorance, and do not
+validate their incoming messages adequately.
+
+
+\subsubsection{Inadequate Mixing of XML and Serialized Data}
+\label{objections:o-x:mixing}
+
+JAX-RPC and JAXM are two different views of the world. What does JAX-RPC
+do when it encounters a piece of random XML in a message? It creates a
+JAXM Node to describe that part of the tree.
+
+From then on, the tree below that node is permanently isolated from the
+JAX-RPC; the developer has sailed off the edge of the JAX-RPC world, and
+fallen into the universe of XML. Any O/X mappings which may exist for data
+within this piece of the message are now inaccessible, all that is left
+is the low-level JAX-M API. It is as if incorporating arbitrary XML
+within a SOAP message is not an approved action, yet this is the key
+aspect of SOAP's flexibility; a key to its aim of being more extensible
+and less brittle than its predecessors.
+
+\subsection{SOAP is not just RPC}
+\label{objections:soap-not-just-rmi}
+
+SOAP's parentage include XML-RPC \cite{winer:xmlrpc}, and it
+was clearly designed at its outset to be a form of remote procedure call
+in XML, over HTTP.
+
+Over time that world-view has changed. While it is often presented as
+that, it can also be viewed as a system where arbitrary XML documents
+are exchanged between parties, potentially asynchronously, and potentially
+via intermediares. 
+
+In this world, a programming paradigm that seemed appropriate for an RPC
+infrastructure, looks out of place.
+
+
+On a fast network, RPC invocation is often a good choice as a
+communication paradigm. Other models of communication are harder to
+code, and the benefits are not apparent. When working over long-haul
+connections, however, or with large content (eg fifteen megabyte
+attachments), the limitations of RPC become clear. 
+
+Currently, our only option is to split network communication into a
+separate thread from the rest of the program. While this works, it
+provides the programmer no way to give the user effective feedback or
+control over the communications. There is no way to receive progress
+notifications or cancel an active call, even though the underlying
+transport code invariably permits such features.
+
+\tocheck{Again, following our principle that SOAP technologies should
+attempt to work to the same goals as SOAP itself, we note that SOAP
+was designed to work over long haul connections (and be simple). By
+making it both difficult and complicated to work over a long
+connection, JAX-RPC fails to meet these criteria for a SOAP
+technology.}
 
 \subsection{SOAP is not RMI}
 \label{objections:soap-not-rmi}
@@ -166,28 +306,7 @@ the very things we turned to SOAP for in the first place.}
 % advocated as a means of dealing with loose organisational coupling, by
 % forcing a loose data coupling between applications.
 
-\subsubsection{Blocking RPC is often inappropriate}
-\label{objections:soap-not-rmi:blocking}
 
-On a fast network, RPC invocation is often a good choice as a
-communication paradigm. Other models of communication are harder to
-code, and the benefits are not apparent. When working over long-haul
-connections, however, or with large content (eg fifteen megabyte
-attachments), the limitations of RPC become clear. 
-
-Currently, our only option is to split network communication into a
-separate thread from the rest of the program. While this works, it
-provides the programmer no way to give the user effective feedback or
-control over the communications. There is no way to receive progress
-notifications or cancel an active call, even though the underlying
-transport code invariably permits such features.
-
-\tocheck{Again, following our principle that SOAP technologies should
-attempt to work to the same goals as SOAP itself, we note that SOAP
-was designed to work over long haul connections (and be simple). By
-making it both difficult and complicated to work over a long
-connection, JAX-RPC fails to meet these criteria for a SOAP
-technology.}
 
 \subsubsection{Fault processing}
 \label{objections:soap-not-rmi:faults}
@@ -291,13 +410,11 @@ release also retains the core metaphor of service invocation as method
 invocation, with the payload of most invocations being Java objects
 that are somehow mapped to XML content. The automated generation of
 WSDL from Java source is retained, despite this problem having been
-shown to be hard.
+shown to be fundamentally flawed.
 
 We understand the rationale for much of this. Working with raw XML is
 hard.  Writing good XML Schema documents is hard. WSDL is exceedingly
-painful to work with\footnote{We'd be tempted to say it's like an
-interface definition language, only more complex and
-verbose!}. However, we believe that if service developers do not write
+painful to work with. However, we believe that if service developers do not write
 their XSD and WSDL definitions of messages, they will never have
 control of the messages that get sent over the wire, and without that
 control, interoperability and XML-based processing will be hard.

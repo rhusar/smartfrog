@@ -85,7 +85,11 @@
     <exec executable="wc" 
         failonerror="true" 
         os="Linux">
-      <arg file="${title}.tex" />
+      <arg file="jaxrpc.tex" />
+      <arg file="wsdl.tex" />
+      <arg file="introduction.tex" />
+      <arg file="objections.tex" />
+      <arg file="alpine.tex" />
     </exec>
   </target>      
   

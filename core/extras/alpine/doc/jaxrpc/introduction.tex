@@ -10,8 +10,8 @@ characterise them as follows:
 \item \textbf{interoperability}: It is more interoperable than binary predecessors
 \item \textbf{XML-centric}: Built on XML, and intended to integrate
 with XML-based technologies.
-\item \textbf{extensibility}: \tocheck{The header construct allows extra data to be attached to a
-request, without breaking existing clients.}
+\item \textbf{extensibility}: The envelope/header/body structure allows extra data to be attached to a
+request, potentially without breaking existing systems.
 \item \textbf{self-describing}: Messages can contain type definitions alongside
 data, and provide human readable names.
 \item \textbf{flexibility}: Participants can handle variable amounts of
@@ -54,7 +54,7 @@ class that represents the body of the message, with operations to
 manipulate the pieces. These operations include accessors and
 manipulators of the envelope, headers, the body and any binary attachments. In
 SAAJ, all these pieces of the model are accessed via interfaces which
-implement the DOM \cite{DOM} model of navigating around XML nodes.
+implement the DOM \cite{spec:DOM} model of navigating around XML nodes.
 
 JAXM does not provide significant transport support. The primary method
 of receiving JAXM messages is to implement and deploy an HTTP servlet.
@@ -62,9 +62,9 @@ The sole method of sending a servlet is to ask a
 \verb|SOAPConnectionFactory| for a \verb|SOAPConnection| instance, and
 then make a blocking call of the endpoint.
 
-JAXM is an orphan specification. Prior to it's SAAJ instantiation, it
+JAXM is an orphan specification. Prior to its SAAJ instantiation, it
 was too isolated from the rest of the Java XML APIs to be easy to use.
-It was also not oriented towards non-XML users, requiring detailed XML
+It was of no interest to non-XML users, requiring detailed XML
 knowledge to work. Lacking any support for WSDL, it has received very
 little publicity, even though it could be more widely used.  
 
@@ -72,7 +72,7 @@ little publicity, even though it could be more widely used.
 
 In JAX-RPC, all the details of how the message was
 encoded are hidden, and the developer works with Java objects created
-automatically from the XML data using a mapping process.
+automatically from the XML data using a semi-standardised mapping process.
 
 Java classes can be automatically turned into SOAP endpoints, with each
 public method in the class exported as a SOAPAction; an operation with a
@@ -80,6 +80,13 @@ request message and a response message. The message structure is
 described in a WSDL file, which can be hand-written, or automatically
 extracted from the Java classes through intospection.
 
+A good architectural feature of JAX-RPC is its \emph{handler chain}; an
+ordered sequence of classes that are configured to handle requests and
+responses. It is through the handler chain that support for new SOAP
+headers can be added to existing services, or extra diagnostics applied.
+Dispatch of operations to java methods, EJB methods or other
+destinations is actually implemented in specific handlers, showing that
+the handler chain is the foundation for the rest of the system.
 
 JAX-RPC is widely implemented, both by open
 source projects (for example Apache Axis \cite{axis}), and by
@@ -89,7 +96,7 @@ model, but this feature is not broadly covered. All the
 \emph{evangelisation} of SOAP focuses on JAXRPC, as do most of the
 examples in the vendors' documentation.
 
-The bias is such that, for Java development, JAXRPC is SOAP. 
+The bias is such that, for Java development, JAXRPC \emph{is} SOAP. 
 
 \subsection{The Hard Lessons of Service Implementation}
 \label{intro:experience}
@@ -102,17 +109,21 @@ seven operations. These operations permit suitably authenticated
 callers to deploy distributed applications to a grid fabric.
 
 This service was defined in a ``pure way'', by writing the XSD and
-WSDL files first. \tocheck{This approach is believed to aid in
+WSDL files first. This approach is believed to aid in
 creating a platform-independent system, and represents current best
-practice.} However, the XSD file for the service messages is
+practice. However, the XSD file for the service messages is
 approximately 2000 lines, of which seventy-five percent is either
 comment or XSD annotations. That it takes so many lines to describe a
 relatively simple service is clearly one reason why this approach,
 despite its superiority of output, is so unpopular. 
 
+Many problems were encountered turning this WSDL specification into
+functional clients and servers, problems that we attribute to JAX-RPC.
+
 \todo{Any other problems we experienced that were clearly related to
 JAX-RPC sucking would be good here, eg. namespaces, introspection and
 so forth}.
+
 
 In section \ref{objections} we discuss a number of problems we believe
 this work highlighted with JAX-RPC. Section \ref{objections:wsdl-gen}
