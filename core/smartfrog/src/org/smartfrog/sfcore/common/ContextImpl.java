@@ -161,7 +161,7 @@ public class ContextImpl extends OrderedHashtable implements Context,
       * @param name name of attribute
       * @param value value of attribute
       *
-      * @return added attribute if non-existent or null otherwise
+      * @return previous value for name or null if none
       *
       * @throws SmartFrogRuntimeException when name or value are null or name already used
       */
@@ -188,9 +188,7 @@ public class ContextImpl extends OrderedHashtable implements Context,
 
          }
 
-         this.put(name, value);
-
-         return value;
+         return this.put(name, value);
      }
 
      /**
