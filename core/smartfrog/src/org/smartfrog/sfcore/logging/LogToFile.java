@@ -43,7 +43,14 @@ public interface LogToFile extends LogToErr {
     final static String ATR_LOG_FILE_EXTENSION = "logFileExtension";
     /** String name for optional attribute "useDatedFileName". */
     final static String ATR_USE_DATED_FILE_NAME = "useDatedFileName";
+    /** String name for optional attribute "useLogNameInFileName". */
+    final static String ATR_USE_LOG_NAME_IN_FILE_NAME = "useLogNameInFileName";
+    /** String name for optional attribute "useHostNameInFileName". */
+    final static String ATR_USE_HOST_NAME_IN_FILE_NAME = "useHostNameInFileName";
+    /** String name for optional attribute "fileNamePrefix". */
+    final static String ATR_FILE_NAME_PREFIX = "fileNamePrefix";
     /** String name for optional attribute "useDatedFileName". */
     final static String ATR_REDIRECT_SYSTEM_OUTPUTS = "redirectSystemOutputs";
+
 
 }

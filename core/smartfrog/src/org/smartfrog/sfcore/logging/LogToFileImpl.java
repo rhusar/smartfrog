@@ -22,6 +22,7 @@ For more information: www.smartfrog.org
 package org.smartfrog.sfcore.logging;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SFNull;
 
 import java.io.PrintStream;
 import java.io.File;
@@ -29,6 +30,7 @@ import java.io.FileOutputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.net.*;
 
 /**
  *
@@ -48,10 +50,21 @@ public class LogToFileImpl extends LogToErrImpl implements LogToFile {
     /** String name for path. */
     String path=".";//+File.separator+"log";
 
+    /**
+     *  Log File extension
+     */
     String logFileExtension = "log";
+    /**  */
+    String  fileNamePrefix = null;
 
     /** Use date in file name */
     boolean datedName = true;
+
+    /** Use Log Name in file name */
+    boolean useLogNameInFileName = true;
+
+    /** Use HostName in file name */
+    boolean useHostNameInFileName = true;
 
     /** Redirect system.out and system.err */
     boolean redirectSystemOutputs = false;
@@ -126,6 +139,9 @@ public class LogToFileImpl extends LogToErrImpl implements LogToFile {
           logFileExtension =classComponentDescription.sfResolve(ATR_LOG_FILE_EXTENSION,logFileExtension, false);
           datedName =classComponentDescription.sfResolve(ATR_USE_DATED_FILE_NAME,datedName, false);
           redirectSystemOutputs = classComponentDescription.sfResolve(ATR_REDIRECT_SYSTEM_OUTPUTS,redirectSystemOutputs, false);
+          fileNamePrefix = classComponentDescription.sfResolve(ATR_FILE_NAME_PREFIX,fileNamePrefix, false);
+          useLogNameInFileName = classComponentDescription.sfResolve(ATR_USE_LOG_NAME_IN_FILE_NAME,useLogNameInFileName, false);
+          useHostNameInFileName = classComponentDescription.sfResolve(ATR_USE_HOST_NAME_IN_FILE_NAME,useHostNameInFileName, false);
         } catch (Exception sex){
            this.warn("",sex);;
         }
@@ -144,11 +160,29 @@ public class LogToFileImpl extends LogToErrImpl implements LogToFile {
         if (!path.endsWith(File.separator)) {
             path += File.separator;
         }
+
         fullLogFileName.append(path);
 
-        String fixedName = correctFilename(logName);
+        if (useHostNameInFileName) {
+            try {
+                String hostname = java.net.InetAddress.getLocalHost().getCanonicalHostName();
+                fullLogFileName.append(correctFilename(hostname));
+                if ((fileNamePrefix!=null)||useLogNameInFileName) {
+                    fullLogFileName.append("_");
+                }
+            } catch (UnknownHostException ex) {
+                if (isErrorEnabled()) error("",ex);
+            }
+        }
 
-        fullLogFileName.append(fixedName);
+        if ((fileNamePrefix!=null)){
+          fullLogFileName.append(correctFilename(fileNamePrefix));
+          if (useLogNameInFileName) fullLogFileName.append("_");
+        }
+
+        if (useLogNameInFileName) {
+           fullLogFileName.append(correctFilename(logName));
+        }
 
         if (datedName){
             /** Used to format times in filename */
