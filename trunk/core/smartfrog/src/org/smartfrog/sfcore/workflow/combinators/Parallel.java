@@ -43,14 +43,14 @@ import org.smartfrog.sfcore.workflow.eventbus.EventRegistration;
  * operate in parallel but do not share the same lifecycle, and in particular
  * the same termination. A Parallel combinator creates no subcomponents until
  * it's sfStart phase at which point all the subcomponents are created in the
- * normal way and with synchronized lifecycle. The Parallel combinator waits
+ * normal way and with synchronized or asynchronized lifecycle. The Parallel combinator waits
  * for each of its sub-components to terminate normally at which point it too
  * terminates normally. If an error occurs at any point, or a sub-component
  * terminates abnormally, the Parallel combinator does too.
  *
  * <p>
  * The file parallel.sf contains the SmartFrog configuration file for the base
- * Parallel combinator. This file conatins the details of the attributes which
+ * Parallel combinator. This file contains the details of the attributes which
  * may be passed to Parallel.
  * </p>
  */
