@@ -2,7 +2,6 @@
 <cdl:cdl xmlns:cdl="http://gridforge.org/cddlm/xml/2004/07/30/"
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://gridforge.org/cddlm/xml/2004/07/30/ cddlm.xsd"  
     >
   <cdl:documentation>
     This document declares its elements in the wrong order, so is illegal.
