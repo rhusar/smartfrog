@@ -205,7 +205,7 @@ public class Schema extends BasePredicate implements PhaseAction {
        throws java.lang.ClassNotFoundException, SmartFrogException {
         if (schemaClass instanceof String ) {
            return isValidClass ((String) schemaClass, foundClassToValidate);
-        } else if (schemaClass instanceof String ){
+        } else if (schemaClass instanceof Vector ){
             Vector schemaClassV = (Vector) schemaClass;
             for (Enumeration keys = schemaClassV.elements(); keys.hasMoreElements(); ) {
                if (isValidClass(keys.nextElement().toString(),foundClassToValidate)){
