@@ -942,24 +942,47 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
      * @throws RemoteException for consistency with the {@link Liveness} interface
      */
     public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
+	if (sflog().isTraceEnabled()) {
+	    sflog().trace("ping received from " + source + ": in " + sfCompleteNameSafe() + ", counter " + sfLivenessCount);
+	}
 
-        if ((source == null) || (sfParent == null)) {
-            if (sfIsTerminated) {
-                throw new SmartFrogLivenessException(COMPONENT_TERMINATED_MESSAGE);
-            }
-            return;
-        }
+	if (sfIsTerminated) {
+	    if (sflog().isTraceEnabled()) {
+		sflog().trace("ping returning that am terminated : in " + sfCompleteNameSafe());
+	    }
+	    throw new SmartFrogLivenessException(COMPONENT_TERMINATED_MESSAGE);
+	}
 
-        if (sfIsTerminated && !source.equals(sfParent)) {
-            throw new SmartFrogLivenessException(COMPONENT_TERMINATED_MESSAGE);
-        }
+	if (source == null) {
+	    return;
+	}
 
-        if (source.equals(sfParent)) {
-            sfLivenessCount = sfLivenessFactor;
-        } else if ((sfLivenessSender != null) &&
-                source.equals(sfLivenessSender) && (sfLivenessCount-- <= 0)) { // ptm: must decrement *AFTER* test
-            sfLivenessFailure(this, sfParent, null);
-        }
+	if (sfParent == null) {
+	    // if am root - don't check counters...!
+	    return;
+	}
+
+	// memory model hack...
+	boolean fail = false;
+	synchronized (this) {
+	    if (source.equals(sfParent)) {
+		if (sflog().isTraceEnabled()) {
+		    sflog().trace("parent ping received - resetting counter: in " + sfCompleteNameSafe());
+		}
+		sfLivenessCount = sfLivenessFactor;
+	    } else if ((sfLivenessSender != null) &&
+		       source.equals(sfLivenessSender) && 
+		       (sfLivenessCount-- <= 0)) {
+		fail = true;
+	    }
+	}
+
+	if (fail) {
+	    if (sflog().isDebugEnabled()) {
+		sflog().debug("failing as parent liveness checking had counted down: in " + sfCompleteNameSafe());
+	    }
+	    sfLivenessFailure(this, sfParent, null);
+	}
     }
 
     /**
