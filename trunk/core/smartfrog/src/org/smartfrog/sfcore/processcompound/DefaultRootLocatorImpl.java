@@ -69,15 +69,20 @@ public class DefaultRootLocatorImpl implements RootLocator, MessageKeys {
      */
     protected static int getRegistryPort(ProcessCompound c)
         throws SmartFrogException, RemoteException {
-        // TODO: check for class cast exception
-        if (registryPort == -1) {
-            //TODO: This is a troublespot. move to sfResolveID or otherwise fix.
-            // (was sfResolve())
-            Number port = ((Number) c.sfResolveId(SmartFrogCoreKeys.SF_ROOT_LOCATOR_PORT));
-            if(port==null) {
-                throw new SmartFrogResolutionException("Unable to locate registry port from ",c);
+
+        try {
+            if (registryPort==-1) {
+                Number port = ((Number)c.sfResolveHere(SmartFrogCoreKeys.
+                    SF_ROOT_LOCATOR_PORT));
+                if (port==null) {
+                    throw new SmartFrogResolutionException(
+                        "Unable to locate registry port from ", c);
+                }
+                registryPort = port.intValue();
             }
-            registryPort = port.intValue();
+        } catch (ClassCastException ccex){
+            throw new SmartFrogResolutionException(
+                "Wrong object for "+SmartFrogCoreKeys.SF_ROOT_LOCATOR_PORT, ccex, c);
         }
 
         return registryPort;
@@ -97,16 +102,8 @@ public class DefaultRootLocatorImpl implements RootLocator, MessageKeys {
      */
     public void setRootProcessCompound(ProcessCompound c)
         throws SmartFrogException, RemoteException {
-        // Read optional property 
-        // "org.smartfrog.ProcessCompound.sfRootLocatorPort"
-        String port = System.getProperty(SmartFrogCoreProperty.sfDaemonPort);
-        // port defined in default.ini overrides the "sfRootLocatorPort"
-        // attribute  defined in processcompound sf description
-        if(port != null) { 
-            registryPort = Integer.parseInt(port);
-        } else {
-            registryPort = getRegistryPort(c);
-        }
+
+        registryPort = getRegistryPort(c);
         try {
             Registry reg = SFSecurity.createRegistry(registryPort);
             reg.bind(defaultName, c);
