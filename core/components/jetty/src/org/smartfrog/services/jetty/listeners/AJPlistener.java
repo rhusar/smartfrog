@@ -3,13 +3,17 @@ package org.smartfrog.services.jetty.listeners;
 import java.rmi.RemoteException;
 import java.net.UnknownHostException;
 
+import org.smartfrog.sfcore.common.Logger;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.processcompound.ProcessCompound;
+import org.smartfrog.sfcore.processcompound.SFProcess;
+import org.mortbay.http.HttpServer;
 import org.mortbay.http.ajp.AJP13Listener;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.services.jetty.SFJetty;
+
 /**
  * AJPlistener class for AJPListener for jetty server.
  * @author Ritu Sabharwal
@@ -21,9 +25,13 @@ public class AJPlistener extends PrimImpl implements Prim, Listener {
 
   int listenerPort = 8009;
 
-  String serverHost;
+  String serverHost = null;
 
   AJP13Listener listener = null;
+
+  ProcessCompound process = null;
+
+  HttpServer server = null;
        
   /** Standard RMI constructor */
   public AJPlistener() throws RemoteException {
@@ -38,7 +46,7 @@ public class AJPlistener extends PrimImpl implements Prim, Listener {
   public void sfDeploy() throws SmartFrogException, RemoteException {
 	  super.sfDeploy();      
 	  listenerPort = sfResolve(listenerPortRef,listenerPort,true);
-	  serverHost = sfResolve(serverHostRef, "null", true);
+	  serverHost = sfResolve(serverHostRef, serverHost, true);
   }
 
   /**
@@ -56,7 +64,12 @@ public class AJPlistener extends PrimImpl implements Prim, Listener {
    * Termination phase
    */
   public void sfTerminateWith(TerminationRecord status) {
-	  SFJetty.server.removeListener(listener);
+	  try{
+		  listener.stop();
+	  } catch(Exception ex){
+		  Logger.log(" Interrupted on AJPlistener termination " + ex);
+	  }
+	  server.removeListener(listener);
 	  super.sfTerminateWith(status);
   } 
   
@@ -70,7 +83,14 @@ public class AJPlistener extends PrimImpl implements Prim, Listener {
 		  listener = new AJP13Listener(); 
 	          listener.setPort(listenerPort);
 	          listener.setHost(serverHost);
-	          SFJetty.server.addListener(listener);
+		  process = SFProcess.getProcessCompound();
+		  server = (HttpServer)process.sfResolveId("Jetty Server"); 
+	          server.addListener(listener);
+		  try{
+			  listener.start();
+		  } catch(Exception ex){
+			  throw SmartFrogException.forward(ex);
+		  }
 	  } catch (UnknownHostException unex) {
 		   throw SmartFrogException.forward(unex);	
 	  }

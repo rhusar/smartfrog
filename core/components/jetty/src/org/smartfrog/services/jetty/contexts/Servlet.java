@@ -1,17 +1,20 @@
 package org.smartfrog.services.jetty.contexts;
 
 import java.rmi.RemoteException;
+
 import org.mortbay.http.HttpServer;
 import org.smartfrog.services.jetty.contexts.Context;
 import org.mortbay.jetty.servlet.ServletHttpContext;
+import org.smartfrog.sfcore.common.Logger;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.processcompound.ProcessCompound;
+import org.smartfrog.sfcore.processcompound.SFProcess;
 import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.compound.CompoundImpl;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.services.jetty.SFJetty;
 import org.mortbay.http.handler.ResourceHandler;
 
 
@@ -32,6 +35,10 @@ public class Servlet extends CompoundImpl implements Compound {
    String classPath = "null";
    String mapfromPath;
    String maptoPath;
+
+   ProcessCompound process = null;
+
+   HttpServer server = null;
    
    ServletHttpContext context;
    
@@ -48,9 +55,9 @@ public class Servlet extends CompoundImpl implements Compound {
    public void sfDeploy() throws SmartFrogException, RemoteException {
        context =  new ServletHttpContext();
        sfAddAttribute("Context", context);
-       Prim parent = this.sfParent();
-       Prim grandParent = parent.sfParent();
-       jettyhome = (String)grandParent.sfResolveId("jettyhome");
+       process = SFProcess.getProcessCompound();
+       server = (HttpServer)process.sfResolveId("Jetty Server");
+       jettyhome = (String)process.sfResolveId("jettyhome");
        contextPath = sfResolve(contextPathRef, contextPath, true);
        resourceBase = sfResolve(resourceBaseRef, 
 		       jettyhome + resourceBase, true);
@@ -66,15 +73,25 @@ public class Servlet extends CompoundImpl implements Compound {
    */ 
    public void sfStart() throws SmartFrogException, RemoteException {
        super.sfStart();
-       addcontext(contextPath,resourceBase,classPath); 
-       SFJetty.server.addContext(context);
+       addcontext(contextPath,resourceBase,classPath);
+       server.addContext(context);
+       try {
+	       context.start();
+       } catch(Exception ex){
+	       throw SmartFrogException.forward(ex);
+       } 
    }
 
    /**
    * Termination phase
    */
    public void sfTerminateWith(TerminationRecord status) {
-	   SFJetty.server.removeContext(context);
+	   try{
+		  context.stop();
+	   } catch(Exception ex){
+		  Logger.log(" Interrupted on ServletHttpContext termination " + ex);
+	  }
+	   server.removeContext(context);
            super.sfTerminateWith(status);
    }
      

@@ -5,6 +5,8 @@ import org.smartfrog.sfcore.common.Logger;
 import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.compound.CompoundImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.processcompound.ProcessCompound;
+import org.smartfrog.sfcore.processcompound.SFProcess;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
@@ -28,7 +30,7 @@ public class SFJetty extends CompoundImpl implements Compound {
   String jettyhome;
   
   /** The Http server */
-  public static HttpServer server = new HttpServer();
+  HttpServer server;
 
   /** Standard RMI constructor */
   public SFJetty() throws RemoteException {
@@ -42,13 +44,17 @@ public class SFJetty extends CompoundImpl implements Compound {
    */
   public void sfDeploy() throws SmartFrogException, RemoteException {
     try {
-    super.sfDeploy();
-    jettyhome = sfResolve(jettyhomeRef,jettyhome,true);
-    configureHttpServer();
+	   server = new HttpServer();
+	   ProcessCompound process = SFProcess.getProcessCompound();
+	   process.sfAddAttribute("Jetty Server", server);
+	   jettyhome = sfResolve(jettyhomeRef,jettyhome,true);
+           process.sfAddAttribute("Jetty Home", jettyhome);
+	   configureHttpServer();
+           super.sfDeploy();
+           
     } catch (Exception ex){ 
        throw SmartFrogDeploymentException.forward(ex);
     }
-   
   }
 
   /**
