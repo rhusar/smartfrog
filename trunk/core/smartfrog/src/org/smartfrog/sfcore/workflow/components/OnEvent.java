@@ -86,14 +86,18 @@ public class OnEvent extends EventCompoundImpl implements Compound {
         } catch (SmartFrogResolutionException e) {
 	    // no handler - log and ignore
 	    Logger.log(this.sfCompleteNameSafe()+"ignoring unknown event " + event);
+            // if there is no handler, and it is finished (in principle this is only if singleEvent)
+	    if (finished) sfTerminate(TerminationRecord.abnormal("terminating in single event after unknown event " + event, 
+                                                                 sfCompleteNameSafe()));
 	} catch (Exception e) {
             // error in  handler - log and ignore
             sfTerminate(TerminationRecord.abnormal(
-                    "error in event handler for event " + event, null));
+                "error in event handler for event " + event, null));
         }
     }
 
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
+        super.sfDeploy();
 	singleEvent = sfResolve("singleEvent", true, false);
     }
 
