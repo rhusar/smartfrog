@@ -53,6 +53,8 @@ import javax.swing.event.*;
 import java.util.Vector;
 import java.util.Iterator;
 
+import java.util.Enumeration;
+
 import org.smartfrog.sfcore.reference.*;
 import org.smartfrog.sfcore.parser.*;
 import org.smartfrog.sfcore.componentdescription.*;
@@ -77,7 +79,7 @@ public class MainFrame extends JFrame implements ActionListener {
    /**
     *  Description of the Field
     */
-   public final static String version = "v0.6 r99";
+   public final static String version = "v0.7 r01";
    // This has to  be done properly !!!!!!!!!!!!!!! no static. Because of crap log.
    static PrintStream msg = System.out;
    static JLabel statusBar = new JLabel();
@@ -110,7 +112,7 @@ public class MainFrame extends JFrame implements ActionListener {
    // Default SFSystem class
    private String sfSystemClass = "org.smartfrog.SFSystem";
    //Default config for Browsers
-   private String cmdExeBrowserLinux = "netscape";
+   private String cmdExeBrowserLinux = "firefox";
    private String cmdExeBrowserWindows = "explorer";
    private String cmdBrowserURL = "http://127.0.0.1:4242/";
 
@@ -136,6 +138,7 @@ public class MainFrame extends JFrame implements ActionListener {
    String panelNameRaw = "Raw";
    String panelNameType = "Type Reso.";
    String panelNamePlace = "Placement";
+   String panelNameDescription = "Description";
    String panelNameDeploy = "Deploy";
    String panelNameGenParse = "Adv.Parser";
 
@@ -217,6 +220,7 @@ public class MainFrame extends JFrame implements ActionListener {
    JEditTextArea jTextAreaType = new JEditTextArea();
    JEditTextArea jTextAreaPlace = new JEditTextArea();
    JEditTextArea jTextAreaDeploy = new JEditTextArea();
+   JEditTextArea jTextAreaDescription = new JEditTextArea();
    JTextArea screen = new JTextArea();
    JScrollPane output = new JScrollPane();
 
@@ -596,6 +600,7 @@ public class MainFrame extends JFrame implements ActionListener {
       jTextAreaRaw.setText("Raw");
       jTextAreaType.setText("Type Resolution");
       jTextAreaPlace.setText("Placement");
+      jTextAreaDescription.setText("Description");
       jTextAreaDeploy.setText("Deploy");
    }
 
@@ -1074,7 +1079,10 @@ public class MainFrame extends JFrame implements ActionListener {
                jTextAreaRaw.setText("Error!. Not resolved.");
                jTextAreaType.setText("Error!. Not resolved.");
                jTextAreaPlace.setText("Error!. Not resolved.");
+               jTextAreaDescription.setText("Schema metadata not present for this SmartFrog description.");
                jTextAreaDeploy.setText("Error!. Not resolved.");
+
+               jTextAreaDescription.setText(parsePhaseDescription (currFileName,this.getActiveLanguage()));
 
                is = new FileInputStream(currFileName);
                jTextAreaRaw.setText(this.parsePhase("raw", is,this.getActiveLanguage()));
@@ -1128,7 +1136,7 @@ public class MainFrame extends JFrame implements ActionListener {
             // Parse up to the phase selected in sfComboBox
             Vector auxphases = new Vector();
 
-            if ((phases != null) && (!phases.equals("all"))) {
+            if ((phases != null) && (!phases.equals("all"))&& (!phases.equals("description"))) {
                Iterator iter = phases.iterator();
                String temp;
                while (iter.hasNext()) {
@@ -1149,6 +1157,7 @@ public class MainFrame extends JFrame implements ActionListener {
                top=top.sfResolvePhases();
                return (top.sfAsComponentDescription().toString());
             }
+
             top = top.sfResolvePhases(auxphases);
 
             this.log("SFParse Done(" + (auxphases.lastElement()).toString() + ").", "Parse", 3);
@@ -1166,6 +1175,50 @@ public class MainFrame extends JFrame implements ActionListener {
       }
       return null;
    }
+
+   /**
+       *  To get textual description for a SF desc.
+       *
+       *@param  phase  Description of Parameter
+       *@param  is     Description of Parameter
+       *@return        Description of the Returned Value
+       */
+      public String parsePhaseDescription(String currFileName , String language) {
+        if (currFileName != null) {
+          InputStream is = null;
+          try {
+            is = new FileInputStream(currFileName);
+            Phases top = new SFParser(language).sfParse(is);
+            is.close();
+            Vector phaseList = top.sfGetPhases();
+            String phase;
+            for (Enumeration e = phaseList.elements(); e.hasMoreElements(); ) {
+                phase = (String) e.nextElement();
+                try {
+                  if (!(phase.equals("predicate"))) {
+                      top = top.sfResolvePhase(phase);
+                      System.out.println(phase + top.toString());
+                  }
+                } catch (Exception ex) {
+                  //report.add("   "+ phase +" phase: "+ex.getMessage());
+                  throw ex;
+                }
+            }
+            top.sfResolvePhase("description");
+            //System.out.println("description"+top.toString());
+            ComponentDescription cd = top.sfAsComponentDescription();
+            return (cd.sfCompleteName().toString()+"\n"+ cd.toString());
+          } catch (Throwable ex) {
+             log(ex.getMessage(), "parsePhaseDescription", 5);
+             // 5 Erro
+             //System.err.println(ex.printStackTrace());
+             ex.printStackTrace();
+          }
+       } else {
+          //log("No SFFile loaded", "parsePhaseDescription", 4);
+       }
+        return "hola";
+      }
 
 
    /**
@@ -1599,6 +1652,8 @@ public class MainFrame extends JFrame implements ActionListener {
             return jTextAreaType;
          } else if (indexPanel == this.jTabbedPaneParse.indexOfTab(panelNamePlace)) {
             return jTextAreaPlace;
+         } else if (indexPanel == this.jTabbedPaneParse.indexOfTab(panelNameDescription)) {
+             return jTextAreaDescription;
          } else if (indexPanel == this.jTabbedPaneParse.indexOfTab(panelNameDeploy)) {
             return jTextAreaDeploy;
          } else if (indexPanel == this.jTabbedPaneParse.indexOfTab(panelNameGenParse)) {
@@ -2143,6 +2198,7 @@ public class MainFrame extends JFrame implements ActionListener {
       jTextAreaRaw.setTokenMarker(tokenMarker);
       jTextAreaType.setTokenMarker(tokenMarker);
       jTextAreaPlace.setTokenMarker(tokenMarker);
+      jTextAreaDescription.setTokenMarker(tokenMarker);
       jTextAreaDeploy.setTokenMarker(tokenMarker);
    }
 
@@ -2186,6 +2242,7 @@ public class MainFrame extends JFrame implements ActionListener {
       jTextAreaRaw.setFont(new java.awt.Font("DialogInput", 0, 12));
       jTextAreaType.setFont(new java.awt.Font("DialogInput", 0, 12));
       jTextAreaPlace.setFont(new java.awt.Font("DialogInput", 0, 12));
+      jTextAreaDescription.setFont(new java.awt.Font("DialogInput", 0, 12));
       jTextAreaDeploy.setFont(new java.awt.Font("DialogInput", 0, 12));
 
       setTokenEditTokenMarker(sfTokenMarker);
@@ -2194,6 +2251,7 @@ public class MainFrame extends JFrame implements ActionListener {
       setTabSize(jTextAreaRaw, tabSize);
       setTabSize(jTextAreaType, tabSize);
       setTabSize(jTextAreaPlace, tabSize);
+      setTabSize(jTextAreaDescription, tabSize);
       setTabSize(jTextAreaDeploy, tabSize);
 
 
@@ -2409,6 +2467,8 @@ public class MainFrame extends JFrame implements ActionListener {
      jTextAreaType.setEditable(false);
      jTextAreaPlace.setText("Placement");
      jTextAreaPlace.setEditable(false);
+     jTextAreaDescription.setText("Description");
+     jTextAreaDescription.setEditable(false);
      jTextAreaDeploy.setText("Deploy");
      jTextAreaDeploy.setEditable(false);
      screen.setForeground(SystemColor.text);
@@ -2679,6 +2739,7 @@ public class MainFrame extends JFrame implements ActionListener {
  //      jTabbedPaneParse.add(jTextAreaType, panelNameType);
  //      jTabbedPaneParse.add(jTextAreaPlace, panelNamePlace);
      jTabbedPaneParse.add(jPanelGenParse, panelNameGenParse);
+     jTabbedPaneParse.add(jTextAreaDescription, panelNameDescription);
      jTabbedPaneParse.add(jTextAreaDeploy, panelNameDeploy);
      jTabbedPanelNorth.add(output, "output");
      jTabbedPanelNorth.add(BrowseSFComponentPanel, panelNameBrowseComp);
