@@ -39,6 +39,10 @@ public class DoNothing extends EventPrimImpl implements Prim {
     String terminationType;
     String message;
     boolean printEvents;
+    public static final String TIME = "time";
+    public static final String TERMINATION_TYPE = "terminationType";
+    public static final String MESSAGE = "message";
+    public static final String PRINT_EVENTS = "printEvents";
 
     /**
      * Constructs DoNothing.
@@ -74,25 +78,25 @@ public class DoNothing extends EventPrimImpl implements Prim {
         myId = sfCompleteName().toString();
 
         try {
-            time = ((Integer) sfResolve("time")).intValue();
+            time = ((Integer) sfResolve(TIME)).intValue();
         } catch (Exception e) {
             time = 10000;
         }
 
         try {
-            terminationType = (String) sfResolve("terminationType");
+            terminationType = (String) sfResolve(TERMINATION_TYPE);
         } catch (Exception e) {
             terminationType = "normal";
         }
 
         try {
-            message = myId + ": " + (String) sfResolve("message");
+            message = myId + ": " + (String) sfResolve(MESSAGE);
         } catch (Exception e) {
             message = null;
         }
 
         try {
-            printEvents = ((Boolean) sfResolve("printEvents")).
+            printEvents = ((Boolean) sfResolve(PRINT_EVENTS)).
                                                         booleanValue();
         } catch (Exception e) {
             printEvents = true;

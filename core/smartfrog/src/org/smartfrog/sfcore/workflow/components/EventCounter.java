@@ -39,6 +39,8 @@ public class EventCounter extends EventPrimImpl implements Prim {
     private boolean allDifferent = true;
     private HashSet events;
     private Reference id;
+    public static final String COUNT = "count";
+    public static final String ALL_DIFFERENT = "allDifferent";
 
     /**
      * Constructs EventCounter.
@@ -52,8 +54,8 @@ public class EventCounter extends EventPrimImpl implements Prim {
      * Deploys the component and reads the configuration attributes.
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
-        count = ((Integer) sfResolve("count")).intValue();
-        allDifferent = ((String) sfResolve("allDifferent")).equals("true");
+        count = ((Integer) sfResolve(COUNT)).intValue();
+        allDifferent = ((String) sfResolve(ALL_DIFFERENT)).equals("true");
 
         if (allDifferent) {
             events = new HashSet(count);
