@@ -25,6 +25,7 @@ import org.apache.axis.AxisFault;
 import org.apache.axis.types.URI;
 import org.cddlm.client.console.ConsoleOperation;
 import org.cddlm.client.console.Undeploy;
+import org.smartfrog.services.cddlm.api.UndeployProcessor;
 import org.smartfrog.services.cddlm.generated.api.DeployApiConstants;
 
 /**
@@ -33,7 +34,6 @@ import org.smartfrog.services.cddlm.generated.api.DeployApiConstants;
 public class UndeployTest extends ConsoleTestBase {
 
     private Undeploy operation;
-    public static final String INVALID_URI = "http://invalid.example.org/undeploy/1";
 
     /**
      * get the operation of this test base
@@ -59,6 +59,16 @@ public class UndeployTest extends ConsoleTestBase {
             assertFaultMatches(e,
                     DeployApiConstants.FAULT_NO_SUCH_APPLICATION,
                     null);
+        }
+    }
+
+    public void testNullApp() throws Exception {
+        try {
+            operation.undeploy(null, "termination");
+        } catch (AxisFault e) {
+            assertFaultMatches(e,
+                    DeployApiConstants.FAULT_BAD_ARGUMENT,
+                    UndeployProcessor.ERROR_NO_APPLICATION);
         }
     }
 

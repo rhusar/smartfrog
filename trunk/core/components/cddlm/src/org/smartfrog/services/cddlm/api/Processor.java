@@ -44,9 +44,6 @@ import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
 
 import javax.xml.namespace.QName;
-import javax.xml.rpc.server.ServiceLifecycle;
-import javax.xml.rpc.server.ServletEndpointContext;
-import javax.xml.rpc.ServiceException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.net.MalformedURLException;
@@ -60,6 +57,8 @@ import java.util.Enumeration;
 public class Processor {
     private static final Log log = LogFactory.getLog(EndpointHelper.class);
     public static final String WRONG_MESSAGE_ELEMENT_COUNT = "wrong number of message elements";
+    public static final String ERROR_NO_APPLICATION = "No application URI";
+    public static final String ERROR_APP_URI_NOT_FOUND = "Not found: ";
 
     public Processor(SmartFrogHostedEndpoint owner) {
         this.owner = owner;
@@ -71,7 +70,6 @@ public class Processor {
     private SmartFrogHostedEndpoint owner;
 
 
-
     public SmartFrogHostedEndpoint getOwner() {
         return owner;
     }
@@ -79,7 +77,6 @@ public class Processor {
     public void setOwner(SmartFrogHostedEndpoint owner) {
         this.owner = owner;
     }
-
 
 
     /**
@@ -141,7 +138,8 @@ public class Processor {
     public JobState lookupJob(URI jobURI) throws AxisFault {
         JobState jobState = lookupJobNonFaulting(jobURI);
         if (jobState == null) {
-            throw raiseNoSuchApplicationFault(jobURI.toString());
+            throw raiseNoSuchApplicationFault(
+                    ERROR_APP_URI_NOT_FOUND + jobURI.toString());
         }
         return jobState;
     }

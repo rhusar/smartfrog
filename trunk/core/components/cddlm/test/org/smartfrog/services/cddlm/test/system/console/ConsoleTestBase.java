@@ -55,6 +55,7 @@ public abstract class ConsoleTestBase extends TestCase {
     private StringWriter outputWriter = new StringWriter();
 
     private PrintWriter out = new PrintWriter(outputWriter, true);
+    public static final String INVALID_URI = "http://invalid.example.org/undeploy/1";
 
     /**
      * get the operation of this test base

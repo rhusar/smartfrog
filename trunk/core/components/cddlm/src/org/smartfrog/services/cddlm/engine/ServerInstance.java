@@ -73,7 +73,7 @@ public class ServerInstance {
         //TODO: use the smartfrog resource loader & sfCodebase;
         ResourceLoader loader = new ResourceLoader(this.getClass());
         try {
-            cdlParser=new CdlParser(loader, true);
+            cdlParser = new CdlParser(loader, true);
         } catch (SAXException e) {
             throw new RuntimeException(e);
         }
@@ -164,6 +164,15 @@ public class ServerInstance {
      */
     public CdlParser getCdlParser() {
         return cdlParser;
+    }
+
+    /**
+     * queue an action for execution
+     *
+     * @param action
+     */
+    public void queue(Action action) {
+        queue.push(action);
     }
 
 }

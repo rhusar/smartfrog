@@ -718,14 +718,14 @@
         <xsd:element name="callback" type="types:callbackInformationType" minOccurs="0">
           <xsd:annotation>
             <xsd:documentation>
-            callback data, can be committed
+            optional callback data
             </xsd:documentation>
           </xsd:annotation>
         </xsd:element>
         <xsd:element name="options" type="types:optionMapType" minOccurs="0">
           <xsd:annotation>
             <xsd:documentation>
-          This is for optional deployment options.
+            This is for optional deployment options.
             </xsd:documentation>
           </xsd:annotation>
         </xsd:element>
@@ -767,11 +767,54 @@
   </xsd:element>
 
   <!-- ============================================================= -->
-  <!-- there isnt really much to say here -->
+  <!-- undeploy response means that either the request has been submitted, -->
+  <!-- or the request is being ignored, as the request is meant to be
+       idempotent -->
+  <!-- this should only ever return true -->
   <!-- ============================================================= -->
   <xsd:element name="undeployResponse" type="xsd:boolean">
   </xsd:element>
 
+  
+  <!-- ============================================================= -->
+  <!-- define/redefine the callback endpoint -->
+  <!-- ============================================================= -->
+  <xsd:element name="setCallbackRequest">
+    <xsd:complexType>
+      <xsd:annotation>
+        <xsd:documentation>
+          Request to redefine the callback mechanism/address for an application.
+          The new value will remain valid until changed or the application
+          is undeployed.
+        </xsd:documentation>
+      </xsd:annotation>
+      <xsd:sequence>
+        <xsd:element name="application" type="types:applicationReferenceType">
+          <xsd:annotation>
+            <xsd:documentation>
+            URI of application
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="callback" type="types:callbackInformationType" minOccurs="0">
+          <xsd:annotation>
+            <xsd:documentation>
+            callback data
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <!-- ============================================================= -->
+  <!-- response from a request to set a callback-->
+  <!-- ============================================================= -->
+  <xsd:element name="setCallbackResponse" type="xsd:boolean">
+  </xsd:element>
+  
+
+  
   <!-- ============================================================= -->
   <!-- ============================================================= -->
 
@@ -866,7 +909,6 @@
         <xsd:element name="identifier" type="xsd:string"/>
         <xsd:element name="applicationReference" type="types:applicationReferenceType"/>
         <xsd:element name="status" type="types:applicationStatusType"/>
-        <!--      <xsd:element name="BaseFault" type="wsbf:BaseFaultType" minOccurs="0"/>-->
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>

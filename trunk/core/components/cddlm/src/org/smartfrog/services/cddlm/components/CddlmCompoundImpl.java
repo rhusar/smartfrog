@@ -19,6 +19,10 @@
  */
 package org.smartfrog.services.cddlm.components;
 
+import org.apache.axis.types.URI;
+import org.smartfrog.services.cddlm.engine.JobState;
+import org.smartfrog.services.cddlm.engine.ServerInstance;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.compound.CompoundImpl;
 import org.smartfrog.sfcore.prim.Prim;
@@ -34,9 +38,63 @@ import java.rmi.RemoteException;
 public class CddlmCompoundImpl extends CompoundImpl
         implements CddlmCompound {
 
+    private String endpoint;
+
+    private URI jobURI;
+
+    private String identifier;
+
+    private int timeout = -1;
+
+    private JobState job;
+
+    public static final String ERROR_UNKNOWN_JOB_URI = "No job of that address defined:";
+
     public CddlmCompoundImpl() throws RemoteException {
     }
 
+    /**
+     * Deploy the compound. Deployment is defined as iterating over the context
+     * and deploying any parsed eager components.
+     *
+     * @throws SmartFrogException failure deploying compound or sub-component
+     * @throws RemoteException    In case of Remote/nework error
+     */
+    public synchronized void sfDeploy() throws SmartFrogException,
+            RemoteException {
+        super.sfDeploy();
+    }
+
+    /**
+     * Starts the compound. This sends a synchronous sfStart to all managed
+     * components in the compound context. Any failure will cause the compound
+     * to terminate
+     *
+     * @throws SmartFrogException failed to start compound
+     * @throws RemoteException    In case of Remote/nework error
+     */
+    public synchronized void sfStart() throws SmartFrogException,
+            RemoteException {
+        super.sfStart();
+        //attributes
+        endpoint = sfResolve(ATTR_NOTIFICATION_ENDPOINT, (String) null, true);
+        identifier = sfResolve(ATTR_IDENTIFIER, (String) null, true);
+        timeout = sfResolve(ATTR_TIMEOUT, timeout, false);
+        //make the URI
+        try {
+            jobURI = new URI(endpoint);
+        } catch (URI.MalformedURIException e) {
+            throw SmartFrogException.forward(e);
+        }
+        //find and bind to the job
+        ServerInstance server = ServerInstance.currentInstance();
+        job = server.getJobs().lookup(jobURI);
+        if (job == null) {
+            throw new SmartFrogDeploymentException(
+                    ERROR_UNKNOWN_JOB_URI + endpoint);
+        }
+
+    }
 
     public class startupHook implements PrimHook {
 
@@ -46,6 +104,6 @@ public class CddlmCompoundImpl extends CompoundImpl
 
         }
     }
-    //PrimHook
+
 
 }

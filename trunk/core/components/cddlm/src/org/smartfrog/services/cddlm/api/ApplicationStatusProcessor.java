@@ -19,7 +19,6 @@
  */
 package org.smartfrog.services.cddlm.api;
 
-import org.apache.axis.types.NCName;
 import org.apache.axis.types.URI;
 import org.smartfrog.services.axis.SmartFrogHostedEndpoint;
 import org.smartfrog.services.cddlm.engine.JobState;
@@ -53,7 +52,7 @@ public class ApplicationStatusProcessor extends Processor {
         URI reference = applicationStatus.getApplication();
         JobState job = lookupJob(reference);
         Prim process = job.resolvePrimFromJob();
-        ApplicationStatusType status = new ApplicationStatusType();
+        ApplicationStatusType status = job.createApplicationStatus();
         boolean running;
         try {
             process.sfPing(null);
@@ -62,7 +61,6 @@ public class ApplicationStatusProcessor extends Processor {
             running = false;
             status.setStateInfo(e.toString());
         }
-        status.setName(new NCName(job.getName()));
         String statusName = running ? "running" : "terminated";
         status.setState(LifecycleStateEnum.fromString(statusName));
 

@@ -22,6 +22,7 @@
 package org.smartfrog.services.cddlm.test.system.console;
 
 import org.apache.axis.AxisFault;
+import org.apache.axis.types.NCName;
 import org.apache.axis.types.URI;
 import org.cddlm.client.console.ConsoleOperation;
 import org.cddlm.client.console.Lookup;
@@ -66,6 +67,16 @@ public class LookupApplicationsTest extends ConsoleTestBase {
         URI uri = new URI(INVALID_URI_NAME);
         String errorText = INVALID_URI_NAME;
         assertNoSuchApplication(uri, errorText);
+    }
+
+    public void testNullApplication() throws Exception {
+        try {
+            operation.lookupApplication((NCName) null);
+        } catch (AxisFault fault) {
+            assertFaultMatches(fault,
+                    DeployApiConstants.FAULT_BAD_ARGUMENT,
+                    null);
+        }
     }
 
 }
