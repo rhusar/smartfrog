@@ -36,6 +36,9 @@ import org.smartfrog.sfcore.processcompound.SFProcess;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.Logger;
 
+import java.awt.Component;
+import javax.swing.JOptionPane;
+
 /**
  * Implements the display for the trace component.
  *
@@ -99,6 +102,9 @@ public class SFTraceDisplay extends SFDisplay implements ActionListener {
             refresh.addActionListener(this);
             display.mainToolBar.add(this.refresh);
             display.showToolbar(true);
+            boolean stepTraceBoolean = false;
+            stepTraceBoolean = sfResolve("stepTrace",stepTraceBoolean, false);
+            if (stepTraceBoolean) stepTrace = 0; else stepTrace =1;
         //end panelTree example
     }
 
@@ -138,6 +144,7 @@ public class SFTraceDisplay extends SFDisplay implements ActionListener {
 
         // We print in the output
         ((TraceTreePanel) panelTree).add(msg);
+        if (stepTrace == 0) getUserConfirmation(this.display, msg);
     }
 
     // Refresh Section
@@ -183,4 +190,27 @@ public class SFTraceDisplay extends SFDisplay implements ActionListener {
     public static void main(String[] args) {
         //SFTraceDisplay SFTraceDisplay1 = new SFTraceDisplay();
     }
+
+    static int stepTrace = 0;
+//    static Object[] options = {"NEXT", "Finish"};
+     /**
+      * Asks the user confirmation
+      *
+      *@param  cp       Component
+      *@param  message  Message
+      *@return          The user confirmation value
+      */
+     public static boolean getUserConfirmation(Component cp, String message) {
+        message=message.replace(',','\n');
+        stepTrace = JOptionPane.showConfirmDialog(cp, message,
+              "Please confirm...", JOptionPane.YES_NO_OPTION);
+
+        if (stepTrace == 0) {
+           return true;
+        } else {
+           return false;
+        }
+     }
+
+
 }
