@@ -30,13 +30,14 @@ For more information: www.smartfrog.org
 AxisServer extends Prim {
     name "axis";
     sfClass "org.smartfrog.services.cddlm.AxisImpl";
-    port 5050;
+    port 8080;
     wsddResource;
     
 };
 
 CDDLM extends AxisServer {
     name "CDDLM";
+    port 5050;
     wsddResource "/org/smartfrog/services/cddlm/deploy.wsdd";
 };
 
