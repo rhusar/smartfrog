@@ -41,6 +41,7 @@ import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.compound.CompoundImpl;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
@@ -49,6 +50,8 @@ import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferencePart;
 import org.smartfrog.sfcore.security.SFSecurity;
 import org.smartfrog.sfcore.security.SFSecurityProperties;
+import org.smartfrog.sfcore.common.Context;
+import org.smartfrog.sfcore.common.ContextImpl;
 
 
 
@@ -322,6 +325,11 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
         }
 
 
+        // This call and method will disapear once we refactor ProcessCompound
+        // SFProcess.addDefaultProcessDescriptions will replace all this code.
+        // @TODO fix after refactoring ProcessCompound.
+        deployDefaultProcessDescriptions(this);
+
 
         // the last act is to inform the root process compound that the
         // subprocess is now ready for action - only done if not the root
@@ -337,6 +345,44 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
                                                 rex, this);
         }
     }
+
+
+    private void deployDefaultProcessDescriptions(ProcessCompound comp)
+        throws SmartFrogException, RemoteException {
+        Properties props = System.getProperties();
+        Prim p;
+        Context nameContext = null;
+        String name = null;
+        String url = null;
+        String key = null;
+        try {
+            for (Enumeration e = props.keys(); e.hasMoreElements(); ) {
+                key = e.nextElement().toString();
+                if (key.startsWith(SmartFrogCoreProperty.defaultDescPropBase)) {
+                    // Collects all properties refering to default descriptions that
+                    // have to be deployed inmediately after process compound
+                    // is started.
+                    url = (String)props.get(key);
+                    name = key.substring(SmartFrogCoreProperty.defaultDescPropBase.length());
+                    nameContext = new ContextImpl();
+                    nameContext.put(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME, name);
+                    ComponentDescription cd = ComponentDescriptionImpl.
+                        sfComponentDescription(url.trim());
+                    // Parent is null: default descriptions are root components
+                    p = comp.sfDeployComponentDescription(null, null, cd,
+                        nameContext);
+                    p.sfDeploy();
+                    p.sfStart();
+                }
+            }
+
+        } catch (SmartFrogException sfex){
+           if (sfex instanceof SmartFrogDeploymentException) throw sfex;
+           else throw new SmartFrogDeploymentException
+             ("deploying default description for '" + key+"'", sfex,comp,nameContext);
+        }
+    }
+
 
     /**
      * Process compound sub-component termination policy is currently not to

@@ -29,8 +29,8 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import org.smartfrog.SFSystem;
-import org.smartfrog.sfcore.common.Context;
-import org.smartfrog.sfcore.common.ContextImpl;
+//import org.smartfrog.sfcore.common.Context;
+//import org.smartfrog.sfcore.common.ContextImpl;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.SmartFrogCoreProperty;
 import org.smartfrog.sfcore.common.OrderedHashtable;
@@ -248,41 +248,41 @@ public class SFProcess implements MessageKeys {
         }
     }
 
-    public static void deployDefaultProcessDescriptions(ProcessCompound comp)
-        throws SmartFrogException, RemoteException {
-        Properties props = System.getProperties();
-        Prim p;
-        Context nameContext = null;
-        String name = null;
-        String url = null;
-        String key = null;
-        try {
-            for (Enumeration e = props.keys(); e.hasMoreElements(); ) {
-                key = e.nextElement().toString();
-                if (key.startsWith(SmartFrogCoreProperty.defaultDescPropBase)) {
-                    // Collects all properties refering to default descriptions that
-                    // have to be deployed inmediately after process compound
-                    // is started.
-                    url = (String)props.get(key);
-                    name = key.substring(SmartFrogCoreProperty.defaultDescPropBase.length());
-                    nameContext = new ContextImpl();
-                    nameContext.put(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME, name);
-                    ComponentDescription cd = ComponentDescriptionImpl.
-                        sfComponentDescription(url.trim());
-                    // Parent is null: default descriptions are root components
-                    p = comp.sfDeployComponentDescription(null, null, cd,
-                        nameContext);
-                    p.sfDeploy();
-                    p.sfStart();
-                }
-            }
-
-        } catch (SmartFrogException sfex){
-           if (sfex instanceof SmartFrogDeploymentException) throw sfex;
-           else throw new SmartFrogDeploymentException
-             ("deploying default description for '" + key+"'", sfex,comp,nameContext);
-        }
-    }
+//    public static void deployDefaultProcessDescriptions(ProcessCompound comp)
+//        throws SmartFrogException, RemoteException {
+//        Properties props = System.getProperties();
+//        Prim p;
+//        Context nameContext = null;
+//        String name = null;
+//        String url = null;
+//        String key = null;
+//        try {
+//            for (Enumeration e = props.keys(); e.hasMoreElements(); ) {
+//                key = e.nextElement().toString();
+//                if (key.startsWith(SmartFrogCoreProperty.defaultDescPropBase)) {
+//                    // Collects all properties refering to default descriptions that
+//                    // have to be deployed inmediately after process compound
+//                    // is started.
+//                    url = (String)props.get(key);
+//                    name = key.substring(SmartFrogCoreProperty.defaultDescPropBase.length());
+//                    nameContext = new ContextImpl();
+//                    nameContext.put(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME, name);
+//                    ComponentDescription cd = ComponentDescriptionImpl.
+//                        sfComponentDescription(url.trim());
+//                    // Parent is null: default descriptions are root components
+//                    p = comp.sfDeployComponentDescription(null, null, cd,
+//                        nameContext);
+//                    p.sfDeploy();
+//                    p.sfStart();
+//                }
+//            }
+//
+//        } catch (SmartFrogException sfex){
+//           if (sfex instanceof SmartFrogDeploymentException) throw sfex;
+//           else throw new SmartFrogDeploymentException
+//             ("deploying default description for '" + key+"'", sfex,comp,nameContext);
+//        }
+//    }
 
     public static void addDefaultProcessDescriptions
         (ComponentDescription compDesc) throws SmartFrogException, RemoteException {
@@ -386,7 +386,7 @@ public class SFProcess implements MessageKeys {
         // This call and method will disapear once we refactor ProcessCompound
         // addDefaultProcessDescriptions will replace all this code.
         // @TODO fix after refactoring ProcessCompound.
-        deployDefaultProcessDescriptions((ProcessCompound)processCompound);
+        //deployDefaultProcessDescriptions((ProcessCompound)processCompound);
 
 
         return processCompound;
@@ -418,8 +418,10 @@ public class SFProcess implements MessageKeys {
 
         processCompoundDescription = getCoreProcessCompoundDescription();
 
-        // Cannot be used yet because ProcessCompound acts alos as deployer
+        // Cannot be used yet because ProcessCompound acts also as deployer
         // This will be used once we refactor ProcessCompound.
+        //@TODO: review once ProcessCompound/SFProcess are reviewed.
+        // this would replace ProcessCompoundImpl.deployDefaultProcessDescriptions
         //addDefaultProcessDescriptions (processCompoundDescription);
 
         // Add system properties
