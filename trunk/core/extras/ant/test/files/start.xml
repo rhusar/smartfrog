@@ -94,7 +94,7 @@ ant -lib ..\..\build\dist\lib\smartfrog-tasks.jar -lib ..\..\..\..\smartfrog\dis
         <sequential>
           <sf-block/>
           <sleep milliseconds="${short.delay}"/>
-           <sf-stopdaemon />
+          <sf-stopdaemon />
         </sequential>
       </parallel>
     </target>
@@ -107,8 +107,8 @@ ant -lib ..\..\build\dist\lib\smartfrog-tasks.jar -lib ..\..\..\..\smartfrog\dis
         </sf-startdaemon>
         <sequential>
           <sf-block/>
-           <sleep milliseconds="${short.delay}"/>
-           <sf-stopdaemon />
+          <sleep milliseconds="${short.delay}"/>
+          <sf-stopdaemon />
         </sequential>
       </parallel>      
     </target> 

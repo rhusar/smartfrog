@@ -57,7 +57,7 @@
     <target name="init" depends="init-standard-output-dirs,use-smartfrog-tasks">
 
         <property name="target.jar" location="${dist.lib.dir}/cddlm.jar"/>
-        <property name="deploy.sf" value="org/smartfrog/services/cddlm/cddlm.sf"/>
+        <property name="deploy.sf" value="org/smartfrog/services/cddlm/system.sf"/>
 
         <property name="default.ini" location="test/files/default.ini"/>
         <property name="default.sf" location="test/files/default.sf"/>
@@ -141,13 +141,6 @@
             <classpath path="${target.jar}"/>
         </sf-parse>
 
-        <sf-parse quiet="true">
-            <classpath path="${target.jar}"/>
-            <source dir="${build.classes.dir}"
-                includes="org/cddlm/components/*.sf">
-            </source>
-        </sf-parse>
-
     </target>
 
     <!-- ========================================================== -->
@@ -169,8 +162,23 @@
     <!-- ========================================================== -->
     <!-- run the service inline -->
     <!-- ========================================================== -->
+    <target name="run" depends="parse,dist"
+        description="run the service inline r">
+        <sf-run classpathref="run.classpath" includeantruntime="false"
+            logStackTraces="true">
+            <assertions enableSystemAssertions="true">
+                <enable/>
+            </assertions>
+            <application name="cddlm" descriptor="/${deploy.sf}"/>
+            <codebase file="${target.jar}"/>
+        </sf-run>
+    </target>
+    
+    <!-- ========================================================== -->
+    <!-- start the daemon -->
+    <!-- ========================================================== -->
     <target name="start-daemon" depends="parse,dist"
-        description="parse the cddlm descriptor">
+        description="start the daemon">
         <sf-startdaemon classpathref="run.classpath"
             logStackTraces="true" spawn="true">
             <assertions enableSystemAssertions="true">
@@ -186,12 +194,19 @@
     <target name="deploy" depends="parse,dist"
         description="parse the cddlm descriptor">
         <property name="deploy.host" value="localhost"/>
+        <sf-tourl property="target.jar.url" file="${target.jar}"/>
         <sf-deploy classpathref="run.classpath"
             logStackTraces="true"
             host="${deploy.host}"
             >
-            <application name="cddlm" descriptor="/${deploy.sf}"/>
-            <codebase file="target.jar"/>
+            <codebase url="${target.jar.url}"/>
+            <application name="cddlm">
+#include "org/smartfrog/services/cddlm/cddlm.sf"
+  sfCodeBase "${target.jar.url}";
+
+sfConfig extends CddlmSystem {
+}            
+            </application>
         </sf-deploy>
     </target>
 
