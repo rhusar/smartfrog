@@ -21,19 +21,17 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.filesystem.replacevar;
 
-
-import org.smartfrog.sfcore.prim.*;
-import org.smartfrog.sfcore.parser.*;
-import org.smartfrog.sfcore.reference.*;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.prim.TerminationRecord;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 
 import java.util.Vector;
-import java.util.HashMap;
 import java.util.Enumeration;
 
-import java.rmi.*;
+import java.rmi.RemoteException;
 
 /**
  *  Description of the Class

@@ -21,8 +21,6 @@ For more information: www.smartfrog.org
 package org.smartfrog.examples.persistance;
 
 import java.rmi.RemoteException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -34,12 +32,9 @@ import java.io.IOException;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
 
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.logging.LogSF;
 
 import org.smartfrog.examples.counter.Counter;
 import org.smartfrog.examples.counter.CounterImpl;
@@ -52,12 +47,12 @@ import org.smartfrog.examples.counter.CounterImpl;
  *
  *  The persistant counter is identical to counter, but provides in addition the
  *  capability to be restarted according to the simple persistance pattern provided with the core
- *  
+ *
  *  The pattern provides the ability for the component to be aware of the fact that it is being restarted
  *  rather than being started from scratch, and provides some attributes, such as a directory and filename stem,
  *  which allows it to persist and recover its internal state at regular checkpoints. In this way the
  *  comopnent can restart at the point it had previously reached.
- *  
+ *
  *  In the case of the counter, this state is the last value reached...
  */
 public class PersistantCounterImpl extends CounterImpl implements Prim, Counter, Runnable {
@@ -80,18 +75,18 @@ public class PersistantCounterImpl extends CounterImpl implements Prim, Counter,
 
 	try {
 	    String name = sfCompleteNameSafe().toString();
-	    
+
 	    checkpointDir = sfResolve("sfCheckpointDirectory", checkpointDir, false);
 	    checkpointFileRoot = sfResolve("sfCheckpointFileRoot", checkpointFileRoot, false);
-	    
+
 	    checkpointFile = new File(checkpointDir, checkpointFileRoot + "." + name + ".chkpt");
-	    
+
 	    if (checkpointFile.canRead()) {
 		ObjectInputStream reader = new ObjectInputStream(new FileInputStream(checkpointFile));
 		counter = reader.readInt();
 		reader.close();
-	    } 
-	    
+	    }
+
 	    checkpointState();
 	} catch (Exception e) {
 	    SmartFrogException.forward("Error reading checkpointed state", e);

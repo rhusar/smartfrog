@@ -22,9 +22,6 @@ package org.smartfrog.services.filesystem;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
-import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.utils.ComponentHelper;
 
 import java.io.File;
 import java.io.IOException;
