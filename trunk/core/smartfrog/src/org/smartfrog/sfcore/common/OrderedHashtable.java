@@ -44,7 +44,6 @@ public class OrderedHashtable extends Hashtable implements Copying, MessageKeys,
     Serializable {
 
 
-
     /**
      * Initial capacity for hashtables. Looks up
      * Common.OrderedHashtable.initCap (offset by SFSystem.propBase). Defaults
@@ -213,6 +212,27 @@ public class OrderedHashtable extends Hashtable implements Copying, MessageKeys,
         return r;
     }
 
+
+    /**
+     *   Removes the element at the specified position.
+     *   Removes the key (and its corresponding value) from this hashtable.
+     *   This method does nothing if the key is not in the hashtable.
+     *
+     * @param index index to remove
+     *
+     * @return the value to which the index had been mapped in this hashtable,
+     *         or null if the key did not have a mapping
+     */
+    public Object remove(int index) {
+        Object key = orderedKeys.remove(index);
+        Object value = null;
+        if (key != null) {
+            value = super.remove(key);
+        }
+        return value;
+    }
+
+
     /**
      * Renames an entry in the otable, leaving its position in the table
      * unchanged.
@@ -247,7 +267,7 @@ public class OrderedHashtable extends Hashtable implements Copying, MessageKeys,
 
     /**
      * Returns the values of the hashtable in order.
-     * Replaced by values() using Iterator.
+     *
      * @return ordered enumeration over values
      */
     public Enumeration elements() {
@@ -258,17 +278,22 @@ public class OrderedHashtable extends Hashtable implements Copying, MessageKeys,
         return r.elements();
     }
 
+
     /**
      * Returns the attributes of the hashtable in order.
+     * The remove operation of this Iterator won't affect
+     * the contents of OrderedHashTable.
      *
      * @return ordered iterator over attributes
      */
     public Iterator orderedAttributes() {
-        return orderedKeys.iterator();
+        return ((Vector)orderedKeys.clone()).iterator();
     }
 
     /**
      * Returns the values of the hashtable in order.
+     * The remove operation of this Iterator won't affect
+     * the contents of OrderedHashTable.
      *
      * @return ordered iterator over values
      */

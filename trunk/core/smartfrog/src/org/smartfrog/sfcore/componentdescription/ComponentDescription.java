@@ -23,6 +23,7 @@ package org.smartfrog.sfcore.componentdescription;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Enumeration;
+import java.util.Iterator;
 
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.Copying;
@@ -112,6 +113,25 @@ public interface ComponentDescription extends Copying, ReferenceResolver, Refere
      */
     public Object sfReplaceAttribute(Object name, Object value)
         throws SmartFrogRuntimeException;
+
+    /**
+     * Returns an ordered iterator over the attribute names in the context.
+     * The remove operation of this Iterator won't affect
+     * the contents of ConponentDescription
+     * @return iterator
+     */
+    public  Iterator sfAttributes();
+
+    /**
+     * Returns an ordered iterator over the values in the context.
+     * The remove operation of this Iterator won't affect
+     * the contents of ConponentDescription
+     *
+     * @return iterator
+     */
+    public  Iterator sfValues();
+
+
 
     /**
      * Get complete name for this description. This is a reference all the way

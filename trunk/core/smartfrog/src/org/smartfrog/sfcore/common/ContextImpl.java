@@ -113,6 +113,8 @@ public class ContextImpl extends OrderedHashtable implements Context,
 
     /**
      * Returns an ordered iterator over the attribute names in the context.
+     * The remove operation of this Iterator won't affect
+     * the contents of Context
      *
      * @return iterator
      */
@@ -123,7 +125,9 @@ public class ContextImpl extends OrderedHashtable implements Context,
 
     /**
      * Returns an ordered iterator over the values in the context.
-     *
+     * The remove operation of this Iterator won't affect
+     * the contents of Context
+
      * @return iterator
      */
     public  Iterator sfValues(){

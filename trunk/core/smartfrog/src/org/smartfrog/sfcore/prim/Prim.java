@@ -127,6 +127,8 @@ public interface Prim extends Liveness, RemoteReferenceResolver, RemoteReference
 
     /**
      * Returns an ordered iterator over the attribute names in the context.
+     * The remove operation of this Iterator won't affect
+     * the contents of this component
      *
      * @return iterator
      *
@@ -136,6 +138,8 @@ public interface Prim extends Liveness, RemoteReferenceResolver, RemoteReference
 
     /**
      * Returns an ordered iterator over the values in the context.
+     * The remove operation of this Iterator won't affect
+     * the contents of this component
      *
      * @return iterator
      *

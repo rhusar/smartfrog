@@ -177,14 +177,17 @@ public interface Context extends Copying {
 
     /**
      * Returns an iterator over the attribute names of the context.
-     *
+     * The remove operation of this Iterator won't affect
+     * the contents of Context
+
      * @return iterator
      */
     public  Iterator sfAttributes();
 
     /**
      * Returns an iterator over the values of the context.
-     *
+     * The remove operation of this Iterator won't affect
+     * the contents of Context
      * @return iterator
      */
     public  Iterator sfValues();
