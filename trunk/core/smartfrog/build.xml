@@ -27,7 +27,7 @@ For more information: www.smartfrog.org
 ]>
 
 
-<project name="SmartFrog" default="dist" basedir=".">
+<project name="SmartFrog" default="all" basedir=".">
 
 <description>
 Introduction
@@ -478,7 +478,9 @@ relevant JAR files into the javacc subdirectory
   <!-- =================================================================== -->
   <!--  DIST                                                               -->
   <!-- =================================================================== -->
-  <target name="dist" depends="build,initdist,jars,copylibs,copybins,copyPrivate,copydocs, copyexamples,copyTestCA,buildSetup, sfParseTest" description="Prepares distribution package">
+  <target name="dist" 
+    depends="build,initdist,jars,copylibs,copybins,copyPrivate,copydocs, copyexamples,copyTestCA,buildSetup" 
+    description="Prepares distribution package">
   </target>
 
   <!-- =================================================================== -->
@@ -501,16 +503,9 @@ relevant JAR files into the javacc subdirectory
 
 
   <!-- =================================================================== -->
-  <!-- reallyClean/fromClean                                               -->
-  <!-- =================================================================== -->
-  <target name="reallyclean" depends="clean">
-    <delete dir="${dist.dir}"/>
-  </target>
-
-  <!-- =================================================================== -->
   <!-- a clean distribution                                               -->
   <!-- =================================================================== -->
-  <target name="fromclean" depends="clean,dist"/>
+  <target name="fromclean" depends="clean,sfParseTest,dist"/>
 
   <!-- =================================================================== -->
   <!-- sfParse parsertargets                                                -->
@@ -526,12 +521,16 @@ relevant JAR files into the javacc subdirectory
       <arg file="parsertargets"/>
    </java>
   </target>
-  <target name="all" depends="dist" description="creates all the packages required to run smartfrog">
+  
+  <!-- =================================================================== -->
+  <!-- do everything -->
+  <!-- =================================================================== -->
+  <target name="all" depends="dist,sfParseTest" 
+    description="creates all the packages required to run smartfrog, and validate any .sf in the package">
   </target>
-  <target name="cleanall" depends="init" description="Restores the distribution to its clean state">
-    <delete dir="${build}"/>
-    <delete dir="${dist.dir}"/>
-  </target>
+  
+  
+
 
 </project>
 
