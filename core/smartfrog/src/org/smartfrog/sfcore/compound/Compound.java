@@ -62,7 +62,7 @@ public interface Compound extends Prim, ChildMinder {
 
     /**
      * A high-level component deployment method - creates a child of this
-     * Compound, running it through its entire lifecycle. This is the preferred way
+     * Compound, running it through its entire startup lifecycle. This is the preferred way
      * of creating new child components of a Compound.  The method is safe against
      * multiple calls of lifecycle.
      *
@@ -79,4 +79,21 @@ public interface Compound extends Prim, ChildMinder {
     public Prim sfCreateNewChild(Object name, ComponentDescription cmp, Context parms)
         throws RemoteException, SmartFrogDeploymentException;
 
+    /**
+     * A high-level component deployment method - creates a new self-managing application,
+     * running it through its entire startup lifecycle. This is the preferred way
+     * of creating new applications.
+     *
+     * @param cmp compiled component to deploy and start
+     * @param name name of attribute which the deployed component should adopt
+     * @param parms parameters for description
+     *
+     * @return deployed component if successfull
+     *
+     * @exception SmartFrogDeploymentException failed to deploy compiled 
+     * component
+     * @exception RemoteException In case of Remote/nework error
+     */
+    public Prim sfCreateNewApp(ComponentDescription cmp, Context parms)
+        throws RemoteException, SmartFrogDeploymentException;
 }
