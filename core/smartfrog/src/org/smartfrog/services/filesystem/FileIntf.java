@@ -52,7 +52,10 @@ public interface FileIntf extends UriIntf,Remote {
     String varMustExist = "mustExist";
     String varMustRead = "mustRead";
     String varMustWrite = "mustWrite";
-
+    String varMustBeFile = "mustBeFile";
+    String varMustBeDir = "mustBeDir";
+    String varTestOnStartup = "testOnStartup";
+    String varTestOnLiveness = "testOnLiveness";
 
     /**
      * get the absolute path of this file

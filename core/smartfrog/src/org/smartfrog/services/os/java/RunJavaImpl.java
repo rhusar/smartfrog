@@ -20,6 +20,7 @@
 package org.smartfrog.services.os.java;
 
 import org.smartfrog.services.os.runshell.RunShellImpl;
+import org.smartfrog.services.filesystem.FileIntf;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogInitException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
@@ -39,14 +40,13 @@ import java.util.Vector;
 
 public class RunJavaImpl extends RunShellImpl implements RunJava {
 
-    private PlatformHelper platform;
+    private final static PlatformHelper platform = PlatformHelper.getLocalPlatform();;
     /**
      * a log
      */
     private Log log;
 
     public RunJavaImpl() throws RemoteException {
-        platform = PlatformHelper.getLocalPlatform();
     }
 
     /**
@@ -276,18 +276,31 @@ public class RunJavaImpl extends RunShellImpl implements RunJava {
      * @param pathVector
      * @return
      */
-    private String makePath(Vector pathVector) {
+    private String makePath(Vector pathVector) throws RemoteException {
         Vector classpathFlat=RunJavaUtils.recursivelyFlatten(pathVector);
         Iterator entries=classpathFlat.iterator();
         StringBuffer result= new StringBuffer();
         while (entries.hasNext()) {
             Object entry = (Object) entries.next();
-            String file=entry.toString();
-            file= platform.convertFilename(file);
-            result.append(file);
-            result.append(platform.getPathSeparator());
+            if(entry instanceof FileIntf) {
+                FileIntf file=(FileIntf) entry;
+                appendOnePathEntry(result,file.getAbsolutePath());
+            } else if (entry instanceof JavaPackage) {
+                JavaPackage jpackage=(JavaPackage) entry;
+                //jpackage.
+
+            } else if (entry instanceof String) {
+                String file;
+                file = platform.convertFilename((String)entry);
+                appendOnePathEntry(result,file);
+            }
         }
         return result.toString();
+    }
+
+    private void appendOnePathEntry(StringBuffer result, String entry) {
+        result.append(entry);
+        result.append(platform.getPathSeparator());
     }
 
 }

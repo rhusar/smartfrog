@@ -45,7 +45,12 @@ public class FileImpl extends PrimImpl implements FileIntf {
     private boolean mustExist;
     private boolean mustRead;
     private boolean mustWrite;
+    private boolean mustBeFile;
+    private boolean mustBeDir;
     private boolean exists;
+    private boolean testOnLiveness;
+    private boolean testOnStartup;
+
     /**
      * a log
      */
@@ -102,6 +107,10 @@ public class FileImpl extends PrimImpl implements FileIntf {
         mustExist =getBool(varMustExist,false,false);
         mustRead = getBool(varMustWrite, false, false);
         mustWrite = getBool(varMustRead, false, false);
+        mustBeDir = getBool(varMustBeDir, false, false);
+        mustBeFile = getBool(varMustBeFile, false, false);
+        testOnStartup = getBool(varTestOnStartup, false, false);
+        testOnLiveness = getBool(varTestOnLiveness, false, false);
 
         exists = file.exists();
         boolean isDirectory;
@@ -201,6 +210,20 @@ public class FileImpl extends PrimImpl implements FileIntf {
     }
 
     /**
+     * Can be called to start components. Subclasses should override to provide
+     * functionality Do not block in this call, but spawn off any main loops!
+     *
+     * @throws SmartFrogException failure while starting
+     * @throws RemoteException    In case of network/rmi error
+     */
+    public synchronized void sfStart() throws SmartFrogException,
+            RemoteException {
+        if (testOnStartup) {
+            testFileState();
+        }
+    }
+
+    /**
      * Returns the string of the remote reference if this primitive was
      * exported, the superclass toString if not.
      *
@@ -220,6 +243,17 @@ public class FileImpl extends PrimImpl implements FileIntf {
      */
     public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
+        if(testOnLiveness) {
+            testFileState();
+        }
+
+    }
+
+    /**
+     * do our file state test
+     * @throws SmartFrogLivenessException if a test failed
+     */
+    protected void testFileState() throws SmartFrogLivenessException {
         if ( log.isDebugEnabled() ) {
             log.debug("liveness check will look for "+file.toString());
         }

@@ -40,6 +40,17 @@ FileSchema extends Schema {
     mustRead  extends OptionalBoolean;
     //the file must be writeable
     mustWrite  extends OptionalBoolean;
+    //test for being a file during liveness checks
+    mustBeFile   extends OptionalBoolean;
+
+    //test for being a file during deployment
+    mustBeDir  extends OptionalBoolean;
+
+    //flag to say when to test
+    testOnStartup extends  OptionalBoolean;
+
+    //flag to say when to test
+    testOnLiveness extends  OptionalBoolean;
 
     /* added at deploy time
     exists: Boolean
@@ -59,6 +70,8 @@ FileSchema extends Schema {
 File extends Prim {
     fileSchema extends Schema;
     sfClass "org.smartfrog.services.filesystem.FileImpl";
+    testOnDeploy false;
+    testOnLiveness true;
 }
 
 /*

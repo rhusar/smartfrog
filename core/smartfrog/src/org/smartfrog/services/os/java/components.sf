@@ -30,13 +30,16 @@ JavaPackage extends Prim {
         //list of files, packages or URLs
         source extends OptionalVector;
         //a string classpath that is generated automatically
-        //classpath extends OptionalString;
-        //lazy attribute
-        //classpathList extends OptionalVector;
         //classes to look for
         requiredClasses extends OptionalVector;
         requiredResources extends OptionalVector;
         useCodebase extends Boolean;
+
+        //classpath extends OptionalString;
+        //classpathList extends OptionalVector;
+        //uriClasspath extends OptionalString;
+        //uriClasspathList extends OptionalVector;
+
     }
 
     //we use the codebase

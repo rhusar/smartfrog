@@ -25,14 +25,14 @@ import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.prim.PrimImpl;
-import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.security.SFClassLoader;
+import org.smartfrog.sfcore.utils.ComponentHelper;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.rmi.RemoteException;
 import java.util.Iterator;
 import java.util.Vector;
-import java.io.InputStream;
-import java.io.IOException;
 
 /**
  * created Sep 30, 2004 11:58:59 AM
@@ -41,11 +41,14 @@ import java.io.IOException;
 public class JavaPackageImpl extends PrimImpl implements JavaPackage {
     private Vector requiredClasses;
     private Vector requiredResources;
+    private Vector uriClasspathList;
     private Vector classpathList;
     private Vector sources;
     private boolean useCodebase;
     private ComponentHelper helper;
+    private String uriClasspath;
     private String classpath;
+
     /**
      * our log
      */
@@ -120,14 +123,15 @@ public class JavaPackageImpl extends PrimImpl implements JavaPackage {
             sources =new Vector();
         }
         //now iterate over the (flatter) file list and get stuff from it
-        classpathList = new Vector(sources.size());
+        uriClasspathList = new Vector(sources.size());
+//        classpathList = new Vector(sources.size());
 
         //extract the list from the codebase.
         useCodebase = sfResolve(ATTR_USECODEBASE, false, false);
         if(useCodebase) {
             String codebase= helper.getCodebase();
             Vector elements=RunJavaUtils.crack(codebase);
-            classpathList.addAll(elements);
+            uriClasspathList.addAll(elements);
         }
 
 
@@ -135,32 +139,40 @@ public class JavaPackageImpl extends PrimImpl implements JavaPackage {
         while (it.hasNext()) {
             Object elt = it.next();
             if(elt instanceof String) {
-                classpathList.add(elt);
+                uriClasspathList.add(elt);
             } else if(elt instanceof UriIntf) {
                 //URIs are resolved to strings
                 UriIntf uriIntf=(UriIntf) elt;
                 String uriString = uriIntf.getURI().toString();
-                classpathList.add(uriString);
+                uriClasspathList.add(uriString);
             } else if(elt instanceof JavaPackage) {
                 //recursive retrieval
                 JavaPackage p=(JavaPackage) elt;
-                Vector v=p.getClasspathList();
+                Vector v=p.getUriClasspathList();
                 if(v!=null) {
-                    classpathList.addAll(v);
+                    uriClasspathList.addAll(v);
                 }
             }
         }
 
         //now merge duplicates
-        classpathList=RunJavaUtils.mergeDuplicates(classpathList);
+        uriClasspathList=RunJavaUtils.mergeDuplicates(uriClasspathList);
 
-        sfReplaceAttribute(ATTR_CLASSPATHLIST,classpathList);
+        sfReplaceAttribute(ATTR_URICLASSPATHLIST,uriClasspathList);
 
-        classpath= RunJavaUtils.makeString(classpathList);
+        uriClasspath= RunJavaUtils.makeSpaceSeparatedString(uriClasspathList);
         if (debugEnabled) {
-            log.debug("classpath =" + classpath);
+            log.debug("classpath =" + uriClasspath);
         }
-        sfReplaceAttribute(ATTR_CLASSPATH,classpath);
+        sfReplaceAttribute(ATTR_URICLASSPATH,uriClasspath);
+    }
+
+    /**
+     * given that the uris have been built, now extract the URIs
+     *
+     */
+    private void extractClasspathFromUris() {
+        assert uriClasspathList!=null;
     }
 
     /**
@@ -202,13 +214,13 @@ public class JavaPackageImpl extends PrimImpl implements JavaPackage {
             throws SmartFrogLivenessException {
         InputStream in=null;
         try {
-            in = SFClassLoader.getResourceAsStream(resource,classpath,false);
+            in = SFClassLoader.getResourceAsStream(resource,uriClasspath,false);
             /*
             URL url=loader.getResource(resource);
             */
             if(in==null) {
                 throw new SmartFrogLivenessException("could not find "+resource
-                    +" in "+classpath,this);
+                    +" in "+uriClasspath,this);
             }
         } finally {
             if(in!=null) {
@@ -231,18 +243,9 @@ public class JavaPackageImpl extends PrimImpl implements JavaPackage {
      */
     private void checkForClass(ClassLoader loader, String classname)
             throws SmartFrogLivenessException  {
-        log.warn("class checking is not yet implemented");
-        /*
-        try {
-            Class clazz=loader.loadClass(classname);
-        } catch (ClassNotFoundException classNotFoundException) {
-            throw new SmartFrogLivenessException(
-                    "Could not load class "+classname
-                    + " in classpath "+classpath,
-                    classNotFoundException,
-                    this);
-        }
-        */
+        //log.warn("class checking is not yet implemented");
+        String resource=RunJavaUtils.makeResource(classname);
+        checkForResource(loader,resource);
     }
 
 /*
@@ -255,7 +258,9 @@ public class JavaPackageImpl extends PrimImpl implements JavaPackage {
      *
      * @return
      */
-    public Vector getClasspathList() {
-        return classpathList;
+    public Vector getUriClasspathList() {
+        return uriClasspathList;
     }
+
+
 }
