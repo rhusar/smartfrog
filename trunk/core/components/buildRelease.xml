@@ -34,7 +34,10 @@ does not contain extras/ant and common.xml.
 TODO: Change the script once SmartFrog release contains ant tasks.
 To use: ant -f buildRelease release
 -->
-<project name="components" default="process">
+<project name="componentsrelease" default="process">
+
+
+
 
   <!-- =================================================================== -->
   <!-- Initialization target                                               -->
@@ -49,11 +52,26 @@ To use: ant -f buildRelease release
 
     <property name="root.dir" location=".."  />
     <property name="dist" value="dist"/>   
-
+	 <property name="releases.dir" value="releases"/>   
     <echo message=""/>
     <echo message="==================================================================="/>
     <echo message="= ${Name.Components} - ${Name.Company} "/>
     <echo message="==================================================================="/>
+
+
+	 <property name="arithmetic-testharness.project" location="arithmetic-testharness" />
+    <property name="cddlm.project" location="cddlm" />
+    <property name="emailer.project" location="emailer" />
+    <property name="jetty.project" location="jetty" />
+    <property name="junit.project" location="junit" />
+    <property name="logger.project" location="logger" />
+    <property name="net.project" location="net" />
+    <property name="scripting.project" location="scripting" />
+    <property name="sfcoreloggers.project" location="sfcoreloggers" />
+    <property name="ssh.project" location="ssh" />
+    <property name="slp.project" location="slp" />
+    <property name="utils.project" location="utils" />
+    <property name="releasetest.project" location="releasetest" />
   </target>
 
   <!-- =================================================================== -->
@@ -208,11 +226,65 @@ To use: ant -f buildRelease release
   <delete file="../releases/${Name.System}.${version}.${DSTAMP}_COMMON_DIST.tar"/>
 
   </target>
+
+  <!-- =================================================================== -->
+  <!-- distrelease                                                         -->
+  <!-- =================================================================== -->
+  <target name="distrelease" depends="init, initrelease">
+
+
+	<macrodef name="copyreleaseszips" >
+      <attribute name="project" description="component to copy"/>
+      <attribute name="releasesdir" default="${releases.dir}" />
+      <attribute name="includes" default="**/*.zip" />
+      
+      <sequential>
+        <copy todir="${releases.dir}">
+          <fileset dir="@{project}/@{releasesdir}" includes="@{includes}" />
+        </copy>
+      </sequential>
+    </macrodef>
+
+    <copyreleaseszips project="${emailer.project}" />
+    <copyreleaseszips project="${jetty.project}" />
+    <copyreleaseszips project="${logger.project}" />
+    <copyreleaseszips project="${net.project}" />
+    <copyreleaseszips project="${scripting.project}" />
+    <!--copyreleaseszips project="${sfcoreloggers.project}" /-->
+    <copyreleaseszips project="${slp.project}"  />
+    <copyreleaseszips project="${ssh.project}" />
+    <copyreleaseszips project="${utils.project}" />
+
+
+   <zip destfile="../releases/${Name.System}.${version}.${DSTAMP}_DIST.zip">
+       <zipfileset dir="." prefix="${Name.System}.${version}">
+			<include name="${releases.dir}/**"/>
+      </zipfileset>
+   </zip>
+	  
+  <!--tar tarfile="../releases/${Name.System}.${version}.${DSTAMP}_COMMON_DIST.tar">
+      <tarfileset dir="." prefix="${Name.System}.${version}">
+	<include name="${dist}/**"/>
+	<include name="${dist}/docs/**"/>
+	<include name="${dist}/docs/jdocs/**"/>
+	<include name="${dist}/bin/**"/>
+	<include name="${dist}/lib/**"/>
+	<include name="${dist}/src/**"/>
+	<include name="${dist}/src.zip"/>
+      </tarfileset>
+  </tar>
+  
+  <gzip src="../releases/${Name.System}.${version}.${DSTAMP}_COMMON_DIST.tar" zipfile="../releases/${Name.System}.${version}.${DSTAMP}_COMMON_DIST.tar.gz"/>
+  <delete file="../releases/${Name.System}.${version}.${DSTAMP}_COMMON_DIST.tar"/-->
+  </target>
+
+
+  
   
   <!-- =================================================================== -->
   <!-- release                                                             -->
   <!-- =================================================================== -->
-  <target name="release" depends="init, initrelease, allrelease, commonrelease" description="Creates zip with release packages"> 
+  <target name="release" depends="init, initrelease, allrelease, commonrelease , distrelease" description="Creates zip with release packages"> 
   </target>
 </project>
 
