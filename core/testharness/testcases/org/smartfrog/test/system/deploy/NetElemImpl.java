@@ -78,10 +78,10 @@ public abstract class NetElemImpl extends CompoundImpl implements Compound,
                     }
 
                     for (Enumeration o = outputs.keys(); o.hasMoreElements();) {
-                        Object name = o.nextElement();
+                        Object item = o.nextElement();
 
-                        if (outputs.get(name) instanceof Output) {
-                            Output out = (Output) outputs.get(name);
+                        if (outputs.get(item) instanceof Output) {
+                            Output out = (Output) outputs.get(item);
 
                             try {
                                 out.output(value);
@@ -130,8 +130,8 @@ public abstract class NetElemImpl extends CompoundImpl implements Compound,
 
             // trigger termination of component
             try {
-                Reference name = sfCompleteName();
-                terminateComponent(this, sfex, name);
+                Reference componentName = sfCompleteName();
+                terminateComponent(this, sfex, componentName);
                 throw sfex;
             } catch (Throwable t) { // the call to sfCompleteName has failed
                 terminateComponent(this, sfex, null);
@@ -140,8 +140,8 @@ public abstract class NetElemImpl extends CompoundImpl implements Compound,
         } catch (Throwable t) {
             // trigger termination of component
             try {
-                Reference name = sfCompleteName();
-                terminateComponent(this, t, name);
+                Reference componentName = sfCompleteName();
+                terminateComponent(this, t, componentName);
                 throw new SmartFrogDeploymentException(t, this);
             } catch (Throwable th) { // the call to sfCompleteName has failed
                 terminateComponent(this, t, null);
@@ -155,9 +155,9 @@ public abstract class NetElemImpl extends CompoundImpl implements Compound,
             super.sfStart();
     } catch (Exception ex) {
                // any exception causes termination
-               Reference name = sfCompleteNameSafe();
+               Reference componentName = sfCompleteNameSafe();
                sfTerminate(TerminationRecord.abnormal("Compound sfStart failure: " + ex,
-                                  name));
+                                  componentName));
          }
     }
 

@@ -54,9 +54,9 @@ public class Generator2 extends NetElemImpl implements Remote {
             generator.start();
      } catch (Exception ex) {
                // any exception causes termination
-               Reference name = sfCompleteNameSafe();
+               Reference componentName = sfCompleteNameSafe();
                sfTerminate(TerminationRecord.abnormal("Compound sfStart failure: " + ex,
-                                  name));
+                                  componentName));
         }
     }
 
