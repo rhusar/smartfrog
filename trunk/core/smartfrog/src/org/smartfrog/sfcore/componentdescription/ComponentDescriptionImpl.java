@@ -576,12 +576,11 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      *
      * @return process compound description 'phases' Resolved
      *
-     * @throws RemoteException In case of network/rmi error
      * @throws SmartFrogRuntimeException In case of SmartFrog system error
      */
     public static ComponentDescription sfComponentDescription(String url,
                   Vector phases, Reference ref)
-        throws SmartFrogException, RemoteException {
+        throws SmartFrogException{
         String language = url;
         return sfComponentDescription(url,language, phases, ref);
     }
@@ -605,7 +604,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      */
     public static ComponentDescription sfComponentDescription(String url,
                   String language, Vector phases, Reference ref)
-        throws SmartFrogException, RemoteException {
+        throws SmartFrogException {
         Phases descr = null;
         try {
             descr = (new SFParser(language)).sfParseResource(url);
@@ -625,8 +624,6 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
 
         } catch (SmartFrogException sfex) {
             throw sfex;
-        } catch (RemoteException rex) {
-            throw rex;
         } catch (Throwable thr) {
             throw new SmartFrogException(MessageUtil.
                                          formatMessage(
