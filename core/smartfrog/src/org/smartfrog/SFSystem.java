@@ -148,11 +148,12 @@ public class SFSystem implements MessageKeys {
      * @param c a context of additional attributes that should be set before
      *        deployment
      * @param language the language whose parser to use
+     * @return Reference to deployed component
      *
      * @exception SmartFrogException failure in some part of the process
      * @throws RemoteException In case of network/rmi error
      */
-    public static void deployFrom(InputStream is, ProcessCompound target,
+    public static Prim deployFrom(InputStream is, ProcessCompound target,
         Context c, String language) throws SmartFrogException, RemoteException {
         Prim comp = null;
         Phases top;
@@ -178,13 +179,15 @@ public class SFSystem implements MessageKeys {
             try {
                 comp.sfDeploy();
             } catch (Throwable thr){
-                if (thr instanceof SmartFrogLifecycleException) throw (SmartFrogLifecycleException)SmartFrogLifecycleException.forward(thr);
+                if (thr instanceof SmartFrogLifecycleException)
+                    throw (SmartFrogLifecycleException) SmartFrogLifecycleException.forward(thr);
                 throw SmartFrogLifecycleException.sfDeploy("",thr,null);
             }
             try {
                 comp.sfStart();
             } catch (Throwable thr){
-                if (thr instanceof SmartFrogLifecycleException) throw (SmartFrogLifecycleException)SmartFrogLifecycleException.forward(thr);
+                if (thr instanceof SmartFrogLifecycleException)
+                    throw (SmartFrogLifecycleException)SmartFrogLifecycleException.forward(thr);
                 throw SmartFrogLifecycleException.sfStart("",thr,null);
             }
         } catch (Throwable e) {
@@ -203,7 +206,7 @@ public class SFSystem implements MessageKeys {
                }
                throw ((SmartFrogException) SmartFrogException.forward(e));
       }
-
+      return comp;
     }
 
     /**
@@ -219,9 +222,10 @@ public class SFSystem implements MessageKeys {
 
         if (source != null) {
             ProcessCompound target = SFProcess.getProcessCompound();
+            InputStream iniFileStream =  getInputStreamForResource(source);
+            String lang = getLanguageFromUrl(source);
             try {
-                deployFrom(SFClassLoader.getResourceAsStream(source), target, null,
-                           getLanguageFromUrl(source));
+                deployFrom(iniFileStream, target, null, lang);
             } catch (SmartFrogParseException sfpex){
                 sfpex.add(SmartFrogParseException.DATA, " URL '"+source+"'");
                 throw sfpex;
@@ -293,24 +297,30 @@ public class SFSystem implements MessageKeys {
      * @throws SmartFrogException something went wrong with the deploy -this may contain a nested exception
      * @throws RemoteException if anything went wrong over the net
      */
-    private static void deployFromURL(String url, String appName,
-         ProcessCompound target) throws SmartFrogException, RemoteException {
+    private static Prim deployFromURL(String url, String appName, ProcessCompound target)
+        throws SmartFrogException, RemoteException {
 
+        /* @Todo there is almost no difference between this method and
+        * #deployFromURLsGiven; the latter could
+        * have its core replaced by this with some work.*/
+
+        Prim deployedApp = null;
         Context nameContext = null;
         nameContext = new ContextImpl();
         nameContext.put("sfProcessComponentName", appName);
 
-        deployFromURL(url, appName, target, nameContext);
+        deployedApp = deployFromURL(url, appName, target, nameContext);
+        return deployedApp;
 
     }
 
-    private static void deployFromURL(String url, String appName, ProcessCompound target, Context nameContext) throws SmartFrogException, RemoteException {
+    private static Prim deployFromURL(String url, String appName, ProcessCompound target, Context nameContext) throws SmartFrogException, RemoteException {
         //To calculate how long it takes to deploy a description
         long deployTime = 0;
+        Prim deployedApp =  null;
         if (Logger.logStackTrace) {
             deployTime = System.currentTimeMillis();
         }
-
         InputStream is=null;
         try {
             //assumes that the URL refers to stuff on the classpath
@@ -320,7 +330,7 @@ public class SFSystem implements MessageKeys {
                 throw new SmartFrogDeploymentException(MessageUtil.
                         formatMessage(MSG_URL_NOT_FOUND, url, appName));
             }
-            deployFrom(is, target, nameContext, getLanguageFromUrl(url));
+            deployedApp = deployFrom(is, target, nameContext, getLanguageFromUrl(url));
             if (Logger.logStackTrace) {
                 deployTime = System.currentTimeMillis() - deployTime;
                 Logger.log("  - " + appName + " (" + url + ")"
@@ -345,6 +355,7 @@ public class SFSystem implements MessageKeys {
                 }
             }
         }
+        return deployedApp;
     }
 
     /**
@@ -533,15 +544,21 @@ public class SFSystem implements MessageKeys {
     /**
      * Reads properties given a system property "org.smartfrog.iniFile".
      *
-     * @exception Exception failed to read properties
+     * @throws SmartFrogException if failed to read properties from the
+     * ini file
      */
-    public static void readPropertiesFromIniFile() throws Exception {
+    public static void readPropertiesFromIniFile() throws SmartFrogException {
         String source = System.getProperty(iniFile);
         if (source != null) {
-            readPropertiesFrom(SFClassLoader.getResourceAsStream(source));
+            InputStream iniFileStream = getInputStreamForResource(source);
+            try {
+                readPropertiesFrom(iniFileStream);
+            }
+            catch (IOException ioEx) {
+                throw new SmartFrogException(ioEx);
+            }
         }
     }
-
 
     /**
      * Reads and sets system properties given in input stream.
@@ -698,30 +715,33 @@ public class SFSystem implements MessageKeys {
      * Bring up smartfrog and deploy a component on the specified host.
      * A useful little entry point for external programs and tests.
      * @param hostName host where to deploy
-     * @param Url url to the component
+     * @param url url to the component
      * @param appName application name
      * @param remoteHost host is a remote host or not
+     * @return Reference to deployed application
      * @throws SmartFrogException if any application error
      * @throws RemoteException if any rmi or network error
      */
-    public static void deployAComponent(String hostName, String Url,
+    public static Prim deployAComponent(String hostName, String Url,
             String appName, boolean remoteHost)
                     throws SmartFrogException, RemoteException {
+        Prim deployedApp=null;
         try {
             ProcessCompound rootProcess=null;
-            // init sec
+            // Initialize security
             SFSecurity.initSecurity();
             // Read init properties
             readPropertiesFromIniFile();
             // Deploy process Compound
             rootProcess = SFProcess.deployProcessCompound();
-            // get the target process compound
+           // Get the target process compound
             ProcessCompound target = getTargetProcessCompound(hostName,
                                                                 remoteHost);
-            deployFromURL(Url, appName, target);
+            deployedApp = deployFromURL(Url, appName, target);
         }catch (Exception ex) {
             throw SmartFrogException.forward(ex);
         }
+        return deployedApp;
     }
 
 
@@ -862,6 +882,27 @@ public class SFSystem implements MessageKeys {
 
         return process;
     }
+
+    /**
+     * Gets input stream for the given resource. Throws exception if stream is
+     * null.
+     * @param resource Name of the resource
+     * @return Input stream for the resource
+     * @throws SmartFrogException if input stream could not be created for the
+     * resource
+     * @see SFClassLoader
+     */
+    private static InputStream getInputStreamForResource(String resource)
+                                                throws SmartFrogException{
+        InputStream  is = null;
+        is = SFClassLoader.getResourceAsStream(resource);
+        if(is == null) {
+            throw new SmartFrogException(MessageUtil.
+                    formatMessage(MSG_FILE_NOT_FOUND, resource));
+        }
+        return is;
+    }
+
 
     /**
      * a class used for status feedback
