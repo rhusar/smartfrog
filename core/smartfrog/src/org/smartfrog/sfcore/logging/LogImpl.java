@@ -20,6 +20,8 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.logging;
 
+import org.smartfrog.sfcore.common.Logger;
+
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLogException;
 import org.smartfrog.sfcore.prim.TerminationRecord;
@@ -646,6 +648,9 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
             if (isCurrentLevelEnabled(localLog)) {
                 if ((localLog!=null)&&(localLog instanceof LogMessage)) {
                     ((LogMessage)localLog).err(message, t);
+                    if (Logger.logStackTrace){
+                      if (t != null){t.printStackTrace();}
+                    }
                 } else {
                     System.err.println(message.toString());
                     if (t != null){t.printStackTrace();}
@@ -654,7 +659,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
         }catch (Throwable thr){
             if (localLog!=null)
                      localLog.trace("",thr);
-                 else thr.printStackTrace();
+             else thr.printStackTrace();
         }
         //Registered logs
         synchronized (registeredLogs){
