@@ -49,7 +49,7 @@ CddlmSystem extends Compound {
     //fetch the WSDL every so often, just to see that we are happy
     wsdlFetch extends LivenessPage {
         port PARENT:cddlm:port;
-        page "axis/services/cddlm/?wsdl";
+        page "axis/services/cddlm?wsdl";
         checkFrequency 10;
     }
 }
