@@ -1,7 +1,7 @@
-release 3.04.005_beta 
+release 3.04.006_beta 
 ---------------------
-2004-Oct-08 Release date
-2004-Oct-07 Add: sfResolve methods will return null whener they find SFNull and an object is returned
+2004-Oct-11 Release date
+2004-Oct-07 Add: sfResolve methods will return null when they find SFNull and an object is returned
 2004-Oct-07 Add: prefix and HostName attributes in logging
 2004-Oct-07 New: Container component - like parallel but ignore abnormal termination
 2004-Oct-07 Fix: Parentage problems in vector function

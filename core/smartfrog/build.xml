@@ -57,7 +57,7 @@ relevant JAR files into the javacc subdirectory
     <property name="Name.System" value="SmartFrog "/>
     <property name="Name.Company" value="(C) Copyright 1998-2004 Hewlett-Packard Development Company, LP"/>
     <property name="version" value="CORE"/>
-    <property name="Version" value="3.04.005.beta"/>
+    <property name="Version" value="3.04.006.beta"/>
     <property name="year" value="2004"/>
 
     <echo level="verbose">
