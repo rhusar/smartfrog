@@ -136,7 +136,7 @@ public class PopUpTable extends JComponent implements ActionListener {
 
       path = treePath2Path(tpath);
 
-      //System.out.println("Tree PopUp(source): "+e.getSource()+", 
+      //System.out.println("Tree PopUp(source): "+e.getSource()+",
       //Path: "+path);
       // Launch it
       if (source == menuItemResolveAttribute) {
@@ -300,6 +300,9 @@ public class PopUpTable extends JComponent implements ActionListener {
            text.append("\n * Value resolved: \n" + solvedValue.toString());
            text.append("\n\n" + "+ Value class:" +
                        value.getClass().toString());
+           text.append("\n" + "+ Solved Value class:" +
+                       solvedValue.getClass().toString());
+
            parent.jTextArea1.setText(text.toString());
          }
          else {
