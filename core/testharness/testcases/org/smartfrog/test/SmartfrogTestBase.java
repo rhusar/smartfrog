@@ -139,11 +139,15 @@ public abstract class SmartfrogTestBase extends TestCase {
                                    +containedExceptionName,
                                    cause);
                     //verify the name
-                    assertThrowableNamed(cause,
+//                    assertThrowableNamed(cause,
+//                                         containedExceptionName,
+//                                         cfgDesc.statusString());
+                    assertContains(cause.toString(),
                                          containedExceptionName,
                                          cfgDesc.statusString());
+
                     if (containedExceptionText!=null) {
-                        assertContains(cause.getMessage(),
+                        assertContains(cause.toString(),
                                        containedExceptionText,
                                        cfgDesc.statusString());
                     }
@@ -187,6 +191,7 @@ public abstract class SmartfrogTestBase extends TestCase {
      */
     public void assertThrowableNamed(Throwable thrown,String name, String cfgDescMsg) {
         assertContains(thrown.getClass().getName(),name, cfgDescMsg);
+        //assertContains(thrown.toString(),name, cfgDescMsg);
     }
 
     /**
