@@ -44,6 +44,12 @@ DefaultDisplay extends  Display {
     terminateSFProcessOnExit true; // Terminates sfDaemon when window is closed
 };
 
+DisplayTrace extends TraceDisplay{
+  nameDisplay "Trace info (Exit:ALT+F4)";
+  formatMsg   true;
+  stepTrace false; // Should ask for confirmation before stepping through?
+}
+
 DefaultLog extends LogToFile{
     path PROPERTY java.io.tmpdir;
     fileName "standardLog";
@@ -57,7 +63,10 @@ DefaultCompound extends Compound {
 }
 
 DefaultTraceCompound extends DefaultCompound {
-    trace extends Trace;       // Component lifecycle trace notification
+    displayTrace extends DisplayTrace;
+    trace extends Trace{ // Component lifecycle trace notification
+       outputMsg LAZY ATTRIB displayTrace;
+    } 
     // log extends DefaultLog; // Logs standard output and error to a file
 }
 
