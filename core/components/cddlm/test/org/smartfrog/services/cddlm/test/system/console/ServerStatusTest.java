@@ -21,16 +21,17 @@
 
 package org.smartfrog.services.cddlm.test.system.console;
 
-import org.apache.axis.types.URI;
 import org.apache.axis.Constants;
+import org.apache.axis.types.URI;
+import org.cddlm.client.common.ServerBinding;
 import org.cddlm.client.console.ShowServerStatus;
 import org.cddlm.client.generated.api.types.DynamicServerStatusType;
 import org.cddlm.client.generated.api.types.ServerInformationType;
 import org.cddlm.client.generated.api.types.ServerStatusType;
 import org.cddlm.client.generated.api.types.StaticServerStatusType;
 
-import java.rmi.RemoteException;
 import java.io.IOException;
+import java.rmi.RemoteException;
 
 /**
  * Date: 01-Sep-2004 Time: 11:16:43
@@ -104,15 +105,24 @@ public class ServerStatusTest extends ConsoleTestBase {
         return text;
     }
 
-    private static void assertInText(String source, String search) {
-        assertTrue("not found [" + search + "] in " + source,
-                source.indexOf(search) >= 0);
-    }
-
     public void testSuccessIsPrinted() throws IOException {
         String text = execute();
         assertInText(text, "Connecting to");
         assertInText(text, "SmartFrog/1.0");
         assertInText(text, "cddlm-prototype");
+    }
+
+    public void testInnerMain() throws IOException {
+        boolean flag = ShowServerStatus.innerMain(createBoundArguments());
+        assertTrue("failed", flag);
+    }
+
+    public void testCommandExtraction() throws IOException {
+        ServerBinding binding;
+        String[] empty = new String[0];
+        assertNull(ServerBinding.fromCommandLine(empty));
+        binding = ServerBinding.fromCommandLine(createBoundArguments());
+        assertNotNull(binding);
+        assertEquals(getBinding(), binding);
     }
 }

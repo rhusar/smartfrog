@@ -19,11 +19,18 @@
  */
 package org.cddlm.client.console;
 
+import org.apache.axis.types.URI;
 import org.cddlm.client.common.ServerBinding;
 import org.cddlm.client.generated.api.endpoint.CddlmSoapBindingStub;
+import org.cddlm.client.generated.api.types.ApplicationReferenceListType;
+import org.cddlm.client.generated.api.types.ApplicationStatusType;
+import org.cddlm.client.generated.api.types.EmptyElementType;
+import org.cddlm.client.generated.api.types.ServerStatusType;
+import org.cddlm.client.generated.api.types._applicationStatusRequest;
+import org.cddlm.client.generated.api.types._serverStatusRequest;
 
-import java.io.PrintWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.rmi.RemoteException;
 
 /**
@@ -56,6 +63,7 @@ public abstract class ConsoleOperation {
      */
     public CddlmSoapBindingStub getStub() throws RemoteException {
         if (stub == null) {
+            out.println("Connecting to " + binding.toString());
             stub = binding.createStub();
         }
         return stub;
@@ -96,18 +104,75 @@ public abstract class ConsoleOperation {
         } catch (RemoteException e) {
             logThrowable(e);
             return false;
-        } 
+        }
     }
 
     /**
      * TODO: parse command line looking for values
+     *
      * @param args command line arguments; look for -url url
      * @return
      */
     public static ServerBinding extractBindingFromCommandLine(String[] args)
             throws IOException {
-        return ServerBinding.createDefaultBinding();
+        ServerBinding extractedBinding = ServerBinding.fromCommandLine(args);
+        if (extractedBinding == null) {
+            extractedBinding = ServerBinding.createDefaultBinding();
+        }
+        return extractedBinding;
     }
 
 
+    /**
+     * list all applications
+     *
+     * @return
+     * @throws java.rmi.RemoteException
+     */
+    public URI[] listApplications() throws RemoteException {
+        EmptyElementType empty = new EmptyElementType();
+        ApplicationReferenceListType list = getStub().listApplications(empty);
+        URI apps[] = list.getApplication();
+        if (apps == null) {
+            apps = new URI[0];
+        }
+        return apps;
+    }
+
+    /**
+     * get the status of an application
+     *
+     * @param app
+     * @return
+     * @throws java.rmi.RemoteException
+     */
+    ApplicationStatusType queryApplicationStatus(URI app)
+            throws RemoteException {
+        _applicationStatusRequest request = new _applicationStatusRequest();
+        request.setApplication(app);
+        ApplicationStatusType status = getStub().applicationStatus(request);
+        return status;
+    }
+
+    /**
+     * get the status
+     *
+     * @return
+     * @throws java.rmi.RemoteException
+     */
+    public ServerStatusType getStatus() throws RemoteException {
+        _serverStatusRequest request = new _serverStatusRequest();
+        ServerStatusType status = getStub().serverStatus(request);
+        return status;
+    }
+
+    /**
+     * exit, use success flag to choose the return time. This method does not
+     * return
+     *
+     * @param success success flag
+     */
+    static void exit(boolean success) {
+        Runtime.getRuntime().exit(success ? 0 : -1);
+    }
 }

@@ -43,8 +43,8 @@ public class Constants {
      */
     public static final int LANGUAGE_UNKNOWN = -1;
     public static final int LANGUAGE_SMARTFROG = 0;
-    public static final int LANGUAGE_XML_CDL =1;
-    public static final int LANGUAGE_ANT =2;
+    public static final int LANGUAGE_XML_CDL = 1;
+    public static final int LANGUAGE_ANT = 2;
 
 
     public static final String WS_NOTIFICATION = "ws-notification";
@@ -55,17 +55,23 @@ public class Constants {
     };
     public static final String SMARTFROG_HOMEPAGE = "http://smartfrog.org/";
     public static final String PRODUCT_NAME = "SmartFrog implementation";
-    public static final String CVS_INFO = "$ID$ $NAME$ $REVISION$";
+    public static final String CVS_INFO = "$ID: $";
     public static final String SMARTFROG_SCHEMA = "smartfrog";
     public static final String ERROR_INVALID_SCHEMA = "invalid schema in URI: ";
     public static final String ERROR_NO_APPLICATION = "application is undefined";
 
     public static final String CDDLM_FAULT_NAMESPACE = org.smartfrog.services.cddlm.cdl.Constants.SMARTFROG_NAMESPACE;
 
-    public static final QName FAULT_BAD_ARGUMENT = new QName(CDDLM_FAULT_NAMESPACE,"bad-argument");
-    public static final QName FAULT_NESTED_EXCEPTION = new QName(CDDLM_FAULT_NAMESPACE, "nested-exception");
-    public static final QName FAULT_APPLICATION_NOT_FOUND = new QName(CDDLM_FAULT_NAMESPACE, "no-such-application");
-    public static final QName FAULT_WRONG_APP_STATE = new QName(CDDLM_FAULT_NAMESPACE, "wrong-application-state");
-    public static final QName FAULT_UNSUPPORTED_LANGUAGE = new QName(CDDLM_FAULT_NAMESPACE, "unsupported-language");
-    public static final QName FAULT_NOTUNDERSTOOD = new QName(CDDLM_FAULT_NAMESPACE, "not-understood");
- }
+    public static final QName FAULT_BAD_ARGUMENT = new QName(
+            CDDLM_FAULT_NAMESPACE, "bad-argument");
+    public static final QName FAULT_NESTED_EXCEPTION = new QName(
+            CDDLM_FAULT_NAMESPACE, "nested-exception");
+    public static final QName FAULT_APPLICATION_NOT_FOUND = new QName(
+            CDDLM_FAULT_NAMESPACE, "no-such-application");
+    public static final QName FAULT_WRONG_APP_STATE = new QName(
+            CDDLM_FAULT_NAMESPACE, "wrong-application-state");
+    public static final QName FAULT_UNSUPPORTED_LANGUAGE = new QName(
+            CDDLM_FAULT_NAMESPACE, "unsupported-language");
+    public static final QName FAULT_NOTUNDERSTOOD = new QName(
+            CDDLM_FAULT_NAMESPACE, "not-understood");
+}

@@ -71,11 +71,12 @@ public abstract class ConsoleTestBase extends TestCase {
 
     /**
      * create a server bound to an invalid host
+     *
      * @return
      * @throws IOException
      */
-    protected ServerBinding bindToInvalidHost()  throws IOException {
-        URL url=new URL(Constants.DEFAULT_PROTOCOL,
+    protected ServerBinding bindToInvalidHost() throws IOException {
+        URL url = new URL(Constants.DEFAULT_PROTOCOL,
                 "invalid-host",
                 Constants.DEFAULT_SERVICE_PORT,
                 Constants.DEFAULT_PATH);
@@ -141,4 +142,14 @@ public abstract class ConsoleTestBase extends TestCase {
         assertTrue(message, value.length() > 0);
     }
 
+    protected static void assertInText(String source, String search) {
+        assertTrue("not found [" + search + "] in " + source,
+                source.indexOf(search) >= 0);
+    }
+
+    public String[] createBoundArguments() {
+        String[] args = new String[1];
+        args[0] = getBinding().toCommandLineElement();
+        return args;
+    }
 }
