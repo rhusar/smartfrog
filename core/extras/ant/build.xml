@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="ant_tasks" default="default" basedir=".">
+<project name="smartfrog-tasks" default="default" basedir=".">
   
 <description>
   Build file for Ant tasks for Smartfrog
@@ -17,6 +17,10 @@
 <!-- Import common stuff -->
 <import file="${root.dir}/common.xml"/>
 
+  <!-- this is done so that the jarfile generated is bound to our project name with
+    no -components suffix-->
+  <property name="jarfile.suffix" value=""/>
+    
   <target name="init" 
     depends="init-common,verify-smartfrog,init-standard-output-dirs">
     <property name="src.dir" location="src"/>

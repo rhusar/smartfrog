@@ -92,8 +92,12 @@
     <property name="dist.dir" location="${build.dir}/dist"/>
     <property name="dist.lib.dir" location="${build.dir}/dist/lib"/>
     <property name="dist.doc.dir" location="${build.dir}/dist/doc"/>
+    
+    <!-- build the name of our JAR file from the name of the project.
+      override any of this stuff for alternate naming -->
     <property name="project.name" value="${ant.project.name}" />
-    <property name="jarfile.name" value="${project.name}-components.jar"/>
+    <property name="jarfile.suffix" value="-components"/>
+    <property name="jarfile.name" value="${project.name}${jarfile.suffix}.jar"/>
     <property name="target.jar" 
         location="${dist.lib.dir}/${jarfile.name}" />  
         
