@@ -166,7 +166,10 @@ XmlElement extends XmlQNameNode {
 
 XmlDocumentSchema extends XmlCompoundNodeSchema {
     //can be a string or a File instance/reference
-    filename extends OptionalString;
+    destFile extends OptionalString;
+
+    //can be a string or a File instance/reference
+    sourceFile extends OptionalString;
 
     //document type of type DocType;
     docType extends Optional;

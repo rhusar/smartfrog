@@ -1,11 +1,9 @@
 package org.smartfrog.services.xml.impl;
 
 import nu.xom.Node;
-import nu.xom.XMLException;
-import org.smartfrog.services.xml.interfaces.XmlNode;
 import org.smartfrog.services.xml.interfaces.LocalNode;
+import org.smartfrog.services.xml.interfaces.XmlNode;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.prim.PrimImpl;
 
 import java.rmi.RemoteException;
@@ -13,12 +11,13 @@ import java.rmi.RemoteException;
 /**
  * This node contains whatever
  */
-public abstract class SimpleXmlNode extends PrimImpl implements XmlNode, LocalNode {
+public abstract class SimpleXmlNode extends PrimImpl implements XmlNode,
+        LocalNode {
 
     /**
      * most of the work is delegated to the helper
      */
-    XmlNodeHelper helper=new XmlNodeHelper(this);
+    protected XmlNodeHelper helper = new XmlNodeHelper(this);
 
     /**
      * empty constructor
@@ -70,7 +69,6 @@ public abstract class SimpleXmlNode extends PrimImpl implements XmlNode, LocalNo
      * don't know what has changed underneath.
      *
      * @return XML of the tree
-     *
      * @throws RemoteException
      * @throws SmartFrogException for smartfrog problems, and for caught
      *                            XMLExceptions
@@ -98,7 +96,8 @@ public abstract class SimpleXmlNode extends PrimImpl implements XmlNode, LocalNo
      *                                  error while deploying
      * @throws java.rmi.RemoteException In case of network/rmi error
      */
-    public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
+    public synchronized void sfDeploy() throws SmartFrogException,
+            RemoteException {
         super.sfDeploy();
         toXML();
     }
