@@ -148,14 +148,14 @@ For more information: www.smartfrog.org
             location="${config.dir}/default.ini" />
       <available file="${smartfrog.iniFile}" property="inifile.found"/>
       <fail unless="inifile.found">No file:${smartfrog.iniFile}</fail> 
-      <sf-startdaemon  failonerror="false">
+      <sf-startdaemon-debug  failonerror="false">
         <sysproperty key="java.util.config.logging.config.file"
           file="${config.dir}/logging.properties" />
         <sysproperty key="org.smartfrog.iniFile"
             file="${smartfrog.iniFile}" />
         <sysproperty key="org.smartfrog.sfcore.processcompound.sfDefault.sfDefault"
           file="${config.dir}/default.sf" />
-      </sf-startdaemon>
+      </sf-startdaemon-debug>
   </target>
 
   <!-- ========================================================== -->
