@@ -29,30 +29,31 @@ For more information: www.smartfrog.org
 
    <!-- override point -->
   <property file="build.properties" />
+  <property name="root.dir" location="../../"  />
 
-      
-  
-  <property name="root.dir" location=".."  />
+
   <!-- Import common stuff -->
-  <available file="../../common.xml" property="root.dir" value="../.."/> 
+  <!--available file="../../common.xml" property="root.dir" value="../.."/--> 
   <import file="${root.dir}/common.xml"/>
-  
-  
+
+  <property name="is.component" value="true"  />
+
+
+
   <!-- ========================================================== -->
+  <!-- create the jdocs -->
+  <!-- ========================================================== -->
+
+
+  <!-- ========================================================== -->
+  <!-- pre-dist  -->
   <!-- ========================================================== -->
   <target name="init" depends="init-standard-output-dirs,use-smartfrog-tasks">
-          
-
-  </target>
+	</target>
 
   <!-- ========================================================== -->
   <!-- create the jar -->
   <!-- ========================================================== -->
-  <target name="dist" depends="common.dist" 
-    description="create the jar files">
-    <copy todir = "${dist.lib.dir}">
-        <fileset dir ="${lib.dir}" />
-    </copy>          
-  </target>
-
+	<target name="dist" depends="common.dist" description="create the jar files">
+	</target>
 </project>
