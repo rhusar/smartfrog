@@ -1084,18 +1084,33 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
             res = sysClasspath;
           }
         } else {
+          String pathSeparator = SFSystem.getProperty("path.separator",";");
           res ="";
           if (cdClasspath!=null){
             res = res + cdClasspath;
-          } else if (envPcClasspath!=null){
+            if (!res.endsWith(pathSeparator)){
+              res=res+pathSeparator;
+            }
+          }
+          if (envPcClasspath!=null){
             res=res + envPcClasspath;
-          } else if (pcClasspath!=null){
+            if (!res.endsWith(pathSeparator)){
+              res=res+pathSeparator;
+            }
+          }
+          if (pcClasspath!=null){
             res=res + pcClasspath;
-          } else if (sysClasspath !=null){
+            if (!res.endsWith(pathSeparator)){
+              res=res+pathSeparator;
+            }
+          }
+          if (sysClasspath !=null){
             res = res + sysClasspath;
+            if (!res.endsWith(pathSeparator)){
+              res=res+pathSeparator;
+            }
           }
         }
-
         if (res != null) {
             cmd.addElement("-classpath");
             cmd.addElement(res);
