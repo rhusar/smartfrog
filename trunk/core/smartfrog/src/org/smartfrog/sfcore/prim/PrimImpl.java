@@ -1056,8 +1056,6 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     /**
      *  To get the sfCore logger
      * @return Logger implementing LogSF and Log
-     * @throws SmartFrogException
-     * @throws RemoteException
      */
     public LogSF sfGetProcessLog() {
        if (sflog==null) {
@@ -1069,8 +1067,6 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     /**
      *  To log into sfCore logger. This method should be used to log Core messages
      * @return Logger implementing LogSF and Log
-     * @throws SmartFrogException
-     * @throws RemoteException
      */
     public LogSF sflog() {
        return sfGetProcessLog();
