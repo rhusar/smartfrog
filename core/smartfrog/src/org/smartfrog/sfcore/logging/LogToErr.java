@@ -144,7 +144,7 @@ public class LogToErr implements Log, LogMessage, LogLevel, Serializable {
      * @param name log name
      * @param intialLogLevel level to log at
      */
-    public LogToErr(String name, int initialLogLevel) {
+    public LogToErr(String name, Integer initialLogLevel) {
        this(name,initialLogLevel,System.err);
     }
 
@@ -156,12 +156,11 @@ public class LogToErr implements Log, LogMessage, LogLevel, Serializable {
      * @param out output stream to log to
      */
 
-    public LogToErr(String name, int initialLogLevel,PrintStream out) {
+    public LogToErr(String name, Integer initialLogLevel,PrintStream out) {
         assert name != null;
-        assert initialLogLevel >= 0;
         logName = name;
         // Set initial log level
-        setLevel(initialLogLevel);
+        setLevel(initialLogLevel.intValue());
         setOutstream(out);
     }
 
