@@ -853,6 +853,59 @@ import org.smartfrog.sfcore.prim.Prim;
 
         return defaultValue;
     }
+    /**
+     * Resolves given reference and gets a java.net.URL.
+     * Utility method to resolve an attribute with a SmartFrog
+     * java.net.URL value.
+     *
+     * @param reference reference
+     * @param defaultValue java.net.URL default value that is returned
+     *        when reference is not found and it is not mandatory
+     * @param mandatory boolean that indicates if this attribute must be
+     *        present in the description. If it is mandatory and not found it
+     *        triggers a SmartFrogResolutionException
+     *
+     * @return java.net.URL for attribute value, null if SFNull is found or defaultValue if not
+     *         found
+     *
+     * @throws SmartFrogResolutionException illegal reference or reference
+     * not resolvable
+     *
+     */
+    public java.net.URL sfResolve(Reference reference,
+        java.net.URL defaultValue, boolean mandatory)
+        throws SmartFrogResolutionException {
+        boolean illegalClassType = false;
+
+        try {
+            Object referenceObj = sfResolve(reference, 0);
+            if (referenceObj instanceof SFNull) {return null;}
+
+            if (referenceObj instanceof java.net.URL) {
+                return (java.net.URL) referenceObj;
+            } else if (referenceObj instanceof String) {
+                try {
+                    return new java.net.URL((String) referenceObj);
+                } catch (Exception ex) {
+                    SmartFrogResolutionException resEx = SmartFrogResolutionException.generic(reference,
+                            this.sfCompleteNameSafe(), ex.toString());
+                    resEx.put(SmartFrogException.DATA, ex);
+                    throw resEx;
+                }
+            } else {
+                illegalClassType = true;
+                throw SmartFrogResolutionException.illegalClassType(reference,
+                                    this.sfCompleteNameSafe()
+                                    , referenceObj , referenceObj.getClass().toString()
+                                    , "java.net.URL/java.lang.String");
+            }
+        } catch (SmartFrogResolutionException e) {
+            if ((mandatory) || (illegalClassType)) {
+                throw e;
+            }
+        }
+        return defaultValue;
+    }
 
     /**
      * Resolves given reference and gets a java Object.
@@ -1293,7 +1346,29 @@ import org.smartfrog.sfcore.prim.Prim;
         return sfResolve(new Reference(referencePart), defaultValue, mandatory);
     }
 
-
+    /**
+     * Resolves a referencePart given a string and gets a SmartFrog Reference.
+     * Utility method to resolve an attribute with a java.net.URL
+     * value.
+     *
+     * @param referencePart string field reference
+     * @param defaultValue java.net.URL default value that is returned
+     *        when reference is not found and it is not mandatory
+     * @param mandatory boolean that indicates if this attribute must be
+     *        present in the description. If it is mandatory and not found it
+     *        triggers a SmartFrogResolutionException
+     *
+     * @return Reference for attribute value, null if SFNull is found or defaultValue if not found
+     *
+     * @throws SmartFrogResolutionException illegal reference or reference
+     * not resolvable
+     *
+     */
+    public java.net.URL sfResolve(String referencePart,
+        java.net.URL defaultValue, boolean mandatory)
+        throws SmartFrogResolutionException {
+        return sfResolve(new Reference(referencePart), defaultValue, mandatory);
+    }
 
     /**
      * Resolves a referencePart given a string and gets a java Object.
