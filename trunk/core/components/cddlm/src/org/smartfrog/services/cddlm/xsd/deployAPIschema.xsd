@@ -1,11 +1,5 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<xsd:schema elementFormDefault="qualified"
-  targetNamespace="http://gridforum.org/cddlm/serviceAPI/types/2004/10/11/"
-  xmlns:types="http://gridforum.org/cddlm/serviceAPI/types/2004/10/11/"
-  xmlns="http://gridforum.org/cddlm/serviceAPI/types/2004/10/11/"
-  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-  xmlns:wsa="http://schemas.xmlsoap.org/ws/2003/03/addressing"
-  >
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://gridforum.org/cddlm/serviceAPI/types/2004/10/11/" xmlns:types="http://gridforum.org/cddlm/serviceAPI/types/2004/10/11/" xmlns="http://gridforum.org/cddlm/serviceAPI/types/2004/10/11/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wsa="http://schemas.xmlsoap.org/ws/2003/03/addressing" elementFormDefault="qualified">
   <!--
   xmlns:jsdl="http://www.gridforum.org/JSDL"
   xmlns:wsbf="http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseFaults"
@@ -31,42 +25,34 @@
     </xsd:documentation>
   </xsd:annotation>
   <!-- ============================================================= -->
-
-  
   <!-- ============================================================= -->
   <!-- BEGIN IMPORTS -->
   <!-- ============================================================= -->
-
-  <xsd:import
+  <!--   <xsd:import
     namespace="http://schemas.xmlsoap.org/ws/2003/03/addressing"
-    schemaLocation="ws-addressing.xsd"/>
-
+    schemaLocation="ws-addressing.xsd"/> -->
   <!-- <xsd:import
      namespace="http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseFaults"
      schemaLocation="WS-BaseFaults.xsd"/> -->
-
   <!-- ============================================================= -->
   <!-- END IMPORTS -->
   <!-- ============================================================= -->
-
   <!-- low level type: XML with no validations, namespace = ##other -->
   <xsd:complexType name="unboundedXMLOtherNamespace">
     <xsd:sequence>
-      <xsd:any processContents="lax" minOccurs="0" maxOccurs="unbounded" namespace="##other"/>
+      <xsd:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
   </xsd:complexType>
-
   <!-- low level type: XML with no validations, namespace = ##any  -->
   <xsd:complexType name="unboundedXMLAnyNamespace">
     <xsd:sequence>
-      <xsd:any processContents="lax" minOccurs="0" maxOccurs="unbounded" namespace="##any"/>
+      <xsd:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
   </xsd:complexType>
-
   <!-- ============================================================= -->
   <!-- BEGIN SIMPLETYPES -->
   <!-- ============================================================= -->
-
+  <!-- 
   <xsd:simpleType name="notificationEnum">
     <xsd:annotation>
       <xsd:documentation>
@@ -74,7 +60,7 @@
       unexpected type constitutes an error and should be
       flagged.
 
-        -ws-notification:  callbacks via WS-N
+        -ws-notification:  notification via WS-N
         -ws-eventing: subscriptions and notifications of WS-Eventing
         -CDDLM:  a non-standard direct invocation mechanism
 
@@ -107,20 +93,16 @@
 
 
     </xsd:restriction>
-  </xsd:simpleType>
-
-
+  </xsd:simpleType> -->
   <!-- ============================================================= -->
   <!-- lifecycle states-->
   <!-- ============================================================= -->
-
   <xsd:simpleType name="lifecycleStateEnum">
     <xsd:annotation>
       <xsd:documentation>
       Enumeration of lifecycle states.
       </xsd:documentation>
     </xsd:annotation>
-
     <xsd:restriction base="xsd:string">
       <xsd:enumeration value="undefined">
         <xsd:annotation>
@@ -129,7 +111,6 @@
           </xsd:documentation>
         </xsd:annotation>
       </xsd:enumeration>
-
       <xsd:enumeration value="instantiated">
         <xsd:annotation>
           <xsd:documentation>
@@ -137,7 +118,6 @@
           </xsd:documentation>
         </xsd:annotation>
       </xsd:enumeration>
-
       <xsd:enumeration value="initialized">
         <xsd:annotation>
           <xsd:documentation>
@@ -145,7 +125,6 @@
           </xsd:documentation>
         </xsd:annotation>
       </xsd:enumeration>
-
       <xsd:enumeration value="running">
         <xsd:annotation>
           <xsd:documentation>
@@ -153,7 +132,6 @@
           </xsd:documentation>
         </xsd:annotation>
       </xsd:enumeration>
-
       <xsd:enumeration value="failed">
         <xsd:annotation>
           <xsd:documentation>
@@ -161,7 +139,6 @@
           </xsd:documentation>
         </xsd:annotation>
       </xsd:enumeration>
-
       <xsd:enumeration value="terminated">
         <xsd:annotation>
           <xsd:documentation>
@@ -171,7 +148,6 @@
       </xsd:enumeration>
     </xsd:restriction>
   </xsd:simpleType>
-
   <!-- ============================================================= -->
   <!-- naming rules for application -->
   <!-- we may want a more restrictive policy, such as
@@ -188,13 +164,11 @@
     </xsd:annotation>
     <xsd:restriction base="xsd:NCName"/>
   </xsd:simpleType>
-
   <!-- ============================================================= -->
   <!-- The response to deployment requests is the URI to a endpoint
        within the Basic-Services generated component model -->
   <!-- Commentary: we may want to make this a WS-Addressing endpoint -->
   <!-- ============================================================= -->
-
   <xsd:simpleType name="applicationReferenceType">
     <xsd:annotation>
       <xsd:documentation>
@@ -203,7 +177,6 @@
     </xsd:annotation>
     <xsd:restriction base="xsd:anyURI"/>
   </xsd:simpleType>
-
   <!-- ============================================================= -->
   <!-- allows the caller to pass a URL to a deploy descriptor, instead
        of the body itself. This allows signed descriptors inside
@@ -219,52 +192,42 @@
     </xsd:annotation>
     <xsd:restriction base="xsd:anyURI"/>
   </xsd:simpleType>
-
   <!-- ============================================================= -->
   <!-- BEGIN COMPLEXTYPES -->
   <!-- ============================================================= -->
-
   <!-- ============================================================= -->
   <!-- notification address union -->
   <!-- TODO replace with any XML -->
   <!-- ============================================================= -->
-
+  <!-- 
   <xsd:complexType name="notificationAddressType">
     <xsd:annotation>
       <xsd:documentation>
-      holder for different callback types
+      holder for different notification types
       </xsd:documentation>
     </xsd:annotation>
     <xsd:choice>
       <xsd:element name="uri" type="xsd:anyURI"/>
       <xsd:element name="address" type="wsa:EndpointReferenceType"/>
     </xsd:choice>
-  </xsd:complexType>
-
-
+  </xsd:complexType> -->
   <!-- ============================================================= -->
-  <!-- composite representation of callback enum, address and identifier -->
+  <!-- composite representation of notification enum, address and identifier -->
   <!-- ============================================================= -->
-
   <xsd:complexType name="notificationInformationType">
     <xsd:annotation>
       <xsd:documentation>
       Notification information consists of a selection of a notification mechanism,
       an identifier that is used in all messages to help identify the conversation,
       and whatever subscription information that notification mechanism expects.
-
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-      <xsd:element name="type" type="types:notificationEnum"/>
-      <xsd:element name="address" type="types:notificationAddressType"/>
+      <xsd:element name="type" type="xsd:anyURI"/>
       <xsd:element name="identifier" type="xsd:string"/>
+      <xsd:element name="subscription" type="unboundedXMLOtherNamespace"/>
     </xsd:sequence>
   </xsd:complexType>
-
-
-
-
   <!-- ============================================================= -->
   <!--
     we could actually explicitly declare both the smartfrog
@@ -299,7 +262,7 @@
         </xsd:annotation>
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:any processContents="lax" namespace="##other" minOccurs="1" maxOccurs="1"/>
+            <xsd:any namespace="##other" processContents="lax"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -322,8 +285,6 @@
       </xsd:annotation>
     </xsd:attribute>
   </xsd:complexType>
-
-
   <!-- ============================================================= -->
   <!-- TODO: incorporate JSDL into the specification -->
   <!-- ============================================================= -->
@@ -339,10 +300,29 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-      <xsd:any processContents="lax" minOccurs="0" maxOccurs="unbounded" namespace="##other"/>
+      <xsd:choice>
+        <xsd:element name="reference" type="xsd:anyURI">
+          <xsd:annotation>
+            <xsd:documentation>
+            A remote reference to the JSDL description.
+          </xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="description">
+          <xsd:annotation>
+            <xsd:documentation>
+            The JSDL submission
+          </xsd:documentation>
+          </xsd:annotation>
+          <xsd:complexType>
+            <xsd:sequence>
+              <xsd:any namespace="##other" processContents="lax"/>
+            </xsd:sequence>
+          </xsd:complexType>
+        </xsd:element>
+      </xsd:choice>
     </xsd:sequence>
   </xsd:complexType>
-
   <!-- ============================================================= -->
   <!-- application naming -->
   <!-- ============================================================= -->
@@ -361,8 +341,6 @@
       <xsd:element name="reference" type="types:applicationReferenceType"/>
     </xsd:choice>
   </xsd:complexType>
-
-
   <!-- ============================================================= -->
   <!-- options -->
   <!-- ============================================================= -->
@@ -394,7 +372,6 @@
     <xsd:attribute name="name" type="xsd:anyURI" use="required"/>
     <xsd:attribute name="mustUnderstand" type="xsd:boolean" use="optional" default="false"/>
   </xsd:complexType>
-
   <!-- ============================================================= -->
   <!-- a set of options -->
   <!-- TODO: add some uniqueness rules -->
@@ -407,12 +384,9 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-      <xsd:element name="option" type="types:optionType"
-        minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="option" type="types:optionType" minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
   </xsd:complexType>
-
-
   <!-- ============================================================= -->
   <!-- property tuples-->
   <!-- ============================================================= -->
@@ -430,7 +404,6 @@
       <xsd:element name="value" type="xsd:string"/>
     </xsd:sequence>
   </xsd:complexType>
-
   <!-- ============================================================= -->
   <!-- a map of property tuples -->
   <!-- to use this in a deployment, add it under the option -->
@@ -447,19 +420,14 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-      <xsd:element name="property" type="types:propertyTupleType"
-        minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="property" type="types:propertyTupleType" minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
   </xsd:complexType>
-
-
-
   <!-- ============================================================= -->
   <!-- Server status -->
   <!-- this section includes various lists of server information -->
   <!-- which are returned in the server status response -->
   <!-- ============================================================= -->
-
   <xsd:complexType name="languageListType">
     <xsd:annotation>
       <xsd:documentation>
@@ -467,7 +435,7 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-      <xsd:element name="language" minOccurs="1" maxOccurs="unbounded">
+      <xsd:element name="language" maxOccurs="unbounded">
         <xsd:complexType>
           <xsd:annotation>
             <xsd:documentation>
@@ -485,7 +453,6 @@
       </xsd:element>
     </xsd:sequence>
   </xsd:complexType>
-
   <xsd:complexType name="stringListType">
     <xsd:annotation>
       <xsd:documentation>
@@ -493,12 +460,9 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-      <xsd:element name="item" minOccurs="1" maxOccurs="unbounded"
-        type="xsd:string">
-      </xsd:element>
+      <xsd:element name="item" type="xsd:string" maxOccurs="unbounded"/>
     </xsd:sequence>
   </xsd:complexType>
-
   <xsd:complexType name="serverInformationType">
     <xsd:annotation>
       <xsd:documentation>
@@ -507,39 +471,35 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-      <xsd:element name="name" type="xsd:string" minOccurs="1" maxOccurs="1">
+      <xsd:element name="name" type="xsd:string">
         <xsd:annotation>
           <xsd:documentation>
           Name of the implementation of the server
           </xsd:documentation>
         </xsd:annotation>
       </xsd:element>
-
-      <xsd:element name="build" type="xsd:string" minOccurs="1" maxOccurs="1">
+      <xsd:element name="build" type="xsd:string">
         <xsd:annotation>
           <xsd:documentation>
           Build information: version, build number, build date, etc. 
           </xsd:documentation>
         </xsd:annotation>
       </xsd:element>
-
-      <xsd:element name="home" type="xsd:anyURI" minOccurs="1" maxOccurs="1">
+      <xsd:element name="home" type="xsd:anyURI">
         <xsd:annotation>
           <xsd:documentation>
         URL to a page providing support and docs for the server
           </xsd:documentation>
         </xsd:annotation>
       </xsd:element>
-
-      <xsd:element name="location" type="xsd:string" minOccurs="1" maxOccurs="1">
+      <xsd:element name="location" type="xsd:string">
         <xsd:annotation>
           <xsd:documentation>
           Location string describing server location
           </xsd:documentation>
         </xsd:annotation>
       </xsd:element>
-
-      <xsd:element name="timezoneUTCOffset" type="xsd:integer" minOccurs="1" maxOccurs="1">
+      <xsd:element name="timezoneUTCOffset" type="xsd:integer">
         <xsd:annotation>
           <xsd:documentation>
             Offset from UTC of the local clock.
@@ -547,7 +507,6 @@
           </xsd:documentation>
         </xsd:annotation>
       </xsd:element>
-
       <xsd:element name="diagnostics" type="types:unboundedXMLAnyNamespace" minOccurs="0">
         <xsd:annotation>
           <xsd:documentation>
@@ -556,10 +515,8 @@
           </xsd:documentation>
         </xsd:annotation>
       </xsd:element>
-
     </xsd:sequence>
   </xsd:complexType>
-
   <xsd:complexType name="staticServerStatusType">
     <xsd:annotation>
       <xsd:documentation>
@@ -575,7 +532,6 @@
           </xsd:documentation>
         </xsd:annotation>
       </xsd:element>
-
       <xsd:element name="languages" type="types:languageListType">
         <xsd:annotation>
           <xsd:documentation>
@@ -583,7 +539,6 @@
           </xsd:documentation>
         </xsd:annotation>
       </xsd:element>
-
       <xsd:element name="notifications" type="types:stringListType">
         <xsd:annotation>
           <xsd:documentation>
@@ -591,7 +546,6 @@
           </xsd:documentation>
         </xsd:annotation>
       </xsd:element>
-
       <xsd:element name="options" type="types:stringListType">
         <xsd:annotation>
           <xsd:documentation>
@@ -601,7 +555,6 @@
       </xsd:element>
     </xsd:sequence>
   </xsd:complexType>
-
   <xsd:complexType name="dynamicServerStatusType">
     <xsd:annotation>
       <xsd:documentation>
@@ -611,15 +564,12 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-      <xsd:any processContents="lax" minOccurs="0" maxOccurs="unbounded" namespace="##other"/>
+      <xsd:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
   </xsd:complexType>
-
   <!-- ============================================================= -->
   <!-- serverstatus -->
   <!-- ============================================================= -->
-
-
   <xsd:complexType name="serverStatusType">
     <xsd:annotation>
       <xsd:documentation>
@@ -638,12 +588,9 @@
       <xsd:element name="dynamic" type="types:dynamicServerStatusType" minOccurs="0"/>
     </xsd:sequence>
   </xsd:complexType>
-
   <!-- ============================================================= -->
   <!-- application status -->
   <!-- ============================================================= -->
-
-
   <xsd:complexType name="applicationStatusType">
     <xsd:annotation>
       <xsd:documentation>
@@ -663,15 +610,12 @@
       <xsd:element name="notification" type="types:notificationInformationType" minOccurs="0"/>
       <xsd:element name="state" type="types:lifecycleStateEnum"/>
       <xsd:element name="stateInfo" type="xsd:string"/>
-      <xsd:element name="extendedState" minOccurs="0" type="types:unboundedXMLOtherNamespace"/>
+      <xsd:element name="extendedState" type="types:unboundedXMLOtherNamespace" minOccurs="0"/>
     </xsd:sequence>
   </xsd:complexType>
-
-
   <!-- ============================================================= -->
   <!-- list of application is used for enumerating running applications -->
   <!-- ============================================================= -->
-
   <xsd:complexType name="applicationReferenceListType">
     <xsd:annotation>
       <xsd:documentation>
@@ -679,17 +623,12 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-      <xsd:element name="application" minOccurs="0" maxOccurs="unbounded"
-        type="types:applicationReferenceType">
-      </xsd:element>
+      <xsd:element name="application" type="types:applicationReferenceType" minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
   </xsd:complexType>
-
-  
   <!-- ============================================================= -->
   <!-- empty elements get used in a few places -->
   <!-- ============================================================= -->
-
   <xsd:complexType name="emptyElementType">
     <xsd:annotation>
       <xsd:documentation>
@@ -697,11 +636,9 @@
       </xsd:documentation>
     </xsd:annotation>
   </xsd:complexType>
-
   <!-- ============================================================= -->
   <!-- option elements -->
   <!-- ============================================================= -->
-
   <xsd:element name="PropertyMapOption" type="types:propertyMapType">
     <xsd:annotation>
       <xsd:appinfo>
@@ -727,13 +664,10 @@
       </xsd:annotation>
     </xsd:element>
   -->
-
-
   <!-- ============================================================= -->
   <!-- Requests and responses. These are the complex types that
   get sent/received as messages-->
   <!-- ============================================================= -->
-
   <!-- ============================================================= -->
   <!-- ============================================================= -->
   <xsd:element name="createRequest">
@@ -750,11 +684,10 @@
       <xsd:sequence>
         <xsd:element name="jsdl" type="types:jsdlType" minOccurs="0">
           <xsd:annotation>
-            <xsd:documentation>
-            </xsd:documentation>
+            <xsd:documentation/>
           </xsd:annotation>
         </xsd:element>
-        <xsd:element name="descriptor" type="types:deploymentDescriptorType" minOccurs="1">
+        <xsd:element name="descriptor" type="types:deploymentDescriptorType">
           <xsd:annotation>
             <xsd:documentation>
           Mandatory deployment descriptor
@@ -778,7 +711,6 @@
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
-
   <!-- ============================================================= -->
   <!-- ============================================================= -->
   <xsd:element name="createResponse">
@@ -797,8 +729,6 @@
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
-
-  
   <!-- ============================================================= -->
   <!-- request to run the engine -->
   <!-- ============================================================= -->
@@ -806,10 +736,10 @@
     <xsd:complexType>
       <xsd:annotation>
         <xsd:documentation>
-          Request to start an application.
+          Request to run an application.
           This only valid if the application is in a state from which
-          it can be started, which effectively means it has already
-          been created.
+          it can enter the running, which effectively means it can only 
+					be done from the running state.
 
           TODO: should run be a noop if we are already started?
         </xsd:documentation>
@@ -819,29 +749,29 @@
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
-
   <!-- ============================================================= -->
   <!-- this response means that the request has been submitted, -->
   <!-- this should only ever return true -->
   <!-- ============================================================= -->
-  <xsd:element name="runResponse" type="xsd:boolean">
-  </xsd:element>
-  
+  <xsd:element name="runResponse" type="xsd:boolean"/>
   <!-- ============================================================= -->
-  <!-- terminate an application -->  
+  <!-- terminate an application -->
   <!-- ============================================================= -->
   <xsd:element name="terminateRequest">
     <xsd:complexType>
       <xsd:annotation>
         <xsd:documentation>
           Request to terminate an application.
+					It is not a fault to terminate an application in the terminated
+					state, but it is a fault (no-such-application) to terminate an
+					unknown application.
         </xsd:documentation>
       </xsd:annotation>
       <xsd:sequence>
         <xsd:element name="application" type="types:applicationReferenceType">
           <xsd:annotation>
             <xsd:documentation>
-            Request to terminate an application.
+            Application to terminate.
             </xsd:documentation>
           </xsd:annotation>
         </xsd:element>
@@ -856,17 +786,13 @@
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
-
   <!-- ============================================================= -->
   <!-- terminate response means that either the request has been submitted, -->
   <!-- or the request is being ignored, as the request is meant to be
        idempotent -->
   <!-- this should only ever return true -->
   <!-- ============================================================= -->
-  <xsd:element name="terminateResponse" type="xsd:boolean">
-  </xsd:element>
-
-  
+  <xsd:element name="terminateResponse" type="xsd:boolean"/>
   <!-- ============================================================= -->
   <!-- define/redefine the notification choices-->
   <!-- ============================================================= -->
@@ -904,17 +830,12 @@
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
-
   <!-- ============================================================= -->
   <!-- response from a request to set a notification-->
   <!-- ============================================================= -->
-  <xsd:element name="setNotificationResponse" type="xsd:boolean">
-  </xsd:element>
-  
-
+  <xsd:element name="setNotificationResponse" type="xsd:boolean"/>
   <!-- ============================================================= -->
   <!-- ============================================================= -->
-
   <xsd:element name="serverStatusRequest">
     <xsd:annotation>
       <xsd:documentation>
@@ -923,12 +844,9 @@
     </xsd:annotation>
     <xsd:complexType/>
   </xsd:element>
-
   <!-- ============================================================= -->
   <!-- ============================================================= -->
-  <xsd:element name="serverStatusResponse" type="types:serverStatusType">
-  </xsd:element>
-
+  <xsd:element name="serverStatusResponse" type="types:serverStatusType"/>
   <!-- ============================================================= -->
   <!-- ============================================================= -->
   <xsd:element name="applicationStatusRequest">
@@ -943,10 +861,7 @@
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
-
-  <xsd:element name="applicationStatusResponse" type="types:applicationStatusType">
-  </xsd:element>
-
+  <xsd:element name="applicationStatusResponse" type="types:applicationStatusType"/>
   <!-- ============================================================= -->
   <!-- ============================================================= -->
   <xsd:element name="lookupApplicationRequest">
@@ -963,14 +878,10 @@
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
-
-  <xsd:element name="lookupApplicationResponse" type="types:applicationReferenceType">
-  </xsd:element>
-
+  <xsd:element name="lookupApplicationResponse" type="types:applicationReferenceType"/>
   <!-- ============================================================= -->
   <!-- list applications request/response -->
   <!-- ============================================================= -->
-
   <xsd:element name="listApplicationsRequest" type="types:emptyElementType">
     <xsd:annotation>
       <xsd:documentation>
@@ -980,17 +891,13 @@
       </xsd:documentation>
     </xsd:annotation>
   </xsd:element>
-
-  <xsd:element name="listApplicationsResponse"
-    type="types:applicationReferenceListType">
+  <xsd:element name="listApplicationsResponse" type="types:applicationReferenceListType">
     <xsd:annotation>
       <xsd:documentation>
-        List of running applications
+        List of active applications
       </xsd:documentation>
     </xsd:annotation>
   </xsd:element>
-
-
   <!-- ============================================================= -->
   <!-- callback event message -->
   <!-- ============================================================= -->
@@ -1006,7 +913,7 @@
         <xsd:element name="identifier" type="xsd:string">
           <xsd:annotation>
             <xsd:documentation>
-            identifier passed in when requesting callbacks
+            identifier passed in when requesting notifications
             </xsd:documentation>
           </xsd:annotation>
         </xsd:element>
@@ -1050,7 +957,6 @@
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
-
   <xsd:element name="lifecycleEventResponse" type="xsd:boolean">
     <xsd:annotation>
       <xsd:documentation>
@@ -1061,11 +967,7 @@
       </xsd:documentation>
     </xsd:annotation>
   </xsd:element>
-
-
   <!-- ============================================================= -->
   <!-- end schema-->
   <!-- ============================================================= -->
-
 </xsd:schema>
-  
