@@ -24,6 +24,7 @@ package org.smartfrog.services.cddlm.test.system.console;
 import org.apache.axis.AxisFault;
 import org.apache.axis.types.URI;
 import org.cddlm.client.console.Undeploy;
+import org.cddlm.client.console.ConsoleOperation;
 import org.smartfrog.services.cddlm.generated.faults.FaultCodes;
 
 /**
@@ -33,6 +34,15 @@ public class UndeployTest extends ConsoleTestBase {
 
     private Undeploy operation;
     public static final String INVALID_URI = "http://invalid.example.org/undeploy/1";
+
+    /**
+     * get the operation of this test base
+     *
+     * @return the current operation
+     */
+    protected ConsoleOperation getOperation() {
+        return operation;
+    }
 
     /**
      * Sets up the fixture, by creating an operation

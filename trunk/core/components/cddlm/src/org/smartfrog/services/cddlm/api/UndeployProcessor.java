@@ -54,13 +54,9 @@ public class UndeployProcessor extends Processor {
         return true;
     }
 
-    public boolean undeploy2(_undeployRequest undeploy) throws RemoteException {
-        final URI appURI = undeploy.getApplication();
-        String application = extractApplicationFromURI(appURI);
-        if (isEmpty(application)) {
-            throw raiseNoSuchApplicationFault(appURI.toString());
-        }
+    public boolean undeploy2(JobState job) throws RemoteException {
         try {
+            String application=job.getName();
             ConfigurationDescriptor config = new ConfigurationDescriptor();
             config.setHost(null);
             config.setName(application);
@@ -72,8 +68,9 @@ public class UndeployProcessor extends Processor {
             config.execute(processCompound);
             Object targetC = config.execute(null);
             //TODO: act on the target
+            return true;
         } catch (SmartFrogException exception) {
-            throw AxisFault.makeFault(exception);
+            throw translateSmartFrogException(exception);
         } catch (Exception exception) {
             throw AxisFault.makeFault(exception);
         }

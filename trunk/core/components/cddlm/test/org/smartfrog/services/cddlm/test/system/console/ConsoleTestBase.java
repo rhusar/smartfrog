@@ -23,14 +23,20 @@ package org.smartfrog.services.cddlm.test.system.console;
 
 import junit.framework.TestCase;
 import org.apache.axis.AxisFault;
+import org.apache.axis.types.URI;
 import org.cddlm.client.common.Constants;
 import org.cddlm.client.common.ServerBinding;
+import org.cddlm.client.generated.api.types.StaticServerStatusType;
+import org.cddlm.client.generated.api.types.ApplicationStatusType;
+import org.cddlm.client.console.ConsoleOperation;
+import org.smartfrog.services.cddlm.generated.faults.FaultCodes;
 
 import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URL;
+import java.rmi.RemoteException;
 
 /**
  * base class for tests Date: 01-Sep-2004 Time: 10:52:46
@@ -50,6 +56,12 @@ public abstract class ConsoleTestBase extends TestCase {
     private StringWriter outputWriter = new StringWriter();
 
     private PrintWriter out = new PrintWriter(outputWriter, true);
+
+    /**
+     * get the operation of this test base
+     * @return
+     */
+    protected abstract ConsoleOperation getOperation();
 
     /**
      * extract info from the JVM, or use defaults, to set up our binding to the
@@ -135,15 +147,29 @@ public abstract class ConsoleTestBase extends TestCase {
         return outputWriter.getBuffer().toString();
     }
 
+    /**
+     * get the current server binding
+     * @return
+     */
     public ServerBinding getBinding() {
         return binding;
     }
 
+    /**
+     * assert that the value is not null or empty
+     * @param message
+     * @param value
+     */
     protected static void assertNotEmpty(String message, String value) {
         assertTrue(message, value != null);
         assertTrue(message, value.length() > 0);
     }
 
+    /**
+     * assert the text is not null and contains the message
+     * @param source
+     * @param search
+     */
     protected static void assertInText(String source, String search) {
         assertNotNull("empty source", source);
         assertTrue("not found [" + search + "] in " + source,
@@ -186,6 +212,23 @@ public abstract class ConsoleTestBase extends TestCase {
                     " in \n" +
                     faultAsString,
                     message.indexOf(text) >= 0);
+        }
+    }
+
+    /**
+     * assert that an application doesnt exist
+     * @param uri uri of app
+     * @param errorText optional error text
+     * @throws RemoteException
+     */
+    public void assertNoSuchApplication(URI uri, String errorText) throws RemoteException {
+        try {
+            ApplicationStatusType status = getOperation().lookupApplicationStatus(
+                    uri);
+        } catch (AxisFault fault) {
+            assertFaultMatches(fault,
+                    FaultCodes.FAULT_NO_SUCH_APPLICATION,
+                    errorText);
         }
     }
 }

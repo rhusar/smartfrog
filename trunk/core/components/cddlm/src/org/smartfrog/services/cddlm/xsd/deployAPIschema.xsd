@@ -81,9 +81,27 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:restriction base="xsd:string">
-      <xsd:enumeration value="ws-notification"/>
-      <xsd:enumeration value="cddlm-prototype"/>
-      <xsd:enumeration value="ws-eventing"/>
+      <xsd:enumeration value="ws-notification">
+        <xsd:annotation>
+          <xsd:documentation>
+            Notification
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="cddlm-prototype">
+      <xsd:annotation>
+        <xsd:documentation>
+            Non-standard callback
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:enumeration>
+      <xsd:enumeration value="ws-eventing">
+    <xsd:annotation>
+      <xsd:documentation>
+            WS-eventing
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:enumeration>
     </xsd:restriction>
   </xsd:simpleType>
 
@@ -95,12 +113,49 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:restriction base="xsd:string">
-      <xsd:enumeration value="null"/>
-      <xsd:enumeration value="instantiated"/>
-      <xsd:enumeration value="initialized"/>
-      <xsd:enumeration value="running"/>
-      <xsd:enumeration value="failed"/>
-      <xsd:enumeration value="terminated"/>
+      <xsd:enumeration value="null">
+        <xsd:annotation>
+          <xsd:documentation>
+            undefined state
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+
+      <xsd:enumeration value="instantiated">
+        <xsd:annotation>
+          <xsd:documentation>
+            Instantiated component
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="initialized">
+        <xsd:annotation>
+          <xsd:documentation>
+            Initialized component
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="running">
+        <xsd:annotation>
+          <xsd:documentation>
+            Running deployment
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="failed">
+        <xsd:annotation>
+          <xsd:documentation>
+            Application has failed
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="terminated">
+        <xsd:annotation>
+          <xsd:documentation>
+            Application has terminated
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
     </xsd:restriction>
   </xsd:simpleType>
 
