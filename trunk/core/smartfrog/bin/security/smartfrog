@@ -1,4 +1,6 @@
 if ! test $SFHOME; then export SFHOME=$PWD; fi
+if ! test $SFPRIVATE; then export SFPRIVATE=$SFHOME/private; fi
+if ! test $SFHOSTNAME; then export SFHOSTNAME=host1; fi
 
 print_usage()
 {
@@ -31,7 +33,7 @@ then
      exit
      fi
 fi
-for i in $SFHOME/lib/*.jar; do CLASSPATH=$i:$CLASSPATH; done
+for i in $SFHOME/signedLib/*.jar; do CLASSPATH=$i:$CLASSPATH; done
 export CLASSPATH
-java -Dorg.smartfrog.iniFile=$SFHOME/bin/default.ini org.smartfrog.SFSystem $*
+java -Djava.security.manager -Djava.security.policy==$SFPRIVATE/sf.policy -Dorg.smartfrog.sfcore.security.keyStoreName=$SFPRIVATE/$SFHOSTNAME/mykeys.st -Dorg.smartfrog.sfcore.security.propFile=$SFPRIVATE/$SFHOSTNAME/SFSecurity.properties org.smartfrog.SFSystem $*
      

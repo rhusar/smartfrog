@@ -31,7 +31,10 @@ then
      exit
      fi
 fi
-for i in $SFHOME/lib/*.jar; do CLASSPATH=$i:$CLASSPATH; done
-export CLASSPATH
-java -Dorg.smartfrog.iniFile=$SFHOME/bin/default.ini org.smartfrog.SFSystem $*
+export CLASSPATH=$SFHOME/lib/smartfrog.jar:$SFHOME/lib/sfServices.jar:$SFHOME/lib/sfTestCases.jar:$CLASSPATH
+export SERVER=eb97201.india.hp.com:8080
+# Please edit codebase if you have any other jar file in webserver
+export CODEBASE="http://$SERVER/sfExamples.jar"
+
+java -Dorg.smartfrog.iniFile=$SFHOME/bin/default.ini -Dorg.smartfrog.codebase=$CODEBASE org.smartfrog.SFSystem $*
      
