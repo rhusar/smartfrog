@@ -36,7 +36,9 @@ For more information: www.smartfrog.org
 
 
   <property environment="env" />
-  
+   <property name="is.component" value="true"  />
+
+
   <!--fail unless="${env.FORREST_HOME}">
   FORREST_HOME is not defined. 
   To create the documentation, you need Forrest 1.5.x on your system, and
@@ -60,7 +62,10 @@ For more information: www.smartfrog.org
 	 <property name="xdocs.skin.dir"  location="${comp.home}/src/documentation/content/xdocs"/>
 	 <property name="xdocs.dir"  location="${comp.home}/src/documentation/content/xdocs/smartfrogdoc"/>
     <property name="skin.dir" location="forrest_skin" />
-    <macrodef name="forrest-component">
+    
+	
+	
+	<macrodef name="forrest-component">
       <attribute name="component" description="component to copy"/>
       <attribute name="includes" default="**/*" description="inclusion pattern; defaults to **/*"/>
       <sequential>
@@ -78,6 +83,7 @@ For more information: www.smartfrog.org
         </copy>
       </sequential>
     </macrodef>
+	
   </target>
 
   <target name="copy-properties" depends="init">
@@ -98,7 +104,8 @@ For more information: www.smartfrog.org
 				 <include name="SFComponents.xml" />
 			</fileset>
 		</copy>	
-		<copy todir="${xdocs.skin.dir}">
+
+		<copy todir="${xdocs.skin.dir}" overwrite="true">
         <fileset dir="${skin.dir}">
 				 <include name="index.xml" />
 				 <include name="site.xml" />
@@ -113,13 +120,14 @@ For more information: www.smartfrog.org
     <forrest-component component="utils" />
     <forrest-component component="scripting" />
     <forrest-component component="slp" />
-    <!-- <forrest-component component="cddlm" /> -->
+	<!--forrest-component component="sfcorelogger" /-->
 
+   
 	<copy todir="${comp.home}/src/documentation" overwrite="true"
       file="${skin.dir}/skinconf.xml">
 	</copy>
     
-    <copy todir="${xdocs.dir}/images">
+    <copy todir="${xdocs.skin.dir}/images">
 			<fileset dir="${skin.dir}">
 				 <include name="sf.*" />
 				  <include name="frog.*" />
@@ -135,13 +143,15 @@ For more information: www.smartfrog.org
     
     
 	<target name="copy-forrest-docs" depends="generate-site" >
-		<copy todir="${dist.docs.dir}">
+		<copy todir="${dist.doc.dir}">
       <fileset dir="${comp.home}/build/site">
 	     <include name="**/*.*" />
        <exclude name="samples/*.*"/>
        <exclude name="test1.html"/>
        <exclude name="test2.html"/>
        <exclude name="hello.pdf"/>
+	   <exclude name="linkmap.*"/>
+	   
       </fileset>
     </copy>
 	</target>
