@@ -45,9 +45,12 @@ public class TempFileImpl extends PrimImpl implements Prim, TempFile, FileIntf {
     /**
      * to delete flag
      */
-    boolean delete=false;
+    private boolean delete=false;
 
-    Log log;
+    /**
+     * our log
+     */
+    private Log log;
 
     public TempFileImpl() throws RemoteException {
     }
