@@ -1,5 +1,7 @@
-release 3.04.001_beta
+release 3.04.002_beta
 ---------------------
+2004-Aug-19 Release date
+2004-Aug-19 Fix: New improved shell scripts
 2004-Aug-18 Fix: Important bug introduced in 3.04.000: cxt params were not
                  merged with sf description in PrimDeployerImpl.sfDeploy()
 2004-Aug-17 Add: Improved sfRelsove illegalClassType exceptions
