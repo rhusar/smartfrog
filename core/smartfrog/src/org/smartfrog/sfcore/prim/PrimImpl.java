@@ -702,7 +702,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     }
 
     /**
-     * Called after instantiation for deployment purposed. Heart monitor is
+     * Called after instantiation for deployment purposes. Heart monitor is
      * started and if there is a parent the deployed component is added to the
      * heartbeat. Subclasses can override to provide additional deployment
      * behavior.
