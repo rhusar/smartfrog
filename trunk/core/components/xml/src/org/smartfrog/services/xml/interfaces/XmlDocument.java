@@ -1,5 +1,7 @@
 package org.smartfrog.services.xml.interfaces;
 
+import org.smartfrog.services.xml.impl.SerializedXomDocument;
+
 import java.rmi.RemoteException;
 import java.io.IOException;
 
@@ -51,4 +53,18 @@ public interface XmlDocument extends XmlNode {
     void save(String filename) throws RemoteException,
             IOException;
 
+    /**
+     * Get the entire Xom document serialised for local manipulation.
+     * @return
+     * @throws RemoteException
+     */
+    SerializedXomDocument getXomDocument() throws RemoteException;
+
+    /**
+     * set a new Xom document. After this point, the doc graph will diverge
+     * from that of (any components) used to describe it
+     * @param document
+     * @throws RemoteException
+     */
+    void setXomDocument(SerializedXomDocument document) throws RemoteException;
 }

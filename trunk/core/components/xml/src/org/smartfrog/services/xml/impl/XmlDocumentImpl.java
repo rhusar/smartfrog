@@ -178,6 +178,29 @@ public class XmlDocumentImpl extends CompoundXmlNode implements XmlDocument {
     }
 
     /**
+     * Get the entire Xom document serialised for local manipulation.
+     *
+     * @return
+     * @throws RemoteException
+     */
+    public SerializedXomDocument getXomDocument() throws RemoteException {
+        return new SerializedXomDocument(getDocument());
+    }
+
+    /**
+     * set a new Xom document. After this point, the doc graph will diverge from
+     * that of (any components) used to describe it
+     *
+     * @param document
+     * @throws RemoteException
+     */
+    public void setXomDocument(SerializedXomDocument document)
+            throws RemoteException {
+        helper.setNode(document.getDocument());
+
+    }
+
+    /**
      * save a document to a file
      *
      * @param filename
