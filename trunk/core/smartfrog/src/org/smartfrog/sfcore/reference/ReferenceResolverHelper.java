@@ -37,7 +37,7 @@ import org.smartfrog.sfcore.prim.Prim;
  * causing the reference resolver to forward the rest of the resolution to the
  * next component.
  */
-public interface ReferenceResolverHelper {
+public interface ReferenceResolverHelper extends ReferenceResolver {
     /**
      * Resolve a given reference. Generally forwards directly to indexed
      * resolve with index 0
@@ -64,21 +64,7 @@ public interface ReferenceResolverHelper {
     public Object sfResolve(Reference reference, int index)
         throws SmartFrogResolutionException;
 
-    /**
-     * Call in to resolve to the parent reference resolver of this one.
-     *
-     * @return parent referencee resolver or null if none
-     */
-    public ReferenceResolver sfResolveParent();
 
-    /**
-     * Call in to resolve a single id part of a reference.
-     *
-     * @param id attribute name to resolve in target context
-     *
-     * @return resolved id or null if not found
-     */
-    public Object sfResolveId(Object id);
 
     // sfResolve Helper methods
 
