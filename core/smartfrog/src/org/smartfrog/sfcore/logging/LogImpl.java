@@ -153,8 +153,16 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
         try {
             //Check Class and read configuration...including system.properties
             classComponentDescription = getClassComponentDescription(this, true);
+            Integer logLevel = new Integer (currentLogLevel);
+            try {
+                 logLevel = new Integer(((Double)(
+                    classComponentDescription.sfResolve(new Reference(
+                    "logLevel")))).intValue());
+            } catch (ClassCastException cce){
+                //ignore //@TODO put in log
+            }
             localLog = getLocalLog(name
-                                   , ((Integer)classComponentDescription.sfResolve(new Reference("logLevel")))
+                                   , logLevel
                                    , (String)classComponentDescription.sfResolve(new Reference("localLoggerClass"))
                                    , getSfCodeBase(classComponentDescription));
         } catch (Exception ex ){
