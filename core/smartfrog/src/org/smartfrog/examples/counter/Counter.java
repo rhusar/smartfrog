@@ -24,23 +24,23 @@ package org.smartfrog.examples.counter;
  * Defines the attributes for counter component.
  */
 public interface Counter {
-    /** String name for optional attribute "debug". */
+    /** String name for optional attribute "debug". Value {@value}. */
     final static String ATR_DEBUG = "debug";
-    /** String name for optional attribute "sleep". */
+    /** String name for optional attribute "sleep". Value {@value}. */
     final static String ATR_PAUSE = "pause";
-    /** String name for optional attribute "counter". */
+    /** String name for optional attribute "counter". Value {@value}. */
     final static String ATR_COUNTER = "counter";
-    /** String name for optional attribute "message". */
+    /** String name for optional attribute "message". Value {@value}. */
     final static String ATR_MESSAGE = "message";
-    /** String name for mandatory attribute "limit".*/
+    /** String name for mandatory attribute "limit". Value {@value}.*/
     final static String ATR_LIMIT = "limit";
 
     /**
-     * string name for optional attribute, sleep
+     * string name for optional attribute, sleep. Value {@value}.
      */
     final static String ATR_SLEEP = "sleep";
     /**
-      * string name for optional attribute, terminate
+      * string name for optional attribute, terminate. Value {@value}.
      */
     final static String ATR_TERMINATE = "terminate";
 }

@@ -348,10 +348,14 @@ public class CounterImpl extends PrimImpl implements Prim, Counter, Runnable {
                 }
                 counter++;
             }
-            if (terminate) sfTerminate(TerminationRecord.normal(this.sfCompleteNameSafe()));
-
+            if (terminate) {
+              if (logApp.isInfoEnabled())logApp.info("Count completed. Terminating now: "+ this.sfCompleteNameSafe());
+              sfTerminate(TerminationRecord.normal(this.sfCompleteNameSafe()));
+            }
             //end while
+            if (logApp.isInfoEnabled()) logApp.info("Count completed. While Finished: "+ this.sfCompleteNameSafe());
         } catch (InterruptedException ie) {
+            if (logApp.isErrorEnabled()) logApp.err(null,ie);
             exception("run", ie);
         }
 
