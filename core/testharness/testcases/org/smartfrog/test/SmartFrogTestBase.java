@@ -73,9 +73,17 @@ public abstract class SmartFrogTestBase extends TestCase {
      */
     public SmartFrogTestBase(String name) {
         super(name);
-        hostname = TestHelper.getTestProperty(TestHelper.HOSTNAME,"localhost");
-        String classesdirname = TestHelper.getTestProperty(TestHelper.CLASSESDIR,null);
-        if(classesdirname!=null) {
+    }
+
+    /**
+     * Sets up the fixture, for example, open a network connection. This method
+     * is called before a test is executed.
+     */
+    protected void setUp() throws Exception {
+        super.setUp();
+        hostname = TestHelper.getTestProperty(TestHelper.HOSTNAME, "localhost");
+        String classesdirname = TestHelper.getTestProperty(TestHelper.CLASSESDIR, null);
+        if (classesdirname != null) {
             classesDir = new File(classesdirname);
         }
     }
