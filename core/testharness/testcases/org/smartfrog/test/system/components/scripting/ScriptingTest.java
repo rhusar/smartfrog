@@ -21,9 +21,19 @@
 
 package org.smartfrog.test.system.components.scripting;
 
+
 import org.smartfrog.test.SmartFrogTestBase;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.processcompound.ProcessCompound;
+import org.smartfrog.sfcore.processcompound.ProcessCompoundImpl;
+import org.smartfrog.sfcore.processcompound.ProcessCompoundImpl_Stub;
+import org.smartfrog.sfcore.processcompound.SFProcess;
+import org.smartfrog.sfcore.reference.ProcessReferencePart;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import java.net.*;
+
 
 
 /**
@@ -52,9 +62,14 @@ public void testCaseTCP52() throws Throwable
 {
 		Prim applicationtcp52 = deployExpectingSuccess(FILES+"TCP52.sf", "TCP52");
 		assertNotNull(applicationtcp52);
-		// take from root process not from applicationtcp52
-		Prim p = (Prim)applicationtcp52.sfResolveHere("exam");
-		String actualPSfClass = (String)p.sfResolveHere("sfClass");
+		
+		System.out.println("testCaseTCP52  process name :" +applicationtcp52.sfCompleteName());
+		//ProcessCompound pc= SFProcess.getProcessCompound();
+	
+		ProcessCompound pc= SFProcess.getRootLocator().getRootProcessCompound(InetAddress.getLocalHost());
+		Prim count=(Prim)pc.sfResolve("exam");
+		
+		String actualPSfClass =(String) count.sfResolveHere("sfClass");
 		assertEquals("org.smartfrog.examples.counter.CounterImpl", actualPSfClass);
 }
 

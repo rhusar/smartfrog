@@ -7,7 +7,7 @@ sfConfig extends Compound {
 	sfProcessName "rootProcess";
 	attributesAsVariables true;
 
-	fileName "file:///C:SF/sep_27/core/testharness/testcases/org/smartfrog/test/system/components/scripting/testscript.bsh"; 
+fileName "file:///C:/SF/Oct_7/core/components/scripting/src/org/smartfrog/services/scripting/examples/testscript.bsh"; 
 	simpleScript extends ScriptPrim 
 	{
 	sfDeployCode ATTRIB fileName;
