@@ -27,7 +27,7 @@ import org.apache.tools.ant.BuildException;
 public class StopApplication extends SmartFrogTask {
 
     public StopApplication() {
-        setHostname("localhost");
+        setHost("localhost");
         setFailOnError(true);
     }
 

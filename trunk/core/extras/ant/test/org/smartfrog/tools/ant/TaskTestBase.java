@@ -69,4 +69,19 @@ public abstract class TaskTestBase extends BuildFileTest {
     public void assertNotInLog(String text) {
         assertTrue(text,getLog().indexOf(text)==-1);
     }
+
+    /**
+     * expect an exception with the text in the log
+     * @param target
+     * @param log
+     * @param cause
+     */
+    public void expectExceptionWithLogContaining(String target,String log,String cause) {
+        expectBuildException(target,cause);
+        assertLogContaining(log);
+    }
+
+    public void expectExceptionWithLogContaining(String target, String log) {
+        expectExceptionWithLogContaining(target,log,target);
+    }
 }

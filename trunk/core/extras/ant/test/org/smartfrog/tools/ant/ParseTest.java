@@ -54,10 +54,11 @@ public class ParseTest extends TaskTestBase {
     }
 
     public void testInvalid() {
-        expectBuildException("testInvalid", "parse failure");
-        assertLogContaining("SmartFrogCompileResolutionException");
+        expectExceptionWithLogContaining("testInvalid",
+                "SmartFrogCompileResolutionException",
+                "parse failure");
     }
-    
+
     public void testMissingFile() {
         expectBuildExceptionContaining("testMissingFile", "not found", "File not found :");
     }

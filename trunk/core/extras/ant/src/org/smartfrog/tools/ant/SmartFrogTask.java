@@ -59,7 +59,7 @@ public abstract class SmartFrogTask extends TaskBase {
     /**
      * name of host
      */
-    protected String hostname;
+    protected String host;
 
     /**
      * name of an app
@@ -162,10 +162,10 @@ public abstract class SmartFrogTask extends TaskBase {
 
     /**
      * set the hostname to deploy to (optional)
-     * @param hostname
+     * @param host
      */
-    public void setHostname(String hostname) {
-        this.hostname = hostname;
+    public void setHost(String host) {
+        this.host = host;
     }
 
     /**
@@ -232,8 +232,8 @@ public abstract class SmartFrogTask extends TaskBase {
     }
 
 
-    protected String getHostname() {
-        return hostname;
+    protected String getHost() {
+        return host;
     }
 
     protected String getApplicationName() {
@@ -293,9 +293,9 @@ public abstract class SmartFrogTask extends TaskBase {
      * adds the hostname to the task
      */
     protected void addHostname() {
-        if (hostname != null) {
+        if (host != null) {
             smartfrog.createArg().setValue("-h");
-            smartfrog.createArg().setValue(hostname);
+            smartfrog.createArg().setValue(host);
         }
     }
 
