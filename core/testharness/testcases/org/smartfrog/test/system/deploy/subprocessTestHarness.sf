@@ -116,7 +116,7 @@ System extends Compound {
             }
             demoE extends MyCounter {
                 Message "demoE";
-                limit 5;
+                limit 9;
             }
         }
      }
