@@ -95,8 +95,9 @@ public class ErrorMessageBundle extends ListResourceBundle
         { ILLEGAL_VECTOR_PARAMETER  , "Illegal vector parameter"},
         { ILLEGAL_BOOLEAN_PARAMETER  , "Illegal boolean parameter"},
         { MISSING_PARAMETER  , "Missing Parameter {0}"},
-	{ COPY_SERIALIZE_FAILED , "Attempt to copy data failed, exception during serialize/deserialize {0}"},
-	{ COPY_FAILED , "Attempt to copy data failed, data not serializable {0}"}
+        { COPY_SERIALIZE_FAILED , "Attempt to copy data failed, exception during serialize/deserialize {0}"},
+        { COPY_FAILED , "Attempt to copy data failed, data not serializable {0}"},
+        { MSG_OBJECT_REGISTRATION_FAILED, "Failed to register/export the object {0}"}
     };
 
     /**
