@@ -79,7 +79,7 @@ public class MainFrame extends JFrame implements ActionListener {
    /**
     *  Description of the Field
     */
-   public final static String version = "v0.7 r12";
+   public final static String version = "v0.7 r06";
    // This has to  be done properly !!!!!!!!!!!!!!! no static. Because of crap log.
    static PrintStream msg = System.out;
    static JLabel statusBar = new JLabel();
@@ -1355,7 +1355,7 @@ public class MainFrame extends JFrame implements ActionListener {
                if (osName.equals("Windows 2000") || osName.equals("Windows NT")|| osName.equals("Windows XP")) {
 
                   cmdGeneral = "cmd.exe /C";
-                  dir = ".\\" + batchDir + "\\";
+                  dir = " .\\" + batchDir + "\\";
 
                   if (this.securityCheckBox.isSelected()) {
                      dir = dir + cmdAddSecurity + "\\"  ;
@@ -1364,7 +1364,7 @@ public class MainFrame extends JFrame implements ActionListener {
 
                } else if (osName.equals("Windows 95") || osName.equals("Windows 98")) {
                   cmdGeneral = "command.exe /C";
-                  dir = ".\\" + batchDir + "\\";
+                  dir = " .\\" + batchDir + "\\";
                   if (this.securityCheckBox.isSelected()) {
                      dir = dir + cmdAddSecurity + "\\"  ;
                      cmdStop = dir + cmdAddSecurity + "\\"  ;
@@ -1372,7 +1372,7 @@ public class MainFrame extends JFrame implements ActionListener {
 
                } else {
                   cmdGeneral = "bash";
-                  dir = "./" + batchDir + "/";
+                  dir = " ./" + batchDir + "/";
                   if (this.securityCheckBox.isSelected()) {
                      dir = dir + cmdAddSecurity + "/"  ;
                      cmdStop = dir + cmdAddSecurity + "/"  ;
@@ -1385,7 +1385,7 @@ public class MainFrame extends JFrame implements ActionListener {
 //                      +"\""+ file.getPath()+"\"" + " ";
 //ProcessName:DEPLOY:org/smartfrog/examples/counter/examplekk.sf::127.0.0.1:
                cmdStart = cmdGeneral + " " + dir + "smartfrog" + " -a "
-                      +"\""+ this.processNameTextField.getText()+"\"" +":"
+                      + this.processNameTextField.getText() +":"
                       +cmdSFStart+":"
                       +"\""+ file.getPath()+"\""+":"
                       +":"
@@ -1398,7 +1398,7 @@ public class MainFrame extends JFrame implements ActionListener {
 //                      + " ";
 //ProcessName:DEPLOY:org/smartfrog/examples/counter/examplekk.sf::127.0.0.1:
                   cmdStop = cmdGeneral + " " + dir + "smartfrog" + " -a "
-                         +"\""+ this.processNameTextField.getText()+"\"" +":"
+                         + this.processNameTextField.getText() +":"
                          +cmdSFStop+":"
                          +""+":"
                          +":"
@@ -1453,24 +1453,32 @@ public class MainFrame extends JFrame implements ActionListener {
             }
             if (osName.equals("Windows 2000") || osName.equals("Windows NT")|| osName.equals("Windows XP")) {
                cmdGeneral = "cmd.exe /C";
-               dir = ".\\" + batchDir + "\\";
+               dir = " .\\" + batchDir + "\\";
             } else if (osName.equals("Windows 95") || osName.equals("Windows 98")) {
                cmdGeneral = "command.exe /C";
-               dir = ".\\" + batchDir + "\\";
+               dir = " .\\" + batchDir + "\\";
             } else {
                cmdGeneral = "bash";
-               dir = "./" + batchDir + "/";
+               dir = " ./" + batchDir + "/";
             }
+//            cmdStart = cmdGeneral + " " + dir + cmdStart + " "
+//                   + this.hostNameTextField.getText() + " "
+//                   + this.processNameTextField.getText() + " "
+//                   +"\"" +sfFilePath +"\""+ " ";
+//            cmdStop = cmdGeneral + " " + dir + cmdStop + " "
+//                   + this.hostNameTextField.getText() + " "
+//                   + this.processNameTextField.getText() + " "
+//                   + " ";
 
            cmdStart = cmdGeneral + " " + dir + "smartfrog" + " -a "
-                  +"\""+ this.processNameTextField.getText() +"\""+":"
+                  + this.processNameTextField.getText() +":"
                   +cmdSFStart+":"
                   +"\""+ sfFilePath+"\""+":"
                   +":"
                   + this.hostNameTextField.getText() + ": -e";
 
-              cmdStop = cmdGeneral + " " +dir + "smartfrog" + " -a "
-                     +"\""+ this.processNameTextField.getText() +"\""+":"
+              cmdStop = cmdGeneral + " " + dir + "smartfrog" + " -a "
+                     + this.processNameTextField.getText() +":"
                      +cmdSFStop+":"
                      +""+":"
                      +":"
@@ -1502,26 +1510,19 @@ public class MainFrame extends JFrame implements ActionListener {
       if (isWindows == false) {
          //linux
          cmd = "java" + " "
-                + "-cp \"" + classpath + "\" "
-                + sfDaemonDefIniFileProperty+ "\""+sfDaemonDefIniFile +"\""+ " "
-                + sfDaemonDefSFFileProperty +"\""+ sfDaemonDefSFFile +"\""+ " "
+                + "-cp " + classpath + " "
+                + sfDaemonDefIniFileProperty + sfDaemonDefIniFile + " "
+                + sfDaemonDefSFFileProperty + sfDaemonDefSFFile + " "
                 + cmdSFDaemon + "" + sfDaemonProcessName + " "
                 + this.sfSystemClass
                 + "";
-//         cmd = "java" + " "
-//                + "-cp " + classpath + " "
-//                + sfDaemonDefIniFileProperty + sfDaemonDefIniFile + " "
-//                + sfDaemonDefSFFileProperty + sfDaemonDefSFFile + " "
-//                + cmdSFDaemon + "" + sfDaemonProcessName + " "
-//                + this.sfSystemClass
-//                + "";
 
       } else {
          // windows
          cmd = "java" + " "
-                + "-cp \"" + classpath + "\" "
-                + sfDaemonDefIniFileProperty+ "\""+sfDaemonDefIniFile +"\""+ " "
-                + sfDaemonDefSFFileProperty +"\""+ sfDaemonDefSFFile +"\""+ " "
+                + "-cp " + classpath + " "
+                + sfDaemonDefIniFileProperty+ sfDaemonDefIniFile + " "
+                + sfDaemonDefSFFileProperty + sfDaemonDefSFFile + " "
                 + cmdSFDaemon + "" + sfDaemonProcessName + " "
                 + this.sfSystemClass
                 + "";
@@ -1537,7 +1538,7 @@ public class MainFrame extends JFrame implements ActionListener {
       String cmd = "";
 
           cmd = "java" + " "
-                + "-cp \"" + classpath + "\" "
+                + "-cp " + classpath + " "
                 + this.sfSystemClass + " "
                 + "-a"+" "
                 +  this.sfDaemonProcessName + ":TERMINATE:::"

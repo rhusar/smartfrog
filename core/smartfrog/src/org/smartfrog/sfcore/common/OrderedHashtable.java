@@ -214,7 +214,7 @@ public class OrderedHashtable extends Hashtable implements Copying, MessageKeys,
 
 
     /**
-     *   Removes the element at the specified position.
+     *   Removes the element at the specified position.
      *   Removes the key (and its corresponding value) from this hashtable.
      *   This method does nothing if the key is not in the hashtable.
      *

@@ -17,10 +17,9 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.tools.ant.test.unit;
+package org.smartfrog.tools.ant.test;
 
 import org.smartfrog.tools.ant.ToUrlTask;
-import org.smartfrog.tools.ant.test.TaskTestBase;
 
 import java.net.URL;
 import java.io.InputStream;

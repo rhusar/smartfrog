@@ -20,11 +20,9 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.common;
 
-import java.io.Serializable;
-
 import org.smartfrog.sfcore.prim.Prim;
 
-public class SmartFrogContextException extends SmartFrogRuntimeException implements Serializable {
+public class SmartFrogContextException extends SmartFrogRuntimeException {
 
   public SmartFrogContextException(String message) {
     super(message);

@@ -21,28 +21,25 @@
 
 package org.smartfrog.services.junit.listeners;
 
-import org.smartfrog.services.junit.TestInfo;
-import org.smartfrog.services.junit.TestListenerFactory;
 import org.smartfrog.services.junit.TestListener;
-import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.services.junit.TestInfo;
 import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.common.SmartFrogException;
 
 import java.rmi.RemoteException;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.ArrayList;
 
 /**
- * This class buffers received messages Date: 27-Jun-2004 Time: 21:26:28
+ * This class buffers received messages
+ * Date: 27-Jun-2004
+ * Time: 21:26:28
  */
-public class BufferingListenerComponent extends PrimImpl
-        implements BufferingListener {
+public class BufferingListenerComponent  extends PrimImpl implements BufferingListener {
 
     public BufferingListenerComponent() throws RemoteException {
     }
 
-    List errors, failures, starts, ends;
-
-    int sessionStartCount,sessionEndCount;
+    ArrayList errors,failures,starts,ends;
 
     /**
      * Called after instantiation for deployment purposed. Heart monitor is
@@ -54,16 +51,61 @@ public class BufferingListenerComponent extends PrimImpl
      *                                  error while deploying
      * @throws java.rmi.RemoteException In case of network/rmi error
      */
-    public synchronized void sfDeploy() throws SmartFrogException,
-            RemoteException {
+    public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
-        errors = new LinkedList();
-        failures = new LinkedList();
-        starts = new LinkedList();
-        ends = new LinkedList();
+        errors=new ArrayList();
+        failures = new ArrayList();
+        starts = new ArrayList();
+        ends = new ArrayList();
     }
 
+    /**
+     * An error occurred.
+     */
+    public synchronized void addError(TestInfo test) throws RemoteException {
+        TestInfo cloned = cloneTestInfo(test);
+        errors.add(cloned);
+    }
 
+    /**
+     * make a clone of any test info
+     * @param test
+     * @return
+     */
+    private TestInfo cloneTestInfo(TestInfo test) {
+        TestInfo cloned =null;
+        try {
+            cloned= (TestInfo) test.clone();
+        } catch (CloneNotSupportedException e) {
+            //we should never get here
+            assert false;
+        }
+        return cloned;
+    }
+
+    /**
+     * A failure occurred.
+     */
+    public synchronized void addFailure(TestInfo test) throws RemoteException {
+        TestInfo cloned = cloneTestInfo(test);
+        failures.add(cloned);
+    }
+
+    /**
+     * A test ended.
+     */
+    public synchronized void endTest(TestInfo test) throws RemoteException {
+        TestInfo cloned = cloneTestInfo(test);
+        ends.add(cloned);
+    }
+
+    /**
+     * A test started.
+     */
+    public synchronized void startTest(TestInfo test) throws RemoteException {
+        TestInfo cloned = cloneTestInfo(test);
+        starts.add(cloned);
+    }
 
     /**
      * get the number of errors
@@ -83,8 +125,7 @@ public class BufferingListenerComponent extends PrimImpl
      * @throws java.rmi.RemoteException
      * @throws IndexOutOfBoundsException if the entry is out of range
      */
-    public synchronized TestInfo getErrorInfo(int entry)
-            throws RemoteException, IndexOutOfBoundsException {
+    public synchronized TestInfo getErrorInfo(int entry) throws RemoteException, IndexOutOfBoundsException {
         return ((TestInfo) errors.get(entry)).duplicate();
     }
 
@@ -106,9 +147,8 @@ public class BufferingListenerComponent extends PrimImpl
      * @throws java.rmi.RemoteException
      * @throws IndexOutOfBoundsException if the entry is out of range
      */
-    public synchronized TestInfo getStartInfo(int entry)
-            throws RemoteException, IndexOutOfBoundsException {
-        return ((TestInfo) starts.get(entry)).duplicate();
+    public synchronized TestInfo getStartInfo(int entry) throws RemoteException, IndexOutOfBoundsException {
+        return ((TestInfo)starts.get(entry)).duplicate();
     }
 
     /**
@@ -129,8 +169,7 @@ public class BufferingListenerComponent extends PrimImpl
      * @throws java.rmi.RemoteException
      * @throws IndexOutOfBoundsException if the entry is out of range
      */
-    public TestInfo getEndInfo(int entry) throws RemoteException,
-            IndexOutOfBoundsException {
+    public TestInfo getEndInfo(int entry) throws RemoteException, IndexOutOfBoundsException {
         return ((TestInfo) ends.get(entry)).duplicate();
     }
 
@@ -152,8 +191,7 @@ public class BufferingListenerComponent extends PrimImpl
      * @throws java.rmi.RemoteException
      * @throws IndexOutOfBoundsException if the entry is out of range
      */
-    public TestInfo getFailureInfo(int entry) throws RemoteException,
-            IndexOutOfBoundsException {
+    public TestInfo getFailureInfo(int entry) throws RemoteException, IndexOutOfBoundsException {
         return ((TestInfo) failures.get(entry)).duplicate();
     }
 
@@ -164,119 +202,8 @@ public class BufferingListenerComponent extends PrimImpl
      * @throws java.rmi.RemoteException
      */
     public boolean testsWereSuccessful() throws RemoteException {
-        return getFailureCount() == 0 && getErrorCount() == 0;
-    }
-
-    /**
-     * get the number of times that callers started listening
-     *
-     * @return and interface that should have events reported to it
-     *
-     * @throws java.rmi.RemoteException
-     */
-    public int getSessionStartCount() throws RemoteException {
-        return sessionStartCount;
-    }
-
-    protected void incrementSessionEndCount() {
-        sessionEndCount++;
-    }
-
-    /**
-     * get the number of times that callers ended listening
-     *
-     * @return
-     *
-     * @throws java.rmi.RemoteException
-     */
-    public int getSessionEndCount() throws RemoteException {
-        return sessionEndCount;
+        return getFailureCount()==0 && getErrorCount()==0;
     }
 
 
-    /**
-     * bind to a caller
-     *
-     * @param hostname  name of host
-     * @param suitename name of test suite
-     * @param timestamp start timestamp (UTC)
-     *
-     * @return a listener to talk to
-     */
-    public TestListener listen(String hostname,
-                               String suitename,
-                               long timestamp) throws RemoteException,
-            SmartFrogException {
-        sessionStartCount++;
-        return new BufferingTestListener();
-    }
-
-    /**
-     * this is a non-static nested class that provides the test listener
-     * for this component; 
-     */
-    protected class BufferingTestListener implements TestListener {
-        /**
-         * end this test suite. After calling this, caller should discard all
-         * references; they may no longer be valid. <i>No further methods may be
-         * called</i>
-         */
-        public void endSuite() throws RemoteException, SmartFrogException {
-            incrementSessionEndCount();
-        }
-
-
-        /**
-         * An error occurred.
-         */
-        public synchronized void addError(TestInfo test)
-                throws RemoteException {
-            TestInfo cloned = cloneTestInfo(test);
-            errors.add(cloned);
-        }
-
-        /**
-         * make a clone of any test info
-         *
-         * @param test
-         *
-         * @return
-         */
-        private TestInfo cloneTestInfo(TestInfo test) {
-            TestInfo cloned = null;
-            try {
-                cloned = (TestInfo) test.clone();
-            } catch (CloneNotSupportedException e) {
-                //we should never get here
-                assert false;
-            }
-            return cloned;
-        }
-
-        /**
-         * A failure occurred.
-         */
-        public synchronized void addFailure(TestInfo test)
-                throws RemoteException {
-            TestInfo cloned = cloneTestInfo(test);
-            failures.add(cloned);
-        }
-
-        /**
-         * A test ended.
-         */
-        public synchronized void endTest(TestInfo test) throws RemoteException {
-            TestInfo cloned = cloneTestInfo(test);
-            ends.add(cloned);
-        }
-
-        /**
-         * A test started.
-         */
-        public synchronized void startTest(TestInfo test)
-                throws RemoteException {
-            TestInfo cloned = cloneTestInfo(test);
-            starts.add(cloned);
-        }
-    }
 }

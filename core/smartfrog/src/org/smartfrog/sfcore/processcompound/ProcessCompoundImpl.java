@@ -25,10 +25,8 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.Properties;
 import java.util.Vector;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.Iterator;
 
 import org.smartfrog.SFSystem;
 import org.smartfrog.sfcore.common.Context;
@@ -680,7 +678,6 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
             } catch (SmartFrogResolutionException srex){
               //@todo log ignore.
             } catch (NullPointerException exSfHost) {
-                //Problem hre a null exc trown.
                 canonicalHostName = this.sfDeployedHost().getCanonicalHostName();
             }
 
@@ -847,7 +844,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
      *
      * @exception Exception failed to deploy process
      */
-    public ProcessCompound sfResolveProcess(Object name, ComponentDescription cd) throws Exception {
+    public ProcessCompound sfResolveProcess(Object name) throws Exception {
         ProcessCompound pc = null;
 
         if (sfParent() == null) { // I am the root
@@ -855,10 +852,10 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
                 pc = (ProcessCompound) sfResolve(new Reference(new HereReferencePart(name)));
             } catch (SmartFrogResolutionException e) {
                 if (sflog().isTraceEnabled()) sflog().trace(" Creating a new ProcessCompound: "+ name.toString());
-                pc = addNewProcessCompound(name, cd);
+                pc = addNewProcessCompound(name);
             }
-        } else { // I am a child process - find in the parent
-            pc = ((ProcessCompound) sfParent()).sfResolveProcess(name, cd);
+        } else { // am a child process - find in the parent
+            pc = ((ProcessCompound) sfParent()).sfResolveProcess(name);
         }
 
         return pc;
@@ -882,7 +879,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
      *
      * @exception Exception failed to deploy new naming compound
      */
-    protected ProcessCompound addNewProcessCompound(Object name, ComponentDescription cd)
+    protected ProcessCompound addNewProcessCompound(Object name)
         throws Exception {
         // Check if process creation is allowed
         boolean allowProcess=false;
@@ -928,7 +925,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
         }
 
         // Start process
-        Process process = startProcess(name, cd);
+        Process process = startProcess(name);
 
         if (process != null) {
             // IMPORTANT COMMENT: We loose track of this two threads.
@@ -972,22 +969,18 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
      * Any property prefixed by 'org.smartfrog.sfcore.processcompound.jvm.'+NAME+property=value
      * will be added  only to the subprocess named 'NAME' as a parameter
      * for the JVM. The parameter will be "property+value". @see addProcessDefines
-     * Every attribute described by cd.sfProcessAttributes will be added to the command line
-     * as "-Dorg.smartfrog.processcompound.ATTRIBUTE_NAME=ATTRIBUTE_VALUE"
      *
      * @param name name of new process
-     * @param cd component description with extra process configuration (ex. sfProcessAttributes)
      *
      * @return new process
      *
      * @exception Exception failed to locate all attributes, or start process
      */
-    protected Process startProcess(Object name, ComponentDescription cd) throws Exception {
+    protected Process startProcess(Object name) throws Exception {
         Vector runCmd = new Vector();
-        addProcessJava(runCmd, cd);
+        addProcessJava(runCmd);
         addProcessClassPath(runCmd, name);
         addProcessDefines(runCmd, name);
-        addProcessAttributes(runCmd, cd);
         addProcessClassName(runCmd);
 
         String[] runCmdArray = new String[runCmd.size()];
@@ -1004,17 +997,8 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
      *
      * @exception Exception failed to construct java command
      */
-    protected void addProcessJava(Vector cmd,ComponentDescription cd) throws Exception {
-        Object processCmd = null;
-        processCmd = cd.sfResolveHere(SmartFrogCoreKeys.SF_PROCESS_JAVA,false);
-        if (processCmd==null){
-            processCmd = sfResolveHere(SmartFrogCoreKeys.SF_PROCESS_JAVA);
-        }
-        if (processCmd instanceof String)
-            cmd.addElement((String) processCmd);
-        else if (processCmd instanceof Collection)
-            cmd.addAll((Collection) processCmd);
-        else cmd.addElement(processCmd);
+    protected void addProcessJava(Vector cmd) throws Exception {
+        cmd.addElement((String) sfResolveHere(SmartFrogCoreKeys.SF_PROCESS_JAVA));
     }
 
     /**
@@ -1150,34 +1134,6 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
             }
         }
     }
-
-    /**
-     * Constructs sequence of -D statements for the new sub-process by
-     * iterating over the sfProcessAttributes ComponentDescription.
-     *
-     * @param cmd command to append to
-     * @param cd component description with extra process configuration (ex. sfProcessAttributes)
-     *
-     * @exception Exception failed to construct defines
-     */
-    protected void addProcessAttributes(Vector cmd, ComponentDescription cd)
-        throws Exception {
-            System.out.println("To Complete (TEST!) processcompoundImpl.addProcessAttributes(): "+cd.toString());
-            ComponentDescription sfProcessAttributes = (ComponentDescription) sfResolveHere (SmartFrogCoreKeys.SF_PROCESS_CONFIG, false);
-            if (sfProcessAttributes == null) return;
-            Object key = null;
-            Object value = null;
-            for (Iterator i = sfProcessAttributes.sfAttributes(); i.hasNext();) {
-                key = i.next().toString();
-                value = cd.sfResolveHere(key);
-                cmd.addElement("-D "+
-                                 SmartFrogCoreProperty.propBaseSFProcess +
-                                 key.toString() + "=" +
-                                 value.toString());
-
-            }
-    }
-
 
 //    Deprecated: Replaced with common/TerminatorThread
 //    /**

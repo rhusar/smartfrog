@@ -52,7 +52,7 @@ public interface ConfigurationDescriptorTestURLs {
     String urlTest08  ="\"HOST localhost:first:CounterInFirst1ROOT\":DEPLOY:org/smartfrog/examples/counter/example.sf::localhost:";
     String urlTest09  ="\"HOST localhost:first:CounterInFirst1FIST\":DEPLOY:org/smartfrog/examples/counter/example.sf::localhost:first";
     String urlTest10  ="counterEx3:DEPLOY:org/smartfrog/examples/counter/example2.sf:\"testLevel1:counterToSucceed\":localhost:";
-    String urlTest11  ="\"HOST \"127.0.0.1\":first:Julio2B\":DEPLOY:org/smartfrog/examples/counter/example2.sf:\"testLevel1:counterToSucceed\":localhost:";
+    String urlTest11  ="\"HOST \"127.0.0.1\":Julio:Julio2B\":DEPLOY:org/smartfrog/examples/counter/example2.sf:\"testLevel1:counterToSucceed\":localhost:";
     String urlTest12  ="\"HOST localhost:SubProcessInRootProcess2\":DEPLOY:org/smartfrog/examples/subprocesses/subprocess.sf::localhost:";
     String urlTest12b  ="\"HOST localhost:SubProcessInRootProcess2\":TERMINATE:org/smartfrog/examples/subprocesses/subprocess.sf::localhost:";
 

@@ -1,47 +1,47 @@
 <?xml version="1.0"?>
 <project name="junit" default="default">
 
-  <!--
-  /** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+<!--
+/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
 
-  This library is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Lesser General Public
-  License as published by the Free Software Foundation; either
-  version 2.1 of the License, or (at your option) any later version.
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
 
-  This library is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Lesser General Public License for more details.
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
 
-  You should have received a copy of the GNU Lesser General Public
-  License along with this library; if not, write to the Free Software
-  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-  For more information: www.smartfrog.org
+For more information: www.smartfrog.org
 
-  */
-  -->
+*/
+-->
 
-  <description>
+<description>
      Build file for the JUnit tests.
-  </description>
+</description>
 
-  <!-- override point -->
-  <property file="build.properties"/>
+   <!-- override point -->
+  <property file="build.properties" />
 
-
-  <property name="root.dir" location="../.."/>
-  <!-- Import common stuff -->
+  
+  <property name="root.dir" location="../.."  />
+    <!-- Import common stuff -->
   <import file="${root.dir}/common.xml"/>
   
   
   <!-- ========================================================== -->
   <!-- ========================================================== -->
-  <target name="init"
+  <target name="init" 
     depends="init-standard-output-dirs,use-smartfrog-tasks,use-smartfrog-testharness">
-
-    <property name="deploy.sf" value="files/success.sf"/>
+          
+    <property name="deploy.sf" value="test/files/success.sf" />
     <property name="default.ini" location="test/files/default.ini"/>
     <property name="default.sf" location="test/files/default.sf"/>
 
@@ -51,115 +51,94 @@
   <!-- ========================================================== -->
   <!-- declare our compile time classpath -->
   <!-- ========================================================== -->
-  <target name="declare-compile.classpath" depends="declare-base.compile.classpath">
+  <target name="declare-compile.classpath" depends="declare-base.compile.classpath" >  
     <path id="compile.classpath">
       <path refid="base.compile.classpath"/>
       <pathelement location="${junit.jar}"/>
-    </path>
+    </path>    
   </target>
-  
-  
-  <!-- ========================================================== -->
-  <!-- create a distro. 
-       we want both sf-junit and the test har -->
-  <!-- ========================================================== -->
-  <target name="dist" depends="package,package-tests"
-    description="create a distribution">
-
-  </target>    
-    
   
   <!-- ========================================================== -->
   <!-- parse the file -->
   <!-- ========================================================== -->
-  <target name="parse" depends="init,dist,init-codebase"
+  <target name="parse" depends="init,dist" 
     description="parse the deployment descriptor">
-    <property name="parse.quiet" value="true"/>
-    <sf-parse quiet="${parse.quiet}">
-      <classpath path="${target.jar}:${test.jar}"/>
-      <sysproperty key="org.smartfrog.codebase"
-        value="${codebase}"/>
-      <!-- source files -->
-      <source dir="${src.dir}"
-        includes="org/smartfrog/services/junit/example.sf">
-      </source>
-      <!-- test files -->
-      <source dir="${test.src.dir}">
-        <include name="files/*.sf"/>
-        <exclude name="files/components.sf"/>
-      </source>
-    </sf-parse>
+        <sf-parse quiet="true">
+            <classpath path="${target.jar}"/>
+            <source dir="${build.classes.dir}"
+                includes="org/smartfrog/services/**/*.sf">
+            </source>
+        </sf-parse>    
   </target>
 
-
-  <!-- ========================================================== -->
-  <!-- set up any properties for deployment -->
-  <!-- ========================================================== -->
-  <target name="init-deploy-properties" depends="init">
-    <property name="deploy.host" value="localhost"/>
-    <property name="application.name" value="${project.name}"/>
-  </target>
-
-  <!-- ========================================================== -->
-  <!-- set-->
-  <!-- ========================================================== -->
-  <target name="init-codebase" depends="init-deploy-properties"
-    description="deploy">
-    <sf-tourl property="codebase">
-      <fileset file="${target.jar}"/>
-      <fileset file="${test.jar}"/>
-      <fileset file="${junit.jar}"/>
-    </sf-tourl>
-    <echo>
-        deploying to ${deploy.host}
-        codebase=${codebase}</echo>
-  </target>
+  
+    <!-- ========================================================== -->
+    <!-- set up any properties for deployment -->
+    <!-- ========================================================== -->
+    <target name="init-deploy-properties" depends="init">
+      <property name="deploy.host" value="localhost"/>
+      <property name="application.name" value="{project.name}"/>
+    </target>
+    
   <!-- ========================================================== -->
   <!-- deploy; requires a host -->
   <!-- ========================================================== -->
-  <target name="deploy" depends="parse,init-codebase,init-deploy-properties"
+  <target name="deploy0" depends="dist" 
     description="deploy">
+     <property name="deploy.host" value="localhost"/>
+      <sf-deploy classpathref="run.classpath"
+        logStackTraces="true"
+        host="${deploy.host}"
+        >
+        <application name="junit" descriptor="/${deploy.sf}"/>
+        <codebase file="target.jar"/>
+      </sf-deploy>
+  </target>  
 
-    <sf-deploy classpathref="run.classpath"
-      logStackTraces="true"
-      host="${deploy.host}"
-      timeout="30000"
-      >
-      <codebase url="${codebase}"/>
-
-      <application name="${application.name}">
+  
+    <!-- ========================================================== -->
+    <!-- deploy; requires a host -->
+    <!-- ========================================================== -->
+    <target name="deploy" depends="dist,init-deploy-properties"
+        description="deploy">
+        <sf-tourl property="target.jar.url" file="${target.jar}">
+<!--           <filelist>
+            <file name="${junit.jar}"/>
+          </filelist>
+ -->        </sf-tourl>
+        <sf-tourl property="junit.jar.url" file="${junit.jar}"/>
+        <property name="codebase" 
+         value="${target.jar.url} ${junit.jar.url}" />
+        <echo> codebase= ${codebase}</echo>
+        <sf-deploy classpathref="run.classpath"
+            logStackTraces="true"
+            host="${deploy.host}"
+            >
+            <codebase url="${codebase}"/>
+            
+            <application name="${application.name}">
               #include "/${deploy.sf}"
-              sfCodeBase PROPERTY org.smartfrog.codebase;
-      </application>
-    </sf-deploy>
-  </target>
-
-  <target name="undeploy" depends="init-deploy-properties"
-    description="deploy">
-
-    <sf-undeploy classpathref="run.classpath"
-      logStackTraces="true"
-      host="${deploy.host}"
-      timeout="30000"
-      application="${application.name}"/>
-  </target>
+              sfCodeBase PROPERTY org.smartfrog.codebase;         
+            </application>
+        </sf-deploy>
+    </target>
     
 
   <!-- ========================================================== -->
   <!-- system tests -->
   <!-- ========================================================== -->
-  <target name="system-tests" depends="parse,dist,compile-tests,init-codebase"
-    description="run system tests"
-    if="system.tests.enabled">
-    <parallel>
+  <target name="system-tests" depends="dist,compile-tests"
+      description="run system tests"
+      if="system.tests.enabled">
+      <parallel>
 
-      <!-- first thread runs the daemon -->
-      <sequential>
-        <antcall target="start-daemon-if-needed"/>
-      </sequential>
+        <!-- first thread runs the daemon -->
+        <sequential>
+          <antcall target="start-daemon-if-needed"/>
+        </sequential>
 
-      <!-- this is the next thread -->
-      <sequential>
+        <!-- this is the next thread -->
+        <sequential>
 
         <!--
           wait ten seconds for the harness to start
@@ -169,25 +148,20 @@
         <sf-waitfordaemon maxwait="10" timeoutproperty="daemon.missing"/>
         <fail if="daemon.missing">No daemon</fail>
         <sf-junit
-          errorProperty="test.failed"
-          failureProperty="test.failed"
-          >
+           errorProperty="test.failed"
+           failureProperty="test.failed"
+           >
           <classpath>
             <path refid="tests.run.classpath"/>
             <pathelement location="${test.classes.dir}"/>
           </classpath>
-          <sysproperty key="org.smartfrog.codebase" value="${codebase}"/>
-          <syspropertyset>
-            <propertyref prefix="runtime"/>
-          </syspropertyset>
-
           <!-- #Test case isolation technique -->
           <test name="${testcase}" if="testcase"/>
-          <batchtest todir="${test.data.dir}" unless="testcase">
+          <batchtest todir="${test.data.dir}" unless="testcase" >
             <!-- bulk test case -->
             <fileset dir="${test.classes.dir}">
-              <include name="org/smartfrog/services/junit/test/*Test.class"/>
-            </fileset>
+              <include name="org/smartfrog/services/junit/test/*Test.class" />
+           </fileset>
           </batchtest>
         </sf-junit>
 
@@ -197,5 +171,5 @@
       </sequential>
     </parallel>
   </target>
-
+  
 </project>

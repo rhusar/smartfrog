@@ -18,13 +18,26 @@ For more information: www.smartfrog.org
 
 */
 
-#include "/files/components.sf"
+#include "/org/smartfrog/components.sf"
+#include "/org/smartfrog/predicates.sf"
+#include "/org/smartfrog/services/junit/components.sf"
 
     /**
      * we are going to fail
      */
 
-sfConfig extends BufferingTestRunner {
-    tests extends FailureTest;
-}
+sfConfig extends TestRunner {
 
+    //buffer the results
+
+    listener extends BufferingListener;
+
+
+    //run the rigged tests
+    tests extends JUnitTestSuite {
+        package "org.smartfrog.services.junit.test.targets";
+        classes ["FailureTest"];
+        if true;
+    }
+
+}

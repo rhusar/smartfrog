@@ -20,8 +20,6 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.common;
 
-import java.io.Serializable;
-
 import org.smartfrog.sfcore.prim.Prim;
 
 /**
@@ -29,7 +27,7 @@ import org.smartfrog.sfcore.prim.Prim;
  * during the compilation of smartfrog component's description.
  *
  */
-public class SmartFrogParseException extends SmartFrogCompilationException implements Serializable {
+public class SmartFrogParseException extends SmartFrogCompilationException {
 
     /**
      * Constructs a SmartFrogParseException with no message.
@@ -103,9 +101,9 @@ public class SmartFrogParseException extends SmartFrogCompilationException imple
 
     /**
      * To forward SmartFrog exceptions instead of chain them.
-     *
+     * 
      * @param thr throwable object to be forwarded
-     *
+     * 
      * @return SmartFrogException that is a SmartFrogParseException
      */
     public static SmartFrogException forward (Throwable thr){

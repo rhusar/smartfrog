@@ -24,7 +24,6 @@ package org.smartfrog.services.junit.test.targets;
 import junit.framework.TestCase;
 
 /**
- * This test fails
  * Date: 05-Jul-2004
  * Time: 22:08:54
  */

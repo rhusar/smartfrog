@@ -36,7 +36,6 @@ import java.util.Enumeration;
 
 /**
  * This is the test runner.
- * It runs multiple test suites;
  * It keeps all its public state in a configuration object that can be got/cloned and serialized to suites
  * created 15-Apr-2004 15:44:41
  */
@@ -59,30 +58,19 @@ public class TestRunnerComponent extends CompoundImpl implements TestRunner, Run
 
     private int threadPriority=Thread.NORM_PRIORITY;
 
-    /**
-     * thread to run the tests
-     */
     private Thread worker=null;
 
-    /**
-     * keeper of statistics
-     */
     private Statistics stats;
 
-    /**
-     * who listens to the tests? This is potentially remote
-     */
-    private RunnerConfiguration configuration = new RunnerConfiguration();
-
-    /**
-     * constructor
-     *
-     * @throws RemoteException
-     */
     public TestRunnerComponent() throws RemoteException {
         helper = new ComponentHelper(this);
     }
 
+    /**
+     * who listens to the tests?
+     * This is potentially remote
+     */
+    private RunnerConfiguration configuration=new RunnerConfiguration();
 
 
     /**
@@ -91,6 +79,9 @@ public class TestRunnerComponent extends CompoundImpl implements TestRunner, Run
      * @throws SmartFrogInitException
      */
     private void validate() throws SmartFrogInitException {
+        if (configuration.getFork()) {
+            throw new SmartFrogInitException("forking is not yet implemented");
+        }
         if(threadPriority<Thread.MIN_PRIORITY || threadPriority>Thread.MAX_PRIORITY) {
             throw new SmartFrogInitException(ATTR_THREAD_PRIORITY+" is out of range -must be within "
                     +Thread.MIN_PRIORITY+" and " +Thread.MAX_PRIORITY);
@@ -125,12 +116,13 @@ public class TestRunnerComponent extends CompoundImpl implements TestRunner, Run
             RemoteException {
         //this will deploy all our children, including the test suites
         super.sfStart();
-        Object o = sfResolve(ATTR_LISTENER, configuration.getListenerFactory(), true);
-        if (!(o instanceof TestListenerFactory)) {
+        Object o = sfResolve(ATTR_LISTENER, configuration.getListener(), true);
+        if (!(o instanceof TestListener)) {
             throw new SmartFrogException("The attribute " + ATTR_LISTENER
-                    + "must refer to an implementation of TestListenerFactory");
+                    + "must refer to an implementation of TestListener");
         }
-        configuration.setListenerFactory((TestListenerFactory) o);
+        configuration.setListener((TestListener) o);
+        configuration.setFork(sfResolve(ATTR_FORK, configuration.getFork(), false));
         configuration.setKeepGoing(sfResolve(ATTR_KEEPGOING, configuration.getKeepGoing(), false));
         failOnError=sfResolve(ATTR_FAILONERROR,failOnError,false);
         threadPriority=sfResolve(ATTR_THREAD_PRIORITY,threadPriority,false);
@@ -144,14 +136,13 @@ public class TestRunnerComponent extends CompoundImpl implements TestRunner, Run
     }
 
     /**
-     * Liveness tests first delegates to the parent,
-     * then considers itself live unless all of the following conditions are met
-     * <ol>
-     * <li>We are finished
-     * <li>There was an exception
-     * <li>failOnError is set
-     * </ol>
-     * In which case the cached exception gets thrown.
+     * Implements ping for a compound. A compound extends prim functionality by
+     * pinging each of its children, any failure to do so will call
+     * sfLivenessFailure with the compound as source and the errored child as
+     * target. The exception that ocurred is also passed in. This check is
+     * only done if the source is non-null and if the source is the parent (if
+     * parent exists). If there is no parent and the source is non-null the
+     * check is still done.
      *
      * @param source source of ping
      * @throws org.smartfrog.sfcore.common.SmartFrogLivenessException
@@ -182,36 +173,31 @@ public class TestRunnerComponent extends CompoundImpl implements TestRunner, Run
     }
 
     /**
-     * run all the tests; this is the routine run in the worker thread.
-     * Break out (between suites) if we are interrupted.
-     * Sets the {@link TestResultAttributes#ATTR_FINISHED} attribute
-     * to true on completion.
+     * run all the tests;
+     * break out (between suites) if we are interrupted.
      * @return
      * @throws SmartFrogException
      * @throws RemoteException
      */
     public boolean runTests() throws SmartFrogException, RemoteException {
 
-        try {
-            boolean successful=true;
-            Enumeration e=sfChildren();
-            while (e.hasMoreElements()) {
-                Object o = e.nextElement();
-                if(o instanceof TestSuite) {
-                    TestSuite suiteComponent=(TestSuite) o;
-                    suiteComponent.bind(getConfiguration());
-                    successful &=suiteComponent.runTests();
-                    updateResultAttributes((Prim)suiteComponent);
-                    //break out if the thread is interrupted
-                    if(Thread.currentThread().isInterrupted()) {
-                        return false;
-                    }
+        boolean successful=true;
+        Enumeration e=sfChildren();
+        while (e.hasMoreElements()) {
+            Object o = (Object) e.nextElement();
+            if(o instanceof TestSuite) {
+                TestSuite suiteComponent=(TestSuite) o;
+                suiteComponent.bind(getConfiguration());
+                successful &=suiteComponent.runTests();
+                updateResultAttributes((Prim)suiteComponent);
+                //break out if the thread is interrupted
+                if(Thread.currentThread().isInterrupted()) {
+                    return false;
                 }
             }
-            return successful;
-        } finally {
-            sfReplaceAttribute(ATTR_FINISHED, Boolean.TRUE);
         }
+        sfReplaceAttribute(ATTR_FINISHED, Boolean.TRUE);
+        return successful;
     }
 
 
@@ -224,13 +210,13 @@ public class TestRunnerComponent extends CompoundImpl implements TestRunner, Run
         stats.updateResultAttributes(this,false);
     }
 
-
-    public TestListenerFactory getListenerFactory() throws RemoteException {
-        return configuration.getListenerFactory();
+    public TestListener getListener() {
+        return configuration.getListener();
     }
 
-    public void setListenerFactory(TestListenerFactory listener) {
-        configuration.setListenerFactory(listener);
+
+    public void setListener(TestListener listener) {
+        configuration.setListener(listener);
     }
 
 
@@ -241,6 +227,15 @@ public class TestRunnerComponent extends CompoundImpl implements TestRunner, Run
     public void setKeepGoing(boolean keepGoing) {
         configuration.setKeepGoing(keepGoing);
     }
+
+    public boolean getFork() {
+        return configuration.getFork();
+    }
+
+    public void setFork(boolean fork) {
+        configuration.setFork(fork);
+    }
+
 
     public RunnerConfiguration getConfiguration() {
         return configuration;
@@ -263,7 +258,6 @@ public class TestRunnerComponent extends CompoundImpl implements TestRunner, Run
         } catch (SmartFrogException e) {
             setCachedException(cachedException);
         }
-
         setFinished(true);
     }
 

@@ -26,12 +26,12 @@ ant -lib ..\..\build\dist\lib\smartfrog-tasks.jar -lib ..\..\..\..\smartfrog\dis
   </target>
     
   <target name="testWorks">
-    <sf-tourl property="testWorks" file="foo" validate="false"/>
+    <sf-tourl property="testWorks" file="foo"/>
     <fail unless="testWorks" />
   </target>
 
   <target name="testIllegalChars">
-    <sf-tourl property="testIllegalChars" file="fo o%" validate="false"/>
+    <sf-tourl property="testIllegalChars" file="fo o%"/>
   </target>
   
   <target name="testRoundTrip">
@@ -39,7 +39,7 @@ ant -lib ..\..\build\dist\lib\smartfrog-tasks.jar -lib ..\..\..\..\smartfrog\dis
   </target>
 
   <target name="testIllegalCombinations">
-    <sf-tourl property="testIllegalCombinations" file="foo" validate="false">
+    <sf-tourl property="testIllegalCombinations" file="foo">
       <fileset dir="." includes="*.xml" />
     </sf-tourl>
   </target>
@@ -55,10 +55,5 @@ ant -lib ..\..\build\dist\lib\smartfrog-tasks.jar -lib ..\..\..\..\smartfrog\dis
     <sf-tourl property="testFilesetSeparator" separator='","'>
       <fileset dir="." includes="*.xml" />
     </sf-tourl>
-  </target>
-
-  <target name="testValidation">
-    <sf-tourl property="testValidation" file="absent" validate="true"/>
-  </target>
-
-</project>
+  </target>  
+</project>      

@@ -21,7 +21,6 @@ For more information: www.smartfrog.org
 package org.smartfrog.sfcore.common;
 
 import java.rmi.RemoteException;
-import java.io.Serializable;
 
 import org.smartfrog.sfcore.prim.Prim;
 
@@ -29,7 +28,7 @@ import org.smartfrog.sfcore.prim.Prim;
  * A SmartFrogLogException is thrown when an error occurs in SmartFrog Logging.
  *
  */
-public class SmartFrogLogException extends SmartFrogException implements Serializable {
+public class SmartFrogLogException extends SmartFrogException {
 
     /** Attribute name for reference in exceptioncontext. */
     public static final String REFERENCE = "reference";

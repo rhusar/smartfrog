@@ -21,25 +21,21 @@ package org.smartfrog.services.junit.listeners;
 
 import org.smartfrog.services.junit.TestInfo;
 import org.smartfrog.services.junit.ThrowableTraceInfo;
-import org.smartfrog.services.junit.TestListenerFactory;
-import org.smartfrog.services.junit.TestListener;
 import org.smartfrog.sfcore.prim.PrimImpl;
-import org.smartfrog.sfcore.common.SmartFrogException;
 
 import java.io.PrintStream;
 import java.rmi.RemoteException;
 
 /**
- * The basic listener for trouble; the console listener. created 14-May-2004
- * 15:42:31
+ * The basic listener for trouble; the console listener.
+ * created 14-May-2004 15:42:31
  */
 
-public class ConsoleListenerComponent extends PrimImpl
-        implements  TestListenerFactory {
+public class ConsoleListenerComponent extends PrimImpl implements ConsoleListener {
 
     /**
-     * cache the prinstream so that when system.out is used to capture output we
-     * still go to the original console (i.e. no recursion)
+     * cache the prinstream so that when system.out is used to capture output
+     * we still go to the original console (i.e. no recursion)
      */
 
     PrintStream outstream = System.out;
@@ -47,7 +43,22 @@ public class ConsoleListenerComponent extends PrimImpl
     public ConsoleListenerComponent() throws RemoteException {
     }
 
+    public void addError(TestInfo test) throws RemoteException {
+        logTrouble("Error:", test);
+    }
 
+    public void addFailure(TestInfo test) throws RemoteException {
+        logTrouble("Failure:", test);
+    }
+
+    public void endTest(TestInfo test) throws RemoteException {
+        log("   ending " + test.getClassname() + " on " + test.getHostname());
+
+    }
+
+    public void startTest(TestInfo test) throws RemoteException {
+        log("Starting " + test.getClassname() + " on " + test.getHostname());
+    }
 
     private void log(String s) {
         outstream.println(s);
@@ -68,6 +79,7 @@ public class ConsoleListenerComponent extends PrimImpl
         log(buffer.toString());
         flush();
         logTrace(test.getFault());
+
     }
 
     private void logTrace(ThrowableTraceInfo fault) {
@@ -83,53 +95,5 @@ public class ConsoleListenerComponent extends PrimImpl
         flush();
         //recurse
         logTrace(fault.getCause());
-    }
-
-    /**
-     * bind to a caller
-     *
-     * @param hostname  name of host
-     * @param suitename name of test suite
-     * @param timestamp start timestamp (UTC)
-     *
-     * @return a listener to talk to
-     */
-    public TestListener listen(String hostname,
-                               String suitename,
-                               long timestamp) throws RemoteException,
-            SmartFrogException {
-        return new ConsoleTestListener();
-    }
-
-    /**
-     * this class exists to forward tests to the console
-     */
-    protected class ConsoleTestListener implements TestListener {
-
-        /**
-         * end this test suite. After calling this, caller should discard all
-         * references; they may no longer be valid. <i>No further methods may be
-         * called</i>
-         */
-        public void endSuite() throws RemoteException, SmartFrogException {
-
-        }
-
-        public void addError(TestInfo test) throws RemoteException {
-            logTrouble("Error:", test);
-        }
-
-        public void addFailure(TestInfo test) throws RemoteException {
-            logTrouble("Failure:", test);
-        }
-
-        public void endTest(TestInfo test) throws RemoteException {
-            log("   ending " + test.getClassname() + " on " + test.getHostname());
-
-        }
-
-        public void startTest(TestInfo test) throws RemoteException {
-            log("Starting " + test.getClassname() + " on " + test.getHostname());
-        }
     }
 }

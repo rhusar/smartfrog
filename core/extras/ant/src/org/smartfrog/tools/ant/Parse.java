@@ -23,9 +23,7 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Java;
-import org.apache.tools.ant.types.Environment;
 import org.apache.tools.ant.types.FileSet;
-import org.apache.tools.ant.types.PropertySet;
 import org.apache.tools.ant.util.FileUtils;
 
 import java.io.File;
@@ -37,15 +35,14 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * This task parses smartfrog files and validates them. Errors are thrown when
- * appropriate
+ * This task parses smartfrog files and validates them. Errors are thrown when appropriate
  *
  * @ant.task category="SmartFrog" name="sf-parse"
  * <p/>
  * created 20-Feb-2004 16:17:41
  */
 
-public class Parse extends TaskBase implements SysPropertyAdder {
+public class Parse extends TaskBase {
 
     /**
      * ini file to read in first
@@ -73,28 +70,10 @@ public class Parse extends TaskBase implements SysPropertyAdder {
      */
     private List source = new LinkedList();
 
-    /**
-     * parser subprocess
-     */
-    private Java parser;
 
     /**
-     * Called by the project to let the task initialize properly. The default
-     * implementation is a no-op.
-     *
-     * @throws BuildException if something goes wrong with the build
-     */
-    public void init() throws BuildException {
-        super.init();
-        String entryPoint = SmartFrogJVMProperties.PARSER_ENTRY_POINT;
-        parser = createJavaTask(entryPoint);
-        parser.setFailonerror(true);
-        parser.setFork(true);
-    }
-
-    /**
-     * name a single file for parsing. Exactly equivalent to a nested fileset
-     * with a file attribute
+     * name a single file for parsing.
+     * Exactly equivalent to a nested fileset with a file attribute
      *
      * @param file
      */
@@ -196,25 +175,25 @@ public class Parse extends TaskBase implements SysPropertyAdder {
             }
 
 
-            //now lets configure the parser
-            setupClasspath(parser);
-            parser.setFork(true);
+            //now lets create the Java statement
+            String entryPoint = SmartFrogJVMProperties.PARSER_ENTRY_POINT;
+            Java java = createJavaTask(entryPoint);
+            setupClasspath(java);
+            java.setFailonerror(true);
+            java.setFork(true);
             //and add various options to it
-            parser.createArg().setValue(SmartFrogJVMProperties.PARSER_OPTION_R);
+            java.createArg().setValue(SmartFrogJVMProperties.PARSER_OPTION_R);
             if (quiet) {
-                parser.createArg().setValue(
-                        SmartFrogJVMProperties.PARSER_OPTION_QUIET);
+                java.createArg().setValue(SmartFrogJVMProperties.PARSER_OPTION_QUIET);
             }
             if (verbose) {
-                parser.createArg().setValue(
-                        SmartFrogJVMProperties.PARSER_OPTION_VERBOSE);
+                java.createArg().setValue(SmartFrogJVMProperties.PARSER_OPTION_VERBOSE);
             }
-            parser.createArg().setValue(
-                    SmartFrogJVMProperties.PARSER_OPTION_FILENAME);
-            parser.createArg().setFile(tempFile);
+            java.createArg().setValue(SmartFrogJVMProperties.PARSER_OPTION_FILENAME);
+            java.createArg().setFile(tempFile);
 
             //run it
-            err = parser.executeJava();
+            err = java.executeJava();
         } finally {
             tempFile.delete();
         }
@@ -225,7 +204,6 @@ public class Parse extends TaskBase implements SysPropertyAdder {
                 //success
                 break;
             case -1:
-            case 255: //for HPUX and other unixes.
                 //parse fail
                 throw new BuildException("parse failure");
             default:
@@ -233,33 +211,6 @@ public class Parse extends TaskBase implements SysPropertyAdder {
                 throw new BuildException("Java application error code " + err);
         }
 
-    }
-
-    /**
-     * add a property
-     *
-     * @param sysproperty
-     */
-    public void addSysproperty(Environment.Variable sysproperty) {
-        parser.addSysproperty(sysproperty);
-    }
-
-    /**
-     * Adds a set of properties as system properties.
-     *
-     * @param propset set of properties to add
-     */
-    public void addSyspropertyset(PropertySet propset) {
-        parser.addSyspropertyset(propset);
-    }
-
-    /**
-     * add a property file to the JVM
-     *
-     * @param propFile
-     */
-    public void addConfiguredPropertyFile(PropertyFile propFile) {
-        propFile.addPropertiesToJvm(this);
     }
 
 }

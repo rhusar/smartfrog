@@ -20,8 +20,6 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.common;
 
-import java.io.Serializable;
-
 import org.smartfrog.sfcore.prim.Prim;
 
 /**
@@ -29,7 +27,7 @@ import org.smartfrog.sfcore.prim.Prim;
  * the SmartFrog lifecycle phases fails.
  *
  */
-public class SmartFrogLifecycleException extends SmartFrogRuntimeException implements Serializable {
+public class SmartFrogLifecycleException extends SmartFrogRuntimeException {
     /**
      * Constructs a SmartFrogLifecycleException with message.
      *

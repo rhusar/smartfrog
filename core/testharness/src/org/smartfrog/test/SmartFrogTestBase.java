@@ -681,13 +681,4 @@ public abstract class SmartFrogTestBase extends TestCase {
                          "          > "+ o2.toString()+"\n");
       TestCase.assertEquals(o1,o2);
     }
-
-    /**
-     * assert that a property is defined
-     * @param property
-     */
-    public final void assertSystemPropertySet(String property) {
-        String value=TestHelper.getTestProperty(property,null);
-        assertNotNull("Property not set: "+property, value);
-    }
 }

@@ -35,14 +35,7 @@ sfConfig extends TestRunner {
 
     listener extends ConsoleListener;
 
-    unused extends XMLListener {
-        outputDirectory ".";
-
-    }
-
-
     JUnitTestSuite extends TestSuite {
-        name "suite1";
         classes ["test"];
         excludes ["test"];
         if true;

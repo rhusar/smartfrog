@@ -19,9 +19,7 @@
  */
 
 
-package org.smartfrog.tools.ant.test.unit;
-
-import org.smartfrog.tools.ant.test.TaskTestBase;
+package org.smartfrog.tools.ant.test;
 
 /**
  * Test the parser

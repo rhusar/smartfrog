@@ -24,16 +24,11 @@ import junit.framework.Test;
 import java.io.Serializable;
 
 /**
- * This is information about a test that is sent over the wire. created
- * 15-Apr-2004 13:15:32
+ * This is information about a test that is sent over the wire.
+ * created 15-Apr-2004 13:15:32
  */
 
-public class TestInfo implements Serializable, Cloneable {
-
-    /**
-     * session info to use when forwarding
-     */
-    private String sessionID;
+public class TestInfo implements Serializable,Cloneable {
 
     /**
      * text from Test.toString();
@@ -165,13 +160,6 @@ public class TestInfo implements Serializable, Cloneable {
         this.endTime = endTime;
     }
 
-    /**
-     * get the duration of the call
-     */
-    public long getDuration() {
-        return endTime - startTime;
-    }
-
     public String getHostname() {
         return hostname;
     }
@@ -188,14 +176,6 @@ public class TestInfo implements Serializable, Cloneable {
         this.fault = fault;
     }
 
-    public String getSessionID() {
-        return sessionID;
-    }
-
-    public void setSessionID(String sessionID) {
-        this.sessionID = sessionID;
-    }
-
     /**
      * test for a fault being contained;
      *
@@ -207,21 +187,19 @@ public class TestInfo implements Serializable, Cloneable {
 
     /**
      * clone the trace info; include cloning any fault
-     *
      * @return
      * @throws CloneNotSupportedException
      */
     public Object clone() throws CloneNotSupportedException {
-        TestInfo cloned = (TestInfo) super.clone();
-        if (fault != null) {
-            cloned.fault = (ThrowableTraceInfo) cloned.fault.clone();
+        TestInfo cloned=(TestInfo) super.clone();
+        if(fault!=null) {
+            cloned.fault=(ThrowableTraceInfo) cloned.fault.clone();
         }
         return cloned;
     }
 
     /**
      * cloning, without the possiblity of failing
-     *
      * @return a duplicate instance
      */
     public TestInfo duplicate() {

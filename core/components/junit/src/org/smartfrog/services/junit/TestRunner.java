@@ -32,7 +32,10 @@ import java.rmi.RemoteException;
 
 public interface TestRunner extends Remote , TestResultAttributes
  {
-
+    /**
+     * name of the fork attribute
+     */
+    String ATTR_FORK = "fork";
     /**
      * name of the listener
      */
@@ -52,9 +55,9 @@ public interface TestRunner extends Remote , TestResultAttributes
     String ATTR_THREAD_PRIORITY="threadPriority";
 
 
-    TestListenerFactory getListenerFactory() throws RemoteException;
+    TestListener getListener() throws RemoteException;
 
-    void setListenerFactory(TestListenerFactory listener) throws RemoteException;
+    void setListener(TestListener listener) throws RemoteException;
 
     /**
      * run the test

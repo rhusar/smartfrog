@@ -24,7 +24,6 @@ import java.rmi.RemoteException;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.compound.Compound;
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.prim.Prim;
 
 
@@ -57,14 +56,13 @@ public interface ProcessCompound extends Compound {
      * not exist.
      *
      * @param name process name to use
-     * @param cd component description with extra process configuration (ex. sfProcessAttributes)
      *
      * @return processcompound under name
      *
      * @throws Exception failed to deploy or locate process
      * @throws RemoteException if there is any network or remote error
      */
-    public ProcessCompound sfResolveProcess(Object name, ComponentDescription cd)
+    public ProcessCompound sfResolveProcess(Object name)
         throws Exception, RemoteException;
 
     /**

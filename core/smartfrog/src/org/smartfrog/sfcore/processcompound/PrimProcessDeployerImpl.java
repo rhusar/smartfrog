@@ -69,6 +69,6 @@ public class PrimProcessDeployerImpl extends PrimHostDeployerImpl {
             return hostCompound;
         }
 
-        return hostCompound.sfResolveProcess(processName, target);
+        return hostCompound.sfResolveProcess(processName);
     }
 }

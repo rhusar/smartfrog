@@ -19,7 +19,7 @@ For more information: www.smartfrog.org
 */
 
 LogToLog4JImpl extends {
-   //configuratorFile ""; //Optional. If not defined will try: "log4j.configuration" system env variable
-   configureAndWatch false;
-   configureAndWatchDelay 60000L; //Default 60 secs
+   //configuratorFile "";
+   //configureAndWatch false;
+   //configureAndWatchDelay 60000L; //Default 60 secs
 }
