@@ -127,9 +127,9 @@ For more information: www.smartfrog.org
 		 <copy todir = "${dist.src.dir}">
         <fileset dir ="${src.dir}">
 		  <include name="**/examples/**"/>
-		  <!--include name="**/dynamicexample*"/-->
 		</fileset>
-    </copy>   
+    </copy>  
+	 <copy tofile="${dist.dir}/build.xml" file="releaseBuild.xml"/>	
 	</target>
 
   <!-- ========================================================== -->
@@ -142,6 +142,15 @@ For more information: www.smartfrog.org
         pattern="*.jar" dest="${smartfrog.dist.lib.dir}" />    
   </target>   -->
   
+<!-- ========================================================== -->
+  <!-- clean -->
+  <!-- ========================================================== -->
+
+ <target name="clean" depends="init,common.clean" description="clean up build ,dist and releases" >
+  	<property name="releases.dir" value="releases"/>  
+    <delete dir="${releases.dir}"  />  
+	
+  </target>  
 
   <!-- =================================================================== -->
   <!--   JDocs                                                             -->

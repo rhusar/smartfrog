@@ -49,7 +49,7 @@ For more information: www.smartfrog.org
     <!--  Java Docs for all                                                -->
     <echo message=""/>
     <echo message="------------------------------------------------------------------------"/>
-    <echo message="  Creating Java Docs for ${Name.System} ${version} [${dist.dir}/${jdocs}]"/>
+    <echo message="  Creating Java Docs for ${Name.System} ${version} "/>
     <echo message="------------------------------------------------------------------------"/>
     <mkdir dir="${dist.jdocs.dir}"/>
     <javadoc packagenames="org.smartfrog.*"
@@ -132,6 +132,18 @@ For more information: www.smartfrog.org
         value="No apache commons.net found"/>    
   </target>
   
+
+  <!-- ========================================================== -->
+  <!-- clean -->
+  <!-- ========================================================== -->
+
+ <target name="clean" depends="init,common.clean" description="clean up build ,dist and releases" >
+    <property name="releases.dir" value="releases"/>
+    <delete dir="${releases.dir}"  />  
+ </target>  
+
+
+
   <!-- ========================================================== -->
   <!-- create the jar -->
   <!-- ========================================================== -->
@@ -146,7 +158,8 @@ For more information: www.smartfrog.org
         <fileset dir ="${src.dir}">
 		  <include name="**/examples/**"/>
 		</fileset>
-    </copy>   
+    </copy> 
+	 <copy tofile="${dist.dir}/build.xml" file="releaseBuild.xml"/>
   </target>
 
 </project>
