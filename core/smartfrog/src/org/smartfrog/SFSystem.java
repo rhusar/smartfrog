@@ -100,15 +100,6 @@ public class SFSystem implements MessageKeys {
     /** Property name for ini file to read at start-up. */
     public static final String iniFile = propBase + "iniFile";
 
-    /** Property name for initial sf file to read at start-up. */
-    public static final String iniSFFile = propBase + "iniSFFile";
-
-    /** flag indicating error while deployment */
-    private static boolean errorDeploy = false;
-
-    /** flag indicating error while termination */
-    private static boolean errorTermination = false;
-
 
     /** Property name for logging stackTrace during exceptions. */
     public static final String propLogStackTrace = propBase +
@@ -118,35 +109,6 @@ public class SFSystem implements MessageKeys {
      * value of the errror code returned during a failed exit
      */
     private static final int EXIT_ERROR_CODE = -1;
-
-
-    /**
-     * Gets language grom the URL
-     *
-     * @param url URL passed to application
-     *
-     * @return Language string
-     *
-     * @throws SmartFrogException In case any error while getting the
-     *         language string
-     */
-    private static String getLanguageFromUrl(String url)
-        throws SmartFrogException {
-        if (url == null) {
-            throw new SmartFrogInitException(MessageUtil.formatMessage(
-                    MSG_NULL_URL));
-        }
-
-        int i = url.lastIndexOf('.');
-
-        if (i <= 0) {
-            // i.e. it cannot contain no "." or start with the only "."
-            throw new SmartFrogInitException(MessageUtil.formatMessage(
-                    MSG_LANG_NOT_FOUND, url));
-        } else {
-            return url.substring(i + 1);
-        }
-    }
 
     /**
      * Parses and deploys "sfConfig" from a stream to the target process
@@ -292,7 +254,7 @@ public class SFSystem implements MessageKeys {
                 throw new SmartFrogDeploymentException(MessageUtil.
                         formatMessage(MSG_URL_NOT_FOUND, url, appName));
             }
-            deployedApp = deployFrom(is, target, nameContext, getLanguageFromUrl(url));
+            deployedApp = deployFrom(is, target, nameContext, SFParser.getLanguageFromUrl(url));
         } catch (SmartFrogException sfex) {
             sfex.put("URL:", url);
             sfex.put("Component Name:", appName);
