@@ -105,6 +105,11 @@ public class SFSystem implements MessageKeys {
     public static final String propLogStackTrace = propBase +
         "logger.logStackTrace";
 
+    /**
+     * value of the errror code returned during a failed exit
+     */
+    private static final int EXIT_ERROR_CODE = -1;
+
 
     /**
      * Gets language grom the URL
@@ -231,8 +236,9 @@ public class SFSystem implements MessageKeys {
      *
      * @param opts option set to use
      * @param target the target process compound to request deployment
+     * @return the number of components successfully deployed.
      */
-    public static void deployFromURLsGiven(OptionSet opts,
+    public static int deployFromURLsGiven(OptionSet opts,
                                            ProcessCompound target) {
         Context nameContext = null;
         Enumeration names = opts.names.elements();
@@ -240,6 +246,7 @@ public class SFSystem implements MessageKeys {
         String name = "";
         //number of anonymous deploys
         int counter = 0;
+        int successfulDeploys=0;
         //so far so good
         errorDeploy = false;
         for (Enumeration e = opts.configs.elements(); e.hasMoreElements();) {
@@ -255,6 +262,7 @@ public class SFSystem implements MessageKeys {
 
             try {
                 deployFromURL(url, name, target, nameContext);
+                successfulDeploys++;
             } catch (SmartFrogException sfex) {
                 errorDeploy = true;
                 sfex.put("URL:", url);
@@ -275,6 +283,7 @@ public class SFSystem implements MessageKeys {
                 }
             }
         }
+        return successfulDeploys;
     }
 
     /**
@@ -345,8 +354,9 @@ public class SFSystem implements MessageKeys {
      * @param opts the option set to use
      * @param target the target process compound to request the terminations
      */
-    public static void terminateNamedApplications(OptionSet opts,
+    public static int terminateNamedApplications(OptionSet opts,
         ProcessCompound target) {
+        int terminateCount=0;
         for (Enumeration terms = opts.terminations.elements();
                 terms.hasMoreElements();) {
             String term = (String) terms.nextElement();
@@ -379,6 +389,7 @@ public class SFSystem implements MessageKeys {
                         Logger.log(ex);
                     }
                 }
+                terminateCount++;
             } catch (Exception e) {
                 errorTermination  = true;
                 Logger.log(MessageUtil.formatMessage(MSG_ERR_TERM, term));
@@ -386,6 +397,7 @@ public class SFSystem implements MessageKeys {
                 Logger.log(e);
             }
         }
+        return terminateCount;
     }
 
 
@@ -393,7 +405,7 @@ public class SFSystem implements MessageKeys {
      * Terminates the named components given as -T options on the command
      * line.
      *
-    *  @param options option set up configured with SmartFrog Options
+    *  @param opts option set up configured with SmartFrog Options
      * @param target the target process compound to request the terminations
      *
      */
@@ -438,44 +450,54 @@ public class SFSystem implements MessageKeys {
      * Detaches and terminates the named components given as -d options on the
      * command line.
      *
-    * @param options option set up configured with SmartFrog Options
+    * @param opts option set up configured with SmartFrog Options
      * @param target the target process compound to request the terminations
+     * @return number of detachments.
      */
-    public static void detachAndTerminateNamedComponents(OptionSet opts,
-        ProcessCompound target) {
-            Prim obj = null;
+    public static int detachAndTerminateNamedComponents(OptionSet opts,
+                                                         ProcessCompound target) {
+        //return early if there is nothing to detach
+        if(opts.detaching.size()==0) {
+            return 0;
+        }
+        int detachCount=0;
+        Prim obj;
+        try {
+            obj = (Prim)target;
+        } catch (Exception e) {
+            errorTermination  = true;
+            Logger.log(MessageUtil.formatMessage(MSG_ERR_TERM, target));
+            // log stack trace
+            Logger.log(e);
+            //exit immediately at this point
+            return detachCount;
+        }
+
+        StringTokenizer st = null;
+        String token = null;
+
+        TerminationRecord tr = new TerminationRecord(TerminationRecord.NORMAL,
+                "External Management Action", null);
+        for (Enumeration detachs = opts.detaching.elements();
+             detachs.hasMoreElements();) {
+            String detach = (String) detachs.nextElement();
+            st = new StringTokenizer(detach, ":");
             try {
-                    obj = (Prim)target;
+                while (st.hasMoreTokens()) {
+                    token = st.nextToken();
+                    obj = ((Prim)obj.sfResolveHere(token));
+                }
+                obj.sfDetachAndTerminate(tr);
+                detachCount++;
             } catch (Exception e) {
                 errorTermination  = true;
-                Logger.log(MessageUtil.formatMessage(MSG_ERR_TERM, target));
+                Logger.log(MessageUtil.formatMessage(
+                        MSG_ERR_TERM,token));
                 // log stack trace
                 Logger.log(e);
             }
-
-            StringTokenizer st = null;
-            String token = null;
-
-            TerminationRecord tr = new TerminationRecord(TerminationRecord.NORMAL,
-                    "External Management Action", null);
-            for (Enumeration detachs = opts.detaching.elements();
-                detachs.hasMoreElements();) {
-                     String detach = (String) detachs.nextElement();
-                     st = new StringTokenizer(detach, ":");
-                     try {
-                             while (st.hasMoreTokens()) {
-                                     token = st.nextToken();
-                                     obj = ((Prim)obj.sfResolveHere(token));
-                             }
-                             obj.sfDetachAndTerminate(tr);
-                     } catch (Exception e) {
-                             errorTermination  = true;
-                             Logger.log(MessageUtil.formatMessage(
-                                                       MSG_ERR_TERM,token));
-                             // log stack trace
-                             Logger.log(e);
-                     }
-            }
+        }
+        return detachCount;
     }
 
     /**
@@ -637,15 +659,33 @@ public class SFSystem implements MessageKeys {
         if (str != null) {
             System.err.println(str);
         }
-        exit();
+        exitWithError();
     }
 
     /**
      * Exits from the system.
      */
-    private static void exit() {
-        System.exit(1);
+    private static void exitWithError() {
+        System.exit(EXIT_ERROR_CODE);
     }
+
+    /**
+     * exit with an error code that depends on the status of the execution
+     *
+     * @param status
+     */
+    private static void exitWithStatus(StatusInfo status) {
+        boolean somethingFailed=false;
+        somethingFailed=status.detachRequests!=status.detachCount;
+        somethingFailed|=status.terminateRequests!=status.terminatedCount;
+        somethingFailed|=status.deployRequests!=status.deployedCount;
+        if(somethingFailed) {
+            exitWithError();
+        } else {
+            System.exit(0);
+        }
+    }
+
 
     /**
      * Shows the version info of the SmartFrog system.
@@ -694,6 +734,7 @@ public class SFSystem implements MessageKeys {
     public static void main(String[] args) {
 
         ProcessCompound rootProcess = null;
+        StatusInfo info = new StatusInfo();
 
         showVersionInfo();
 
@@ -701,32 +742,32 @@ public class SFSystem implements MessageKeys {
 
         if (opts.errorString != null) {
             Logger.log(opts.errorString);
-            exit();
+            exitWithError();
         }
         try {
-            rootProcess = runSmartFrog(opts, null);
+            rootProcess = runSmartFrog(opts, null, info);
 
         } catch (SmartFrogException sfex) {
             Logger.log(sfex);
-            exit();
+            exitWithError();
         } catch (UnknownHostException uhex) {
             Logger.log(MessageUtil.formatMessage(MSG_UNKNOWN_HOST, opts.host),
                     uhex);
-            exit();
+            exitWithError();
         } catch (ConnectException cex) {
             Logger.log(MessageUtil.formatMessage(MSG_CONNECT_ERR, opts.host),
                     cex);
-            exit();
+            exitWithError();
         } catch (RemoteException rmiEx) {
             // log stack trace
             Logger.log(MessageUtil.formatMessage(MSG_REMOTE_CONNECT_ERR,
                     opts.host), rmiEx);
-            exit();
+            exitWithError();
         } catch (Exception ex) {
             //log stack trace
             Logger.log(MessageUtil.
                     formatMessage(MSG_UNHANDLED_EXCEPTION), ex);
-            exit();
+            exitWithError();
         }
         // Check for exit flag
         if (opts.exit) {
@@ -738,7 +779,7 @@ public class SFSystem implements MessageKeys {
                 Logger.log(MessageUtil.
                         formatMessage(MSG_TERMINATE_SUCCESS, opts.terminations));
             }
-            System.exit(0);
+            exitWithStatus(info);
         } else {
             //Logger.log(MessageUtil.formatMessage(MSG_SF_READY));
             if (Logger.logStackTrace) {
@@ -757,12 +798,14 @@ public class SFSystem implements MessageKeys {
         }
     }
 
+
     /**
      * Run SmartFrog as configured. This call does not exit smartfrog, even if the OptionSet requests it.
      * This entry point exists so that alternate entry points (e.g. Ant Tasks) can start the system.
      * Important: things like the output streams can be redirected if the
      * @param options option set up configured with SmartFrog Options
      * @param iniFile optional initialisation file.
+     * @param info status object for complex result reporting
      * @return the root process
      * @throws SmartFrogException for a specific SmartFrog problem
      * @throws UnknownHostException if the target host is unknown
@@ -770,9 +813,19 @@ public class SFSystem implements MessageKeys {
      * @throws RemoteException if something goes wrong during the communication
      * @throws Exception if anything else went wrong
      */
-    public static ProcessCompound runSmartFrog(OptionSet options, String iniFile)
+    public static ProcessCompound runSmartFrog(OptionSet options,
+                                               String iniFile,
+                                               StatusInfo info)
             throws SmartFrogException, UnknownHostException, ConnectException, RemoteException, Exception {
         ProcessCompound process = null;
+
+        //copy the reference and make a new instance if the caller did not provide
+        //one. This avoids lots of conditional checks in the code logging #of calls.
+        StatusInfo status=info;
+        if(status==null) {
+            status = new StatusInfo();
+        }
+
         // Initialize Smart Frog Security
         SFSecurity.initSecurity();
 
@@ -798,12 +851,27 @@ public class SFSystem implements MessageKeys {
         // get the target process compound
         ProcessCompound targetPC = selectTargetProcess(options);
 
-        detachAndTerminateNamedComponents(options, targetPC);
+        status.detachRequests= options.detaching.size();
+        status.detachCount=detachAndTerminateNamedComponents(options, targetPC);
 
-        terminateNamedApplications(options, targetPC);
+        status.terminateRequests=options.terminations.size();
+        status.terminatedCount=terminateNamedApplications(options, targetPC);
 
-        deployFromURLsGiven(options, targetPC);
+        status.deployRequests=options.configs.size();
+        status.deployedCount = deployFromURLsGiven(options, targetPC);
 
         return process;
+    }
+
+    /**
+     * a class used for status feedback
+     */
+    private static class StatusInfo {
+        public int deployRequests;
+        public int deployedCount;
+        public int terminateRequests;
+        public int terminatedCount;
+        public int detachRequests;
+        public int detachCount;
     }
 }
