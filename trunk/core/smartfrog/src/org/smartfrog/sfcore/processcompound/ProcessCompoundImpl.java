@@ -526,7 +526,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
     }
 
     /**
-     * Register a comonent under given name. Exception is thrown if the name is
+     * Register a component under given name. Exception is thrown if the name is
      * already used. If name is null a name is made up for the component.
      * Consisting of the complete name of the component concatenated with the
      * current time.
