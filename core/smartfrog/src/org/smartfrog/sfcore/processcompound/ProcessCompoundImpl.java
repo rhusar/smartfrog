@@ -591,10 +591,9 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
         return success;
     }
 
-
     /**
      * Tries to find an attribute in the local context. If the attribute is not
-     * found the thread will wait for a notification from sfNotifySubprocessReady
+         * found the thread will wait for a notification from sfNotifySubprocessReady
      * or until given timeout expires. Used to wait for a new process
      * compound to appear.
      *
@@ -606,33 +605,33 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
      * @throws Exception attribute not found after timeout
      * @throws RemoteException if there is any network or remote error
      */
-    public Object sfResolveHereOrWait(Object name, long timeout)
-        throws Exception {
-        long endTime = (new Date()).getTime() + timeout;
+    public Object sfResolveHereOrWait(Object name, long timeout) throws
+        Exception {
+        long endTime = (new Date()).getTime()+timeout;
 
-    synchronized (processLocks) {
-        while (true) {
-        try {
-            // try to return the attribute value
-            // if name in locks => process not ready, pretend not found...
-            if (processLocks.contains(name)) {
-            throw SmartFrogResolutionException.notFound(new Reference(name),
-                                    sfCompleteNameSafe());
-            }
-            else
-            return sfResolveHere(name);
-        } catch (SmartFrogResolutionException ex) {
-            // not found, wait for leftover timeout
-            long now = (new Date()).getTime();
+        synchronized (processLocks) {
+            while (true) {
+                try {
+                    // try to return the attribute value
+                    // if name in locks => process not ready, pretend not found...
+                    if (processLocks.contains(name)) {
+                        throw SmartFrogResolutionException.notFound(new
+                            Reference(name),
+                            sfCompleteNameSafe());
+                    } else
+                        return sfResolveHere(name);
+                } catch (SmartFrogResolutionException ex) {
+                    // not found, wait for leftover timeout
+                    long now = (new Date()).getTime();
 
-            if (now >= endTime) {
-            throw ex;
+                    if (now>=endTime) {
+                        throw ex;
+                    }
+                    processLocks.add(name);
+                    processLocks.wait(endTime-now);
+                }
             }
-            processLocks.add(name);
-            processLocks.wait(endTime - now);
         }
-        }
-    }
     }
 
     /**
@@ -643,14 +642,13 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
      * @throws RemoteException if there is any network or remote error
      *
      */
-    public void sfNotifySubprocessReady(String name)
-        throws RemoteException {
+    public void sfNotifySubprocessReady(String name) throws RemoteException {
 
         // Notify any waiting threads that an attribute was added
-    synchronized (processLocks) {
-        processLocks.remove(name);
-        processLocks.notifyAll();
-    }
+        synchronized (processLocks) {
+            processLocks.remove(name);
+            processLocks.notifyAll();
+        }
     }
 
     /**
