@@ -11,4 +11,4 @@ export SERVER=eb97201.india.hp.com:8080
 # Please edit codebase if you have any other jar file in webserver
 export CODEBASE="http://$SERVER/sfExamples.jar"
 
-java -Djava.security.manager -Djava.security.policy==$SFPRIVATE/sf.policy -Dorg.smartfrog.sfcore.security.keyStoreName=$SFPRIVATE/$SFHOSTNAME/mykeys.st -Dorg.smartfrog.sfcore.security.propFile=$SFPRIVATE/$SFHOSTNAME/SFSecurity.properties -Dorg.smartfrog.codebase=$CODEBASE org.smartfrog.SFSystem -h $1 -n $2 $3 -e 
+java -Djava.security.manager -Djava.security.policy==$SFPRIVATE/sf.policy -Dorg.smartfrog.sfcore.security.keyStoreName=$SFPRIVATE/$SFHOSTNAME/mykeys.st -Dorg.smartfrog.sfcore.security.propFile=$SFPRIVATE/$SFHOSTNAME/SFSecurity.properties -Dorg.smartfrog.codebase=$CODEBASE org.smartfrog.SFSystem -a $2:DEPLOY:$3::$1: -e 

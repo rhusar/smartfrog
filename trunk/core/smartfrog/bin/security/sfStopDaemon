@@ -13,5 +13,5 @@ echo "Stopping sfDaemon on" $1 "..."
 java -Djava.security.manager -Djava.security.policy==$SFPRIVATE/sf.policy \
       -Dorg.smartfrog.sfcore.security.keyStoreName=$SFPRIVATE/$SFHOSTNAME/mykeys.st \
       -Dorg.smartfrog.sfcore.security.propFile=$SFPRIVATE/$SFHOSTNAME/SFSecurity.properties \
-       org.smartfrog.SFSystem -h1 $1 -t rootProcess -e
+       org.smartfrog.SFSystem -a rootProcess:TERMINATE:::$1: -e
 echo "Stopped sfDaemon on" $1 

@@ -17,7 +17,7 @@ set CODEBASE="http://%SERVER%/sfExamples.jar"
 
 rem if exist "%SFHOME%\jre\bin\java.exe" set path=%SFHOME%\jre\bin
 rem call %SFHOME%\bin\setClassPath
-java -Dorg.smartfrog.iniFile=%SFHOME%\bin\default.ini -Dorg.smartfrog.codebase=%CODEBASE% org.smartfrog.SFSystem -h %1 -n %2 %3 -e
+java -Dorg.smartfrog.iniFile=%SFHOME%\bin\default.ini -Dorg.smartfrog.codebase=%CODEBASE% org.smartfrog.SFSystem -a %2:DEPLOY:%3::%1: -e
 GOTO end
 :usage
 echo Insufficient arguments to use sfStart 

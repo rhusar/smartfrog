@@ -15,7 +15,7 @@ set SERVER=localhost:8080
 rem Please edit codebase if you have any other jar file in webserver 
 set CODEBASE="http://%SERVER%/sfExamples.jar" 
 
-java -Dorg.smartfrog.iniFile=%SFHOME%\bin\default.ini -Dorg.smartfrog.codebase=%CODEBASE% org.smartfrog.SFSystem -h %1 -d %2 -e
+java -Dorg.smartfrog.iniFile=%SFHOME%\bin\default.ini -Dorg.smartfrog.codebase=%CODEBASE% org.smartfrog.SFSystem -a %2:DETaTERM:::%1: -e
 GOTO end
 :usage
 echo Insufficient arguments to use sfDetachAndTerminate

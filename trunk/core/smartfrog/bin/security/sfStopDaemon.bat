@@ -17,7 +17,7 @@ call %SFHOME%\bin\security\setClassPath
 if exist "%SFHOME%\jre\bin\java.exe" set path=%SFHOME%\jre\bin
 echo "Stopping sfDaemon in %1"
 
-java -Djava.security.policy==%SFHOME%\private\sf.policy -Djava.security.manager -Dorg.smartfrog.sfcore.security.keyStoreName=%SFPRIVATE%\mykeys.st -Dorg.smartfrog.sfcore.security.propFile=%SFPRIVATE%\SFSecurity.properties org.smartfrog.SFSystem -h1 %1 -t rootProcess -e
+java -Djava.security.policy==%SFHOME%\private\sf.policy -Djava.security.manager -Dorg.smartfrog.sfcore.security.keyStoreName=%SFPRIVATE%\mykeys.st -Dorg.smartfrog.sfcore.security.propFile=%SFPRIVATE%\SFSecurity.properties org.smartfrog.SFSystem -a rootProcess:TERMINATE:::%1: -e
 GOTO end
 :usage
 echo Insufficient arguments to use sfStopDaemon

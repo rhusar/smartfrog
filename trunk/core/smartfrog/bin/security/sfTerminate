@@ -11,4 +11,4 @@ export CLASSPATH
 java   -Djava.security.manager -Djava.security.policy==$SFHOME/private/sf.policy \
       -Dorg.smartfrog.sfcore.security.keyStoreName=$SFPRIVATE/$SFHOSTNAME/mykeys.st \
       -Dorg.smartfrog.sfcore.security.propFile=$SFPRIVATE/$SFHOSTNAME/SFSecurity.properties \
-      org.smartfrog.SFSystem -h $1 -T $2 -e
+      org.smartfrog.SFSystem -a $2:TERMINATE:::$1: -e
