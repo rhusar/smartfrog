@@ -53,8 +53,10 @@
         edit core/build.properties to set it to the base dir of Ant
     </fail>
     <property name="smartfrog.home" location="${core.dir}/smartfrog"/>
-    <property name="smartfrog.dist.dir" location="${smartfrog.home}/dist"/>
+    <!--property name="smartfrog.dist.dir" location="${smartfrog.home}/dist"/-->
+    <property name="smartfrog.dist.dir" location="${env.SFHOME}"/>
     <property name="smartfrog.dist.lib.dir" location="${smartfrog.dist.dir}/lib"/>
+    <property name="smartfrog.components.lib.dir" value="${env.SFCOMPONENTS}/lib"/>
     <!-- Compile options for Smartfrog Release -->
     <property name="javac.debug.mode" value="true"/> 
     <property name="javac.deprecation.mode" value="true"/> 
@@ -69,6 +71,11 @@
       </fileset>       
     </path>
     
+    <path id="smartfrog.components.classpath">
+      <fileset dir="${smartfrog.components.lib.dir}">
+        <include name="**/*.jar"/>
+      </fileset>       
+    </path> 
     <property name="extras.dir"
       location="${core.dir}/extras"/>
       
@@ -411,6 +418,7 @@
     description="declare the classpath and imports for the smartfrog tasks">
     <path id="smartfrog.tasks.classpath">
       <path refid="smartfrog.classpath"/>
+      <path refid="smartfrog.components.classpath"/>
       <pathelement location="${smartfrog.tasks.jar}"/>
     </path>
     <available 
