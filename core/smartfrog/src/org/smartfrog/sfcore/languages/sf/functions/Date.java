@@ -24,11 +24,15 @@ import org.smartfrog.sfcore.languages.sf.PhaseAction;
 
 /**
  * Defines the Date function that returns a string representation of the current
- * date.
+ * date and time.
  */  
 public class Date extends BaseFunction implements PhaseAction {
     /**
-     * Interface method. Retunts the date.
+     * Interface method. Returns the date and time.
+     * Currently this is in ctime() format
+     *  {@link java.util.Date#toString}; it will move to ISO8601/RFC3339
+     * format with the next release
+     * @todo generate RFC3339 timestamps 
      * @return system date
      */
     protected Object doFunction() {
