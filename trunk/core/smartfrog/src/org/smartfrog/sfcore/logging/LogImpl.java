@@ -155,7 +155,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
             classComponentDescription = getClassComponentDescription(this, true);
             Integer logLevel = new Integer (currentLogLevel);
             try {
-                 logLevel = new Integer(((Double)(
+                 logLevel = new Integer(((Number)(
                     classComponentDescription.sfResolve(new Reference(
                     "logLevel")))).intValue());
             } catch (ClassCastException cce){
