@@ -1,12 +1,12 @@
 package org.smartfrog.services.xml.impl;
 
+import nu.xom.Node;
+import nu.xom.XMLException;
 import org.smartfrog.services.xml.interfaces.LocalNode;
 import org.smartfrog.services.xml.interfaces.XmlNode;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.prim.Prim;
-import nu.xom.Node;
-import nu.xom.XMLException;
 
 import java.rmi.RemoteException;
 
@@ -15,8 +15,8 @@ import java.rmi.RemoteException;
  */
 public final class XmlNodeHelper implements XmlNode {
     /**
-     * text of the message when wrapping a {@link nu.xom.XMLException} with a {@link
-     * SmartFrogException}
+     * text of the message when wrapping a {@link nu.xom.XMLException} with a
+     * {@link SmartFrogException}
      */
     public static final String ERROR_XML_FAULT = "XML exception when creating node or generating XML";
 
@@ -49,6 +49,7 @@ public final class XmlNodeHelper implements XmlNode {
 
     /**
      * get the current node value
+     *
      * @return
      */
     public Node getNode() {
@@ -92,7 +93,9 @@ public final class XmlNodeHelper implements XmlNode {
             }
             xml = node.toXML();
         } catch (XMLException e) {
-            throw new SmartFrogException(XmlNodeHelper.ERROR_XML_FAULT, e, ownerAsPrim);
+            throw new SmartFrogException(XmlNodeHelper.ERROR_XML_FAULT,
+                    e,
+                    ownerAsPrim);
         }
         ownerAsPrim.sfReplaceAttribute(ATTR_XML, xml);
         validate();
@@ -114,5 +117,28 @@ public final class XmlNodeHelper implements XmlNode {
                     + xml,
                     ownerAsPrim);
         }
+    }
+
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof XmlNodeHelper)) {
+            return false;
+        }
+
+        final XmlNodeHelper xmlNodeHelper = (XmlNodeHelper) o;
+
+        if (node != null ?
+                !node.equals(xmlNodeHelper.node) :
+                xmlNodeHelper.node != null) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public int hashCode() {
+        return (node != null ? node.hashCode() : 0);
     }
 }

@@ -21,8 +21,8 @@ package org.smartfrog.services.xml.impl;
 
 import nu.xom.Element;
 import nu.xom.Node;
-import org.smartfrog.services.xml.interfaces.XmlElement;
 import org.smartfrog.services.xml.interfaces.LocalNode;
+import org.smartfrog.services.xml.interfaces.XmlElement;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
 import java.rmi.RemoteException;
@@ -40,7 +40,6 @@ public class XmlElementImpl extends CompoundXmlNode implements XmlElement {
      * create a node of the appropriate type. This is called during deployment;
      *
      * @return a new node
-     *
      * @throws nu.xom.XMLException if needed
      */
     public Node createNode() throws RemoteException, SmartFrogException {
@@ -52,6 +51,7 @@ public class XmlElementImpl extends CompoundXmlNode implements XmlElement {
 
     /**
      * Get the node as an element
+     *
      * @return the node typecast to an element
      */
     public Element getElement() {
@@ -59,7 +59,6 @@ public class XmlElementImpl extends CompoundXmlNode implements XmlElement {
     }
 
     /**
-     *
      * @throws SmartFrogException
      * @throws RemoteException
      */
@@ -69,7 +68,7 @@ public class XmlElementImpl extends CompoundXmlNode implements XmlElement {
             if (elem instanceof LocalNode) {
                 LocalNode node = (LocalNode) elem;
                 appendChild(node);
-            } else if(elem instanceof XmlNamespaceDeclarationImpl) {
+            } else if (elem instanceof XmlNamespaceDeclarationImpl) {
                 //namespaces are special
                 XmlNamespaceDeclarationImpl declaration = (XmlNamespaceDeclarationImpl) elem;
                 declaration.addDeclaration(getElement());

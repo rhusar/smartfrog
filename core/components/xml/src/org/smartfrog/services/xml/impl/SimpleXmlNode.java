@@ -102,4 +102,31 @@ public abstract class SimpleXmlNode extends PrimImpl implements XmlNode,
         toXML();
     }
 
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof SimpleXmlNode)) {
+            return false;
+        }
+        if (!super.equals(o)) {
+            return false;
+        }
+
+        final SimpleXmlNode simpleXmlNode = (SimpleXmlNode) o;
+
+        if (helper != null ?
+                !helper.equals(simpleXmlNode.helper) :
+                simpleXmlNode.helper != null) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 29 * result + (helper != null ? helper.hashCode() : 0);
+        return result;
+    }
 }
