@@ -227,7 +227,6 @@ import org.smartfrog.sfcore.prim.Prim;
                     this.sfCompleteNameSafe()
                     , referenceObj.getClass().toString()
                     , "int");
-
             }
         } catch (SmartFrogResolutionException e) {
             if ((mandatory) || (illegalClassType)) {
@@ -300,7 +299,6 @@ import org.smartfrog.sfcore.prim.Prim;
                                     this.sfCompleteNameSafe()
                                     , referenceObj.getClass().toString()
                                     , "long");
-
             }
         } catch (SmartFrogResolutionException e) {
             if ((mandatory) || (illegalClassType)) {
@@ -371,7 +369,6 @@ import org.smartfrog.sfcore.prim.Prim;
                                     this.sfCompleteNameSafe()
                                     , referenceObj.getClass().toString()
                                     , "float");
-
             }
         } catch (SmartFrogResolutionException e) {
             if ((mandatory) || (illegalClassType)) {
@@ -445,7 +442,6 @@ import org.smartfrog.sfcore.prim.Prim;
                                     this.sfCompleteNameSafe()
                                     , referenceObj.getClass().toString()
                                     , "double");
-
             }
         } catch (SmartFrogResolutionException e) {
             if ((mandatory) || (illegalClassType)) {
@@ -516,7 +512,6 @@ import org.smartfrog.sfcore.prim.Prim;
                                     this.sfCompleteNameSafe()
                                     , referenceObj.getClass().toString()
                                     , "java.lang.String");
-
             }
         } catch (SmartFrogResolutionException e) {
             if ((mandatory) || (illegalClassType)) {
@@ -559,7 +554,6 @@ import org.smartfrog.sfcore.prim.Prim;
                                     this.sfCompleteNameSafe()
                                     , referenceObj.getClass().toString()
                                     , "java.util.Vector");
-
             }
         } catch (SmartFrogResolutionException e) {
             if ((mandatory) || (illegalClassType)) {
@@ -610,7 +604,6 @@ import org.smartfrog.sfcore.prim.Prim;
                                     this.sfCompleteNameSafe()
                                     , referenceObj.getClass().toString()
                                     , "java.util.Vector to String[]");
-
             }
         } catch (SmartFrogResolutionException e) {
             if ((mandatory) || (illegalClassType)) {
