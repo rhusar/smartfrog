@@ -43,7 +43,7 @@ public class IPropertyReferencePart extends ReferencePart {
      * @param v value for property
      */
     public IPropertyReferencePart(Object v) {
-        super(v);
+        value = v;
     }
 
     /**

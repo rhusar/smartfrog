@@ -42,7 +42,7 @@ public class PropertyReferencePart extends ReferencePart {
      * @param v value for property
      */
     public PropertyReferencePart(Object v) {
-        value = v;;
+        value = v;
     }
 
     /**
