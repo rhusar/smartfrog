@@ -344,7 +344,7 @@ public class SFSystem implements MessageKeys {
                  somethingFailed = true;
              }
              Logger.log(" - "+(cfgDesc).statusString()+"\n");
-             //Logger.logQuietly(cfgDesc.resultException);
+             Logger.logQuietly(cfgDesc.resultException);
          }
         // Check for exit flag
         if (opts.exit) {
