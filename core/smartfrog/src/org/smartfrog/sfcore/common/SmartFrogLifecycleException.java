@@ -104,7 +104,11 @@ public class SmartFrogLifecycleException extends SmartFrogRuntimeException imple
      */
     static public SmartFrogLifecycleException sfDeploy(String message, Throwable cause,
             Prim sfObject) {
-        return (SmartFrogLifecycleException)SmartFrogLifecycleException.forward( "sfDeploy: " + message, cause ,sfObject);
+        try {
+            return (SmartFrogLifecycleException)SmartFrogLifecycleException.forward("sfDeploy: "+message, cause, sfObject);
+        } catch (Exception ex) {
+            return (SmartFrogLifecycleException)SmartFrogLifecycleException.forward("sfDeploy: "+message, cause);
+        }
     }
 
     /**
@@ -118,7 +122,11 @@ public class SmartFrogLifecycleException extends SmartFrogRuntimeException imple
      */
     static public SmartFrogLifecycleException sfStart(String message, Throwable cause,
             Prim sfObject) {
-        return (SmartFrogLifecycleException)SmartFrogLifecycleException.forward( "sfStart: " + message, cause, sfObject);
+        try {
+            return (SmartFrogLifecycleException)SmartFrogLifecycleException.forward("sfStart: "+message, cause, sfObject);
+        } catch (Exception ex) {
+            return (SmartFrogLifecycleException)SmartFrogLifecycleException.forward("sfStart: "+message, cause);
+        }
     }
 
 
@@ -178,19 +186,31 @@ public class SmartFrogLifecycleException extends SmartFrogRuntimeException imple
      * @return SmartFrogException that is a SmartFrogLifecycleException
      */
     public static SmartFrogException forward (String message, Throwable thr, Prim sfObject){
-        if (thr instanceof SmartFrogLifecycleException) {
-            // add message to data
-            if (sfObject !=null) {
-                ((SmartFrogException)thr).init(sfObject);
-                if ((message!=null)&&(!message.equals (""))){
-                    String name =null;
-                    try { name = "msg:" + sfObject.sfCompleteName().toString();} catch (Exception ex){}
-                    ((SmartFrogLifecycleException)thr).add(name,message);
+        try {
+            if (thr instanceof SmartFrogLifecycleException) {
+                // add message to data
+                if (sfObject!=null) {
+                    try {
+                        ((SmartFrogException)thr).init(sfObject);
+                        if ((message!=null)&&(!message.equals(""))) {
+                            String name = null;
+                            try {
+                                name = "msg:"+ sfObject.sfCompleteName().toString();
+                            } catch (Exception ex) {
+                            }
+                            ((SmartFrogLifecycleException)thr).add(name, message);
+                        }
+                    } catch (Throwable ex2) {
+                    }
                 }
+                return (SmartFrogLifecycleException)thr;
+            } else {
+                return new SmartFrogLifecycleException(message, thr, sfObject);
             }
-            return (SmartFrogLifecycleException)thr;
-        } else {
-            return new SmartFrogLifecycleException (message,thr,sfObject);
+        } catch (Throwable ex1) {
+            ex1.printStackTrace();
         }
+
+        return  (SmartFrogLifecycleException)SmartFrogLifecycleException.forward(thr);
     }
 }

@@ -206,7 +206,7 @@ public class SmartFrogException extends Exception implements Serializable {
         if (params != null) {
             for (Enumeration e = params.keys(); e.hasMoreElements();) {
                 Object key = e.nextElement();
-                newCxt.put(key, params.get(key).toString());
+                newCxt.put(key.toString(), params.get(key).toString());
             }
         }
         return newCxt;
