@@ -431,7 +431,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
         }
     }
 
-    public synchronized void sfPing(Object source) 
+    public synchronized void sfPing(Object source)
             throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
 
@@ -483,42 +483,48 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
      *
      * @throws RemoteException In case of network/rmi error
      */
+     //sfCompleteName is cached. @TODO: clean cache when re-parenting
     public Reference sfCompleteName() throws RemoteException {
-        Reference r;
-        r = new Reference();
+        if (sfCompleteName==null){
+            Reference r;
+            r = new Reference();
 
-        String canonicalHostName = SmartFrogCoreKeys.SF_HOST;
+            String canonicalHostName = SmartFrogCoreKeys.SF_HOST;
 
-        try {
-            // read sfHost attribute. Faster that using sfDeployedHost().
-            canonicalHostName = ((java.net.InetAddress) sfResolveId(canonicalHostName)).getCanonicalHostName();
-        } catch (NullPointerException exSfHost) {
-            canonicalHostName = this.sfDeployedHost().getCanonicalHostName();
-        }
+            try {
+                // read sfHost attribute. Faster that using sfDeployedHost().
+                canonicalHostName = ((java.net.InetAddress)sfResolveId(
+                    canonicalHostName)).getCanonicalHostName();
+            } catch (NullPointerException exSfHost) {
+                canonicalHostName = this.sfDeployedHost().getCanonicalHostName();
+            }
 
-        if (sfParent == null) {
-            r.addElement(ReferencePart.host((canonicalHostName)));
+            if (sfParent==null) {
+                r.addElement(ReferencePart.host((canonicalHostName)));
 
-            if (this.sfProcessName() == null) {
-                // Process created when using sfDeployFrom (use by sfStart &
-                //  sfRun)
-                r.addElement(ReferencePart.here(SmartFrogCoreKeys.SF_RUN_PROCESS));
+                if (this.sfProcessName()==null) {
+                    // Process created when using sfDeployFrom (use by sfStart &
+                    //  sfRun)
+                    r.addElement(ReferencePart.here(SmartFrogCoreKeys.
+                        SF_RUN_PROCESS));
+                } else {
+                    r.addElement(ReferencePart.here(this.sfProcessName()));
+                }
             } else {
-                r.addElement(ReferencePart.here(this.sfProcessName()));
-            }
-        } else {
-            //r = sfParent.sfCompleteName(); // Only if you had a hierarchy
-            //of processes.
-            r.addElement(ReferencePart.host((canonicalHostName)));
+                //r = sfParent.sfCompleteName(); // Only if you had a hierarchy
+                //of processes.
+                r.addElement(ReferencePart.host((canonicalHostName)));
 
-            Object key = sfParent.sfAttributeKeyFor(this);
+                Object key = sfParent.sfAttributeKeyFor(this);
 
-            if (key != null) {
-                r.addElement(ReferencePart.here(key));
+                if (key!=null) {
+                    r.addElement(ReferencePart.here(key));
+                }
             }
+            sfCompleteName=r;
+            System.out.println("completeNameCreated2: "+sfCompleteName.toString());
         }
-
-        return r;
+        return sfCompleteName;
     }
 
     /**

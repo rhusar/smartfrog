@@ -71,6 +71,7 @@ import org.smartfrog.sfcore.logging.LogSF;
  *
  */
 public class PrimImpl extends Object implements Prim, MessageKeys {
+
     /** Static attribute that hold the lifecycle hooks for sfDeploy. */
     public static PrimHookSet sfDeployHooks = new PrimHookSet();
 
@@ -127,6 +128,9 @@ public class PrimImpl extends Object implements Prim, MessageKeys {
 
     /** Reference to export form of self if sfExport is true. */
     protected Object sfExportRef = null;
+
+    /** Reference that caches cannonical name. */
+    protected Reference sfCompleteName = null;
 
     /**
      * Used in conjunction with sfDeployWith to set parent and context after
@@ -1586,23 +1590,26 @@ public class PrimImpl extends Object implements Prim, MessageKeys {
      *
      * @throws RemoteException In case of network/rmi error
      */
+     //sfCompleteName is cached. @TODO: clean cache when re-parenting
     public Reference sfCompleteName() throws RemoteException {
-        Reference r;
-        Object key;
+        if (sfCompleteName==null) {
+            Reference r;
+            Object key;
+            if (sfParent==null) {
+                r = SFProcess.getProcessCompound().sfCompleteName();
+                key = SFProcess.getProcessCompound().sfAttributeKeyFor(this);
+            } else {
+                r = sfParent.sfCompleteName();
+                key = sfParent.sfAttributeKeyFor(this);
+            }
+            sfCompleteName= (Reference)r.clone();
 
-        if (sfParent == null) {
-            r = SFProcess.getProcessCompound().sfCompleteName();
-            key = SFProcess.getProcessCompound().sfAttributeKeyFor(this);
-        } else {
-            r = sfParent.sfCompleteName();
-            key = sfParent.sfAttributeKeyFor(this);
+            if (key!=null) {
+                sfCompleteName.addElement(ReferencePart.here(key));
+            }
+            System.out.println("completeNameCreated: "+sfCompleteName.toString());
         }
-
-        if (key != null) {
-            r.addElement(ReferencePart.here(key));
-        }
-
-        return r;
+        return sfCompleteName;
     }
 
     /**
