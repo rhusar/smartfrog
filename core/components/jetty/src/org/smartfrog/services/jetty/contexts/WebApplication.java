@@ -1,12 +1,15 @@
 package org.smartfrog.services.jetty.contexts;
 
 import java.rmi.RemoteException;
+import java.io.File;
 
 import org.mortbay.http.HttpServer;
-import org.smartfrog.services.jetty.contexts.Context;
 import org.mortbay.jetty.servlet.WebApplicationContext;
 import org.mortbay.jetty.servlet.AbstractSessionManager;
 import org.mortbay.jetty.servlet.ServletHandler;
+import org.smartfrog.services.jetty.JettyIntf;
+import org.smartfrog.services.filesystem.FileImpl;
+import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.Logger;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
@@ -14,23 +17,22 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.sfcore.processcompound.SFProcess;
 import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.common.SmartFrogException;
-
+import org.smartfrog.sfcore.utils.PlatformHelper;
 /**
  * A WebApplication context class for jetty server 
  * @author Ritu Sabharwal
  */
 
 
-public class WebApplication extends PrimImpl implements Prim {
-   Reference contextPathRef = new Reference("contextPath");
-   Reference webAppRef = new Reference("webApp");
-   Reference requestIdRef = new Reference("requestId");
+public class WebApplication extends PrimImpl implements JettyWebApplicationContext {
+    Reference contextPathRef = new Reference(CONTEXT_PATH);
+    Reference webAppRef = new Reference(WEBAPP);
+    Reference requestIdRef = new Reference(REQUEST_ID);
    
 
    String jettyhome = ".";
    String contextPath = "/";
-   String webApp = "\\demo\\webapps\\root";
+   String webApp = null;
    boolean requestId = false;
 
    ProcessCompound process = null;
@@ -39,7 +41,7 @@ public class WebApplication extends PrimImpl implements Prim {
    
    WebApplicationContext context = new WebApplicationContext();
 
-   /** Standard RMI constructor */
+    /** Standard RMI constructor */
        public WebApplication() throws RemoteException {
        super();
        }
@@ -50,21 +52,35 @@ public class WebApplication extends PrimImpl implements Prim {
    * @exception  RemoteException In case of network/rmi error  
    */ 
    public void sfDeploy() throws SmartFrogException, RemoteException {
-       super.sfDeploy();     
+       super.sfDeploy();
        process = SFProcess.getProcessCompound();
-       server = (HttpServer)process.sfResolveId("Jetty Server"); 
-       jettyhome = (String)process.sfResolveId("jettyhome");
+       server = (HttpServer)process.sfResolveId(JettyIntf.JETTY_SERVER); 
+       jettyhome = (String)process.sfResolveId(JettyIntf.JETTY_HOME);
+       /* no, doesnt work w/ resolveID
+       jettyhome = FileImpl.lookupAbsolutePath(this, JettyIntf.JETTY_HOME,
+               null,
+               new File("."),
+               true,
+               PlatformHelper.getLocalPlatform());
+               */
        contextPath = sfResolve(contextPathRef, contextPath, true);
-       webApp = sfResolve(webAppRef, jettyhome + webApp, true);
+       //fetch the webapp reference by doing filename resolution
+       //if the file exists, it does not need to be anywhere
+       //webApp = sfResolve(webAppRef, webApp, true);
+       FileImpl.lookupAbsolutePath(this,webAppRef,null,new File(jettyhome),true,PlatformHelper.getLocalPlatform());
+       File webappFile=new File(webApp);
+       if(!webappFile.exists()) {
+
+       }
        requestId = sfResolve(requestIdRef, requestId, false);
    }
-   
+
    /**
    * sfStart: adds the WebApplication context to the jetty server
-   * 
-   * @exception  SmartFrogException In case of error while starting  
-   * @exception  RemoteException In case of network/rmi error 
-   */ 
+   *
+   * @exception  SmartFrogException In case of error while starting
+   * @exception  RemoteException In case of network/rmi error
+   */
    public void sfStart() throws SmartFrogException, RemoteException {
 	   super.sfStart();
            addcontext(contextPath,webApp,requestId);
@@ -83,7 +99,7 @@ public class WebApplication extends PrimImpl implements Prim {
 	   try{
 		  context.stop();
 	   } catch(Exception ex){
-		  Logger.log(" Interrupted on WebApplicationContext termination " + ex);
+		  Logger.log(" Interrupted on WebApplicationContext termination ",ex);
 	  }
 	   server.removeContext(context);
            super.sfTerminateWith(status);

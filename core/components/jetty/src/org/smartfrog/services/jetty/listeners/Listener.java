@@ -10,11 +10,13 @@ import org.smartfrog.sfcore.common.SmartFrogException;
  */
 
 public interface Listener extends Remote {
-	
-	/**
+    String LISTENER_PORT = "listenerPort";
+    String SERVER_HOST = "serverHost";
+
+    /**
 	 * Add the listener to the http server
 	 * @exception  RemoteException In case of network/rmi error 
-	 */ 
-	public void addlistener(int listenerPort, String serverHost) throws 
-	SmartFrogException, RemoteException; 
+	 */
+    public void addlistener(int listenerPort, String serverHost) throws
+            SmartFrogException, RemoteException;
 }

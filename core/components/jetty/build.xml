@@ -69,9 +69,10 @@ For more information: www.smartfrog.org
   
   <!-- ========================================================== -->
   <!-- ========================================================== -->
-  <target name="init" depends="init-standard-output-dirs">
+  <target name="init" depends="init-standard-output-dirs,use-smartfrog-tasks">
           
     <property name="target.jar" location="${dist.lib.dir}/jetty.jar" />
+    <property name="deploy.sf" value="org/smartfrog/services/jetty/example.sf"/>
         
     <!-- the compile time path includes jetty-->
     <path id="compile.classpath">
@@ -119,11 +120,26 @@ For more information: www.smartfrog.org
   <!-- ========================================================== -->
   <target name="rmi" depends="compile" 
     description="create the RMI classes">
-    <rmic includesfile="${rmitargets}" base="${build.classes.dir}">      
+    <sf-rmic
+        base="${build.classes.dir}"
+        verify="true"
+        includes="**/*.class">
        <classpath refid="compile.classpath"/>
-    </rmic>
-  </target>  
+    </sf-rmic>
+  </target>
   
+    <!-- ========================================================== -->
+    <!-- parse the file -->
+    <!-- ========================================================== -->
+    <target name="parse" depends="init,dist"
+        description="parse the cddlm descriptor">
+
+        <sf-parse quiet="true" file="${src.dir}/${deploy.sf}">
+            <classpath path="${target.jar}"/>
+        </sf-parse>
+
+    </target>
+    
   <!-- ========================================================== -->
   <!-- create the jar -->
   <!-- ========================================================== -->

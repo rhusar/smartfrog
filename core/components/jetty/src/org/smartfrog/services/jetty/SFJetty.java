@@ -23,11 +23,12 @@ import org.mortbay.util.MultiException;
  * @author Ritu Sabharwal
  */
 
-public class SFJetty extends CompoundImpl implements Compound {
-  Reference jettyhomeRef = new Reference("jettyhome");
+public class SFJetty extends CompoundImpl implements JettyIntf {
+
+    protected Reference jettyhomeRef = new Reference(JETTY_HOME);
  
   /**  Jetty home path */
-  String jettyhome;
+  protected String jettyhome;
   
   /** The Http server */
   HttpServer server;
@@ -46,7 +47,7 @@ public class SFJetty extends CompoundImpl implements Compound {
     try {
 	   server = new HttpServer();
 	   ProcessCompound process = SFProcess.getProcessCompound();
-	   process.sfAddAttribute("Jetty Server", server);
+	   process.sfAddAttribute(JETTY_SERVER, server);
 	   jettyhome = sfResolve(jettyhomeRef,jettyhome,true);
            process.sfAddAttribute("Jetty Home", jettyhome);
 	   configureHttpServer();
@@ -77,25 +78,28 @@ public class SFJetty extends CompoundImpl implements Compound {
    * Configure the http server
    */
   public void configureHttpServer() throws SmartFrogException{
-	  try {
-		  server.addRealm(new HashUserRealm("Jetty Demo Realm",jettyhome
-+ "/etc/demoRealm.properties"));
-    		  server.addRealm(new HashUserRealm("Example Form-Based Authentication Area", jettyhome + "/etc/examplesRealm.properties"));
-    		  NCSARequestLog requestlog = new NCSARequestLog();
-                  requestlog.setFilename(jettyhome + 
-				  "/logs/yyyy_mm_dd.request.log");
-    	          requestlog.setBuffered(false);
-                  requestlog.setRetainDays(90);
-                  requestlog.setAppend(true);
-                  requestlog.setExtended(true);
-                  requestlog.setLogTimeZone("GMT");
-                  String[] paths = {"/jetty/images/*", 
-			  "/demo/images/*","*.css"};
-                  requestlog.setIgnorePaths(paths);
-                  server.setRequestLog(requestlog);
-	  } catch (Exception ex) {
-		  throw SmartFrogException.forward(ex);
-	  }
+      try {
+          /*
+          server.addRealm(new HashUserRealm("Jetty Demo Realm", jettyhome
+                  + "/etc/demoRealm.properties"));
+          server.addRealm(new HashUserRealm("Example Form-Based Authentication Area",
+                  jettyhome + "/etc/examplesRealm.properties"));
+          */
+          NCSARequestLog requestlog = new NCSARequestLog();
+          requestlog.setFilename(jettyhome +
+                  "/logs/yyyy_mm_dd.request.log");
+          requestlog.setBuffered(false);
+          requestlog.setRetainDays(90);
+          requestlog.setAppend(true);
+          requestlog.setExtended(true);
+          requestlog.setLogTimeZone("GMT");
+          String[] paths = {"/jetty/images/*",
+                            "/demo/images/*", "*.css"};
+          requestlog.setIgnorePaths(paths);
+          server.setRequestLog(requestlog);
+      } catch (Exception ex) {
+          throw SmartFrogException.forward(ex);
+      }
   }
 
   /**
@@ -105,7 +109,7 @@ public class SFJetty extends CompoundImpl implements Compound {
 	  try {
 		  server.stop();
 	  } catch (InterruptedException ie) {
-		  Logger.log(" Interrupted on server termination " + ie);
+		  Logger.log(" Interrupted on server termination " , ie);
 	  }
 	  super.sfTerminateWith(status);
   }

@@ -21,112 +21,124 @@ import org.mortbay.util.MultiException;
 
 /**
  * A wrapper for a Jetty http server for admin configurations
+ *
  * @author Ritu Sabharwal
  */
 
-public class SFJettyAdmin extends PrimImpl implements Prim {
-  Reference listenerPortRef = new Reference("listenerPort");
-  Reference httpserverHostRef = new Reference("httpserverHost");
-  Reference contextPathRef = new Reference("contextPath");
-  
-  int listenerPort = 8081;
-  String httpserverHost;
-  String contextPath;
-  
-  /** The server */
-  HttpServer server;
- 
-  /** The Socket listener */
-  SocketListener listener = new SocketListener();
-  
-  /** Realm context */
-  ServletHttpContext realmcontext = new ServletHttpContext();
-  
-  /** User realm */
-  HashUserRealm admin_realm = new HashUserRealm("Admin Realm");
+public class SFJettyAdmin extends PrimImpl implements JettyAdminIntf {
+    Reference listenerPortRef = new Reference(LISTENER_PORT);
+    Reference httpserverHostRef = new Reference(HTTP_SERVER_HOST);
+    Reference contextPathRef = new Reference(CONTEXT_PATH);
 
-  /** Standard RMI constructor */
-  public SFJettyAdmin() throws RemoteException {
-    super();
-  }
+    int listenerPort = 8081;
+    String httpserverHost;
+    String contextPath;
 
-  /**
-   * Deploy the SFJettyAdmin component
-   * @exception  SmartFrogException In case of error while starting  
-   * @exception  RemoteException In case of network/rmi error  
-   */
-  public void sfDeploy() throws SmartFrogException, RemoteException {
-	  try {
-		  super.sfDeploy();
-		  server = new HttpServer();
-    	          listenerPort = sfResolve(listenerPortRef,listenerPort,false);
-                  httpserverHost = sfResolve(httpserverHostRef, "null", 
-				  true);
-                  contextPath = sfResolve(contextPathRef, "/", false);
-                  configureHttpServer();
-	  } catch (Exception ex){
-		  throw SmartFrogDeploymentException.forward(ex); 
-	  }
-  }
+    /**
+     * The server
+     */
+    HttpServer server;
 
-  /**
-   * sfStart: starts Jetty Http server.
-   * 
-   * @exception  SmartFrogException In case of error while starting  
-   * @exception  RemoteException In case of network/rmi error  
-   */
-   public synchronized void sfStart() throws SmartFrogException, 
-   RemoteException {
-	   super.sfStart();
-	   try {
-		   server.start();
-	   } catch (MultiException mexp) {
-		   throw new SmartFrogException(mexp);
-	   }
-   }
-    
-  /**
-   * Configure the http server for admin configurations
-   */
-   public void configureHttpServer() throws SmartFrogException{
-	   try {
-		   listener.setPort(listenerPort);
-                   listener.setHost(httpserverHost);
-                   server.addListener(listener);
-                   admin_realm.put("admin","admin");
-                   admin_realm.addUserToRole("admin","server-administrator");
-                   server.addRealm(admin_realm);
-                   realmcontext.setContextPath(contextPath);
-                   realmcontext.setRealmName("Admin Realm");
-                   realmcontext.setAuthenticator(new BasicAuthenticator());
-                   realmcontext.addHandler(new SecurityHandler());
-                   realmcontext.addSecurityConstraint("/",
-				   new SecurityConstraint("Admin",
-					   "server-administrator"));
-                   realmcontext.addServlet("Debug","/Debug/*",
-				   "org.mortbay.servlet.Debug");
-                   realmcontext.addServlet("Admin","/",
-				   "org.mortbay.servlet.AdminServlet");
-                   realmcontext.setAttribute("org.mortbay.http.HttpServer",
-		   realmcontext.getHttpServer());
-                   server.addContext(realmcontext);
-                   server.setAnonymous(true);
-	   } catch (Exception ex) {
-		   throw SmartFrogException.forward(ex);	
-	   }
-   }
+    /**
+     * The Socket listener
+     */
+    SocketListener listener = new SocketListener();
 
-  /**
-   * Termination phase
-   */
-  public void sfTerminateWith(TerminationRecord status) {
-	  server.removeListener(listener);
-	  server.removeContext(realmcontext);
-	  try {
-		  server.stop();
-	  } catch (InterruptedException ie) {
-		  Logger.log(" Interrupted on server termination " + ie);
-	  }
-	  super.sfTerminateWith(status);
-  }
+    /**
+     * Realm context
+     */
+    ServletHttpContext realmcontext = new ServletHttpContext();
+
+    /**
+     * User realm
+     */
+    HashUserRealm admin_realm = new HashUserRealm("Admin Realm");
+
+    /**
+     * Standard RMI constructor
+     */
+    public SFJettyAdmin() throws RemoteException {
+        super();
+    }
+
+    /**
+     * Deploy the SFJettyAdmin component
+     *
+     * @throws SmartFrogException In case of error while starting
+     * @throws RemoteException    In case of network/rmi error
+     */
+    public void sfDeploy() throws SmartFrogException, RemoteException {
+        try {
+            super.sfDeploy();
+            server = new HttpServer();
+            listenerPort = sfResolve(listenerPortRef, listenerPort, false);
+            httpserverHost = sfResolve(httpserverHostRef, "null",
+                    true);
+            contextPath = sfResolve(contextPathRef, "/", false);
+            configureHttpServer();
+        } catch (Exception ex) {
+            throw SmartFrogDeploymentException.forward(ex);
+        }
+    }
+
+    /**
+     * sfStart: starts Jetty Http server.
+     *
+     * @throws SmartFrogException In case of error while starting
+     * @throws RemoteException    In case of network/rmi error
+     */
+    public synchronized void sfStart() throws SmartFrogException,
+            RemoteException {
+        super.sfStart();
+        try {
+            server.start();
+        } catch (MultiException mexp) {
+            throw new SmartFrogException(mexp);
+        }
+    }
+
+    /**
+     * Configure the http server for admin configurations
+     */
+    public void configureHttpServer() throws SmartFrogException {
+        try {
+            listener.setPort(listenerPort);
+            listener.setHost(httpserverHost);
+            server.addListener(listener);
+            admin_realm.put("admin", "admin");
+            admin_realm.addUserToRole("admin", "server-administrator");
+            server.addRealm(admin_realm);
+            realmcontext.setContextPath(contextPath);
+            realmcontext.setRealmName("Admin Realm");
+            realmcontext.setAuthenticator(new BasicAuthenticator());
+            realmcontext.addHandler(new SecurityHandler());
+            realmcontext.addSecurityConstraint("/",
+                    new SecurityConstraint("Admin",
+                            "server-administrator"));
+            realmcontext.addServlet("Debug", "/Debug/*",
+                    "org.mortbay.servlet.Debug");
+            realmcontext.addServlet("Admin", "/",
+                    "org.mortbay.servlet.AdminServlet");
+            realmcontext.setAttribute("org.mortbay.http.HttpServer",
+                    realmcontext.getHttpServer());
+            server.addContext(realmcontext);
+            server.setAnonymous(true);
+        } catch (Exception ex) {
+            throw SmartFrogException.forward(ex);
+        }
+    }
+
+    /**
+     * Termination phase
+     */
+    public void sfTerminateWith(TerminationRecord status) {
+        server.removeListener(listener);
+        server.removeContext(realmcontext);
+        try {
+            server.stop();
+        } catch (InterruptedException ie) {
+            Logger.log(" Interrupted on server termination " , ie);
+        }
+        super.sfTerminateWith(status);
+    }
 }
