@@ -223,7 +223,8 @@
       <!-- SOAP properties -->
       <property name="deploymentAPI.wsdl"
         location="${src.dir}/${xsd.path}/deploymentAPI.wsdl" />
-        
+      <property name="callbackAPI.wsdl"
+        location="${src.dir}/${xsd.path}/callbackAPI.wsdl" />        
       <property name="mapping.file"
         location="${src.dir}/${xsd.path}/namespace-package-mapping.properties" />
         
@@ -288,7 +289,10 @@
    <target name="check-soapapi"  depends="init-soap" >
      <uptodate property="soapapi.uptodate"
        targetfile="${soapapi.touch.file}"
-       srcfile="${deploymentAPI.wsdl}" />
+       >
+       <srcfiles dir="${src.dir}/${xsd.path}" includes="*.xsd,*.wsdl"/>
+     </uptodate>
+       
    </target>
 
     <!-- =================================================================== -->
@@ -313,9 +317,27 @@
       debug="false"
       printstacktraceonfailure="false"
       typemappingversion="1.2"
-      implementationClassName="org.smartfrog.components.api.DeploymentEndpoint"
-      >
-    </axis-wsdl2java>
+      implementationClassName="org.smartfrog.services.cddlm.api.DeploymentEndpoint"
+      />
+      <sleep seconds="5"/>
+    <axis-wsdl2java
+      output="${soap.server.dir}"
+      serverside="true"
+      url="${callbackAPI.wsdl}"
+      verbose="true"
+      all="false"
+      testcase="false"
+      namespacemappingfile="${mapping.file}"
+      skeletondeploy="true"
+      helpergen="true"
+      failonnetworkerrors="true"
+      noimports="false"
+      debug="false"
+      printstacktraceonfailure="false"
+      typemappingversion="1.2"
+      implementationClassName="org.smartfrog.services.cddlm.api.DeploymentEndpoint"
+      />
+      
    <touch file="${soapapi.touch.file}"/>
   </target>
   

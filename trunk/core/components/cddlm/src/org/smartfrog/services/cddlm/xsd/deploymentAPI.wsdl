@@ -8,13 +8,17 @@
   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
   xmlns:cdl="urn:cddlm/xml/0.1"
   xmlns:wsa="http://schemas.xmlsoap.org/ws/2003/03/addressing"
+
+  >
+
+  <!--
   xmlns:jsdl="http://www.gridforum.org/JSDL"
   xmlns:wsbf=
-  "http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseFaults" 
-  >
-  
+  "http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseFaults"
+  -->
   <!-- ============================================================= -->
 <wsdl:documentation >  
+
     This is the WSDL Describing the service API for the public deployment
     services of a CDDLM Basic Services runtime. 
     
@@ -31,7 +35,7 @@
     "OPTIONAL" in this document are to be interpreted as described in
     RFC 2119.
     http://www.ietf.org/rfc/rfc2119.txt
-      
+
 </wsdl:documentation>
      
   <!-- ============================================================= -->
@@ -45,9 +49,9 @@
  -->
 
  <!-- import the types -->
- <wsdl:import 
+ <wsdl:import
     namespace="http://gridforum.org/cddlm/serviceAPI/types/2004/07/30" 
-    schemaLocation="deployAPIschema.xsd"/>
+    location="deployAPIschema.xsd"/>
     
 <!--     
   <import 
@@ -55,34 +59,7 @@
     schemaLocation="jsdl.xsd"/> 
  
   -->
-    <!--
-      <xsd:schema 
-        targetNamespace=
- "http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseNotification" >
- 
-         <xsd:include schemaLocation="WS-BaseN.xsd" />
-         
-         <xsd:import 
-            namespace=
-            "http://schemas.xmlsoap.org/ws/2003/03/addressing"
-            schemaLocation=
-            "http://schemas.xmlsoap.org/ws/2003/03/addressing" 
-         />
-         <xsd:import namespace=
-  "http://www.ibm.com/xmlns/stdwip/web-services/WS-ResourceProperties" 
-              schemaLocation= 
-  "http://www-106.ibm.com/developerworks/webservices/library/ws-resource/WS-ResourceProperties.xsd" 
-         />
-         <xsd:import 
-            namespace=
-  "http://www.ibm.com/xmlns/stdwip/web-services/WS-ResourceLifetime"
-            schemaLocation= 
-  "http://www-106.ibm.com/developerworks/webservices/library/ws-resource/WS-ResourceLifetime.xsd" 
-         />
-                
-       </xsd:schema>
-       
-       -->
+
   <!-- ============================================================= -->
   <!-- END IMPORTS -->
   <!-- ============================================================= -->

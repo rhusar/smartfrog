@@ -6,14 +6,15 @@
         xmlns:xsd="http://www.w3.org/2001/XMLSchema"
         xmlns:cdl="urn:cddlm/xml/0.1"
         xmlns:wsa="http://schemas.xmlsoap.org/ws/2003/03/addressing"
-       xmlns:jsdl="http://www.gridforum.org/JSDL"
-       xmlns:wsbf="http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseFaults"
 >
+<!--
+xmlns:jsdl="http://www.gridforum.org/JSDL"
+xmlns:wsbf="http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseFaults"
+  -->
   <!-- ============================================================= -->
   <xsd:annotation>
   <xsd:documentation>
   
-<!--
     This is the XSD describing the types of the CDDLM servicaPI
 
 
@@ -28,7 +29,6 @@
     RFC 2119.
     http://www.ietf.org/rfc/rfc2119.txt
 
--->
   </xsd:documentation>
   </xsd:annotation>
   <!-- ============================================================= -->
@@ -38,8 +38,8 @@
   <xsd:import
     namespace="http://schemas.xmlsoap.org/ws/2003/03/addressing"
     schemaLocation="ws-addressing.xsd"/>
-<!--
-  <xsd:import
+
+ <!-- <xsd:import
     namespace="http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseFaults"
     schemaLocation="WS-BaseFaults.xsd"/> -->
 
@@ -155,15 +155,6 @@
   <!-- ============================================================= -->
 
 
-  <xsd:simpleType name="addressType">
-    <xsd:annotation>
-      <xsd:documentation>
-      holder for WS-Addressing address
-      </xsd:documentation>
-    </xsd:annotation>
-    <xsd:restriction base="wsa:EndpointReferenceType"/>
-  </xsd:simpleType>
-
   <xsd:complexType name="callbackAddressType">
     <xsd:annotation>
       <xsd:documentation>
@@ -172,7 +163,7 @@
     </xsd:annotation>
     <xsd:choice>
       <xsd:element name="uri" type="xsd:anyURI"/>
-      <xsd:element name="address" type="types:addressType"/>
+      <xsd:element name="address" type="wsa:EndpointReferenceType"/>
     </xsd:choice>
   </xsd:complexType>
 
@@ -209,14 +200,14 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:choice>
-      <xsd:element name="source" type="xsd:anyURI"  minOccurs="1" maxOccurs="1"/>
-      <xsd:any  processContents="lax" minOccurs="1" maxOccurs="1" namespace="##other"/>
+      <xsd:element name="source" type="xsd:anyURI"  />
+      <xsd:any  processContents="lax"  namespace="##other"/>
     </xsd:choice>
   </xsd:complexType>
 
 
   <!-- TODO: incorporate JSDL into the specification -->
-  <xsd:simpleType name="jsdlType" extends="types:unboundedXMLOtherNamespace" >
+  <xsd:complexType name="jsdlType">
     <xsd:annotation>
       <xsd:documentation>
         This is the jsdl content. It should be in the namespace http://www.gridforum.org/JSDL.
@@ -227,7 +218,10 @@
             (like the Mono implementation)
       </xsd:documentation>
     </xsd:annotation>
-  </xsd:simpleType>
+    <xsd:sequence>
+      <xsd:any processContents="lax" minOccurs="0" maxOccurs="unbounded" namespace="##other"/>
+    </xsd:sequence>
+  </xsd:complexType>
 
   <!-- application naming -->
   <xsd:complexType name="applicationNameOrReferenceType">
@@ -257,8 +251,8 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-      <xsd:element name="name" type="xsd:NCName" minOccurs="1" maxOccurs="1"/>
-      <xsd:element name="value" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="name" type="xsd:NCName" />
+      <xsd:element name="value" type="xsd:string" />
     </xsd:sequence>
   </xsd:complexType>
 
@@ -292,10 +286,10 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:choice>
-      <xsd:element name="string" type="xsd:string" minOccurs="1" maxOccurs="1"/>
-      <xsd:element name="integer" type="xsd:integer" minOccurs="1" maxOccurs="1"/>
-      <xsd:element name="boolean" type="xsd:boolean" minOccurs="1" maxOccurs="1"/>
-      <xsd:element name="xml" type="types:unboundedXMLAnyNamespace" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="string" type="xsd:string" />
+      <xsd:element name="integer" type="xsd:integer" />
+      <xsd:element name="boolean" type="xsd:boolean" />
+      <xsd:element name="xml" type="types:unboundedXMLAnyNamespace" />
     </xsd:choice>
     <xsd:attribute name="name" type="xsd:anyURI" use="required" />
     <xsd:attribute name="mustUnderstand" type="xsd:boolean" use="optional" default="false" />
@@ -373,7 +367,7 @@
     </xsd:sequence>
   </xsd:complexType>
 
-  <xsd:complexType name="dynamicServerStatusType" extends="types:unboundedXMLOtherNamespace">
+  <xsd:complexType name="dynamicServerStatusType" >
     <xsd:annotation>
       <xsd:documentation>
         Dynamic status contents are undefined; service is free to provide
@@ -381,6 +375,9 @@
         This could be declared as a WS-RF property.
       </xsd:documentation>
     </xsd:annotation>
+    <xsd:sequence>
+      <xsd:any processContents="lax" minOccurs="0" maxOccurs="unbounded" namespace="##other"/>
+    </xsd:sequence>
   </xsd:complexType>
 
   <!-- ============================================================= -->
@@ -426,8 +423,8 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-      <xsd:element name="state" type="types:lifecycleStateEnum" minOccurs="1" maxOccurs="1"/>
-      <xsd:element name="stateInfo" type="xsd:string"  minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="state" type="types:lifecycleStateEnum" />
+      <xsd:element name="stateInfo" type="xsd:string"  />
       <xsd:element name="extendedState" minOccurs="0" type="types:unboundedXMLOtherNamespace"/>
     </xsd:sequence>
   </xsd:complexType>
@@ -565,7 +562,8 @@
 
 
    <!-- callback event message -->
-  <xsd:complexType name="LifecycleEventCallbackRequest">
+   <xsd:element name="lifecycleEventCallbackRequest">
+   <xsd:complexType >
     <xsd:annotation>
       <xsd:documentation>
         This is the message which gets sent after a state change
@@ -576,11 +574,20 @@
       <xsd:element name="identifier" type="xsd:string" />
       <xsd:element name="applicationReference" type="types:applicationReferenceType" />
       <xsd:element name="status" type="types:applicationStatusType" />
-      <xsd:element name="BaseFault" type="wsbf:BaseFaultType" minOccurs="0"/>
+<!--      <xsd:element name="BaseFault" type="wsbf:BaseFaultType" minOccurs="0"/>-->
     </xsd:sequence>
-  </xsd:complexType>
+   </xsd:complexType>
+  </xsd:element>
 
-   <xsd:element name="LifecycleEventCallbackResponse" type="xsd:void" >
+   <xsd:element name="lifecycleEventCallbackResponse" type="xsd:boolean" >
+     <xsd:annotation>
+       <xsd:documentation>
+         Return false if you wish to cease to receive notification events.
+         Return true if you wish to continue to receive events.
+         The sender must not view failure to send as a reason to stop
+         sending messages, as these may be transient.
+       </xsd:documentation>
+     </xsd:annotation>
    </xsd:element>
 
 
