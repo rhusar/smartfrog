@@ -216,6 +216,7 @@ public class SFLogToFile extends PrimImpl implements Prim, PrintMsgInt,
         logFile = new File(fullFileName);
         System.out.println("Log File created at " + logFile.getAbsolutePath());
     }
+
     /**
      * Redirects the outputs to a file.
      * @throws Exception if any io error
