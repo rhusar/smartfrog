@@ -141,16 +141,14 @@ public class SFProcess implements MessageKeys {
      * @throws SmartFrogDeploymentException In case of any error while
      *         deploying the component
      */
-    public static RootLocator getRootLocator()
+    public synchronized static RootLocator getRootLocator()
         throws SmartFrogException, RemoteException {
         String className = null;
 
         try {
             if (rootLocator == null) {
                 className = (String) getProcessCompoundDescription().sfResolve(refRootLocatorClass);
-
-                return (RootLocator) SFClassLoader.forName(className)
-                                                  .newInstance();
+                rootLocator = (RootLocator) SFClassLoader.forName(className).newInstance();
             }
         } catch (ClassNotFoundException cnfexcp) {
             // TODO: Check
@@ -423,6 +421,7 @@ public class SFProcess implements MessageKeys {
         //@TODO: review once ProcessCompound/SFProcess are reviewed.
         // this would replace ProcessCompoundImpl.deployDefaultProcessDescriptions
         //addDefaultProcessDescriptions (processCompoundDescription);
+
 
         // Add system properties
         processCompoundDescription = ComponentDescriptionImpl.addSystemProperties(
