@@ -71,7 +71,7 @@ For more information: www.smartfrog.org
   <!-- ========================================================== -->
   <target name="init" depends="init-standard-output-dirs,use-smartfrog-tasks">
           
-    <property name="target.jar" location="${dist.lib.dir}/jetty.jar" />
+    <!-- <property name="target.jar" location="${dist.lib.dir}/jetty.jar" /> -->
     <property name="deploy.sf" value="org/smartfrog/services/jetty/example.sf"/>
         
     <!-- the compile time path includes jetty-->
@@ -81,58 +81,33 @@ For more information: www.smartfrog.org
         <include name="**/*.jar"/>
       </fileset>
     </path>
-    
-    <!-- check for jetty. Because we pull in system classes too (the default),
-    if jetty is on the classpath it gets used, even if jetty.lib.dir is unset 
-         -->
-	 <available property="jetty.found" 
-      classname="org.mortbay.http.HttpServer"
-      classpathref="compile.classpath"
-      ignoresystemclasses="false"/>
-    <fail unless="jetty.found">No Jetty found in ${jetty.lib.dir}</fail>
-    
-       
+
   </target>
     
-  <!-- ========================================================== -->
-  <!-- compile -->
-  <!-- ========================================================== -->
-  <target name="compile" 
-    depends="verify-smartfrog,init">
-      <javac
-      includes="**/*.java"
-      srcdir="${src.dir}"
-      destdir="${build.classes.dir}"
-      debug="${javac.debug.mode}"
-      debuglevel="${javac.debug.level}"
-      nowarn="true"
-      includeAntRuntime="false"
-      source="${javac.java.version}"
-      target="${javac.java.version}"
-      >
-      <classpath refid="compile.classpath"/> 
-      </javac>
-    <copy-useful-files src="${src.dir}" dest="${build.classes.dir}" />   
-  </target>
   
   <!-- ========================================================== -->
-  <!-- RMI compile-->
+  <!-- this is an override point -->
+  <!-- set the verified.ok property if everything needed is present -->
+  <!-- Do Not Fail. This test is used to control conditional builds -->
+  <!-- NB, set property verify.fail.message to something meaningful
+       for better diagnostic messages on failure (see assert-prerequisites) 
+       -->
   <!-- ========================================================== -->
-  <target name="rmi" depends="compile" 
-    description="create the RMI classes">
-    <sf-rmic
-        base="${build.classes.dir}"
-        verify="true"
-        includes="**/*.class">
-       <classpath refid="compile.classpath"/>
-    </sf-rmic>
+  <target name="verify-prerequisites" depends="init">
+        <available property="verified.ok"
+            classname="org.mortbay.http.HttpServer"
+            classpathref="compile.classpath"
+            ignoresystemclasses="false"/>
+        <property name="verify.fail.message"
+          value="No Jetty found in ${jetty.lib.dir}"/>    
   </target>
   
+ 
     <!-- ========================================================== -->
     <!-- parse the file -->
     <!-- ========================================================== -->
     <target name="parse" depends="init,dist"
-        description="parse the cddlm descriptor">
+        description="parse the deployment descriptor">
 
         <sf-parse quiet="true" file="${src.dir}/${deploy.sf}">
             <classpath path="${target.jar}"/>
@@ -141,6 +116,7 @@ For more information: www.smartfrog.org
     </target>
     
   <!-- ========================================================== -->
+  <!-- this is an override, as we add a manifest -->
   <!-- create the jar -->
   <!-- ========================================================== -->
   <target name="dist" depends="compile,rmi" 
@@ -149,15 +125,20 @@ For more information: www.smartfrog.org
         basedir="${build.classes.dir}" 
         includes="**/services/**"
         manifest ="${manifestName}"/>
-    <copy-useful-files src="${dist.lib.dir}" 
-        pattern="*.jar" dest="${smartfrog.dist.lib.dir}" />   
-    <copy-useful-files src="${jetty.lib.dir}" 
-	    pattern="*.jar" dest="${smartfrog.dist.lib.dir}" />   
+  
   </target>
-  
-  
+
   <!-- ========================================================== -->
-  <!-- default target -->
-  <!-- ========================================================== -->
-  <target name="default" depends="dist" description="default target" />
+  <!-- this is an override -->
+  <!-- install the jar -->
+  <!-- ========================================================== -->  
+  <target name="install" depends="common.install"
+    description="copy the jar files to the SmartFrog distribution directory">
+<!--     <copy-useful-files src="${dist.lib.dir}" 
+        pattern="*.jar" dest="${smartfrog.dist.lib.dir}" />  -->  
+    <copy-useful-files src="${jetty.lib.dir}" 
+	    pattern="*.jar" dest="${smartfrog.dist.lib.dir}" />      
+  </target>  
+  
+
 </project>

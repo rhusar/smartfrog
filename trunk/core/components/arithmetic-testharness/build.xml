@@ -30,9 +30,7 @@ For more information: www.smartfrog.org
    <!-- override point -->
   <property file="build.properties" />
 
-  <!-- this component keeps its test files in a different place from the 
-       rest, for historical reasons (i.e. it is nothing but test) -->  
-   <property name="test.src.dir" location="testcases" />
+
    <property name="arithmetic.testharness.lib.dir" location="lib" />
        
   
@@ -45,10 +43,6 @@ For more information: www.smartfrog.org
   <!-- ========================================================== -->
   <target name="init" depends="init-standard-output-dirs,use-smartfrog-tasks">
           
-    <property name="target.jar" 
-            location="${dist.lib.dir}/arithmetictestharness.jar" />
-    
-    
     <!-- the compile time path includes axis-->
     <path id="compile.classpath">
       <path refid="smartfrog.classpath"/>
@@ -62,46 +56,42 @@ For more information: www.smartfrog.org
       <path location="${target.jar}" />
     </path>  
     
-  </target>
-    
-  <!-- ========================================================== -->
-  <!-- compile -->
-  <!-- ========================================================== -->
-  <target name="compile" 
-      depends="verify-smartfrog,init">
-    <depend srcdir="${src.dir}"
-      destdir="${build.classes.dir}"
-      cache="${build.dir}/depends"
-      closure="yes"/>
-    <sf-javac
-      classpathref="compile.classpath"
-      srcdir="${src.dir}"
-      destdir="${build.classes.dir}"
-      />
-    <copy-useful-files src="${src.dir}" dest="${build.classes.dir}" />   
-  </target>
+  </target> 
   
-  <target name="compile-RMI" depends="compile">
-    <rmic includesfile="rmitargets" base="${build.classes.dir}">
-      <classpath refid="compile.classpath"/>
-    </rmic>
-  </target>  
+  <!-- ========================================================== -->
+  <!-- this is an override point -->
+  <!-- set the verified.ok property if everything needed is present -->
+  <!-- Do Not Fail. This test is used to control conditional builds -->
+  <!-- NB, set property verify.fail.message to something meaningful
+       for better diagnostic messages on failure (see assert-prerequisites) 
+       -->
+  <!-- ========================================================== -->
+  <target name="verify-prerequisites" depends="init">
+    <condition property="verified.ok">
+      <and>
+        <available 
+          classname="org.apache.velocity.Template"
+          classpathref="compile.classpath"
+          ignoresystemclasses="false"/>
+        <available 
+          classname="bsh.Primitive"
+          classpathref="compile.classpath"
+          ignoresystemclasses="false"/>
+       </and>   
+      </condition>
+      <property name="verify.fail.message"
+        value="No velocity or beanshell found"/>    
+  </target>
   
   <!-- ========================================================== -->
   <!-- create the jar -->
   <!-- ========================================================== -->
-  <target name="dist" depends="compile" 
+  <target name="dist" depends="common.dist" 
     description="create the jar files">
-    <jar destfile="${target.jar}" basedir="${build.classes.dir}" 
-        includes="**/*"/>
     <!--copy file ="${target.jar}"  todir="${smartfrog.dist.lib.dir}"/ -->
     <copy-useful-files src="${arithmetic.testharness.lib.dir}" 
         dest="${dist.lib.dir}" pattern ="**/*.jar"/>   
   </target>
 
-  <!-- ========================================================== -->
-  <!-- default target -->
-  <!-- ========================================================== -->
-  <target name="default" depends="compile, compile-RMI, dist" description="default target" />
 
 </project>

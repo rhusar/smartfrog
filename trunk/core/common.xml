@@ -6,13 +6,17 @@
   inclusion into other build files. It is a self contained build file
   for importing and overriding in subsidiary build files. 
   
-  This build file is Ant1.6+ only. import did not exist before then.
+    This build file is cutting-edge Ant1.6 scalability at work. It is 
+    not going to run on older versions, and the documentation for what
+    is in use is still sparse. 
+    Best docs so far: http://otn.oracle.com/pub/articles/bodewig_ant1.6.html
   
   When ant 1.6 imports stuff into a project, the value of ".", the project
   directory is that of the importing project, not the imported. But it sets
   a property ant.file.PROJECTNAME to that of the directory of the imported 
   project, where PROJECTNAME is not the filename, but the name of the project
-  in the XML declaratio.
+  in the XML declaration.
+  
   
   
 </description>
@@ -43,6 +47,9 @@
     
     <!-- now read in environment settings -->
     <property environment="env" />
+    
+  
+    
     
     <property name="smartfrog.home" location="${core.dir}/smartfrog"/>
     <property name="smartfrog.dist.dir" location="${smartfrog.home}/dist"/>
@@ -85,7 +92,26 @@
     <property name="dist.dir" location="${build.dir}/dist"/>
     <property name="dist.lib.dir" location="${build.dir}/dist/lib"/>
     <property name="dist.doc.dir" location="${build.dir}/dist/doc"/>
+    <property name="project.name" value="${ant.project.name}" />
+    <property name="jarfile.name" value="${project.name}-components.jar"/>
+    <property name="target.jar" 
+        location="${dist.lib.dir}/${jarfile.name}" />  
+        
     
+      <!-- turn on the tests. If you dont want this, set one (or both) to false)  in the unit tests-->
+    <property name="system.tests" value="true" />
+    <property name="unit.tests" value="true" />
+
+    <condition property="system.tests.enabled">
+      <istrue value="${system.tests}"/>
+    </condition>
+
+    <condition property="unit.tests.enabled">
+      <istrue value="${unit.tests}"/>
+    </condition>
+
+    <echo level="verbose">system.tests.enabled=${system.tests.enabled}</echo>
+    <echo level="verbose">unit.tests.enabled=${unit.tests.enabled}</echo>
     
     <!-- define a new javac task with new default options -->  
     <presetdef name="sf-javac">
@@ -99,8 +125,6 @@
             >
        </javac>
     </presetdef>
-    
-    
     
     <!-- an extension of the previous javac, this with ant classpath included -->
     <presetdef name="sf-javac-with-ant">
@@ -205,6 +229,8 @@
         verify="true"
         stubversion="1.2" />
     </presetdef>
+    
+    
   </target>
 
   <!-- ========================================================== -->
@@ -239,9 +265,10 @@
    
   <!-- ========================================================== -->
   <!-- probe for the smartfrog binaries existing in the dist dir. -->
+  <!-- and exit if they are not -->
   <!-- ========================================================== -->
     
-  <target name="verify-smartfrog"  depends="init-common"
+  <target name="assert-smartfrog"  depends="init-common"
     description="verify smartfrog is present, fail if not">
     <available 
       classname="org.smartfrog.SFSystem" 
@@ -255,6 +282,12 @@
     <echo level="verbose">Smartfrog found in ${smartfrog.dist.lib.dir}</echo>
   </target>
 
+  <!-- ========================================================== -->
+  <!-- left in for backwards naming compatibility -->
+  <!-- ========================================================== -->
+    
+  <target name="verify-smartfrog"  depends="assert-smartfrog" />
+  
   <!-- ========================================================== -->
   <!-- probe for tasks and use them if they are found; fail if not -->
   <!-- ========================================================== -->
@@ -277,8 +310,24 @@
       resource="org/smartfrog/tools/ant/tasks.properties"
       classpathref="smartfrog.tasks.classpath"
       />
+     
   </target>
-    
+
+  <!-- ========================================================== -->
+  <!-- declare presets and macrodefs to enhance the tasks better 
+    for our needs -->
+  <!-- ========================================================== -->
+  <target name="declare-extended-smartfrog-tasks" 
+      depends="init,use-smartfrog-tasks">
+    <presetdef name="sf-startdaemon-debug">
+      <sf-startdaemon classpathref="run.classpath"
+        logStackTraces="true" spawn="true">
+        <assertions enableSystemAssertions="true">
+          <enable/>
+        </assertions>
+      </sf-startdaemon>
+    </presetdef>      
+  </target>  
   
   <!-- ========================================================== -->
   <!--  look for a local daemon. Sets the property  local.daemon.running if
@@ -292,9 +341,9 @@
   <!-- conditionally start the daemon if one was not found already-->
   <!-- ========================================================== -->
   <target name="start-daemon-if-needed" 
-    depends="use-smartfrog-tasks,probe-local-daemon"
+    depends="declare-extended-smartfrog-tasks,probe-local-daemon"
     unless="local.daemon.running">
-      <sf-startdaemon  />
+      <sf-startdaemon-debug  />
   </target>
   
   <!-- ========================================================== -->
@@ -302,9 +351,9 @@
   <!-- and do not complain if it could not start (or execution timed out) -->
   <!-- ========================================================== -->
   <target name="start-daemon-if-needed-no-failonerror" 
-    depends="use-smartfrog-tasks,probe-local-daemon"
+    depends="declare-extended-smartfrog-tasks,probe-local-daemon"
     unless="local.daemon.running">
-      <sf-startdaemon  failonerror="false"/>
+      <sf-startdaemon-debug failonerror="false"/>
   </target>
   
   
@@ -319,17 +368,240 @@
     <sf-stopdaemon failonerror="false" />
   </target>  
   
+  <!-- ========================================================== -->
+  <!-- always shutdown a local daemon. keep going if one is not running -->
+  <!-- ========================================================== -->
   <target name="shutdown"
     depends="use-smartfrog-tasks"
     description="shut down a local smartfrog daemon">
     <sf-stopdaemon failonerror="false" />
   </target> 
   
+<<<<<<< common.xml
+  
+  <!-- ========================================================== -->
+  <!-- this is an override point -->
+  <!-- ========================================================== -->
+  <target name="init" depends="init-standard-output-dirs"/>
+  
+  <!-- ========================================================== -->
+  <!-- this is an override point -->
+  <!-- set the verified.ok property if everything needed is present -->
+  <!-- Do Not Fail. This test is used to control conditional builds -->
+  <!-- NB, set property verify.fail.message to something meaningful
+       for better diagnostic messages on failure (see assert-prerequisites) 
+       -->
+  <!-- ========================================================== -->
+  <target name="verify-prerequisites" depends="init">
+    <property name="verified.ok" value="true"/>
+  </target>
+  
+  <!-- ========================================================== -->
+  <!-- entry point for the components/build.xml delegation;
+       probe for needed libraries, and skip the operation if they 
+       are missing -->
+  <!-- ========================================================== -->
+  
+  <target name="maybe-dist" depends="verify-prerequisites" if="verified.ok">
+    <antcall target="dist" />
+  </target>
 
-  <target name="printenv"
+  <!-- ========================================================== -->
+  <!-- entry point for the components/build.xml delegation;
+       default implementation runs batch-test if the 
+       prerequisites are met -->
+  <!-- ========================================================== -->
+  <target name="maybe-test" depends="verify-prerequisites" if="verified.ok">
+    <antcall target="batch-test" />
+  </target>
+  
+  
+  <!-- ========================================================== -->
+  <!-- entry point for the components/build.xml delegation;
+       probe for needed libraries, and skip the operation if they 
+       are missing -->
+  <!-- ========================================================== -->
+  <target name="maybe-install" depends="verify-prerequisites" if="verified.ok">
+    <antcall target="install" />
+  </target>
+  
+  <!-- ========================================================== -->
+  <!-- assert the prerequisites were found. 
+    Use this before you compile for a more meaningful failure message
+    preset the property verify.fail.message for better diagnostics
+    -->
+  <!-- ========================================================== -->
+  <target name="assert-prerequisites" depends="verify-prerequisites"
+    unless="verified.ok">
+    <property name="verify.fail.message" 
+      value="The prerequisite classes for this project were not found"/>
+    <fail>${verify.fail.message}</fail>
+  </target>  
+  
+  
+
+  <!-- ========================================================== -->
+  <!-- this is an override point -->
+  <!-- compile everything, copy useful files over-->
+  <!-- ========================================================== -->
+  <target name="compile"
+      depends="init,assert-smartfrog,assert-prerequisites">
+      <depend srcdir="${src.dir}"
+          destdir="${build.classes.dir}"
+          cache="${build.dir}/depends"
+          closure="yes"/>
+      <sf-javac
+          classpathref="compile.classpath"
+          srcdir="${src.dir}"
+          destdir="${build.classes.dir}"
+          />
+      <copy-useful-files src="${src.dir}" dest="${build.classes.dir}"/>
+  </target>
+
+  <!-- ========================================================== -->
+  <!-- this is an override point -->
+  <!-- RMI compile by looking for all remote classes in the
+       compiled project-->
+  <!-- ========================================================== -->
+  <target name="rmi" depends="compile"
+      description="create the RMI classes">
+      <sf-rmic
+          base="${build.classes.dir}"
+          verify="true"
+          includes="**/*.class">
+          <classpath refid="compile.classpath"/>
+      </sf-rmic>
+  </target>  
+  
+  <!-- another name for rmi -->
+  <target name="compile-RMI" depends="rmi" />
+  
+  <!-- ========================================================== -->
+  <!-- this is an override point -->
+  <!-- create the jar ${target.jar}-->
+  <!-- ========================================================== -->
+  <target name="dist" depends="compile,rmi"
+      description="create the jar files">
+      <jar destfile="${target.jar}" 
+        basedir="${build.classes.dir}" 
+        includes="**/*"/>
+  </target>    
+    
+ 
+  <!-- ========================================================== -->
+  <!-- this is an override point -->
+  <!-- install the jar -->
+  <!-- ========================================================== -->
+  <target name="install" depends="dist"
+    description="copy the jar file to the SmartFrog distribution directory">
+    <copy file="${target.jar}" todir="${smartfrog.dist.lib.dir}"/>
+  </target>
+  
+  <!-- ========================================================== -->
+  <!-- this is an override point -->
+  <!-- generate test reports and break on failure-->
+  <!-- ========================================================== -->
+
+  <target name="reports" depends="init"
+    description="generate the test reports" >
+    <sf-test-report data="${test.data.dir}"
+      reports="${test.reports.dir}"
+      failed="test.failed"/>
+    <echo>reports in ${test.reports.dir}</echo>
+  </target>
+  
+  <!-- ========================================================== -->
+  <!-- this is an override point -->
+  <!-- generate test reports; ignore failur results-->
+  <!-- ========================================================== -->
+
+  <target name="reports-no-failure" depends="init"
+    description="generate the test reports" >
+    <sf-test-report data="${test.data.dir}"
+      reports="${test.reports.dir}"
+      failed="a.property.that.had.better.never.be.set"/>
+    <echo>reports in ${test.reports.dir}</echo>
+  </target>
+  
+  
+  <!-- ========================================================== -->
+  <!-- this is an override point -->
+  <!-- system tests : anything that is tested on a live daemon 
+       not to be run on public machines for
+       security reasons, unless security is active-->
+  <!-- ========================================================== -->
+  <target name="system-tests" if="system.tests.enabled" depends="init"
+    description="run the system tests">
+    <echo message="No system tests"/>
+  </target>  
+  
+  <!-- ========================================================== -->
+  <!-- this is an override point -->
+  <!-- unit tests : anything which does not need deployment to run-->
+  <!-- ========================================================== -->
+  <target name="unit-tests" depends="init,dist" if="unit.tests.enabled"
+    description="run the unit tests">
+    <echo message="No unit tests"/>
+  </target> 
+  
+  <!-- ========================================================== -->
+  <!-- run tests, both unit and system  -->
+  <!-- ========================================================== -->
+  <target name="run-tests"
+    depends="unit-tests,system-tests" />
+    
+    
+  <!-- ========================================================== -->
+  <!-- public entry point does all tests and the reports -->
+  <!-- ========================================================== -->
+  <target name="test"
+    depends="run-tests,reports"
+    description="compile and run all the tests"
+    />
+
+  <!-- ========================================================== -->
+  <!-- public entry point does all tests and the reports -->
+  <!-- ========================================================== -->
+  <target name="batch-test"
+    depends="run-tests,reports-no-failure"
+    description="compile and run all the tests; do not break on test failure"
+    />
+    
+  <!-- ========================================================== -->
+  <!-- shortcut for testing -->
+  <!-- ========================================================== -->
+  <target name="smartfrog-dist"
     depends="init-common"
-    description="print the current environment">
+    >
+    <ant dir="${smartfrog.home}" target="dist" inheritall="false"/>
+  </target>
+
+  <!-- ========================================================== -->
+  <!-- rebuild smartfrog, then run the tests
+       this target is useful if you are changing smartfrog core
+       as well as a component-->
+  <!-- ========================================================== -->
+  <target name="buildtest"
+    depends="smartfrog-dist,test"
+    description="compile the smartfrog distribution, 
+      compile and run all the tests"
+    />    
+    
+  <!-- ========================================================== -->
+  <!-- this is an override point -->
+  <!-- print meaningful diagnostics -->
+  <!-- ========================================================== -->    
+ <target name="diagnostics" depends="init"
+    description="build file diagnostics">
     <echoproperties/>
   </target> 
   
+   <!-- ========================================================== -->
+  <!-- this is an override point -->
+  <!-- default target -->
+  <!-- ========================================================== -->
+  <target name="default" depends="dist" 
+    description="default target creates a distribution" />
+
+    
 </project>   
