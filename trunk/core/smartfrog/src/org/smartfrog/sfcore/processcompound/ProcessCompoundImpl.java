@@ -860,6 +860,9 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
         } else { // I am a child process - find in the parent
             pc = ((ProcessCompound) sfParent()).sfResolveProcess(name, cd);
         }
+        if (sflog().isTraceEnabled()){
+            sflog().trace("ProcessCompound '"+name+"' found: "+pc.sfCompleteName());
+        }
 
         return pc;
     }
@@ -944,13 +947,19 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
                     "out");
 
             // kick them off
+            errorGobbler.setName(name+".errorGobbler");
+            outputGobbler.setName(name+".outputGobbler");
             errorGobbler.start();
             outputGobbler.start();
         }
 
         try {
             // Wait for new compound to appear and try to return it
-            return (ProcessCompound) sfResolveHereOrWait(name, timeout);
+            ProcessCompound newPc = (ProcessCompound) sfResolveHereOrWait(name, timeout);
+            if (sflog().isDebugEnabled()){
+                sflog().debug("New ProcessCompound "+name+" created: "+ newPc.sfCompleteName());
+            }
+            return newPc;
         } catch (Exception ex) {
             // failed to find new compound. Destroy process and re-throw
             // exception
