@@ -489,13 +489,6 @@ For more information: www.smartfrog.org
     		token="@version" 
     		property="@{compname}.version"/>
 	</replace>
-	<replace 
-		file="@{project}/doc/@{compname}_readme.sxw"
-   		propertyFile="version.properties">
-  		<replacefilter 
-    		token="version" 
-    		property="@{compname}.version"/>
-	</replace>
       </sequential>
     </macrodef>
 
