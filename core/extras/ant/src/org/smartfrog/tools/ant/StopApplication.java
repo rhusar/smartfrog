@@ -40,7 +40,7 @@ public class StopApplication extends SmartFrogTask {
 
     public void init() throws BuildException {
         super.init();
-        setHost("localhost");
+        bindToLocalhost();
         setFailOnError(true);
         setTimeout(DEFAULT_TIMEOUT_VALUE);
     }
