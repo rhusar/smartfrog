@@ -1,0 +1,14 @@
+
+
+ant demo-serverStatus -e
+
+ant demo-listApplications
+
+ant demo-undeploy -Duri=http://app
+
+ant demo-applicationStatus -Duri=http://app
+
+
+ant demo-deploy-sf -Dfile=test/files/counter.sf
+
+

@@ -33,7 +33,7 @@ import org.smartfrog.services.cddlm.generated.api.DeployApiConstants;
  */
 public class LookupApplicationsTest extends ConsoleTestBase {
 
-    Lookup operation;
+    private Lookup operation;
     public static final String INVALID_URI_NAME = "http://invalid.org/lookup";
 
     /**

@@ -43,6 +43,8 @@ public class CallbackProcessor extends Processor {
     public static final String ERROR_NO_CALLBACK = "No callback information";
     public static final String ERROR_NO_ADDRESS = "No address for callbacks";
     public static final String ERROR_NO_URI = "No URI in the address";
+    public static final String ERROR_NO_CALLBACK_TYPE = "no callback type specified";
+    public static final String ERROR_BAD_CALLBACK_URL = "Bad callback URL : ";
 
     public CallbackProcessor(SmartFrogHostedEndpoint owner) {
         super(owner);
@@ -60,16 +62,18 @@ public class CallbackProcessor extends Processor {
             boolean required)
             throws AxisFault {
         CallbackEnum type = null;
-
-        if (callbacks != null) {
-            type = callbacks.getType();
-        }
-        if (callbacks == null || type == null) {
+        if (callbacks == null) {
             if (!required) {
+                job.clearCallbackData();
                 return;
             } else {
                 throw raiseBadArgumentFault(ERROR_NO_CALLBACK);
             }
+        }
+
+        type = callbacks.getType();
+        if (type == null) {
+            throw raiseBadArgumentFault(ERROR_NO_CALLBACK_TYPE);
         }
         if (!DeployApiConstants.CALLBACK_CDDLM_PROTOTYPE.equals(
                 type.getValue())) {
@@ -90,7 +94,8 @@ public class CallbackProcessor extends Processor {
         try {
             url = makeURL(uri);
         } catch (MalformedURLException e) {
-            throw raiseBadArgumentFault("Bad callback URL : " + uri.toString());
+            throw raiseBadArgumentFault(
+                    ERROR_BAD_CALLBACK_URL + uri.toString());
         }
         job.setCallbackURL(url);
         job.setCallbackType(type.getValue());
@@ -108,7 +113,7 @@ public class CallbackProcessor extends Processor {
             throw raiseBadArgumentFault(ERROR_NO_APPLICATION);
         }
         JobState job = lookupJob(appURI);
-        process(job, setCallback.getCallback(), true);
+        process(job, setCallback.getCallback(), false);
 
         return true;
     }

@@ -20,8 +20,6 @@
 package org.smartfrog.services.cddlm.engine;
 
 import org.apache.axis.AxisFault;
-import org.apache.axis.MessageContext;
-import org.apache.axis.encoding.SerializationContext;
 import org.apache.axis.message.MessageElement;
 import org.apache.axis.types.NCName;
 import org.apache.axis.types.URI;
@@ -31,15 +29,12 @@ import org.smartfrog.services.cddlm.api.CallbackRaiser;
 import org.smartfrog.services.cddlm.api.OptionProcessor;
 import org.smartfrog.services.cddlm.api.Processor;
 import org.smartfrog.services.cddlm.cdl.CdlDocument;
-import org.smartfrog.services.cddlm.cdl.XomAxisHelper;
 import org.smartfrog.services.cddlm.generated.api.types.ApplicationStatusType;
 import org.smartfrog.services.cddlm.generated.api.types.DeploymentDescriptorType;
-import org.smartfrog.services.cddlm.generated.api.types.UnboundedXMLOtherNamespace;
 import org.smartfrog.services.cddlm.generated.api.types._deployRequest;
 import org.smartfrog.sfcore.prim.Prim;
 
 import javax.xml.namespace.QName;
-import java.io.StringWriter;
 import java.lang.ref.WeakReference;
 import java.net.URL;
 
@@ -154,6 +149,16 @@ public class JobState {
 
     public void setCallbackRaiser(CallbackRaiser callbackRaiser) {
         this.callbackRaiser = callbackRaiser;
+    }
+
+    /**
+     * clear all callback information
+     */
+    public void clearCallbackData() {
+        callbackRaiser = null;
+        callbackIdentifier = null;
+        callbackType = null;
+        callbackURL = null;
     }
 
     public WeakReference getPrimReference() {
@@ -353,9 +358,10 @@ public class JobState {
         status.setName(new NCName(name));
         status.setReference(getUri());
         if (fault != null) {
+            /* TODO: implement. this doesnt compile on jikes
             MessageContext msgContext = MessageContext.getCurrentContext();
             StringWriter sw = new StringWriter();
-            SerializationContext context = new SerializationContext(sw,
+            SerializationContext context = new org.apache.axis.encoding.SerializationContext(sw,
                     msgContext);
             try {
                 fault.output(context);
@@ -369,6 +375,7 @@ public class JobState {
                 //ignore and continue
                 log.warn(e);
             }
+            */
         }
         return status;
     }
