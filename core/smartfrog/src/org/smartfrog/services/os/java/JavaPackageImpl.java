@@ -243,7 +243,6 @@ public class JavaPackageImpl extends PrimImpl implements JavaPackage {
      */
     private void checkForClass(ClassLoader loader, String classname)
             throws SmartFrogLivenessException  {
-        //log.warn("class checking is not yet implemented");
         String resource=RunJavaUtils.makeResource(classname);
         checkForResource(loader,resource);
     }
