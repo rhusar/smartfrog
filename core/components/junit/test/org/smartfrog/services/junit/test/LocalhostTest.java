@@ -19,21 +19,29 @@
  */
 
 
-package org.smartfrog.services.junit.test.targets;
+package org.smartfrog.services.junit.test;
 
-import junit.framework.TestCase;
+import org.smartfrog.test.SmartFrogTestBase;
+import org.smartfrog.test.LocalJVMTestBase;
+import org.smartfrog.sfcore.prim.Prim;
 
 /**
- * Date: 05-Jul-2004
- * Time: 22:09:54
+ * Test deploying against a localhost
+ * Date: 06-Jul-2004
+ * Time: 21:54:25
  */
-public class ThrowingTest extends TestCase {
+public class LocalhostTest extends LocalJVMTestBase {
 
-    public ThrowingTest(String s) {
-        super(s);
+    public LocalhostTest(String name) {
+        super(name);
     }
 
-    public void testThrowing() {
-        throw new RuntimeException("This was meant to happen");
+
+    public void testSuccess() throws Throwable {
+        String url;
+        url="/files/success.sf";
+        final String appName = "localhostTest";
+        Prim deploy=deployExpectingSuccess(url , appName);
+        terminateApplication(deploy);
     }
 }
