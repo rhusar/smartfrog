@@ -44,7 +44,7 @@ public final class MessageUtil {
 
     /**
      * Gets the message string for the message key.
-     * @param the message key
+     * @param messageKey the message key
      * @return Message String
      */
     private static String getMessageString(String messageKey) {
