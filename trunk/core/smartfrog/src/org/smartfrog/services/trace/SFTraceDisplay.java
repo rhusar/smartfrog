@@ -34,7 +34,7 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.processcompound.SFProcess;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
-
+import org.smartfrog.sfcore.common.Logger;
 
 /**
  * Implements the display for the trace component.
@@ -149,8 +149,7 @@ public class SFTraceDisplay extends SFDisplay implements ActionListener {
         try {
             ((TraceTreePanel) panelTree).refresh();
         } catch (Exception ex) {
-            System.out.println("Failure refresh() SFTraceDisplay!");
-            ex.printStackTrace();
+            Logger.logQuietly("Failure refresh() SFTraceDisplay!",ex);
         }
     }
 

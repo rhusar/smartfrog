@@ -353,8 +353,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
          ((DeployTreePanel) panelTree).setModel(root);
          ((DeployTreePanel) panelTree).refresh();
       } catch (Throwable ex) {
-         Logger.log("Failure refresh() SFDeployDisplay!");
-         ex.printStackTrace();
+         Logger.logQuietly("Failure refresh() SFDeployDisplay!",ex);
       }
    }
 
