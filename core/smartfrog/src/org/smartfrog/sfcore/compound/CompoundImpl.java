@@ -467,7 +467,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
      * @param status termination status
      */
     public synchronized void sfTerminateWith(TerminationRecord status) {
-        //Reevalution of sfSynchTermite to get runtime changes.
+        //Re-check of sfSynchTerminate to get runtime changes.
         try {
             sfSyncTerminate = sfResolve(SmartFrogCoreKeys.SF_SYNC_TERMINATE, sfSyncTerminate, false);
         } catch (Exception sfrex){
@@ -490,6 +490,9 @@ public class CompoundImpl extends PrimImpl implements Compound {
      * @param status status to terminate with
      */
     protected void sfSyncTerminateWith(TerminationRecord status) {
+        if (sflog().isTraceEnabled()) {
+           sflog().trace("SYNCTermination: "+ sfCompleteNameSafe(),null,status);
+        }
         for (int i = sfChildren.size()-1; i>=0; i--) {
             try {
                 ((Prim)sfChildren.elementAt(i)).sfTerminateQuietlyWith(status);
@@ -508,6 +511,9 @@ public class CompoundImpl extends PrimImpl implements Compound {
      * @param status status to terminate with
      */
     protected void sfASyncTerminateWith(TerminationRecord status) {
+        if (sflog().isTraceEnabled()) {
+           sflog().trace("ASYNCTermination: "+ sfCompleteNameSafe(),null,status);
+        }
         for (int i = sfChildren.size()-1; i>=0; i--) {
             try {
                 //Deprecated: new TerminateCall((Prim)(sfChildren.elementAt(i)), status);
