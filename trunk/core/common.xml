@@ -558,6 +558,15 @@
   <!-- ========================================================== -->
   <target name="init" depends="init-standard-output-dirs"/>
   
+  
+  <!-- ========================================================== -->
+  <!-- this is here to set up the depends graph properly for
+       overriden verify-prerequisites targets -->
+  <!-- ========================================================== -->
+  
+  <target name="pre-verify-prerequisites" depends="init,declare-classpaths">
+  </target>
+  
   <!-- ========================================================== -->
   <!-- this is an override point -->
   <!-- set the verified.ok property if everything needed is present -->
@@ -566,7 +575,7 @@
        for better diagnostic messages on failure (see assert-prerequisites) 
        -->
   <!-- ========================================================== -->
-  <target name="verify-prerequisites" depends="init,declare-classpaths">
+  <target name="verify-prerequisites" depends="pre-verify-prerequisites">
     <property name="verified.ok" value="true"/>
   </target>
   

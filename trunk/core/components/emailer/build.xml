@@ -41,20 +41,7 @@ For more information: www.smartfrog.org
   <!-- ========================================================== -->
   <target name="init" depends="init-standard-output-dirs,use-smartfrog-tasks">
           
-   
-    <!-- the compile time path includes axis-->
-<!--     <path id="compile.classpath">
-      <path refid="smartfrog.classpath"/>
-      <fileset dir="${emailer.lib.dir}">
-        <include name="**/*.jar"/>
-      </fileset>
-    </path>
-    
-    <path id="run.classpath">
-      <path refid="compile.classpath"/>
-      <path location="${target.jar}" />
-    </path>  
- -->    
+
   </target>
 
   <!-- ========================================================== -->

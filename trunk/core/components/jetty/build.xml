@@ -75,7 +75,7 @@ For more information: www.smartfrog.org
        for better diagnostic messages on failure (see assert-prerequisites) 
        -->
   <!-- ========================================================== -->
-  <target name="verify-prerequisites" depends="common.verify-prerequisites">
+  <target name="verify-prerequisites" depends="pre-verify-prerequisites">
         <available property="verified.ok"
             classname="org.mortbay.http.HttpServer"
             classpathref="compile.classpath"
