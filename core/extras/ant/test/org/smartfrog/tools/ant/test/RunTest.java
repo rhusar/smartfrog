@@ -114,12 +114,6 @@ public class RunTest extends TaskTestBase {
         assertDeployFailsWithUnresolvedReference(target);
     }
 
-    private void assertDeployFailsWithUnresolvedReference(String target) {
-        expectBuildExceptionContaining(target, "deploy failure",
-                "Could not run");
-        assertInLog("Reference not found, Unresolved Reference");
-    }
-
     /**
      * assertions get passed down
      */

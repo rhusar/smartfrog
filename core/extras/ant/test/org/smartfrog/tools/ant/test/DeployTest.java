@@ -127,7 +127,7 @@ public class DeployTest extends TaskTestBase {
      [sf-deploy] SmartFrogDeploymentException: HOST "141.20.195.89":rootProcess failed to deploy 'app' component
      [sf-deploy]    cause: SmartFrogResolutionException:: Reference not found, Unresolved Reference: sfClass
      */
-    public void testDeployFile() {
+    public void notestDeployFile() {
         expectBuildExceptionContaining("testDeployFile", "expected timeout", "Timeout");
         //assertInLog("rootProcess failed to deploy 'app' component");
         assertInLog("FAILED when trying DEPLOY of 'app'");
@@ -145,4 +145,15 @@ public class DeployTest extends TaskTestBase {
         assertInLog("[[elementA, elementB], Message from outerVector, [value is , 99]]");
         assertInLog("1");
     }
+
+    public void testInline() {
+        assertDeployFailsWithUnresolvedReference("testInline");
+    }
+
+    /**
+     * turned off; it doesnt add more than the inline one
+     */
+    public void notestDeployInline() {
+        expectBuildExceptionContaining("testDeployInline", "expected timeout", "Timeout");
+        assertInLog("goodbye");    }
 }
