@@ -21,6 +21,7 @@ package org.smartfrog.services.xml.impl;
 
 import nu.xom.Node;
 import nu.xom.Text;
+import nu.xom.XMLException;
 import org.smartfrog.services.xml.interfaces.XmlTextNode;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
@@ -35,12 +36,17 @@ public class XmlTextNodeImpl extends SimpleXmlNode implements XmlTextNode {
 
     /**
      * create a node of the appropriate type. This is called during deployment;
-     *
+     * Requires {@link #ATTR_TEXT} to be set
      * @return a Node of type {@link nu.xom.Text}
      */
     public Node createNode() throws RemoteException, SmartFrogException {
         String text = sfResolve(ATTR_TEXT, "", true);
-        return new Text(text);
+        try {
+            return new Text(text);
+        } catch (XMLException e) {
+            throw XmlNodeHelper.handleXmlException(e);
+        }
+
     }
 
 

@@ -23,9 +23,18 @@ package org.smartfrog.services.xml.test.system;
 
 import org.smartfrog.test.SmartFrogTestBase;
 import org.smartfrog.services.xml.interfaces.XmlNode;
+import org.smartfrog.services.xml.utils.ParserHelper;
 import org.smartfrog.sfcore.prim.Prim;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
 
 import java.rmi.RemoteException;
+import java.io.IOException;
+import java.io.File;
+
+import nu.xom.ParsingException;
+import nu.xom.Document;
+import nu.xom.Builder;
 
 /**
  * base class for tests; currently extends the smartfrog testbase
@@ -74,5 +83,21 @@ public abstract class TestBase extends SmartFrogTestBase {
      */
     protected void terminateNode(XmlNode node) throws RemoteException {
         terminateApplication((Prim)node);
+    }
+
+    /**
+     * load an XML File
+     * @param file
+     * @return
+     * @throws SAXException
+     * @throws ParsingException
+     * @throws IOException
+     */
+    public Document loadXMLFile(File file) throws SAXException,
+            ParsingException, IOException {
+        XMLReader xmlParser = ParserHelper.createXmlParser(true,true,false);
+        Builder builder = new Builder(xmlParser, true);
+        Document document = builder.build(file);
+        return document;
     }
 }

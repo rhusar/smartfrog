@@ -21,6 +21,8 @@ package org.smartfrog.services.xml.impl;
 
 import nu.xom.DocType;
 import nu.xom.Node;
+import nu.xom.Attribute;
+import nu.xom.XMLException;
 import org.smartfrog.services.xml.interfaces.XmlDocType;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
@@ -43,7 +45,11 @@ public class XmlDocTypeImpl extends SimpleXmlNode implements XmlDocType {
         String publicID = sfResolve(ATTR_PUBLICID, (String) null, false);
         String systemID = sfResolve(ATTR_SYSTEMID, (String) null, false);
         String root = sfResolve(ATTR_ROOT_ELEMENT_NAME, "", true);
-        return new DocType(root, systemID, publicID);
+        try {
+            return new DocType(root, systemID, publicID);
+        } catch (XMLException e) {
+            throw XmlNodeHelper.handleXmlException(e);
+        }
     }
 
 

@@ -21,6 +21,7 @@ package org.smartfrog.services.xml.impl;
 
 import nu.xom.Node;
 import nu.xom.ProcessingInstruction;
+import nu.xom.XMLException;
 import org.smartfrog.services.xml.interfaces.XmlProcessingInstruction;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
@@ -43,6 +44,11 @@ public class XmlProcessingInstructionImpl extends SimpleXmlNode
     public Node createNode() throws RemoteException, SmartFrogException {
         String target = sfResolve(ATTR_TARGET, "", true);
         String data = sfResolve(ATTR_DATA, "", true);
-        return new ProcessingInstruction(target, data);
+        try {
+            return new ProcessingInstruction(target, data);
+        } catch (XMLException e) {
+            throw XmlNodeHelper.handleXmlException(e);
+        }
+
     }
 }
