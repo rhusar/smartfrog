@@ -113,7 +113,7 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:restriction base="xsd:string">
-      <xsd:enumeration value="null">
+      <xsd:enumeration value="undefined">
         <xsd:annotation>
           <xsd:documentation>
             undefined state
@@ -906,9 +906,37 @@
         </xsd:documentation>
       </xsd:annotation>
       <xsd:sequence>
-        <xsd:element name="identifier" type="xsd:string"/>
-        <xsd:element name="applicationReference" type="types:applicationReferenceType"/>
-        <xsd:element name="status" type="types:applicationStatusType"/>
+        <xsd:element name="identifier" type="xsd:string">
+          <xsd:annotation>
+            <xsd:documentation>
+            identifier passed in when requesting callbacks
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="timestamp" type="xsd:integer">
+          <xsd:annotation>
+            <xsd:documentation>
+            UTC timestamp of message sending.
+              time_t, seconds since 1/1/1970.
+              Anyone who wants xsd:dateTime instead hasn't done enough
+              interop testing.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:element> 
+        <xsd:element name="applicationReference" type="types:applicationReferenceType">
+          <xsd:annotation>
+            <xsd:documentation>
+            Application this is referring to
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="status" type="types:applicationStatusType">
+          <xsd:annotation>
+            <xsd:documentation>
+            status of application
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>

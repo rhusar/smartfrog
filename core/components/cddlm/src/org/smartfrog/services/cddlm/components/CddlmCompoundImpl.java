@@ -22,6 +22,7 @@ package org.smartfrog.services.cddlm.components;
 import org.apache.axis.types.URI;
 import org.smartfrog.services.cddlm.engine.JobState;
 import org.smartfrog.services.cddlm.engine.ServerInstance;
+import org.smartfrog.services.cddlm.generated.api.types.LifecycleStateEnum;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.compound.CompoundImpl;
@@ -38,13 +39,7 @@ import java.rmi.RemoteException;
 public class CddlmCompoundImpl extends CompoundImpl
         implements CddlmCompound {
 
-    private String endpoint;
-
     private URI jobURI;
-
-    private String identifier;
-
-    private int timeout = -1;
 
     private JobState job;
 
@@ -77,12 +72,10 @@ public class CddlmCompoundImpl extends CompoundImpl
             RemoteException {
         super.sfStart();
         //attributes
-        endpoint = sfResolve(ATTR_NOTIFICATION_ENDPOINT, (String) null, true);
-        identifier = sfResolve(ATTR_IDENTIFIER, (String) null, true);
-        timeout = sfResolve(ATTR_TIMEOUT, timeout, false);
+        String uri= sfResolve(ATTR_JOBURI, (String) null, true);
         //make the URI
         try {
-            jobURI = new URI(endpoint);
+            jobURI = new URI(uri);
         } catch (URI.MalformedURIException e) {
             throw SmartFrogException.forward(e);
         }
@@ -91,19 +84,52 @@ public class CddlmCompoundImpl extends CompoundImpl
         job = server.getJobs().lookup(jobURI);
         if (job == null) {
             throw new SmartFrogDeploymentException(
-                    ERROR_UNKNOWN_JOB_URI + endpoint);
+                    ERROR_UNKNOWN_JOB_URI + uri);
         }
+        //now add our hooks
+        LifecycleEventHook deploy=new LifecycleEventHook(job, LifecycleStateEnum.instantiated);
+        LifecycleEventHook start = new LifecycleEventHook(job, LifecycleStateEnum.running);
+        LifecycleEventHook terminate = new LifecycleEventHook(job, LifecycleStateEnum.terminated);
+        sfDeployHooks.addHook(deploy);
+        sfStartHooks.addHook(start);
+        sfTerminateWithHooks.addHook(terminate);
 
     }
 
-    public class startupHook implements PrimHook {
+    /**
+     * lifecycle events
+     */
+    public static class LifecycleEventHook implements PrimHook {
 
+        JobState job;
+        LifecycleStateEnum state;
+
+        public LifecycleEventHook(JobState job, LifecycleStateEnum state) {
+            this.job = job;
+            this.state = state;
+        }
+
+        /**
+         * forward this event to the system
+         * @param prim
+         * @param terminationRecord
+         * @throws SmartFrogException
+         */
         public void sfHookAction(Prim prim,
-                TerminationRecord terminationRecord)
+                                 TerminationRecord terminationRecord)
                 throws SmartFrogException {
-
+            String info=null;
+            //if we died
+            if(terminationRecord!=null) {
+                //we tell the system that
+                job.enterTerminatedStateNotifying(terminationRecord);
+            } else {
+                //otherwise, tell it of the fact we entered our known state
+                job.enterStateNotifying(state,info);
+            }
         }
     }
+
 
 
 }

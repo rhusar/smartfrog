@@ -20,8 +20,8 @@
 package org.smartfrog.services.cddlm.test.system.console;
 
 import org.apache.axis.types.URI;
-import org.smartfrog.services.cddlm.generated.api.types.DeploymentDescriptorType;
 import org.smartfrog.services.cddlm.generated.api.DeployApiConstants;
+import org.smartfrog.services.cddlm.generated.api.types.DeploymentDescriptorType;
 import org.smartfrog.services.cddlm.test.unit.cdl.CdlLoaderTest;
 
 /**

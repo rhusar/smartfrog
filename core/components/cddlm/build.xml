@@ -76,7 +76,9 @@
     <property name="client.package.base" value="org.cddlm.client"/>
     <property name="client.src.dir" value="client"/>
     <property name="build.client.dir" value="${build.dir}/client"/>
-    <property name="build.client.classes.dir" value="${build.client.dir}/classes"/>
+    <!-- <property name="build.client.classes.dir" value="${build.client.dir}/classes"/> -->
+    <!-- recompile client code into the same tree as the main app -->
+    <property name="build.client.classes.dir" value="${build.classes.dir}"/>
     <mkdir dir="${build.client.dir}"/>
     <mkdir dir="${build.client.classes.dir}"/>
 
@@ -388,43 +390,14 @@
       typemappingversion="${type.mapping}"
       implementationClassName="org.smartfrog.services.cddlm.api.CallbackEndpoint"
       />
-    <!-- now delete the stub endpoint implementation classes in the generated file tree -->
-    <!-- as we use the one in the main codebase, and want to eliminate confusion -->
-    <delete dir="${soap.server.dir}/org/smartfrog/services/cddlm/api"/>
-    <touch file="${soapapi.touch.file}"/>
-  </target>
-
-  <!-- =================================================================== -->
-  <!-- generate server WSDL from our WSDL document-->
-  <!-- =================================================================== -->
-
-  <target name="client-wsdl" depends="check-soapapi"
-    unless="soapapi.client.uptodate"
-    description="create server classes from WSDL">
     <axis-wsdl2java
-      output="${soap.client.dir}"
-      serverside="false"
-      url="${deploymentAPI.wsdl}"
-      verbose="true"
-      all="false"
-      testcase="true"
-      namespacemappingfile="${client.mapping.file}"
-      skeletondeploy="false"
-      helpergen="${helpergen}"
-      failonnetworkerrors="true"
-      noimports="false"
-      debug="false"
-      printstacktraceonfailure="false"
-      typemappingversion="${type.mapping}"
-      />
-    <axis-wsdl2java
-      output="${soap.client.dir}"
+      output="${soap.server.dir}"
       serverside="true"
       url="${callbackAPI.wsdl}"
       verbose="true"
       all="false"
       testcase="false"
-      namespacemappingfile="${client.mapping.file}"
+      namespacemappingfile="${mapping.file}"
       skeletondeploy="true"
       helpergen="${helpergen}"
       failonnetworkerrors="true"
@@ -432,13 +405,18 @@
       debug="false"
       printstacktraceonfailure="false"
       typemappingversion="${type.mapping}"
-      implementationClassName="${client.package.base}.callbacks.CallbackEndpoint"
-      />
+      implementationClassName="org.smartfrog.services.cddlm.api.CallbackEndpoint"
+      />      
     <!-- now delete the stub endpoint implementation classes in the generated file tree -->
-    <!-- as we use the one in the main client codebase, and want to eliminate confusion -->
-    <delete dir="${soap.client.dir}/org/cddlm/client/callbacks"/>
-    <touch file="${soapapi.client.touch.file}"/>
+    <!-- as we use the one in the main codebase, and want to eliminate confusion -->
+    <delete dir="${soap.server.dir}/org/smartfrog/services/cddlm/api"/>
+    <touch file="${soapapi.touch.file}"/>
   </target>
+
+  <target name="touch-wsdl" depends="init-soap"> 
+      <delete file="${soapapi.touch.file}"/>
+  </target>
+
 
   <!-- ========================================================== -->
   <!-- create all the wsdl. useful when there is a change -->
@@ -625,7 +603,10 @@
 
   <target name="demo-init" depends="declare-classpaths">
     <property name="console.package" value="org.cddlm.client.console"/>
-    <property name="server" value="http://localhost:5050/axis/services/cddlm"/>
+    <property name="host" value="localhost" />
+    <property name="port" value="5050" />
+    <property name="url" value="http://${host}:${port}/axis/services/cddlm"/>
+    <property name="url.command" value="-url:${uri}" />
     <presetdef name="operation">
       <java
         fork="true"
@@ -640,18 +621,22 @@
   <target name="demo-listApplications" depends="demo-init"
     description="list applications">
     <operation classname="${console.package}.ListApplications">
+      <arg value="${url.command}"/>
     </operation>
   </target>
 
   <target name="demo-serverStatus" depends="demo-init"
     description="show server status">
     <operation
-      classname="${console.package}.ShowServerStatus"/>
+      classname="${console.package}.ShowServerStatus">
+      <arg value="${url.command}"/>
+      </operation>
   </target>
 
   <target name="demo-applicationStatus" depends="demo-init"
     description="show app status">
     <operation classname="${console.package}.ApplicationStatus">
+      <arg value="${url.command}"/>
       <arg value="${uri}"/>
     </operation>
   </target>
@@ -659,6 +644,7 @@
   <target name="demo-undeploy" depends="demo-init"
     description="undeploy an application; set uri property">
     <operation classname="${console.package}.Undeploy">
+      <arg value="${url.command}"/>
       <arg value="${uri}"/>
     </operation>
   </target>
@@ -666,6 +652,7 @@
   <target name="demo-deploy-sf" depends="demo-init"
     description="deploy an application; set file properties ">
     <operation classname="${console.package}.DeploySmartFrogFile">
+      <arg value="${url.command}"/>
       <arg file="${file}"/>
     </operation>
   </target>

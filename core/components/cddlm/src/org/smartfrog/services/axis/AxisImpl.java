@@ -28,7 +28,6 @@ import org.apache.axis.deployment.wsdd.WSDDDeployment;
 import org.apache.axis.deployment.wsdd.WSDDDocument;
 import org.apache.axis.transport.http.SimpleAxisServer;
 import org.apache.axis.utils.XMLUtils;
-import org.smartfrog.services.cddlm.DeploymentEndpoint;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;

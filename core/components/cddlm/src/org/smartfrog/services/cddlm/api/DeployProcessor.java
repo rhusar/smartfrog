@@ -31,6 +31,7 @@ import org.smartfrog.services.cddlm.engine.JobRepository;
 import org.smartfrog.services.cddlm.engine.JobState;
 import org.smartfrog.services.cddlm.engine.ServerInstance;
 import org.smartfrog.services.cddlm.generated.api.types.DeploymentDescriptorType;
+import org.smartfrog.services.cddlm.generated.api.types.LifecycleStateEnum;
 import org.smartfrog.services.cddlm.generated.api.types._deployRequest;
 import org.smartfrog.services.cddlm.generated.api.types._deployResponse;
 import org.smartfrog.sfcore.common.ConfigurationDescriptor;
@@ -114,6 +115,7 @@ public class DeployProcessor extends Processor {
         //add the job state to the store
         if (deployed) {
             repository.add(job);
+            job.enterStateNotifying(LifecycleStateEnum.running, null);
         }
         _deployResponse response = new _deployResponse(applicationReference);
         return response;
@@ -212,8 +214,6 @@ public class DeployProcessor extends Processor {
 
         try {
             String descriptor = descriptorElement.getValue();
-
-
             log.info("processing descriptor " + descriptor);
             tempFile = saveStringToFile(descriptor, ".sf");
             String url = tempFile.toURI().toURL().toExternalForm();

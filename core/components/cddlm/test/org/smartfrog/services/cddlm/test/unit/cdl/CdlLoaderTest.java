@@ -22,18 +22,15 @@ package org.smartfrog.services.cddlm.test.unit.cdl;
 
 import junit.framework.TestCase;
 import nu.xom.Document;
-import nu.xom.ParsingException;
-import nu.xom.ValidityException;
 import nu.xom.Element;
+import nu.xom.ParsingException;
+import org.apache.axis.message.MessageElement;
 import org.smartfrog.services.cddlm.cdl.CdlDocument;
 import org.smartfrog.services.cddlm.cdl.CdlParser;
 import org.smartfrog.services.cddlm.cdl.ResourceLoader;
-import org.smartfrog.services.cddlm.cdl.CdlParsingException;
 import org.smartfrog.services.cddlm.cdl.XomAxisHelper;
 import org.w3c.dom.DOMImplementation;
-import org.apache.axis.message.MessageElement;
 
-import javax.xml.namespace.QName;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 

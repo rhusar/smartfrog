@@ -31,10 +31,13 @@ public interface CddlmCompound extends Remote {
     /**
      * URL of an endpoint to notify
      */
+    /*
     public String ATTR_NOTIFICATION_ENDPOINT = "endpoint";
 
     public String ATTR_TIMEOUT = "timeout";
 
     public String ATTR_IDENTIFIER = "identifier";
+*/
+    public String ATTR_JOBURI = "joburi";
 
 }

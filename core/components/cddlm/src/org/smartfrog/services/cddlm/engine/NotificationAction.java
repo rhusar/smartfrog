@@ -19,7 +19,8 @@
  */
 package org.smartfrog.services.cddlm.engine;
 
-import org.apache.axis.types.URI;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.smartfrog.services.cddlm.generated.api.callbacks.DeploymentCallbackSoapBindingStub;
 import org.smartfrog.services.cddlm.generated.api.types._lifecycleEventCallbackRequest;
 import org.smartfrog.sfcore.common.SmartFrogException;
@@ -32,30 +33,42 @@ import java.rmi.RemoteException;
  */
 
 public class NotificationAction extends BaseAction {
-
+    /**
+     * log
+     */
+    private static final Log log = LogFactory.getLog(NotificationAction.class);
     /**
      * uri to notify
      */
-    private URI uri;
+    private URL url;
 
     /**
      * data to send
      */
-    private _lifecycleEventCallbackRequest data;
+    private _lifecycleEventCallbackRequest message;
 
+    /**
+     * callback timeout
+     */
     private Integer timeout;
+
+    /**
+     * sleep time. this is mostly for demos
+     */
+
+    private int sleepTime;
 
     /**
      * constructor
      *
-     * @param uri
+     * @param url
      * @param data
      */
-    public NotificationAction(URI uri, _lifecycleEventCallbackRequest data) {
+    public NotificationAction(URL url, _lifecycleEventCallbackRequest data) {
         assert data != null;
-        assert uri != null;
-        this.uri = uri;
-        this.data = data;
+        assert url != null;
+        this.url = url;
+        this.message = data;
     }
 
     /**
@@ -68,19 +81,50 @@ public class NotificationAction extends BaseAction {
     }
 
     /**
+     * set the optional sleep time in seconds
+     * @param sleepTimeInSeconds
+     */
+    public void setSleepTime(int sleepTimeInSeconds) {
+        this.sleepTime = sleepTimeInSeconds;
+    }
+
+    public _lifecycleEventCallbackRequest getMessage() {
+        return message;
+    }
+
+    public void setMessage(_lifecycleEventCallbackRequest message) {
+        this.message = message;
+    }
+
+    public URL getUrl() {
+        return url;
+    }
+
+    public void setUrl(URL url) {
+        this.url = url;
+    }
+
+    /**
      * issue a notification
      *
      * @throws SmartFrogException
      * @throws RemoteException
      */
     public void execute() throws SmartFrogException, RemoteException {
-        URL url = URIHelper.toJavaURL(uri);
+        if(sleepTime>0) {
+            try {
+                Thread.sleep(sleepTime*1000);
+            } catch (InterruptedException e) {
+
+            }
+        }
         DeploymentCallbackSoapBindingStub callback = new DeploymentCallbackSoapBindingStub(
                 url, null);
         if (timeout != null) {
             callback.setTimeout(timeout.intValue());
         }
-        callback.callback(data);
+        log.info("sending notification to "+url);
+        callback.callback(message);
     }
 
 

@@ -26,8 +26,10 @@ import org.apache.axis.types.URI;
 import org.smartfrog.services.cddlm.engine.JobRepository;
 import org.smartfrog.services.cddlm.engine.JobState;
 import org.smartfrog.services.cddlm.generated.api.types.ApplicationReferenceListType;
+import org.smartfrog.services.cddlm.generated.api.types.LifecycleStateEnum;
 import org.smartfrog.services.cddlm.generated.api.types._deployRequest;
 
+import java.rmi.RemoteException;
 import java.util.Iterator;
 
 /**
@@ -127,5 +129,28 @@ public class JobTest extends TestCase {
         URI[] uriList2 = results.getApplication();
         assertEquals(1, uriList2.length);
         assertEquals(uriList[0], uriList2[0]);
+    }
+
+    public void testStateTransitions() throws RemoteException {
+        String info = "testing";
+        LifecycleStateEnum state = LifecycleStateEnum.running;
+        job1.enterStateNotifying(state, info);
+        assertEquals(state,job1.getState());
+        assertEquals(info,job1.getStateInfo());
+    }
+
+    public void testCallbacks() throws RemoteException {
+        TestharnessCallbackRaiser callback=new TestharnessCallbackRaiser();
+        job1.setCallbackRaiser(callback);
+        String info = "testing";
+        LifecycleStateEnum state = LifecycleStateEnum.running;
+        assertEquals(0, callback.getCount());
+        job1.enterStateNotifying(state, info);
+        assertEquals(state, callback.getState());
+        assertEquals(info, callback.getStateInfo());
+        assertEquals(1,callback.getCount());
+        job1.enterStateNotifying(state, null);
+        assertNull(job1.getStateInfo());
+        assertEquals(1, callback.getCount());
     }
 }

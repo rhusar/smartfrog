@@ -32,27 +32,8 @@ import org.smartfrog.services.cddlm.cdl.ResourceLoader;
 import org.smartfrog.services.cddlm.cdl.XomAxisHelper;
 import org.smartfrog.services.cddlm.generated.api.DeployApiConstants;
 import org.smartfrog.services.cddlm.generated.api.endpoint.CddlmSoapBindingStub;
-import org.smartfrog.services.cddlm.generated.api.types.ApplicationReferenceListType;
-import org.smartfrog.services.cddlm.generated.api.types.ApplicationStatusType;
-import org.smartfrog.services.cddlm.generated.api.types.CallbackAddressType;
-import org.smartfrog.services.cddlm.generated.api.types.CallbackEnum;
-import org.smartfrog.services.cddlm.generated.api.types.CallbackInformationType;
-import org.smartfrog.services.cddlm.generated.api.types.DeploymentDescriptorType;
-import org.smartfrog.services.cddlm.generated.api.types.EmptyElementType;
-import org.smartfrog.services.cddlm.generated.api.types.JsdlType;
-import org.smartfrog.services.cddlm.generated.api.types.OptionMapType;
-import org.smartfrog.services.cddlm.generated.api.types.OptionType;
-import org.smartfrog.services.cddlm.generated.api.types.ServerStatusType;
-import org.smartfrog.services.cddlm.generated.api.types.StaticServerStatusType;
-import org.smartfrog.services.cddlm.generated.api.types._applicationStatusRequest;
-import org.smartfrog.services.cddlm.generated.api.types._deployRequest;
-import org.smartfrog.services.cddlm.generated.api.types._deployResponse;
-import org.smartfrog.services.cddlm.generated.api.types._deploymentDescriptorType_data;
-import org.smartfrog.services.cddlm.generated.api.types._languageListType_language;
-import org.smartfrog.services.cddlm.generated.api.types._lookupApplicationRequest;
-import org.smartfrog.services.cddlm.generated.api.types._serverStatusRequest;
-import org.smartfrog.services.cddlm.generated.api.types._setCallbackRequest;
-import org.smartfrog.services.cddlm.generated.api.types._undeployRequest;
+import org.smartfrog.services.cddlm.generated.api.types.*;
+import org.smartfrog.services.cddlm.engine.URIHelper;
 import org.w3c.dom.DOMImplementation;
 import org.xml.sax.SAXException;
 
@@ -522,8 +503,13 @@ public abstract class ConsoleOperation {
         callbackInfo.setType(CallbackEnum.fromString(
                 DeployApiConstants.CALLBACK_CDDLM_PROTOTYPE));
         callbackInfo.setIdentifier(identifier);
-        callbackInfo.setAddress(new CallbackAddressType(application, null));
-        _setCallbackRequest request = new _setCallbackRequest(application,
+        URI replyAddress=null;
+        if(url !=null) {
+            replyAddress= URIHelper.toAxisUri(url);
+        }
+        callbackInfo.setAddress(new CallbackAddressType(replyAddress, null));
+        _setCallbackRequest request = new _setCallbackRequest(
+                application,
                 callbackInfo);
         return setCallback(request);
     }

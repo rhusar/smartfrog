@@ -19,38 +19,39 @@
  */
 
 
-package org.smartfrog.services.axis;
+package org.smartfrog.services.cddlm.components;
 
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.logging.LogToErrImpl;
 
+import java.util.LinkedList;
 
 /**
- * Date: 10-Mar-2004
- * Time: 20:07:32
+ * Date: 16-Sep-2004
+ * Time: 12:08:13
  */
-public class SmartFrogHostedEndpoint {
-    /**
-     * name of whoever created this endpoint
-     */
-    private static AxisImpl owner;
+public class BufferingLogImpl extends LogToErrImpl implements BufferingLog {
+
+    private int limit;
 
     /**
-     * set the owner
-     * we do this as there is a need for instances to be bound.
-     * Maybe Axis should have a Factory option so that you can
-     * dynamically create stuff pre-configured.
-     * @param owner
+     * store every
      */
+    LinkedList logList;
 
-    static public void setOwner(AxisImpl owner) {
-        SmartFrogHostedEndpoint.owner=owner;
+    /**
+     * Reads optional and mandatory attributes.
+     *
+     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     *          error while reading attributes
+     */
+    protected void readSFAttributes() throws SmartFrogException {
+        super.readSFAttributes();
+        if ( classComponentDescription == null ) {
+            return;
+        }
+        limit= classComponentDescription.sfResolve(ATTR_LIMIT, limit, true);
     }
 
 
-    /**
-     * get the owner
-     * @return
-     */
-    public static AxisImpl getOwner() {
-        return owner;
-    }
 }

@@ -27,7 +27,6 @@ import org.smartfrog.sfcore.utils.ComponentHelper;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.StringWriter;
 import java.rmi.RemoteException;
 
 /**

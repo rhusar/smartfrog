@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2004 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -17,24 +17,18 @@
  For more information: www.smartfrog.org
 
  */
-package org.cddlm.client.callbacks;
 
-import org.smartfrog.services.cddlm.generated.api.callbacks.DeploymentCallbackEndpoint;
 
-import java.rmi.RemoteException;
+package org.smartfrog.services.cddlm.components;
+
+import java.rmi.Remote;
 
 /**
- * created Aug 31, 2004 4:19:20 PM This is our deployment callback.
- * We hand off to the server which does the lookup
+ * Date: 16-Sep-2004
+ * Time: 12:32:52
  */
 
-public class CallbackEndpoint implements DeploymentCallbackEndpoint {
+public interface BufferingLog extends Remote {
 
-    public boolean callback(
-            org.smartfrog.services.cddlm.generated.api.types._lifecycleEventCallbackRequest callback)
-            throws RemoteException {
-        return CallbackServer.processCallback(callback);
-    }
-
-
+    public String ATTR_LIMIT="limit";
 }

@@ -19,15 +19,15 @@
  */
 package org.smartfrog.services.cddlm.test.unit.cdl;
 import junit.framework.TestCase;
+import org.smartfrog.services.cddlm.cdl.XomAxisHelper;
+import org.w3c.dom.DOMImplementation;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
-import org.smartfrog.services.cddlm.cdl.XomAxisHelper;
-import org.w3c.dom.DOMImplementation;
 
-import javax.xml.parsers.SAXParserFactory;
-import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 
 /**
  * created Aug 12, 2004 1:39:59 PM

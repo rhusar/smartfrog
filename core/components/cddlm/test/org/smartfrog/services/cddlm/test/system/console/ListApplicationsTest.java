@@ -20,8 +20,8 @@
 package org.smartfrog.services.cddlm.test.system.console;
 
 import org.apache.axis.types.URI;
-import org.cddlm.client.console.ListApplications;
 import org.cddlm.client.console.ConsoleOperation;
+import org.cddlm.client.console.ListApplications;
 
 import java.io.IOException;
 import java.rmi.RemoteException;

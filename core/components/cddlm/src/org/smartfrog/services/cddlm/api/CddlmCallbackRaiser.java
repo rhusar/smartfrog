@@ -19,13 +19,18 @@
  */
 package org.smartfrog.services.cddlm.api;
 
-import org.smartfrog.services.cddlm.engine.CallbackAction;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.smartfrog.services.cddlm.engine.JobState;
+import org.smartfrog.services.cddlm.engine.NotificationAction;
 import org.smartfrog.services.cddlm.engine.ServerInstance;
 import org.smartfrog.services.cddlm.generated.api.types.ApplicationStatusType;
 import org.smartfrog.services.cddlm.generated.api.types._lifecycleEventCallbackRequest;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
+
+import java.math.BigInteger;
+import java.net.URL;
 
 /**
  * class handles cddlm callbacks created Sep 14, 2004 4:04:05 PM
@@ -34,25 +39,36 @@ import org.smartfrog.sfcore.prim.Prim;
 public class CddlmCallbackRaiser extends CallbackRaiser {
 
     /**
+     * log
+     */
+    private static final Log log = LogFactory.getLog(CddlmCallbackRaiser.class);
+
+    /**
+     * how long we generally sleep.
+     */
+    private static final int DEMO_SLEEP_TIME_IN_SECONDS = 3;
+
+    /**
      * raise an event
      *
      * @param object object (may be null
      * @param sfe
      */
     public void raiseLifecycleEvent(JobState job, Prim object,
-            SmartFrogException sfe) {
-
+            SmartFrogException sfe)  {
         ServerInstance server = ServerInstance.currentInstance();
         _lifecycleEventCallbackRequest event = new _lifecycleEventCallbackRequest();
         event.setApplicationReference(job.getUri());
         event.setIdentifier(job.getCallbackIdentifier());
-        ApplicationStatusType status = new ApplicationStatusType();
-
-        event.setStatus(null);
-        CallbackAction action = new CallbackAction(job.getCallbackURL(),
+        ApplicationStatusType status = job.createApplicationStatus();
+        event.setStatus(status);
+        event.setTimestamp(BigInteger.valueOf(System.currentTimeMillis()/1000));
+        URL callbackURL = job.getCallbackURL();
+        NotificationAction action = new NotificationAction(callbackURL,
                 event);
+        action.setSleepTime(DEMO_SLEEP_TIME_IN_SECONDS);
+        log.info("queuing "+status.getState()+" event to "+callbackURL);
         server.queue(action);
-
     }
 
 

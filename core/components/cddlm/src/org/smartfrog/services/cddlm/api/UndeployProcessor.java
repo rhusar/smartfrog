@@ -69,7 +69,7 @@ public class UndeployProcessor extends Processor {
             return true;
         }
         log.info("Undeploying " + job.getName() + " for " + reason);
-        if (undeploy3(job, reason)) {
+        if (undeploy(job, reason)) {
             //purge the store
             JobRepository jobs = ServerInstance.currentInstance().getJobs();
             jobs.remove(appURI);
@@ -78,7 +78,14 @@ public class UndeployProcessor extends Processor {
         return false;
     }
 
-    public boolean undeploy3(JobState job, String reason)
+    /**
+     * working undeploy
+     * @param job
+     * @param reason
+     * @return
+     * @throws RemoteException
+     */
+    private boolean undeploy(JobState job, String reason)
             throws RemoteException {
         Prim target = job.resolvePrimNonFaulting();
         if (target == null) {
@@ -89,9 +96,16 @@ public class UndeployProcessor extends Processor {
         termination =
                 new TerminationRecord(TerminationRecord.NORMAL, reason, null);
         target.sfTerminate(termination);
+        job.enterTerminatedStateNotifying(termination);
         return true;
     }
 
+    /**
+     * Original undeploy
+     * @param job
+     * @return
+     * @throws RemoteException
+     */
     public boolean doUndeploy(JobState job) throws RemoteException {
         try {
             String application = job.getName();
