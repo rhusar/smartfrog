@@ -394,8 +394,8 @@ public class SFClassLoader {
      * @param isForName whether we are loading a class or other resource
      *
      * @return A class or an input stream to the resource
-     *
-     * @throws Exception if any error
+     * @throws ClassNotFoundException
+     * @throws IOException
      */
     static Object opHelper(String name, String codebase, boolean isForName)
             throws ClassNotFoundException, IOException {
