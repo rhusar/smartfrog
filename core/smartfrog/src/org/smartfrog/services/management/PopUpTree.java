@@ -350,8 +350,8 @@ public class PopUpTree extends JComponent implements ActionListener {
          *  Display's screen object.
          */
         JTextArea screen = new JTextArea(message);
-        Frame parent = new Frame();
-        JDialog pane = new JDialog(parent,title,true);
+        Frame parentFrame = new Frame();
+        JDialog pane = new JDialog(parentFrame,title,true);
         pane.setSize(600,400);
         pane.setResizable(true);
         pane.getContentPane().add(scrollPane);
