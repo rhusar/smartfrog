@@ -106,7 +106,7 @@ which consists of an ordered sequence of classes which are configured
 to manage requests and responses. Using the handler chain, it is
 possible to add support for new SOAP headers to existing services, or
 to apply extra diagnostics. The dispatch of operations to Java
-methods, EJB methods or other destinations is actually implemented by
+methods, Enterprise Java Bean methods or other destinations is actually implemented by
 specific handlers, making the handler chain the foundation for the
 rest of the system.
 
@@ -147,34 +147,7 @@ believe this work highlighted. Section \ref{objections:wsdl-gen}
 outlines the particular problems we believe typical JAX-RPC oriented
 approaches to WSDL generation create.
 
-%% The subsequent sections do not establish their own relevance to 
-%% the question of why JAX-RPC sucks. We either need to find a link
-%% between these issues and JAX-RPC sucking, or cut them.
 
-% One of the features of this service was that it was intended to
-% support multiple deployment languages, and multiple deployment
-% engines, each potentially with different capabilities and options. To
-% this end, some features of the design stand out.
-
-% Firstly, the deployment payload is arbitrary XML. It is not
-% appropriate or possible for the service definition to declare what
-% deployment languages are supported.
-
-% Secondly, we defined an option mechanism, in which callers can set
-% arbitrary options on a deployment. Each option can have a string,
-% integer or XML value, and is identified in a set of options by a
-% URI. We plan to define some normative options within the working
-% group, and allow implementations to define new ones.  Following the
-% example of the WebDAV and SOAP header designs, options can be ignored
-% unless their \verb|mustUnderstand| attribute is set. With a few well
-% known option types defined for the nested XML option, we wanted
-% to treat options just like other received data, and use the XML to Java
-% mapping facility of the classes. 
-
-% Thirdly, we need to raise lifecycle event notifications with
-% callers. In the absence of a single, stable notification protocol, we
-% chose to allow services to support multiple mechanism (again, each
-% defined by arbitrary inline XML).
 
 
 
