@@ -361,14 +361,16 @@ public class SFSystem implements MessageKeys {
             //Logger.log(MessageUtil.formatMessage(MSG_SF_READY));
             if (Logger.logStackTrace) {
                 String name = "";
+                String port ="";
                 try {
                     if (rootProcess != null) {
                         name = rootProcess.sfResolve(SmartFrogCoreKeys.SF_PROCESS_NAME, name, false);
+                        port = rootProcess.sfResolve(SmartFrogCoreKeys.SF_ROOT_LOCATOR_PORT, port, false);
                     }
                 } catch (Exception ex) {
                     //ignore.
                 }
-                Logger.log(MessageUtil.formatMessage(MSG_SF_READY, "[" + name + "]") + " " + new Date(System.currentTimeMillis()));
+                Logger.log(MessageUtil.formatMessage(MSG_SF_READY, "[" + name + ":"+port+"]") + " " + new Date(System.currentTimeMillis()));
             } else {
                 Logger.log(MessageUtil.formatMessage(MSG_SF_READY, ""));
             }
