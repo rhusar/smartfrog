@@ -95,7 +95,7 @@ public class ContextImpl extends OrderedHashtable implements Context,
      * @return true if context contains value, false otherwise
      */
     public boolean sfContainsValue(Object value){
-       return containsKey(value);
+       return containsValue(value);
     }
 
 
