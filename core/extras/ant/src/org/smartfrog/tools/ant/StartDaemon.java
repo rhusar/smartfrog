@@ -27,7 +27,7 @@ import org.apache.tools.ant.Project;
  * if it spawns, it outlives ant (which doesnt block), but output gets lost.
  * This task only works on Ant1.6 or later, as that was when spawning was added to the
  * system.
- * <p>
+ * <p/>
  * This task starts a daemon which is only terminated by external request, and which
  * blocks the calling thread until it terminates
  * This means the build file calling this routine must either
@@ -39,10 +39,10 @@ import org.apache.tools.ant.Project;
  * </ol>
  * Timeout killing of a process is somewhat brutal; we do not (yet) cleanly shut
  * down the localhost, though that is a distinctly possible option in future.
- * @author steve loughran
- * created 16-Feb-2004 16:37:26
- * @ant.task category="SmartFrog" name="sf-startdaemon"
  *
+ * @author steve loughran
+ *         created 16-Feb-2004 16:37:26
+ * @ant.task category="SmartFrog" name="sf-startdaemon"
  */
 
 public class StartDaemon extends DeployingTaskBase {
@@ -55,14 +55,7 @@ public class StartDaemon extends DeployingTaskBase {
         super.init();
     }
 
-    /**
-     * get the title string used to name a task
-     *
-     * @return the name of the task
-     */
-    protected String getTaskTitle() {
-        return "sf-startdaemon";
-    }
+
 
     /**
      * spawn flag, false by default. Needs Ant1.7 or later to work.
@@ -72,15 +65,16 @@ public class StartDaemon extends DeployingTaskBase {
     /**
      * run the process standalone, losing all output.
      * This also sets the failonerror flag to false.
+     *
      * @param spawn
      */
     public void setSpawn(boolean spawn) {
-        this.spawn=spawn;
+        this.spawn = spawn;
         setFailOnError(false);
     }
 
     /**
-     *  Start the daemon in this thread or a new process.
+     * Start the daemon in this thread or a new process.
      *
      * @throws org.apache.tools.ant.BuildException
      *          if something goes wrong with the build
@@ -91,15 +85,16 @@ public class StartDaemon extends DeployingTaskBase {
         setStandardSmartfrogProperties();
         //this is needed to start the registry. Without it you cannot shut
         //smartfrog down.
-        addSmartfrogProperty("org.smartfrog.sfcore.processcompound.sfProcessName",
+        addJVMProperty("org.smartfrog.sfcore.processcompound.sfProcessName",
                 ROOT_PROCESS);
         addIniFile();
         deployApplications();
-        if(spawn) {
+        if (spawn) {
             smartfrog.setSpawn(spawn);
         } else {
             log("embedded smartfrog daemon started; " +
-                    "this thread will block until it exits", Project.MSG_VERBOSE);
+                    "this thread will block until it exits",
+                    Project.MSG_VERBOSE);
         }
 
         execSmartfrog("failed to start the smartfrog daemon");

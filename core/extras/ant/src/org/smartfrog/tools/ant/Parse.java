@@ -36,9 +36,10 @@ import java.util.List;
 
 /**
  * This task parses smartfrog files and validates them. Errors are thrown when appropriate
- * @ant.task category="SmartFrog" name="sf-parse"
  *
- *         created 20-Feb-2004 16:17:41
+ * @ant.task category="SmartFrog" name="sf-parse"
+ * <p/>
+ * created 20-Feb-2004 16:17:41
  */
 
 public class Parse extends TaskBase {
@@ -46,20 +47,20 @@ public class Parse extends TaskBase {
     /**
      * ini file to read in first
      */
-    private File iniFile=null;
+    private File iniFile = null;
 
     /**
      * log a stack trace
      */
-    private boolean logStackTrace=false;
+    private boolean logStackTrace = false;
 
 
-    private boolean verbose=false;
+    private boolean verbose = false;
 
-    private boolean quiet=false;
+    private boolean quiet = false;
 
     /**
-     *  a list of filesets
+     * a list of filesets
      */
     private List source = new LinkedList();
 
@@ -67,13 +68,14 @@ public class Parse extends TaskBase {
     /**
      * name a single file for parsing.
      * Exactly equivalent to a nested fileset with a file attribute
+     *
      * @param file
      */
     public void setFile(File file) {
-        if(!file.exists()) {
-            throw new BuildException("File not found :"+file.toString());
+        if (!file.exists()) {
+            throw new BuildException("File not found :" + file.toString());
         }
-        FileSet fs=new FileSet();
+        FileSet fs = new FileSet();
         fs.setFile(file);
         addSource(fs);
     }
@@ -89,6 +91,7 @@ public class Parse extends TaskBase {
 
     /**
      * get extra verbose output
+     *
      * @param verbose
      */
     public void setVerbose(boolean verbose) {
@@ -97,6 +100,7 @@ public class Parse extends TaskBase {
 
     /**
      * get extra quiet output;
+     *
      * @param quiet
      */
     public void setQuiet(boolean quiet) {
@@ -105,6 +109,7 @@ public class Parse extends TaskBase {
 
     /**
      * an optional ini file to set custom settings.
+     *
      * @param iniFile
      */
     public void setIniFile(File iniFile) {
@@ -113,46 +118,48 @@ public class Parse extends TaskBase {
 
     /**
      * execute the task
+     *
      * @throws BuildException
      */
     public void execute() throws BuildException {
 
-        List files=new LinkedList();
-        Iterator src=source.iterator();
+        List files = new LinkedList();
+        Iterator src = source.iterator();
         while (src.hasNext()) {
             FileSet set = (FileSet) src.next();
             DirectoryScanner scanner = set.getDirectoryScanner(getProject());
-            String[] included=scanner.getIncludedFiles();
-            for(int i=0;i<included.length;i++) {
-                File parsefile = new File(scanner.getBasedir(),included[i]);
-                log("scanning "+ parsefile,Project.MSG_VERBOSE);
+            String[] included = scanner.getIncludedFiles();
+            for (int i = 0; i < included.length; i++) {
+                File parsefile = new File(scanner.getBasedir(), included[i]);
+                log("scanning " + parsefile, Project.MSG_VERBOSE);
                 files.add(parsefile.toString());
             }
         }
         //at this point the files are all scanned.
         // Verify we have something interesting
-        if(files.isEmpty()) {
+        if (files.isEmpty()) {
             log("No source files");
             return;
         }
 
         //now save them to a file.
-        File tempFile=FileUtils.newFileUtils().createTempFile("parse",".txt",null);
-        PrintWriter out=null;
+        File tempFile = FileUtils.newFileUtils().createTempFile("parse",
+                ".txt", null);
+        PrintWriter out = null;
 
         int err;
         try {
             try {
                 out = new PrintWriter(new FileOutputStream(tempFile));
-                src=files.iterator();
+                src = files.iterator();
                 while (src.hasNext()) {
                     String s = (String) src.next();
                     out.println(s);
                 }
             } catch (IOException e) {
-                throw new BuildException("while saving to "+tempFile,e);
+                throw new BuildException("while saving to " + tempFile, e);
             } finally {
-                if(out!=null) {
+                if (out != null) {
                     try {
                         out.close();
                     } catch (Exception swallowed) {
@@ -164,16 +171,16 @@ public class Parse extends TaskBase {
 
             //now lets create the Java statement
             String entryPoint = "org.smartfrog.SFParse";
-            Java java = createJavaTask(entryPoint, "sf-parse");
+            Java java = createJavaTask(entryPoint);
             setupClasspath(java);
             java.setFailonerror(true);
             java.setFork(true);
             //and add various options to it
             java.createArg().setValue("-r");
-            if(quiet) {
+            if (quiet) {
                 java.createArg().setValue("-q");
             }
-            if(verbose ) {
+            if (verbose) {
                 java.createArg().setValue("-v");
             }
             java.createArg().setValue("-f");
@@ -186,7 +193,7 @@ public class Parse extends TaskBase {
         }
 
         //process the results
-        switch(err) {
+        switch (err) {
             case 0:
                 //success
                 break;
@@ -195,7 +202,7 @@ public class Parse extends TaskBase {
                 throw new BuildException("parse failure");
             default:
                 //something else
-                throw new BuildException("Java application error code "+err);
+                throw new BuildException("Java application error code " + err);
         }
 
     }

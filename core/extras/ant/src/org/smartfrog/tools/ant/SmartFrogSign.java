@@ -21,11 +21,10 @@
 
 package org.smartfrog.tools.ant;
 
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.taskdefs.SignJar;
 import org.apache.tools.ant.types.FileSet;
 import org.apache.tools.ant.types.Reference;
-import org.apache.tools.ant.taskdefs.SignJar;
-import org.apache.tools.ant.Task;
-import org.apache.tools.ant.BuildException;
 
 import java.io.File;
 
@@ -47,6 +46,8 @@ public class SmartFrogSign extends TaskBase {
      */
     private SecurityHolder securityHolder = new SecurityHolder();
 
+
+
     /**
      * Called by the project to let the task initialize properly.
      * The default implementation is a no-op.
@@ -57,7 +58,8 @@ public class SmartFrogSign extends TaskBase {
     public void init() throws BuildException {
 
         //create a signer task
-        signer=(SignJar) getProject().createTask("signjar");
+        signer = (SignJar) getProject().createTask("signjar");
+        signer.setTaskName(this.getTaskName());
     }
 
     /**
@@ -80,14 +82,27 @@ public class SmartFrogSign extends TaskBase {
 
     /**
      * name a JAR file to sign
+     *
      * @param file
      */
     public void setFile(File file) {
         signer.setSignedjar(file);
     }
 
+    /**
+     * a fileset of jar files to sign
+     * @param fileset
+     */
     public void addFileSet(FileSet fileset) {
         signer.addFileset(fileset);
+    }
+
+    /**
+     * enable verbose output
+     * @param verbose
+     */
+    public void setVerbose(boolean verbose) {
+        signer.setVerbose(verbose);
     }
 
     /**
@@ -101,6 +116,11 @@ public class SmartFrogSign extends TaskBase {
      *          if something goes wrong with the build
      */
     public void execute() throws BuildException {
-        super.execute();
+        Security sec = securityHolder.getSecurity(this);
+        if (sec == null) {
+            throw new BuildException("No security settings provided");
+        }
+        sec.applySecuritySettings(signer);
+        signer.execute();
     }
 }

@@ -27,6 +27,7 @@ import org.apache.tools.ant.types.Assertions;
 import org.apache.tools.ant.types.Environment;
 import org.apache.tools.ant.types.PropertySet;
 import org.apache.tools.ant.types.Reference;
+import org.apache.tools.ant.types.Commandline;
 
 import java.io.File;
 import java.util.LinkedList;
@@ -37,16 +38,16 @@ import java.util.List;
  * it may be calling the Java task, it may be calling smartfrog direct.
  * What is not a detail is that the combined classpath of ant+ any classpath parameters must include
  * all the relevant smartfrog JAR files.
- * <p>
+ * <p/>
  * Smartfrog can be configured via system properties, an ini file, or the explicit
  * properties of this task. All the attributes of this task that configure SmartFrog
  * (port, liveness, spawning, stack trace) are undefined; whatever defaults are built into
  * SmartFrog apply, not any hard coded in the task. This also permits one to override smartfrog
  * by setting system properties inline, or in a property set.
- * <p>
+ * <p/>
  * By default, all tasks are given a timeout of ten minutes; and propagate any
  * failure to execute to the build file. These can be adjusted via the
- * {@link SmartFrogTask#setFailOnError(boolean)} call, and
+ * {@link SmartFrogTask#setTimeout(long)} and
  * {@link SmartFrogTask#setFailOnError(boolean)} calls respectively.
  */
 public abstract class SmartFrogTask extends TaskBase {
@@ -63,6 +64,7 @@ public abstract class SmartFrogTask extends TaskBase {
     /**
      * initialisation routine; set up some settings like the java task
      * that we configure as we go
+     *
      * @throws BuildException
      */
     public void init() throws BuildException {
@@ -134,7 +136,7 @@ public abstract class SmartFrogTask extends TaskBase {
     /**
      * name of a file
      */
-    protected File initialSmartFrogFile=null;
+    protected File initialSmartFrogFile = null;
 
 
     /**
@@ -145,12 +147,12 @@ public abstract class SmartFrogTask extends TaskBase {
     /**
      * what is the default timeout for those tasks that have a timeout
      */
-    public static final long DEFAULT_TIMEOUT_VALUE = 60*10*1000L;
+    public static final long DEFAULT_TIMEOUT_VALUE = 60 * 10 * 1000L;
 
     /**
      * our security holder
      */
-    private SecurityHolder securityHolder=new SecurityHolder();
+    private SecurityHolder securityHolder = new SecurityHolder();
 
     /**
      * add a file to the list
@@ -177,7 +179,7 @@ public abstract class SmartFrogTask extends TaskBase {
      * @param host
      */
     public void setHost(String host) {
-        log("setting host to "+host, Project.MSG_DEBUG);
+        log("setting host to " + host, Project.MSG_DEBUG);
         this.host = host;
     }
 
@@ -233,7 +235,7 @@ public abstract class SmartFrogTask extends TaskBase {
      * @param initialSmartFrogFile
      */
     public void setInitialSmartFrogFile(File initialSmartFrogFile) {
-        if(initialSmartFrogFile!=null && initialSmartFrogFile.length()>0 ) {
+        if (initialSmartFrogFile != null && initialSmartFrogFile.length() > 0) {
             if (!initialSmartFrogFile.exists()) {
                 throw new BuildException("Not found: " + initialSmartFrogFile);
             }
@@ -253,7 +255,7 @@ public abstract class SmartFrogTask extends TaskBase {
      * @return
      */
     protected String getHost() {
-        if (host==null) return "";
+        if (host == null) return "";
         return host;
     }
 
@@ -279,14 +281,16 @@ public abstract class SmartFrogTask extends TaskBase {
 
     /**
      * set a reference to the security types
+     *
      * @param securityRef
      */
     public void setSecurityRef(Reference securityRef) {
-       securityHolder.setSecurityRef(securityRef);
+        securityHolder.setSecurityRef(securityRef);
     }
 
     /**
      * set a security definition
+     *
      * @param security
      */
     public void addSecurity(Security security) {
@@ -299,21 +303,15 @@ public abstract class SmartFrogTask extends TaskBase {
      * @return a java task set up with forking, the entry point set to SFSystem, timeout maybe enabled
      */
     protected Java getBaseJavaTask() {
-        Java java = createJavaTask("org.smartfrog.SFSystem", getTaskTitle());
+        Java java = createJavaTask("org.smartfrog.SFSystem");
         java.setFork(true);
         java.setDir(getProject().getBaseDir());
         return java;
     }
 
     /**
-     * get the title string used to name a task
-     *
-     * @return the name of the task
-     */
-    protected abstract String getTaskTitle();
-
-    /**
      * add an argument to the java process
+     *
      * @param value
      */
     protected void addArg(String value) {
@@ -360,7 +358,7 @@ public abstract class SmartFrogTask extends TaskBase {
      */
     protected void addIniFile() {
         if (iniFile != null && iniFile.exists()) {
-            addSmartfrogProperty("org.smartfrog.iniFile", iniFile.toString());
+            addJVMProperty("org.smartfrog.iniFile", iniFile.toString());
         }
     }
 
@@ -385,11 +383,10 @@ public abstract class SmartFrogTask extends TaskBase {
         addSmartfrogPropertyIfDefined(
                 "org.smartfrog.ProcessCompound.sfProcessTimeout",
                 spawnTimeout);
-        addSmartfrogPropertyIfDefined("org.smartfrog.sfcore.processcompound.sfDefault.sfDefault",
+        addSmartfrogPropertyIfDefined(
+                "org.smartfrog.sfcore.processcompound.sfDefault.sfDefault",
                 initialSmartFrogFile);
     }
-
-
 
 
     /**
@@ -445,13 +442,31 @@ public abstract class SmartFrogTask extends TaskBase {
      * @param name
      * @param value
      */
-    public void addSmartfrogProperty(String name, String value) {
+    public void addJVMProperty(String name, String value) {
         Environment.Variable property = new Environment.Variable();
         property.setKey(name);
         property.setValue(value);
         smartfrog.addSysproperty(property);
     }
 
+    /**
+     * this is a convenience method for things that work
+     * with the task -it defines a new JVM arg with the
+     * string value.
+     * @param argument
+     */
+    public void defineJVMArg(String argument) {
+        smartfrog.createJvmarg().setValue(argument);
+    }
+
+    /**
+     * part of the ANT interface; this method
+     * creates a JVM argument for manipulation
+     * @return
+     */
+    public Commandline.Argument createJVMarg() {
+        return smartfrog.createJvmarg();
+    }
 
     /**
      * set a sys property on the smartfrog JVM if the object used to set the property value is defined
@@ -461,7 +476,7 @@ public abstract class SmartFrogTask extends TaskBase {
      */
     public void addSmartfrogPropertyIfDefined(String name, Object object) {
         if (object != null) {
-            addSmartfrogProperty(name, object.toString());
+            addJVMProperty(name, object.toString());
         }
     }
 
@@ -513,19 +528,19 @@ public abstract class SmartFrogTask extends TaskBase {
 
 
     /**
-     *  if we ask for localhost, set it to null.
+     * if we ask for localhost, set it to null.
      * This avoids problems with anything that demands that localhost is
      * undefined
      */
     protected void resetHostIfLocal() {
 
-        if ("localhost".equals(host) || "127.0.0.1".equals(host))
-        {
+        if ("localhost".equals(host) || "127.0.0.1".equals(host)) {
             host = null;
             return;
         }
 
     }
+
     /**
      * check no host;
      *
@@ -534,18 +549,19 @@ public abstract class SmartFrogTask extends TaskBase {
      */
     protected void verifyHostUndefined() {
         if (host != null && host.length() > 0) {
-            throw new BuildException("host cannot be set on this task; it is set to "+host);
+            throw new BuildException(
+                    "host cannot be set on this task; it is set to " + host);
         }
     }
 
 
-
     /**
      * set the timeout for execution. This is incompatible with spawning.
+     *
      * @param timeout
      */
     public void setTimeout(long timeout) {
-        if(timeout>0) {
+        if (timeout > 0) {
             smartfrog.setTimeout(new Long(timeout));
         } else {
             //no valid timeout; ignore it.
@@ -555,11 +571,12 @@ public abstract class SmartFrogTask extends TaskBase {
 
     /**
      * verify that the host is defined; assert if it is not set
+     *
      * @throws org.apache.tools.ant.BuildException
      *          if a host is undefined
      */
     protected void verifyHostDefined() {
-        if(getHost()==null) {
+        if (getHost() == null) {
             throw new BuildException("host is undefined");
         }
     }

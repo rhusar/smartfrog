@@ -5,7 +5,17 @@
   <typedef 
     resource="org/smartfrog/tools/ant/tasks.properties"
     />
-      
+
+  <typedef resource="org/smartfrog/tools/ant/types.properties"
+    />
+
+    <!-- this imports the XML file -->
+  <taskdef 
+    uri="http://smartfrog.org/"
+    resource="org/smartfrog/tools/ant/tasks.xml"
+    xmlns:sf="http://smartfrog.org/"
+    />
+    
    <property name="resource.sf" 
     value="org/smartfrog/examples/functions/function.sf" />
 

@@ -40,7 +40,7 @@ import java.util.List;
 /**
  * This class is used as an extended base for those tasks that do deployment, as it supports
  * declaring of applications as nested elements.
- *         created 27-Feb-2004 15:27:47
+ * created 27-Feb-2004 15:27:47
  */
 
 public abstract class DeployingTaskBase extends SmartFrogTask {
@@ -49,7 +49,7 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
     /**
      * list of applications
      */
-    protected List applications=new LinkedList();
+    protected List applications = new LinkedList();
 
 
     /**
@@ -61,13 +61,14 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
      * add a new application to the list.
      */
     public Application createApplication() {
-        Application application=createNewApplication();
+        Application application = createNewApplication();
         applications.add(application);
-        return  application;
+        return application;
     }
 
     /**
      * application factory is here for easy overriding
+     *
      * @return
      */
     protected Application createNewApplication() {
@@ -76,6 +77,7 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
 
     /**
      * get the count of applications
+     *
      * @return
      */
     protected int getApplicationCount() {
@@ -84,10 +86,11 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
 
     /**
      * test for apps existing
+     *
      * @throws BuildException if the count is zero
      */
     protected void checkApplicationsDeclared() {
-        if(getApplicationCount()==0) {
+        if (getApplicationCount() == 0) {
             throw new BuildException("No applications declared");
         }
     }
@@ -99,17 +102,17 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
     public void deployApplications() {
         verifyHostDefined();
         setupCodebase();
-        Iterator it=applications.iterator();
+        Iterator it = applications.iterator();
         while (it.hasNext()) {
             Application application = (Application) it.next();
             application.validate();
             addArg("-a");
-            addArg(application.getName()+":" //NAME
-                    +"DEPLOY"+":"              //Action: DEPLOY,TERMINATE,DETACH,DETaTERM
-                    +application.getDescriptor()+":"                    //URL
-                    +""+":"                    // sfConfig or empty
-                    +getHost()+":"              // host
-                    +"");                // subprocess
+            addArg(application.getName() + ":" //NAME
+                    + "DEPLOY" + ":"              //Action: DEPLOY,TERMINATE,DETACH,DETaTERM
+                    + application.getDescriptor() + ":"                    //URL
+                    + "" + ":"                    // sfConfig or empty
+                    + getHost() + ":"              // host
+                    + "");                // subprocess
 
         }
     }
@@ -117,11 +120,12 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
     /**
      * Add a new codebase element to the current set. The URLs of the codebase
      * will be visible to the deploying app.
+     *
      * @param codebaseEntry a new codebase entry
      */
     public void addCodebase(Codebase codebaseEntry) {
-        if(codebase==null) {
-            codebase=new LinkedList();
+        if (codebase == null) {
+            codebase = new LinkedList();
         }
         codebase.add(codebaseEntry);
     }
@@ -131,7 +135,7 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
             //add the codebase for extra stuff
             String codelist = Codebase.getCodebaseString(codebase);
             log("Codebase set to " + codelist, Project.MSG_VERBOSE);
-            addSmartfrogProperty("org.smartfrog.codebase", codelist);
+            addJVMProperty("org.smartfrog.codebase", codelist);
         }
     }
 
@@ -165,6 +169,7 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
 
         /**
          * name of the app
+         *
          * @param name
          */
         public void setName(String name) {
@@ -173,6 +178,7 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
 
         /**
          * location of the app's descriptor
+         *
          * @param descriptor
          */
         public void setDescriptor(String descriptor) {
@@ -182,13 +188,14 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
         /**
          * set the file of the app. This is the same as the descriptor, except
          * that it must exist
+         *
          * @param file
          */
         public void setFile(File file) {
-            if(!file.exists()) {
-                throw new BuildException("File "+file+" does not exist");
+            if (!file.exists()) {
+                throw new BuildException("File " + file + " does not exist");
             }
-            descriptor=file.toString();
+            descriptor = file.toString();
         }
 
         public String getName() {
@@ -203,38 +210,40 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
          * validate the descriptor
          */
         public void validate() {
-            if(name==null) {
+            if (name == null) {
                 throw new BuildException("no application name");
             }
 
 
-            if(descriptor==null) {
-                throw new BuildException("no descriptor provided for "+name);
+            if (descriptor == null) {
+                throw new BuildException("no descriptor provided for " + name);
             }
         }
 
         /**
          * set text inside. This will get saved.
+         *
          * @param text
          */
         public void addText(String text) {
-            this.text=owner.getProject().replaceProperties(text);
-            File tempfile=FileUtils.newFileUtils().createTempFile("deploy",".sf",null);
-            OutputStream out=null;
-            OutputStreamWriter writer=null;
-            PrintWriter printer=null;
+            this.text = owner.getProject().replaceProperties(text);
+            File tempfile = FileUtils.newFileUtils().createTempFile("deploy",
+                    ".sf", null);
+            OutputStream out = null;
+            OutputStreamWriter writer = null;
+            PrintWriter printer = null;
             try {
-                out=new BufferedOutputStream(new FileOutputStream(tempfile));
-                writer = new OutputStreamWriter(out,"UTF-8");
+                out = new BufferedOutputStream(new FileOutputStream(tempfile));
+                writer = new OutputStreamWriter(out, "UTF-8");
                 printer = new PrintWriter(writer);
                 printer.write(this.text);
                 printer.flush();
                 //remember our name
                 setFile(tempfile);
             } catch (IOException e) {
-                throw new BuildException("could not write to "+tempfile,e);
+                throw new BuildException("could not write to " + tempfile, e);
             } finally {
-                if(writer !=null) {
+                if (writer != null) {
                     try {
                         writer.close();
                     } catch (IOException ignored) {
@@ -245,6 +254,7 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
 
         }
     }
+
     /**
      * this contains information pointing to the location of code.
      * It can either be a URL or a file path to a Java file.
@@ -280,6 +290,7 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
          * The path must be visible to the server process(es) at this location,
          * which means it is either on a shared filestore, or you are only
          * deploying to a local daemon.
+         *
          * @param file
          */
         public void setFile(File file) {

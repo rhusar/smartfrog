@@ -28,6 +28,7 @@ import org.apache.tools.ant.types.Reference;
 
 /**
  * This is a foundation task that manages classpath setup for everything underneath.
+ *
  * @author steve loughran
  *         created 26-Feb-2004 11:50:17
  */
@@ -45,14 +46,15 @@ public abstract class TaskBase extends Task {
     /**
      * flag set to include the ant runtime if class or classpath defined
      */
-    protected boolean includeAntRuntime=false;
-    
+    protected boolean includeAntRuntime = false;
+
 
     /**
      * If a new classpath is passed in, should the existing one
      * (used when declaring the task) be included? If it is not, the new classpath
      * must include smartfrog.jar.
      * Default: false.
+     *
      * @param includeAntRuntime
      */
     public void setIncludeAntRuntime(boolean includeAntRuntime) {
@@ -61,6 +63,7 @@ public abstract class TaskBase extends Task {
 
     /**
      * the classpath to run the parser
+     *
      * @param classpath
      */
     public void addClasspath(Path classpath) {
@@ -69,6 +72,7 @@ public abstract class TaskBase extends Task {
 
     /**
      * a reference to the classpath to use to run smartfrog
+     *
      * @param classpathRef
      */
     public void setClasspathRef(Reference classpathRef) {
@@ -77,14 +81,14 @@ public abstract class TaskBase extends Task {
 
     /**
      * create a java task
+     *
      * @param entryPoint
-     * @param title
      * @return
      */
-    protected Java createJavaTask(String entryPoint, String title) {
-        Java java=(Java)getProject().createTask("java");
+    protected Java createJavaTask(String entryPoint) {
+        Java java = (Java) getProject().createTask("java");
         java.setClassname(entryPoint);
-        java.setTaskName(title);
+        java.setTaskName(getTaskName());
         return java;
     }
 
@@ -96,31 +100,31 @@ public abstract class TaskBase extends Task {
      * <li>If loaded by an AntClassLoader, by that loader's path
      * <li>the java.class.path
      * </ol>
+     *
      * @param java
      */
     protected void setupClasspath(Java java) {
-        boolean useRuntimeClasspath=includeAntRuntime;
-        if(classpath!=null) {
+        boolean useRuntimeClasspath = includeAntRuntime;
+        if (classpath != null) {
             java.setClasspath(classpath);
         } else {
             if (classpathRef != null) {
                 java.setClasspathRef(classpathRef);
-            }
-            else {
+            } else {
                 //no path defined, use the runtime
-                useRuntimeClasspath=true;
+                useRuntimeClasspath = true;
             }
         }
         //now use the runtime classpath if requested.
-        if(useRuntimeClasspath) {
+        if (useRuntimeClasspath) {
             String pathstring;
-            ClassLoader cl=this.getClass().getClassLoader();
-            if(cl instanceof AntClassLoader) {
-                AntClassLoader acl=(AntClassLoader)cl;
-                pathstring= acl.getClasspath();
+            ClassLoader cl = this.getClass().getClassLoader();
+            if (cl instanceof AntClassLoader) {
+                AntClassLoader acl = (AntClassLoader) cl;
+                pathstring = acl.getClasspath();
                 log("using classpath of task", Project.MSG_DEBUG);
             } else {
-                log("resorting to the java.class.path",Project.MSG_DEBUG);
+                log("resorting to the java.class.path", Project.MSG_DEBUG);
                 pathstring = System.getProperty("java.class.path");
             }
             Path path = new Path(getProject(), pathstring);

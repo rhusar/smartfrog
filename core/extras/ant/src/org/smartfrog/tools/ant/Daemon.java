@@ -27,7 +27,6 @@ import org.apache.tools.ant.types.DataType;
  * a daemon. is a (host,port) tuple
  * The vision here is that you deploy to a daemon that you refer to. But if everyone
  * uses default ports this is excess complexity, so is currently left lurking on the sidelines
- *  
  */
 public class Daemon extends DataType {
     private String hostname;
