@@ -14,7 +14,7 @@ fi
 
 . $SFHOME/bin/setSFProperties
 
-if test $SFDEFAULTiSF; then
+if test $SFDEFAULTSF; then
 	export SFCMDPARAMETERS="$SFCMDPARAMETERS $SFDEFAULTSF"
 fi
 
