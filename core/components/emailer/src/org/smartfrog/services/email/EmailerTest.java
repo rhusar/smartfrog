@@ -54,7 +54,9 @@ public class EmailerTest extends PrimImpl implements Prim {
         String compName = (String) sfResolve("sfProcessComponentName", false);
         mailer = (Emailer) sfResolve("myMailer", mailer, false);
         assert (mailer != null);
-        mailer.sendEmail("This is "+ compName); 
+        if (mailer != null)
+            mailer.sendEmail("This is "+ compName); 
+
     }
     
     public synchronized void sfTerminateWith(TerminationRecord tr) {
