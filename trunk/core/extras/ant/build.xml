@@ -162,7 +162,7 @@
       <batchtest todir="${test.data.dir}" >
         <fileset dir="${test.classes.dir}">
           <include name="**/*Test.class" />
-          <exclude name="**/StartTest.class" if="system.tests.enabled"/>
+          <exclude name="**/StartTest.class" unless="system.tests.enabled"/>
        </fileset>
       </batchtest>
     </sf-junit>
