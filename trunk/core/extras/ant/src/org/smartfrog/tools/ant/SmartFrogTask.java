@@ -415,8 +415,8 @@ public abstract class SmartFrogTask extends TaskBase {
      * run smartfrog and throw an exception if something went awry.
      * failure texts are for when smartfrog ran and failed; errorTexts when
      * smartfrog wouldnt run.
-     * @param failureText text when return value==1
-     * @param errorText text when return value!=0 && !=1
+     * @param failureText text when return value==-1
+     * @param errorText text when return value!=0 && !=1-
      * @throws BuildException if the return value from java!=0
      */
     protected void execSmartfrog(String failureText, String errorText) {
@@ -435,7 +435,7 @@ public abstract class SmartFrogTask extends TaskBase {
         switch(err) {
             case 0:
                 return;
-            case 1:
+            case -1:
                 throw new BuildException(failureText);
             default:
                 throw new BuildException(errorText+" - error code "+err);
