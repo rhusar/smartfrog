@@ -176,7 +176,10 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
            } catch (Exception ex) {ex.printStackTrace();} //ignore
 
         } catch (SmartFrogContextException ex) {
-            throw SmartFrogResolutionException.notFound(new Reference(name), sfCompleteNameSafe());
+            //sfCompleteName() uses sfResolveHere() and therefore it can be a problem here :-)!
+            // Using the sfCompleteName cache to provide as much info a it is available.
+            throw SmartFrogResolutionException.notFound(new Reference(name), sfCompleteName ,ex);
+
         }
         return result;
     }
