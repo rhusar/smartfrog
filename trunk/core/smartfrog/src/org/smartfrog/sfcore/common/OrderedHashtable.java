@@ -21,6 +21,11 @@ For more information: www.smartfrog.org
 package org.smartfrog.sfcore.common;
 
 import java.io.Serializable;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
@@ -34,7 +39,7 @@ import org.smartfrog.sfcore.common.SmartFrogCoreProperty;
  * components since lexical ordering needs to be maintained for overwrites.
  *
  */
-public class OrderedHashtable extends Hashtable implements Copying,
+public class OrderedHashtable extends Hashtable implements Copying, MessageKeys,
     Serializable {
 
 
@@ -97,26 +102,59 @@ public class OrderedHashtable extends Hashtable implements Copying,
 
     /**
      * Does a deep copy of the hashtable. Values in the hashtable which
-     * understand the Copying interface get copied properly.
+     * understand the Copying interface get copied properly. If the Values
+     * cannot be copied, the basic SF values (numbers, strings, booleans, are
+     * each properly dealt with. Other values are copied using serialize/deserialize
+     * if they implement serialization - note that because of this transient data will
+     * not be copied.
      *
      * @return copy of hashtable
      */
     public Object copy() {
         OrderedHashtable r = (OrderedHashtable) clone();
-
         for (Enumeration e = keys(); e.hasMoreElements();) {
             Object key = e.nextElement();
             Object value = get(key);
 
             if (value instanceof Copying) {
                 value = ((Copying) value).copy();
+	    } else if (value instanceof SFNull) {
+		// do nothing...
+	    } else if (value instanceof Number) {
+		if (value instanceof Integer) {
+		    value = new Integer(((Integer)value).intValue());
+		} else if (value instanceof Double) {
+		    value = new Double(((Double)value).doubleValue());
+		} else if (value instanceof Float) {
+		    value = new Float(((Float)value).floatValue());
+		} else if (value instanceof Long) {
+		    value = new Long(((Long)value).longValue());
+		}
+	    } else if (value instanceof String) {
+		value = new String((String)value);
+	    } else if (value instanceof Boolean) {
+		value = new Boolean(((Boolean) value).booleanValue());
+	    } else if (value instanceof Serializable) {
+		// copy by serialization and de-serialization
+		try {
+		    ByteArrayOutputStream bos = new ByteArrayOutputStream(100);
+		    ObjectOutputStream oos = new ObjectOutputStream(bos);
+		    oos.writeObject(value);
+		    ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
+		    ObjectInputStream ois = new ObjectInputStream(bis);
+		    value = ois.readObject();
+		} catch (Exception t) {
+		    throw new RuntimeException(MessageUtil.formatMessage(COPY_SERIALIZE_FAILED,value), t);
+		}
+	    } else {
+		throw new IllegalArgumentException(MessageUtil.formatMessage(COPY_FAILED, value));
             }
-
             r.primPut(key, value);
         }
 
         return r;
     }
+
 
     /**
      * Internal method to call the basic put method on hashtables. This will
