@@ -51,38 +51,38 @@ import org.smartfrog.sfcore.logging.LogSF;
  */
 public class CounterImpl extends PrimImpl implements Prim, Counter, Runnable {
     /** Counter component data - counter. */
-    int counter = 1;
+    protected int counter = 1;
     /** Counter component data - message. */
-    String message = "Hola Mundo!";
+    protected String message = "Hola Mundo!";
     /** Counter component data - limit. */
-    int limit = 2;
+    protected int limit = 2;
     /** Thread object */
-    Thread action = null;
+    protected Thread action = null;
     /** sleep time */
-    int sleeptime=1000;
+    protected int sleeptime=1000;
 
-    LogSF logCore = null;
-    LogSF logApp = null;
+    protected LogSF logCore = null;
+    protected LogSF logApp = null;
 
     /**
      *  Shows debug messages.
      */
-    private boolean debug = true;
+    protected boolean debug = true;
 
     /**
      *  Should pause during sfDeploy and sfStart?
      */
-    private boolean pause = true;
+    protected boolean pause = true;
 
     /**
      *  Terminates component when counter reaches limit
      */
-    private boolean terminate = false;
+    protected boolean terminate = false;
 
     /**
      * Component name used for debug messages.
      */
-    private String myName = "CounterImpl";
+    protected String myName = "CounterImpl";
 
     /**
      *  Constructor for the Counter object.
@@ -230,7 +230,7 @@ public class CounterImpl extends PrimImpl implements Prim, Counter, Runnable {
      * @exception  SmartFrogException error while reading attributes
      * @exception  RemoteException In case of network/rmi error
      */
-    private void readSFAttributes() throws SmartFrogException, RemoteException {
+    protected void readSFAttributes() throws SmartFrogException, RemoteException {
         //
         // Mandatory attributes.
         try {
@@ -364,7 +364,7 @@ public class CounterImpl extends PrimImpl implements Prim, Counter, Runnable {
      * @param method error method
      * @param message error message
      */
-    private void error(String method, String message) {
+    protected void error(String method, String message) {
         if (debug) {
             StringBuffer msg = new StringBuffer();
             msg.append (myName);
@@ -385,7 +385,7 @@ public class CounterImpl extends PrimImpl implements Prim, Counter, Runnable {
      * @param method error method
      * @param message error message
      */
-    private void log(String method, String message) {
+    protected void log(String method, String message) {
         if (debug) {
             StringBuffer msg = new StringBuffer();
             msg.append (myName);
@@ -406,7 +406,7 @@ public class CounterImpl extends PrimImpl implements Prim, Counter, Runnable {
      * @param method error method
      * @param exception exception
      */
-    private void exception(String method, Throwable exception) {
+    protected void exception(String method, Throwable exception) {
         if (debug) {
             StringBuffer msg = new StringBuffer();
             msg.append (myName);
