@@ -71,6 +71,7 @@ public abstract class SmartfrogTestBase extends TestCase {
      * Deploy a component, expecting a smartfrog exception.
      * @param testURL   URL to test
      * @param appName   name of test app
+     * @param exceptionName name of the exception thrown 
      * @param searchString string which must be found in the exception message
      * @throws RemoteException in the event of remote trouble.
      */
@@ -87,15 +88,16 @@ public abstract class SmartfrogTestBase extends TestCase {
     }
     /**
      * Deploy a component, expecting a smartfrog exception. You can
-     * also specify the classname of a contained fault -which, if specified, must
-     * be contained, and some text to be searched for in this exception.
+     * also specify the classname of a contained fault -which, if specified, 
+     * must be contained, and some text to be searched for in this exception.
      * @param testURL   URL to test
      * @param appName   name of test app
+     * @param exceptionName name of the exception thrown
      * @param searchString string which must be found in the exception message
-     * @param containedExceptionName optional classname of a contained exception; does
-     * not have to be the full name; a fraction will suffice.
-     * @param containedExceptionText optional text in the contained fault. Ignored
-     * if the containedExceptionClass parametere is null.
+     * @param containedExceptionName optional classname of a contained 
+     * exception; does not have to be the full name; a fraction will suffice.
+     * @param containedExceptionText optional text in the contained fault. 
+     * Ignored if the containedExceptionClass parametere is null.
      * @throws RemoteException in the event of remote trouble.
      */
     protected void deployExpectingException(String testURL,
