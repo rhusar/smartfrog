@@ -77,8 +77,9 @@ public class Schema extends BasePredicate implements PhaseAction {
         String valueClass = "anyClass";
         String description = "";
 
-        String errorString = "error in schema (" + schemaDescription + "): ";
-
+        String errorString = "error in schema";
+        errorString = errorString +
+           (schemaDescription.equals("") ? ": ": "(" + schemaDescription + "): " ) ;
         try {
             optional = ((Boolean) predicate.sfResolve(optionalRef)).booleanValue();
         } catch (Throwable e) {
@@ -91,12 +92,12 @@ public class Schema extends BasePredicate implements PhaseAction {
             binding = (String) predicate.sfResolve(bindingRef);
             if (!(binding.equals("lazy") || binding.equals("eager") || binding.equals("anyBinding")))
                 throw new SmartFrogCompileResolutionException (
-                     errorString + "binding not valid value for attribute " + name, null, ref, "predicate", null
+                     errorString + "binding not valid value for attribute '" + name+"'", null, ref, "predicate", null
                     );
         } catch (Throwable e) {
             if (!(e instanceof SmartFrogCompileResolutionException))
                 throw new SmartFrogCompileResolutionException(
-                     errorString + "error reading binding for attribute " + name, e, ref, "predicate", null
+                     errorString + "error reading binding for attribute '" + name+"'", e, ref, "predicate", null
                     );
             else
                 throw (SmartFrogCompileResolutionException)e;
@@ -106,7 +107,7 @@ public class Schema extends BasePredicate implements PhaseAction {
             valueClass = (String) predicate.sfResolve(classRef);
         } catch (Throwable e) {
             throw new SmartFrogCompileResolutionException (
-                     errorString + "error reading class for attribute " + name, e, ref, "predicate", null
+                     errorString + "error reading class for attribute '" + name+"'", e, ref, "predicate", null
                     );
         }
 
@@ -130,7 +131,7 @@ public class Schema extends BasePredicate implements PhaseAction {
 
                     if (!condition)
                         throw new SmartFrogCompileResolutionException (
-                               "errorString + (lazy) reference value for non-reference eager attribute " + name + " (" + description + ")", null, ref, "predicate", null
+                               "errorString + (lazy) reference value for non-reference eager attribute " + getNameAndDescription(name,description), null, ref, "predicate", null
                             );
                 } else {
                     if (binding.equals("lazy"))
@@ -138,10 +139,9 @@ public class Schema extends BasePredicate implements PhaseAction {
                                errorString + "non-reference value found for lazy attribute " + name,
                                null, ref, "predicate", null
                             );
-//                    else if (!(valueClass.equals("anyClass") || valueClass.equals(testvalueClass)))
                       else if (!(valueClass.equals("anyClass")) && !(java.lang.Class.forName(valueClass).isAssignableFrom(testvalue.getClass())))
                         throw new SmartFrogCompileResolutionException (
-                               errorString + "wrong class found for attribute " + name + " (" + description + "), expected: " + valueClass + ", found: " + testvalueClass,
+                               errorString + "wrong class found for attribute " + getNameAndDescription(name,description)+ ", expected: " + valueClass + ", found: " + testvalueClass,
                                null, ref, "predicate", null
                             );
                 }
@@ -150,18 +150,25 @@ public class Schema extends BasePredicate implements PhaseAction {
             } catch (SmartFrogResolutionException re) {
                 if (!optional) {
                     throw new SmartFrogCompileResolutionException (
-                     errorString + "non-optional attribute is missing: " + name + " (" + description + ")", null, ref, "predicate", null
+                     errorString + "non-optional attribute is missing: " + getNameAndDescription(name,description), null, ref, "predicate", null
                     );
                 }
             }
         } catch (Throwable e) {
             if (!(e instanceof SmartFrogCompileResolutionException))
                 throw new SmartFrogCompileResolutionException (
-                     "error checking attribute " + name + " (" + description + ")", e, ref, "predicate", null
+                     "error checking attribute " + getNameAndDescription(name,description), e, ref, "predicate", null
                     );
             else
                 throw (SmartFrogCompileResolutionException)e;
         }
+    }
+
+    protected String getNameAndDescription (Object name, String description){
+          if (description.equals(""))
+              return "'"+name+"'";
+          else
+              return "'"+name+" ("+description+")"+"'";
     }
     /**
      * Applies predicates.
