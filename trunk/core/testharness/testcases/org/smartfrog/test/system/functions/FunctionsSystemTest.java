@@ -24,14 +24,14 @@ package org.smartfrog.test.system.functions;
 import java.util.Vector;
 import java.util.Calendar;
 
-import org.smartfrog.test.SmartfrogTestBase;
+import org.smartfrog.test.SmartFrogTestBase;
 import org.smartfrog.sfcore.prim.Prim;
 
 
 /**
  * JUnit test class for functions provided by SmartFrog framework.
  */
-public class FunctionsSystemTest extends SmartfrogTestBase {
+public class FunctionsSystemTest extends SmartFrogTestBase {
 
     private static final String FILES="org/smartfrog/test/system/functions/";
 

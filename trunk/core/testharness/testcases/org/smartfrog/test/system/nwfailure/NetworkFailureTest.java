@@ -19,7 +19,7 @@
  */
 package org.smartfrog.test.system.nwfailure;
 
-import org.smartfrog.test.SmartfrogTestBase;
+import org.smartfrog.test.SmartFrogTestBase;
 
 /**
  * Test network failures.
@@ -27,7 +27,7 @@ import org.smartfrog.test.SmartfrogTestBase;
  *         created 01-Apr-2004 13:10:30
  */
 
-public class NetworkFailureTest extends SmartfrogTestBase {
+public class NetworkFailureTest extends SmartFrogTestBase {
     private static final String FILES = "org/smartfrog/test/system/nwfailure/";
 
     public NetworkFailureTest(String name) {

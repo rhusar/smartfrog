@@ -21,14 +21,14 @@
 
 package org.smartfrog.test.system.compiler;
 
-import org.smartfrog.test.SmartfrogTestBase;
+import org.smartfrog.test.SmartFrogTestBase;
 
 
 
 /**
  * JUnit test class for compiler/parser functional tests.
  */
-public class CompilerSystemTest extends SmartfrogTestBase {
+public class CompilerSystemTest extends SmartFrogTestBase {
 
     private static final String FILES="org/smartfrog/test/system/compiler/";
 

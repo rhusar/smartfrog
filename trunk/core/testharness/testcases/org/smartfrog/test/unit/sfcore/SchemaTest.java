@@ -21,7 +21,7 @@ package org.smartfrog.test.unit.sfcore;
 
 
 import junit.framework.TestCase;
-import org.smartfrog.test.SmartfrogTestBase;
+import org.smartfrog.test.SmartFrogTestBase;
 import org.smartfrog.sfcore.parser.Phases;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
@@ -29,7 +29,7 @@ import org.smartfrog.sfcore.common.SmartFrogException;
  * created 16-Apr-2004 11:36:32
  */
 
-public class SchemaTest extends SmartfrogTestBase {
+public class SchemaTest extends SmartFrogTestBase {
 
     private static final String FILES = "org/smartfrog/test/unit/sfcore/";
 

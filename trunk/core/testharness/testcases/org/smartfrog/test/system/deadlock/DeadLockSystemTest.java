@@ -21,14 +21,14 @@
 
 package org.smartfrog.test.system.deadlock;
 
-import org.smartfrog.test.SmartfrogTestBase;
+import org.smartfrog.test.SmartFrogTestBase;
 import org.smartfrog.sfcore.prim.Prim;
 
 
 /**
  * JUnit test class for test cases related to life cycle method "sfDeploy"
  */
-public class DeadLockSystemTest extends SmartfrogTestBase {
+public class DeadLockSystemTest extends SmartFrogTestBase {
 
     private static final String FILES="org/smartfrog/test/system/deadlock/";
 

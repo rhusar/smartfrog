@@ -27,7 +27,7 @@ import org.smartfrog.sfcore.common.SmartFrogInitException;
 import org.smartfrog.SFSystem;
 import junit.framework.Assert;
 
-import org.smartfrog.test.SmartfrogTestBase;
+import org.smartfrog.test.SmartFrogTestBase;
 
 import java.util.Enumeration;
 
