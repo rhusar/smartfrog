@@ -1,5 +1,7 @@
 release 3.04.001_beta
 ---------------------
+2004-Aug-18 Fix: Important bug introduced in 3.04.000: cxt params were not
+                 merged with sf description in PrimDeployerImpl.sfDeploy()
 2004-Aug-17 Add: Improved sfRelsove illegalClassType exceptions
 2004-Aug-17 Add: New sfGui version 0.7r01
 2004-Aug-17 Add: Improved SchemaDescription phase.
