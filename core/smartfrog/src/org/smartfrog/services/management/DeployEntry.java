@@ -624,7 +624,8 @@ public class DeployEntry implements Entry {
                 return  (String)context.keyFor(this.getEntry());
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
+            //@Todo log this.
+            //ex.printStackTrace();
         }
         return "";
     }
