@@ -31,8 +31,8 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 
 
 /**
- * Retract is a modified compound in which sub-components are terminated in 
- * reverse order in which they are deployed and started.   
+ * Retract is a modified compound in which sub-components are terminated in
+ * reverse order in which they are deployed and started.
  */
 public class Retract extends EventCompoundImpl implements Compound {
     /**
@@ -43,7 +43,6 @@ public class Retract extends EventCompoundImpl implements Compound {
     LogSF log = null;
     public Retract() throws RemoteException , SmartFrogException {
         super();
-	log = this.sfGetProcessLog();
 
     }
 
@@ -55,19 +54,20 @@ public class Retract extends EventCompoundImpl implements Compound {
      * @param status termination status
      */
     public synchronized void sfTerminateWith(TerminationRecord status) {
+        log = sfGetProcessLog();
         for (int i = sfChildren.size() - 1; i >= 0; i--) {
             try {
                 ((Prim) sfChildren.elementAt(i)).sfTerminateQuietlyWith(status);
             } catch (Exception ex) {
                // System.out.println("Exception while terminating one of the children");
-	          String errStr="Exception while terminating one of the children";
+              String errStr="Exception while terminating one of the children";
                   if (log.isErrorEnabled())
-                	log.error(errStr);
+                    log.error(errStr);
                 ex.printStackTrace();
             }
         }
 
-        // we've overriden the compound's sfTerminateWith; therefore we need 
+        // we've overriden the compound's sfTerminateWith; therefore we need
         // to call the hooks ourselves.
         try {
             sfTerminateWithHooks.applyHooks(this, status);
