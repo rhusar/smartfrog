@@ -95,15 +95,15 @@
       <description>version attribute of smartfrog documents</description>
     </string>
 
-    <string name="CALLBACK_WS_NOTIFICATION" value="ws-notification">
+    <string name="CALLBACK_WS_NOTIFICATION" value="http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseNotification">
       <description>name of ws-notification callback type</description>
     </string>
 
-    <string name="CALLBACK_WS_EVENTING" value="ws-eventing">
+    <string name="CALLBACK_WS_EVENTING" value="http://schemas.xmlsoap.org/ws/2004/08/eventing">
       <description>name of ws-eventing callback type</description>
     </string>
 
-    <string name="CALLBACK_CDDLM_PROTOTYPE" value="cddlm-prototype">
+    <string name="CALLBACK_CDDLM_PROTOTYPE" value="http://gridforum.org/cddlm/serviceAPI/notifications/2004/10/11/">
       <description>name of prototype-quality CDDLM notification type</description>
     </string>
 

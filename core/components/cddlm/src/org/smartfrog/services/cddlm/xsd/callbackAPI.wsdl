@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <wsdl:definitions
-  targetNamespace="http://gridforum.org/cddlm/serviceAPI/callbacks/2004/07/30"
-  xmlns="http://gridforum.org/cddlm/serviceAPI/callbacks/2004/07/30"
-  xmlns:types="http://gridforum.org/cddlm/serviceAPI/types/2004/07/30"
+  targetNamespace="http://gridforum.org/cddlm/serviceAPI/callbacks/2004/10/11/"
+  xmlns="http://gridforum.org/cddlm/serviceAPI/callbacks/2004/10/11/"
+  xmlns:types="http://gridforum.org/cddlm/serviceAPI/types/2004/10/11/"
   xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
   xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/"
   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
@@ -34,7 +34,7 @@
 
   <!-- import the types -->
   <wsdl:import
-    namespace="http://gridforum.org/cddlm/serviceAPI/types/2004/07/30"
+    namespace="http://gridforum.org/cddlm/serviceAPI/types/2004/10/11/"
     location="deployAPIschema.xsd"/>
 
 
@@ -42,12 +42,12 @@
   <!-- begin WSDL message types-->
   <!-- ============================================================= -->
 
-  <wsdl:message name="callbackRequest">
-    <wsdl:part name="callback" element="types:lifecycleEventCallbackRequest"/>
+  <wsdl:message name="notificationRequest">
+    <wsdl:part name="notification" element="types:lifecycleEventRequest"/>
   </wsdl:message>
 
-  <wsdl:message name="callbackResponse">
-    <wsdl:part name="response" element="types:lifecycleEventCallbackResponse"/>
+  <wsdl:message name="notificationResponse">
+    <wsdl:part name="notification" element="types:lifecycleEventResponse"/>
   </wsdl:message>
  
   <!-- ============================================================= -->
@@ -55,12 +55,12 @@
   <!-- ============================================================= -->
 
 
-  <wsdl:portType name="DeploymentCallbackEndpoint">
+  <wsdl:portType name="DeploymentNotificationEndpoint">
 
     <!-- deploy -->
-    <wsdl:operation name="callback">
-      <wsdl:input message="callbackRequest" name="callbackRequest"/>
-      <wsdl:output message="callbackResponse" name="callbackRequest"/>
+    <wsdl:operation name="notification">
+      <wsdl:input message="notificationRequest" name="notificationRequest"/>
+      <wsdl:output message="notificationResponse" name="notificationResponse"/>
     </wsdl:operation>
   </wsdl:portType>
  
@@ -69,18 +69,19 @@
   <!-- Bind WSDL to doc/lit SOAP1.2 -->
   <!-- ============================================================= -->
 
-  <wsdl:binding name="DeploymentCallbackSoapBinding" type="DeploymentCallbackEndpoint">
+  <wsdl:binding name="DeploymentNotificationSoapBinding"
+    type="DeploymentNotificationEndpoint">
 
     <wsdlsoap:binding style="document"
       transport="http://schemas.xmlsoap.org/soap/http"/>
 
     <!-- deploy -->
-    <wsdl:operation name="callback">
+    <wsdl:operation name="notification">
       <wsdlsoap:operation soapAction=""/>
-      <wsdl:input name="callbackRequest">
+      <wsdl:input name="notificationRequest">
         <wsdlsoap:body use="literal"/>
       </wsdl:input>
-      <wsdl:output name="callbackRequest">
+      <wsdl:output name="notificationResponse">
         <wsdlsoap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
@@ -91,12 +92,12 @@
   <!-- end WSDL definitions-->
   <!-- ============================================================= -->
 
-  <wsdl:service name="CDDLMCallbackService">
+  <wsdl:service name="CddlmNotificationService">
     <wsdl:documentation>
-      This is a sample CDDLM callback service, and is only for testing
+      This is a sample CDDLM notification service, and is only for testing
     </wsdl:documentation>
-    <wsdl:port binding="DeploymentCallbackSoapBinding" name="callbacks">
-      <wsdlsoap:address location="http://127.0.0.1:5051/axis/services/callbacks"/>
+    <wsdl:port binding="DeploymentNotificationSoapBinding" name="notifications">
+      <wsdlsoap:address location="http://127.0.0.1:5051/axis/services/notifications"/>
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

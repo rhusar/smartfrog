@@ -55,7 +55,7 @@ public class ShowServerStatus extends ConsoleOperation {
                 serverInfo.getLocation());
         out.println("UTC offset " + serverInfo.getTimezoneUTCOffset());
         out.println("Build " + serverInfo.getBuild());
-        String callbacks[] = statInfo.getCallbacks().getItem();
+        String callbacks[] = statInfo.getNotifications().getItem();
         out.println("Callbacks: " + callbacks.length + " :-");
         for (int i = 0; i < callbacks.length; i++) {
             out.println("  " + callbacks[i]);

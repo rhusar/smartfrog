@@ -28,9 +28,9 @@ import org.cddlm.client.console.Deploy;
 import org.cddlm.client.console.Options;
 import org.smartfrog.services.cddlm.generated.api.DeployApiConstants;
 import org.smartfrog.services.cddlm.generated.api.types.ApplicationStatusType;
-import org.smartfrog.services.cddlm.generated.api.types.CallbackInformationType;
 import org.smartfrog.services.cddlm.generated.api.types.DeploymentDescriptorType;
 import org.smartfrog.services.cddlm.generated.api.types.LifecycleStateEnum;
+import org.smartfrog.services.cddlm.generated.api.types.NotificationInformationType;
 import org.smartfrog.services.cddlm.generated.api.types._deploymentDescriptorType_body;
 
 import javax.xml.namespace.QName;
@@ -85,7 +85,7 @@ public abstract class DeployingTestBase extends ConsoleTestBase {
 
     protected URI deploy(String name,
             DeploymentDescriptorType descriptor,
-            Options options, CallbackInformationType callback)
+            Options options, NotificationInformationType callback)
             throws RemoteException {
         URI uri = operation.deploy(name, descriptor, options, callback);
         assertNotNull("uri", uri);
@@ -106,7 +106,7 @@ public abstract class DeployingTestBase extends ConsoleTestBase {
     protected void deployExpectingFault(final String name,
             DeploymentDescriptorType dd,
             final Options options,
-            CallbackInformationType callback, final QName fault,
+            NotificationInformationType callback, final QName fault,
             final String text)
             throws RemoteException {
         try {
@@ -140,7 +140,7 @@ public abstract class DeployingTestBase extends ConsoleTestBase {
      * @throws RemoteException
      */
     public boolean undeploy(URI uri) throws RemoteException {
-        return operation.undeploy(uri, UNDEPLOY_REASON);
+        return operation.terminate(uri, UNDEPLOY_REASON);
     }
 
     public void assertDeployed(URI uri) throws RemoteException {
@@ -153,7 +153,8 @@ public abstract class DeployingTestBase extends ConsoleTestBase {
         return uri;
     }
 
-    protected DeploymentDescriptorType createSimpleDescriptor() throws IOException {
+    protected DeploymentDescriptorType createSimpleDescriptor()
+            throws IOException {
         DeploymentDescriptorType dt = operation.createSmartFrogDescriptor(
                 DeploySmartFrogTest.SIMPLE_DESCRIPTOR);
         return dt;

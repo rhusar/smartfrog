@@ -26,17 +26,17 @@ import org.apache.commons.logging.LogFactory;
 import org.smartfrog.services.axis.SmartFrogHostedEndpoint;
 import org.smartfrog.services.cddlm.engine.JobState;
 import org.smartfrog.services.cddlm.generated.api.DeployApiConstants;
-import org.smartfrog.services.cddlm.generated.api.types.CallbackAddressType;
-import org.smartfrog.services.cddlm.generated.api.types.CallbackEnum;
-import org.smartfrog.services.cddlm.generated.api.types.CallbackInformationType;
-import org.smartfrog.services.cddlm.generated.api.types._setCallbackRequest;
+import org.smartfrog.services.cddlm.generated.api.types.NotificationAddressType;
+import org.smartfrog.services.cddlm.generated.api.types.NotificationEnum;
+import org.smartfrog.services.cddlm.generated.api.types.NotificationInformationType;
+import org.smartfrog.services.cddlm.generated.api.types._setNotificationRequest;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
  * extract callback information from a job, attach it to a job Can be called in
- * a setCallback call, or as part of a deployment operation
+ * a setNotification call, or as part of a deployment operation
  * <p/>
  * created Sep 2, 2004 5:42:51 PM
  */
@@ -65,10 +65,10 @@ public class CallbackProcessor extends Processor {
      * @param required
      * @throws AxisFault
      */
-    public void process(JobState job, CallbackInformationType callbackInfo,
+    public void process(JobState job, NotificationInformationType callbackInfo,
             boolean required)
             throws AxisFault {
-        CallbackEnum type = null;
+        NotificationEnum type = null;
         if (callbackInfo == null) {
             if (!required) {
                 job.clearCallbackData();
@@ -88,7 +88,7 @@ public class CallbackProcessor extends Processor {
                     DeployApiConstants.UNSUPPORTED_CALLBACK_WIRE_MESSAGE);
         }
 
-        CallbackAddressType address = callbackInfo.getAddress();
+        NotificationAddressType address = callbackInfo.getAddress();
         if (address == null) {
             throw raiseBadArgumentFault(ERROR_NO_ADDRESS);
         }
@@ -104,8 +104,8 @@ public class CallbackProcessor extends Processor {
             throw raiseBadArgumentFault(
                     ERROR_BAD_CALLBACK_URL + uri.toString());
         }
-        String identifier= callbackInfo.getIdentifier();
-        log.info("sending callbacks to "+url);
+        String identifier = callbackInfo.getIdentifier();
+        log.info("sending callbacks to " + url);
         job.setCallbackInformation(callbackInfo);
         job.setCallbackURL(url);
         job.setCallbackType(type.getValue());
@@ -118,7 +118,7 @@ public class CallbackProcessor extends Processor {
      * handle the request from the endpoint by looking up the app and handing
      * off to our internal process method
      */
-    public boolean process(_setCallbackRequest request) throws AxisFault {
+    public boolean process(_setNotificationRequest request) throws AxisFault {
         final URI appURI = request.getApplication();
         if (appURI == null) {
             throw raiseBadArgumentFault(ERROR_NO_APPLICATION);
@@ -126,13 +126,13 @@ public class CallbackProcessor extends Processor {
         JobState job;
         /*
         job = lookupJobNonFaulting(appURI);
-        if(job==null && request.getCallback()==null) {
+        if(job==null && request.getNotification()==null) {
             return true;
         }
         */
         job = lookupJob(appURI);
 
-        process(job, request.getCallback(), false);
+        process(job, request.getNotification(), false);
 
         return true;
     }

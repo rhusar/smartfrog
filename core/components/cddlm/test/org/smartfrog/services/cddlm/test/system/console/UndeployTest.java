@@ -25,7 +25,7 @@ import org.apache.axis.AxisFault;
 import org.apache.axis.types.URI;
 import org.cddlm.client.console.ConsoleOperation;
 import org.cddlm.client.console.Undeploy;
-import org.smartfrog.services.cddlm.api.UndeployProcessor;
+import org.smartfrog.services.cddlm.api.TerminateProcessor;
 import org.smartfrog.services.cddlm.generated.api.DeployApiConstants;
 
 /**
@@ -54,7 +54,7 @@ public class UndeployTest extends ConsoleTestBase {
 
     public void testMissingApp() throws Exception {
         try {
-            operation.undeploy(new URI(INVALID_URI), "termination");
+            operation.terminate(new URI(INVALID_URI), "termination");
         } catch (AxisFault e) {
             assertFaultMatches(e,
                     DeployApiConstants.FAULT_NO_SUCH_APPLICATION,
@@ -64,17 +64,17 @@ public class UndeployTest extends ConsoleTestBase {
 
     public void testNullApp() throws Exception {
         try {
-            operation.undeploy(null, "termination");
+            operation.terminate(null, "termination");
         } catch (AxisFault e) {
             assertFaultMatches(e,
                     DeployApiConstants.FAULT_BAD_ARGUMENT,
-                    UndeployProcessor.ERROR_NO_APPLICATION);
+                    TerminateProcessor.ERROR_NO_APPLICATION);
         }
     }
 
     public void testMissingAppAndReason() throws Exception {
         try {
-            operation.undeploy(new URI(INVALID_URI), null);
+            operation.terminate(new URI(INVALID_URI), null);
         } catch (AxisFault e) {
             assertFaultMatches(e,
                     DeployApiConstants.FAULT_NO_SUCH_APPLICATION,

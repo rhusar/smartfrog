@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <wsdl:definitions
-  targetNamespace="http://gridforum.org/cddlm/serviceAPI/api/2004/07/30"
-  xmlns:types="http://gridforum.org/cddlm/serviceAPI/types/2004/07/30"
-  xmlns:api="http://gridforum.org/cddlm/serviceAPI/api/2004/07/30"
+  targetNamespace="http://gridforum.org/cddlm/serviceAPI/api/2004/10/11/"
+  xmlns:types="http://gridforum.org/cddlm/serviceAPI/types/2004/10/11/"
+  xmlns:api="http://gridforum.org/cddlm/serviceAPI/api/2004/10/11/"
   xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
   xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/"
   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
@@ -47,7 +47,7 @@
 
   <!-- import the types -->
   <wsdl:import
-    namespace="http://gridforum.org/cddlm/serviceAPI/types/2004/07/30"
+    namespace="http://gridforum.org/cddlm/serviceAPI/types/2004/10/11"
     location="deployAPIschema.xsd"/>
 
   <!--
@@ -77,20 +77,28 @@
   <!-- begin WSDL message types-->
   <!-- ============================================================= -->
 
-  <wsdl:message name="deployRequest">
-    <wsdl:part element="types:deployRequest" name="deploy"/>
+  <wsdl:message name="createRequest">
+    <wsdl:part element="types:createRequest" name="create"/>
   </wsdl:message>
 
-  <wsdl:message name="deployResponse">
-    <wsdl:part element="types:deployResponse" name="response"/>
+  <wsdl:message name="createResponse">
+    <wsdl:part element="types:createResponse" name="response"/>
   </wsdl:message>
 
-  <wsdl:message name="undeployRequest">
-    <wsdl:part element="types:undeployRequest" name="undeploy"/>
+  <wsdl:message name="startRequest">
+    <wsdl:part element="types:startRequest" name="undeploy"/>
   </wsdl:message>
 
-  <wsdl:message name="undeployResponse">
-    <wsdl:part element="types:undeployResponse" name="response"/>
+  <wsdl:message name="startResponse">
+    <wsdl:part element="types:startResponse" name="response"/>
+  </wsdl:message>
+
+  <wsdl:message name="terminateRequest">
+    <wsdl:part element="types:terminateRequest" name="undeploy"/>
+  </wsdl:message>
+
+  <wsdl:message name="terminateResponse">
+    <wsdl:part element="types:terminateResponse" name="response"/>
   </wsdl:message>
 
   <wsdl:message name="serverStatusRequest">
@@ -125,12 +133,12 @@
     <wsdl:part element="types:listApplicationsResponse" name="response"/>
   </wsdl:message>
 
-  <wsdl:message name="setCallbackRequest">
-    <wsdl:part element="types:setCallbackRequest" name="setCallback"/>
+  <wsdl:message name="setNotificationRequest">
+    <wsdl:part element="types:setNotificationRequest" name="setNotification"/>
   </wsdl:message>
 
-  <wsdl:message name="setCallbackResponse">
-    <wsdl:part element="types:setCallbackResponse" name="response"/>
+  <wsdl:message name="setNotificationResponse">
+    <wsdl:part element="types:setNotificationResponse" name="response"/>
   </wsdl:message>
 
   <!-- ============================================================= -->
@@ -140,15 +148,21 @@
   <wsdl:portType name="DeploymentEndpoint">
 
     <!-- deploy -->
-    <wsdl:operation name="deploy">
-      <wsdl:input message="api:deployRequest" name="deployRequest"/>
-      <wsdl:output message="api:deployResponse" name="deployResponse"/>
+    <wsdl:operation name="create">
+      <wsdl:input message="api:createRequest" name="createRequest"/>
+      <wsdl:output message="api:createResponse" name="createResponse"/>
     </wsdl:operation>
 
-    <!-- undeploy -->
-    <wsdl:operation name="undeploy">
-      <wsdl:input message="api:undeployRequest" name="undeployRequest"/>
-      <wsdl:output message="api:undeployResponse" name="undeployResponse"/>
+    <!-- start an application -->
+    <wsdl:operation name="start">
+      <wsdl:input message="api:startRequest" name="startRequest"/>
+      <wsdl:output message="api:startResponse" name="startResponse"/>
+    </wsdl:operation>
+
+    <!-- terminate -->
+    <wsdl:operation name="terminate">
+      <wsdl:input message="api:terminateRequest" name="terminateRequest"/>
+      <wsdl:output message="api:terminateResponse" name="terminateResponse"/>
     </wsdl:operation>
 
     <!--  server status -->
@@ -177,9 +191,9 @@
       <wsdl:output message="api:listApplicationsResponse" name="listApplicationsResponse"/>
     </wsdl:operation>
 
-    <wsdl:operation name="setCallback">
-      <wsdl:input message="api:setCallbackRequest" name="setCallbackRequest"/>
-      <wsdl:output message="api:setCallbackResponse" name="setCallbackResponse"/>
+    <wsdl:operation name="setNotification">
+      <wsdl:input message="api:setNotificationRequest" name="setNotificationRequest"/>
+      <wsdl:output message="api:setNotificationResponse" name="setNotificationResponse"/>
     </wsdl:operation>
 
   </wsdl:portType>
@@ -194,22 +208,32 @@
       transport="http://schemas.xmlsoap.org/soap/http"/>
 
     <!-- deploy -->
-    <wsdl:operation name="deploy">
+    <wsdl:operation name="create">
       <wsdlsoap:operation soapAction=""/>
-      <wsdl:input name="deployRequest">
+      <wsdl:input name="createRequest">
         <wsdlsoap:body use="literal"/>
       </wsdl:input>
-      <wsdl:output name="deployResponse">
+      <wsdl:output name="createResponse">
         <wsdlsoap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
 
-    <wsdl:operation name="undeploy">
+    <wsdl:operation name="start">
       <wsdlsoap:operation soapAction=""/>
-      <wsdl:input name="undeployRequest">
+      <wsdl:input name="startRequest">
         <wsdlsoap:body use="literal"/>
       </wsdl:input>
-      <wsdl:output name="undeployResponse">
+      <wsdl:output name="startResponse">
+        <wsdlsoap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+
+    <wsdl:operation name="terminate">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="terminateRequest">
+        <wsdlsoap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="terminateResponse">
         <wsdlsoap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
@@ -256,12 +280,12 @@
       </wsdl:output>
     </wsdl:operation>
 
-    <wsdl:operation name="setCallback">
+    <wsdl:operation name="setNotification">
       <wsdlsoap:operation soapAction=""/>
-      <wsdl:input name="setCallbackRequest">
+      <wsdl:input name="setNotificationRequest">
         <wsdlsoap:body use="literal"/>
       </wsdl:input>
-      <wsdl:output name="setCallbackResponse">
+      <wsdl:output name="setNotificationResponse">
         <wsdlsoap:body use="literal"/>
       </wsdl:output>
     </wsdl:operation>
@@ -277,13 +301,13 @@
 
 
   <wsdl:service name="CDDLMDeploymentService">
-    <wsdl:documentation >
+    <wsdl:documentation>
       This is a sample CDDLM deployment service, and is only for testing
     </wsdl:documentation>
     <wsdl:port binding="api:cddlmSoapBinding" name="cddlm">
-     <wsdlsoap:address location="http://127.0.0.1:5050/axis/services/cddlm"/>
+      <wsdlsoap:address location="http://127.0.0.1:5050/axis/services/cddlm"/>
     </wsdl:port>
-   </wsdl:service>
+  </wsdl:service>
 
  
   <!-- ============================================================= -->

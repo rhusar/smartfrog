@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<xsd:schema targetNamespace="http://gridforge.org/cddlm/xml/2004/07/30/"
+<xsd:schema targetNamespace="http://gridforge.org/cddlm/xml/2004/10/11/"
   xmlns:cdl="http://gridforge.org/cddlm/xml/2004/07/30/"
   xmlns="http://gridforge.org/cddlm/xml/2004/07/30/"
   xmlns:xsd="http://www.w3.org/2001/XMLSchema"

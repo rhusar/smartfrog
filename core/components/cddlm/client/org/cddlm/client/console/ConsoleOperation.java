@@ -20,11 +20,11 @@
 package org.cddlm.client.console;
 
 import nu.xom.ParsingException;
+import org.apache.axis.AxisFault;
 import org.apache.axis.message.MessageElement;
 import org.apache.axis.message.Text;
 import org.apache.axis.types.NCName;
 import org.apache.axis.types.URI;
-import org.apache.axis.AxisFault;
 import org.cddlm.client.common.Constants;
 import org.cddlm.client.common.ServerBinding;
 import org.smartfrog.services.cddlm.cdl.CdlDocument;
@@ -36,25 +36,25 @@ import org.smartfrog.services.cddlm.generated.api.DeployApiConstants;
 import org.smartfrog.services.cddlm.generated.api.endpoint.CddlmSoapBindingStub;
 import org.smartfrog.services.cddlm.generated.api.types.ApplicationReferenceListType;
 import org.smartfrog.services.cddlm.generated.api.types.ApplicationStatusType;
-import org.smartfrog.services.cddlm.generated.api.types.CallbackAddressType;
-import org.smartfrog.services.cddlm.generated.api.types.CallbackEnum;
-import org.smartfrog.services.cddlm.generated.api.types.CallbackInformationType;
 import org.smartfrog.services.cddlm.generated.api.types.DeploymentDescriptorType;
 import org.smartfrog.services.cddlm.generated.api.types.EmptyElementType;
 import org.smartfrog.services.cddlm.generated.api.types.JsdlType;
+import org.smartfrog.services.cddlm.generated.api.types.NotificationAddressType;
+import org.smartfrog.services.cddlm.generated.api.types.NotificationEnum;
+import org.smartfrog.services.cddlm.generated.api.types.NotificationInformationType;
 import org.smartfrog.services.cddlm.generated.api.types.OptionMapType;
 import org.smartfrog.services.cddlm.generated.api.types.OptionType;
 import org.smartfrog.services.cddlm.generated.api.types.ServerStatusType;
 import org.smartfrog.services.cddlm.generated.api.types.StaticServerStatusType;
 import org.smartfrog.services.cddlm.generated.api.types._applicationStatusRequest;
-import org.smartfrog.services.cddlm.generated.api.types._deployRequest;
-import org.smartfrog.services.cddlm.generated.api.types._deployResponse;
+import org.smartfrog.services.cddlm.generated.api.types._createRequest;
+import org.smartfrog.services.cddlm.generated.api.types._createResponse;
 import org.smartfrog.services.cddlm.generated.api.types._deploymentDescriptorType_body;
 import org.smartfrog.services.cddlm.generated.api.types._languageListType_language;
 import org.smartfrog.services.cddlm.generated.api.types._lookupApplicationRequest;
 import org.smartfrog.services.cddlm.generated.api.types._serverStatusRequest;
-import org.smartfrog.services.cddlm.generated.api.types._setCallbackRequest;
-import org.smartfrog.services.cddlm.generated.api.types._undeployRequest;
+import org.smartfrog.services.cddlm.generated.api.types._setNotificationRequest;
+import org.smartfrog.services.cddlm.generated.api.types._terminateRequest;
 import org.w3c.dom.DOMImplementation;
 import org.xml.sax.SAXException;
 
@@ -243,7 +243,7 @@ public abstract class ConsoleOperation {
     public URI deploy(String name,
             DeploymentDescriptorType descriptor,
             Options options,
-            CallbackInformationType callbackInfo)
+            NotificationInformationType callbackInfo)
             throws RemoteException {
         JsdlType jsdl = new JsdlType();
         if (name != null) {
@@ -257,11 +257,11 @@ public abstract class ConsoleOperation {
         if (options != null) {
             map = options.toOptionMap();
         }
-        _deployRequest request = new _deployRequest(jsdl,
+        _createRequest request = new _createRequest(jsdl,
                 descriptor,
                 callbackInfo,
                 map);
-        _deployResponse response = getStub().deploy(request);
+        _createResponse response = getStub().create(request);
         return response.getApplicationReference();
 
     }
@@ -314,7 +314,9 @@ public abstract class ConsoleOperation {
             String version) {
         MessageElement any[] = new MessageElement[1];
         any[0] = element;
-        DeploymentDescriptorType descriptor = createDescriptorWithXML(any,language, version);
+        DeploymentDescriptorType descriptor = createDescriptorWithXML(any,
+                language,
+                version);
         return descriptor;
     }
 
@@ -340,8 +342,9 @@ public abstract class ConsoleOperation {
 
 
     /**
-     * jump through hoops to turn a Xom document into a descriptor
-     * Caller is left to set the language and version attributes
+     * jump through hoops to turn a Xom document into a descriptor Caller is
+     * left to set the language and version attributes
+     *
      * @param xom
      * @return
      * @throws ParserConfigurationException
@@ -351,7 +354,7 @@ public abstract class ConsoleOperation {
             throws ParserConfigurationException {
         DOMImplementation impl = XomAxisHelper.loadDomImplementation();
         MessageElement messageElement = XomAxisHelper.convert(xom, impl);
-        return createDescriptorWithXML(messageElement,null,null);
+        return createDescriptorWithXML(messageElement, null, null);
     }
 
     /**
@@ -500,10 +503,11 @@ public abstract class ConsoleOperation {
      * @return true if the process has commenced. Undeployment is asynchronous
      * @throws RemoteException
      */
-    public boolean undeploy(URI application, String reason)
+    public boolean terminate(URI application, String reason)
             throws RemoteException {
-        _undeployRequest undeploy = new _undeployRequest(application, reason);
-        return getStub().undeploy(undeploy);
+        _terminateRequest undeploy = new _terminateRequest(application,
+                reason);
+        return getStub().terminate(undeploy);
     }
 
     /**
@@ -513,9 +517,9 @@ public abstract class ConsoleOperation {
      * @return true
      * @throws RemoteException
      */
-    public boolean setCallback(_setCallbackRequest request)
+    public boolean setNotification(_setNotificationRequest request)
             throws RemoteException {
-        return getStub().setCallback(request);
+        return getStub().setNotification(request);
     }
 
     /**
@@ -526,21 +530,23 @@ public abstract class ConsoleOperation {
      * @param identifier  optional identifier
      * @return
      */
-    public boolean setCddlmCallback(URI application, String url,
+    public boolean setCddlmNotification(URI application, String url,
             String identifier)
             throws RemoteException {
-        CallbackInformationType callbackInfo = new CallbackInformationType();
-        callbackInfo.setType(CallbackEnum.fromString(
+        NotificationInformationType callbackInfo = new NotificationInformationType();
+        callbackInfo.setType(NotificationEnum.fromString(
                 DeployApiConstants.CALLBACK_CDDLM_PROTOTYPE));
         callbackInfo.setIdentifier(identifier);
         URI replyAddress = null;
         if (url != null) {
             replyAddress = URIHelper.toAxisUri(url);
         }
-        callbackInfo.setAddress(new CallbackAddressType(replyAddress, null));
-        _setCallbackRequest request = new _setCallbackRequest(application,
+        callbackInfo.setAddress(
+                new NotificationAddressType(replyAddress, null));
+        _setNotificationRequest request = new _setNotificationRequest(
+                application,
                 callbackInfo);
-        return setCallback(request);
+        return setNotification(request);
     }
 
     /**
@@ -551,12 +557,14 @@ public abstract class ConsoleOperation {
      */
     public boolean setUnsubscribeCallback(URI application)
             throws RemoteException {
-        _setCallbackRequest request = new _setCallbackRequest(application,
+        _setNotificationRequest request = new _setNotificationRequest(
+                application,
                 null);
         try {
-            return setCallback(request);
+            return setNotification(request);
         } catch (AxisFault e) {
-            if(DeployApiConstants.FAULT_NO_SUCH_APPLICATION.equals(e.getFaultCode())) {
+            if (DeployApiConstants.FAULT_NO_SUCH_APPLICATION.equals(
+                    e.getFaultCode())) {
                 //do nothing, as this is a common event
                 return false;
             } else {

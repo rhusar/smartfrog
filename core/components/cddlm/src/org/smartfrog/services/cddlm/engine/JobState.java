@@ -33,25 +33,19 @@ import org.smartfrog.services.cddlm.cdl.XomAxisHelper;
 import org.smartfrog.services.cddlm.generated.api.types.ApplicationStatusType;
 import org.smartfrog.services.cddlm.generated.api.types.DeploymentDescriptorType;
 import org.smartfrog.services.cddlm.generated.api.types.LifecycleStateEnum;
-import org.smartfrog.services.cddlm.generated.api.types._deployRequest;
+import org.smartfrog.services.cddlm.generated.api.types.NotificationInformationType;
 import org.smartfrog.services.cddlm.generated.api.types.UnboundedXMLOtherNamespace;
-import org.smartfrog.services.cddlm.generated.api.types.CallbackInformationType;
-import org.smartfrog.services.cddlm.generated.api.types._lifecycleEventCallbackRequest;
+import org.smartfrog.services.cddlm.generated.api.types._createRequest;
+import org.smartfrog.services.cddlm.generated.api.types._lifecycleEventRequest;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.xml.sax.SAXException;
 
 import javax.xml.namespace.QName;
-import javax.xml.parsers.ParserConfigurationException;
 import java.lang.ref.WeakReference;
-import java.net.URL;
-import java.rmi.RemoteException;
-import java.util.List;
-import java.util.LinkedList;
-import java.io.IOException;
 import java.math.BigInteger;
-
-import nu.xom.ParsingException;
+import java.net.URL;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * created Aug 5, 2004 3:00:26 PM
@@ -69,7 +63,7 @@ public class JobState {
      *
      * @param request
      */
-    public JobState(_deployRequest request, OptionProcessor options)
+    public JobState(_createRequest request, OptionProcessor options)
             throws AxisFault {
         bind(request, options);
     }
@@ -104,7 +98,7 @@ public class JobState {
      * job info
      */
 
-    private _deployRequest request;
+    private _createRequest request;
 
     /**
      * any fault
@@ -133,7 +127,7 @@ public class JobState {
     /**
      * lifecycle state
      */
-    private LifecycleStateEnum state=LifecycleStateEnum.undefined;
+    private LifecycleStateEnum state = LifecycleStateEnum.undefined;
 
     /**
      * state information string
@@ -159,12 +153,12 @@ public class JobState {
      */
     private URL callbackURL;
 
-    private CallbackInformationType callbackInformation;
+    private NotificationInformationType callbackInformation;
 
     /**
      * callback sequence counter
      */
-    private int callbackSequenceID=0;
+    private int callbackSequenceID = 0;
 
     /**
      * enter terminated state
@@ -204,11 +198,12 @@ public class JobState {
         resetSequenceCounter();
     }
 
-    public CallbackInformationType getCallbackInformation() {
+    public NotificationInformationType getCallbackInformation() {
         return callbackInformation;
     }
 
-    public void setCallbackInformation(CallbackInformationType callbackInformation) {
+    public void setCallbackInformation(
+            NotificationInformationType callbackInformation) {
         this.callbackInformation = callbackInformation;
     }
 
@@ -220,7 +215,7 @@ public class JobState {
         this.primReference = primReference;
     }
 
-    public _deployRequest getRequest() {
+    public _createRequest getRequest() {
         return request;
     }
 
@@ -284,7 +279,7 @@ public class JobState {
      *
      * @param requestIn
      */
-    public void bind(_deployRequest requestIn, OptionProcessor options)
+    public void bind(_createRequest requestIn, OptionProcessor options)
             throws AxisFault {
         this.request = requestIn;
 
@@ -292,17 +287,18 @@ public class JobState {
             name = options.getName();
         }
         DeploymentDescriptorType descriptorType = request.getDescriptor();
-        if (descriptorType != null ) {
+        if (descriptorType != null) {
             //extract language from descriptor
             URI languageURI = descriptorType.getLanguage();
-            if(languageURI==null) {
-                throw Processor.raiseBadArgumentFault(Processor.ERROR_NO_LANGUAGE_DECLARED);
+            if (languageURI == null) {
+                throw Processor.raiseBadArgumentFault(
+                        Processor.ERROR_NO_LANGUAGE_DECLARED);
             }
             languageName = languageURI.toString();
             language = Processor.determineLanguage(languageName);
 
             //now extract body from message
-            if(descriptorType.getBody() != null) {
+            if (descriptorType.getBody() != null) {
                 MessageElement[] messageElements = descriptorType.getBody()
                         .get_any();
                 if (messageElements.length != 1) {
@@ -420,14 +416,14 @@ public class JobState {
     }
 
 
-    public ApplicationStatusType createApplicationStatus()  {
+    public ApplicationStatusType createApplicationStatus() {
         ApplicationStatusType status = new ApplicationStatusType();
         status.setName(new NCName(name));
         status.setReference(getUri());
         status.setState(getState());
         status.setStateInfo(stateInfo);
-        status.setCallback(callbackInformation);
-        List extras=new LinkedList();
+        status.setNotification(callbackInformation);
+        List extras = new LinkedList();
         /*
         if(callbackURL!=null) {
             try {
@@ -470,8 +466,8 @@ public class JobState {
             */
         }
         //add our extra state
-        MessageElement[] elements=XomAxisHelper.toArray(extras);
-        if(elements!=null) {
+        MessageElement[] elements = XomAxisHelper.toArray(extras);
+        if (elements != null) {
             UnboundedXMLOtherNamespace extendedState = new UnboundedXMLOtherNamespace();
             extendedState.set_any(elements);
             status.setExtendedState(extendedState);
@@ -500,34 +496,40 @@ public class JobState {
     }
 
     /**
-     * enter a state, send notification if this is different
-     * from a state we were in before
-     * This method is synchronous, you cannot enter a state till the
-     * last one was processed.
+     * enter a state, send notification if this is different from a state we
+     * were in before This method is synchronous, you cannot enter a state till
+     * the last one was processed.
+     *
      * @param newState new state to enter
      */
-    public synchronized void enterStateNotifying(LifecycleStateEnum newState,String info) {
-        stateInfo=info;
-        if(!newState.equals(state)) {
-            state=newState;
-            if(callbackRaiser!=null) {
-                callbackRaiser.raiseLifecycleEvent(this,resolvePrimNonFaulting(), null);
+    public synchronized void enterStateNotifying(LifecycleStateEnum newState,
+            String info) {
+        stateInfo = info;
+        if (!newState.equals(state)) {
+            state = newState;
+            if (callbackRaiser != null) {
+                callbackRaiser.raiseLifecycleEvent(this,
+                        resolvePrimNonFaulting(),
+                        null);
             }
         }
     }
 
     /**
      * terminate, send a message out
+     *
      * @param record
      */
-    public synchronized void enterTerminatedStateNotifying(TerminationRecord record)  {
-        this.terminationRecord=record;
-        enterStateNotifying(LifecycleStateEnum.terminated,record.toString());
+    public synchronized void enterTerminatedStateNotifying(
+            TerminationRecord record) {
+        this.terminationRecord = record;
+        enterStateNotifying(LifecycleStateEnum.terminated, record.toString());
     }
 
 
     /**
      * get the next sequence counter; every call will be different.
+     *
      * @return
      */
     public synchronized int getNextSequenceNumber() {
@@ -538,17 +540,18 @@ public class JobState {
      * reset the sequence ID counter
      */
     public synchronized void resetSequenceCounter() {
-        callbackSequenceID=0;
+        callbackSequenceID = 0;
     }
 
     /**
-     * create a lifecycle event message, all filled in with:
-     * URI, callback identifier, timestamp, status, sequence ID
+     * create a lifecycle event message, all filled in with: URI, callback
+     * identifier, timestamp, status, sequence ID
+     *
      * @return
      */
-    public _lifecycleEventCallbackRequest createLifecycleEventMessage() {
+    public _lifecycleEventRequest createLifecycleEventMessage() {
         ServerInstance server = ServerInstance.currentInstance();
-        _lifecycleEventCallbackRequest event = new _lifecycleEventCallbackRequest();
+        _lifecycleEventRequest event = new _lifecycleEventRequest();
         event.setApplicationReference(uri);
         event.setIdentifier(callbackIdentifier);
         event.setSequenceID(BigInteger.valueOf(getNextSequenceNumber()));

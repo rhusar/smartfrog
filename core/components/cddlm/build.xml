@@ -373,7 +373,7 @@
       implementationClassName="org.smartfrog.services.cddlm.api.DeploymentEndpoint"
       />
     <!-- here the callback API is defined (client side -we are a caller-) -->
-    <property name="callback.implementation" value="org.cddlm.client.callbacks.CallbackEndpoint" />
+    <property name="callback.implementation" value="org.cddlm.client.callbacks.CallbackEndpoint"/>
     <axis-wsdl2java
       output="${soap.server.dir}"
       serverside="false"
@@ -411,12 +411,13 @@
     <!-- now delete the stub endpoint implementation classes in the generated file tree -->
     <!-- as we use the one in the main codebase, and want to eliminate confusion -->
     <delete dir="${soap.server.dir}/org/smartfrog/services/cddlm/api"/>
+    <delete file="${soap.server.dir}/org/cddlm/client/callbacks/DeploymentEndpoint.java"/>
     <delete file="${soap.server.dir}/org/cddlm/client/callbacks/CallbackEndpoint.java"/>
     <touch file="${soapapi.touch.file}"/>
   </target>
 
   <target name="touch-wsdl" depends="init-soap"
-      description="force a wsdl rebuild by deleting the marker file" >
+    description="force a wsdl rebuild by deleting the marker file">
     <delete file="${soapapi.touch.file}"/>
   </target>
 
@@ -651,13 +652,13 @@
       <arg file="${file}"/>
     </operation>
   </target>
-  
+
   <target name="demo-listen" depends="demo-init"
     description="listen for application events; set uri property">
     <operation classname="${console.package}.Listen">
       <arg value="${url.command}"/>
       <arg value="${uri}"/>
     </operation>
-  </target>  
+  </target>
 
 </project>

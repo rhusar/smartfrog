@@ -19,22 +19,22 @@
  */
 package org.cddlm.client.callbacks;
 
-import org.smartfrog.services.cddlm.generated.api.callbacks.DeploymentCallbackEndpoint;
+import org.smartfrog.services.cddlm.generated.api.callbacks.DeploymentNotificationEndpoint;
+import org.smartfrog.services.cddlm.generated.api.types._lifecycleEventRequest;
 
 import java.rmi.RemoteException;
 
 /**
- * created Aug 31, 2004 4:19:20 PM This is our deployment callback.
- * We hand off to the server which does the lookup
+ * created Aug 31, 2004 4:19:20 PM This is our deployment callback. We hand off
+ * to the server which does the lookup
  */
 
-public class CallbackEndpoint implements DeploymentCallbackEndpoint {
+public class CallbackEndpoint implements DeploymentNotificationEndpoint {
 
-    public boolean callback(
-            org.smartfrog.services.cddlm.generated.api.types._lifecycleEventCallbackRequest callback)
+
+    public boolean notification(_lifecycleEventRequest notification)
             throws RemoteException {
-        return CallbackServer.processCallback(callback);
+        return CallbackServer.processCallback(notification);
     }
-
 
 }
