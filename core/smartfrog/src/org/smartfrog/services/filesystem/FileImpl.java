@@ -242,4 +242,36 @@ public class FileImpl extends PrimImpl implements FileIntf {
             throw SmartFrogResolutionException.illegalClassType(attribute,owner);
         }
     }
+
+    /**
+     * This static call is a helper for any component that wants
+     * to get either an absolute path or a FileIntf binding to an attribute.
+     * The attribute is looked up on a component. If it is bound to anything
+     * that implements FileIntf, then that component is asked for an absolute path.
+     * if it is bound to a string, then the string is turned into an absolute path,
+     * relative to any directory named, after the string is converted into platform
+     * appropriate forward/back slashes.
+     *
+     * @param component component to look up the path from
+     * @param attribute the name of the attribute to look up
+     * @param defval    a default value. This should already be in the local format for the target platform,
+     *                  and absolute. Can be null. No used when mandatory is true
+     * @param baseDir   optional base directory for a relative file when constructing from a string
+     * @param mandatory flag that triggers the throwing of a SmartFrogResolutionException when things
+     *                  go wrong
+     * @param platform  a platform to use for converting filetypes. Set to null to use
+     *                  the default helper for this platform.
+     * @return
+     * @throws SmartFrogResolutionException
+     * @throws RemoteException
+     */
+    public static String lookupAbsolutePath(Prim component,
+                                            String attribute,
+                                            String defval,
+                                            File baseDir,
+                                            boolean mandatory,
+                                            PlatformHelper platform)
+            throws SmartFrogResolutionException, RemoteException {
+        return lookupAbsolutePath(component,new Reference(attribute),defval,baseDir, mandatory,platform);
+    }
 }
