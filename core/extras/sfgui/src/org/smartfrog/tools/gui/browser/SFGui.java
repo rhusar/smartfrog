@@ -32,12 +32,12 @@ public class SFGui {
   /**Construct the application*/
   // fileName = Name of the file to open automatically in the editor
   // runAll = runs every process in the process manager once the SFGui is instanciated
-  public SFGui(String fileName, boolean runAll) {
+  public SFGui(String fileName, boolean runAll, boolean eclipseMode) {
     MainFrame frame = null;
 //    if (fileName=="") {
 //      frame = new MainFrame();
 //    } else {
-      frame = new MainFrame(fileName, runAll);
+      frame = new MainFrame(fileName, runAll, eclipseMode);
 //    }
     //Validate frames that have preset sizes
     //Pack frames that have useful preferred size info, e.g. from their layout
@@ -76,6 +76,7 @@ public class SFGui {
       System.out.println("Starting SFGui..."+org.smartfrog.tools.gui.browser.MainFrame.version);
       String fileName="";
       boolean runAll = false;
+      boolean eclipseMode = false;
       int numberParameters=args.length;
       if((args!=null)&&(numberParameters>0)) {
          if (numberParameters>1) {numberParameters=2;} // Max number parameters 2 (file to load and -runAll)
@@ -83,6 +84,8 @@ public class SFGui {
          for(;numberParameters>=0;numberParameters--){
            if (args[numberParameters].equals("-runAll")){
             runAll=true;
+           } else if (args[numberParameters].equals("-eclipse")) {
+             eclipseMode=true;
            } else {
             fileName =args[numberParameters];
            }
@@ -90,7 +93,7 @@ public class SFGui {
       } else {
         fileName="";
       }
-      new SFGui(fileName,runAll);
+      new SFGui(fileName,runAll,eclipseMode);
     }
     catch(Exception e) {
       System.out.println("SFGui Error - Exit!! "+org.smartfrog.tools.gui.browser.MainFrame.version);

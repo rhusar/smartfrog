@@ -79,7 +79,7 @@ public class MainFrame extends JFrame implements ActionListener {
    /**
     *  Description of the Field
     */
-   public final static String version = "v0.7 r01";
+   public final static String version = "v0.7 r04";
    // This has to  be done properly !!!!!!!!!!!!!!! no static. Because of crap log.
    static PrintStream msg = System.out;
    static JLabel statusBar = new JLabel();
@@ -349,7 +349,7 @@ public class MainFrame extends JFrame implements ActionListener {
     *@param  fileName                Description of Parameter
     *@param  runAllProcessAfterBoot  Description of Parameter
     */
-   public MainFrame(String fileName, boolean runAllProcessAfterBoot) {
+   public MainFrame(String fileName, boolean runAllProcessAfterBoot, boolean eclipseMode) {
 
       try {
          UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
@@ -368,11 +368,26 @@ public class MainFrame extends JFrame implements ActionListener {
          if (runAllProcessAfterBoot) {
             this.processPanel.runAll();
          }
+         if  (eclipseMode){
+           setEclipseMode();
+         }
       } catch (Exception e) {
          e.printStackTrace();
       }
    }
 
+    public void setEclipseMode(){
+         int indexPanel = jTabbedPanelNorth.indexOfTab(panelNameSFFile);
+        jTextAreaSFFile.setEditable(false);
+        jTabbedPanelNorth.remove(indexPanel);
+        jButtonOpen.hide();
+        jButtonSave.hide();
+        jMenuItemOpen.hide();
+        jMenuItemSaveAs.hide();
+        jMenuItemSave.hide();
+        jMenuItemNew.hide();
+
+    }
 
    /**
     *  Sets the cursorOnWait attribute of the MainFrame class
@@ -1087,8 +1102,8 @@ public class MainFrame extends JFrame implements ActionListener {
                is = new FileInputStream(currFileName);
                jTextAreaRaw.setText(this.parsePhase("raw", is,this.getActiveLanguage()));
                is.close();
+               jTabbedPanelNorth.setSelectedIndex(jTabbedPanelNorth.indexOfTab(this.panelNameParse));
 
-               jTabbedPanelNorth.setSelectedIndex(1);
                // Parse Index.!!!
                jTabbedPaneParse.requestFocus();
                is = new FileInputStream(currFileName);
@@ -1197,7 +1212,7 @@ public class MainFrame extends JFrame implements ActionListener {
                 try {
                   if (!(phase.equals("predicate"))) {
                       top = top.sfResolvePhase(phase);
-                      System.out.println(phase + top.toString());
+                      //System.out.println(phase + top.toString());
                   }
                 } catch (Exception ex) {
                   //report.add("   "+ phase +" phase: "+ex.getMessage());
@@ -1373,7 +1388,7 @@ public class MainFrame extends JFrame implements ActionListener {
                       + this.processNameTextField.getText() + " "
                       + " ";
 //                    runCmd = new RunProcess(cmd);
-               jTabbedPanelNorth.setSelectedIndex(2);
+               jTabbedPanelNorth.setSelectedIndex(jTabbedPanelNorth.indexOfTab("output"));
 //                    // Select Output
 //                    runCmd.start();
                auxProcess = new InfoProcess(this.processNameTextField.getText() + "(" + this.hostNameTextField.getText() + ")", cmdStart, " ", cmdStop, " ", ".", null);
@@ -1436,8 +1451,8 @@ public class MainFrame extends JFrame implements ActionListener {
                    + this.hostNameTextField.getText() + " "
                    + this.processNameTextField.getText() + " "
                    + " ";
-
-            jTabbedPanelNorth.setSelectedIndex(2);
+            jTabbedPanelNorth.setSelectedIndex(jTabbedPanelNorth.indexOfTab("output"));
+            //jTabbedPanelNorth.setSelectedIndex(2);
             auxProcess = new InfoProcess(this.processNameTextField.getText() + "(" + this.hostNameTextField.getText() + ")", cmdStart, " ", cmdStop, " ", ".", null);
             auxProcess.start();
             this.processPanel.mngProcess.addProcess(auxProcess, true);
