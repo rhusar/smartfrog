@@ -44,7 +44,7 @@ public class JettyTest extends SmartFrogTestBase {
                 "tcn52",
                 "SmartFrogLifecycleException",
                 "sfStart",
-		"SmartFrogDeploymentException",
+        "SmartFrogDeploymentException",
                 "Illegal ClassType");
     }
 
@@ -53,14 +53,14 @@ public class JettyTest extends SmartFrogTestBase {
                 "tcn53",
                 "SmartFrogLifecycleException",
                 "sfStart",
-         	"SmartFrogException",
-		"java.net.UnknownHostException: no-hostname");	
+            "SmartFrogException",
+        "java.net.UnknownHostException: no-hostname");
     }
-   
+
     public void testCaseTCN54() throws Exception {
         deployExpectingException(FILES+"tcn54.sf",
                 "tcn54",
-		"SmartFrogDeploymentException",
+        "SmartFrogDeploymentException",
                 "unnamed component",
                 "SmartFrogCompileResolutionException",
                 "java.lang.StackOverflowError");
@@ -69,18 +69,18 @@ public class JettyTest extends SmartFrogTestBase {
     public void testCaseTCN55() throws Exception {
         deployExpectingException(FILES+"tcn55.sf",
                 "tcn55",
-		"SmartFrogLifecycleException",
+        "SmartFrogLifecycleException",
                 "sfDeploy",
                 "SmartFrogDeploymentException",
                 "SmartFrogResolutionException");
     }
-    
+
     public void testCaseTCN56() throws Exception {
         deployExpectingException(FILES+"tcn56.sf",
                 "tcn56",
-		"SmartFrogDeploymentException",
-		"unnamed component",
-		"SmartFrogCompileResolutionException",
+        "SmartFrogDeploymentException",
+        "unnamed component",
+        "SmartFrogCompileResolutionException",
                 "error in schema: non-optional attribute 'listenerPort' is missing");
     }
 
@@ -89,18 +89,18 @@ public class JettyTest extends SmartFrogTestBase {
                 "tcn57",
                 "SmartFrogLifecycleException",
                 "sfStart",
-		"SmartFrogResolutionException",
+        "SmartFrogResolutionException",
                 "Illegal ClassType");
     }
-    
+
     public void testCaseTCP19() throws Throwable {
         Prim application = deployExpectingSuccess(FILES + "tcp19.sf", "tcp19");
-	assertNotNull(application);
-	int port = 0 ;
-	String hostname = application.sfResolve("serverHost",(String)null,true);
-	port = application.sfResolve("port",port,true);
-	URL url = new URL("http",hostname,port,"/jetty/index.html");
-	URLConnection urlConnection = url.openConnection();
+    assertNotNull(application);
+    int port = 0 ;
+    String hostname = application.sfResolve("serverHost",(String)null,true);
+    port = application.sfResolve("port",port,true);
+    URL url = new URL("http",hostname,port,"/jetty/index.html");
+    URLConnection urlConnection = url.openConnection();
 
         BufferedReader in = new BufferedReader(
                                 new InputStreamReader(
@@ -108,51 +108,52 @@ public class JettyTest extends SmartFrogTestBase {
         String inputLine;
 
         while ((inputLine = in.readLine()) != null)
-		assertNotNull(inputLine);
+        assertNotNull(inputLine);
         in.close();
     }
 
     public void testCaseTCP20() throws Throwable {
         Prim application = deployExpectingSuccess(FILES + "tcp20.sf", "tcp20");
-	assertNotNull(application);
-	Prim server1 = (Prim)application.sfResolveId("server1");
-	Prim server2 = (Prim)application.sfResolveId("server2");
-	String hostname1 = server1.sfResolve("serverHost",(String)null,true);
-	Prim listener1 = (Prim)server1.sfResolveId("list1");
-	int port1 = listener1.sfResolve("listenerPort",0,true);
-	String hostname2 = server2.sfResolve("serverHost",(String)null,true);
-	Prim listener2 = (Prim)server2.sfResolveId("list2");
-	int port2 = listener2.sfResolve("listenerPort",0,true);
-	URL url1 = new URL("http",hostname1,port1,"/jetty/index.html");
-	URLConnection urlConnection1 = url1.openConnection();
-	URL url2 = new URL("http",hostname2,port2,"/jetty/index.html");
-	URLConnection urlConnection2 = url2.openConnection();
+    assertNotNull(application);
+    Prim server1 = (Prim)application.sfResolveHere("server1");
+    Prim server2 = (Prim)application.sfResolveHere("server2");
+    String hostname1 = server1.sfResolve("serverHost",(String)null,true);
+    Prim listener1 = (Prim)server1.sfResolveHere("list1");
+    int port1 = listener1.sfResolve("listenerPort",0,true);
+    String hostname2 = server2.sfResolve("serverHost",(String)null,true);
+    Prim listener2 = (Prim)server2.sfResolveHere("list2");
+    int port2 = listener2.sfResolve("listenerPort",0,true);
+    URL url1 = new URL("http",hostname1,port1,"/jetty/index.html");
+    URLConnection urlConnection1 = url1.openConnection();
+    URL url2 = new URL("http",hostname2,port2,"/jetty/index.html");
+    URLConnection urlConnection2 = url2.openConnection();
 
         BufferedReader in1 = new BufferedReader(
                                 new InputStreamReader(
                                 urlConnection1.getInputStream()));
-	BufferedReader in2 = new BufferedReader(
+    BufferedReader in2 = new BufferedReader(
                                 new InputStreamReader(
                                 urlConnection2.getInputStream()));
         String inputLine1;
         String inputLine2 = null;
 
         while ((inputLine1 = in1.readLine()) != null && (inputLine2 = in2.readLine()) != null)
-		assertEquals(inputLine1, inputLine2);
+        assertEquals(inputLine1, inputLine2);
         in1.close();
         in2.close();
     }
 
     public void testCaseTCP21() throws Throwable {
         Prim application = deployExpectingSuccess(FILES + "tcp21.sf", "tcp21");
-	assertNotNull(application);
-	Prim server = (Prim)application.sfResolveId("server");
+    assertNotNull(application);
+    //Prim server = (Prim)application.sfResolveId("server");
+    Prim server = (Prim)application.sfResolve("server");
         String jettyhome = server.sfResolve("jettyhome", (String) null, true);
-	String filename = jettyhome.concat("\\webapps\\template\\index.html");
+    String filename = jettyhome.concat("\\webapps\\template\\index.html");
         File file = new File(filename);
         File jettyfile = new File(jettyhome);
-            
-	assertTrue(file.exists());
+
+    assertTrue(file.exists());
         assertTrue(jettyfile.exists());
         assertFalse(file.isDirectory());
         assertTrue(jettyfile.isDirectory());
@@ -160,17 +161,18 @@ public class JettyTest extends SmartFrogTestBase {
 
     public void testCaseTCP22() throws Throwable {
         Prim application = deployExpectingSuccess(FILES + "tcp22.sf", "tcp22");
-	assertNotNull(application);
-	Prim server = (Prim)application.sfResolveId("adminServer");
-	String hostname = server.sfResolve("httpserverHost",(String)null,true);
-	int port = server.sfResolve("listenerPort",0,true);
-	URL url = new URL("http",hostname,port,"/");
-	HttpURLConnection urlConnection = (HttpURLConnection)url.openConnection();
-	String expectedmessage = "Unauthorized";
-	String actualmessage = urlConnection.getResponseMessage();
-	int expectedcode = 401;
-	int actualcode = urlConnection.getResponseCode();
-	assertEquals(expectedmessage, actualmessage);
-	assertEquals(expectedcode, actualcode);
+    assertNotNull(application);
+    //Prim server = (Prim)application.sfResolveId("adminServer");
+    Prim server = (Prim)application.sfResolve("adminServer");
+    String hostname = server.sfResolve("httpserverHost",(String)null,true);
+    int port = server.sfResolve("listenerPort",0,true);
+    URL url = new URL("http",hostname,port,"/");
+    HttpURLConnection urlConnection = (HttpURLConnection)url.openConnection();
+    String expectedmessage = "Unauthorized";
+    String actualmessage = urlConnection.getResponseMessage();
+    int expectedcode = 401;
+    int actualcode = urlConnection.getResponseCode();
+    assertEquals(expectedmessage, actualmessage);
+    assertEquals(expectedcode, actualcode);
     }
 }
