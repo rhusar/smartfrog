@@ -227,16 +227,12 @@ public class HereReferencePart extends ReferencePart {
         }
     }
 
-   private LogSF sflog = null;
-
     /**
      *  To get the sfCore logger
      * @return Logger implementing LogSF and Log
      */
     public LogSF sfGetProcessLog() {
-       if (sflog==null) {
-           sflog =  LogFactory.sfGetProcessLog();
-       }
+       LogSF sflog  =  LogFactory.sfGetProcessLog();
        return sflog;
     }
 }
