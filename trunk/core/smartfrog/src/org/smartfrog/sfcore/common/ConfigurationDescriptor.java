@@ -23,6 +23,7 @@ package org.smartfrog.sfcore.common;
 
 import org.smartfrog.sfcore.common.SmartFrogInitException;
 import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.prim.Prim;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
 import java.util.Vector;
@@ -99,6 +100,12 @@ public class ConfigurationDescriptor implements MessageKeys{
       * Result type for action
       */
      private int resultType = Result.UNDEFINED;
+
+     /**
+      * Result Object return by EXEC action
+      */
+     public Object resultObject = null;
+
      /**
       * Result message for action
       */
@@ -107,6 +114,8 @@ public class ConfigurationDescriptor implements MessageKeys{
       * Result exception for action
       */
      public Throwable resultException = null;
+
+
 
      /**
       * Extra parameters for action
@@ -188,8 +197,12 @@ public class ConfigurationDescriptor implements MessageKeys{
     public String statusString(String separator){
           StringBuffer message = new StringBuffer();
           String result = "";
+          if ((resultObject!=null)&&(resultObject instanceof Prim)){
+            message.append("'");
+            message.append(getResultObjectName().toString());
+            message.append("'");
 
-          if (getName()!=null) {
+          } else if (getName()!=null) {
               message.append("'");
               message.append(getName().toString());
               message.append("'");
@@ -363,9 +376,7 @@ public class ConfigurationDescriptor implements MessageKeys{
                     tempURL = deploymentURL.substring(deploymentURL.indexOf(
                             separator)+1);
                 }
-                if (this.getName().equals(" ")) {
-                    this.setName(null);
-                }
+
             } catch (Exception ex) {
                 throw new SmartFrogInitException("Error parsing NAME in: "+
                                                  deploymentURL, ex);
@@ -636,20 +647,24 @@ public class ConfigurationDescriptor implements MessageKeys{
      * Performs the nominated action
      * @param targetProcess optional target process; set to null to
      * hand off process lookup to the ConfigurationAction subclass.
+     * It keeps a reference to the result object in resultObject.
      * @return the object created from the operation
      * @throws SmartFrogException if smartfrog is unhappy
      * @throws RemoteException if the network is unhappy
      */
     public Object execute(ProcessCompound targetProcess) throws SmartFrogException,
             RemoteException {
+
         if(action ==null) {
             throw new SmartFrogInitException("No valid action");
         }
         if(targetProcess==null) {
-            return action.execute(this);
+            resultObject= action.execute(this);
         } else {
-            return action.execute(targetProcess,this);
+            resultObject= action.execute(targetProcess,this);
         }
+
+        return resultObject;
     }
 
     /**
@@ -661,10 +676,29 @@ public class ConfigurationDescriptor implements MessageKeys{
     }
 
     /**
+     * get the name of resultObject only if it is a Prim. Otherways returns null
+     * @return String
+     */
+    public String getResultObjectName() {
+      if ((resultObject!=null)&&(resultObject instanceof Prim)){
+        try {
+          return (( (Prim) resultObject).sfCompleteName().toString());
+        } catch (RemoteException ex) {
+          return null;
+        }
+      }
+      return null;
+    }
+
+
+    /**
      * set the name of this component
      * @param name
      */
     public void setName(String name) {
+      if (name.trim().equals("")){
+        return;
+      }
         this.name = name;
     }
 
