@@ -64,6 +64,18 @@ public class ToUrlTask extends Task {
     private List filesets = new LinkedList();
 
     /**
+     * validation flag
+     */
+    private boolean validate=true;
+
+    /**
+     * error message
+     */
+    public static final String ERROR_MISSING_FILE = "A source file is missing :";
+    public static final String ERROR_NO_PROPERTY = "No property defined";
+    public static final String ERROR_NO_FILES = "No files defined";
+
+    /**
      * set the name of a property to fill with the URL
      *
      * @param property
@@ -98,6 +110,10 @@ public class ToUrlTask extends Task {
         this.separator = separator;
     }
 
+    public void setValidate(boolean validate) {
+        this.validate = validate;
+    }
+
     /**
      * convert the filesets to urls.
      * @return null for no files
@@ -115,6 +131,7 @@ public class ToUrlTask extends Task {
             String[] files=scanner.getIncludedFiles();
             for(int i=0;i<files.length;i++) {
                 File f=new File(scanner.getBasedir(), files[i]);
+                validateFile(f);
                 String asUrl = toURL(f);
                 urls.append(asUrl);
                 log(asUrl,Project.MSG_DEBUG);
@@ -128,6 +145,17 @@ public class ToUrlTask extends Task {
             return new String(urls);
         } else {
             return "";
+        }
+    }
+
+    /**
+     * verify that the file exists, if {@link #validate} is set
+     * @param fileToCheck file that may need to exist
+     * @throws BuildException with text beginning {@link #ERROR_MISSING_FILE}
+     */
+    private void validateFile(File fileToCheck) {
+        if(validate && !fileToCheck.exists()) {
+            throw new BuildException(ERROR_MISSING_FILE+fileToCheck.toString());
         }
     }
 
@@ -146,6 +174,7 @@ public class ToUrlTask extends Task {
         String url;
         String filesetURL= filesetsToURL();
         if(file!=null) {
+            validateFile(file);
             url = toURL(file);
             //and add any files if also defined
             if(filesetURL.length()>0) {
@@ -161,10 +190,10 @@ public class ToUrlTask extends Task {
     private void validate() {
         //validation
         if (property == null) {
-            throw new BuildException("No property defined");
+            throw new BuildException(ERROR_NO_PROPERTY);
         }
         if (file == null && filesets.isEmpty()) {
-            throw new BuildException("No files defined");
+            throw new BuildException(ERROR_NO_FILES);
         }
     }
 
