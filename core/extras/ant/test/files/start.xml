@@ -30,7 +30,6 @@ ant -lib ..\..\build\dist\lib\smartfrog-tasks.jar -lib ..\..\..\..\smartfrog\dis
     <target name="testDefaults" depends="setup">
       <sf-startdaemon iniFile="default.ini" initialSmartfrogFile="default.sf" 
        timeout="${timeout}" />
-      <sf-stopdaemon />
     </target>
 
     
@@ -41,68 +40,59 @@ ant -lib ..\..\build\dist\lib\smartfrog-tasks.jar -lib ..\..\..\..\smartfrog\dis
     </target>    
 
     <target name="testIncompatibleSettings" depends="setup">
-      <sf-startdaemon spawn="true"  timeout="500" />
       <sf-startdaemon iniFile="default.ini" spawn="true" timeout="500" initialSmartfrogFile="default.sf"/>
       <sf-block/>
       <sf-stopdaemon failonerror="true"/>
     </target>
 
 		<target name="testIncompatiblePort"  depends="setup">
-		<sf-startdaemon>
-		<sysproperty key="org.smartfrog.sfcore.processcompound.sfRootLocatorPort" value="improper" />
-		</sf-startdaemon>
-		<sf-stopdaemon/>
+      <sf-startdaemon timeout="${timeout}">
+        <sysproperty key="org.smartfrog.sfcore.processcompound.sfRootLocatorPort" value="improper" />
+      </sf-startdaemon>
 		</target>
 		
 		<target name="testIncompatibleLivenessDelay" depends="setup">
-		<sf-startdaemon>
+		<sf-startdaemon timeout="${timeout}">
 		<sysproperty key="org.smartfrog.sfcore.processcompound.sfLivenessDelay" value="improper" />
 		</sf-startdaemon>
-		<sf-stopdaemon />
 		</target>
 	
 		<target name="testIncompatibleLivenessFactor" depends="setup">
-      	<sf-startdaemon>
-		<sysproperty key="org.smartfrog.sfcore.processcompound.sfLivenessFactor" value="improper" />
-		</sf-startdaemon>
-		<sf-stopdaemon />
-    	</target>
+      <sf-startdaemon timeout="${timeout}">
+    		<sysproperty key="org.smartfrog.sfcore.processcompound.sfLivenessFactor" value="improper" />
+		  </sf-startdaemon>
+    </target>
 		
 		<target name="testIncompatibleLogStackTraces" depends="setup">
-		<sf-startdaemon  timeout="9999" >
-		<sysproperty key="org.smartfrog.logger.logStackTrace" value="improper" />
-		</sf-startdaemon>
-		<sf-stopdaemon />
-    	</target>
+		  <sf-startdaemon  timeout="${timeout}" >
+		    <sysproperty key="org.smartfrog.logger.logStackTrace" value="improper" />
+		  </sf-startdaemon>
+    </target>
 
 		
 		<target name="testIncompatibleLoggerClass" depends="setup">
-		<sf-startdaemon  timeout="9999" >
-		<sysproperty key="org.smartfrog.sfcore.logging.LogImpl.localLoggerClass" value="12" />
-		</sf-startdaemon>
-		<sf-stopdaemon />
-    	</target>
+		  <sf-startdaemon  timeout="${timeout}" >
+		    <sysproperty key="org.smartfrog.sfcore.logging.LogImpl.localLoggerClass" value="12" />
+		  </sf-startdaemon>
+    </target>
 		
 		<target name="testIncompatibleLogLevel" depends="setup">
-		<sf-startdaemon  timeout="9999" >
-		<sysproperty key="org.smartfrog.sfcore.logging.LogImpl.logLevel" value="improper" />
-		</sf-startdaemon>
-		<sf-stopdaemon />
+		  <sf-startdaemon  timeout="${timeout}" >
+    		<sysproperty key="org.smartfrog.sfcore.logging.LogImpl.logLevel" value="improper" />
+		  </sf-startdaemon>
     	</target>
 	    
 		<target name="testIncompatibleProcessAllow" depends="setup">
-		<sf-startdaemon timeout="9999">
-		<sysproperty key="org.smartfrog.sfcore.processcompound.sfProcessAllow" value="12" />
-		</sf-startdaemon>
-		<sf-stopdaemon />
-    	</target>
+		  <sf-startdaemon  timeout="${timeout}">
+		    <sysproperty key="org.smartfrog.sfcore.processcompound.sfProcessAllow" value="12" />
+		  </sf-startdaemon>
+    </target>
 	    
 		<target name="testIncompatibleProcessTimeOut" depends="setup">
-        <sf-startdaemon timeout="9999">
-		<sysproperty key="org.smartfrog.sfcore.processcompound.sfProcessTimeout" value="improper" />
-		</sf-startdaemon>
-		<sf-stopdaemon />
-    	</target>
+      <sf-startdaemon >
+        <sysproperty key="org.smartfrog.sfcore.processcompound.sfProcessTimeout" value="improper" />
+      </sf-startdaemon>
+    </target>
 	
     
     <target name="testNoFailure">
