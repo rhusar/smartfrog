@@ -626,7 +626,9 @@ relevant JAR files into the javacc subdirectory
     description="creates all the packages required to run smartfrog, and validate any .sf in the package">
   </target>
 
-
+  <target name="default" depends="all"
+    description="default target for the project; invokes 'all'"
+    />
 
 
 </project>
