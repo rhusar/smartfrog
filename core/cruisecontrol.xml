@@ -28,6 +28,12 @@
         <ant target="cc-full" antscript="ant" useLogger="true" />
     </schedule>
 
+    <schedule interval="600">
+        <maven mavenscript="/home/cruise/maven/bin/maven"
+            goal="site:generate"
+            projectfile="/home/cruise/cruisecontrol/project.xml"/>
+    </schedule>
+
     <log dir="../artifacts">
     <!--	    <merge dir="smartfrog/dist/tests/logs" /> -->
     </log>
@@ -35,7 +41,8 @@
       <currentbuildstatuspublisher file="../artifacts/currentbuildstatus.txt"/>
 
       <artifactspublisher
-        dir="smartfrog/dist"
+        file="./cruisecontrol.log"
+        dir="./smartfrog/dist"
         dest="../artifacts" />
 
         <!-- email assumes that localhost is an SMTP server -->
