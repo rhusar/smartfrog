@@ -879,16 +879,24 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
     protected ProcessCompound addNewProcessCompound(Object name)
         throws Exception {
         // Check if process creation is allowed
-        boolean allowProcess;
+        boolean allowProcess=false;
 
         Object ap = sfResolveHere(SmartFrogCoreKeys.SF_PROCESS_ALLOW,false);
 
         if (ap == null) {
             allowProcess = false;
-        } else if (ap instanceof String) {
-            allowProcess = Boolean.valueOf((String) ap).booleanValue() && sfIsRoot;
-        } else {
+        } else if (ap instanceof Boolean) {
             allowProcess = ((Boolean) ap).booleanValue() && sfIsRoot;
+        } else {
+            allowProcess = false;
+            SmartFrogResolutionException srex =
+            SmartFrogResolutionException.illegalClassType(
+                Reference.fromString(SmartFrogCoreKeys.SF_PROCESS_ALLOW),
+                this.sfCompleteName(),
+                ap,
+                ap.getClass().getName(),
+                "java.lang.Boolean");
+            if (sflog().isErrorEnabled()) sflog().error(srex);
         }
 
         if (!allowProcess) {
