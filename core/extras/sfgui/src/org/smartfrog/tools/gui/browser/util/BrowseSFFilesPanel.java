@@ -133,8 +133,10 @@ public class BrowseSFFilesPanel extends JPanel {
          } else if (fileName.endsWith(".sfxml")){
             textArea.setTokenMarker(sfXMLTokenMarker);
            //System.out.println("TextArea SFXML");
+         } else if (fileName.endsWith(".sfcd")){
+           textArea.setTokenMarker(sfTokenMarker);
          } else {
-            //this.setTokenEditTokenMarker(sfTokenMarker);
+            textArea.setTokenMarker(sfTokenMarker);
          }
    }
    /**

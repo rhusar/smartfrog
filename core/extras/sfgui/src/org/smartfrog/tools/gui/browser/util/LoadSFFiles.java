@@ -47,7 +47,7 @@ public class LoadSFFiles {
     *  Description of the Field
     */
    public boolean debugOn = false;
-   String[] filters = {".sf",".sf2",".sfxml"};
+   String[] filters = {".sf",".sf2",".sfxml",".sfcd"};
    Vector listJars = new Vector();
    private Hashtable sfFiles = new Hashtable();
    private Hashtable htSizes = new Hashtable();
