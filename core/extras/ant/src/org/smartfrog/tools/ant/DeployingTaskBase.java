@@ -58,6 +58,13 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
     protected List codebase = new LinkedList();
 
     /**
+     * keep in sync with whatever the classloader uses, including
+     * the format it takes
+     * @see org.smartfrog.sfcore.security.SFClassLoader#SF_CODEBASE_PROPERTY
+     */
+    protected static final String CODEBASE_PROPERTY = "org.smartfrog.codebase";
+
+    /**
      * add a new application to the list.
      */
     public Application createApplication() {
@@ -130,12 +137,16 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
         codebase.add(codebaseEntry);
     }
 
+    /**
+     * set up the codebase params on the command line, if needed
+     * @see org.smartfrog.sfcore.security.SFClassLoader#SF_CODEBASE_PROPERTY
+     */
     private void setupCodebase() {
         if (codebase != null && !codebase.isEmpty()) {
             //add the codebase for extra stuff
             String codelist = Codebase.getCodebaseString(codebase);
             log("Codebase set to " + codelist, Project.MSG_VERBOSE);
-            addJVMProperty("org.smartfrog.codebase", codelist);
+            addJVMProperty(CODEBASE_PROPERTY, codelist);
         }
     }
 
@@ -146,6 +157,9 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
      */
     public static class Application {
 
+        /**
+         * owner task
+         */
         private Task owner;
 
         public Application(Task owner) {
@@ -226,9 +240,16 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
          * @param text
          */
         public void addText(String text) {
-            this.text = owner.getProject().replaceProperties(text);
+            //convert properties
+            text = owner.getProject().replaceProperties(text);
+            this.text=text;
+            //create a temp file
             File tempfile = FileUtils.newFileUtils().createTempFile("deploy",
                     ".sf", null);
+            //mark for cleanup later
+            tempfile.deleteOnExit();
+            owner.log("Saving to temporary file "+tempfile,Project.MSG_VERBOSE);
+            owner.log(text, Project.MSG_VERBOSE);
             OutputStream out = null;
             OutputStreamWriter writer = null;
             PrintWriter printer = null;

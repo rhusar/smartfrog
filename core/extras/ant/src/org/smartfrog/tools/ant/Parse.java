@@ -55,8 +55,14 @@ public class Parse extends TaskBase {
     private boolean logStackTrace = false;
 
 
+    /**
+     * verbose flag
+     */
     private boolean verbose = false;
 
+    /**
+     * extra quiet flag
+     */
     private boolean quiet = false;
 
     /**

@@ -27,6 +27,7 @@ import org.apache.tools.ant.types.FileSet;
 import org.apache.tools.ant.types.Reference;
 
 import java.io.File;
+import java.io.IOException;
 
 /**
  * Sign a jar file(s)
@@ -120,7 +121,12 @@ public class SmartFrogSign extends TaskBase {
         if (sec == null) {
             throw new BuildException("No security settings provided");
         }
-        sec.applySecuritySettings(signer);
+        try {
+            sec.applySecuritySettings(signer);
+        } catch (IOException e) {
+            throw new BuildException("Could not apply security settings with "
+                    +sec.toString(),e);
+        }
         signer.execute();
     }
 }

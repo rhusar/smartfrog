@@ -28,6 +28,10 @@ import org.apache.tools.ant.types.DataType;
 import org.apache.tools.ant.types.Reference;
 
 import java.io.File;
+import java.io.InputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Properties;
 
 /**
  * This is a datatype for the smartfrog tasks, one that
@@ -41,6 +45,7 @@ public class Security extends DataType {
     private File keystore;
     private File passFile;
     private File policyFile;
+    protected static final String KEYSTORE_PASSWORD = "org.smartfrog.sfcore.security.keyStorePassword";
 
     public File getKeystore() {
         return keystore;
@@ -159,10 +164,41 @@ public class Security extends DataType {
      * apply whatever settings are needed for signing a jar file
      * @param signJar task to configure
      */
-    public void applySecuritySettings(SignJar signJar) {
+    public void applySecuritySettings(SignJar signJar) throws IOException {
         validate();
         signJar.setKeystore(keystore.getAbsolutePath());
-        //todo: get the pass in. 
-        signJar.setKeypass("");
+        //todo: get the pass in.
+            Properties securityProps = loadPassFile();
+            signJar.setKeypass(securityProps.getProperty(KEYSTORE_PASSWORD));
+    }
+
+    /**
+     * load the passfile into a properties structure
+     * @return
+     * @throws IOException
+     */
+    private Properties loadPassFile() throws IOException {
+        Properties securityProps=new Properties();
+        InputStream instream=null;
+        try {
+            instream=new FileInputStream(passFile);
+            securityProps.load(instream);
+            return securityProps;
+        } finally {
+            if(instream!=null) {
+                try {
+                    instream.close();
+                } catch (IOException e) {
+
+                }
+            }
+        }
+    }
+
+    /**
+     * @return a string representation of the object.
+     */
+    public String toString() {
+        return "Security: keystore="+keystore+" passfile="+passFile;
     }
 }
