@@ -57,7 +57,7 @@ relevant JAR files into the javacc subdirectory
     <property name="Name.System" value="SmartFrog "/>
     <property name="Name.Company" value="(C) Copyright 1998-2004 Hewlett-Packard Development Company, LP"/>
     <property name="version" value="CORE"/>
-    <property name="Version" value="3.04.008.beta"/>
+    <property name="Version" value="3.04.0012.beta"/>
     <property name="year" value="2004"/>
 
     <echo level="verbose">
@@ -105,7 +105,7 @@ relevant JAR files into the javacc subdirectory
   <!-- Initialization path (Libs needed for compiling)                     -->
   <!-- =================================================================== -->
   <path id="smartfrog.class.path">
-      <pathelement path="${classpath}"/>
+      <pathelement path="${classpath};lib/log4j-1.2.8.jar"/>
   </path>
 
   <!-- =================================================================== -->
