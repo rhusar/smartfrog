@@ -1885,13 +1885,6 @@ public class PrimImpl extends ReferenceResolverHelperImpl implements Prim, Messa
             Logger.logQuietly(ex);
         }
 
-        //UnExports this component
-        try {
-            org.smartfrog.sfcore.security.SecureRemoteObject.unexportObject(this, true);
-        } catch (NoSuchObjectException ex) {
-            // @TODO: Log. Ignore.
-            Logger.logQuietly(ex);
-        }
         // Deregisters this component from local ProcessCompound (if ever registered)
         try {
             SFProcess.getProcessCompound().sfDeRegister(this);
@@ -1947,6 +1940,15 @@ public class PrimImpl extends ReferenceResolverHelperImpl implements Prim, Messa
             } catch (Exception ex) {
                 Logger.logQuietly(ex);
             }
+        }
+
+        //UnExports this component.
+        // It has to be placed after comp.sfTerminatedWith(status, this);
+        try {
+            org.smartfrog.sfcore.security.SecureRemoteObject.unexportObject(this, true);
+        } catch (NoSuchObjectException ex) {
+            // @TODO: Log. Ignore.
+            Logger.logQuietly(ex);
         }
 
     }
