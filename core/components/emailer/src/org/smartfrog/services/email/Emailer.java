@@ -40,7 +40,9 @@ public interface Emailer extends Prim {
     public static String SMTP_HOST = "smtpHost";
     public static String CHARSET = "charset";
     public static String RUNASWFCOMPONENT = "runAsWorkFlowComponent";
-    
+    public static String SEND_ON_STARTUP = "sendOnStartup";
+    public static String SEND_ON_SHUTDOWN = "sendOnShutdown";
+
      /**
      * Sends a single part message using to, from subject attributes defined in
      * the Emailer component
@@ -73,4 +75,12 @@ public interface Emailer extends Prim {
     public void sendEmail(String to, String cc, String from, 
         String subject, String message)
                                 throws SmartFrogException, RemoteException;
+
+    /**
+     * send the message we are configured to send.
+     *
+     * @throws SmartFrogException
+     * @throws RemoteException
+     */
+    public void sendConfiguredMessage() throws SmartFrogException, RemoteException;
 }
