@@ -9,39 +9,49 @@
 /**
  * Specify the jetty home path as the property jetty.home *at the destination*
  */
-jetty_home LAZY PROPERTY jetty.home;
+//jetty_home LAZY PROPERTY jetty.home;
+jetty_home "C:\\jetty\\Jetty-4.2.18";
 
 
 sfConfig extends Compound {
+   //sfProcessComponentName "Jetty";
    adminServer extends HttpServerAdmin {
          httpserverHost "localhost"; // mandatory
          listenerPort 8081; // mandatory
    } 
-   server1 extends CoreJettyServer {
+   server1 extends HttpServer {
       jettyhome ROOT:jetty_home; // mandatory
       serverHost "localhost"; //mandatory
    }
-   server2 extends CoreJettyServer {
-      jettyhome ROOT:jetty_home; // mandatory
-      serverHost "localhost"; //mandatory
-      server ROOT:server2; // mandatory
-      listeners extends Listeners {
-            list2 extends JettyListener {
-                sfClass "org.smartfrog.services.jetty.listeners.AJPlistener";
-                    listenerPort 8010;
-                    serverHost "localhost";
-                    server LAZY server2;
-            }
-
-       }
-   }
+   SERVER2 extends server2; 
 
     //out of band instance
     list1 extends JettyListener {
-           listenerPort 8082;
+           listenerPort 8083;
            serverHost "localhost";
-           server server2;
+           server LAZY SERVER2;
     }
 
+    list3 extends JettyListener {
+           listenerPort 8085;
+           serverHost "localhost";
+           server LAZY server1;
+    }
+    context extends JettyServletContext {
+         contextPath "/test2";
+         resourceBase ("C:\\ritu");
+         server LAZY SERVER2;
+    }
 }
 
+server2 extends CoreJettyServer {
+      jettyhome ROOT:jetty_home; // mandatory
+      serverHost "localhost"; //mandatory
+      port 8082;
+      list2 extends JettyListener {
+            sfClass "org.smartfrog.services.jetty.listeners.AJPlistener";
+            listenerPort 8010;
+            serverHost "localhost";
+            server LAZY SERVER2;
+      }
+}
