@@ -303,22 +303,25 @@
       serverside="true"
       url="${deploymentAPI.wsdl}"
       verbose="true"
-      all="true"
+      all="false"
       testcase="false"
       namespacemappingfile="${mapping.file}"
       skeletondeploy="true"
       helpergen="true"
       failonnetworkerrors="true"
-      noimports="true"
-      debug="true"
+      noimports="false"
+      debug="false"
       printstacktraceonfailure="false"
+      typemappingversion="1.2"
+      implementationClassName="org.smartfrog.components.api.DeploymentEndpoint"
       >
     </axis-wsdl2java>
    <touch file="${soapapi.touch.file}"/>
   </target>
   
   <!-- yes, they really can't spell parseable -->
-   <target name="dotnet-client-wsdl" depends="init-soap">
+   <target name="dotnet-client-wsdl" depends="init-soap"
+      description="create the client-side C# code" >
      <wsdltodotnet srcFile="${deploymentAPI.wsdl}"
       destFile="${soap.dotnet.proxy.class}"
       extraoptions="/parsableerrors"
@@ -326,6 +329,27 @@
       <!-- extraoptions="/protocol:SOAP12" -->
    </target>
 
+   
+  <!-- ========================================================== -->
+  <!-- this is an override point -->
+  <!-- compile everything, copy useful files over-->
+  <!-- ========================================================== -->
+  <target name="compile"
+      depends="pre-compile,server-wsdl">
+      <depend srcdir="${src.dir}"
+          destdir="${build.classes.dir}"
+          cache="${build.dir}/depends"
+          closure="yes"/>
+      <sf-javac
+          classpathref="compile.classpath"
+          srcdir="${src.dir}:${soap.server.dir}"
+          destdir="${build.classes.dir}"
+          />
+      <copy-useful-files src="${src.dir}" dest="${build.classes.dir}"/>
+      <copy-useful-files src="${soap.server.dir}" dest="${build.classes.dir}"/>
+  </target>
+  
+  
     <!-- ========================================================== -->
     <!-- system tests -->
     <!-- ========================================================== -->

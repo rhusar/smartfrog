@@ -20,34 +20,40 @@
     It may change completely in future. 
 
 
-    In the annotations of this document, MAY, SHOULD and MUST have the
-    same strict meaning as in IETF documents (TODO: insert reference)
-    
+    The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL
+    NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED",  "MAY", and
+    "OPTIONAL" in this document are to be interpreted as described in
+    RFC 2119.
+    http://www.ietf.org/rfc/rfc2119.txt
+      
 </wsdl:documentation>
      
   <!-- ============================================================= -->
   <!-- BEGIN IMPORTS -->
   <!-- ============================================================= -->
-<!--     
+    <!-- 
+    
   <import 
     namespace="urn:cddlm/xml/0.1" 
     schemaLocation="cddlm.xsd"/> 
+ -->
 
-  <import 
+ <import 
     namespace="http://schemas.xmlsoap.org/ws/2003/03/addressing" 
     schemaLocation="ws-addressing.xsd"/>
     
+<!--     
   <import 
     namespace="http://www.gridforum.org/JSDL" 
     schemaLocation="jsdl.xsd"/> 
- -->
  
+  -->
+    <!--
       <xsd:schema 
         targetNamespace=
  "http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseNotification" >
  
-         <xsd:include schemaLocation=
- "http://www-106.ibm.com/developerworks/library/specification/ws-notification/WS-BaseN.xsd" />
+         <xsd:include schemaLocation="WS-BaseN.xsd" />
          
          <xsd:import 
             namespace=
@@ -68,6 +74,8 @@
          />
                 
        </xsd:schema>
+       
+       -->
   <!-- ============================================================= -->
   <!-- END IMPORTS -->
   <!-- ============================================================= -->
@@ -78,132 +86,18 @@
  <wsdl:types>
 
   <!-- ============================================================= -->
-  <!-- BEGIN WS-ADDRESSING SCHEMA -->
-  <!-- This is an inline insertion of the 2003/03 version of WS-A    -->
-  <!-- The terms and conditions of the following disclaimer apply    -->
-  <!-- to this schema only.    -->
-  <!-- ============================================================= -->
-
-<!-- 
- 
-Legal Disclaimer
-
-The presentation, distribution or other dissemination of the information 
-contained in this document is not a license, either expressly or impliedly, 
-to any intellectual property owned or controlled by BEA or IBM or Microsoft
-and\or any other third party.  BEA and IBM and Microsoft and\or any other
-third party may have patents, patent applications, trademarks, copyrights, 
-or other intellectual property rights covering subject matter in this 
-document.  The furnishing of this document does not give you any license 
-to BEA's and IBM's and Microsoft's or any other third party's patents, 
-trademarks, copyrights, or other intellectual property.
-
-This document and the information contained herein is provided on an "AS IS"
-basis and to the maximum extent permitted by applicable law, BEA and IBM 
-and Microsoft provide the document AS IS AND WITH ALL FAULTS, and hereby 
-disclaims all other warranties and conditions, either express, implied or 
-statutory, including, but not limited to, any (if any) implied warranties, 
-duties or conditions of merchantability, of fitness for a particular 
-purpose, of accuracy or completeness of responses, of results, of 
-workmanlike effort, of lack of viruses, and of lack of negligence, all with
-regard to the document. ALSO, THERE IS NO WARRANTY OR CONDITION OF 
-TITLE, QUIET ENJOYMENT, QUIET POSSESSION, CORRESPONDENCE TO DESCRIPTION OR 
-NON-INFRINGEMENT OF ANY INTELLECTUAL PROPERTY RIGHTS WITH REGARD TO THE 
-DOCUMENT.
-
-IN NO EVENT WILL BEA or IBM or MICROSOFT BE LIABLE TO ANY OTHER PARTY FOR THE
-COST OF PROCURING SUBSTITUTE GOODS OR SERVICES, LOST PROFITS, LOSS OF USE, 
-LOSS OF DATA, OR ANY INCIDENTAL, CONSEQUENTIAL, DIRECT, INDIRECT, OR SPECIAL 
-DAMAGES WHETHER UNDER CONTRACT, TORT, WARRANTY, OR OTHERWISE, ARISING IN ANY 
-WAY OUT OF THIS OR ANY OTHER AGREEMENT RELATING TO THIS DOCUMENT, WHETHER OR 
-NOT SUCH PARTY HAD ADVANCE NOTICE OF THE POSSIBILITY OF SUCH DAMAGES.
-
-Copyright Notice
-
-Copyright 2003 BEA Systems Inc. and IBM Corporation and Microsoft Corporation. All rights reserved.
-
--->
-<!--
-<xsd:schema targetNamespace="http://schemas.xmlsoap.org/ws/2003/03/addressing" elementFormDefault="qualified" blockDefault="#all">
-  <xsd:element name="EndpointReference" type="wsa:EndpointReferenceType"/>
-  <xsd:complexType name="EndpointReferenceType">
-    <xsd:sequence>
-      <xsd:element name="Address" type="wsa:AttributedURI"/>
-      <xsd:element name="ReferenceProperties" type="wsa:ReferencePropertiesType" minOccurs="0"/>
-      <xsd:element name="PortType" type="wsa:AttributedQName" minOccurs="0"/>
-      <xsd:element name="ServiceName" type="wsa:ServiceNameType" minOccurs="0"/>
-      <xsd:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded">
-        <xsd:annotation>
-          <xsd:documentation>
-					 If "Policy" elements from namespace "http://schemas.xmlsoap.org/ws/2002/12/policy#policy" are used, they must appear first (before any extensibility elements).
-          </xsd:documentation>
-        </xsd:annotation>
-      </xsd:any>
-    </xsd:sequence>
-    <xsd:anyAttribute namespace="##other" processContents="lax"/>
-  </xsd:complexType>
-  <xsd:complexType name="ReferencePropertiesType">
-    <xsd:sequence>
-      <xsd:any processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
-    </xsd:sequence>
-  </xsd:complexType>
-  <xsd:complexType name="ServiceNameType">
-    <xsd:simpleContent>
-      <xsd:extension base="xsd:QName">
-        <xsd:attribute name="PortName" type="xsd:NCName"/>
-        <xsd:anyAttribute namespace="##other" processContents="lax"/>
-      </xsd:extension>
-    </xsd:simpleContent>
-  </xsd:complexType>
-  <xsd:element name="MessageID" type="wsa:AttributedURI"/>
-  <xsd:element name="RelatesTo" type="wsa:Relationship"/>
-  <xsd:element name="To" type="wsa:AttributedURI"/>
-  <xsd:element name="Action" type="wsa:AttributedURI"/>
-  <xsd:element name="From" type="wsa:EndpointReferenceType"/>
-  <xsd:element name="ReplyTo" type="wsa:EndpointReferenceType"/>
-  <xsd:element name="FaultTo" type="wsa:EndpointReferenceType"/>
-  <xsd:element name="Recipient" type="wsa:EndpointReferenceType"/>
-  <xsd:complexType name="Relationship">
-    <xsd:simpleContent>
-      <xsd:extension base="xsd:anyURI">
-        <xsd:attribute name="RelationshipType" type="xsd:QName" use="optional"/>
-        <xsd:anyAttribute namespace="##other" processContents="lax"/>
-      </xsd:extension>
-    </xsd:simpleContent>
-  </xsd:complexType>
-  <xsd:simpleType name="RelationshipTypeValues">
-    <xsd:restriction base="xsd:QName">
-      <xsd:enumeration value="wsa:Response"/>
-    </xsd:restriction>
-  </xsd:simpleType>
-  <xsd:complexType name="AttributedQName">
-    <xsd:simpleContent>
-      <xsd:extension base="xsd:QName">
-        <xsd:anyAttribute namespace="##other" processContents="lax"/>
-      </xsd:extension>
-    </xsd:simpleContent>
-  </xsd:complexType>
-  <xsd:complexType name="AttributedURI">
-    <xsd:simpleContent>
-      <xsd:extension base="xsd:anyURI">
-        <xsd:anyAttribute namespace="##other" processContents="lax"/>
-      </xsd:extension>
-    </xsd:simpleContent>
-  </xsd:complexType>
-</xsd:schema>
- 
--->
-
-  <!-- ============================================================= -->
   <!-- BEGIN SCHEMA -->
   <!-- ============================================================= -->
       
-<!--       xmlns="http://www.w3.org/2001/XMLSchema" -->
 
   <xsd:schema elementFormDefault="qualified" 
     targetNamespace="http://smartfrog.org/cddlm" 
     >
-    
+<!--     
+  <xsd:import 
+    namespace="http://schemas.xmlsoap.org/ws/2003/03/addressing" 
+    schemaLocation="ws-addressing.xsd"/>    
+     -->
   <!-- ============================================================= -->
   <!-- BEGIN SIMPLETYPES -->
   <!-- ============================================================= -->
@@ -217,6 +111,7 @@ Copyright 2003 BEA Systems Inc. and IBM Corporation and Microsoft Corporation. A
         -none: we have no callback
         -direct:  caller calls URL with a predefined event message
         -ws-notification:  callbacks via WS-N
+        -ws-eventing
         
       </xsd:documentation>
     </xsd:annotation>
@@ -301,16 +196,14 @@ Copyright 2003 BEA Systems Inc. and IBM Corporation and Microsoft Corporation. A
   <!-- ============================================================= -->
   
 
-  <xsd:complexType name="addressType">
+  <xsd:simpleType name="addressType">
     <xsd:annotation>
       <xsd:documentation>
       holder for WS-Addressing address
       </xsd:documentation>
     </xsd:annotation>    
-    <xsd:sequence>
-      <xsd:any  namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
-    </xsd:sequence>
-  </xsd:complexType>
+    <xsd:restriction base="wsa:EndpointReferenceType"/>
+  </xsd:simpleType>
   
   <xsd:complexType name="callbackAddressType">
     <xsd:annotation>
@@ -321,7 +214,7 @@ Copyright 2003 BEA Systems Inc. and IBM Corporation and Microsoft Corporation. A
     <xsd:choice>
       <xsd:element name="uri" type="xsd:anyURI"/>
       <xsd:element name="address" type="api:addressType"/>
-      <xsd:any  processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+      <!-- <xsd:any  processContents="lax" minOccurs="0" maxOccurs="unbounded"/> -->
     </xsd:choice>
   </xsd:complexType>    
   
