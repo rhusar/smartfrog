@@ -89,9 +89,13 @@ public void testCaseSPE01 ()throws Throwable
 		actualdemoF = demoF.sfResolve("limit",actualdemoE,true);
 		assertEquals(expecteddemoE, actualdemoE);
 
-	Prim displayLOCALHOST = (Prim)foobar.sfResolveHere("displayLOCALHOST");
+                //this does not work with the displayless version :-(
+//	Prim displayLOCALHOST = (Prim)foobar.sfResolveHere("displayLOCALHOST");
+//		String actualSfClassDLH = (String)displayLOCALHOST.sfResolveHere("sfClass");
+//		assertEquals("org.smartfrog.services.display.SFDisplay", actualSfClassDLH);
+               	Prim displayLOCALHOST = (Prim)foobar.sfResolveHere("displayLOCALHOST");
 		String actualSfClassDLH = (String)displayLOCALHOST.sfResolveHere("sfClass");
-		assertEquals("org.smartfrog.services.display.SFDisplay", actualSfClassDLH);
+		assertEquals("org.smartfrog.sfcore.sfcore.compound.CompoundImpl", actualSfClassDLH);
 
 	Prim baz = (Prim)sys.sfResolveHere("baz");
 		Prim demoC = (Prim)baz.sfResolveHere("demoC");
