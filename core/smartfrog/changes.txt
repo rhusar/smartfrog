@@ -1,3 +1,11 @@
+release 3.04.004_beta
+---------------------
+2004-Aug-20 Release date
+2004-Aug-20 Fix: Windows bin/security shell scripts
+2004-Aug-20 Fix: build.xml "fixcrlf" task removed. Problems with MacOSX
+2004-Aug-20 Add: build.xml to add files *.sfcd (SmartFrog configuration descriptors)
+                 into jar files.
+
 release 3.04.002_beta
 ---------------------
 2004-Aug-19 Release date
@@ -29,7 +37,6 @@ release 3.04.000_beta
 2004-Aug-02  Add: New shell scripts for starting daemon and applications
 2004-July-23 Add: New property prefixed by 'org.smartfrog.sfcore.processcompound.jvm.'+NAME+property=value
 2004-July-07 Add: sfResolveHelper methods in ComponentDescription and Prim
-release 3.02.002_beta
 2004-July-06 Add: Unbind rootProcess compound from registry during termination
 2004-July-05 Add: Initialized system in every user entry point in SFSystem
 2004-July-02 Fix: Property names in default.ini

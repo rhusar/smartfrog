@@ -57,7 +57,7 @@ relevant JAR files into the javacc subdirectory
     <property name="Name.System" value="SmartFrog "/>
     <property name="Name.Company" value="(C) Copyright 1998-2004 Hewlett-Packard Development Company, LP"/>
     <property name="version" value="CORE"/>
-    <property name="Version" value="3.04.002.beta"/>
+    <property name="Version" value="3.04.004.beta"/>
     <property name="year" value="2004"/>
 
     <echo level="verbose">
@@ -202,25 +202,33 @@ relevant JAR files into the javacc subdirectory
 
   <target name="fixCRLF" depends="copybins" description="adapts CRLF for different OS">
      <!-- OS dependant -->
+     <!--
      <fixcrlf srcdir="${dist.dir}/${bin}"
        includes="**/**"
        excludes="**/*.bat,**/default*"
      />
+     -->
      <!-- OS dependant -->
+     <!--
      <fixcrlf srcdir="${dist.dir}/${bin}"
        tab="remove"
        tablength="4"
        includes="**/default*"
      />
+     -->
      <!-- Windows/Dos format -->
+     <!--
      <fixcrlf srcdir="${dist.dir}/${bin}"
        eol="crlf"
        includes="**/*.bat"
      />
+     -->
      <!-- OS dependant -->
+     <!--
      <fixcrlf srcdir="${dist.dir}"
        includes="**/*.txt"
      />
+     -->
   </target>
 
   <!-- =================================================================== -->
@@ -314,6 +322,18 @@ relevant JAR files into the javacc subdirectory
     <copy todir="${build.classes.dir}">
       <fileset dir="${src.dir}">
         <include name="**/*.sf*" />
+      </fileset>
+    </copy>
+  </target>
+
+  <!-- =================================================================== -->
+  <!--   Copy .sfcd  files to "build" directories                          -->
+  <!--   These files should contain a list of configuration descriptors    -->
+  <!-- =================================================================== -->
+  <target name="copySFCD" depends="initbuild">
+    <copy todir="${build.classes.dir}">
+      <fileset dir="${src.dir}">
+        <include name="**/*.sfcd*" />
       </fileset>
     </copy>
   </target>
@@ -476,7 +496,7 @@ relevant JAR files into the javacc subdirectory
   <!--  BUILD                                                              -->
   <!-- =================================================================== -->
 
-  <target name="build" depends="initbuild,compile,copySF,copyGif,copyBAT,copyHTML,copyDefault"
+  <target name="build" depends="initbuild,compile,copySF,copyGif,copyBAT,copyHTML,copyDefault,copySFCD"
       description="Recompile and create all packages"/>
 
   <!-- =================================================================== -->
