@@ -396,14 +396,12 @@ relevant JAR files into the javacc subdirectory
     </javadoc>
 
     <!--  Java doc for the grammars -->
-    <!--
     <exec executable="java">
-        <arg line="-cp javacc/JavaCC.zip" />
-        <arg line="COM/sun/labs/jjdoc/JJDocMain" />
+        <arg line="-cp ${javacc.dir}/javacc.jar" />
+        <arg line="jjdoc" />
         <arg line= "-OUTPUT_FILE=${docs}/DefaultParser.html" />
         <arg line="${src}/org/smartfrog/sfcore/languages/sf/DefaultParser.jj" />
     </exec>
-    -->
   </target>
 
 
