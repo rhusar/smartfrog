@@ -251,6 +251,19 @@ relevant JAR files into the javacc subdirectory
     </rmic>
 
   </target>
+  
+  <!-- =================================================================== -->
+  <!--   Copy default.sf and default.ini files to "src/org/smartfrog" directory -->
+  <!--   so that they can be used with security on                         -->
+  <!-- =================================================================== -->
+  <target name="copyDefault" depends="initbuild">
+    <copy todir="${build.classes.dir}/org/smartfrog">
+      <fileset dir="${bin}">
+        <include name="default.sf" />
+        <include name="default.ini" />        
+      </fileset>
+    </copy>  
+  </target>  
 
   <!-- =================================================================== -->
   <!--   Copy .sf files to "build" directories                             -->
@@ -418,7 +431,7 @@ relevant JAR files into the javacc subdirectory
   <!--  BUILD                                                              -->
   <!-- =================================================================== -->
 
-  <target name="build" depends="initbuild,compile,copySF,copyGif,copyBAT,copyHTML"
+  <target name="build" depends="initbuild,compile,copySF,copyGif,copyBAT,copyHTML,copyDefault"
       description="Recompile and create all packages"/>
 
   <!-- =================================================================== -->
