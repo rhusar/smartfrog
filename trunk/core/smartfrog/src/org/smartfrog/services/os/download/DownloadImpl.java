@@ -41,7 +41,7 @@ import org.smartfrog.services.filesystem.FileImpl;
 /**
  * Defines the Downloader class. It downloads the data from a given url.
  */ 
-public class DownloadImpl extends PrimImpl implements Prim {
+public class DownloadImpl extends PrimImpl implements Download {
 
     /**
      * Constructor.
@@ -68,13 +68,13 @@ public class DownloadImpl extends PrimImpl implements Prim {
             url = (String) sfResolve("url");
             localFile =
                     FileImpl.lookupAbsolutePath(this,
-                            "toLocalFile",
+                            ATTR_LOCALFILE,
                             null,
                             null,
                             true,
                             null);
 
-            int blocksize = ((Integer) sfResolve("blocksize")).intValue();
+            int blocksize = ((Integer) sfResolve(ATTR_BLOCKSIZE)).intValue();
 
             download(url, new File(localFile), blocksize);
 
@@ -94,6 +94,13 @@ public class DownloadImpl extends PrimImpl implements Prim {
         }
     }
 
+    /**
+     * Simple Download
+     * @param url
+     * @param localFile
+     * @param blocksize
+     * @throws IOException
+     */
     private static void download(String url, File localFile, int blocksize)
             throws IOException {
         /** FileOutputStream object. */
