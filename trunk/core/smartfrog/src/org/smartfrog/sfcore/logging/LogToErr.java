@@ -60,19 +60,19 @@ public class LogToErr implements Log, LogMessage, LogLevel, Serializable {
         message. Default to true - otherwise we'll be lost in a flood of
         messages without knowing who sends them.
     */
-    protected static boolean showShortName = false;
+    protected boolean showShortName = false;
 
     /** Include the current time in the log message */
     protected static boolean showDateTime = true;
 
     /** Include thread name in the log message */
-    protected static boolean showThreadName = true;
+    protected boolean showThreadName = true;
 
     /** Include package name in the log message */
-    protected static boolean showMethodCall = true;
+    protected boolean showMethodCall = true;
 
     /** Include package name in the log message */
-    protected static boolean showStackTrace =true;
+    protected boolean showStackTrace =true;
 
     /** Used to format times */
     protected static DateFormat dateFormatter = null;
@@ -199,14 +199,14 @@ public class LogToErr implements Log, LogMessage, LogLevel, Serializable {
      * text for error levels
      */
     protected static final String ERROR_NAMES[]={
-        "ALL",
+        "ALL  ",
         "TRACE",
         "DEBUG",
-        "INFO",
-        "WARN",
+        "INFO ",
+        "WARN ",
         "ERROR",
         "FATAL",
-        "NONE"
+        "NONE "
     };
 
     // -------------------------------------------------------- Logging Methods
