@@ -26,14 +26,14 @@
 
     <!-- the interval is seconds -->
     <schedule interval="600">
+        <ant target="cc-full" antscript="ant" useLogger="true" />
         <maven mavenscript="/home/cruise/maven/bin/maven"
             goal="site:generate"
             projectfile="/home/cruise/cruisecontrol/project.xml"/>
-        <ant target="cc-full" antscript="ant" useLogger="true" />
     </schedule>
 
     <log dir="../artifacts">
-<!--	    <merge dir="activities/dist/tests/logs" /> -->
+    <!--	    <merge dir="smartfrog/dist/tests/logs" /> -->
     </log>
     <publishers>
       <currentbuildstatuspublisher file="../artifacts/currentbuildstatus.txt"/>
