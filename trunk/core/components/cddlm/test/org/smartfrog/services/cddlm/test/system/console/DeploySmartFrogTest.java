@@ -56,8 +56,7 @@ public class DeploySmartFrogTest extends DeployingTestBase {
     public void testDeployAndUndeploy() throws Exception {
         String name = "simple";
         URI uri = null;
-        DeploymentDescriptorType dt = operation.createSmartFrogDescriptor(
-                DeploySmartFrogTest.SIMPLE_DESCRIPTOR);
+        DeploymentDescriptorType dt = createSimpleDescriptor();
         uri = deploy(name, dt, null, null);
         //now test a lookup
         String stateName = DeployApiConstants.STATE_RUNNING;
@@ -69,11 +68,9 @@ public class DeploySmartFrogTest extends DeployingTestBase {
     }
 
     public void testDeployTwice() throws Exception {
-        String name = "simple";
+        DeploymentDescriptorType dt = createSimpleDescriptor();
         URI uri = null;
-        DeploymentDescriptorType dt = operation.createSmartFrogDescriptor(
-                DeploySmartFrogTest.SIMPLE_DESCRIPTOR);
-        uri = deploy(null, dt, null, null);
+        uri = deploy(dt);
         URI uri2 = deploy(null, dt, null, null);
         //now test a lookup
         assertDeployed(uri);

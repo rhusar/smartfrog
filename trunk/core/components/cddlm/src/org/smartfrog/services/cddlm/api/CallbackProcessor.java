@@ -21,6 +21,8 @@ package org.smartfrog.services.cddlm.api;
 
 import org.apache.axis.AxisFault;
 import org.apache.axis.types.URI;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.smartfrog.services.axis.SmartFrogHostedEndpoint;
 import org.smartfrog.services.cddlm.engine.JobState;
 import org.smartfrog.services.cddlm.generated.api.DeployApiConstants;
@@ -40,6 +42,11 @@ import java.net.URL;
  */
 
 public class CallbackProcessor extends Processor {
+
+    /**
+     * log
+     */
+    private static final Log log = LogFactory.getLog(CallbackProcessor.class);
     public static final String ERROR_NO_CALLBACK = "No callback information";
     public static final String ERROR_NO_ADDRESS = "No address for callbacks";
     public static final String ERROR_NO_URI = "No URI in the address";
@@ -97,9 +104,10 @@ public class CallbackProcessor extends Processor {
             throw raiseBadArgumentFault(
                     ERROR_BAD_CALLBACK_URL + uri.toString());
         }
+        log.info("sending callbacks to "+url);
         job.setCallbackURL(url);
         job.setCallbackType(type.getValue());
-        job.setCallbackRaiser(null);
+        job.setCallbackRaiser(new CddlmCallbackRaiser());
 
     }
 

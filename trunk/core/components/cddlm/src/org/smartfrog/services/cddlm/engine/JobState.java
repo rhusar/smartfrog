@@ -31,12 +31,15 @@ import org.smartfrog.services.cddlm.api.Processor;
 import org.smartfrog.services.cddlm.cdl.CdlDocument;
 import org.smartfrog.services.cddlm.generated.api.types.ApplicationStatusType;
 import org.smartfrog.services.cddlm.generated.api.types.DeploymentDescriptorType;
+import org.smartfrog.services.cddlm.generated.api.types.LifecycleStateEnum;
 import org.smartfrog.services.cddlm.generated.api.types._deployRequest;
 import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.TerminationRecord;
 
 import javax.xml.namespace.QName;
 import java.lang.ref.WeakReference;
 import java.net.URL;
+import java.rmi.RemoteException;
 
 /**
  * created Aug 5, 2004 3:00:26 PM
@@ -108,16 +111,22 @@ public class JobState {
      */
     private CdlDocument cdlDocument;
 
+
     /**
-     * type of the callback
+     * description string from the JSDL
      */
-    private String callbackType;
+    private String description;
 
 
     /**
-     *
+     * lifecycle state
      */
-    private URL callbackURL;
+    private LifecycleStateEnum state=LifecycleStateEnum.undefined;
+
+    /**
+     * state information string
+     */
+    private String stateInfo;
 
     /**
      * the language
@@ -128,12 +137,25 @@ public class JobState {
      * name of the language (one of the constants)
      */
     private String languageName = null;
+    /**
+     * type of the callback
+     */
+    private String callbackType;
+
+    /**
+     * url for callbacks
+     */
+    private URL callbackURL;
+
+    /**
+     * enter terminated state
+     */
+    private TerminationRecord terminationRecord;
 
     /**
      * callback identifier
      */
     private String callbackIdentifier;
-
 
     public String getCallbackIdentifier() {
         return callbackIdentifier;
@@ -217,6 +239,14 @@ public class JobState {
 
     public void setCallbackURL(URL callbackURL) {
         this.callbackURL = callbackURL;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     /**
@@ -353,10 +383,13 @@ public class JobState {
     }
 
 
-    public ApplicationStatusType createApplicationStatus() throws AxisFault {
+    public ApplicationStatusType createApplicationStatus()  {
         ApplicationStatusType status = new ApplicationStatusType();
         status.setName(new NCName(name));
         status.setReference(getUri());
+        status.setState(getState());
+        status.setStateInfo(stateInfo);
+
         if (fault != null) {
             /* TODO: implement. this doesnt compile on jikes
             MessageContext msgContext = MessageContext.getCurrentContext();
@@ -379,4 +412,52 @@ public class JobState {
         }
         return status;
     }
+
+    public LifecycleStateEnum getState() {
+        return state;
+    }
+
+    public void setState(LifecycleStateEnum state) {
+        this.state = state;
+    }
+
+    public String getStateInfo() {
+        return stateInfo;
+    }
+
+    public void setStateInfo(String stateInfo) {
+        this.stateInfo = stateInfo;
+    }
+
+    public TerminationRecord getTerminationRecord() {
+        return terminationRecord;
+    }
+
+    /**
+     * enter a state, send notification if this is different
+     * from a state we were in before
+     * This method is synchronous, you cannot enter a state till the
+     * last one was processed.
+     * @param newState new state to enter
+     */
+    public synchronized void enterStateNotifying(LifecycleStateEnum newState,String info) {
+        stateInfo=info;
+        if(!newState.equals(state)) {
+            state=newState;
+            if(callbackRaiser!=null) {
+                callbackRaiser.raiseLifecycleEvent(this,resolvePrimNonFaulting(), null);
+            }
+        }
+    }
+
+    /**
+     * terminate, send a message out
+     * @param record
+     */
+    public synchronized void enterTerminatedStateNotifying(TerminationRecord record)  {
+        this.terminationRecord=record;
+        enterStateNotifying(LifecycleStateEnum.terminated,record.toString());
+    }
+
+
 }

@@ -53,10 +53,7 @@ public class ListApplications extends ConsoleOperation {
             ApplicationStatusType status = lookupApplicationStatus(app);
             out.println("   name: " + status.getName().toString());
             out.println("   state: " + status.getState().toString());
-
         }
-
-
     }
 
     /**

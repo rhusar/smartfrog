@@ -32,4 +32,9 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 
 /*
  These components host CDDLM deployed stuff under smartfrog.
- */ 
+ */
+
+
+CddlmCompound extends Compound {
+    sfClass "org.smartfrog.services.cddlm.components.AxisImpl";
+}

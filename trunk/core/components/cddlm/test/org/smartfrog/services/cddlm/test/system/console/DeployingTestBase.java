@@ -34,6 +34,7 @@ import org.smartfrog.services.cddlm.generated.api.types.LifecycleStateEnum;
 import org.smartfrog.services.cddlm.generated.api.types._deploymentDescriptorType_data;
 
 import javax.xml.namespace.QName;
+import java.io.IOException;
 import java.rmi.RemoteException;
 
 /**
@@ -48,6 +49,7 @@ public abstract class DeployingTestBase extends ConsoleTestBase {
     public static final String BROKEN_DESCRIPTOR =
             "#include \"/org/smartfrog/components.sf\""
             + " sfConfig extends Unknown {} ";
+    public static final String UNDEPLOY_REASON = "end test";
 
     protected ConsoleOperation getOperation() {
         return operation;
@@ -138,10 +140,22 @@ public abstract class DeployingTestBase extends ConsoleTestBase {
      * @throws RemoteException
      */
     public boolean undeploy(URI uri) throws RemoteException {
-        return operation.undeploy(uri, "end test");
+        return operation.undeploy(uri, UNDEPLOY_REASON);
     }
 
     public void assertDeployed(URI uri) throws RemoteException {
         assertInState(uri, DeployApiConstants.STATE_RUNNING);
+    }
+
+    protected URI deploy(DeploymentDescriptorType dt) throws RemoteException {
+        URI uri;
+        uri = deploy(null, dt, null, null);
+        return uri;
+    }
+
+    protected DeploymentDescriptorType createSimpleDescriptor() throws IOException {
+        DeploymentDescriptorType dt = operation.createSmartFrogDescriptor(
+                DeploySmartFrogTest.SIMPLE_DESCRIPTOR);
+        return dt;
     }
 }

@@ -26,10 +26,10 @@ import org.apache.axis.types.URI;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.smartfrog.services.axis.SmartFrogHostedEndpoint;
+import org.smartfrog.services.cddlm.generated.api.DeployApiConstants;
 import org.smartfrog.services.cddlm.generated.api.types.OptionMapType;
 import org.smartfrog.services.cddlm.generated.api.types.OptionType;
 import org.smartfrog.services.cddlm.generated.api.types.UnboundedXMLAnyNamespace;
-import org.smartfrog.services.cddlm.generated.api.DeployApiConstants;
 
 import java.util.Properties;
 

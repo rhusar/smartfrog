@@ -41,8 +41,11 @@ public class ServerBinding implements Serializable {
 
     private String username;
     private String password;
+    /**
+     * this is the prefix we look for on the command line
+     */
     public static final String URL_COMMAND = "-url:";
-    public static final String URL_COMMAND2 = "-u:";
+    //public static final String URL_COMMAND2 = "-u:";
 
 
     public ServerBinding() {
@@ -132,7 +135,7 @@ public class ServerBinding implements Serializable {
             String commandLineElement)
             throws MalformedURLException {
         boolean isOption = commandLineElement.indexOf(URL_COMMAND) == 0;
-        isOption |= commandLineElement.indexOf(URL_COMMAND2) == 0;
+        //isOption |= commandLineElement.indexOf(URL_COMMAND2) == 0;
         if (isOption) {
             String urlBody = commandLineElement.substring(URL_COMMAND.length());
             if ("".equals(urlBody)) {
