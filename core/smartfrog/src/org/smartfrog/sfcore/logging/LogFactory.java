@@ -68,10 +68,20 @@ public  class LogFactory {
         return log;
     }
 
+    /**
+     * Convenience method to return a named logger
+     *
+     * @param clazz Class from which a log name will be derived
+     *
+     * @exception SmartFrogLogException if suitable Log instance cannot be
+     * returned
+     */
+    public static Log getLog(Class clazz) {
+        return (getLog(clazz.toString()));
+    }
 
     /**
-     * Convenience method to derive a name from the specified class and
-     * call <code>getInstance(String)</code> with it.
+     * Convenience method to derive a name from
      *
      * @param prim component to use
      * @param registerWithCoreLog
