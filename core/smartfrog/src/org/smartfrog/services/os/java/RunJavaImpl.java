@@ -70,19 +70,19 @@ public class RunJavaImpl extends RunShellImpl implements RunJava {
         //get classname and classpath and verify that one is defined
         String classname=null;
         String jar=null;
-        classname=sfResolve(varClassname,classname,false);
-        jar= platform.convertFilename(sfResolve(varJarFile, jar, false));
+        classname=sfResolve(ATTR_CLASSNAME,classname,false);
+        jar= platform.convertFilename(sfResolve(ATTR_JARFILE, jar, false));
 
-        Vector environment = (Vector) sfResolve(varEnvironment, (Vector) null, false);
+        Vector environment = (Vector) sfResolve(ATTR_ENVIRONMENT, (Vector) null, false);
         Vector flatEnv = flatten(environment, null, "=", null);
 
-        Vector jvmArgs=(Vector) sfResolve(varJVMArgs,(Vector)null,false);
+        Vector jvmArgs=(Vector) sfResolve(ATTR_JVM_ARGS,(Vector)null,false);
 
-        Vector sysProperties=(Vector)sfResolve(varSysProperties, (Vector) null, false);
+        Vector sysProperties=(Vector)sfResolve(ATTR_SYSPROPERTIES, (Vector) null, false);
         Vector flatSysProperties = flatten(sysProperties, "-D", "=", "");
-        Boolean assertions=(Boolean) sfResolve(varAssertions,(Boolean)null,false);
-        Boolean sysAssertions = (Boolean) sfResolve(varSystemAssertions, (Boolean) null, false);
-        Vector arguments=sfResolve(varAssertions, (Vector) null, false);
+        Boolean assertions=(Boolean) sfResolve(ATTR_ASSERTIONS,(Boolean)null,false);
+        Boolean sysAssertions = (Boolean) sfResolve(ATTR_SYSTEMASSERTIONS, (Boolean) null, false);
+        Vector arguments=sfResolve(ATTR_ASSERTIONS, (Vector) null, false);
 
 
         addArgs(args, flatSysProperties);
@@ -120,7 +120,7 @@ public class RunJavaImpl extends RunShellImpl implements RunJava {
 
         //set the classname or jar to run
         if (jar == null && classname == null) {
-            throw new SmartFrogInitException("One of " + varClassname + " and " + varJarFile + " must be supplied");
+            throw new SmartFrogInitException("One of " + ATTR_CLASSNAME + " and " + ATTR_JARFILE + " must be supplied");
         }
         if(classname!=null) {
             if ( debugEnabled ) {
@@ -215,7 +215,7 @@ public class RunJavaImpl extends RunShellImpl implements RunJava {
      * @throws RemoteException
      */
     private String buildClasspath(boolean mandatory) throws SmartFrogResolutionException, RemoteException {
-        Vector classpathV=(Vector)sfResolve(varClasspath,(Vector)null,mandatory);
+        Vector classpathV=(Vector)sfResolve(ATTR_CLASSPATH,(Vector)null,mandatory);
         if(classpathV==null) {
             return null;
         }
@@ -232,10 +232,10 @@ public class RunJavaImpl extends RunShellImpl implements RunJava {
     private String buildEndorsedDirs() throws SmartFrogResolutionException, RemoteException {
         final boolean debugEnabled = log.isDebugEnabled();
         log.debug("building endorsed directory parameter");
-        Vector pathV = (Vector) sfResolve(varEndorsedDirs, (Vector) null, false);
+        Vector pathV = (Vector) sfResolve(ATTR_ENDORSED_DIRS, (Vector) null, false);
         if(pathV==null) {
             if(debugEnabled ) {
-                log.debug(varEndorsedDirs+" is unset");
+                log.debug(ATTR_ENDORSED_DIRS+" is unset");
             }
             return null;
         }

@@ -343,4 +343,35 @@ public class FileImpl extends FileUsingComponentImpl implements FileIntf {
     }
 
 
+    /**
+     * Look up the absolutePath attribute of any component,
+     * then turn it into a file.
+     * @param component component to resolve against
+     * @return file representing the path.
+     * @throws SmartFrogResolutionException If the attribute is not defined.
+     * @throws RemoteException
+     */
+    public static File resolveAbsolutePath(Prim component)
+            throws SmartFrogResolutionException,
+            RemoteException {
+        String absolutePath = component.sfResolve(FileUsingComponent.ATTR_ABSOLUTE_PATH, "", true);
+        File file = new File(absolutePath);
+        return file;
+    }
+
+    /**
+     * Look up the absolutePath attribute of any FileUsingComponent, then turn it into a
+     * file.
+     * Note that the RPC method is not used; only sf attributes. Thus the coupling
+     * is much looser.
+     * @param component component to resolve against
+     * @return file representing the path.
+     * @throws SmartFrogResolutionException If the attribute is not defined.
+     * @throws RemoteException
+     */
+    public static File resolveAbsolutePath(FileUsingComponent component)
+            throws SmartFrogResolutionException, RemoteException {
+        return resolveAbsolutePath((Prim)component);
+    }
+
 }

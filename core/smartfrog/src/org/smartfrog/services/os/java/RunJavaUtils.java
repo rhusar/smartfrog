@@ -147,7 +147,8 @@ public class RunJavaUtils {
      */
     public static String makeResource(String classname) {
         assert (classname!=null && classname.length()>0);
-        StringBuffer buffer=new StringBuffer(classname.length()+7);
+        //add seven,
+        StringBuffer buffer=new StringBuffer(classname.length()+"/.class".length());
         buffer.append('/');
         for(int i=0;i<classname.length();i++) {
             char c=classname.charAt(i);
