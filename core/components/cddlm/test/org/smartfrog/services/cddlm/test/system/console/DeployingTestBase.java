@@ -122,7 +122,7 @@ public abstract class DeployingTestBase extends ConsoleTestBase {
         ApplicationStatusType status = operation.lookupApplicationStatus(uri);
         assertNotNull("app status of "+uri,status);
         LifecycleStateEnum state = status.getState();
-        state.getValue();
-        assertEquals(stateName, state);
-            }
+        String currentState = state.getValue();
+        assertEquals(stateName, currentState);
+        }
 }

@@ -88,7 +88,7 @@ public class ServerStatusTest extends ConsoleTestBase {
     public void testUnsupportedLanguage() throws RemoteException {
         String languageURI = FaultCodes.XPATH_NAMESPACE;
         boolean found = operation.supportsLanguage(languageURI);
-        assertTrue("supported :" + languageURI, found);
+        assertFalse("supported :" + languageURI, found);
     }
 
     public void assertSupportedLanguage(String languageURI) throws RemoteException {

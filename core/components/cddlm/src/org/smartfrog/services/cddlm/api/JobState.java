@@ -130,6 +130,10 @@ public class JobState {
         this.hostname = hostname;
     }
 
+    public void bindToPrim(Prim prim) {
+        primReference=new WeakReference(prim);
+    }
+
     /**
      * get the prim; raise a fault if it is terminated
      *
@@ -140,7 +144,7 @@ public class JobState {
         final WeakReference primReference = getPrimReference();
         if (primReference == null) {
             throw Processor.raiseNoSuchApplicationFault(
-                    "application not found");
+                    "job exists but reference is undefined");
         }
         Object weakRef = primReference.get();
         if (weakRef == null) {

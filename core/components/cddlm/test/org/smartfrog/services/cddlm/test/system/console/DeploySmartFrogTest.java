@@ -43,7 +43,8 @@ public class DeploySmartFrogTest extends DeployingTestBase {
         //now test a lookup
         String stateName = FaultCodes.STATE_RUNNING;
         assertInState(uri, stateName);
-        operation.undeploy(uri, "end test");
+        assertTrue("undeloy returned false",
+                operation.undeploy(uri, "end test"));
 
     }
 

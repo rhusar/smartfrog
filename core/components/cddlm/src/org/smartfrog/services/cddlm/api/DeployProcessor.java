@@ -210,7 +210,9 @@ public class DeployProcessor extends Processor {
             log.info("processing descriptor " + descriptor);
             tempFile = saveStringToFile(descriptor, ".sf");
             String url = tempFile.toURI().toURL().toExternalForm();
-            deployThroughSFSystem(null, applicationName, url, null);
+            Prim runningJobInstance;
+            runningJobInstance = deployThroughSFSystem(null, applicationName, url, null);
+            job.bindToPrim(runningJobInstance);
         } catch (IOException e) {
             throw AxisFault.makeFault(e);
         } finally {
