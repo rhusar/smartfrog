@@ -67,11 +67,6 @@ For more information: www.smartfrog.org
    <!-- override point -->
   <property file="build.properties" />
 
-  <!-- this component keeps its test files in a different place from the 
-       rest, for historical reasons (i.e. it is nothing but test) -->  
-  <property name="test.src.dir" location="testcases" />
-  
-  <property name="root.dir" location="../.."  />
   
   <!-- ========================================================== -->
   <!-- initialisation -->
@@ -118,7 +113,9 @@ component.path :=
     </echo>
     
     <presetdef name="delegate">
-      <subant buildpathref="component.path" />
+      <subant buildpathref="component.path"
+        antfile="build.xml"
+        inheritall ="false" inheritrefs="false"/>
     </presetdef>
     
   </target>
