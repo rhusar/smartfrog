@@ -45,16 +45,17 @@ public class EventPrimImpl extends PrimImpl implements EventRegistration,
     static Reference sendRef = new Reference("sendTo");
     Vector receiveFrom = new Vector();
     Vector sendTo = new Vector();
- LogSF log = null;
+    LogSF log = null;
 
     /**
      * Constructs EventPrimImpl.
      *
      * @throws RemoteException In case of RMI or network failure.
      */
-    public EventPrimImpl() throws RemoteException, SmartFrogException {
+    public EventPrimImpl() throws RemoteException {
+	    //, SmartFrogException {
         super();
-        log = this.sfGetProcessLog();
+        //log = this.sfGetProcessLog();
     }
 
     /**
@@ -140,8 +141,10 @@ public class EventPrimImpl extends PrimImpl implements EventRegistration,
      * @throws SmartFrogDeploymentException In case of any error while
      *         deploying the component
      */
-    public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
+    public synchronized void sfDeploy() throws SmartFrogException, 
+    RemoteException {
         super.sfDeploy();
+        log = sfGetProcessLog();
 
         /* find local registrations and register them */
         ComponentDescription sends = (ComponentDescription)
