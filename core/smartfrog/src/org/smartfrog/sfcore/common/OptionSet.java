@@ -46,7 +46,7 @@ public class OptionSet {
 
     /** Usage string for SFSystem. */
     public String usage = "\n" +
-        " Usage: java -D... org.smartfrog.SFSystem [-a URL_DESCRIPTOR] [-f FILE_URL] [-e]\n" +
+        " Usage: java -D... org.smartfrog.SFSystem [-a URL_DESCRIPTOR] [-f SFREF] [-e]\n" +
         "    or: java -D... org.smartfrog.SFSystem -?";
 
     /** Help string for SFSystem. */
@@ -81,7 +81,7 @@ public class OptionSet {
         "              ex3: Deploy \"counterToSucceed\" from counter/example2.sf\n" +
         "                   counterEx3:DEPLOY:org/smartfrog/examples/counter/example2.sf:\"testLevel1:counterToSucceed\":localhost:\n" +
         "\n" +
-        "    -f FILE_URL: file url with the ConfigurationDescriptors to deploy" +
+        "    -f SFREF: file with the ConfigurationDescriptors to deploy" +
         "\n" +
         "    -e:             exit after deployment is finished" + "\n" +
         " ";
