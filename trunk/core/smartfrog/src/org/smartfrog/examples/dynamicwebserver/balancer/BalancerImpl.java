@@ -248,6 +248,12 @@ public class BalancerImpl extends PrimImpl implements Prim, Balancer, DataSource
         //  any component-specific init code
         readSFAttributes();
 
+        // Simply invoke the instance start method
+	// This needs to be done here, so that others can invoke the addServer methods, etc
+	// during their sfStarts.
+
+        start();
+
         // Any error - propagate and hance fail to deploy
     }
 
@@ -259,9 +265,6 @@ public class BalancerImpl extends PrimImpl implements Prim, Balancer, DataSource
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-
-        // Simply invoke the instance start method
-        start();
     }
 
     /**
