@@ -82,6 +82,7 @@ For more information: www.smartfrog.org
     <property name="logger.project" location="logger" />
     <property name="net.project" location="net" />
     <property name="scripting.project" location="scripting" />
+    <property name="sfcoreloggers.project" location="sfcoreloggers" />
     <property name="ssh.project" location="ssh" />
     <property name="slp.project" location="slp" />
     <property name="utils.project" location="utils" />
@@ -89,18 +90,18 @@ For more information: www.smartfrog.org
     
     <property name="root.dir" location=".."  />
     <!--where the files for release will go-->
+    <property name="bin" value="bin"/>
     <property name="lib" value="lib"/>
-    <property name="build" value="build"/>
     <property name="docs" value="docs"/>
-    <property name="doc" value="doc"/>
     <property name="src" value="src"/>
     <property name="jdocs" value="jdocs"/>
+    <property name="build.dir" value="build"/>      
     <property name="dist.dir" value="dist"/>         <!-- where the files to zip go -->
-    <property name="dist.dir" value="dist"/>         <!-- where the files to zip go -->
+    <property name="dist.bin.dir" value="${dist.dir}/${bin}"/>
     <property name="dist.lib.dir" value="${dist.dir}/${lib}"/>
     <property name="dist.src.dir" value="${dist.dir}/${src}"/>
     <property name="dist.docs.dir" value="${dist.dir}/${docs}"/>
-    <property name="dist.jdocs.dir" value="${dist.dir}/${jdocs}"/>
+    <property name="dist.jdocs.dir" value="${dist.docs.dir}/${jdocs}"/>
 
     <property name="componentsFiles" value="org/smartfrog/services/**/*"/>
     
@@ -123,6 +124,7 @@ For more information: www.smartfrog.org
       <pathelement location="${slp.project}"/>
       
       <pathelement location="${scripting.project}"/>
+      <pathelement location="${sfcoreloggers.project}"/>
     </path>
     <property name="component.path.asproperty"
       refid="component.path"/>
@@ -172,9 +174,9 @@ component.path :=
   <!-- =================================================================== -->
   <!-- clean jdocs                                                               -->
   <!-- =================================================================== -->
-  <target name="clean-dist" description="Cleans the dist directory">
+  <target name="clean-dist" description="Cleans the dist and build directories">
 	  <delete dir="${dist.dir}"/>
-	  <delete file="common.xml"/>
+	  <delete dir="${build.dir}"/>
   </target>
   
    <!-- =================================================================== -->
@@ -198,9 +200,8 @@ component.path :=
     <!--  Java Docs for all                                                -->
     <echo message=""/>
     <echo message="------------------------------------------------------------------------"/>
-    <echo message="  Creating Java Docs for ${Name.System} ${version} [${jdocs.dir}]"/>
+    <echo message="  Creating Java Docs for ${Name.System} ${version} [${dist.jdocs.dir}]"/>
     <echo message="------------------------------------------------------------------------"/>
-    <mkdir dir="${dist.jdocs.dir}"/>
     <javadoc packagenames="org.*"
              destdir="${dist.jdocs.dir}"
              author="true"
@@ -220,6 +221,7 @@ component.path :=
 		   <pathelement path="${logger.project}/${src}"/>
 		   <pathelement path="${net.project}/${src}"/>
 		   <pathelement path="${scripting.project}/${src}"/>
+		   <!--pathelement path="${sfcoreloggers.project}/${src}"/-->
 		   <pathelement path="${slp.project}/${src}"/>
 		   <pathelement path="${ssh.project}/${src}"/>
 		   <pathelement path="${utils.project}/${src}"/>
@@ -235,11 +237,71 @@ component.path :=
   <!-- =================================================================== -->
   <target name="initdist" depends="init">
       <mkdir dir="${dist.dir}"/>
+      <mkdir dir="${dist.bin.dir}"/>
       <mkdir dir="${dist.lib.dir}"/>
       <mkdir dir="${dist.docs.dir}"/>
+      <mkdir dir="${dist.jdocs.dir}"/>
       <mkdir dir="${dist.src.dir}"/>
-  </target> 
+  </target>
 
+  <!-- =================================================================== -->
+  <!--                                                                     -->
+  <!-- =================================================================== -->
+  <target name="copybuild" depends="init">
+  
+    <macrodef name="copybuild" >
+      <attribute name="project" description="component to copy"/>
+      <attribute name="builddir" default="${build.dir}" />
+      <attribute name="includes" default="**/*" />
+      
+      <sequential>
+        <copy todir="${build.dir}">
+          <fileset dir="@{project}/@{builddir}" includes="@{includes}" />
+        </copy>
+      </sequential>
+    </macrodef>
+
+    <copybuild project="${emailer.project}" />
+    <copybuild project="${jetty.project}" />
+    <copybuild project="${logger.project}" />
+    <copybuild project="${net.project}" />
+    <copybuild project="${scripting.project}" />
+    <!--copybuild project="${sfcoreloggers.project}" /-->
+    <copybuild project="${slp.project}"  />
+    <copybuild project="${ssh.project}" />
+    <copybuild project="${utils.project}" />
+
+  </target>
+    
+  <!-- =================================================================== -->
+  <!--                                                                     -->
+  <!-- =================================================================== -->
+  <target name="copybins" depends="initdist,dist">
+  
+    <macrodef name="copybins" >
+      <attribute name="project" description="component to copy"/>
+      <attribute name="bindir" default="${dist.bin.dir}" />
+      <attribute name="includes" default="**/*" />
+      
+      <sequential>
+        <copy todir="${dist.bin.dir}">
+          <fileset dir="@{project}/@{bindir}" includes="@{includes}" />
+        </copy>
+      </sequential>
+    </macrodef>
+
+    <copybins project="${emailer.project}" />
+    <copybins project="${jetty.project}" />
+    <copybins project="${logger.project}" />
+    <copybins project="${net.project}" />
+    <copybins project="${scripting.project}" />
+    <!--copybins project="${sfcoreloggers.project}" /-->
+    <copybins project="${slp.project}"  />
+    <copybins project="${ssh.project}" />
+    <copybins project="${utils.project}" />
+
+  </target>
+  
   <!-- =================================================================== -->
   <!--                                                                     -->
   <!-- =================================================================== -->
@@ -247,7 +309,7 @@ component.path :=
   
     <macrodef name="copylibs" >
       <attribute name="project" description="component to copy"/>
-      <attribute name="libdir" default="${build}/${dist.lib.dir}" />
+      <attribute name="libdir" default="${dist.lib.dir}" />
       <attribute name="includes" default="**/*" />
       
       <sequential>
@@ -262,6 +324,7 @@ component.path :=
     <copylibs project="${logger.project}" />
     <copylibs project="${net.project}" />
     <copylibs project="${scripting.project}" />
+    <!--copylibs project="${sfcoreloggers.project}" /-->
     <copylibs project="${slp.project}"  />
     <copylibs project="${ssh.project}" />
     <copylibs project="${utils.project}" />
@@ -275,7 +338,7 @@ component.path :=
   
     <macrodef name="copycomponents" >
       <attribute name="project" description="component to copy"/>
-      <attribute name="srcdir" default="${src}" />
+      <attribute name="srcdir" default="${dist.src.dir}" />
       <attribute name="includes" default="**/*" />
       <sequential>
         <copy todir="${dist.src.dir}">
@@ -292,6 +355,7 @@ component.path :=
     <copycomponents project="${logger.project}" />
     <copycomponents project="${net.project}"  />
     <copycomponents project="${scripting.project}" />
+    <!--copycomponents project="${sfcoreloggers.project}" /-->
     <copycomponents project="${net.project}"  />
     <copycomponents project="${slp.project}"  />
     <copycomponents project="${ssh.project}" />
@@ -305,7 +369,7 @@ component.path :=
   
     <macrodef name="copydocs" >
       <attribute name="project" description="component to copy"/>
-      <attribute name="docdir" default="${doc}" />
+      <attribute name="docdir" default="${dist.docs.dir}" />
       <attribute name="includes" default="**/*" />
       
       <sequential>
@@ -319,8 +383,9 @@ component.path :=
     <copydocs project="${jetty.project}" />
     <copydocs project="${logger.project}" />
     <copydocs project="${net.project}" />
-    <copydocs project="${scripting.project}" docdir="docs" />
-    <copydocs project="${slp.project}" docdir="docs" />
+    <copydocs project="${scripting.project}" />
+    <!--copydocs project="${sfcoreloggers.project}" /-->
+    <copydocs project="${slp.project}" />
     <copydocs project="${ssh.project}" />
     <copydocs project="${utils.project}" />
   </target>
@@ -335,35 +400,39 @@ component.path :=
         <include name="**/**"/>
         <exclude name="**/*.dfPackage"/>
       </zipfileset-->
-      <zipfileset dir="${emailer.project}/${src}">
+      <zipfileset dir="${emailer.project}/${dist.src.dir}">
         <include name="**/**"/>
         <exclude name="**/*.dfPackage"/>
       </zipfileset>
-      <zipfileset dir="${jetty.project}/${src}">
+      <zipfileset dir="${jetty.project}/${dist.src.dir}">
         <include name="**/**"/>
         <exclude name="**/*.dfPackage"/>
       </zipfileset>
-      <zipfileset dir="${logger.project}/${src}">
+      <zipfileset dir="${logger.project}/${dist.src.dir}">
         <include name="**/**"/>
         <exclude name="**/*.dfPackage"/>
       </zipfileset>
-      <zipfileset dir="${net.project}/${src}">
+      <zipfileset dir="${net.project}/${dist.src.dir}">
         <include name="**/**"/>
         <exclude name="**/*.dfPackage"/>
       </zipfileset>
-      <zipfileset dir="${scripting.project}/${src}">
+      <zipfileset dir="${scripting.project}/${dist.src.dir}">
         <include name="**/**"/>
         <exclude name="**/*.dfPackage"/>
       </zipfileset>
-      <zipfileset dir="${slp.project}/${src}">
+     <!--zipfileset dir="${sfcoreloggers.project}/${dist.src.dir}">
+        <include name="**/**"/>
+        <exclude name="**/*.dfPackage"/>
+      </zipfileset-->
+      <zipfileset dir="${slp.project}/${dist.src.dir}">
         <include name="**/**"/>
         <exclude name="**/*.dfPackage"/>
       </zipfileset>
-      <zipfileset dir="${ssh.project}/${src}">
+      <zipfileset dir="${ssh.project}/${dist.src.dir}">
         <include name="**/**"/>
         <exclude name="**/*.dfPackage"/>
       </zipfileset>
-      <zipfileset dir="${utils.project}/${src}">
+      <zipfileset dir="${utils.project}/${dist.src.dir}">
         <include name="**/**"/>
         <exclude name="**/*.dfPackage"/>
       </zipfileset>
@@ -371,20 +440,10 @@ component.path :=
   </target>
 
   <!-- =================================================================== -->
-  <!--                                                                     -->
-  <!-- =================================================================== -->
-  <target name="copy-files">
-	  <mkdir dir="${lib}"/>
-	  <copy file="${root.dir}/common.xml" todir="."/>
-	  <copy file="${root.dir}/extras/ant/build/dist/lib/smartfrog-tasks.jar" todir="${lib}"/>
-   </target>
-  <!-- =================================================================== -->
   <!--  Release                                                            -->
   <!-- =================================================================== -->
-  <target name="release"  depends="clean, copy-files, dist, initdist, copylibs, copydocs, copycomponents, srczip, jdocs, generatedoc " description="Creates clean new release">
-	  <copy tofile="${dist.dir}/build.xml" file="build.xml"/>
-	  <copy tofile="${dist.dir}/buildRelease.xml" file="buildRelease.xml"/>
-	  <copy tofile="${dist.dir}/common.xml" file="common.xml"/>
+  <target name="release"  depends="clean, dist, initdist, copybuild, copybins, copylibs, copydocs, copycomponents, srczip, jdocs, generatedoc " description="Creates clean new release">
+	  <copy tofile="${dist.dir}/build.xml" file="releaseBuild.xml"/>
   </target>
 
   <target name="default" depends="dist"/>

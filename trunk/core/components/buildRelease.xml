@@ -101,52 +101,34 @@ To use: ant -f buildRelease release
     <mkdir dir="../releases"/>
   </target>
 
-  <target name="copy-file">
-      <copy file="${root.dir}/common.xml" todir="."/>
-      <copy todir="./extras/ant">
-          <fileset dir="${root.dir}/extras/ant">
-              <exclude name="**/Cvs"/>
-          </fileset>
-      </copy>
-	  <!--copydir src="${root.dir}/extras" dest="./extras" excludes="**/Cvs"/ -->
-  </target>
   <!-- =================================================================== -->
-  <!-- release                                                             -->
+  <!-- allrelease                                                             -->
   <!-- =================================================================== -->
-  <target name="release" depends="init, initrelease" description="Creates zip with release packages"> 
-	  
-   <zip destfile="../releases/${Name.System}.${version}.${DSTAMP}_DIST.zip">
+  <target name="allrelease" depends="init, initrelease">
+	 
+    <zip destfile="../releases/${Name.System}.${version}.${DSTAMP}_ALL.zip">
        <zipfileset dir="." prefix="${Name.System}.${version}">
-	<include name="${dist}/**"/>
-	<include name="${dist}/docs/**"/>
-	<include name="${dist}/jdocs/**"/>
-	<include name="${dist}/lib/**"/>
-	<include name="${dist}/src/**"/>
-	<include name="${dist}/src.zip"/>
-       </zipfileset>
-   </zip>
-	  
-   <zip destfile="../releases/${Name.System}.${version}.${DSTAMP}_ALL.zip">
-       <zipfileset dir="." prefix="${Name.System}.${version}">
+	<include name="../common.xml"/>
 	<include name="emailer/**"/>
 	<include name="jetty/**"/>
 	<include name="logger/**"/>
 	<include name="net/**"/>
 	<include name="scripting/**"/>
+	<include name="sfcoreloggers/**"/>
 	<include name="slp/**"/>
 	<include name="ssh/**"/>
 	<include name="utils/**"/>
         <include name="build.xml"/>
         <include name="buildRelease.xml"/>
-	<include name="lib/**"/>
+        <include name="releaseBuild.xml"/>
+        <include name="documentation.xml"/>
 	<include name="${dist}/**"/>
 	<include name="${dist}/docs/**"/>
-	<include name="${dist}/jdocs/**"/>
+	<include name="${dist}/docs/jdocs/**"/>
+	<include name="${dist}/bin/**"/>
 	<include name="${dist}/lib/**"/>
 	<include name="${dist}/src/**"/>
 	<include name="${dist}/build.xml"/>
-	<include name="${dist}/buildRelease.xml"/>
-	<include name="common.xml"/>
 	<include name="${dist}/src.zip"/>
         <exclude name="**/CVS" />
         <exclude name="**/*.dfPackage" />
@@ -156,41 +138,29 @@ To use: ant -f buildRelease release
        </zipfileset>
    </zip>
 
-  <tar tarfile="../releases/${Name.System}.${version}.${DSTAMP}_DIST.tar">
+    <tar tarfile="../releases/${Name.System}.${version}.${DSTAMP}_ALL.tar">
       <tarfileset dir="." prefix="${Name.System}.${version}">
-	<include name="${dist}/**"/>
-	<include name="${dist}/docs/**"/>
-	<include name="${dist}/jdocs/**"/>
-	<include name="${dist}/lib/**"/>
-	<include name="${dist}/src/**"/>
-	<include name="${dist}/src.zip"/>
-      </tarfileset>
-  </tar>
-  
-  <gzip src="../releases/${Name.System}.${version}.${DSTAMP}_DIST.tar" zipfile="../releases/${Name.System}.${version}.${DSTAMP}_DIST.tar.gz"/>
-  <delete file="../releases/${Name.System}.${version}.${DSTAMP}_DIST.tar"/>
-
-   <tar tarfile="../releases/${Name.System}.${version}.${DSTAMP}_ALL.tar">
-      <tarfileset dir="." prefix="${Name.System}.${version}">
+	<include name="../common.xml"/>
 	<include name="emailer/**"/>
 	<include name="jetty/**"/>
 	<include name="logger/**"/>
 	<include name="net/**"/>
 	<include name="scripting/**"/>
+	<include name="sfcoreloggers/**"/>
 	<include name="slp/**"/>
 	<include name="ssh/**"/>
 	<include name="utils/**"/>
         <include name="build.xml"/>
         <include name="buildRelease.xml"/>
-	<include name="common.xml"/>
-	<include name="lib/**"/>
+        <include name="releaseBuild.xml"/>
+        <include name="documentation.xml"/>
 	<include name="${dist}/**"/>
 	<include name="${dist}/docs/**"/>
-	<include name="${dist}/jdocs/**"/>
+	<include name="${dist}/docs/jdocs/**"/>
+	<include name="${dist}/bin/**"/>
 	<include name="${dist}/lib/**"/>
 	<include name="${dist}/src/**"/>
 	<include name="${dist}/build.xml"/>
-	<include name="${dist}/buildRelease.xml"/>
 	<include name="${dist}/src.zip"/>
         <exclude name="**/CVS" />
         <exclude name="**/*.dfPackage" />
@@ -203,6 +173,46 @@ To use: ant -f buildRelease release
   <gzip src="../releases/${Name.System}.${version}.${DSTAMP}_ALL.tar" zipfile="../releases/${Name.System}.${version}.${DSTAMP}_ALL.tar.gz"/>
   <delete file="../releases/${Name.System}.${version}.${DSTAMP}_ALL.tar"/>
 
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- commonrelease                                                         -->
+  <!-- =================================================================== -->
+  <target name="commonrelease" depends="init, initrelease"> 
+	  
+   <zip destfile="../releases/${Name.System}.${version}.${DSTAMP}_COMMON_DIST.zip">
+       <zipfileset dir="." prefix="${Name.System}.${version}">
+	<include name="${dist}/**"/>
+	<include name="${dist}/docs/**"/>
+	<include name="${dist}/docs/jdocs/**"/>
+	<include name="${dist}/bin/**"/>
+	<include name="${dist}/lib/**"/>
+	<include name="${dist}/src/**"/>
+	<include name="${dist}/src.zip"/>
+       </zipfileset>
+   </zip>
+	  
+  <tar tarfile="../releases/${Name.System}.${version}.${DSTAMP}_COMMON_DIST.tar">
+      <tarfileset dir="." prefix="${Name.System}.${version}">
+	<include name="${dist}/**"/>
+	<include name="${dist}/docs/**"/>
+	<include name="${dist}/docs/jdocs/**"/>
+	<include name="${dist}/bin/**"/>
+	<include name="${dist}/lib/**"/>
+	<include name="${dist}/src/**"/>
+	<include name="${dist}/src.zip"/>
+      </tarfileset>
+  </tar>
+  
+  <gzip src="../releases/${Name.System}.${version}.${DSTAMP}_COMMON_DIST.tar" zipfile="../releases/${Name.System}.${version}.${DSTAMP}_COMMON_DIST.tar.gz"/>
+  <delete file="../releases/${Name.System}.${version}.${DSTAMP}_COMMON_DIST.tar"/>
+
+  </target>
+  
+  <!-- =================================================================== -->
+  <!-- release                                                             -->
+  <!-- =================================================================== -->
+  <target name="release" depends="init, initrelease, allrelease, commonrelease" description="Creates zip with release packages"> 
   </target>
 </project>
 
