@@ -1,9 +1,14 @@
-if ! test $SFHOME; then export SFHOME=$PWD; fi
+#! /bin/sh
+if ! test $SFHOME; 
+then 
+    export SFHOME=$PWD;
+    echo SFHOME undefined, using $SFHOME as base directory;
+fi
 if [ $# -ne 0 ];
 then
-echo "Insufficient argument(s) to use sfDaemon"
-echo "Usage: sfDaemon"
-exit
+    echo "Incorrect number of argument(s) to use sfDaemon"
+    echo "Usage: sfDaemon"
+    exit
 fi
 for i in $SFHOME/lib/*.jar; do CLASSPATH=$i:$CLASSPATH; done
 export CLASSPATH
