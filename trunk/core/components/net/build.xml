@@ -85,10 +85,14 @@ For more information: www.smartfrog.org
   <!-- ========================================================== -->
   <!-- use rmi to generate stubs and skeleton-->
   <!-- ========================================================== -->
-  <target name="compile-RMI" depends="compile">
-    <rmic includesfile="rmitargets" base="${build.classes.dir}">
-      <classpath refid="compile.classpath"/>
-    </rmic>
+  <target name="compile-RMI" depends="compile"
+    description="create the RMI classes">
+        <sf-rmic
+            base="${build.classes.dir}"
+            verify="true"
+            includes="**/*.class">
+            <classpath refid="compile.classpath"/>
+        </sf-rmic>
   </target>  
   
   <!-- ========================================================== -->
