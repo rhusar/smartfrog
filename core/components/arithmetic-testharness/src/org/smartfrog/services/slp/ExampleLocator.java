@@ -4,6 +4,7 @@ import org.smartfrog.sfcore.prim.*;
 import org.smartfrog.sfcore.workflow.eventbus.*;
 import org.smartfrog.sfcore.reference.*;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 
 import java.rmi.*;
@@ -112,7 +113,14 @@ public class ExampleLocator extends EventPrimImpl implements Prim{
       resultsForThisType = (Vector) sfResolve(sURL.getServiceType().toString());
     } catch (SmartFrogResolutionException rex){
       resultsForThisType = new Vector();
-      this.sfReplaceAttribute(sURL.getServiceType().toString(),resultsForThisType);
+      try {
+        this.sfReplaceAttribute(sURL.getServiceType().toString(),
+                                resultsForThisType);
+      }catch (SmartFrogRuntimeException sfRex) {
+          System.out.println("Run time exception :"+ sfRex); //Temporary Fix
+      } catch (RemoteException re) {
+          System.out.println("Remote Exception:"+ re);
+      }
        // could specify a destination component other than 'this'
     } catch (Exception ex){
       System.out.println( " Could not store new item ");
