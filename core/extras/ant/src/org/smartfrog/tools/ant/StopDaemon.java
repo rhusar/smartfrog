@@ -27,16 +27,15 @@ import org.apache.tools.ant.BuildException;
  * Ant task to stop a smartfrog daemon on a host
  * As the daemon is just another process, this is implemented as a call to shut down the application
  * named 'rootProcess'.
- * By default this target does not raise an error when the daemon cannot be stopped,
- * as the usual cause of this is 'there is no daemon', which is the state
- * we are seeking.
+ * By default this target raises an error when the daemon cannot be stopped,
  * @author steve loughran
  */
 public class StopDaemon extends SmartFrogTask {
 
     public StopDaemon() {
         setApplicationName("rootProcess");
-        setHostname("localhost");
+        setHost("localhost");
+        setFailOnError(true);
     }
 
     /**
@@ -50,7 +49,6 @@ public class StopDaemon extends SmartFrogTask {
         addHostname();
         addApplicationName("-t");
         addExitFlag();
-        setFailOnError(false);
         execSmartfrog("failed to terminate " + getApplicationName());
     }
 
