@@ -66,14 +66,15 @@ public class LogToLog4JImpl implements LogToLog4J, Log, LogMessage, LogLevel, Se
    * URL for Log4J configuration file
    */
   Object configuratorURL = null;
-  /**
-   * Should Log4J configuration be refreshed?
-   */
-  boolean configureAndWatch = false;
-  /**
-   * Refresh period for Log4J configuration
-   */
-  long configureAndWatchDelay = 60 * 1000;
+// Log4J 1.3 removes Configure and Wath
+//  /**
+//   * Should Log4J configuration be refreshed?
+//   */
+//  boolean configureAndWatch = false;
+//  /**
+//   * Refresh period for Log4J configuration
+//   */
+//  long configureAndWatchDelay = 60 * 1000;
   /**
    * Method setLogLevel should ignore any call
    */
@@ -173,11 +174,11 @@ public class LogToLog4JImpl implements LogToLog4J, Log, LogMessage, LogLevel, Se
 
       if (configuratorURL instanceof java.net.URL) {
           try {
-              if (configureAndWatch) {
-                  if (isWarnEnabled()) {
-                      this.warn("LogToLog4JImpl: ConfigureAndWatch not available with URL (" + configuratorURL.toString() + ")");
-                  }
-              }
+//              if (configureAndWatch) {
+//                  if (isWarnEnabled()) {
+//                      this.warn("LogToLog4JImpl: ConfigureAndWatch not available with URL (" + configuratorURL.toString() + ")");
+//                  }
+//              }
               if (((java.net.URL) configuratorURL).getFile().endsWith(".xml")) {
                   //Initial configurator is removed
                   org.apache.log4j.BasicConfigurator.resetConfiguration();
@@ -206,31 +207,31 @@ public class LogToLog4JImpl implements LogToLog4J, Log, LogMessage, LogLevel, Se
               if (((String) configuratorURL).endsWith(".xml")) {
                   //Initial configurator is removed
                   org.apache.log4j.BasicConfigurator.resetConfiguration();
-                  if (!configureAndWatch) {
+//                  if (!configureAndWatch) {
                       org.apache.log4j.xml.DOMConfigurator.configure((String)configuratorURL);
                       if (isTraceEnabled()) {
                           this.out("LogToLog4JImpl: Using Log4J.xml.DOMConfigurator with " + (String) configuratorURL);
                       }
-                  } else {
-                      org.apache.log4j.xml.DOMConfigurator.configureAndWatch((String) configuratorURL, configureAndWatchDelay);
-                      if (isTraceEnabled()) {
-                          this.out("LogToLog4JImpl: Using Log4J.xml.DOMConfigurator with " + configuratorURL + " and watch every " + configureAndWatchDelay + "ms");
-                      }
-                  }
+//                  } else {
+//                      org.apache.log4j.xml.DOMConfigurator.configureAndWatch((String) configuratorURL, configureAndWatchDelay);
+//                      if (isTraceEnabled()) {
+//                          this.out("LogToLog4JImpl: Using Log4J.xml.DOMConfigurator with " + configuratorURL + " and watch every " + configureAndWatchDelay + "ms");
+//                      }
+//                  }
               } else {
                   //Initial configurator is removed
                   org.apache.log4j.BasicConfigurator.resetConfiguration();
-                  if (!configureAndWatch) {
+//                  if (!configureAndWatch) {
                       org.apache.log4j.PropertyConfigurator.configure((String)configuratorURL);
                       if (isTraceEnabled()) {
                           this.out("LogToLog4JImpl: Using Log4J.PropertyConfigurator with " + configuratorURL);
                       }
-                  } else {
-                      org.apache.log4j.PropertyConfigurator.configureAndWatch((String) configuratorURL, configureAndWatchDelay);
-                      if (isTraceEnabled()) {
-                          this.out("LogToLog4JImpl: Using Log4J.PropertyConfigurator with " + configuratorURL + " and watch every " + configureAndWatchDelay + "ms");
-                      }
-                  }
+//                  } else {
+//                      org.apache.log4j.PropertyConfigurator.configureAndWatch((String) configuratorURL, configureAndWatchDelay);
+//                      if (isTraceEnabled()) {
+//                          this.out("LogToLog4JImpl: Using Log4J.PropertyConfigurator with " + configuratorURL + " and watch every " + configureAndWatchDelay + "ms");
+//                      }
+//                  }
               }
           } catch (FactoryConfigurationError ex3) {
               if (isErrorEnabled()) {
@@ -277,14 +278,24 @@ public class LogToLog4JImpl implements LogToLog4J, Log, LogMessage, LogLevel, Se
             }
         }
 
-        configureAndWatch = classComponentDescription.sfResolve( ATR_CONFIGURE_AND_WATCH, configureAndWatch, false);
-        double delay = Double.longBitsToDouble(configureAndWatchDelay);
-
-        delay = (classComponentDescription.sfResolve(ATR_CONFIGURE_AND_WATCH_DELAY, delay, false));
-        configureAndWatchDelay = (long)delay;
-
         ignoreSetLogLevel = (classComponentDescription.sfResolve(this.ATR_INGNORE_SET_LOG_LEVEL, ignoreSetLogLevel, false));
         setIniLog4JLoggerLevel = (classComponentDescription.sfResolve(ATR_SET_INI_LOG4J_LOGGER_LEVEL, setIniLog4JLoggerLevel, false));
+
+        try {
+            //true so that if it is present we can issue a warning. configureAndWatch not supported in Log4J new versions.
+            boolean configureAndWatch = false;
+            String ATR_CONFIGURE_AND_WATCH = "configureAndWatch";
+            configureAndWatch = classComponentDescription.sfResolve(ATR_CONFIGURE_AND_WATCH, configureAndWatch, true);
+            if (isWarnEnabled()) {
+                this.warn(ATR_CONFIGURE_AND_WATCH + " not supported any more");
+            }
+        } catch (SmartFrogResolutionException sfrex){
+            //ignore. This attributea should not be there.
+        }
+
+//        double delay = Double.longBitsToDouble(configureAndWatchDelay);
+//        delay = (classComponentDescription.sfResolve(ATR_CONFIGURE_AND_WATCH_DELAY, delay, false));
+//        configureAndWatchDelay = (long)delay;
 
     } catch (Exception ex1) {
         throw (SmartFrogLogException)SmartFrogLogException.forward(ex1);
