@@ -35,6 +35,9 @@ For more information: www.smartfrog.org
   To run just one test, run the test target with the testcase property set to
   the full name of the test, e.g. 
     -Dtestcase=org.smartfrog.test.unit.core.coreTest
+    
+  You can enable/disable unit tests by setting unit.tests to true or false;
+  system tests by setting system.tests to true or false. By default both are enabled.
   
 </description>
 
@@ -83,13 +86,7 @@ For more information: www.smartfrog.org
   <property name="system.tests" value="true" />
   <property name="unit.tests" value="false" />
   
-  <condition property="system.tests.enabled">
-    <istrue value="${system.tests}"/>
-  </condition>
-  
-  <condition property="unit.tests.enabled">
-    <istrue value="${unit.tests}"/>
-  </condition>
+
   
   <!-- ========================================================== -->
   <!-- Test settings                                              -->
@@ -102,6 +99,13 @@ For more information: www.smartfrog.org
     <mkdir dir="${test.datafiles.dir}" />
     <mkdir dir="${test.reports.dir}" />
     <mkdir dir="${test.src.dir}"  />
+      <condition property="system.tests.enabled">
+          <istrue value="${system.tests}"/>
+      </condition>
+
+      <condition property="unit.tests.enabled">
+          <istrue value="${unit.tests}"/>
+      </condition>      
   </target>
 
   <target name="clean" description="clean up the test directories only">
