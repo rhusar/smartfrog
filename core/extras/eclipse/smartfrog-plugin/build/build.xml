@@ -22,8 +22,10 @@
 
     <!-- Local directories -->
     <property name="build.dir" value="build_area"/>
-    <property name="temp.folder.name" value="temp.folder"/>
-    <property name="temp.folder" value="${build.dir}/${temp.folder.name}"/>
+    <property name="temp.zip.folder.name" value="temp.zip.folder"/>
+    <property name="temp.zip.folder" value="${build.dir}/${temp.zip.folder.name}"/>
+    <property name="temp.tar.folder.name" value="temp.tar.folder"/>
+    <property name="temp.tar.folder" value="${build.dir}/${temp.tar.folder.name}"/>
     <property name="work.folder.name" value="work.folder"/>
     <property name="work.folder" value="${build.dir}/${work.folder.name}"/>
     <property name="build.results.folder" value="${build.artifacts.dir.name}"/>
@@ -249,14 +251,23 @@
         description="Create distribution zip of plugins and install doc"
         depends="build.bin.plugin,build.doc.plugin">
 
-        <delete dir="${temp.folder}"/>
-        <mkdir dir="${temp.folder}"/>
+        <delete dir="${temp.zip.folder}"/>
+        <mkdir dir="${temp.zip.folder}"/>
+        <delete dir="${temp.tar.folder}"/>
+        <mkdir dir="${temp.tar.folder}"/>
 
         <!-- Copy the binary, doc and xmen plugin zips -->
-        <copy todir="${temp.folder}">
+        <copy todir="${temp.zip.folder}">
             <fileset dir="${build.results.folder}">
                 <include name="${bin.plugin.zip.name}"/>
                 <include name="${doc.plugin.zip.name}"/>
+            </fileset>
+        </copy>
+
+        <copy todir="${temp.tar.folder}">
+            <fileset dir="${build.results.folder}">
+                <include name="${bin.plugin.tar.name}"/>
+                <include name="${doc.plugin.tar.name}"/>
             </fileset>
         </copy>
         
@@ -264,15 +275,22 @@
         
         <!-- Perform any custom setup work -->
         <antcall target="custom.build.dist.zip">
-            <param name="target.dir" value="${temp.folder}"/>
+            <param name="target.dir" value="${temp.zip.folder}"/>
+        </antcall>
+        <antcall target="custom.build.dist.zip">
+            <param name="target.dir" value="${temp.tar.folder}"/>
         </antcall>
 
 
         <!-- Zip it up! -->
         <zip zipfile="${build.results.folder}/${plugin.distribution.zip.name}"
-            basedir="${temp.folder}" filesonly="true"/>
+            basedir="${temp.zip.folder}" filesonly="true"/>
 
-        <delete dir="${temp.folder}"/>
+        <tar tarfile="${build.results.folder}/${plugin.distribution.tar.name}"
+            basedir="${temp.tar.folder}"/>
+
+        <delete dir="${temp.zip.folder}"/>
+        <delete dir="${temp.tar.folder}"/>
         <antcall target="refresh"/>
     </target>
 
