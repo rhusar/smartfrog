@@ -30,11 +30,14 @@ import java.util.Vector;
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.Copying;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogCompilationException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.languages.sf.Phase;
 import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
 import org.smartfrog.sfcore.parser.Phases;
+import org.smartfrog.sfcore.reference.ReferenceResolver;
 import org.smartfrog.sfcore.reference.HereReferencePart;
 import org.smartfrog.sfcore.reference.Reference;
 
@@ -171,6 +174,31 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
                resState.unresolved(),null);
       }
    }
+
+
+    //
+    // ReferenceResolver
+    //
+
+    /**
+     * Resolves a refererence starting at given index. If the reference is
+     * lazy, it is returned since component descriptions are not supposed to
+     * chain on lazy references.
+     *
+     * @param r reference to resolve
+     * @param index index in reference to start to resolve
+     *
+     * @return Object refernce
+     *
+     * @throws SmartFrogResolutionException failure while resolving reference
+     */
+    public Object sfResolve(Reference r, int index)
+        throws SmartFrogResolutionException {
+	if (!r.getEager() && (index == 0)) {
+	    return r;
+	}
+        return r.resolve(this, index);
+    }
 
 
    /**
@@ -537,11 +565,30 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
 
    /**
     *  Return a component description as required by the deployer.
+    *  Works by side-effect on the SFComponentDescription for efficiency.
+    *  This becomes uniseable after the conversion.
     *
-    *@return    this
+    *@return    the equivalent component descriptino
     */
-   public ComponentDescription sfAsComponentDescription() {
-      return this;
+   public ComponentDescription sfAsComponentDescription() throws SmartFrogCompilationException {
+       ComponentDescription res = null;
+       // works heavily by side-effect for efficiency
+
+       // don't bother to copy context as we are ditching the original!
+       // parent only necessary for the root - gets overwritten below
+       res = new ComponentDescriptionImpl(null, context, eager);
+
+       for (Enumeration e = context.keys(); e.hasMoreElements(); ) {
+	   Object key = e.nextElement();
+	   Object value = res.getContext().get(key);
+	   
+	   if (value instanceof SFComponentDescription) {
+	       value = ((SFComponentDescription) value).sfAsComponentDescription();
+	       ((ComponentDescription) value).setParent(res);
+	       context.put(key, value);
+	   }
+       }
+       return res;
    }
 
 
@@ -610,7 +657,6 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
              actOn.deployResolve();
            }
            else if (name.equals("print")) {
-             //System.out.println(actOn.toString());
              org.smartfrog.sfcore.common.Logger.log(actOn.toString());
            }
            else {
