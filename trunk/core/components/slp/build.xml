@@ -157,7 +157,7 @@ Reference URL:http://ant.apache.org
     <mkdir dir="${dist.dir}"/>
     <mkdir dir="${dist.lib.dir}"/>
     <mkdir dir="${dist.bin.dir}"/>
-    <mkdir dir="${dist.docs.dir}"/>
+    <!--mkdir dir="${dist.docs.dir}"/-->
     <mkdir dir="${dist.src.dir}"/>
   </target>
 
@@ -261,7 +261,7 @@ Reference URL:http://ant.apache.org
     <!--  Java Docs for all                                                -->
     <echo message=""/>
     <echo message="------------------------------------------------------------------------"/>
-    <echo message="  Creating Java Docs for ${Name.System} ${version} [${dist.dir}/${jdocs}]"/>
+    <echo message="  Creating Java Docs for ${Name.System} ${version} [${dist.jdocs.dir}]"/>
     <echo message="------------------------------------------------------------------------"/>
     <mkdir dir="${dist.jdocs.dir}"/>
     <javadoc packagenames="org.smartfrog.services.comm.slp.*"
