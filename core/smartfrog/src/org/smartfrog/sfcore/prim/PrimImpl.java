@@ -285,14 +285,12 @@ public class PrimImpl extends Object implements Prim, MessageKeys {
             return null;
         }
 
-	
-	if (sfContext != null) {
-        	if (sfContext.containsKey(name)) {
-            		return null;
-        	}
+        if (sfContext.containsKey(name)) {
+                return null;
+        }
 
-        	sfContext.put(name, value);
-	}
+        sfContext.put(name, value);
+
         return value;
     }
 
@@ -1622,7 +1620,7 @@ public class PrimImpl extends Object implements Prim, MessageKeys {
     public Reference sfCompleteNameSafe() {
        return ComponentHelper.completeNameSafe(this);
     }
-    
+
 
 
     /**
@@ -2203,7 +2201,7 @@ public class PrimImpl extends Object implements Prim, MessageKeys {
      * @throws RemoteException
      */
     public LogSF sfGetProcessLog() throws SmartFrogException, RemoteException {
-       return sfGetLog(SmartFrogCoreKeys.SF_CORE_LOG);
+       return LogFactory.getProcessLog();
     }
 
     /**
