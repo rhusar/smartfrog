@@ -22,6 +22,8 @@ package org.smartfrog.services.cddlm;
 import org.apache.axis.AxisFault;
 import org.smartfrog.SFSystem;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.TerminationRecord;
 
 import java.rmi.RemoteException;
 
@@ -60,11 +62,11 @@ public class DeploymentEndpoint {
     /**
      * deploy a file; save it to a temporary location and then deploy it
      * @param language
-     * @param appname
+     * @param application
      * @param data
      * @throws AxisFault
      */
-    public void deploy(String language, String hostname, String appname, String data) throws AxisFault {
+    public void deploy(String language, String hostname, String application, String data) throws AxisFault {
         verifySupported(language);
         throw new AxisFault("Not yet implemented");
     }
@@ -72,21 +74,36 @@ public class DeploymentEndpoint {
     /**
      * deploy a named resource
      * @param language
-     * @param appname
+     * @param application
      * @param url
      * @throws AxisFault
      */
-    public void deployURL(String language, String hostname, String appname, String url) throws RemoteException
+    public void deployURL(String language, String hostname, String application, String url) throws RemoteException
             {
         verifySupported(language);
         boolean remote= hostname.length() != 0 && !"localhost".equalsIgnoreCase(hostname) ;
         try {
-            SFSystem.deployAComponent(hostname,url,appname,remote);
+            SFSystem.deployAComponent(hostname,url,application,remote);
         } catch (SmartFrogException exception) {
             AxisFault.makeFault(exception);
         }
     }
 
+
+    /**
+     * undeploy an application
+     * @param hostname
+     * @param application
+     */
+    public void undeploy(String hostname, String application) throws AxisFault {
+        /*
+        TerminationRecord tr = new TerminationRecord(TerminationRecord.NORMAL,
+                "force to terminate", null);
+        Prim obj = ((Prim) obj.sfResolveHere(token));
+        obj.sfTerminate(tr);
+        */
+        throw new AxisFault("Not implemented yet");
+    }
 
 }
 
