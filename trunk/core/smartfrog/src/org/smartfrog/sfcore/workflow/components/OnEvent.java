@@ -42,7 +42,7 @@ import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
 public class OnEvent extends EventCompoundImpl implements Compound {
 
     /* whether to handle a single event, or multiple */
-    boolean singleEvent = false;
+    boolean singleEvent = true;
 
     /* whether the event handler should continue to handle events */
     boolean finished = false;
@@ -94,7 +94,7 @@ public class OnEvent extends EventCompoundImpl implements Compound {
     }
 
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
-	singleEvent = sfResolve("singleEvent", false, false);
+	singleEvent = sfResolve("singleEvent", true, false);
     }
 
     public synchronized void sfTerminateWith(TerminationRecord tr) {

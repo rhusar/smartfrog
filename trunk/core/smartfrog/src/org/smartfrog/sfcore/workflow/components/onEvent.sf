@@ -22,6 +22,9 @@ For more information: www.smartfrog.org
 
 OnEvent extends EventCompound {
     sfClass "org.smartfrog.sfcore.workflow.components.OnEvent";
+    // set the handler to accept either a sigle event (then terminate), or remain until told to go
+    // handling as many events as aer thrown at it. Defaults to single event handlnig
+    singleEvent true;
 /*
     event1 extends LAZY ... { ... }
     event2 extends LAZY ... { ... }
