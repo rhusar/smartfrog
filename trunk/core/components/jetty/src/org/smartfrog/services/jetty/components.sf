@@ -1,6 +1,9 @@
 #include "org/smartfrog/components.sf";
 #include "org/smartfrog/sfcore/workflow/components.sf";
 #include "org/smartfrog/functions.sf";
+#include "/org/smartfrog/predicates.sf"
+//liveness and webserver
+#include "/org/smartfrog/services/www/components.sf"
 
 /**
  * This component is a minimal http server.
@@ -15,6 +18,99 @@ HttpServer extends Compound {
    
 }
 
+/**
+ * this is the admin channel for jetty
+ */
+JettyAdminSchema extends Schema {
+    listenerPort extends Integer;
+    httpserverHost extends String;
+    contextPath extends String;
+}
+
+HttpServerAdmin extends Prim {
+    sfClass "org.smartfrog.services.jetty.SFJettyAdmin";
+    listenerPort 8081;         // the port on which the http server listens
+    httpserverHost   "null";
+    contextPath "/";
+}
+
+
+/**
+ * a jetty servlet context is a compound
+ * with a resource base
+ * It defines something to be deployed on a jetty server
+ */
+
+JettyServletContextSchema extends Schema {
+    resourceBase extends String;
+}
+
+JettyServletContext extends Compound {
+    sfClass "org.smartfrog.services.jetty.contexts.Servlet";
+    jettyServletContextSchema extends JettyServletContextSchema;
+}
+
+
+/**
+ * a jetty web application has a context path
+ * and a a path to its home directory
+ */
+JettyWebApplicationSchema extends Schema {
+    contextPath extends String;
+    webApp extends String;
+}
+
+JettyWebApplication extends Prim {
+  jettyWebApplicationSchema extends JettyWebApplicationSchema;
+  sfClass "org.smartfrog.services.jetty.contexts.WebApplication";
+}
+
+/**
+ * jetty handlers handle requests.
+ * there is no schema, or other information, but we declare
+ * an extra template for clarity
+ */
+JettyHandler extends Prim {
+}
+
+
+/**
+ * listeners listen on ports
+ */
+JettyListenerSchema extends Schema {
+    listenerPort extends Integer;
+    serverHost extends String;
+}
+
+JettyListener extends Prim {
+    sfClass "org.smartfrog.services.jetty.listeners.Socketlistener";
+}
+
+/**
+ * this servlet declaration defines
+ * the servlet information
+ */
+JettyServletSchema extends Schema {
+    name extends String;
+    pathSpec extends String;
+    className extends String;
+    initParams extends OptionalVector;
+}
+
+/**
+ * and this implementing class binds the servlet to
+ * jetty
+ */
+JettyServlet extends Prim {
+    sfClass "org.smartfrog.services.jetty.contexts.servlets.Servlet";
+    jettyServletSchema extends JettyServletSchema;
+}
+
+
+/*==========================================
+  declare jetty contexts
+===========================================*/
+
 Contexts extends Compound {
   Context1 ATTRIB context1;
   Context2 ATTRIB context2;
@@ -24,27 +120,23 @@ Contexts extends Compound {
   Context6 ATTRIB context6;
 }
 
-context1 extends Prim {
- sfClass "org.smartfrog.services.jetty.contexts.WebApplication";
+context1 extends JettyWebApplication {
  contextPath "/";
  webApp (jettyhome ++ "/demo/webapps/root");
 }
 
-context2 extends Prim {
- sfClass "org.smartfrog.services.jetty.contexts.WebApplication";
+context2 extends JettyWebApplication {
  contextPath "/jetty";
  webApp (jettyhome ++ "/demo/webapps/jetty");
 }
 
-context3 extends Prim {
- sfClass "org.smartfrog.services.jetty.contexts.WebApplication";
+context3 extends JettyWebApplication {
  contextPath "/examples";
  webApp (jettyhome ++ "/demo/webapps/examples");
  requestId true; //optional
 }
 
-context4 extends Compound {
- sfClass "org.smartfrog.services.jetty.contexts.Servlet";
+context4 extends JettyServletContext {
  contextPath "/demo";
  resourceBase (jettyhome ++ "/demo/docroot");
  classPath (jettyhome ++ "/demo/servlets"); 
@@ -52,14 +144,12 @@ context4 extends Compound {
  servlets extends Servlets; //optional
 }
 
-context5 extends Prim {
- sfClass "org.smartfrog.services.jetty.contexts.Servlet";
+context5 extends JettyServletContext {
  contextPath "/javadoc";
  resourceBase (jettyhome ++ "/javadoc");
 }
 
-context6 extends Prim {
- sfClass "org.smartfrog.services.jetty.contexts.Servlet";
+context6 extends JettyServletContext {
  contextPath "/cgi-bin";
  resourceBase (jettyhome ++ "/cgi-bin");
  servlets extends CGI; //optional
@@ -68,6 +158,10 @@ context6 extends Prim {
 CGI extends Compound {
  servlet1 ATTRIB CGIservlet;
 }
+
+/*==========================================
+  declare handlers
+===========================================*/
 
 Handlers extends Compound {
  Handler1 ATTRIB handler1;
@@ -81,20 +175,26 @@ handler2 extends HTAccess {}
 
 handler3 extends Dump {}
 
-Dump extends Prim {
+
+
+Dump extends JettyHandler {
  sfClass "org.smartfrog.services.jetty.contexts.handlers.Dump";
 }
 
-HTAccess extends Prim {
+HTAccess extends JettyHandler {
  sfClass "org.smartfrog.services.jetty.contexts.handlers.HTAccess";
  accessFile ".htaccess";
 }
 
-Forward extends Prim {
+Forward extends JettyHandler {
  sfClass "org.smartfrog.services.jetty.contexts.handlers.Forward";
  mapfromPath "/forward/*";
  maptoPath "/dump";
 }
+
+/*==========================================
+  declare servlets
+===========================================*/
 
 Servlets extends Compound {
  Servlet1 ATTRIB Invokerservlet;
@@ -105,79 +205,72 @@ Servlets extends Compound {
  Servlet6 ATTRIB SrcDefaultservlet;
 }
 
-Invokerservlet extends Prim {
- sfClass "org.smartfrog.services.jetty.contexts.servlets.Servlet";
+
+
+Invokerservlet extends JettyServlet {
  name "Invoker";
  pathSpec "/servlet/*";
  className "org.mortbay.jetty.servlet.Invoker";
 }
 
-Dumpservlet extends Prim {
- sfClass "org.smartfrog.services.jetty.contexts.servlets.Servlet";
+Dumpservlet extends JettyServlet {
  name "Dump";
  pathSpec "/dump/*:*.DUMP";
  className "org.mortbay.servlet.Dump";
  initParams [["InitParam","Value"]];
 }
 
-Sessionservlet extends Prim {
- sfClass "org.smartfrog.services.jetty.contexts.servlets.Servlet";
+Sessionservlet extends JettyServlet {
  name "Session";
  pathSpec "/session/*";
  className "org.mortbay.servlet.SessionDump";
 }
 
-Dispatchservlet extends Prim {
- sfClass "org.smartfrog.services.jetty.contexts.servlets.Servlet";
+Dispatchservlet extends JettyServlet {
  name "Dispatch";
  pathSpec "/dispatch/*";
  className "org.mortbay.servlet.RequestDispatchTest";
 }
 
-JSPservlet extends Prim {
- sfClass "org.smartfrog.services.jetty.contexts.servlets.Servlet";
+JSPservlet extends JettyServlet {
  name "JSP";
  pathSpec "*.jsp";
  className "org.apache.jasper.servlet.JspServlet";
 }
 
-SrcDefaultservlet extends Prim {
- sfClass "org.smartfrog.services.jetty.contexts.servlets.Servlet";
+SrcDefaultservlet extends JettyServlet {
  name "SrcDefault";
  pathSpec "/src/*";
  className "org.mortbay.jetty.servlet.Default";
  initParams [["dirAllowed","true"], ["resourceBase", (jettyhome ++ "/src")]];
 }
 
-CGIservlet extends Prim {
- sfClass "org.smartfrog.services.jetty.contexts.servlets.Servlet";
+CGIservlet extends JettyServlet {
  name "Common Gateway Interface";
  pathSpec "/";
  className "org.mortbay.servlet.CGI";
  initParams [["Path","/bin:/usr/bin:/usr/local/bin"], ["ENV_TEST", ("Jetty home is " ++ jettyhome)]];
 }
 
+/*==========================================
+  declare listeners
+===========================================*/
+
 Listeners extends Compound { 
    Listener1 ATTRIB listener1;
    Listener2 ATTRIB listener2;
 }
 
-listener1 extends Prim {
- sfClass "org.smartfrog.services.jetty.listeners.Socketlistener";
+
+listener1 extends JettyListener {
  listenerPort 8080;
  serverHost PARENT:PARENT:serverHost;
 }
 
-listener2 extends Prim {
+listener2 extends JettyListener {
  sfClass "org.smartfrog.services.jetty.listeners.AJPlistener";
  listenerPort 8009;
  serverHost PARENT:PARENT:serverHost;
 }
 
-HttpServerAdmin extends Prim {
-    sfClass "org.smartfrog.services.jetty.SFJettyAdmin";
-    listenerPort 8081;         // the port on which the http server listens
-    httpserverHost   "null";
-    contextPath "/";
-}
 

@@ -5,6 +5,7 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.services.jetty.contexts.ServletContextIntf;
 import org.mortbay.http.handler.ForwardHandler;
 import org.mortbay.http.HttpContext;
 import org.mortbay.jetty.servlet.ServletHttpContext;
@@ -15,9 +16,9 @@ import org.mortbay.jetty.servlet.ServletHttpContext;
  */
 
 
-public class Forward extends PrimImpl implements Prim {
-   Reference mapfromPathRef = new Reference("mapFromPath");
-   Reference maptoPathRef = new Reference("maptoPath");
+public class Forward extends PrimImpl implements ForwardIntf {
+    Reference mapfromPathRef = new Reference(MAP_FROM_PATH);
+    Reference maptoPathRef = new Reference(MAP_TO_PATH);
    
    String mapfromPath = "/forward/*";
    String maptoPath = "/dump";
@@ -45,7 +46,7 @@ public class Forward extends PrimImpl implements Prim {
        Prim parent = this.sfParent();
        Prim grandParent = parent.sfParent();
        ServletHttpContext cxt = (ServletHttpContext)grandParent.
-	       				sfResolveId("Context"); 
+	       				sfResolveId(ServletContextIntf.CONTEXT);
        cxt.addHandler(fwdhandler);  
    }
 }

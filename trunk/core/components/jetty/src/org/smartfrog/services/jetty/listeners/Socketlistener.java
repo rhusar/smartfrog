@@ -19,9 +19,9 @@ import org.mortbay.http.HttpServer;
  * @author Ritu Sabharwal
  */
 
-public class Socketlistener extends PrimImpl implements Prim, Listener {
-  Reference listenerPortRef = new Reference("listenerPort");
-  Reference serverHostRef = new Reference("serverHost");
+public class Socketlistener extends PrimImpl implements SocketListenerIntf {
+    Reference listenerPortRef = new Reference(LISTENER_PORT);
+    Reference serverHostRef = new Reference(SERVER_HOST);
   
   int listenerPort = 8080;
 

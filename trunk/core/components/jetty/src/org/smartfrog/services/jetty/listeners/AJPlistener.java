@@ -19,9 +19,9 @@ import org.smartfrog.sfcore.common.SmartFrogException;
  * @author Ritu Sabharwal
  */
 
-public class AJPlistener extends PrimImpl implements Prim, Listener {
-  Reference listenerPortRef = new Reference("listenerPort");
-  Reference serverHostRef = new Reference("serverHost");
+public class AJPlistener extends PrimImpl implements Listener {
+  Reference listenerPortRef = new Reference(LISTENER_PORT);
+  Reference serverHostRef = new Reference(SERVER_HOST);
 
   int listenerPort = 8009;
 
