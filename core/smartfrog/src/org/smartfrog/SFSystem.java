@@ -296,7 +296,8 @@ public class SFSystem implements MessageKeys {
      * run whatever action is configured
      * @param configuration
      * @param throwException
-     * @return
+     * @return whatever came back from calling
+     *  {@link ConfigurationDescriptor#execute(ProcessCompound)}
      * @throws SmartFrogException
      */
     public static Object runConfigurationDescriptor(ConfigurationDescriptor configuration,
@@ -498,7 +499,8 @@ public class SFSystem implements MessageKeys {
             // Notify status of Security
             if (!SFSecurity.isSecurityOn()){
                 String securityRequired = System.getProperty(SFSecurityProperties.propSecurityRequired,"false");
-                if(Boolean.parseBoolean(securityRequired)) {
+                Boolean secured=Boolean.valueOf(securityRequired);
+                if(secured) {
                     //we need security, but it is not enabled
                     throw new SFGeneralSecurityException(ERROR_NO_SECURITY_BUT_REQUIRED);
                 }
@@ -579,7 +581,7 @@ public class SFSystem implements MessageKeys {
 
     /**
      * get the root process
-     * @return
+     * @return the root process, null for none.
      */
     public ProcessCompound getRootProcess() {
         return rootProcess;
