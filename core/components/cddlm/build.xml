@@ -62,10 +62,9 @@
       <!-- schema config -->
       <property name="xsd.path" 
         value="${component.package.path}/xsd"/>
-      <property name="xsd.dir" 
-        value="${src.dir}/${xsd.path}"/>
+
       <property name="cddlm.xsd"
-        location="${xsd.dir}/cddlm.xsd" />
+        location="${src.dir}/${xsd.path}/cddlm.xsd" />
 
 
     </target>
@@ -347,24 +346,18 @@
    <delete dir="${soap.server.dir}/org.smartfrog/services/cddlm/api" />  
    <touch file="${soapapi.touch.file}"/>
   </target>
-  
-  <!-- yes, they really can't spell parseable -->
+
+ 
+  <!-- ========================================================== -->
+  <!-- generate Dotnet client -->
+  <!-- ========================================================== -->
    <target name="dotnet-client-wsdl" depends="init-soap,check-soapapi"
       unless="dotnet.uptodate"
       description="create the client-side C# code" >
    
      <wsdltodotnet URL="${deploymentAPI.wsdl.url}"
       destFile="${soap.dotnet.proxy.class}"
-      parseableErrors="true"
-      makeURL="true"
-      protocol="SOAP"
-      >
-<!--       
-        <schema file="${xsd.dir}/deployAPIschema.xsd"/>
-        <schema file="${xsd.dir}/ws-addressing.xsd"/>
-        <schema file="${xsd.dir}/jsdl.xsd"/>
-
- -->      </wsdltodotnet>
+      />
    </target>
 
    

@@ -19,7 +19,6 @@
  */
 package org.smartfrog.services.cddlm.api;
 
-import org.apache.axis.AxisFault;
 import org.apache.axis.types.URI;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
