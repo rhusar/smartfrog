@@ -286,10 +286,12 @@ public class PopUpTable extends JComponent implements ActionListener {
                           getEntry()));
          value = prim.sfResolveHere(attribName);
          if (value instanceof Reference) {
+           String solvedValueClass="class not found";
            try {
              ( (Reference) value).setEager(true);
              Object objSolvedValue = prim.sfResolve( (Reference) value);
              solvedValue.append(objSolvedValue.toString());
+             solvedValueClass = objSolvedValue.getClass().toString();
            } catch (Exception ex){
             solvedValue.append(" Failed to relsove!: " + ex.toString());
            }
@@ -300,8 +302,7 @@ public class PopUpTable extends JComponent implements ActionListener {
            text.append("\n * Value resolved: \n" + solvedValue.toString());
            text.append("\n\n" + "+ Value class:" +
                        value.getClass().toString());
-           text.append("\n" + "+ Solved Value class:" +
-                       solvedValue.getClass().toString());
+           text.append("\n" + "+ Solved Value class:" + solvedValueClass);
 
            parent.jTextArea1.setText(text.toString());
          }
