@@ -1,4 +1,50 @@
+release 3.04.000_beta
+---------------------
+2004-Aug-08 Release date
+2004-Aug-06  Add: SFGui added to distribution 
+2004-Aug-06  Add: sfReference document updated for common.TerminatorThread and sfCompleteNameSafe
+2004-Aug-05  Add: sfUserManual document updated for new shell scripts
+2004-Aug-03  Add: New method sfComponentDescriptionFromStr to ComponentDescription
+2004-Aug-02  Add: New shell scripts for starting daemon and applications
+2004-July-23 Add: New property prefixed by 'org.smartfrog.sfcore.processcompound.jvm.'+NAME+property=value 
+2004-July-07 Add: sfResolveHelper methods in ComponentDescription and Prim 
 release 3.02.002_beta
+2004-July-06 Add: Unbind rootProcess compound from registry during termination
+2004-July-05 Add: Initialized system in every user entry point in SFSystem
+2004-July-02 Fix: Property names in default.ini
+2004-July-02 Fix: Race condition during deployment of a new subprocess
+2004-June-29 Add: Generic java web application declarations
+2004-June-18 Add: First version of assertion checking predicate
+2004-June-18 Add: Primitive vectors to language
+2004-June-17 Add: Phases: function and predicate when creating component description
+2004-June-17 Add: Liveness component in core services
+2004-June-15 Add: Example properties to control Log in default.ini
+2004-June-15 Add: First thing in main (in SFSystem): init system
+2004-June-15 Add: Method to read system properties and add them to a component description in SFProcess 
+2004-June-04 Add: sfDeregister method in ProcessCompoundImpl
+2004-June-02 Add: sfDetach now registers component with LOCAL ProcessCompound
+2004-June-01 Add: sfCreateNewApp method in CompoundImpl
+2004-June-01 Add: sfCreateNewChild method in CompoundImpl
+2004-June-01 Add: Flags sfIsDeployed and sfIsStarted
+2004-June-01 Add: First versions of the Event Queuing model
+2004-May-27  Add: Draft for SmartFrog workflow components
+2004-May-26  Add: New logging System with standard APIs
+2004-May-26  Add: First pass of a Java component in services/os/java
+2004-May-21  Add: Schema for Runshell
+2004-May-20  Fix: Problem when comparing classes in schema
+2004-May-20  Fix: Problem when extracting date from trace messages
+2004-May-19  Fix: Schema error for filename in filesystem example
+2004-May-18  Add: New example in examples/counter
+2004-May-18  Fix: Errors in the cleanup after excpetion in sfDeployWith
+2004-May-07  Add: Error messages for copy in ordered hash table class
+2004-May-07  Fix: Broken code base because of sfPing
+2004-Apr-30  Add: Turning javac warnings on
+2004-Apr-29  Add: Better logging of classloading failures 
+2004-Apr-28  Add: fixCRLF targets to fix problems with shell and .txt files in different OSs
+2004-Apr-28  Fix: SignJars target in buildSecurity.xml
+2004-Apr-27  Fix: Dummy CA target in buildSecurity.xml
+2004-Apr-26  Add: Documentation for dynamicwebserver example
+
 ---------------------
 2004-Apr-26 Release date
 2004-Apr-23 - Fix:  Corrected problem with sfCodeBase
