@@ -34,6 +34,7 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.deployer.SFDeployer;
 import org.smartfrog.sfcore.prim.Dump;
 import org.smartfrog.sfcore.prim.Liveness;
 import org.smartfrog.sfcore.prim.Prim;
@@ -112,7 +113,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
                                 formatMessage(MSG_NON_REP_ATTRIB, name), null,null);
             }
             // try to deploy
-            Prim result = cmp.deploy(null, parent, parms);
+            Prim result = SFDeployer.deploy(cmp, null, parent, parms);
 
             if ((parent != null) && (name != null)) {
                 parent.sfReplaceAttribute(name, result);
