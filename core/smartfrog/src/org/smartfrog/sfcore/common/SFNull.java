@@ -45,6 +45,6 @@ public final class SFNull implements Serializable {
      * @return the string "", which is the form required for the unparse
      */
     public String toString() {
-	return "";
+	return "NULL";
     }
 }
