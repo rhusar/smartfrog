@@ -28,13 +28,16 @@ For more information: www.smartfrog.org
 
 /*
 Error tested:
- - FAILED when trying DEPLOY of 'TCN5',  [org/smartfrog/test/system/compiler/tcn5.sf],  deployReference: HERE sfconfig,  host:localhost
+ - FAILED when trying DEPLOY of 'example1JBuilider',  [org/smartfrog/test/system/compiler/tcn5.sf],  deployReference: HERE sfconfig,  host:localhost
    Error:
-    SmartFrogDeploymentException: HOST guijarro-j-3.hpl.hp.com:rootProcess:example1JBuilider failed to deploy 'TCN5' component. Wrong class when resolving 'HERE sfClass': '' (org.smartfrog.sfcore.common.SFNull)
-    cause: java.lang.ClassCastException
-    reference: HERE sfClass
+    SmartFrogDeploymentException: unnamed component
+    cause: SmartFrogResolutionException:: Error resolving 'HERE sfConfig' in org/smartfrog/test/system/compiler/tcn5.sf. The result is not a ComponentDescription, result: hello - here is a constructed message
+value is 99
+goodbye
+[[elementA, elementB], Message from outerVector, [value is , 99]]
+5 (java.lang.String)
     deployedContext: included
-    data: defaul
+   source: HOST eb97201.india.hp.com:rootProcess
 */
 
 value1 43;
@@ -67,8 +70,8 @@ outerVector extends vector{
    -- extends innerVector;
 }
 
-sfConfig extends Prim {  // -> To Fail
-sfClass ;
+sfConfig extends concat {  // -> To Fail
+sfClass;
 //sfConfig extends Counter {
    message extends concat {
        hello "hello - here is a constructed message\n";
