@@ -169,7 +169,7 @@ public class EventPrimImpl extends PrimImpl implements EventRegistration,
      * @param status Record having termination details of the component
      * @param comp The terminated component
      */
-    public synchronized void sfTerminateWith(TerminationRecord status, Prim comp) {
+    public synchronized void sfTerminateWith(TerminationRecord status) {
         /* unregister from all remote registrations */
         for (Enumeration e = receiveFrom.elements(); e.hasMoreElements();) {
             EventRegistration s = (EventRegistration) e.nextElement();
@@ -177,9 +177,10 @@ public class EventPrimImpl extends PrimImpl implements EventRegistration,
             try {
                 s.deregister(this);
             } catch (RemoteException ex) {
+		ex.printStackTrace();
             }
         }
 
-        super.sfTerminatedWith(status, comp);
+        super.sfTerminateWith(status);
     }
 }

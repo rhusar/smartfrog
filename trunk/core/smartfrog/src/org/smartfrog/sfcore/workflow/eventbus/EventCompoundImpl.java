@@ -169,7 +169,7 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
      * @param status Termination  Record
      * @param comp Component which caused the termination
      */
-    public synchronized void sfTerminateWith(TerminationRecord status, Prim comp) {
+    public synchronized void sfTerminateWith(TerminationRecord status) {
         /* unregister from all remote registrations */
         for (Enumeration e = receiveFrom.elements(); e.hasMoreElements();) {
             EventRegistration s = (EventRegistration) e.nextElement();
@@ -180,6 +180,6 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
             }
         }
 
-        super.sfTerminatedWith(status, comp);
+        super.sfTerminateWith(status);
     }
 }
