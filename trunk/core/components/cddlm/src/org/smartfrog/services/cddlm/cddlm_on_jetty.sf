@@ -76,7 +76,7 @@ sfConfig extends Compound {
      */
     JettyServer extends CoreJettyServer {
 
-        serverName "axis";
+        server "axis";
 
         serverHost host;
 
@@ -84,7 +84,9 @@ sfConfig extends Compound {
 
         listeners extends Compound {
             jetty extends JettyListener {
-                serverPort port;
+                listenerPort port;
+                serverHost host;
+                server PARENT:PARENT:server;
             }
         }
 
@@ -98,7 +100,7 @@ sfConfig extends Compound {
         AxisWebApp extends JettyWebApplication {
             webApp LAZY warFile:absolutePath;
             contextPath "axis";
-            server "axis";
+            server PARENT:server;
         }
 
     }
