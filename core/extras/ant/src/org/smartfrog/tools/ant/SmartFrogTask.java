@@ -21,6 +21,7 @@
 package org.smartfrog.tools.ant;
 
 import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Java;
 import org.apache.tools.ant.types.Environment;
 import org.apache.tools.ant.types.PropertySet;
@@ -167,7 +168,7 @@ public abstract class SmartFrogTask extends TaskBase {
     }
 
     /**
-     * port of daemon
+     * port of daemon; optional -default is 3800
      * @param port
      */
     public void setPort(Integer port) {
@@ -183,7 +184,7 @@ public abstract class SmartFrogTask extends TaskBase {
     }
 
     /**
-     * retry count
+     * retry count for liveness checks.
      * @param livenessCheckRetries
      */
     public void setLivenessCheckRetries(Integer livenessCheckRetries) {
@@ -194,8 +195,8 @@ public abstract class SmartFrogTask extends TaskBase {
      * can this process spawn new processes?
      * @param allowSpawning
      */
-    public void setAllowSpawning(Boolean allowSpawning) {
-        this.allowSpawning = allowSpawning;
+    public void setAllowSpawning(boolean allowSpawning) {
+        this.allowSpawning = new Boolean(allowSpawning);
     }
 
     /**
@@ -206,16 +207,9 @@ public abstract class SmartFrogTask extends TaskBase {
         this.spawnTimeout = spawnTimeout;
     }
 
-    /**
-     * log stack traces on failure
-     * @param logStackTraces
-     */
-    public void setLogStackTraces(Boolean logStackTraces) {
-        this.logStackTraces = logStackTraces;
-    }
 
     /**
-     * the name of a smartfrog file to load
+     * the name of a smartfrog file to load on startupe
      * @param initialSmartfrogFile
      */
     public void setInitialSmartfrogFile(File initialSmartfrogFile) {
@@ -230,6 +224,10 @@ public abstract class SmartFrogTask extends TaskBase {
     }
 
 
+    /**
+     * get the current host
+     * @return
+     */
     protected String getHost() {
         return host;
     }
@@ -237,7 +235,7 @@ public abstract class SmartFrogTask extends TaskBase {
 
 
     /**
-     * An ini file can contain data that overrides the basic settings.
+     * Name an ini file can contain data that overrides the basic settings.
      * @param iniFile
      */
     public void setIniFile(File iniFile) {
@@ -245,15 +243,14 @@ public abstract class SmartFrogTask extends TaskBase {
     }
 
 
-
     /**
-     * should the runtime log stack traces
+     * should the runtime log stack traces?
+     *
      * @param logStackTraces
      */
     public void setLogStackTraces(boolean logStackTraces) {
         this.logStackTraces = new Boolean(logStackTraces);
     }
-
 
     /**
      * get the base java task
@@ -353,14 +350,13 @@ public abstract class SmartFrogTask extends TaskBase {
             allowSpawning);
         addSmartfrogPropertyIfDefined("org.smartfrog.ProcessCompound.sfProcessTimeout",
             spawnTimeout);
-        /*
-        addSmartfrogPropertyIfDefined("",
-                );
-        addSmartfrogPropertyIfDefined("",
-                );
-        addSmartfrogPropertyIfDefined("",
-                );
-        */
+        if(codebase!=null) {
+            //add the codebase for extra stuff
+            String codelist=Codebase.getCodebaseString(codebase);
+            log("Codebase set to "+codelist,Project.MSG_VERBOSE);
+            addSmartfrogProperty("org.smartfrog.codebase",codelist);
+        }
+
     }
 
 
@@ -485,7 +481,7 @@ public abstract class SmartFrogTask extends TaskBase {
      * @throws org.apache.tools.ant.BuildException if a host is defined
      */
     protected void checkNoHost() {
-        if(host!=null || host.length()>0) {
+        if(host!=null && host.length()>0) {
             throw new BuildException("host cannot be set on this task");
         }
     }
@@ -559,7 +555,8 @@ public abstract class SmartFrogTask extends TaskBase {
                     throw new BuildException("Undefined codebase");
                 }
                 results.append(l);
-                results.append(':');
+                //space separated options here
+                results.append(' ');
             }
             return new String(results);
         }

@@ -89,15 +89,15 @@ public class UndeployTest extends TaskTestBase {
     public void testBadHost() {
         expectBuildExceptionContaining("testBadHost", "unknown host",
                 "failed to terminate");
-        assertLogContaining("Unable to locate IP address of the host: no-such-hostname");
-        //assertLogContaining("java.net.UnknownHostException: no-such-hostname");
+        assertInLog("Unable to locate IP address of the host: no-such-hostname");
+        //assertInLog("java.net.UnknownHostException: no-such-hostname");
 
     }
 
     public void testStopDaemon() {
         executeTarget("testStopDaemon");
-        assertLogContaining("SmartFrog [rootProcess] dead");
-        assertLogContaining("SmartFrog daemon terminated");
+        assertInLog("SmartFrog [rootProcess] dead");
+        assertInLog("SmartFrog daemon terminated");
 
     }
 

@@ -41,6 +41,8 @@ import org.apache.tools.ant.Project;
  * down the localhost, though that is a distinctly possibile option in future.
  * @author steve loughran
  * created 16-Feb-2004 16:37:26
+ * @ant.task category="SmartFrog" name="sf-startdaemon"
+ *
  */
 
 public class StartDaemon extends DeployingTaskBase {

@@ -33,6 +33,8 @@
     </condition>   
     <echo>system.tests.enabled=${system.tests.enabled}</echo>
   </target>
+    
+
 
   <target name="compile" depends="init">
     <sf-javac-with-ant 
@@ -116,8 +118,7 @@
     <path id="tests.compile.classpath">
       <path refid="smartfrog.classpath"/>
       <pathelement location="${smartfrog.tasks.jar}"/>
-      <path refid="testutil.classpath"
-      />
+      <path refid="testutil.classpath"/>
     </path>
     
     <sf-javac-with-ant 
@@ -173,5 +174,64 @@
 
   </target>  
   
+
+  <!-- this target does the extra xdocs initialisation -->
+  <target name="init-xdocs" depends="init">    
+    <property name="build.antdocs.dir" location="${build.dir}/xdocs"/>
+    <property name="gen.dir" location="${build.antdocs.dir}/gen"/>
+    <property name="gen.dir" location="${build.antdocs.dir}/gen"/>
+    <property name="build.docs.dir" location="${build.antdocs.dir}/docs"/>
+    <property name="build.xdocs.dir" location="${build.antdocs.dir}/xdocs"/>    
+    <property name="xdocs.dir" location="${env.ANT_HOME}/proposal/xdocs" />
+    <property name="src.package" value="org/smartfrog/tools/ant/" />
+    <path id="xdoclet.extra.classpath">
+      <path refid="smartfrog.classpath"/>
+      <pathelement location="${smartfrog.tasks.jar}"/>
+    </path>
+    <property name="xdoclet.extra.classpath.asprop"
+      refid="xdoclet.extra.classpath"/>    
+  </target>  
+
+<!-- probe for xdocs, which is only in CVS, not redist packages --> 
+<target name="probe-xdocs" depends="init-xdocs" >
+  <available property="xdocs.found" file="${xdocs.dir}/build.xml"/>
+</target>
+
+<target name="want-xdocs" depends="probe-xdocs">
+  <fail unless="xdocs.found">
+    We need the proposal/xdocs source tree from Ant in ${env.ANT_HOME}/proposal/xdocs
+   </fail>
+</target>
+
+
+
+<target name="xdocs" depends="want-xdocs,compile"
+  description="Run xdoclet over the ant tasks to create doc pages"
+  if="xdocs.found">
+  <echo>
+    running xdocs with classpath=${xdoclet.extra.classpath.asprop}
+  </echo>  
+
+  <ant inheritAll="${ant.inheritAll}" inheritRefs="${ant.inheritRefs}" dir="${xdocs.dir}" 
+      target="gen-and-prepare-for-docs">
+    <property name="src.dir" location="${src.package}"/>
+    <property name="src.root" location="src"/>
+    <property name="xdoclet.extra.classpath" 
+      value="${xdoclet.extra.classpath.asprop}"/>
+    <property name="gen.dir" location="${gen.dir}"/>
+    <property name="xdocs.dir" location="${build.xdocs.dir}"/>
+    <property name="build.docs.dir" location="${build.docs.dir}"/>
+  </ant>
+</target>
+
+<target name="dvsl" depends="want-xdocs">
+  <ant inheritAll="${ant.inheritAll}" inheritRefs="${ant.inheritRefs}" dir="${xdocs.dir}/dvsl">
+    <property name="src.dir" location="src/org/smartfrog/tools/ant/"/>
+    <property name="build.dir" location="${build.antdocs.dir}"/>
+    <property name="taskdocs.src" location="${gen.dir}"/>
+    <property name="xdocs.dir" location="${build.xdocs.dir}"/>
+    <property name="docs.dest" location="${build.docs.dir}"/>
+  </ant>  
+</target>  
   
 </project>   

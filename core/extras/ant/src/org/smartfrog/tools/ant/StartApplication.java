@@ -23,14 +23,15 @@ import org.apache.tools.ant.BuildException;
 
 /**
  * Start an SF application; that deployes it remotely
- * @ant.task category="SmartFrog"
+ * @ant.task category="SmartFrog" name="sf-deploy"
+ *
  */
 public class StartApplication extends DeployingTaskBase {
 
     public void init() throws BuildException {
         super.init();
         setFailOnError(true);
-        
+
     }
 
     /**

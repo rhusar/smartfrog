@@ -70,7 +70,7 @@ public class StartTest extends TaskTestBase {
     public void testBadHost() {
         expectBuildExceptionContaining("testBadHost", "host parameter",
                 "failed to start the smartfrog daemon");
-        assertLogContaining("java.net.UnknownHostException: no-such-hostname");
+        assertInLog("java.net.UnknownHostException: no-such-hostname");
     }
 
     public void testDefaults() {
@@ -91,8 +91,8 @@ public class StartTest extends TaskTestBase {
      */
     public void testSpawn() {
         executeTarget("testSpawn");
-        assertLogContaining("Standalone SmartFrog daemon started");
-        assertLogContaining("SmartFrog daemon terminated");
+        assertInLog("Standalone SmartFrog daemon started");
+        assertInLog("SmartFrog daemon terminated");
     }
 
 
@@ -119,22 +119,22 @@ public class StartTest extends TaskTestBase {
 
     public void testRunFile() {
         executeTarget("testRunFile");
-        assertLogContaining("failed to deploy 'app' component");
-        assertLogContaining("Reference not found, Unresolved Reference: sfClass");
-        assertLogContaining("SmartFrog [rootProcess] dead");
+        assertInLog("failed to deploy 'app' component");
+        assertInLog("Reference not found, Unresolved Reference: sfClass");
+        assertInLog("SmartFrog [rootProcess] dead");
     }
 
     public void testResource() {
         executeTarget("testResource");
-        assertLogContaining("COUNTER: hello - here is a constructed message");
-        assertLogContaining("value is 99");
-        assertLogContaining("goodbye");
-        assertLogContaining("[[elementA, elementB], Message from outerVector, [value is , 99]]");
-        assertLogContaining("1");
+        assertInLog("COUNTER: hello - here is a constructed message");
+        assertInLog("value is 99");
+        assertInLog("goodbye");
+        assertInLog("[[elementA, elementB], Message from outerVector, [value is , 99]]");
+        assertInLog("1");
         assertTerminationInLog();
     }
 
     private void assertTerminationInLog() {
-        assertLogContaining("SmartFrog [rootProcess] dead");
+        assertInLog("SmartFrog [rootProcess] dead");
     }
 }

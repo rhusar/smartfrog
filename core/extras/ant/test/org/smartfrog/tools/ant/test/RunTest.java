@@ -80,23 +80,23 @@ public class RunTest extends TaskTestBase {
 
     public void testRunFile(){
         expectBuildExceptionContaining("testRunFile","deploy failure","Could not run");
-        assertLogContaining("Reference not found, Unresolved Reference: sfClass");
+        assertInLog("Reference not found, Unresolved Reference: sfClass");
     }
 
     public void testInline() {
         expectBuildExceptionContaining("testInline", "deploy failure", "Could not run");
-        assertLogContaining("Reference not found, Unresolved Reference: sfClass");
+        assertInLog("Reference not found, Unresolved Reference: sfClass");
     }
     
     public void testResource() {
         executeTarget("testResource");
         assertDeployed("app");
-        assertLogContaining("app");
-        assertLogContaining("COUNTER: hello - here is a constructed message");
-        assertLogContaining("value is 99");
-        assertLogContaining("goodbye");
-        assertLogContaining("[[elementA, elementB], Message from outerVector, [value is , 99]]");
-        assertLogContaining("1");
+        assertInLog("app");
+        assertInLog("COUNTER: hello - here is a constructed message");
+        assertInLog("value is 99");
+        assertInLog("goodbye");
+        assertInLog("[[elementA, elementB], Message from outerVector, [value is , 99]]");
+        assertInLog("1");
     }
 
     /**
@@ -105,8 +105,8 @@ public class RunTest extends TaskTestBase {
     public void testStackTrace() {
         expectBuildExceptionContaining("testStackTrace", "deploy failure",
                 "Could not run");
-        assertLogContaining("Warning: stack trace logging enabled");
-        assertLogContaining("at org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException.typeResolution");
+        assertInLog("Warning: stack trace logging enabled");
+        assertInLog("at org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException.typeResolution");
     }
 
 
@@ -116,7 +116,7 @@ public class RunTest extends TaskTestBase {
     public void testSubdir() {
         expectBuildExceptionContaining("testSubdir", "deploy failure",
                 "Could not run");
-        assertLogContaining("Reference not found, Unresolved Reference: sfClass");
+        assertInLog("Reference not found, Unresolved Reference: sfClass");
     }
 
     /**
@@ -124,7 +124,7 @@ public class RunTest extends TaskTestBase {
      */
     public void testAssertions() {
         executeTarget("testAssertions");
-        assertLogContaining("Successfully deployed components: [app]");
-        assertLogContaining("goodbye");
+        assertInLog("Successfully deployed components: [app]");
+        assertInLog("goodbye");
     }
 }

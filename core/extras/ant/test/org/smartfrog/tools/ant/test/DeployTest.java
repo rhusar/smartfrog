@@ -91,8 +91,8 @@ public class DeployTest extends TaskTestBase {
     public void testBadHost() {
         expectBuildExceptionContaining("testBadHost", "unknown host",
                 "Could not deploy");
-        assertLogContaining("Unable to locate IP address of the host: no-such-hostname");
-        //assertLogContaining("java.net.UnknownHostException: no-such-hostname");
+        assertInLog("Unable to locate IP address of the host: no-such-hostname");
+        //assertInLog("java.net.UnknownHostException: no-such-hostname");
     }
 
     /**
@@ -111,9 +111,9 @@ public class DeployTest extends TaskTestBase {
     }
 
     private void assertNoConnectionToLocalhost() {
-        assertLogContaining("Unable to connect to sfDaemon on: localhost");
-        assertLogContaining("Reason:sfDaemon may not be running on localhost");
-        assertLogContaining("java.rmi.ConnectException: Connection refused to host: 127.0.0.1");
+        assertInLog("Unable to connect to sfDaemon on: localhost");
+        assertInLog("Reason:sfDaemon may not be running on localhost");
+        assertInLog("java.rmi.ConnectException: Connection refused to host: 127.0.0.1");
     }
 
     public void testResource() {
@@ -129,18 +129,18 @@ public class DeployTest extends TaskTestBase {
      */
     public void testDeployFile() {
         expectBuildExceptionContaining("testDeployFile", "expected timeout", "Timeout");
-        assertLogContaining("rootProcess failed to deploy 'app' component");
-        assertLogContaining("cause: SmartFrogResolutionException:: Reference not found, Unresolved Reference: sfClass");
+        assertInLog("rootProcess failed to deploy 'app' component");
+        assertInLog("cause: SmartFrogResolutionException:: Reference not found, Unresolved Reference: sfClass");
     }
 
 
     public void testDeployResource() {
         expectBuildExceptionContaining("testDeployResource", "expected timeout", "Timeout");
-        assertLogContaining("Successfully deployed components: [app]");
-        assertLogContaining("COUNTER: hello - here is a constructed message");
-        assertLogContaining("value is 99");
-        assertLogContaining("goodbye");
-        assertLogContaining("[[elementA, elementB], Message from outerVector, [value is , 99]]");
-        assertLogContaining("1");
+        assertInLog("Successfully deployed components: [app]");
+        assertInLog("COUNTER: hello - here is a constructed message");
+        assertInLog("value is 99");
+        assertInLog("goodbye");
+        assertInLog("[[elementA, elementB], Message from outerVector, [value is , 99]]");
+        assertInLog("1");
     }
 }
