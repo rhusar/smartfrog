@@ -23,6 +23,7 @@ For more information: www.smartfrog.org
 #include "org/smartfrog/sfcore/workflow/eventbus/eventbus.sf"
 #include "org/smartfrog/sfcore/workflow/combinators/detachingcompound.sf"
 #include "org/smartfrog/sfcore/workflow/combinators/sequence.sf"
+#include "org/smartfrog/sfcore/workflow/combinators/container.sf"
 #include "org/smartfrog/sfcore/workflow/combinators/parallel.sf"
 #include "org/smartfrog/sfcore/workflow/combinators/run.sf"
 #include "org/smartfrog/sfcore/workflow/combinators/timeout.sf"
