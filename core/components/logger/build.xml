@@ -43,6 +43,7 @@ For more information: www.smartfrog.org
   
    <property name="Name.System" value="Logger"/>
   <!-- ========================================================== -->
+ <!--   Init                                                             -->
   <!-- ========================================================== -->
   <target name="init" depends="init-standard-output-dirs,use-smartfrog-tasks">
      <tstamp/>
@@ -102,12 +103,12 @@ For more information: www.smartfrog.org
     depends="declare-run.classpath-no-tests" /> 
 
 
- <!-- ========================================================== -->
-  <!-- dist : create the jar -->
   <!-- ========================================================== -->
-	<target name="dist" depends="common.dist" description="create the jar files">
+		<!-- dist : create the jar -->
+  <!-- ========================================================== -->
+<target name="dist" depends="common.dist,jdocs" description="create the jar files">
 	
-		 <copy todir = "${dist.doc.dir}">
+	<copy todir = "${dist.doc.dir}">
         <fileset dir ="${doc.dir}" />
     </copy>   
 		 <copy todir = "${dist.src.dir}">
@@ -116,6 +117,4 @@ For more information: www.smartfrog.org
 		</fileset>
     </copy>   
 	</target>
-	
-  
 </project>
