@@ -48,7 +48,7 @@ For more information: www.smartfrog.org
     <!--  Java Docs for all                                                -->
     <echo message=""/>
     <echo message="------------------------------------------------------------------------"/>
-    <echo message="  Creating Java Docs for ${Name.System} ${version} [${dist.dir}/${jdocs}]"/>
+    <echo message="  Creating Java Docs for ${Name.System} ${version} [${dist.jdocs.dir}]"/>
     <echo message="------------------------------------------------------------------------"/>
     <mkdir dir="${dist.jdocs.dir}"/>
     <javadoc packagenames="org.smartfrog.*"
@@ -127,6 +127,7 @@ For more information: www.smartfrog.org
         <fileset dir ="${src.dir}">
 		  <include name="**/examples/**"/>
 		</fileset>
-    </copy>   
+	</copy>
+     <copy tofile="${dist.dir}/build.xml" file="releaseBuild.xml"/>	
 	</target>
 </project>
