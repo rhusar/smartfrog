@@ -219,10 +219,9 @@ public class CompoundImpl extends PrimImpl implements Compound {
     }
 
     /**
-     * A high-level component deployment method - creates a child of this
-     * Compound, running it through its entire lifecycle. This is the preferred way
-     * of creating new child components of a Compound. The method is safe against
-     * multiple calls of lifecycle.
+     * A high-level component deployment method - creates an app
+     * , running it through its entire lifecycle. This is the preferred way
+     * of creating new app.
      *
      * @param cmp compiled component to deploy and start
      * @param name name of attribute which the deployed component should adopt
@@ -243,13 +242,13 @@ public class CompoundImpl extends PrimImpl implements Compound {
         try {
             comp.sfDeploy();
         } catch (Exception ex) {
-           throw SmartFrogLifecycleException.sfDeploy("Failed to create a new child.",ex,this);
+           throw SmartFrogLifecycleException.sfDeploy("Failed to create a new app.",ex,this);
         }
 
         try {
             comp.sfStart(); // otherwise let the start of this component do it...
         } catch (Exception ex) {
-           throw SmartFrogLifecycleException.sfStart("Failed to create a new child.",ex,this);
+           throw SmartFrogLifecycleException.sfStart("Failed to create a new app.",ex,this);
         }
 
     } catch (Exception e) {
@@ -502,7 +501,8 @@ public class CompoundImpl extends PrimImpl implements Compound {
     protected void sfASyncTerminateWith(TerminationRecord status) {
         for (int i = sfChildren.size()-1; i>=0; i--) {
             try {
-                new TerminateCall((Prim)(sfChildren.elementAt(i)), status);
+                //Deprecated: new TerminateCall((Prim)(sfChildren.elementAt(i)), status);
+                (new TerminatorThread((Prim)(sfChildren.elementAt(i)),status).quietly()).start();
             } catch (Exception ex) {
             //@TODO: Log
             // ignore
@@ -602,39 +602,40 @@ public class CompoundImpl extends PrimImpl implements Compound {
         super.sfParentageChanged();
     }
 
-    /**
-     * Implements an asynchronous sfTerminateQuietlyWith call
-     */
-    private class TerminateCall implements Runnable {
-        /**
-         * Reference to component.
-         */
-        private Prim target;
-
-        /**
-         * Termination record.
-         */
-        private TerminationRecord record;
-
-        /**
-         * Constructs TerminateCall with component and termination record.
-         */
-        public TerminateCall(Prim target, TerminationRecord record) {
-            this.target = target;
-            this.record = record;
-            (new Thread(this)).start();
-        }
-        /**
-         * Runs the thread.
-         */
-        public void run() {
-            try {
-                target.sfTerminateQuietlyWith(record);
-            } catch (Exception remex) {
-                // ignore
-            }
-        }
-    }
+//    Deprecated and replaced with: common/TerminatorThread
+//    /**
+//     * Implements an asynchronous sfTerminateQuietlyWith call
+//     */
+//    private class TerminateCall implements Runnable {
+//        /**
+//         * Reference to component.
+//         */
+//        private Prim target;
+//
+//        /**
+//         * Termination record.
+//         */
+//        private TerminationRecord record;
+//
+//        /**
+//         * Constructs TerminateCall with component and termination record.
+//         */
+//        public TerminateCall(Prim target, TerminationRecord record) {
+//            this.target = target;
+//            this.record = record;
+//            (new Thread(this)).start();
+//        }
+//        /**
+//         * Runs the thread.
+//         */
+//        public void run() {
+//            try {
+//                target.sfTerminateQuietlyWith(record);
+//            } catch (Exception remex) {
+//                // ignore
+//            }
+//        }
+//    }
 
     /**
      * Implements an asynchronous dump call
