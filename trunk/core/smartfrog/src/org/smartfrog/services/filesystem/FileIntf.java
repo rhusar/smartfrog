@@ -26,22 +26,12 @@ import java.rmi.RemoteException;
  * created 27-May-2004 10:43:10
  */
 
-public interface FileIntf extends UriIntf,Remote {
+public interface FileIntf extends UriIntf, FileUsingComponent, Remote {
 
-    /*
-    filename extends OptionalString;
-    dir extends OptionalString;
-    mustExist extends OptionalBoolean;
-
-    exists: Boolean
-    absolutePath: String
-    URI: String
-    */
-
-    String varFilename="filename";
+    String varFilename=ATTR_FILE;
     String varDir="dir";
     String varExists="exists";
-    String varAbsolutePath="absolutePath";
+    String varAbsolutePath=ATTR_ABSOLUTE_PATH;
     String varIsDirectory="isDirectory";
     String varIsFile = "isFile";
     String varIsHidden = "isHidden";
@@ -56,6 +46,7 @@ public interface FileIntf extends UriIntf,Remote {
     String varMustBeDir = "mustBeDir";
     String varTestOnStartup = "testOnStartup";
     String varTestOnLiveness = "testOnLiveness";
+    String ATTR_DELETE_ON_EXIT = "deleteOnExit";
 
     /**
      * get the absolute path of this file

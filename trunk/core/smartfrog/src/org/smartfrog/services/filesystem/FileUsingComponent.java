@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2005 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -19,27 +19,30 @@
  */
 package org.smartfrog.services.filesystem;
 
-import java.rmi.RemoteException;
+import java.rmi.Remote;
 
 /**
- * This is an interface to a component that creates a temporary filename
- * @see java.io.File#createTempFile(java.lang.String, java.lang.String, java.io.File)
- * created 18-May-2004 11:36:25
+ * A file using component has an attribute bound to a file
+ * This interface defines no operations, merely well-known attributes
+ * created 30-Mar-2005 16:30:30
  */
 
-public interface TempFile extends FileUsingComponent {
 
-    public static final String ATTR_PREFIX="prefix";
-    public static final String ATTR_SUFFIX = "suffix";
-    public static final String ATTR_DIRECTORY = "dir";
-    //this is the filename that is created
-    public static final String ATTR_FILENAME = "filename";
+public interface FileUsingComponent extends Remote {
 
     /**
-     * get the filename of this file
-     *
-     * @return
+     * The attribute that is used for extracting file strings/file components
+     * {@value }
      */
-    String getFilename() throws RemoteException ;
+    String ATTR_FILE = "file";
 
+    /**
+     * Absolute path {@value}
+     */
+    String ATTR_ABSOLUTE_PATH = "absolutePath";
+
+    /**
+     * URI attribute {@value}
+     */
+    String ATTR_URI = UriIntf.varURI;
 }

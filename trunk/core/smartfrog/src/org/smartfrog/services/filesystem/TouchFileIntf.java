@@ -22,7 +22,6 @@ package org.smartfrog.services.filesystem;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
 import java.rmi.RemoteException;
-import java.rmi.Remote;
 
 /**
  * Remote interface for touching a file.
@@ -30,7 +29,7 @@ import java.rmi.Remote;
  */
 
 
-public interface TouchFileIntf extends Remote {
+public interface TouchFileIntf extends FileUsingComponent {
     /**
      * the file to be touched
      */

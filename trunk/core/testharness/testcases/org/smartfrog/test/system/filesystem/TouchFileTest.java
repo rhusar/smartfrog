@@ -23,7 +23,7 @@ import org.smartfrog.test.SmartFrogTestBase;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.services.filesystem.TouchFile;
+import org.smartfrog.services.filesystem.TouchFileImpl;
 
 import java.io.File;
 import java.rmi.RemoteException;
@@ -54,8 +54,8 @@ public class TouchFileTest  extends SmartFrogTestBase {
      */
     public void testTouchSetTime() throws Throwable {
         Prim application = deployExpectingSuccess(FILES + "testTouchSetTime.sf", "testTouchSetTime");
-        String filename= application.sfResolve(TouchFile.ATTR_FILENAME,(String)null,true);
-        long age = application.sfResolve(TouchFile.ATTR_AGE,(long)0,true);
+        String filename= application.sfResolve(TouchFileImpl.ATTR_FILENAME,(String)null,true);
+        long age = application.sfResolve(TouchFileImpl.ATTR_AGE,(long)0,true);
         File file=new File(filename);
         assertTrue(file.exists());
         assertEquals(age,file.lastModified());

@@ -19,29 +19,26 @@
  */
 package org.smartfrog.services.filesystem;
 
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
-import org.smartfrog.sfcore.common.SmartFrogLivenessException;
-import org.smartfrog.sfcore.utils.PlatformHelper;
-import org.smartfrog.sfcore.utils.ComponentHelper;
-import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.logging.Log;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.utils.ComponentHelper;
+import org.smartfrog.sfcore.utils.PlatformHelper;
 
-import java.rmi.RemoteException;
 import java.io.File;
-import java.net.URI;
+import java.rmi.RemoteException;
 
 /**
  * Implement a class that can dynamically map to a file
  * created 27-May-2004 10:47:34
  */
 
-public class FileImpl extends PrimImpl implements FileIntf {
+public class FileImpl extends FileUsingComponentImpl implements FileIntf {
 
-    private File file;
     private boolean mustExist;
     private boolean mustRead;
     private boolean mustWrite;
@@ -57,20 +54,6 @@ public class FileImpl extends PrimImpl implements FileIntf {
     private Log log;
 
     public FileImpl() throws RemoteException {
-    }
-
-    public String getAbsolutePath() throws RemoteException {
-        return file.getAbsolutePath();
-    }
-
-    /**
-     * get the URI of this file
-     *
-     * @return
-     * @throws RemoteException
-     */
-    public URI getURI() throws RemoteException {
-        return file.toURI();
     }
 
     /**
@@ -89,6 +72,7 @@ public class FileImpl extends PrimImpl implements FileIntf {
             log.debug("file="+filename);
         }
         String dir= sfResolve(varDir, (String) null, false);
+        File file;
         if(dir!=null) {
             dir= platform.convertFilename(dir);
             if ( debugEnabled ) {
@@ -102,6 +86,7 @@ public class FileImpl extends PrimImpl implements FileIntf {
         if ( debugEnabled ) {
             log.debug("absolute file=" + file.toString());
         }
+        bind(file);
 
 
         mustExist =getBool(varMustExist,false,false);
@@ -147,12 +132,7 @@ public class FileImpl extends PrimImpl implements FileIntf {
         setAttribute(varTimestamp, timestamp);
         setAttribute(varLength, length);
 
-        String path= getAbsolutePath();
-        sfReplaceAttribute(varAbsolutePath,path);
-        String uri;
-        uri = file.toURI().toString();
-        sfReplaceAttribute(varURI, uri);
-        String name=file.getName();
+        String name=getFile().getName();
         sfReplaceAttribute(varShortname,name);
 
     }
@@ -224,16 +204,6 @@ public class FileImpl extends PrimImpl implements FileIntf {
     }
 
     /**
-     * Returns the string of the remote reference if this primitive was
-     * exported, the superclass toString if not.
-     *
-     * @return string form for this component
-     */
-    public String toString() {
-        return file!=null?file.getAbsolutePath() : "uninitialized file";
-    }
-
-    /**
      * Liveness call in to check if this component is still alive.
      *
      * @param source source of call
@@ -255,17 +225,17 @@ public class FileImpl extends PrimImpl implements FileIntf {
      */
     protected void testFileState() throws SmartFrogLivenessException {
         if ( log.isDebugEnabled() ) {
-            log.debug("liveness check will look for "+file.toString());
+            log.debug("liveness check will look for "+getFile().toString());
         }
 
-        if(mustExist && !file.exists()) {
-            throw new SmartFrogLivenessException("File "+file.getAbsolutePath()+" does not exist");
+        if(mustExist && !getFile().exists()) {
+            throw new SmartFrogLivenessException("File "+getFile().getAbsolutePath()+" does not exist");
         }
-        if(mustRead && !file.canRead()) {
-            throw new SmartFrogLivenessException("File " + file.getAbsolutePath() + " is not readable");
+        if(mustRead && !getFile().canRead()) {
+            throw new SmartFrogLivenessException("File " + getFile().getAbsolutePath() + " is not readable");
         }
-        if (mustWrite && !file.canWrite()) {
-            throw new SmartFrogLivenessException("File " + file.getAbsolutePath() + " is not writeable");
+        if (mustWrite && !getFile().canWrite()) {
+            throw new SmartFrogLivenessException("File " + getFile().getAbsolutePath() + " is not writeable");
         }
     }
 
@@ -347,7 +317,7 @@ public class FileImpl extends PrimImpl implements FileIntf {
      * @param component component to look up the path from
      * @param attribute the name of the attribute to look up
      * @param defval    a default value. This should already be in the local format for the target platform,
-     *                  and absolute. Can be null. No used when mandatory is true
+     *                  and absolute. Can be null. Not used when mandatory is true
      * @param baseDir   optional base directory for a relative file when constructing from a string
      * @param mandatory flag that triggers the throwing of a SmartFrogResolutionException when things
      *                  go wrong

@@ -20,6 +20,31 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/components.sf"
 #include "/org/smartfrog/predicates.sf"
 
+
+
+
+/**
+ * something which takes filenames
+ */
+FileUsingComponentSchema extends Schema {
+    /*
+        Can be either a string, or a reference to a component
+        that implements FileIntf.
+    */
+    file extends Optional;
+
+    /* added at deploy time
+    absolutePath: String
+    URI: String
+    */
+}
+
+DeletableFileSchema extends Schema {
+    //delete flag
+    deleteOnExit extends OptionalBoolean;
+}
+
+
 /**
  * platform independent file
  * set the name and optionally the dir; get the absolute path in a
@@ -31,7 +56,10 @@ For more information: www.smartfrog.org
 
 FileSchema extends Schema {
 
+    //name of a file
     filename extends OptionalString;
+
+    //a directory
     dir extends OptionalString;
 
     //file must always exist
@@ -52,10 +80,11 @@ FileSchema extends Schema {
     //flag to say when to test
     testOnLiveness extends  OptionalBoolean;
 
+
     /* added at deploy time
     exists: Boolean
     absolutePath: String
-    URI: String
+    uri: String
     isFile
     isDirectory
     isHidden
@@ -74,25 +103,30 @@ File extends Prim {
     testOnLiveness true;
 }
 
-/*
- name something that must be a directory and not a file
-  TODO: come up with a design for this. 
+
+
+/**
+ * this can not be instantiated
  */
- /*
-Directory extends File {
-    isDirectory "true";
-    isFile "false";
+FileUsingComponent extends Prim {
+    fileUsingComponentSchema extends FileUsingComponentSchema;
 }
-*/
-TouchFileSchema extends Schema {
-    //filename; this must be in a platform-specific format
-    filename extends OptionalString;
 
-    //file is a file instance
-    file extends OptionalCD;
+/**
+ * touch file schema
+ */
+TouchFileSchema extends FileUsingComponentSchema {
 
-    //age of file, seconds since 1970-01-01; a value of -1 indicates
-    //current timestamp, as does omitting the value
+    /*
+        filename; this must be in a platform-specific format, or
+        a reference to a file
+    */
+    filename extends Optional;
+
+    /**
+     age of file, seconds since 1970-01-01; a value of -1 indicates
+     current timestamp, as does omitting the value
+     */
     timestamp extends OptionalLong;
 }
 
@@ -102,13 +136,13 @@ TouchFileSchema extends Schema {
  */
 TouchFile extends Prim {
     touchFileSchema extends TouchFileSchema;
-    sfClass "org.smartfrog.services.filesystem.TouchFile";
+    sfClass "org.smartfrog.services.filesystem.TouchFileImpl";
 }
 
 /**
  * tempfile
  */
-TempFileSchema extends Schema {
+TempFileSchema extends DeletableFileSchema {
     //prefix should be three or more characters long
     prefix extends String;
     //suffix, like ".tmp"
@@ -116,18 +150,12 @@ TempFileSchema extends Schema {
     //a directory. If not specified, the temp directory for this JVM will
     //be used.
     dir extends OptionalString;
-    //delete flag
-    deleteOnExit extends OptionalBoolean;
 }
 
 /**
  * the temp file component creates a temporary file on deployment.
- * this interface also implements the same interface as File, so that the
- * getAbsolutePath() call works on it to give an absolute path.
- * and absolutePath is set to the absolute path. None of the other
- * attributes of File are set
  */
-TempFile extends Prim {
+TempFile extends FileUsingComponent {
     tempFileSchema extends TempFileSchema;
     sfClass "org.smartfrog.services.filesystem.TempFileImpl";
 }
@@ -154,3 +182,57 @@ Mkdir extends Prim {
     mkdirSchema extends MkdirSchema;
     sfClass "org.smartfrog.services.filesystem.MkdirImpl";
 }
+
+/**
+ * A text file represents a file that is given the predefined text
+ * on deployment. It is retained after the end of deployment. To create
+ * transient files, link it to a temporary file
+ */
+
+TextFileSchema extends DeletableFileSchema {
+    //text to write out
+    text extends String;
+    //encoding of the optional text. Only needed when text is set
+    encoding extends String;
+}
+
+
+TextFile extends FileUsingComponent {
+    textFileSchema extends TextFileSchema;
+    sfClass "org.smartfrog.services.filesystem.TextFileImpl";
+
+    //default encoding is utf8
+    encoding "utf8";
+}
+
+/**
+ * this identifies a file (not a directory; a file) which
+ * is deleted when the component is terminated.
+ */
+
+SelfDeletingFile extends FileUsingComponent {
+    deletableFileSchema extends DeletableFileSchema;
+    sfClass "org.smartfrog.services.filesystem.SelfDeletingFileImpl";
+    deleteOnExit true;
+}
+
+/**
+ * a temporary text file
+ */
+ /*
+TempTextFile extends TextFile {
+
+    prefix;
+    suffix;
+    dir;
+    deleteOnExit;
+
+
+    File extends TempFile {
+        prefix ATTRIB PARENT:prefix;
+        suffix ATTRIB PARENT:suffix;
+        dir ATTRIB PARENT:dir;
+        deleteOnExit ATTRIB PARENT:deleteOnExit;
+    }
+}
+*/

@@ -19,9 +19,9 @@
  */
 package org.smartfrog.services.filesystem;
 
+import java.net.URI;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.net.URI;
 
 /**
  * This is an interface for anything that provides a URI
@@ -30,6 +30,10 @@ import java.net.URI;
 
 
 public interface UriIntf extends Remote {
+
+    /**
+     * URI attribute {@value}
+     */
     String varURI = "uri";
 
     /**
