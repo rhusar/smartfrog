@@ -62,7 +62,7 @@
     <property name="smartfrog.dist.dir" location="${smartfrog.home}/dist" />
     <property name="smartfrog.dist.lib.dir" location="${smartfrog.dist.dir}/lib"/>
     <property name="smartfrog.components.dir" location="${core.dir}/components"/>
-    <property name="smartfrog.components.lib.dir" location="${smartfrog.components.dir}/lib"/>
+    
     <!-- Compile options for Smartfrog Release -->
     <property name="javac.debug.mode" value="true"/> 
     <property name="javac.deprecation.mode" value="true"/> 
@@ -93,12 +93,7 @@
       <fileset refid="smartfrog.core.fileset" />
     </path>
 
-    <path id="smartfrog.components.classpath">
-      <fileset dir="${smartfrog.components.lib.dir}">
-        <include name="**/*.jar"/>
-      </fileset>
-    </path>
-
+    
     <property name="extras.dir"
       location="${core.dir}/extras"/>
       
@@ -510,8 +505,7 @@
     description="declare the classpath and imports for the smartfrog tasks">
     <path id="smartfrog.tasks.classpath">
       <path refid="smartfrog.classpath"/>
-      <path refid="smartfrog.components.classpath"/>
-      <pathelement location="${smartfrog.tasks.jar}"/>
+       <pathelement location="${smartfrog.tasks.jar}"/>
     </path>
     <available 
       classname="org.smartfrog.tools.ant.Parse" 
@@ -614,9 +608,6 @@
   <!-- ========================================================== -->
   <target name="probe-local-daemon" depends="init-common">
     <sf-daemonfound property="local.daemon.running" />
-    <echo level="verbose">
-    local.daemon.running=${local.daemon.running}
-    </echo>
   </target>
 
   <!-- ========================================================== -->
@@ -976,4 +967,5 @@
   </target>
 
 </project>   
+
 
