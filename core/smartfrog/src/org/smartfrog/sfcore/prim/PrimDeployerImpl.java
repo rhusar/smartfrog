@@ -183,6 +183,8 @@ public class PrimDeployerImpl implements ComponentDeployer, MessageKeys {
             ComponentDescription cdInfo = new ComponentDescriptionImpl(null,new ContextImpl(),false);
             cdInfo.sfAddAttribute("sfCodeBase", targetCodeBase);
             cdInfo.sfAddAttribute("java.class.path", System.getProperty("java.class.path"));
+            cdInfo.sfAddAttribute("org.smartfrog.sfcore.processcompound.sfProcessName",
+               System.getProperty("org.smartfrog.sfcore.processcompound.sfProcessName"));
             throw new SmartFrogDeploymentException (refClass,null,name,target,null,"Class not found", cnfex, cdInfo);
         }
 
