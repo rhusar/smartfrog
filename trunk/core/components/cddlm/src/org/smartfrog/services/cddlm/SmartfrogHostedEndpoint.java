@@ -22,11 +22,10 @@
 package org.smartfrog.services.cddlm;
 
 /**
- * @author steve loughran
  *         Date: 10-Mar-2004
  *         Time: 20:07:32
  */
-public class SmartfrogHostedEndpoint {
+public class SmartFrogHostedEndpoint {
     static AxisImpl owner;
 
     /**
