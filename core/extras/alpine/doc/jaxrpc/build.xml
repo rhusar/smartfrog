@@ -30,7 +30,7 @@
   </target>
   
   <target name="configure-for-miktex" if="is.miktex" depends="pick-version">
-    <property name="tex.error.output" valu= "-c-style-errors" />
+    <property name="tex.error.output" value= "-c-style-errors" />
     <property name="tex.silent" value="-silent" />
   </target>
 

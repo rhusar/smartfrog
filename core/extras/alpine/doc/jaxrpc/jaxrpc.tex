@@ -100,7 +100,7 @@ We believe that there has to be a better approach, and outline an alternative.
 
 JAX-RPC is the acronym of ``Java API for XML-based RPC'' \cite{spec:JAX-RPC-11}, 
 one of the two official APIs for SOAP in Java. 
-The other, JAX-M, stands for ``Java API for XML Messaging'' \cite{spec:JAX-M-11}
+The other, SAAJ, SOAP with Attachments API for Java \cite{spec:SAAJ-11}
 The two APIs represent alternate viewpoints. In JAX-M, the developer works with the
 XML body of the message, in JAX-RPC all the details of how the message is encoded
 is hidden, and the developer works with Java objects that are automatically mapped
@@ -341,7 +341,7 @@ developers were forced to declare and then implement custom wsdl:fault elements,
 then a service definition would be platform-neutral. 
 
 As well as the marshalled faults, the specification includes one
-standard fault. 
+standard fault, SoapFaultException. 
 
 \section{Blocking RPC is often inappropriate}
 
@@ -385,6 +385,12 @@ compound objects, if possible. The user appears to have a reference to something
 like an object, though one that represents the current conversation with an endpoint,
 not a direct endpoint proxy. 
 
+When a message gets delivered to its endpoint, the normal handler for
+dispatching the message creates an instance of the relevant Java class and then
+dispatches the request to it. The message is turned into an invocation of an
+instance of a remote object, which certainly looks like RMI, even if the
+lifecycle of the class is radically different. 
+
 
 We can see the consequence of this metaphor on the mailing list of users of
 Apache Axis. All too often, someone is confused by the errors displayed when
@@ -408,7 +414,7 @@ will demonstrate that these -along with deployment failures- are the
 common problems.
 
 
-\section{the insidous illusion of method calls}
+
 
 \section{the danger of code-first service declaration}
 
@@ -525,8 +531,8 @@ The full design goals are as follows:
 \item Java 1.5 or later 
 \item Server side and client side, with both sides looking similary. 
 \item No support for JAX-RPC or JAX-M/SAAJ.
-\item Configurable only procedurally -through JMX. 
-\item No guarantee of backwards compatibility or 'legacy' protocol support between versions. 
+\item Configurable only procedurally -or through JMX. 
+\item One supported parser: Xerces
 
 \item No provision of side features such as a built in HTTP server (e.g.
 \verb|SimpleAxisServer|), or declarative configuration mechanism.
@@ -549,7 +555,8 @@ SOAP operations look like a remote procedure call; it is not going to be
 for anyone who wants to ignore the format of the messages sent or
 received over the wire. 
 
-Instead, we 
+Instead, it is going to provide the basic housekeeping and handler chain
+management to make life simpler for XML experts who are prepared to work with XOM. 
 
 \section{Acknowledgements}
 
