@@ -22,7 +22,7 @@ communications.
 We argue that JAX-RPC greatly complicates users' software by
 introducing a complex and fickle serialisation system. The generation
 of WSDL from Java code, which JAX-RPC encourages, makes it very
-difficult to maintain version consistency of an interfaces, and
+difficult to maintain version consistency of an interface, and
 creates significant interoperability problems.
 
 On top of all of this, for users who do want to work with the XML
@@ -52,7 +52,7 @@ SOAP stack. The 2.0 release also retains the core metaphor of service
 calls as method invocation, with the payload of most invocations
 being Java objects that are somehow mapped to XML content. The
 automated generation of WSDL from Java source is retained, despite
-this problem having been shown to be fundamentally flawed.
+this approach having been shown to be fundamentally flawed.
 
 We understand the rationale for much of this. Working with raw XML is
 hard.  Writing good XML Schema documents is hard. WSDL is exceedingly
