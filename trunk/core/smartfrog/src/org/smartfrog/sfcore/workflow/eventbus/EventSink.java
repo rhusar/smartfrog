@@ -39,5 +39,5 @@ public interface EventSink extends Remote {
      *
      * @throws RemoteException In case of network/rmi error
      */
-    void event(String theEvent) throws RemoteException;
+    void event(Object theEvent) throws RemoteException;
 }

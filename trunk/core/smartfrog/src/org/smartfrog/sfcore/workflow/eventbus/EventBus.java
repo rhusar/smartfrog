@@ -30,17 +30,17 @@ public interface EventBus {
     /**
      * method to deal with the event locally after receipt by the component.
      *
-     * @param event java.lang.String The Event received
+     * @param event java.lang.Object The Event received
      */
-    void handleEvent(String event);
+    void handleEvent(Object event);
 
     /**
      * method which forwards an event to all registered EventSinks.
      *
-     * @param event java.lang.String
+     * @param event java.lang.Object
      *
      * @see org.smartfrog.sfcore.workflow.eventbus.EventRegistration
      * @see org.smartfrog.sfcore.workflow.eventbus.EventSink
      */
-    void sendEvent(String event);
+    void sendEvent(Object event);
 }
