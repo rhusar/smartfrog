@@ -26,6 +26,7 @@ import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.security.SFClassLoader;
 
 import java.rmi.RemoteException;
@@ -157,13 +158,24 @@ public class ComponentHelper {
      */
     public InputStream loadResource(String resourcename)
             throws SmartFrogException, RemoteException {
-        String targetCodeBase = (String) owner.sfResolve(SmartFrogCoreKeys.SF_CODE_BASE);
+        String targetCodeBase = getCodebase();
 
         InputStream in = SFClassLoader.getResourceAsStream(resourcename, targetCodeBase, true);
         if (in == null) {
             throw new SmartFrogException("Not found: " + resourcename);
         }
         return in;
+    }
+
+    /**
+     * get the codebase of a component
+     * @return
+     * @throws SmartFrogResolutionException
+     * @throws RemoteException
+     */
+    public String getCodebase() throws SmartFrogResolutionException,
+            RemoteException {
+        return (String) owner.sfResolve(SmartFrogCoreKeys.SF_CODE_BASE);
     }
 
     /**
