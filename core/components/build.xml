@@ -162,7 +162,7 @@ component.path :=
   <target name="diagnostics" depends="init"
     description="diagnostics">
     <delegate target="diagnostics"/>
-  </target> 
+  </target>  
   <target name="diag2" depends="init"
     description="diagnostics">
     <delegate target="diag2"/>
@@ -411,11 +411,107 @@ component.path :=
   <!-- =================================================================== -->
   <!--  Release                                                            -->
   <!-- =================================================================== -->
-  <target name="release"  depends="clean, copy-files, dist, initdist, copylibs, copydocs, copycomponents, srczip, jdocs" description="Creates clean new release">
+  <target name="release"  depends="clean, copy-files, dist, initdist, copylibs, copydocs, copycomponents, srczip, jdocs " description="Creates clean new release">
 	  <copy tofile="${dist.dir}/build.xml" file="build.xml"/>
 	  <copy tofile="${dist.dir}/buildRelease.xml" file="buildRelease.xml"/>
 	  <copy tofile="${dist.dir}/common.xml" file="common.xml"/>
   </target>
 
   <target name="default" depends="dist"/>
+
+<!-- =================================================================== -->
+  <!--  Generate Forrest Documentation									   -->
+  <!-- =================================================================== -->
+
+
+
+	<property environment="env"/>
+	<property name="forrest.home"  location="${env.FORREST_HOME}"/>
+	<import file="${env.FORREST_HOME}/forrest.build.xml"/>
+		<import file="${env.FORREST_HOME}/forrest.antproxy.xml"/>
+	
+	<target name="seedforrest" depends="seed" description="Creates forrest project template">
+		<echo>Created forrest project template</echo>
+			</target>
+	<property name="comp.home"  location="${SFHOME}/../../components"/>
+	
+		<target name="Collectcompdocs">
+	
+		<mkdir dir="${comp.home}/src/documentation/content/xdocs/smarfrogdoc"/>
+
+		<mkdir dir="${comp.home}/src/documentation/content/xdocs/smarfrogdoc/cddlm"/>
+		<copy todir="${comp.home}/src/documentation/content/xdocs/smarfrogdoc/cddlm">
+        <fileset dir="./cddlm/doc">
+			<include name="**/*.*" />
+		</fileset>
+		</copy>	
+		<mkdir dir="${comp.home}/src/documentation/content/xdocs/smarfrogdoc/emailer"/>
+		<copy todir="${comp.home}/src/documentation/content/xdocs/smarfrogdoc/emailer">
+        	<fileset dir="./emailer/doc">
+        <include name="**/*.*" />
+		</fileset>
+		</copy>	
+		<mkdir dir="${comp.home}/src/documentation/content/xdocs/smarfrogdoc/jetty"/>
+		<copy todir="${comp.home}/src/documentation/content/xdocs/smarfrogdoc/jetty">
+         <fileset dir="./jetty/doc">
+        <include name="**/*.*" />
+      </fileset>
+		</copy>	
+		<mkdir dir="${comp.home}/src/documentation/content/xdocs/smarfrogdoc/logger"/>
+		<copy todir="${comp.home}/src/documentation/content/xdocs/smarfrogdoc/logger">
+        <fileset dir="./logger/doc">
+         <include name="**/*.*" />
+      </fileset>
+	  	</copy>	
+
+		<mkdir dir="${comp.home}/src/documentation/content/xdocs/smarfrogdoc/net"/>
+		<copy todir="${comp.home}/src/documentation/content/xdocs/smarfrogdoc/net">
+        <fileset dir="./net/doc">
+         <include name="**/*.*" />
+      </fileset>
+		</copy>
+		<mkdir dir="${comp.home}/src/documentation/content/xdocs/smarfrogdoc/ssh"/>
+		<copy todir="${comp.home}/src/documentation/content/xdocs/smarfrogdoc/ssh">
+        <fileset dir="./ssh/doc">
+        <include name="**/*.*"/>
+      </fileset>
+		</copy>	
+		<mkdir dir="${comp.home}/src/documentation/content/xdocs/smarfrogdoc/utils"/>
+		<copy todir="${comp.home}/src/documentation/content/xdocs/smarfrogdoc/utils">
+         <fileset dir="./utils/doc">
+        <include name="**/*.*" />
+      </fileset>
+		</copy>	
+ 		<mkdir dir="${comp.home}/src/documentation/content/xdocs/smarfrogdoc/scripting"/>
+		<copy todir="${comp.home}/src/documentation/content/xdocs/smarfrogdoc/scripting">
+       <fileset dir="./scripting/docs">
+        <include name="**/*.*" />
+      </fileset>
+		</copy>	
+		<mkdir dir="${comp.home}/src/documentation/content/xdocs/smarfrogdoc/slp"/>
+		<copy todir="${comp.home}/src/documentation/content/xdocs/smarfrogdoc/slp">
+        <fileset dir="./slp/docs">
+        <include name="**/*.sxw" />
+      </fileset>
+		</copy>	
+		<echo>${comp.home}</echo>
+ 	</target>
+
+	<target name="generatesite">
+	<ant target="site"/>
+		</target>
+	<target name="copyforrestdocs">
+	<echo>Forrest site docs Copied</echo>
+		<copy todir="${dist.docs.dir}">
+      <fileset dir="${comp.home}/build/site">
+	     <include name="**/*.*" />
+		</fileset>
+    </copy>
+	</target>
+
+	<target name="generatedoc" depends="seedforrest, Collectcompdocs , generatesite , copyforrestdocs" description="Document Generation">
+	<echo>Forrest Documents Copied</echo>
+	</target>
+
+
 </project>
