@@ -78,8 +78,7 @@ public class SFSlpDeployerImpl extends PrimProcessDeployerImpl {
         if(!discoveryCompleted) {
             ServiceLocationEnumeration urls = null;
             ServiceType type = null;
-            Context ctxt = target.getContext();
-            Properties p = getSlpConfiguration(ctxt);
+			Properties p = getSlpConfiguration();
             try {
                 if(scopes == null || scopes.isEmpty()) {
                     scopes = ServiceLocationManager.findScopes();
@@ -94,10 +93,10 @@ public class SFSlpDeployerImpl extends PrimProcessDeployerImpl {
             
                 if(url != null) {
                     // set smartfrog attributes to use...
-                    ctxt.put("sfProcessHost", url.getHost());
+                    target.sfReplaceAttribute("sfProcessHost", url.getHost());
                     String pname = url.getURLPath();
                     if(!pname.equals("")) {
-                        ctxt.put("sfProcessName", pname.substring(1));
+                        target.sfReplaceAttribute("sfProcessName", pname.substring(1));
                     }
                 }
             }catch(Exception ex) {
@@ -105,8 +104,8 @@ public class SFSlpDeployerImpl extends PrimProcessDeployerImpl {
                 System.out.println(ex.toString());
                 ex.printStackTrace();
             }
-            ctxt.put("discoveryDone", "true");
-            ctxt.remove("slpConfig");
+            target.sfReplaceAttribute("discoveryDone", "true");
+            target.sfRemoveAttribute("slpConfig");
         }
         return super.getProcessCompound();
     }
@@ -114,15 +113,15 @@ public class SFSlpDeployerImpl extends PrimProcessDeployerImpl {
     /**
         Reads the SLP configuration from the description.
     */
-    protected Properties getSlpConfiguration(Context context) throws SmartFrogResolutionException {
+    protected Properties getSlpConfiguration() throws SmartFrogResolutionException {
         Properties properties = new Properties( SLPDefaults.getDefaultProperties() );
         // try to find configuration
         ComponentDescription descr = null;
-        try {
-            descr = (ComponentDescription)target.sfResolve(refConfig);
-        }catch(SmartFrogResolutionException ex) {
-            return properties; // use defaults...
-        }
+
+		// get the SLP configuration.
+		// This component description MUST be present with at least the service type given.
+		descr = (ComponentDescription)target.sfResolve(refConfig);
+
         
         // get service type, filter and scopes
         serviceType = (String)descr.sfResolve(refServiceType); // required
@@ -139,23 +138,23 @@ public class SFSlpDeployerImpl extends PrimProcessDeployerImpl {
         
         // read configuration...
         try {
-            String s = (String)sfResolve(descr, "slp_config_interface");
+            String s = (String)descr.sfResolve("slp_config_interface");
             if(!s.equals("")) properties.setProperty("net.slp.interface", s);
-            properties.setProperty("net.slp.multicastMaximumWait", sfResolve(descr, "slp_config_mc_max").toString());
-            properties.setProperty("net.slp.randomWaitBound", sfResolve(descr, "slp_config_rnd_wait").toString());
-            properties.setProperty("net.slp.initialTimeout", sfResolve(descr, "slp_config_retry").toString());
-            properties.setProperty("net.slp.unicastMaximumWait", sfResolve(descr, "slp_config_retry_max").toString());
-            properties.setProperty("net.slp.DAActiveDiscoveryInterval", sfResolve(descr, "slp_config_da_find").toString());
-            properties.setProperty("net.slp.DAAddresses", sfResolve(descr, "slp_config_daAddresses").toString());
-            properties.setProperty("net.slp.useScopes", sfResolve(descr, "slp_config_scope_list").toString());
-            properties.setProperty("net.slp.mtu", sfResolve(descr, "slp_config_mtu").toString());
-            properties.setProperty("net.slp.port", sfResolve(descr, "slp_config_port").toString());
-            properties.setProperty("net.slp.locale", sfResolve(descr, "slp_config_locale").toString());
-            properties.setProperty("net.slp.multicastAddress", sfResolve(descr, "slp_config_mc_addr").toString());
-            properties.setProperty("net.slp.debug", sfResolve(descr, "slp_config_debug").toString());
-            properties.setProperty("net.slp.logErrors", sfResolve(descr, "slp_config_log_errors").toString());
-            properties.setProperty("net.slp.logMsg", sfResolve(descr, "slp_config_log_msg").toString());
-            properties.setProperty("net.slp.logfile", sfResolve(descr, "slp_config_logfile").toString());
+            properties.setProperty("net.slp.multicastMaximumWait", descr.sfResolve("slp_config_mc_max").toString());
+            properties.setProperty("net.slp.randomWaitBound", descr.sfResolve("slp_config_rnd_wait").toString());
+            properties.setProperty("net.slp.initialTimeout", descr.sfResolve("slp_config_retry").toString());
+            properties.setProperty("net.slp.unicastMaximumWait", descr.sfResolve("slp_config_retry_max").toString());
+            properties.setProperty("net.slp.DAActiveDiscoveryInterval", descr.sfResolve("slp_config_da_find").toString());
+            properties.setProperty("net.slp.DAAddresses", descr.sfResolve("slp_config_daAddresses").toString());
+            properties.setProperty("net.slp.useScopes", descr.sfResolve("slp_config_scope_list").toString());
+            properties.setProperty("net.slp.mtu", descr.sfResolve("slp_config_mtu").toString());
+            properties.setProperty("net.slp.port", descr.sfResolve("slp_config_port").toString());
+            properties.setProperty("net.slp.locale", descr.sfResolve("slp_config_locale").toString());
+            properties.setProperty("net.slp.multicastAddress", descr.sfResolve("slp_config_mc_addr").toString());
+            properties.setProperty("net.slp.debug", descr.sfResolve("slp_config_debug").toString());
+            properties.setProperty("net.slp.logErrors", descr.sfResolve("slp_config_log_errors").toString());
+            properties.setProperty("net.slp.logMsg", descr.sfResolve("slp_config_log_msg").toString());
+            properties.setProperty("net.slp.logfile", descr.sfResolve("slp_config_logfile").toString());
         }catch(Exception e) {
             // ignored...
             System.out.println(e.toString());
@@ -164,9 +163,5 @@ public class SFSlpDeployerImpl extends PrimProcessDeployerImpl {
         
         return properties;
     }
-    
-    private Object sfResolve(ComponentDescription cd, String ref) throws SmartFrogResolutionException {
-        return cd.sfResolve(new Reference(ref));
-    }    
 }
 
