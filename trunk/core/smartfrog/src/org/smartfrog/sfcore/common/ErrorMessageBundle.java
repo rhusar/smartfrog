@@ -78,7 +78,8 @@ public class ErrorMessageBundle extends ListResourceBundle
         // Resolution Exception messages start
         { MSG_UNRESOLVED_REFERENCE , "Unresolved Reference"},
         { MSG_NOT_FOUND_REFERENCE , "Reference not found"},
-        { MSG_NOT_FOUND_ATTRIBUTE , "Attribute '{0}' not found"},
+        { MSG_NOT_FOUND_ATTRIBUTE , "Attribute {0} not found"},
+        { MSG_REPEATED_ATTRIBUTE , "Attribute {0} already present"},
         { MSG_NOT_VALUE_REFERENCE , "Reference with no value"},
         { MSG_NOT_COMPONENT_REFERENCE , "Reference is not a SmartFrog Component"},
         { MSG_ILLEGAL_REFERENCE , "Illegal Reference"},

@@ -163,7 +163,7 @@ public class ContextImpl extends OrderedHashtable implements Context,
       *
       * @return added attribute if non-existent or null otherwise
       *
-      * @throws SmartFrogRuntimeException when name or value are null
+      * @throws SmartFrogRuntimeException when name or value are null or name already used
       */
      public synchronized Object sfAddAttribute(Object name, Object value)
          throws SmartFrogContextException{
@@ -183,7 +183,9 @@ public class ContextImpl extends OrderedHashtable implements Context,
          }
 
          if (this.containsKey(name)) {
-                 return null;
+             throw new SmartFrogContextException(
+             MessageUtil.formatMessage(MessageKeys.MSG_REPEATED_ATTRIBUTE, name));
+
          }
 
          this.put(name, value);

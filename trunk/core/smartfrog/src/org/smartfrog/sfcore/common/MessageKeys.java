@@ -45,6 +45,11 @@ public interface MessageKeys {
      */
     public static String MSG_NON_REP_ATTRIB = "MSG_NON_REP_ATTRIB";
     /**
+     * Message key: Attribute 'name' already present.
+     */
+    public static String MSG_REPEATED_ATTRIBUTE = "MSG_REPEATED_ATTRIBUTE";
+
+    /**
      * Message key: An object is null in a method call.
      */
     public static String MSG_NULL_DEF_METHOD = "MSG_NULL_DEF_METHOD";
