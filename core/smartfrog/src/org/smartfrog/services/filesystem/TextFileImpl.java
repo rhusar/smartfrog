@@ -58,7 +58,10 @@ public class TextFileImpl extends SelfDeletingFileImpl implements TextFile {
                 OutputStream fout;
                 fout = new FileOutputStream(getFile());
                 wout = new OutputStreamWriter(fout, encoding);
-                wout.append(text);
+//                wout.append(text); // Java 1.5 ???
+                wout.write(text);
+                wout.flush();
+
                 wout.close();
             } catch (IOException ioe) {
                 if (wout != null) {
