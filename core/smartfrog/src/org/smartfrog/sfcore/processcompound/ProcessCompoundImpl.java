@@ -902,13 +902,15 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
 
             if ((key.startsWith(SmartFrogCoreProperty.propBase)) &&
                     (!(key.startsWith(SFSecurityProperties.propBaseSecurity)))) {
-                if (!key.equals(SmartFrogCoreProperty.sfProcessName)) {
+                if (!key.equals(SmartFrogCoreProperty.propBaseSFProcess
+                               +SmartFrogCoreKeys.SF_PROCESS_NAME)) {
                     Object value = props.get(key);
                     cmd.addElement("-D" + key.toString() + "=" +
                         value.toString());
                 } else {
                     cmd.addElement("-D" +
-                        (SmartFrogCoreProperty.sfProcessName+"=") +
+                        (SmartFrogCoreProperty.propBaseSFProcess
+                        +SmartFrogCoreKeys.SF_PROCESS_NAME+"=") +
                         name.toString());
                 }
             }

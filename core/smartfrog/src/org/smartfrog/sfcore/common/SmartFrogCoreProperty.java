@@ -106,15 +106,6 @@ public class SmartFrogCoreProperty {
     public static String defaultDescPropBase = propBaseSFProcess + "sfDefault.";
 
 
-    //ProcessCompund
-
-    /**
-     * Property that defines the process name
-     * descriptions
-     * @see ProcessCompoundImpl
-     */
-    public static String sfProcessName = propBase +"sfcore.processcompound.sfProcessName";
-
     //Compound
 
     /**
@@ -240,17 +231,6 @@ public class SmartFrogCoreProperty {
     */
    public final static String sfParserSFIncludeHandlerClass =
                               propBase+propBaseSFParserSF + "includeHandlerClass";
-   /**
-    *  Property used to define RMI port for SmartFrog Daemon
-    *
-    * @see languages.sf.SFParser
-    */
-   public final static String sfDaemonPort =
-                              propBase+"ProcessCompound.sfRootLocatorPort";
-
-
-
-
 
 
 }
