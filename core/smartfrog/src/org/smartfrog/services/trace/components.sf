@@ -33,7 +33,7 @@ Trace extends Prim {
         sfClass "org.smartfrog.services.trace.SFTrace";
     // set to false if you want to switch date, process and host displays off the messages
     verbose true;
-     
+
    // future improvement: output per Hook, no need for now.
         //outputMsg LAZY PARENT:display; // for printing Trace messages!
    //Active Hooks. By default they are active
@@ -70,6 +70,7 @@ TraceDisplay extends Display {
       positionDisplay "SW"; //Default C. (also N, S, SE, ...)
       redirectStd false; //Redirect System.out,.in,.err
       screenEditable false; //Editable?
+      stepTrace true; // Should ask for confirmation before stepping through?
 }
 // end TraceDisplay
 
