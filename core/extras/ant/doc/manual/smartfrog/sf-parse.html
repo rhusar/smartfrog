@@ -21,10 +21,6 @@
             <br><font face="arial,helvetica,sanserif">This task parses smartfrog files and validates them.</font>
           </td>
           <td>
-            <!-- PROJECT LOGO -->
-            <a href="http://ant.apache.org/">
-              <img src="../../images/ant_logo_large.gif" align="right" alt="Apache Ant" border="0"/>
-            </a>
           </td>
       </tr></table>
     </td>
@@ -46,7 +42,7 @@
       </td></tr>
 
       <tr><td><blockquote>
-        This task parses smartfrog files and validates them. Errors are thrown when appropriate
+        This task parses smartfrog files and validates them. Errors are thrown when appropriate. Valid files must have an sfConfig node to deploy, and all other files included must be on the classpath -either that used in the task declaration, or inline in this use of the task. A single file can be parsed with the file attribute; setting multiple source filesets causes the program to test them all in turn. That is, every file must be individually valid.
       </blockquote></td></tr>
 
     </table>
@@ -197,10 +193,40 @@
       <tr><td>&nbsp;</td></tr>
       <tr><td bgcolor="#828DA6">
         <font color="#ffffff" face="arial,helvetica.sanserif" size="-1">
+          <strong>propertyfile</strong> (org.smartfrog.tools.ant.PropertyFile)</font>
+      </td></tr>
+      <tr><td><blockquote>
+        add a property file to the JVM
+ <!-- Ignore -->
+ <!-- Ignore -->
+
+      </blockquote></td></tr>
+    </table>
+    <!-- End Element -->
+    <!-- Start Element -->
+    <table border="0" cellspacing="0" cellpadding="2" width="100%">
+      <tr><td>&nbsp;</td></tr>
+      <tr><td bgcolor="#828DA6">
+        <font color="#ffffff" face="arial,helvetica.sanserif" size="-1">
           <strong>source</strong> (org.apache.tools.ant.types.FileSet)</font>
       </td></tr>
       <tr><td><blockquote>
         add a fileset to the list of files to parse
+ <!-- Ignore -->
+ <!-- Ignore -->
+
+      </blockquote></td></tr>
+    </table>
+    <!-- End Element -->
+    <!-- Start Element -->
+    <table border="0" cellspacing="0" cellpadding="2" width="100%">
+      <tr><td>&nbsp;</td></tr>
+      <tr><td bgcolor="#828DA6">
+        <font color="#ffffff" face="arial,helvetica.sanserif" size="-1">
+          <strong>syspropertyset</strong> (org.apache.tools.ant.types.PropertySet)</font>
+      </td></tr>
+      <tr><td><blockquote>
+        Adds a set of properties as system properties.
  <!-- Ignore -->
  <!-- Ignore -->
 

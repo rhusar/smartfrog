@@ -22,7 +22,13 @@ package org.smartfrog.tools.ant;
 import org.apache.tools.ant.BuildException;
 
 /**
- * Ping a system
+ * Probe the health of a deployed application.
+ * This task will trigger a liveness check against the application, which
+ * causes the application to assess its own health and return successfully
+ * or raise an exception.
+ * The build file will stop on failure (default), or the task can be set
+ * to ignore the failure, and instead set a property on success, leaving it
+ * blank on failure. 
  * @ant.task category="SmartFrog" name="sf-ping"
  */
 public class PingTask extends SmartFrogTask {
@@ -48,7 +54,7 @@ public class PingTask extends SmartFrogTask {
 
 
     /**
-     * set the app name; optional on some actions
+     * set the name of the application to ping. Required
      *
      * @param application
      */

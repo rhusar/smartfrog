@@ -22,7 +22,10 @@ package org.smartfrog.tools.ant;
 import org.apache.tools.ant.BuildException;
 
 /**
- * Start an SF application; that deployes it remotely
+ * Start an SF application, an application which will run asynchronously until
+ * stopped by another mechanism.
+ *
+ * A smartfrog daemon must already be running on the target machine/port
  *
  * @ant.task category="SmartFrog" name="sf-deploy"
  * By default this target raises an error when the application cannot be stopped, and has a timeout

@@ -365,7 +365,7 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
     }
 
     /**
-     * set the fail on error flag.
+     * should the build halt on failure? (default=true)
      *
      * @param failOnError
      */
@@ -376,7 +376,7 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
 
 
     /**
-     * assertions to enable in this program
+     * assertions to enable in the JVM created
      *
      * @param asserts assertion set
      */
