@@ -54,8 +54,8 @@
   <target name="libraries" depends="setproxy">
     <property file="libraries.properties"/>
     <property file="${smartfrog.components.dir}/libraries.properties"/>
-    <libraries destdir="${maven.lib.dir}"
-      pathID="libraries.path">
+    <libraries destdir="${lib.dir}" flatten="true">
+      
       <mavenrepository url="${maven.url}"/>
       <library project="xerces"
         archive="xercesImpl"
@@ -67,8 +67,8 @@
         version="${xom.version}"/>
       <library project="jaxen"
         version="${jaxen.version}"/>
-      <library project="junit"
-        version="${junit.version}"/>
+<!--       <library project="junit"
+        version="${junit.version}"/> -->
     </libraries>
   </target>
     
@@ -76,7 +76,7 @@
   <!-- ========================================================== -->
   <!-- declare our compile time classpath -->
   <!-- ========================================================== -->
-  <target name="declare-compile.classpath"
+<!--   <target name="declare-compile.classpath"
     depends="declare-base.compile.classpath,libraries">
     <path id="compile.classpath">
       <path refid="base.compile.classpath"/>
@@ -84,7 +84,7 @@
     </path>
     <property name="compile.classpath.value" refid="exec.classpath"/>
     <echo level="verbose">compile.classpath=${compile.classpath.value}</echo>
-  </target>
+  </target> -->
   
   <!-- this is the classpath for running the daemon -->
   
@@ -170,7 +170,7 @@
     <sf-tourl property="codebase">
       <fileset file="${target.jar}"/>
       <fileset file="${test.jar}"/>
-      <path refid="libraries.path"/>
+      <path refid="compile.classpath"/>
     </sf-tourl>
     <echo>
         deploying to ${deploy.host}
