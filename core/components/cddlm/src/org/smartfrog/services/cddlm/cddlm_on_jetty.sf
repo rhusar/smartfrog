@@ -66,15 +66,11 @@ sfConfig extends Compound {
     }
     */
 
-    cddlmService extends CddlmService {
-        port PARENT:port;
-    }
-
-
     /*
      deploy axis on jetty
      */
-    JettyServer extends CoreJettyServer {
+    jettyServer extends CoreJettyServer {
+        sfSyncTerminate true;
 
         server "axis";
 
@@ -86,23 +82,34 @@ sfConfig extends Compound {
             jetty extends JettyListener {
                 listenerPort port;
                 serverHost host;
-                server PARENT:PARENT:server;
+                server LAZY jettyServer;
             }
         }
 
-        warFile extends LAZY File {
+        warFile extends File {
             dir axishome;
             filename "axis.war";
+            mustExist true;
         }
 
 
 
         AxisWebApp extends JettyWebApplication {
             webApp LAZY warFile:absolutePath;
-            contextPath "axis";
-            server PARENT:server;
+            contextPath "/axis";
+            server LAZY jettyServer;
         }
 
+    }
+
+    cddlmService extends CddlmService {
+        port PARENT:port;
+    }
+
+
+    //fetch the WSDL every so often, just to see that we are happy
+    wsdlFetch extends FetchCddlmWSDL {
+        port PARENT:port;
     }
 
 }

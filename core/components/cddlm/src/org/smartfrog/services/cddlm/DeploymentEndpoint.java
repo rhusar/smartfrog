@@ -233,7 +233,7 @@ public class DeploymentEndpoint extends SmartfrogHostedEndpoint {
      *
      * @return
      */
-    protected ProcessCompound getRootProcessCompount() {
+    protected ProcessCompound getRootProcessCompound() {
         return SFProcess.getProcessCompound();
     }
 
