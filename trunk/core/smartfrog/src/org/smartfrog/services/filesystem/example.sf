@@ -17,22 +17,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-#include "/org/smartfrog/components.sf"
-#include "/org/smartfrog/predicates.sf"
+#include "/org/smartfrog/services/filesystem/components.sf"
 
-TouchFileSchema extends Schema {
-    //filename; this must be in a platform-specific format
-    file extends String;
-    //age of file, seconds since 1970-01-01; a value of -1 indicates
-    //current timestamp, as does omitting the value
-    age extends OptionalLong;
-}
-
-/**
- * the TouchFile component exits immediately after creation.
- * it takes a file and an age
- */
-TouchFile extends Prim {
-    touchFileSchema extends TouchFileSchema;
-    sfClass "org.smartfrog.services.filesystem.TouchFile";
+sfConfig extends TouchFile {
+    file "test";
+    age -1L;
 }

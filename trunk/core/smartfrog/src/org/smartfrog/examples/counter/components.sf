@@ -24,7 +24,26 @@ For more information: www.smartfrog.org
  * The Counter component is a basic primitive component.     
  */
 
+#include "/org/smartfrog/predicates.sf"
+
 Counter extends Prim {
+
+    counterSchema extends Schema {
+        counter extends OptionalInteger;
+        message extends OptionalString;
+        /**
+         limit is not really optional, but
+         setting it as mandatory breaks a lot of
+         example files
+         */
+        limit extends OptionalInteger;
+        //sleep time in milliseconds. 0 means no sleep.
+        sleep extends OptionalInteger;
+        /** debug flag */
+        debug extends OptionalBoolean;
+    }
+
+
    /** 
     * Optional attribute: a seed value( integer) for the counter 
     */  

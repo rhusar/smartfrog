@@ -33,10 +33,8 @@ public interface Counter {
     /** String name for mandatory attribute "limit".*/
     final static String ATR_LIMIT = "limit";
 
-    // Interfaces Examples.
-    // //Normal method
-    //  public int enable (InetAddress hostIP, int port) throws Exception;
-    // //Remote methods
-    //  public int enable (InetAddress hostIP, int port) throws RemoteException;
-    //
+    /**
+     * string name for optional attribute, sleep
+     */
+    final static String ATR_SLEEP = "sleep";
 }
