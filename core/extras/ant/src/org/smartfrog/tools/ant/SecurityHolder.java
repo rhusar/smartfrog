@@ -23,7 +23,6 @@ package org.smartfrog.tools.ant;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
-import org.apache.tools.ant.taskdefs.SignJar;
 import org.apache.tools.ant.types.Reference;
 
 /**
@@ -97,7 +96,6 @@ public class SecurityHolder {
         //hand off to the task
         sec.applySecuritySettings(task);
         return true;
-
     }
 
 }

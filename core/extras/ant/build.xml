@@ -243,7 +243,7 @@
 
 
 
-<target name="xdocs" depends="want-xdocs,compile"
+<target name="xdocs" depends="want-xdocs,package"
   description="Run xdoclet over the ant tasks to create doc pages"
   if="xdocs.found">
   <echo>
@@ -262,7 +262,7 @@
   </ant>
 </target>
 
-<target name="dvsl" depends="want-xdocs">
+<target name="dvsl" depends="xdocs">
   <ant inheritAll="${ant.inheritAll}" inheritRefs="${ant.inheritRefs}" dir="${xdocs.dir}/dvsl">
     <property name="src.dir" location="src/org/smartfrog/tools/ant/"/>
     <property name="build.dir" location="${build.antdocs.dir}"/>
