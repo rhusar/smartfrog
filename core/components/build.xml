@@ -474,8 +474,8 @@ For more information: www.smartfrog.org
   <!-- =================================================================== -->
   <!-- update version                                                      -->
   <!-- =================================================================== -->
-  <target name="updateversion" depends="init-common, init">
-
+ <target name="updateversion" depends="init-common, init">
+    <property name="skin.dir" location="forrest_skin" />
     <replace 
     		file="buildRelease.xml"
    		propertyFile="version.properties">
@@ -495,6 +495,19 @@ For more information: www.smartfrog.org
   		<replacefilter 
     		token="@version" 
     		property="@{compname}.version"/>
+	</replace>
+		<replace 
+    		file="${skin.dir}/SFComponents.xml"
+   		propertyFile="version.properties">
+  		<replacefilter 
+    		token="@{compname}-ver" 
+    		property="@{compname}.version"/>
+			<replacefilter 
+    		token="@{compname}-minver" 
+    		property="@{compname}.minversion"/>
+			<replacefilter 
+    		token="@{compname}-maxver" 
+    		property="@{compname}.maxversion"/>
 	</replace>
       </sequential>
     </macrodef>
