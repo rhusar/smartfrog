@@ -80,7 +80,7 @@ public class MainFrame_AboutBox extends JDialog implements ActionListener {
     gridLayout1.setColumns(1);
     label1.setText(product);
     label2.setText(org.smartfrog.tools.gui.browser.MainFrame.version);
-    label3.setText("HP Labs Bristol Copyright (c) 2001");
+    label3.setText(copyright);
     label4.setText(comments);
     insetsPanel3.setLayout(gridLayout1);
     insetsPanel3.setBorder(BorderFactory.createEmptyBorder(10, 60, 10, 10));
