@@ -18,9 +18,10 @@
 
  */
 
-package org.smartfrog.extras.wrapper;
+package org.smartfrog.extras.wrapper.launcher;
 
 import org.smartfrog.SFSystem;
+import org.smartfrog.extras.wrapper.WrappedEntryPoint;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.sfcore.processcompound.SFProcess;
@@ -28,17 +29,15 @@ import org.smartfrog.sfcore.processcompound.SFProcess;
 import java.rmi.RemoteException;
 
 /**
- * This is a wrapped entry point to the SFSystem runtime.
- * The core differences are
- * <ol>
- * <li>we run in a separate thread
- * <li>Instead of calling system.exit(), we throw an {@link ExitException}
- * <li>That gets caught and saved as the exit code
- * </ol>
+ * This is a wrapped entry point to the SFSystem runtime. The core differences
+ * are <ol> <li>we run in a separate thread <li>Instead of calling
+ * system.exit(), we throw an {@link ExitException} <li>That gets caught and
+ * saved as the exit code </ol>
  *
  * @since 01-Oct-2004
  */
-public class WrappedSFSystem extends SFSystem implements Runnable {
+public class WrappedSFSystem extends SFSystem implements Runnable,
+        WrappedEntryPoint {
 
     private String args[];
 
@@ -80,8 +79,8 @@ public class WrappedSFSystem extends SFSystem implements Runnable {
     }
 
     /**
-     * this is a brute force operation, not how you are encouraged to shut things
-     * down
+     * this is a brute force operation, not how you are encouraged to shut
+     * things down
      */
     public void emergencyStop() {
         thread.stop();
@@ -108,8 +107,10 @@ public class WrappedSFSystem extends SFSystem implements Runnable {
         return systemExitOnRootProcessTermination;
     }
 
-    public void setSystemExitOnRootProcessTermination(boolean systemExitOnRootProcessTermination) {
-        this.systemExitOnRootProcessTermination = systemExitOnRootProcessTermination;
+    public void setSystemExitOnRootProcessTermination(
+            boolean systemExitOnRootProcessTermination) {
+        this.systemExitOnRootProcessTermination =
+                systemExitOnRootProcessTermination;
     }
 
     /**
@@ -138,21 +139,22 @@ public class WrappedSFSystem extends SFSystem implements Runnable {
      * @throws SmartFrogException
      * @throws RemoteException
      */
-    protected ProcessCompound createRootProcess() throws SmartFrogException, RemoteException {
+    protected ProcessCompound createRootProcess() throws SmartFrogException,
+            RemoteException {
         ProcessCompound rootProcess = SFProcess.deployProcessCompound(false);
         rootProcess.systemExitOnTermination(systemExitOnRootProcessTermination);
         return rootProcess;
     }
 
     /**
-     * Block till stopping has finished.
-     * There is no timeout, because we expect the
+     * Block till stopping has finished. There is no timeout, because we expect
+     * the
      *
      * @param seconds timeout;
      * @return true if we were successful
      */
     public boolean waitTillStopped(long seconds) {
-        if(thread==null) {
+        if (thread == null) {
             //implicitly halted
             return true;
         }
@@ -169,8 +171,8 @@ public class WrappedSFSystem extends SFSystem implements Runnable {
     }
 
     /**
-     * Exits from the system.
-     * This implementation throws an runtime exception for a container to catch
+     * Exits from the system. This implementation throws an runtime exception
+     * for a container to catch
      *
      * @throws ExitException with the supplied error code.
      */
@@ -180,15 +182,14 @@ public class WrappedSFSystem extends SFSystem implements Runnable {
 
 
     /**
-     * Exception thrown
-     * we want to stop
+     * Exception thrown we want to stop
      */
     private static class ExitException extends RuntimeException {
 
         /**
          * Constructs a new runtime exception with <code>null</code> as its
-         * detail message.  The cause is not initialized, and may subsequently be
-         * initialized by a call to {@link #initCause}.
+         * detail message.  The cause is not initialized, and may subsequently
+         * be initialized by a call to {@link #initCause}.
          *
          * @param exitCode our exit code.
          */

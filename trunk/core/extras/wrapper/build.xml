@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="sf-wrapper" default="default">
+<project name="wrapper" default="default">
 
   <!--
   /** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
@@ -39,14 +39,16 @@
   <!-- ========================================================== -->
   <!-- ========================================================== -->
   <target name="init" depends="init-standard-output-dirs,use-smartfrog-tasks">
+    <property name="secondary.jar"
+      location="${dist.lib.dir}/${project.name}-launched.jar"/>
   </target>
 
   <target name="fetch-libraries"
-    description="pull in the smartfrog/dist/lib jar files" >
+    description="pull in the smartfrog/dist/lib jar files">
     <!-- grab everything from the smartfrog distribution, even though
          the daemon will only load a subset -->
-    <copy todir="${dist.lib.dir}" >
-      <fileset refid="smartfrog.lib.fileset" />
+    <copy todir="${dist.lib.dir}">
+      <fileset refid="smartfrog.lib.fileset"/>
     </copy>
   </target>
 
@@ -55,12 +57,12 @@
     <echo>we are ${os.name}</echo>
   </target>
 
-  <target name="all" depends="dist,fetch-libraries" />
+  <target name="all" depends="dist,fetch-libraries"/>
 
-  <target name="run-dos" depends="all" >
+  <target name="run-dos" depends="all">
     <exec dir="bin" executable="cmd.exe" os="windows"
-      failonerror="true" >
-      <arg value="sfconsole.bat" />
+      failonerror="true">
+      <arg value="sfconsole.bat"/>
     </exec>
   </target>
 
@@ -82,4 +84,24 @@
 
   <target name="declare-run.classpath"
     depends="declare-run.classpath-no-tests"/>
+
+  <!-- ========================================================== -->
+  <!-- this is an override point -->
+  <!-- create the JAR ${target.jar}-->
+  <!-- ========================================================== -->
+  <target name="package" depends="compile"
+    description="create the JAR files">
+    <jar destfile="${target.jar}"
+      basedir="${build.classes.dir}"
+      includes="**/*"
+      excludes="**/launcher/*"
+      />
+    <echo level="verbose">created package ${target.jar}</echo>
+    <jar destfile="${secondary.jar}"
+      basedir="${build.classes.dir}"
+      includes="**/launcher/*"
+      />
+    <echo level="verbose">created package ${secondary.jar}</echo>
+  </target>
+
 </project>
