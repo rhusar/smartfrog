@@ -29,39 +29,63 @@ import org.smartfrog.sfcore.prim.Prim;
 /**
  * SmartFrog Logger Interface. Defines names of Logger attributes and methods
  * for distributed logging.
+ *
+ * Because the logger may be running on a remote system from the caller, it is
+ * important to filter out unsent messages -especially debug messages- before
+ * making a call over the network. There is a method in the interface, isDebugEnabled,
+ * that returns true if debug messages should be sent out.
+ * Obviously, making that call before every debug message is sent does not save any time
+ * either, so if it is to be used, cache the return value.
  */ 
 public interface SFLogger extends Prim {
     
     //SmartFrog attributes for the distributed logger
-    public static String FILE_LOGGING = "fileLogging";
-    public static String CONSOLE_LOGGING = "consoleLogging";
-    public static String LOG_DIR = "logsDir";
-    public static String LOG_FILE = "logFile";
-    public static String LOG_FORMATTER = "logFormatter";
+    public static final String FILE_LOGGING = "fileLogging";
+    public static final String CONSOLE_LOGGING = "consoleLogging";
+    public static final String LOG_DIR = "logsDir";
+    public static final String LOG_FILE = "logFile";
+    public static final String LOG_FORMATTER = "logFormatter";
     
     /**
      * Logs Info message.
-     * @param the log message
+     * @param msg the log message
      * @throws RemoteException if there is any network or RMI error
      */
     public void logInfo(String msg) throws RemoteException ;
     /**
      * Logs Warning message.
-     * @param the log message
+     * @param msg the log message
      * @throws RemoteException if there is any network or RMI error
      */
     public void logWarning(String msg) throws RemoteException;
     /**
      * Logs Error message.
-     * @param the log message
+     * @param msg the log message
      * @throws RemoteException if there is any network or RMI error
      */
     public void logError(String msg) throws RemoteException;
     /**
      * Logs a log reecord
-     * @param the log record
+     * @param logRec the log record
      * @throws RemoteException if there is any network or RMI error
      * @see java.util.logging.LogRecord
      */
     public void log(LogRecord logRec) throws RemoteException;
+
+    /**
+     * log at debug level
+     * @param msg
+     * @throws RemoteException
+     * @see #isDebugEnabled() 
+     */
+
+
+    public void logDebug(String msg) throws RemoteException;
+
+    /**
+     * message which determines whether debug logging is enabled
+     * @return
+     * @throws RemoteException
+     */
+    public boolean isDebugEnabled() throws RemoteException;
 }
