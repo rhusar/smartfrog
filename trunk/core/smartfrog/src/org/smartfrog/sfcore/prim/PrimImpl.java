@@ -2010,8 +2010,9 @@ public class PrimImpl extends Object implements Prim, MessageKeys {
      * @param source source of call
      *
      * @throws SmartFrogLivenessException component is terminated
+     * @throws RemoteException for consistency with the {@link Liveness} interface
      */
-    public void sfPing(Object source) throws SmartFrogLivenessException {
+    public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
         if (sfIsTerminated) {
             throw new SmartFrogLivenessException("Component Terminated");
         }
