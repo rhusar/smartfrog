@@ -1,30 +1,30 @@
 \subsection{WSDL: an extra complication}
-\subsubsection{Automatically Generating WSDL from Java}
-\label{objections:o-x:wsdl-gen}
+\label{objections:wsdl-gen}
 
 The role of an Interface Definition Language (IDL) has always been
-twofold. 
+twofold.
 
 The primary output of the process is a definition of \emph{the
 interface} of the remote system. This is ``interface''in the sense of
 \emph{the implementation independent signature of the service}, and does
 not imply that the implementation language needs an explicit notion of
-interfaces. The interface is inherently implementation independent, and
-can be frozen or carefully managed with respects to versioning.
+interfaces. The interface is inherently implementation independent,
+and can be frozen or carefully managed with respects to versioning.
 
-The act of writing the IDL inherently forces the author to define 
-portable datatypes and operations in its restricted language of the IDL.
-This effectively guarantees portability. The implementation languages
-invariably contain constructs which are not portable, but as these are
-excluded from the Interface language, a portability issue is the
-exception, rather than the rule.
+The act of writing the IDL inherently forces the author to define
+portable datatypes and operations in its restricted language of the
+IDL.  This effectively guarantees portability. The implementation
+languages invariably contain constructs which are not portable, but as
+these are excluded from the Interface language, a portability issue is
+the exception, rather than the rule.
 
 Yet the generally accepted practise for working with JAX-RPC discards
-all these notions. Instead of generating implementation classes from the
-WSDL, the WSDL is often generated from the implementation classes, using
-Java's Reflection API. We shall term this process \emph{WSDL-last development}.
+all these notions. Instead of generating implementation classes from
+the WSDL, the WSDL is often generated from the implementation classes,
+using Java's Reflection API. We shall term this process
+\emph{WSDL-last development}.
 
-This has the following consequences. 
+This has the following consequences.
 
 \begin{itemize}
 
@@ -86,10 +86,3 @@ WSDL's core flaws; it is to continue to encourage developers to hand
 over to their SOAP stacks the challenge of deriving a stable and portable 
 service interface from the inherently unstable and unportable sevice
 implementation.   
-
-
-
-
-
-
-
