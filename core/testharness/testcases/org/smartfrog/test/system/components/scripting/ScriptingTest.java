@@ -28,7 +28,7 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.sfcore.processcompound.ProcessCompoundImpl;
-//import org.smartfrog.sfcore.processcompound.ProcessCompoundImpl_Stub;
+import org.smartfrog.sfcore.processcompound.ProcessCompoundImpl_Stub;
 import org.smartfrog.sfcore.processcompound.SFProcess;
 import org.smartfrog.sfcore.reference.ProcessReferencePart;
 import org.smartfrog.sfcore.common.SmartFrogException;
