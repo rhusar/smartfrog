@@ -119,6 +119,7 @@ public class OnEvent extends EventCompoundImpl implements Compound {
             try {
 		if (singleEvent) {
 		    super.sfTerminatedWith(status, comp);
+		    return;
 		}
 
                 if (!(status.errorType.equals("normal".intern()))) {
