@@ -370,7 +370,7 @@ public class SmartFrogException extends Exception implements Serializable {
         strb.append ((((getCause() == null) ) ? "" : (nm+"  cause: " +
                         getCause())));
         strb.append ((((cxt == null) ||
-            (cxt.size() == 0)) ? "" : (nm+"  context: " + "\n" +cxt.toString()+nm)));
+            (cxt.size() == 0)) ? "" : (nm+"  context: " + nm +cxt.toString()+nm)));
         return strb.toString();
     }
 

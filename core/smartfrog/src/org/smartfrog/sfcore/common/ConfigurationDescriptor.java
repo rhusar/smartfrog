@@ -38,6 +38,10 @@ import java.rmi.ConnectException;
 import org.smartfrog.sfcore.common.MessageKeys;
 import org.smartfrog.sfcore.common.MessageUtil;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
+import java.io.LineNumberReader;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.io.PrintWriter;
 
 public class ConfigurationDescriptor implements MessageKeys{
 
@@ -201,8 +205,13 @@ public class ConfigurationDescriptor implements MessageKeys{
             str.append(" resultMessage:");  str.append(resultMessage.toString());
             }
         if (resultException!=null) {
-            str.append(separator);
-            str.append(" resultExceptionMessage:"); str.append(resultException.getMessage());}
+          str.append(separator);
+          str.append(" resultExceptionMessage:");
+          str.append(resultException.getMessage());
+          if (Logger.logStackTrace) {
+             str.append(parseExceptionStackTrace(resultException,separator));
+          }
+        }
         return str.toString();
     }
 
@@ -323,7 +332,7 @@ public class ConfigurationDescriptor implements MessageKeys{
               (((resultMessage!=null)||
                 (resultException!=null))&&(this.resultType!=Result.SUCCESSFUL))) {
                   messageError = new StringBuffer();
-                  messageError.append("\n   Result:");
+                  messageError.append(separator+"   Result:");
                   if ((resultMessage!=null)&&(resultMessage.toString().trim()!="")) {
                      messageError.append(lineSeparator);
                      messageError.append("Message: '"+ resultMessage.toString()+"'");
@@ -331,6 +340,10 @@ public class ConfigurationDescriptor implements MessageKeys{
                   if (resultException!=null) {
                       messageError.append(lineSeparator);
                       messageError.append("Exception: '"+parseException(resultException,lineSeparator)+"'");
+                      if (Logger.logStackTrace) {
+                         messageError.append(lineSeparator);
+                         messageError.append("StackTrace: '"+parseExceptionStackTrace(resultException,lineSeparator+"   ")+"'");
+                       }
                   }
                   if (originalSFACT!=null) {
                     messageError.append(lineSeparator);
@@ -380,6 +393,42 @@ public class ConfigurationDescriptor implements MessageKeys{
         return messageError.toString();
     }
 
+    /**
+     * Generates a String for the StackTrace using lineSeparator
+     * @param thr Exception
+     * @return message
+     */
+    public static String parseExceptionStackTrace(Throwable thr, String lineSeparator) {
+
+      if (thr==null) return "";
+
+      final StringWriter sw = new StringWriter(1024);
+      final PrintWriter out = new PrintWriter(sw, false);
+
+      StringBuffer messageError = new StringBuffer();
+      messageError.append(lineSeparator);
+      thr.fillInStackTrace();
+      thr.printStackTrace(out);
+
+      LineNumberReader in = new LineNumberReader( new StringReader(sw.toString()));
+
+      try {
+        String result;
+        while ( (result = in.readLine()) != null) {
+          messageError.append(result.toString() + lineSeparator);
+        }
+      } catch (IOException ex) {
+        // this should REALLY never happen
+        throw new RuntimeException(ex.toString());
+      }
+
+      if (thr instanceof SmartFrogException) {
+        //messageError.append(lineSeparator);
+        messageError.append( ( (SmartFrogException) thr).toStringAll(lineSeparator));
+      }
+      //messageError.append(lineSeparator+" --- StackTrace sfex Begins --");
+      return messageError.toString();
+    }
 
     /**
      * this is a constant that defines what the inter-element token is when cracking

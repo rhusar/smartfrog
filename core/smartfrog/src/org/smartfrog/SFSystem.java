@@ -51,6 +51,10 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.Properties;
 import java.util.Vector;
+import java.io.StringWriter;
+import java.io.PrintWriter;
+import java.io.LineNumberReader;
+import java.io.StringReader;
 
 
 /**
@@ -360,22 +364,27 @@ public class SFSystem implements MessageKeys {
             setRootProcess(runSmartFrog(opts.cfgDescriptors));
         } catch (SmartFrogException sfex) {
             sflog().out(sfex);
+            if (Logger.logStackTrace){ printStackTrace(sfex); }
             exitWithError();
         } catch (UnknownHostException uhex) {
             sflog().err(MessageUtil.formatMessage(MSG_UNKNOWN_HOST, opts.host), uhex);
+            if (Logger.logStackTrace){ printStackTrace(uhex); }
             exitWithError();
         } catch (ConnectException cex) {
             sflog().err(MessageUtil.formatMessage(MSG_CONNECT_ERR, opts.host), cex);
+            if (Logger.logStackTrace){ printStackTrace(cex); }
             exitWithError();
         } catch (RemoteException rmiEx) {
             // log stack trace
             sflog().err(MessageUtil.formatMessage(MSG_REMOTE_CONNECT_ERR,
                     opts.host), rmiEx);
+            if (Logger.logStackTrace){ printStackTrace(rmiEx); }
             exitWithError();
         } catch (Exception ex) {
             //log stack trace
             sflog().err(MessageUtil.
                     formatMessage(MSG_UNHANDLED_EXCEPTION), ex);
+            if (Logger.logStackTrace){ printStackTrace(ex); }
             exitWithError();
         }
 
@@ -415,6 +424,15 @@ public class SFSystem implements MessageKeys {
                 sflog().out(MessageUtil.formatMessage(MSG_SF_READY, ""));
             }
         }
+    }
+
+    /**
+     * Prints StackTrace
+     * @param thr Throwable
+     */
+    public void printStackTrace(Throwable thr){
+      System.err.println(MessageUtil.formatMessage(this.MSG_STACKTRACE_FOLLOWS)+"' "+
+                         ConfigurationDescriptor.parseExceptionStackTrace(thr,"\n"+"   ")+" '");
     }
 
     /**
