@@ -34,40 +34,30 @@ import java.util.Date;
  */
 public interface LogToErr {
 
-//  //Configuration parameters
-//  /** String name for optional attribute "path". */
-//   final static String ATR_PATH = "path";
-//   /** String name for optional attribute "logFileExtension". */
-//   final static String ATR_LOG_FILE_EXTENSION = "logFileExtension";
-//   /** String name for optional attribute "useDatedFileName". */
-//   final static String ATR_USE_DATED_FILE_NAME = "useDatedFileName";
-//   /** String name for optional attribute "useDatedFileName". */
-//   final static String ATR_REDIRECT_SYSTEM_OUTPUTS = "redirectSystemOutputs";
+   /** Include the instance name in the log message? */
+    final static String ATR_SHOW_LOG_NAME = "showLogName";
 
-//  /** Include the instance name in the log message? */
-//  protected static boolean showLogName = true;
-//
-//  /** Include the short name ( last component ) of the logger in the log
-//      message. Default to true - otherwise we'll be lost in a flood of
-//      messages without knowing who sends them.
-//  */
-//  protected boolean showShortName = false;
-//
-//  /** Include the current time in the log message */
-//  protected static boolean showDateTime = true;
-//
-//  /** Include thread name in the log message */
-//  protected boolean showThreadName = true;
-//
-//  /** Include package name in the log message */
-//  protected boolean showMethodCall = true;
-//
-//  /** Include package name in the log message */
-//  protected boolean showStackTrace =true;
-//
-//  /** Used to format times */
-//  protected static DateFormat dateFormatter = null;
+  /** Include the short name ( last component ) of the logger in the log
+      message. Default to true - otherwise we'll be lost in a flood of
+      messages without knowing who sends them.
+  */
+  /** String name for optional attribute "path". */
+   final static String ATR_SHOW_SHORT_NAME = "showShortName";
+  /** Include the current time in the log message */
+  final static String ATR_SHOW_DATE_TIME = "showDateTime";
 
+  /** Include thread name in the log message */
+  final static String ATR_SHOW_THREAD_NAME = "showThreadName";
+
+
+  /** Include method call in the log message */
+  final static String ATR_SHOW_METHOD_CALL = "showMethodCall";
+
+  /** Include stack trace in log message */
+  final static String ATR_SHOW_STACK_TRACE = "showStackTrace";
+
+  /** Used to format times */
+  final static String ATR_DATE_FORMAT = "dateFormat";
 
 }
 

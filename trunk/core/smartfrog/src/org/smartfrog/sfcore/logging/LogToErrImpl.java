@@ -54,8 +54,8 @@ import java.util.Date;
  */
 public class LogToErrImpl implements LogToErr, Log, LogMessage, LogLevel, Serializable {
 
-    //Configuration for LogImpl class
-    ComponentDescription classComponentDescription = null;
+  //Configuration for LogImpl class
+   ComponentDescription classComponentDescription = null;
 
   /** Include the instance name in the log message? */
   protected boolean showLogName = true;
@@ -143,17 +143,54 @@ public class LogToErrImpl implements LogToErr, Log, LogMessage, LogLevel, Serial
     public LogToErrImpl(String name, Integer initialLogLevel,PrintStream out) {
         setOutstream(out);
         setLevel(initialLogLevel.intValue());
-      //Check Class and read configuration...including system.properties
+        //Check Class and read configuration...including system.properties
         try {
-          ComponentDescription classComponentDescription = LogImpl.getClassComponentDescription(this, true);
+          classComponentDescription = LogImpl.getClassComponentDescription(this, true);
         } catch (SmartFrogException ex) {
            this.warn(ex.toString());
+        }
+        try {
+          readSFAttributes();
+        } catch (SmartFrogException ex1) {
+           this.error("",ex1);
         }
         assert name != null;
         logName = name;
         // Set initial log level
         setLevel(initialLogLevel.intValue());
     }
+
+
+    /**
+     *  Reads optional and mandatory attributes.
+     *
+     * @exception  SmartFrogException error while reading attributes
+     * @exception  RemoteException In case of network/rmi error
+     */
+    private void readSFAttributes() throws SmartFrogException {
+        if (classComponentDescription==null) return;
+
+        //Optional attributes.
+        try {
+          showLogName =    classComponentDescription.sfResolve(ATR_SHOW_LOG_NAME,showLogName, false);
+          showShortName =  classComponentDescription.sfResolve(ATR_SHOW_SHORT_NAME,showShortName, false);
+          showDateTime =   classComponentDescription.sfResolve(ATR_SHOW_DATE_TIME,showDateTime, false);
+          showThreadName = classComponentDescription.sfResolve(ATR_SHOW_THREAD_NAME,showThreadName, false);
+          showMethodCall = classComponentDescription.sfResolve(ATR_SHOW_METHOD_CALL,showMethodCall, false);
+          showStackTrace = classComponentDescription.sfResolve(ATR_SHOW_STACK_TRACE,showStackTrace, false);
+        } catch (Exception sex){
+           this.warn("",sex);;
+        }
+
+        try{
+          dateFormatter= new SimpleDateFormat(classComponentDescription.sfResolve
+             (ATR_DATE_FORMAT,"yyyy/MM/dd HH:mm:ss:SSS zzz",false));
+        } catch (Exception ex){
+           this.err("dateFormatter",ex);
+        }
+
+    }
+
 
     /**
      * set the output stream for logging. must not be null
