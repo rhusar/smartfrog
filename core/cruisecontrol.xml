@@ -22,12 +22,12 @@
       propertyondelete="cvs.deleted"/>
     </modificationset>
 
-    <ant target="cc-full" antscript="ant" useLogger="true" />
     <!-- the interval is seconds -->
-    <schedule interval="1800">
+    <schedule interval="1200">
       <maven mavenscript="/home/cruise/maven/bin/maven"
             goal="site:generate"
             projectfile="/home/cruise/cruisecontrol/project.xml"/>
+      <ant target="cc-full" antscript="ant" useLogger="true" />
     </schedule>
 
     <log dir="../artifacts">
