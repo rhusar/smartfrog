@@ -1,30 +1,29 @@
 #include "org/smartfrog/components.sf";
 #include "org/smartfrog/services/jetty/components.sf";
+//#include "org/smartfrog/services/jetty/example.sf";
+
 
 /** 
  * This is an example of dynamic adding of listeners and contexts to 
  * running jetty server
  */ 
 
-server1 "Jetty Server 1";
-server2 "Jetty Server 2";
-
 context extends JettyServletContext {
- contextPath "/test2";
- resourceBase ("C:\\ritu");
+ contextPath "/test3";
+ resourceBase ("C:\\ritu\\ant");
 }
 
 listener extends JettyListener {
- listenerPort 8085;
+ listenerPort 8086;
  serverHost "localhost";
 }
 
 
 sfConfig extends Compound {
       newlistener extends listener {
-        server ROOT:server1;
+          server LAZY HOST eb97201.india.hp.com:rootProcess:ex1:server1;
       }
       newcontext extends context {
-        server ROOT:server2;
+          server LAZY HOST eb97201.india.hp.com:rootProcess:ex1:SERVER2;
      }
 }
