@@ -65,7 +65,7 @@ For more information: www.smartfrog.org
     <property name="default.ini" location="test/files/default.ini"/>
     <property name="default.sf" location="test/files/default.sf"/>
 
-     
+
     
     <!-- the compile time path includes axis-->
     <path id="compile.classpath">
@@ -84,6 +84,10 @@ For more information: www.smartfrog.org
       ignoresystemclasses="false"/>
     <fail unless="axis.found">No Axis found in ${axis.lib.dir}</fail>
     
+    <!-- import Axis tasks-->
+    <taskdef resource="axis-tasks.properties"
+      classpathref="compile.classpath" />
+    <!-- set up the runtime path --> 
     <path id="run.classpath">
       <path refid="compile.classpath"/>
       <path location="${target.jar}" />
@@ -140,15 +144,15 @@ For more information: www.smartfrog.org
   <!-- ========================================================== -->
   <!-- run the service inline -->
   <!-- ========================================================== -->
-  <target name="run" depends="parse,dist" 
+  <target name="start-daemon" depends="parse,dist" 
     description="parse the cddlm descriptor">
-      <sf-run classpathref="run.classpath"
+      <sf-startdaemon classpathref="run.classpath"
         logStackTraces="true" >
         <assertions enableSystemAssertions="true">
           <enable/>
         </assertions>
         <application name="cddlm" descriptor="/${deploy.sf}"/>
-      </sf-run>
+      </sf-startdaemon>
   </target>
 
 
@@ -166,6 +170,43 @@ For more information: www.smartfrog.org
       </sf-deploy>
   </target>  
 
+  
+  <!-- ========================================================== -->
+  <!-- deploy; requires a host -->
+  <!-- ========================================================== -->
+  <target name="create-WSDL" depends="dist">
+    <axis-java2wsdl>
+    </axis-java2wsdl>
+  </target>
+  
+  <target name="system-tests" depends="parse,dist" 
+    description="run system tests"
+    if="system.tests.enabled">
+    <parallel>
+      
+      <!-- first thread runs the daemon -->
+      <sequential>
+        <antcall target="start-daemon"/>
+      </sequential>
+      
+      <!-- this is the next thread -->
+      <sequential>
+      
+        <!-- 
+          wait ten seconds for the harness to start
+          without this the first tests will fail as there is no
+          sf daemon around
+        -->
+        <sf-waitfordaemon maxwait="10" timeoutproperty="daemon.missing" />
+        <fail if="daemon.missing">No daemon</fail>
+        <!-- get the WSDL -->
+          
+        <!-- conditionally stop the daemon -->
+        <antcall target="stop-daemon-if-started"/>
+        <!-- end the test thread -->
+      </sequential>
+    </parallel>
+  </target>  
   
   <!-- ========================================================== -->
   <!-- default target -->

@@ -34,6 +34,7 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.common.ConfigurationDescriptor;
 import org.smartfrog.sfcore.processcompound.SFProcess;
+import org.smartfrog.sfcore.processcompound.ProcessCompound;
 
 import java.rmi.RemoteException;
 
@@ -53,7 +54,8 @@ public class DeploymentEndpoint extends SmartfrogHostedEndpoint {
 
 
     protected final static String[] languages= {
-        "SmartFrog"
+        "SmartFrog",
+        "CDDLM-XML"
     };
     /**
      * list our languages
@@ -70,9 +72,12 @@ public class DeploymentEndpoint extends SmartfrogHostedEndpoint {
      * @throws AxisFault
      */
     protected void verifySupported(String language) throws AxisFault {
-        if(language.length()>0 && !languages[0].equalsIgnoreCase(language)) {
-            throw new AxisFault("Unsupported Language :"+language);
+        for(int i=0;i<languages.length; i++) {
+            if(languages[i].equalsIgnoreCase(language)) {
+                return;
+            }
         }
+        throw new AxisFault("Unsupported language :"+language);
     }
 
     /**
@@ -90,9 +95,11 @@ public class DeploymentEndpoint extends SmartfrogHostedEndpoint {
     /**
      * deploy a named resource
      * @param language
+     * @param hostname
      * @param application
      * @param url
-     * @throws AxisFault
+     * @return
+     * @throws RemoteException
      */
     public String deployURL(String language, String hostname, String application, String url) throws RemoteException
             {
@@ -100,14 +107,25 @@ public class DeploymentEndpoint extends SmartfrogHostedEndpoint {
         if(hostname.length() == 0) {
             hostname="localhost";
         }
-        boolean remote= !"localhost".equalsIgnoreCase(hostname) ;
+        return deployThroughActions(hostname, application, url);
+    }
+
+    /**
+     * first pass impl of deployment; use sfsystem
+     * @param hostname
+     * @param application
+     * @param url
+     * @return
+     * @throws AxisFault
+     */
+    private String deployThroughSFSystem(String hostname, String application,
+                                         String url) throws AxisFault {
         try {
             ConfigurationDescriptor config=new ConfigurationDescriptor(application,url);
-            config.host=hostname;
+            config.setHost(hostname);
             config.setActionType(ConfigurationDescriptor.Action.DEPLOY);
             log.info("Deploying " + url + " to " + hostname);
             //deploy, throwing an exception if we cannot
-            SFProcess.getProcessCompound();
             config.execute(SFProcess.getProcessCompound());
             SFSystem.runConfigurationDescriptor(config,true);
 
@@ -122,54 +140,62 @@ public class DeploymentEndpoint extends SmartfrogHostedEndpoint {
 
 
     /**
+     * first pass impl of deployment; use sfsystem
+     *
+     * @param hostname
+     * @param application
+     * @param url
+     * @return
+     * @throws AxisFault
+     */
+    private String deployThroughActions(String hostname, String application,
+                                         String url) throws AxisFault {
+        try {
+            ConfigurationDescriptor config = new ConfigurationDescriptor(application, url);
+            config.setHost(hostname);
+            config.setActionType(ConfigurationDescriptor.Action.DEPLOY);
+            log.info("Deploying " + url + " to " + hostname);
+            //deploy, throwing an exception if we cannot
+            config.execute(SFProcess.getProcessCompound());
+            Object targetC = config.execute(null);
+            return targetC.toString();
+            //return "urn://" + hostname + "/" + application;
+        } catch (SmartFrogException exception) {
+            throw AxisFault.makeFault(exception);
+        } catch (Exception exception) {
+            throw AxisFault.makeFault(exception);
+        }
+    }
+    /**
+     * get the root process compound of this process
+     * @return
+     */
+    protected ProcessCompound getRootProcessCompount() {
+        return SFProcess.getProcessCompound();
+    }
+
+    /**
      * undeploy an application
      * @param hostname
      * @param application
      */
     public void undeploy(String hostname, String application) throws AxisFault {
-        /*
-        TerminationRecord tr = new TerminationRecord(TerminationRecord.NORMAL,
-                "force to terminate", null);
-        Prim obj = ((Prim) obj.sfResolveHere(token));
-        obj.sfTerminate(tr);
-        */
-        try {
-            Reference ownerName = null;
-            try {
-                ownerName = (((Prim) owner).sfCompleteName());
-            } catch (Exception ex) {
-                //ignore  //TODO: Check
-            }
-            try {
-                Prim appToUndeploy = (Prim) owner.sfResolveHere(application);
-                appToUndeploy.
-                        sfTerminate(new TerminationRecord("normal",
-                                "External Management Action", ownerName));
-            } catch (ClassCastException cce) {
-                try {
-                    if (application.equals("rootProcess")) {
-                        ((Prim) owner.sfResolve((Reference) owner.
-                                sfResolveHere(application))).
-                                sfTerminate(new TerminationRecord("normal",
-                                        "External Management Action", ownerName));
-                    }
-                } catch (Exception ex) {
-                    //TODO: Check exception handling
-                    if ((ex.getCause() instanceof java.net.SocketException) ||
-                            (ex.getCause() instanceof java.io.EOFException)) {
-                        Logger.log(MessageUtil.formatMessage(MessageKeys.MSG_SF_TERMINATED));
-                    } else {
-                        Logger.log(ex);
-                    }
-                }
-            }
-        } catch (RemoteException e) {
-            throw AxisFault.makeFault(e);
-        } catch (SmartFrogResolutionException e) {
-            throw AxisFault.makeFault(e);
 
+        try {
+            ConfigurationDescriptor config = new ConfigurationDescriptor();
+            config.setHost(hostname);
+            config.setActionType(ConfigurationDescriptor.Action.DETaTERM);
+            log.info("Undeploying " + application+ " on " + hostname);
+            //deploy, throwing an exception if we cannot
+            config.execute(SFProcess.getProcessCompound());
+            Object targetC = config.execute(null);
+        } catch (SmartFrogException exception) {
+            throw AxisFault.makeFault(exception);
+        } catch (Exception exception) {
+            throw AxisFault.makeFault(exception);
         }
 
     }
+
 
 }
