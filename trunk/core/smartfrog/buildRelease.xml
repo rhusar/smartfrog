@@ -88,7 +88,7 @@ To Be Written
     <echo message="  2. Change version in file org.smarfrog.version.java"/>
     <echo message=" "/>
     <echo message=" "/>
-    <echo message="  3. Change documentation  version (if updated):"/>
+    <echo message="  3. Change documentation version (if updated):"/>
     <echo message=" 	    - Check sfReference.doc"/>
     <echo message="         - Check sfUserManual.doc"/>
     <echo message="         - Generate PDF: sfReference.pdf"/>
@@ -97,7 +97,7 @@ To Be Written
     <echo message="  4. Tag cvs with new version using: "/>
     <echo message="         Ex. cvs tag release3_01_003_alpha "/>
     <echo message=" "/>
-    <echo message="  5. Clean cheout with tag: "/>
+    <echo message="  5. Clean checkout with tag: "/>
     <echo message="         Ex. cvs checkout -r release3_02_000_alpha core"/>
     <echo message=" "/>
     <echo message="  6. Build new release: "/>
