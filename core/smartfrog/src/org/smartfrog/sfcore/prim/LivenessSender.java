@@ -34,13 +34,15 @@ public class LivenessSender extends Timer {
     /** Target for the liveness messages. */
     protected Liveness target;
 
+    protected String name = "LivenessSender";
+
     /**
      * Constructor.
      *
      * @param target target for heart beats
      * @param delay wait between heartbeats (in millis)
      */
-    public LivenessSender(Liveness target, long delay) {
+    public LivenessSender(Liveness target, long delay, String name) {
         super(delay);
         this.target = target;
     }
@@ -65,8 +67,10 @@ public class LivenessSender extends Timer {
      *
      * @return  Thread
      */
-    protected Thread createThread(Runnable run) {
-        Thread t = new Thread(livenessGroup, run,"LivenessSender");
+    protected Thread createThread(Runnable run, String nameTh) {
+        if (nameTh !=null)
+            this.name = nameTh+"."+name;
+        Thread t = new Thread(livenessGroup, run,name);
         t.setDaemon(true);
 
         return t;

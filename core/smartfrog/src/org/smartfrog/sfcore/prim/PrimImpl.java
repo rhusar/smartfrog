@@ -656,7 +656,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
                 sfIsRemote(sfParent)) {
             try {
                 sfLivenessSender = new LivenessSender(this,
-                        sfLivenessDelay * 1000);
+                        sfLivenessDelay * 1000, this.sfCompleteNameSafe().toString() );
                 sfLivenessSender.start();
             } catch (Throwable t) {
                 throw new SmartFrogLivenessException(MSG_LIVENESS_START_FAILED,
