@@ -10,6 +10,9 @@
 # Uncomment to enable Security
 #export SFSECURITY_ON=ENABLED
 
+# To define a user classpath, use variable SFUSERCLASSPATH
+# export SFUSERCLASSPATH=.
+
 # -------------------End user properties-------------------------
 
 . $SFHOME/bin/setSFDefaultProperties
@@ -74,6 +77,6 @@ if test "$SFUSERHOME4"; then
     export CLASSPATH
 fi
 
-if test "$srcDir"; then
-    export CLASSPATH=$srcDir:$CLASSPATH
+if test "$SFUSERCLASSPATH"; then
+    export CLASSPATH=$SFUSERCLASSPATH:$CLASSPATH
 fi
