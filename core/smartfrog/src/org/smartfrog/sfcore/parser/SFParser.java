@@ -23,6 +23,7 @@ package org.smartfrog.sfcore.parser;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.io.IOException;
 
 import org.smartfrog.SFSystem;
 import org.smartfrog.sfcore.common.MessageKeys;
@@ -160,12 +161,31 @@ public class SFParser implements Parser, MessageKeys {
      */
 
      public Phases sfParseResource(String url) throws SmartFrogParseException {
-         InputStream is = SFClassLoader.getResourceAsStream(url);
-         if (is == null) {
-                  throw new SmartFrogParseException(MessageUtil.formatMessage(
-                           MSG_INPUTSTREAM_NULL));
+         InputStream is=null;
+         try {
+             is = SFClassLoader.getResourceAsStream(url);
+             if (is==null) {
+                 throw new SmartFrogParseException(
+                 MessageUtil.formatMessage(MSG_URL_TO_PARSE_NOT_FOUND,url));
+//                     MessageUtil.formatMessage(MSG_INPUTSTREAM_NULL)+
+//                     ". " +
+//                     MessageUtil.formatMessage(MSG_LOADING_URL,url));
+             }
+             return sfParse(is);
+         } catch (SmartFrogParseException spex){
+             throw spex;
+         } catch (Throwable thr) {
+             throw new SmartFrogParseException(MessageUtil.
+                     formatMessage(MSG_ERR_PARSE), thr);
+         } finally {
+             if (is!=null) {
+                 try {
+                     is.close();
+                 } catch (IOException ignored) {
+                 //TODO
+                 }
+             }
          }
-         return sfParse(is);
      }
 
 
