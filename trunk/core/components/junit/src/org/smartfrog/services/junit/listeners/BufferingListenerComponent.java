@@ -38,6 +38,10 @@ public class BufferingListenerComponent extends PrimImpl
         implements BufferingListener {
 
     public BufferingListenerComponent() throws RemoteException {
+        errors = new LinkedList();
+        failures = new LinkedList();
+        starts = new LinkedList();
+        ends = new LinkedList();
     }
 
     List errors, failures, starts, ends;
@@ -57,10 +61,7 @@ public class BufferingListenerComponent extends PrimImpl
     public synchronized void sfDeploy() throws SmartFrogException,
             RemoteException {
         super.sfDeploy();
-        errors = new LinkedList();
-        failures = new LinkedList();
-        starts = new LinkedList();
-        ends = new LinkedList();
+
     }
 
 
