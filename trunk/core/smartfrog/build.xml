@@ -57,7 +57,7 @@ relevant JAR files into the javacc subdirectory
     <property name="Name.System" value="SmartFrog "/>
     <property name="Name.Company" value="(C) Copyright 1998-2004 Hewlett-Packard Development Company, LP"/>
     <property name="version" value="CORE"/>
-    <property name="Version" value="3.01.003.alpha"/>
+    <property name="Version" value="3.02.000.alpha"/>
     <property name="year" value="2004"/>
 
     <echo message=""/>
@@ -239,7 +239,7 @@ relevant JAR files into the javacc subdirectory
         handle it otherwise.
         It is tempting to run these in parallel, to get speedup on multiway
         CPUs, but as the SunRmic adapter runs rmic in-VM, that is too dangerous.
-        We'd need to fork rmic to get decent isolation. 
+        We'd need to fork rmic to get decent isolation.
         -->
     <rmic includesfile="${rmitargets}"
       base="${build.classes.dir}">
@@ -483,8 +483,8 @@ relevant JAR files into the javacc subdirectory
   <!-- =================================================================== -->
   <!--  DIST                                                               -->
   <!-- =================================================================== -->
-  <target name="dist" 
-    depends="build,initdist,jars,copylibs,copybins,copyPrivate,copydocs, copyexamples,copyTestCA,buildSetup" 
+  <target name="dist"
+    depends="build,initdist,jars,copylibs,copybins,copyPrivate,copydocs, copyexamples,copyTestCA,buildSetup"
     description="Prepares distribution package">
   </target>
 
@@ -526,15 +526,15 @@ relevant JAR files into the javacc subdirectory
       <arg file="parsertargets"/>
    </java>
   </target>
-  
+
   <!-- =================================================================== -->
   <!-- do everything -->
   <!-- =================================================================== -->
-  <target name="all" depends="dist,sfParseTest" 
+  <target name="all" depends="dist,sfParseTest"
     description="creates all the packages required to run smartfrog, and validate any .sf in the package">
   </target>
-  
-  
+
+
 
 
 </project>
