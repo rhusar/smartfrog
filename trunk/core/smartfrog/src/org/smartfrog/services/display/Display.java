@@ -704,9 +704,8 @@ public class Display extends JFrame implements ActionListener, KeyListener {
       fileName = directory + fileName.replace(':', '_');
       fileName = fileName.replace('\\', File.pathSeparatorChar);
       fileName = fileName.replace('/', File.pathSeparatorChar);
-      System.out.println(
-            "*************************************To write in:    " + fileName);
-
+//      System.out.println(
+//            "*************************************To write in:    " + fileName);
       return fileName;
    }
 
