@@ -25,7 +25,7 @@ For more information: www.smartfrog.org
 
 sfConfig extends Compound {
 
-    tmpdir LAZY PROPERTY java.io.tmpdir;
+    tmpdir PROPERTY java.io.tmpdir;
     newdir (tmpdir ++ "/new-directory-for-mkdir");
 
     sfSyncTerminate true;
