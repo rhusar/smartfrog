@@ -47,14 +47,25 @@ class SfDaemonStopperExt
     
     public void run()
     {
-        String cmd = JAVA   + ISmartFrogConstants.WHITE_SPACE
-        + "-cp " + mClassPath+ ISmartFrogConstants.WHITE_SPACE //$NON-NLS-1$
-        + SfSystemClass + ISmartFrogConstants.WHITE_SPACE
-        + "-a"+ISmartFrogConstants.WHITE_SPACE //$NON-NLS-1$
-        +  SfDaemonProcessName + ":TERMINATE:::" //$NON-NLS-1$
-        + "" + DEFAULT_HOST+ ":"+ ISmartFrogConstants.WHITE_SPACE //$NON-NLS-1$ //$NON-NLS-2$
-        + "-e"; //$NON-NLS-1$
-        executeCmd(cmd);
+//        String cmd = JAVA   + ISmartFrogConstants.WHITE_SPACE
+//        + "-cp " + mClassPath+ ISmartFrogConstants.WHITE_SPACE //$NON-NLS-1$
+//        + SfSystemClass + ISmartFrogConstants.WHITE_SPACE
+//        + "-a"+ISmartFrogConstants.WHITE_SPACE //$NON-NLS-1$
+//        +  SfDaemonProcessName + ":TERMINATE:::" //$NON-NLS-1$
+//        + "" + DEFAULT_HOST+ ":"+ ISmartFrogConstants.WHITE_SPACE //$NON-NLS-1$ //$NON-NLS-2$
+//        + "-e"; //$NON-NLS-1$
+        
+        
+        String cmds[] = new String[7];
+        cmds[0]= JAVA;
+        cmds[1] = "-cp";
+        cmds[2] = mClassPath ;
+        cmds[3] = SfSystemClass;
+        cmds[4] = "-a";
+        cmds[5] = SfDaemonProcessName + ":TERMINATE:::"+ "" + DEFAULT_HOST+ ":";
+        cmds[6] = "-e";
+        
+        executeCmd(cmds);
         
     }
  

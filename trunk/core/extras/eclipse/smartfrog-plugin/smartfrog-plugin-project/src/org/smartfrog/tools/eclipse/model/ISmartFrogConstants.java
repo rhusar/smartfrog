@@ -33,6 +33,7 @@ public interface ISmartFrogConstants
     static final String WHITE_SPACE = " "; //$NON-NLS-1$
     static final String SEMICOLON = ";"; //$NON-NLS-1$
     static final String COLON = ":"; //$NON-NLS-1$
+    static final String DOUBLE_QUOTE = "\""; //$NON-NLS-1$
 
 
     //GLOBAL ERROR number
@@ -54,10 +55,10 @@ public interface ISmartFrogConstants
     
     //Libs for SmartFrog Framework
     public static final String[] SMARTFROG_LIBS = {
-            "/lib/smartfrog.jar", //$NON-NLS-1$
-            "/lib/sfServices.jar", "/lib/sfExamples.jar" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    		FILE_SEPARATOR + "lib" + FILE_SEPARATOR + "smartfrog.jar", //$NON-NLS-1$
+    		FILE_SEPARATOR + "lib" + FILE_SEPARATOR + "sfServices.jar", FILE_SEPARATOR + "lib" + FILE_SEPARATOR + "sfExamples.jar" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         };
-    public static String SMARTFROG_GUI_TOOLS_LIB = "/lib/SFGuiTools.jar"; //$NON-NLS-1$
+    public static String SMARTFROG_GUI_TOOLS_LIB = FILE_SEPARATOR + "lib" + FILE_SEPARATOR + "SFGuiTools.jar"; //$NON-NLS-1$
     
 	static final String SMARTFROG_CONSOLE_ID = "org.smartfrog.tools.eclipse.ui.console.ConsoleView"; //$NON-NLS-1$
 }

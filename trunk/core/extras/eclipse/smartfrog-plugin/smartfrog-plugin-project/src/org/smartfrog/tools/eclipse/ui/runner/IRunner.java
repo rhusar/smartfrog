@@ -78,6 +78,47 @@ public abstract class IRunner
 
         return ISmartFrogConstants.ERROR;
     }
+
+    /**
+     * Execute the command in the thread
+     * @param cmd	Command string
+     * @return
+     */
+    protected int executeCmd(String[] cmd)
+    {
+ 
+    	
+        try {
+        	for (int i=0; i <cmd.length; i++)
+        	{
+        		fDcument.append(cmd[i] + " " , SmartFrogConsoleDocument.MSG_DEFAULT);
+        	}
+            mProcess = Runtime.getRuntime().exec( cmd, null, new File(SmartFrogPreferencePage.getSmartFrogLocation()));
+            ( new StreamGobbler(mProcess.getInputStream(), "ERROR") ).start(); //$NON-NLS-1$
+            ( new StreamGobbler(mProcess.getErrorStream(), "OUTPUT") ).start(); //$NON-NLS-1$
+
+            int status = mProcess.waitFor();
+
+            if (0 != status) {
+                // if this the daemon, it may just got killed before a now one launched, ignore this now
+//                ExceptionHandler.log(new Exception(""), //$NON-NLS-1$
+//                    ( Messages.getString(
+//                            "SmartFrogGUIRunnerExt.Message.LaunchFailed") )); //$NON-NLS-1$
+
+                return ISmartFrogConstants.ERROR;
+            }
+
+            return ISmartFrogConstants.SUCCESS;
+        } catch (Exception e) {
+            ExceptionHandler.handleInSWTThread(e,
+                ( Messages.getString("SmartFrogGUIRunnerExt.Title.CantLaunch") ), //$NON-NLS-1$
+                ( Messages.getString(
+                        "SmartFrogGUIRunnerExt.Message.CantLaunch") )); //$NON-NLS-1$
+        }
+
+        return ISmartFrogConstants.ERROR;
+    }
+
     
     /**
      * 

@@ -70,21 +70,56 @@ class SfProcessRunnerExt
             ISmartFrogConstants.FILE_SEPARATOR + batchDir +
             ISmartFrogConstants.FILE_SEPARATOR;
 
-        String cmdStart = CMD_SFPROCESS_START;
-        String cmdStop = CMD_SFPROCESS_TERMINATE;
+//        String cmdStart = CMD_SFPROCESS_START;
+//        String cmdStop = CMD_SFPROCESS_TERMINATE;
 
-        String cmdGeneral = getCommandGeneral();
+        String cmdGeneral[] =  getCommandGeneralArray();
 
-        cmdStart = cmdGeneral + ISmartFrogConstants.WHITE_SPACE + dir + cmdStart + ISmartFrogConstants.WHITE_SPACE + mHostName + ISmartFrogConstants.WHITE_SPACE +
-            mProcessName + ISmartFrogConstants.WHITE_SPACE + "\"" + mFile + "\"" + ISmartFrogConstants.WHITE_SPACE; //$NON-NLS-1$ //$NON-NLS-2$
+//        cmdStart = cmdGeneral + ISmartFrogConstants.WHITE_SPACE + ISmartFrogConstants.DOUBLE_QUOTE  + 
+//		ISmartFrogConstants.DOUBLE_QUOTE + dir + cmdStart+ISmartFrogConstants.DOUBLE_QUOTE + ISmartFrogConstants.WHITE_SPACE + mHostName + ISmartFrogConstants.WHITE_SPACE +
+//            mProcessName + ISmartFrogConstants.WHITE_SPACE + ISmartFrogConstants.DOUBLE_QUOTE + mFile + ISmartFrogConstants.DOUBLE_QUOTE+ ISmartFrogConstants.WHITE_SPACE
+//			+ISmartFrogConstants.DOUBLE_QUOTE ; //$NON-NLS-1$ //$NON-NLS-2$
+        	
 
-        cmdStop = cmdGeneral + ISmartFrogConstants.WHITE_SPACE + dir + CMD_SFPROCESS_TERMINATE + ISmartFrogConstants.WHITE_SPACE +
-            mHostName + ISmartFrogConstants.WHITE_SPACE + mProcessName;
+        String cmdsStart = "";//new String[cmdGeneral.length+4];
+         for (int i=0;  i < cmdGeneral.length; i++)
+        {
+         	cmdsStart += cmdGeneral[i] + " ";
+        }
+        cmdsStart +=  ".\\bin\\"+ CMD_SFPROCESS_START  +" " ;
+        cmdsStart += "-a ";
+        cmdsStart +=mProcessName+":DEPLOY:\"" + mFile +"\"::"+mHostName+": ";
+        cmdsStart += "-e";
+//        cmdsStart[cmdGeneral.length+1] = mHostName;
+//		cmdsStart[cmdGeneral.length+2] = mProcessName;
+//		cmdsStart[cmdGeneral.length+3] = mFile ;
+	
+         	
+        
+//        cmdStop = cmdGeneral + ISmartFrogConstants.WHITE_SPACE + ISmartFrogConstants.DOUBLE_QUOTE +
+//			ISmartFrogConstants.DOUBLE_QUOTE +dir + CMD_SFPROCESS_TERMINATE + ISmartFrogConstants.DOUBLE_QUOTE+  ISmartFrogConstants.WHITE_SPACE +
+//            mHostName + ISmartFrogConstants.WHITE_SPACE + mProcessName
+//			+ISmartFrogConstants.DOUBLE_QUOTE ;
 
-        addProcess(mProcessName, cmdStart, cmdStop,
+        //cmd.exe /C  .\bin\smartfrog -a ProcessName:TERMINATE:::127.0.0.1: -e  
+        String cmdsStop = "";//new String[cmdGeneral.length+3];
+        for (int i=0;  i < cmdGeneral.length; i++)
+       {
+        	cmdsStop += cmdGeneral[i]+ " ";
+       }
+        cmdsStop += ".\\bin\\"+ CMD_SFPROCESS_START  +" " ;
+        cmdsStop += "-a ";
+        cmdsStop +=mProcessName+":TERMINATE:::"+mHostName+": ";
+        cmdsStop += "-e";
+//        cmdsStop[cmdGeneral.length+0] = dir + CMD_SFPROCESS_TERMINATE ;
+//        cmdsStop[cmdGeneral.length+1] = mHostName;
+//        cmdsStop[cmdGeneral.length+2] = mProcessName;
+
+		
+        addProcess(mProcessName, cmdsStart, cmdsStop,
             SmartFrogPreferencePage.getSmartFrogLocation());
 
-        return cmdStart;
+        return cmdsStart;
     }
 
     public void stopProcess()
@@ -96,7 +131,7 @@ class SfProcessRunnerExt
         mProcess = null;
     }
 
-    private void addProcess(String processName, String startCmd, String stopCmd,
+    private void addProcess(String processName, Object startCmd, Object stopCmd,
         String workDir)
     {
         InfoProcess process = new InfoProcess(processName, startCmd, stopCmd,

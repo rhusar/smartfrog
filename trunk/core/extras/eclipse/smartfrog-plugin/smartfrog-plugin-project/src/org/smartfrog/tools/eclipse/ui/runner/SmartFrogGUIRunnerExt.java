@@ -64,12 +64,19 @@ class SmartFrogGUIRunnerExt
             batFileName = SFGUI_COMMAND_LINUX;
         }
 
-        String cmd = sfLocation + ISmartFrogConstants.FILE_SEPARATOR +
-            RELATIVE_BIN_DIR + ISmartFrogConstants.FILE_SEPARATOR +
-            batFileName + ISmartFrogConstants.WHITE_SPACE + mFilePath +
-            ISmartFrogConstants.WHITE_SPACE + GUI_PARAMETER;
+//        String cmd = ISmartFrogConstants.DOUBLE_QUOTE + sfLocation + ISmartFrogConstants.FILE_SEPARATOR +
+//            RELATIVE_BIN_DIR + ISmartFrogConstants.FILE_SEPARATOR +
+//            batFileName + ISmartFrogConstants.DOUBLE_QUOTE + ISmartFrogConstants.WHITE_SPACE + 
+//            ISmartFrogConstants.DOUBLE_QUOTE + mFilePath + ISmartFrogConstants.DOUBLE_QUOTE + ISmartFrogConstants.WHITE_SPACE +
+//			GUI_PARAMETER ;
 
-        executeCmd(cmd);
+        String cmds[] = new String[3];
+        cmds[0] =  sfLocation + ISmartFrogConstants.FILE_SEPARATOR +
+        RELATIVE_BIN_DIR + ISmartFrogConstants.FILE_SEPARATOR + batFileName ;
+        cmds[1] = mFilePath;
+        cmds [2] = GUI_PARAMETER;
+        
+        executeCmd(cmds);
         mRunning = true;
     }
 

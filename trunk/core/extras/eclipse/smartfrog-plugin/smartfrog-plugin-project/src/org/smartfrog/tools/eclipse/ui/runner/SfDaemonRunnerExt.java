@@ -58,15 +58,24 @@ class SfDaemonRunnerExt
     	String classpath = SmartFrogProjectUtil.getbinPathName(mSelectedIFile);
     	if (null == classpath)
     	    return;
-    	classpath += Util.getClassSeparator()+mClassPath;
-        String cmd = JAVA + ISmartFrogConstants.WHITE_SPACE
-        + "-cp " + classpath + ISmartFrogConstants.WHITE_SPACE //$NON-NLS-1$
-        + SfDaemonDefIniFileProperty+ mSfDaemonDefIniFile + ISmartFrogConstants.WHITE_SPACE
-        + SfDaemonDefSFFileProperty + mSfDaemonDefSFFile + ISmartFrogConstants.WHITE_SPACE
-        + CMD_SFDaemon + "" + SfDaemonProcessName + ISmartFrogConstants.WHITE_SPACE //$NON-NLS-1$
-        + SfSystemClass
-        + ""; //$NON-NLS-1$
-        executeCmd(cmd);
+    	classpath = classpath + Util.getClassSeparator()+mClassPath ;
+//        String cmd = JAVA + ISmartFrogConstants.WHITE_SPACE
+//        + "-cp " + classpath + ISmartFrogConstants.WHITE_SPACE //$NON-NLS-1$
+//        + SfDaemonDefIniFileProperty+ mSfDaemonDefIniFile + ISmartFrogConstants.WHITE_SPACE
+//        + SfDaemonDefSFFileProperty + mSfDaemonDefSFFile + ISmartFrogConstants.WHITE_SPACE
+//        + CMD_SFDaemon + "" + SfDaemonProcessName + ISmartFrogConstants.WHITE_SPACE //$NON-NLS-1$
+//        + SfSystemClass
+//        + ""; //$NON-NLS-1$
+        
+        String cmds[] = new String[7];
+        cmds[0]= JAVA;
+        cmds[1] = "-cp";
+        cmds[2] = classpath;
+        cmds[3] = SfDaemonDefIniFileProperty+ mSfDaemonDefIniFile;
+        cmds[4] =SfDaemonDefSFFileProperty + mSfDaemonDefSFFile;
+        cmds[5] =CMD_SFDaemon + "" + SfDaemonProcessName;
+        cmds[6] =SfSystemClass;
+        executeCmd(cmds);
     }
     
 
