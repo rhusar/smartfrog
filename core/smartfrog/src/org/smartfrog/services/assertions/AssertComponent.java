@@ -35,6 +35,8 @@ public class AssertComponent extends PrimImpl implements Assert {
     public AssertComponent() throws RemoteException {
     }
 
+
+
     //~ Methods ----------------------------------------------------------------
 
     /**
@@ -76,6 +78,7 @@ public class AssertComponent extends PrimImpl implements Assert {
         try {
             reference = sfResolve(REFERENCE, (Reference) reference, false);
             if ( reference == null ) {
+                //there was no reference
                 return null;
             }
             prim = sfResolve(reference, (Prim) null, false);
@@ -96,9 +99,28 @@ public class AssertComponent extends PrimImpl implements Assert {
     protected void assertTrue(boolean fact, String test)
             throws SmartFrogAssertionException {
         if (!fact) {
-            throw new SmartFrogAssertionException("Assertion " + test
-                    + " did not hold");
+            throw new SmartFrogAssertionException(createAssertionMessage(test));
         }
+    }
+
+    /**
+     * get the failure message.
+     * This is done by attempting to resolve the message, falling back to a declared one
+     * if there is no declared message, or the resolution process failed. 
+     * @param test
+     * @return
+     */
+    private String createAssertionMessage(String test) {
+        String message = "Assertion " + test
+                                    + " did not hold";
+        try {
+            message=sfResolve(MESSAGE,message,false);
+        } catch (SmartFrogResolutionException ignore) {
+
+        } catch (RemoteException ignore) {
+
+        }
+        return message;
     }
 
     /**

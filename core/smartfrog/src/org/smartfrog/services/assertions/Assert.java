@@ -41,4 +41,5 @@ public interface Assert extends Remote {
      */
     public static final String CHECK_ON_LIVENESS = "checkOnLiveness";
 
+    public static final String MESSAGE="message";
 }
