@@ -40,6 +40,7 @@ import org.apache.commons.net.ftp.FTPReply;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.TerminatorThread;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
@@ -53,6 +54,7 @@ public class FTPClientImpl extends PrimImpl implements SFFTPClient {
     private final String BINARY = "binary" ;
     private final String GET = "get";
     private final String PUT = "put";
+    private boolean shouldTerminate = true;
     private String ftpServer;
     private String port = ""; //default
     private String user = "smartfrog"; //default
@@ -60,7 +62,7 @@ public class FTPClientImpl extends PrimImpl implements SFFTPClient {
     private String password = "password"; 
     private String localFile;
     private String remoteFile;
-    private String transferMode =  "ascii"; //default
+    private String transferMode =  "binary"; //default
     private String transferType =  "get"; //default
     private Vector remoteFileList =  null; //list of files to transfer
     private Vector localFileList =  null; //list of files to transfer
@@ -142,6 +144,14 @@ public class FTPClientImpl extends PrimImpl implements SFFTPClient {
             }
             //logout
             ftpClient.logout();
+
+            // check if it should terminate by itself
+            if(shouldTerminate) {
+                TerminationRecord termR = new TerminationRecord("normal",
+                "FTP finished: ",sfCompleteName());
+                TerminatorThread terminator = new TerminatorThread(this,termR);
+                terminator.start();
+            }
         }
         catch (FTPConnectionClosedException e)
         {
@@ -197,6 +207,7 @@ public class FTPClientImpl extends PrimImpl implements SFFTPClient {
         // optional attributes
         transferType = sfResolve(TRANSFER_TYPE, transferType, false);
         transferMode = sfResolve(TRANSFER_MODE, transferMode, false);
+        shouldTerminate = sfResolve(TERMINATE, shouldTerminate, false);
     }
     /**
      * Gets files from the FTP server.

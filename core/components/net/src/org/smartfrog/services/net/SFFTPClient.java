@@ -39,6 +39,7 @@ public interface SFFTPClient extends Prim {
     public static String TRANSFER_TYPE = "transferType";
     public static String LOCAL_FILES = "localFiles";
     public static String REMOTE_FILES = "remoteFiles";
+    public static String TERMINATE = "shouldTerminate";
 
     // messages
     public static String CONNECTION_FAILED = "CONNECTION_FAILED";
