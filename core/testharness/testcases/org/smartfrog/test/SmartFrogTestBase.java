@@ -33,19 +33,23 @@ import java.net.MalformedURLException;
 
 import org.smartfrog.SFSystem;
 import org.smartfrog.SFParse;
+import org.smartfrog.services.assertions.SmartFrogAssertionException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.ConfigurationDescriptor;
 import org.smartfrog.sfcore.common.MessageUtil;
 import org.smartfrog.sfcore.common.SmartFrogParseException;
 import org.smartfrog.sfcore.common.MessageKeys;
 import org.smartfrog.sfcore.common.SmartFrogInitException;
+import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.sfcore.processcompound.SFProcess;
 import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.security.SFGeneralSecurityException;
 import org.smartfrog.sfcore.security.SFClassLoader;
 import org.smartfrog.sfcore.parser.Phases;
 import org.smartfrog.sfcore.parser.SFParser;
+import org.smartfrog.sfcore.reference.Reference;
 
 /**
  * A base class for smartfrog tests
@@ -59,6 +63,8 @@ public abstract class SmartFrogTestBase extends TestCase {
      */
     protected File classesDir;
     protected String hostname;
+    private static final String LIFECYCLE_EXCEPTION = "SmartFrogLifecycleException";
+    private static final String ASSERTION_EXCEPTION = "SmartFrogAssertionException";
 
     /**
      * Construct the base class, extract hostname and test classes directory from the JVM
@@ -133,21 +139,17 @@ public abstract class SmartFrogTestBase extends TestCase {
         ConfigurationDescriptor cfgDesc =
                 createDeploymentConfigurationDescriptor(appName, testURL);
         Object deployedApp = null;
-        Throwable returnedFault=null;
+        Throwable resultException = null;
         try {
-
             //Deploy and don't throw exception. Exception will be contained
             // in a ConfigurationDescriptor.
             deployedApp = SFSystem.runConfigurationDescriptor(cfgDesc,false);
             if ((deployedApp instanceof ConfigurationDescriptor) &&
                     (((ConfigurationDescriptor) deployedApp).resultException != null)) {
-                //we got an exception. let's take a look.
-                returnedFault = ((ConfigurationDescriptor) deployedApp).resultException;
-                assertFaultCauseAndTextContains(returnedFault, exceptionName, searchString, cfgDesc);
-                //get any underlying cause
-                Throwable cause = returnedFault.getCause();
-                assertFaultCauseAndTextContains(cause, containedExceptionName, containedExceptionText, cfgDesc);
-
+                searchForExpectedExceptions(deployedApp, cfgDesc, exceptionName,
+                        searchString, containedExceptionName,containedExceptionText);
+                resultException = ((ConfigurationDescriptor) deployedApp).resultException;
+                return resultException;
             } else {
                 fail("We expected an exception here:"+exceptionName
                      +" but got this result "+deployedApp.toString());
@@ -155,7 +157,19 @@ public abstract class SmartFrogTestBase extends TestCase {
          } catch (Exception fault) {
             fail(fault.toString());
          }
-        return returnedFault;
+        return null;
+    }
+
+    private void searchForExpectedExceptions(Object deployedApp, ConfigurationDescriptor cfgDesc, String exceptionName, String searchString,
+                                             String containedExceptionName,
+                                             String containedExceptionText) {
+        //we got an exception. let's take a look.
+        Throwable returnedFault;
+        returnedFault = ((ConfigurationDescriptor) deployedApp).resultException;
+        assertFaultCauseAndTextContains(returnedFault, exceptionName, searchString, cfgDesc);
+        //get any underlying cause
+        Throwable cause = returnedFault.getCause();
+        assertFaultCauseAndTextContains(cause, containedExceptionName, containedExceptionText, cfgDesc);
     }
 
     /**
@@ -380,6 +394,82 @@ public abstract class SmartFrogTestBase extends TestCase {
         }
         return phases;
 
+    }
+
+    /**
+     * deploy something from this directory; expect an exception
+     * @param filename
+     * @param appname
+     * @throws Throwable
+     */
+    public Throwable deployExpectingAssertionFailure(String filename, String appname) throws Throwable {
+        startSmartFrog();
+        ConfigurationDescriptor cfgDesc =
+                createDeploymentConfigurationDescriptor(appname, filename);
+        Object deployedApp = null;
+        Throwable resultException = null;
+        try {
+            //Deploy and don't throw exception. Exception will be contained
+            // in a ConfigurationDescriptor.
+            deployedApp = SFSystem.runConfigurationDescriptor(cfgDesc,false);
+            if ((deployedApp instanceof ConfigurationDescriptor) &&
+                    (((ConfigurationDescriptor) deployedApp).resultException != null)) {
+                searchForExpectedExceptions(deployedApp, cfgDesc, LIFECYCLE_EXCEPTION,
+                        null, ASSERTION_EXCEPTION,null);
+                resultException = ((ConfigurationDescriptor) deployedApp).resultException;
+                return resultException;
+            } else {
+                //here we deploy the application
+                Prim application=(Prim)deployedApp;
+                try {
+                    application.sfPing(null);
+                    application.sfPing(null);
+                    application.sfPing(null);
+                    application.sfPing(null);
+                    application.sfPing(null);
+                } catch (SmartFrogLivenessException liveness) {
+                    assertFaultCauseAndTextContains(liveness,LIFECYCLE_EXCEPTION,null,"expected lifecycle failure");
+                    assertFaultCauseAndTextContains(liveness.getCause(), ASSERTION_EXCEPTION, null,
+                            "expected nested assertion failure");
+                }
+            }
+
+         } catch (Exception fault) {
+            fail(fault.toString());
+         }
+        return null;
+    }
+
+    /**
+     * recursive search for the root cause
+     *
+     * @param throwable
+     * @return the assertion or null
+     */
+    public SmartFrogAssertionException extractAssertionException(Throwable throwable) {
+        if (throwable == null) {
+            return null;
+        }
+        if (throwable instanceof SmartFrogAssertionException) {
+            return (SmartFrogAssertionException) throwable;
+        }
+        return extractAssertionException(throwable.getCause());
+    }
+
+    /**
+     * terminate a named application
+     * @param application
+     * @throws java.rmi.RemoteException on network trouble
+     */
+    public void terminateApplication(Prim application) throws RemoteException {
+        Reference name;
+        try {
+            name = application.sfCompleteName();
+        } catch (RemoteException e) {
+            name = null;
+
+        }
+        application.sfDetachAndTerminate(TerminationRecord.normal(name));
     }
 
 

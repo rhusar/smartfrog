@@ -41,37 +41,23 @@ public class AssertionsTest extends SmartFrogTestBase {
     }
 
     public void testTrueIsFalse() throws Throwable  {
-        deployExpectingAssertionFailure("testTrueIsFalse.sf");
+        deployExpectingAssertionFailure(FILES + "testTrueIsFalse.sf", "testTrueIsFalse");
     }
 
     public void testFalseIsTrue() throws Throwable {
-        Throwable t=deployExpectingAssertionFailure("testFalseIsTrue.sf");
+        Throwable t=deployExpectingAssertionFailure(FILES + "testFalseIsTrue.sf", "testFalseIsTrue");
         SmartFrogAssertionException sfe= extractAssertionException(t);
         assertContains(sfe.getMessage(),"truth and falsehood");
-
     }
 
-    /**
-     * recursive search for the root cause
-     * @param throwable
-     * @return the assertion or null
-     */
-    public SmartFrogAssertionException extractAssertionException(Throwable throwable) {
-        if(throwable==null) {
-            return null;
-        }
-        if(throwable instanceof SmartFrogAssertionException) {
-            return (SmartFrogAssertionException) throwable;
-        }
-        return extractAssertionException(throwable.getCause());
-    }
+
 
     /**
      * @todo: turn on once we have a way of expecting liveness faults.
      * @throws Throwable
      */
     public void NotestFalseIsLazyTrue() throws Throwable {
-        deployExpectingAssertionFailure("testFalseIsLazyTrue.sf");
+        deployExpectingAssertionFailure(FILES + "testFalseIsLazyTrue.sf", "testFalseIsLazyTrue");
     }
 
     /**
@@ -92,24 +78,13 @@ public class AssertionsTest extends SmartFrogTestBase {
         deployExpectingSuccess(FILES + "testEvaluatesTrueToFalse.sf", "testEvaluatesTrueToFalse");
     }
 
-    /**
-     * deploy something from this directory; expect an exception
-     * @param filename
-     * @throws Throwable
-     */
-    public Throwable deployExpectingAssertionFailure(String filename) throws Throwable {
-        return deployExpectingException(FILES + filename,
-                filename,
-                "SmartFrogLifecycleException", null,
-                "SmartFrogAssertionException", null);
-    }
 
     /**
      * test that no method results in a meaningful failure
      * @throws Throwable
      */
     public void testEvaluatesNoSuchMethod() throws Throwable {
-        deployExpectingAssertionFailure("testEvaluatesNoSuchMethod.sf");
+        deployExpectingAssertionFailure(FILES + "testEvaluatesNoSuchMethod.sf", "testEvaluatesNoSuchMethod");
     }
 
     /**
@@ -123,4 +98,11 @@ public class AssertionsTest extends SmartFrogTestBase {
         deployExpectingSuccess(FILES + "testEvaluatesThrowsRuntimeException.sf", "testEvaluatesThrowsRuntimeException");
     }
 
+    public void testAttributeFound() throws Throwable {
+        deployExpectingSuccess(FILES + "testAttributeFound.sf", "testAttributeFound");
+    }
+
+    public void testAttributeNotFound() throws Throwable {
+        deployExpectingAssertionFailure(FILES + "testAttributeNotFound.sf", "testAttributeNotFound");
+    }
 }

@@ -20,12 +20,13 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/components.sf"
 #include "/org/smartfrog/predicates.sf"
 
+
 TouchFileSchema extends Schema {
     //filename; this must be in a platform-specific format
-    file extends String;
+    filename extends String;
     //age of file, seconds since 1970-01-01; a value of -1 indicates
     //current timestamp, as does omitting the value
-    age extends OptionalLong;
+    timestamp extends OptionalLong;
 }
 
 /**
@@ -35,4 +36,31 @@ TouchFileSchema extends Schema {
 TouchFile extends Prim {
     touchFileSchema extends TouchFileSchema;
     sfClass "org.smartfrog.services.filesystem.TouchFile";
+}
+
+TempFileSchema extends Schema {
+    //prefix should be three or more characters long
+    prefix extends String;
+    //suffix, like ".tmp"
+    suffix extends OptionalString;
+    //a directory. If not specified, the temp directory for this JVM will
+    //be used.
+    dir extends OptionalString;
+    //delete flag
+    deleteOnExit extends OptionalBoolean;
+}
+
+/**
+ * the temp file component creates a temporary file on deployment.
+ */
+TempFile extends Prim {
+    tempFileSchema extends TempFileSchema;
+    sfClass "org.smartfrog.services.filesystem.TempFileImpl";
+}
+
+/**
+ * A temp file which auto cleans up
+ */
+TempFileWithCleanup extends TempFile {
+    deleteOnExit true;
 }

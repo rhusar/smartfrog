@@ -32,7 +32,7 @@ import org.smartfrog.services.display.PrintMsgInt;
 
 /**
  * Stream Gobbler used to redirect content from System streams.
- * Active tread that will read the content from a stream and will
+ * Active thread that will read the content from a stream and will
  * send it to another stream and/or external method.
  *
  * @see PrintMsgInt

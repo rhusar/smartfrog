@@ -130,6 +130,20 @@ For more information: www.smartfrog.org
       <classpath refid="compile.classpath"/>
     </rmic>
   </target>
+  
+  <!-- ========================================================== -->
+  <!-- conditionally start the daemon if one was not found already-->
+  <!-- and do not complain if it could not start (or execution timed out) -->
+  <!-- ========================================================== -->
+  <target name="start-daemon-if-needed-with-logging" 
+    depends="use-smartfrog-tasks,probe-local-daemon"
+    unless="local.daemon.running">
+      <sf-startdaemon  failonerror="false">
+        <sysproperty key="java.util.config.logging.config.file"
+          file="${test.classes.dir}/org/smartfrog/test/logging.properties" />
+      </sf-startdaemon>
+      
+  </target>  
 
   <!-- ========================================================== -->
   <!-- run the unit tests tests -->
@@ -172,7 +186,7 @@ For more information: www.smartfrog.org
 
       <!-- first thread runs the daemon -->
       <sequential>
-        <antcall target="start-daemon-if-needed-no-failonerror"/>
+        <antcall target="start-daemon-if-needed-with-logging"/>
       </sequential>
 
       <!-- this is the next thread -->
