@@ -138,6 +138,7 @@ TOKEN : /* reserved words */
  | <LAZY: "LAZY">
  | <ROOT: "ROOT">
  | <ATTRIB: "ATTRIB">
+ | <THIS: "THIS">
  | <PROPERTY: "PROPERTY">
  | <IPROPERTY: "IPROPERTY">
  | <PARENT: "PARENT">
@@ -436,6 +437,7 @@ void ReferencePart(Reference ref) :
     (<ROOT> { ref.addElement(ReferencePart.root()); })
   | (<PARENT> { ref.addElement(ReferencePart.parent()); })
   | (<ATTRIB> id=<WORD> { ref.addElement(ReferencePart.attrib(id.image)); })
+  | (<THIS> { ref.addElement(ReferencePart.thisref()); })
   | (<PROPERTY> id=<WORD> { ref.addElement(ReferencePart.property(id.image));})
   | (<IPROPERTY> id=<WORD> { ref.addElement(ReferencePart.iproperty(id.image));})
   | (<HOST> (
