@@ -50,6 +50,7 @@ public class ErrorMessageBundle extends ListResourceBundle
         { MSG_INPUTSTREAM_NULL, "input stream is null" },
         { MSG_RANDM_ERR, "Unable to start a component randomly" },
         { MSG_NULL_URL, "Url is null" },
+        { MSG_LOADING_URL, "Trying to load {0}" },
         { MSG_LANG_NOT_FOUND, "Unable to locate language in URL : {0}" },
         { MSG_URL_NOT_FOUND, "Unable to locate File or URL: {0} for component : {1}"+
             " \nReason: The path to URL may be incorrect or file may be missing"},
@@ -86,7 +87,7 @@ public class ErrorMessageBundle extends ListResourceBundle
         { MSG_DETACH_SUCCESS , "Successfully detached component: {0}"},
         { MSG_DETACH_TERMINATE_SUCCESS , "Successfully detatched and terminated: {0}"},
         { MSG_UNHANDLED_EXCEPTION , "Unhandled exception: "},
-        { MSG_URL_TO_PARSE_NOT_FOUND , "Unable to locate URL \"{0}\"\nReason: URL may be incorrect or file is misssing"},
+        { MSG_URL_TO_PARSE_NOT_FOUND , "Unable to locate URL \"{0}\"\nReason: URL may be incorrect or resource is misssing"},
 
         { ILLEGAL_NUMERIC_PARAMETER , "Illegal numeric parameter"},
         { ILLEGAL_STRING_PARAMETER  , "Illegal string parameter"},

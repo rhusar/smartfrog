@@ -47,6 +47,7 @@ import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.common.SmartFrogParseException;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.parser.Phases;
 import org.smartfrog.sfcore.parser.SFParser;
 import org.smartfrog.sfcore.prim.Prim;
@@ -111,177 +112,6 @@ public class SFSystem implements MessageKeys {
     private static final int EXIT_ERROR_CODE = -1;
 
     /**
-     * Parses and deploys "sfConfig" from a stream to the target process
-     * compound rethrows an exception if it fails, after trying to clean up.
-     *
-     * @param is input stream to parse
-     * @param target the target process compound to request deployment
-     * @param c a context of additional attributes that should be set before
-     *        deployment
-     * @param language the language whose parser to use
-     * @return Reference to deployed component
-     *
-     * @exception SmartFrogException failure in some part of the process
-     * @throws RemoteException In case of network/rmi error
-     */
-    public static Prim deployFrom(InputStream is, ProcessCompound target,
-        Context c, String language) throws SmartFrogException, RemoteException {
-        Prim comp = null;
-        Phases top;
-        //To calculate how long it takes to deploy a description
-        long deployTime = 0;
-        long parseTime = 0;
-        if (Logger.logStackTrace) {
-            deployTime = System.currentTimeMillis();
-        }
-        try {
-            top = new SFParser(language).sfParse(is);
-        } catch (SmartFrogException sfex){
-           throw sfex;
-        } catch (Throwable thr) {
-            throw new SmartFrogException(MessageUtil.
-                    formatMessage(MSG_ERR_PARSE), thr);
-        }
-        try {
-            top = top.sfResolvePhases();
-        } catch (SmartFrogException sfex){
-           throw sfex;
-        } catch (Throwable thr) {
-            throw new SmartFrogException(MessageUtil.
-                    formatMessage(MSG_ERR_RESOLVE_PHASE), thr);
-        }
-        try {
-            ComponentDescription cd = top.sfAsComponentDescription();
-            if (Logger.logStackTrace) {
-                parseTime = System.currentTimeMillis() - deployTime;
-                deployTime = System.currentTimeMillis();
-            }
-            comp = target.sfDeployComponentDescription(null, null, cd, c);
-            try {
-                comp.sfDeploy();
-            } catch (Throwable thr){
-                if (thr instanceof SmartFrogLifecycleException)
-                    throw (SmartFrogLifecycleException) SmartFrogLifecycleException.forward(thr);
-                throw SmartFrogLifecycleException.sfDeploy("",thr,null);
-            }
-            try {
-                comp.sfStart();
-            } catch (Throwable thr){
-                if (thr instanceof SmartFrogLifecycleException)
-                    throw (SmartFrogLifecycleException)SmartFrogLifecycleException.forward(thr);
-                throw SmartFrogLifecycleException.sfStart("",thr,null);
-            }
-        } catch (Throwable e) {
-               if (comp != null) {
-                  Reference compName = null;
-                  try {
-                      compName = comp.sfCompleteName();
-                  }
-                  catch (Exception ex) {
-                  }
-                  try {
-                  comp.sfTerminate(TerminationRecord.
-                           abnormal("Deployment Failure: " +
-                                e, compName));
-                  } catch (Exception ex) {}
-               }
-               throw ((SmartFrogException) SmartFrogException.forward(e));
-      }
-
-      if (Logger.logStackTrace) {
-          deployTime = System.currentTimeMillis()-deployTime;
-          try {
-              comp.sfAddAttribute("sfParseTime",new Long(parseTime));
-              comp.sfAddAttribute("sfDeployTime",new Long(deployTime));
-          } catch (Exception ex){
-            //ignored, this is only information
-          }
-      }
-      return comp;
-    }
-
-/*
-    if (Logger.logStackTrace) {
-        deployTime = System.currentTimeMillis()-deployTime;
-        Logger.log("     * "+comp.sfCompleteName()
-                   +" parsed in "+parseTime+" msecs."
-                   +" deployed in "+deployTime+" msecs.");
-        try {
-            comp.sfAddAttribute("sfParseTime",new Long(parseTime));
-            comp.sfAddAttribute("sfDeployTime",new Long(deployTime));
-        } catch (Exception ex){
-          //ignored, this is only information
-        }
-    }
-*/
-
-
-
-    /**
-     * Deploy a single application URL.
-     * @param appName name of the application
-     * @param target the target process compound to request deployment
-     * @throws SmartFrogException something went wrong with the deploy -this may contain a nested exception
-     * @throws RemoteException if anything went wrong over the net
-     */
-    public static Prim deployFromURL(String url, String appName, ProcessCompound target)
-        throws SmartFrogException, RemoteException {
-
-        /* @Todo there is almost no difference between this method and
-        * #deployFromURLsGiven; the latter could
-        * have its core replaced by this with some work.*/
-
-        Prim deployedApp = null;
-        Context nameContext = null;
-        nameContext = new ContextImpl();
-        nameContext.put("sfProcessComponentName", appName);
-
-        deployedApp = deployFromURL(url, appName, target, nameContext);
-        return deployedApp;
-
-    }
-
-    private static Prim deployFromURL(String url, String appName, ProcessCompound target, Context nameContext) throws SmartFrogException, RemoteException {
-
-        Prim deployedApp =  null;
-
-        InputStream is=null;
-        try {
-            //assumes that the URL refers to stuff on the classpath
-            is = SFClassLoader.getResourceAsStream(url);
-
-            if (is == null) {
-                throw new SmartFrogDeploymentException(MessageUtil.
-                        formatMessage(MSG_URL_NOT_FOUND, url, appName));
-            }
-            deployedApp = deployFrom(is, target, nameContext, SFParser.getLanguageFromUrl(url));
-        } catch (SmartFrogException sfex) {
-            sfex.put("URL:", url);
-            sfex.put("Component Name:", appName);
-            throw sfex;
-        } catch (RemoteException ex) {
-            //rethrow
-            throw ex;
-        } catch (Exception ex) {
-            //anything that was not dealt with gets wrapped
-            throw new SmartFrogException(ex);
-        } finally {
-            if(is!=null) {
-                try {
-                    is.close();
-                } catch (IOException ignored) {
-                    //TODO
-                }
-            }
-        }
-        return deployedApp;
-    }
-
-
-
-
-
-    /**
      * Entry point to get system properties. Works around a bug in some JVM's
      * (ie. Solaris) to return the default correctly.
      *
@@ -319,6 +149,7 @@ public class SFSystem implements MessageKeys {
      */
     public static void readPropertiesFromIniFile() throws SmartFrogException {
         String source = System.getProperty(iniFile);
+
         if (source != null) {
             InputStream iniFileStream = getInputStreamForResource(source);
             try {
@@ -399,59 +230,6 @@ public class SFSystem implements MessageKeys {
 
 
     /**
-     * Select target process compound using host and subprocess names
-     *
-     * @param  host host name. If null, assumes localhost.
-     * @param  subProcess subProcess name (optional; can be null)
-     *
-     * @return ProcessCompound the target process compound
-     *
-     * @throws SmartFrogException In case of SmartFrog system error
-     */
-    public static ProcessCompound selectTargetProcess(String host, String subProcess)
-        throws SmartFrogException, RemoteException {
-        ProcessCompound target = null;
-        try {
-            target = SFProcess.getProcessCompound();
-            if (host!=null) {
-                    target = SFProcess.getRootLocator().
-                        getRootProcessCompound(InetAddress.getByName(host));
-            }
-            if (subProcess!=null) {
-                target = (ProcessCompound)target.sfResolveHere(subProcess);
-            }
-        } catch (Exception ex) {
-                throw SmartFrogException.forward(ex);
-        }
-        return target;
-    }
-
-
-
-
-    /**
-     * Gets the ProcessCompound running on the host.
-     * @param hostName Name of the host
-     * @param remoteHost boolean indicating if the host is remote host
-     * @return ProcessCompound
-     */
-    public static ProcessCompound getTargetProcessCompound(String hostName,
-            boolean remoteHost) throws SmartFrogException, RemoteException {
-        ProcessCompound target = null;
-        try {
-            if (!remoteHost) {
-                target = SFProcess.getProcessCompound();
-            }else {
-               target = SFProcess.getRootLocator().
-                   getRootProcessCompound(InetAddress.getByName(hostName));
-            }
-        }catch (Exception ex) {
-            throw SmartFrogException.forward(ex);
-        }
-        return target;
-    }
-
-    /**
      * Prints given error string and exits system.
      *
      * @param str string to print on out
@@ -492,6 +270,11 @@ public class SFSystem implements MessageKeys {
         System.out.println(Version.copyright);
     }
 
+    /**
+     * Runs a set (vector) of configuration descriptors
+     * @param cfgDescs Vector of ConfigurationDescriptors
+     * @see ConfigurationDescriptor
+     */
 
     public static void runConfigurationDescriptors (Vector cfgDescs) {
         if (cfgDescs==null) return;
@@ -500,9 +283,13 @@ public class SFSystem implements MessageKeys {
         }
     }
 
+    /**
+     * Runs a configuration descripor trapping any possible exception
+     * @param cfgDescs Vector of ConfigurationDescriptors
+     * @see ConfigurationDescriptor
+     */
     public static Object runConfigurationDescriptor (ConfigurationDescriptor cfgDesc) {
         try {
-            //return runConfigurationDescriptor(cfgDesc, false);
             return runConfigurationDescriptor(cfgDesc, false);
         } catch (SmartFrogException ex) {
             Logger.logQuietly(ex);
@@ -510,7 +297,11 @@ public class SFSystem implements MessageKeys {
         return null;
     }
 
-
+    /**
+     * Runs  configuration descriptors
+     * @param cfgDescs Vector of ConfigurationDescriptors
+     * @see ConfigurationDescriptor
+     */
     public static Object runConfigurationDescriptor(ConfigurationDescriptor configuration,
                                                     boolean throwException) throws SmartFrogException {
         //return runConfigurationDescriptorOld(configuration,throwException);
@@ -546,107 +337,6 @@ public class SFSystem implements MessageKeys {
         return configuration;
     }
 
-    /**
-     * this is the old configuration descriptor runner
-     * @param cfgDesc
-     * @param throwException
-     * @return
-     * @throws SmartFrogException
-     */
-    public static Object runConfigurationDescriptorOld(
-        ConfigurationDescriptor cfgDesc,
-        boolean throwException) throws SmartFrogException {
-
-        ProcessCompound targetP=null;
-        Prim targetC = null;
-        boolean isRootProcess = false;
-        try {
-            initSystem();
-            targetP = selectTargetProcess(cfgDesc.host,cfgDesc.subProcess);
-            // name has different meaning for DEPLOY
-            if (cfgDesc.getActionType()!=ConfigurationDescriptor.Action.DEPLOY) {
-
-                targetC = (Prim)targetP.sfResolveWithParser(cfgDesc.name);
-
-                if (targetC instanceof ProcessCompound) {
-                    if (((ProcessCompound)targetC).sfIsRoot()) {
-                        isRootProcess = true;
-                    }
-                }
-            }
-            switch (cfgDesc.getActionType()) {
-                case (ConfigurationDescriptor.Action.DEPLOY):
-                    Prim prim = deployFromURL(cfgDesc.url, cfgDesc.name, targetP);
-                    //Logger.log(MessageUtil.
-                    //           formatMessage(MSG_DEPLOY_SUCCESS, prim.sfCompleteName()+", "+
-                    //          "\n     using: " +cfgDesc.url));
-                    cfgDesc.setSuccessfulResult();
-                    return prim;
-
-                case ConfigurationDescriptor.Action.DETACH:
-                    {
-                        String name = targetC.sfCompleteName().toString();
-                        targetC.sfDetach();
-                        cfgDesc.setSuccessfulResult();
-                        //Logger.log("- Detached: "+name
-                        //           +",\n     now:"+targetC.sfCompleteName());
-                    }
-                    return targetC;
-
-                case ConfigurationDescriptor.Action.DETaTERM:
-                    {
-                    String name = targetC.sfCompleteName().toString();
-                    targetC.sfDetachAndTerminate(new TerminationRecord(
-                            TerminationRecord.NORMAL,
-                            "External Management Action",
-                            targetP.sfCompleteName()));
-                    cfgDesc.setSuccessfulResult();
-                    //Logger.log("- DetachAndTerminated: "+name);
-                    }
-                    break;
-                case ConfigurationDescriptor.Action.TERMINATE:
-                   {
-                       try {
-                           String name = targetC.sfCompleteName().toString();
-                           targetC.sfTerminate(new TerminationRecord(
-                               TerminationRecord.NORMAL,
-                               "External Management Action",
-                               targetP.sfCompleteName()));
-                        //Logger.log("- Terminated: "+name);
-                            cfgDesc.setSuccessfulResult();
-                       } catch (Exception ex) {
-                           if (!isRootProcess)
-                               throw ex;
-                           //TODO: Check exception handling
-                           if ((ex.getCause()instanceof java.net.SocketException)||
-                               (ex.getCause()instanceof java.io.EOFException)) {
-                               Logger.log(MessageUtil.formatMessage(
-                                   MSG_SF_TERMINATED));
-                               cfgDesc.setSuccessfulResult();
-                           } else {
-                               Logger.log(ex);
-                           }
-                       }
-                   }
-                    break;
-                default:
-                    throw new SmartFrogInitException("Unknown Action in: "+ cfgDesc.toString());
-            }
-
-        } catch (Throwable thr){
-            if (cfgDesc.resultException ==null) {
-                cfgDesc.setResult(ConfigurationDescriptor.Result.FAILED,null,thr);
-                //@Todo Improve error message!
-                //Logger.log( thr +"\n - ConfigurationDescriptor:" +cfgDesc.toString()+"\n");
-            } else {
-                Logger.logQuietly(thr);
-            }
-            if (throwException) {
-                throw SmartFrogException.forward(thr);
-            }
-        }
-        return cfgDesc;
-    }
 
 
     /**
@@ -779,20 +469,17 @@ public class SFSystem implements MessageKeys {
             process.sfAddAttribute(SmartFrogCoreKeys.SF_BOOT_DATE, new Date(System.currentTimeMillis()));
         } catch (RemoteException swallowed) {
         }
-
         return process;
     }
 
     synchronized public static void initSystem() throws SmartFrogException,
         SFGeneralSecurityException {
-
         if (!alreadySystemInit) {
             // Initialize SmartFrog Security
             SFSecurity.initSecurity();
 
             // Read init properties
             readPropertiesFromIniFile();
-
             // Set stackTracing
             readPropertyLogStackTrace();
 

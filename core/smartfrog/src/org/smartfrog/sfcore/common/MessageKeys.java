@@ -110,6 +110,11 @@ public interface MessageKeys {
      */
     public static String MSG_NULL_URL = "MSG_NULL_URL";
     /**
+     * Message key: Loading url.
+     */
+    public static String MSG_LOADING_URL = "MSG_LOADING_URL";
+
+    /**
      * Message key: unable to locate language in url.
      */
     public static String MSG_LANG_NOT_FOUND = "MSG_LANG_NOT_FOUND";
