@@ -167,6 +167,7 @@ To Be Written
         <include name="${dist}/docs/DefaultParser.html"/>
         <include name="${dist}/docs/dir.JPG"/>
         <include name="${dist}/docs/sfReference.pdf"/>
+        <include name="${dist}/docs/sfDynamicWebServerExample.pdf"/>        
         <include name="${dist}/docs/jdocs/**"/>
        </zipfileset>
     </zip>
@@ -179,6 +180,7 @@ To Be Written
         <include name="docs/DefaultParser.html"/>
         <include name="docs/dir.JPG"/>
         <include name="docs/sfReference.pdf"/>
+        <include name="docs/sfDynamicWebServerExample.pdf"/>                
         <include name="lib/**"/>
         <include name="src/**"/>
         <include name="private/**"/>
@@ -211,6 +213,7 @@ To Be Written
         <include name="${dist}/docs/DefaultParser.html"/>
         <include name="${dist}/docs/dir.JPG"/>
         <include name="${dist}/docs/sfReference.pdf"/>
+        <include name="${dist}/docs/sfDynamicWebServerExample.pdf"/>                
         <include name="${dist}/docs/jdocs/**"/>
        </zipfileset>
     </zip>
@@ -232,6 +235,7 @@ To Be Written
         <include name="${dist}/docs/DefaultParser.html"/>
         <include name="${dist}/docs/dir.JPG"/>
         <include name="${dist}/docs/sfReference.pdf"/>
+        <include name="${dist}/docs/sfDynamicWebServerExample.pdf"/>         
         <include name="${dist}/docs/jdocs/**"/>
        </tarfileset>
        <tarfileset dir="." mode="755" prefix="${Name.System}.${version}">
@@ -254,6 +258,7 @@ To Be Written
         <include name="docs/DefaultParser.html"/>
         <include name="docs/dir.JPG"/>
         <include name="docs/sfReference.pdf"/>
+        <include name="docs/sfDynamicWebServerExample.pdf"/>                
         <include name="lib/**"/>
         <include name="src/**"/>
         <include name="private/**"/>
@@ -300,6 +305,7 @@ To Be Written
         <include name="${dist}/docs/DefaultParser.html"/>
         <include name="${dist}/docs/dir.JPG"/>
         <include name="${dist}/docs/sfReference.pdf"/>
+        <include name="${dist}/docs/sfDynamicWebServerExample.pdf"/>                
         <include name="${dist}/docs/jdocs/**"/>
        </tarfileset>
        <tarfileset dir="." mode="755" prefix="${Name.System}.${version}">
