@@ -26,20 +26,17 @@ import java.util.Enumeration;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
+import org.smartfrog.sfcore.common.ContextImpl;
 import org.smartfrog.sfcore.languages.sf.PhaseAction;
 import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferencePart;
-import org.smartfrog.sfcore.logging.LogSF;
-import org.smartfrog.sfcore.logging.LogFactory;
 
 /**
  * Defines the basic schema description implementation.
  */
 public class SchemaDescription extends BasePredicate implements PhaseAction {
-
-    /** Core log */
-    private LogSF sflog=LogFactory.sfGetProcessLog();
 
     Reference ref;
     Reference parentref;
@@ -51,17 +48,21 @@ public class SchemaDescription extends BasePredicate implements PhaseAction {
     private Reference classRef = new Reference(ReferencePart.here("class"));
     private Reference descriptionRef = new Reference(ReferencePart.here("description"));
 
+
     /**
      * Describes the attributes of a schema.
      *
      * @param name the attribute name
      * @param predicate component description
      * @param attributes the attributes of component description
+     * @return attribute description
      *
      * @throws SmartFrogCompileResolutionException failed to describe attributes
      */
-    protected void describeAttribute(Object name, ComponentDescription predicate, ComponentDescription attributes)
+    protected String describeAttribute(Object name, ComponentDescription predicate, ComponentDescription attributes)
                             throws SmartFrogCompileResolutionException {
+
+        StringBuffer attributeDescriptionBuffer = new StringBuffer();
 
         boolean optional = true;
         String binding = "anyBinding";
@@ -109,7 +110,7 @@ public class SchemaDescription extends BasePredicate implements PhaseAction {
         try {
             description = (String) predicate.sfResolve(descriptionRef);
         } catch (Throwable e) {
-            description = "";
+            description = "--description no set--";
         }
 
         // get the value, and print the attribute description
@@ -125,17 +126,25 @@ public class SchemaDescription extends BasePredicate implements PhaseAction {
                          );
                 }
             }
-            sflog.out("    ");
-            sflog.out(description);
-            sflog.out(" (");
-            sflog.out(name);
-            sflog.out("):    ");
+//            attributeDescriptionBuffer.append(" ");
+//            attributeDescriptionBuffer.append(name);
+//            attributeDescriptionBuffer.append(":: ");
             if (testValue == null)
-                sflog.out("--not set--");
-            else{
-                sflog.out(testValue);
-            }
+                attributeDescriptionBuffer.append("--value not set--");
+            else
+                attributeDescriptionBuffer.append(testValue);
+            attributeDescriptionBuffer.append("; //");
+            attributeDescriptionBuffer.append(description);
+            attributeDescriptionBuffer.append(" [ ");
+            attributeDescriptionBuffer.append(valueClass);
+            attributeDescriptionBuffer.append(", ");
+            if (optional) attributeDescriptionBuffer.append("optional");
+            else attributeDescriptionBuffer.append("mandatory");
+            attributeDescriptionBuffer.append(", ");
+            attributeDescriptionBuffer.append(binding);
+            attributeDescriptionBuffer.append("]");
         }
+        return attributeDescriptionBuffer.toString();
     }
 
 
@@ -146,27 +155,38 @@ public class SchemaDescription extends BasePredicate implements PhaseAction {
      */
 
     protected void doPredicate() throws SmartFrogCompileResolutionException {
+        StringBuffer descriptionBuffer = new StringBuffer();
         String description = "";
 
         ref = component.sfCompleteName();
         ComponentDescription parent = (ComponentDescription) component.sfParent();
         parentref = parent.sfCompleteName();
 
+//        System.out.println("===============================");
+//        System.out.println(parent.toString());
+//        System.out.println("===============================");
+
         try {
             description = (String) context.get(schemaDescription);
+            parent.sfAddAttribute("description",description);
         } catch (Throwable e) {
             description = "";
         }
-        if (description == null) description = "";
+        if (description == null) description = "--description not set--";
 
-        sflog.out("component " + parentref+ "\n" +":  " + description);
-
+        descriptionBuffer.append("component " + parentref);
+        descriptionBuffer.append("::  //" + description + "\n");
         for (Enumeration keys = context.keys(); keys.hasMoreElements();) {
             Object key = keys.nextElement();
             Object value = context.get(key);
+            String attributeDescription="";
             try {
                 if (!key.equals(schemaDescription))
-                    describeAttribute(key, (ComponentDescription)value, parent);
+                    if (parent.sfContainsAttribute(key)){
+                        attributeDescription = describeAttribute(key, (ComponentDescription)value, parent);
+                        descriptionBuffer.append(key+":: "+attributeDescription+"\n");
+                        parent.sfReplaceAttribute(key, attributeDescription);
+                    }
             } catch (Throwable e) {
                 e.printStackTrace();
                 if (!(e instanceof SmartFrogCompileResolutionException))
@@ -177,9 +197,15 @@ public class SchemaDescription extends BasePredicate implements PhaseAction {
                     throw (SmartFrogCompileResolutionException)e;
             }
         }
-        sflog.out("\n\n");
+        descriptionBuffer.append("\n\n\n\n");
+        //System.out.println(descriptionBuffer.toString());
 
+        keepPredicates=false;
 
+//        System.out.println("==========AFTER================");
+//        System.out.println(parent.sfCompleteName().toString());
+//        System.out.println(parent.toString());
+//        System.out.println("==========end after ===========");
     }
 
 }
