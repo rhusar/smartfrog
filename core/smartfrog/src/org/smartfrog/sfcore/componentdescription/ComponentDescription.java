@@ -80,6 +80,24 @@ public interface ComponentDescription extends Copying, ReferenceResolver, Refere
      */
     public Object sfAttributeKeyFor(Object value);
 
+    /**
+     * Returns true if the context contains value.
+     *
+     * @param value object to check
+     *
+     * @return true if context contains value, false otherwise
+     */
+    public boolean sfContainsValue(Object value);
+
+
+    /**
+     * Returns true if the context contains attribute.
+     * @param attribute to check
+     *
+     * @return true if context contains key, false otherwise
+     */
+    public boolean sfContainsAttribute(Object attribute);
+
 
     /**
      * Replace named attribute in component description context. If attribute is not

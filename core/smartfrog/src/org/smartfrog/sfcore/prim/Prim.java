@@ -23,6 +23,7 @@ package org.smartfrog.sfcore.prim;
 import java.net.InetAddress;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.Iterator;
 
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.SmartFrogException;
@@ -84,6 +85,29 @@ public interface Prim extends Liveness, RemoteReferenceResolver, RemoteReference
      */
     public Object sfAttributeKeyFor(Object value) throws RemoteException;
 
+    /**
+     * Returns true if the context contains value.
+     *
+     * @param value object to check
+     *
+     * @return true if context contains value, false otherwise
+     *
+     * @throws RemoteException In case of Remote/nework error
+     */
+    public boolean sfContainsValue(Object value) throws RemoteException;
+
+
+    /**
+     * Returns true if the context contains attribute.
+     * @param attribute to check
+     *
+     * @return true if context contains key, false otherwise
+     *
+     * @throws RemoteException In case of Remote/nework error
+     */
+    public boolean sfContainsAttribute(Object attribute) throws RemoteException;
+
+
 
     /**
      * Replace named attribute in component context. If attribute is not
@@ -99,6 +123,26 @@ public interface Prim extends Liveness, RemoteReferenceResolver, RemoteReference
      */
     public Object sfReplaceAttribute(Object name, Object value)
         throws SmartFrogRuntimeException, RemoteException;
+
+
+    /**
+     * Returns an ordered iterator over the attribute names in the context.
+     *
+     * @return iterator
+     *
+     * @throws RemoteException In case of Remote/nework error
+     */
+    public  Iterator sfAttributes() throws RemoteException;
+
+    /**
+     * Returns an ordered iterator over the values in the context.
+     *
+     * @return iterator
+     *
+     * @throws RemoteException In case of Remote/nework error
+     */
+    public  Iterator sfValues() throws RemoteException;
+
 
     /**
      * Returns the context of this component.

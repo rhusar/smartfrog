@@ -27,6 +27,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -118,36 +119,36 @@ public class OrderedHashtable extends Hashtable implements Copying, MessageKeys,
 
             if (value instanceof Copying) {
                 value = ((Copying) value).copy();
-	    } else if (value instanceof SFNull) {
-		// do nothing...
-	    } else if (value instanceof Number) {
-		if (value instanceof Integer) {
-		    value = new Integer(((Integer)value).intValue());
-		} else if (value instanceof Double) {
-		    value = new Double(((Double)value).doubleValue());
-		} else if (value instanceof Float) {
-		    value = new Float(((Float)value).floatValue());
-		} else if (value instanceof Long) {
-		    value = new Long(((Long)value).longValue());
-		}
-	    } else if (value instanceof String) {
-		value = new String((String)value);
-	    } else if (value instanceof Boolean) {
-		value = new Boolean(((Boolean) value).booleanValue());
-	    } else if (value instanceof Serializable) {
-		// copy by serialization and de-serialization
-		try {
-		    ByteArrayOutputStream bos = new ByteArrayOutputStream(100);
-		    ObjectOutputStream oos = new ObjectOutputStream(bos);
-		    oos.writeObject(value);
-		    ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
-		    ObjectInputStream ois = new ObjectInputStream(bis);
-		    value = ois.readObject();
-		} catch (Exception t) {
-		    throw new RuntimeException(MessageUtil.formatMessage(COPY_SERIALIZE_FAILED,value), t);
-		}
-	    } else {
-		throw new IllegalArgumentException(MessageUtil.formatMessage(COPY_FAILED, value));
+        } else if (value instanceof SFNull) {
+        // do nothing...
+        } else if (value instanceof Number) {
+        if (value instanceof Integer) {
+            value = new Integer(((Integer)value).intValue());
+        } else if (value instanceof Double) {
+            value = new Double(((Double)value).doubleValue());
+        } else if (value instanceof Float) {
+            value = new Float(((Float)value).floatValue());
+        } else if (value instanceof Long) {
+            value = new Long(((Long)value).longValue());
+        }
+        } else if (value instanceof String) {
+        value = new String((String)value);
+        } else if (value instanceof Boolean) {
+        value = new Boolean(((Boolean) value).booleanValue());
+        } else if (value instanceof Serializable) {
+        // copy by serialization and de-serialization
+        try {
+            ByteArrayOutputStream bos = new ByteArrayOutputStream(100);
+            ObjectOutputStream oos = new ObjectOutputStream(bos);
+            oos.writeObject(value);
+            ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
+            ObjectInputStream ois = new ObjectInputStream(bis);
+            value = ois.readObject();
+        } catch (Exception t) {
+            throw new RuntimeException(MessageUtil.formatMessage(COPY_SERIALIZE_FAILED,value), t);
+        }
+        } else {
+        throw new IllegalArgumentException(MessageUtil.formatMessage(COPY_FAILED, value));
             }
             r.primPut(key, value);
         }
@@ -246,7 +247,7 @@ public class OrderedHashtable extends Hashtable implements Copying, MessageKeys,
 
     /**
      * Returns the values of the hashtable in order.
-     *
+     * Replaced by values() using Iterator.
      * @return ordered enumeration over values
      */
     public Enumeration elements() {
@@ -254,9 +255,30 @@ public class OrderedHashtable extends Hashtable implements Copying, MessageKeys,
 
         for (Enumeration e = keys(); e.hasMoreElements();)
             r.addElement(get(e.nextElement()));
-
         return r.elements();
     }
+
+    /**
+     * Returns the attributes of the hashtable in order.
+     *
+     * @return ordered iterator over attributes
+     */
+    public Iterator orderedAttributes() {
+        return orderedKeys.iterator();
+    }
+
+    /**
+     * Returns the values of the hashtable in order.
+     *
+     * @return ordered iterator over values
+     */
+    public Iterator orderedValues() {
+        Vector r = new Vector(orderedKeys.size());
+        for (Enumeration e = keys(); e.hasMoreElements();)
+            r.addElement(get(e.nextElement()));
+        return r.iterator();
+    }
+
 
     /**
      * Does a shallow copy of the hashtable and the ordered keys.
