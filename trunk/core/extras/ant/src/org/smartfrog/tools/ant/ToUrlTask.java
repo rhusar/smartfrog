@@ -24,6 +24,7 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.DirectoryScanner;
 import org.apache.tools.ant.types.FileSet;
+import org.apache.tools.ant.types.Path;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -62,6 +63,11 @@ public class ToUrlTask extends Task {
      * filesets of nested files to add to this url
      */
     private List filesets = new LinkedList();
+
+    /**
+     * paths to add
+     */
+    private List paths = new LinkedList();
 
     /**
      * validation flag
@@ -110,15 +116,24 @@ public class ToUrlTask extends Task {
         this.separator = separator;
     }
 
+    /**
+     * set this flag to trigger validation that every named file exists.
+     * Optional: default=true
+     * @param validate
+     */
     public void setValidate(boolean validate) {
         this.validate = validate;
+    }
+
+    public void addPath(Path path) {
+        paths.add(path);
     }
 
     /**
      * convert the filesets to urls.
      * @return null for no files
      */
-    public String filesetsToURL() {
+    private String filesetsToURL() {
         if(filesets.isEmpty()) {
             return "";
         }
@@ -140,12 +155,53 @@ public class ToUrlTask extends Task {
             }
         }
         //at this point there is one trailing space to remove, if the list is not empty.
+        return stripTrailingSeparator(urls, count);
+    }
+
+    /**
+     * convert the string buffer to a string, potentially stripping
+     * out any trailing separator
+     * @param urls URL buffer
+     * @param count number of URL entries
+     * @return trimmed string, or empty string
+     */
+    private String stripTrailingSeparator(StringBuffer urls,
+            int count) {
         if(count>0) {
             urls.delete(urls.length()-separator.length(),urls.length());
             return new String(urls);
         } else {
             return "";
         }
+    }
+
+
+    /**
+     * convert all paths to URLs
+     * @return
+     */
+    private String pathsToURL() {
+        if(paths.isEmpty()) {
+            return "";
+        }
+        int count = 0;
+        StringBuffer urls = new StringBuffer();
+        ListIterator list = paths.listIterator();
+        while (list.hasNext()) {
+            Path path= (Path) list.next();
+            String[] elements=path.list();
+            for (int i = 0; i < elements.length; i++) {
+                File f = new File(elements[i]);
+                validateFile(f);
+                String asUrl = toURL(f);
+                urls.append(asUrl);
+                log(asUrl, Project.MSG_DEBUG);
+                urls.append(separator);
+                count++;
+            }
+        }
+        //at this point there is one trailing space to remove, if the list is not empty.
+        return stripTrailingSeparator(urls, count);
     }
 
     /**
@@ -183,6 +239,15 @@ public class ToUrlTask extends Task {
         } else {
             url=filesetURL;
         }
+        //add path URLs
+        String pathURL=pathsToURL();
+        if(pathURL.length()>0) {
+            if(url.length()>0) {
+                url=url+separator+pathURL;
+            } else {
+                url=pathURL;
+            }
+        }
         log("Setting " + property + " to URL " + url, Project.MSG_VERBOSE);
         getProject().setNewProperty(property, url);
     }
@@ -192,7 +257,7 @@ public class ToUrlTask extends Task {
         if (property == null) {
             throw new BuildException(ERROR_NO_PROPERTY);
         }
-        if (file == null && filesets.isEmpty()) {
+        if (file == null && filesets.isEmpty() && paths.isEmpty()) {
             throw new BuildException(ERROR_NO_FILES);
         }
     }
