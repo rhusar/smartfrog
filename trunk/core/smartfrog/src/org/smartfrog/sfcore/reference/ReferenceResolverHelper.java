@@ -21,6 +21,7 @@ For more information: www.smartfrog.org
 package org.smartfrog.sfcore.reference;
 
 import java.util.Vector;
+import java.io.File;
 
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
@@ -379,6 +380,26 @@ public interface ReferenceResolverHelper {
         boolean mandatory) throws SmartFrogResolutionException;
 
     /**
+     * Resolves a given reference and gets a File. Utility method
+     * to resolve an attribute with a String value and returns a File.
+     *
+     * @param reference reference
+     * @param defaultValue File default value that is returned when
+     *        reference is not found and it is not mandatory
+     * @param mandatory boolean that indicates if this attribute must be
+     *        present in the description. If it is mandatory and not found it
+     *        triggers a ResolutionException
+     *
+     * @return java.io.File for attribute value, null if SFNull is found or null if not found
+     *
+     * @throws SmartFrogResolutionException if invalid reference of reference
+     * not resolvable
+
+     */
+    public File sfResolve(Reference reference, File defaultValue,
+          boolean mandatory) throws SmartFrogResolutionException;
+
+    /**
      * Resolves given reference and gets a java.net.InetAddress.
      * Utility method to resolve an attribute with a
      * java.net.InetAddress value.
@@ -731,7 +752,7 @@ public interface ReferenceResolverHelper {
         throws SmartFrogResolutionException;
 
     /**
-     * Resolves a reference given a string and gets a String. Utility method to
+     * Resolves a reference given a String and gets a String. Utility method to
      * resolve an attribute with a String value.
      *
      * @param referencePart string field reference with single part
@@ -744,9 +765,7 @@ public interface ReferenceResolverHelper {
      * @return String for attribute value, null if SFNull is found or null if not found
      *
      * @throws SmartFrogResolutionException if invalid reference of reference
-     * not resolvable or resolve value &lt;minValue or resolveValue
-     * &gt;maxValue
-
+     * not resolvable
      */
     public String sfResolve(String referencePart, String defaultValue,
         boolean mandatory) throws SmartFrogResolutionException;
@@ -769,6 +788,26 @@ public interface ReferenceResolverHelper {
 
      */
     public Vector sfResolve(String referencePart, Vector defaultValue,
+        boolean mandatory) throws SmartFrogResolutionException;
+
+
+  /**
+   * Resolves a reference given a String and gets a File. Utility method to
+   * resolve an attribute with a String value.
+   *
+   * @param referencePart string field reference with single part
+   * @param defaultValue String default value that is returned when reference
+   *        is not found and it is not mandatory
+   * @param mandatory boolean that indicates if this attribute must be
+   *        present in the description. If it is mandatory and not found it
+   *        triggers a ResolutionException
+   *
+   * @return String for attribute value, null if SFNull is found or null if not found
+   *
+   * @throws SmartFrogResolutionException if invalid reference of reference
+   * not resolvable or File does not exists.
+   */
+  public File sfResolve(String referencePart, File defaultValue,
         boolean mandatory) throws SmartFrogResolutionException;
 
     /**
