@@ -21,13 +21,18 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.shellscript;
 
 import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.prim.TerminationRecord;
 
 
 /**
  * Iterface to the lock object that is returned when the shell is locked.
- * It provides no methods.
+ * It provides a method to get the ScriptExecution to which it is a lock
  */
 public interface ScriptLock {
+
+    /**
+     *  Obtain the ScriptExecution implmentation component for which this is a lock
+     *  @returns the ScriptExecution
+     */
+    ScriptExecution getScriptExecution();
 
 }
