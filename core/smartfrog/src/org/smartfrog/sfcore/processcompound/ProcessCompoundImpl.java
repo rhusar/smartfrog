@@ -985,9 +985,9 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
     protected Process startProcess(Object name, ComponentDescription cd) throws Exception {
         Vector runCmd = new Vector();
         addProcessJava(runCmd, cd);
-        addProcessClassPath(runCmd, name);
+        addProcessClassPath(runCmd, name, cd);
         addProcessDefines(runCmd, name);
-        addProcessAttributes(runCmd, cd);
+        addProcessAttributes(runCmd, name, cd);
         addProcessClassName(runCmd);
 
         String[] runCmdArray = new String[runCmd.size()];
@@ -996,19 +996,21 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
         return Runtime.getRuntime().exec(runCmdArray);
     }
 
-    /**
+
+  /**
      * Gets the process java start command. Looks up the sfProcessJava
-     * attribute
+     * attribute. sfProcessJava could be a String or a Collection
      *
      * @param cmd cmd to append to
+     * @param cd component description with extra process configuration (ex. sfProcessAttributes)
      *
      * @exception Exception failed to construct java command
      */
-    protected void addProcessJava(Vector cmd,ComponentDescription cd) throws Exception {
+    protected void addProcessJava(Vector cmd, ComponentDescription cd) throws Exception {
         Object processCmd = null;
         processCmd = cd.sfResolveHere(SmartFrogCoreKeys.SF_PROCESS_JAVA,false);
         if (processCmd==null){
-            processCmd = sfResolveHere(SmartFrogCoreKeys.SF_PROCESS_JAVA);
+            processCmd = sfResolveHere(SmartFrogCoreKeys.SF_PROCESS_JAVA, false);
         }
         if (processCmd instanceof String)
             cmd.addElement((String) processCmd);
@@ -1032,16 +1034,67 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
     /**
      * Gets the current class path out of the system properties and returns it
      * as a command line parameter for the subprocess.
+     * The class path is created reading one of the following in order selection:
+     *
+     *  1.- from a property named sfcore.processcompound.PROCESS_NAME.java.class.path.
+     *  2.- attribute java.class.path inside sfProcessAttribute componentDescription
+     *
+     * The result if any is added (default) to the system property:  System property java.class.path
+     * or replaced if  sfProcessReplaceClassPath=true
+     *
      *
      * @param cmd command to append ro
+     * @param name process name
+     * @param cd component description with extra process configuration
      *
      * @exception Exception failed to construct classpath
      */
-    protected void addProcessClassPath(Vector cmd, Object name) throws Exception {
+    //@todo document how new classpath works for subProcesses.
+    protected void addProcessClassPath(Vector cmd, Object name, ComponentDescription cd) throws Exception {
+        String res = null;
+        Boolean replaceClasspath=null;
 
-        String res = SFSystem.getProperty(SmartFrogCoreProperty.propBaseSFProcess + "java.class.path."+ name, null);
+        replaceClasspath = ((Boolean)cd.sfResolveHere(SmartFrogCoreKeys.SF_PROCESS_REPLACE_CLASSPATH,false));
+        if (replaceClasspath==null) {
+          replaceClasspath = ( (Boolean) sfResolveHere(SmartFrogCoreKeys.SF_PROCESS_REPLACE_CLASSPATH, false));
+        }
+        //by default add, not replace
+        if (replaceClasspath == null) replaceClasspath = Boolean.valueOf(false);
 
-        if (res==null) res = SFSystem.getProperty("java.class.path", null);
+        //Deployed description. This only happens during the first deployment of a SubProcess.
+        String  cdClasspath = (String) cd.sfResolveHere(SmartFrogCoreKeys.SF_PROCESS_CLASSPATH,false);
+
+        //This will read the system property for org.smartfrog.sfcore.processcompound.NAME.sfProcessClassPath;
+        String  envPcClasspath = SFSystem.getProperty(SmartFrogCoreProperty.propBaseSFProcess
+                                                    + SmartFrogCoreKeys.SF_PROCESS_NAME
+                                                    +SmartFrogCoreKeys.SF_PROCESS_CLASSPATH, null);
+        //General description for process compound
+        String  pcClasspath = (String) sfResolveHere(SmartFrogCoreKeys.SF_PROCESS_REPLACE_CLASSPATH,false);
+        //Takes previous process classpath (rootProcessClassPath)
+        String  sysClasspath = SFSystem.getProperty("java.class.path", null);
+
+        if ( replaceClasspath.booleanValue()) {
+          if (cdClasspath!=null){
+            res = cdClasspath;
+          } else if (envPcClasspath!=null){
+            res=envPcClasspath;
+          } else if (pcClasspath!=null){
+            res=pcClasspath;
+          } else if (sysClasspath !=null){
+            res = sysClasspath;
+          }
+        } else {
+          res ="";
+          if (cdClasspath!=null){
+            res = res + cdClasspath;
+          } else if (envPcClasspath!=null){
+            res=res + envPcClasspath;
+          } else if (pcClasspath!=null){
+            res=res + pcClasspath;
+          } else if (sysClasspath !=null){
+            res = res + sysClasspath;
+          }
+        }
 
         if (res != null) {
             cmd.addElement("-classpath");
@@ -1083,9 +1136,11 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
                 //Logger.log("Key: "+key.toString());
                 if (!key.equals(SmartFrogCoreProperty.propBaseSFProcess+ SmartFrogCoreKeys.SF_PROCESS_NAME)) {
                   // Special case relsolved in addClassPath
-                  if (key.startsWith(SmartFrogCoreProperty.propBaseSFProcess + "java.class.path.")) {
-                      continue;
-                  }
+
+// No meaning anymore
+//                  if (key.startsWith(SmartFrogCoreProperty.propBaseSFProcess + "java.class.path.")) {
+//                      continue;
+//                  }
                   //Add special parameters to named subprocesses
                   //@todo add Junit test for this feature
                   //@todo test what happens with special caracters
@@ -1093,9 +1148,11 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
                   String specialParameters = SmartFrogCoreProperty.propBaseSFProcess + "jvm." + name + ".";
                   //This will be ignored
                   // The right way is to use: 'org.smartfrog.sfcore.processcompound.java.class.path.NAME';
-                  if (key.startsWith(specialParameters+ "java.class.path.")) {
-                      continue;
-                  }
+
+// No meaning anymore
+//                  if (key.startsWith(specialParameters+ "java.class.path.")) {
+//                      continue;
+//                  }
                   //Logger.log("Testing: "+specialParameters);
                   //Logger.log("key: "+key);
                   if (key.startsWith(specialParameters)) {
@@ -1152,25 +1209,37 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
     }
 
     /**
+     * Resolves sfProcessAttributes and adds to it all SystemProperties that
+     * start with org.smartfrog.processcompoun.PROCESS_NAME
+     * @param cd ComponentDescription
+     * @return ComponentDescription
+     */
+    private ComponentDescription getProcessAttributes(Object name, ComponentDescription cd) throws  SmartFrogResolutionException {
+      ComponentDescription sfProcessAttributes =null;
+      sfProcessAttributes = (ComponentDescription) sfResolveHere (SmartFrogCoreKeys.SF_PROCESS_CONFIG, false);
+      if (sfProcessAttributes == null) sfProcessAttributes = new ComponentDescriptionImpl(null, new ContextImpl(),false);
+      ComponentDescriptionImpl.addSystemProperties(SmartFrogCoreProperty.propBaseSFProcess + name ,sfProcessAttributes);
+      return sfProcessAttributes;
+    }
+
+    /**
      * Constructs sequence of -D statements for the new sub-process by
      * iterating over the sfProcessAttributes ComponentDescription.
      *
      * @param cmd command to append to
-     * @param cd component description with extra process configuration (ex. sfProcessAttributes)
+     * @param sfProcessAttributes component description with extra process configuration (ex. sfProcessAttributes)
      *
      * @exception Exception failed to construct defines
      */
-    protected void addProcessAttributes(Vector cmd, ComponentDescription cd)
+    protected void addProcessAttributes(Vector cmd,Object name , ComponentDescription cd)
         throws Exception {
-            System.out.println("To Complete (TEST!) processcompoundImpl.addProcessAttributes(): "+cd.toString());
-            ComponentDescription sfProcessAttributes = (ComponentDescription) sfResolveHere (SmartFrogCoreKeys.SF_PROCESS_CONFIG, false);
-            if (sfProcessAttributes == null) return;
+            ComponentDescription sfProcessAttributes = getProcessAttributes(name,cd);
             Object key = null;
             Object value = null;
             for (Iterator i = sfProcessAttributes.sfAttributes(); i.hasNext();) {
                 key = i.next().toString();
-                value = cd.sfResolveHere(key);
-                cmd.addElement("-D "+
+                value = sfProcessAttributes.sfResolveHere(key);
+                cmd.addElement("-D"+
                                  SmartFrogCoreProperty.propBaseSFProcess +
                                  key.toString() + "=" +
                                  value.toString());
