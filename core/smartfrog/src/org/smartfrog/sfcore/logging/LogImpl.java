@@ -166,6 +166,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
             localLog=new LogToFileImpl(name,new Integer(currentLogLevel));
             localLog.warn("Error init localLog for LogImpl",ex);
         }
+        localLog.trace(classComponentDescription.toString());
         logName = name;
     }
 
@@ -210,9 +211,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
             //add properties that start with package name.
             cmpDesc = ComponentDescriptionImpl.addSystemProperties(
                        obj.getClass().toString().substring(6)+"."
-                     , cmpDesc
-                    );
-
+                     , cmpDesc);
         }
         return cmpDesc;
     }

@@ -34,6 +34,9 @@ import org.smartfrog.sfcore.security.SFClassLoader;
 import org.smartfrog.sfcore.security.SFGeneralSecurityException;
 import org.smartfrog.sfcore.security.SFSecurity;
 
+import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.logging.LogFactory;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
@@ -142,8 +145,10 @@ public class SFSystem implements MessageKeys {
             Object key = e.nextElement();
             sysProps.put(key, props.get(key));
         }
-
         System.setProperties(sysProps);
+        if (LogFactory.getProcessLog().isTraceEnabled()){
+            LogFactory.getProcessLog().trace("New system properties: " +sysProps.toString());
+        }
     }
 
 
@@ -447,9 +452,14 @@ public class SFSystem implements MessageKeys {
         if (!alreadySystemInit) {
             // Initialize SmartFrog Security
             SFSecurity.initSecurity();
-
             // Read init properties
             readPropertiesFromIniFile();
+            // Notify status of Security
+            if (!SFSecurity.isSecurityOn()){
+                LogSF log=LogFactory.getLog("SFSecurityLog");
+                if (log.isWarnEnabled()) log.warn("SmartFrog security is NOT active");
+            }
+
             // Set stackTracing
             readPropertyLogStackTrace();
 
