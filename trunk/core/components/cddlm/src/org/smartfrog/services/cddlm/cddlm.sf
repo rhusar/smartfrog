@@ -42,7 +42,7 @@ CddlmSystem extends Compound {
     port 5050;
 
     //our CDDLM description
-    cddlm extends CDDLM {
+    cddlm extends AxisServer {
         port PARENT:port;
         threads 4;
         sessions 8;
@@ -53,5 +53,11 @@ CddlmSystem extends Compound {
         port PARENT:port;
         page "axis/services/cddlm?wsdl";
         checkFrequency 10;
+    }
+
+    CddlmService extends AxisServiceResource {
+        port PARENT:port;
+        serviceName "cddlm";
+        descriptorResource "/org/smartfrog/services/cddlm/deploy.wsdd";
     }
 }
