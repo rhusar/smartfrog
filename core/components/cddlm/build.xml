@@ -49,7 +49,8 @@
     <target name="init" depends="init-standard-output-dirs,use-smartfrog-tasks">
 
         <property name="target.jar" location="${dist.lib.dir}/cddlm.jar"/>
-        <property name="deploy.sf" value="org/smartfrog/services/cddlm/system.sf"/>
+        <property name="deploy.sf" 
+          value="org/smartfrog/services/cddlm/cddlm_on_jetty.sf"/>
 
         <property name="default.ini" location="test/files/default.ini"/>
         <property name="default.sf" location="test/files/default.sf"/>
@@ -219,15 +220,12 @@
             logStackTraces="true"
             host="${deploy.host}"
             >
-            <!-- <JVMProperty key="axis.port" value="${axis.port}" /> -->
+            <sysproperty key="axis.home" file="${axis.lib.dir}" />
             <codebase url="${target.jar.url}"/>
+            
             <application name="${application.name}">
-#include "org/smartfrog/services/cddlm/cddlm.sf"
-  sfCodeBase "${target.jar.url}";
-
-sfConfig extends CddlmSystem {
-  port ${axis.port};
-}            
+#include "org/smartfrog/services/cddlm/cddlm_on_jetty.sf"
+  sfCodeBase PROPERTY org.smartfrog.codebase;         
             </application>
         </sf-deploy>
     </target>
