@@ -45,7 +45,7 @@ For more information: www.smartfrog.org
     <ant dir="${main.project}" target="clean" inheritAll="false" />
     <ant dir="${test.project}" target="clean" inheritAll="false" />
     <ant dir="${ant.project}" target="clean" inheritAll="false" />
-    <ant dir="${component.project}" target="clean" inheritAll="false" />
+    <!-- <ant dir="${components.project}" target="clean" inheritAll="false" /> -->
   </target>
 
   <!-- =================================================================== -->
