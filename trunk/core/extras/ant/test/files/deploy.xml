@@ -89,6 +89,7 @@ ant -lib ../../build/dist/lib/smartfrog-tasks.jar -lib ../../../../smartfrog/dis
         </sf-startdaemon>
         <sequential>
           <sf-block/>
+          <fail if="block.timeout">No SmartFrog daemon found</fail>
           <antcall target="testRunFile" />
         </sequential>
       </parallel>
@@ -100,6 +101,7 @@ ant -lib ../../build/dist/lib/smartfrog-tasks.jar -lib ../../../../smartfrog/dis
         </sf-startdaemon>
         <sequential>
           <sf-block/>
+          <fail if="block.timeout">No SmartFrog daemon found</fail>
           <antcall target="testResource" />
        <!--    <sf-stopdaemon failonerror="false" /> -->
         </sequential>
@@ -112,6 +114,7 @@ ant -lib ../../build/dist/lib/smartfrog-tasks.jar -lib ../../../../smartfrog/dis
         </sf-startdaemon>
         <sequential>
           <sf-block/>
+          <fail if="block.timeout">No SmartFrog daemon found</fail>
           <antcall target="testInline" />
         </sequential>
       </parallel>
