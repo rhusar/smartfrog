@@ -45,6 +45,8 @@ CoreJettyServer extends Compound {
    coreJettySchema extends CoreJettySchema;
    enableLogging false;
    serverHost "localhost";
+   //synchronous deploy/undeploy policy
+   sfSyncTerminate true;
 }
 
 /**
@@ -93,7 +95,9 @@ JettyWebApplicationSchema extends Schema {
     webApp extends OptionalString;
     //warFile can also refer to a file reference
     warFile extends Optional;
-    server extends String;
+
+    //application server
+    //server extends String;
 }
 
 JettyWebApplication extends Prim {
@@ -116,7 +120,7 @@ JettyHandler extends Prim {
 JettyListenerSchema extends Schema {
     listenerPort extends Integer;
     serverHost extends String;
-    server extends String;
+    //server extends String;
 }
 
 JettyListener extends Prim {
@@ -160,19 +164,19 @@ Contexts extends Compound {
 
 context1 extends JettyWebApplication {
  contextPath "/";
- webApp (jettyhome ++ "/demo/webapps/root");
+ warFile (jettyhome ++ "/demo/webapps/root");
  server PARENT:PARENT:server;
 }
 
 context2 extends JettyWebApplication {
  contextPath "/jetty";
- webApp (jettyhome ++ "/demo/webapps/jetty");
+ warFile (jettyhome ++ "/demo/webapps/jetty");
  server PARENT:PARENT:server;
 }
 
 context3 extends JettyWebApplication {
  contextPath "/examples";
- webApp (jettyhome ++ "/demo/webapps/examples");
+ warFile (jettyhome ++ "/demo/webapps/examples");
  requestId true; //optional
  server PARENT:PARENT:server;
 }

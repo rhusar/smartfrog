@@ -37,7 +37,6 @@ public class WebApplication extends PrimImpl implements JettyWebApplicationConte
    String serverName = null;
    boolean requestId = false;
 
-
    HttpServer server = null;
    
    WebApplicationContext context = new WebApplicationContext();
@@ -54,30 +53,7 @@ public class WebApplication extends PrimImpl implements JettyWebApplicationConte
    */ 
    public void sfDeploy() throws SmartFrogException, RemoteException {
        super.sfDeploy();
-       server = jettyHelper.bindToServer();
-       jettyhome = jettyHelper.findJettyHome();
-       /* no, doesnt work w/ resolveID
-       jettyhome = FileImpl.lookupAbsolutePath(this, JettyIntf.JETTY_HOME,
-               null,
-               new File("."),
-               true,
-               PlatformHelper.getLocalPlatform());
-               */
-       contextPath = sfResolve(contextPathRef, contextPath, true);
-       //fetch the webapp reference by doing filename resolution
-       //if the file exists, it does not need to be anywhere
-       webApp = sfResolve(webAppRef, webApp, false);
-       //no webapp? look for the warfile
-       if(webApp==null) {
-           webApp = FileImpl.lookupAbsolutePath(this, WARFILE, null, null, true,null);
-       }
-       //sanity check
-       File webappFile=new File(webApp);
-       if(!webappFile.exists()) {
-            throw new SmartFrogDeploymentException("Web application "+webappFile+" was not found");
-       }
-       //request ID
-       requestId = sfResolve(requestIdRef, requestId, false);
+
    }
 
    /**
@@ -88,6 +64,23 @@ public class WebApplication extends PrimImpl implements JettyWebApplicationConte
    */
    public void sfStart() throws SmartFrogException, RemoteException {
 	   super.sfStart();
+       server = jettyHelper.bindToServer();
+       jettyhome = jettyHelper.findJettyHome();
+       contextPath = sfResolve(contextPathRef, contextPath, true);
+       //fetch the webapp reference by doing filename resolution
+       //if the file exists, it does not need to be anywhere
+       webApp = sfResolve(webAppRef, webApp, false);
+       //no webapp? look for the warfile
+       if (webApp == null) {
+           webApp = FileImpl.lookupAbsolutePath(this, WARFILE, null, null, true, null);
+       }
+       //sanity check
+       File webappFile = new File(webApp);
+       if (!webappFile.exists()) {
+           throw new SmartFrogDeploymentException("Web application " + webappFile + " was not found");
+       }
+       //request ID
+       requestId = sfResolve(requestIdRef, requestId, false);
        addcontext(contextPath,webApp,requestId);
 	   server.addContext(context);
 	   try {

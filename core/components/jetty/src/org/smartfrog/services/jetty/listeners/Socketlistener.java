@@ -47,9 +47,6 @@ public class Socketlistener extends PrimImpl implements SocketListenerIntf {
    */
   public void sfDeploy() throws SmartFrogException, RemoteException {
 	  super.sfDeploy();
-      listenerPort = sfResolve(listenerPortRef, listenerPort, true);
-      serverHost = sfResolve(serverHostRef, serverHost, true);
-      serverName = sfResolve(serverNameRef, serverName, true);
   }
 
   /**
@@ -60,6 +57,8 @@ public class Socketlistener extends PrimImpl implements SocketListenerIntf {
    */  
   public void sfStart() throws SmartFrogException, RemoteException {
       super.sfStart();
+      listenerPort = sfResolve(listenerPortRef, listenerPort, true);
+      serverHost = sfResolve(serverHostRef, serverHost, true);
       jettyHelper.bindToServer();
       addlistener(listenerPort, serverHost);
   }

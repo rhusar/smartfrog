@@ -21,17 +21,17 @@ import org.smartfrog.services.jetty.JettyHelper;
  */
 
 public class AJPlistener extends PrimImpl implements Listener {
-  Reference listenerPortRef = new Reference(LISTENER_PORT);
-  Reference serverHostRef = new Reference(SERVER_HOST);
-  Reference serverNameRef = new Reference(SERVER);
+    protected Reference listenerPortRef = new Reference(LISTENER_PORT);
+    protected Reference serverHostRef = new Reference(SERVER_HOST);
+    protected Reference serverNameRef = new Reference(SERVER);
 
-  int listenerPort = 8009;
+    protected int listenerPort = 8009;
 
-  String serverHost = null;
+    protected String serverHost = null;
 
-  String serverName = null;
+    protected String serverName = null;
 
-  AJP13Listener listener = null;
+    protected AJP13Listener listener = null;
 
     protected JettyHelper jettyHelper = new JettyHelper(this);
 
@@ -47,9 +47,6 @@ public class AJPlistener extends PrimImpl implements Listener {
    */
   public void sfDeploy() throws SmartFrogException, RemoteException {
 	  super.sfDeploy();      
-	  listenerPort = sfResolve(listenerPortRef,listenerPort,true);
-	  serverHost = sfResolve(serverHostRef, serverHost, true);
-	  serverName = sfResolve(serverNameRef, serverName, true);
   }
 
   /**
@@ -60,6 +57,8 @@ public class AJPlistener extends PrimImpl implements Listener {
    */
   public void sfStart() throws SmartFrogException, RemoteException {
 	  super.sfStart();
+      listenerPort = sfResolve(listenerPortRef, listenerPort, true);
+      serverHost = sfResolve(serverHostRef, serverHost, true);
       jettyHelper.bindToServer();
       addlistener(listenerPort, serverHost);
   }

@@ -26,6 +26,7 @@ import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.common.Logger;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.processcompound.SFProcess;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.services.jetty.contexts.ServletContextIntf;
@@ -47,11 +48,19 @@ public class JettyHelper {
     /**
      * who owns this class
      */
-    Prim owner;
+    private Prim owner;
 
-    HttpServer httpServer;
+    /**
+     * the server
+     */
+    private HttpServer httpServer;
 
-    Reference serverNameRef = new Reference(JettyIntf.SERVER);
+    private Reference serverNameRef = new Reference(JettyIntf.SERVER);
+
+    /**
+     * a reference to our server component
+     */
+    private Prim serverComponent=null;
 
     public JettyHelper(Prim owner) {
         this.owner = owner;
@@ -61,7 +70,8 @@ public class JettyHelper {
      * bind to the server, cache it
      */
     public HttpServer bindToServer() throws SmartFrogException, RemoteException {
-        httpServer=findJettyServer(true);
+        findJettyComponent();
+        httpServer=findJettyServer();
         return httpServer;
     }
 
@@ -70,43 +80,43 @@ public class JettyHelper {
      * @return
      * @throws SmartFrogException
      * @throws RemoteException
-     * @param mandatory
      */
-    public HttpServer findJettyServer(boolean mandatory) throws SmartFrogException, RemoteException {
-        Reference serverName=null;
-        serverName = owner.sfResolve(serverNameRef, serverName, true);
-        ProcessCompound process = SFProcess.getProcessCompound();
-        HttpServer server = (HttpServer) process.sfResolveId(serverName);
-        if ( mandatory && server == null ) {
-            throw new SmartFrogException("Could not locate a Jetty Server");
-        }
+    private HttpServer findJettyServer() throws SmartFrogException, RemoteException {
+        assert serverComponent!=null;
+        HttpServer server =null;
+        server = (HttpServer) serverComponent.sfResolve(JettyIntf.JETTY_SERVER,server,true);
         return server;
+    }
+
+    private void findJettyComponent() throws SmartFrogResolutionException, RemoteException {
+        if(serverComponent == null) {
+            serverComponent=owner.sfResolve(JettyIntf.SERVER, serverComponent, true);
+        }
     }
 
     /**
      * save the jetty info for retrieval
-     * @param serverName
      * @param server
      * @throws SmartFrogException
      * @throws RemoteException
      */
-    public void cacheJettyServer(String serverName, HttpServer server)
+    public void cacheJettyServer(HttpServer server)
             throws SmartFrogException, RemoteException {
-        ProcessCompound process = SFProcess.getProcessCompound();
-        process.sfAddAttribute(serverName, server);
+        owner.sfReplaceAttribute(JettyIntf.JETTY_SERVER, server);
 
     }
 
 
     /**
      * locate jettyhome
-     * @return jetty home or null
+     * @return jetty home or null if it is not there
      * @throws SmartFrogException
      * @throws RemoteException
      */
     public String findJettyHome() throws SmartFrogException, RemoteException {
-        ProcessCompound process = SFProcess.getProcessCompound();
-        String jettyhome = (String) process.sfResolveId(JettyIntf.JETTY_HOME);
+        assert serverComponent != null;
+        String jettyhome =null;
+        jettyhome= serverComponent.sfResolve(JettyIntf.JETTY_HOME,jettyhome,false);
         return jettyhome;
     }
 
@@ -117,8 +127,7 @@ public class JettyHelper {
      * @throws RemoteException
      */
     public void cacheJettyHome(String jettyhome) throws SmartFrogRuntimeException, RemoteException {
-        ProcessCompound process = SFProcess.getProcessCompound();
-        process.sfAddAttribute(JettyIntf.JETTY_HOME, jettyhome);
+        owner.sfReplaceAttribute(JettyIntf.JETTY_HOME, jettyhome);
     }
 
     /**
@@ -130,21 +139,69 @@ public class JettyHelper {
      * @throws RemoteException
      * @param mandatory
      */
-    public  ServletHttpContext getServletContext(boolean mandatory)
+    public ServletHttpContext getServletContext(boolean mandatory)
             throws SmartFrogException,RemoteException {
-        Prim parent = owner.sfParent();
-        Prim grandParent = parent.sfParent();
-        ServletHttpContext context = (ServletHttpContext) grandParent.
-                sfResolveId(ServletContextIntf.CONTEXT);
-        if(mandatory && context==null) {
-            throw new SmartFrogException("Could not locate "
-                    + ServletContextIntf.CONTEXT+" in the grandparent");
+
+
+        ServletHttpContext context=null;
+
+        Prim ancestor = findAncestorImplementing("ServletContextIntf", -1);
+        if(ancestor!=null) {
+            context = (ServletHttpContext) ancestor.
+                    sfResolveId(ServletContextIntf.CONTEXT);
         }
-
+        if (mandatory && context == null) {
+            throw new SmartFrogException("Could not locate "
+                    + ServletContextIntf.CONTEXT + " in the hierarchy");
+        }
         return context;
-
     }
 
+    /**
+     * find an ancestor of a given type
+     * @param node
+     * @param interfaceName
+     * @param depth: 0 means dont look, -1 means indefinite.
+     * @return
+     * @throws RemoteException
+     */
+    private Prim findAncestorImplementing(Prim node, String interfaceName, int depth) throws RemoteException {
+        if (depth == 0 || node == null) {
+            return null;
+        }
+        Prim parent = node.sfParent();
+        Class[] interfaces = parent.getClass().getInterfaces();
+        for (int i = 0; i < interfaces.length; i++) {
+            if (interfaces[i].equals(interfaceName)) {
+                return (SFJetty) parent;
+            }
+        }
+        return findAncestorImplementing(parent, interfaceName, depth - 1);
+    }
+
+    private Prim findAncestorImplementing(String interfaceName, int depth) throws RemoteException {
+        return findAncestorImplementing(owner, interfaceName, depth);
+    }
+
+
+    /**
+     * recursive search for interface inheritance
+     * @param clazz
+     * @param interfaceName
+     * @return
+     */
+    private boolean implementsInterface(Class clazz,String interfaceName ) {
+        if(clazz==null) {
+            return false;
+        }
+        Class[] interfaces = clazz.getInterfaces();
+        for (int i = 0; i < interfaces.length; i++) {
+            if (interfaces[i].equals(interfaceName)) {
+                return true;
+            }
+        }
+        return implementsInterface(clazz.getSuperclass(),interfaceName);
+    }
     /**
      * add a handler to the server
      * @param handler
@@ -191,8 +248,6 @@ public class JettyHelper {
     public HttpServer getServer() {
         return httpServer;
     }
-
-
 
     /**
      * terminate a context log failures but do not throw anything
