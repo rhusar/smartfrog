@@ -62,12 +62,18 @@
       location="${core.dir}/extras"/>
       
       <!-- information about the ant tasks -->
-    <property name="smartfrog.tasks.name" value="smartfrog-tasks.jar"/>      
+    <property name="smartfrog.tasks.prefix" value="smartfrog-tasks"/>      
+    <property name="smartfrog.tasks.name" value="${smartfrog.tasks.prefix}.jar"/>      
+    <property name="smartfrog.tasks.dist.dir"
+      location="${extras.dir}/ant/build/dist/"/>
+    <property name="smartfrog.tasks.lib.dir"
+      location="${smartfrog.tasks.dist.dir}/lib/"/>
     <property name="smartfrog.tasks.jar"
-      location="${extras.dir}/ant/build/dist/lib/${smartfrog.tasks.name}"/>
+      location="${smartfrog.tasks.lib.dir}${smartfrog.tasks.name}"/>
 
       <!-- common directories -->
     <property name="src.dir" location="src"/>
+    <property name="doc.dir" location="doc"/>
     <property name="build.dir" location="build"/>
     <property name="build.classes.dir" location="${build.dir}/classes"/>
     <property name="test.dir" location="${build.dir}/test"/>
@@ -78,6 +84,7 @@
     <property name="test.src.dir" location="test" />
     <property name="dist.dir" location="${build.dir}/dist"/>
     <property name="dist.lib.dir" location="${build.dir}/dist/lib"/>
+    <property name="dist.doc.dir" location="${build.dir}/dist/doc"/>
     
     
     <!-- define a new javac task with new default options -->  
@@ -218,6 +225,7 @@
     
     <mkdir dir="${dist.dir}"/>
     <mkdir dir="${dist.lib.dir}"/>
+    <mkdir dir="${dist.doc.dir}"/>
   </target>
   
   <!-- ========================================================== -->
