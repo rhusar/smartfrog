@@ -37,22 +37,22 @@ public class OnBlackBoxResults extends OnResults implements Prim{
   }
   public void sfStart() throws SmartFrogException, RemoteException {
       super.sfStart();
-	// let any errors be thrown and caught by SmartFrog for abnormal termination  - including empty actions
+        // let any errors be thrown and caught by SmartFrog for abnormal termination  - including empty actions
       timer = new Thread(new Runnable() {
                 public boolean running = true;
                 public void run() {
-		    if ( time > 0 ){
+                    if ( time > 0 ){
                       try {
                         Thread.sleep(time);
                         if (running)
                           triggerResourceDeployment();
                       } catch (Exception e) {}
                     }
-		}
+                }
                 public void stop(){
                   running = false;
                 }
-	    });
+            });
       timer.start();
   }
   public void triggerResourceDeployment() throws Exception{
@@ -67,12 +67,12 @@ public class OnBlackBoxResults extends OnResults implements Prim{
     } catch (Exception e){e.printStackTrace();}
   // get the operation for which we want a description
     ComponentDescription resDesc = (ComponentDescription)loc.sfResolve("serviceNeeded");
-    String type = (String) resDesc.getContext().get("sfServiceType");
+    String type = (String) resDesc.sfContext().get("sfServiceType");
     String operation = "";
     if (type.indexOf("generator") == -1) {
 //      System.out.println( " Generator description needed ");
     } else {
-      operation = (String) ((ComponentDescription) resDesc.getContext().get("sfServiceAttributes")).getContext().get("op");
+      operation = (String) ((ComponentDescription) resDesc.sfContext().get("sfServiceAttributes")).sfContext().get("op");
 //      System.out.println( " Description needed is " +operation);
     }
     // get the description and deploy it.

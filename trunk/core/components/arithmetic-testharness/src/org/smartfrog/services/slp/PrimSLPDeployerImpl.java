@@ -44,7 +44,7 @@ public class PrimSLPDeployerImpl extends PrimHostDeployerImpl {
   public String buildServiceQuery(ComponentDescription attributesRequirements){
     String result = "";
     if (attributesRequirements != null) {
-      Context cxt = attributesRequirements.getContext();
+      Context cxt = attributesRequirements.sfContext();
       for(Enumeration e = cxt.keys(); e.hasMoreElements();){
         String att = (String) e.nextElement();
         result = result.equals("")?result+"(&":result;
@@ -70,7 +70,7 @@ public class PrimSLPDeployerImpl extends PrimHostDeployerImpl {
     if (serviceDescription !=null) {
       // extract the locale & the deployer type
       //System.out.println(" --PrimSLPDeployerImpl-- Looking for deployer: " +serviceDescription);
-      Context serviceInfo = serviceDescription.getContext();
+      Context serviceInfo = serviceDescription.sfContext();
       deployerType = (String) serviceInfo.get("sfDeployerType");
 
 

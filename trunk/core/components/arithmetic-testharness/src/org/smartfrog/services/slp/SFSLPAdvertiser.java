@@ -100,7 +100,7 @@ public class SFSLPAdvertiser extends EventPrimImpl implements Prim{
     super.sfStart();
     // add here the registerOnStart test
     boolean advOnStart = false;
-    Object advertiseOnStart = sfResolveId("advertiseOnStart");
+    Object advertiseOnStart = sfResolveHere("advertiseOnStart",false);
     if (advertiseOnStart != null)
       advOnStart = (advertiseOnStart instanceof String)?
           Boolean.valueOf((String)advertiseOnStart).booleanValue():((Boolean)advertiseOnStart).booleanValue();
@@ -112,7 +112,7 @@ public class SFSLPAdvertiser extends EventPrimImpl implements Prim{
         }
       // if oneShot is 'true' the advertiser will die after its advertisement
       boolean singleShot = false;
-      Object oneShot = sfResolveId("oneShot");
+      Object oneShot = sfResolveHere("oneShot",false);
       if (oneShot != null)
         singleShot = (oneShot instanceof String)? Boolean.valueOf((String)oneShot).booleanValue():((Boolean)oneShot).booleanValue();
       if (singleShot) {
@@ -254,7 +254,7 @@ public class SFSLPAdvertiser extends EventPrimImpl implements Prim{
   public Vector buildAttributes(){
     Vector atts = new Vector();
     try {
-      Context cxt = ((ComponentDescription) this.sfContext().get(refAttributes)).getContext();
+      Context cxt = ((ComponentDescription) this.sfContext().get(refAttributes)).sfContext();
       if (cxt!=null){
         for (Enumeration e = cxt.keys();e.hasMoreElements();){
           String name = e.nextElement().toString();
