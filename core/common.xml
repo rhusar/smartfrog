@@ -114,6 +114,14 @@
     <property name="junit.jar" 
       location="${ant.home}/lib/junit.jar" />
     
+    <!-- name of a file for runtime properties 
+      This is optional and allows users to define extra 
+      properties for the smartfrog daemons and other runtimes-->
+    <property name="runtime.properties"
+      location="${core.dir}/runtime.properties"/>
+    <echo level="verbose">Looking at ${runtime.properties} 
+      for optional SmartFrog runtime properties</echo>
+      
       <!-- turn on the tests. If you dont want this, set one (or both) to false)  in the unit tests-->
     <property name="system.tests" value="true" />
     <property name="unit.tests" value="true" />
@@ -425,9 +433,12 @@
     <presetdef name="sf-startdaemon-debug">
       <sf-startdaemon classpathref="run.classpath"
         logStackTraces="true" spawn="true">
+          <!-- assertions are enabled -->
         <assertions enableSystemAssertions="true">
           <enable/>
         </assertions>
+          <!-- load in a property file if it is present --> 
+        <propertyfile file="${runtime.properties}" optional="true"/>
       </sf-startdaemon>
     </presetdef>      
   </target>  
