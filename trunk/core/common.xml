@@ -391,7 +391,7 @@
         
   <target name="declare-base.compile.classpath" depends="init" >  
     <path id="base.compile.classpath">
-      <path refid="smartfrog.core.classpath"/>
+      <path refid="smartfrog.classpath"/>
     </path>
   </target>
     
