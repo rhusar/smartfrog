@@ -114,6 +114,18 @@ public  class LogFactory {
         return log;
     }
 
+
+    /**
+     *  To get the sfCore logger
+     * @return Logger implementing LogSF and Log
+     * @exception SmartFrogLogException if a suitable <code>Log</code>
+     *  instance cannot be returned
+     */
+    public static LogSF getProcessLog() throws SmartFrogLogException {
+       return getLog (SmartFrogCoreKeys.SF_CORE_LOG);
+    }
+
+
     /**
      * register a log with the core
      * @param name
