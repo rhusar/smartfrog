@@ -8,11 +8,21 @@ options {
 PARSER_BEGIN(DefaultParser)
 package org.smartfrog.sfcore.languages.sf;
 
-import org.smartfrog.sfcore.languages.sf.*;
-import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.*;
-import org.smartfrog.sfcore.reference.*;
-import java.io.*;
-import java.util.*;
+import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescriptionImpl;
+import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescription;
+import org.smartfrog.sfcore.reference.ReferencePart;
+import org.smartfrog.sfcore.reference.HostReferencePart;
+import org.smartfrog.sfcore.reference.PropertyReferencePart;
+import org.smartfrog.sfcore.reference.IPropertyReferencePart;
+import org.smartfrog.sfcore.reference.HereReferencePart;
+import org.smartfrog.sfcore.reference.RootReferencePart;
+import org.smartfrog.sfcore.reference.AttribReferencePart;
+import org.smartfrog.sfcore.reference.ThisReferencePart;
+import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.common.SFNull;
+import java.io.InputStream;
+import java.util.Vector;
+import java.util.Enumeration;
 
 public class DefaultParser {
   protected IncludeHandler includeHandler;
@@ -324,7 +334,8 @@ Object[] Attribute() :
       attribute[0] = ((HereReferencePart)name.firstElement()).value;
      else
       attribute[0] = name;
-     if (attribute[1] == null) attribute[1] = ((HereReferencePart)name.lastElement()).value;
+     //if (attribute[1] == null) attribute[1] = ((HereReferencePart)name.lastElement()).value;
+     if (attribute[1] == null) attribute[1] = SFNull.get();
      return attribute;
    })
 }
