@@ -260,7 +260,14 @@ public class SFParse implements MessageKeys {
                printItemReport(report);
              }
            }
-           Logger.log( "SFParse: SUCCESFUL");
+           //Added so that ant task detects error during build process.
+           // If we found errors during parsing we force exit.
+           if (!errorReport.isEmpty()) {
+             Logger.log("Error detected. Check report.");
+             exit();
+           } else {
+               Logger.log( "SFParse: SUCCESFUL");
+           }
         } catch (Throwable thr){
            Logger.log(thr);
         }
