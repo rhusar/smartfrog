@@ -21,7 +21,6 @@ package org.smartfrog.services.junit.listeners;
 
 import org.smartfrog.services.junit.TestInfo;
 import org.smartfrog.services.junit.TestListener;
-import org.smartfrog.services.junit.TestListenerFactory;
 import org.smartfrog.services.junit.ThrowableTraceInfo;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.PrimImpl;
@@ -36,7 +35,7 @@ import java.rmi.RemoteException;
  */
 
 public class ConsoleListenerComponent extends PrimImpl
-        implements TestListenerFactory {
+        implements ConsoleListenerFactory {
 
     /**
      * cache the prinstream so that when system.out is used to capture output we
@@ -133,7 +132,7 @@ public class ConsoleListenerComponent extends PrimImpl
     /**
      * this class exists to forward tests to the console
      */
-    protected class ConsoleTestListener implements ConsoleListener {
+    protected class ConsoleTestListener implements TestListener {
 
         /**
          * end this test suite. After calling this, caller should discard all
@@ -153,8 +152,7 @@ public class ConsoleListenerComponent extends PrimImpl
         }
 
         public void endTest(TestInfo test) throws RemoteException {
-            log(
-                    "   ending " +
+            log("   ending " +
                     test.getClassname() +
                     " on " +
                     test.getHostname());
@@ -162,8 +160,7 @@ public class ConsoleListenerComponent extends PrimImpl
         }
 
         public void startTest(TestInfo test) throws RemoteException {
-            log(
-                    "Starting " +
+            log("Starting " +
                     test.getClassname() +
                     " on " +
                     test.getHostname());

@@ -13,11 +13,12 @@ import java.rmi.RemoteException;
 import java.util.Date;
 
 /**
- * Implement the {@link XmlListener} interface and so provide a component for
- * XML logging. Note that we are only a factory; the listening is done by {@link
- * OneHostXMLListener }
+ * Implement the {@link XmlListenerFactory} interface and so provide a component
+ * for XML logging. Note that we are only a factory; the listening is done by
+ * {@link OneHostXMLListener }
  */
-public class XmlListenerComponent extends PrimImpl implements XmlListener {
+public class XmlListenerComponent extends PrimImpl
+        implements XmlListenerFactory {
 
 
     /**

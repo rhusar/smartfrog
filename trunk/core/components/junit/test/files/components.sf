@@ -22,7 +22,7 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/predicates.sf"
 #include "/org/smartfrog/services/junit/components.sf"
 
-sfCodeBase PROPERTY org.smartfrog.codebase;
+//sfCodeBase PROPERTY org.smartfrog.codebase;
 
 
 /**

@@ -22,34 +22,32 @@
 package org.smartfrog.services.junit;
 
 /**
- * nothing but results
- * Date: 07-Jul-2004
- * Time: 20:42:05
+ * nothing but results Date: 07-Jul-2004 Time: 20:42:05
  */
 
 public interface TestResultAttributes {
     /**
      * true if the test has finished
      */
-    public String ATTR_FINISHED = "finished";
+    String ATTR_FINISHED = "finished";
 
     /**
      * number of tests
      */
-    public String ATTR_TESTS = "tests";
+    String ATTR_TESTS = "tests";
     /**
      * number of failures
      */
-    public String ATTR_FAILURES = "failures";
+    String ATTR_FAILURES = "failures";
 
     /**
      * number of errors
      */
-    public String ATTR_ERRORS = "errors";
+    String ATTR_ERRORS = "errors";
     /**
      * boolean set to true iff all tests passed
      */
-    public String ATTR_SUCCESSFUL = "successful";
+    String ATTR_SUCCESSFUL = "successful";
 
 
 }

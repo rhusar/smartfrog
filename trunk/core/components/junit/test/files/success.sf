@@ -20,6 +20,8 @@ For more information: www.smartfrog.org
 
 #include "/files/components.sf"
 
+sfCodeBase PROPERTY org.smartfrog.codebase;
+
     /**
      * run all tests in the suite. Then analyse the results
      * that are stored in the listener
