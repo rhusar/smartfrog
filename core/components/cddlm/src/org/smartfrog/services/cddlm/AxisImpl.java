@@ -56,7 +56,6 @@ import java.rmi.RemoteException;
  * that is because I wrote the Apache servlet; the registration code is pasted in from
  * the program I wrote from which I later extracted the AutoRegisterServlet.
  *
- * @author steve loughran
  *         created 02-Mar-2004 17:28:31
  */
 
@@ -168,21 +167,7 @@ public class AxisImpl extends PrimImpl implements Axis, Prim {
     }
 
     /**
-     * Liveness call in to check if this component is still alive. This method
-     * can be overriden to check other state of a component. An example is
-     * Compound where all children of the compound are checked. This basic
-     * check updates the liveness count if the ping came from its parent.
-     * Otherwise (if source non-null) the liveness count is decreased by the
-     * sfLivenessFactor attribute. If the count ever reaches 0 liveness
-     * failure on tha parent has occurred and sfLivenessFailure is called with
-     * source this, and target parent. Note: the sfLivenessCount must be
-     * decreased AFTER doing the test to correctly count the number of ping
-     * opportunities that remain before invoking sfLivenessFailure. If done
-     * before then the number of missing pings is reduced by one. E.g. if
-     * sfLivenessFactor is 1 then a sfPing from the parent sets
-     * sfLivenessCount to 1. The sfPing from a non-parent would reduce the
-     * count to 0 and immediately fail.
-     *
+     * Liveness call in to check if this component is still alive.
      * @param source source of call
      * @throws org.smartfrog.sfcore.common.SmartFrogLivenessException
      *          component is terminated
@@ -260,14 +245,8 @@ public class AxisImpl extends PrimImpl implements Axis, Prim {
                 throw new SmartFrogException(
                         "Failed to get Axis deployment system");
             }
-        } catch (ParserConfigurationException e) {
-            throw new SmartFrogException(e);
-        } catch (SAXException e) {
-            throw new SmartFrogException(e);
-
-        } catch (IOException e) {
-            throw new SmartFrogException(e);
-
+        } catch (Exception e) {
+            throw SmartFrogException.forward(e);
         } finally {
             try {
                 instream.close();
