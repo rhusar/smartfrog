@@ -631,7 +631,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
            throw new SmartFrogResolutionException(null,null,"Error resolving '"
                  +ref.toString()+"' in "+ url
                  + ". The result is not a ComponentDescription, resolved to: "
-                 +obj.toString()
+                 + obj.toString()
                  +" ("+obj.getClass().getName()+")" );
         }
         return (ComponentDescription) obj;
@@ -705,6 +705,8 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
         Properties props = System.getProperties();
         for (Enumeration e = props.keys(); e.hasMoreElements(); ) {
             String key = e.nextElement().toString();
+//            System.out.println("- Read:    "+key+
+//                              "\n, Filter: "+startWith);
             if (key.startsWith(startWith)) {
                 Object value = props.get(key);
                 try {
@@ -724,9 +726,10 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
                 }
                 String cxtKey = key.substring(startWith.length());
                 try {
-                  compDesc.sfAddAttribute(cxtKey, value);
+                  compDesc.sfReplaceAttribute(cxtKey, value);
+                  //System.out.println("*** Added: "+cxtKey.toString()+", "+value.toString());
                 } catch (SmartFrogRuntimeException ex1) {
-                   //Logger.log(ex1);
+                   //System.err.println(ex1);
                 }
             }
         }
