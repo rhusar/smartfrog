@@ -1608,7 +1608,6 @@ public class PrimImpl extends Object implements Prim, MessageKeys {
             if (key!=null) {
                 sfCompleteName.addElement(ReferencePart.here(key));
             }
-            System.out.println("completeNameCreated: "+sfCompleteName.toString());
         }
         return sfCompleteName;
     }
