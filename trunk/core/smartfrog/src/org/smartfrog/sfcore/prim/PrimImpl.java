@@ -105,10 +105,9 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
 
     /** Flag indicating that this component has been terminated. */
     protected boolean sfIsTerminated = false;
+
     /** Flag indicating that this component termination is initiated. */
     protected boolean sfIsTerminating = false;
-
-    boolean isTerminating = true;
 
     /** Flag indicating that this component has been deployed. */
     protected boolean sfIsDeployed = false;
@@ -794,7 +793,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
             if (sfIsTerminating || sfIsTerminated) {
                 return;
             }
-            isTerminating = true;
+            sfIsTerminating = true;
         }
 
         try {
