@@ -92,23 +92,34 @@ public class DeploymentEndpoint extends SmartfrogHostedEndpoint {
      *
      * @param language
      * @param application
-     * @param data
+     * @param descriptor
      * @throws AxisFault
      */
-    public String deploy(String language, String hostname, String application,
-                       String data) throws IOException {
+    public String deploy(
+            String Jsdl,
+            String language, 
+            String hostname, 
+            String application,
+            String descriptor,
+            String callbackType,
+            String callbackData,
+            boolean synchronous
+            ) throws IOException {
         verifySupported(language);
         File tempFile=File.createTempFile("deploy",".txt");
         OutputStream out = null;
         try {
+            //save the descriptor to a file
             out=new BufferedOutputStream(new FileOutputStream(tempFile));
             PrintWriter pw=new PrintWriter(out);
-            pw.write(data);
+            pw.write(descriptor);
             pw.flush();
             pw.close();
             out.close();
             out=null;
+            //get a file: url
             String url=tempFile.toURI().toURL().toExternalForm();
+            //deploy it
             return deployThroughActions(hostname, application, url, null);
         } finally {
             if(out!=null) {
@@ -269,7 +280,7 @@ public class DeploymentEndpoint extends SmartfrogHostedEndpoint {
      * @param hostname
      * @param application
      */
-    public void undeploy(String hostname, String application) throws AxisFault {
+    public void terminate(String hostname, String application) throws AxisFault {
 
         hostname = patchHostname(hostname);
         if(isEmpty(application)) {
@@ -286,6 +297,7 @@ public class DeploymentEndpoint extends SmartfrogHostedEndpoint {
             assert processCompound!=null;
             config.execute(processCompound);
             Object targetC = config.execute(null);
+            //TODO: act on the target
         } catch (SmartFrogException exception) {
             throw AxisFault.makeFault(exception);
         } catch (Exception exception) {
@@ -294,5 +306,12 @@ public class DeploymentEndpoint extends SmartfrogHostedEndpoint {
 
     }
 
+    public String getServerStatus() throws AxisFault {
+        return "TODO";
+    }
+
+    public String getApplicationStatus(String application) throws AxisFault {
+        return "TODO";
+    }
 
 }

@@ -44,7 +44,10 @@ import java.net.ServerSocket;
 import java.rmi.RemoteException;
 
 /**
- * Axis component. Note that SimpleAxisServer is <i>not</i> designed to be instantiated
+ * The Axis component creates an instance of {@link SimpleAxisServer}, which
+ * starts the default services, especially something that listens for
+ * new deployment requests.
+ *  Note that SimpleAxisServer is <i>not</i> designed to be instantiated
  * in multiple isolated instances in the same VM, as it uses static structures for
  * its axis server, thread pool, etc. It is not even clear that Axis is designed to run
  * multiple times in the same JVM/classloader.

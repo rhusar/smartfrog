@@ -15,7 +15,7 @@
       <parameter name="className" value="org.smartfrog.services.cddlm.DeploymentEndpoint"/>
 	  <parameter name="SingleSOAPVersion" value="1.2"/>
       <parameter name="allowedMethods" 
-	  	value="listLanguages deploy deployURL undeploy"/>
+	  	value="listLanguages deploy deployURL terminate getServerStatus getApplicationStatus"/>
 	<documentation>This is the CDDLM deployment service</documentation>
   </service>
 </deployment>
