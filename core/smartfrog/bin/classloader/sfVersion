@@ -6,4 +6,4 @@ export SERVER=localhost:8080
 # please edit codebase if you have any other jar file in webserver
 export CODEBASE="http://$SERVER/sfExamples.jar"
 
-java -Dorg.smartfrog.codebase=$CODEBASE org.smartfrog.Version
+java "-Dorg.smartfrog.codebase=$CODEBASE" org.smartfrog.Version

@@ -18,5 +18,5 @@ export SERVER=localhost:8080
 # Please edit codebase if you have any other jar file in webserver 
 export CODEBASE="http://$SERVER/sfExamples.jar"
 
-java -Dorg.smartfrog.iniFile=$SFHOME/bin/default.ini -Dorg.smartfrog.codebase=$CODEBASE org.smartfrog.SFSystem -a $2:DEPLOY:$3::$1: -e
+java -Dorg.smartfrog.iniFile=$SFHOME/bin/default.ini "-Dorg.smartfrog.codebase=$CODEBASE" org.smartfrog.SFSystem -a $2:DEPLOY:$3::$1: -e
 

@@ -8,4 +8,4 @@ export SERVER=localhost:8080
 #Please edit codease if you have any other jar file in wedserver
 export CODEBASE="http://$SERVER/sfExamples.jar"
 
-java -Djava.security.manager -Djava.security.policy==$SFPRIVATE/sf.policy -Dorg.smartfrog.sfcore.security.keyStoreName=$SFPRIVATE/$SFHOSTNAME/mykeys.st -Dorg.smartfrog.sfcore.security.propFile=$SFPRIVATE/$SFHOSTNAME/SFSecurity.properties -Dorg.smartfrog.sfcore.security.debug=true -Dsun.rmi.loader.logLevel=VERBOSE -Dorg.smartfrog.codebase=$CODEBASE -Dorg.smartfrog.sfcore.processcompound.sfProcessName=rootProcess org.smartfrog.SFSystem $* 
+java -Djava.security.manager -Djava.security.policy==$SFPRIVATE/sf.policy -Dorg.smartfrog.sfcore.security.keyStoreName=$SFPRIVATE/$SFHOSTNAME/mykeys.st -Dorg.smartfrog.sfcore.security.propFile=$SFPRIVATE/$SFHOSTNAME/SFSecurity.properties -Dorg.smartfrog.sfcore.security.debug=true -Dsun.rmi.loader.logLevel=VERBOSE "-Dorg.smartfrog.codebase=$CODEBASE" -Dorg.smartfrog.sfcore.processcompound.sfProcessName=rootProcess org.smartfrog.SFSystem $* 

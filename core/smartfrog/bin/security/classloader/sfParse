@@ -14,4 +14,4 @@ java -Djava.security.manager -Djava.security.policy==$SFPRIVATE/sf.policy \
       -Djava.security.debug=scl \
       -Djava.rmi.server.logCalls=true \
       -Dsun.rmi.loader.logLevel=VERBOSE \
-      -Dorg.smartfrog.codebase=$CODEBASE org.smartfrog.SFParse $* 
+      "-Dorg.smartfrog.codebase=$CODEBASE" org.smartfrog.SFParse $* 
