@@ -137,9 +137,8 @@ For more information: www.smartfrog.org
   <!-- clean -->
   <!-- ========================================================== -->
 
- <target name="clean" depends="init,common.clean" description="clean up build ,dist and releases" >
-    <property name="releases.dir" value="releases"/>
-    <delete dir="${releases.dir}"  /> 
+<target name="clean" depends="common.clean" description="clean up build ,dist and releases" >
+    <delete dir="releases"  />  
     <delete dir="test"  />  
  </target>  
 
@@ -153,11 +152,11 @@ For more information: www.smartfrog.org
 		 <!--copy todir = "${dist.doc.dir}">
         <fileset dir ="${doc.dir}" />
     </copy-->   
-	<copy todir = "${dist.src.dir}">
+	<!--copy todir = "${dist.src.dir}">
                <fileset dir ="${src.dir}">
-		  <!--include name="**/examples/**"/-->
+		  <include name="**/examples/**"/>
 		</fileset>
-	</copy>
+	</copy-->
 	 <copy tofile="${dist.dir}/build.xml" file="releaseBuild.xml"/>	
   </target>
 
