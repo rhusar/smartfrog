@@ -27,7 +27,7 @@ import org.smartfrog.services.cddlm.engine.JobRepository;
 import org.smartfrog.services.cddlm.engine.JobState;
 import org.smartfrog.services.cddlm.generated.api.types.ApplicationReferenceListType;
 import org.smartfrog.services.cddlm.generated.api.types.LifecycleStateEnum;
-import org.smartfrog.services.cddlm.generated.api.types._deployRequest;
+import org.smartfrog.services.cddlm.generated.api.types._createRequest;
 
 import java.rmi.RemoteException;
 import java.util.Iterator;
@@ -39,7 +39,7 @@ public class JobTest extends TestCase {
 
     private JobRepository jobs;
 
-    private _deployRequest request;
+    private _createRequest request;
     private URI jobURI;
     private JobState job1;
     private JobState job2;
@@ -54,7 +54,7 @@ public class JobTest extends TestCase {
      * is called before a test is executed.
      */
     protected void setUp() throws Exception {
-        request = new _deployRequest();
+        request = new _createRequest();
 
         job1 = new JobState(request, null);
         jobs = new JobRepository();
@@ -135,12 +135,12 @@ public class JobTest extends TestCase {
         String info = "testing";
         LifecycleStateEnum state = LifecycleStateEnum.running;
         job1.enterStateNotifying(state, info);
-        assertEquals(state,job1.getState());
-        assertEquals(info,job1.getStateInfo());
+        assertEquals(state, job1.getState());
+        assertEquals(info, job1.getStateInfo());
     }
 
     public void testCallbacks() throws RemoteException {
-        TestharnessCallbackRaiser callback=new TestharnessCallbackRaiser();
+        TestharnessCallbackRaiser callback = new TestharnessCallbackRaiser();
         job1.setCallbackRaiser(callback);
         String info = "testing";
         LifecycleStateEnum state = LifecycleStateEnum.running;
@@ -148,7 +148,7 @@ public class JobTest extends TestCase {
         job1.enterStateNotifying(state, info);
         assertEquals(state, callback.getState());
         assertEquals(info, callback.getStateInfo());
-        assertEquals(1,callback.getCount());
+        assertEquals(1, callback.getCount());
         job1.enterStateNotifying(state, null);
         assertNull(job1.getStateInfo());
         assertEquals(1, callback.getCount());

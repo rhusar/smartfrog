@@ -19,18 +19,16 @@
  */
 package org.smartfrog.services.cddlm.api;
 
+import org.apache.axis.types.URI;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.axis.types.URI;
 import org.smartfrog.services.cddlm.engine.JobState;
 import org.smartfrog.services.cddlm.engine.NotificationAction;
 import org.smartfrog.services.cddlm.engine.ServerInstance;
-import org.smartfrog.services.cddlm.generated.api.types.ApplicationStatusType;
-import org.smartfrog.services.cddlm.generated.api.types._lifecycleEventCallbackRequest;
+import org.smartfrog.services.cddlm.generated.api.types._lifecycleEventRequest;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
 
-import java.math.BigInteger;
 import java.net.URL;
 
 /**
@@ -53,14 +51,16 @@ public class CddlmCallbackRaiser extends CallbackRaiser {
     private static final Log log = LogFactory.getLog(CddlmCallbackRaiser.class);
 
 
-    public CddlmCallbackRaiser(URI application, URL callbackURL, String identifier) {
+    public CddlmCallbackRaiser(URI application,
+            URL callbackURL,
+            String identifier) {
         this.application = application;
         this.callbackURL = callbackURL;
         this.identifier = identifier;
     }
 
     public CddlmCallbackRaiser(JobState job) {
-        this(job.getUri(),job.getCallbackURL(), job.getCallbackIdentifier());
+        this(job.getUri(), job.getCallbackURL(), job.getCallbackIdentifier());
     }
 
     /**
@@ -70,8 +70,8 @@ public class CddlmCallbackRaiser extends CallbackRaiser {
      * @param sfe
      */
     public void raiseLifecycleEvent(JobState job, Prim object,
-            SmartFrogException sfe)  {
-        _lifecycleEventCallbackRequest event = job.createLifecycleEventMessage();
+            SmartFrogException sfe) {
+        _lifecycleEventRequest event = job.createLifecycleEventMessage();
         log.info("queuing " +
                 event.getStatus().getState() +
                 " event to " +

@@ -29,8 +29,10 @@ import org.apache.axis.deployment.wsdd.WSDDDeployment;
 import org.apache.axis.deployment.wsdd.WSDDDocument;
 import org.apache.axis.transport.http.SimpleAxisServer;
 import org.apache.axis.utils.XMLUtils;
-import org.smartfrog.services.cddlm.generated.api.callbacks.DeploymentCallbackEndpoint;
-import org.smartfrog.services.cddlm.generated.api.types._lifecycleEventCallbackRequest;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.smartfrog.services.cddlm.generated.api.callbacks.DeploymentNotificationEndpoint;
+import org.smartfrog.services.cddlm.generated.api.types._lifecycleEventRequest;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -38,17 +40,19 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.ServerSocket;
 import java.net.InetAddress;
+import java.net.ServerSocket;
 import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 import java.util.Hashtable;
 
 /**
- * Date: 16-Sep-2004
- * Time: 20:40:23
+ * Date: 16-Sep-2004 Time: 20:40:23
  */
 public class CallbackServer {
+
+    private static Log log = LogFactory.getLog(CallbackServer.class);
+
     public static final String ENDPOINT_PATH_ON_SERVER = "/axis/services/callbacks";
 
     public CallbackServer() {
@@ -64,7 +68,7 @@ public class CallbackServer {
      */
     private SimpleAxisServer axis;
 
-    private static Hashtable mapping=new Hashtable();
+    private static Hashtable mapping = new Hashtable();
 
     ServerSocket serverSocket = null;
 
@@ -85,19 +89,19 @@ public class CallbackServer {
     private int threads = 4;
 
     public synchronized void start() throws Exception {
-        assert axis==null;
+        assert axis == null;
         axis = new SimpleAxisServer(threads);
         //run the service
         serverSocket = new ServerSocket(port);
         axis.setServerSocket(serverSocket);
         axis.start();
-        if ( wsddResource != null ) {
+        if (wsddResource != null) {
             registerResource(wsddResource);
         }
     }
 
     public synchronized void stop() {
-        if ( axis != null ) {
+        if (axis != null) {
             axis.stop();
             axis = null;
         }
@@ -113,13 +117,14 @@ public class CallbackServer {
      *
      * @throws IOException
      */
-    public void registerStream(InputStream instream) throws SAXException, ParserConfigurationException, IOException {
+    public void registerStream(InputStream instream) throws SAXException,
+            ParserConfigurationException, IOException {
         try {
             Document doc = XMLUtils.newDocument(instream);
             WSDDDocument wsddDoc = new WSDDDocument(doc);
             WSDDDeployment deployment;
             deployment = getDeployment();
-            if ( deployment != null ) {
+            if (deployment != null) {
                 wsddDoc.deploy(deployment);
             }
         } finally {
@@ -137,8 +142,10 @@ public class CallbackServer {
      */
     public void registerResource(String resourcename)
             throws SAXException, ParserConfigurationException, IOException {
-        InputStream in = this.getClass().getClassLoader().getResourceAsStream(resourcename);
-        if ( in == null ) {
+        log.info("registering resource " + wsddResource);
+        InputStream in = this.getClass().getClassLoader().getResourceAsStream(
+                resourcename);
+        if (in == null) {
             throw new FileNotFoundException(resourcename);
         }
         registerStream(in);
@@ -154,7 +161,7 @@ public class CallbackServer {
         WSDDDeployment deployment;
         AxisEngine engine = axis.getAxisServer();
         EngineConfiguration config = engine.getConfig();
-        if ( config instanceof WSDDEngineConfiguration ) {
+        if (config instanceof WSDDEngineConfiguration) {
             deployment = ((WSDDEngineConfiguration) config).getDeployment();
         } else {
             deployment = null;
@@ -164,48 +171,54 @@ public class CallbackServer {
 
     /**
      * creates a mapping, returns an identifier for use in lookup calls
+     *
      * @return
      */
-    public static String addMapping(DeploymentCallbackEndpoint callback) {
+    public static String addMapping(DeploymentNotificationEndpoint callback) {
         String key = makeKey(callback);
-        mapping.put(key,callback);
+        mapping.put(key, callback);
         return key;
     }
 
     //counter used for unique keys
-    private static int counter=0;
+    private static int counter = 0;
 
-    private static synchronized String makeKey(DeploymentCallbackEndpoint callback) {
+    private static synchronized String makeKey(
+            DeploymentNotificationEndpoint callback) {
         counter++;
-        String key=counter+"/"+callback.hashCode();
+        String key = counter + "/" + callback.hashCode();
         return key;
     }
 
     public static boolean removeMapping(String key) {
-        return mapping.remove(key)!=null;
+        return mapping.remove(key) != null;
     }
 
 
     /**
      * handle a callback message by mapping it to an instance and dispatching.
+     *
      * @param callback
-     * @return false if the lookup failed, otherwise whatever the dispatched method wanted.
+     * @return false if the lookup failed, otherwise whatever the dispatched
+     *         method wanted.
      * @throws RemoteException
      */
-    public static boolean processCallback(_lifecycleEventCallbackRequest callback) throws RemoteException {
-        String key=callback.getIdentifier();
-        if(key==null) {
+    public static boolean processCallback(_lifecycleEventRequest callback)
+            throws RemoteException {
+        String key = callback.getIdentifier();
+        if (key == null) {
             return false;
         }
-        DeploymentCallbackEndpoint handler=(DeploymentCallbackEndpoint) mapping.get(key);
-        if(handler==null) {
+        DeploymentNotificationEndpoint handler = (DeploymentNotificationEndpoint) mapping.get(
+                key);
+        if (handler == null) {
             return false;
         }
-        return handler.callback(callback);
+        return handler.notification(callback);
     }
 
     public String getCallbackURL() {
-        assert serverSocket!=null;
+        assert serverSocket != null;
         String hostName = null;
         try {
             hostName = InetAddress.getLocalHost().getHostAddress();
@@ -213,8 +226,8 @@ public class CallbackServer {
             throw new RuntimeException(e);
         }
         // serverSocket.getInetAddress().getHostName();
-        assert hostName!=null;
-        String url="http://"+hostName+":"+port+ENDPOINT_PATH_ON_SERVER;
+        assert hostName != null;
+        String url = "http://" + hostName + ":" + port + ENDPOINT_PATH_ON_SERVER;
         return url;
     }
 }

@@ -21,8 +21,8 @@ package org.smartfrog.services.cddlm.engine;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.smartfrog.services.cddlm.generated.api.callbacks.DeploymentCallbackSoapBindingStub;
-import org.smartfrog.services.cddlm.generated.api.types._lifecycleEventCallbackRequest;
+import org.smartfrog.services.cddlm.generated.api.callbacks.DeploymentNotificationSoapBindingStub;
+import org.smartfrog.services.cddlm.generated.api.types._lifecycleEventRequest;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
 import java.net.URL;
@@ -45,13 +45,13 @@ public class NotificationAction extends BaseAction {
     /**
      * data to send
      */
-    private _lifecycleEventCallbackRequest message;
+    private _lifecycleEventRequest message;
 
-    public static final int DEFAULT_TIMEOUT = 10*60*1000;
+    public static final int DEFAULT_TIMEOUT = 10 * 60 * 1000;
     /**
      * callback timeout
      */
-    private Integer timeout=new Integer(DEFAULT_TIMEOUT);
+    private Integer timeout = new Integer(DEFAULT_TIMEOUT);
 
     /**
      * sleep time. this is mostly for demos
@@ -65,7 +65,7 @@ public class NotificationAction extends BaseAction {
      * @param url
      * @param data
      */
-    public NotificationAction(URL url, _lifecycleEventCallbackRequest data) {
+    public NotificationAction(URL url, _lifecycleEventRequest data) {
         assert data != null;
         assert url != null;
         this.url = url;
@@ -83,17 +83,18 @@ public class NotificationAction extends BaseAction {
 
     /**
      * set the optional sleep time in seconds
+     *
      * @param sleepTimeInSeconds
      */
     public void setSleepTime(int sleepTimeInSeconds) {
         this.sleepTime = sleepTimeInSeconds;
     }
 
-    public _lifecycleEventCallbackRequest getMessage() {
+    public _lifecycleEventRequest getMessage() {
         return message;
     }
 
-    public void setMessage(_lifecycleEventCallbackRequest message) {
+    public void setMessage(_lifecycleEventRequest message) {
         this.message = message;
     }
 
@@ -112,21 +113,24 @@ public class NotificationAction extends BaseAction {
      * @throws RemoteException
      */
     public void execute() throws SmartFrogException, RemoteException {
-        if(sleepTime>0) {
+        if (sleepTime > 0) {
             try {
-                Thread.sleep(sleepTime*1000);
+                Thread.sleep(sleepTime * 1000);
             } catch (InterruptedException e) {
 
             }
         }
-        DeploymentCallbackSoapBindingStub callback = new DeploymentCallbackSoapBindingStub(
+        DeploymentNotificationSoapBindingStub callback = new DeploymentNotificationSoapBindingStub(
                 url, null);
         if (timeout != null) {
             callback.setTimeout(timeout.intValue());
         }
         String path = url.toString();
-        log.info("sending notification to "+path+" # "+message.getIdentifier());
-        callback.callback(message);
+        log.info("sending notification to " +
+                path +
+                " # " +
+                message.getIdentifier());
+        callback.notification(message);
         //send a notification
         super.execute();
     }

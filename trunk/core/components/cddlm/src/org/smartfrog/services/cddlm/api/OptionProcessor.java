@@ -66,7 +66,7 @@ public class OptionProcessor extends Processor {
     /**
      * log
      */
-    private static final Log log = LogFactory.getLog(DeployProcessor.class);
+    private static final Log log = LogFactory.getLog(CreateProcessor.class);
 
     public OptionProcessor(SmartFrogHostedEndpoint owner) {
         super(owner);

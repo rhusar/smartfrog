@@ -59,7 +59,7 @@ public class Undeploy extends ConsoleOperation {
      * @throws java.rmi.RemoteException
      */
     public void execute() throws RemoteException {
-        undeploy(uri, reason);
+        terminate(uri, reason);
     }
 
     /**

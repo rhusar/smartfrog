@@ -25,9 +25,9 @@ import org.apache.axis.message.MessageElement;
 import org.apache.axis.types.URI;
 import org.cddlm.client.callbacks.CallbackServer;
 import org.cddlm.client.common.ServerBinding;
-import org.smartfrog.services.cddlm.generated.api.callbacks.DeploymentCallbackEndpoint;
+import org.smartfrog.services.cddlm.generated.api.callbacks.DeploymentNotificationEndpoint;
 import org.smartfrog.services.cddlm.generated.api.types.ApplicationStatusType;
-import org.smartfrog.services.cddlm.generated.api.types._lifecycleEventCallbackRequest;
+import org.smartfrog.services.cddlm.generated.api.types._lifecycleEventRequest;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -39,13 +39,13 @@ import java.util.Date;
  * Date: 16-Sep-2004 Time: 21:03:30
  */
 public class Listen extends ConsoleOperation
-        implements DeploymentCallbackEndpoint {
+        implements DeploymentNotificationEndpoint {
 
-    _lifecycleEventCallbackRequest lastMessage;
+    _lifecycleEventRequest lastMessage;
 
     int messageCount = 0;
 
-    int timeout = 5*60;
+    int timeout = 5 * 60;
 
     public Listen(ServerBinding binding, PrintWriter out, String[] args) {
         super(binding, out);
@@ -74,7 +74,7 @@ public class Listen extends ConsoleOperation
         this.timeout = timeoutSeconds;
     }
 
-    public _lifecycleEventCallbackRequest getLastMessage() {
+    public _lifecycleEventRequest getLastMessage() {
         return lastMessage;
     }
 
@@ -99,7 +99,7 @@ public class Listen extends ConsoleOperation
 
             //send a set callback message
             String url = server.getCallbackURL();
-            setCddlmCallback(getUri(), url, identifier);
+            setCddlmNotification(getUri(), url, identifier);
 
             aboutToWait();
             //now ask for
@@ -114,7 +114,7 @@ public class Listen extends ConsoleOperation
         } finally {
             //shutdown code
             server.stop();
-            if ( identifier != null ) {
+            if (identifier != null) {
                 CallbackServer.removeMapping(identifier);
             }
         }
@@ -129,7 +129,7 @@ public class Listen extends ConsoleOperation
      * been set at this point
      */
 
-    protected void aboutToWait() throws IOException  {
+    protected void aboutToWait() throws IOException {
 
     }
 
@@ -140,10 +140,11 @@ public class Listen extends ConsoleOperation
      * @return
      * @throws RemoteException
      */
-    public synchronized boolean callback(_lifecycleEventCallbackRequest callback) throws RemoteException {
+    public synchronized boolean notification(_lifecycleEventRequest callback)
+            throws RemoteException {
         messageCount++;
         lastMessage = callback;
-        processCallback(callback);
+        processNotification(callback);
         this.notifyAll();
         return true;
     }
@@ -153,9 +154,9 @@ public class Listen extends ConsoleOperation
      *
      * @param callback
      */
-    protected void processCallback(_lifecycleEventCallbackRequest callback) {
+    protected void processNotification(_lifecycleEventRequest callback) {
         BigInteger timestamp = callback.getTimestamp();
-        if ( timestamp != null ) {
+        if (timestamp != null) {
             long utc = timestamp.longValue();
             Date date = new Date(utc * 1000);
             out.println("time:   " + date.toString());
@@ -168,13 +169,13 @@ public class Listen extends ConsoleOperation
                 + ((status != null) ?
                 status.getState().toString()
                 : "(null)"));
-        if ( status != null ) {
-            if ( status.getStateInfo() != null ) {
+        if (status != null) {
+            if (status.getStateInfo() != null) {
                 out.println("info :" + status.getStateInfo());
             }
-            if ( status.getExtendedState() != null ) {
+            if (status.getExtendedState() != null) {
                 MessageElement[] any = status.getExtendedState().get_any();
-                for ( int i = 0; i < any.length; i++ ) {
+                for (int i = 0; i < any.length; i++) {
                     out.println(any[i].toString());
                 }
             }
@@ -193,7 +194,7 @@ public class Listen extends ConsoleOperation
      */
     public synchronized boolean blockForMessages(long timeout)
             throws InterruptedException {
-        if ( messageCount <= 0 ) {
+        if (messageCount <= 0) {
             wait(timeout);
         }
         return messageCount > 0;

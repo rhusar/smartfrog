@@ -22,9 +22,9 @@ package org.cddlm.client.console;
 import org.apache.axis.message.MessageElement;
 import org.cddlm.client.common.ServerBinding;
 import org.smartfrog.services.cddlm.generated.api.types.ApplicationStatusType;
+import org.smartfrog.services.cddlm.generated.api.types.NotificationAddressType;
+import org.smartfrog.services.cddlm.generated.api.types.NotificationInformationType;
 import org.smartfrog.services.cddlm.generated.api.types.UnboundedXMLOtherNamespace;
-import org.smartfrog.services.cddlm.generated.api.types.CallbackInformationType;
-import org.smartfrog.services.cddlm.generated.api.types.CallbackAddressType;
 
 import java.io.PrintWriter;
 import java.rmi.RemoteException;
@@ -52,16 +52,16 @@ public class ApplicationStatus extends ConsoleOperation {
         out.println("name:   " + status.getName());
         out.println("status: " + status.getState());
         out.println("info: " + status.getStateInfo());
-        CallbackInformationType callbackInfo = status.getCallback();
-        if(callbackInfo!=null) {
-            out.println(        "callback: "+callbackInfo.getType());
-            CallbackAddressType address = callbackInfo.getAddress();
-            if ( address != null ) {
-                if ( address.getUri() != null ) {
+        NotificationInformationType notificationInfo = status.getNotification();
+        if (notificationInfo != null) {
+            out.println("callback: " + notificationInfo.getType());
+            NotificationAddressType address = notificationInfo.getAddress();
+            if (address != null) {
+                if (address.getUri() != null) {
                     out.println("url:      " + address.getUri());
                 }
             }
-            out.println(        "identifier:"+callbackInfo.getIdentifier());
+            out.println("identifier:" + notificationInfo.getIdentifier());
         }
         UnboundedXMLOtherNamespace extendedState = status.getExtendedState();
         if (extendedState != null) {

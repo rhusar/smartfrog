@@ -19,7 +19,6 @@
  */
 package org.smartfrog.services.cddlm.api;
 
-import org.apache.axis.AxisFault;
 import org.apache.axis.types.URI;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -27,13 +26,9 @@ import org.smartfrog.services.axis.SmartFrogHostedEndpoint;
 import org.smartfrog.services.cddlm.engine.JobRepository;
 import org.smartfrog.services.cddlm.engine.JobState;
 import org.smartfrog.services.cddlm.engine.ServerInstance;
-import org.smartfrog.services.cddlm.generated.api.types._undeployRequest;
-import org.smartfrog.sfcore.common.ConfigurationDescriptor;
-import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.services.cddlm.generated.api.types._terminateRequest;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.processcompound.ProcessCompound;
-import org.smartfrog.sfcore.processcompound.SFProcess;
 
 import java.rmi.RemoteException;
 
@@ -41,18 +36,19 @@ import java.rmi.RemoteException;
  * process undeploy operation created Aug 4, 2004 4:04:20 PM
  */
 
-public class UndeployProcessor extends Processor {
+public class TerminateProcessor extends Processor {
     /**
      * log
      */
-    private static final Log log = LogFactory.getLog(UndeployProcessor.class);
+    private static final Log log = LogFactory.getLog(TerminateProcessor.class);
 
 
-    public UndeployProcessor(SmartFrogHostedEndpoint owner) {
+    public TerminateProcessor(SmartFrogHostedEndpoint owner) {
         super(owner);
     }
 
-    public boolean undeploy(_undeployRequest undeploy) throws RemoteException {
+    public boolean terminate(_terminateRequest undeploy)
+            throws RemoteException {
         final URI appURI = undeploy.getApplication();
         if (appURI == null) {
             throw raiseBadArgumentFault(ERROR_NO_APPLICATION);
@@ -68,8 +64,8 @@ public class UndeployProcessor extends Processor {
             //job was not found, this is not an error.
             return true;
         }
-        log.info("Undeploying " + job.getName() + " for " + reason);
-        if (undeploy(job, reason)) {
+        log.info("terminating " + job.getName() + " for " + reason);
+        if (terminate(job, reason)) {
             //purge the store
             JobRepository jobs = ServerInstance.currentInstance().getJobs();
             jobs.remove(appURI);
@@ -79,13 +75,14 @@ public class UndeployProcessor extends Processor {
     }
 
     /**
-     * working undeploy
-     * @param job
-     * @param reason
+     * Terminate a job
+     *
+     * @param job    job to kill
+     * @param reason why
      * @return
      * @throws RemoteException
      */
-    private boolean undeploy(JobState job, String reason)
+    private boolean terminate(JobState job, String reason)
             throws RemoteException {
         Prim target = job.resolvePrimNonFaulting();
         if (target == null) {
@@ -100,34 +97,5 @@ public class UndeployProcessor extends Processor {
         return true;
     }
 
-    /**
-     * Original undeploy
-     * @param job
-     * @return
-     * @throws RemoteException
-     */
-    /*
-    public boolean doUndeploy(JobState job) throws RemoteException {
-        try {
-            String application = job.getName();
-            ConfigurationDescriptor config = new ConfigurationDescriptor();
-            config.setHost(null);
-            config.setName(application);
-            config.setActionType(ConfigurationDescriptor.Action.DETaTERM);
-
-            //deploy, throwing an exception if we cannot
-            final ProcessCompound processCompound = SFProcess.getProcessCompound();
-            assert processCompound != null;
-            config.execute(processCompound);
-            Object targetC = config.execute(null);
-            //act on the target
-            return true;
-        } catch (SmartFrogException exception) {
-            throw translateSmartFrogException(exception);
-        } catch (Exception exception) {
-            throw AxisFault.makeFault(exception);
-        }
-    }
-*/
 
 }

@@ -24,11 +24,11 @@ import org.apache.axis.types.URI;
 import org.smartfrog.services.cddlm.api.CallbackProcessor;
 import org.smartfrog.services.cddlm.api.Processor;
 import org.smartfrog.services.cddlm.generated.api.DeployApiConstants;
-import org.smartfrog.services.cddlm.generated.api.types.CallbackAddressType;
-import org.smartfrog.services.cddlm.generated.api.types.CallbackEnum;
-import org.smartfrog.services.cddlm.generated.api.types.CallbackInformationType;
 import org.smartfrog.services.cddlm.generated.api.types.DeploymentDescriptorType;
-import org.smartfrog.services.cddlm.generated.api.types._setCallbackRequest;
+import org.smartfrog.services.cddlm.generated.api.types.NotificationAddressType;
+import org.smartfrog.services.cddlm.generated.api.types.NotificationEnum;
+import org.smartfrog.services.cddlm.generated.api.types.NotificationInformationType;
+import org.smartfrog.services.cddlm.generated.api.types._setNotificationRequest;
 
 /**
  * created Sep 14, 2004 2:27:34 PM
@@ -60,7 +60,7 @@ public class CallbackTest extends DeployingTestBase {
 
     public void testNullApp() throws Exception {
         try {
-            operation.setCddlmCallback(null,
+            operation.setCddlmNotification(null,
                     "http://localhost:8080/endpoint",
                     null);
         } catch (AxisFault e) {
@@ -72,7 +72,7 @@ public class CallbackTest extends DeployingTestBase {
 
     public void testBadApplication() throws Exception {
         try {
-            operation.setCddlmCallback(new URI(INVALID_URI),
+            operation.setCddlmNotification(new URI(INVALID_URI),
                     DUMMY_ENDPOINT,
                     null);
         } catch (AxisFault e) {
@@ -84,7 +84,7 @@ public class CallbackTest extends DeployingTestBase {
 
     public void testNullURL() throws Exception {
         try {
-            operation.setCddlmCallback(application, DUMMY_ENDPOINT, null);
+            operation.setCddlmNotification(application, DUMMY_ENDPOINT, null);
         } catch (AxisFault e) {
             assertFaultMatches(e,
                     DeployApiConstants.FAULT_BAD_ARGUMENT,
@@ -94,12 +94,14 @@ public class CallbackTest extends DeployingTestBase {
 
     public void testBadType() throws Exception {
         try {
-            CallbackInformationType callbackInfo = new CallbackInformationType();
+            NotificationInformationType callbackInfo = new NotificationInformationType();
             callbackInfo.setType(null);
-            callbackInfo.setAddress(new CallbackAddressType(application, null));
-            _setCallbackRequest request = new _setCallbackRequest(application,
+            callbackInfo.setAddress(
+                    new NotificationAddressType(application, null));
+            _setNotificationRequest request = new _setNotificationRequest(
+                    application,
                     callbackInfo);
-            operation.setCallback(request);
+            operation.setNotification(request);
 
         } catch (AxisFault e) {
             assertFaultMatches(e,
@@ -109,23 +111,25 @@ public class CallbackTest extends DeployingTestBase {
     }
 
     public void testNoCallbackIsAllowed() throws Exception {
-        _setCallbackRequest request = new _setCallbackRequest(application,
+        _setNotificationRequest request = new _setNotificationRequest(
+                application,
                 null);
-        operation.setCallback(request);
+        operation.setNotification(request);
     }
 
     public void testUnsupportedType() throws Exception {
         try {
-            CallbackInformationType callbackInfo = new CallbackInformationType();
+            NotificationInformationType callbackInfo = new NotificationInformationType();
             callbackInfo.setType(null);
-            callbackInfo.setType(
-                    CallbackEnum.fromString(
-                            DeployApiConstants.CALLBACK_WS_NOTIFICATION));
+            callbackInfo.setType(NotificationEnum.fromString(
+                    DeployApiConstants.CALLBACK_WS_NOTIFICATION));
 
-            callbackInfo.setAddress(new CallbackAddressType(application, null));
-            _setCallbackRequest request = new _setCallbackRequest(application,
+            callbackInfo.setAddress(
+                    new NotificationAddressType(application, null));
+            _setNotificationRequest request = new _setNotificationRequest(
+                    application,
                     callbackInfo);
-            operation.setCallback(request);
+            operation.setNotification(request);
 
         } catch (AxisFault e) {
             assertFaultMatches(e,

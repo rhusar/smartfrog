@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <xsd:schema elementFormDefault="qualified"
-  targetNamespace="http://gridforum.org/cddlm/serviceAPI/types/2004/07/30"
-  xmlns:types="http://gridforum.org/cddlm/serviceAPI/types/2004/07/30"
-  xmlns="http://gridforum.org/cddlm/serviceAPI/types/2004/07/30"
+  targetNamespace="http://gridforum.org/cddlm/serviceAPI/types/2004/10/11/"
+  xmlns:types="http://gridforum.org/cddlm/serviceAPI/types/2004/10/11/"
+  xmlns="http://gridforum.org/cddlm/serviceAPI/types/2004/10/11/"
   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
   xmlns:wsa="http://schemas.xmlsoap.org/ws/2003/03/addressing"
   >
@@ -67,41 +67,45 @@
   <!-- BEGIN SIMPLETYPES -->
   <!-- ============================================================= -->
 
-  <xsd:simpleType name="callbackEnum">
+  <xsd:simpleType name="notificationEnum">
     <xsd:annotation>
       <xsd:documentation>
-      Enumeration of supported callback types. Any
+      Enumeration of supported notification types. Any
       unexpected type constitutes an error and should be
       flagged.
-        -none: we have no callback
-        -direct:  caller calls URL with a predefined event message
+
         -ws-notification:  callbacks via WS-N
-        -ws-eventing
+        -ws-eventing: subscriptions and notifications of WS-Eventing
+        -CDDLM:  a non-standard direct invocation mechanism
 
       </xsd:documentation>
     </xsd:annotation>
     <xsd:restriction base="xsd:string">
-      <xsd:enumeration value="ws-notification">
+      <xsd:enumeration value="http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseNotification">
         <xsd:annotation>
           <xsd:documentation>
             Notification
           </xsd:documentation>
         </xsd:annotation>
       </xsd:enumeration>
-      <xsd:enumeration value="cddlm-prototype">
-        <xsd:annotation>
-          <xsd:documentation>
-            Non-standard callback
-          </xsd:documentation>
-        </xsd:annotation>
-      </xsd:enumeration>
-      <xsd:enumeration value="ws-eventing">
+
+      <xsd:enumeration value="http://schemas.xmlsoap.org/ws/2004/08/eventing">
         <xsd:annotation>
           <xsd:documentation>
             WS-eventing
           </xsd:documentation>
         </xsd:annotation>
       </xsd:enumeration>
+
+      <xsd:enumeration value="http://gridforum.org/cddlm/serviceAPI/notifications/2004/07/30">
+        <xsd:annotation>
+          <xsd:documentation>
+            Direct endpoint invocation for protoyping only.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+
+
     </xsd:restriction>
   </xsd:simpleType>
 
@@ -109,18 +113,19 @@
   <!-- ============================================================= -->
   <!-- lifecycle states-->
   <!-- ============================================================= -->
-  
+
   <xsd:simpleType name="lifecycleStateEnum">
     <xsd:annotation>
       <xsd:documentation>
       Enumeration of lifecycle states.
       </xsd:documentation>
     </xsd:annotation>
+
     <xsd:restriction base="xsd:string">
       <xsd:enumeration value="undefined">
         <xsd:annotation>
           <xsd:documentation>
-            undefined state
+            Undefined state.
           </xsd:documentation>
         </xsd:annotation>
       </xsd:enumeration>
@@ -132,6 +137,7 @@
           </xsd:documentation>
         </xsd:annotation>
       </xsd:enumeration>
+
       <xsd:enumeration value="initialized">
         <xsd:annotation>
           <xsd:documentation>
@@ -139,6 +145,7 @@
           </xsd:documentation>
         </xsd:annotation>
       </xsd:enumeration>
+
       <xsd:enumeration value="running">
         <xsd:annotation>
           <xsd:documentation>
@@ -146,6 +153,7 @@
           </xsd:documentation>
         </xsd:annotation>
       </xsd:enumeration>
+
       <xsd:enumeration value="failed">
         <xsd:annotation>
           <xsd:documentation>
@@ -153,6 +161,7 @@
           </xsd:documentation>
         </xsd:annotation>
       </xsd:enumeration>
+
       <xsd:enumeration value="terminated">
         <xsd:annotation>
           <xsd:documentation>
@@ -216,10 +225,11 @@
   <!-- ============================================================= -->
 
   <!-- ============================================================= -->
-  <!-- callback address union -->
+  <!-- notification address union -->
+  <!-- TODO replace with any XML -->
   <!-- ============================================================= -->
 
-  <xsd:complexType name="callbackAddressType">
+  <xsd:complexType name="notificationAddressType">
     <xsd:annotation>
       <xsd:documentation>
       holder for different callback types
@@ -236,18 +246,18 @@
   <!-- composite representation of callback enum, address and identifier -->
   <!-- ============================================================= -->
 
-  <xsd:complexType name="callbackInformationType">
+  <xsd:complexType name="notificationInformationType">
     <xsd:annotation>
       <xsd:documentation>
-      Callback information consists of a selection of a callback mechanism,
-      the address for it, and an identifier that is used in all messages
-      to help identify the conversation.
+      Notification information consists of a selection of a notification mechanism,
+      an identifier that is used in all messages to help identify the conversation,
+      and whatever subscription information that notification mechanism expects.
 
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-      <xsd:element name="type" type="types:callbackEnum"/>
-      <xsd:element name="address" type="types:callbackAddressType"/>
+      <xsd:element name="type" type="types:notificationEnum"/>
+      <xsd:element name="address" type="types:notificationAddressType"/>
       <xsd:element name="identifier" type="xsd:string"/>
     </xsd:sequence>
   </xsd:complexType>
@@ -295,13 +305,13 @@
       </xsd:element>
     </xsd:choice>
     <xsd:attribute name="language" type="xsd:anyURI" use="required">
-     <xsd:annotation>
-       <xsd:documentation>
+      <xsd:annotation>
+        <xsd:documentation>
         The URI identifying the language of the descriptor.
-       </xsd:documentation>
-     </xsd:annotation>
+        </xsd:documentation>
+      </xsd:annotation>
     </xsd:attribute>
-    <xsd:attribute name="version" type="xsd:string" use="optional" >
+    <xsd:attribute name="version" type="xsd:string" use="optional">
       <xsd:annotation>
         <xsd:documentation>
           An optional language version string. Optional because some
@@ -311,7 +321,6 @@
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>
-
   </xsd:complexType>
 
 
@@ -362,13 +371,18 @@
       <xsd:documentation>
         Options are @uri plus (string|integer|boolean|XML)
         really, all could be XML, but that forces too much parse complexity
-        having string and int attrs makes it simpler.
+        having string and integer attributes makes it simpler.
 
         A processor of the options MUST ignore options that it does not recognise
         and that are marked mustUnderstand==false.
+
         It MUST fail if it receives an option marked mustUnderstand==true that it
         does not recognise or can not process in accordance with the
         normative/descriptive definition of the option.
+
+        It is also illegal to have more than one of the option types defined.
+        If the SOAP runtime does not validate the choice statement, callers
+        must instead.
       </xsd:documentation>
     </xsd:annotation>
     <xsd:choice>
@@ -389,6 +403,7 @@
     <xsd:annotation>
       <xsd:documentation>
         A set of options. Only one of each URI is allowed.
+        An option map with duplicate URIs MUST BE rejected.
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
@@ -406,7 +421,8 @@
       <xsd:documentation>
         A name/value pair of properties. Names are restricted to NCName type;
         values are any string. Why restrict name type? For easier incorporation
-        into the language
+        into the language.
+
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
@@ -425,10 +441,9 @@
       <xsd:documentation>
         A set of name/value pair of properties. Only one instance of each name
         is allowed. This is essentially a serialisation of a map/hash table.
-        
-        This is for properties that are to be passed directly to the
-        deployment engine, using whatever property binding mechanism is
-        included in the language.        
+        Duplicate name values MUST BE rejected.
+
+
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
@@ -569,10 +584,10 @@
         </xsd:annotation>
       </xsd:element>
 
-      <xsd:element name="callbacks" type="types:stringListType">
+      <xsd:element name="notifications" type="types:stringListType">
         <xsd:annotation>
           <xsd:documentation>
-            List of callbacks
+            List of supported notifications
           </xsd:documentation>
         </xsd:annotation>
       </xsd:element>
@@ -645,7 +660,7 @@
     <xsd:sequence>
       <xsd:element name="reference" type="types:applicationReferenceType"/>
       <xsd:element name="name" type="types:applicationNameType" minOccurs="0"/>
-      <xsd:element name="callback" type="types:callbackInformationType" minOccurs="0"/>
+      <xsd:element name="notification" type="types:notificationInformationType" minOccurs="0"/>
       <xsd:element name="state" type="types:lifecycleStateEnum"/>
       <xsd:element name="stateInfo" type="xsd:string"/>
       <xsd:element name="extendedState" minOccurs="0" type="types:unboundedXMLOtherNamespace"/>
@@ -721,11 +736,12 @@
 
   <!-- ============================================================= -->
   <!-- ============================================================= -->
-  <xsd:element name="deployRequest">
+  <xsd:element name="createRequest">
     <xsd:complexType>
       <xsd:annotation>
         <xsd:documentation>
-          This is our deployment request.
+          This is our request to deploy to a destination, by creating
+          a new application in the 'instantiated' state.
           Rather than have so many typed options,
           a core few mandatory options are specified inline, and the rest
           are referred to in the deployment_options map.
@@ -745,7 +761,7 @@
             </xsd:documentation>
           </xsd:annotation>
         </xsd:element>
-        <xsd:element name="callback" type="types:callbackInformationType" minOccurs="0">
+        <xsd:element name="notification" type="types:notificationInformationType" minOccurs="0">
           <xsd:annotation>
             <xsd:documentation>
             optional callback data
@@ -755,7 +771,7 @@
         <xsd:element name="options" type="types:optionMapType" minOccurs="0">
           <xsd:annotation>
             <xsd:documentation>
-            This is for optional deployment options.
+            This is for options.
             </xsd:documentation>
           </xsd:annotation>
         </xsd:element>
@@ -765,13 +781,15 @@
 
   <!-- ============================================================= -->
   <!-- ============================================================= -->
-  <xsd:element name="deployResponse">
+  <xsd:element name="createResponse">
     <xsd:complexType>
       <xsd:annotation>
         <xsd:documentation>
-        This is our deployment response.
-        It consists of a reference to the application, which can be used
-        for future references.
+          This is our deployment response.
+          It consists of a reference to the application, which can be used
+          for future references.
+          
+          The application is not yet started. 
         </xsd:documentation>
       </xsd:annotation>
       <xsd:sequence>
@@ -780,9 +798,39 @@
     </xsd:complexType>
   </xsd:element>
 
+  
   <!-- ============================================================= -->
+  <!-- request to run the engine -->
   <!-- ============================================================= -->
-  <xsd:element name="undeployRequest">
+  <xsd:element name="runRequest">
+    <xsd:complexType>
+      <xsd:annotation>
+        <xsd:documentation>
+          Request to start an application.
+          This only valid if the application is in a state from which
+          it can be started, which effectively means it has already
+          been created.
+
+          TODO: should run be a noop if we are already started?
+        </xsd:documentation>
+      </xsd:annotation>
+      <xsd:sequence>
+        <xsd:element name="application" type="types:applicationReferenceType"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <!-- ============================================================= -->
+  <!-- this response means that the request has been submitted, -->
+  <!-- this should only ever return true -->
+  <!-- ============================================================= -->
+  <xsd:element name="runResponse" type="xsd:boolean">
+  </xsd:element>
+  
+  <!-- ============================================================= -->
+  <!-- terminate an application -->  
+  <!-- ============================================================= -->
+  <xsd:element name="terminateRequest">
     <xsd:complexType>
       <xsd:annotation>
         <xsd:documentation>
@@ -790,37 +838,50 @@
         </xsd:documentation>
       </xsd:annotation>
       <xsd:sequence>
-        <xsd:element name="application" type="types:applicationReferenceType"/>
-        <xsd:element name="reason" type="xsd:string"/>
+        <xsd:element name="application" type="types:applicationReferenceType">
+          <xsd:annotation>
+            <xsd:documentation>
+            Request to terminate an application.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
+        <xsd:element name="reason" type="xsd:string">
+          <xsd:annotation>
+            <xsd:documentation>
+              Reason for termination. This message
+              may be included in the system logs or otherwise recorded.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
 
   <!-- ============================================================= -->
-  <!-- undeploy response means that either the request has been submitted, -->
+  <!-- terminate response means that either the request has been submitted, -->
   <!-- or the request is being ignored, as the request is meant to be
        idempotent -->
   <!-- this should only ever return true -->
   <!-- ============================================================= -->
-  <xsd:element name="undeployResponse" type="xsd:boolean">
+  <xsd:element name="terminateResponse" type="xsd:boolean">
   </xsd:element>
 
   
   <!-- ============================================================= -->
-  <!-- define/redefine the callback endpoint -->
+  <!-- define/redefine the notification choices-->
   <!-- ============================================================= -->
-  <xsd:element name="setCallbackRequest">
+  <xsd:element name="setNotificationRequest">
     <xsd:complexType>
       <xsd:annotation>
         <xsd:documentation>
-          Request to redefine the callback mechanism/address for an application.
+          Request to redefine the notification mechanism/address for an application.
           The new value will remain valid until changed or the application
           is undeployed.
 
-          Setting the callback must also reset the sequence number, so that
+          Setting the notification must also reset the sequence number, so that
           the first message received at the endpoint should be numbered 1.
 
-          Naming an application without providing a callback means that the user is
+          Naming an application without providing a notification means that the user is
           unsubscribing; it is not an error if the application does not exist on an unsubscription
           request, but it is an error if the application does not exist on a subscription.
         </xsd:documentation>
@@ -833,7 +894,7 @@
             </xsd:documentation>
           </xsd:annotation>
         </xsd:element>
-        <xsd:element name="callback" type="types:callbackInformationType" minOccurs="0">
+        <xsd:element name="notification" type="types:notificationInformationType" minOccurs="0">
           <xsd:annotation>
             <xsd:documentation>
             callback data
@@ -845,13 +906,12 @@
   </xsd:element>
 
   <!-- ============================================================= -->
-  <!-- response from a request to set a callback-->
+  <!-- response from a request to set a notification-->
   <!-- ============================================================= -->
-  <xsd:element name="setCallbackResponse" type="xsd:boolean">
+  <xsd:element name="setNotificationResponse" type="xsd:boolean">
   </xsd:element>
   
 
-  
   <!-- ============================================================= -->
   <!-- ============================================================= -->
 
@@ -934,7 +994,7 @@
   <!-- ============================================================= -->
   <!-- callback event message -->
   <!-- ============================================================= -->
-  <xsd:element name="lifecycleEventCallbackRequest">
+  <xsd:element name="lifecycleEventRequest">
     <xsd:complexType>
       <xsd:annotation>
         <xsd:documentation>
@@ -955,11 +1015,12 @@
             <xsd:documentation>
               UTC timestamp of message sending.
               time_t, seconds since 1/1/1970.
-              Anyone who wants xsd:dateTime instead hasn't done enough
-              interop testing.
+              Georgian times may be human readable, but
+              are very unreliable in practise, especially across
+              different platforms.
             </xsd:documentation>
           </xsd:annotation>
-        </xsd:element> 
+        </xsd:element>
         <xsd:element name="sequenceID" type="xsd:integer">
           <xsd:annotation>
             <xsd:documentation>
@@ -990,7 +1051,7 @@
     </xsd:complexType>
   </xsd:element>
 
-  <xsd:element name="lifecycleEventCallbackResponse" type="xsd:boolean">
+  <xsd:element name="lifecycleEventResponse" type="xsd:boolean">
     <xsd:annotation>
       <xsd:documentation>
          Return false if you wish to cease to receive notification events.

@@ -74,7 +74,7 @@ public class ServerStatusTest extends ConsoleTestBase {
     public void testCallbacks() throws RemoteException {
         StaticServerStatusType staticStatus = getStaticStatus();
         assertTrue("Callbacks>0",
-                staticStatus.getCallbacks().getItem().length > 0);
+                staticStatus.getNotifications().getItem().length > 0);
     }
 
     public void testOptions() throws RemoteException {
@@ -146,7 +146,7 @@ public class ServerStatusTest extends ConsoleTestBase {
         String text = execute();
         assertInText(text, "Connecting to");
         assertInText(text, "SmartFrog/1.0");
-        assertInText(text, "cddlm-prototype");
+        assertInText(text, DeployApiConstants.CALLBACK_CDDLM_PROTOTYPE);
     }
 
     public void testInnerMain() throws IOException {

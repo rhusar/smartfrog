@@ -32,8 +32,8 @@ import org.smartfrog.services.cddlm.engine.JobState;
 import org.smartfrog.services.cddlm.engine.ServerInstance;
 import org.smartfrog.services.cddlm.generated.api.types.DeploymentDescriptorType;
 import org.smartfrog.services.cddlm.generated.api.types.LifecycleStateEnum;
-import org.smartfrog.services.cddlm.generated.api.types._deployRequest;
-import org.smartfrog.services.cddlm.generated.api.types._deployResponse;
+import org.smartfrog.services.cddlm.generated.api.types._createRequest;
+import org.smartfrog.services.cddlm.generated.api.types._createResponse;
 import org.smartfrog.sfcore.common.ConfigurationDescriptor;
 import org.smartfrog.sfcore.prim.Prim;
 
@@ -49,22 +49,22 @@ import java.io.PrintWriter;
  * 4, 2004 3:58:37 PM
  */
 
-public class DeployProcessor extends Processor {
+public class CreateProcessor extends Processor {
     /**
      * log
      */
-    private static final Log log = LogFactory.getLog(DeployProcessor.class);
+    private static final Log log = LogFactory.getLog(CreateProcessor.class);
 
-    private _deployRequest request;
+    private _createRequest request;
     private OptionProcessor options;
     private JobState job;
     public static final String ERROR_NO_DESCRIPTOR = "No descriptor element";
 
-    public DeployProcessor(SmartFrogHostedEndpoint owner) {
+    public CreateProcessor(SmartFrogHostedEndpoint owner) {
         super(owner);
     }
 
-    public _deployRequest getRequest() {
+    public _createRequest getRequest() {
         return request;
     }
 
@@ -79,7 +79,7 @@ public class DeployProcessor extends Processor {
      * @return
      * @throws AxisFault
      */
-    public _deployResponse deploy(_deployRequest deploy) throws AxisFault {
+    public _createResponse create(_createRequest deploy) throws AxisFault {
 
         JobRepository repository;
         repository = ServerInstance.currentInstance().getJobs();
@@ -95,7 +95,7 @@ public class DeployProcessor extends Processor {
         request = deploy;
 
         CallbackProcessor callbackProcessor = new CallbackProcessor(getOwner());
-        callbackProcessor.process(job, deploy.getCallback(), false);
+        callbackProcessor.process(job, deploy.getNotification(), false);
 
         DeploymentDescriptorType dd = deploy.getDescriptor();
         if (dd == null) {
@@ -116,7 +116,7 @@ public class DeployProcessor extends Processor {
             repository.add(job);
             job.enterStateNotifying(LifecycleStateEnum.running, null);
         }
-        _deployResponse response = new _deployResponse(applicationReference);
+        _createResponse response = new _createResponse(applicationReference);
         return response;
     }
 

@@ -22,14 +22,14 @@ package org.smartfrog.services.cddlm.test.system.console;
 import org.apache.axis.message.MessageElement;
 import org.apache.axis.types.URI;
 import org.cddlm.client.console.Options;
+import org.smartfrog.services.cddlm.api.Processor;
 import org.smartfrog.services.cddlm.cdl.ResourceLoader;
 import org.smartfrog.services.cddlm.generated.api.DeployApiConstants;
-import org.smartfrog.services.cddlm.generated.api.types.CallbackEnum;
-import org.smartfrog.services.cddlm.generated.api.types.CallbackInformationType;
 import org.smartfrog.services.cddlm.generated.api.types.DeploymentDescriptorType;
+import org.smartfrog.services.cddlm.generated.api.types.NotificationEnum;
+import org.smartfrog.services.cddlm.generated.api.types.NotificationInformationType;
 import org.smartfrog.services.cddlm.generated.api.types.OptionMapType;
 import org.smartfrog.services.cddlm.generated.api.types.OptionType;
-import org.smartfrog.services.cddlm.api.Processor;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -85,7 +85,7 @@ public class DeployTest extends DeployingTestBase {
         String nsURI = "http://invalid.example.org";
         me.setNamespaceURI(nsURI);
         DeploymentDescriptorType dd = operation.createDescriptorWithXML(me,
-                new URI(me.getNamespaceURI()),null);
+                new URI(me.getNamespaceURI()), null);
         deployExpectingFault(null,
                 dd,
                 null,
@@ -96,7 +96,8 @@ public class DeployTest extends DeployingTestBase {
 
     public void testNoLanguage() throws RemoteException,
             URI.MalformedURIException {
-        MessageElement me = operation.createSmartfrogMessageElement(DeploySmartFrogTest.SIMPLE_DESCRIPTOR);
+        MessageElement me = operation.createSmartfrogMessageElement(
+                DeploySmartFrogTest.SIMPLE_DESCRIPTOR);
         DeploymentDescriptorType dd = operation.createDescriptorWithXML(me,
                 null, null);
         deployExpectingFault(null,
@@ -106,6 +107,7 @@ public class DeployTest extends DeployingTestBase {
                 DeployApiConstants.FAULT_BAD_ARGUMENT,
                 Processor.ERROR_NO_LANGUAGE_DECLARED);
     }
+
     /**
      * change the version to sfrog and see what happens
      *
@@ -152,8 +154,10 @@ public class DeployTest extends DeployingTestBase {
      * @throws IOException
      */
     public void testUnsupportedCallback() throws IOException {
-        CallbackInformationType callback = new CallbackInformationType();
-        callback.setType(CallbackEnum.fromValue("ws-eventing"));
+        NotificationInformationType callback = new NotificationInformationType();
+        callback.setType(
+                NotificationEnum.fromValue(
+                        DeployApiConstants.CALLBACK_WS_EVENTING));
         DeploymentDescriptorType dd = operation.createSmartFrogDescriptor(
                 DeploySmartFrogTest.SIMPLE_DESCRIPTOR);
         deployExpectingFault(null,
