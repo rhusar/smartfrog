@@ -21,6 +21,7 @@ For more information: www.smartfrog.org
 package org.smartfrog.sfcore.languages.sf.predicates;
 
 import java.util.Enumeration;
+import java.util.Vector;
 
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
@@ -28,6 +29,8 @@ import org.smartfrog.sfcore.languages.sf.PhaseAction;
 import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferencePart;
+
+
 
 /**
  * Defines the basic schema implementation.
@@ -136,10 +139,11 @@ public class Schema extends BasePredicate implements PhaseAction {
                 } else {
                     if (binding.equals("lazy"))
                         throw new SmartFrogCompileResolutionException (
-                               errorString + "non-reference value found for lazy attribute " + name,
+                               errorString + "non-reference value found for lazy attribute " + getNameAndDescription(name,description)+"",
                                null, ref, "predicate", null
                             );
-                      else if (!(valueClass.equals("anyClass")) && !(java.lang.Class.forName(valueClass).isAssignableFrom(testvalue.getClass())))
+                      //else if (!(valueClass.equals("anyClass")) && !(java.lang.Class.forName(valueClass).isAssignableFrom(testvalue.getClass())))
+                      else if (!(isValidClass(valueClass,testvalue)))
                         throw new SmartFrogCompileResolutionException (
                                errorString + "wrong class found for attribute " + getNameAndDescription(name,description)+ ", expected: " + valueClass + ", found: " + testvalueClass,
                                null, ref, "predicate", null
@@ -150,7 +154,7 @@ public class Schema extends BasePredicate implements PhaseAction {
             } catch (SmartFrogResolutionException re) {
                 if (!optional) {
                     throw new SmartFrogCompileResolutionException (
-                     errorString + "non-optional attribute is missing: " + getNameAndDescription(name,description), null, ref, "predicate", null
+                     errorString + "non-optional attribute "+ getNameAndDescription(name,description)+" is missing" , null, ref, "predicate", null
                     );
                 }
             }
@@ -162,6 +166,23 @@ public class Schema extends BasePredicate implements PhaseAction {
             else
                 throw (SmartFrogCompileResolutionException)e;
         }
+    }
+
+    protected boolean isValidClass (Vector schemaClass, Object foundClassToValidate) throws java.lang.ClassNotFoundException {
+      boolean isValid = false;
+      for (Enumeration keys = schemaClass.elements(); keys.hasMoreElements();) {
+          if (isValidClass(keys.nextElement().toString(),foundClassToValidate)){
+             isValid = true;
+             break;
+          }
+      }
+      return isValid;
+    }
+//else if (!(valueClass.equals("anyClass")) && !(java.lang.Class.forName(valueClass).isAssignableFrom(testvalue.getClass())))
+    protected boolean isValidClass (String schemaClass, Object foundClassToValidate) throws java.lang.ClassNotFoundException {
+        return ((schemaClass.equals("anyClass"))
+                ||
+                (java.lang.Class.forName(schemaClass).isAssignableFrom(foundClassToValidate.getClass())));
     }
 
     protected String getNameAndDescription (Object name, String description){
