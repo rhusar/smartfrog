@@ -204,6 +204,7 @@ public class DefaultParser implements DefaultParserConstants {
     case LAZY:
     case ROOT:
     case ATTRIB:
+    case THIS:
     case PROPERTY:
     case IPROPERTY:
     case PARENT:
@@ -266,6 +267,7 @@ public class DefaultParser implements DefaultParserConstants {
     case NULLPROTO:
     case ROOT:
     case ATTRIB:
+    case THIS:
     case PROPERTY:
     case IPROPERTY:
     case PARENT:
@@ -304,6 +306,7 @@ public class DefaultParser implements DefaultParserConstants {
     case NULLPROTO:
     case ROOT:
     case ATTRIB:
+    case THIS:
     case PROPERTY:
     case IPROPERTY:
     case PARENT:
@@ -316,6 +319,7 @@ public class DefaultParser implements DefaultParserConstants {
         break;
       case ROOT:
       case ATTRIB:
+      case THIS:
       case PROPERTY:
       case IPROPERTY:
       case PARENT:
@@ -406,6 +410,10 @@ public class DefaultParser implements DefaultParserConstants {
       jj_consume_token(ATTRIB);
       id = jj_consume_token(WORD);
                           ref.addElement(ReferencePart.attrib(id.image));
+      break;
+    case THIS:
+      jj_consume_token(THIS);
+              ref.addElement(ReferencePart.thisref());
       break;
     case PROPERTY:
       jj_consume_token(PROPERTY);
@@ -600,8 +608,8 @@ public class DefaultParser implements DefaultParserConstants {
   private int jj_ntk;
   private int jj_gen;
   final private int[] jj_la1 = new int[20];
-  final private int[] jj_la1_0 = {0x80202000,0x80202000,0x80000,0x200000,0x7fc22000,0x80000,0x7f90a000,0x7f100000,0x7f100000,0xa000,0x800000,0x80000,0x0,0x7f000000,0x4000,0x20000,0x20000,0x0,0x0,0x0,};
-  final private int[] jj_la1_1 = {0x4,0x4,0x0,0x4,0x39c7,0x0,0x4,0x4,0x4,0x0,0x0,0x0,0x44,0x4,0x0,0x39c3,0x39c3,0x3900,0xc0,0x3,};
+  final private int[] jj_la1_0 = {0x202000,0x202000,0x80000,0x200000,0xffc22000,0x80000,0xff90a000,0xff100000,0xff100000,0xa000,0x800000,0x80000,0x0,0xff000000,0x4000,0x20000,0x20000,0x0,0x0,0x0,};
+  final private int[] jj_la1_1 = {0x9,0x9,0x0,0x8,0x738e,0x0,0x8,0x8,0x8,0x0,0x0,0x0,0x88,0x8,0x0,0x7386,0x7386,0x7200,0x180,0x6,};
 
   public DefaultParser(java.io.InputStream stream) {
     jj_input_stream = new ASCII_UCodeESC_CharStream(stream, 1, 1);
@@ -699,8 +707,8 @@ public class DefaultParser implements DefaultParserConstants {
 
   final public ParseException generateParseException() {
     jj_expentries.removeAllElements();
-    boolean[] la1tokens = new boolean[46];
-    for (int i = 0; i < 46; i++) {
+    boolean[] la1tokens = new boolean[47];
+    for (int i = 0; i < 47; i++) {
       la1tokens[i] = false;
     }
     if (jj_kind >= 0) {
@@ -719,7 +727,7 @@ public class DefaultParser implements DefaultParserConstants {
         }
       }
     }
-    for (int i = 0; i < 46; i++) {
+    for (int i = 0; i < 47; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;
