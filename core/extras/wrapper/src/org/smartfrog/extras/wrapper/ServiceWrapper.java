@@ -114,7 +114,7 @@ public class ServiceWrapper implements WrapperListener {
         }
         out.println("\n\n");
         //env variables are only valid on Java1.5+
-        printEnvVar("SFHOME", out);
+        printEnvVar(Launcher.SFHOME_ENV_VARIABLE, out);
         printEnvVar("CLASSPATH", out);
         printEnvVar("PATH", out);
         printEnvVar("Path", out);
@@ -144,6 +144,8 @@ public class ServiceWrapper implements WrapperListener {
         try {
             Launcher.LauncherInfo info = launcher.prelaunch(args);
             wrappedEntryPoint = info.load();
+        } catch (LaunchException exception) {
+            throw exception;
         } catch (Exception exception) {
             throw new LaunchException(WRAPPER_FAILURE_EXIT_CODE,
                     "Exception when executing " + makeCommandLine(args),
