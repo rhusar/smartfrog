@@ -64,7 +64,7 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
 
     private RunnerConfiguration configuration;
 
-    private Statistics stats;
+    private Statistics stats=new Statistics();
 
 
     private String hostname;
@@ -106,6 +106,7 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
      * @throws java.rmi.RemoteException
      */
     public void bind(RunnerConfiguration configuration) throws RemoteException {
+        log(suitename+" binding to test runner");
         this.configuration = configuration;
     }
 
@@ -137,9 +138,13 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
             RemoteException {
         super.sfStart();
         readConfiguration();
-        //runTests();
     }
 
+    /**
+     * read in our configuration
+     * @throws SmartFrogException
+     * @throws RemoteException
+     */
     protected void readConfiguration() throws SmartFrogException,
             RemoteException {
         ifValue = sfResolve(ATTR_IF, ifValue, false);
@@ -192,7 +197,6 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
      */
     private void addTest(String classname) {
         String fullname = packageValue + classname;
-
         if (testClasses.get(fullname) == null) {
             log.debug("adding test " + fullname);
             testClasses.put(fullname, fullname);
@@ -213,7 +217,7 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
         List dest = new ArrayList(src.size());
         Iterator index = src.iterator();
         while (index.hasNext()) {
-            Object element = (Object) index.next();
+            Object element = index.next();
             if (element instanceof List) {
                 dest.addAll(flattenStringList((List) element, name));
             } else if (!(element instanceof String)) {

@@ -128,9 +128,9 @@ BufferingListener extends TestListener {
 TestRunnerSchema extends Schema {
     listener extends CD;
     keepGoing extends OptionalBoolean;
-//    fork extends OptionalBoolean;
     failOnError extends OptionalBoolean;
     threadPriority extends OptionalInteger;
+    runTests extends Boolean;
 }
 
 /**
@@ -141,7 +141,7 @@ TestRunner extends Compound {
     testRunnerSchema extends TestRunnerSchema;
     listener extends ConsoleListener ;
     failOnError true;
-
+    runTests true; 
 }
 
 

@@ -22,6 +22,7 @@
 package org.smartfrog.services.junit.test;
 
 import org.smartfrog.services.junit.TestRunner;
+import org.smartfrog.services.junit.Statistics;
 import org.smartfrog.services.junit.listeners.BufferingListener;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.test.TestHelper;
@@ -58,12 +59,15 @@ public class LocalhostTest extends TestRunnerTestBase {
             assertTrue(runner != null);
             BufferingListener listener = null;
             listener =
-                    (BufferingListener) deploy.sfResolve("listener",
+                    (BufferingListener) deploy.sfResolve(TestRunner.ATTR_LISTENER,
                             listener,
                             true);
-            boolean finished = spinTillFinished(listener, 1, seconds);
+            boolean finished = spinTillFinished(runner, seconds);
             assertTrue("Test run timed out", finished);
-
+            Statistics statistics = runner.getStatistics();
+            assertEquals("statistics.testRun==1",1,statistics.getTestsRun());
+            assertEquals("statistics.errors==0", 0, statistics.getErrors());
+            assertEquals("statistics.failures==0",0, statistics.getFailures());
             assertTrue("expected tests to run", listener.getStartCount() == 1);
             assertTrue("session started",
                     listener.getSessionStartCount() == 1);
@@ -77,16 +81,14 @@ public class LocalhostTest extends TestRunnerTestBase {
 
     }
 
-    private boolean spinTillFinished(BufferingListener listener,
-            final int testsExpected,
-            int timeoutSeconds) throws InterruptedException,
+    private boolean spinTillFinished(TestRunner runner,
+                                     int timeoutSeconds) throws InterruptedException,
             RemoteException {
 
         do {
             Thread.sleep(1000);
             timeoutSeconds--;
-        } while (listener.getEndCount() != testsExpected && timeoutSeconds >=
-                0);
-        return listener.getEndCount() == testsExpected;
+        } while (!runner.isFinished() && timeoutSeconds >=0);
+        return runner.isFinished();
     }
 }

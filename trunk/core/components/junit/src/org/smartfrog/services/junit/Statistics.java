@@ -24,6 +24,7 @@ import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.Prim;
 
 import java.rmi.RemoteException;
+import java.io.Serializable;
 
 /**
  * cache statistics for operations. thread safe add operations, and
@@ -31,7 +32,7 @@ import java.rmi.RemoteException;
  * created Jul 14, 2004 4:21:51 PM
  */
 
-public final class Statistics {
+public final class Statistics implements Serializable {
 
     private int errors = 0;
     private int failures = 0;
