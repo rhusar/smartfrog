@@ -28,6 +28,8 @@ import java.util.Enumeration;
 import java.util.Vector;
 
 import org.smartfrog.sfcore.common.Context;
+import org.smartfrog.sfcore.common.MessageKeys;
+import org.smartfrog.sfcore.common.MessageUtil;
 import org.smartfrog.sfcore.common.Copying;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
@@ -47,7 +49,7 @@ import org.smartfrog.sfcore.reference.Reference;
  * Components.
  */
 public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
-       implements Serializable, Cloneable, SFComponentDescription {
+    implements Serializable, Cloneable, SFComponentDescription, MessageKeys {
 
    /**
     *  cache the resoltion phases for this component - obtained by calls to
@@ -315,8 +317,10 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
       } while (resState.moreToResolve());
 
       if (resState.unresolved().size() > 0) {
-         throw SmartFrogCompileResolutionException.typeResolution(null,getCompleteName(),
-               resState.unresolved(),null);
+         throw SmartFrogCompileResolutionException.typeResolution(
+                 MessageUtil.formatMessage(MSG_UNRESOLVED_REFERENCE),
+                 getCompleteName(),
+                 resState.unresolved(),null);
       }
    }
 
@@ -445,8 +449,9 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
       } while (resState.moreToResolve());
 
       if (resState.unresolved().size() > 0) {
-         throw SmartFrogCompileResolutionException.deployResolution(null,getCompleteName(),
-               resState.unresolved(),null);
+         throw SmartFrogCompileResolutionException.deployResolution(
+                 MessageUtil.formatMessage(MSG_UNRESOLVED_REFERENCE),
+                 getCompleteName(), resState.unresolved(),null);
       }
    }
 
