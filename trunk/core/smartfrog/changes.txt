@@ -1,3 +1,51 @@
+release 3.02.200_beta
+---------------------
+2004-Apr-26 Release date
+2004-Apr-23 - Fix: Corrected problem with sfCodeBase
+2004-Apr-22 - Add: Timout tuning for ant tasks 
+            - Add:  Test files for ant tasks
+            - Add:  Security Enhancements for ant tasks
+            - Fix:  Default Parser changes for prototype reference
+            - Fix:  Changed inhertitance of the part to remove HereRefPart. 
+                    This is to solve printing issues 
+            - Fix:  Printout of reference parts
+2004-Apr-21 - Fix:  Static access in SmartFrogRuntimeException and 
+                    SmartFrogLivenessException
+2004-Apr-20 - Add:  TouchFile component 
+            - Add:  Readme for Logger component 
+            - Add:  Readme for Emailer component 
+            - Add:  Security support for ant tasks. Though not functional yet 
+            - Add:  Example usage of Emailer in a workflow
+            - Add:  Attachment functionality for Emailer component
+2004-Apr-19 - Fix:  Build script for Emailer component
+2004-Apr-16 - Add:  Tests for ConfigurationDescriptor
+            - Add:  Openoffice documents for webserver component
+            - Update:   CDDLM documents 
+            - Update:   CDDLM examples 
+            - Add:  Grid application examples
+            - Add:  Emailer component
+            - Add:  Parser tests
+2004-Apr-15 - Add:  Option to comment lines in file used by -f option. 
+                    Lines that start with // or # are ignored 
+            - Add:  SmartFrogRuntimeException to sfAddAttribute,
+                     sfRemoveAttribute, sfReplaceAttribute methods
+            - Fix:  UI issues in webserver component
+            - Add:  New Proxy class for Logger component
+            - Fix:  Problem with codebase java property i.e. quotes around 
+                    "-Dorg.smartfrog.codebase=$CODEBASE" in scripts
+2004-Apr-14 -Add:   Documentation for TBD 
+            -Fix:   Fixed placement bug, where palcements that fail get 
+                    quitely removed
+            -Add:   Dynamic webserver initial instructions on how to build 
+                    the system 
+2004-Apr-13 -Add:   First version of the TBD predicate 
+            -Fix:   fixed issues with signJars target in buildSecurity.xml
+2004-Apr-08 -Fix:   Updated talk. small bug in just-updated common.xml 
+            -Fix:   Remove ComponentDeployer interface and implementing 
+                    methods
+            -Add:   New SFDeploy class
+2004-Apr-08 -Add:   Distributed Logger Component
+
 release 3.02.000_alpha
 -----------------------
 2004-Apr-7  Release date
