@@ -47,19 +47,22 @@ import org.smartfrog.sfcore.processcompound.SFProcess;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
 
 /**
- * Implements the trace component in SmartFrog System. It traces the lifecycle
- * methods of the components.
+ * Persist a component to a file
  */
 public class SFPersist extends PrimImpl implements Prim {
 
-    /** the firectory for persistng the contexts */
-    private String directory = "/tmp";
+    /**
+     * the firectory for persistng the contexts
+     */
+    private String directory;
 
     /* the hook objects */
     private PrimHook sfPersister = new SfPersister();
     private PrimHook sfDePersister = new SfDePersister();
 
-    /** the log component to which to generate the trace logs */
+    /**
+     * the log component to which to generate the trace logs
+     */
     private LogSF log = null;
 
     /* number to add to filename to make unique */
@@ -77,7 +80,7 @@ public class SFPersist extends PrimImpl implements Prim {
      * Deploys the component.
      *
      * @throws SmartFrogException in case of error while deploying
-     * @throws RemoteException in case of network/rmi error
+     * @throws RemoteException    in case of network/rmi error
      */
     public synchronized void sfDeploy() throws SmartFrogException,
             RemoteException {
@@ -85,24 +88,24 @@ public class SFPersist extends PrimImpl implements Prim {
 
         log = sfGetCoreLog();
 
-	directory = sfResolve("directory", directory, false);
+        directory = sfResolve("directory", directory, true);
     }
 
     /**
      * Starts the component.
      *
      * @throws SmartFrogException in case of error in starting
-     * @throws RemoteException in case of network/rmi error
+     * @throws RemoteException    in case of network/rmi error
      */
     public synchronized void sfStart() throws SmartFrogException,
-					      RemoteException {
+            RemoteException {
         super.sfStart();
 
-	restartComponents();
+        restartComponents();
 
-	// applied by default
-	sfDeployWithHooks.addHook(sfPersister);
-	sfTerminateWithHooks.addHook(sfDePersister);
+        // applied by default
+        sfDeployWithHooks.addHook(sfPersister);
+        sfTerminateWithHooks.addHook(sfDePersister);
     }
 
     /**
@@ -113,114 +116,138 @@ public class SFPersist extends PrimImpl implements Prim {
     public synchronized void sfTerminateWith(TerminationRecord r) {
         try {
             sfDeployWithHooks.removeHook(sfPersister);
-	    sfTerminateWithHooks.removeHook(sfDePersister);
-	    // remove file
+            sfTerminateWithHooks.removeHook(sfDePersister);
+            // remove file
         } catch (Exception e) {
-	    
+
         }
         super.sfTerminateWith(r);
     }
 
 
-
     private void restartComponents() throws SmartFrogException {
-	File restartDirectory = new File(directory);
-	File[] files = restartDirectory.listFiles(new sfFileFilter());
-	
-	for (int i = 0; i < files.length; i++) {
-	    deployFile(files[i]);
-	}
+        File restartDirectory = new File(directory);
+        File[] files = restartDirectory.listFiles(new sfFileFilter());
+
+        for (int i = 0; i < files.length; i++) {
+            deployFile(files[i]);
+        }
     }
 
     private void deployFile(File f) throws SmartFrogException {
-	try {
-	    if (log.isInfoEnabled()) log.info("Restart description from file " + f);
-	    Phases top = (new SFParser("sf")).sfParse(new FileInputStream(f));
-	    ComponentDescription topd = top.sfAsComponentDescription(); // should b fully resolved,,,
-	    System.out.println("topd " + topd);
-	    SFProcess.getProcessCompound().sfCreateNewApp(null, topd, null);
-	} catch (Exception e) {
-	    SmartFrogException.forward("Error redeploying persisted component from file " + f, e);
-	}
+        try {
+            if (log.isInfoEnabled()) {
+                log.info("Restart description from file " + f);
+            }
+            Phases top = (new SFParser("sf")).sfParse(new FileInputStream(f));
+            ComponentDescription topd = top.sfAsComponentDescription(); // should b fully resolved,,,
+            System.out.println("topd " + topd);
+            SFProcess.getProcessCompound().sfCreateNewApp(null, topd, null);
+        } catch (Exception e) {
+            SmartFrogException.forward("Error redeploying persisted component from file " +
+                    f, e);
+        }
     }
 
     private class sfFileFilter implements FilenameFilter {
-	public boolean accept(File dir, String name) {
-	    return name.endsWith(".sf");
-	}
+        public boolean accept(File dir, String name) {
+            return name.endsWith(".sf");
+        }
     }
 
     /**
      * Utility inner class- persister functinoality
      */
     private class SfPersister implements PrimHook {
-    /**
-     * sfHookAction for deploying
-     *
-     * @param prim prim component
-     * @param terminationRecord TerminationRecord object
-     *
-     * @throws SmartFrogException in case of any error
-     */
-        public void sfHookAction(Prim prim, TerminationRecord terminationRecord)
-            throws SmartFrogException {
-	    boolean sfPersist = false;
-	    // write the context to the file relative to the directory...
-	    try {
-		System.out.println("running hook");
-		if (prim.sfParent() instanceof ProcessCompound) {
-		    sfPersist = prim.sfResolve("sfPersist", sfPersist, false);
-		    if (sfPersist) {
-			String time = new Long(new Date().getTime()).toString();
-			String filename = "sfPersist." + time + "." + nextInt++ + ".sf";
-			prim.sfReplaceAttribute("sfPersisted", filename);
-			prim.sfReplaceAttribute("sfPersistedDirectory", directory);
-			Context context = prim.sfContext();
-			
-			if (log.isInfoEnabled()) log.info("persisting description to file " + filename);
-			Writer out = new FileWriter(new File(directory, filename));
-			((PrettyPrinting)context).writeOn(out,1);
-			out.close();
-		    }
-		}
-	    } catch (Exception e) {
-		// ignore
-		if (log.isErrorEnabled()) log.error("Error persisting component to file " + sfPersist, e);
-		throw new SmartFrogException("Error persisting component to file " + sfPersist, e);
-	    }
-	}
+        /**
+         * sfHookAction for deploying
+         *
+         * @param prim              prim component
+         * @param terminationRecord TerminationRecord object
+         * @throws SmartFrogException in case of any error
+         */
+        public void sfHookAction(Prim prim,
+                TerminationRecord terminationRecord)
+                throws SmartFrogException {
+            boolean sfPersist = false;
+            // write the context to the file relative to the directory...
+            try {
+                System.out.println("running hook");
+                if (prim.sfParent() instanceof ProcessCompound) {
+                    sfPersist = prim.sfResolve("sfPersist", sfPersist, false);
+                    if (sfPersist) {
+                        String time = new Long(new Date().getTime()).toString();
+                        String filename = "sfPersist." +
+                                time +
+                                "." +
+                                nextInt++ +
+                                ".sf";
+                        prim.sfReplaceAttribute("sfPersisted", filename);
+                        prim.sfReplaceAttribute("sfPersistedDirectory",
+                                directory);
+                        Context context = prim.sfContext();
+
+                        if (log.isInfoEnabled()) {
+                            log.info("persisting description to file " +
+                                    filename);
+                        }
+                        Writer out = new FileWriter(new File(directory,
+                                filename));
+                        ((PrettyPrinting) context).writeOn(out, 1);
+                        out.close();
+                    }
+                }
+            } catch (Exception e) {
+                // ignore
+                if (log.isErrorEnabled()) {
+                    log.error("Error persisting component to file " +
+                            sfPersist,
+                            e);
+                }
+                throw new SmartFrogException("Error persisting component to file " +
+                        sfPersist, e);
+            }
+        }
     }
 
     /**
      * Utility inner class- removing persister functinoality
      */
     private class SfDePersister implements PrimHook {
-    /**
-     * sfHookAction for terminating
-     *
-     * @param prim prim component
-     * @param terminationRecord TerminationRecord object
-     *
-     * @throws SmartFrogException in case of any error
-     */
-        public void sfHookAction(Prim prim, TerminationRecord terminationRecord)
-            throws SmartFrogException {
-	    File file = null;
-	    // write the context to the file relative to the directory...
-	    try {
-		System.out.println("running termination hook");
-		String filename = prim.sfResolve("sfPersisted", "", false);
-		if (!filename.equals("")) {
-		    file = new File(directory, filename);
-		    boolean deleted = file.delete();
-		    if (log.isDebugEnabled()) log.debug("Persisted file " + file + " removal: result: " + deleted);
-		}
-	    } catch (Exception e) {
-		// ignore
-		if (log.isErrorEnabled()) log.error("Error persisting component to file " + file, e);
-		throw new SmartFrogException("Error persisting component to file " + file, e);
-	    }
-	}
+        /**
+         * sfHookAction for terminating
+         *
+         * @param prim              prim component
+         * @param terminationRecord TerminationRecord object
+         * @throws SmartFrogException in case of any error
+         */
+        public void sfHookAction(Prim prim,
+                TerminationRecord terminationRecord)
+                throws SmartFrogException {
+            File file = null;
+            // write the context to the file relative to the directory...
+            try {
+                System.out.println("running termination hook");
+                String filename = prim.sfResolve("sfPersisted", "", false);
+                if (!filename.equals("")) {
+                    file = new File(directory, filename);
+                    boolean deleted = file.delete();
+                    if (log.isDebugEnabled()) {
+                        log.debug("Persisted file " +
+                                file +
+                                " removal: result: " +
+                                deleted);
+                    }
+                }
+            } catch (Exception e) {
+                // ignore
+                if (log.isErrorEnabled()) {
+                    log.error("Error persisting component to file " + file, e);
+                }
+                throw new SmartFrogException("Error persisting component to file " +
+                        file, e);
+            }
+        }
     }
 
 }
