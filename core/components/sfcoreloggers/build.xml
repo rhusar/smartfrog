@@ -27,17 +27,23 @@ For more information: www.smartfrog.org
     Build file for Log4J, JCL,... loggers.
 </description>
 
-   <!-- override point -->
+
+  <!-- override point -->
   <property file="build.properties" />
+  <property name="root.dir" location="../../"  />
+
+
+  <!-- Import common stuff -->
+  <!--available file="../../common.xml" property="root.dir" value="../.."/--> 
+  <import file="${root.dir}/common.xml"/>
+
+  <property name="is.component" value="true"  />
 
 <!--    <property name="net.lib.dir" location="lib" description=
                         "place to put third party libraries"/>
         -->
-  
-  <property name="root.dir" location=".."  />
-  <!-- Import common stuff -->
-  <available file="../../common.xml" property="root.dir" value="../.."/> 
-  <import file="${root.dir}/common.xml"/>
+ 
+
   
   
   <!-- ========================================================== -->
@@ -77,6 +83,15 @@ For more information: www.smartfrog.org
         value="No apache Log4J found"/>    
   </target>
   
+   <!-- ========================================================== -->
+  <!-- clean -->
+  <!-- ========================================================== -->
+
+ <target name="clean" depends="init,common.clean" description="clean up build ,dist and releases" >
+    <property name="releases.dir" value="releases"/>
+    <delete dir="${releases.dir}"  />  
+ </target>  
+
   <!-- ========================================================== -->
   <!-- create the jar -->
   <!-- ========================================================== -->
@@ -84,7 +99,16 @@ For more information: www.smartfrog.org
     description="create the jar files">
     <copy todir = "${dist.lib.dir}">
         <fileset dir ="${lib.dir}" />
-    </copy>          
+    </copy>   
+		 <!--copy todir = "${dist.doc.dir}">
+        <fileset dir ="${doc.dir}" />
+    </copy>   
+		 <copy todir = "${dist.src.dir}">
+        <fileset dir ="${src.dir}">
+		  <include name="**/examples/**"/>
+		</fileset>
+	</copy-->
+	 <copy tofile="${dist.dir}/build.xml" file="releaseBuild.xml"/>	
   </target>
 
 </project>
