@@ -18,61 +18,11 @@ For more information: www.smartfrog.org
 
 */
 
-#include "/org/smartfrog/predicates.sf"
+#include "/org/smartfrog/services/cddlm/api/components.sf"
 
 /**
- * Include the core smartfrog components.
+ * this is a messaging version of the system
  */
-#include "/org/smartfrog/components.sf"
-
-//include axis
-#include "/org/smartfrog/services/axis/components.sf"
-//web stuff
-#include "/org/smartfrog/services/www/components.sf"
-
-
-
-
-
-
-
-//fetch the WSDL every so often, just to see that we are happy
-FetchCddlmWSDL extends LivenessPage {
-    page "axis/services/cddlm?wsdl";
-    checkFrequency 10;
-}
-
-
-/**
- * the actual deployment
- * sets the threads and sessions
- */
-BaseCddlmSystem extends Compound {
-
-    port TBD;
-
-    //so they terminate one after the other
-    sfSyncTerminate true;
-
-    //wsdd for deploy
-    deployResource "/org/smartfrog/services/cddlm/api/deploy.wsdd";
-
-    //wsdd for undeploy
-    undeployResource "/org/smartfrog/services/cddlm/api/undeploy.wsdd";
-
-    //fetch the WSDL every so often, just to see that we are happy
-    wsdlFetch extends FetchCddlmWSDL {
-        port PARENT:port;
-    }
-
-    cddlmService extends AxisServiceResource {
-        port PARENT:port;
-        serviceName "cddlm";
-        deployResource PARENT:deployResource;
-        undeployResource PARENT:undeployResource;
-    }
-
-}
 
 /**
  * the actual deployment
@@ -92,5 +42,6 @@ StandaloneCddlmSystem extends Compound {
     //and cddlm service
     baseCddlmSystem extends BaseCddlmSystem {
         port PARENT:port;
+        deployResource "/org/smartfrog/services/cddlm/api/deploy.wsdd"; 
     }
 }
