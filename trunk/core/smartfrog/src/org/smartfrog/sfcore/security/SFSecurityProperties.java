@@ -22,9 +22,6 @@ package org.smartfrog.sfcore.security;
 
 import java.io.IOException;
 import java.io.InputStream;
-import org.smartfrog.sfcore.logging.LogSF;
-import org.smartfrog.sfcore.logging.LogFactory;
-
 
 
 import org.smartfrog.sfcore.common.SmartFrogCoreProperty;
@@ -96,7 +93,6 @@ public class SFSecurityProperties {
      */
     static void readSecurityProperties() {
         InputStream is = null;
-	LogSF log=LogFactory.getLog("SFSecurityLog");
         try {
             propertiesFileName = System.getProperty(propPropertiesFileName,
                     propertiesFileName);
@@ -111,9 +107,9 @@ public class SFSecurityProperties {
         } catch (IOException e) {
             // Can't load the file, use defaults...
             //System.out.println("SFSSecurityInit::readSecurityProperties " + "Can't read " + is);
-	    String errStr="SFSSecurityInit::readSecurityProperties " +"Can't read " + is;
-               if (log.isErrorEnabled())
-            	log.error(errStr);
+            // @todo review how to put this in a special Logger.
+            String errStr="SFSSecurityInit::readSecurityProperties " +"Can't read " + is;
+            System.err.println(errStr);
         }
     }
 }
