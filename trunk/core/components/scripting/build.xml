@@ -48,7 +48,7 @@ Reference URL:http://ant.apache.org
   <!-- =================================================================== -->
   <!-- Initialization target                                               -->
   <!-- =================================================================== -->
-  <target name="init" depends="init-standard-output-dirs,use-smartfrog-tasks">
+  <target name="init" depends="init-standard-output-dirs">
     <tstamp/>
     <property name="Name.Company" value="(C) Copyright 1998-2004 Hewlett-Packard Development Company, LP"/>
     <property name="version" value="smartfrog components"/>

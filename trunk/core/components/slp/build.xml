@@ -55,7 +55,7 @@ Reference URL:http://ant.apache.org
   <!-- =================================================================== -->
   <!-- Initialization target                                               -->
   <!-- =================================================================== -->
-  <target name="init" depends="init-standard-output-dirs,use-smartfrog-tasks">
+  <target name="init" depends="init-standard-output-dirs">
     <tstamp/>
     <property name="Name.System" value="slplib"/>
     <property name="Name.Author" value="Copyright (C) 2004 Glenn Hisdal"/>
