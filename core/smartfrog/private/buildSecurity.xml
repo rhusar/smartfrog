@@ -230,7 +230,7 @@ For more information: www.smartfrog.org
 <!-- 1.7 Sign jars, need to edit to change what is signed -->
  <target name="signJars">
     <antcall target="signjarbuild">
-      <param name="jarname" value="${dist.lib}/smartfrog.jar"/>
+      <param name="jarname" value="${dist.lib.dir}/smartfrog.jar"/>
       <param name="signedjarname" value="${dist.signedLib.dir}/smartfrog.jar"/>
     </antcall>
 
