@@ -145,6 +145,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
 
     /** Reference that caches cannonical name. */
     protected Reference sfCompleteName = null;
+    public static final String COMPONENT_TERMINATED_MESSAGE = "Component Terminated";
 
     /**
      * Used in conjunction with sfDeployWith to set parent and context after
@@ -927,13 +928,13 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
 
         if ((source == null) || (sfParent == null)) {
             if (sfIsTerminated) {
-                throw new SmartFrogLivenessException("Component Terminated");
+                throw new SmartFrogLivenessException(COMPONENT_TERMINATED_MESSAGE);
             }
             return;
         }
 
         if (sfIsTerminated && !source.equals(sfParent)) {
-            throw new SmartFrogLivenessException("Component Terminated");
+            throw new SmartFrogLivenessException(COMPONENT_TERMINATED_MESSAGE);
         }
 
         if (source.equals(sfParent)) {

@@ -38,7 +38,7 @@ public interface Liveness extends Remote {
      * call on a component, the source of the liveness message is also passed
      * in
      *
-     * @param source Source of call.
+     * @param source Source of call. Optional; can be null.
      *
      * @throws SmartFrogLivenessException liveness failure
      * @throws RemoteException In case of Remote/nework error
