@@ -39,7 +39,7 @@ import java.rmi.*;
     Can be used to locate any service. The result of the discovery is
     a ServiceLocationEnumeration with the discovered Service URLs.
 */
-public class SFSlpLocatorImpl extends PrimImpl implements Prim {
+public class SFSlpLocatorImpl extends PrimImpl implements Prim, SFSlpLocator {
     protected Locator locator;
     protected Properties properties;
     protected ServiceType serviceType;

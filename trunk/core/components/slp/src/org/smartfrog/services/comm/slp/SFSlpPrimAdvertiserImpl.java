@@ -43,7 +43,7 @@ import sun.misc.*;
     Implements a SF advertiser for Prim components.
     The component to advertise is given in the description file.
 */
-public class SFSlpPrimAdvertiserImpl extends SFSlpAdvertiserImpl implements Prim {
+public class SFSlpPrimAdvertiserImpl extends SFSlpAdvertiserImpl implements Prim, SFSlpPrimAdvertiser {
     protected Object toAdvertise = null;
     
     public SFSlpPrimAdvertiserImpl() throws RemoteException {

@@ -39,7 +39,7 @@ import java.rmi.*;
     The component can be used to advertise any service.
     The service type, attributes and URL are set in the SF description.
 */
-public class SFSlpAdvertiserImpl extends PrimImpl implements Prim {
+public class SFSlpAdvertiserImpl extends PrimImpl implements Prim, SFSlpAdvertiser {
     protected Advertiser advertiser;
     protected Properties properties;
     protected ServiceURL serviceURL;

@@ -137,73 +137,10 @@ public class UserAgent extends SLPAgent implements Locator, SlpUdpCallback {
             throw new ServiceLocationException(ServiceLocationException.SCOPE_NOT_SUPPORTED,
                                                "UA: Requested scope is NOT supported");
         }
-
+        
         SLPSrvReqMessage req = new SLPSrvReqMessage(type, scopesToUse, filter, locale);
         
-        Vector receivers = findReceivers((Vector)scopesToUse.clone());
-        if(!receivers.isEmpty()) {
-            DAInfo da;
-            Iterator iter = receivers.iterator();
-            SLPMessageSender ms = new SLPMessageSender(this, CONFIG_SLP_MTU, CONFIG_RETRY, results);
-            Vector additional = null;
-            while(iter.hasNext() || additional != null) {
-                if(!iter.hasNext()) {
-                    receivers = additional;
-                    iter = receivers.iterator();
-                    additional = null;
-                }
-                da = (DAInfo)iter.next();
-                
-                if(da.getHost().equals(CONFIG_SLP_MC_ADDR)) {
-                    //System.out.println("UserAgent -> Sending multicast");
-                    req.setFlags(SLPMessageHeader.FLAG_MCAST);
-                    ms.sendSLPMessage(req, 
-                                      //address, CONFIG_SLP_AGENTPORT,
-                                      da.getHost(), da.getPort(), CONFIG_MC_MAX,
-                                      unicastCommunicator);
-                }
-                else {
-                    //System.out.println("UserAgent -> Sending to DA");
-                    // If the DA is down, we should try to find another DA supporting
-                    // the wanted scopes, or in the worst case use multicast...
-                    // Currently the we go directly do multicast if a DA is down
-                    try {
-                        ms.sendSLPMessage(req, 
-                                          //address, CONFIG_SLP_AGENTPORT,
-                                          da.getHost(), da.getPort(), CONFIG_RETRY_MAX,
-                                          unicastCommunicator);
-                    }catch(ServiceLocationException se) {
-                        if(se.getErrorCode() == ServiceLocationException.DA_NOT_AVAILABLE) {
-                            DAs.remove(da.getHost());
-                            // do multicast...
-                            // Should try to find another DA before going multicast...
-                            /*
-                            DAInfo mc = new DAInfo(CONFIG_SLP_MC_ADDR, CONFIG_SLP_PORT);
-                            if(!receivers.contains(mc)) {
-                                additional = mc;
-                            }
-                             */
-                            
-                            // find another DA (or DAs)...
-                            additional = findReceivers(da.getScopes());
-                            for(Iterator it = additional.iterator(); it.hasNext(); ) {
-                                if(receivers.contains(it.next())) {
-                                    it.remove();
-                                }
-                            }
-                        }
-                        else {
-                            // some other exception.
-                            throw se;
-                        }
-                    }
-                }
-            }
-        }
-        else {
-            throw new ServiceLocationException(ServiceLocationException.SCOPE_NOT_SUPPORTED,
-                                               "UA: Requested scope is NOT supported");
-        }
+        sendRequest(req, scopesToUse, results);
             
         // return the discovered service URLs
         return results;
@@ -226,77 +163,10 @@ public class UserAgent extends SLPAgent implements Locator, SlpUdpCallback {
         // create request...
         SLPSrvTypeReqMessage req = new SLPSrvTypeReqMessage(NA, scopesToUse, locale);
         
-        // find receivers.
-        Vector receivers = findReceivers((Vector)scopesToUse.clone());
-        if(!receivers.isEmpty()) {
-            DAInfo da;
-            Iterator iter = receivers.iterator();
-            SLPMessageSender ms = new SLPMessageSender(this, CONFIG_SLP_MTU, CONFIG_RETRY, results);
-            Vector additional = null;
-            // send request to all receivers
-            while(iter.hasNext() || additional != null) {
-                if(!iter.hasNext()) {
-                    receivers = additional;
-                    iter = receivers.iterator();
-                    additional = null;
-                }
-                da = (DAInfo)iter.next();
-                
-                if(da.getHost().equals(CONFIG_SLP_MC_ADDR)) {
-                    //System.out.println("UserAgent -> Sending multicast");
-                    req.setFlags(SLPMessageHeader.FLAG_MCAST);
-                    ms.sendSLPMessage(req, 
-                                      //address, CONFIG_SLP_AGENTPORT,
-                                      da.getHost(), da.getPort(), CONFIG_MC_MAX,
-                                      unicastCommunicator);
-                }
-                else {
-                    //System.out.println("UserAgent -> Sending to DA");
-                    // If the DA is down, we should try to find another DA supporting
-                    // the wanted scopes, or in the worst case use multicast...
-                    // Currently the we go directly do multicast if a DA is down
-                    try {
-                        ms.sendSLPMessage(req, 
-                                          //address, CONFIG_SLP_AGENTPORT,
-                                          da.getHost(), da.getPort(), CONFIG_RETRY_MAX,
-                                          unicastCommunicator);
-                    }catch(ServiceLocationException se) {
-                        if(se.getErrorCode() == ServiceLocationException.DA_NOT_AVAILABLE) {
-                            DAs.remove(da.getHost());
-                            // do multicast...
-                            // Should try to find another DA before going multicast...
-                            /*
-                             DAInfo mc = new DAInfo(CONFIG_SLP_MC_ADDR, CONFIG_SLP_PORT);
-                             if(!receivers.contains(mc)) {
-                                 additional = mc;
-                             }
-                             */
-                            
-                            // find another DA (or DAs)...
-                            additional = findReceivers(da.getScopes());
-                            for(Iterator it = additional.iterator(); it.hasNext(); ) {
-                                if(receivers.contains(it.next())) {
-                                    it.remove();
-                                }
-                            }
-                        }
-                        else {
-                            // some other exception.
-                            throw se;
-                        }
-                    }
-                }
-            }
-        }
-        else {
-            throw new ServiceLocationException(ServiceLocationException.SCOPE_NOT_SUPPORTED,
-                                               "UA: Requested scope is NOT supported");
-        }
+        sendRequest(req, scopesToUse, results);
         
         // return the discovered service types
         return results;
-        
-        //throw new ServiceLocationException(ServiceLocationException.NOT_IMPLEMENTED);
     }
     
     /**
@@ -540,6 +410,74 @@ public class UserAgent extends SLPAgent implements Locator, SlpUdpCallback {
         }
         return toReturn;
          */
+    }
+    
+    private void sendRequest(SLPMessageHeader request, 
+                             Vector scopesToUse,
+                             ServiceLocationEnumeration results) throws ServiceLocationException {
+                
+        Vector receivers = findReceivers((Vector)scopesToUse.clone());
+        if(!receivers.isEmpty()) {
+            DAInfo da;
+            Iterator iter = receivers.iterator();
+            SLPMessageSender ms = new SLPMessageSender(this, CONFIG_SLP_MTU, CONFIG_RETRY, results);
+            Vector additional = null;
+            while(iter.hasNext() || additional != null) {
+                if(!iter.hasNext()) {
+                    receivers = additional;
+                    iter = receivers.iterator();
+                    additional = null;
+                }
+                da = (DAInfo)iter.next();
+                
+                if(da.getHost().equals(CONFIG_SLP_MC_ADDR)) {
+                    //System.out.println("UserAgent -> Sending multicast");
+                    request.setFlags(SLPMessageHeader.FLAG_MCAST);
+                    ms.sendSLPMessage(request, 
+                                      da.getHost(), da.getPort(), CONFIG_MC_MAX,
+                                      unicastCommunicator);
+                }
+                else {
+                    //System.out.println("UserAgent -> Sending to DA");
+                    // If the DA is down, we should try to find another DA supporting
+                    // the wanted scopes, or in the worst case use multicast...
+                    // Currently the we go directly do multicast if a DA is down
+                    try {
+                        ms.sendSLPMessage(request, 
+                                          da.getHost(), da.getPort(), CONFIG_RETRY_MAX,
+                                          unicastCommunicator);
+                    }catch(ServiceLocationException se) {
+                        if(se.getErrorCode() == ServiceLocationException.DA_NOT_AVAILABLE) {
+                            DAs.remove(da.getHost());
+                            // do multicast...
+                            // Should try to find another DA before going multicast...
+                            /*
+                             DAInfo mc = new DAInfo(CONFIG_SLP_MC_ADDR, CONFIG_SLP_PORT);
+                             if(!receivers.contains(mc)) {
+                                 additional = mc;
+                             }
+                             */
+                            
+                            // find another DA (or DAs)...
+                            additional = findReceivers(da.getScopes());
+                            for(Iterator it = additional.iterator(); it.hasNext(); ) {
+                                if(receivers.contains(it.next())) {
+                                    it.remove();
+                                }
+                            }
+                        }
+                        else {
+                            // some other exception.
+                            throw se;
+                        }
+                    }
+                }
+            }
+        }
+        else {
+            throw new ServiceLocationException(ServiceLocationException.SCOPE_NOT_SUPPORTED,
+                                               "UA: Requested scope is NOT supported");
+        }
     }
     
     protected void writeLog(String message) {
