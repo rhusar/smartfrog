@@ -85,6 +85,7 @@ public class SfTokenMarker extends CTokenMarker {
          sfKeywords.add("extends", Token.KEYWORD1);
          //SF
          sfKeywords.add("LAZY", Token.KEYWORD1);
+         sfKeywords.add("DATA", Token.KEYWORD1);
          sfKeywords.add("==", Token.KEYWORD1);
          sfKeywords.add("!=", Token.KEYWORD1);
          sfKeywords.add(">=", Token.KEYWORD1);
@@ -133,11 +134,9 @@ public class SfTokenMarker extends CTokenMarker {
           */
          //Labels
          sfKeywords.add("sfConfig", Token.LABEL);
-         sfKeywords.add("sfHost", Token.LABEL);
          sfKeywords.add("sfExport", Token.LABEL);
          sfKeywords.add("sfClassBase", Token.LABEL);
          sfKeywords.add("sfDeployerClass", Token.LABEL);
-         sfKeywords.add("sfProcess", Token.LABEL);
          sfKeywords.add("sfProcessName", Token.LABEL);
          sfKeywords.add("sfProcessHost", Token.LABEL);
          sfKeywords.add("sfProcessComponentName", Token.LABEL);
