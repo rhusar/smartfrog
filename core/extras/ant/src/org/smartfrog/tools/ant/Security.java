@@ -43,18 +43,36 @@ import java.util.Properties;
  */
 public class Security extends DataType {
 
-    //java security keystore
+    /** java security keystore */
     private File keystore;
-    //java security policy file
+    /** java security policy file */
     private File policyFile;
-    //sf security resource
+
+    /** sf security resource */
     private File securityProperties;
 
-    //the identity to use
+    /** the identity to use */
     private String alias;
+
+    /**
+     * enabled flag. Security refs are enabled by default.
+     */
+    private boolean enabled=true;
+
+    /**
+     * error string used in JUnit test cases
+     */
     public static final String ERROR_REFID_EXCLUSIVE = "Cannot have other attributes when refid is set";
+
+    /**
+     * error string used in JUnit test cases
+     */
     public static final String ERROR_NO_ALIAS = "alias attribute must be set";
 
+    /**
+     * get the keystore
+     * @return keystore or null
+     */
     public File getKeystore() {
         return keystore;
     }
@@ -68,6 +86,10 @@ public class Security extends DataType {
         this.keystore = keystore;
     }
 
+    /**
+     * Get the security properties
+     * @return security properties filr or null
+     */
     public File getSecurityProperties() {
         return securityProperties;
     }
@@ -126,6 +148,22 @@ public class Security extends DataType {
     public boolean isEmpty() {
         return keystore==null && policyFile==null && securityProperties==null
                 && alias==null;
+    }
+
+    /**
+     * Test for this security element being enabled
+     * @return true if this security element is to be used, false otherwise.
+     */
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    /**
+     * Set the enabled flag. Disabled security elements are effectively unused.
+     * @param enabled
+     */
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 
     /**

@@ -549,9 +549,6 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
         //last minute logging
         if(isDebug()) {
             log("Command: "+getCommandLine());
-
-
-
         }
 
         //run it

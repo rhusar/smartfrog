@@ -113,7 +113,10 @@ public abstract class TaskBase extends Task {
      * @return
      */
     protected Java createJavaTask(String entryPoint) {
-        Java java = (Java) getProject().createTask("java");
+        Java java;
+        java = new Java();
+        bindToChild(java);
+        java = (Java) getProject().createTask("java");
         java.setClassname(entryPoint);
         java.setTaskName(getTaskName());
         return java;
@@ -157,5 +160,21 @@ public abstract class TaskBase extends Task {
             Path path = new Path(getProject(), pathstring);
             java.setClasspath(path);
         }
+    }
+
+    /**
+     * set a child task up as bound to this.
+     * It is the inverse of Task.bindToOwner() in Ant1.7+,
+     * implemented here
+     * @param child a child task
+     */
+    public void bindToChild(Task child) {
+        assert child!=this;
+        child.setProject(getProject());
+        child.setOwningTarget(getOwningTarget());
+        child.setTaskName(getTaskName());
+        child.setDescription(getDescription());
+        child.setLocation(getLocation());
+        child.setTaskType(getTaskType());
     }
 }
