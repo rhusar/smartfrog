@@ -285,12 +285,14 @@ public class PrimImpl extends Object implements Prim, MessageKeys {
             return null;
         }
 
-        if (sfContext.containsKey(name)) {
-            return null;
-        }
+	
+	if (sfContext != null) {
+        	if (sfContext.containsKey(name)) {
+            		return null;
+        	}
 
-        sfContext.put(name, value);
-
+        	sfContext.put(name, value);
+	}
         return value;
     }
 
