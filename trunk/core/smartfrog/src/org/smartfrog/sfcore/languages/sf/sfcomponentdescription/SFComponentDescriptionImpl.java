@@ -613,7 +613,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
     *@throws  SmartFrogException  In case of SmartFrog system error
     *@throws  RemoteException     In case of network/rmi error
     */
-   public Phases sfResolvePhases() throws SmartFrogException, RemoteException {
+   public Phases sfResolvePhases() throws SmartFrogException {
       return sfResolvePhases(sfGetPhases());
    }
 
@@ -628,7 +628,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
     *@throws  RemoteException     In case of network/rmi error
     */
    public Phases sfResolvePhase(String phase)
-          throws SmartFrogException, RemoteException {
+          throws SmartFrogException {
       Vector v = new Vector();
       v.add(phase);
 
@@ -648,7 +648,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
     *@throws  RemoteException     In case of network/rmi error
     */
    public Phases sfResolvePhases(Vector phases)
-          throws SmartFrogException, RemoteException {
+          throws SmartFrogException {
       boolean sfConfig = false;
       SFComponentDescription actOn = this;
 
