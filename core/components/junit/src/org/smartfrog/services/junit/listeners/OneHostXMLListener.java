@@ -23,6 +23,9 @@ package org.smartfrog.services.junit.listeners;
 
 import org.smartfrog.services.junit.TestInfo;
 import org.smartfrog.services.junit.ThrowableTraceInfo;
+import org.smartfrog.services.junit.TestListener;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -32,13 +35,18 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.rmi.RemoteException;
+import java.util.Date;
 
 /**
  * This class listens to tests on a single host. The XML Listener forwards stuff
  * to it. It is not a component; it is a utility class that components use, so
- * as to field requests from multiple servers Date: 12-Jun-2004 Time: 00:28:44
+ * as to log different test suites to different files.
+ *
+ * Important: close the file after use. The finalizer does not clean up; it merely
+ * throws an assertion failure if it is called while the file is open.
+ *
  */
-public class OneHostXMLListener implements XmlListener {
+public class OneHostXMLListener implements TestListener {
 
     /**
      * file we save to
@@ -49,10 +57,11 @@ public class OneHostXMLListener implements XmlListener {
      * name of host
      */
     private String hostname;
-
+    private String suitename;
+    private Date startTime;
 
     private OutputStream out = null;
-    private PrintWriter xmlfile = null;
+    private PrintWriter xmlFile = null;
 
     /**
      * cache of last test failed; this is so that a failure will be logged as
@@ -67,27 +76,36 @@ public class OneHostXMLListener implements XmlListener {
 
     protected static final String ROOT_TAG = "testsuite";
     protected static final String ROOT_ATTRS = "";
-    protected static final String ROOT_OPEN = "<" +
-            ROOT_TAG +
-            " " +
-            ROOT_ATTRS +
-            " >\n";
+
     protected static final String ROOT_CLOSE = "</" + ROOT_TAG + ">\n";
+    private String preamble;
+    public static final String ERROR_LISTENER_CLOSED = "Attemped to log to a closed listener";
 
 
     /**
      * Listen to stuff coming from a single host.
+     * opens the file for future messages
      *
-     * @param hostname
-     * @param dir      directory to save to
+     * @param destFile destination file
+     * @param hostname hostname of the (possibly remote system)
+     * @param suitename name of the test suite
+     * @param startTime timestamp (in UTC) of the start of the tests
+     * @param preamble any text to include before the root element, like PI and comments
+     * @throws IOException if there is trouble opening the file.
      */
-    public OneHostXMLListener(String hostname, File dir) {
-        assert hostname != null;
-        assert dir != null;
+    public OneHostXMLListener(String hostname,
+                              File destFile,
+                              String suitename,
+                              Date startTime,
+                              String preamble
+                              ) throws IOException {
         //create our new directory
-        destFile = new File(dir, hostname + ".xml");
         destFile.mkdirs();
         this.hostname = hostname;
+        this.suitename = suitename;
+        this.startTime = startTime;
+        this.preamble = preamble;
+        open();
     }
 
     /**
@@ -99,22 +117,48 @@ public class OneHostXMLListener implements XmlListener {
      */
     protected void finalize() throws Throwable {
         assert out == null: ERROR_OUTPUT_FILE_OPEN;
-        assert xmlfile == null: ERROR_OUTPUT_FILE_OPEN;
+        assert xmlFile == null: ERROR_OUTPUT_FILE_OPEN;
+        super.finalize();
     }
 
+    /**
+     * open the file for writing
+     * @throws IOException
+     */
     public void open() throws IOException {
-        assert out == null;
-        assert xmlfile == null;
+        assert !isOpen(): "file is already open";
+        destFile.mkdirs();
         out = new BufferedOutputStream(new FileOutputStream(destFile));
-        xmlfile = new PrintWriter(new OutputStreamWriter(out, ENCODING));
-        xmlfile.write(XML_DECLARATION);
-        xmlfile.write(ROOT_OPEN);
+        xmlFile = new PrintWriter(new OutputStreamWriter(out, ENCODING));
+        //XML declaration whose encoding had better match
+        xmlFile.write(XML_DECLARATION);
+        xmlFile.write("\n");
+        //preamble if supplied
+        if(preamble!=null) {
+            xmlFile.write(preamble);
+            xmlFile.write("\n");
+        }
+        //write the root tag
+        xmlFile.write("<");
+        xmlFile.write(ROOT_TAG);
+        xmlFile.write(" "+ROOT_ATTRS+"\n");
+        xmlFile.write(a("hostname",hostname));
+        xmlFile.write(a("suitename", suitename));
+        xmlFile.write(a("utc", startTime.getTime()));
+        xmlFile.write(a("started", startTime.toString()));
+        xmlFile.write(">\n");
     }
 
 
+    /**
+     * close the file
+     * @throws IOException
+     */
     public void close() throws IOException {
-        assert out != null;
-        assert xmlfile != null;
+        if(!isOpen()) {
+            //harmless to close an already closed file.
+            return;
+        }
 
         write("summary",
                 a("tests", testCount)
@@ -123,14 +167,14 @@ public class OneHostXMLListener implements XmlListener {
                 + a("errors", errorCount),
                 null, false);
 
-        xmlfile.write(ROOT_CLOSE);
+        xmlFile.write(ROOT_CLOSE);
 
         // flush and check for a fault
-        if (xmlfile.checkError()) {
+        if (xmlFile.checkError()) {
             throw new IOException("Error while writing " + destFile);
         }
         try {
-            xmlfile.close();
+            xmlFile.close();
         } catch (Exception e) {
 
         }
@@ -139,13 +183,65 @@ public class OneHostXMLListener implements XmlListener {
         } catch (IOException e) {
 
         }
+        xmlFile=null;
+        out=null;
+        destFile=null;
+    }
+
+    /**
+     * check for errors
+     * @return true iff we have an output stream and it is open
+     */
+    public boolean isHappy() {
+        return xmlFile!=null && xmlFile.checkError();
+    }
+
+    /**
+     * Raise a smartfrog exception if there are any
+     * pending errors on the output stream.
+     * @throws SmartFrogException
+     */
+    public void raisePendingErrors() throws SmartFrogException {
+        if(!xmlFile.checkError()) {
+            throw new SmartFrogLivenessException("Trouble writing to " + destFile);
+        }
+
+    }
+
+    /**
+     * test for the file being open
+     * @return
+     */
+    public boolean isOpen() {
+        return xmlFile!=null;
+    }
+
+    /**
+     * Returns a string representation of the object. 
+     * @return a string representation of the object.
+     */
+    public String toString() {
+        return destFile!=null?destFile.toString():super.toString();
     }
 
 
     /**
+     * end this test suite. After calling this, caller should discard all
+     * references; they may no longer be valid. <i>No further methods may be
+     * called</i>
+     */
+    public void endSuite() throws RemoteException, SmartFrogException {
+        try {
+            close();
+        } catch (IOException e) {
+            throw SmartFrogException.forward(e);
+        }
+    }
+
+    /**
      * An error occurred.
      */
-    public void addError(TestInfo test) throws RemoteException {
+    public void addError(TestInfo test) throws RemoteException, SmartFrogException {
         errorCount++;
         add("error", test);
     }
@@ -153,7 +249,7 @@ public class OneHostXMLListener implements XmlListener {
     /**
      * A failure occurred.
      */
-    public void addFailure(TestInfo test) throws RemoteException {
+    public void addFailure(TestInfo test) throws RemoteException, SmartFrogException {
         failureCount++;
         add("failure", test);
     }
@@ -161,7 +257,7 @@ public class OneHostXMLListener implements XmlListener {
     /**
      * A test ended.
      */
-    public void endTest(TestInfo test) throws RemoteException {
+    public void endTest(TestInfo test) throws RemoteException, SmartFrogException {
         testCount++;
         if (!test.getClassname().equals(lastTestFailed)) {
             add("pass", test);
@@ -173,7 +269,7 @@ public class OneHostXMLListener implements XmlListener {
     /**
      * A test started.
      */
-    public void startTest(TestInfo test) throws RemoteException {
+    public void startTest(TestInfo test) throws RemoteException, SmartFrogException {
         //do nothing
     }
 
@@ -185,7 +281,11 @@ public class OneHostXMLListener implements XmlListener {
      * @param tag  element name
      * @param test test result to log
      */
-    protected void add(String tag, TestInfo test) {
+    protected void add(String tag, TestInfo test) throws SmartFrogException {
+        if(!isOpen()) {
+            //bail out on a closed operation
+            throw new SmartFrogException(ERROR_LISTENER_CLOSED);
+        }
         boolean success = test.hasFault();
         if (!success) {
             lastTestFailed = test.getClassname();
@@ -193,7 +293,8 @@ public class OneHostXMLListener implements XmlListener {
             lastTestFailed = null;
         }
         String entry = toXML(tag, test);
-        xmlfile.write(entry);
+        xmlFile.write(entry);
+        raisePendingErrors();
     }
 
 
@@ -209,7 +310,7 @@ public class OneHostXMLListener implements XmlListener {
             String body,
             boolean escape) {
         String x = x(tag, attrs, body, escape);
-        xmlfile.write(x);
+        xmlFile.write(x);
     }
 
 
@@ -330,7 +431,6 @@ public class OneHostXMLListener implements XmlListener {
      * @return
      */
     protected String toXML(String tag, TestInfo test) {
-        StringBuffer buf = new StringBuffer();
         String fault = toXML(test.getFault());
         String classname = a("classname", test.getClassname());
         String duration = a("duration", Long.toString(test.getDuration()));
@@ -395,9 +495,6 @@ public class OneHostXMLListener implements XmlListener {
 
         final OneHostXMLListener oneHostXMLListener = (OneHostXMLListener) o;
 
-        if (!hostname.equals(oneHostXMLListener.hostname)) {
-            return false;
-        }
         if (!destFile.equals(oneHostXMLListener.destFile)) {
             return false;
         }
@@ -406,12 +503,11 @@ public class OneHostXMLListener implements XmlListener {
     }
 
     /**
-     * hashcode is hashcode of hostname. Lets us search using the hashcode as
-     * the 1ary key.
-     *
+     * hashcode is hashcode of the session ID, which
+     * makes it easy to sort in a sensible table.
      * @return
      */
     public int hashCode() {
-        return hostname.hashCode();
+        return destFile.toString().hashCode();
     }
 }

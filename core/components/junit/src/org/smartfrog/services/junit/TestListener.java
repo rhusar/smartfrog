@@ -19,6 +19,9 @@
  */
 package org.smartfrog.services.junit;
 
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.common.SmartFrogException;
+
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
@@ -37,24 +40,33 @@ import java.rmi.RemoteException;
 public interface TestListener extends Remote {
 
     /**
+     * end this test suite. After calling this, caller should discard
+     * all references; they may no longer be valid.
+     * <i>No further methods may be called</i>
+     *
+     */
+    void endSuite()
+            throws RemoteException, SmartFrogException;
+
+    /**
      * An error occurred.
      */
-    public void addError(TestInfo test) throws RemoteException;
+    void addError(TestInfo test) throws RemoteException, SmartFrogException;
 
     /**
      * A failure occurred.
      */
-    public void addFailure(TestInfo test)
-            throws RemoteException;
+    void addFailure(TestInfo test)
+            throws RemoteException, SmartFrogException;
 
     /**
      * A test ended.
      */
-    public void endTest(TestInfo test) throws RemoteException;
+    void endTest(TestInfo test) throws RemoteException, SmartFrogException;
 
     /**
      * A test started.
      */
-    public void startTest(TestInfo test) throws RemoteException;
+    void startTest(TestInfo test) throws RemoteException, SmartFrogException;
 
 }

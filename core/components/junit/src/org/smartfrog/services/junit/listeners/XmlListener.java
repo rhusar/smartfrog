@@ -22,14 +22,14 @@
 package org.smartfrog.services.junit.listeners;
 
 import org.smartfrog.services.junit.TestListener;
+import org.smartfrog.services.junit.TestListenerFactory;
 
 /**
  * Date: 12-Jun-2004
  * Time: 00:16:06
  */
 
-public interface XmlListener extends TestListener {
-
+public interface XmlListener extends TestListenerFactory {
 
     /**
      * name of a directory for output
@@ -40,5 +40,9 @@ public interface XmlListener extends TestListener {
      * flag to include hostname logic in file/dir choice
      */
     public static final String USE_HOSTNAME="useHostname";
+
+    //public static final String OUTPUT_FILE="outputFile";
+
+    public static final String PREAMBLE = "preamble";
 
 }

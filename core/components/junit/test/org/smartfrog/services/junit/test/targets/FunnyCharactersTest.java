@@ -17,26 +17,25 @@
  For more information: www.smartfrog.org
 
  */
-
-
 package org.smartfrog.services.junit.test.targets;
 
 import junit.framework.TestCase;
 
 /**
- * This test fails
- * Date: 05-Jul-2004
- * Time: 22:08:54
+ * Each test here fails with a funny character
  */
-public class FailureTest extends TestCase {
+public class FunnyCharactersTest extends TestCase {
 
-    public FailureTest(String s) {
-        super(s);
+    public void testAmpersand() {
+        fail("[&]");
     }
 
-    public void testFailure() {
-        assertTrue("expected failure",false);
+    public void testAngleBrackets() {
+        fail("[<]");
     }
 
-    
+    public void testIllegalChar() {
+        fail("[\u0007]");
+    }
+
 }
