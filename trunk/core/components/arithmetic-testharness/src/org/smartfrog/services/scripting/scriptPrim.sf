@@ -34,7 +34,7 @@ For more information: www.smartfrog.org
 
 ScriptPrim extends Prim {
         sfProcessName "BeanShell"; // BeanShell implements its own class loader.
-        sfClass "org.smartfrog.services.scripting.ScriptImpl";
+        sfClass "org.smartfrog.services.scripting.ScriptPrimImpl";
 //    	port 1234;				// create a http daemon on this port
         attributesAsVariables false;		// set to true if you want all attributes of
                                                 // the component to be registered in the bsh interpreter
