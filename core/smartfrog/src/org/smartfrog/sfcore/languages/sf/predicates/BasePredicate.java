@@ -54,8 +54,8 @@ public abstract class BasePredicate implements PhaseAction {
      */
     public void doit() throws SmartFrogCompileResolutionException {
         doPredicate();
-        ComponentDescription parent = (ComponentDescription) component.getParent();
-        Context parentContext = parent.getContext();
+        ComponentDescription parent = (ComponentDescription) component.sfParent();
+        Context parentContext = parent.sfContext();
         Object key = parentContext.keyFor(component);
         if (!keepPredicates) parentContext.remove(key);
     }
@@ -65,6 +65,6 @@ public abstract class BasePredicate implements PhaseAction {
      */
     public void forComponent(ComponentDescription cd) {
         component = cd;
-        context = cd.getContext();
+        context = cd.sfContext();
     }
 }

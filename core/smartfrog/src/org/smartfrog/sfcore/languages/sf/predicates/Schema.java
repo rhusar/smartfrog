@@ -252,7 +252,7 @@ public class Schema extends BasePredicate implements PhaseAction {
         String description = "";
 
         ref = component.sfCompleteName();
-        ComponentDescription parent = (ComponentDescription) component.getParent();
+        ComponentDescription parent = (ComponentDescription) component.sfParent();
 
 
         try {

@@ -352,7 +352,7 @@ void AttributesNoEOF(SFComponentDescription descr) :
   {
     for (Enumeration e = attrs.elements(); e.hasMoreElements(); ) {
       Object[] attribute = (Object[])e.nextElement();
-      descr.getContext().put(attribute[0], attribute[1]);
+      descr.sfContext().put(attribute[0], attribute[1]);
       if (attribute[1] instanceof SFComponentDescription)
         ((SFComponentDescription)attribute[1]).setParent(descr);
     }
@@ -493,23 +493,23 @@ Object Operator() :
 		for (Enumeration e = v.elements(); e.hasMoreElements(); ) {
 		    Object attribute = e.nextElement();
 		    Reference name = new Reference(ReferencePart.here("unique" + nextId++));
-		    ((SFComponentDescription)res).getContext().put(name, attribute);
+		    ((SFComponentDescription)res).sfContext().put(name, attribute);
 		    if (attribute instanceof SFComponentDescription)
 			((SFComponentDescription)attribute).setParent((SFComponentDescription)res);
 		}
 	    } else if (arity == 2) {
-		((SFComponentDescription)res).getContext().put("left", a);
+		((SFComponentDescription)res).sfContext().put("left", a);
 		if (a instanceof SFComponentDescription)
 		    ((SFComponentDescription)a).setParent((SFComponentDescription)res);
-		((SFComponentDescription)res).getContext().put("right", b);
+		((SFComponentDescription)res).sfContext().put("right", b);
 		if (b instanceof SFComponentDescription)
 		    ((SFComponentDescription)b).setParent((SFComponentDescription)res);
 	    } else { // (arity == 1)
-		((SFComponentDescription)res).getContext().put("data", a);
+		((SFComponentDescription)res).sfContext().put("data", a);
 		if (a instanceof SFComponentDescription)
 		    ((SFComponentDescription)a).setParent((SFComponentDescription)res);
 	    }
-	    ((SFComponentDescription)res).getContext().put("phase.function", operator);
+	    ((SFComponentDescription)res).sfContext().put("phase.function", operator);
 	}
 	return res;
     }
@@ -533,10 +533,10 @@ Object IfThenElse() :
 	if (e instanceof SFComponentDescription)
 	    ((SFComponentDescription)e).setParent((SFComponentDescription)ifte);
 
-	ifte.getContext().put("phase.function", ifThenElseOp);
-	ifte.getContext().put("if", i);
-	ifte.getContext().put("then", t);
-	ifte.getContext().put("else", e);
+	ifte.sfContext().put("phase.function", ifThenElseOp);
+	ifte.sfContext().put("if", i);
+	ifte.sfContext().put("then", t);
+	ifte.sfContext().put("else", e);
 	return ifte;
     }
 }
@@ -670,11 +670,11 @@ Object Basic() :
 	  for (Enumeration e = ((Vector)res).elements(); e.hasMoreElements(); ) {
 	      Object attribute = e.nextElement();
 	      Reference name = new Reference(ReferencePart.here("unique" + nextId++));
-	      component.getContext().put(name, attribute);
+	      component.sfContext().put(name, attribute);
 	      if (attribute instanceof SFComponentDescription)
 		  ((SFComponentDescription)attribute).setParent(component);
 	  }
-	  component.getContext().put("phase.function", "org.smartfrog.sfcore.languages.sf.functions.Vector");
+	  component.sfContext().put("phase.function", "org.smartfrog.sfcore.languages.sf.functions.Vector");
 	  res = component;
       })
     ) { return res; }

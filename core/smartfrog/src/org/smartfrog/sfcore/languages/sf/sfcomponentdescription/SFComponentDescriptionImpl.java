@@ -134,7 +134,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
       res.setEager(eager);
 
       for (Enumeration e = context.keys(); e.hasMoreElements(); ) {
-         Object value = res.getContext().get(e.nextElement());
+         Object value = res.sfContext().get(e.nextElement());
 
          if (value instanceof SFComponentDescription) {
             ((SFComponentDescription) value).setParent(res);
@@ -293,7 +293,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
       resState.haveResolved(true);
 
       // place value under simple name in destination
-      destDescription.getContext().put(nam, value);
+      destDescription.sfContext().put(nam, value);
 
       // Set new parent if value is component
       if (value instanceof ComponentDescription) {
@@ -409,7 +409,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
     */
    protected void subtype(SFComponentDescription superType) {
       // First copy the context of the supertype
-      Context sContext = (Context) superType.getContext().copy();
+      Context sContext = (Context) superType.sfContext().copy();
       Object key;
       Object value;
 
@@ -558,10 +558,10 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
          ps.write("extends " + (compVal.getEager() ? "" : "LAZY ") +
                ((compVal.getType() == null) ? "" : compVal.getType().toString()));
 
-         if (compVal.getContext().size() > 0) {
+         if (compVal.sfContext().size() > 0) {
             ps.write(" {\n");
             compVal.writeContextOn(ps, indent + 1,
-                  compVal.getContext().keys());
+                  compVal.sfContext().keys());
             tabPad(ps, indent);
             ps.write('}');
          } else {
@@ -591,7 +591,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
 
        for (Enumeration e = context.keys(); e.hasMoreElements(); ) {
        Object key = e.nextElement();
-       Object value = res.getContext().get(key);
+       Object value = res.sfContext().get(key);
 
        if (value instanceof SFComponentDescription) {
            value = ((SFComponentDescription) value).sfAsComponentDescription();

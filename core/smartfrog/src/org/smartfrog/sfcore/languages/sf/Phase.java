@@ -84,7 +84,7 @@ public class Phase implements CDVisitor {
      * @throws SmartFrogCompileResolutionException failed to create PhaseAction
      */
     public void actOn(ComponentDescription cd) throws SmartFrogCompileResolutionException {
-        Context c = cd.getContext();
+        Context c = cd.sfContext();
         for (Enumeration e = ((Context) c.clone()).keys(); e.hasMoreElements();) {
             Object name = e.nextElement();
 

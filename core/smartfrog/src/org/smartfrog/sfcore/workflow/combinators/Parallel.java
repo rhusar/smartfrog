@@ -75,8 +75,7 @@ public class Parallel extends EventCompoundImpl implements Compound {
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
-        actions = ((ComponentDescription) sfResolve(actionsRef)).
-                                                            getContext();
+        actions = ((ComponentDescription) sfResolve(actionsRef)).sfContext();
         name = sfCompleteNameSafe();
     }
 

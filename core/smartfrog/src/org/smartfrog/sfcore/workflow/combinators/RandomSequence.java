@@ -119,7 +119,7 @@ public class RandomSequence extends EventCompoundImpl implements Compound {
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
-        actions = ((ComponentDescription) sfResolve(actionsRef)).getContext();
+        actions = ((ComponentDescription) sfResolve(actionsRef)).sfContext();
         seed = ((Integer) sfResolve("seed")).intValue();
         random = new Random(seed);
         initActionKeys();
