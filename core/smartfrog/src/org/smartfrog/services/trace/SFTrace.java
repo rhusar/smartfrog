@@ -96,10 +96,9 @@ public class SFTrace extends PrimImpl implements SFTraceIntf {
             try {
                 localhost = java.net.InetAddress.getLocalHost();
             } catch (Exception ex) {
-                //TODO
                 if (log.isErrorEnabled()) {
-                    log.error("sfTrace: Exception deployment:" +
-                            ex.toString());
+                    log.error("sfTrace: Exception deployment: " +
+                            ex.toString(),ex);
                 }
             }
 
@@ -108,17 +107,15 @@ public class SFTrace extends PrimImpl implements SFTraceIntf {
                         .sfResolve(SmartFrogCoreKeys.SF_ROOT_LOCATOR_PORT)
                         .toString();
             } catch (Exception ex) {
-                //TODO
                 if (log.isErrorEnabled()) {
                     log.error("sfTrace: Exception deployment:" +
-                            ex.toString());
+                            ex.toString(),ex);
                 }
             }
 
             try {
                 processName = getSfProcessName();
             } catch (Exception ex) {
-                //TODO
                 if (log.isErrorEnabled()) {
                     log.error("sfTrace: Exception deployment:" +
                             ex.toString());
@@ -184,7 +181,7 @@ public class SFTrace extends PrimImpl implements SFTraceIntf {
         } catch (Exception ex) {
             if (log.isErrorEnabled()) {
                 log.error("sfTrace: Exception(getUniqueID :" +
-                        ex.toString());
+                        ex.toString(),ex);
             }
             id = "defaultUniqueID";
         }
@@ -303,19 +300,19 @@ public class SFTrace extends PrimImpl implements SFTraceIntf {
             }
 
             if (printMsgImp == null) {
-		log.out("sfTrace: " + msg);
+                log.out("sfTrace: " + msg);
             } else {
                 try {
                     printMsgImp.printMsg(msg + "\n");
                 } catch (Exception ex) {
-		    if (log.isErrorEnabled()) 
-			log.error("sfTrace: " + ex);
+                    if (log.isErrorEnabled())
+                        log.error("sfTrace: "+ex, ex);
                     //ex.printStackTrace();
                 }
             }
         } catch (Throwable th) {
-	    if (log.isErrorEnabled()) 
-		log.error("SFTrace.printMsg " + th.toString());
+	    if (log.isErrorEnabled())
+            log.error("SFTrace.printMsg " + th.toString(),th);
         }
     }
 
