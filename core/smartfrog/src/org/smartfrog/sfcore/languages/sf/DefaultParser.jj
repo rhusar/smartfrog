@@ -590,20 +590,22 @@ void LazyComponent(SFComponentDescription comp) :
 
 void BaseComponent(SFComponentDescription comp) :
 {
-  Reference protoType = new Reference();
-  protoType.setEager(true);
+  Reference prototype = new Reference();
+  prototype.setEager(true);
 }
 {
-  [ <NULL> | BaseReference(protoType) ]
+  [ <NULL> | BaseReference(prototype) ]
   (<SEMICOLON>| (<LBRACE> AttributesNoEOF(comp) <RBRACE>) )
   {
-    if (protoType.size() > 0 &&
+      /*
+	if (protoType.size() > 0 &&
         (protoType.firstElement() instanceof HereReferencePart)) {
-      HereReferencePart firstPart = (HereReferencePart)
+	HereReferencePart firstPart = (HereReferencePart)
         protoType.firstElement();
-      protoType.setElementAt(firstPart.asAttribReferencePart(), 0);
-    }
-    comp.setType(protoType.size() == 0 ? null : protoType);
+	protoType.setElementAt(firstPart.asAttribReferencePart(), 0);
+	}
+      */
+    comp.setType(prototype.size() == 0 ? null : prototype);
   }
 }
 
