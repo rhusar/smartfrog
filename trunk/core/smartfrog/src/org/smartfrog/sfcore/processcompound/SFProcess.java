@@ -468,8 +468,7 @@ public class SFProcess implements MessageKeys {
      */
     public static ComponentDescription getCoreProcessCompoundDescription()
         throws SmartFrogException, RemoteException {
-        String urlProcessCompound =
-                "org/smartfrog/sfcore/processcompound/processcompound.sf";
+        String urlProcessCompound ="org/smartfrog/sfcore/processcompound/processcompound.sf";
         Vector phases = new Vector();
         phases.add("type");
         phases.add("link");
@@ -501,11 +500,9 @@ public class SFProcess implements MessageKeys {
         String subProcess) throws SmartFrogException, RemoteException {
         try {
             if (host==null) {
-                return sfSelectTargetProcess((InetAddress)null,
-                                           subProcess);
+                return sfSelectTargetProcess((InetAddress)null, subProcess);
             } else {
-                return sfSelectTargetProcess(InetAddress.getByName(host),
-                                           subProcess);
+                return sfSelectTargetProcess(InetAddress.getByName(host), subProcess);
             }
         } catch (UnknownHostException uhex) {
             throw new SmartFrogException(MessageUtil.formatMessage(
@@ -522,15 +519,13 @@ public class SFProcess implements MessageKeys {
      * @return ProcessCompound the target process compound
      * @throws SmartFrogException In case of SmartFrog system error
      */
-    public static ProcessCompound sfSelectTargetProcess(InetAddress host,
-                                                      String subProcess)
+    public static ProcessCompound sfSelectTargetProcess(InetAddress host, String subProcess)
             throws SmartFrogException, RemoteException {
         ProcessCompound target = null;
         try {
             target = SFProcess.getProcessCompound();
             if (host != null) {
-                target = SFProcess.getRootLocator().
-                        getRootProcessCompound(host);
+                target = SFProcess.getRootLocator().getRootProcessCompound(host);
             }
             if (subProcess != null) {
                 try {
