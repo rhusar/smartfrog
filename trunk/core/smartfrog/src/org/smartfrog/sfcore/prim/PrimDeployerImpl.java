@@ -154,7 +154,7 @@ public class PrimDeployerImpl implements ComponentDeployer, MessageKeys {
             // We look in the default code base if everything else fails.
             return SFClassLoader.forName(targetClassName,targetCodeBase, true);
         } catch (SmartFrogResolutionException resex) {
-            resex.put(SmartFrogRuntimeException.SOURCE, target.getCompleteName());
+            resex.put(SmartFrogRuntimeException.SOURCE, target.sfCompleteName());
             resex.fillInStackTrace();
 
             throw resex;
