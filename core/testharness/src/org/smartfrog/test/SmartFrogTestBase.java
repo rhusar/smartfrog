@@ -441,6 +441,34 @@ public abstract class SmartFrogTestBase extends TestCase {
 
     }
 
+     /**
+     * parse a smartfrog file; throw an exception if something went wrong
+     * @param file
+     * @throws SmartFrogException
+     */
+    protected Phases parse(String fileUrl) throws SmartFrogException {
+        Phases phases=null;
+        InputStream is=null;
+        try {
+            is = SFClassLoader.getResourceAsStream(fileUrl);
+            if (is == null) {
+                String msg = MessageUtil.
+                        formatMessage(MessageKeys.MSG_URL_TO_PARSE_NOT_FOUND, fileUrl);
+                throw new SmartFrogParseException(msg);
+            }
+            phases = (new SFParser("sf")).sfParse(is);
+        } finally {
+            if (is != null) {
+                try {
+                    is.close();
+                } catch (IOException swallowed) {
+
+                }
+            }
+        }
+        return phases;
+    }
+    
     /**
      * deploy something from this directory; expect an exception
      * @param filename
