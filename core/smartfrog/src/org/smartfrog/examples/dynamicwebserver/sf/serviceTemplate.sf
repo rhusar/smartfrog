@@ -1,0 +1,127 @@
+/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+#include "/org/smartfrog/examples/dynamicwebserver/sf/nodes.sf"
+#include "/org/smartfrog/examples/dynamicwebserver/thresholder/components.sf"
+#include "/org/smartfrog/examples/dynamicwebserver/logging/components.sf"
+#include "/org/smartfrog/examples/dynamicwebserver/stresstest/components.sf"
+#include "/org/smartfrog/examples/dynamicwebserver/balancer/components.sf"
+#include "/org/smartfrog/examples/dynamicwebserver/sf/webTemplate.sf";
+
+serviceLoadGenerator extends StressTester {
+        host ATTRIB balancerHost;
+        port ATTRIB webPort;
+
+        page "/cgi-bin/u1";
+        frequency 1;
+        factor 200;
+        numHits 10;
+}
+
+
+
+WebThresholder extends Thresholder {
+        minInstances 1;
+
+        balancer;
+
+        template extends LAZY WebServerTemplate {
+            //logTo LAZY ATTRIB logger;
+        };
+
+        servers extends serverHosts;
+
+        repeatMeasures 2;
+        stabilizationMeasures 5;
+
+        isAuto true;
+}
+
+
+
+
+serviceTemplate extends Compound {
+    sfProcessHost ATTRIB serviceManagerHost;
+    polling 5;
+
+    upper 800;
+    lower 350;
+    max 1500;
+    min 0;
+
+    logger extends Logger {
+        //verbose true;
+    }
+
+    loadGenerator extends serviceLoadGenerator {
+        //logTo LAZY ATTRIB logger;
+        frequency 10;
+    }
+
+    balancerGroup extends Compound{
+       sfProcessHost ATTRIB balancerHost;
+       sfProcessComponentName "loadBalancer";
+       balancer extends WebBalancer {
+            //logTo LAZY ATTRIB logger;
+            hosts extends serverHosts;
+        }
+        connectionMeter extends Meter {
+            dataSource LAZY ATTRIB balancer;
+            pollingPeriod ATTRIB polling;
+            maxY 300;
+            minY 0;
+            gridStepY 10;
+            positionDisplay "NE";
+            dataDisplayed "connections";
+       }
+    }
+
+    webThresholder extends WebThresholder {
+        //logTo LAZY ATTRIB logger;
+        balancer LAZY ATTRIB balancerGroup:balancer;
+
+        polling PARENT:polling;
+
+        lowerThreshold ATTRIB lower;
+        upperThreshold ATTRIB upper;
+        dataSource LAZY ATTRIB loadGenerator;
+    }
+
+    thresholdGraph extends DisplayThresholder {
+        //logTo LAZY ATTRIB logger;
+        dataSource LAZY ATTRIB loadGenerator;
+        thresholder LAZY ATTRIB webThresholder;
+
+        pollingPeriod ATTRIB polling;
+
+        panelWidth 600;
+        panelHeight 200;
+
+        maxY ATTRIB max;
+        minY ATTRIB min;
+    }
+
+}
+
+
+sfConfig extends serviceTemplate {
+    sfLivenessDelay 0;
+}
+

@@ -1,0 +1,12 @@
+if ! test $SFHOME; then export SFHOME=$PWD; fi
+if [ $# -ne 0 ]; then
+echo "Insufficient argument(s) to use sfDaemon"
+echo "Usage: sfDaemon"
+exit
+fi
+export CLASSPATH=$SFHOME/lib/smartfrog.jar:$SFHOME/lib/sfServices.jar:$SFHOME/lib/sfTestCases.jar:$CLASSPATH
+export SERVER=eb97201.india.hp.com:8080
+# Please edit codebase if you have any other jar file in webserver
+export CODEBASE="http://$SERVER/sfExamples.jar"
+
+java -Dorg.smartfrog.iniFile=$SFHOME/bin/default.ini -Dorg.smartfrog.iniSFFile=$SFHOME/bin/default.sf -Dorg.smartfrog.codebase=$CODEBASE -Dorg.smartfrog.sfcore.processcompound.sfProcessName=rootProcess org.smartfrog.SFSystem $*

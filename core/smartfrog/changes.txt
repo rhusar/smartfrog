@@ -1,0 +1,3 @@
+release 3.001.003_alpha
+-----------------------
+2004-Jan-29 First public Open Source release

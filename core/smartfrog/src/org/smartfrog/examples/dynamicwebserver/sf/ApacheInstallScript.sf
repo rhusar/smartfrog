@@ -1,0 +1,211 @@
+/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+#include "org/smartfrog/functions.sf";
+#include "org/smartfrog/examples/dynamicwebserver/sf/genericInstallScript.sf";
+
+ApacheInstallScript extends GenericInstallScript {
+    //----------------------------------
+    // Webserver parameters
+    //----------------------------------
+    webServerHost;
+    webServerPort;
+    tarLocation "/apache.tar";
+    webPagesLocation "/webPages.tar";
+    cgiScriptsLocation "/cgiScripts.tar";
+
+    //-------------------------------------
+    // parameters defining download to location
+    //-------------------------------------
+    installLocation "/";
+    file "apache.tar";
+
+
+    //-------------------------------------
+    // parameter defining location of install
+    // typically, top level directory created by the tar file
+    // when expanded in install location
+    //-------------------------------------
+    home "apache_1.3.26";
+
+    //-------------------------------------
+    // parameter defining prefix for event notification
+    //-------------------------------------
+    name "apache";
+
+    //----------------------------------
+    // the install script to be run
+    //----------------------------------
+
+    installScript extends vector {
+        -- ATTRIB cdApacheHome;
+        -- ATTRIB configureScript;
+        -- ATTRIB makeScript;
+    }
+
+    //-------------------------------------
+    // constructions of the scripts lines
+    //-------------------------------------
+
+    cdApacheHome extends concat {
+        -- "cd ";
+        -- ATTRIB home;
+    }
+    configureScript "./configure";
+    makeScript "make install";
+
+
+    actions:startEvent:event:msg ":1:4:Apache download started";
+    actions:downloadEvent:event:msg ":2:4:Apache downloaded, starting install";
+    action:completeEvent:event:msg ":3:4:Apache install complete, downloading data";
+
+
+    actions:downloadCGI extends Downloader {
+        url extends concat {
+            -- "http://";
+            -- ATTRIB webServerHost;
+            -- ":";
+            -- ATTRIB webServerPort;
+            -- ATTRIB cgiScriptsLocation;
+        }
+        toLocalFile "/usr/local/apache/cgi-bin/cgiScripts.tar";
+    }
+
+    actions:untarCGI extends BashShellScript {
+        processName ATTRIB name;
+        cmd ["cd /usr/local/apache/cgi-bin", "tar -xf cgiScripts.tar", "exit 0"];
+    }
+
+    actions:cgiEvent extends EventSend {
+        sendTo:top LAZY PARENT;
+        event extends concat {
+            -- ATTRIB name;
+            msg ":4:4: cgi download complete, loading pages";
+        }
+    }
+
+    actions:downloadPages extends Downloader {
+        url extends concat {
+            -- "http://";
+            -- ATTRIB webServerHost;
+            -- ":";
+            -- ATTRIB webServerPort;
+            -- ATTRIB webPagesLocation;
+        }
+        toLocalFile "/usr/local/apache/htdocs/webPages.tar";
+    }
+
+    actions:untarPages extends BashShellScript {
+        processName ATTRIB name;
+        cmd ["cd /usr/local/apache/htdocs", "tar -xf webPages.tar", "exit 0"];
+    }
+
+
+    actions:webPagesEvent extends EventSend {
+        sendTo:top LAZY PARENT;
+        event extends concat {
+            -- ATTRIB name;
+            msg ":5:4: Apache install complete";
+        }
+    }
+
+    actions:delayTermination extends DoNothing {
+        time 2000;
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+SimulatedApacheInstallScript extends Sequence {
+    name "apache";
+
+    actions extends LAZY {
+        e1 extends EventSend {
+            sendTo:top LAZY PARENT;
+            event extends concat {
+                -- ATTRIB name;
+                msg ":1:4: ";
+            }
+        }
+
+        e2 extends EventSend {
+            sendTo:top LAZY PARENT;
+            event extends concat {
+                -- ATTRIB name;
+                msg ":2:4: ";
+            }
+        }
+
+        e3 extends EventSend {
+            sendTo:top LAZY PARENT;
+            event extends concat {
+                -- ATTRIB name;
+                msg ":3:4: ";
+            }
+        }
+
+        e4 extends EventSend {
+            sendTo:top LAZY PARENT;
+            event extends concat {
+                -- ATTRIB name;
+                msg ":4:4: ";
+            }
+        }
+
+        e5 extends EventSend {
+            sendTo:top LAZY PARENT;
+            event extends concat {
+                -- ATTRIB name;
+                msg ":5:4: Apache already installed";
+            }
+        }
+
+        delayTermination extends DoNothing {
+            time 2000;
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+sfConfig extends ApacheInstallScript ;

@@ -1,0 +1,12 @@
+if ! test $SFHOME; then export SFHOME=$PWD; fi
+if [ $# -ne 1 ]; then
+echo "Insufficient arguments to use sfStopDaemon"
+echo "Usage: sfStopDaemon HostName"
+exit
+fi
+for i in $SFHOME/lib/*.jar; do CLASSPATH=$i:$CLASSPATH; done
+export CLASSPATH
+
+echo "Stopping sfDaemon on" $1 "..."
+java org.smartfrog.SFSystem -h1 $1 -t rootProcess -e
+echo "Stopped sfDaemon on" $1
