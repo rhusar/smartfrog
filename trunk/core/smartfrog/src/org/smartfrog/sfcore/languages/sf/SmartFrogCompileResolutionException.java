@@ -91,8 +91,7 @@ public class SmartFrogCompileResolutionException extends
     public final static String LINK_PHASE ="link";
     /** String name for function resolution phase. */
     public final static String FUNCTION_PHASE ="function";
-    /** String name for deploy resolution phase. */
-    public final static String DEPLOY_PHASE ="deploy";
+
 
     /**
      * Constructs a SmartFrogCompileResolutionException with specified message.
@@ -109,7 +108,7 @@ public class SmartFrogCompileResolutionException extends
      *
      *@param  message exception message
      *@param  cause  exception causing this exception
-     *@param  source source that raised the exception 
+     *@param  source source that raised the exception
      *@param resolutionPhase Resolution phase that caused the exception
      *@param  data    additional data for exception
      */
@@ -175,9 +174,9 @@ public class SmartFrogCompileResolutionException extends
      * @param  source  component causing the exception
      * @param  data    vector of unresolved placements
      * @param cause exception causing this exception
-     * 
+     *
      * @return SmartFrogException that is a SmartFrogCompileResolutionException
-     */ 
+     */
     public static SmartFrogCompileResolutionException placeResolution(String reason, Reference source, Object data, Throwable cause) {
        return new SmartFrogCompileResolutionException (reason, cause, source, PLACE_PHASE, data);//   (source, "placeResolution", data);
     }
@@ -190,7 +189,7 @@ public class SmartFrogCompileResolutionException extends
      * @param  source  component causing the exception
      * @param  data    vector of unresolved placements.
      * @param cause exception causing this exception
-     * 
+     *
      * @return SmartFrogException that is a SmartFrogCompileResolutionException
      */
     public static SmartFrogCompileResolutionException typeResolution(String reason, Reference source, Object data, Throwable cause) {
@@ -198,20 +197,6 @@ public class SmartFrogCompileResolutionException extends
     }
 
 
-    /**
-     *  Creates a deploy resolution exception. The data field generally is a
-     *  vector containing the unresolved references.
-     *
-     * @param reason message exception
-     * @param  source  component causing the exception
-     * @param  data    vector of unresolved placements.
-     * @param cause exception causing this exception
-     * 
-     * @return SmartFrogException that is a SmartFrogCompileResolutionException
-     */
-    public static SmartFrogCompileResolutionException deployResolution(String reason, Reference source, Object data, Throwable cause) {
-       return new SmartFrogCompileResolutionException (reason, cause, source, DEPLOY_PHASE, data);//   (source, "placeResolution", data);
-    }
 
     /**
      *  Creates a link resolution exception. The data field generally is a
@@ -221,7 +206,7 @@ public class SmartFrogCompileResolutionException extends
      * @param  source  component causing the exception
      * @param  data    vector of unresolved placements.
      * @param cause exception causing this exception
-     * 
+     *
      * @return SmartFrogException that is a SmartFrogCompileResolutionException
      */
     public static SmartFrogCompileResolutionException linkResolution(String reason, Reference source, Object data, Throwable cause) {
@@ -237,7 +222,7 @@ public class SmartFrogCompileResolutionException extends
      * @param  source  component causing the exception
      * @param  data    vector of unresolved placements.
      * @param cause exception causing this exception
-     * 
+     *
      * @return SmartFrogException that is a SmartFrogCompileResolutionException
      */
     public static SmartFrogCompileResolutionException functionResolution(String reason, Reference source, Object data, Throwable cause) {
@@ -252,7 +237,7 @@ public class SmartFrogCompileResolutionException extends
      * @param  source  component causing the exception
      * @param  data    vector of unresolved placements.
      * @param cause exception causing this exception
-     * 
+     *
      * @return SmartFrogException that is a SmartFrogCompileResolutionException
      */
     public static SmartFrogCompileResolutionException sfConfigResolution(String reason, Reference source, Object data, Throwable cause) {
@@ -267,7 +252,7 @@ public class SmartFrogCompileResolutionException extends
      * @param  source  component causing the exception
      * @param  data    vector of unresolved placements.
      * @param cause exception causing this exception
-     * 
+     *
      * @return SmartFrogException that is a SmartFrogCompileResolutionException
      */
     public static SmartFrogCompileResolutionException printResolution(String reason, Reference source, Object data, Throwable cause) {
@@ -277,9 +262,9 @@ public class SmartFrogCompileResolutionException extends
 
     /**
      * To forward SmartFrog exceptions instead of chain them.
-     * 
+     *
      * @param thr throwable object to be forwarded
-     * 
+     *
      * @return SmartFrogException that is a SmartFrogCompileResolutionException
      */
     public static SmartFrogException forward (Throwable thr){
@@ -292,11 +277,11 @@ public class SmartFrogCompileResolutionException extends
 
     /**
      * To forward SmartFrog exceptions instead of chain them.
-     * 
+     *
      * @param thr throwable object to be forwarded
-     * @param resolutionPhase Resolution phase that caused the exception to be 
+     * @param resolutionPhase Resolution phase that caused the exception to be
      * forwarded
-     * 
+     *
      * @return SmartFrogException that is a SmartFrogCompileResolutionException
      */
     public static SmartFrogException forward (Throwable thr, String resolutionPhase){

@@ -76,7 +76,7 @@ public interface ComponentResolver {
     *
     * @throws  SmartFrogCompileResolutionException failed to deploy resolve
     */
-   public void deployResolve() throws SmartFrogCompileResolutionException;
+   public void linkResolve() throws SmartFrogCompileResolutionException;
 
 
    /**
@@ -86,5 +86,5 @@ public interface ComponentResolver {
     *
     * @throws  SmartFrogCompileResolutionException failed to deploy resolve
     */
-   public void doDeployResolve(ResolutionState resState) throws SmartFrogCompileResolutionException;
+   public void doLinkResolve(ResolutionState resState) throws SmartFrogCompileResolutionException;
 }
