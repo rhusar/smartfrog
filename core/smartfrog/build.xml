@@ -564,7 +564,7 @@ relevant JAR files into the javacc subdirectory
   <!--  DIST                                                               -->
   <!-- =================================================================== -->
   <target name="dist"
-    depends="build,initdist,jars,copylibs,copybins,copyPrivate,copydocs, copyexamples,copyTestCA,buildSetup,fixCRLF"
+    depends="build,initdist,jars,copylibs,copybins,copyPrivate,copydocs, copyexamples,copyTestCA,buildSetup,fixCRLF,srczip"
     description="Prepares distribution package">
   </target>
 
@@ -575,6 +575,17 @@ relevant JAR files into the javacc subdirectory
     <ant  dir="${dist.dir}" target="signJars" inheritAll="false"/>
   </target>
 
+  <!-- =================================================================== -->
+  <!-- src.zip                                                             -->
+  <!-- =================================================================== -->
+  <target name="srczip" depends="initdist"  description="Creates src.zip with SF sources">
+    <zip destfile="${dist.dir}/src.zip" >
+      <zipfileset dir="${src}">
+        <include name="**/**"/>
+        <exclude name="**/*.dfPackage"/>
+      </zipfileset>
+    </zip>
+  </target>
 
   <!-- =================================================================== -->
   <!-- clean                                                               -->
@@ -585,7 +596,6 @@ relevant JAR files into the javacc subdirectory
     <delete dir="${build}"/>
     <delete dir="${dist.dir}"/>
   </target>
-
 
   <!-- =================================================================== -->
   <!-- a clean distribution                                               -->
