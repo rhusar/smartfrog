@@ -19,7 +19,7 @@ if test "$SFDYNAMICCLASSLOADING_ON"; then
 fi
 
 if test "$SFSECURITY_ON"; then
-    . $SFHOME/bin/setSFSecurityDefaultProperties
+    . $SFHOME/bin/setSFSecurityProperties
 fi
 
 
@@ -32,6 +32,9 @@ fi
 if test "$SFCODEBASE"; then
     export SFCMDPARAMETERS="$SFCMDPARAMETERS $SFCODEBASE"
 fi
+
+# reset CLASSPATH
+export CLASSPATH=
 
 export SFLIBPATH=$SFHOME/lib
 if test "$SFSECURITY"; then

@@ -14,7 +14,7 @@ rem ------------------------------------------------------
 rem -- Security properties --
 set SFSECURITY=-Djava.security.policy==%SFPRIVATE%\sf.policy -Djava.security.manager -Dorg.smartfrog.sfcore.security.keyStoreName=%SFPRIVATE%\%SFHOSTNAME%\mykeys.st -Dorg.smartfrog.sfcore.security.propFile=%SFPRIVATE%\%SFHOSTNAME%\SFSecurity.properties
 
-rem  -- default.ini and default.sf with security. This files need to be inside a jar file--
+rem  -- default.ini and default.sf with security. These files need to be inside a jar file--
 set SFDEFAULTINI=-Dorg.smartfrog.iniFile=org/smartfrog/default.ini
 set SFDEFAULTSF=-Dorg.smartfrog.sfcore.processcompound.sfDefault.sfDefault=org/smartfrog/default.sf
 
