@@ -62,8 +62,11 @@ public interface ReferenceResolver {
      * Call in to resolve to the parent reference resolver of this one.
      *
      * @return parent referencee resolver or null if none
+     *
+     * @throws SmartFrogResolutionException if error occurred while resolving
      */
-    public ReferenceResolver sfResolveParent();
+    public Object sfResolveParent()
+        throws SmartFrogResolutionException;
 
 
     /**

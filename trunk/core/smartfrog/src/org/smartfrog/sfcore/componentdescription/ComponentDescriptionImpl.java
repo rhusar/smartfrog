@@ -43,6 +43,7 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferencePart;
 import org.smartfrog.sfcore.reference.ReferenceResolver;
+import org.smartfrog.sfcore.reference.RemoteReferenceResolver;
 import org.smartfrog.sfcore.security.SFClassLoader;
 
 //For utility methods
@@ -69,6 +70,9 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
 
     /** Parent of this description. */
     public ComponentDescription parent;
+
+    /** PrimParent of this description. */
+    public Prim primParent;
 
     /** Whether this description is eager or lazy. */
     public boolean eager;
@@ -282,7 +286,49 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      */
     public ComponentDescription setParent(ComponentDescription p) {
         ComponentDescription op = parent;
+	primParent = null; // cannot have both!
         parent = p;
+
+        return op;
+    }
+
+
+    /**
+     * When a component description is held as an attribute in a Prim, the
+     * parent is no longer a ComponentDescription, but the Prim itself.
+     * This is so that attribute resolution works through the component description
+     * in to the Prim hierarchy. For typenig reasons, the PrimParent has to be handled
+     * specially and not through the normal interface (due to RemoteExceptions in the interface).
+     * 
+     * Gets the parent for this description.
+     *
+     * @return component parent description
+     *
+     * @see #setPrimParent
+     */
+    public Prim sfPrimParent() {
+	return primParent;
+    }
+
+    /**
+     * When a component description is held as an attribute in a Prim, the
+     * parent is no longer a ComponentDescription, but the Prim itself.
+     * This is so that attribute resolution works through the component description
+     * in to the Prim hierarchy. For typenig reasons, the PrimParent has to be handled
+     * specially and not through the normal interface (due to RemoteExceptions in the interface).
+     * 
+     * Sets parent for this component.
+     *
+     * @param parent new parent component
+     *
+     * @return old parent for description
+     *
+     * @see #sfPrimParent
+     */
+    public Prim setPrimParent(Prim p) {
+        Prim op = primParent;
+	parent = null; // cannot have both!
+        primParent = p;
 
         return op;
     }
@@ -368,9 +414,16 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      *
      * @return parent or null if no parent
      */
-    public ReferenceResolver sfResolveParent() {
-        return sfParent();
+    public Object sfResolveParent() {
+	if (sfParent() == null)
+	    if (sfPrimParent() == null) 
+		return null;
+	    else
+		return sfPrimParent();
+	else
+	    return sfParent();
     }
+
 
     /**
      * Resolve a given reference. Forwards to indexed resolve with index 0.
