@@ -35,7 +35,7 @@ import java.util.*;
 
 import java.rmi.*;
 
-public class SFSlpEventLocatorImpl extends EventPrimImpl implements Prim {
+public class SFSlpEventLocatorImpl extends EventPrimImpl implements Prim, SFSlpEventLocator {
     protected Locator locator;
     protected Properties properties;
     protected ServiceType serviceType;

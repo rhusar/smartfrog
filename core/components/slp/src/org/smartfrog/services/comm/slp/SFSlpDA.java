@@ -26,33 +26,8 @@
 
 package org.smartfrog.services.comm.slp;
 
-import java.rmi.RemoteException;
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.common.SmartFrogException;
+import java.rmi.Remote;
 
-/**
-    Component to advertise a ProcessCompound.
-    The component will advertise the PC it is started in.
-    These advertised process compounds can then be discovered with the SLP
-    deployer class.
-*/
-public class SFSlpProcessCompoundAdvertiserImpl extends SFSlpAdvertiserImpl 
-    implements Prim, SFSlpProcessCompoundAdvertiser {
-    
-    public SFSlpProcessCompoundAdvertiserImpl() throws RemoteException {
-        
-    }
-    
-    public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
-        super.sfDeploy();
-        // find the process compound to advertise.
-        String procName = sfDeployedProcessName();
-        String procHost = sfDeployedHost().getHostAddress();
-    
-        // build the service location...
-        serviceLocation = procHost+"/"+procName;
-        
-        //System.out.println("PC Location: " + serviceLocation);
-    }
+public interface SFSlpDA extends Remote {
+
 }
-

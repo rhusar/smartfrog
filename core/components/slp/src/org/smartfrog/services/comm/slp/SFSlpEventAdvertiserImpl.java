@@ -35,7 +35,7 @@ import java.util.*;
 
 import java.rmi.*;
 
-public class SFSlpEventAdvertiserImpl extends EventPrimImpl implements Prim {
+public class SFSlpEventAdvertiserImpl extends EventPrimImpl implements Prim, SFSlpEventAdvertiser {
     protected Advertiser advertiser;
     protected Properties properties;
     protected ServiceURL serviceURL;

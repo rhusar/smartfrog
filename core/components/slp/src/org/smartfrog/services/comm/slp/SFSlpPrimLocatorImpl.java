@@ -42,7 +42,7 @@ import sun.misc.*;
     The result of the discovery is a reference to a running component, or null
     if no component was found.
 */
-public class SFSlpPrimLocatorImpl extends SFSlpLocatorImpl implements Prim {
+public class SFSlpPrimLocatorImpl extends SFSlpLocatorImpl implements Prim, SFSlpPrimLocator {
     private Prim discoveredPrim = null;
     
     public SFSlpPrimLocatorImpl() throws RemoteException {

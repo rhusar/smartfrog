@@ -39,7 +39,7 @@ import org.smartfrog.services.comm.slp.agents.DirectoryAgent;
 /**
     SmartFrog component for the Directory Agent.
 */
-public class SFSlpDAImpl extends PrimImpl implements Prim {
+public class SFSlpDAImpl extends PrimImpl implements Prim, SFSlpDA {
     private DirectoryAgent da;
     
     public SFSlpDAImpl() throws RemoteException {
