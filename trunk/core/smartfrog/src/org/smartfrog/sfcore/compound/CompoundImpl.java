@@ -183,27 +183,27 @@ public class CompoundImpl extends PrimImpl implements Compound {
      */
     public Prim sfCreateNewChild(Object name, ComponentDescription cmp, Context parms)
         throws RemoteException, SmartFrogDeploymentException {
-	Prim comp = null;
-	try {
-	    synchronized (this) {
-		if (!sfIsTerminated) {
-		    comp = sfDeployComponentDescription(name, this, cmp, parms);
-		    // it is now a child, so need to guard against double calling of lifecycle...
-		    if (sfIsDeployed) comp.sfDeploy(); // otherwise let the deploy of this component do it...
-		    if (sfIsStarted) comp.sfStart(); // otherwise let the start of this component do it...
-		}
-	    }
-	} catch (Exception e) {
-	    if (comp != null) {
-		try {
-		    comp.sfDetachAndTerminate(TerminationRecord.abnormal("error during deployment" + e.getMessage(), sfCompleteName()));
-		} catch (Exception ex) {
-		    //@TODO log
-		}
-	    }
-	    throw (SmartFrogDeploymentException) SmartFrogDeploymentException.forward(e);
-	}
-	return comp;
+    Prim comp = null;
+    try {
+        synchronized (this) {
+        if (!sfIsTerminated) {
+            comp = sfDeployComponentDescription(name, this, cmp, parms);
+            // it is now a child, so need to guard against double calling of lifecycle...
+            if (sfIsDeployed) comp.sfDeploy(); // otherwise let the deploy of this component do it...
+            if (sfIsStarted) comp.sfStart(); // otherwise let the start of this component do it...
+        }
+        }
+    } catch (Exception e) {
+        if (comp != null) {
+        try {
+            comp.sfDetachAndTerminate(TerminationRecord.abnormal("error during deployment" + e.getMessage(), sfCompleteName()));
+        } catch (Exception ex) {
+            //@TODO log
+        }
+        }
+        throw (SmartFrogDeploymentException) SmartFrogDeploymentException.forward(e);
+    }
+    return comp;
     }
 
     /**
@@ -574,6 +574,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
              Prim p = (Prim)(e.nextElement());
              p.sfParentageChanged();
         }
+        super.sfParentageChanged();
     }
 
     /**
