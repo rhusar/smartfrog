@@ -129,7 +129,7 @@ public class SFTrace extends PrimImpl implements Prim {
 			      ex.toString());
             }
 
-            verbose = sfResolve(this.ATR_VERBOSE,verbose,false);
+            verbose = sfResolve(ATR_VERBOSE,verbose,false);
 
             printMsgImp = (PrintMsgInt) sfResolve(ATR_OUTPUT_MSG,false );
 

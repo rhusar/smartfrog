@@ -198,7 +198,7 @@ public class LogToErr implements Log, LogMessage, Serializable {
         }
 
         if ((showMethodCall)&&(message!=null)) {
-            buf.append(" * "+this.detective.findCaller(callDepth)+" * ");
+            buf.append(" * "+detective.findCaller(callDepth)+" * ");
         }
 
         // Append the name of the log instance if so configured
