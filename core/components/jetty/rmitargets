@@ -1,3 +1,11 @@
 org/smartfrog/services/jetty/SFJetty.class
 org/smartfrog/services/jetty/SFJettyAdmin.class
+org/smartfrog/services/jetty/listeners/Socketlistener.class
+org/smartfrog/services/jetty/listeners/AJPlistener.class
+org/smartfrog/services/jetty/contexts/WebApplication.class
+org/smartfrog/services/jetty/contexts/Servlet.class
+org/smartfrog/services/jetty/contexts/handlers/Forward.class
+org/smartfrog/services/jetty/contexts/handlers/HTAccess.class
+org/smartfrog/services/jetty/contexts/handlers/Dump.class
+org/smartfrog/services/jetty/contexts/servlets/Servlet.class
 
