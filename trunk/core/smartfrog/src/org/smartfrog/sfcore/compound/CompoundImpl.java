@@ -86,7 +86,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
     }
 
     /**
-     * An internal SmartFrog method. 
+     * An internal SmartFrog method.
      * It deploys a compiled component and makes it an attribute of the
      * parent compound. Also start heartbeating the deployed component
      * if the component registers. Note that the remaining lifecycle methods must
@@ -168,7 +168,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
     /**
      * A high-level component deployment method - creates a child of this
      * Compound, running it through its entire lifecycle. This is the preferred way
-     * of creating new child components of a Compound. The method is safe against 
+     * of creating new child components of a Compound. The method is safe against
      * multiple calls of lifecycle.
      *
      * @param cmp compiled component to deploy and start
@@ -177,26 +177,26 @@ public class CompoundImpl extends PrimImpl implements Compound {
      *
      * @return deployed component if successfull
      *
-     * @exception SmartFrogDeploymentException failed to deploy compiled 
+     * @exception SmartFrogDeploymentException failed to deploy compiled
      * component
      * @exception RemoteException In case of Remote/nework error
      */
     public Prim sfCreateNewChild(Object name, ComponentDescription cmp, Context parms)
         throws RemoteException, SmartFrogDeploymentException {
-	Prim comp = null;
-	try {
-	    synchronized (this) {
-		if (!sfIsTerminated) {
-		    comp = sfDeployComponentDescription(name, this, cmp, parms);
-		    // it is now a child, so need to guard against double calling of lifecycle...
-		    if (sfIsDeployed) comp.sfDeploy(); // otherwise let the deploy of this component do it...
-		    if (sfIsStarted) comp.sfStart(); // otherwise let the start of this component do it...
-		}
-	    }
-	} catch (Exception e) {
-	    throw (SmartFrogDeploymentException) SmartFrogDeploymentException.forward(e);
-	}
-	return comp;
+    Prim comp = null;
+    try {
+        synchronized (this) {
+        if (!sfIsTerminated) {
+            comp = sfDeployComponentDescription(name, this, cmp, parms);
+            // it is now a child, so need to guard against double calling of lifecycle...
+            if (sfIsDeployed) comp.sfDeploy(); // otherwise let the deploy of this component do it...
+            if (sfIsStarted) comp.sfStart(); // otherwise let the start of this component do it...
+        }
+        }
+    } catch (Exception e) {
+        throw (SmartFrogDeploymentException) SmartFrogDeploymentException.forward(e);
+    }
+    return comp;
     }
 
 
@@ -414,21 +414,14 @@ public class CompoundImpl extends PrimImpl implements Compound {
      * @param status status to terminate with
      */
     protected void sfSyncTerminateWith(TerminationRecord status) {
-
-        Vector children = new Vector();
-        for (Enumeration e = sfChildren(); e.hasMoreElements();) {
-            children.add((Prim)e.nextElement());
-        }
-        for (int i= children.size(); i>0; ) {
-          i--;
-          try {
-              ((Prim)(children.remove(i))).sfTerminateQuietlyWith(status);
-          } catch (Exception ex) {
-              //@TODO: Log
+        for (int i = sfChildren.size()-1; i>=0; i--) {
+            try {
+                ((Prim)sfChildren.elementAt(i)).sfTerminateQuietlyWith(status);
+            } catch (Exception ex) {
+            //@TODO: Log
             // ignore
-          }
+            }
         }
-
     }
 
     /**
@@ -438,18 +431,13 @@ public class CompoundImpl extends PrimImpl implements Compound {
      * @param status status to terminate with
      */
     protected void sfASyncTerminateWith(TerminationRecord status) {
-        Vector children = new Vector();
-        for (Enumeration e = sfChildren(); e.hasMoreElements();) {
-            children.add((Prim)e.nextElement());
-        }
-        for (int i= children.size(); i>0; ) {
-          i--;
-          try {
-                new TerminateCall((Prim)(children.remove(i)), status);
-          } catch (Exception ex) {
-              //@TODO: Log
+        for (int i = sfChildren.size()-1; i>=0; i--) {
+            try {
+                new TerminateCall((Prim)(sfChildren.elementAt(i)), status);
+            } catch (Exception ex) {
+            //@TODO: Log
             // ignore
-          }
+            }
         }
     }
 
