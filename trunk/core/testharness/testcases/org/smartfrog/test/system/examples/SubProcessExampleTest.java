@@ -132,13 +132,16 @@ public class SubProcessExampleTest
     assertEquals("rootProcess", tres.sfDeployedProcessName());
 
     Reference refCUATRO = Reference.fromString("HOST localhost:CUATRO-VM:CUATRO");
-    assertEquals(cuatro.sfCompleteName().toString(), ((Prim)refCUATRO).sfCompleteName().toString());
+    Prim cuatro2 = (Prim)applicationEPCN02.sfResolve(refCUATRO,true);
+    assertEquals(cuatro.sfCompleteName().toString(), cuatro2.sfCompleteName().toString());
 
     Reference refTRES = Reference.fromString("HOST localhost:rootProcess:TRES");
-    assertEquals(tres.sfCompleteName().toString(), ((Prim)refTRES).sfCompleteName().toString());
+    Prim tres2 = (Prim)applicationEPCN02.sfResolve(refTRES,true);
+    assertEquals(tres.sfCompleteName().toString(), tres2.sfCompleteName().toString());
 
     Reference refDOS = Reference.fromString("HOST localhost:DOS-VM:DOS");
-    assertEquals(dos.sfCompleteName().toString(), ((Prim)refDOS).sfCompleteName().toString());
+    Prim dos2 = (Prim)applicationEPCN02.sfResolve(refDOS,true);
+    assertEquals(dos.sfCompleteName().toString(), dos2.sfCompleteName().toString());
 
 
   }
