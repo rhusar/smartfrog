@@ -26,6 +26,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.smartfrog.services.axis.SmartFrogHostedEndpoint;
 
+import javax.xml.namespace.QName;
+
 /**
  * created Aug 4, 2004 3:59:42 PM
  */
@@ -128,5 +130,34 @@ public class Processor {
      */
     public static boolean isEmpty(String param) {
         return param == null || param.length() == 0;
+    }
+
+
+/**
+ * construct a fault for throwing
+ *
+ * @param code    qname for the error
+ * @param message text message
+ * @return a fault ready to throw
+ */
+public static AxisFault raiseFault(QName code,String message) {
+    return raiseFault(code,message,null);
+}
+
+    /**
+     * construct a fault for throwing
+     * @param code qname for the error
+     * @param message text message
+     * @param thrown optional nested fault
+     * @return a fault ready to throw
+     */
+    public static AxisFault raiseFault(QName code, String message,Throwable thrown) {
+        AxisFault fault=new AxisFault();
+        fault.setFaultCode(code);
+        fault.setFaultReason(message);
+        if(thrown!=null) {
+            fault.initCause(thrown);
+        }
+        return fault;
     }
 }
