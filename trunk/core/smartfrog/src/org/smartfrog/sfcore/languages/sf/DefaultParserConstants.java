@@ -20,26 +20,27 @@ public interface DefaultParserConstants {
   int LAZY = 23;
   int ROOT = 24;
   int ATTRIB = 25;
-  int PROPERTY = 26;
-  int IPROPERTY = 27;
-  int PARENT = 28;
-  int HOST = 29;
-  int PROCESS = 30;
-  int INCLUDE = 31;
-  int TRUE = 32;
-  int FALSE = 33;
-  int WORD = 34;
-  int SPECIAL = 35;
-  int LETTER = 36;
-  int DIGIT = 37;
-  int STRING = 38;
-  int MULTILINESTRING = 39;
-  int INTEGER = 40;
-  int FLOAT_BASE = 41;
-  int EXPONENT = 42;
-  int DOUBLE = 43;
-  int LONG = 44;
-  int FLOAT = 45;
+  int THIS = 26;
+  int PROPERTY = 27;
+  int IPROPERTY = 28;
+  int PARENT = 29;
+  int HOST = 30;
+  int PROCESS = 31;
+  int INCLUDE = 32;
+  int TRUE = 33;
+  int FALSE = 34;
+  int WORD = 35;
+  int SPECIAL = 36;
+  int LETTER = 37;
+  int DIGIT = 38;
+  int STRING = 39;
+  int MULTILINESTRING = 40;
+  int INTEGER = 41;
+  int FLOAT_BASE = 42;
+  int EXPONENT = 43;
+  int DOUBLE = 44;
+  int LONG = 45;
+  int FLOAT = 46;
 
   int DEFAULT = 0;
   int IN_SINGLE_LINE_COMMENT = 1;
@@ -73,6 +74,7 @@ public interface DefaultParserConstants {
     "\"LAZY\"",
     "\"ROOT\"",
     "\"ATTRIB\"",
+    "\"THIS\"",
     "\"PROPERTY\"",
     "\"IPROPERTY\"",
     "\"PARENT\"",
