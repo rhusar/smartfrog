@@ -423,7 +423,7 @@ public abstract class SmartFrogTask extends TaskBase {
         //adopt the classpath
         setupClasspath(smartfrog);
         //last minute fixup of error properties.
-        //this is because pre Ant1.6, even setting this to false stops spawn working
+        //this is because pre Ant1.7, even setting this to false stops spawn working
         //delayed setting only when the flag is true reduces the need to flip the bit
         if(failOnError) {
             smartfrog.setFailonerror(failOnError);
@@ -435,7 +435,11 @@ public abstract class SmartFrogTask extends TaskBase {
         switch(err) {
             case 0:
                 return;
+                //-1 is an expected error, but
+                //for some reason smartfrog on HP-UX returns something else.
+                //so we catch 255 as well.
             case -1:
+            case 255:
                 throw new BuildException(failureText);
             default:
                 throw new BuildException(errorText+" - error code "+err);
