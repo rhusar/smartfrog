@@ -75,7 +75,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
     /** Log: it cannot be initialized before LogImpl is ready
      * LogImpl uses ComponentDescription.sfResolve to read its initial
      * configuration */
-    private static  LogSF log = null;
+    private static  LogSF sflog= null;
 
 
     /**
@@ -339,8 +339,8 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
     public Object sfResolve(Reference r) throws SmartFrogResolutionException {
         Object obj = sfResolve(r, 0);
         try {
-            if ((log!= null) && log.isTraceEnabled()) {
-                log.trace("sfResolved: "+r.toString()+" to "+obj.toString());
+            if ((sflog!= null) && sflog.isTraceEnabled()) {
+                sflog.trace("sfResolved: "+r.toString()+" to "+obj.toString());
             }
         } catch (Exception ex) {ex.printStackTrace();}//ignore}
         return obj;
@@ -790,7 +790,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      *
      */
     static public void initLog(LogSF newlog){
-        if (log==null) log = newlog;
+        if (sflog==null) sflog = newlog;
     }
 
 }

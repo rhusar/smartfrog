@@ -122,11 +122,11 @@ public  class LogFactory {
      *  instance cannot be returned
      */
     public static LogSF getProcessLog() {
-       LogSF log =  getLog ((String)SmartFrogCoreKeys.SF_CORE_LOG);
-       if ((log!=null)&&log.isTraceEnabled()) log.trace("getProcessLog()");
+       LogSF sflog =  getLog ((String)SmartFrogCoreKeys.SF_CORE_LOG);
+       if ((sflog!=null)&&sflog.isTraceEnabled()) sflog.trace("getProcessLog()");
        /* LogImpl uses ComponentDescription and it needs to enable its log only when that is available */
-       ComponentDescriptionImpl.initLog(log);
-       return log;
+       ComponentDescriptionImpl.initLog(sflog);
+       return sflog;
     }
 
 

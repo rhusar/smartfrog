@@ -78,7 +78,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
 
     /** Static ProcessLog: this log is used to log into SF_CORE_LOG
      */
-    protected static LogSF  log = null;
+    protected static LogSF  sflog = LogFactory.getProcessLog();;
 
     /** Static attribute that hold the lifecycle hooks for sfDeploy. */
     public static PrimHookSet sfDeployHooks = new PrimHookSet();
@@ -1004,10 +1004,10 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
      * @throws RemoteException
      */
     public LogSF sfGetProcessLog() {
-       if (log==null) {
-           log =  LogFactory.getProcessLog();
+       if (sflog==null) {
+           sflog =  LogFactory.getProcessLog();
        }
-       return log;
+       return sflog;
     }
 
     /**
