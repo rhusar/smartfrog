@@ -272,7 +272,7 @@ public final class BrowserEntry implements Entry {
      *@return      The msgLocation value
      */
     private String getMsgLocation(String msg) {
-        String msgLocation = msg.substring(msg.lastIndexOf(',') + 1,
+        String msgLocation = msg.substring(msg.lastIndexOf('[') ,
                 msg.length());
 
         return msgLocation;
