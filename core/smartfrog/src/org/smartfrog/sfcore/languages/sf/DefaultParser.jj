@@ -168,7 +168,7 @@ TOKEN : /* reserved words */
  | <LBRACKET: "[">
  | <RBRACKET: "]">
  | <REFPARTSEP: ":">
- | <NULLPROTO: "NULL">
+ | <NULL: "NULL">
  | <UNIQUE: "--">
  | <EXTENDS: "extends">
  | <LAZY: "LAZY">
@@ -594,7 +594,7 @@ void BaseComponent(SFComponentDescription comp) :
   protoType.setEager(true);
 }
 {
-  [ <NULLPROTO> | BaseReference(protoType) ]
+  [ <NULL> | BaseReference(protoType) ]
   (<SEMICOLON>| (<LBRACE> AttributesNoEOF(comp) <RBRACE>) )
   {
     if (protoType.size() > 0 &&
@@ -656,7 +656,8 @@ Object Basic() :
 }
 {
   (
-     (res=String())
+   (<NULL> {res = SFNull.get();})
+   |  (res=String())
    | (res=Number())
    | (res=Boolean())
    | (<LBRACKET> { res = new Vector(); }
