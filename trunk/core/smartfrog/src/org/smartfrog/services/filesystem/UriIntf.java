@@ -21,44 +21,22 @@ package org.smartfrog.services.filesystem;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.net.URI;
 
 /**
- * created 27-May-2004 10:43:10
+ * This is an interface for anything that provides a URI
+ * created Sep 30, 2004 3:42:23 PM
  */
 
-public interface FileIntf extends UriIntf,Remote {
 
-    /*
-    filename extends OptionalString;
-    dir extends OptionalString;
-    mustExist extends OptionalBoolean;
-
-    exists: Boolean
-    absolutePath: String
-    URI: String
-    */
-
-    String varFilename="filename";
-    String varDir="dir";
-    String varExists="exists";
-    String varAbsolutePath="absolutePath";
-    String varIsDirectory="isDirectory";
-    String varIsFile = "isFile";
-    String varIsHidden = "isHidden";
-    String varTimestamp = "timestamp";
-    String varLength = "length";
-    String varIsEmpty = "isEmpty";
-    String varShortname="shortname";
-    String varMustExist = "mustExist";
-    String varMustRead = "mustRead";
-    String varMustWrite = "mustWrite";
-
+public interface UriIntf extends Remote {
+    String varURI = "uri";
 
     /**
-     * get the absolute path of this file
+     * get the URI of this file
+     *
      * @return
      * @throws RemoteException
      */
-    public String getAbsolutePath() throws RemoteException;
-
+    URI getURI() throws RemoteException;
 }

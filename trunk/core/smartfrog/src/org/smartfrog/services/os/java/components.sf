@@ -22,6 +22,37 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/predicates.sf"
 #include "/org/smartfrog/services/os/runshell/components.sf"
 
+JavaPackage extends Prim {
+
+    sfClass "org.smartfrog.services.os.java.JavaPackageImpl";
+
+    javaPackageSchema extends Schema {
+        //list of files, packages or URLs
+        source extends OptionalVector;
+        //a string classpath that is generated automatically
+        //classpath extends OptionalString;
+        //lazy attribute
+        //classpathList extends OptionalVector;
+        //classes to look for
+        requiredClasses extends OptionalVector;
+        requiredResources extends OptionalVector;
+        useCodebase extends Boolean;
+    }
+
+    //we use the codebase
+    useCodebase false;
+
+}
+
+
+/**
+ * a java package that is in the codebase;
+ */
+JavaPackageInCodebase extends JavaPackage {
+    useCodebase true;
+}
+
+
 JavaSchema extends Schema {
     classname extends OptionalString;
     jar extends OptionalString;

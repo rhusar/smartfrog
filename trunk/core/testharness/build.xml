@@ -71,13 +71,6 @@ For more information: www.smartfrog.org
 
   <target name="init" depends="init-common,init-standard-output-dirs,use-smartfrog-tasks">
 
-
-    <!-- test time path -->
-<!--     <path id="test.classpath">
-      <path refid="compile.classpath"/>
-      <pathelement location="${test.classes.dir}"/>
-    </path> -->
-
     <property name="test.smartfrog.classesdir" location="${test.classes.dir}"/>
     
     <!-- load in our runtime properties too, so we can use presence/absence of
@@ -141,8 +134,42 @@ For more information: www.smartfrog.org
       </sf-startdaemon-debug>
   </target>
 
+  
+    <!-- ========================================================== -->
+  <!-- look for the varous components so that we can make test 
+  suites conditional on their presence/absence -->
   <!-- ========================================================== -->
-  <!-- run the unit tests tests -->
+  
+  <target name="probe-for-components" depends="init">
+    <presetdef name="probe4" > 
+      <available classpathref="tests.run.classpath" ignoresystemclasses="true"/>
+    </presetdef>
+    
+    <probe4 resource="org/smartfrog/services/email/emailer.sf" 
+      property="emailer.present"/>
+    <probe4 resource="org/smartfrog/services/logger/logger.sf"
+      property="logger.present"/>    
+    <probe4 resource="org/smartfrog/services/net/telnet.sf "
+      property="net.present"/>    
+    <probe4 resource="org/smartfrog/services/scripting/scriptPrim.sf"
+      property="scripting.present"/>    
+    <probe4 resource="org/smartfrog/services/ssh/password.sf"
+      property="ssh.present"/>    
+    <probe4 resource="org/smartfrog/services/comm/slp/sf/SFSlpDA.sf"
+      property="slp.present"/> 
+    <probe4 resource="org/smartfrog/services/installer/sfinstaller.sf"
+      property="utils.present"/> 
+      <!--
+    <probe4 resource=""
+      property=""/> 
+    <probe4 resource=""
+      property=""/> 
+    <probe4 resource=""
+      property=""/>  -->
+      </target>
+
+  <!-- ========================================================== -->
+  <!-- run the unit tests -->
   <!-- ========================================================== -->
   <target name="unit-tests" depends="compile-tests"  unless="testcase"
     description="run unit tests">
@@ -163,7 +190,7 @@ For more information: www.smartfrog.org
       </batchtest>
     </sf-junit>
   </target>
-
+  
 
   <!-- ========================================================== -->
   <!-- system tests are more complex than the unit tests as they need a
@@ -175,7 +202,7 @@ For more information: www.smartfrog.org
        -->
   <!-- ========================================================== -->
   <target name="system-tests" 
-    depends="compile-tests,rmi-tests,test-package, probe-local-daemon"
+    depends="compile-tests,rmi-tests,test-package,probe-for-components, probe-local-daemon"
     description="run system tests"
     if="system.tests.enabled">
     <parallel>
@@ -215,7 +242,24 @@ For more information: www.smartfrog.org
               <!-- except for jetty, when jetty.home is undefined -->
               <exclude name="org/smartfrog/test/system/jetty/**/*Test.class"
                 unless="runtime.jetty.home"/>
-           </fileset>
+                
+                <!-- other conditional components -->
+              <exclude name="**/test/system/components/ssh/**/*Test.class"
+                unless="ssh.present"/>
+              <exclude name="**/test/system/components/scripting/**/*Test.class"
+                unless="scripting.present"/>
+              <exclude name="**/test/system/components/net/**/*Test.class"
+                unless="net.present"/>
+              <exclude name="**/test/system/components/logger/**/*Test.class"
+                unless="logger.present"/>
+              <exclude name="**/test/system/components/emailer/**/*Test.class"
+                unless="emailer.present"/>
+              <exclude name="**/test/system/components/slp/**/*Test.class"
+                unless="slp.present"/>
+              <exclude name="**/test/system/components/utils/**/*Test.class"
+                unless="utils.present"/>
+                
+            </fileset>
           </batchtest>
         </sf-junit>
         <!-- conditionally stop the daemon -->

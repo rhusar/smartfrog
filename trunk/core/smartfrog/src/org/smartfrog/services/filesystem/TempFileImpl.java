@@ -20,15 +20,15 @@
 package org.smartfrog.services.filesystem;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.logging.Log;
+import org.smartfrog.sfcore.logging.LogFactory;
+import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.utils.ComponentHelper;
-import org.smartfrog.sfcore.logging.LogFactory;
-import org.smartfrog.sfcore.logging.Log;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.rmi.RemoteException;
 
 /**
@@ -131,4 +131,13 @@ public class TempFileImpl extends PrimImpl implements Prim, TempFile, FileIntf {
         return tempFile.getAbsolutePath();
     }
 
+    /**
+     * get the URI of this file
+     *
+     * @return
+     * @throws RemoteException
+     */
+    public URI getURI() throws RemoteException {
+        return tempFile.toURI();
+    }
 }

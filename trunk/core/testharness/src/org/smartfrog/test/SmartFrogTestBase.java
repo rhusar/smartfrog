@@ -20,36 +20,30 @@
 package org.smartfrog.test;
 
 import junit.framework.TestCase;
-
-import java.io.File;
-import java.io.InputStream;
-import java.io.IOException;
-import java.rmi.RemoteException;
-import java.util.logging.Logger;
-import java.util.logging.Level;
-import java.util.Vector;
-import java.net.UnknownHostException;
-import java.net.MalformedURLException;
-
 import org.smartfrog.SFSystem;
-import org.smartfrog.SFParse;
 import org.smartfrog.services.assertions.SmartFrogAssertionException;
-import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.ConfigurationDescriptor;
-import org.smartfrog.sfcore.common.MessageUtil;
-import org.smartfrog.sfcore.common.SmartFrogParseException;
 import org.smartfrog.sfcore.common.MessageKeys;
+import org.smartfrog.sfcore.common.MessageUtil;
+import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogInitException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
-import org.smartfrog.sfcore.processcompound.ProcessCompound;
-import org.smartfrog.sfcore.processcompound.SFProcess;
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.security.SFGeneralSecurityException;
-import org.smartfrog.sfcore.security.SFClassLoader;
+import org.smartfrog.sfcore.common.SmartFrogParseException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.parser.Phases;
 import org.smartfrog.sfcore.parser.SFParser;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.security.SFClassLoader;
+import org.smartfrog.sfcore.security.SFGeneralSecurityException;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.UnknownHostException;
+import java.rmi.RemoteException;
 
 /**
  * A base class for smartfrog tests
@@ -156,13 +150,6 @@ public abstract class SmartFrogTestBase extends TestCase {
             //Deploy and don't throw exception. Exception will be contained
             // in a ConfigurationDescriptor.
             deployedApp = SFSystem.runConfigurationDescriptor(cfgDesc,false);
-            /*
-            System.out.println("\n"+"* Test failure in description: \n    "+cfgDesc.toString("\n    ")+"\n"
-                                   +"  - searching for: "+searchString+"\n"
-                                   +"  - exception name: "+containedExceptionName+"\n"
-                                   +"  - exception text: "+containedExceptionText+"\n"
-                                   );
-            */
             if ((deployedApp instanceof ConfigurationDescriptor) &&
                     (((ConfigurationDescriptor) deployedApp).resultException != null)) {
                 searchForExpectedExceptions(deployedApp, cfgDesc, exceptionName,
@@ -170,6 +157,11 @@ public abstract class SmartFrogTestBase extends TestCase {
                 resultException = ((ConfigurationDescriptor) deployedApp).resultException;
                 return resultException;
             } else {
+                //clean up
+                if(deployedApp instanceof Prim) {
+                    terminateApplication((Prim)deployedApp);
+                }
+                //then fail
                 fail("We expected an exception here:"+exceptionName
                      +" but got this result "+deployedApp.toString());
             }
@@ -597,5 +589,81 @@ public abstract class SmartFrogTestBase extends TestCase {
         application.sfDetachAndTerminate(TerminationRecord.normal(name));
     }
 
+    /**
+     * get an  attribute from an application
+     *
+     * @param application
+     * @param attribute
+     * @return
+     * @throws SmartFrogResolutionException
+     * @throws RemoteException
+     */
+    public Object resolveAttribute(Prim application, String attribute)
+            throws SmartFrogResolutionException, RemoteException {
+        return application.sfResolve(attribute, true);
+    }
 
+    /**
+     * get a string attribute from an application
+     * @param application
+     * @param attribute
+     * @return
+     * @throws SmartFrogResolutionException
+     * @throws RemoteException
+     */
+    public String resolveStringAttribute(Prim application,String attribute)
+            throws SmartFrogResolutionException, RemoteException {
+        String value=(String)application.sfResolve(attribute,true);
+        return value;
+    }
+
+    /**
+     * assert that an attribute exists
+     *
+     * @param app
+     * @param attribute
+     * @throws Exception
+     */
+    public void assertAttributeExists(Prim app, String attribute)
+            throws Exception {
+        resolveAttribute(app, attribute);
+    }
+
+    /**
+     * assert that an attribute exists
+     * @param app
+     * @param attribute
+     * @throws Exception
+     */
+    public void assertStringAttributeExists(Prim app,String attribute) throws Exception {
+        resolveStringAttribute(app,attribute);
+    }
+
+    /**
+     * assert that an attribute exists and equals a specified value
+     * @param app
+     * @param attribute
+     * @param mustEqual
+     * @throws Exception
+     */
+    public void assertAttributeEquals(Prim app, String attribute,String mustEqual)
+            throws Exception {
+        String value=resolveStringAttribute(app, attribute);
+        assertEquals(mustEqual,value);
+    }
+
+    /**
+     * assert that an attribute exists and equals a specified value
+     *
+     * @param app
+     * @param attribute
+     * @param mustEqual
+     * @throws Exception
+     */
+    public void assertAttributeEquals(Prim app, String attribute,
+            Object mustEqual)
+            throws Exception {
+        Object value = resolveAttribute(app, attribute);
+        assertEquals(mustEqual, value);
+    }
 }
