@@ -20,7 +20,7 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.parser;
 
-import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogParseException;
 import org.smartfrog.sfcore.reference.Reference;
 
 
@@ -40,7 +40,21 @@ public interface Parser extends StreamParser {
      *
      * @exception SmartFrogException error parsing string
      */
-    public Phases sfParse(String str) throws SmartFrogException;
+    public Phases sfParse(String str) throws SmartFrogParseException;
+
+    /**
+     * Parses component(s) from an resource url. Returns a root component which
+     * contains the parsed components. Includes should be handled by some
+     * default include handler.
+     *
+     * @param is url to resource to parse and compile from
+     *
+     * @return root component containing parsed component(s)
+     *
+     * @exception SmartFrogParseException error parsing stream
+     */
+     public Phases sfParseResource(String url) throws SmartFrogParseException;
+
 
     /**
      * Parses a reference from a string. Used by components and developers to
@@ -52,5 +66,5 @@ public interface Parser extends StreamParser {
      *
      * @exception SmartFrogException failed to parse reference
      */
-    public Reference sfParseReference(String txt) throws SmartFrogException;
+    public Reference sfParseReference(String txt) throws SmartFrogParseException;
 }

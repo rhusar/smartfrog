@@ -42,6 +42,14 @@ import org.smartfrog.sfcore.reference.ReferencePart;
 import org.smartfrog.sfcore.reference.ReferenceResolver;
 import org.smartfrog.sfcore.security.SFClassLoader;
 
+//For utility methods
+import org.smartfrog.sfcore.parser.Phases;
+import org.smartfrog.sfcore.parser.SFParser;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import java.rmi.RemoteException;
+import java.io.InputStream;
+
+
 /**
  * Defines the context class used by Components. Context implementations
  * need to respect the ordering and copying requirements imposed by
@@ -551,4 +559,54 @@ public class ComponentDescriptionImpl implements Serializable, Cloneable,
             action.actOn(this);
         }
     }
+
+    /**
+     * Utility method that gets Component Description for URL after applying
+     * default parser phases
+     *
+     * @param String url to convert to ComponentDescription
+     *
+     * @return process compound description default phases Resolved
+     *
+     * @throws RemoteException In case of network/rmi error
+     * @throws SmartFrogRuntimeException In case of SmartFrog system error
+     */
+    public static ComponentDescription getComponentDescription(String url)
+        throws SmartFrogException, RemoteException {
+        return getComponentDescription(url,null,null);
+    }
+
+
+    /**
+     * Utility method that gets Component Description for URL after applying
+     * some parser phases
+     *
+     * @param String url to convert to ComponentDescription
+     * @param Vector parser phases to apply. If the vector is null, then all
+     *    the default phases are applied
+     * @param Rererence ref reference to resolve in Description.
+     *
+     * @return process compound description 'phases' Resolved
+     *
+     * @throws RemoteException In case of network/rmi error
+     * @throws SmartFrogRuntimeException In case of SmartFrog system error
+     */
+    public static ComponentDescription getComponentDescription(String url,
+                  Vector phases, Reference ref)
+        throws SmartFrogException, RemoteException {
+
+        Phases descr = (new SFParser(url)).sfParseResource(url);
+
+        if (phases==null) {
+            return descr.sfResolvePhases().sfAsComponentDescription();
+        } else {
+            descr.sfResolvePhases(phases);
+        }
+
+        if (ref==null) ref =  new Reference (SmartFrogCoreKeys.SF_CONFIG);
+
+        return (ComponentDescription) descr.sfAsComponentDescription().sfResolve(ref);
+    }
+
+
 }
