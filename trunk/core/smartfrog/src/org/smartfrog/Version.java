@@ -28,7 +28,7 @@ public class Version {
     private final static String name=        "SmartFrog";
     private final static String majorRelease="3";
     private final static String minorRelease="04";
-    private final static String build=       "005"; // odd numbers are development versions
+    private final static String build=       "006"; // odd numbers are development versions
     private final static String status=      "beta"; //alpha, beta, stable
 
     /** The version String for the SmartFrog system. */
