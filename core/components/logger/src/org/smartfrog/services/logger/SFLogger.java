@@ -76,7 +76,7 @@ public interface SFLogger extends Prim {
      * log at debug level
      * @param msg
      * @throws RemoteException
-     * @see #isDebugEnabled() 
+     * @see #isDebug()
      */
 
 
@@ -87,5 +87,5 @@ public interface SFLogger extends Prim {
      * @return
      * @throws RemoteException
      */
-    public boolean isDebugEnabled() throws RemoteException;
+    public boolean isDebug() throws RemoteException;
 }
