@@ -27,6 +27,7 @@ import java.util.Iterator;
 
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.Copying;
+import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferenceResolver;
 import org.smartfrog.sfcore.reference.ReferenceResolverHelper;
@@ -177,9 +178,42 @@ public interface ComponentDescription extends Copying, ReferenceResolver, Refere
      *
      * @return old parent for description
      *
-     * @see #getParent
+     * @see #sfParent
      */
     public ComponentDescription setParent(ComponentDescription parent);
+
+    /**
+     * When a component description is held as an attribute in a Prim, the
+     * parent is no longer a ComponentDescription, but the Prim itself.
+     * This is so that attribute resolution works through the component description
+     * in to the Prim hierarchy. For typenig reasons, the PrimParent has to be handled
+     * specially and not through the normal interface (due to RemoteExceptions in the interface).
+     * 
+     * Gets the parent for this description.
+     *
+     * @return component parent description
+     *
+     * @see #setPrimParent
+     */
+    public Prim sfPrimParent();
+
+    /**
+     * When a component description is held as an attribute in a Prim, the
+     * parent is no longer a ComponentDescription, but the Prim itself.
+     * This is so that attribute resolution works through the component description
+     * in to the Prim hierarchy. For typenig reasons, the PrimParent has to be handled
+     * specially and not through the normal interface (due to RemoteExceptions in the interface).
+     * 
+     * Sets parent for this component.
+     *
+     * @param parent new parent component
+     *
+     * @return old parent for description
+     *
+     * @see #sfPrimParent
+     */
+    public Prim setPrimParent(Prim parent);
+
 
     /**
      * Gets the eager flag for description.

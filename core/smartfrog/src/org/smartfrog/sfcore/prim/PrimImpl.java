@@ -212,7 +212,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
      *
      * @return parent for this component or null if none
      */
-    public RemoteReferenceResolver sfResolveParent() {
+    public Object sfResolveParent() {
         return sfParent;
     }
 
@@ -528,75 +528,66 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
             sfParent = parent;
             sfContext = cxt;
 
-        /* @TODO Would like to do this, but requires Prim to be a ComponentDescription
-         * which is a good idea in anycase, but requires a refactoring of the interfaces
-         *
-         * in the mean time reference resolution from a CD is bounded to that CD hierarchy
-         * and cannot move between this and the Component hierarchy
-         *
-         * Could do this by providing a proxy which implements CD and forwards the resovlve
-         * requests to the Prim...
-         *
-
-        // set the parent link of any contained component description to this Prim
-        // so that references work
-        for (Enumeration e = sfContext.keys(); e.hasMoreElements();) {
-        Object value = sfContext.get(e.nextElement());
-
-        if (value instanceof ComponentDescription) {
-            ((ComponentDescription) value).setParent(this);
-        }
-        }
-
-        */
-            boolean es; // allow exportRef to be defined by string (backward compatability) or boolean
-            Object eso = sfResolveHere(SmartFrogCoreKeys.SF_EXPORT, false);
-
-            if (eso == null) {
-                es = true;
-            } else if (eso instanceof String) {
-                es = Boolean.valueOf((String) eso).booleanValue();
-            } else {
-                es = ((Boolean) eso).booleanValue();
-            }
-
-            if (es) {
-                sfExportRef();
-            }
-
-            if (sfParent != null) {
-                ((ChildMinder) sfParent).sfAddChild(this);
-            }
-
-            registerWithProcessCompound();
-
-            // Look up delay, if not there never mind looking up factor
-            sfLivenessDelay= sfResolve(refLivenessDelay,sfLivenessDelay,false);
-            sfLivenessFactor = sfResolve(refLivenessFactor,sfLivenessFactor,false);
-
-            // copy in local description for efficiency when subcomponents looking up
-            sfReplaceAttribute(SmartFrogCoreKeys.SF_LIVENESS_DELAY, new Long (sfLivenessDelay) );
-            // copy in local description for efficiency when subcomponents looking up
-            sfReplaceAttribute(SmartFrogCoreKeys.SF_LIVENESS_FACTOR, new Integer (sfLivenessFactor));
-
-            sfLivenessCount = sfLivenessFactor;
-
-            // start the liveness thread
-            sfStartLivenessSender();
 
 
-            sfReplaceAttribute(SmartFrogCoreKeys.SF_HOST, sfDeployedHost());
-            sfReplaceAttribute(SmartFrogCoreKeys.SF_PROCESS, sfDeployedProcessName());
-
-            sfDeployWithHooks.applyHooks(this, null);
-
+	    // set the prim parent link of any contained component description to this Prim
+	    // so that references work
+	    for (Enumeration e = sfContext.keys(); e.hasMoreElements();) {
+		Object value = sfContext.get(e.nextElement());
+		
+		if (value instanceof ComponentDescription) {
+		    ((ComponentDescription) value).setPrimParent(this);
+		}
+	    }
+	    
+	    boolean es; // allow exportRef to be defined by string (backward compatability) or boolean
+	    Object eso = sfResolveHere(SmartFrogCoreKeys.SF_EXPORT, false);
+	    
+	    if (eso == null) {
+		es = true;
+	    } else if (eso instanceof String) {
+		es = Boolean.valueOf((String) eso).booleanValue();
+	    } else {
+		es = ((Boolean) eso).booleanValue();
+	    }
+	    
+	    if (es) {
+		sfExportRef();
+	    }
+	    
+	    if (sfParent != null) {
+		((ChildMinder) sfParent).sfAddChild(this);
+	    }
+	    
+	    registerWithProcessCompound();
+	    
+	    // Look up delay, if not there never mind looking up factor
+	    sfLivenessDelay= sfResolve(refLivenessDelay,sfLivenessDelay,false);
+	    sfLivenessFactor = sfResolve(refLivenessFactor,sfLivenessFactor,false);
+	    
+	    // copy in local description for efficiency when subcomponents looking up
+	    sfReplaceAttribute(SmartFrogCoreKeys.SF_LIVENESS_DELAY, new Long (sfLivenessDelay) );
+	    // copy in local description for efficiency when subcomponents looking up
+	    sfReplaceAttribute(SmartFrogCoreKeys.SF_LIVENESS_FACTOR, new Integer (sfLivenessFactor));
+	    
+	    sfLivenessCount = sfLivenessFactor;
+	    
+	    // start the liveness thread
+	    sfStartLivenessSender();
+	    
+	    
+	    sfReplaceAttribute(SmartFrogCoreKeys.SF_HOST, sfDeployedHost());
+	    sfReplaceAttribute(SmartFrogCoreKeys.SF_PROCESS, sfDeployedProcessName());
+	    
+	    sfDeployWithHooks.applyHooks(this, null);
+	    
         } catch (Exception sfex){
             Logger.log(sfex);
             new TerminatorThread(this, sfex, null).quietly().run();
             throw (SmartFrogDeploymentException)SmartFrogDeploymentException.forward (sfex);
         }
     }
-
+    
     protected void registerWithProcessCompound() throws RemoteException, SmartFrogException {
         //Registers component with local ProcessCompound
         if ((sfParent==null)||

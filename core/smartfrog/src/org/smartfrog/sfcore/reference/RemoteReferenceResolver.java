@@ -49,7 +49,7 @@ public interface RemoteReferenceResolver extends Remote {
      * @throws RemoteException if there is any network/rmi error
      */
     public Object sfResolve(Reference r)
-        throws RemoteException, SmartFrogException;
+        throws RemoteException, SmartFrogResolutionException;
 
     /**
      * Resolves a reference starting at a given index.
@@ -69,9 +69,10 @@ public interface RemoteReferenceResolver extends Remote {
      * Resolves parent reference of the given reference.
      *
      * @return resolved parent reference
+     * @throws SmartFrogResolutionException if any error occurrs while resolving
      * @throws RemoteException if there is any network/rmi error
      */
-    public RemoteReferenceResolver sfResolveParent() throws RemoteException;
+    public Object sfResolveParent() throws  RemoteException, SmartFrogResolutionException;
 
 
     /**
