@@ -107,6 +107,7 @@ public class ConfigurationDescriptor implements MessageKeys{
       * Result exception for action
       */
      public Throwable resultException = null;
+
      /**
       * Extra parameters for action
       */
@@ -486,7 +487,7 @@ public class ConfigurationDescriptor implements MessageKeys{
      * @return deployReference
      * @see Reference
      */
-    private Reference getDeployReference(){
+    public Reference getDeployReference(){
         String key = SF1Options.SFCONFIGREF;
         if (getOptions().containsKey(key)){
             return ((Reference)getOptions().get(key));
@@ -500,7 +501,7 @@ public class ConfigurationDescriptor implements MessageKeys{
      * @see Reference
      * @param reference
      */
-    private void setDeployReference(String reference){
+    public void setDeployReference(String reference){
 
         if (reference.trim().equals("")){
             return;

@@ -52,7 +52,7 @@ public class ActionDeploy extends ConfigurationAction {
       * @throws RemoteException In case of network/rmi error
       */
      public static Prim Deploy(String url, String appName, ProcessCompound target,
-         Context c) throws SmartFrogException, RemoteException {
+         Context c, Reference deployReference) throws SmartFrogException, RemoteException {
          Prim comp = null;
          Phases top;
          //To calculate how long it takes to deploy a description
@@ -68,7 +68,7 @@ public class ActionDeploy extends ConfigurationAction {
          try {
              ComponentDescription cd;
              try {
-                 cd = ComponentDescriptionImpl.sfComponentDescription(url);
+                 cd = ComponentDescriptionImpl.sfComponentDescription(url,null,deployReference);
                  if (Logger.logStackTrace) {
                      parseTime = System.currentTimeMillis()-deployTime;
                      deployTime = System.currentTimeMillis();
@@ -139,7 +139,11 @@ public class ActionDeploy extends ConfigurationAction {
      */
     public Object execute(ProcessCompound targetP, ConfigurationDescriptor configuration)
        throws SmartFrogException, RemoteException {
-        Prim prim = Deploy(configuration.getUrl(), configuration.getName(), targetP, null);
+        Prim prim = Deploy(configuration.getUrl(),
+                           configuration.getName(),
+                           targetP,
+                           null,
+                           configuration.getDeployReference());
         configuration.setSuccessfulResult();
         return prim;
     }
