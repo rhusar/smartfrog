@@ -27,6 +27,7 @@ import java.rmi.registry.Registry;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.MessageKeys;
 import org.smartfrog.sfcore.common.MessageUtil;
+import org.smartfrog.sfcore.common.SmartFrogCoreProperty;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
@@ -96,8 +97,16 @@ public class DefaultRootLocatorImpl implements RootLocator, MessageKeys {
      */
     public void setRootProcessCompound(ProcessCompound c)
         throws SmartFrogException, RemoteException {
-        registryPort = getRegistryPort(c);
-
+        // Read optional property 
+        // "org.smartfrog.ProcessCompound.sfRootLocatorPort"
+        String port = System.getProperty(SmartFrogCoreProperty.sfDaemonPort);
+        // port defined in default.ini overrides the "sfRootLocatorPort"
+        // attribute  defined in processcompound sf description
+        if(port != null) { 
+            registryPort = Integer.parseInt(port);
+        } else {
+            registryPort = getRegistryPort(c);
+        }
         try {
             Registry reg = SFSecurity.createRegistry(registryPort);
             reg.bind(defaultName, c);
