@@ -27,9 +27,10 @@ import org.apache.tools.ant.BuildException;
  */
 public class StartApplication extends DeployingTaskBase {
 
-
-    public StartApplication() {
+    public void init() throws BuildException {
+        super.init();
         setFailOnError(true);
+        setHost("localhost");
     }
 
     /**
@@ -39,7 +40,8 @@ public class StartApplication extends DeployingTaskBase {
     public void execute() throws BuildException {
         enableFailOnError();
         checkApplicationsDeclared();
-        deployApplications();        
+        addHostname();
+        deployApplications();
         addExitFlag();
         execSmartfrog("Could not deploy");
     }
