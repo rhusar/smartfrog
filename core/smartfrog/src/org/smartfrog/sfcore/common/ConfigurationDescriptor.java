@@ -401,7 +401,6 @@ public class ConfigurationDescriptor implements MessageKeys{
             //GET DEPLOY_REFERENCE
             //If it contains : has to be between ""
             //ex. ...:"componentOne:componentTwo":...
-            System.out.println("TempURL: "+tempURL);
             try {
 
                 if (tempURL.trim().endsWith("\"")){
@@ -411,7 +410,6 @@ public class ConfigurationDescriptor implements MessageKeys{
                 } else {
                     this.setDeployReference(getAndCutLastFieldTempURL(separator));
                 }
-                 System.out.println("TempURL2: "+tempURL);
             } catch (Exception ex) {
                 throw new SmartFrogInitException(
                     "Error parsing DEPLOY_REFERENCE in: "+
