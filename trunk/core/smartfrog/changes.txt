@@ -1,6 +1,6 @@
 release 3.04.000_beta
 ---------------------
-2004-Aug-08 Release date
+2004-Aug-12 Release date
 2004-Aug-06  Add: SFGui added to distribution 
 2004-Aug-06  Add: sfReference document updated for common.TerminatorThread and sfCompleteNameSafe
 2004-Aug-05  Add: sfUserManual document updated for new shell scripts
