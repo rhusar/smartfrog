@@ -91,6 +91,9 @@ public class AxisImpl extends PrimImpl implements Axis {
      * max no. of sessions
      */
     private int sessions = SimpleAxisServer.MAX_SESSIONS_DEFAULT;
+    /**
+     * default path to services
+     */
     protected static final String DEFAULT_AXIS_SERVICE_PATH = "/axis/services/";
 
 
@@ -158,6 +161,7 @@ public class AxisImpl extends PrimImpl implements Axis {
             axis.start();
 
         } catch (Exception e) {
+            log.error("when stating the server",e);
             stopAxis();
             //io trouble binding, axis itself being trouble
             throw SmartFrogLifecycleException.forward(e);
@@ -190,7 +194,7 @@ public class AxisImpl extends PrimImpl implements Axis {
      * If there is trouble here, we log the error, instead of throwing it,
      * and set axis to null as usual.
      */
-    private void stopAxis() {
+    private synchronized void stopAxis() {
         if (axis == null) {
             return;
         }

@@ -78,15 +78,13 @@ StandaloneCddlmSystem extends Compound {
 
     //web server
     webserver extends AxisServer {
-        port 5050; //PARENT:port;
+        port PARENT:port;
         threads 4;
         sessions 8;
     }
 
     //and cddlm service
-    /*
     baseCddlmSystem extends BaseCddlmSystem {
         port PARENT:port;
     }
-*/
 }
