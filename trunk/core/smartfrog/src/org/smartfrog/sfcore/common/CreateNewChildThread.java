@@ -62,6 +62,7 @@ public class CreateNewChildThread extends Thread {
           //@todo: Replace by SF Exception
           throw new SmartFrogException("Wrong parent");
       }
+
       String parentName = "parent";
       try {
           parentName = parent.sfCompleteName().toString();
@@ -241,7 +242,7 @@ public class CreateNewChildThread extends Thread {
  private void waitFor(long timeout) throws InterruptedException, SmartFrogException {
      if (timeout < 0) throw new SmartFrogException("IllegalArgumentException");
      if (isDone()) return;
-     long deadline = timeout;
+     long deadline = System.currentTimeMillis() + timeout;
      while (timeout > 0) {
          this.wait(timeout);
          if (isDone()) return;
