@@ -18,8 +18,8 @@ For more information: www.smartfrog.org
 
 */
 
-
 LogToLog4JImpl extends {
-	//propertyConfiguratorFile "";
-
+   //configuratorFile "";
+   //configureAndWatch false;
+   //configureAndWatchDelay 60000L; //Default 60 secs
 }
