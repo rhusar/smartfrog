@@ -339,8 +339,8 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
     public Object sfResolve(Reference r) throws SmartFrogResolutionException {
         Object obj = sfResolve(r, 0);
         try {
-            if ((sflog!= null) && sflog.isTraceEnabled()) {
-                sflog.trace("sfResolved: "+r.toString()+" to "+obj.toString());
+            if ((sflog()!= null) && sflog().isTraceEnabled()) {
+                sflog().trace("sfResolved: "+r.toString()+" to "+obj.toString());
             }
         } catch (Exception ex) {ex.printStackTrace();}//ignore}
         return obj;
@@ -792,5 +792,17 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
     static public void initLog(LogSF newlog){
         if (sflog==null) sflog = newlog;
     }
+
+    /**
+     *  To log into sfCore logger. This method should be used to log Core messages
+     * @return Logger implementing LogSF and Log
+     * @throws SmartFrogException
+     * @throws RemoteException
+     */
+    public LogSF sflog() {
+       return sflog;
+    }
+
+
 
 }

@@ -30,6 +30,8 @@ import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferenceResolver;
 import org.smartfrog.sfcore.reference.ReferenceResolverHelper;
 
+import org.smartfrog.sfcore.logging.LogSF;
+
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 
 /**
@@ -201,4 +203,14 @@ public interface ComponentDescription extends Copying, ReferenceResolver, Refere
      */
     public void visit(CDVisitor action, boolean topDown)
         throws Exception;
+
+    /**
+     *  To log into sfCore logger. This method should be used to log Core messages
+     * @return Logger implementing LogSF and Log
+     * @throws SmartFrogException
+     * @throws RemoteException
+     */
+    public LogSF sflog();
+
+
 }

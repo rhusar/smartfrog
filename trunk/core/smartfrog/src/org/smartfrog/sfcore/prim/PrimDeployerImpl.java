@@ -34,6 +34,8 @@ import org.smartfrog.sfcore.componentdescription.ComponentDeployer;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.security.SFClassLoader;
+import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.logging.LogFactory;
 
 
 /**
@@ -44,6 +46,12 @@ import org.smartfrog.sfcore.security.SFClassLoader;
  *
  */
 public class PrimDeployerImpl implements ComponentDeployer, MessageKeys {
+
+    /** Static ProcessLog. This log is used to log into the core log: SF_CORE_LOG
+     */
+    protected static LogSF sflog = LogFactory.sfGetProcessLog();
+
+
     /** Efficiency holder of sfClass reference. */
     protected static final Reference refClass = new Reference(
                 SmartFrogCoreKeys.SF_CLASS);

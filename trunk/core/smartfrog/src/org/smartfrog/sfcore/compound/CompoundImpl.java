@@ -410,8 +410,10 @@ public class CompoundImpl extends PrimImpl implements Compound {
                 }
             }
         } catch (SmartFrogException sfex){
+            sfex.printStackTrace();
             throw sfex;
         } catch (Throwable thr) {
+            thr.printStackTrace();
             throw SmartFrogLifecycleException.sfDeploy(null,thr, (Prim)this);
         }
     }

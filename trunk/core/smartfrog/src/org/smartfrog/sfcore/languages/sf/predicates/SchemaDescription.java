@@ -47,7 +47,7 @@ public class SchemaDescription extends BasePredicate implements PhaseAction {
     private Reference bindingRef = new Reference(ReferencePart.here("binding"));
     private Reference classRef = new Reference(ReferencePart.here("class"));
     private Reference descriptionRef = new Reference(ReferencePart.here("description"));
-    LogSF log=LogFactory.getLog("SFCoreLog");
+    private LogSF sflog=LogFactory.sfGetProcessLog();
 
     /**
      * Describes the attributes of a schema.
@@ -131,19 +131,19 @@ public class SchemaDescription extends BasePredicate implements PhaseAction {
             System.out.print("):    ");*/
             String infoStr="     "+ "\n" + description + "\n" +  " (" + name + "):    " ;
             if (log.isInfoEnabled())
-            	log.info(infoStr);
-            
-           
-            
+                log.info(infoStr);
+
+
+
             if (testValue == null)
              //  System.out.print("--not set--");
             if (log.isInfoEnabled())
-            	log.info("--not set--"+"\n");
-            
+                log.info("--not set--"+"\n");
+
             else{
             //System.out.print(testValue);
             if (log.isInfoEnabled())
-            	log.info(testValue + "\n");
+                log.info(testValue + "\n");
             }
         }
     }
@@ -173,7 +173,7 @@ public class SchemaDescription extends BasePredicate implements PhaseAction {
         //   System.out.print("component " + parentref);
      //   System.out.println(":  " + description + "\n");
         if (log.isInfoEnabled())
-        	log.info("component " + parentref+ "\n" +":  " + description + "\n");
+            log.info("component " + parentref+ "\n" +":  " + description + "\n");
 
         for (Enumeration keys = context.keys(); keys.hasMoreElements();) {
             Object key = keys.nextElement();
@@ -192,9 +192,9 @@ public class SchemaDescription extends BasePredicate implements PhaseAction {
             }
         }
      // System.out.println("\n\n\n");
-        
+
         if (log.isInfoEnabled())
-        	log.info("\n\n\n");
+            log.info("\n\n\n");
 
 
     }
