@@ -29,23 +29,17 @@ import java.util.Iterator;
 import java.util.Vector;
 import java.util.Properties;
 
-import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.PrettyPrinting;
 import org.smartfrog.sfcore.common.SmartFrogContextException;
 import org.smartfrog.sfcore.common.MessageKeys;
 import org.smartfrog.sfcore.common.MessageUtil;
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferencePart;
-import org.smartfrog.sfcore.reference.ReferenceResolver;
-import org.smartfrog.sfcore.reference.RemoteReferenceResolver;
-import org.smartfrog.sfcore.security.SFClassLoader;
 
 //For utility methods
 import org.smartfrog.sfcore.parser.Phases;
@@ -54,7 +48,6 @@ import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.common.SmartFrogContextException;
 import org.smartfrog.sfcore.reference.ReferenceResolverHelperImpl;
 import java.rmi.RemoteException;
-import java.io.InputStream;
 
 
 /**

@@ -22,21 +22,15 @@ For more information: www.smartfrog.org
 package org.smartfrog.sfcore.common;
 
 import org.smartfrog.SFSystem;
-import org.smartfrog.sfcore.common.SmartFrogInitException;
+
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.prim.Prim;
 import java.util.Hashtable;
-import java.util.StringTokenizer;
-import java.util.Vector;
 import java.rmi.RemoteException;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.rmi.ConnectException;
 
-
-
-import org.smartfrog.sfcore.common.MessageKeys;
-import org.smartfrog.sfcore.common.MessageUtil;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import java.io.LineNumberReader;
 import java.io.StringReader;

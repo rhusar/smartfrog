@@ -34,8 +34,6 @@ import org.smartfrog.sfcore.common.MessageKeys;
 import org.smartfrog.sfcore.common.MessageUtil;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 
-
-import java.util.Properties;
 import java.lang.Double;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -44,7 +42,6 @@ import java.lang.reflect.Method;
 import java.rmi.RemoteException;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.Vector;
 
 
 /**

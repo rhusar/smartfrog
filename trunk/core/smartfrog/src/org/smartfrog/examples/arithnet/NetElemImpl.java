@@ -28,7 +28,6 @@ import org.smartfrog.sfcore.common.Context;
 
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 
-import org.smartfrog.sfcore.common.Logger;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.compound.CompoundImpl;
