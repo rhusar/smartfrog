@@ -108,7 +108,8 @@
     
     <!-- build the name of our JAR file from the name of the project.
       override any of this stuff for alternate naming -->
-    <property name="project.name" value="sf-${ant.project.name}" />
+    <property name="jar.prefix" value="sf-" />
+    <property name="project.name" value="${jar.prefix}${ant.project.name}" />
     <property name="jarfile.suffix" value=""/>
     <property name="jarfile.name" value="${project.name}${jarfile.suffix}.jar"/>
     <property name="target.jar" 
@@ -119,7 +120,7 @@
     <property name="dist.lib.dir.relative" value="/build/dist/lib" />
     
       <!-- information about the ant tasks -->
-    <property name="smartfrog.tasks.prefix" value="sf-tasks"/>      
+    <property name="smartfrog.tasks.prefix" value="${jar.prefix}tasks"/>      
     <property name="smartfrog.tasks.name" value="${smartfrog.tasks.prefix}.jar"/>      
 <!--     <property name="smartfrog.tasks.lib.dir"
       location="${extras.dir}/ant/${dist.lib.dir.relative}"/> -->
