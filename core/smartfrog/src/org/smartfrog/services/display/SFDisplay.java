@@ -364,7 +364,7 @@ public class SFDisplay extends PrimImpl implements Prim, PrintMsgInt,
     *
     *@param  msg  Message to be displayed
     */
-   public synchronized void printMsg(String msg) {
+   public void printMsg(String msg) {
       if (formatMsg) {
          msg = formatMsg(msg);
       }
