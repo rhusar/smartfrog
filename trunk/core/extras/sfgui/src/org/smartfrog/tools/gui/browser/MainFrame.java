@@ -1439,8 +1439,8 @@ public class MainFrame extends JFrame implements ActionListener {
                 + this.sfSystemClass + " "
                 + "-a"+" "
                 +  this.sfDaemonProcessName + ":TERMINATE:::"
-                + "" + this.hostNameTextField.getText()+ ": "
-                + "";
+                + "" + this.hostNameTextField.getText()+ ":"+ " "
+                + "-e";
 
 
 
