@@ -37,7 +37,7 @@
     overrides (like the compiler settings) that apply across
     all projects that use this common file-->
     <property file="${core.dir}/common.properties"/>
-    
+    <property file="${core.dir}/build.properties"/>
     <property name="smartfrog.home" location="${core.dir}/smartfrog"/>
     <property name="smartfrog.dist.dir" location="${smartfrog.home}/dist"/>
     <property name="smartfrog.dist.lib.dir" location="${smartfrog.dist.dir}/lib"/>
