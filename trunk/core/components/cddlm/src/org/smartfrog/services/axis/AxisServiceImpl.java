@@ -19,25 +19,26 @@
  */
 
 
-package org.smartfrog.services.cddlm;
+package org.smartfrog.services.axis;
+
+import org.smartfrog.sfcore.prim.PrimImpl;
+
+import java.rmi.RemoteException;
 
 /**
- * Date: 10-Mar-2004
- * Time: 20:07:32
+ * This is the axis service, which registers for anything.
+ * The service supports different modes of deployment: deploy local, and deploy remote
+ * But that detail is hidden because the work is handed back up to the parent.
+ *
+ * Date: 14-Jun-2004
+ * Time: 14:27:26
  */
-public class SmartfrogHostedEndpoint {
-    /**
-     * name of whoever created this endpoint
-     */
-    static AxisImpl owner;
 
-    /**
-     * set the owner
-     *
-     * @param owner
-     */
-    static void setOwner(AxisImpl owner) {
-        DeploymentEndpoint.owner = owner;
+public class AxisServiceImpl extends PrimImpl implements AxisService {
+
+    public AxisServiceImpl() throws RemoteException {
     }
+
+    
 
 }

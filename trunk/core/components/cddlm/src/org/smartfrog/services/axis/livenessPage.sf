@@ -50,6 +50,8 @@ For more information: www.smartfrog.org
      protocol extends OptionalString;
      //page
      page extends OptionalString;
+     //query list of things that get turned into queries -without escaping.
+     queries extends OptionalVector;
 
    //and any of
 
@@ -79,7 +81,7 @@ For more information: www.smartfrog.org
 
  LivenessPage extends Prim {
      livenessPageSchema extends LivenessPageSchema;
-     sfClass "org.cddlm.components.LivenessPageComponent";
+     sfClass "org.smartfrog.services.axis.LivenessPageComponent";
 
  }
 

@@ -34,4 +34,4 @@ For more information: www.smartfrog.org
  * now include the CDDLM components
  */
 #include "/org/cddlm/components/platformInformation.sf"
-#include "/org/cddlm/components/livenessPage.sf"
+

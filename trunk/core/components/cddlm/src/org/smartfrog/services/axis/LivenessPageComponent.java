@@ -17,16 +17,16 @@
  For more information: www.smartfrog.org
 
  */
-package org.cddlm.components;
+package org.smartfrog.services.axis;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
+import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.utils.ComponentHelper;
-import org.smartfrog.sfcore.logging.Log;
 
 import java.rmi.RemoteException;
-import java.util.logging.Logger;
+import java.util.Vector;
 
 
 /**
@@ -88,6 +88,8 @@ public class LivenessPageComponent extends PrimImpl implements LivenessPage {
             livenessPage.setProtocol(sfResolve(PROTOCOL,
                     livenessPage.getProtocol(), false));
             livenessPage.setPage(sfResolve(PAGE, livenessPage.getPage(), false));
+            Vector queries = (Vector) sfResolve(LivenessPage.QUERIES, (Vector) null, false);
+            livenessPage.buildQueryString(queries);
         }
 
         livenessPage.setFollowRedirects(sfResolve(PROTOCOL,
@@ -101,6 +103,8 @@ public class LivenessPageComponent extends PrimImpl implements LivenessPage {
         livenessPage.setFetchErrorText(sfResolve(FETCH_ERROR_TEXT,
                 livenessPage.getFetchErrorText(), false));
         checkFrequency = sfResolve(CHECK_FREQUENCY, checkFrequency, false);
+
+
 
         //now tell the liveness page it is deployed
         livenessPage.onDeploy();

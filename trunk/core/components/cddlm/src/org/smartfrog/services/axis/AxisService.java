@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2004 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -17,26 +17,31 @@
  For more information: www.smartfrog.org
 
  */
-package org.cddlm.components;
 
-import java.rmi.Remote;
+
+package org.smartfrog.services.axis;
 
 /**
- * created 28-Apr-2004 17:41:06
+ * Date: 14-Jun-2004
+ * Time: 14:26:58
  */
 
+public interface AxisService {
 
-public interface LivenessPage extends Remote {
+    /**
+     * the name of a resource for the descriptor
+     */
+    public static final String DESCRIPTOR_RESOURCE ="descriptorResource";
 
-    String URL = "url";
-    String HOST = "host";
-    String PORT = "port";
-    String PROTOCOL = "protocol";
-    String PAGE = "page";
-    String FOLLOW_REDIRECTS = "followRedirects";
-    String FETCH_ERROR_TEXT = "fetchErrorText";
-    String MINIMUM_RESPONSE_CODE = "minimumResponseCode";
-    String MAXIMUM_RESPONSE_CODE = "maximumResponseCode";
-    String CHECK_FREQUENCY = "checkFrequency";
-    String ENABLED = "enabled";
+    /**
+     * runtime attr: service path
+     */
+    public static final String SERVICE_PATH = "servicePath";
+
+    /**
+     * runtime attr: path to WSDL. Usually service path plus a query string
+     */
+    public static final String WSDL_PATH = "wsdlPath";
+
+    
 }
