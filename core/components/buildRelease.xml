@@ -240,7 +240,7 @@ To use: ant -f buildRelease release
 	<macrodef name="copyreleaseszips" >
       <attribute name="project" description="component to copy"/>
       <attribute name="releasesdir" default="${releases.dir}" />
-      <attribute name="includes" default="**/*.zip" />
+      <attribute name="includes" default="**/*DIST.zip" />
       
       <sequential>
         <copy todir="${releases.dir}">
@@ -254,7 +254,7 @@ To use: ant -f buildRelease release
     <copyreleaseszips project="${logger.project}" />
     <copyreleaseszips project="${net.project}" />
     <copyreleaseszips project="${scripting.project}" />
-    <!--copyreleaseszips project="${sfcoreloggers.project}" /-->
+    <copyreleaseszips project="${sfcoreloggers.project}"/>
     <copyreleaseszips project="${slp.project}"  />
     <copyreleaseszips project="${ssh.project}" />
     <copyreleaseszips project="${utils.project}" />
@@ -262,24 +262,42 @@ To use: ant -f buildRelease release
 
    <zip destfile="../releases/${Name.System}.${version}.${DSTAMP}_DIST.zip">
        <zipfileset dir="." prefix="${Name.System}.${version}">
-			<include name="${releases.dir}/**"/>
+			<include name="${releases.dir}/*DIST.zip"/>
       </zipfileset>
    </zip>
-	  
-  <!--tar tarfile="../releases/${Name.System}.${version}.${DSTAMP}_COMMON_DIST.tar">
+	
+
+	<macrodef name="copyreleasestars" >
+      <attribute name="project" description="component to copy"/>
+      <attribute name="releasesdir" default="${releases.dir}" />
+      <attribute name="includes" default="**/*DIST.tar.gz" />
+      
+      <sequential>
+        <copy todir="${releases.dir}">
+          <fileset dir="@{project}/@{releasesdir}" includes="@{includes}" />
+        </copy>
+      </sequential>
+    </macrodef>
+
+    <copyreleasestars project="${emailer.project}" />
+    <copyreleasestars project="${jetty.project}" />
+    <copyreleasestars project="${logger.project}" />
+    <copyreleasestars project="${net.project}" />
+    <copyreleasestars project="${scripting.project}" />
+    <copyreleasestars project="${sfcoreloggers.project}"/>
+    <copyreleasestars project="${slp.project}"  />
+    <copyreleasestars project="${ssh.project}" />
+    <copyreleasestars project="${utils.project}" />
+
+	
+  <tar tarfile="../releases/${Name.System}.${version}.${DSTAMP}_DIST.tar">
       <tarfileset dir="." prefix="${Name.System}.${version}">
-	<include name="${dist}/**"/>
-	<include name="${dist}/docs/**"/>
-	<include name="${dist}/docs/jdocs/**"/>
-	<include name="${dist}/bin/**"/>
-	<include name="${dist}/lib/**"/>
-	<include name="${dist}/src/**"/>
-	<include name="${dist}/src.zip"/>
+	<include name="${releases.dir}/*.gz"/>
       </tarfileset>
   </tar>
   
-  <gzip src="../releases/${Name.System}.${version}.${DSTAMP}_COMMON_DIST.tar" zipfile="../releases/${Name.System}.${version}.${DSTAMP}_COMMON_DIST.tar.gz"/>
-  <delete file="../releases/${Name.System}.${version}.${DSTAMP}_COMMON_DIST.tar"/-->
+  <gzip src="../releases/${Name.System}.${version}.${DSTAMP}_DIST.tar" zipfile="../releases/${Name.System}.${version}.${DSTAMP}_DIST.tar.gz"/>
+  <delete file="../releases/${Name.System}.${version}.${DSTAMP}_DIST.tar"/>
   </target>
 
 
