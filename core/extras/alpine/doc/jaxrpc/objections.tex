@@ -285,72 +285,52 @@ predecessors.
 \subsubsection{Fault processing}
 \label{objections:soap-not-rmi:faults}
 
+JAX-RPC's fault handling encompasses two distinct and opposing
+viewpoints. On one hand, the {\tt SOAPFaultException} type provides
+direct access to the XML elements of a generic SOAP fault. Users of
+this mechanism can construct SOAP faults with arbitrary
+contents\footnote{In Apache Axis, this technique is used to add
+non-standard diagnostic elements such as hostname, HTTP error codes
+and stack trace to messages.} and process faults from arbitrary remote
+endpoints, regardless of their implementation type or version.
 
-JAX-RPC's fault handling is best described as ``schizophrenic''. One
-way of dealing with faults is to use the {\tt SOAPFaultException} type, which
-provides direct access to the XML elements within a SOAP Fault. Users of this
-class can construct SOAP Faults with arbitrary contents, and indeed Apache Axis
-uses this technique to add non-standard diagnostic elements such as hostname,
-http error codes and stack trace. Client applications processing these faults
-can navigate round any fault sent by any remote endpoint, regardless of the
-implementation type or version.
+In contrast, the other fault processing feature mechanism offered by
+JAX-RPC aims to provide for loss-less marshalling of Java exceptions
+across the SOAP infrastructure. The implementation and platform
+dependence inherent in this represents the complete antithesis of the
+generic SOAP fault mechanism.
 
-The other fault processing feature offered by JAX-RPC is the complete
-antithesis of this vision. It aims to provide lossless marshalling of Java
-Exceptions across the SOAP infrastructure. The process to do this is as follows:
+While this may seem a simpler approach for the application developer,
+mapping faults into Java exceptions with a specific static structure
+means that extra data included in the original SOAP fault is likely to
+be lost. For example, should a remote runtime include a hostname or
+stack trace, this information will be stripped out on the receiving
+side before the client can be made aware of it. The process is also
+inordinately brittle: if, for example, an updated endpoint were to
+throw a new exception, any callers built against earlier WSDL would
+have to revert to handling a generic {\tt SOAPFaultException}.
 
-\begin{enumerate}
+While the goal appears to have been to provide near-seamless
+marshalling of Java exceptions whilst permitting the exceptions to be
+immutable, the technical details of the marshalling undermine the
+success of the approach even without the interoperability problems.
+For example, there is a requirement that special constructors exist to
+configure the created exception to preserve its immutability, and WSDL
+generation is unreliable unless sufficient debug information is
+included in the bytecode for the names of all parameters to the
+constructor to be visible.
 
-\item Endpoints must declare which exceptions they can throw, above and beyond
-the minimum of {\tt java.rmi.RemoteExeption}. 
-
-\item In generated WSDL, a new fault type is declared with the same name as the Java
-Fault. 
-
-\item Every field in the fault which has an accessor "getter" method
-\emphasis{and a corresponding parameter in its constructor} is declared as an
-element of the fault message.
-
-\item Java class inheritance is mimiced through declaring a schema type for every
-superclass, the types of subclass declaring their inheritance through the
-\tt{extends} declaration of XML Schema's {\tt complexType}.
-
-\item The WSDL to Java generator is expected to generate matching Java Exception 
-classes, with the relevant accessor methods and constructors. 
-
-\item When such an Exception is thrown, the SOAP stack is expected to examine
-the fields of the exception (and its parents) and generate the relevant XML
-message.
-
-\item On receiving such an exception, a SOAP stack is expected to construct an
-instance of the generated Exception class, providing all the fault data as the
-appropriately typed fields of the special constructor.
-
-\end{enumerate}
-
-We believe that the goal here is to provide a near-seamless marshalling of Java
-Exceptions, while permitting the exceptions to be immutable. Hence the
-requirement to use special constructors to configure the created exception.
-While an admirable goal, it has some consequences. The first is that WSDL
-generation only works reliably when enough debug information is included with
-the class for the names of all parameters to the constructor are
-visible. The second is that all extra data provided within the SOAP Fault is lost.
-The remote runtime may have included a hostname or stack trace, 
-but this is stripped out on the receiving side. Finally, the whole
-process seems inordinately brittle. If an updated endpoint threw a new
-exception, any callers that were built against the old WSDL would have to revert
-to the generic {\tt SOAPFaultException}. 
-
-We believe that attempting to seamlessly marshal faults is a misguided approach.
-Furthermore, by propagating the still controversial ``declare all possible
-faults'' Java requirement into remote interfaces, it exposes platform
-implementation details, at the expense of interoperability. Interoperability is
-a major strength of SOAP, yet here JAX-RPC lets developers down, by trying too
-hard to mimic Java RMI.
-
-The only sensible way to work with faults in JAX-RPC is to embrace the
-SOAPFault-as-XML-document option and have the service only throw pure SOAP Faults,
-leaving it to the recipient to process. 
+We believe that the attempt JAX-RPC makes to seamlessly marshal faults
+is consistent with its general approach, but like so much of that
+approach, it undermines the interoperability and robustness of
+services created with it. By propagating Java's requirement that all
+posssible exceptions be declared into remote it exposes platform
+implementation details. Interoperability is a major strength of SOAP,
+yet here JAX-RPC tries too hard to mimic Java RMI, and abandons many
+of the gains SOAP would otherwise have over RMI. In our opinion, the
+only sensible approach for working with faults in JAX-RPC is to have
+services throw pure SOAP faults and leave it to the recipient to
+process them.
 
 \subsection{SOAP is not just RPC}
 \label{objections:soap-not-just-rmi}
