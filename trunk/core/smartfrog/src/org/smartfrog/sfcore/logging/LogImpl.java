@@ -151,7 +151,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
         logName = name;
         try {
             //Check Class and read configuration...including system.properties
-            classComponentDescription = getClassComponentDescription(this, true);
+            classComponentDescription = ComponentDescriptionImpl.getClassComponentDescription(this, true,null);
             //Get int from Double
             setLevel (((Number)new Double(classComponentDescription.sfResolve(ATR_LOG_LEVEL,((double)getLevel()),false))).intValue());
             localLog = getLocalLog(name
@@ -183,42 +183,6 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
 
     //LogImpl configuration
 
-    /**
-     *  Gets configuration description for Obj class. The short class name will
-     *  be used to locate its Reference.
-     * TSystem properties that start with same package name as obj  are added to
-     * ComponentDescription if addSystemProperties is true.
-     * @param obj which class Component description has to be read
-     * @param addSystemProperties to select if to add system properties
-     * @return Component Description
-     * @throws SmartFrogException
-     * @throws RemoteException
-     */
-    public static ComponentDescription getClassComponentDescription (Object obj,
-          boolean addSystemProperties) throws SmartFrogException {
-        //Get Component description for this log class
-        String className = obj.getClass().toString();
-        className = className.substring(6).replace('.','/');
-        String urlDescription = className+".sf";
-        Reference selectedRef = new Reference (className.substring(className.lastIndexOf("/")+1));
-        Vector phases = new Vector();
-        phases.add("type");
-        phases.add("link");
-        phases.add("function");
-        phases.add("predicate");
-        // Get componentDescription and
-        ComponentDescription cmpDesc = ComponentDescriptionImpl.sfComponentDescription(
-                                                                   urlDescription.toLowerCase()
-                                                                 , phases
-                                                                 , selectedRef);
-        if (addSystemProperties){
-            //add properties that start with package name.
-            cmpDesc = ComponentDescriptionImpl.addSystemProperties(
-                       obj.getClass().toString().substring(6)+"."
-                     , cmpDesc);
-        }
-        return cmpDesc;
-    }
 
    protected Log getLocalLog(String name, Integer logLevel, String targetClassName , String targetCodeBase)
           throws SmartFrogLogException{

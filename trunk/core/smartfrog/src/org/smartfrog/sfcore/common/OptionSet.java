@@ -50,8 +50,8 @@ public class OptionSet {
         "    or: java -D... org.smartfrog.SFSystem -?";
 
     /** Help string for SFSystem. */
-    public String help = "\n" + Version.copyright + " - v." +
-        Version.versionString + "\n" + " Parameters: " + "\n" +
+    public String help = "\n" + Version.copyright() + " - v." +
+        Version.versionString() + "\n" + " Parameters: " + "\n" +
         "    -a SFACT: SmartFrog Action Descriptor (SFACT),\n"+
         "              which is used to indicate to SmartFrog an action to take.\n" +
         "       ex. Deploy a description - " +  "\n" +

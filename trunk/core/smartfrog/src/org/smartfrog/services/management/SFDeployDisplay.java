@@ -300,7 +300,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
          display.tabPane.add(panelTree, "Deploy Deployed System ...", 0);
 
          this.display.screen.append("\n Version: " +
-               org.smartfrog.Version.versionString + "\n");
+               org.smartfrog.Version.versionString() + "\n");
 
          // Button for Refresh view ...
          refresh.setText("Refresh");

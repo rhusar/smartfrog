@@ -308,8 +308,8 @@ public class SFParse implements MessageKeys {
      * Shows the version info of the SmartFrog system.
      */
     private static void showVersionInfo() {
-        Logger.log("\nParser - " +Version.versionString);
-        Logger.log(Version.copyright);
+        Logger.log("\nParser - " +Version.versionString());
+        Logger.log(Version.copyright());
         Logger.log(" ");
     }
 

@@ -24,6 +24,7 @@ package org.smartfrog.sfcore.logging;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 
 import java.io.PrintStream;
 import java.io.Serializable;
@@ -145,7 +146,7 @@ public class LogToErrImpl implements LogToErr, Log, LogMessage, LogLevel, Serial
         setLevel(initialLogLevel.intValue());
         //Check Class and read configuration...including system.properties
         try {
-          classComponentDescription = LogImpl.getClassComponentDescription(this, true);
+          classComponentDescription = ComponentDescriptionImpl.getClassComponentDescription(this, true,null);
         } catch (SmartFrogException ex) {
            this.warn(ex.toString());
         }
