@@ -88,20 +88,4 @@ public class ServiceURLEnumeration implements ServiceLocationEnumeration {
             }
         }
     }
-    /**
-        Adds an element to the enumeration.
-        @param url The element to add
-    */
-    /*
-    public void addElement(ServiceURL url) {
-        if(!elements.contains(url)) {
-            elements.add(url);
-        }
-    }
-    */
-    /*
-    public boolean contains(Object o) {
-        return elements.contains(o);
-    }
-     */
-}
+ }
