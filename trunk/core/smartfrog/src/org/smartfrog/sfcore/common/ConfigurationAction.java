@@ -30,93 +30,22 @@ import java.rmi.RemoteException;
  * This code contains the methods to do things from configurations.
  * It is a factoring out of SFSystem.
  *
- * @author steve loughran
- *         created 18-Mar-2004 10:10:05
  */
 
 public abstract class ConfigurationAction {
 
-    /**
-     * Gets the ProcessCompound running on the host.
-     *
-     * @param hostName   Name of the host
-     * @param remoteHost boolean indicating if the host is remote host
-     * @return ProcessCompound
-     */
-    public static ProcessCompound getTargetProcessCompound(String hostName,
-                                                           boolean remoteHost) throws SmartFrogException,
-            RemoteException {
-        ProcessCompound target = null;
-        try {
-            if (!remoteHost) {
-                target = SFProcess.getProcessCompound();
-            } else {
-                target = SFProcess.getRootLocator().
-                        getRootProcessCompound(InetAddress.getByName(hostName));
-            }
-        } catch (Exception ex) {
-            throw SmartFrogException.forward(ex);
+       /**
+         * Select target process compound using host and subprocess names
+         *
+         * @param host host name. If null, assumes localhost.
+         * @param subProcess subProcess name (optional; can be null)
+         * @return ProcessCompound the target process compound
+         * @throws SmartFrogException In case of SmartFrog system error
+         */
+        public static ProcessCompound selectTargetProcess(String host,
+            String subProcess) throws SmartFrogException, RemoteException {
+            return SFProcess.sfSelectTargetProcess(host,subProcess);
         }
-        return target;
-    }
-
-    /**
-     * Select target process compound using host and subprocess names
-     *
-     * @param host       host name. If null, assumes localhost.
-     * @param subProcess subProcess name (optional; can be null)
-     * @return ProcessCompound the target process compound
-     * @throws SmartFrogException In case of SmartFrog system error
-     */
-    public static ProcessCompound selectTargetProcess(String host,
-                                                      String subProcess)
-            throws SmartFrogException, RemoteException {
-        ProcessCompound target = null;
-        try {
-            target = SFProcess.getProcessCompound();
-            if (host != null) {
-                target = SFProcess.getRootLocator().
-                        getRootProcessCompound(InetAddress.getByName(host));
-            }
-            if (subProcess != null) {
-                target = (ProcessCompound) target.sfResolveHere(subProcess);
-            }
-        } catch (Exception ex) {
-            throw SmartFrogException.forward(ex);
-        }
-        return target;
-    }
-
-
-    /**
-     * check for a process being root.
-     * @param targetC
-     * @return
-     * @throws RemoteException
-     */
-    public boolean IsRootProcess(Prim targetC) throws RemoteException {
-        if (targetC instanceof ProcessCompound) {
-            if (((ProcessCompound) targetC).sfIsRoot()) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * look up the named target for the action
-     * @param targetP
-     * @param cfgDesc
-     * @return a resolved target
-     * @throws SmartFrogResolutionException if the name is unknown
-     * @throws RemoteException if something happened on the network
-     */
-    public Prim LookupTarget(Prim targetP, ConfigurationDescriptor cfgDesc) throws SmartFrogResolutionException,
-            RemoteException {
-        Prim targetC = null;
-        targetC = (Prim) targetP.sfResolveWithParser(cfgDesc.name);
-        return targetC;
-    }
 
 
     /**
@@ -142,7 +71,7 @@ public abstract class ConfigurationAction {
             RemoteException {
         ProcessCompound targetProcess;
         targetProcess = selectTargetProcess(configuration.host, configuration.subProcess);
-        assert targetProcess!=null;
+  //      assert targetProcess!=null;
         return execute(targetProcess,configuration);
     }
 
@@ -153,21 +82,23 @@ public abstract class ConfigurationAction {
      * @param ex
      * @param rootProcess
      * @param configuration
+     * @return boolean indiacating if action was successful or not.
      * @throws RemoteException
+     *
      */
-    protected void HandleTerminationException(RemoteException ex,
-                                            boolean rootProcess,
-                                            ConfigurationDescriptor configuration) throws RemoteException {
+    protected static boolean HandleTerminationException(RemoteException ex,
+                                            boolean rootProcess) throws RemoteException {
         if (!rootProcess)
             throw ex;
         //TODO: Check exception handling
         if ((ex.getCause() instanceof java.net.SocketException) ||
                 (ex.getCause() instanceof java.io.EOFException)) {
             Logger.log(MessageUtil.formatMessage(MessageKeys.MSG_SF_TERMINATED));
-            configuration.setSuccessfulResult();
+            return true;
         } else {
             Logger.log(ex);
         }
+        return false;
     }
 
 
