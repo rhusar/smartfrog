@@ -356,7 +356,7 @@ public abstract class SmartFrogTestBase extends TestCase {
      * @throws RemoteException in the event of remote trouble.
      */
     protected Prim deployExpectingSuccess(String testURL, String appName)
-                                                    throws Exception,Throwable {
+                                                    throws Throwable {
 
         try {
             Object deployedApp = deployApplication(appName, testURL);
@@ -365,23 +365,25 @@ public abstract class SmartFrogTestBase extends TestCase {
                 return ((Prim) deployedApp);
             } else if (deployedApp instanceof ConfigurationDescriptor) {
                 System.out.println("\n    "
-                            +"* ERROR IN: Test success in description: \n        "
+                            +"* ERROR IN: Test success in description: \n" +
+                             "        "
                             +((ConfigurationDescriptor)deployedApp).toString("\n        ")
                                );
                 Throwable exception = ((ConfigurationDescriptor)deployedApp).
                         resultException;
-                if (exception!=null); {
+                if (exception!=null) {
                     throw exception;
                 }
             }
         } catch (Throwable throwable) {
-            logChainedException(throwable);
+            logThrowable("thrown during deployment",throwable);
             throw throwable;
         }
         fail("something odd came back");
         //fail throws a fault; this is here to keep the compiler happy.
         return null;
     }
+
 
     /**
      * internal helper to test stuff
@@ -410,11 +412,6 @@ public abstract class SmartFrogTestBase extends TestCase {
     }
 
     /**
-     * a Java1.4 log
-     */
-    private Logger log=Logger.getLogger(this.getClass().getName());
-
-    /**
      * log a chained exception if there is one; do nothing if not.
      * There because JUnit 3.8.1 is not aware of chaining (yet), presumably
      * through a need to work with pre1.4 stuff
@@ -423,7 +420,22 @@ public abstract class SmartFrogTestBase extends TestCase {
     protected void logChainedException(Throwable throwable) {
         Throwable cause = throwable.getCause();
         if(cause!=null) {
-            log.log(Level.SEVERE,"nested fault in "+throwable,cause);
+            logThrowable("nested fault in "+throwable,cause);
+        }
+    }
+
+    /**
+     * log a throwable
+     *
+     * @param thrown
+     */
+    public void logThrowable(String message, Throwable thrown) {
+        String info = extractDiagnosticsInfo(thrown);
+        System.err.println(message);
+        System.err.println(info);
+        Throwable nested = thrown.getCause();
+        if (nested != null) {
+            logThrowable("nested fault:" , nested);
         }
     }
 

@@ -96,14 +96,6 @@ For more information: www.smartfrog.org
     </path>    
   </target>
   
-  
-<!--   <target name="declare-tests.compile.classpath" 
-      depends="declare-exec.classpath,use-smartfrog-testharness" >  
-    <path id="tests.compile.classpath">
-      <path refid="exec.classpath"/>
-      <pathelement location="${junit.jar}"/>
-    </path>
-  </target>   -->
 
   <!-- replace the normal test with a simple noop, because we will
       not have the test harness around in the early stages of the build -->
@@ -112,23 +104,6 @@ For more information: www.smartfrog.org
   <target name="compile-tests"
       depends="package,declare-tests.compile.classpath,common.compile-tests"/>
       
-  <!-- ========================================================== -->
-  <!-- compile the tests -->
-  <!-- ========================================================== -->
-<!--   <target name="compile"
-    depends="verify-smartfrog,init,init-common">
-    <depend srcdir="${test.src.dir}"
-      destdir="${test.classes.dir}"
-      cache="${test.dir}/testdepends"
-      closure="yes"/>
-    <sf-javac-with-ant
-      srcdir="${test.src.dir}"
-      destdir="${test.classes.dir}"
-      classpathref="compile.classpath"
-      >
-    </sf-javac-with-ant>
-    <copy-useful-files src="${test.src.dir}" dest="${test.classes.dir}" />
-  </target> -->
 
   <!-- ========================================================== -->
   <!-- compile the RMI. This is separate from the other compile, so that unit
@@ -267,7 +242,7 @@ For more information: www.smartfrog.org
       location="${testcases.jar.dist.dir}/${testcases.jar}"/>
     <jar jarfile="${testcases.jar.file}"
          basedir="${test.classes.dir}"
-         includes="**/system/**, **/unit/**" >
+         includes="**/*" >
     </jar>
   </target>
 

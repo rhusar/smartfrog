@@ -22,6 +22,7 @@ For more information: www.smartfrog.org
 #include "org/smartfrog/sfcore/workflow/combinators/sequence.sf"
 #include "org/smartfrog/functions.sf"
 #include "/org/smartfrog/services/os/runshell/components.sf"
+#include "/org/smartfrog/services/filesystem/components.sf"
 
 /**
  * Tests the scenario where failure of one component in sequence leads to 
@@ -29,22 +30,20 @@ For more information: www.smartfrog.org
  * removes that but second component fails and thus third is never executed.
  */
 testSequence extends Sequence {
+
+
     actions extends LAZY {
-        // creates a dir
-        comp1 extends WinNTShellScript {
-            processName "shellNT";
-            processId   "1";
-            cmdCD "md tempDir";
-            shouldTerminate true;
+        
+        comp1 extends TouchFile {
+            filename "comp1";
         }
+
         comp2 extends Prim {
             // fails and leads to sequence termination
             sfClass "org.smartfrog.sfcore.NoClass"; 
         }
-        comp3 extends WinNTShellScript {
-            processName "shellNT";
-            processId   "1";
-            cmdCD "rmdir /s tempDir";
+        comp3 extends TouchFile {
+            filename "comp3";
         }
     }
 }
