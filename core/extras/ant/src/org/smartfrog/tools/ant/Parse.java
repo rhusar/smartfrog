@@ -36,7 +36,6 @@ import java.util.List;
 
 /**
  * This task parses smartfrog files and validates them. Errors are thrown when appropriate
- * @author steve loughran
  * @ant.task category="SmartFrog" name="sf-parse"
  *
  *         created 20-Feb-2004 16:17:41

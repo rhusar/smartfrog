@@ -36,12 +36,17 @@ import java.util.List;
  * it may be calling the Java task, it may be calling smartfrog direct.
  * What is not a detail is that the combined classpath of ant+ any classpath parameters must include
  * all the relevant smartfrog JAR files.
- * <p/>
+ * <p>
  * Smartfrog can be configured via system properties, an ini file, or the explicit
  * properties of this task. All the attributes of this task that configure SmartFrog
  * (port, liveness, spawning, stack trace) are undefined; whatever defaults are built into
  * SmartFrog apply, not any hard coded in the task. This also permits one to override smartfrog
  * by setting system properties inline, or in a property set.
+ * <p>
+ * By default, all tasks are given a timeout of ten minutes; and propagate any
+ * failure to execute to the build file. These can be adjusted via the
+ * {@link SmartFrogTask#setFailOnError(boolean)} call, and
+ * {@link SmartFrogTask#setFailOnError(boolean)} calls respectively.
  */
 public abstract class SmartFrogTask extends TaskBase {
     protected static final String ROOT_PROCESS = "rootProcess";
@@ -118,9 +123,8 @@ public abstract class SmartFrogTask extends TaskBase {
 
     /**
      * name of a file
-     * org.smartfrog.iniSFFile
      */
-    protected File initialSmartfrogFile;
+    protected File initialSmartFrogFile=null;
 
 
     /**
@@ -131,7 +135,7 @@ public abstract class SmartFrogTask extends TaskBase {
     /**
      * what is the default timeout for those tasks that have a timeout
      */
-    public static final long DEFAULT_TIMEOUT_VALUE = 60*1000L;
+    public static final long DEFAULT_TIMEOUT_VALUE = 60*10*1000L;
 
 
     /**
@@ -212,18 +216,20 @@ public abstract class SmartFrogTask extends TaskBase {
     /**
      * the name of a smartfrog file to load on startupe
      *
-     * @param initialSmartfrogFile
+     * @param initialSmartFrogFile
      */
-    public void setInitialSmartfrogFile(File initialSmartfrogFile) {
-        if (!initialSmartfrogFile.exists()) {
-            throw new BuildException("Not found: " + initialSmartfrogFile);
-        }
-        if (!initialSmartfrogFile.isFile()) {
-            throw new BuildException(
-                    "Unexpected file type: " + initialSmartfrogFile);
+    public void setInitialSmartFrogFile(File initialSmartFrogFile) {
+        if(initialSmartFrogFile!=null && initialSmartFrogFile.length()>0 ) {
+            if (!initialSmartFrogFile.exists()) {
+                throw new BuildException("Not found: " + initialSmartFrogFile);
+            }
+            if (!initialSmartFrogFile.isFile()) {
+                throw new BuildException(
+                        "Unexpected file type: " + initialSmartFrogFile);
+            }
         }
 
-        this.initialSmartfrogFile = initialSmartfrogFile;
+        this.initialSmartFrogFile = initialSmartFrogFile;
     }
 
 
@@ -284,16 +290,6 @@ public abstract class SmartFrogTask extends TaskBase {
         smartfrog.createArg().setValue(value);
     }
 
-//    /**
-//     * adds the hostname to the task
-//     */
-//    protected void addHostname() {
-//        if (host != null) {
-//            addArg( "-h");
-//            addArg(host);
-//        }
-//    }
-
     /**
      * set a flag to tell the runtime to exit after actioning something
      */
@@ -337,6 +333,9 @@ public abstract class SmartFrogTask extends TaskBase {
         }
     }
 
+    /**
+     * set various standard properties if they are set in the task
+     */
     protected void setStandardSmartfrogProperties() {
         addSmartfrogPropertyIfDefined("org.smartfrog.logger.logStackTrace",
                 logStackTraces);
@@ -355,6 +354,8 @@ public abstract class SmartFrogTask extends TaskBase {
         addSmartfrogPropertyIfDefined(
                 "org.smartfrog.ProcessCompound.sfProcessTimeout",
                 spawnTimeout);
+        addSmartfrogPropertyIfDefined("org.smartfrog.sfcore.processcompound.sfDefault.sfDefault",
+                initialSmartFrogFile);
     }
 
 
