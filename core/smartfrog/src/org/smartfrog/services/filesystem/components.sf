@@ -202,7 +202,7 @@ TextFile extends FileUsingComponent {
     sfClass "org.smartfrog.services.filesystem.TextFileImpl";
 
     //default encoding is utf8
-    encoding "utf8";
+    encoding "UTF-8";
 }
 
 /**
@@ -216,23 +216,3 @@ SelfDeletingFile extends FileUsingComponent {
     deleteOnExit true;
 }
 
-/**
- * a temporary text file
- */
- /*
-TempTextFile extends TextFile {
-
-    prefix;
-    suffix;
-    dir;
-    deleteOnExit;
-
-
-    File extends TempFile {
-        prefix ATTRIB PARENT:prefix;
-        suffix ATTRIB PARENT:suffix;
-        dir ATTRIB PARENT:dir;
-        deleteOnExit ATTRIB PARENT:deleteOnExit;
-    }
-}
-*/

@@ -34,8 +34,4 @@ public interface TextFile extends FileUsingComponent  {
      */
     public static final String ATTR_TEXT_ENCODING = "encoding";
 
-    /**
-     * default encoding: {@value}
-     */
-    public static String DEFAULT_TEXT_ENCODING = "utf8";
 }
