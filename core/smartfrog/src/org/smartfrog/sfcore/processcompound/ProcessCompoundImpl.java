@@ -300,6 +300,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
 
             // Register with parent (does nothing if parent in null)
             sfRegisterWithParent((ProcessCompound) sfParent);
+
         } catch (SmartFrogException sfex){
             throw ((SmartFrogDeploymentException)SmartFrogDeploymentException.forward(sfex));
         }
@@ -330,6 +331,10 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
         // @TODO fix after refactoring ProcessCompound.
         deployDefaultProcessDescriptions(this);
 
+        // Add boot time only in rootProcess
+        if (sfIsRoot)
+        sfAddAttribute(SmartFrogCoreKeys.SF_BOOT_DATE,
+                                       new Date(System.currentTimeMillis()));
 
         // the last act is to inform the root process compound that the
         // subprocess is now ready for action - only done if not the root
