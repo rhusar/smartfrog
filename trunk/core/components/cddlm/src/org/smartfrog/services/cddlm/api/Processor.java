@@ -27,7 +27,9 @@ import org.apache.axis.types.URI;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.smartfrog.services.axis.SmartFrogHostedEndpoint;
-import org.smartfrog.services.cddlm.generated.api.DeployApiConstants;
+import org.smartfrog.services.cddlm.engine.JobRepository;
+import org.smartfrog.services.cddlm.engine.JobState;
+import org.smartfrog.services.cddlm.engine.ServerInstance;
 import org.smartfrog.services.cddlm.generated.api.DeployApiConstants;
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.SmartFrogCompilationException;
@@ -186,19 +188,22 @@ public class Processor {
     }
 
     protected static AxisFault raiseUnsupportedLanguageFault(String message) {
-        return raiseFault(DeployApiConstants.FAULT_UNSUPPORTED_LANGUAGE, message);
+        return raiseFault(DeployApiConstants.FAULT_UNSUPPORTED_LANGUAGE,
+                message);
     }
 
-    protected static AxisFault raiseUnsupportedCallbackFault(String message) {
-        return raiseFault(DeployApiConstants.FAULT_UNSUPPORTED_CALLBACK, message);
+    public static AxisFault raiseUnsupportedCallbackFault(String message) {
+        return raiseFault(DeployApiConstants.FAULT_UNSUPPORTED_CALLBACK,
+                message);
     }
 
-    protected static AxisFault raiseBadArgumentFault(String message) {
+    public static AxisFault raiseBadArgumentFault(String message) {
         return raiseFault(DeployApiConstants.FAULT_BAD_ARGUMENT, message);
     }
 
-    protected static AxisFault raiseNoSuchApplicationFault(String message) {
-        return raiseFault(DeployApiConstants.FAULT_NO_SUCH_APPLICATION, message);
+    public static AxisFault raiseNoSuchApplicationFault(String message) {
+        return raiseFault(DeployApiConstants.FAULT_NO_SUCH_APPLICATION,
+                message);
     }
 
     protected URL makeURL(URI source) throws MalformedURLException {
@@ -287,7 +292,8 @@ public class Processor {
             //TODO: escape local parts that are not valid.
             final String localPart = key.toString();
             fault.addFaultDetail(
-                    new QName(DeployApiConstants.SMARTFROG_NAMESPACE, localPart)
+                    new QName(DeployApiConstants.SMARTFROG_NAMESPACE,
+                            localPart)
                     , value.toString());
         }
 

@@ -19,7 +19,11 @@
  */
 package org.smartfrog.services.cddlm.components;
 
+import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.compound.CompoundImpl;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.PrimHook;
+import org.smartfrog.sfcore.prim.TerminationRecord;
 
 import java.rmi.RemoteException;
 
@@ -34,6 +38,14 @@ public class CddlmCompoundImpl extends CompoundImpl
     }
 
 
+    public class startupHook implements PrimHook {
+
+        public void sfHookAction(Prim prim,
+                TerminationRecord terminationRecord)
+                throws SmartFrogException {
+
+        }
+    }
     //PrimHook
 
 }

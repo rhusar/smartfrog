@@ -19,14 +19,15 @@
  */
 package org.smartfrog.services.cddlm.api;
 
-import org.smartfrog.services.axis.SmartFrogHostedEndpoint;
-import org.smartfrog.services.cddlm.generated.api.types.ApplicationStatusType;
-import org.smartfrog.services.cddlm.generated.api.types._applicationStatusRequest;
-import org.smartfrog.services.cddlm.generated.api.types.LifecycleStateEnum;
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.apache.axis.types.NCName;
 import org.apache.axis.types.URI;
+import org.smartfrog.services.axis.SmartFrogHostedEndpoint;
+import org.smartfrog.services.cddlm.engine.JobState;
+import org.smartfrog.services.cddlm.generated.api.types.ApplicationStatusType;
+import org.smartfrog.services.cddlm.generated.api.types.LifecycleStateEnum;
+import org.smartfrog.services.cddlm.generated.api.types._applicationStatusRequest;
+import org.smartfrog.sfcore.common.SmartFrogLivenessException;
+import org.smartfrog.sfcore.prim.Prim;
 
 import java.rmi.RemoteException;
 
@@ -41,26 +42,28 @@ public class ApplicationStatusProcessor extends Processor {
 
     /**
      * app status processor does a ping to see if the dest is still alive
+     *
      * @param applicationStatus
      * @return
      * @throws RemoteException
      */
-    public ApplicationStatusType applicationStatus(_applicationStatusRequest applicationStatus)
+    public ApplicationStatusType applicationStatus(
+            _applicationStatusRequest applicationStatus)
             throws RemoteException {
         URI reference = applicationStatus.getApplication();
-        JobState job=lookupJob(reference);
-        Prim process=job.resolvePrimFromJob();
+        JobState job = lookupJob(reference);
+        Prim process = job.resolvePrimFromJob();
         ApplicationStatusType status = new ApplicationStatusType();
         boolean running;
         try {
             process.sfPing(null);
-            running=true;
+            running = true;
         } catch (SmartFrogLivenessException e) {
-            running=false;
+            running = false;
             status.setStateInfo(e.toString());
         }
         status.setName(new NCName(job.getName()));
-        String statusName=running?"running":"terminated";
+        String statusName = running ? "running" : "terminated";
         status.setState(LifecycleStateEnum.fromString(statusName));
 
         return status;

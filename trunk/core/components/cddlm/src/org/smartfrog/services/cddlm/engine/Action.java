@@ -17,21 +17,24 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.cddlm.components;
+package org.smartfrog.services.cddlm.engine;
 
-import java.rmi.Remote;
+import org.smartfrog.sfcore.common.SmartFrogException;
+
+import java.rmi.RemoteException;
 
 /**
- * created Sep 8, 2004 2:33:07 PM
+ * this is what we queue; actions for execution.
+ * <p/>
+ * created Sep 9, 2004 4:16:08 PM
  */
 
-public interface CddlmCompound extends Remote {
 
+public interface Action {
 
     /**
-     * URL of an endpoint to notify
+     * execute a queued command
      */
-    public String ATTR_NOTIFICATION_ENDPOINT = "endpoint";
-
+    public void execute() throws SmartFrogException, RemoteException;
 
 }

@@ -22,6 +22,7 @@ package org.smartfrog.services.cddlm.api;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.smartfrog.services.axis.SmartFrogHostedEndpoint;
+import org.smartfrog.services.cddlm.engine.ServerInstance;
 import org.smartfrog.services.cddlm.generated.api.types.DynamicServerStatusType;
 import org.smartfrog.services.cddlm.generated.api.types.ServerStatusType;
 import org.smartfrog.services.cddlm.generated.api.types.StaticServerStatusType;

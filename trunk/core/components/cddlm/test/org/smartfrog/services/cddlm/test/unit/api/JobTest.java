@@ -23,8 +23,8 @@ package org.smartfrog.services.cddlm.test.unit.api;
 
 import junit.framework.TestCase;
 import org.apache.axis.types.URI;
-import org.smartfrog.services.cddlm.api.JobRepository;
-import org.smartfrog.services.cddlm.api.JobState;
+import org.smartfrog.services.cddlm.engine.JobRepository;
+import org.smartfrog.services.cddlm.engine.JobState;
 import org.smartfrog.services.cddlm.generated.api.types.ApplicationReferenceListType;
 import org.smartfrog.services.cddlm.generated.api.types._deployRequest;
 
