@@ -38,6 +38,14 @@ public class ActionDetach extends ConfigurationAction{
       */
      public static Prim Detach(String name, ProcessCompound targetP)  throws SmartFrogException,
             RemoteException {
+            //First thing first: system gets initialized
+            //Protect system if people use this as entry point
+            try {
+                org.smartfrog.SFSystem.initSystem();
+            } catch (Exception ex) {
+                throw SmartFrogException.forward(ex);
+            }
+
             try {
                 Prim targetC = (Prim)targetP.sfResolveWithParser(name);
                 targetC.sfDetach();
