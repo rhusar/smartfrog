@@ -63,7 +63,7 @@ relevant JAR files into the javacc subdirectory
     <echo level="verbose">
 ===================================================================
 = ${Name.System} ${version}"
-= ${Name.Company} 
+= ${Name.Company}
 ===================================================================
 
 (${ant.version})
@@ -153,6 +153,7 @@ relevant JAR files into the javacc subdirectory
     <property name="javac.debug.mode" value="on"/> <!-- turn on compile -g -->
     <property name="javac.debug.level" value="lines,vars,source" />
     <property name="javac.java.version" value="1.4" />
+    <property name="javac.compiler" value="${build.compiler}" />
 
     <!-- override point for javacc -->
     <property name="javacc.dir" location="javacc"/>
@@ -241,7 +242,7 @@ relevant JAR files into the javacc subdirectory
   <!-- =================================================================== -->
   <!--   Compiles source directory                                         -->
   <!-- =================================================================== -->
-  <target name="compile-source" depends="initbuild,createParser" 
+  <target name="compile-source" depends="initbuild,createParser"
     description="Compiles the source code">
     <!-- use better dependency logic -->
 <!--     <depend srcdir="${src.dir}"
@@ -250,7 +251,9 @@ relevant JAR files into the javacc subdirectory
       closure="yes"/> -->
 
     <!-- Compile the java code -->
+    <echo>${javac.java.version} build.compiler=${build.compiler} javac.compiler=${javac.compiler}</echo>
     <javac
+      compiler="${javac.compiler}"
       srcdir="${src.dir}"
       includes="**/*.java"
       destdir="${build.classes.dir}"
@@ -264,7 +267,7 @@ relevant JAR files into the javacc subdirectory
     </javac>
   </target>
 
-  <target name="compile-rmi" depends="compile-source" >    
+  <target name="compile-rmi" depends="compile-source" >
     <!-- the RMI compile is split in two, as the compiler could not
         handle it otherwise.
         It is tempting to run these in parallel, to get speedup on multiway
@@ -281,8 +284,8 @@ relevant JAR files into the javacc subdirectory
     </rmic>
 
   </target>
-  
-  <target name="compile" depends="compile-rmi" 
+
+  <target name="compile" depends="compile-rmi"
     description="Compiles the source code"/>
 
 
