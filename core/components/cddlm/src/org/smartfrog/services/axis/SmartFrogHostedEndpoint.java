@@ -41,7 +41,7 @@ public class SmartFrogHostedEndpoint {
      * @param owner
      */
     static public void setOwner(AxisImpl owner) {
-        DeploymentEndpoint.owner = owner;
+        DeploymentEndpoint.setOwner(owner);
     }
 
     /**

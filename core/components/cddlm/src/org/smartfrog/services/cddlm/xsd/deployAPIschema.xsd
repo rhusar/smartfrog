@@ -14,7 +14,7 @@ xmlns:wsbf="http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseFaults"
   <xsd:annotation>
   <xsd:documentation>
   
-    This is the XSD describing the types of the CDDLM servicaPI
+    This is the XSD describing the types of the CDDLM service API
 
 
     Version: 0.1.
@@ -30,6 +30,9 @@ xmlns:wsbf="http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseFaults"
 
   </xsd:documentation>
   </xsd:annotation>
+  <!-- ============================================================= -->
+
+  
   <!-- ============================================================= -->
   <!-- BEGIN IMPORTS -->
   <!-- ============================================================= -->
