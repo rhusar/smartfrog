@@ -21,20 +21,14 @@
 
 package org.smartfrog.sfcore.logging;
 
-import java.io.InputStream;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.prim.TerminationRecord;
+
+import java.io.PrintStream;
 import java.io.Serializable;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Properties;
-
-import org.smartfrog.sfcore.common.SmartFrogLogException;
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.prim.TerminationRecord;
 
 
 /**
@@ -43,47 +37,45 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
  * are supported to configure the behavior of this logger:</p>
  * <ul>
  * <li><code>defaultlog</code> -
- *     Default logging detail level for all instances of SimpleLog.
- *     Must be one of ("trace", "debug", "info", "warn", "error", or "fatal").
- *     If not specified, defaults to "info". </li>
+ * Default logging detail level for all instances of SimpleLog.
+ * Must be one of ("trace", "debug", "info", "warn", "error", or "fatal").
+ * If not specified, defaults to "info". </li>
  * <li><code>showlogname</code> -
- *     Set to <code>true</code> if you want the Log instance name to be
- *     included in output messages. Defaults to <code>false</code>.</li>
+ * Set to <code>true</code> if you want the Log instance name to be
+ * included in output messages. Defaults to <code>false</code>.</li>
  * <li><code>showShortLogname</code> -
- *     Set to <code>true</code> if you want the last component of the name to be
- *     included in output messages. Defaults to <code>true</code>.</li>
+ * Set to <code>true</code> if you want the last component of the name to be
+ * included in output messages. Defaults to <code>true</code>.</li>
  * <li><code>showdatetime</code> -
- *     Set to <code>true</code> if you want the current date and time
- *     to be included in output messages. Default is false.</li>
+ * Set to <code>true</code> if you want the current date and time
+ * to be included in output messages. Default is false.</li>
  * </ul>
- *
- *
  */
 public class LogToErr implements Log, LogMessage, Serializable {
 
     /** Include the instance name in the log message? */
-    static protected boolean showLogName = true;
+    protected static boolean showLogName = true;
 
     /** Include the short name ( last component ) of the logger in the log
         message. Default to true - otherwise we'll be lost in a flood of
         messages without knowing who sends them.
     */
-    static protected boolean showShortName = false;
+    protected static boolean showShortName = false;
 
     /** Include the current time in the log message */
-    static protected boolean showDateTime = true;
+    protected static boolean showDateTime = true;
 
     /** Include thread name in the log message */
-    static protected boolean showThreadName = true;
+    protected static boolean showThreadName = true;
 
     /** Include package name in the log message */
-    static protected boolean showMethodCall = true;
+    protected static boolean showMethodCall = true;
 
     /** Include package name in the log message */
-    static protected boolean showStackTrace =true;
+    protected static boolean showStackTrace =true;
 
     /** Used to format times */
-    static protected DateFormat dateFormatter = null;
+    protected static DateFormat dateFormatter = null;
 
     /** "Trace" level logging. */
     public static final int LOG_LEVEL_TRACE  = 1;
@@ -121,24 +113,60 @@ public class LogToErr implements Log, LogMessage, Serializable {
     /** The short name of this simple log instance */
     private String shortLogName = null;
 
-    //To get from where this Log was call
+
+
+    /** To get from where this Log was called */
     private static CallDetective detective = CallDetective.Factory.makeCallDetective();
-    //Depth in StackTrace it will depend on how this Log is used and connected to LogImpl
+
+    /** Depth in StackTrace it will depend on how this Log is used and connected to LogImpl */
     int callDepth = 8;
 
+    /** output stream to print to. Bonded at construct time, and usually system.err unless
+     * otherwise chosen
+     */
+
+    private PrintStream outstream;
+
     /**
-     * Construct a simple log with given name.
-     *
+     * buffer size
+     */
+    private static final int STACK_BUFFER_SIZE = 1024;
+
+    /**
+     * Construct a simple log with given name and log level
+     * and log to output level
      * @param name log name
+     * @param intialLogLevel level to log at
      */
     public LogToErr(String name, int intialLogLevel) {
+       this(name,intialLogLevel,System.err);
+    }
 
+    /**
+     * Construct a simple log with given name and log level
+     * and log to output level
+     * @param name log name
+     * @param intialLogLevel level to log at
+     * @param out output stream to log to
+     */
+
+    public LogToErr(String name, int intialLogLevel,PrintStream out) {
+        assert name != null;
+        assert intialLogLevel >= 0;
         logName = name;
         // Set initial log level
         setLevel(intialLogLevel);
-
+        setOutstream(out);
     }
 
+    /**
+     * set the output stream for logging. must not be null
+     * @param outstream
+     */
+    public void setOutstream(PrintStream outstream) {
+        assert(outstream != null);
+        this.outstream = outstream;
+    }
 
     /**
      * <p> Set logging level. </p>
@@ -160,6 +188,18 @@ public class LogToErr implements Log, LogMessage, Serializable {
         return currentLogLevel;
     }
 
+
+    /**
+     * text for error levels
+     */
+    protected static final String ERROR_NAMES[]={
+        "TRACE",
+        "DEBUG",
+        "INFO",
+        "WARN",
+        "ERROR",
+        "FATAL"
+    };
 
     // -------------------------------------------------------- Logging Methods
 
@@ -184,14 +224,14 @@ public class LogToErr implements Log, LogMessage, Serializable {
         }
 
         // Append a readable representation of the log level
-        switch(type) {
-            case LogToErr.LOG_LEVEL_TRACE: buf.append("[TRACE] "); break;
-            case LogToErr.LOG_LEVEL_DEBUG: buf.append("[DEBUG] "); break;
-            case LogToErr.LOG_LEVEL_INFO:  buf.append("[INFO]  ");  break;
-            case LogToErr.LOG_LEVEL_WARN:  buf.append("[WARN]  ");  break;
-            case LogToErr.LOG_LEVEL_ERROR: buf.append("[ERROR] "); break;
-            case LogToErr.LOG_LEVEL_FATAL: buf.append("[FATAL] "); break;
+        buf.append('[');
+        if(type>=0 && type<ERROR_NAMES.length) {
+            buf.append(ERROR_NAMES[type]);
+        } else {
+            //show out of range stuff as an int
+            buf.append(type);
         }
+        buf.append(']');
 
         if ((showThreadName)&&(message!=null)) {
             buf.append("["+Thread.currentThread().getName()+"]");
@@ -250,7 +290,7 @@ public class LogToErr implements Log, LogMessage, Serializable {
         // Append stack trace if not null
         if(t != null) {
             if (showStackTrace || this.isLevelEnabled(LOG_LEVEL_WARN)) {
-                java.io.StringWriter sw = new java.io.StringWriter(1024);
+                java.io.StringWriter sw = new java.io.StringWriter(STACK_BUFFER_SIZE);
                 java.io.PrintWriter pw = new java.io.PrintWriter(sw);
                 t.printStackTrace(pw);
                 pw.close();
@@ -266,14 +306,17 @@ public class LogToErr implements Log, LogMessage, Serializable {
 
     /**
      * <p>Write the content of the message accumulated in the specified
-     * <code>StringBuffer</code> to the appropriate output destination.  The
-     * default implementation writes to <code>System.err</code>.</p>
+     * <code>StringBuffer</code> to the appropriate output destination.
+     *
+     * this is the output stream specified in the constructor or, by default,
+     * the reference to System.err <i>at the time of construction</i>. Changes
+     * to System.err are not picked up.
      *
      * @param buffer A <code>StringBuffer</code> containing the accumulated
      *  text to be logged
      */
     protected void write(StringBuffer buffer) {
-        System.err.println(buffer.toString());
+        outstream.println(buffer.toString());
 
     }
 
@@ -509,7 +552,7 @@ public class LogToErr implements Log, LogMessage, Serializable {
      * @param message log this message
      */
     public void out(Object message) {
-         System.out.println(message.toString());
+         outstream.println(message.toString());
     }
 
     /**
@@ -520,7 +563,7 @@ public class LogToErr implements Log, LogMessage, Serializable {
      * @param t log this cause
      */
     public void err(Object message, Throwable t) {
-          System.err.println(message.toString());
+          outstream.println(message.toString());
           t.printStackTrace();
     }
 
@@ -532,7 +575,7 @@ public class LogToErr implements Log, LogMessage, Serializable {
      */
     public void err(Object message, SmartFrogException t, TerminationRecord tr) {
         err(message, t);
-        System.err.println(tr.toString());
+        outstream.println(tr.toString());
     }
 
     /**
