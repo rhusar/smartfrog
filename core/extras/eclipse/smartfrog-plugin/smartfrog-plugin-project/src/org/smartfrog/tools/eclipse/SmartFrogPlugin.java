@@ -35,6 +35,15 @@ import org.osgi.framework.BundleContext;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.jdt.core.IClasspathEntry;
+import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.JavaCore;
+import org.smartfrog.tools.eclipse.model.Util;
+import org.smartfrog.tools.eclipse.model.builder.BasicSmartFrogBuilder;
+import org.eclipse.jdt.core.JavaModelException;
 
 /**
  * The main plugin class to be used in the desktop.
@@ -192,5 +201,24 @@ public class SmartFrogPlugin
     public static String getPluginId()
     {
         return PLUGIN_ID;
+    }
+
+    public static String getmClassPath(IFile selectedIFile)
+    {
+	    StringBuffer sb = null;
+       try {
+            IProject project = selectedIFile.getProject();
+	    IJavaProject jproject = JavaCore.create(project);
+	    IClasspathEntry[] nclasspath = jproject.getRawClasspath();	
+	    sb = new StringBuffer();
+	    for ( int i=0; i < nclasspath.length; i++) {
+		sb.append(Util.getClassSeparator());
+	    	IPath path = nclasspath[i].getPath();
+		sb.append(path.toOSString());
+	    }
+	} catch (JavaModelException ex){
+	//	throw ex;
+	}
+       return sb.toString();
     }
 }
