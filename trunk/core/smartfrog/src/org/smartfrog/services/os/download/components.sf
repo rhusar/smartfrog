@@ -106,5 +106,5 @@ Install extends Try {
     }
 }
 
-sfConfig extends Install;
+//sfConfig extends Install;
 
