@@ -21,7 +21,6 @@
 package org.smartfrog.tools.ant;
 
 import org.apache.tools.ant.BuildException;
-import java.util.Iterator;
 
 
 /**
@@ -79,7 +78,7 @@ public class RunApplicationTask extends DeployingTaskBase {
      *          if something goes wrong with the build
      */
     public void execute() throws BuildException {
-        checkNoHost();
+        verifyHostUndefined();
         setHost("");
         setStandardSmartfrogProperties();
         enableFailOnError();

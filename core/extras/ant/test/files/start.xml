@@ -79,6 +79,12 @@ ant -lib ..\..\build\dist\lib\smartfrog-tasks.jar -lib ..\..\..\..\smartfrog\dis
     </target>
 
 
+    <target name="testRunNostop" depends="setup" >
+      <sf-startdaemon  timeout="${medium.timeout}" >
+        <application name="app" file="valid.sf"/>
+      </sf-startdaemon>
+    </target>
+    
     <!-- run smartfrog in one thread, shut it down in another -->
     <target name="testRunFile">
      <parallel>

@@ -51,6 +51,11 @@ public class StartDaemon extends DeployingTaskBase {
         setFailOnError(true);
     }
 
+    public void init() throws BuildException {
+        super.init();
+        setHost("localhost");
+    }
+
     /**
      * get the title string used to name a task
      *
@@ -88,7 +93,6 @@ public class StartDaemon extends DeployingTaskBase {
         addSmartfrogProperty("org.smartfrog.sfcore.processcompound.sfProcessName",
                 ROOT_PROCESS);
         addIniFile();
-        //addHostname();
         deployApplications();
         if(spawn) {
             smartfrog.setSpawn(spawn);

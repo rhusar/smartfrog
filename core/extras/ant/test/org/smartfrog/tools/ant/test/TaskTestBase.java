@@ -127,9 +127,9 @@ public abstract class TaskTestBase extends BuildFileTest {
         assertInLog("[rootProcess]");
     }
 
-    protected void assertDeployed(String s) {
-        assertInLog("Successfully deployed");
-        assertInLog(s);
+    protected void expectDeployed(String target,String appname) {
+        executeTarget(target);
+        assertInLog("Successfully deployed: "+appname);
     }
 
 }
