@@ -21,16 +21,13 @@
 
 package org.smartfrog.services.cddlm.test.system.console;
 
-import org.cddlm.client.console.Undeploy;
-import org.apache.axis.types.URI;
 import org.apache.axis.AxisFault;
-import org.smartfrog.services.cddlm.api.Constants;
-
-import java.rmi.RemoteException;
+import org.apache.axis.types.URI;
+import org.cddlm.client.console.Undeploy;
+import org.smartfrog.services.cddlm.generated.faults.FaultCodes;
 
 /**
- * Date: 02-Sep-2004
- * Time: 20:41:24
+ * Date: 02-Sep-2004 Time: 20:41:24
  */
 public class UndeployTest extends ConsoleTestBase {
 
@@ -45,11 +42,11 @@ public class UndeployTest extends ConsoleTestBase {
         operation = new Undeploy(getBinding(), getOut());
     }
 
-    public void testMissingApp() throws Exception{
+    public void testMissingApp() throws Exception {
         try {
-            operation.undeploy(new URI(INVALID_URI),"termination");
+            operation.undeploy(new URI(INVALID_URI), "termination");
         } catch (AxisFault e) {
-            assertFaultMatches(e,Constants.FAULT_APPLICATION_NOT_FOUND,null);
+            assertFaultMatches(e, FaultCodes.FAULT_NO_SUCH_APPLICATION, null);
         }
     }
 
@@ -57,7 +54,7 @@ public class UndeployTest extends ConsoleTestBase {
         try {
             operation.undeploy(new URI(INVALID_URI), null);
         } catch (AxisFault e) {
-            assertFaultMatches(e, Constants.FAULT_APPLICATION_NOT_FOUND, null);
+            assertFaultMatches(e, FaultCodes.FAULT_NO_SUCH_APPLICATION, null);
         }
     }
 

@@ -21,17 +21,14 @@
 
 package org.smartfrog.services.cddlm.test.system.console;
 
+import org.apache.axis.AxisFault;
+import org.apache.axis.types.URI;
 import org.cddlm.client.console.Lookup;
 import org.cddlm.client.generated.api.types.ApplicationStatusType;
-import org.apache.axis.types.URI;
-import org.apache.axis.AxisFault;
-import org.smartfrog.services.cddlm.api.Constants;
-
-import java.rmi.RemoteException;
+import org.smartfrog.services.cddlm.generated.faults.FaultCodes;
 
 /**
- * Date: 02-Sep-2004
- * Time: 20:40:57
+ * Date: 02-Sep-2004 Time: 20:40:57
  */
 public class LookupApplicationsTest extends ConsoleTestBase {
 
@@ -50,16 +47,21 @@ public class LookupApplicationsTest extends ConsoleTestBase {
         try {
             URI uri = operation.lookupApplication("noname");
         } catch (AxisFault fault) {
-            assertFaultMatches(fault, Constants.FAULT_APPLICATION_NOT_FOUND, null);
+            assertFaultMatches(fault,
+                    FaultCodes.FAULT_NO_SUCH_APPLICATION,
+                    null);
         }
     }
 
     public void testStatusOfMissingApp() throws Exception {
-        URI uri=new URI(INVALID_URI_NAME);
+        URI uri = new URI(INVALID_URI_NAME);
         try {
-            ApplicationStatusType status =operation.lookupApplicationStatus(uri);
+            ApplicationStatusType status = operation.lookupApplicationStatus(
+                    uri);
         } catch (AxisFault fault) {
-            assertFaultMatches(fault,Constants.FAULT_APPLICATION_NOT_FOUND,INVALID_URI_NAME);
+            assertFaultMatches(fault,
+                    FaultCodes.FAULT_NO_SUCH_APPLICATION,
+                    INVALID_URI_NAME);
         }
     }
 }

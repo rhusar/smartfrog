@@ -21,12 +21,13 @@ package org.smartfrog.services.cddlm.cdl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.smartfrog.services.cddlm.generated.faults.FaultCodes;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
-import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.SAXNotRecognizedException;
+import org.xml.sax.SAXNotSupportedException;
+import org.xml.sax.XMLReader;
 
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerException;
@@ -35,7 +36,6 @@ import javax.xml.transform.stream.StreamSource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
-import java.util.Iterator;
 
 /**
  * created Jul 15, 2004 3:58:11 PM
@@ -53,9 +53,9 @@ public class CdlCatalog implements URIResolver, EntityResolver {
     private static final String XSD = "org/smartfrog/services/cddlm/xsd/";
 
     private static final String CDDLM_MAPPINGS[] = {
-        Constants.CDL_NAMESPACE, Constants.CDDLM_XSD_FILENAME,
-        Constants.CDL_API_NAMESPACE, Constants.DEPLOY_API_SCHEMA_FILENAME,
-        Constants.WS_ADDRESSING_NAMESPACE, "ws-addressing.xsd",
+        FaultCodes.XML_CDL_NAMESPACE, Constants.CDDLM_XSD_FILENAME,
+        FaultCodes.CDL_API_NAMESPACE, Constants.DEPLOY_API_SCHEMA_FILENAME,
+        FaultCodes.WS_ADDRESSING_NAMESPACE, "ws-addressing.xsd",
     };
 
     /**
@@ -101,7 +101,7 @@ public class CdlCatalog implements URIResolver, EntityResolver {
      */
     public void loadMappings(String map[]) {
         assert map.length % 2 == 0;
-        for ( int i = 0; i < map.length; i += 2 ) {
+        for (int i = 0; i < map.length; i += 2) {
             String schema = map[i];
             String filename = map[i + 1];
             mappings.put(schema, filename);
@@ -117,7 +117,7 @@ public class CdlCatalog implements URIResolver, EntityResolver {
      */
     public String lookup(String uri) {
         Object value = mappings.get(uri);
-        if ( value != null ) {
+        if (value != null) {
             return packageBase + (String) value;
         } else {
             return null;
@@ -139,7 +139,7 @@ public class CdlCatalog implements URIResolver, EntityResolver {
     public Source resolve(String href, String base)
             throws TransformerException {
         String resource = lookup(href);
-        if ( resource == null ) {
+        if (resource == null) {
             return null;
         }
         try {
@@ -186,19 +186,19 @@ public class CdlCatalog implements URIResolver, EntityResolver {
      */
     public InputSource resolveEntity(String publicId, String systemId)
             throws SAXException, IOException {
-        if ( log.isDebugEnabled() ) {
+        if (log.isDebugEnabled()) {
             log.debug("resolving " + systemId);
         }
         String resource = lookup(systemId);
-        if ( resource == null ) {
+        if (resource == null) {
             String filename = getFilenameFromSystemID(systemId);
-            if ( filename != null ) {
+            if (filename != null) {
                 return resolveEntity(publicId, filename);
             }
             log.debug("no match");
             return null;
         } else {
-            if ( log.isDebugEnabled() ) {
+            if (log.isDebugEnabled()) {
                 log.debug("resolved to " + resource);
             }
             return new InputSource(loader.loadResource(resource));
@@ -212,7 +212,7 @@ public class CdlCatalog implements URIResolver, EntityResolver {
      * @return
      */
     String getFilenameFromSystemID(String systemId) {
-        if ( !systemId.startsWith("file://") ) {
+        if (!systemId.startsWith("file://")) {
             return null;
         }
         return extractLastPathElement(systemId);
@@ -220,11 +220,11 @@ public class CdlCatalog implements URIResolver, EntityResolver {
 
     private String extractLastPathElement(String systemId) {
         int lastSlash = systemId.lastIndexOf('/');
-        if ( lastSlash == -1 ) {
+        if (lastSlash == -1) {
             return null;
         }
         String endString = systemId.substring(lastSlash + 1);
-        if ( endString.length() > 0 ) {
+        if (endString.length() > 0) {
             return endString;
         } else {
             return null;
@@ -232,15 +232,15 @@ public class CdlCatalog implements URIResolver, EntityResolver {
     }
 
     /**
-     * 	    parser.setProperty(
-     "http://apache.org/xml/properties/schema/external-schemaLocation",
-     "http: //domain.com/mynamespace mySchema.xsd");
+     * parser.setProperty( "http://apache.org/xml/properties/schema/external-schemaLocation",
+     * "http: //domain.com/mynamespace mySchema.xsd");
+     *
      * @param parser
      */
     public void setImportPaths(XMLReader parser)
             throws SAXNotSupportedException, SAXNotRecognizedException {
-        String[] map= CDDLM_MAPPINGS;
-        StringBuffer buffer=new StringBuffer();
+        String[] map = CDDLM_MAPPINGS;
+        StringBuffer buffer = new StringBuffer();
         for (int i = 0; i < map.length; i += 2) {
             String schema = map[i];
             String filename = map[i + 1];
@@ -249,12 +249,13 @@ public class CdlCatalog implements URIResolver, EntityResolver {
             buffer.append(filename);
             buffer.append(' ');
         }
-        String s=new String(buffer);
+        String s = new String(buffer);
         parser.setProperty(SCHEMA_LOCATION, s);
     }
 
     /**
      * bind an XML reader to this bunny
+     *
      * @param parser
      */
     public void bind(XMLReader parser) throws SAXNotSupportedException,

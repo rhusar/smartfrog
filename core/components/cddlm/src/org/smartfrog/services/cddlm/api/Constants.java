@@ -21,23 +21,21 @@ package org.smartfrog.services.cddlm.api;
 
 import org.smartfrog.services.cddlm.generated.faults.FaultCodes;
 
-import javax.xml.namespace.QName;
-
 /**
  * created Aug 4, 2004 10:34:47 AM
  */
 
 public class Constants {
     public static final String[] LANGUAGES = {
-        "SmartFrog", "1.0", org.smartfrog.services.cddlm.cdl.Constants.SMARTFROG_NAMESPACE,
-        "XML-CDL", "0.3", org.smartfrog.services.cddlm.cdl.Constants.CDL_NAMESPACE,
-        "Apache Ant", "1.7", org.smartfrog.services.cddlm.cdl.Constants.ANT_NAMESPACE
+        "SmartFrog", "1.0", FaultCodes.SMARTFROG_NAMESPACE,
+        "XML-CDL", "0.3", FaultCodes.XML_CDL_NAMESPACE,
+        "Apache Ant", "1.7", FaultCodes.ANT_NAMESPACE
     };
 
     public static final String[] LANGUAGE_NAMESPACES = {
-        org.smartfrog.services.cddlm.cdl.Constants.SMARTFROG_NAMESPACE,
-        org.smartfrog.services.cddlm.cdl.Constants.CDL_NAMESPACE,
-        org.smartfrog.services.cddlm.cdl.Constants.ANT_NAMESPACE
+        FaultCodes.SMARTFROG_NAMESPACE,
+        FaultCodes.XML_CDL_NAMESPACE,
+        FaultCodes.ANT_NAMESPACE
     };
 
     /**
@@ -62,12 +60,10 @@ public class Constants {
     public static final String ERROR_INVALID_SCHEMA = "invalid schema in URI: ";
     public static final String ERROR_NO_APPLICATION = "application is undefined";
 
-    public static final String CDDLM_FAULT_NAMESPACE = FaultCodes.CDDLM_FAULTS_NAMESPACE;
-
-    public static final QName FAULT_BAD_ARGUMENT = new QName(
-            CDDLM_FAULT_NAMESPACE, FaultCodes.BAD_ARGUMENT_FAULTCODE);
-    public static final QName FAULT_NESTED_EXCEPTION = new QName(
-            CDDLM_FAULT_NAMESPACE, FaultCodes.NESTED_EXCEPTION_FAULTCODE);
+    public static final String CDDLM_FAULT_NAMESPACE = FaultCodes.CDDLM_FAULT_NAMESPACE;
+/*
+    public static final QName FAULT_BAD_ARGUMENT = FaultCodes.FAULT_BAD_ARGUMENT;
+    public static final QName FAULT_NESTED_EXCEPTION = FaultCodes.FAULT_NESTED_EXCEPTION
     public static final QName FAULT_APPLICATION_NOT_FOUND = new QName(
             CDDLM_FAULT_NAMESPACE, FaultCodes.NO_SUCH_APPLICATION_FAULTCODE);
     public static final QName FAULT_WRONG_APP_STATE = new QName(
@@ -79,4 +75,6 @@ public class Constants {
             CDDLM_FAULT_NAMESPACE, FaultCodes.UNSUPPORTED_CALLBACK_FAULTCODE);
     public static final QName FAULT_NOTUNDERSTOOD = new QName(
             CDDLM_FAULT_NAMESPACE, FaultCodes.NOT_UNDERSTOOD_FAULTCODE);
+*/
+
 }

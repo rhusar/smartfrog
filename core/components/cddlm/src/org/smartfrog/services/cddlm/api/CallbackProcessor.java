@@ -19,16 +19,34 @@
  */
 package org.smartfrog.services.cddlm.api;
 
+import org.apache.axis.AxisFault;
 import org.smartfrog.services.axis.SmartFrogHostedEndpoint;
+import org.smartfrog.services.cddlm.generated.api.types.CallbackEnum;
+import org.smartfrog.services.cddlm.generated.api.types.CallbackInformationType;
+import org.smartfrog.services.cddlm.generated.faults.FaultCodes;
 
 /**
- * created Sep 2, 2004 5:42:51 PM
+ * extract callback information from a job, attach it to a job created Sep 2,
+ * 2004 5:42:51 PM
  */
 
 public class CallbackProcessor extends Processor {
 
     public CallbackProcessor(SmartFrogHostedEndpoint owner) {
         super(owner);
+    }
+
+    public void process(JobState job, CallbackInformationType callbacks)
+            throws AxisFault {
+        CallbackEnum type = null;
+        if (callbacks != null) {
+            type = callbacks.getType();
+        }
+        if (type != null) {
+            throw raiseUnsupportedCallbackFault(
+                    FaultCodes.UNSUPPORTED_CALLBACK_WIRE_MESSAGE);
+        }
+
     }
 }
 
