@@ -4,10 +4,10 @@
 
   #if ($dynamicLoadingOn) 
     #set ($libJars = [])
-    #set ($httpJars = ["sfRegTest.jar","bsh-1.1a17.jar","sfTools.jar","sfServices.jar"])
+    #set ($httpJars = ["velocity-1.1.jar","bsh-1.3.0.jar","sfServices.jar", "sf-arithmetic-testharness.jar"])
   #else 
     ## security is ON and  DL is OFF
-    #set ($libJars = ["sfTools.jar","sfRegTest.jar","bsh-1.1a17.jar","sfServices.jar"])
+    #set ($libJars = ["velocity-1.1.jar","bsh-1.3.0.jar","sfServices.jar", "sf-arithmetic-testharness.jar"])
   #end
 
 #else 
@@ -16,7 +16,7 @@
 
   #if ($dynamicLoadingOn) 
     #set ($libJars = [])
-    #set ($httpJars = ["sfRegTest.jar","sfServices.jar","sfTools.jar","bsh-1.1a17.jar","SFGuiTools.jar","SFGuiBrowser.jar"])
+    #set ($httpJars = ["sfServices.jar","velocity-1.1.jar","bsh-1.3.0.jar","SFGuiTools.jar","SFGuiBrowser.jar", "sf-arithmetic-testharness.jar"])
   #else
     ## security AND DL are OFF
     #set ($libJars = ["sfServices.jar","velocity-1.1.jar","bsh-1.3.0.jar","SFGuiTools.jar","SFGuiBrowser.jar" , "sf-arithmetic-testharness.jar"])
@@ -74,7 +74,7 @@ MonitoredDaemon extends Compound {
 //    startAtt_49 "-Djavax.net.debug=ssl";
 #end
 #if ($dynamicLoadingOn)
-    startAtt_10a "-Dorg.smartfrog.sfcore.codebase=";
+    startAtt_10a "-Dorg.smartfrog.codebase=";
     startAtt_10b ATTRIB httpCodebase;
 #if ($securityOn)
 //    startAtt_90a "-Djava.rmi.server.codebase=";
@@ -97,10 +97,10 @@ MonitoredDaemon extends Compound {
 PrincipalMonitoredDaemon extends MonitoredDaemon {
 //       doStartDaemon:startAtt_12a "-Dorg.smartfrog.iniSFFile=";
 //       doStartDaemon:startAtt_12b "org/smartfrog/SFDynaServer/dynadaemon.sf";    //tocheck 
-      doStartDaemon:startAtt_21 "-c";
-      doStartDaemon:startAtt_22 "org/smartfrog/services/codeserver/dynadaemon.sf";    //tocheck
-       doStartDaemon:startAtt_14a "-DDSHOMEBASE=";
-       doStartDaemon:startAtt_14b "${principalDaemon.sfHome}$libSubdir";
+    //  doStartDaemon:startAtt_21 "-c"; // added
+//      doStartDaemon:startAtt_22 "org/smartfrog/services/codeserver/dynadaemon.sf";    //tocheck added
+//       doStartDaemon:startAtt_14a "-DDSHOMEBASE="; // added
+  //     doStartDaemon:startAtt_14b "${principalDaemon.sfHome}$libSubdir"; //added
 }
 #end
 
@@ -111,6 +111,7 @@ Scheduler extends SchedulerCompound {
   numberOfAcks ATTRIB numDaemons;
 
   globalOutput extends  NotifyOutputFilterPrim {
+    scheduler LAZY ATTRIB globalScheduler; // added
     processId ATTRIB globalProcess;
     fileNameOutput ATTRIB globalFileOutput;
   }
@@ -149,18 +150,19 @@ Scheduler extends SchedulerCompound {
 //          startAtt_48 "-Djava.security.debug=policy";
 #end
 #if ($dynamicLoadingOn)
-          startAtt_10a "-Dorg.smartfrog.sfcore.codebase=";
+          startAtt_10a "-Dorg.smartfrog.codebase=";
           startAtt_10b ATTRIB httpCodebase;
 #if ($securityOn)
 //          startAtt_90a "-Djava.rmi.server.codebase=";
 //          startAtt_90b ATTRIB httpCodebase;
 #end
 #end
-		  startAtt_17 "org.smartfrog.SFSystem";
+          startAtt_17 "org.smartfrog.SFSystem";
           startAtt_18 "-a";
           startAtt_19a "sfConfig:DEPLOY:";
-          startAtt_19b (ATTRIB appName ++ "::" ++ ATTRIB sfProcessHost ++ ":");
-		  startAtt_21 "-e";
+          startAtt_19b (ATTRIB appName ++ "::localhost:");
+//          startAtt_19b (ATTRIB appName ++ "::" ++ ATTRIB sfProcessHost ++ ":");
+	  startAtt_21 "-e";
           startAtt_22 "";
         }                
       }
@@ -171,7 +173,7 @@ Scheduler extends SchedulerCompound {
         
         doStopApps extends TestRunCommand  { 
           processName "stopApps";
-         /* startAtt_01 "-cp";
+          startAtt_01 "-cp";
           startAtt_02 ATTRIB classPath;
           startAtt_03a "-Dorg.smartfrog.sfcore.processcompound.sfRootLocatorPort=";
           startAtt_03b ATTRIB port;
@@ -183,11 +185,11 @@ Scheduler extends SchedulerCompound {
           startAtt_06a "-Dorg.smartfrog.sfcore.security.propFile=";
           startAtt_06b ATTRIB secPropFile;  
 #end
-		  */
-   	      startAtt_01 "-cp";
+		 
+   	     /* startAtt_01 "-cp";
           startAtt_02 ATTRIB classPath;
           startAtt_03a "-Dorg.smartfrog.sfcore.processcompound.sfRootLocatorPort=";
-          startAtt_03b ATTRIB port;
+          startAtt_03b ATTRIB port;*/
           startAtt_07 "org.smartfrog.SFSystem";
           startAtt_08 "-a";
           startAtt_09 "sfConfig:TERMINATE:::localhost:";//ATTRIB sfProcessHost;
@@ -211,7 +213,7 @@ Scheduler extends SchedulerCompound {
 #foreach ($daemon in $allDaemons)
       $daemon.name extends $daemon.type {
         sfProcessHost "$daemon.host";
-        daemonFileOutput "${daemon.sfHome}daemon.out";
+        daemonFileOutput "${daemon.sfHome}/daemon.out";
         daemonName "$daemon.name";
         workingDirectory "${daemon.sfHome}";
 #if ($daemon.isLinux())
@@ -242,6 +244,7 @@ Scheduler extends SchedulerCompound {
 TemplateSerrano extends Compound {
   // Default values for all the runCommand
   sfProcessHost "${principalDaemon.host}";
+  sfLivenessDelay 0;
   command "java";
   workingDirectory  "${principalDaemon.sfHome}";
   allEnvProperties ["SFHOME=${principalDaemon.sfHome}",
@@ -262,7 +265,7 @@ TemplateSerrano extends Compound {
   // Application that we are testing. this is set from outside.
   // appName "org/smartfrog/examples/example1TH.sf";
   globalProcess "Scheduler";
-  globalFileOutput "${principalDaemon.sfHome}scheduler";
+  globalFileOutput "${principalDaemon.sfHome}/scheduler";
   globalScheduler extends Scheduler;
   //  trace extends Trace;
   // Global definitions...
