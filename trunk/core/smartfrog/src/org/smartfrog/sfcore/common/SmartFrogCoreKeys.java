@@ -165,7 +165,7 @@ public interface SmartFrogCoreKeys {
     public final static String SF_RUN_PROCESS = "sfRunProcess";
 
     /**
-     * Name used to prefix the name of unamed deployments
+     * Name used to prefix the name of unnamed deployments
      */
     public final static String SF_UNNAMED = "unnamed_";
 
