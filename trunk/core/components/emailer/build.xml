@@ -97,8 +97,11 @@ For more information: www.smartfrog.org
   <target name="dist" depends="compile" 
     description="create the jar files">
     <jar destfile="${target.jar}" basedir="${build.classes.dir}" includes="**/*"/>
-    <copydir src = "${emailer.lib.dir}" dest= "${dist.lib.dir}"  
-        includes ="**/*.jar" />
+    <!--copydir src = "${emailer.lib.dir}" dest= "${dist.lib.dir}"  
+        includes ="**/*.jar" / -->
+    <copy todir = "${dist.lib.dir}">
+        <fileset dir ="${emailer.lib.dir}" />
+    </copy>          
     <!--copy file ="${target.jar}"  todir="${smartfrog.dist.lib.dir}"/ -->
   </target>
 
