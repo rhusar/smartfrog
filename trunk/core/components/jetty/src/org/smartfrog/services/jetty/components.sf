@@ -2,6 +2,7 @@
 #include "org/smartfrog/sfcore/workflow/components.sf";
 #include "org/smartfrog/functions.sf";
 #include "/org/smartfrog/predicates.sf"
+#include "org/smartfrog/services/utils/concat/components.sf"
 //liveness and webserver
 #include "/org/smartfrog/services/www/components.sf"
 
