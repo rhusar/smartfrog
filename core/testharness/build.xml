@@ -79,6 +79,17 @@ For more information: www.smartfrog.org
     <pathelement location="${test.classes.dir}"/>
   </path>  
   
+  <!-- turn on the tests. If you dont want this, set one (or both) to false)  in the unit tests-->
+  <property name="system.tests" value="true" />
+  <property name="unit.tests" value="false" />
+  
+  <condition property="system.tests.enabled">
+    <istrue value="${system.tests}"/>
+  </condition>
+  
+  <condition property="unit.tests.enabled">
+    <istrue value="${unit.tests}"/>
+  </condition>
   
   <!-- ========================================================== -->
   <!-- Test settings                                              -->
@@ -151,10 +162,16 @@ For more information: www.smartfrog.org
       <formatter type="brief" usefile="false"/>
       <!-- #Test case isolation technique -->
       <test name="${testcase}" if="testcase"/>
-      <batchtest todir="${test.data.dir}" unless="testcase">
+      <batchtest todir="${test.data.dir}" unless="testcase" if="system.tests.enabled">
         <!-- bulk test case -->
         <fileset dir="${test.classes.dir}">
-          <include name="**/*Test.class" />
+          <include name="org/smartfrog/test/system/**/*Test.class" />
+       </fileset>
+      </batchtest>
+      <batchtest todir="${test.data.dir}" unless="testcase" if="unit.tests.enabled">
+        <!-- bulk test case -->
+        <fileset dir="${test.classes.dir}">
+          <include name="org/smartfrog/test/unit/**/*Test.class" />
        </fileset>
       </batchtest>
     </junit>
