@@ -15,6 +15,10 @@ public class Plus extends NetElemImpl implements Remote {
 		lhs = value;
 	else
 		rhs = value;
-	return lhs + rhs;
+        int result =  lhs + rhs;
+
+        System.out.println("PLUS:   LVal: "+lhs +", RVal: "+ rhs +", Result: "+ result +", "+sfCompleteNameSafe());
+
+	return result;
   }
 }

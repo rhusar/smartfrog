@@ -11,6 +11,8 @@ public class Constant extends NetElemImpl implements Remote {
 
     public void sfStart() throws SmartFrogException, RemoteException {
 	super.sfStart();
-	addValue(((Integer) sfResolve("constant")).intValue());
+        int v = ((Integer) sfResolve("constant")).intValue();
+        System.out.println("CONSTANT: "+" Result: "+ v +", "+sfCompleteNameSafe());
+	addValue(v);
     }
 }

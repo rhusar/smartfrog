@@ -15,6 +15,8 @@ public class Times extends NetElemImpl implements Remote {
 		lhs = value;
 	else
 		rhs = value;
-	return lhs * rhs;
+        int result =    lhs * rhs;
+        System.out.println("TIMES(*): LVal: "+lhs +", RVal: "+ rhs +", Result: "+ result +", "+sfCompleteNameSafe());
+	return result;
   }
 }

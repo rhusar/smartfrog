@@ -33,6 +33,9 @@ import org.smartfrog.sfcore.reference.Reference;
  * Defines the generator component.
  */
 public class Generator extends NetElemImpl implements Remote {
+
+    String name = "Generator";
+
     /**
      * Seed value for the generator.
      */
@@ -78,23 +81,17 @@ public class Generator extends NetElemImpl implements Remote {
             diff = ((Integer) sfResolve("max")).intValue() - min + 1;
             seed = ((Integer) sfResolve("seed")).intValue();
             delay = ((Integer) sfResolve("interval")).intValue();
+            name = this.sfCompleteNameSafe().toString();
             generator = new TheGenerator();
             generator.start();
-	    //generator.join();// india team changes
-        } catch (SmartFrogException sfex) {
+	    //generator.join();    //Mod Idia Team
+        } catch (Exception ex) {
             System.out.println("DEBUG TERMINATE SFSTART");
             Reference refName = sfCompleteNameSafe();
-            terminateComponent(this, sfex, refName);
-            throw sfex;
-        } 
-		
-		/*
-		catch (InterruptedException e)
-	{
-            System.out.println("DEBUG TERMINATE SFSTART");
-		//throw e;
-	}
-	*/
+            terminateComponent(this, ex, refName);
+            throw SmartFrogException.forward(ex);
+        }
+
     }
     /**
      * Life cycle method for component termination.
@@ -122,17 +119,17 @@ public class Generator extends NetElemImpl implements Remote {
          */
         public void run() {
             Random r = new Random(seed);
-			System.out.println("Thread name : =========> ");
+            this.setName(name);
             while (true) {
-				diff = 2;
+                diff = 10;
                 int v = Math.abs((r.nextInt() % diff)) + min;
-				System.out.println(name + " generating " + v);
+                System.out.println("\n\n*****************************************"
+                                  +"\n  GENERATOR:"+" Result: "+ v +", "+sfCompleteNameSafe());
                 addValue(v);
-
                 try {
                     sleep(delay * 1000);
                 } catch (Exception e) {
-                    System.out.println("DEBUG TERMINATE RUN");
+                    System.out.println("DEBUG TERMINATE RUN ,"+e.toString());
                 }
             }
         }

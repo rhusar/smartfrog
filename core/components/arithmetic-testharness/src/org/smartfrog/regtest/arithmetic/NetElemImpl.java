@@ -23,9 +23,9 @@ public abstract class NetElemImpl extends CompoundImpl implements Compound, NetE
 
   protected void addValue(int i) {
    currentInvocation++;
-    System.out.println("addValue:Invocation number " + currentInvocation + "Integer" +  i);
+    System.out.println("                                       (addValue: Invo# " + currentInvocation + ", value " +  i+", maxInvoc "+maxInvocations+")");
     if (currentInvocation> maxInvocations)
-      TestHelper.printSFStartDone(System.out,false);
+     TestHelper.printSFStartDone(System.out,false);
      synchronized(currentValues){
 	currentValues.addElement(new Integer(i));
 	currentValues.notify();
@@ -78,7 +78,7 @@ public abstract class NetElemImpl extends CompoundImpl implements Compound, NetE
 		doOutputs();
     	} finally {
 		try{
-			System.out.println( sfCompleteName() + " Thread terminated ");
+                   System.out.println( sfCompleteName() + " Thread terminated ");
 		} catch (Exception e) {}
 	}
 	}
@@ -121,11 +121,11 @@ public abstract class NetElemImpl extends CompoundImpl implements Compound, NetE
 	// the outputer is waiting to pass them on.
 	outputer = new Outputer();
 	outputer.start();
-	System.out.println(name + " deployed");
+	//System.out.println(name + " deployed");
   }
   public void sfStart() throws SmartFrogException, RemoteException {
 	super.sfStart();
-	System.out.println(name + " started");
+	//System.out.println(name + " started");
   }
   public void sfTerminateWith(TerminationRecord tr) {
 	try {
