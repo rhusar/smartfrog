@@ -90,7 +90,7 @@ For more information: www.smartfrog.org
     <property name="Version" value="1.00.000"/>
     <property name="year" value="2004"/>
 	<property name="releases.dir" value="releases"/>
-
+	<property name="test.dir" value="test"/>
 
     <echo message=""/>
     <echo message="==================================================================="/>
@@ -107,8 +107,10 @@ For more information: www.smartfrog.org
   <!-- ========================================================== -->
 
  <target name="clean" depends="init,common.clean" description="clean up build ,dist and releases" >
-    <property name="releases.dir" value="releases"/>
+    
+	
     <delete dir="${releases.dir}"  />  
+	<delete dir="test"  />  
  </target>  
 
 
