@@ -102,11 +102,11 @@ Boolean extends Compulsory {
 }
 
 OptionalVector extends Optional {
-    class "java.lang.Vector";
+    class "java.util.Vector";
 }
 
 Vector extends Compulsory {
-    class "java.lang.Vector";
+    class "java.util.Vector";
 }
 
 OptionalCD extends Optional {
