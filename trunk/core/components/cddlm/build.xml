@@ -1,0 +1,172 @@
+<?xml version="1.0"?>
+<project name="cddlm" default="default">
+
+<!--
+/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+-->
+
+<description>
+     Build file for CDDLM.
+     Important: set ${axis.lib.dir} to point to the directory of axis that contains
+     the following files
+      axis.jar
+      wsdl4j.jar
+      commons-discovery.jar
+      commons-logging.jar
+      log4j.jar (optional)
+     This is usually ws-axis/java/build/lib in a source distribution.
+     
+     After deploying, get the WSDL From
+     http://localhost:5050/axis/services/cddlm?wsdl
+     
+</description>
+
+   <!-- override point -->
+  <property file="build.properties" />
+
+  <!-- this component keeps its test files in a different place from the 
+       rest, for historical reasons (i.e. it is nothing but test) -->  
+  <property name="test.src.dir" location="testcases" />
+  
+  <property name="root.dir" location="../.."  />
+    <!-- Import common stuff -->
+  <import file="${root.dir}/common.xml"/>
+  
+  
+  <!-- ========================================================== -->
+  <!-- ========================================================== -->
+  <target name="init" depends="init-standard-output-dirs,use-smartfrog-tasks">
+          
+    <property name="target.jar" location="${dist.lib.dir}/cddlm.jar" />
+    <property name="deploy.sf" value="org/smartfrog/services/cddlm/cddlm.sf" />
+    
+    <property name="default.ini" location="test/files/default.ini"/>
+    <property name="default.sf" location="test/files/default.sf"/>
+
+     
+    
+    <!-- the compile time path includes axis-->
+    <path id="compile.classpath">
+      <path refid="smartfrog.classpath"/>
+      <fileset dir="${axis.lib.dir}">
+        <include name="**/*.jar"/>
+      </fileset>
+    </path>
+    
+    <!-- check for axis. Because we pull in system classes too (the default),
+         if axis is on the classpath it gets used, even if axis.lib.dir is unset 
+         -->
+    <available property="axis.found" 
+      classname="org.apache.axis.transport.http.SimpleAxisServer"
+      classpathref="compile.classpath"
+      ignoresystemclasses="false"/>
+    <fail unless="axis.found">No Axis found in ${axis.lib.dir}</fail>
+    
+    <path id="run.classpath">
+      <path refid="compile.classpath"/>
+      <path location="${target.jar}" />
+    </path>  
+    
+  </target>
+    
+  <!-- ========================================================== -->
+  <!-- compile -->
+  <!-- ========================================================== -->
+  <target name="compile" 
+    depends="verify-smartfrog,init">
+    <depend srcdir="${src.dir}"
+      destdir="${build.classes.dir}"
+      cache="${build.dir}/depends"
+      closure="yes"/>
+    <sf-javac
+      classpathref="compile.classpath"
+      srcdir="${src.dir}"
+      destdir="${build.classes.dir}"
+      />
+    <copy-useful-files src="${src.dir}" dest="${build.classes.dir}" />   
+  </target>
+  
+  <!-- ========================================================== -->
+  <!-- RMI compile-->
+  <!-- ========================================================== -->
+  <target name="rmi" depends="compile" 
+    description="create the RMI classes">
+    <sf-rmic
+      base="${build.classes.dir}"
+      verify="true"
+      includes="**/*.class">
+      <classpath refid="compile.classpath"/>
+    </sf-rmic>
+  </target>  
+  
+  <!-- ========================================================== -->
+  <!-- create the jar -->
+  <!-- ========================================================== -->
+  <target name="dist" depends="compile,rmi" 
+    description="create the jar files">
+    <jar destfile="${target.jar}" basedir="${build.classes.dir}" includes="**/*"/>
+  </target>
+  
+  <!-- ========================================================== -->
+  <!-- parse the file -->
+  <!-- ========================================================== -->
+  <target name="parse" depends="init" 
+    description="parse the cddlm descriptor">
+    <sf-parse file="${src.dir}/${deploy.sf}"/>
+  </target>
+
+  <!-- ========================================================== -->
+  <!-- run the service inline -->
+  <!-- ========================================================== -->
+  <target name="run" depends="parse,dist" 
+    description="parse the cddlm descriptor">
+      <sf-run classpathref="run.classpath"
+        logStackTraces="true" >
+        <assertions enableSystemAssertions="true">
+          <enable/>
+        </assertions>
+        <application name="cddlm" descriptor="/${deploy.sf}"/>
+      </sf-run>
+  </target>
+
+
+  <!-- ========================================================== -->
+  <!-- run the service inline -->
+  <!-- ========================================================== -->
+  <target name="run" depends="parse,dist" 
+    description="parse the cddlm descriptor">
+      <sf-run classpathref="run.classpath"
+        logStackTraces="true"
+        iniFile="${default.ini}" initialSmartfrogFile="${default.sf}" >
+        <assertions enableSystemAssertions="true">
+          <enable/>
+        </assertions>
+        <application name="cddlm" descriptor="/${deploy.sf}"/>
+      </sf-run>
+  </target>  
+  
+  
+  <!-- ========================================================== -->
+  <!-- default target -->
+  <!-- ========================================================== -->
+  <target name="default" depends="run" description="default target" />
+  
+</project>
