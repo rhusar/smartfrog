@@ -22,13 +22,16 @@ package org.smartfrog.sfcore.languages.sf.functions;
 
 import java.util.Enumeration;
 
+import org.smartfrog.sfcore.common.MessageUtil;
+import org.smartfrog.sfcore.common.MessageKeys;
+
 import org.smartfrog.sfcore.languages.sf.PhaseAction;
 import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
 
 /**
- * Defines the baseoperator for the operator functions.
+ * Defines the baseoperator for the binary operator functions.
  */
-public abstract class BaseOperator extends BaseFunction implements PhaseAction {
+public abstract class BaseBinaryOperator extends BaseFunction implements PhaseAction, MessageKeys {
 
     /**
      * The method to implement the functionality of any operator.
@@ -40,22 +43,19 @@ public abstract class BaseOperator extends BaseFunction implements PhaseAction {
      *  */
     protected abstract Object doOperator(Object a, Object b) throws SmartFrogCompileResolutionException;
 
+
     /** Implements the functionality of base operator. */
     protected Object doFunction() throws SmartFrogCompileResolutionException {
-        Object result = null;
+	Object left = context.get("left");
+	Object right = context.get("right");
 
-        for (Enumeration e = context.keys(); e.hasMoreElements();) {
-            Object key = e.nextElement();
+	if (left == null)
+	    throw new SmartFrogCompileResolutionException(MessageUtil.formatMessage(MISSING_PARAMETER, "left"), 
+							  null, name, "function", null);
+	if (right == null)
+	    throw new SmartFrogCompileResolutionException(MessageUtil.formatMessage(MISSING_PARAMETER, "right"), 
+							  null, name, "function", null);
 
-            if (!key.toString().startsWith("phase.function")) {
-                if (result == null) {
-                    result = context.get(key);
-                } else {
-                    result = doOperator(result, context.get(key));
-                }
-            }
-        }
-
-        return result;
+	return doOperator(left, right);
     }
 }

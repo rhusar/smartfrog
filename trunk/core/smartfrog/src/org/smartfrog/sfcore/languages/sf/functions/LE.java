@@ -25,12 +25,12 @@ import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
 import org.smartfrog.sfcore.common.MessageUtil;
 
 /**
- * Defines the Sum function that sums each of its attributes type-caste to
+ * Defines the Minus function that sums each of its attributes type-caste to
  * integers, failure will result in an exception.
  */
-public class Sum extends BaseOperator implements PhaseAction {
+public class LE extends BaseBinaryOperator implements PhaseAction {
     /**
-     * Sums two numbers.
+     * Differences two numbers.
      * @param a first number
      * @param b second number
      * @return sum
@@ -45,42 +45,42 @@ public class Sum extends BaseOperator implements PhaseAction {
 
 	if (a instanceof Double) {
 	    if (b instanceof Double)
-		return new Double(((Double) a).doubleValue() + ((Double) b).doubleValue());
+		return new Boolean(((Double) a).doubleValue() <= ((Double) b).doubleValue());
 	    else if (b instanceof Float)
-		return new Double(((Double) a).doubleValue() + ((Float) b).floatValue());
+		return new Boolean(((Double) a).doubleValue() <= ((Float) b).floatValue());
 	    else if (b instanceof Long)
-		return new Double(((Double) a).doubleValue() + ((Long) b).longValue());
+		return new Boolean(((Double) a).doubleValue() <= ((Long) b).longValue());
 	    else 
-		return new Double(((Double) a).doubleValue() + ((Integer) b).intValue());
+		return new Boolean(((Double) a).doubleValue() <= ((Integer) b).intValue());
 
 	} else if (a instanceof Float) {
 	    if (b instanceof Double)
-		return new Double(((Float) a).floatValue() + ((Double) b).doubleValue());
+		return new Boolean(((Float) a).floatValue() <= ((Double) b).doubleValue());
 	    else if (b instanceof Float)
-		return new Float(((Float) a).floatValue() + ((Float) b).floatValue());
+		return new Boolean(((Float) a).floatValue() <= ((Float) b).floatValue());
 	    else if (b instanceof Long)
-		return new Float(((Float) a).floatValue() + ((Long) b).longValue());
-	    else 
-		return new Float(((Float) a).floatValue() + ((Integer) b).intValue());
+		return new Boolean(((Float) a).floatValue() <= ((Long) b).longValue());
+	    else
+		return new Boolean(((Float) a).floatValue() <= ((Integer) b).intValue());
 
 	} else if (a instanceof Long) {
 	    if (b instanceof Double)
-		return new Double(((Long) a).longValue() + ((Double) b).doubleValue());
+		return new Boolean(((Long) a).longValue() <= ((Double) b).doubleValue());
 	    else if (b instanceof Float)
-		return new Float(((Long) a).longValue() + ((Float) b).floatValue());
+		return new Boolean(((Long) a).longValue() <= ((Float) b).floatValue());
 	    else if (b instanceof Long)
-		return new Long(((Long) a).longValue() + ((Long) b).longValue());
+		return new Boolean(((Long) a).longValue() <= ((Long) b).longValue());
 	    else 
-		return new Long(((Long) a).longValue() + ((Integer) b).intValue());
+		return new Boolean(((Long) a).longValue() <= ((Integer) b).intValue());
 	} else {
 	    if (b instanceof Double)
-		return new Double(((Integer) a).intValue() + ((Double) b).doubleValue());
+		return new Boolean(((Integer) a).intValue() <= ((Double) b).doubleValue());
 	    else if (b instanceof Float)
-		return new Float(((Integer) a).intValue() + ((Float) b).floatValue());
+		return new Boolean(((Integer) a).intValue() <= ((Float) b).floatValue());
 	    else if (b instanceof Long)
-		return new Long(((Integer) a).intValue() + ((Long) b).longValue());
+		return new Boolean(((Integer) a).intValue() <= ((Long) b).longValue());
 	    else 
-		return new Integer(((Integer) a).intValue() + ((Integer) b).intValue());
+		return new Boolean(((Integer) a).intValue() <= ((Integer) b).intValue());
 	}
     }
 }
