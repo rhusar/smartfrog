@@ -124,11 +124,16 @@ public abstract class TaskTestBase extends BuildFileTest {
     }
 
     public void assertRootProcessInLog() {
-        assertInLog("[rootProcess]");
+        assertInLog("SmartFrog ready");
+        //assertProcessInLog("rootProcess");
     }
 
     protected void expectDeployed(String target,String appname) {
         executeTarget(target);
+        assertProcessInLog(appname);
+    }
+
+    private void assertProcessInLog(String appname) {
         assertInLog(":sfRunProcess:"+appname);
     }
 
