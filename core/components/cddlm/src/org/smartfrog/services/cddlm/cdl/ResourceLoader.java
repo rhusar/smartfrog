@@ -26,6 +26,8 @@ import org.smartfrog.sfcore.utils.ComponentHelper;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.StringWriter;
 import java.rmi.RemoteException;
 
 /**
@@ -123,5 +125,24 @@ public class ResourceLoader {
         }
         assertResourceLoaded(in, resourceName);
         return in;
+    }
+
+    /**
+     * load a resource into a string.
+     *
+     * @param resourceName
+     * @return
+     * @throws IOException if a resource is missing
+     */
+    public String loadResourceAsString(String resourceName) throws IOException {
+        InputStream in=loadResource(resourceName);
+        InputStreamReader reader=new InputStreamReader(in);
+        StringBuffer buffer=new StringBuffer();
+        char[] block=new char[1024];
+        int read;
+        while(((read = reader.read(block))>=0)) {
+            buffer.append(block);
+        }
+        return buffer.toString();
     }
 }

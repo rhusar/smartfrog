@@ -50,7 +50,7 @@ public class ListApplications extends ConsoleOperation {
         for (int i = 0; i < length; i++) {
             final URI app = apps[i];
             out.println(" " + app.toString());
-            ApplicationStatusType status = queryApplicationStatus(app);
+            ApplicationStatusType status = lookupApplicationStatus(app);
             out.println("   name: " + status.getName().toString());
             out.println("   state: " + status.getState().toString());
 
