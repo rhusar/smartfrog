@@ -21,6 +21,7 @@ For more information: www.smartfrog.org
 package org.smartfrog.sfcore.languages.sf.functions;
 
 import java.util.Enumeration;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 
 /**
  * Defines the Vector function that takes the attribute parameters and puts them
@@ -41,6 +42,7 @@ public class Vector extends BaseFunction {
             value = context.get(key);
 
             if (value != null) {
+		if (value instanceof ComponentDescription) ((ComponentDescription) value).setParent(null);
                 result.add(value);
             }
         }
