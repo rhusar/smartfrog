@@ -1,0 +1,87 @@
+\section{Implications}
+\label{objections:implications}
+
+What are the implications of these problems?
+
+
+We believe that there are only two categories of people writing web
+services: those who know XML and want to work with it, and those who
+don't but end up doing so anyway. JAX-RPC provides a sugar coated
+wrapping that encourages developers who are relatively unfamiliar with
+XML to bite. Yet, as anyone who has written a web service of any
+complexity knows, the XML must be faced and understood eventually. In
+practice, the task of creating a real web service is made more
+difficult, not less, by the huge volume of code JAX-RPC introduces.
+
+JAX-RPC only superficially benefits developers who do not want to work
+with XML: by hiding all the details, and giving developers a model of
+remote method calls via serialised Java graphs, JAX-RPC makes it harder
+to write true, interoperable SOAP services. Not only that, but it
+introduces the O/X mapping problem, while retaining an invocation model
+that is inappropriate for long-distance networks and slow
+communications.
+
+We argue that JAX-RPC greatly complicates users' software
+by introducing a complex serialisation system (which, at least in
+Apache Axis, is notoriously fickle.) The generation of WSDL from Java
+code, which JAX-RPC encourages, by makes it very difficult to
+maintain version consistency of an interfaces, and creates significant
+interoperability problems. 
+
+
+On top of all of this, for users who do want to work with XML
+(typically those whose first project did not!) JAX-RPC is
+inappropriate because it hides everything.} Trying to integrate custom
+XML documents with JAX-RPC serialisations is possible, but very hard
+work. In Apache Axis, DOM trees get recreated when assigning or
+extracting them from {\tt SoapMessageElement} implementations.
+
+Anonther consequence of the way the API gives the illusion of remote method
+invocation, could arguably be the appearance of specifications that present a
+``resource'' view of the remote system, where a remote resource consists of 
+attributes and operations: an object, by any other name. 
+A programming paradigm that presents remote services as local objects, may have
+created pressure to change the remote service model to match that local
+representation. The result is specifications such as WS-ResourceFramework
+\cite{spec:WSRF}.
+ 
+
+% For the developers of proprietary implementations, this is not an
+% issue, and the inherent complexity of the implentation results in a
+% product the vendors can charge for. It is hard to get serialisation,
+% interoperability, WSDL processing and introspection right, and then
+% there is the performance issue. Perhaps this is why both webMethods
+% GLUE and the BEA JAX-RPC implementations have a reputation for being
+% faster and more reliable than the open source version.
+
+\subsubsection{The Future}
+\label{objections:implications:future}
+
+JAX-RPC has become a cornerstone of Enterprise Java \cite{spec:J2EE-14}, in
+which distributed communications based on RMI and CORBA are considered
+legacy protocols. That is not by itself a bad thing, but we believe
+that migration to web services should be done from a position of
+understanding the XML and the message. Instead, more and more
+developers will feel obliged to write Web Service accessors to their
+code, and in doing so, fall into the traps that JAX-RPC creates for
+them.
+
+The forthcoming 2.0 release of the JAX-RPC specification promises to
+correct some of these flaws, but does it correct enough? An alternate
+O/X mapping is used: JAX-B\footnote{Java Architecture for XML
+Binding}, which is independent of the SOAP Stack, but still represents
+a compile-time declaration of what XML is to be expected. The 2.0
+release also retains the core metaphor of service invocation as method
+invocation, with the payload of most invocations being Java objects
+that are somehow mapped to XML content. The automated generation of
+WSDL from Java source is retained, despite this problem having been
+shown to be fundamentally flawed.
+
+We understand the rationale for much of this. Working with raw XML is
+hard.  Writing good XML Schema documents is hard. WSDL is exceedingly
+painful to work with. However, we believe that if service developers do not write
+their XSD and WSDL definitions of messages, they will never have
+control of the messages that get sent over the wire, and without that
+control, interoperability and XML-based processing will be near-impossible.
+
+%Instead the developers will be left at the mercy of JAX-RPC and JAX-B.

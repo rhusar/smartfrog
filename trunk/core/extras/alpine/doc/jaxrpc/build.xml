@@ -89,6 +89,7 @@
       <arg file="abstract.tex" />
       <arg file="introduction.tex" />
       <arg file="objections.tex" />
+      <arg file="implications.tex" />
       <arg file="wsdl.tex" />
       <arg file="alpine.tex" />
     </exec>

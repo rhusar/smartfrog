@@ -62,11 +62,11 @@ The sole method of sending a servlet is to ask a
 \verb|SOAPConnectionFactory| for a \verb|SOAPConnection| instance, and
 then make a blocking call of the endpoint.
 
-JAXM is an orphan specification. Prior to its SAAJ instantiation, it
-was too isolated from the rest of the Java XML APIs to be easy to use.
-It was of no interest to non-XML users, requiring detailed XML
-knowledge to work. Lacking any support for WSDL, it has received very
-little publicity, even though it could be more widely used.  
+JAXM is an orphan specification. If ebXML had taken off, perhaps it
+would be more popular, and message-centric SOAP development in Java
+commonplace. Instead JAX-RPC is touted as the recommended way to work
+with SOAP in Java. 
+
 
 \subsubsection{JAX-RPC}
 
@@ -78,7 +78,13 @@ Java classes can be automatically turned into SOAP endpoints, with each
 public method in the class exported as a SOAPAction; an operation with a
 request message and a response message. The message structure is
 described in a WSDL file, which can be hand-written, or automatically
-extracted from the Java classes through intospection.
+extracted from the Java classes through intospection. Client side
+proxy classes can be generated from the WSDL files, proxy classes which
+again provide a method for every SOAPAction. In Java-Java
+communications, the result is that methods called on the proxy class
+result in the passing of the method parameters to remote methods 
+on an instance of the implementation class, a behaviour that superficially
+resembles Java RMI \cite{paper:RMI}.
 
 A good architectural feature of JAX-RPC is its \emph{handler chain}; an
 ordered sequence of classes that are configured to handle requests and
@@ -88,13 +94,12 @@ Dispatch of operations to java methods, EJB methods or other
 destinations is actually implemented in specific handlers, showing that
 the handler chain is the foundation for the rest of the system.
 
-JAX-RPC is widely implemented, both by open
-source projects (for example Apache Axis \cite{apache:axis}), and by
-commercial vendors like Sun, IBM and BEA. The SOAP toolkits do all
-implement the appropriate version of JAXM/SAAJ to go alongside the RPC
-model, but this feature is not broadly covered. All the
-\emph{evangelisation} of SOAP focuses on JAXRPC, as do most of the
-examples in the vendors' documentation.
+JAX-RPC is widely implemented, both by open source projects (for example
+Apache Axis \cite{apache:axis}), and by commercial vendors like Sun, IBM
+and BEA. The SOAP toolkits do all implement the appropriate version of
+JAXM/SAAJ to go alongside the RPC model, but this feature is not broadly
+covered. All the \emph{evangelisation} of SOAP focuses on JAXRPC, as do
+most of the examples in the vendors' documentation.
 
 The bias is such that, for Java development, JAXRPC \emph{is} SOAP. 
 
@@ -119,11 +124,6 @@ despite its superiority of output, is so unpopular.
 
 Many problems were encountered turning this WSDL specification into
 functional clients and servers, problems that we attribute to JAX-RPC.
-
-\todo{Any other problems we experienced that were clearly related to
-JAX-RPC sucking would be good here, eg. namespaces, introspection and
-so forth}.
-
 
 In section \ref{objections} we discuss a number of problems we believe
 this work highlighted with JAX-RPC. Section \ref{objections:wsdl-gen}
