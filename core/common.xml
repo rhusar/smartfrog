@@ -474,7 +474,9 @@
   <target name="clean" description="clean up build and dist"
       depends="init-standard-output-dirs">
     <delete dir="${build.dir}" />    
-    <delete dir="${dist.dir}"  />    
+    <delete dir="${dist.dir}"  />  
+	
+
   </target>  
    
   <!-- ========================================================== -->
@@ -961,4 +963,14 @@
     description="default target creates a distribution" />
 
     
+ <!-- ========================================================== -->
+  <!-- entry point for the components/buildRelease.xml delegation;
+       probe for needed libraries, and skip the operation if they 
+       are missing -->
+  <!-- ========================================================== -->
+  
+  <target name="maybe-buildrelease">
+    <antcall target="release"/>
+  </target>
+
 </project>   
