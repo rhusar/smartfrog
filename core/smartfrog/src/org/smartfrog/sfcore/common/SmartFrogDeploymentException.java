@@ -32,14 +32,14 @@ import org.smartfrog.sfcore.reference.Reference;
  */
 public class SmartFrogDeploymentException extends SmartFrogRuntimeException {
 
-    /** String name for the deployed component description. */  
+    /** String name for the deployed component description. */
     public final static String COMPONENT_DESCRIPTION =
                                             "deployedComponentDescription";
-    
-    /** String name for the context in which component is deployed. */  
+
+    /** String name for the context in which component is deployed. */
     public final static String DEPLOY_CONTEXT="deployedContext";
-    
-    /** String name for object name. */ 
+
+    /** String name for object name. */
     public final static String OBJECT_NAME="objectName";
 
     /**
@@ -117,7 +117,7 @@ public class SmartFrogDeploymentException extends SmartFrogRuntimeException {
      * @param message message
      * @param cause The cause for exception
      * @param sfObject The Component that has encountered the exception
-     * @param deployContext to be merged with the deployed component 
+     * @param deployContext to be merged with the deployed component
      * description
      */
     public SmartFrogDeploymentException(String message, Throwable cause,
@@ -133,7 +133,7 @@ public class SmartFrogDeploymentException extends SmartFrogRuntimeException {
      * @param source source that raised the exception
      * @param name component failed to deploy
      * @param deployedCompDesc compoent description failed to deploy
-     * @param deployedContext to be merged with the deployed component 
+     * @param deployedContext to be merged with the deployed component
      * description
      * @param message message for exception
      * @param cause cause for exception
@@ -162,9 +162,9 @@ public class SmartFrogDeploymentException extends SmartFrogRuntimeException {
 
     /**
      * To forward SmartFrog exceptions instead of chain them.
-     * 
-     * @param thr throwable object to be forwarded 
-     * 
+     *
+     * @param thr throwable object to be forwarded
+     *
      * @return SmartFrogException that is a SmartFrogDeploymentException
      */
     public static SmartFrogException forward (Throwable thr){
@@ -177,7 +177,7 @@ public class SmartFrogDeploymentException extends SmartFrogRuntimeException {
 
     /**
      * Returns the message.
-     * 
+     *
      * @return the message value
      */
     public String getMessage(){
@@ -188,13 +188,13 @@ public class SmartFrogDeploymentException extends SmartFrogRuntimeException {
                                 ? (get(SOURCE)+ " failed to deploy ") : "" ));
         strb.append ((((this.containsKey(OBJECT_NAME)))? ("'"+get(OBJECT_NAME)
                                  +"' component") : "unnamed component" ));
-        //strb.append ((super.getMessage() == null)  ? "" : ": "+super.getMessage().toString());
+        strb.append ((super.getMessage() == null)  ? "" : ": "+super.getMessage().toString());
        return strb.toString();
     }
-    
+
     /**
      * Returns the cause message.
-     * 
+     *
      * @return the cause message value
      */
     public String getCauseMessage(){
@@ -204,7 +204,7 @@ public class SmartFrogDeploymentException extends SmartFrogRuntimeException {
     /**
      * Returns a string representation of the deployment exception.
      *
-     * @param nm Message separator (ex. "\n"); 
+     * @param nm Message separator (ex. "\n");
      *
      * @return reason source and ref of exception
      */
