@@ -49,8 +49,8 @@ allTests extends Sequence {
 }
 
 Compound extends Prim {
-  sfClass "org.smartfrog.SmartFrog.Compound.CompoundImpl";
-  sfSyncTerminate "true";
+  sfClass "org.smartfrog.sfcore.compound.CompoundImpl";
+  sfSyncTerminate true;
 }
 sfConfig extends Compound {
   maxTimePerTest 300000000;
