@@ -21,27 +21,33 @@ For more information: www.smartfrog.org
 package org.smartfrog.sfcore.languages.sf.functions;
 
 import org.smartfrog.sfcore.common.Context;
+import org.smartfrog.sfcore.common.MessageKeys;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.languages.sf.PhaseAction;
+import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
 
 /**
  * Defines the base function for all the functions.
  */
-public abstract class BaseFunction implements PhaseAction {
+public abstract class BaseFunction implements PhaseAction, MessageKeys {
     /** The component description. */
     protected ComponentDescription component;
 
     /** The context of the component. */
     protected Context context;
 
+    /** The name of the component for exceptions */
+    protected Reference name; 
+
     /**
      * The method to implement the functionality of any function.
      *
      * @return an Object
      * */
-    protected abstract Object doFunction();
+    protected abstract Object doFunction() throws SmartFrogCompileResolutionException;
 
-    public void doit() {
+    public void doit() throws SmartFrogCompileResolutionException {
         Object o = doFunction();
         ComponentDescription parent = (ComponentDescription) component.getParent();
         Context context = parent.getContext();
@@ -51,6 +57,7 @@ public abstract class BaseFunction implements PhaseAction {
 
     public void forComponent(ComponentDescription cd) {
         component = cd;
+	name = cd.getCompleteName();
         context = cd.getContext();
     }
 }
