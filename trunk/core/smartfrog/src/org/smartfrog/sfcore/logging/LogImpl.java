@@ -161,6 +161,12 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
                                            ,"org.smartfrog.sfcore.logging.LogToFileImpl"
                                            ,false)
                                    , getSfCodeBase(classComponentDescription));
+            //Set lower level of the two, just in case local logger has its own mechanism to set log level
+            int i= getLevel(localLog);
+            if (currentLogLevel>i){
+              setLevel(i);
+            }
+
         } catch (Exception ex ){
             localLog=new LogToFileImpl(name,new Integer(currentLogLevel));
             if (localLog.isWarnEnabled()) localLog.warn("Error during init of localLog for LogImpl. Using Default (LogToFile)",ex);
@@ -170,14 +176,12 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
         }
     }
 
-
     /**
      *  Registered inputs, distribution list
      */
     protected Hashtable registeredLogs = new Hashtable();
 
     //LogImpl configuration
-
 
     /**
      *  Gets configuration description for Obj class. The short class name will
@@ -287,6 +291,28 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      */
     public int getLevel() {
         return currentLogLevel;
+    }
+
+    /**
+     * <p> Get logger level </p>
+     *
+     * @param logger
+     */
+    public int getLevel(Log logger) {
+       if (logger.isTraceEnabled()){
+         return LOG_LEVEL_TRACE;
+       } else if (logger.isDebugEnabled()){
+         return LOG_LEVEL_DEBUG;
+       } else if (logger.isInfoEnabled()){
+         return LOG_LEVEL_INFO;
+       } else if (logger.isWarnEnabled()){
+         return LOG_LEVEL_WARN;
+       } else if (logger.isErrorEnabled()){
+         return LOG_LEVEL_ERROR;
+       } else if (logger.isFatalEnabled()){
+          return LOG_LEVEL_FATAL;
+       }
+       return LOG_LEVEL_ALL;
     }
 
     /**
