@@ -39,51 +39,51 @@ public class AJPlistener extends PrimImpl implements Listener {
   public AJPlistener() throws RemoteException {
 	  super();
   }
-  
+
   /**
    * Deploy the AJPListener listener
-   * @exception  SmartFrogException In case of error while deploying  
-   * @exception  RemoteException In case of network/rmi error  
+   * @exception  SmartFrogException In case of error while deploying
+   * @exception  RemoteException In case of network/rmi error
    */
   public void sfDeploy() throws SmartFrogException, RemoteException {
-	  super.sfDeploy();      
+	  super.sfDeploy();
   }
 
   /**
    * sfStart: adds the AJPListener to the jetty server
-   * 
-   * @exception  SmartFrogException In case of error while starting  
-   * @exception  RemoteException In case of network/rmi error 
+   *
+   * @exception  SmartFrogException In case of error while starting
+   * @exception  RemoteException In case of network/rmi error
    */
   public void sfStart() throws SmartFrogException, RemoteException {
 	  super.sfStart();
       listenerPort = sfResolve(listenerPortRef, listenerPort, true);
-      serverHost = sfResolve(serverHostRef, serverHost, true);
+      serverHost = sfResolve(serverHostRef, serverHost, false);
       jettyHelper.bindToServer();
       addlistener(listenerPort, serverHost);
   }
-     
+
   /**
    * Termination phase
    */
   public void sfTerminateWith(TerminationRecord status) {
       jettyHelper.terminateListener(listener);
 	  super.sfTerminateWith(status);
-  } 
-  
+  }
+
   /**
    * Add the listener to the http server
-   * @exception  RemoteException In case of network/rmi error 
-   */ 
-  public void addlistener(int listenerPort, String serverHost) throws 
+   * @exception  RemoteException In case of network/rmi error
+   */
+  public void addlistener(int listenerPort, String serverHost) throws
   SmartFrogException, RemoteException {
 	  try {
-		  listener = new AJP13Listener(); 
+		  listener = new AJP13Listener();
           listener.setPort(listenerPort);
           listener.setHost(serverHost);
           jettyHelper.addAndStartListener(listener);
 	  } catch (UnknownHostException unex) {
-		   throw SmartFrogException.forward(unex);	
+		   throw SmartFrogException.forward(unex);
 	  }
-  } 	
+  }
 }

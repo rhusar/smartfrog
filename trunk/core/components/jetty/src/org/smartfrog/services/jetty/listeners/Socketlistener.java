@@ -61,9 +61,9 @@ public class Socketlistener extends PrimImpl implements SocketListenerIntf {
       try {
         listenerPort = sfResolve(listenerPortRef, listenerPort, true);
         jettyHelper.bindToServer();
-        addlistener(listenerPort, serverHost);
         // Optional. If null or not defined, then it listens using all network interfaces
         serverHost = sfResolve(serverHostRef, serverHost, false);
+        addlistener(listenerPort, serverHost);
         } catch (Exception ex) {
             throw SmartFrogDeploymentException.forward(ex);
         }

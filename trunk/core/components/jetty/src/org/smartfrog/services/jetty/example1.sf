@@ -1,7 +1,7 @@
 #include "org/smartfrog/components.sf";
 #include "org/smartfrog/services/jetty/components.sf";
 
-/** 
+/**
  * This is an example of jetty component
  */
 
@@ -10,16 +10,16 @@
  * Specify the jetty home path as the property jetty.home *at the destination*
  */
 jetty_home PROPERTY jetty.home;
-//jetty_home "C:\\Jetty-4.2.18";
+jetty_home "d:\\java\\jetty";
 
 
 sfConfig extends Compound {
    adminServer extends HttpServerAdmin {
-         httpserverHost "localhost"; // mandatory
+         //httpserverHost "localhost"; // optional
          listenerPort 8081; // mandatory
-   } 
+   }
    server extends HttpServer {
       jettyhome ROOT:jetty_home; // mandatory
-      serverHost "localhost"; //mandatory
+      //serverHost "localhost"; //optional
    }
 }
