@@ -343,7 +343,8 @@
         minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
   </xsd:complexType>
-  
+
+
 
   <!-- ============================================================= -->
   <!-- Server status -->
@@ -521,6 +522,7 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
+      <xsd:element name="name" type="types:applicationNameType"/>
       <xsd:element name="state" type="types:lifecycleStateEnum"/>
       <xsd:element name="stateInfo" type="xsd:string"/>
       <xsd:element name="extendedState" minOccurs="0" type="types:unboundedXMLOtherNamespace"/>
@@ -547,6 +549,7 @@
 
   
   <!-- ============================================================= -->
+  <!-- empty elements get used in a few places -->
   <!-- ============================================================= -->
 
   <xsd:complexType name="emptyElementType">
@@ -556,7 +559,38 @@
       </xsd:documentation>
     </xsd:annotation>
   </xsd:complexType>
-  
+
+  <!-- ============================================================= -->
+  <!-- option elements -->
+  <!-- ============================================================= -->
+
+  <xsd:element name="PropertyMapOption" type="types:propertyMapType" >
+    <xsd:annotation>
+      <xsd:appinfo>
+        http://gridforum.org/cddlm/serviceAPI/options/propertyMap/2004/07/30
+      </xsd:appinfo>
+      <xsd:documentation>
+        this is the contents of a property map option
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+<!--
+  not needed, we just use boolean on the option instead.
+  <xsd:element name="ValidateOnlyOption" type="xsd:boolean">
+    <xsd:annotation>
+      <xsd:appinfo>
+        http://gridforum.org/cddlm/serviceAPI/options/validateOnly/2004/07/30
+      </xsd:appinfo>
+      <xsd:documentation>
+        this is the contents of a validateOnly option.
+        If set to true, a runtime that understands the message must
+        only validate the message and deployment descriptor, and not execute it.
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
+-->
+
+
   <!-- ============================================================= -->
   <!-- Requests and responses. These are the complex types that
   get sent/received as messages-->
