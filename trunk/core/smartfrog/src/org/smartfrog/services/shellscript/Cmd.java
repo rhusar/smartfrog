@@ -94,4 +94,20 @@ import java.io.File;
          return this.lineSeparator;
      }
 
+     public String toString(){
+         StringBuffer str = new StringBuffer();
+         str.append("Cmd: ");
+         Vector v = new Vector(java.util.Arrays.asList(getCmdArray()));
+         str.append(v.toString());
+         if (envp !=null){
+             str.append(", envp: ");
+             str.append(this.getEnvp().toString());
+         }
+         if (dir !=null){
+             str.append(", dir: ");
+             str.append(this.getFile().toString());
+         }
+         return str.toString();
+     }
+
  }

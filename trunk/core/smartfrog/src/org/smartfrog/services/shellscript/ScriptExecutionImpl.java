@@ -100,7 +100,8 @@ public class ScriptExecutionImpl  extends PrimImpl implements Prim, ScriptExecut
   */
  public synchronized void sfStart() throws SmartFrogException,RemoteException {
      super.sfStart();
-     runProcess.execCommand("dir");
+     runProcess.execCommand("cd \\");
+     runProcess.execCommand("dir /s");
      runProcess.execCommand("exit");
      //@Todo: if defined we could run an initial set of commands here
      // execute(commands,timeout);
