@@ -19,7 +19,7 @@ For more information: www.smartfrog.org
 */
 
 #include "/org/smartfrog/components.sf"
-
+#include "/org/smartfrog/predicates.sf"
 #include "org/smartfrog/services/display/components.sf"
 
 /**
@@ -28,15 +28,37 @@ For more information: www.smartfrog.org
  * See example.sf for use.
  */
 
+
 Trace extends Prim {
         sfClass "org.smartfrog.services.trace.SFTrace";
-    verbose true; // set to false if you want to switch date, process and host displays off the messages
+    // set to false if you want to switch date, process and host displays off the messages
+    verbose true;
+     
    // future improvement: output per Hook, no need for now.
         //outputMsg LAZY PARENT:display; // for printing Trace messages!
    //Active Hooks. By default they are active
         //deployHook    false;
         //startHook     false;
         //terminateHook false;
+
+    traceSchema extends Schema {
+
+        //this is the axis configuration file for a service
+        verbose extends OptionalBoolean;
+
+        //destination
+        outputMsg extends OptionalCD;
+
+        //log on deploy
+        deployHook    extends OptionalBoolean;
+
+        //log on startup
+        startHook     extends OptionalBoolean;
+
+        //log on terminate
+        terminateHook extends OptionalBoolean;
+    }
+
 }
 
 // TraceDisplay component

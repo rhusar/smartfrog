@@ -40,44 +40,37 @@ import org.smartfrog.sfcore.processcompound.SFProcess;
  * Implements the trace component in SmartFrog System. It traces the lifecycle
  * methods of the components.
  */
-public class SFTrace extends PrimImpl implements Prim {
+public class SFTrace extends PrimImpl implements SFTraceIntf {
     /** Counter for message printing. */
-    static long counter = 0;
+    private static long counter = 0;
     /** PrintMsgInt object. */
-    PrintMsgInt printMsgImp = null;
+    private PrintMsgInt printMsgImp = null;
     /** Inet address. */
-    java.net.InetAddress localhost = null;
+    private java.net.InetAddress localhost = null;
     /** String name for rootLocatorPrt. */
-    String rootLocatorPort = "defaultRootLocatorPort";
+    private String rootLocatorPort = "defaultRootLocatorPort";
     /** Strin for process name. */
     private String processName = "defaultProcessName";
     /** Flag indicating verbose is on or off. */
-    boolean verbose = true;
+    private boolean verbose = true;
 
     /** the log component to which to generate the trace logs */
-    LogSF log = null;
+    private LogSF log = null;
 
-    //SmartFrog Attributes:
-    final static String ATR_DEPLOY_HOOK = "deployHook";
-    final static String ATR_START_HOOK = "startHook";
-    final static String ATR_TERMINATE_HOOK = "terminateHook";
-    final static String ATR_OUTPUT_MSG = "outputMsg";
-    final static String ATR_VERBOSE = "verbose";
-
-    boolean deployHook = true;
-    boolean startHook = true;
-    boolean terminateHook = true;
+    private boolean deployHook = true;
+    private boolean startHook = true;
+    private boolean terminateHook = true;
 
     /**
      * Instances of the different tracers. (Non anonymous to allow removal on
      * sfTerminate)
      */
     /** Deploy tracer. */
-    SfDeployTracer sfDeployTracer = new SfDeployTracer();
+    private SfDeployTracer sfDeployTracer = new SfDeployTracer();
     /** Start tracer. */
-    SfStartTracer sfStartTracer = new SfStartTracer();
+    private SfStartTracer sfStartTracer = new SfStartTracer();
     /** Terminate tracer. */
-    SfTerminateWithTracer sfTerminateWithTracer = new SfTerminateWithTracer();
+    private SfTerminateWithTracer sfTerminateWithTracer = new SfTerminateWithTracer();
 
     /**
      * Constructor.
@@ -94,59 +87,69 @@ public class SFTrace extends PrimImpl implements Prim {
      * @throws RemoteException in case of network/rmi error
      */
     public synchronized void sfDeploy() throws SmartFrogException,
-    RemoteException {
+            RemoteException {
         super.sfDeploy();
 
-	log = sfGetProcessLog();
+        log = sfGetProcessLog();
 
         try {
             try {
                 localhost = java.net.InetAddress.getLocalHost();
             } catch (Exception ex) {
                 //TODO
-		if (log.isErrorEnabled()) 
-		    log.error("sfTrace: Exception deployment:" +
-			      ex.toString());
+                if (log.isErrorEnabled()) {
+                    log.error("sfTrace: Exception deployment:" +
+                            ex.toString());
+                }
             }
 
             try {
                 rootLocatorPort = SFProcess.getProcessCompound()
-                                           .sfResolve(SmartFrogCoreKeys.SF_ROOT_LOCATOR_PORT)
-                                           .toString();
+                        .sfResolve(SmartFrogCoreKeys.SF_ROOT_LOCATOR_PORT)
+                        .toString();
             } catch (Exception ex) {
                 //TODO
-		if (log.isErrorEnabled()) 
-		    log.error("sfTrace: Exception deployment:" +
-			      ex.toString());
+                if (log.isErrorEnabled()) {
+                    log.error("sfTrace: Exception deployment:" +
+                            ex.toString());
+                }
             }
 
             try {
                 processName = getSfProcessName();
             } catch (Exception ex) {
                 //TODO
-		if (log.isErrorEnabled()) 
-		    log.error("sfTrace: Exception deployment:" +
-			      ex.toString());
+                if (log.isErrorEnabled()) {
+                    log.error("sfTrace: Exception deployment:" +
+                            ex.toString());
+                }
             }
 
-            verbose = sfResolve(ATR_VERBOSE,verbose,false);
+            verbose = sfResolve(ATR_VERBOSE, verbose, false);
 
-            printMsgImp = (PrintMsgInt) sfResolve(ATR_OUTPUT_MSG,false );
+            printMsgImp = (PrintMsgInt) sfResolve(ATR_OUTPUT_MSG, false);
 
             //DeployHook
-            deployHook = sfResolve (ATR_DEPLOY_HOOK,deployHook ,false);
-              // applied by default
-            if (deployHook) sfDeployHooks.addHook(sfDeployTracer);
+            deployHook = sfResolve(ATR_DEPLOY_HOOK, deployHook, false);
+            // applied by default
+            if (deployHook) {
+                sfDeployHooks.addHook(sfDeployTracer);
+            }
 
             //StartHook
-            startHook = sfResolve (ATR_START_HOOK,startHook ,false);
-              // applied by default
-            if (startHook) sfStartHooks.addHook(sfStartTracer);
+            startHook = sfResolve(ATR_START_HOOK, startHook, false);
+            // applied by default
+            if (startHook) {
+                sfStartHooks.addHook(sfStartTracer);
+            }
 
             //TeminateWithHook
-            terminateHook = sfResolve (ATR_TERMINATE_HOOK,terminateHook ,false);
-              // applied by default
-            if (terminateHook) sfTerminateWithHooks.addHook(sfTerminateWithTracer);
+            terminateHook =
+                    sfResolve(ATR_TERMINATE_HOOK, terminateHook, false);
+            // applied by default
+            if (terminateHook) {
+                sfTerminateWithHooks.addHook(sfTerminateWithTracer);
+            }
 
         } catch (Throwable t) {
             // TODO: Need to be revisited
@@ -179,9 +182,10 @@ public class SFTrace extends PrimImpl implements Prim {
 
             // TODO: Check
         } catch (Exception ex) {
-	    if (log.isErrorEnabled()) 
-		log.error("sfTrace: Exception(getUniqueID :" +
-			      ex.toString());
+            if (log.isErrorEnabled()) {
+                log.error("sfTrace: Exception(getUniqueID :" +
+                        ex.toString());
+            }
             id = "defaultUniqueID";
         }
 
@@ -233,7 +237,7 @@ public class SFTrace extends PrimImpl implements Prim {
      * @param date date
      */
     private void printMsgPhase(String msg, String tag, Date date) {
-        if (msg.equals("")) {
+        if ("".equals(msg)) {
             msg = "ROOT[" + rootLocatorPort + "]";
         } else {
             msg = "ROOT[" + rootLocatorPort + "]>" + msg;
@@ -266,8 +270,8 @@ public class SFTrace extends PrimImpl implements Prim {
      * Prints message terminate.
      *
      * @param msg message
-     * @param terminationmsg termination message
-     * @date date
+     * @param terminationMsg termination message
+     * @param date termination date
      */
     private void printMsgTerminate(String msg, String terminationMsg, Date date) {
         printMsgPhase(msg, "TERMINATED (" + terminationMsg + ")", date);
@@ -325,7 +329,7 @@ public class SFTrace extends PrimImpl implements Prim {
      * @param prim prim component
      * @param terminationRecord TerminationRecord object
      *
-     * @throws SamrtFrogException in case of any error
+     * @throws SmartFrogException in case of any error
      */
         public void sfHookAction(Prim prim, TerminationRecord terminationRecord)
             throws SmartFrogException {
@@ -348,7 +352,7 @@ public class SFTrace extends PrimImpl implements Prim {
      * @param prim prim component
      * @param terminationRecord TerminationRecord object
      *
-     * @throws SamrtFrogException in case of any error
+     * @throws SmartFrogException in case of any error
      */
         public void sfHookAction(Prim prim, TerminationRecord terminationRecord)
             throws SmartFrogException {
@@ -372,7 +376,7 @@ public class SFTrace extends PrimImpl implements Prim {
      * @param prim prim component
      * @param terminationRecord TerminationRecord object
      *
-     * @throws SamrtFrogException in case of any error
+     * @throws SmartFrogException in case of any error
      */
         public void sfHookAction(Prim prim, TerminationRecord terminationRecord)
             throws SmartFrogException {
