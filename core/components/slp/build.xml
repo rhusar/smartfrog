@@ -48,10 +48,14 @@ Reference URL:http://ant.apache.org
 
 </description>
 
+  <property name="root.dir" location=".."  />
+  <!-- Import common stuff -->
+  <available file="../../common.xml" property="root.dir" value="../.."/>
+  <import file="${root.dir}/common.xml"/>
   <!-- =================================================================== -->
   <!-- Initialization target                                               -->
   <!-- =================================================================== -->
-  <target name="init">
+  <target name="init" depends="init-standard-output-dirs,use-smartfrog-tasks">
     <tstamp/>
     <property name="Name.System" value="slplib"/>
     <property name="Name.Author" value="Copyright (C) 2004 Glenn Hisdal"/>
@@ -352,7 +356,14 @@ Reference URL:http://ant.apache.org
   <target name="slplibJar" depends="build">
     <jar jarfile="${dist.lib.dir}/sfSlp.jar"
          basedir="${build.classes.dir}"
-         includes="**/slp/**"/>
+	 includes="**/slp/**"/>
+     <mkdir dir="build/dist/lib"/>
+     <copy file="${dist.lib.dir}/sfSlp.jar" todir="build/dist/lib"/>
+     <copy todir="build/dist/lib">
+	     <fileset dir="lib">
+		     <include name="**/*.jar"/>
+	     </fileset>
+     </copy>
   </target>
 
 

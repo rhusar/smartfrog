@@ -34,8 +34,9 @@ For more information: www.smartfrog.org
                         "place to put third party libraries"/> -->
        
   
-  <property name="root.dir" location="../.."  />
-    <!-- Import common stuff -->
+  <property name="root.dir" location=".."  />
+  <!-- Import common stuff -->
+  <available file="../../common.xml" property="root.dir" value="../.."/> 
   <import file="${root.dir}/common.xml"/>
   
  
