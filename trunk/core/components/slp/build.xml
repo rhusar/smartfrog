@@ -58,6 +58,11 @@ Reference URL:http://ant.apache.org
   <import file="${root.dir}/common.xml"/>
 
   <property name="is.component" value="true"  />
+
+
+   <property name="doc.dir" location="docs"/>
+
+
   <!-- =================================================================== -->
   <!-- Initialization target                                               -->
   <!-- =================================================================== -->
@@ -274,11 +279,16 @@ Reference URL:http://ant.apache.org
            source="${javac.runtime.target}"
            >
       <group title="SmartFrog Packages" packages="org.smartfrog.*"/>
-      <classpath>
-          <fileset dir="${core.smartfrog.lib}">
+      
+		<classpath>
+          <fileset dir="${smartfrog.dist.lib.dir}">
+              <include name="**/*.jar"/>
+          </fileset>
+		   <fileset dir="${dist.lib.dir}">
               <include name="**/*.jar"/>
           </fileset>
       </classpath>
+	  
     </javadoc>
 
   </target>
@@ -330,14 +340,24 @@ Reference URL:http://ant.apache.org
     description="Prepares distribution package">
   </target-->
 
-	<target name="dist" depends="common.dist" description="create the jar files">
+	<target name="dist" depends="common.dist,jdocs" description="create the jar files">
+
 	 <copy todir = "${dist.lib.dir}">
         <fileset dir ="${lib.dir}" />
     </copy> 
+	
+	<copy todir = "${dist.src.dir}">
+        <fileset dir ="${src.dir}">
+		  <include name="**/examples/**"/>
+		</fileset>
+    </copy>   
+	
+	<copy todir = "${dist.doc.dir}">
+        <fileset dir ="${doc.dir}" />
+    </copy>  
 
 	 <antcall target="copybins"/>
-	
-   
+	  
 	
 	</target>
 

@@ -110,8 +110,8 @@ For more information: www.smartfrog.org
     </copy>   
 		 <copy todir = "${dist.src.dir}">
         <fileset dir ="${src.dir}">
-		  <include name="**/sshExecExample*"/>
-		  <include name="**/scpExample*"/>
+		  <include name="**/examples/**"/>
+	
 		</fileset>
     </copy>   
   </target>

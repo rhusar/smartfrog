@@ -126,8 +126,8 @@ For more information: www.smartfrog.org
 
 		 <copy todir = "${dist.src.dir}">
         <fileset dir ="${src.dir}">
-		  <include name="**/example*"/>
-		  <include name="**/dynamicexample*"/>
+		  <include name="**/examples/**"/>
+		  <!--include name="**/dynamicexample*"/-->
 		</fileset>
     </copy>   
 	</target>
