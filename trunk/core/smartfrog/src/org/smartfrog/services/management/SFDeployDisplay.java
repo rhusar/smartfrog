@@ -146,11 +146,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
       if (org.smartfrog.services.display.WindowUtilities.areGraphicsAvailable()) {
          newDisplay = new Display(nameDisplay, null);
 
-         String imagesPath = SFDeployDisplay.class.getPackage().getName()+".";
-         imagesPath=imagesPath.replace('.','/');
-         imagesPath=imagesPath+"frogb.gif";
-         newDisplay.setIconImage(Display.createImage(imagesPath));
-
+         addFrogIcon(newDisplay);
 
          newDisplay.setShouldSystemExit(shouldSystemExit);
          newDisplay.setVisible(false);
@@ -202,6 +198,13 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
       }
 
       return null;
+   }
+
+   private static void addFrogIcon(Display newDisplay) {
+       String imagesPath = SFDeployDisplay.class.getPackage().getName()+".";
+       imagesPath = imagesPath.replace('.', '/');
+       imagesPath = imagesPath+"frogb.gif";
+       newDisplay.setIconImage(Display.createImage(imagesPath));
    }
 
 
@@ -293,7 +296,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
          //System.out.println("Root: "+root.toString());
          this.panelTree = new DeployTreePanel(root, false);
          this.panelTree.setEnabled(true);
-
+         addFrogIcon(display);
          display.tabPane.add(panelTree, "Deploy Deployed System ...", 0);
 
          this.display.screen.append("\n Version: " +
