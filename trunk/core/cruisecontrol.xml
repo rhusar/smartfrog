@@ -24,9 +24,6 @@
 
     <!-- the interval is seconds -->
     <schedule interval="1200">
-      <maven mavenscript="/home/cruise/maven/bin/maven"
-            goal="site:generate"
-            projectfile="/home/cruise/cruisecontrol/project.xml"/>
       <ant target="cc-full" antscript="ant" useLogger="true" />
     </schedule>
 
@@ -37,7 +34,7 @@
       <currentbuildstatuspublisher file="../artifacts/currentbuildstatus.txt"/>
 
       <artifactspublisher
-        dir="./smartfrog/dist"
+        dir="./smartfrog/dist/lib"
         dest="../artifacts" />
 
         <!-- email assumes that localhost is an SMTP server -->
