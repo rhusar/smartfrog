@@ -242,7 +242,7 @@ public class SFProcess implements MessageKeys {
                     Logger.log(
                         "Going to terminate the daemon gracefully!!");
                     processCompound.sfTerminate(new TerminationRecord(
-                                "management action",
+                                TerminationRecord.NORMAL,
                                 "sfDaemon forced to terminate ",
                                  ((Prim)processCompound).sfCompleteName()));
                 }catch (RemoteException re) {

@@ -89,7 +89,7 @@ public class DeployMgnt {
      */
     public static void terminate(Prim obj) {
         try {
-            TerminationRecord tr = new TerminationRecord("normal",
+            TerminationRecord tr = new TerminationRecord(TerminationRecord.NORMAL,
                     "External Management Action", null);
             obj.sfTerminate(tr);
         } catch (Exception ex) {
@@ -104,7 +104,7 @@ public class DeployMgnt {
      */
     public static void dTerminate(Prim obj) {
         try {
-            TerminationRecord tr = new TerminationRecord("normal",
+            TerminationRecord tr = new TerminationRecord(TerminationRecord.NORMAL,
                     "External Management Action", null);
             obj.sfDetachAndTerminate(tr);
         } catch (Exception ex) {
