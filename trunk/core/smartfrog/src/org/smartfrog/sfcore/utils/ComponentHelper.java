@@ -44,10 +44,18 @@ public class ComponentHelper {
 
     private Prim owner;
 
+    /**
+     * construct a component helper and bind to a prim class
+     * @param owner
+     */
     public ComponentHelper(Prim owner) {
         this.owner = owner;
     }
 
+    /**
+     * return the prim that this helper is bound to
+     * @return
+     */
     public Prim getOwner() {
         return owner;
     }
