@@ -43,6 +43,8 @@ public class FunctionsSystemTest extends SmartFrogTestBase {
     public void testCaseTCN29() throws Exception {
         deployExpectingException(FILES+"tcn29.sf",
                 "tcn29",
+                "SmartFrogDeploymentException",
+                null,
                 "SmartFrogCompileResolutionException",
                 "Unresolved Reference");
     }
@@ -50,6 +52,8 @@ public class FunctionsSystemTest extends SmartFrogTestBase {
     public void testCaseTCN32() throws Exception {
         deployExpectingException(FILES + "tcn32.sf",
                 "tcn32",
+                "SmartFrogDeploymentException",
+                null,
                 "SmartFrogCompileResolutionException",
                 "Unresolved Reference");
     }

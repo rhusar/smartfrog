@@ -95,7 +95,8 @@ public class ConfigurationDescriptorDeployTest extends SmartFrogTestBase impleme
          * Ignored if the containedExceptionClass parametere is null.
          * @throws RemoteException in the event of remote trouble.
          */
-        protected void deployExpectingException(String sfact,
+    /*
+        protected void deployExpectingException2(String sfact,
                                                 String testDescription,
                                                 String exceptionName,
                                                 String searchString,
@@ -141,7 +142,7 @@ public class ConfigurationDescriptorDeployTest extends SmartFrogTestBase impleme
                 fail(fault.toString());
              }
         }
-
+*/
         /**
          * Deploys an application and returns the refence to deployed application.
          * @param sfact  SFACT: SmartFrog Action Descriptors
@@ -149,7 +150,8 @@ public class ConfigurationDescriptorDeployTest extends SmartFrogTestBase impleme
          * @return Reference to deployed application
          * @throws RemoteException in the event of remote trouble.
          */
-        protected Prim deployExpectingSuccess(String sfact, String testDescription)
+
+        protected Prim deployExpectingSuccess2(String sfact, String testDescription)
                                                         throws Exception,Throwable {
             testDescription = "- Test description: \n   "+testDescription+" -  \n";
             System.out.println("\n"+testDescription);
@@ -178,68 +180,68 @@ public class ConfigurationDescriptorDeployTest extends SmartFrogTestBase impleme
 
 
         public void testurlTest01 ()throws Throwable{
-           String sfact = this.urlTest01;
+           String sfact = urlTest01;
            String description = "testurlTest01("+sfact+")";
-           this.deployExpectingSuccess(sfact,description);
+           deployExpectingSuccess2(sfact,description);
         }
         public void testurlTest02 ()throws Throwable{
-           String sfact = this.urlTest02;
+           String sfact = urlTest02;
            String description = "testurlTest02("+sfact+")";
-           this.deployExpectingSuccess(sfact,description);
+           deployExpectingSuccess2(sfact,description);
         }
 //        public void testurlTest03 ()throws Throwable{
-//           String sfact = this.urlTest03;
+//           String sfact = urlTest03;
 //           String description = "testurlTest03("+sfact+")";
 //           this.deployExpectingSuccess(sfact,description);
 //        }
 //        public void testurlTest04 ()throws Throwable{
-//           String sfact = this.urlTest04;
+//           String sfact = urlTest04;
 //           String description = "testurlTest04("+sfact+")";
 //           this.deployExpectingSuccess(sfact,description);
 //        }
         public void testurlTest05 ()throws Throwable{
-           String sfact = this.urlTest05;
+           String sfact = urlTest05;
            String description = "testurlTest05("+sfact+")";
-           this.deployExpectingSuccess(sfact,description);
+           deployExpectingSuccess2(sfact,description);
         }
         public void testurlTest06 ()throws Throwable{
-           String sfact = this.urlTest06;
+           String sfact = urlTest06;
            String description = "testurlTest06("+sfact+")";
-           this.deployExpectingSuccess(sfact,description);
+           deployExpectingSuccess2(sfact,description);
         }
 //        public void testurlTest07 ()throws Throwable{
-//           String sfact = this.urlTest07;
+//           String sfact = urlTest07;
 //           String description = "testurlTest07("+sfact+")";
 //           this.deployExpectingSuccess(sfact,description);
 //        }
 //        public void testurlTest07b ()throws Throwable{
-//           String sfact = this.urlTest07b;
+//           String sfact = urlTest07b;
 //           String description = "testurlTest07b("+sfact+")";
 //           this.deployExpectingSuccess(sfact,description);
 //        }
 
 //        public void testurlTest08 ()throws Throwable{
-//           String sfact = this.urlTest08;
+//           String sfact = urlTest08;
 //           String description = "testurlTest08("+sfact+")";
 //           this.deployExpectingSuccess(sfact,description);
 //        }
 //        public void testurlTest09 ()throws Throwable{
-//           String sfact = this.urlTest09;
+//           String sfact = urlTest09;
 //           String description = "testurlTest09("+sfact+")";
 //           this.deployExpectingSuccess(sfact,description);
 //        }
         public void testurlTest10 ()throws Throwable{
-           String sfact = this.urlTest10;
+           String sfact = urlTest10;
            String description = "testurlTest10("+sfact+")";
-           this.deployExpectingSuccess(sfact,description);
+           deployExpectingSuccess2(sfact,description);
         }
 //        public void testurlTest11 ()throws Throwable{
-//           String sfact = this.urlTest11;
+//           String sfact = urlTest11;
 //           String description = "testurlTest11("+sfact+")";
 //           this.deployExpectingSuccess(sfact,description);
 //        }
 //        public void testurlTest12b ()throws Throwable{
-//           String sfact = this.urlTest12b;
+//           String sfact = urlTest12b;
 //           String description = "testurlTest15b("+sfact+")";
 //           this.deployExpectingSuccess(sfact,description);
 //        }

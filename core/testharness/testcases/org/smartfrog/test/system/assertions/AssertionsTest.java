@@ -22,6 +22,7 @@
 package org.smartfrog.test.system.assertions;
 
 import org.smartfrog.test.SmartFrogTestBase;
+import org.smartfrog.services.assertions.SmartFrogAssertionException;
 
 /**
  * Date: 30-Apr-2004
@@ -44,7 +45,25 @@ public class AssertionsTest extends SmartFrogTestBase {
     }
 
     public void testFalseIsTrue() throws Throwable {
-        deployExpectingAssertionFailure("testFalseIsTrue.sf");
+        Throwable t=deployExpectingAssertionFailure("testFalseIsTrue.sf");
+        SmartFrogAssertionException sfe= extractAssertionException(t);
+        assertContains(sfe.getMessage(),"truth and falsehood");
+
+    }
+
+    /**
+     * recursive search for the root cause
+     * @param throwable
+     * @return the assertion or null
+     */
+    public SmartFrogAssertionException extractAssertionException(Throwable throwable) {
+        if(throwable==null) {
+            return null;
+        }
+        if(throwable instanceof SmartFrogAssertionException) {
+            return (SmartFrogAssertionException) throwable;
+        }
+        return extractAssertionException(throwable.getCause());
     }
 
     /**
@@ -78,10 +97,30 @@ public class AssertionsTest extends SmartFrogTestBase {
      * @param filename
      * @throws Throwable
      */
-    public void deployExpectingAssertionFailure(String filename) throws Throwable {
-        deployExpectingException(FILES + filename,
+    public Throwable deployExpectingAssertionFailure(String filename) throws Throwable {
+        return deployExpectingException(FILES + filename,
                 filename,
-                "SmartFrogLivenessException", null,
+                "SmartFrogLifecycleException", null,
                 "SmartFrogAssertionException", null);
     }
+
+    /**
+     * test that no method results in a meaningful failure
+     * @throws Throwable
+     */
+    public void testEvaluatesNoSuchMethod() throws Throwable {
+        deployExpectingAssertionFailure("testEvaluatesNoSuchMethod.sf");
+    }
+
+    /**
+     * test that values are resolved.
+     */
+    public void testEvaluatesThrowsSFException() throws Throwable {
+        deployExpectingSuccess(FILES + "testEvaluatesThrowsSFException.sf", "testEvaluatesThrowsSFException");
+    }
+
+    public void testEvaluatesThrowsRuntimeException() throws Throwable {
+        deployExpectingSuccess(FILES + "testEvaluatesThrowsRuntimeException.sf", "testEvaluatesThrowsRuntimeException");
+    }
+
 }
