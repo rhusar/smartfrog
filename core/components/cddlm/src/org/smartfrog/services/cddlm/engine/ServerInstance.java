@@ -19,10 +19,12 @@
  */
 
 
-package org.smartfrog.services.cddlm.api;
+package org.smartfrog.services.cddlm.engine;
 
-import org.apache.axis.types.URI;
 import org.apache.axis.AxisFault;
+import org.apache.axis.types.URI;
+import org.smartfrog.services.cddlm.api.Constants;
+import org.smartfrog.services.cddlm.api.Processor;
 import org.smartfrog.services.cddlm.generated.api.types.CallbackListType;
 import org.smartfrog.services.cddlm.generated.api.types.LanguageListType;
 import org.smartfrog.services.cddlm.generated.api.types.ServerInformationType;
@@ -45,9 +47,34 @@ public class ServerInstance {
 
     private JobRepository jobs;
 
+    private ActionQueue queue = new ActionQueue();
+
+    private ActionWorker workers[];
+
+    public static final int WORKERS = 1;
+    public static final long TIMEOUT = 0;
+
+    /**
+     * construct the server. Workers get started too.
+     */
     public ServerInstance() {
         staticStatus = createStaticStatusInfo();
         jobs = new JobRepository();
+        workers = new ActionWorker[WORKERS];
+        for (int i = 0; i < workers.length; i++) {
+            workers[i] = new ActionWorker(queue, TIMEOUT);
+            workers[i].start();
+        }
+    }
+
+    /**
+     * initiate a graceful shutdown of workers. we do this by pushing a shutdown
+     * request for every worker
+     */
+    public void stop() {
+        for (int i = 0; i < workers.length; i++) {
+            queue.push(new EndWorkerAction());
+        }
     }
 
     public StaticServerStatusType getStaticServerStatus() {
@@ -55,7 +82,7 @@ public class ServerInstance {
     }
 
 
-    private StaticServerStatusType createStaticStatusInfo()  {
+    private StaticServerStatusType createStaticStatusInfo() {
         ServerInformationType serverInfo = new ServerInformationType();
         serverInfo.setName(Constants.PRODUCT_NAME);
         try {
@@ -114,4 +141,5 @@ public class ServerInstance {
         }
         return instance;
     }
+
 }

@@ -17,9 +17,10 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.cddlm.api;
+package org.smartfrog.services.cddlm.engine;
 
 import org.apache.axis.types.URI;
+import org.smartfrog.services.cddlm.api.Processor;
 
 import java.util.Collection;
 import java.util.Hashtable;
@@ -36,6 +37,11 @@ import java.util.Set;
 public class JobRepository /* implements Map */ {
 
     private Hashtable jobs = new Hashtable();
+    private final String prefix;
+
+    public JobRepository() {
+        prefix = "/" + System.currentTimeMillis() + "/job/";
+    }
 
     public void clear() {
         jobs.clear();
@@ -150,7 +156,7 @@ public class JobRepository /* implements Map */ {
 
     private synchronized String getUniqueName() {
         counter++;
-        String name = "job" + counter;
+        String name = prefix + counter;
         return name;
     }
 

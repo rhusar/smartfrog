@@ -17,21 +17,40 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.cddlm.components;
+package org.smartfrog.services.cddlm.test.unit.api;
 
-import java.rmi.Remote;
+import org.smartfrog.services.cddlm.engine.BaseAction;
+import org.smartfrog.sfcore.common.SmartFrogException;
+
+import java.rmi.RemoteException;
 
 /**
- * created Sep 8, 2004 2:33:07 PM
+ * For testing, we have an action that increments every time it is executed
+ * created Sep 9, 2004 5:39:44 PM
  */
 
-public interface CddlmCompound extends Remote {
+public class TestAction extends BaseAction {
 
+    public int counter = 0;
+
+    public synchronized int getCounter() {
+        return counter;
+    }
+
+    public synchronized void setCounter(int counter) {
+        this.counter = counter;
+    }
 
     /**
-     * URL of an endpoint to notify
+     * execute increments a counter and waits on it
+     *
+     * @throws SmartFrogException
+     * @throws RemoteException
      */
-    public String ATTR_NOTIFICATION_ENDPOINT = "endpoint";
-
+    public synchronized void execute() throws SmartFrogException,
+            RemoteException {
+        counter++;
+        notifyAll();
+    }
 
 }

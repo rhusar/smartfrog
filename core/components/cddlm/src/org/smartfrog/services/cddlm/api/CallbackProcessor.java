@@ -21,9 +21,10 @@ package org.smartfrog.services.cddlm.api;
 
 import org.apache.axis.AxisFault;
 import org.smartfrog.services.axis.SmartFrogHostedEndpoint;
+import org.smartfrog.services.cddlm.engine.JobState;
+import org.smartfrog.services.cddlm.generated.api.DeployApiConstants;
 import org.smartfrog.services.cddlm.generated.api.types.CallbackEnum;
 import org.smartfrog.services.cddlm.generated.api.types.CallbackInformationType;
-import org.smartfrog.services.cddlm.generated.api.DeployApiConstants;
 
 /**
  * extract callback information from a job, attach it to a job created Sep 2,

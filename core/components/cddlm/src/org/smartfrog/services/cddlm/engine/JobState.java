@@ -17,10 +17,13 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.cddlm.api;
+package org.smartfrog.services.cddlm.engine;
 
 import org.apache.axis.AxisFault;
 import org.apache.axis.types.URI;
+import org.smartfrog.services.cddlm.api.CallbackRaiser;
+import org.smartfrog.services.cddlm.api.OptionProcessor;
+import org.smartfrog.services.cddlm.api.Processor;
 import org.smartfrog.services.cddlm.generated.api.types._deployRequest;
 import org.smartfrog.sfcore.prim.Prim;
 
