@@ -10,9 +10,7 @@
 ant -lib ../../build/dist/lib/smartfrog-tasks.jar -lib ../../../../smartfrog/dist/lib/smartfrog.jar -f parse.xml testNoop 
 </description>
 
-    <typedef 
-      resource="org/smartfrog/tools/ant/tasks.properties"
-      />
+  <import file="test-common.xml" />
 
   <target name="testNoop">
     <sf-parse/>

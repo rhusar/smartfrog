@@ -14,4 +14,16 @@ ant -lib ..\..\build\dist\lib\smartfrog-tasks.jar -lib ..\..\..\..\smartfrog\dis
 
   <import file="test-common.xml" />
   
+  <property name="host1.keystore" location="host1-keys.st"/>
+  <property name="host1.properties" location="host1-SFSecurity.properties"/>
   
+  
+  <target name="define-security">
+    <security id="host1" keystore="${host1.keystore}" /> 
+  </target>
+  
+  <target name="create-jar">
+    
+  </target>
+  
+</project>

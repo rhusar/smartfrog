@@ -19,6 +19,7 @@
    <property name="resource.sf" 
     value="org/smartfrog/examples/functions/function.sf" />
 
+   <property name="short.delay"   value="1000" />
    <property name="timeout"   value="10000" />
    <property name="long.timeout"   value="20000" />
    <property name="medium.timeout"   value="10000" />
