@@ -83,7 +83,7 @@ public class SFJetty extends CompoundImpl implements Compound,JettyIntf {
 	   super.sfStart();
 	   try {
 		   server.start();
-	   } catch (MultiException mexp) {
+	   } catch (Exception mexp) {
 		   throw SmartFrogException.forward(mexp);
 	   }
    }
