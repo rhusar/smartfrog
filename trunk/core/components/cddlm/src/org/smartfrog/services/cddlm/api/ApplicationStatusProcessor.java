@@ -24,6 +24,7 @@ import org.smartfrog.services.cddlm.generated.api.types.ApplicationStatusType;
 import org.smartfrog.services.cddlm.generated.api.types._applicationStatusRequest;
 import org.smartfrog.services.cddlm.generated.api.types.LifecycleStateEnum;
 import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.apache.axis.types.NCName;
 import org.apache.axis.types.URI;
 
@@ -38,14 +39,30 @@ public class ApplicationStatusProcessor extends Processor {
         super(owner);
     }
 
+    /**
+     * app status processor does a ping to see if the dest is still alive
+     * @param applicationStatus
+     * @return
+     * @throws RemoteException
+     */
     public ApplicationStatusType applicationStatus(_applicationStatusRequest applicationStatus)
             throws RemoteException {
         URI reference = applicationStatus.getApplication();
         JobState job=lookupJob(reference);
-        Prim p=job.resolvePrimFromJob();
+        Prim process=job.resolvePrimFromJob();
         ApplicationStatusType status = new ApplicationStatusType();
+        boolean running;
+        try {
+            process.sfPing(null);
+            running=true;
+        } catch (SmartFrogLivenessException e) {
+            running=false;
+            status.setStateInfo(e.toString());
+        }
         status.setName(new NCName(job.getName()));
-        status.setState(LifecycleStateEnum.fromString("running"));
+        String statusName=running?"running":"terminated";
+        status.setState(LifecycleStateEnum.fromString(statusName));
+
         return status;
     }
 
