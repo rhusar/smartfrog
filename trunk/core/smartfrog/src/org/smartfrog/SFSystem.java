@@ -787,6 +787,8 @@ public class SFSystem implements MessageKeys {
         } catch (RemoteException swallowed) {
         }
 
+        SFProcess.deployDefaultProcessDescriptions(process);
+
         return process;
     }
 
