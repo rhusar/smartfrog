@@ -48,12 +48,12 @@ For more information: www.smartfrog.org
    <!-- override point -->
   <property file="build.properties" />
 
-  <!-- this component keeps its test files in a different place from the 
-       rest, for historical reasons (i.e. it is nothing but test) -->  
-  <!--property name="test.src.dir" location="testcases" /-->
   <property name="jetty.lib.dir" location="lib" />
+  <property name="build.dir" location="build"/>
+  <property name="test.dir" location="${build.dir}/test"/>
   <property name="dist.dir" location="dist" />
   <property name="dist.lib.dir" location="dist/lib" />
+  <property name="test.datafiles.dir" location="${test.dir}/files"/>
   <property name="root.dir" location="../.."  />
   <property name="smartfrog.home" location="${root.dir}/smartfrog"/>
   <property name="smartfrog.dist.dir" location="${smartfrog.home}/dist"/>
@@ -72,9 +72,6 @@ For more information: www.smartfrog.org
   <target name="init" depends="init-standard-output-dirs">
           
     <property name="target.jar" location="${dist.lib.dir}/jetty.jar" />
-   
-    <mkdir dir="${dist.dir}"/>
-    <mkdir dir="${dist.lib.dir}"/> 
         
     <!-- the compile time path includes jetty-->
     <path id="compile.classpath">
