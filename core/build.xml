@@ -64,9 +64,9 @@ For more information: www.smartfrog.org
   
 
   <!-- =================================================================== -->
-  <!-- test in the main project                                            -->
+  <!-- test in the ant project                                            -->
   <!-- =================================================================== -->
-  <target name="test-main" depends="init" description="test in main project">
+  <target name="test-ant" depends="init" description="test in main project">
     <ant dir="${ant.project}" target="test" inheritAll="false" />
   </target>
 
@@ -91,7 +91,7 @@ For more information: www.smartfrog.org
   <!-- =================================================================== -->
   <!-- test all                                                            -->
   <!-- =================================================================== -->
-  <target name="test" depends="test-main,test-testharness"
+  <target name="test" depends="test-main,test-ant,test-testharness"
     description="test everything"/>
 
 
