@@ -50,23 +50,26 @@ which will be used to configure the chosen Forrest skin.
   <disable-external-link-image>false</disable-external-link-image>
   
   <!-- Disable w3c compliance links? -->
-  <disable-compliance-links>false</disable-compliance-links>
+  <disable-compliance-links>true</disable-compliance-links>
   <!-- Render mailto: links unrecognisable by spam harvesters? -->
   <obfuscate-mail-links>true</obfuscate-mail-links>
 
 
   <!-- mandatory project logo
        skin: forrest-site renders it at the top -->
-  <project-name align="center">SmartFrog</project-name>
-  <project-description>SmartFrog</project-description>  
+  <project-name>SmartForg</project-name>
+  <project-description>Smart Framework for Object Groups</project-description>  
   <project-url>http://www.SmartFrog.org/</project-url>
-  <project-logo>images/sf.gif</project-logo>
-  
-  
+  <project-logo>images/frog.gif</project-logo>
+
+ 
 
   <!-- optional group logo
        skin: forrest-site renders it at the top-left corner -->
-
+<group-name>SmartForg</group-name>
+  <group-description>SmartForg Components</group-description>
+  <group-url>http://www.SmartFrog.org/</group-url>
+  <group-logo>images/sf.gif</group-logo>
 
   <!-- optional host logo (e.g. sourceforge logo)
        default skin: renders it at the bottom-left corner -->

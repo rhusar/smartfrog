@@ -558,6 +558,7 @@ component.path :=
 			<copy todir="${comp.home}/src/documentation/content/xdocs/images">
 			<fileset dir="./forrest_skin">
 				 <include name="sf.*" />
+				  <include name="frog.*" />
 				</fileset>
 		</copy>	
 	
