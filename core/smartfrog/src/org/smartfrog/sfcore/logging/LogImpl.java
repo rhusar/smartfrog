@@ -61,34 +61,34 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
     /** Current log level */
     protected int currentLogLevel= LOG_LEVEL_INFO;
 
-    private static final Method TRACE_O =
+    public static final Method TRACE_O =
           getObjectMethod("trace", new Class[] {Object.class});
-    private static final Method TRACE_O_T =
+    public static final Method TRACE_O_T =
           getObjectMethod("trace", new Class[] {Object.class,Throwable.class});
 
-      private static final Method DEBUG_O =
+      public static final Method DEBUG_O =
           getObjectMethod("debug", new Class[] {Object.class});
-      private static final Method DEBUG_O_T =
+      public static final Method DEBUG_O_T =
           getObjectMethod("debug", new Class[] {Object.class, Throwable.class});
 
-      private static final Method INFO_O =
+      public static final Method INFO_O =
           getObjectMethod("info", new Class[] {Object.class});
-      private static final Method INFO_O_T =
+      public static final Method INFO_O_T =
           getObjectMethod("info", new Class[] {Object.class, Throwable.class});
 
-      private static final Method WARN_O =
+      public static final Method WARN_O =
           getObjectMethod("warn", new Class[] {Object.class});
-      private static final Method WARN_O_T =
+      public static final Method WARN_O_T =
           getObjectMethod("warn", new Class[] {Object.class, Throwable.class});
 
-      private static final Method ERROR_O =
+      public static final Method ERROR_O =
           getObjectMethod("error", new Class[] {Object.class});
-      private static final Method ERROR_O_T =
+      public static final Method ERROR_O_T =
           getObjectMethod("error", new Class[] {Object.class, Throwable.class});
 
-      private static final Method FATAL_O =
+      public static final Method FATAL_O =
           getObjectMethod("fatal", new Class[] {Object.class});
-      private static final Method FATAL_O_T =
+      public static final Method FATAL_O_T =
           getObjectMethod("fatal", new Class[] {Object.class, Throwable.class});
 
 
