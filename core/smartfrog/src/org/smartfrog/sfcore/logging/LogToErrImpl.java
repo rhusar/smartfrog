@@ -55,7 +55,7 @@ public class LogToErrImpl implements LogToErr, Log, LogMessage, LogLevel, Serial
 
 
   /** Include the instance name in the log message? */
-  protected static boolean showLogName = true;
+  protected boolean showLogName = true;
 
   /** Include the short name ( last component ) of the logger in the log
       message. Default to true - otherwise we'll be lost in a flood of
@@ -88,7 +88,7 @@ public class LogToErrImpl implements LogToErr, Log, LogMessage, LogLevel, Serial
     /** The name of this simple log instance */
     protected String logName = null;
     /** The current log level */
-    protected int currentLogLevel;
+    protected int currentLogLevel=0;
     /** The short name of this simple log instance */
     private String shortLogName = null;
 
@@ -160,9 +160,7 @@ public class LogToErrImpl implements LogToErr, Log, LogMessage, LogLevel, Serial
      * @param currentLogLevel new logging level
      */
     public void setLevel(int currentLogLevel) {
-
         this.currentLogLevel = currentLogLevel;
-
     }
 
 
@@ -170,7 +168,6 @@ public class LogToErrImpl implements LogToErr, Log, LogMessage, LogLevel, Serial
      * <p> Get logging level. </p>
      */
     public int getLevel() {
-
         return currentLogLevel;
     }
 
@@ -314,10 +311,12 @@ public class LogToErrImpl implements LogToErr, Log, LogMessage, LogLevel, Serial
      *
      * @param logLevel is this level enabled?
      */
-    protected boolean isLevelEnabled(int logLevel) {
+    public boolean isLevelEnabled(int logLevel) {
         // log level are numerically ordered so can use simple numeric
         // comparison
+        //System.out.println("Local: Current "+currentLogLevel+", compared "+logLevel);
         return (logLevel >= currentLogLevel);
+
     }
 
 
@@ -328,9 +327,8 @@ public class LogToErrImpl implements LogToErr, Log, LogMessage, LogLevel, Serial
      * <p> Log a message with debug log level.</p>
      */
     public final void debug(Object message) {
-
-        if (isLevelEnabled(LogToErr.LOG_LEVEL_DEBUG)) {
-            log(LogToErr.LOG_LEVEL_DEBUG, message, null);
+        if (isLevelEnabled(LogLevel.LOG_LEVEL_DEBUG)) {
+            log(LogLevel.LOG_LEVEL_DEBUG, message, null);
         }
     }
 
@@ -339,9 +337,8 @@ public class LogToErrImpl implements LogToErr, Log, LogMessage, LogLevel, Serial
      * <p> Log an error with debug log level.</p>
      */
     public final void debug(Object message, Throwable t) {
-
-        if (isLevelEnabled(LogToErr.LOG_LEVEL_DEBUG)) {
-            log(LogToErr.LOG_LEVEL_DEBUG, message, t);
+        if (isLevelEnabled(LogLevel.LOG_LEVEL_DEBUG)) {
+            log(LogLevel.LOG_LEVEL_DEBUG, message, t);
         }
     }
 
@@ -350,9 +347,8 @@ public class LogToErrImpl implements LogToErr, Log, LogMessage, LogLevel, Serial
      * <p> Log a message with trace log level.</p>
      */
     public final void trace(Object message) {
-
-        if (isLevelEnabled(LogToErr.LOG_LEVEL_TRACE)) {
-            log(LogToErr.LOG_LEVEL_TRACE, message, null);
+        if (isLevelEnabled(LogLevel.LOG_LEVEL_TRACE)) {
+            log(LogLevel.LOG_LEVEL_TRACE, message, null);
         }
     }
 
@@ -361,9 +357,8 @@ public class LogToErrImpl implements LogToErr, Log, LogMessage, LogLevel, Serial
      * <p> Log an error with trace log level.</p>
      */
     public final void trace(Object message, Throwable t) {
-
-        if (isLevelEnabled(LogToErr.LOG_LEVEL_TRACE)) {
-            log(LogToErr.LOG_LEVEL_TRACE, message, t);
+        if (isLevelEnabled(LogLevel.LOG_LEVEL_TRACE)) {
+            log(LogLevel.LOG_LEVEL_TRACE, message, t);
         }
     }
 
@@ -372,9 +367,8 @@ public class LogToErrImpl implements LogToErr, Log, LogMessage, LogLevel, Serial
      * <p> Log a message with info log level.</p>
      */
     public final void info(Object message) {
-
-        if (isLevelEnabled(LogToErr.LOG_LEVEL_INFO)) {
-            log(LogToErr.LOG_LEVEL_INFO,message,null);
+        if (isLevelEnabled(LogLevel.LOG_LEVEL_INFO)) {
+            log(LogLevel.LOG_LEVEL_INFO,message,null);
         }
     }
 
@@ -383,9 +377,8 @@ public class LogToErrImpl implements LogToErr, Log, LogMessage, LogLevel, Serial
      * <p> Log an error with info log level.</p>
      */
     public final void info(Object message, Throwable t) {
-
-        if (isLevelEnabled(LogToErr.LOG_LEVEL_INFO)) {
-            log(LogToErr.LOG_LEVEL_INFO, message, t);
+        if (isLevelEnabled(LogLevel.LOG_LEVEL_INFO)) {
+            log(LogLevel.LOG_LEVEL_INFO, message, t);
         }
     }
 
@@ -394,9 +387,8 @@ public class LogToErrImpl implements LogToErr, Log, LogMessage, LogLevel, Serial
      * <p> Log a message with warn log level.</p>
      */
     public final void warn(Object message) {
-
-        if (isLevelEnabled(LogToErr.LOG_LEVEL_WARN)) {
-            log(LogToErr.LOG_LEVEL_WARN, message, null);
+        if (isLevelEnabled(LogLevel.LOG_LEVEL_WARN)) {
+            log(LogLevel.LOG_LEVEL_WARN, message, null);
         }
     }
 
@@ -405,9 +397,8 @@ public class LogToErrImpl implements LogToErr, Log, LogMessage, LogLevel, Serial
      * <p> Log an error with warn log level.</p>
      */
     public final void warn(Object message, Throwable t) {
-
-        if (isLevelEnabled(LogToErr.LOG_LEVEL_WARN)) {
-            log(LogToErr.LOG_LEVEL_WARN, message, t);
+        if (isLevelEnabled(LogLevel.LOG_LEVEL_WARN)) {
+            log(LogLevel.LOG_LEVEL_WARN, message, t);
         }
     }
 
@@ -416,9 +407,8 @@ public class LogToErrImpl implements LogToErr, Log, LogMessage, LogLevel, Serial
      * <p> Log a message with error log level.</p>
      */
     public final void error(Object message) {
-
-        if (isLevelEnabled(LogToErr.LOG_LEVEL_ERROR)) {
-            log(LogToErr.LOG_LEVEL_ERROR, message, null);
+        if (isLevelEnabled(LogLevel.LOG_LEVEL_ERROR)) {
+            log(LogLevel.LOG_LEVEL_ERROR, message, null);
         }
     }
 
@@ -427,9 +417,8 @@ public class LogToErrImpl implements LogToErr, Log, LogMessage, LogLevel, Serial
      * <p> Log an error with error log level.</p>
      */
     public final void error(Object message, Throwable t) {
-
-        if (isLevelEnabled(LogToErr.LOG_LEVEL_ERROR)) {
-            log(LogToErr.LOG_LEVEL_ERROR, message, t);
+        if (isLevelEnabled(LogLevel.LOG_LEVEL_ERROR)) {
+            log(LogLevel.LOG_LEVEL_ERROR, message, t);
         }
     }
 
@@ -438,9 +427,8 @@ public class LogToErrImpl implements LogToErr, Log, LogMessage, LogLevel, Serial
      * <p> Log a message with fatal log level.</p>
      */
     public final void fatal(Object message) {
-
-        if (isLevelEnabled(LogToErr.LOG_LEVEL_FATAL)) {
-            log(LogToErr.LOG_LEVEL_FATAL, message, null);
+        if (isLevelEnabled(LogLevel.LOG_LEVEL_FATAL)) {
+            log(LogLevel.LOG_LEVEL_FATAL, message, null);
         }
     }
 
@@ -449,9 +437,8 @@ public class LogToErrImpl implements LogToErr, Log, LogMessage, LogLevel, Serial
      * <p> Log an error with fatal log level.</p>
      */
     public final void fatal(Object message, Throwable t) {
-
-        if (isLevelEnabled(LogToErr.LOG_LEVEL_FATAL)) {
-            log(LogToErr.LOG_LEVEL_FATAL, message, t);
+        if (isLevelEnabled(LogLevel.LOG_LEVEL_FATAL)) {
+            log(LogLevel.LOG_LEVEL_FATAL, message, t);
         }
     }
 
@@ -465,7 +452,7 @@ public class LogToErrImpl implements LogToErr, Log, LogMessage, LogLevel, Serial
      */
     public final boolean isDebugEnabled() {
 
-        return isLevelEnabled(LogToErr.LOG_LEVEL_DEBUG);
+        return isLevelEnabled(LogLevel.LOG_LEVEL_DEBUG);
     }
 
 
@@ -478,7 +465,7 @@ public class LogToErrImpl implements LogToErr, Log, LogMessage, LogLevel, Serial
      */
     public final boolean isErrorEnabled() {
 
-        return isLevelEnabled(LogToErr.LOG_LEVEL_ERROR);
+        return isLevelEnabled(LogLevel.LOG_LEVEL_ERROR);
     }
 
 
@@ -491,7 +478,7 @@ public class LogToErrImpl implements LogToErr, Log, LogMessage, LogLevel, Serial
      */
     public final boolean isFatalEnabled() {
 
-        return isLevelEnabled(LogToErr.LOG_LEVEL_FATAL);
+        return isLevelEnabled(LogLevel.LOG_LEVEL_FATAL);
     }
 
 
@@ -504,7 +491,7 @@ public class LogToErrImpl implements LogToErr, Log, LogMessage, LogLevel, Serial
      */
     public final boolean isInfoEnabled() {
 
-        return isLevelEnabled(LogToErr.LOG_LEVEL_INFO);
+        return isLevelEnabled(LogLevel.LOG_LEVEL_INFO);
     }
 
     /**
@@ -516,7 +503,7 @@ public class LogToErrImpl implements LogToErr, Log, LogMessage, LogLevel, Serial
      */
     public final boolean isTraceEnabled() {
 
-        return isLevelEnabled(LogToErr.LOG_LEVEL_TRACE);
+        return isLevelEnabled(LogLevel.LOG_LEVEL_TRACE);
     }
 
     /**
@@ -528,7 +515,7 @@ public class LogToErrImpl implements LogToErr, Log, LogMessage, LogLevel, Serial
      */
     public final boolean isWarnEnabled() {
 
-        return isLevelEnabled(LogToErr.LOG_LEVEL_WARN);
+        return isLevelEnabled(LogLevel.LOG_LEVEL_WARN);
     }
 
 
@@ -543,6 +530,18 @@ public class LogToErrImpl implements LogToErr, Log, LogMessage, LogLevel, Serial
          outstream.println(message.toString());
     }
 
+
+    /**
+     * <p> Log an error with message log level. </p>
+     * <p> Same as info messages but without Labels.</p>
+     *
+     * @param message log this message
+     */
+    public void err(Object message) {
+          err(message,null);
+    }
+
+
     /**
      * <p> Log an error with message log level. </p>
      * <p> Same as info messages but without Labels.</p>
@@ -552,7 +551,9 @@ public class LogToErrImpl implements LogToErr, Log, LogMessage, LogLevel, Serial
      */
     public void err(Object message, Throwable t) {
           outstream.println(message.toString());
-          t.printStackTrace(outstream);
+          if (t!=null){
+              t.printStackTrace(outstream);
+          }
     }
 
     /**

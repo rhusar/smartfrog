@@ -40,6 +40,14 @@ public interface LogMessage {
      */
     public void out(Object message);
 
+    /**
+     * <p> Log an error with message log level. </p>
+     * <p> Same as info messages but without Labels.</p>
+     *
+     * @param message log this message
+     */
+    public void err(Object message);
+
 
     /**
      * <p> Log an error with message log level. </p>

@@ -118,7 +118,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
                 method.invoke(localLog,args);
         }catch (Throwable thr){
             if (localLog!=null)
-                     localLog.trace("",thr);
+                     localLog.error("Error Invoke LogImpl",thr);
                  else thr.printStackTrace();
         }
         //Registered logs
@@ -165,6 +165,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
                                    , logLevel
                                    , (String)classComponentDescription.sfResolve(new Reference("localLoggerClass"))
                                    , getSfCodeBase(classComponentDescription));
+            setLevel(logLevel.intValue());
         } catch (Exception ex ){
             localLog=new LogToFileImpl(name,new Integer(currentLogLevel));
             localLog.warn("Error init localLog for LogImpl",ex);
@@ -297,9 +298,10 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      *
      * @param logLevel is this level enabled?
      */
-    protected boolean isLevelEnabled(int logLevel) {
+    public boolean isLevelEnabled(int logLevel) {
         // log level are numerically ordered so can use simple numeric
         // comparison
+        //System.out.println("LogImpl: Current "+currentLogLevel+", compared "+logLevel);
         return (logLevel >= currentLogLevel);
     }
 
@@ -634,6 +636,17 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
         }
     }
 
+    /**
+     * <p> Log an error with message log level. </p>
+     * <p> Same as info messages but without Labels.</p>
+     *
+     * @param message log this message
+     * @param t log this cause
+     */
+    public void err(Object message){
+        Throwable thrNull = null;
+        err (message, (Throwable)thrNull);
+    }
 
     /**
      * <p> Log an error with message log level. </p>
@@ -649,7 +662,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
                     ((LogMessage)localLog).err(message, t);
                 } else {
                     System.err.println(message.toString());
-                    t.printStackTrace();
+                    if (t != null){t.printStackTrace();}
                 }
             }
         }catch (Throwable thr){
@@ -701,7 +714,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * @param t log this cause
      */
     public void err(Object message, SmartFrogException t){
-      err(message,t);
+      err(message,(Throwable)t);
     }
 
 

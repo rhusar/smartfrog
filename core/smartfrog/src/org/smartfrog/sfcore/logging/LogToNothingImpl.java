@@ -112,7 +112,7 @@ public class LogToNothingImpl implements LogToErr, Log, LogMessage, LogLevel, Se
      *
      * @param logLevel is this level enabled?
      */
-    protected boolean isLevelEnabled(int logLevel) {
+    public boolean isLevelEnabled(int logLevel) {
         // log level are numerically ordered so can use simple numeric
         // comparison
         return false;
@@ -299,6 +299,18 @@ public class LogToNothingImpl implements LogToErr, Log, LogMessage, LogLevel, Se
          outstream.println(message.toString());
     }
 
+
+    /**
+     * <p> Log an error with message log level. </p>
+     * <p> Same as info messages but without Labels.</p>
+     *
+     * @param message log this message
+     */
+    public void err(Object message) {
+          outstream.println(message.toString());
+    }
+
+
     /**
      * <p> Log an error with message log level. </p>
      * <p> Same as info messages but without Labels.</p>
@@ -330,7 +342,7 @@ public class LogToNothingImpl implements LogToErr, Log, LogMessage, LogLevel, Se
      * @param t log this cause
      */
     public void err(Object message, SmartFrogException t) {
-        err(message, t);
+        err(message, (Throwable)t);
     }
 
 }

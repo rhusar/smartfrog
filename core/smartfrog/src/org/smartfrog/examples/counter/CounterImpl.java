@@ -120,6 +120,52 @@ public class CounterImpl extends PrimImpl implements Prim, Counter, Runnable {
     RemoteException {
         super.sfStart();
         log("sfStart", "Starting with msg-" + message);
+        System.out.println("********Temporal test for logging*************");
+        if (logApp.isTraceEnabled()){
+          System.out.println("TRACE:"+message);
+          logApp.trace(message);
+          System.out.println();
+        }
+        if (logApp.isDebugEnabled()){
+          System.out.println("DEBUG:"+message);
+          logApp.debug(message);
+          System.out.println();
+        }
+        if (logApp.isInfoEnabled()){
+          System.out.println("INFO:"+message);
+          logApp.info(message);
+          System.out.println();
+        }
+
+        if (logApp.isWarnEnabled()){
+          System.out.println("WARN:"+message);
+          logApp.warn(message);
+          System.out.println();
+        }
+
+        if (logApp.isErrorEnabled()){
+          System.out.println("ERROR:"+message);
+          logApp.error(message);
+          System.out.println();
+        }
+        if (logApp.isFatalEnabled()){
+          System.out.println("FATAL:"+message);
+          logApp.fatal(message);
+          System.out.println();
+        }
+
+        if (logApp.isInfoEnabled()){
+          System.out.println(".out:"+message);
+          logApp.out(message);
+          System.out.println();
+          System.out.println(".err:"+message);
+          logApp.err(message);
+          logApp.err(message+1,null);
+          System.out.println();
+        }
+
+        System.out.println("******************************");
+
         action = new Thread(this);
         action.start();
     }
@@ -234,6 +280,32 @@ public class CounterImpl extends PrimImpl implements Prim, Counter, Runnable {
                 logApp.out(messageSt);
                 logCore.info(messageSt);
                 logApp.info(messageSt);
+
+//                if (logApp.isTraceEnabled()){
+//                  logApp.trace(messageSt);
+//                }
+//                if (logApp.isDebugEnabled()){
+//                  System.out.print("DEBUG: messageSt");
+//                  logApp.debug(messageSt);
+//                }
+//                if (logApp.isInfoEnabled()){
+//                  logApp.info(messageSt);
+//                }
+//
+//                if (logApp.isWarnEnabled()){
+//                  logApp.warn(messageSt);
+//                }
+//
+//
+//                if (logApp.isErrorEnabled()){
+//                  logApp.fatal(messageSt);
+//                }
+//                if (logApp.isFatalEnabled()){
+//                  logApp.fatal(messageSt);
+//                }
+
+
+
                 if(sleeptime>0) {
                     Thread.sleep(sleeptime);
 

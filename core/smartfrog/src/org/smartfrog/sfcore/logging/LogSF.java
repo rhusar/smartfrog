@@ -31,29 +31,6 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
  */
 public interface LogSF extends Log, LogMessage, LogLevel {
 
-    /** "IGNORE" level logging. */
-    public static final int LOG_LEVEL_IGNORE  = 0;
-    /** "Trace" level logging. */
-    public static final int LOG_LEVEL_TRACE  = 1;
-    /** "Debug" level logging. */
-    public static final int LOG_LEVEL_DEBUG  = 2;
-    /** "Info" level logging. */
-    public static final int LOG_LEVEL_INFO   = 3;
-    /** "Warn" level logging. */
-    public static final int LOG_LEVEL_WARN   = 4;
-    /** "Error" level logging. */
-    public static final int LOG_LEVEL_ERROR  = 5;
-    /** "Fatal" level logging. */
-    public static final int LOG_LEVEL_FATAL  = 6;
-
-    /** Enable all logging levels */
-    public static final int LOG_LEVEL_ALL    = (LOG_LEVEL_IGNORE - 1);
-
-    /** Enable no logging levels */
-    public static final int LOG_LEVEL_OFF    = (LOG_LEVEL_FATAL + 1);
-
-
-
 
     /**
      * <p> Set logging level. </p>
