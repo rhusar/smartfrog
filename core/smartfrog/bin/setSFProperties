@@ -12,9 +12,9 @@ export SFDEFAULTINI="-Dorg.smartfrog.iniFile=$SFHOME/bin/default.ini"
 export SFDEFAULTSF="-Dorg.smartfrog.sfcore.processcompound.sfDefault.sfDefault=$SFHOME/bin/default.sf"
 
 # -- Dynamic classloading: CODEBASE --
-# export SERVER=localhost:8080
-# export CODEBASE="http://$SERVER/sfExamples.jar" 
-# export SFCODEBASE="-Dorg.smartfrog.codebase=$CODEBASE" 
+export SERVER=localhost:8080
+export CODEBASE="http://$SERVER/sfExamples.jar" 
+export SFCODEBASE="-Dorg.smartfrog.codebase=$CODEBASE" 
 
 # -- Security properties --
 #export SFSECURITY="-Djava.security.policy==$SFHOME/private/sf.policy -Djava.security.manager -Dorg.smartfrog.sfcore.security.keyStoreName=$SFHOME/private/mykeys.st -Dorg.smartfrog.sfcore.security.propFile=$SFHOME/private/SFSecurity.properties"
@@ -34,11 +34,11 @@ if test "$SFCODEBASE"; then
 	export SFCMDPARAMETERS="$SFCMDPARAMETERS $SFCODEBASE"
 fi
 
+export SFLIBPATH=$SFHOME/lib 
 if test "$SFSECURITY"; then
 	export SFLIBPATH=$SFHOME/signedLib
 fi
 
-export SFLIBPATH=$SFHOME/lib 
 for i in $SFLIBPATH/*.jar; do CLASSPATH=$i:$CLASSPATH; done
 export CLASSPATH
 
