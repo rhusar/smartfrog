@@ -24,30 +24,25 @@ For more information: www.smartfrog.org
 
 Example extends Sequence {
     actions extends LAZY {
-        /*
         Foo extends Prim {
-        sfClass "org.smartfrog.services.email.EmailerTest";
-        sfProcessHost "ebnt171.india.hp.com";
-        sfProcessComponentName "Foo";
+        	sfClass "org.smartfrog.services.email.EmailerTest";
+        	sfProcessHost "eb97201.india.hp.com";
+        	sfProcessComponentName "Foo";
         }
         Bar extends Prim {
-            sfClass "org.smartfrog.services.email.EmailerTest";
-            sfProcessHost "ebnt17.india.hp.com";
-            sfProcessComponentName "Bar";
+            	sfClass "org.smartfrog.services.email.EmailerTest";
+            	sfProcessHost "eb97201.india.hp.com";
+            	sfProcessComponentName "Bar";
         }
-        */
-        mailer extends Emailer {
+       mailer extends Emailer {
                 // mail will be send when mailer executes as part of work-flow
                 runAsWorkFlowComponent true; 
-                to "awasthi@india.hp.com";
+                to "ritu@india.hp.com";
+		from "smartfrog@india.hp.com";
                 message "This is a test message \n thanks";
                 subject "SF Emailer Test";
-                smtpHost "SMTP.india.hp.com";     // SMTP host name
-
-                // vector of attachments each element is relative or 
-                // absolute path to files 
-                attachments ["common.xml","build.xml"];
-        }
+                smtpHost "stash.india.hp.com";     // SMTP host name
+       }
     }
 }
 sfConfig extends Example;

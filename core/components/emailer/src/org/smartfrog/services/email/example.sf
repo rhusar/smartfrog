@@ -23,6 +23,8 @@ For more information: www.smartfrog.org
 
 Example extends Compound {
     mailer extends Emailer {
+	to "ritu@india.hp.com";
+	from "smartfrog@india.hp.com";
         smtpHost "mysmtphost.india.hp.com";
         runAsWorkFlowComponent false; 
     }
