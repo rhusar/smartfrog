@@ -168,7 +168,7 @@ public class FilterImpl extends Thread {
           }
           // This trace is very useful for debugging but now application output
           if (sfLog.isInfoEnabled()){
-            sfLog.info( ID  + " -- " + line );
+            sfLog.info(line );
           }
 
           //
@@ -182,7 +182,7 @@ public class FilterImpl extends Thread {
               buffer.wait();
             } catch (InterruptedException e) {
               if (sfLog.isErrorEnabled()){
-                sfLog.error("run" + ID +" -- interrupted while waiting for more output", e);
+                sfLog.error("interrupted while waiting for more output", e);
               }
             }
 //            finally {
@@ -193,7 +193,7 @@ public class FilterImpl extends Thread {
       }
     } catch (Throwable t) {
       if (sfLog.isErrorEnabled()){
-        sfLog.error(ID + " -- failed to read input buffer", t);
+        sfLog.error("failed to read input buffer", t);
       }
     }
 
@@ -203,11 +203,11 @@ public class FilterImpl extends Thread {
       bufferFiller.join();
     } catch (Exception e) {
       if (sfLog.isErrorEnabled()){
-        sfLog.error("run" + ID + " -- problems stooped buffer filler", e);
+        sfLog.error("problems stoped buffer filler", e);
       }
     }
     if (sfLog.isInfoEnabled()){
-      sfLog.info("run" + ID + " -- buffer filler stopped");
+      sfLog.info("buffer filler stopped");
     }
   }
 

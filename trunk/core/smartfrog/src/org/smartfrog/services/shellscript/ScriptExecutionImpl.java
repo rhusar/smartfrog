@@ -81,7 +81,16 @@ public class ScriptExecutionImpl  extends PrimImpl implements Prim, ScriptExecut
       super.sfDeploy();
       readSFAttributes();
       runProcess = new RunProcessImpl (ID, name, cmd);
-      runProcess.run();
+      ((RunProcessImpl) runProcess).start();
+
+      if (!runProcess.ready()){
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException ex) {
+        }
+          //throw new SmartFrogException("Process '"+ID+" "+name+" "+cmd+"' not ready",this);
+      }
+      //@TODO add a waitfor state processing, just in case program fails.
   }
   /**
   *  This sets a flag that will start the httpd process running.
@@ -91,6 +100,8 @@ public class ScriptExecutionImpl  extends PrimImpl implements Prim, ScriptExecut
   */
  public synchronized void sfStart() throws SmartFrogException,RemoteException {
      super.sfStart();
+     runProcess.execCommand("dir");
+     runProcess.execCommand("exit");
      //@Todo: if defined we could run an initial set of commands here
      // execute(commands,timeout);
  }
@@ -103,6 +114,9 @@ public class ScriptExecutionImpl  extends PrimImpl implements Prim, ScriptExecut
   */
  public synchronized void sfTerminateWith(TerminationRecord tr) {
      try {
+         if (sfLog().isDebugEnabled()){
+             sfLog().debug("Terminating.",null,tr);
+          }
          if (runProcess != null) {
              runProcess.kill();
              runProcess = null;
@@ -117,10 +131,9 @@ public class ScriptExecutionImpl  extends PrimImpl implements Prim, ScriptExecut
 
 
   /**
-   * @throws SmartFrogException if the lock object is not valid, i.e.
    *
    * @throws SmartFrogException if the lock object is not valid, i.e. if it is
-   *   not currently holding the l0ck
+   *   not currently holding the lock
    * @param command String
    * @param lock ScriptLock
    * @return ScriptResults
@@ -130,9 +143,8 @@ public class ScriptExecutionImpl  extends PrimImpl implements Prim, ScriptExecut
   public ScriptResults execute(String command, ScriptLock lock) throws
       SmartFrogException {
     if (this.lock!=lock) return null;
-
     // Run cmd in RunProcess setting filters for new listener
-
+    runProcess.execCommand(command);
     return null;
   }
 
