@@ -139,8 +139,212 @@ AxisServiceConfiguration extends AxisService {
     axisServiceConfigurationSchema extends AxisServiceConfigurationSchema;
 }
 
+/**
+
+ in server-config.wsdd, a section like
+ <globalConfiguration>
+    <parameter name="adminPassword" value="admin"/>
+    <parameter name="attachments.Directory" value="c:\temp\attachments"/>
+    <parameter name="sendMultiRefs" value="true"/>
+    <parameter name="sendXsiTypes" value="true"/>
+    <parameter name="attachments.implementation" value="org.apache.axis.attachments.AttachmentsImpl"/>
+    <parameter name="sendXMLDeclaration" value="true"/>
+    <parameter name="enable2DArrayEncoding" value="true"/>
+</globalConfiguration>
+
+ adminPassword  	Adminstrator password, as used by AdminService.
+attachments.Directory 	The directory where attachments end up. This should be in the syntax appropriate for the target platform.
+attachments.implementation 	Name of class that implements attachments support. Default is org.apache.axis.attachments.AttachmentsImpl
+axis.enableListQuery 	Flag to enable the "list the WSDD" feature. Set to false by default, because listing the current system config can expose information (such as the adminservice password) that one does not want widely avaialable.
+axis.disableServiceList 	Flag to disable the list of services feature. Set to false by default, which enables the list of services by the AxisServlet when a GET request is performed on the servlet root.
+axis.Compiler 	Compiler adapter classname for JWS compilation. Default is org.apache.axis.components.compiler.Javac; change this to org.apache.axis.components.compiler.Jikes to invoke jikes instead.
+axis.development.system 	Flag to switch the system from production (false) to development (true). A development system gives out stack traces and other information that production boxes should not.
+axis.xmlEncoding 	Encoding used for XML messages -either UTF-8 (default) or UTF-16
+axis.engineConfigClass 	Name of a class that provides Axis configuration. Implement a new class implementing EngineConfiguration and name it here to use alternate configuration mechanisms.
+axis.jws.servletClassDir 	Path to where compiled JWS pages are placed.
+axis.sendMinimizedElements 	Flag to turn on support for a when .NET1.0 can't correctly handle some bits of XML that it should. The flag defaults to true; if some .NET clients are failing to handle a Web Service returning an empty array inside another object, set this flag to false.
+enable2DArrayEncoding 	Set this to "true" to turn 2D array encoding on; this encoding is incompatible with .NET 1.0: default="false".
+sendMultiRefs 	true/false flag to control whether multirefs are sent or not.
+sendXMLDeclaration 	true/false flag to control whether the <?xml?> declaration is sent in messages
+sendXsiTypes 	true/false flag to enable/disable sending the type of every value sent over the wire. Defaults to true.
+SingleSOAPVersion 	When set to either "1.1" or "1.2", this configures the engine to only accept the specified SOAP version. Attempts to connect to the engine using another version will result in a fault.
+use-servlet-security 	Set this flag to hand authentication off to the servlet container.
+*/
+
+AxisGlobalConfigurationSchema extends Schema {
+    //reference to axis
+    axis extends CD;
+    adminPassword extends OptionalString;
+    xmlEncodingIsUTF16 extends Boolean;
+    sendMinimizedElements extends Boolean;
+    enable2DArrayEncoding extends Boolean;
+    sendMultiRefs extends Boolean;
+    sendXMLDeclaration extends Boolean;
+    sendXsiTypes extends Boolean;
+    developmentSystem extends Boolean;
+    //string or file
+    attachmentsDirectory extends OptionalReference;
+    attachmentsImplementation extends OptionalString;
+    //string or file
+    jwsServletClassDir  extends OptionalReference;
+    singleSOAPVersion extends OptionalBoolean;
+    useServletSecurity extends OptionalBoolean;
+}
+
+/**
+ * the base implementation is .NET 1.0 compatible and assumes debug mode
+
+ */
+AxisGlobalConfiguration extends Prim {
+    xmlEncodingIsUTF16 false;
+    sendMinimizedElements false;
+    enable2DArrayEncoding false;
+    sendMultiRefs true;
+    sendXMLDeclaration true;
+    sendXsiTypes true;
+    //usability depends on dev system flag
+    developmentSystem true;
+    enableListQuery developmentSystem;
+    disableServiceList not(developmentSystem);
+}
+
+
+/**
+ * this is the schema of a deployment descriptor
+ */
+WsddDescriptorSchema extends Schema {
+
+ //begin attributes
+
+    /*
+    The provider for the service.
+    The recognized providers are: java:RPC, java:MSG, java:EJB, java:COM, java:BSF, java:CORBA, java:RMI
+    and "Handler" where xmlns:java="http://xml.apache.org/axis/wsdd/providers/java".
+    The RPC provider supports both rpc/encoded, document/literal and wrapped/literal services.
+    the MSG provider supports the 'fixed signature' service which takes XML in and returns XML our directly.
+    The other providers must be built in to Axis. See the code in org.apache.axis.providers.
+    */
+    provider extends String;
+    style  extends String;
+    use  extends String;
+    /*
+     This turns on or off the streaming mode of the XML deserializer.
+     The default is currently off.
+     Certain Axis functionality may not function properly if this is turned on. Use with caution.
+     */
+    streaming extends Boolean;
+
+    /*
+
+    Valid values are "MIME" for SOAP with attachements (SwA),
+        "DIME" for DIME support and
+        "NONE" for no attachement support at all.
+        The default mode of Axis is to use MIME attachements (SwA).
+    */
+    attachment  extends String;
+
+  //end attributes
+
+  //begin nested elements
+
+    /*
+    The path to a WSDL File; can be an absolute path or a resource
+    that axis.jar can load.
+    Useful to export your custom WSDL file.
+    When specifying a path to a resource, place a forward slash to start
+    at the beginning of the classpath (e.g "/org/someone/res/mywsdl.wsdl").
+    How does Axis know whether to return a file or resource? It looks for a file first, if that is missing a resource is returned.
+    */
+  wsdlFile extends OptionalString;
+
+    /*
+    Documentation text that will get inserted in to the document element of the WSDL for the service
+    */
+
+  documentation extends OptionalString;
+
+    /*
+       Specify the endpoint URL of the service, which will override the
+       transport level URL created by the Axis servlet.
+       This is useful if you have a proxy handling requests and you need the
+       endpoint URL to reflect a different hostname than the one Axis is executing on.
+       */
+
+   endpointURL extends OptionalString;
+
+   /*
+   the default namespace for the service
+   */
+   namespace extends OptionalString;
+
+  /*
+<handlerInfoChain>
+
+Specify the JAX RPC handler chain for this service.
+
+In addition, as described above, the <requestFlow> and/or <responseFlow> elements are also allowed in the service element.
+*/
+
+/*
+these are all  <parameter name="allowedMethods" value="*"/> style options
+
+className  	The fully qualified name of the implemenation class of the service.
+allowedMethods 	A space or comma seperated list of method names, or "*" for all methods in the service class. If this parameter isn't specified, all methods ("*") is the default.
+wsdlPortType 	The name of the portType element in the generated WSDL for the service.
+wsdlServiceElement 	The name of the Service element in the generated WSDL for the service.
+wsdlServicePort 	The name of the port in the generated WSDL for the service.
+wsdlTargetNamespace 	The target namespace in the generated WSDL for the service.
+wsdlInputSchema 	A comma separated list of of input Schema for the generated WSDL for the service.
+wsdlSoapActionMode 	Values are DEFAULT, OPERATION or NONE. OPERATION forces soapAction to the name of the operation. DEFAULT causes the soapAction to be set according to the operations meta data, specifically the soapAction attribute of the operation in the deployment information. NONE forces the soapAction to "". The default is DEFAULT.
+wsdlSoapActionMode 	When set to either "1.1" or "1.2", this configures a service to only accept the specified SOAP version. Attempts to connect to the service using another version will result in a fault.
+*/
+
+    className extends OptionalString;
+
+    allowedMethods TBD;
+
+    wsdlPortType extends OptionalString;
+
+    wsdlServiceElement extends OptionalString;
+    wsdlServicePort extends OptionalString;
+    wsdlTargetNamespace extends OptionalString;
+    wsdlInputSchema extends OptionalString;
+    wsdlSoapActionMode extends OptionalString;
+    wsdlSoapActionMode extends OptionalString;
+
+
+
+}
 
 
 
 
+WsddDescriptor extends Compound {
+    wsddDescriptorSchema extends WsddDescriptorSchema;
+    provider "java:RPC";
+    streaming false;
+    attachment "MIME";
+}
 
+RpcEncDescriptor extends WsddDescriptor {
+    style "rpc";
+    use "encoded";
+}
+
+DocLitDescriptor extends WsddDescriptor {
+    style "document";
+    use "literal";
+}
+
+/**
+ * wrapped is how .NET works; it is doc/lit with a different class binding
+ */
+WrappedDescriptor extends WsddDescriptor {
+    style "wrapped";
+    use "literal";
+}
+
+
+TypeMappingElementSchema extends Schema {
+
+}
