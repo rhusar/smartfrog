@@ -1,9 +1,0 @@
-smartfrog.jpx
-*.jpx
-build
-dist
-build.properties
-runtime.properties
-*.ipr
-*.iml
-*.iws
