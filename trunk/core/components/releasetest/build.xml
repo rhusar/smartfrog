@@ -24,25 +24,32 @@ For more information: www.smartfrog.org
 -->
 
 <description>
-    Build file for releasetest SmartFrog component.
+    Build file for releasetest SmartFrog components.
 </description>
 
    <!-- override point -->
   <property file="build.properties" />
 
-      
+<!--    <property name="releasetest.lib.dir" location="lib" description=
+                        "place to put third party libraries"/> -->
+       
   
   <property name="root.dir" location="../.."  />
     <!-- Import common stuff -->
   <import file="${root.dir}/common.xml"/>
   
+ 
+
   
   <!-- ========================================================== -->
   <!-- ========================================================== -->
-  <target name="init" depends="init-standard-output-dirs,use-smartfrog-tasks">
+  <target name="init" depends="init-standard-output-dirs">
           
-   
-    <!-- the compile time path includes axis-->
+<!--     <property name="target.jar" 
+        location="${dist.lib.dir}/releasetestComponents.jar" /> -->
+    
+    
+    <!-- the compile time path includes releasetest-->
 <!--     <path id="compile.classpath">
       <path refid="smartfrog.classpath"/>
       <fileset dir="${releasetest.lib.dir}">
@@ -53,18 +60,33 @@ For more information: www.smartfrog.org
     <path id="run.classpath">
       <path refid="compile.classpath"/>
       <path location="${target.jar}" />
-    </path>  
- -->    
+    </path>   -->
+    
   </target>
-
+  
+  
   <!-- ========================================================== -->
   <!-- create the jar -->
   <!-- ========================================================== -->
   <target name="dist" depends="common.dist" 
     description="create the jar files">
-    <copy todir = "${dist.lib.dir}">
-        <fileset dir ="${lib.dir}" />
-    </copy>          
+    <!--copy toDir = "${dist.lib.dir}">
+        <fileset dir ="${lib.dir}">
+            <include name = "**/*.jar"/>
+        </fileset>    
+    </copy -->
   </target>
+
+  <!-- ========================================================== -->
+  <!-- override: copy in the releasetest files too -->
+  <!-- ========================================================== -->
+  <target name="install" depends="dist">
+      <copy toDir = "${smartfrog.dist.lib.dir}">
+        <fileset dir ="${dist.lib.dir}"> 
+            <include name = "**/*.jar"/>
+        </fileset>    
+    </copy>
+  </target>
+
 
 </project>
