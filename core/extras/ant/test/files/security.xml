@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<project name="security">
+
+<description>
+ Tests for starting security
+ 
+ command line invocation
+
+
+ant -lib ../../build/dist/lib/smartfrog-tasks.jar -lib ../../../../smartfrog/dist/lib/smartfrog.jar -lib ../../../../smartfrog/dist/lib/sfExamples.jar -f security.xml testResource
+ant -lib ..\..\build\dist\lib\smartfrog-tasks.jar -lib ..\..\..\..\smartfrog\dist\lib\smartfrog.jar -lib ..\..\..\..\smartfrog\dist\lib\sfExamples.jar -f security.xml testResource
+
+</description>
+
+  <import file="test-common.xml" />
+  
+  
