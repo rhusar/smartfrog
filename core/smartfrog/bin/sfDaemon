@@ -7,4 +7,11 @@ fi
 
 for i in $SFHOME/lib/*.jar; do CLASSPATH=$i:$CLASSPATH; done
 export CLASSPATH
-java -Dorg.smartfrog.iniFile=$SFHOME/bin/default.ini -Dorg.smartfrog.sfcore.processcompound.sfDefault.sfDefault=$SFHOME/bin/default.sf -Dorg.smartfrog.sfcore.processcompound.sfProcessName=rootProcess org.smartfrog.SFSystem $*
+
+. $SFHOME/bin/setSFProperties
+if test $SFDEFAULTSF;
+then
+   export SFCMDPARAMETERS="$SFCMDPARAMETERS $SFDEFAULTSF"
+fi
+
+java -Dorg.smartfrog.sfcore.processcompound.sfProcessName=rootProcess $SFCMDPARAMETERS org.smartfrog.SFSystem $*

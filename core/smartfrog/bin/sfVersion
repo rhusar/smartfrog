@@ -3,4 +3,8 @@ if ! test $SFHOME; then export SFHOME=$PWD; fi
 
 for i in $SFHOME/lib/*.jar; do CLASSPATH=$i:$CLASSPATH; done
 export CLASSPATH
-java  org.smartfrog.Version
+
+. $SFHOME/bin/setSFProperties
+
+echo "SmartFrog Version:"
+java  $SFCMDPARAMETERS org.smartfrog.Version
