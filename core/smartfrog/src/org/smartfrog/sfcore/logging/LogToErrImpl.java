@@ -55,7 +55,7 @@ import java.util.Date;
 public class LogToErrImpl implements LogToErr, Log, LogMessage, LogLevel, Serializable {
 
   //Configuration for LogImpl class
-   ComponentDescription classComponentDescription = null;
+   protected ComponentDescription classComponentDescription = null;
 
   /** Include the instance name in the log message? */
   protected boolean showLogName = true;
@@ -101,7 +101,7 @@ public class LogToErrImpl implements LogToErr, Log, LogMessage, LogLevel, Serial
     private static CallDetective detective = CallDetective.Factory.makeCallDetective();
 
     /** Depth in StackTrace it will depend on how this Log is used and connected to LogImpl */
-    int callDepth = 8;
+    protected int callDepth = 8;
 
     /** output stream to print to. Bonded at construct time, and usually system.err unless
      * otherwise chosen
@@ -126,7 +126,7 @@ public class LogToErrImpl implements LogToErr, Log, LogMessage, LogLevel, Serial
      * Construct a simple log with given name and log level
      * and log to output level
      * @param name log name
-     * @param intialLogLevel level to log at
+     * @param initialLogLevel level to log at
      */
     public LogToErrImpl(String name, Integer initialLogLevel) {
        this(name,initialLogLevel,System.err);
@@ -136,7 +136,7 @@ public class LogToErrImpl implements LogToErr, Log, LogMessage, LogLevel, Serial
      * Construct a simple log with given name and log level
      * and log to output level
      * @param name log name
-     * @param intialLogLevel level to log at
+     * @param initialLogLevel level to log at
      * @param out output stream to log to
      */
 
@@ -168,7 +168,6 @@ public class LogToErrImpl implements LogToErr, Log, LogMessage, LogLevel, Serial
      *  Reads optional and mandatory attributes.
      *
      * @exception  SmartFrogException error while reading attributes
-     * @exception  RemoteException In case of network/rmi error
      */
     protected void readSFAttributes() throws SmartFrogException {
         if (classComponentDescription==null) return;
