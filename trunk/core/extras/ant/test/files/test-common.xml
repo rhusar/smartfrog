@@ -11,7 +11,7 @@
 
    <property name="timeout"   value="10000" />
    <property name="long.timeout"   value="20000" />
-   <property name="medium.timeout"   value="15000" />
+   <property name="medium.timeout"   value="10000" />
   
    <presetdef name="sf-block">
        <waitfor maxwait="10" maxwaitunit="second">
