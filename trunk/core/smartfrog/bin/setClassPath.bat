@@ -6,7 +6,7 @@ if defined SFHOME goto continue1
   cd bin
 :continue1
 
-set CLASSPATH=
+rem set CLASSPATH=  (This is reset in setSFProperties.bat)
 set cd=
 for /f "tokens=*" %%i in (
  'dir /s /b "%SFLIBPATH%\*.jar"'
@@ -24,10 +24,3 @@ goto :EOF
 
 :MORE
 
-if not defined SFUSERHOME goto continue2
-  set SFLIBPATH=%SFUSERHOME%
-  set SFUSERHOME=
-  CALL "%SFHOME%\bin\setClassPath.bat"
-:continue2
-
-if defined srcDir set CLASSPATH=%srcDir%;%classpath%
