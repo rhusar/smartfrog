@@ -29,6 +29,8 @@ import org.apache.tools.ant.BuildException;
  * named 'rootProcess'.
  * By default this target raises an error when the daemon cannot be stopped,
  * @author steve loughran
+ * @ant.task category="SmartFrog" name="sf-stopdaemon"
+ *
  */
 public class StopDaemon extends SmartFrogTask {
 

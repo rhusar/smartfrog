@@ -22,7 +22,8 @@ package org.smartfrog.tools.ant;
 import org.apache.tools.ant.BuildException;
 
 /**
- * unload any smartfrog application
+ * Undeploy any smartfrog application from a running daemon.
+ * @ant.task category="SmartFrog" name="sf-undeploy"
  */
 public class StopApplication extends SmartFrogTask {
 

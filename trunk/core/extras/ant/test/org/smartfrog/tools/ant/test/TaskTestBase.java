@@ -67,7 +67,38 @@ public abstract class TaskTestBase extends BuildFileTest {
      * @param text
      */
     public void assertNotInLog(String text) {
-        assertTrue(text,getLog().indexOf(text)==-1);
+        String log = getLog();
+        boolean found = log.indexOf(text) >= 0;
+        if(found) {
+            System.out.print(log);
+            fail("Did not want to find: "+ text);
+        }
+    }
+
+    /**
+     * Assert that the given substring is in the log messages
+     */
+
+    protected void assertInLog(String text) {
+        String log = getLog();
+        boolean found = log.indexOf(text) >=0;
+        if (!found) {
+            System.out.println("not found:");
+            System.out.println(text);
+            System.out.println(" log was:-");
+            System.out.print(log);
+            String errorText = "not found: \"" + text + "\" log was \""
+                    + log + "\"";
+            fail(errorText);
+        }
+    }
+
+    /**
+     * for overrides
+     * @param text
+     */
+    protected void assertLogContaining(String text) {
+        assertInLog(text);
     }
 
     /**
@@ -78,7 +109,7 @@ public abstract class TaskTestBase extends BuildFileTest {
      */
     public void expectExceptionWithLogContaining(String target,String log,String cause) {
         expectBuildException(target,cause);
-        assertLogContaining(log);
+        assertInLog(log);
     }
 
     public void expectExceptionWithLogContaining(String target, String log) {
@@ -86,11 +117,12 @@ public abstract class TaskTestBase extends BuildFileTest {
     }
 
     public void assertRootProcessInLog() {
-        assertLogContaining("[rootProcess]");
+        assertInLog("[rootProcess]");
     }
 
     protected void assertDeployed(String s) {
-        assertLogContaining("Successfully deployed");
-        assertLogContaining(s);
+        assertInLog("Successfully deployed");
+        assertInLog(s);
     }
+
 }

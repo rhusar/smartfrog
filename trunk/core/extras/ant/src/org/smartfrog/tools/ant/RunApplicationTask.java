@@ -25,6 +25,7 @@ import org.apache.tools.ant.BuildException;
 
 /**
  * Run an application by deploying it locally; only return from ant after it has finished.
+ * @ant.task category="SmartFrog" name="sf-run"
  */
 public class RunApplicationTask extends DeployingTaskBase {
 
