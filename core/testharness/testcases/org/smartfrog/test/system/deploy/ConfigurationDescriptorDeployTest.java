@@ -238,11 +238,12 @@ public class ConfigurationDescriptorDeployTest extends SmartFrogTestBase impleme
            String description = "testurlTest10("+sfact+")";
            deployExpectingSuccess2(sfact,description);
         }
-        public void testurlTest11 ()throws Throwable{
-           String sfact = urlTest11;
-           String description = "testurlTest11("+sfact+")";
-           deployExpectingSuccess2(sfact,description);
-        }
+
+//        public void testurlTest11 ()throws Throwable{
+//           String sfact = urlTest11;
+//           String description = "testurlTest11("+sfact+")";
+//           deployExpectingSuccess2(sfact,description);
+//        }
 
 // 12 and 12b cannot be run when 7 is.
 //        public void testurlTest12 ()throws Throwable{

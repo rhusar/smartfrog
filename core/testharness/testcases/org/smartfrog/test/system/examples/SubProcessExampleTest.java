@@ -95,6 +95,8 @@ public void testCaseSPE01 ()throws Throwable
 //		assertEquals("org.smartfrog.services.display.SFDisplay", actualSfClassDLH);
                	Prim displayLOCALHOST = (Prim)foobar.sfResolveHere("displayLOCALHOST");
 		String actualSfClassDLH = (String)displayLOCALHOST.sfResolveHere("sfClass");
+                System.out.println("    Asserting: "+ "org.smartfrog.sfcore.compound.CompoundImpl"
+                                  + " with "+actualSfClassDLH);
 		assertEquals("org.smartfrog.sfcore.sfcore.compound.CompoundImpl", actualSfClassDLH);
 
 	Prim baz = (Prim)sys.sfResolveHere("baz");
@@ -110,9 +112,6 @@ public void testCaseSPE01 ()throws Throwable
 		int expecteddemoD = 3;
 		actualdemoD = demoD.sfResolve("limit",actualdemoD,true);
 		assertEquals(expecteddemoD, actualdemoD);
-
-
-
 
 
 }
