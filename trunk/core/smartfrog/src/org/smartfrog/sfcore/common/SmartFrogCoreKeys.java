@@ -70,6 +70,12 @@ public interface SmartFrogCoreKeys {
     public final static String SF_PROCESS_ALLOW ="sfProcessAllow";
 
     /**
+     * Attribute used to define what  subProcesses attributes to overwrite when
+     * it is deployed
+     */
+    public final static String SF_PROCESS_CONFIG ="sfProcessConfig";
+
+    /**
      * Attribute with subprocess deployment timeout
      */
     public final static String SF_PROCESS_TIMEOUT ="sfProcessTimeout";
