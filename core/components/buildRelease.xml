@@ -47,7 +47,7 @@ To use: ant -f buildRelease release
     <property name="Name.Components" value="SmartFrog Components"/>
     <property name="Name.System" value="components"/>
     <property name="Name.Company" value="(C) Copyright 1998-2004 Hewlett-Packard Development Company, LP"/>
-    <property name="version" value="1.00.000_beta"/>
+    <property name="version" value="@version"/>
     <property name="year" value="2004"/>
 
     <property name="root.dir" location=".."  />
