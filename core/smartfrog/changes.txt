@@ -1,6 +1,7 @@
 release 3.04.008_beta
 ---------------------
 2004-Oct-15 Release date
+2004-Oct-15 Fix: registering  with ProcessCompound
 2004-Oct-15 Fix: sfAddAttribute  @return previous value for name or null if none
 2004-Oct-15 Fix: Schema - vector parsing
 2004-Oct-15 Fix: unamed component registration in remote parent
