@@ -104,6 +104,7 @@ sfConfig extends Sequence {
                     localFile "ebnt171.tar.gz";
                     testHome PARENT:ATTRIB testHome;
                     path PARENT:ATTRIB localPath;
+                    // Please ensure that this file is present before starting the release test component
                     scriptName "c:\\extract.bat";
                 }
             }
