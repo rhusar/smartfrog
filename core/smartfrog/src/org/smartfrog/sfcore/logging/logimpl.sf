@@ -37,9 +37,8 @@ LOG_LEVEL_ALL  0;
 /** No logging */
 LOG_LEVEL_OFF  (LOG_LEVEL_FATAL + 1);
 
-
 LogImpl extends {
-  localLoggerClass "org.smartfrog.sfcore.logging.LogToFile";
-  localLoggerClass "org.smartfrog.sfcore.logging.LogToErr";
+  localLoggerClass "org.smartfrog.sfcore.logging.LogToFileImpl";
+  //localLoggerClass "org.smartfrog.sfcore.logging.LogToErrImpl";
   logLevel LOG_LEVEL_INFO;
 }
