@@ -403,28 +403,10 @@ public class SFProcess implements MessageKeys {
         // This will be used once we refactor ProcessCompound.
         //addDefaultProcessDescriptions (processCompoundDescription);
 
-        Properties props = System.getProperties();
-
-        for (Enumeration e = props.keys(); e.hasMoreElements();) {
-            String key = e.nextElement().toString();
-            if (key.startsWith(SmartFrogCoreProperty.defaultDescPropBase)) {
-
-              // Ignore, will be use to deploy  default descriptions.
-
-            } else if (key.startsWith(SmartFrogCoreProperty.propBaseSFProcess)) {
-                Object value = props.get(key);
-
-                try {
-                    // convert to number
-                    value = Double.valueOf((String) value);
-                } catch (Exception ex) {
-                    // ignore, value is not a number
-                }
-
-                String cxtKey = key.substring(SmartFrogCoreProperty.propBaseSFProcess.length());
-                processCompoundDescription.getContext().put(cxtKey, value);
-            }
-        }
+        // Add system properties
+        processCompoundDescription = ComponentDescriptionImpl.addSystemProperties(
+                                         SmartFrogCoreProperty.propBaseSFProcess
+                                        ,processCompoundDescription);
 
         return processCompoundDescription;
     }
