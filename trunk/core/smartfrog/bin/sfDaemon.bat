@@ -3,7 +3,7 @@ setlocal
 
 if defined SFHOME goto continue1
   if exist "%cd%\sfDaemon.bat" cd ..
-  set SFHOME="%cd%"
+  set SFHOME=%cd%
   cd bin
 :continue1
 
