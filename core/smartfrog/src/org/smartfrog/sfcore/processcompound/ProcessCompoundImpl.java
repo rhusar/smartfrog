@@ -892,14 +892,16 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
             allowProcess = ((Boolean) ap).booleanValue() && sfIsRoot;
         } else {
             allowProcess = false;
-            SmartFrogResolutionException srex =
-            SmartFrogResolutionException.illegalClassType(
-                Reference.fromString(SmartFrogCoreKeys.SF_PROCESS_ALLOW),
-                this.sfCompleteName(),
-                ap,
-                ap.getClass().getName(),
-                "java.lang.Boolean");
-            if (sflog().isErrorEnabled()) sflog().error(srex);
+            if (sflog().isErrorEnabled()) {
+                SmartFrogResolutionException srex =
+                        SmartFrogResolutionException.illegalClassType(
+                                Reference.fromString(SmartFrogCoreKeys.SF_PROCESS_ALLOW),
+                                this.sfCompleteName(),
+                                ap,
+                                ap.getClass().getName(),
+                                "java.lang.Boolean");
+                sflog().error(srex);
+            }
         }
 
         if (!allowProcess) {
