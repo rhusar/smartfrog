@@ -37,7 +37,6 @@ import java.rmi.RemoteException;
 import java.util.Vector;
 import java.util.Enumeration;
 
-import java.lang.String;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.ContextImpl;
