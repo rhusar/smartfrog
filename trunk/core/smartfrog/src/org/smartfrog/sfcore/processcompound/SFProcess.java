@@ -32,6 +32,7 @@ import org.smartfrog.sfcore.common.MessageUtil;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.common.Logger;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.parser.Phases;
 import org.smartfrog.sfcore.parser.SFParser;
@@ -45,7 +46,7 @@ import sun.misc.SignalHandler;
 
 
 /**
- * Access point to the single allowed process compound for a VM. Itholds the 
+ * Access point to the single allowed process compound for a VM. Itholds the
  * single instance of the process compound. It also knows how to get
  * a process compound from a given host and process name by forwarding the
  * request to the process compound on that host. Thirdly it maintains a
@@ -54,19 +55,19 @@ import sun.misc.SignalHandler;
  *
  */
 public class SFProcess implements MessageKeys {
-    /** 
+    /**
      * Single instance of process compound for this process
      */
     protected static ProcessCompound processCompound;
 
     /**
-     * processCompound description 
+     * processCompound description
      */
     protected static ComponentDescription processCompoundDescription;
 
     /**
      * Root locator to get and set the root process compound for this HOST
-     */ 
+     */
     protected static RootLocator rootLocator;
     /**
      * Reference to root locator class.
@@ -81,10 +82,14 @@ public class SFProcess implements MessageKeys {
                 "ProcessCompound");
 
     /**
-     * Base for process compound property names 
+     * Base for process compound property names
      */
     public static String propBase = SFSystem.propBase +
         "sfcore.processcompound.";
+
+
+    private SFProcess (){
+    }
 
     /**
      * Sets the root locator for this process. The root locator will be used to
@@ -234,14 +239,14 @@ public class SFProcess implements MessageKeys {
         Signal.handle(new Signal("INT"), new SignalHandler () {
             public void handle(Signal sig) {
                 try {
-                    // use logger to log the msg TODO
-                    System.out.println(
+                    Logger.log(
                         "Going to terminate the daemon gracefully!!");
                     processCompound.sfTerminate(new TerminationRecord(
                                 "management action",
-                                "sfDaemon forced to terminate ", 
+                                "sfDaemon forced to terminate ",
                                  ((Prim)processCompound).sfCompleteName()));
                 }catch (RemoteException re) {
+                    Logger.log(re);
                     //log and ignore
                 }
             }
