@@ -39,7 +39,7 @@
       <currentbuildstatuspublisher file="../artifacts/currentbuildstatus.txt"/>
 
       <artifactspublisher
-        dir="activities/dist"
+        dir="smartfrog/dist"
         dest="../artifacts" />
 
         <!-- email assumes that localhost is an SMTP server -->
