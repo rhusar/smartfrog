@@ -29,24 +29,24 @@ public class StopApplication extends SmartFrogTask {
     /**
      * name of an app
      */
-    protected String applicationName;
+    protected String application;
 
     public StopApplication() {
         setHost("localhost");
         setFailOnError(true);
     }
-    protected String getApplicationName() {
-        return applicationName;
+    protected String getApplication() {
+        return application;
     }
 
 
     /**
      * set the app name; optional on some actions
      *
-     * @param applicationName
+     * @param application
      */
-    public void setApplicationName(String applicationName) {
-        this.applicationName = applicationName;
+    public void setApplication(String application) {
+        this.application = application;
     }
     /**
      * execution logic
@@ -55,14 +55,11 @@ public class StopApplication extends SmartFrogTask {
      *
      */
     public void execute() throws BuildException {
-        if(applicationName==null) {
-            throw new BuildException("No application to undeploy");
-        }
         setStandardSmartfrogProperties();
         addHostname();
-        addApplicationCommand("-t",applicationName);
+        addApplicationCommand("-t",application);
         addExitFlag();
-        execSmartfrog("failed to terminate "+getApplicationName());
+        execSmartfrog("failed to terminate "+getApplication());
     }
 
     /**

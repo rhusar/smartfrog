@@ -368,8 +368,12 @@ public abstract class SmartFrogTask extends TaskBase {
      *
      * @param command
      * @param name
+     * @throws BuildException if there is no app name
      */
     protected  void addApplicationCommand(String command, String name) {
+        if(name==null || name.length()==0) {
+            throw new BuildException("Missing application name");
+        }
         addArg(command);
         addArg(name);
     }
