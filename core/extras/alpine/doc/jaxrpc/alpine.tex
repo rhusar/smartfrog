@@ -16,9 +16,9 @@ experience shows us that simpler systems are typically more
 straightforward to work with, as they react in more predictable ways}.
 
 If a WSDL description of an Alpine-hosted service is required, the
-user will be required to write it: \tocheck{as we concluded in section
+user will be required to write it: as we concluded in section
 \ref{objections:o-x:wsdl-gen} generating WSDL from Java introduces
-unwanted implementation dependencies and hampers interoperability.}
+unwanted implementation dependencies and hampers interoperability.
 
 What will Alpine consist of then? With so much stripped out, a SOAP
 stack gets reduced to its essentials: a system for managing the flow
@@ -29,6 +29,14 @@ SOAP protocol will be provided, namely envelope validation and
 expected to use XPath specifications to work with contents of the
 message; we will depend upon XOM for our XML binding
 \cite{harold:xom}.
+
+By removing extraneous yet useful features, we introduce dependencies
+on many other components to work correctly. Yet we also reduce
+development and support effort. This is not going to be a SOAP stack
+for use by anyone who wants to make SOAP look like RMI, nor for anyone
+who wants to ignore the format of the messages sent or over the wire.
+Instead, Alpine will provide the basic housekeeping and handler
+chain management to make life simpler for web service developers.
 
 \subsection{Design Goals}
 \label{alpine:design}
@@ -53,15 +61,72 @@ The full design goals are as follows:
 These are delegated to other products.
 \end{enumerate}
 
-By removing extraneous yet useful features, we introduce dependencies
-on many other components to work correctly. Yet we also reduce
-development and support effort.
+\subsection{XSD validation}
+\label{alpine:validation}
 
-This is not going to be a SOAP stack for use by anyone who wants to
-make SOAP operations look like a remote procedure call; it is not
-going to be for anyone who wants to ignore the format of the messages
-sent or received over the wire.
+An XML schema document, as used to describe a document literal
+payload, can contain many declarations about what constitutes a valid
+XML document. \emph{Restrictions} can restrict the type of a value,
+such as the range of an integer from zero to ten. The \verb|minOccurs|
+and \verb|maxOccurs| declarations are used to declare what allowed
+number of occurences of an element are. None of these values are
+used. Restricted integer types are just mapped to normal integers,
+while element occurence declarations are ignored.
 
-Instead, it is going to provide the basic housekeeping and handler
-chain management to make life simpler for XML experts who are prepared
-to work with XOM.
+This means that the set of XML documents which an endpoint can
+receive, is significantly larger than the set of XML documents which
+its XML schema will declare that it can support. With no built-in
+validation, developers must either write validation logic themselves
+-and corresponding tests, or ignore the problem. Given that there is
+no warning that the problem occurs, we suspect that ignorance is the
+common process. Not writing the logic to recognise and reject illegal
+documents is not likely to show up in development -especially if a
+test-centric process is not followed- but is inevitable once a service
+goes live, and callers using other languages invoke the service. Such
+insidious defects, defects that only show up in production, are never
+welcome.
+
+We note that there is a trivial solution to this problem, one that is
+common to other XML stacks. It is: validate incoming messages against
+the XML schema of the service. This is not done for performance, yet
+the effect is to hide defects.
+
+\subsection{A Community SOAP Stack}
+\label{alpine:community}
+From the perspective of an open source project, JAX-RPC creates
+many problems as it isolates all the XML in the implementation, it
+creates a huge gulf between the exceedingly complex implementation
+code (low level SAX and DOM processing, code generation from WSDL
+metadata, WSDL generation from introspection, fault processing) and
+the end user code.  This makes it hard for end users to become
+developers, which is exactly what open source platforms need. Open
+source projects succeed from the contributions of the users, and so
+depend upon users who are able and willing to understand the
+implementation. JAX-RPC, by its very nature, places too firm a divide
+between end users and developers.
+
+We can see the consequences this on the user mailing list for Apache
+Axis. All too often, someone is confused by the errors displayed when
+they try and do something that they expect to work like RMI, such as
+send an low level class such as \verb|java.io.File| instance, or a
+\verb|javax.swing.JPanel|. The latter is serializable in RMI, yet
+clearly does not make sense for an interoperable web service.
+
+While it would be easy to laugh at their na\"{i}ve and unrealistic
+expectations, we have to recognise that these users have been led to
+such expectations through a combination of marketing ("Web Services!
+They're easy!") and the fact that JAX-RPC creates the illusion of
+being just like RMI. It is often even relatively easy to write the
+code that looks like a SOAP service, and then try and deploy it, only
+to find at runtime that the introspection system rejects Java classes
+as unacceptable, or the serialization logic raises deserialization
+exceptions when inbound messages are processed. A quick perusal of the
+Apache Axis user list
+\footnote{http://mail-archives.apache.org/eyebrowse/SummarizeList?listId=209}
+will demonstrate that these (along with deployment failures) are the
+most common problems.
+
+With Alpine, we hope to avoid reaching a similar situation, where a
+small core of developers maintain a codebase for a much larger user
+base, for whom the operation of the stack is essentially ``black
+magic''. 

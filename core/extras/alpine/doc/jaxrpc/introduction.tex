@@ -1,44 +1,28 @@
 \section{Introduction}
-\label{intro:top}
+\label{introduction}
 
-We must recall that the core rationales for using SOAP were as
-follows:
+In any discussion of SOAP-based technologies, it is important to
+remember the core reasons for adopting SOAP originally. We
+characterise them as follows:
+
 \begin{enumerate}
-\item simplicity: SOAP was to be easy to work with.
-\item interoperability: more interoperable than binary predecessors
-\item extensibility: the SOAP header allowed extra data to be attached to a
-request. 
-\item self-describing: messages could contain type definitions with the
+\item \textbf{simplicity}: It is intended to be easy to work with.
+\item \textbf{interoperability}: It is more interoperable than binary predecessors
+\item \textbf{extensibility}: \tocheck{The header construct allows extra data to be attached to a
+request, without breaking existing clients.}
+\item \textbf{self-describing}: Messages can contain type definitions alongside
 data, and provide human readable names.
-\item flexibility: participants could handle variable amounts of
+\item \textbf{flexibility}: Participants can handle variable amounts of
 incoming data.
-\item XML-centric: which should make it easier to insert arbitrary XML
-inside a request.
-\item long-haul: designed to work through firewalls, over HTTP.
-\item loosely-coupled: participants were not expected to share
+\item \textbf{XML-centric}: Inserting arbitrary XML inside a requests
+is easier.
+\item \textbf{long-haul}: It is designed to work through firewalls, over HTTP.
+\item \textbf{loosely-coupled}: Participants are not expected to share
 implementation code.
 \end{enumerate}
 
 We will refer to these criteria throughout our discussion, as the
 desiderata against which any SOAP technology should be judged.
-
-%% these two paragraphs belong somewhere else, in a detail discussion
-%% of some kind. leaving them here for now
-% SOAP strove to overcome many of the failings of precursor technologies
-% like CORBA and DCOM. These technologies work well over local area
-% networks, and enable rich bidirectional communications, but are not
-% completely cross platform\footnote{Albeit for political rather than
-% technical reasons}, and ended up being used to produce distributed
-% object systems that were too \emph{tightly coupled}. 
-
-% Tight coupling has proven to be a bad thing in a distributed
-% system. If components are too tightly coupled, it implies that the
-% separate components have merged to become one large system, one which
-% cannot be treated except as a whole. And in a sufficiently large
-% system, it is impossible to co-ordinate the whole \cite{deutsch,
-% jini}. The move towards SOAP and a service oriented architecture was
-% advocated as a means of dealing with loose organisational coupling, by
-% forcing a loose data coupling between applications.
 
 \subsection{SOAP in Java}
 \label{intro:java}
@@ -58,7 +42,7 @@ of the message, in JAX-RPC all the details of how the message was
 encoded are hidden, and the developer works with Java objects created
 automatically from the XML data using a mapping process.
 
-JAX-M lives on in the form of  
+JAX-M lives on in the form of \todo{.... finish this sentence!}
 
 - there is no apparent work on a
 successor, with focus instead being placed on an improved version of
@@ -72,48 +56,58 @@ XML-RPC \cite{spec:XML-RPC} with richer content.
 \label{intro:experience}
 
 Both authors have recently been making independent implementations of
-a SOAP API for deployment. This API is defined by a set of XML Schema
-(XSD)
-\cite{spec:XSD}
-and Web Services Description Language (WSDL) files \cite{spec:WSDL}
-, the end result of which is a service endpoint which
-supports seven operations. The operations permit suitably
-authenticated callers to deploy distributed applications to indivudual
-machines, or a whole grid fabric. This service was defined in the pure
-way, by writing the XSD and WSDL files first, the goal being a
-platform-independent, highly interoperable deployment mechanism.
+a SOAP API for deployment. This API, specified in a set of XML Schema
+(XSD) \cite{spec:XSD} and Web Services Description Language (WSDL)
+files \cite{spec:WSDL} defines a service endpoint which providing
+seven operations. These operations permit suitably authenticated
+callers to deploy distributed applications to a grid fabric.
 
-One of the features of this service was that it was intended to
-support multiple deployment languages, and multiple deployment
-engines, each potentially with different capabilities and options. To
-this end, some features of the design stand out.
+This service was defined in a ``pure way'', by writing the XSD and
+WSDL files first. \tocheck{This approach is believed to aid in
+creating a platform-independent system, and represents current best
+practice.} However, the XSD file for the service messages is
+approximately 2000 lines, of which seventy-five percent is either
+comment or XSD annotations. That it takes so many lines to describe a
+relatively simple service is clearly one reason why this approach,
+despite its superiority of output, is so unpopular. 
 
-Firstly, the deployment payload is arbitrary XML. It is not
-appropriate or possible for the service definition to declare what
-deployment languages are supported.
+\todo{Any other problems we experienced that were clearly related to
+JAX-RPC sucking would be good here, eg. namespaces, introspection and
+so forth}.
 
-Secondly, we defined an option mechanism, in which callers can set
-arbitrary options on a deployment. Each option can have a string,
-integer or XML value, and is identified in a set of options by a
-URI. We plan to define some normative options within the working
-group, and allow implementations to define new ones.  Following the
-example of the WebDAV and SOAP header designs, options can be ignored
-unless their \verb|mustUnderstand| attribute is set. With a few well
-known option types defined for the nested XML option, we wanted
- to treat options just like other received data, and use the XML to Java
-mapping facility of the classes. 
+In section \ref{objections} we discuss a number of problems we believe
+this work highlighted with JAX-RPC. Section \ref{objections:wsdl-gen}
+outlines the particular problems we believe typical JAX-RPC oriented
+approaches to WSDL generation create.
 
-Thirdly, we need to raise lifecycle event notifications with
-callers. In the absence of a single, stable notification protocol, we
-chose to allow services to support multiple mechanism (again, each
-defined by arbitrary inline XML).
+%% The subsequent sections do not establish their own relevance to 
+%% the question of why JAX-RPC sucks. We either need to find a link
+%% between these issues and JAX-RPC sucking, or cut them.
 
-The XSD file for the service messages is approximately 2000 lines, of
-which seventy-five percent is either comment or XSD annotations. That it
-takes that many lines to describe a relatively simple service is a
-fault of  XML Schema, and clearly one reason why \emph{schema first}
-service design is so unpopular. Note that SOAP1.2 permits alternate XML
-type systems for message elements, so that Relax NG \cite{spec:RelaxNG}
-could be used in place of XML Schema, perhaps with greater success. 
+% One of the features of this service was that it was intended to
+% support multiple deployment languages, and multiple deployment
+% engines, each potentially with different capabilities and options. To
+% this end, some features of the design stand out.
+
+% Firstly, the deployment payload is arbitrary XML. It is not
+% appropriate or possible for the service definition to declare what
+% deployment languages are supported.
+
+% Secondly, we defined an option mechanism, in which callers can set
+% arbitrary options on a deployment. Each option can have a string,
+% integer or XML value, and is identified in a set of options by a
+% URI. We plan to define some normative options within the working
+% group, and allow implementations to define new ones.  Following the
+% example of the WebDAV and SOAP header designs, options can be ignored
+% unless their \verb|mustUnderstand| attribute is set. With a few well
+% known option types defined for the nested XML option, we wanted
+% to treat options just like other received data, and use the XML to Java
+% mapping facility of the classes. 
+
+% Thirdly, we need to raise lifecycle event notifications with
+% callers. In the absence of a single, stable notification protocol, we
+% chose to allow services to support multiple mechanism (again, each
+% defined by arbitrary inline XML).
+
 
 
