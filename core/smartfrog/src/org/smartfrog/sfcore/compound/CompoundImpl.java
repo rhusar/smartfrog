@@ -255,7 +255,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
     }
     if (sflog().isTraceEnabled()) {
         try {
-            sflog().trace("New child: "+comp.sfCompleteName()+ " created, deployed and started.");
+            sflog().trace("New child created: "+comp.sfCompleteName()+ ".");
         } catch (Exception ex1) {
             sflog().trace(ex1.toString());
         }
@@ -283,9 +283,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
         try {
             if (sflog().isTraceEnabled()) {
                 try {
-                    sflog().trace("Creating new application from: "+
-                                  sfCompleteNameSafe()+", with description: "+
-                                  cmp.toString()+", and parameters: "+parms);
+                    sflog().trace("Creating new application from: "+sfCompleteNameSafe()+", with description: "+ cmp+", and parameters: "+parms);
                 } catch (Exception ex1) {
                     sflog().trace(ex1.toString());
                 }
@@ -318,7 +316,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
         }
         if (sflog().isTraceEnabled()) {
             try {
-                sflog().trace("New App: "+comp.sfCompleteName()+ " created, deployed and started.");
+                sflog().trace("New App created: "+comp.sfCompleteName()+ " by "+sfCompleteNameSafe());
             } catch (Exception ex1) {
                 sflog().trace(ex1.toString());
             }
