@@ -130,13 +130,9 @@ public abstract class SmartFrogTask extends TaskBase {
     protected boolean failOnError;
 
     /**
-     * timeout of the ant task itself; the delay after which
-     * the process gets killed. Not compatible with spawning.
+     * what is the default timeout for those tasks that have a timeout
      */
-
-    private int taskTimeout = DEFAULT_TIMEOUT_VALUE;
-
-    public static final int DEFAULT_TIMEOUT_VALUE = 60;
+    public static final long DEFAULT_TIMEOUT_VALUE = 60*1000L;
 
     /**
      * codebase string
@@ -272,19 +268,7 @@ public abstract class SmartFrogTask extends TaskBase {
         Java java = createJavaTask("org.smartfrog.SFSystem", getTaskTitle());
         java.setFork(true);
         java.setDir(getProject().getBaseDir());
-        applyTimeout(java);
         return java;
-    }
-
-
-    /**
-     * apply any defined timeout; do nothing if there is none
-     */
-    protected void applyTimeout(Java jvm) {
-        if (getTaskTimeout() > 0) {
-            long timeoutMS = getTaskTimeout() * 1000L;
-            jvm.setTimeout(new Long(timeoutMS));
-        }
     }
 
     /**
@@ -331,26 +315,6 @@ public abstract class SmartFrogTask extends TaskBase {
     public void setFailOnError(boolean failOnError) {
         this.failOnError = failOnError;
 
-    }
-
-    /**
-     * set the timeout of a task, in seconds. After this time it will be
-     * killed.
-     *
-     * @param taskTimeout
-     */
-    public void setTaskTimeout(int taskTimeout) {
-        this.taskTimeout = taskTimeout;
-        applyTimeout(smartfrog);
-    }
-
-    /**
-     * get the task timeout (in seconds)
-     *
-     * @return
-     */
-    public int getTaskTimeout() {
-        return taskTimeout;
     }
 
     /**
@@ -531,6 +495,14 @@ public abstract class SmartFrogTask extends TaskBase {
         if (host != null && host.length() > 0) {
             throw new BuildException("host cannot be set on this task");
         }
+    }
+
+    /**
+     * set the timeout for execution. This is incompatible with spawning.
+     * @param timeout
+     */
+    public void setTimeout(long timeout) {
+        smartfrog.setTimeout(new Long(timeout));
     }
 
     /**

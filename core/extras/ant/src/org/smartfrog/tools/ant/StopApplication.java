@@ -23,6 +23,8 @@ import org.apache.tools.ant.BuildException;
 
 /**
  * Undeploy any smartfrog application from a running daemon.
+ * By default this target raises an error when the application cannot be stopped, and has a timeout
+ * set to the standard default value. {@link SmartFrogTask#DEFAULT_TIMEOUT_VALUE}.
  * @ant.task category="SmartFrog" name="sf-undeploy"
  */
 public class StopApplication extends SmartFrogTask {
@@ -33,8 +35,13 @@ public class StopApplication extends SmartFrogTask {
     protected String application;
 
     public StopApplication() {
+    }
+
+    public void init() throws BuildException {
+        super.init();
         setHost("localhost");
         setFailOnError(true);
+        setTimeout(DEFAULT_TIMEOUT_VALUE);
     }
 
     protected String getApplication() {

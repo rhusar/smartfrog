@@ -24,14 +24,16 @@ import org.apache.tools.ant.BuildException;
 /**
  * Start an SF application; that deployes it remotely
  * @ant.task category="SmartFrog" name="sf-deploy"
- *
+ * By default this target raises an error when the application cannot be stopped, and has a timeout
+ * set to the standard default value. {@link SmartFrogTask#DEFAULT_TIMEOUT_VALUE}.
+
  */
 public class StartApplication extends DeployingTaskBase {
 
     public void init() throws BuildException {
         super.init();
         setFailOnError(true);
-
+        setTimeout(DEFAULT_TIMEOUT_VALUE);
     }
 
     /**
