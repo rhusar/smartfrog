@@ -7,7 +7,9 @@
  command line invocation
  ant -lib ..\..\build\dist\lib\smartfrog-tasks.jar -lib ..\..\..\..\smartfrog\dist\lib\smartfrog.jar -f  run.xml testNoParams
 
-ant -lib ../../build/dist/lib/smartfrog-tasks.jar -lib ../../../../smartfrog/dist/lib/smartfrog.jar -f run.xml testNoParams 
+ant -lib ../../build/dist/lib/smartfrog-tasks.jar -lib ../../../../smartfrog/dist/lib/smartfrog.jar -f run.xml testNoParams
+
+ant -lib ../../build/dist/lib/smartfrog-tasks.jar -lib ../../../../smartfrog/dist/lib/smartfrog.jar -lib ../../../../smartfrog/dist/lib/sfExamples.jar -f run.xml testResource
 </description>
 
   <typedef 
@@ -43,6 +45,19 @@ ant -lib ../../build/dist/lib/smartfrog-tasks.jar -lib ../../../../smartfrog/dis
       </sf-run>
     </target> 
 
+    
+    <target name="testBadFile">
+      <sf-run >
+        <application name="app" file="missing-file.sf"/>
+      </sf-run>
+    </target>  
+
+    
+    <target name="testBadHost">
+      <sf-run host="no-such-hostname"/>
+    </target>
+
+    
     <target name="testResource">
       <sf-run >
         <application name="app" descriptor="${resource.sf}"/>
@@ -55,16 +70,6 @@ ant -lib ../../build/dist/lib/smartfrog-tasks.jar -lib ../../../../smartfrog/dis
       </sf-run>
     </target>
     
-    <target name="testBadFile ">
-      <sf-run >
-        <application name="app" file="valid.sf"/>
-      </sf-run>
-    </target>  
-
-    
-    <target name="testBadHost">
-      <sf-run host="no-such-hostname"/>
-    </target>
 
 
     

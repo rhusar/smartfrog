@@ -84,4 +84,8 @@ public abstract class TaskTestBase extends BuildFileTest {
     public void expectExceptionWithLogContaining(String target, String log) {
         expectExceptionWithLogContaining(target,log,target);
     }
+
+    public void assertRootProcessInLog() {
+        assertLogContaining("[rootProcess]");
+    }
 }
