@@ -97,7 +97,8 @@ public class Deploy extends ConsoleOperation {
 
     public void execute() throws IOException {
         createDeploymentDescriptor();
-        deploy(name, descriptor, null, null);
+        uri = deploy(name, descriptor, null, null);
+        out.print("Deployed to uri:" + uri);
     }
 
 
