@@ -111,7 +111,7 @@ ant -lib ../../build/dist/lib/smartfrog-tasks.jar -lib ../../../../smartfrog/dis
         </sf-startdaemon>
         <sequential>
           <sf-block/>
-          <antcall target="testResource" />
+          <antcall target="testInline" />
         </sequential>
       </parallel>
     </target>   

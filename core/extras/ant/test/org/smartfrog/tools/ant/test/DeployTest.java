@@ -147,7 +147,9 @@ public class DeployTest extends TaskTestBase {
     }
 
     public void testInline() {
-        assertDeployFailsWithUnresolvedReference("testInline");
+        expectBuildExceptionContaining("testInline", "deploy failure",
+                "Could not deploy");
+        assertNoConnectionToLocalhost();
     }
 
     /**

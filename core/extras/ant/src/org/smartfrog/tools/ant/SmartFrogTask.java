@@ -28,9 +28,6 @@ import org.apache.tools.ant.types.Environment;
 import org.apache.tools.ant.types.PropertySet;
 
 import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -136,10 +133,6 @@ public abstract class SmartFrogTask extends TaskBase {
      */
     public static final long DEFAULT_TIMEOUT_VALUE = 60*1000L;
 
-    /**
-     * codebase string
-     */
-    protected List codebase = new LinkedList();
 
     /**
      * add a file to the list
@@ -158,6 +151,7 @@ public abstract class SmartFrogTask extends TaskBase {
     public void addSourceURL(String url) {
         sourceFiles.add(url);
     }
+
 
     /**
      * set the hostname to deploy to (optional)
@@ -282,6 +276,10 @@ public abstract class SmartFrogTask extends TaskBase {
      */
     protected abstract String getTaskTitle();
 
+    /**
+     * add an argument to the java process
+     * @param value
+     */
     protected void addArg(String value) {
         smartfrog.createArg().setValue(value);
     }
@@ -357,17 +355,9 @@ public abstract class SmartFrogTask extends TaskBase {
         addSmartfrogPropertyIfDefined(
                 "org.smartfrog.ProcessCompound.sfProcessTimeout",
                 spawnTimeout);
-        if (codebase != null && !codebase.isEmpty()) {
-            //add the codebase for extra stuff
-            String codelist = Codebase.getCodebaseString(codebase);
-//            if(codelist.length()>0)
-            {
-                log("Codebase set to " + codelist, Project.MSG_VERBOSE);
-                addSmartfrogProperty("org.smartfrog.codebase", codelist);
-            }
-        }
-
     }
+
+
 
 
     /**
@@ -525,87 +515,5 @@ public abstract class SmartFrogTask extends TaskBase {
         }
     }
 
-    /**
-     * this contains information pointing to the location of code.
-     * It can either be a URL or a file path to a Java file.
-     */
-    public static class Codebase {
-
-        /**
-         * location of a JAR file
-         */
-        private String location;
-
-        /**
-         * the URL of the JAR file
-         *
-         * @param url
-         */
-        public void setURL(String url) {
-            location = url;
-        }
-
-        /**
-         * provide a URL. This is for the convenience of programmatic access, not
-         * ant build files
-         *
-         * @param url
-         */
-        public void setURL(URL url) {
-            location = url.toExternalForm();
-        }
-
-        /**
-         * name a JAR file for addition to the path
-         *
-         * @param file
-         */
-        public void setFile(File file) {
-            if (!file.exists()) {
-                throw new BuildException("Not found :" + file);
-            }
-            if (file.isDirectory()) {
-                throw new BuildException("Not a JAR file :" + file);
-            }
-            try {
-                setURL(file.toURL());
-            } catch (MalformedURLException e) {
-                throw new BuildException(e);
-            }
-        }
-
-        /**
-         * get the location
-         *
-         * @return
-         */
-        public String getLocation() {
-            return location;
-        }
-
-        /**
-         * take a list of codebase elements and then turn them into a string
-         *
-         * @param codebases
-         * @return
-         */
-        public static String getCodebaseString(List codebases) {
-            StringBuffer results = new StringBuffer();
-            Iterator it = codebases.iterator();
-            while (it.hasNext()) {
-                Codebase codebase = (Codebase) it.next();
-                String l = codebase.getLocation();
-                if (l == null) {
-                    throw new BuildException("Undefined codebase");
-                }
-                results.append(l);
-                //space separated options here
-                results.append(' ');
-            }
-            return new String(results);
-        }
-
-
-    }
 
 }
