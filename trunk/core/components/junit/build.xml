@@ -55,12 +55,15 @@ For more information: www.smartfrog.org
     <!-- the compile time path includes axis-->
     <path id="compile.classpath">
       <path refid="smartfrog.classpath"/>
-
+      <fileset file="${ant.home}/lib/junit.jar"/>
     </path>
     
     
   </target>
     
+   <target name="diag" depends="init">
+    <echoproperties/>
+   </target>
   <!-- ========================================================== -->
   <!-- compile -->
   <!-- ========================================================== -->

@@ -19,6 +19,8 @@
  */
 package org.smartfrog.services.junit;
 
+import org.smartfrog.sfcore.common.SmartFrogException;
+
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.List;
@@ -66,5 +68,19 @@ public interface TestSuite extends Remote {
     List getExcludes() throws RemoteException;
 
     void setExcludes(List excludes) throws RemoteException;
+
+    /**
+     * bind to the configuration. A null parameter means 'stop binding'
+     * @param configuration
+     * @throws RemoteException
+     */
+    void bind(RunnerConfiguration configuration) throws RemoteException;
+
+    /**
+     * run the test
+     * @return true iff all tests passed
+     * @throws RemoteException
+     */
+    boolean runTests() throws RemoteException, SmartFrogException;
 
 }
