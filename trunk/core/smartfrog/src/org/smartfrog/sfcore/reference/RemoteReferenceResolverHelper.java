@@ -392,6 +392,29 @@ public interface RemoteReferenceResolverHelper extends Remote {
         throws SmartFrogResolutionException, RemoteException ;
 
     /**
+     * Resolves given reference and gets a java.net.URL.
+     * Utility method to resolve an attribute with a
+     * java.net.URL value.
+     *
+     * @param reference reference
+     * @param defaultValue java.net.URL default value that is returned
+     *        when reference is not found and it is not mandatory
+     * @param mandatory boolean that indicates if this attribute must be
+     *        present in the description. If it is mandatory and not found it
+     *        triggers a SmartFrogResolutionException
+     *
+     * @return java.net.URL for attribute value, null if SFNull is found or defaultValue if not
+     *         found
+     *
+     * @throws SmartFrogResolutionException if invalid reference of reference
+     * not resolvable
+     * @throws RemoteException if there is any network/rmi error
+     */
+    public java.net.URL sfResolve(Reference reference,
+        java.net.URL defaultValue, boolean mandatory)
+        throws SmartFrogResolutionException, RemoteException ;
+
+    /**
      * Resolves given reference and gets a SmartFrog ComponentDescription.
      * Utility method to resolve an attribute with a SmartFrog
      * ComponentDescription value.
@@ -779,7 +802,30 @@ public interface RemoteReferenceResolverHelper extends Remote {
      */
     public java.net.InetAddress sfResolve(String referencePart,
         java.net.InetAddress defaultValue, boolean mandatory)
-            throws SmartFrogResolutionException, RemoteException;;
+            throws SmartFrogResolutionException, RemoteException;
+
+    /**
+     * Resolves a referencePart given a string and gets a SmartFrog Reference.
+     * Utility method to resolve an attribute with a java.net.URL
+     * value.
+     *
+     * @param referencePart string field reference
+     * @param defaultValue java.net.URL default value that is returned
+     *        when reference is not found and it is not mandatory
+     * @param mandatory boolean that indicates if this attribute must be
+     *        present in the description. If it is mandatory and not found it
+     *        triggers a SmartFrogResolutionException
+     *
+     * @return java.net.URL for attribute value, null if SFNull is found or defaultValue if not
+     * found
+     *
+     * @throws SmartFrogResolutionException if invalid reference of reference
+     * not resolvable
+     * @throws RemoteException if there is any network/rmi error
+     */
+    public java.net.URL sfResolve(String referencePart,
+        java.net.URL defaultValue, boolean mandatory)
+        throws SmartFrogResolutionException, RemoteException;
 
     /**
      * Resolves a referencePart given a string and gets a SmartFrog
