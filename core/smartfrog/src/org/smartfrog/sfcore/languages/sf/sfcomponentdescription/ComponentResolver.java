@@ -80,7 +80,7 @@ public interface ComponentResolver {
 
 
    /**
-    *  Internal recursive method for doing the actual deployment resolution.
+    *  Internal recursive method for doing the actual link resolution.
     *
     * @param  resState  resolution state
     *
