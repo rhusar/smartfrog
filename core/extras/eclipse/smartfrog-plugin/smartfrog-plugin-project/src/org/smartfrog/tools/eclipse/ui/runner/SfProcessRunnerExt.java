@@ -86,7 +86,7 @@ class SfProcessRunnerExt
         {
          	cmdsStart += cmdGeneral[i] + " ";
         }
-        cmdsStart +=  ".\\bin\\"+ CMD_SFPROCESS_START  +" " ;
+        cmdsStart +=  "." + ISmartFrogConstants.FILE_SEPARATOR + "bin"+ ISmartFrogConstants.FILE_SEPARATOR + CMD_SFPROCESS_START  +" " ;
         cmdsStart += "-a ";
         cmdsStart +=mProcessName+":DEPLOY:\"" + mFile +"\"::"+mHostName+": ";
         cmdsStart += "-e";
@@ -107,7 +107,7 @@ class SfProcessRunnerExt
        {
         	cmdsStop += cmdGeneral[i]+ " ";
        }
-        cmdsStop += ".\\bin\\"+ CMD_SFPROCESS_START  +" " ;
+        cmdsStop += "." + ISmartFrogConstants.FILE_SEPARATOR + "bin"+ ISmartFrogConstants.FILE_SEPARATOR + CMD_SFPROCESS_START  +" " ;
         cmdsStop += "-a ";
         cmdsStop +=mProcessName+":TERMINATE:::"+mHostName+": ";
         cmdsStop += "-e";
