@@ -25,6 +25,7 @@ import java.io.Serializable;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Vector;
 import java.util.Properties;
 
@@ -185,6 +186,47 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
     // perhaps this should be synchronized... but causes problems with sfCompleteName if it is
     public Object sfAttributeKeyFor(Object value) {
         return context.sfAttributeKeyFor(value);
+    }
+
+    /**
+     * Returns true if the context contains value.
+     *
+     * @param value object to check
+     *
+     * @return true if context contains value, false otherwise
+     */
+    public boolean sfContainsValue(Object value) {
+       return context.contains(value);
+    }
+
+
+    /**
+     * Returns true if the context contains attribute.
+     * @param attribute to check
+     *
+     * @return true if context contains key, false otherwise
+     */
+    public boolean sfContainsAttribute(Object attribute) {
+       return context.containsKey(attribute);
+    }
+
+
+    /**
+     * Returns an ordered iterator over the attribute names in the context.
+     *
+     * @return iterator
+     */
+    public  Iterator sfAttributes() {
+        return context.sfValues();
+    }
+
+    /**
+     * Returns an ordered iterator over the values in the context.
+     *
+     * @return iterator
+     */
+    public  Iterator sfValues() {
+      return context.sfValues();
     }
 
 

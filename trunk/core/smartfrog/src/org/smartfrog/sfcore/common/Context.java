@@ -21,6 +21,7 @@ For more information: www.smartfrog.org
 package org.smartfrog.sfcore.common;
 
 import java.util.Enumeration;
+import java.util.Iterator;
 
 
 /**
@@ -33,7 +34,7 @@ import java.util.Enumeration;
 public interface Context extends Copying {
     /**
      * Returns true if the context contains value.
-     *
+     * Deprecated: replaced by sfContainsValue()
      * @param value object to check
      *
      * @return true if context contains value, false otherwise
@@ -42,7 +43,7 @@ public interface Context extends Copying {
 
     /**
      * Returns true if the context contains the key.
-     *
+     * Deprecated: replaced by sfContainsAttribute()
      * @param key to check
      *
      * @return true if context contains key, false otherwise
@@ -51,12 +52,13 @@ public interface Context extends Copying {
 
     /**
      * Returns the values of the context.
-     *
+     * Deprecated: replaced by sfValues();
      * @return enumeration over the values of the context
      *
      * @see java.util.Enumeration
      */
     public Enumeration elements();
+
 
     /**
      * Returns object stored under given key, null if not found.
@@ -76,10 +78,11 @@ public interface Context extends Copying {
 
     /**
      * Returns an enumeration over the keys of the context.
-     *
+     * Deprecated: replaced by sfAttributes();
      * @return enumeration
      */
     public Enumeration keys();
+
 
     /**
      * Adds an object value under given key to context.
@@ -120,7 +123,7 @@ public interface Context extends Copying {
 
     /**
      * Returns the first key which has a particular value in the table.
-     *
+     * Deprecated: sfAttributeFor should be used instead.
      * @param value value to find in table
      *
      * @return key for value or null if none
@@ -141,8 +144,51 @@ public interface Context extends Copying {
      */
     public Object clone();
 
+    /**
+     * Returns the first attribute which has a particular value in the table.
+     *
+     * @param value value to find in table
+     *
+     * @return attibute object for value or null if none
+     */
+    public Object sfAttributeFor(Object value);
 
-   // Special methods that throw exception when something does not work
+    /**
+     * Returns true if the context contains value.
+     * Replaces contains()
+     *
+     * @param value object to check
+     *
+     * @return true if context contains value, false otherwise
+     */
+    public boolean sfContainsValue(Object value);
+
+
+    /**
+     * Returns true if the context contains attribute.
+     * Replaces containsKey()
+     *
+     * @param attribute to check
+     *
+     * @return true if context contains key, false otherwise
+     */
+    public boolean sfContainsAttribute(Object attribute);
+
+
+    /**
+     * Returns an iterator over the attribute names of the context.
+     *
+     * @return iterator
+     */
+    public  Iterator sfAttributes();
+
+    /**
+     * Returns an iterator over the values of the context.
+     *
+     * @return iterator
+     */
+    public  Iterator sfValues();
+
    /**
      * Add an attribute to context. Values should be
      * marshallable types if they are to be referenced remotely at run-time.

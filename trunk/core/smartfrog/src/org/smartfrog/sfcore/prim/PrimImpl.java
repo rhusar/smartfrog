@@ -25,6 +25,7 @@ import java.rmi.RemoteException;
 import java.rmi.server.RemoteStub;
 import java.util.Vector;
 import java.util.Enumeration;
+import java.util.Iterator;
 
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.Context;
@@ -384,6 +385,53 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     public Object sfAttributeKeyFor(Object value) {
         return sfContext.sfAttributeKeyFor(value);
     }
+
+    /**
+     * Returns true if the context contains value.
+     *
+     * @param value object to check
+     *
+     * @return true if context contains value, false otherwise
+     *
+     * @throws RemoteException In case of Remote/nework error
+     */
+    public boolean sfContainsValue(Object value) throws RemoteException{
+       return sfContext.contains(value);
+    }
+
+
+    /**
+     * Returns true if the context contains attribute.
+     * @param attribute to check
+     *
+     * @return true if context contains attribute, false otherwise
+     *
+     * @throws RemoteException In case of Remote/nework error
+     */
+    public boolean sfContainsAttribute(Object attribute) throws RemoteException {
+       return sfContext.containsKey(attribute);
+    }
+
+    /**
+     * Returns an ordered iterator over the attribute names in the context.
+     *
+     * @return iterator
+     *
+     * @throws RemoteException In case of Remote/nework error
+     */
+    public  Iterator sfAttributes() throws RemoteException{
+        return sfContext.sfValues();
+    }
+
+    /**
+     * Returns an ordered iterator over the values in the context.
+     *
+     * @return iterator
+     */
+    public  Iterator sfValues() throws RemoteException{
+      return sfContext.sfValues();
+    }
+
 
 
     /**

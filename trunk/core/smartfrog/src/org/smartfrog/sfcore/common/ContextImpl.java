@@ -22,6 +22,7 @@ package org.smartfrog.sfcore.common;
 
 import java.io.Serializable;
 import java.util.Enumeration;
+import java.util.Iterator;
 
 import org.smartfrog.sfcore.common.SmartFrogContextException;
 
@@ -56,12 +57,23 @@ public class ContextImpl extends OrderedHashtable implements Context,
 
     /**
      * Returns the first key for which the value is the given one.
-     *
+     * Deprecated: replaced by sfAttributeFor(value);
      * @param value value to look up
      *
      * @return key for value or null if not found
      */
     public Object keyFor(Object value) {
+        return sfAttributeFor(value);
+    }
+
+    /**
+     * Returns the first attribute which has a particular value in the table.
+     *
+     * @param value value to find in table
+     *
+     * @return attibute object for value or null if none
+     */
+    public Object sfAttributeFor(Object value){
         if (!contains(value)) {
             return null;
         }
@@ -74,6 +86,50 @@ public class ContextImpl extends OrderedHashtable implements Context,
         }
         return null;
     }
+
+    /**
+     * Returns true if the context contains value.
+     * Replaces contains()
+     * @param value object to check
+     *
+     * @return true if context contains value, false otherwise
+     */
+    public boolean sfContainsValue(Object value){
+       return containsKey(value);
+    }
+
+
+    /**
+     * Returns true if the context contains attribute.
+     * Replaces containsKey()
+     * @param attribute to check
+     *
+     * @return true if context contains key, false otherwise
+     */
+    public boolean sfContainsAttribute(Object attribute){
+       return containsKey(attribute);
+    }
+
+
+    /**
+     * Returns an ordered iterator over the attribute names in the context.
+     *
+     * @return iterator
+     */
+    public  Iterator sfAttributes(){
+        return orderedAttributes();
+
+    }
+
+    /**
+     * Returns an ordered iterator over the values in the context.
+     *
+     * @return iterator
+     */
+    public  Iterator sfValues(){
+        return orderedValues();
+    }
+
 
 
     /**
