@@ -208,9 +208,9 @@ tests do not generate invalid messages (as is likely if they are also
 all written in JAX-RPC) then the problem will not be noticed, only
 only surfacing when a third party attempts to use the service.
 
-\item The developers could write the procedural logic to verify that
-the Java classes representing the deserialised message have a
-structure that matches their expectation, based on the schema. This
+\item The developers could write procedural logic to verify that
+the Java classes representing a deserialised message have a
+structure that matches their expectation based on the schema. This
 requires an understanding of the schema, knowledge of the
 serialisation mapping and potential trouble spots, the willingness to
 write the tests to validate this extra logic, and most of all, time.
