@@ -534,15 +534,15 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
 	    // so that references work
 	    for (Enumeration e = sfContext.keys(); e.hasMoreElements();) {
 		Object value = sfContext.get(e.nextElement());
-		
+
 		if (value instanceof ComponentDescription) {
 		    ((ComponentDescription) value).setPrimParent(this);
 		}
 	    }
-	    
+
 	    boolean es; // allow exportRef to be defined by string (backward compatability) or boolean
 	    Object eso = sfResolveHere(SmartFrogCoreKeys.SF_EXPORT, false);
-	    
+
 	    if (eso == null) {
 		es = true;
 	    } else if (eso instanceof String) {
@@ -550,44 +550,50 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
 	    } else {
 		es = ((Boolean) eso).booleanValue();
 	    }
-	    
+
 	    if (es) {
 		sfExportRef();
 	    }
-	    
+
 	    if (sfParent != null) {
 		((ChildMinder) sfParent).sfAddChild(this);
 	    }
-	    
+
 	    registerWithProcessCompound();
-	    
+
 	    // Look up delay, if not there never mind looking up factor
 	    sfLivenessDelay= sfResolve(refLivenessDelay,sfLivenessDelay,false);
 	    sfLivenessFactor = sfResolve(refLivenessFactor,sfLivenessFactor,false);
-	    
+
 	    // copy in local description for efficiency when subcomponents looking up
 	    sfReplaceAttribute(SmartFrogCoreKeys.SF_LIVENESS_DELAY, new Long (sfLivenessDelay) );
 	    // copy in local description for efficiency when subcomponents looking up
 	    sfReplaceAttribute(SmartFrogCoreKeys.SF_LIVENESS_FACTOR, new Integer (sfLivenessFactor));
-	    
+
 	    sfLivenessCount = sfLivenessFactor;
-	    
+
 	    // start the liveness thread
 	    sfStartLivenessSender();
-	    
-	    
+
+
 	    sfReplaceAttribute(SmartFrogCoreKeys.SF_HOST, sfDeployedHost());
 	    sfReplaceAttribute(SmartFrogCoreKeys.SF_PROCESS, sfDeployedProcessName());
-	    
+
 	    sfDeployWithHooks.applyHooks(this, null);
-	    
+
         } catch (Exception sfex){
             Logger.log(sfex);
             new TerminatorThread(this, sfex, null).quietly().run();
             throw (SmartFrogDeploymentException)SmartFrogDeploymentException.forward (sfex);
         }
     }
-    
+
+    /**
+     * Registers component with local ProcessCompound only if it is root component,
+     * its parent is remote or the attribute sfProcessComponentName is defined.
+     * @throws RemoteException
+     * @throws SmartFrogException
+     */
     protected void registerWithProcessCompound() throws RemoteException, SmartFrogException {
         //Registers component with local ProcessCompound
         if ((sfParent==null)||
@@ -600,6 +606,22 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
                 throw (SmartFrogDeploymentException)SmartFrogDeploymentException.forward (ex);
             }
         }
+    }
+
+    /**
+     * Deregisters this component from local ProcessCompound (if ever registered)
+     */
+    private void deregisterWithProcessCompound() {
+        //
+        try {
+            if (SFProcess.getProcessCompound() != null) {
+                SFProcess.getProcessCompound().sfDeRegister(this);
+            }
+        } catch (Exception ex) {
+            // @TODO: Log. Ignore.
+            Logger.logQuietly(ex);
+        }
+
     }
 
     /**
@@ -760,17 +782,8 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
             Logger.logQuietly(ex);
         }
 
-        // Deregisters this component from local ProcessCompound (if ever registered)
-        try {
-            if (SFProcess.getProcessCompound() != null) {
-                SFProcess.getProcessCompound().sfDeRegister(this);
-            }
-        } catch (Exception ex) {
-            // @TODO: Log. Ignore.
-            Logger.logQuietly(ex);
-        }
+        deregisterWithProcessCompound();
     }
-
 
 
     protected final Object termLock = new Object();
