@@ -8,5 +8,5 @@ for i in $SFHOME/lib/*.jar; do CLASSPATH=$i:$CLASSPATH; done
 export CLASSPATH
 
 echo "Stopping sfDaemon on" $1 "..."
-java -Dorg.smartfrog.iniFile=%SFHOME%\bin\default.ini org.smartfrog.SFSystem -a rootProcess:TERMINATE:::$1: -e
+java -Dorg.smartfrog.iniFile=$SFHOME/bin/default.ini org.smartfrog.SFSystem -a rootProcess:TERMINATE:::$1: -e
 echo "Stopped sfDaemon on" $1
