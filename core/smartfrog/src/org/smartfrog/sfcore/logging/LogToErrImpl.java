@@ -34,7 +34,7 @@ import java.util.Date;
 
 /**
  * <p>Simple implementation of Log that sends all enabled log messages,
- * for all defined loggers, to System.err.  The following system properties
+ * for all defined loggers, to System.out.  The following system properties
  * are supported to configure the behavior of this logger:</p>
  * <ul>
  * <li><code>defaultlog</code> -
@@ -103,7 +103,7 @@ public class LogToErrImpl implements LogToErr, Log, LogMessage, LogLevel, Serial
     /** Depth in StackTrace it will depend on how this Log is used and connected to LogImpl */
     protected int callDepth = 8;
 
-    /** output stream to print to. Bonded at construct time, and usually system.err unless
+    /** output stream to print to. Bonded at construct time, and usually system.out unless
      * otherwise chosen
      */
 
@@ -129,7 +129,7 @@ public class LogToErrImpl implements LogToErr, Log, LogMessage, LogLevel, Serial
      * @param initialLogLevel level to log at
      */
     public LogToErrImpl(String name, Integer initialLogLevel) {
-       this(name,initialLogLevel,System.err);
+       this(name,initialLogLevel,System.out);
     }
 
     /**
@@ -342,8 +342,8 @@ public class LogToErrImpl implements LogToErr, Log, LogMessage, LogLevel, Serial
      * <code>StringBuffer</code> to the appropriate output destination.
      *
      * this is the output stream specified in the constructor or, by default,
-     * the reference to System.err <i>at the time of construction</i>. Changes
-     * to System.err are not picked up.
+     * the reference to System.out <i>at the time of construction</i>. Changes
+     * to System.out are not picked up.
      *
      * @param buffer A <code>StringBuffer</code> containing the accumulated
      *  text to be logged
