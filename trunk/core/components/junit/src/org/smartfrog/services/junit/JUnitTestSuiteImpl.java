@@ -64,10 +64,8 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite, juni
 
     private RunnerConfiguration configuration;
 
-    private int errors = 0;
-    private int failures = 0;
-    private int testsStarted = 0;
-    private int testsRun = 0;
+    private Statistics stats;
+
 
 
     /**
@@ -238,7 +236,7 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite, juni
                 return false;
             }
             updateResultAttributes(true);
-            failed = failures > 0 || errors > 0;
+            failed = !stats.isSuccessful();
             if(failed && !configuration.getKeepGoing()) {
                 return false;
             }
@@ -251,11 +249,7 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite, juni
      * order it so that we set the finished last
      */
     private void updateResultAttributes(boolean finished) throws SmartFrogRuntimeException, RemoteException {
-        sfReplaceAttribute(ATTR_ERRORS, new Integer(errors));
-        sfReplaceAttribute(ATTR_FAILURES,new Integer(failures));
-        sfReplaceAttribute(ATTR_TESTS, new Integer(testsRun));
-        sfReplaceAttribute(ATTR_SUCCESSFUL, Boolean.valueOf(errors == 0 && failures == 0));
-        sfReplaceAttribute(ATTR_FINISHED, Boolean.valueOf(finished));
+        stats.updateResultAttributes(this,finished);
     }
 
     /**
@@ -321,7 +315,7 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite, juni
      * An error occurred.
      */
     public void addError(Test test, Throwable throwable) {
-        errors++;
+        stats.incErrors();
         TestInfo info=new TestInfo(test,throwable);
         try {
             getListener().addError(info);
@@ -342,7 +336,7 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite, juni
      * A failure occurred.
      */
     public void addFailure(Test test, AssertionFailedError error) {
-        failures++;
+        stats.incFailures();
         TestInfo info = new TestInfo(test, error);
         try {
             getListener().addFailure(info);
@@ -355,7 +349,7 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite, juni
      * A test ended.
      */
     public void endTest(Test test) {
-        testsRun++;
+        stats.incTestsRun();
         TestInfo info = new TestInfo(test);
         try {
             getListener().endTest(info);
@@ -368,7 +362,7 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite, juni
      * A test started.
      */
     public void startTest(Test test) {
-        testsStarted++;
+        stats.incTestsStarted();
         TestInfo info = new TestInfo(test);
         try {
             getListener().startTest(info);
