@@ -119,7 +119,7 @@ public class Options {
     public OptionType createNamedOption(URI name, boolean mustUnderstand) {
         OptionType option = new OptionType();
         option.setName(name);
-        option.setMustUnderstand(mustUnderstand);
+        option.setMustUnderstand(Boolean.valueOf(mustUnderstand));
         addOption(option);
         return option;
     }

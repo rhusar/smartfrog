@@ -31,12 +31,11 @@ import org.smartfrog.services.cddlm.api.Processor;
 import org.smartfrog.services.cddlm.cdl.CdlDocument;
 import org.smartfrog.services.cddlm.cdl.XomAxisHelper;
 import org.smartfrog.services.cddlm.generated.api.types.ApplicationStatusType;
+import org.smartfrog.services.cddlm.generated.api.types.CreateRequest;
 import org.smartfrog.services.cddlm.generated.api.types.DeploymentDescriptorType;
+import org.smartfrog.services.cddlm.generated.api.types.LifecycleEventRequest;
 import org.smartfrog.services.cddlm.generated.api.types.LifecycleStateEnum;
 import org.smartfrog.services.cddlm.generated.api.types.NotificationInformationType;
-import org.smartfrog.services.cddlm.generated.api.types.UnboundedXMLOtherNamespace;
-import org.smartfrog.services.cddlm.generated.api.types._createRequest;
-import org.smartfrog.services.cddlm.generated.api.types._lifecycleEventRequest;
 import org.smartfrog.services.cddlm.generated.api.types.UnboundedXMLAnyNamespace;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
@@ -64,7 +63,7 @@ public class JobState {
      *
      * @param request
      */
-    public JobState(_createRequest request, OptionProcessor options)
+    public JobState(CreateRequest request, OptionProcessor options)
             throws AxisFault {
         bind(request, options);
     }
@@ -99,7 +98,7 @@ public class JobState {
      * job info
      */
 
-    private _createRequest request;
+    private CreateRequest request;
 
     /**
      * any fault
@@ -216,7 +215,7 @@ public class JobState {
         this.primReference = primReference;
     }
 
-    public _createRequest getRequest() {
+    public CreateRequest getRequest() {
         return request;
     }
 
@@ -280,7 +279,7 @@ public class JobState {
      *
      * @param requestIn
      */
-    public void bind(_createRequest requestIn, OptionProcessor options)
+    public void bind(CreateRequest requestIn, OptionProcessor options)
             throws AxisFault {
         this.request = requestIn;
 
@@ -550,9 +549,9 @@ public class JobState {
      *
      * @return
      */
-    public _lifecycleEventRequest createLifecycleEventMessage() {
+    public LifecycleEventRequest createLifecycleEventMessage() {
         ServerInstance server = ServerInstance.currentInstance();
-        _lifecycleEventRequest event = new _lifecycleEventRequest();
+        LifecycleEventRequest event = new LifecycleEventRequest();
         event.setApplicationReference(uri);
         event.setIdentifier(callbackIdentifier);
         event.setSequenceID(BigInteger.valueOf(getNextSequenceNumber()));

@@ -28,8 +28,8 @@ import org.cddlm.client.console.Listen;
 import org.smartfrog.services.cddlm.generated.api.callbacks.DeploymentNotificationSoapBindingStub;
 import org.smartfrog.services.cddlm.generated.api.types.ApplicationStatusType;
 import org.smartfrog.services.cddlm.generated.api.types.DeploymentDescriptorType;
+import org.smartfrog.services.cddlm.generated.api.types.LifecycleEventRequest;
 import org.smartfrog.services.cddlm.generated.api.types.LifecycleStateEnum;
-import org.smartfrog.services.cddlm.generated.api.types._lifecycleEventRequest;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -77,8 +77,8 @@ public class ListenTest extends DeployingTestBase {
             DeploymentNotificationSoapBindingStub callback = new DeploymentNotificationSoapBindingStub(
                     new URL(url), null);
             callback.setTimeout(2 * 60 * 1000);
-            _lifecycleEventRequest message;
-            message = new _lifecycleEventRequest();
+            LifecycleEventRequest message;
+            message = new LifecycleEventRequest();
             boolean result = callback.notification(message);
             assertFalse("Expected failure", result);
         } finally {
@@ -95,8 +95,8 @@ public class ListenTest extends DeployingTestBase {
             DeploymentNotificationSoapBindingStub callback = new DeploymentNotificationSoapBindingStub(
                     new URL(url), null);
             callback.setTimeout(2 * 60 * 1000);
-            _lifecycleEventRequest message;
-            message = new _lifecycleEventRequest();
+            LifecycleEventRequest message;
+            message = new LifecycleEventRequest();
             message.setIdentifier(key);
             boolean result = callback.notification(message);
             assertTrue("Expected successful dispatch", result);
@@ -142,7 +142,7 @@ public class ListenTest extends DeployingTestBase {
     }
 
     private void assertTerminationMessageReceived() {
-        _lifecycleEventRequest message = listen.getLastMessage();
+        LifecycleEventRequest message = listen.getLastMessage();
         assertNotNull(message);
         ApplicationStatusType status = message.getStatus();
         assertNotNull(status);

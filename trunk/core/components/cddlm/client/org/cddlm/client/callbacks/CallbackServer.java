@@ -32,7 +32,7 @@ import org.apache.axis.utils.XMLUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.smartfrog.services.cddlm.generated.api.callbacks.DeploymentNotificationEndpoint;
-import org.smartfrog.services.cddlm.generated.api.types._lifecycleEventRequest;
+import org.smartfrog.services.cddlm.generated.api.types.LifecycleEventRequest;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -203,7 +203,7 @@ public class CallbackServer {
      *         method wanted.
      * @throws RemoteException
      */
-    public static boolean processCallback(_lifecycleEventRequest callback)
+    public static boolean processCallback(LifecycleEventRequest callback)
             throws RemoteException {
         String key = callback.getIdentifier();
         if (key == null) {
@@ -227,7 +227,11 @@ public class CallbackServer {
         }
         // serverSocket.getInetAddress().getHostName();
         assert hostName != null;
-        String url = "http://" + hostName + ":" + port + ENDPOINT_PATH_ON_SERVER;
+        String url = "http://" +
+                hostName +
+                ":" +
+                port +
+                ENDPOINT_PATH_ON_SERVER;
         return url;
     }
 }

@@ -22,7 +22,7 @@ package org.smartfrog.services.cddlm.engine;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.smartfrog.services.cddlm.generated.api.callbacks.DeploymentNotificationSoapBindingStub;
-import org.smartfrog.services.cddlm.generated.api.types._lifecycleEventRequest;
+import org.smartfrog.services.cddlm.generated.api.types.LifecycleEventRequest;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
 import java.net.URL;
@@ -45,7 +45,7 @@ public class NotificationAction extends BaseAction {
     /**
      * data to send
      */
-    private _lifecycleEventRequest message;
+    private LifecycleEventRequest message;
 
     public static final int DEFAULT_TIMEOUT = 10 * 60 * 1000;
     /**
@@ -65,7 +65,7 @@ public class NotificationAction extends BaseAction {
      * @param url
      * @param data
      */
-    public NotificationAction(URL url, _lifecycleEventRequest data) {
+    public NotificationAction(URL url, LifecycleEventRequest data) {
         assert data != null;
         assert url != null;
         this.url = url;
@@ -90,11 +90,11 @@ public class NotificationAction extends BaseAction {
         this.sleepTime = sleepTimeInSeconds;
     }
 
-    public _lifecycleEventRequest getMessage() {
+    public LifecycleEventRequest getMessage() {
         return message;
     }
 
-    public void setMessage(_lifecycleEventRequest message) {
+    public void setMessage(LifecycleEventRequest message) {
         this.message = message;
     }
 

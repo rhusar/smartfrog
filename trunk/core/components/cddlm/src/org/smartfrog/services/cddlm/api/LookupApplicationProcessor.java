@@ -23,7 +23,7 @@ import org.apache.axis.types.URI;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.smartfrog.services.axis.SmartFrogHostedEndpoint;
-import org.smartfrog.services.cddlm.generated.api.types._lookupApplicationRequest;
+import org.smartfrog.services.cddlm.generated.api.types.LookupApplicationRequest;
 
 import java.rmi.RemoteException;
 
@@ -41,7 +41,7 @@ public class LookupApplicationProcessor extends Processor {
         super(owner);
     }
 
-    public URI lookupApplication(_lookupApplicationRequest lookupApplication)
+    public URI lookupApplication(LookupApplicationRequest lookupApplication)
             throws RemoteException {
         org.apache.axis.types.NCName appname = lookupApplication.getApplication();
         if (appname == null) {

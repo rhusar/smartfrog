@@ -21,10 +21,10 @@ package org.cddlm.client.console;
 
 import org.cddlm.client.common.ServerBinding;
 import org.smartfrog.services.cddlm.generated.api.types.DynamicServerStatusType;
+import org.smartfrog.services.cddlm.generated.api.types.LanguageListTypeLanguage;
 import org.smartfrog.services.cddlm.generated.api.types.ServerInformationType;
 import org.smartfrog.services.cddlm.generated.api.types.ServerStatusType;
 import org.smartfrog.services.cddlm.generated.api.types.StaticServerStatusType;
-import org.smartfrog.services.cddlm.generated.api.types._languageListType_language;
 
 import java.io.PrintWriter;
 import java.rmi.RemoteException;
@@ -61,11 +61,11 @@ public class ShowServerStatus extends ConsoleOperation {
             out.println("  " + callbacks[i]);
         }
         out.println();
-        _languageListType_language languages[] = statInfo.getLanguages()
+        LanguageListTypeLanguage languages[] = statInfo.getLanguages()
                 .getLanguage();
         out.println("Languages: " + languages.length + " :-");
         for (int i = 0; i < languages.length; i++) {
-            final _languageListType_language language = languages[i];
+            final LanguageListTypeLanguage language = languages[i];
             out.println("  " +
                     language.getName()
                     +

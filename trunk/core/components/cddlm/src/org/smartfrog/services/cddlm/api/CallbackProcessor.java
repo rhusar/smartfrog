@@ -26,7 +26,7 @@ import org.apache.commons.logging.LogFactory;
 import org.smartfrog.services.axis.SmartFrogHostedEndpoint;
 import org.smartfrog.services.cddlm.engine.JobState;
 import org.smartfrog.services.cddlm.generated.api.types.NotificationInformationType;
-import org.smartfrog.services.cddlm.generated.api.types._setNotificationRequest;
+import org.smartfrog.services.cddlm.generated.api.types.SetNotificationRequest;
 
 /**
  * extract callback information from a job, attach it to a job Can be called in
@@ -57,8 +57,8 @@ public class CallbackProcessor extends Processor {
     public void process(JobState job, NotificationInformationType callbackInfo,
             boolean required)
             throws AxisFault {
-        CallbackInfo info=new CallbackInfo();
-        if(!info.extractCallback(callbackInfo, required)) {
+        CallbackInfo info = new CallbackInfo();
+        if (!info.extractCallback(callbackInfo, required)) {
             job.clearCallbackData();
             return;
         } else {
@@ -77,7 +77,7 @@ public class CallbackProcessor extends Processor {
      * handle the request from the endpoint by looking up the app and handing
      * off to our internal process method
      */
-    public boolean process(_setNotificationRequest request) throws AxisFault {
+    public boolean process(SetNotificationRequest request) throws AxisFault {
         final URI appURI = request.getApplication();
         if (appURI == null) {
             throw raiseBadArgumentFault(ERROR_NO_APPLICATION);

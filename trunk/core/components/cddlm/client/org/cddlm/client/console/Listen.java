@@ -27,7 +27,7 @@ import org.cddlm.client.callbacks.CallbackServer;
 import org.cddlm.client.common.ServerBinding;
 import org.smartfrog.services.cddlm.generated.api.callbacks.DeploymentNotificationEndpoint;
 import org.smartfrog.services.cddlm.generated.api.types.ApplicationStatusType;
-import org.smartfrog.services.cddlm.generated.api.types._lifecycleEventRequest;
+import org.smartfrog.services.cddlm.generated.api.types.LifecycleEventRequest;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -41,7 +41,7 @@ import java.util.Date;
 public class Listen extends ConsoleOperation
         implements DeploymentNotificationEndpoint {
 
-    _lifecycleEventRequest lastMessage;
+    LifecycleEventRequest lastMessage;
 
     int messageCount = 0;
 
@@ -74,7 +74,7 @@ public class Listen extends ConsoleOperation
         this.timeout = timeoutSeconds;
     }
 
-    public _lifecycleEventRequest getLastMessage() {
+    public LifecycleEventRequest getLastMessage() {
         return lastMessage;
     }
 
@@ -140,7 +140,7 @@ public class Listen extends ConsoleOperation
      * @return
      * @throws RemoteException
      */
-    public synchronized boolean notification(_lifecycleEventRequest callback)
+    public synchronized boolean notification(LifecycleEventRequest callback)
             throws RemoteException {
         messageCount++;
         lastMessage = callback;
@@ -154,7 +154,7 @@ public class Listen extends ConsoleOperation
      *
      * @param callback
      */
-    protected void processNotification(_lifecycleEventRequest callback) {
+    protected void processNotification(LifecycleEventRequest callback) {
         BigInteger timestamp = callback.getTimestamp();
         if (timestamp != null) {
             long utc = timestamp.longValue();

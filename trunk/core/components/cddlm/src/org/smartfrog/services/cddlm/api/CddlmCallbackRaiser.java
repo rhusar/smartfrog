@@ -25,7 +25,7 @@ import org.apache.commons.logging.LogFactory;
 import org.smartfrog.services.cddlm.engine.JobState;
 import org.smartfrog.services.cddlm.engine.NotificationAction;
 import org.smartfrog.services.cddlm.engine.ServerInstance;
-import org.smartfrog.services.cddlm.generated.api.types._lifecycleEventRequest;
+import org.smartfrog.services.cddlm.generated.api.types.LifecycleEventRequest;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
 
@@ -71,7 +71,7 @@ public class CddlmCallbackRaiser extends CallbackRaiser {
      */
     public void raiseLifecycleEvent(JobState job, Prim object,
             SmartFrogException sfe) {
-        _lifecycleEventRequest event = job.createLifecycleEventMessage();
+        LifecycleEventRequest event = job.createLifecycleEventMessage();
         log.info("queuing " +
                 event.getStatus().getState() +
                 " event to " +

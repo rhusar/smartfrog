@@ -30,10 +30,10 @@ import org.smartfrog.services.cddlm.cdl.CdlParser;
 import org.smartfrog.services.cddlm.engine.JobRepository;
 import org.smartfrog.services.cddlm.engine.JobState;
 import org.smartfrog.services.cddlm.engine.ServerInstance;
+import org.smartfrog.services.cddlm.generated.api.types.CreateRequest;
+import org.smartfrog.services.cddlm.generated.api.types.CreateResponse;
 import org.smartfrog.services.cddlm.generated.api.types.DeploymentDescriptorType;
 import org.smartfrog.services.cddlm.generated.api.types.LifecycleStateEnum;
-import org.smartfrog.services.cddlm.generated.api.types._createRequest;
-import org.smartfrog.services.cddlm.generated.api.types._createResponse;
 import org.smartfrog.sfcore.common.ConfigurationDescriptor;
 import org.smartfrog.sfcore.prim.Prim;
 
@@ -55,7 +55,7 @@ public class CreateProcessor extends Processor {
      */
     private static final Log log = LogFactory.getLog(CreateProcessor.class);
 
-    private _createRequest request;
+    private CreateRequest request;
     private OptionProcessor options;
     private JobState job;
     public static final String ERROR_NO_DESCRIPTOR = "No descriptor element";
@@ -64,7 +64,7 @@ public class CreateProcessor extends Processor {
         super(owner);
     }
 
-    public _createRequest getRequest() {
+    public CreateRequest getRequest() {
         return request;
     }
 
@@ -79,7 +79,7 @@ public class CreateProcessor extends Processor {
      * @return
      * @throws AxisFault
      */
-    public _createResponse create(_createRequest deploy) throws AxisFault {
+    public CreateResponse create(CreateRequest deploy) throws AxisFault {
 
         JobRepository repository;
         repository = ServerInstance.currentInstance().getJobs();
@@ -116,7 +116,7 @@ public class CreateProcessor extends Processor {
             repository.add(job);
             job.enterStateNotifying(LifecycleStateEnum.running, null);
         }
-        _createResponse response = new _createResponse(applicationReference);
+        CreateResponse response = new CreateResponse(applicationReference);
         return response;
     }
 
