@@ -109,7 +109,7 @@ public class SmartFrogDeploymentException extends SmartFrogRuntimeException impl
             Context deployContext) {
         super(message, sfObject);
         init(sfObject);
-        put (DEPLOY_CONTEXT,deployContext);
+        put (DEPLOY_CONTEXT,serializableContext(deployContext));
     }
 
     /**
@@ -126,7 +126,7 @@ public class SmartFrogDeploymentException extends SmartFrogRuntimeException impl
             Prim sfObject, Context deployContext) {
         super(message, cause);
         init(sfObject);
-        put (DEPLOY_CONTEXT,deployContext);
+        put (DEPLOY_CONTEXT,serializableContext(deployContext));
     }
 
     /** Constructs a deployment exception.
@@ -145,11 +145,11 @@ public class SmartFrogDeploymentException extends SmartFrogRuntimeException impl
         Context deployedContext, String message, Throwable cause,
                 Object data) {
       super(message,cause);
-      if ((source!=null)) put(SOURCE,source);
-      if ((ref!=null))put(REFERENCE,ref);
+      if ((source!=null)) put(SOURCE,source.toString());
+      if ((ref!=null))put(REFERENCE,ref.toString());
       if (name!=null)put(OBJECT_NAME,name);
-      if (deployedCompDesc!=null) put(DEPLOY_CONTEXT,deployedCompDesc);
-      if (data!=null) put(DATA,data);
+      if (deployedCompDesc!=null) put(DEPLOY_CONTEXT,serializableContext(deployedContext));
+      if (data!=null) put(DATA,data.toString());
     }
 
     /**

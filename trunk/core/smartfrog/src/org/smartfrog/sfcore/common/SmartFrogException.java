@@ -177,7 +177,7 @@ public class SmartFrogException extends Exception implements Serializable {
     }
 
     /**
-     * Puts additional conext in the exception context. This method can be used
+     * Puts additional context in the exception context. This method can be used
      * to add more information as exception propagates in the call chain.
      *
      * @param params Additional Context
@@ -194,6 +194,24 @@ public class SmartFrogException extends Exception implements Serializable {
             }
         }
     }
+
+    /**
+     * Converts a given context into a serializable one:
+     *  Any value is converted toString().
+     *
+     * @param params Additional Context
+     */
+    public Context serializableContext(Context params){
+        Context newCxt = new ContextImpl();
+        if (params != null) {
+            for (Enumeration e = params.keys(); e.hasMoreElements();) {
+                Object key = e.nextElement();
+                newCxt.put(key, params.get(key).toString());
+            }
+        }
+        return newCxt;
+    }
+
     /**
      * Gets the value of the attribute in the exception context.
 
@@ -264,13 +282,14 @@ public class SmartFrogException extends Exception implements Serializable {
     public void init (Prim sfObject){
         if (sfObject == null) return;
         if (cxt == null) cxt = new ContextImpl();
+
         try {
-            add(PRIM_CONTEXT, sfObject.sfContext().copy());
+            add(PRIM_CONTEXT, serializableContext(sfObject.sfContext()));
         } catch (Throwable  rex){
             //Ignore.
         }
         try {
-            add(PRIM_COMPLETE_NAME, sfObject.sfCompleteName());
+            add(PRIM_COMPLETE_NAME, sfObject.sfCompleteName().toString());
         } catch (Throwable  thr){
             //Ignore.
         }
