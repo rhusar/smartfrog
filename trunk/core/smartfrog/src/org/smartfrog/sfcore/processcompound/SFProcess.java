@@ -20,38 +20,31 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.processcompound;
 
-import java.io.InputStream;
-import java.rmi.RemoteException;
-import java.util.Enumeration;
-import java.util.Properties;
-import java.util.Vector;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-
-import org.smartfrog.SFSystem;
-import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
-import org.smartfrog.sfcore.common.SmartFrogCoreProperty;
-import org.smartfrog.sfcore.common.OrderedHashtable;
+import org.smartfrog.sfcore.common.Logger;
 import org.smartfrog.sfcore.common.MessageKeys;
 import org.smartfrog.sfcore.common.MessageUtil;
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
+import org.smartfrog.sfcore.common.SmartFrogCoreProperty;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.common.Logger;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
-import org.smartfrog.sfcore.parser.Phases;
-import org.smartfrog.sfcore.parser.SFParser;
 import org.smartfrog.sfcore.deployer.SFDeployer;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.security.SFClassLoader;
-
-
 import sun.misc.Signal;
 import sun.misc.SignalHandler;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.rmi.RemoteException;
+import java.util.Enumeration;
+import java.util.Properties;
+import java.util.Vector;
 
 
 /**
@@ -116,7 +109,7 @@ public class SFProcess implements MessageKeys {
      * Sets the single instance of process compound for this process.
      * The ProcessCompound can only be set once.
      *
-     * @param c root locator to use.
+     * @param pc root locator to use.
      *
      * @throws Exception if failed to set process compound
      */
@@ -355,18 +348,23 @@ public class SFProcess implements MessageKeys {
     /**
      * Deploys the local process compound, if not already there
      *
+     * @param addShutdownHook flag to enable shutdown hook listening
      * @return local process compound
      *
      * @throws SmartFrogException if failed to deploy process compound
      */
-    public static synchronized ProcessCompound deployProcessCompound()
+    public static synchronized ProcessCompound deployProcessCompound(boolean addShutdownHook)
         throws SmartFrogException,RemoteException {
 
         if (processCompound != null) {
             return processCompound;
         }
 
-        new InterruptHandler().bind("INT");
+
+        //conditionally add a shutdown hook
+        if (addShutdownHook) {
+            new InterruptHandler().bind("INT");
+        }
 
 
         ComponentDescription descr =
@@ -392,7 +390,7 @@ public class SFProcess implements MessageKeys {
 
     /**
      * Resets the root process compound
-     * @param reference of terminatorCompleteName
+     * @param terminatorCompleteName reference of terminatorCompleteName
      * @return new root process compound
      *
      * @throws SmartFrogException if failed to deploy process compound, the root process compound didn't exist or ir the local process compound is not a root process compound
@@ -407,9 +405,9 @@ public class SFProcess implements MessageKeys {
             TerminationRecord termR = new TerminationRecord("normal",
                    "Restarting ProcessCompound: "+
                     processCompound.sfCompleteName(), terminatorCompleteName);
-                processCompound.sfAddAttribute("sfSyncTerminate",new Boolean(true));
+                processCompound.sfAddAttribute("sfSyncTerminate",Boolean.TRUE);
                 processCompound.sfTerminate(termR);
-                return deployProcessCompound();
+                return deployProcessCompound(true);
         }
         if (processCompound == null) {
            throw new SmartFrogRuntimeException ("Process Compound cannot be reset: is null");
