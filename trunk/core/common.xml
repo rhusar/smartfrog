@@ -125,6 +125,8 @@
            >
        <!-- turned off; ant bug # 27218  
        <assertions enableSystemAssertions="true"/> -->
+       <jvmarg value="-ea"/>
+       <jvmarg value="-esa"/>
         <!-- #Tests take system property parameters -->
         <!-- #Formatters for capture and display -->
         <formatter type="xml"/>
