@@ -72,14 +72,14 @@ public class SFReplaceFileVar extends PrimImpl implements Prim {
     protected ParserVar parserVar = null;
 
     // Indicates if the process should terminate when the spanned process finishes
-    final String varShouldTerminate = "shouldTerminate";
-    final String varShouldDetach = "shouldDetach";
+    static final String varShouldTerminate = "shouldTerminate";
+    static final String varShouldDetach = "shouldDetach";
     // processWorkingDirectory
-    final String varSFfileName = "fileName";
-    final String varSFnewFileName = "newFileName";
-    final String varVariables = "var";
+    static final String varSFfileName = "fileName";
+    static final String varSFnewFileName = "newFileName";
+    static final String varVariables = "var";
     //prefix to any variable to be included in dataParse
-    final String appendVariables = "append";
+    static final String appendVariables = "append";
     //prefix to any variable to be included in dataAppend
 
     // 5- info log, 1 - Critical. Use -1 to avoid log
@@ -87,8 +87,8 @@ public class SFReplaceFileVar extends PrimImpl implements Prim {
     boolean printStack = false;
 
     // Level log
-    final String varLogger = "logLevel";
-    final String varPrintStack = "printStack";
+    static final String varLogger = "logLevel";
+    static final String varPrintStack = "printStack";
 
 
     /**
@@ -324,6 +324,7 @@ public class SFReplaceFileVar extends PrimImpl implements Prim {
                         //}
                     }
                 } catch (Exception ex) {
+                    //TOOD: replace with real logging
                     ex.printStackTrace();
                 }
             }

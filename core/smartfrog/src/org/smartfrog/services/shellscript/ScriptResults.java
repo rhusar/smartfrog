@@ -22,7 +22,7 @@ package org.smartfrog.services.shellscript;
 
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.componentdescription.ComopnentDescription;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 
 /**
  * Iterface to the "future" object returned from submiting an execute request
