@@ -52,7 +52,7 @@ public class RunApplicationTask extends DeployingTaskBase {
      */
     public void execute() throws BuildException {
         checkNoHost();
-        setHost("localhost");
+        setHost("");
         setStandardSmartfrogProperties();
         enableFailOnError();
         checkApplicationsDeclared();
