@@ -37,7 +37,7 @@ import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 /**
  *  Basic example component
  */
-public class DeadlockImpl extends PrimImpl implements Prim,Deadlock, Serializable {
+public class DeadlockImpl extends PrimImpl implements Prim,Deadlock {
    String attr1 = "TEST2";
     /*  Constructor for the Counter object
      *
