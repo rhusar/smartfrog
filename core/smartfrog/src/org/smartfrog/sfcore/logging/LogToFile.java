@@ -21,12 +21,6 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.logging;
 
-import java.io.PrintStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  *

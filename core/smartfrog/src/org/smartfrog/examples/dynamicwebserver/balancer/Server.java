@@ -378,7 +378,6 @@ class ConnectionRelay implements Runnable {
     private boolean copyData(ByteBuffer buffer, SocketChannel src,
         SocketChannel dst, boolean clientToServer, SelectionKey sourceKey,
         Connection conn) throws IOException {
-        Iterator iter;
 
         buffer.flip();
 

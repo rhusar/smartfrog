@@ -23,9 +23,6 @@ package org.smartfrog.sfcore.common;
 import java.util.Vector;
 
 import org.smartfrog.Version;
-import org.smartfrog.sfcore.common.Logger;
-import org.smartfrog.sfcore.common.ConfigurationDescriptor;
-import org.smartfrog.sfcore.common.SmartFrogInitException;
 import java.io.LineNumberReader;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;

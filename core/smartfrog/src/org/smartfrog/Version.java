@@ -22,7 +22,6 @@ package org.smartfrog;
 
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
-import org.smartfrog.sfcore.logging.LogToFileImpl;
 import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.logging.LogFactory;
 

@@ -19,11 +19,9 @@
  */
 package org.smartfrog.sfcore.common;
 
-import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.sfcore.processcompound.SFProcess;
 
-import java.net.InetAddress;
 import java.rmi.RemoteException;
 import org.smartfrog.SFSystem;
 

@@ -34,13 +34,10 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 package org.smartfrog.examples.arraycompound;
 
 import java.rmi.RemoteException;
-import java.util.Date;
-//import java.io.*;
 import java.util.Vector;
 import java.util.Enumeration;
 
 import java.lang.String;
-import java.text.SimpleDateFormat;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.ContextImpl;
@@ -51,11 +48,7 @@ import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.compound.CompoundImpl;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
-import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
-
 
 /**
  *

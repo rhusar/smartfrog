@@ -20,7 +20,6 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.common;
 
-import java.rmi.RemoteException;
 import java.io.Serializable;
 
 import org.smartfrog.sfcore.prim.Prim;

@@ -20,15 +20,6 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.logging;
 
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.prim.TerminationRecord;
-
-import java.io.PrintStream;
-import java.io.Serializable;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 
 /**
  */
