@@ -69,7 +69,7 @@
     <property name="smartfrog.tasks.lib.dir"
       location="${smartfrog.tasks.dist.dir}/lib/"/>
     <property name="smartfrog.tasks.jar"
-      location="${smartfrog.tasks.lib.dir}${smartfrog.tasks.name}"/>
+      location="${smartfrog.tasks.lib.dir}/${smartfrog.tasks.name}"/>
 
       <!-- common directories -->
     <property name="src.dir" location="src"/>
