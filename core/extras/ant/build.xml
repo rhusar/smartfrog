@@ -71,6 +71,7 @@
     <jar destfile="${target.jar}">
       <fileset dir="${build.classes.dir}" includes="**/*" />
     </jar>
+    <echo >created package ${target.jar}</echo>
   </target>
   
   <target name="test1" depends="package,use-smartfrog-tasks">

@@ -23,6 +23,7 @@ package org.smartfrog.tools.ant;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
+import org.apache.tools.ant.util.FileUtils;
 import org.apache.tools.ant.taskdefs.SignJar;
 import org.apache.tools.ant.types.DataType;
 import org.apache.tools.ant.types.Reference;
@@ -47,11 +48,12 @@ public class Security extends DataType {
     //java security policy file
     private File policyFile;
     //sf security resource
-    private String securityProperties;
+    private File securityProperties;
 
     //the identity to use
     private String alias;
-
+    public static final String ERROR_REFID_EXCLUSIVE = "Cannot have other attributes when refid is set";
+    public static final String ERROR_NO_ALIAS = "alias attribute must be set";
 
     public File getKeystore() {
         return keystore;
@@ -66,7 +68,7 @@ public class Security extends DataType {
         this.keystore = keystore;
     }
 
-    public String getSecurityProperties() {
+    public File getSecurityProperties() {
         return securityProperties;
     }
 
@@ -77,16 +79,18 @@ public class Security extends DataType {
      *
      * @param securityProperties
      */
+/*
     public void setSecurityResource(String securityProperties) {
         this.securityProperties = securityProperties;
     }
+*/
 
     /**
      * Path to a file containing the security properties
      * @param securityProperties
      */
     public void setSecurityFile(File securityProperties) {
-        this.securityProperties = securityProperties.getAbsolutePath();
+        this.securityProperties = securityProperties;
     }
 
 
@@ -107,6 +111,10 @@ public class Security extends DataType {
         return alias;
     }
 
+    /**
+     * set the alias to use when signing
+     * @param alias
+     */
     public void setAlias(String alias) {
         this.alias = alias;
     }
@@ -121,6 +129,19 @@ public class Security extends DataType {
     }
 
     /**
+     * resolve any references, return the base security reference
+     * @return the security instance that may be us, may be somebody else.
+     */
+    public Security resolve() {
+        if(getRefid()==null) {
+            //check the syntax is good
+            validateReferencesAndAttributes();
+            return this;
+        }
+        return (Security) getCheckedRef(Security.class, "Security");
+    }
+
+    /**
      * take a reference in a project and resolve it.
      *
      * @param project
@@ -130,13 +151,14 @@ public class Security extends DataType {
      */
     public static Security resolveReference(Project project,
                                             Reference reference) {
-        assert project != null;
-        assert reference != null;
-        Object o = reference.getReferencedObject(project);
-        if (!(o instanceof Security)) {
-            throw new BuildException("reference is of wrong type");
-        }
-        return (Security) o;
+        //create a temp security
+        Security security=new Security();
+        //bound to this project
+        security.setProject(project);
+        //with the refID attr
+        security.setRefid(reference);
+        //which we ask to resolve
+        return security.resolve();
     }
 
 
@@ -164,6 +186,22 @@ public class Security extends DataType {
     }
 
     /**
+     * verifies that attributes are free if the references are set
+     */
+    private void validateReferencesAndAttributes() {
+        if(getRefid()!=null) {
+            boolean attrs=false;
+            attrs = keystore!=null;
+            attrs |= policyFile!=null;
+            attrs |= securityProperties!=null;
+            attrs |= alias != null;
+            if(attrs) {
+                throw new BuildException(ERROR_REFID_EXCLUSIVE);
+            }
+        }
+    }
+
+    /**
      * validate the settings.
      */
     public void validate() {
@@ -177,6 +215,10 @@ public class Security extends DataType {
      */
     public void validateForSigning() {
         assertValidFile(keystore, "Keystore");
+        assertValidFile(securityProperties, "Security Properties");
+        if(alias==null) {
+            throw new BuildException(ERROR_NO_ALIAS);
+        }
     }
 
     /**
@@ -206,7 +248,7 @@ public class Security extends DataType {
         signJar.setKeystore(keystore.getAbsolutePath());
         //get the pass in.
         Properties securityProps = loadPassFile();
-        signJar.setKeypass(securityProps.getProperty(SmartFrogJVMProperties.KEYSTORE_PASSWORD));
+        signJar.setStorepass(securityProps.getProperty(SmartFrogJVMProperties.KEYSTORE_PASSWORD));
         signJar.setAlias(getAlias());
     }
 
@@ -223,13 +265,7 @@ public class Security extends DataType {
             securityProps.load(instream);
             return securityProps;
         } finally {
-            if(instream!=null) {
-                try {
-                    instream.close();
-                } catch (IOException e) {
-
-                }
-            }
+            FileUtils.close(instream);
         }
     }
 
