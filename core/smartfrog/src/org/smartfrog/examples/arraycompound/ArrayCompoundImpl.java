@@ -45,6 +45,7 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.ContextImpl;
 import org.smartfrog.sfcore.common.SFNull;
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.compound.CompoundImpl;
@@ -117,12 +118,12 @@ public class ArrayCompoundImpl extends CompoundImpl implements Compound, ArrayCo
         Prim p = null;
         try {
             Context sfHostContext = new ContextImpl();
-            sfHostContext.sfAddAttribute(org.smartfrog.sfcore.common.SmartFrogCoreKeys.SF_PROCESS_HOST, hostname);
+            sfHostContext.sfAddAttribute(SmartFrogCoreKeys.SF_PROCESS_HOST, hostname);
             //Create a new copy of the description!
             ComponentDescription newcd = (ComponentDescription)((ComponentDescriptionImpl)template).copy();
             if (parent == null){
               if (sflog().isDebugEnabled()) {
-                  sfHostContext.sfAddAttribute(org.smartfrog.sfcore.common.SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME,"app-"+hostname.toString());
+                  sfHostContext.sfAddAttribute(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME,"app-"+hostname.toString());
                   sflog().debug("Creating new app: "+ hostname +":'"+parent.sfCompleteName()+"'");
               }
               p = this.sfCreateNewApp(newcd , sfHostContext);
