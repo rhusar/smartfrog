@@ -234,9 +234,8 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
         try {
             return java.net.InetAddress.getLocalHost();
         } catch (Exception ex) {
-            Logger.logQuietly(ex);
+            Logger.logQuietly(MessageUtil.formatMessage(MSG_FAILED_INET_ADDRESS_LOOKUP),ex);
         }
-
         return null;
     }
 
@@ -1721,7 +1720,8 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
             sfDeployWithHooks.applyHooks(this, null);
 
         } catch (Exception sfex){
-        new TerminatorThread(this, sfex, null).quietly().run();
+            Logger.log(sfex);
+            new TerminatorThread(this, sfex, null).quietly().run();
             throw (SmartFrogDeploymentException)SmartFrogDeploymentException.forward (sfex);
         }
     }
@@ -1743,11 +1743,11 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
             try {
                 sfExportRef = SecureRemoteObject.exportObject(this);
             } catch (RemoteException rex) {
-                throw new SmartFrogLifecycleException(MSG_OBJECT_REGISTRATION_FAILED,
-                    rex, this);
+                throw new SmartFrogLifecycleException(MessageUtil.formatMessage(
+                    MSG_OBJECT_REGISTRATION_FAILED),rex);
             } catch (SFGeneralSecurityException sfgsex) {
-                throw new SmartFrogLifecycleException(MSG_OBJECT_REGISTRATION_FAILED,
-                    sfgsex, this);
+                throw new SmartFrogLifecycleException(MessageUtil.formatMessage(
+                    MSG_OBJECT_REGISTRATION_FAILED),sfgsex);
             }
         }
 
@@ -1887,7 +1887,9 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
 
         // Deregisters this component from local ProcessCompound (if ever registered)
         try {
-            SFProcess.getProcessCompound().sfDeRegister(this);
+            if (SFProcess.getProcessCompound() != null) {
+                SFProcess.getProcessCompound().sfDeRegister(this);
+            }
         } catch (Exception ex) {
             // @TODO: Log. Ignore.
             Logger.logQuietly(ex);

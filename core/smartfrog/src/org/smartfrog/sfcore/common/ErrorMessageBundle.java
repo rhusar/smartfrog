@@ -97,7 +97,8 @@ public class ErrorMessageBundle extends ListResourceBundle
         { MISSING_PARAMETER  , "Missing Parameter {0}"},
         { COPY_SERIALIZE_FAILED , "Attempt to copy data failed, exception during serialize/deserialize {0}"},
         { COPY_FAILED , "Attempt to copy data failed, data not serializable {0}"},
-        { MSG_OBJECT_REGISTRATION_FAILED, "Failed to register/export the object {0}"}
+        { MSG_OBJECT_REGISTRATION_FAILED, "Failed to register/export the object"},
+        { MSG_FAILED_INET_ADDRESS_LOOKUP, "Failed to get Inet address of the localhost"}
     };
 
     /**

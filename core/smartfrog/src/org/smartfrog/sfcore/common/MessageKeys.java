@@ -284,5 +284,9 @@ public interface MessageKeys {
      */
     public static String COPY_SERIALIZE_FAILED
                                                = "COPY_SERIALIZE_FAILED";
-
+    
+    /**
+     * Message key: Failed to get InetAddress of the localhost
+     */
+    public static String MSG_FAILED_INET_ADDRESS_LOOKUP = "MSG_FAILED_INET_ADDRESS_LOOKUP";
 }
