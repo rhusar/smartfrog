@@ -74,7 +74,8 @@ public class IsDeployed extends ProjectComponent implements Condition {
         //TODO: implement
         //plan is to use sfResolve, once we have a reference to a remote daemon.
         //all network exceptions should be caught and turned into simple failures.
-        return false;
+        throw new BuildException("Not Implemented");
+        //return false;
     }
 
 
