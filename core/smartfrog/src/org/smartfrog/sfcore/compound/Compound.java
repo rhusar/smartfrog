@@ -37,7 +37,7 @@ import org.smartfrog.sfcore.prim.Prim;
  */
 public interface Compound extends Prim, ChildMinder {
     /**
-     * An internal SmartFrog method. 
+     * An internal SmartFrog method.
      * It deploys a compiled component and makes it an attribute of the
      * parent compound. Also start heartbeating the deployed component
      * if the component registers. Note that the remaining lifecycle methods must
@@ -52,7 +52,7 @@ public interface Compound extends Prim, ChildMinder {
      *
      * @return deployed component if successful
      *
-     * @exception SmartFrogDeploymentException failed to deploy compiled 
+     * @exception SmartFrogDeploymentException failed to deploy compiled
      * component
      * @exception RemoteException In case of Remote/nework error
      */
@@ -66,17 +66,38 @@ public interface Compound extends Prim, ChildMinder {
      * of creating new child components of a Compound.  The method is safe against
      * multiple calls of lifecycle.
      *
-     * @param cmp compiled component to deploy and start
      * @param name name of attribute which the deployed component should adopt
+     * @param cmp compiled component to deploy and start
      * @param parms parameters for description
      *
      * @return deployed component if successful
      *
-     * @exception SmartFrogDeploymentException failed to deploy compiled 
+     * @exception SmartFrogDeploymentException failed to deploy compiled
      * component
      * @exception RemoteException In case of Remote/nework error
      */
     public Prim sfCreateNewChild(Object name, ComponentDescription cmp, Context parms)
+        throws RemoteException, SmartFrogDeploymentException;
+
+    /**
+     * A high-level component deployment method - creates a child of this
+     * Compound, running it through its entire startup lifecycle. This is the preferred way
+     * of creating new child components of a Compound.  The method is safe against
+     * multiple calls of lifecycle.
+     *
+
+     * @param name name of attribute which the deployed component should adopt
+     * @param parent of deployed component
+     * @param cmp compiled component to deploy and start
+     * @param parms parameters for description
+     *
+     * @return deployed component if successful
+     *
+     * @exception SmartFrogDeploymentException failed to deploy compiled
+     * component
+     * @exception RemoteException In case of Remote/nework error
+     */
+    public Prim sfCreateNewChild(Object name, Prim parent, ComponentDescription cmp, Context parms)
         throws RemoteException, SmartFrogDeploymentException;
 
     /**
@@ -89,7 +110,7 @@ public interface Compound extends Prim, ChildMinder {
      *
      * @return deployed component if successful
      *
-     * @exception SmartFrogDeploymentException failed to deploy compiled 
+     * @exception SmartFrogDeploymentException failed to deploy compiled
      * component
      * @exception RemoteException In case of Remote/nework error
      */
