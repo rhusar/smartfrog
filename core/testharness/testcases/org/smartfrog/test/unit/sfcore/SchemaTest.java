@@ -24,7 +24,12 @@ import junit.framework.TestCase;
 import org.smartfrog.test.SmartFrogTestBase;
 import org.smartfrog.sfcore.parser.Phases;
 import org.smartfrog.sfcore.common.SmartFrogException;
-
+import java.io.*;
+import org.smartfrog.sfcore.security.SFClassLoader;
+import org.smartfrog.sfcore.common.MessageUtil;
+import org.smartfrog.sfcore.common.SmartFrogParseException;
+import org.smartfrog.sfcore.common.MessageKeys;
+import org.smartfrog.sfcore.parser.SFParser;
 /**
  * created 16-Apr-2004 11:36:32
  */
@@ -47,5 +52,4 @@ public class SchemaTest extends SmartFrogTestBase {
         Phases phases = parseLocalFile(FILES + "testSchemaOptionalVector.sf");
         assertNotNull(phases);
     }
-
 }
