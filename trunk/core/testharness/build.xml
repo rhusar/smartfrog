@@ -39,48 +39,24 @@ For more information: www.smartfrog.org
   You can enable/disable unit tests by setting unit.tests to true or false;
   system tests by setting system.tests to true or false. By default both are enabled.
   
+  This 
+  
 </description>
 
    <!-- override point -->
   <property file="build.properties" />
-  <property environment="env" />
-  
-  <property name="build.dir" location="build"/>
-  <property name="test.dir" location="${build.dir}/test"/>
-  <property name="test.classes.dir" location="${test.dir}/classes"/>
-  <property name="test.data.dir" location="${test.dir}/data"/>
-  <property name="test.datafiles.dir" location="test/files"/>
-  <property name="test.reports.dir" location="${test.dir}/reports"/>
+
+  <!-- this component keeps its test files in a different place from the 
+       rest, for historical reasons (i.e. it is nothing but test) -->  
   <property name="test.src.dir" location="testcases" />
-  <property name="test.smartfrog.classesdir" location="${test.classes.dir}"/>
-      
-  <!-- 
-       here we define where the smartfrog libraries live.
-       this is correct for the sforge CVS repository; to work with the older
-       taka CVS repository, you must have checked out the smartfrog module with
-       the name 'smartfrog'.
-       To run tests against smartfrog in a different location, override
-       this on the commandline or in build.properties
-       -->
-  <property name="smartfrog.home" location="../smartfrog"/>
-  <property name="dist.dir" location="${smartfrog.home}/dist"/>
-  <property name="dist.lib.dir" location="${dist.dir}/lib"/>
   
-  <!-- Compile options for Smartfrog Release -->
-  <property name="javac.debug.mode" value="on"/> <!-- turn on compile -g -->
-  <property name="javac.debug.level" value="lines,vars,source" />
-  <property name="javac.runtime.target" value="1.4" />
-
+  <property name="root.dir" location=".."  />
   
-  <!-- the compile time path -->
-  <path id="compile.classpath">
-    <fileset dir="${dist.lib.dir}" includes="**/*.jar"/>
-  </path>  
+  <!-- Import common stuff -->
+  <import file="${root.dir}/common.xml"/>
+ 
+  
 
-  <path id="test.classpath">
-    <path refid="compile.classpath"/>
-    <pathelement location="${test.classes.dir}"/>
-  </path>  
   
   <!-- turn on the tests. If you dont want this, set one (or both) to false)  in the unit tests-->
   <property name="system.tests" value="true" />
@@ -92,13 +68,7 @@ For more information: www.smartfrog.org
   <!-- Test settings                                              -->
   <!-- ========================================================== -->
   
-  <target name="init" >
-    <mkdir dir="${test.dir}" />
-    <mkdir dir="${test.classes.dir}" />
-    <mkdir dir="${test.data.dir}" />
-    <mkdir dir="${test.datafiles.dir}" />
-    <mkdir dir="${test.reports.dir}" />
-    <mkdir dir="${test.src.dir}"  />
+  <target name="init" depends="init-common,init-standard-output-dirs,use-smartfrog-tasks">
     <condition property="system.tests.enabled">
       <istrue value="${system.tests}"/>
     </condition>
@@ -109,96 +79,165 @@ For more information: www.smartfrog.org
     
     <echo>system.tests.enabled=${system.tests.enabled}</echo>
     <echo>unit.tests.enabled=${unit.tests.enabled}</echo>
+      
+    <!-- the compile time path -->
+    <path id="compile.classpath">
+      <path refid="smartfrog.classpath"/>
+    </path>  
+
+    <!-- test time path -->
+    <path id="test.classpath">
+      <path refid="compile.classpath"/>
+      <pathelement location="${test.classes.dir}"/>
+    </path>  
+  
+  </target>
+  
+
+    <!--  look for a local daemon. Sets the property  local.daemon.running if
+  one is listening on port 3800-->
+  <target name="probe-local-daemon" depends="init-common">
+    <sf-daemonfound property="local.daemon.running" />
   </target>
 
-  <target name="clean" description="clean up the test directories only">
-    <delete dir="${test.dir}" />    
+  <!-- conditionally start the daemon if one was not found already  -->
+  <target name="start-daemon-if-needed" 
+    depends="use-smartfrog-tasks,probe-local-daemon"
+    unless="local.daemon.running">
+      <sf-startdaemon  />
   </target>
   
-  <target name="verify-smartfrog" >
-    <available 
-      classname="org.smartfrog.SFSystem" 
-      classpathref="compile.classpath" 
-      property="sfSystem.present"/>
-    <fail unless="sfSystem.present">
-      Smartfrog entry point not found in ${dist.lib.dir}
-    </fail>
-  </target>
+  <!-- this is the counterpoint to start-daemon-if-needed 
+    if the probe did not find a daemon, then we shut down any daemon
+    that we created.-->
+  <target name="stop-daemon-if-started"
+    depends="use-smartfrog-tasks"
+    unless="local.daemon.running" >
+    <sf-stopdaemon failonerror="false" />
+  </target>  
+
   
   <!-- compile the tests -->
-  <target name="compile-tests" depends="verify-smartfrog,init">
+  <target name="compile-tests" 
+    depends="verify-smartfrog,init,init-common">
     <depend srcdir="${test.src.dir}"
       destdir="${test.classes.dir}"
       cache="${test.dir}/testdepends"
       closure="yes"/>
-    <javac
-      debug="true"
-      debuglevel="lines,vars,source"
+    <sf-javac-with-ant 
       srcdir="${test.src.dir}"
-      includes="**/*.java"
-      includeAntRuntime="true"
       destdir="${test.classes.dir}"
-      target="1.4"
-      source="1.4"
       classpathref="compile.classpath"
-      />
-      <rmic includesfile="rmitargets" base="${test.classes.dir}">
-          <classpath refid="compile.classpath"/>
-    </rmic>
-    <copy todir="${test.classes.dir}">
-      <fileset dir="${test.src.dir}"
-        includes="**/*.xml,**/*.dtd,**/*.xsd,**/*.sf,**/*.properties" />
-    </copy>
+      >
+    </sf-javac-with-ant>
+    <copy-useful-files src="${test.src.dir}" dest="${test.classes.dir}" />
   </target>
 
-  <!-- run the tests -->
-  <target name="run-tests" depends="compile-tests"
+  <!-- compile the RMI. This is separate from the other compile, so that unit 
+       tests dont depend on it -->
+  <target name="compile-RMI" 
+    depends="verify-smartfrog,init,init-common">
+    <rmic includesfile="rmitargets" base="${test.classes.dir}">
+      <classpath refid="compile.classpath"/>
+    </rmic>
+  </target>  
+  
+  <!-- run the unit tests tests -->
+  <target name="unit-tests" depends="compile-tests"
     description="run unit tests">
-    <junit printsummary="no"
+    <sf-junit 
            errorProperty="test.failed"
-           failureProperty="test.failed"
-           fork="true"
-           includeantruntime="true">
+           failureProperty="test.failed" 
+           >
         <sysproperty key="test.smartfrog.classesdir"
             value="${test.smartfrog.classesdir}" />
-        <jvmarg value="-enableassertions"/>
       <classpath>
         <path refid="compile.classpath"/>
         <pathelement location="${test.classes.dir}"/>
       </classpath>
-      <!-- #Tests take system property parameters -->
-      <!-- #Formatters for capture and display -->
-      <formatter type="xml"/>
-      <formatter type="brief" usefile="false"/>
       <!-- #Test case isolation technique -->
       <test name="${testcase}" if="testcase"/>
-      <batchtest todir="${test.data.dir}" unless="testcase" if="system.tests.enabled">
-        <!-- bulk test case -->
-        <fileset dir="${test.classes.dir}">
-          <include name="org/smartfrog/test/system/**/*Test.class" />
-       </fileset>
-      </batchtest>
       <batchtest todir="${test.data.dir}" unless="testcase" if="unit.tests.enabled">
         <!-- bulk test case -->
         <fileset dir="${test.classes.dir}">
           <include name="org/smartfrog/test/unit/**/*Test.class" />
        </fileset>
       </batchtest>
-    </junit>
-    
-    <!-- do it -->
-    <junitreport todir="${test.data.dir}">
-      <fileset dir="${test.data.dir}">
-        <include name="TEST-*.xml"/>
-      </fileset>
-      <report format="frames" todir="${test.reports.dir}"/>
-    </junitreport>
-    <fail if="test.failed">Unit tests failed see ${test.reports.dir}</fail>
-
+    </sf-junit>
+  </target>
+  
+  
+  <!-- system tests are more complex than the unit tests as they need a 
+       functional smartfrog daemon. We bring this up by 
+       conditionally booting the daemon if one was not there already,
+       and shutting it down if we booted one up. 
+       The daemon is started in a separate thread from the junit task, so that
+       it runs in the ant UI.
+       -->
+  <target name="system-tests" depends="compile-tests,compile-RMI,probe-local-daemon"
+    description="run system tests"
+    if="system.tests.enabled">
+    <parallel>
+      
+      <!-- first thread runs the daemon -->
+      <sequential>
+        <antcall target="start-daemon-if-needed"/>
+      </sequential>
+      
+      <!-- this is the next thread -->
+      <sequential>
+      
+        <!-- 
+          wait ten seconds for the harness to start
+          without this the first tests will fail as there is no
+          sf daemon around
+        -->
+        <waitfor maxwait="10" maxwaitunit="second">
+          <socket server="localhost" port="3800"/>
+        </waitfor>
+        <!-- run the tests -->
+        <sf-junit 
+               errorProperty="test.failed"
+               failureProperty="test.failed" 
+               >
+            <sysproperty key="test.smartfrog.classesdir"
+                value="${test.smartfrog.classesdir}" />
+          <classpath>
+            <path refid="compile.classpath"/>
+            <pathelement location="${test.classes.dir}"/>
+          </classpath>
+          <!-- #Test case isolation technique -->
+          <test name="${testcase}" if="testcase"/>
+          <batchtest todir="${test.data.dir}" unless="testcase" >
+            <!-- bulk test case -->
+            <fileset dir="${test.classes.dir}">
+              <include name="org/smartfrog/test/system/**/*Test.class" />
+           </fileset>
+          </batchtest>
+        </sf-junit>
+        <!-- conditionally stop the daemon -->
+        <antcall target="stop-daemon-if-started"/>
+        <!-- end the test thread -->
+      </sequential>
+    </parallel>
+  </target>
+  
+    <!-- generate the reports-->
+  
+  <target name="reports" depends="init" 
+    description="generate the test reports" >    
+    <sf-test-report data="${test.data.dir}"
+      reports="${test.reports.dir}"
+      failed="test.failed"/>
   </target>
 
+    
+  <target name="run-tests"
+    depends="unit-tests,system-tests" />  
+
+    <!-- public entry point does all tests and the reports -->
   <target name="test" 
-    depends="run-tests"
+    depends="run-tests,reports"
     description="compile and run all the tests"
     />
 </project>

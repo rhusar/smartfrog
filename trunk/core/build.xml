@@ -31,20 +31,44 @@ For more information: www.smartfrog.org
   </target>
 
   <!-- =================================================================== -->
-  <!-- build a distribution                                                -->
+  <!-- build a distribution of smartfrog.jar, sfExamples.jar               -->
   <!-- =================================================================== -->
-  <target name="dist" depends="init" description="build a distribution">
+  <target name="main-dist" depends="init" description="build a distribution">
     <ant dir="${main.project}" target="dist" inheritAll="false" />
   </target>
 
 
   <!-- =================================================================== -->
-  <!-- build a distribution                                                -->
+  <!-- clean all sub-projects                                              -->
   <!-- =================================================================== -->
   <target name="clean" depends="init" description="clean up">
     <ant dir="${main.project}" target="clean" inheritAll="false" />
+    <ant dir="${test.project}" target="clean" inheritAll="false" />
+    <ant dir="${ant.project}" target="clean" inheritAll="false" />
   </target>
 
+  <!-- =================================================================== -->
+  <!-- ant distribution                                                    -->
+  <!-- =================================================================== -->
+  
+  <target name="tasks" depends="init" description="ant tasks">
+    <ant dir="${ant.project}" target="dist" inheritAll="false" />
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- main distribution                                                    -->
+  <!-- =================================================================== -->
+  
+  <target name="dist" depends="main-dist" description="distributables">
+  </target>
+  
+
+  <!-- =================================================================== -->
+  <!-- test in the main project                                            -->
+  <!-- =================================================================== -->
+  <target name="test-main" depends="init" description="test in main project">
+    <ant dir="${ant.project}" target="test" inheritAll="false" />
+  </target>
 
   <!-- =================================================================== -->
   <!-- test in the main project                                            -->
@@ -53,10 +77,11 @@ For more information: www.smartfrog.org
     <ant dir="${main.project}" target="sfParseTest" inheritAll="false" />
   </target>
 
+  
   <!-- =================================================================== -->
   <!-- test in the harness                                                 -->
   <!-- =================================================================== -->
-  <target name="test-testharness" depends="init" 
+  <target name="test-testharness" depends="init,tasks" 
     description="test in test harness; only run system tests">
     <ant dir="${test.project}" target="test" inheritAll="false" >
       <property name="system.tests" value="false" />
@@ -81,6 +106,8 @@ For more information: www.smartfrog.org
     <property name="toplevel.dir" location=".." />
     <property name="main.project" location="smartfrog" />
     <property name="test.project" location="testharness" />
+    <property name="extras.dir" location="extras" />
+    <property name="ant.project" location="${extras.dir}/ant" />
   </target>
 
   <!-- the following targets are for use in CruiseControl automated builds;
@@ -124,7 +151,7 @@ For more information: www.smartfrog.org
   <!-- incremental Cruise Control build                                    -->
   <!-- =================================================================== -->
        <target name="cc-incremental"
-        depends="cvsupdate,dist"/>
+        depends="cvsupdate,dist,tasks"/>
 
     <!-- =================================================================== -->
     <!-- Cruise control test suite                                    -->

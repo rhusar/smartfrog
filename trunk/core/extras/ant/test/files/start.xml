@@ -20,7 +20,14 @@ ant -lib ../../build/dist/lib/smartfrog-tasks.jar -lib ../../../../smartfrog/dis
    <property name="timeout"   value="1000" />
    <property name="long.timeout"   value="10000" />
    <property name="medium.timeout"   value="5000" />
-    
+
+   <presetdef name="sf-block">
+       <waitfor maxwait="10" maxwaitunit="second">
+        <socket server="localhost" port="3800"/>
+      </waitfor>
+   </presetdef>
+   
+   
     <!-- the setup target verifies that smartfrog is not running -->
     <target name="setup" >
       <condition property="daemon.running">
@@ -43,6 +50,7 @@ ant -lib ../../build/dist/lib/smartfrog-tasks.jar -lib ../../../../smartfrog/dis
     
     <target name="testSpawn" depends="setup">
       <sf-startdaemon iniFile="default.ini" initialSmartfrogFile="default.sf" spawn="true" />
+      <sf-block/>
       <sf-stopdaemon failonerror="true"/>
     </target>    
 
@@ -105,7 +113,8 @@ ant -lib ../../build/dist/lib/smartfrog-tasks.jar -lib ../../../../smartfrog/dis
           <application name="app" descriptor="${resource.sf}"/>
         </sf-startdaemon>
         <sequential>
-          <sleep milliseconds="${medium.timeout}"/>
+          <sf-block/>
+           <sleep milliseconds="${medium.timeout}"/>
            <sf-stopdaemon />
         </sequential>
       </parallel>      

@@ -151,7 +151,7 @@ relevant JAR files into the javacc subdirectory
     <!-- Compile options for Smartfrog Release -->
     <property name="javac.debug.mode" value="on"/> <!-- turn on compile -g -->
     <property name="javac.debug.level" value="lines,vars,source" />
-    <property name="javac.runtime.target" value="1.4" />
+    <property name="javac.java.version" value="1.4" />
 
     <!-- override point for javacc -->
     <property name="javacc.dir" location="javacc"/>
@@ -227,15 +227,20 @@ relevant JAR files into the javacc subdirectory
       destdir="${build.classes.dir}"
       debug="${javac.debug.mode}"
       debuglevel="${javac.debug.level}"
+      nowarn="true"
       includeAntRuntime="false"
-      source="${javac.runtime.target}"
-      target="${javac.runtime.target}"
+      source="${javac.java.version}"
+      target="${javac.java.version}"
       >
       <classpath refid="smartfrog.class.path"/>
     </javac>
 
     <!-- the RMI compile is split in two, as the compiler could not
-        handle it otherwise -->
+        handle it otherwise.
+        It is tempting to run these in parallel, to get speedup on multiway
+        CPUs, but as the SunRmic adapter runs rmic in-VM, that is too dangerous.
+        We'd need to fork rmic to get decent isolation. 
+        -->
     <rmic includesfile="${rmitargets}"
       base="${build.classes.dir}">
       <classpath refid="smartfrog.class.path"/>
@@ -391,7 +396,7 @@ relevant JAR files into the javacc subdirectory
            Footer="${Name.System} ${version} ${Version}"
            doctitle="${Name.System}"
            bottom="${Name.Company}"
-           source="${javac.runtime.target}"
+           source="${javac.java.version}"
            >
       <group title="SmartFrog Packages" packages="org.smartfrog.*"/>
       <classpath refid="smartfrog.class.path"/>
