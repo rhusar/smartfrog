@@ -106,6 +106,7 @@ public class UndeployProcessor extends Processor {
      * @return
      * @throws RemoteException
      */
+    /*
     public boolean doUndeploy(JobState job) throws RemoteException {
         try {
             String application = job.getName();
@@ -127,6 +128,6 @@ public class UndeployProcessor extends Processor {
             throw AxisFault.makeFault(exception);
         }
     }
-
+*/
 
 }

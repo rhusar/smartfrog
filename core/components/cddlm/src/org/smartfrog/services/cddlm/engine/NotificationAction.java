@@ -127,6 +127,8 @@ public class NotificationAction extends BaseAction {
         String path = url.toString();
         log.info("sending notification to "+path+" # "+message.getIdentifier());
         callback.callback(message);
+        //send a notification
+        super.execute();
     }
 
 
