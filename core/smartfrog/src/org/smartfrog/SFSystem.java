@@ -391,32 +391,6 @@ public class SFSystem implements MessageKeys {
 
 
     /**
-     * Use the -h and -p options, or lack of, to select target process compound
-     * for the command line configuration requests.
-     *
-     * @param opts the set of parsed command line options
-     *
-     * @return the target process compound
-     *
-     * @throws Exception In case of SmartFrog system error
-     */
-    public static ProcessCompound selectTargetProcess(OptionSet opts)
-        throws Exception {
-        ProcessCompound target = SFProcess.getProcessCompound();
-
-        if (opts.isRemoteDaemon) {
-            target = SFProcess.getRootLocator().
-                getRootProcessCompound(InetAddress.getByName(opts.host));
-
-            if (opts.isRemoteSubprocess) {
-                target = (ProcessCompound) target.sfResolveHere(opts.subprocess);
-            }
-        }
-
-        return target;
-    }
-
-    /**
      * Select target process compound using host and subprocess names
      *
      * @param  host host name. If null, assumes localhost.
