@@ -55,10 +55,10 @@ relevant JAR files into the javacc subdirectory
   <target name="init">
     <tstamp/>
     <property name="Name.System" value="SmartFrog "/>
-    <property name="Name.Company" value="(C) Copyright 1998-2004 Hewlett-Packard Development Company, LP"/>
+    <property name="Name.Company" value="(C) Copyright 1998-2005 Hewlett-Packard Development Company, LP"/>
     <property name="version" value="CORE"/>
-    <property name="Version" value="3.04.0014.beta"/>
-    <property name="year" value="2004"/>
+    <property name="Version" value="3.04.015.beta"/>
+    <property name="year" value="2005"/>
 
     <echo level="verbose">
 ===================================================================
