@@ -24,8 +24,6 @@ For more information: www.smartfrog.org
 
 <!DOCTYPE project [
      <!ENTITY security SYSTEM "private/buildSecurity.xml">
-     <!ENTITY testcases SYSTEM "../testharness/testcases/build.xml">
-     <!ENTITY testharness SYSTEM "../testharness/build.xml">
 ]>
 
 <!-- ===========================================================================
@@ -125,19 +123,10 @@ Please go though the installation guide and install ant. Reference URL:http://an
 
      <!-- Sercurity related files -->
      <property name="manifestName" value="${private}/sealManifest.mf"/>
-     <!-- Test Harness directory -->
-     <property name="../testharnessdir" value="testharness"/>
-
 
 <!-- Include here the security-related ant file -->
 &security;
 <!-- End of security-related ant file -->
-
-<!-- Include here build file for test harness -->
-&testharness;
-
-<!-- Include here build file for test cases -->
-&testcases;
 
   <!-- =================================================================== -->
   <!--  Release                                                            -->
@@ -391,7 +380,7 @@ Please go though the installation guide and install ant. Reference URL:http://an
   <target name="sfJar" depends="build">
     <jar jarfile="${dist}/${lib}/smartfrog.jar" basedir="${build}"
          includes="**/smartfrog/**"
-         excludes="**/services/**,**/examples/**,**/tools/**, **/test/**"
+         excludes="**/services/**,**/examples/**"
          manifest ="${manifestName}"/>
   </target>
 
