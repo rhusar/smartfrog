@@ -482,7 +482,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
                     } catch (Throwable thr){
                         String name = "";
                         try {name =((Prim)elem).sfCompleteName().toString();} catch (Exception ex) {};
-                        SmartFrogLifecycleException sflex = SmartFrogLifecycleException.sfDeploy(name ,thr,null);
+                        SmartFrogLifecycleException sflex = SmartFrogLifecycleException.sfDeploy(name ,thr,this);
                         sflex.add(SmartFrogLifecycleException.DATA,
                                 "Failed object class: "+((Prim) elem).sfResolve(SmartFrogCoreKeys.SF_CLASS,"",false));
                         throw sflex;
@@ -519,7 +519,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
                     } catch (Throwable thr){
                         String name = "";
                         try {name =((Prim)elem).sfCompleteName().toString();} catch (Exception ex) {};
-                        SmartFrogLifecycleException sflex = SmartFrogLifecycleException.sfStart(name ,thr,null);
+                        SmartFrogLifecycleException sflex = SmartFrogLifecycleException.sfStart(name ,thr,this);
                         sflex.add(SmartFrogLifecycleException.DATA,
                                 "Failed object class: "+((Prim) elem).sfResolve(SmartFrogCoreKeys.SF_CLASS,"",false));
                         throw sflex;

@@ -114,7 +114,11 @@ public class SmartFrogRuntimeException extends SmartFrogException implements Ser
      */
     public void init(Prim sfObject){
         if (sfObject == null) return;
-        super.init(sfObject);
+        try {
+            super.init(sfObject);
+        } catch (Throwable rex){
+            //ignore
+        }
         try {
            add(REFERENCE,sfObject.sfCompleteName());
         } catch (Throwable rex){

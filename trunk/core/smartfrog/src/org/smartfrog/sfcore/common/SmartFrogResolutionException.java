@@ -104,8 +104,7 @@ public class SmartFrogResolutionException extends SmartFrogRuntimeException
      * @param cause exception causing this exception
      * @param sfObject component that encountered exception
      */
-    public SmartFrogResolutionException(String message, Throwable cause,
-        Prim sfObject) {
+    public SmartFrogResolutionException(String message, Throwable cause, Prim sfObject) {
         super(message, cause, sfObject);
     }
 
@@ -125,8 +124,7 @@ public class SmartFrogResolutionException extends SmartFrogRuntimeException
      * @param source source that raised the exception
      * @param reason message for exception
      */
-    public SmartFrogResolutionException(Reference ref, Reference source,
-                               String reason) {
+    public SmartFrogResolutionException(Reference ref, Reference source, String reason) {
       this(ref, source, reason, null);
     }
 
@@ -141,9 +139,9 @@ public class SmartFrogResolutionException extends SmartFrogRuntimeException
     public SmartFrogResolutionException (Reference ref, Reference source,
                                String reason, Object data) {
       super(reason);
-      if ((ref!=null))put(REFERENCE,ref);
-      if ((source!=null)) put(SOURCE,source);
-      if (data!=null) put(DATA,data);
+      if ((ref!=null))put(REFERENCE,ref.copy());
+      if ((source!=null)) put(SOURCE,source.copy());
+      if (data!=null) put(DATA,data.toString());
       //addCallerInfo(4);
     }
 
@@ -161,9 +159,9 @@ public class SmartFrogResolutionException extends SmartFrogRuntimeException
                                          String reason, Object data ,
                                          Throwable cause,Prim sfObject) {
       super(reason, cause, sfObject);
-      if ((ref!=null))put(REFERENCE,ref);
-      if ((source!=null)) put(SOURCE,source);
-      if (data!=null) put(DATA,data);
+      if ((ref!=null))put(REFERENCE,ref.copy());
+      if ((source!=null)) put(SOURCE,source.copy());
+      if (data!=null) put(DATA,data.toString());
       //addCallerInfo(4);
     }
 
@@ -178,8 +176,7 @@ public class SmartFrogResolutionException extends SmartFrogRuntimeException
      *
      * @return a SmartFrogResolution exception
      */
-    public static SmartFrogResolutionException generic(Reference ref,
-                                                            String message) {
+    public static SmartFrogResolutionException generic(Reference ref, String message) {
         return new SmartFrogResolutionException(ref, message);
 
     }
@@ -300,7 +297,7 @@ public class SmartFrogResolutionException extends SmartFrogRuntimeException
         Reference source,Object resolvedValue, String referenceValueType, String defaultValueType) {
         SmartFrogResolutionException srex = new SmartFrogResolutionException (ref, source,
                 MessageUtil.formatMessage(MSG_ILLEGAL_CLASS_TYPE));
-                srex.put(REFERENCE_OBJECT_RESOLVED,resolvedValue);
+                srex.put(REFERENCE_OBJECT_RESOLVED,resolvedValue.toString());
                 srex.put(REFERENCE_OBJECT_CLASS_TYPE,referenceValueType);
                 srex.put(DEFAULT_OBJECT_CLASS_TYPE,defaultValueType);
         return srex;
@@ -334,7 +331,7 @@ public class SmartFrogResolutionException extends SmartFrogRuntimeException
             // add message to data
             if (r !=null){
               //ADD: only added if not present.
-              ((SmartFrogResolutionException)thr).add(SmartFrogResolutionException.REFERENCE,r);
+              ((SmartFrogResolutionException)thr).add(SmartFrogResolutionException.REFERENCE,r.copy());
             }
             return (SmartFrogResolutionException)thr;
         } else {
@@ -384,7 +381,9 @@ public class SmartFrogResolutionException extends SmartFrogRuntimeException
      * @return string representation of the resolution exception
      */
     public String toString(String nm) {
-        StringBuffer strb = new StringBuffer();
+      StringBuffer strb = null;
+      try {
+        strb = new StringBuffer();
         strb.append (shortClassName() +":: ");
         //strb.append ((((getMessage() == null) ? "" : getMessage())));
         if (getMessage()==null){
@@ -421,8 +420,11 @@ public class SmartFrogResolutionException extends SmartFrogRuntimeException
                     (nm+PRIM_CONTEXT+  ": " + "included") : "" ));
         strb.append((((this.containsKey(DATA))) ?
                     (nm+DATA+  ": " + get(DATA)) : ""));
-
-        return strb.toString();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            //ignore
+      }
+      return strb.toString();
     }
 
 
