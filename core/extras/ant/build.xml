@@ -22,6 +22,15 @@
     <property name="src.dir" location="src"/>
     <property name="target.name" value="{smartfrog.tasks.name}"/>
     <property name="target.jar" location="${smartfrog.tasks.jar}" />
+    <condition property="system.tests.enabled">
+      <istrue value="${system.tests}"/>
+    </condition>    
+    <property name="system.tests" value="true" />
+    <condition property="system.tests.enabled">
+      <not>
+      <istrue value="${system.tests}"/>
+      </not>
+    </condition>    
   </target>
 
   <target name="compile" depends="init">
@@ -118,7 +127,13 @@
     <copy-useful-files src="${src.dir}" dest="${build.classes.dir}" />
   </target>
   
-  <!-- run the tests -->
+  <!-- 
+    run the tests
+    note that StartTest and any other tests that rely on
+    deployment to a running system must be configured to only run
+    when system.tests is set. This is so that GUMP locks them out
+    
+  -->
   <target name="run-tests" depends="compile-tests,want-testutil"
     if="testutil.found">
     <path id="tests.run.classpath">
@@ -139,6 +154,7 @@
       <batchtest todir="${test.data.dir}" >
         <fileset dir="${test.classes.dir}">
           <include name="**/*Test.class" />
+          <exclude name="**/StartTest.class" if="system.tests.enabled"/>
        </fileset>
       </batchtest>
     </sf-junit>
