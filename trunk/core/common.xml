@@ -126,12 +126,7 @@
 	<istrue value="${is.component}"/>
 	</condition>
   
-  	<!--condition property="dist.dir" value="${build.dir}/dist">
-	<isset property="${dist.dir}"/>
-	</condition-->
-    
-	<property name="dist.dir" value="${build.dir}/dist"/>
-	<echo> Dist path "${dist.dir}" </echo>
+  	<property name="dist.dir" value="${build.dir}/dist"/>
 	<condition property="dist.lib.dir" value="${dist.dir}/lib">
 	<istrue value="${is.component}"/>
 	</condition>
@@ -148,15 +143,19 @@
 	<istrue value="${is.component}"/>
 	</condition>
 	
+	<property name="dist.jdocs.dir" location="${build.dir}/dist/docs/jdocs"/>
 
     <condition property="dist.bin.dir" value="${dist.dir}/bin">
 	<istrue value="${is.component}"/>
 	</condition>
-	
+
+	<property name="dist.bin.dir" location="${build.dir}/dist/bin"/>
+
 	<condition property="dist.src.dir" value="${dist.dir}/src">
 	<istrue value="${is.component}"/>
 	</condition>
 	
+	<property name="dist.src.dir" location="${build.dir}/dist/src"/>
 
     <!-- build the name of our JAR file from the name of the project.
       override any of this stuff for alternate naming -->
@@ -974,3 +973,4 @@
   </target>
 
 </project>   
+
