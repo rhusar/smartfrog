@@ -32,6 +32,7 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 
 #include "org/smartfrog/services/display/components.sf"
 #include "org/smartfrog/services/trace/components.sf"
+#include "org/smartfrog/services/persistance/components.sf"
 #include "org/smartfrog/components.sf"
 
 // Default sfDaemon Display
@@ -71,7 +72,17 @@ DefaultTraceCompound extends DefaultCompound {
     // log extends DefaultLog; // Logs standard output and error to a file
 }
 
+DefaultPersistantCompound extends DefaultCompound {
+    persister extends SFPersist { 
+	directory "/tmp/sfPersist/";
+    } 
+}
+
 sfConfig extends DefaultCompound;
+
+// Alternative default compound with tracing or/and log to file enabled.
+// Uncoment next line to use it.
+//sfConfig extends DefaultPersistantCompound;
 
 // Alternative default compound with tracing or/and log to file enabled.
 // Uncoment next line to use it.
