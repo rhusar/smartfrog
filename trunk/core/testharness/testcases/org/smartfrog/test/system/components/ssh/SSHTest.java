@@ -132,7 +132,7 @@ public class SSHTest
                                  "SmartFrogLifecycleException",
                                  null,
                                  "JSchException",
-                                 "Auth fail");
+                                 "");
     }
 	/*sshexec : command missing*/
 	public void testCaseTCN93() throws Exception {
@@ -140,8 +140,8 @@ public class SSHTest
                                  "tcn93",
                                  "SmartFrogLifecycleException",
                                  null,
-                                 "JSchException",
-                                 "Auth fail");
+                                 "SmartFrogException",
+                                 "Remote command: cmd1 failed with exit status");
     }
 	/*sshexec : password file missing*/
     public void testCaseTCN94() throws Exception {

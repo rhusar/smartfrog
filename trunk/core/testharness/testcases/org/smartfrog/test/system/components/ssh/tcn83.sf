@@ -28,9 +28,9 @@ For more information: www.smartfrog.org
 sfConfig extends Compound {
     scp1 extends ScpSession {
         host "ebnt171.india.hp.com";
-        userId "ashish";
+        userId "kumar";
         passwordFile "c:\\cvs\\forge\\password1.txt";
-        localFiles ["e:\\temp\\ssh\\vimrc_bak", "e:\\temp\\ssh\\anatomy.pdf"];
+         localFiles ["c:\\cvs\\forge\\vimrc_bak", "c:\\cvs\\forge\\anatomy.pdf"];
         remoteFiles ["/home/ashish/tmp/ssh/vimrc_bak", "/home/ashish/tmp/ssh/anatomy.pdf"];
         transferType "put";
     }
