@@ -29,6 +29,7 @@ For more information: www.smartfrog.org
   */
 #include "/org/smartfrog/components.sf"
 #include "/org/smartfrog/predicates.sf"
+#include "/org/smartfrog/services/os/java/components.sf"
 
 
 /**
@@ -52,11 +53,12 @@ TestSuiteSchema extends Schema {
 }
 
 JUnitTestSuiteSchema extends Schema {
-    classes extends OptionalVector;
-    subpackages extends OptionalBoolean;
+    //the package that all classes are in
+    //e.g "org.example.test"
     package extends String;
-    excludes extends OptionalVector;
-    pattern extends OptionalString;
+    //the classes in the package.
+    //e.g. ["test1","subpackage.test2"]
+    classes extends OptionalVector;
 }
 
 /**
@@ -75,10 +77,26 @@ TestSuite extends Prim {
  */
 JUnitTestSuite extends TestSuite {
     junitTestSuiteSchema extends JUnitTestSuiteSchema;
-    sfClass "org.smartfrog.services.junit.TestSuiteComponent";
+    sfClass "org.smartfrog.services.junit.JUnitTestSuiteImpl";
+}
+
+
+/**
+ * This is a forked JUnit instance. We offer all the JUnit attributes
+ * and the java attrs too. The latter are all bound to a
+ * forkedJVM component that lives underneath.
+ */
+ForkedJUnitTestSuite extends JUnitTestSuite {
+    //insert the JVM
+    //javaSchema extends JavaSchema;
+    sfClass "org.smartfrog.services.junit.ForkedJunitTestRunner";
     subpackages true;
     pattern "*Test.class";
+    forkedJVM extends Java {
+        classname "org.smartfrog.services.junit.ForkedJVM";
+    }
 }
+
 
 /**
  * this is a declaration of a test listener
@@ -91,8 +109,18 @@ ConsoleListener extends TestListener {
     sfClass "org.smartfrog.services.junit.listeners.ConsoleListenerComponent";
 }
 
+XMLListenerSchema extends Schema {
+/** output directories are compusory and can be a path or a File ref*/
+    outputDirectory extends Compulsory ;
+    useHostname extends Boolean;
+}
+
 XMLListener extends TestListener {
-    outputDirectory TBD;
+    useHostname "true";
+}
+
+BufferingListener extends TestListener {
+    sfClass "org.smartfrog.services.junit.listeners.BufferingListenerComponent";
 }
 
 /**
@@ -102,7 +130,7 @@ XMLListener extends TestListener {
 TestRunnerSchema extends Schema {
     listener extends CD;
     keepGoing extends OptionalBoolean;
-    fork extends OptionalBoolean;
+//    fork extends OptionalBoolean;
     failOnError extends OptionalBoolean;
     threadPriority extends OptionalInteger;
 }

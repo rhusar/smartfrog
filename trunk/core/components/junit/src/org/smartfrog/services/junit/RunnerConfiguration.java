@@ -22,8 +22,9 @@ package org.smartfrog.services.junit;
 import java.io.Serializable;
 
 /**
+ * This is the configuration to turn
  * created 17-May-2004 17:22:03
- * The clone policy creates a shallow clone
+ * The clone policy creates a shallow clone, and retains the same listener
  */
 
 public class RunnerConfiguration implements Serializable, Cloneable {

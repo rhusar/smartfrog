@@ -24,16 +24,10 @@ import junit.framework.Test;
 import junit.framework.TestResult;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogInitException;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.security.SFClassLoader;
 import org.smartfrog.sfcore.utils.ComponentHelper;
-<<<<<<< TestSuiteComponent.java
-import org.smartfrog.sfcore.security.SFClassLoader;
-import org.smartfrog.sfcore.logging.Log;
-=======
->>>>>>> 1.4
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -42,7 +36,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.regex.Pattern;
 
 
@@ -53,7 +46,7 @@ import java.util.regex.Pattern;
  * created 14-May-2004 15:14:23
  */
 
-public class TestSuiteComponent extends PrimImpl implements JUnitTestSuite, junit.framework.TestListener {
+public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite, junit.framework.TestListener {
 
     private Log log;
 
@@ -65,7 +58,6 @@ public class TestSuiteComponent extends PrimImpl implements JUnitTestSuite, juni
 
     private boolean unlessValue;
 
-    private boolean subPackages;
 
     private String packageValue;
 
@@ -87,7 +79,7 @@ public class TestSuiteComponent extends PrimImpl implements JUnitTestSuite, juni
     private String regexp;
     private Pattern pattern;
 
-    public TestSuiteComponent() throws RemoteException {
+    public JUnitTestSuiteImpl() throws RemoteException {
         helper = new ComponentHelper(this);
         log = helper.getLogger();
     }
@@ -108,14 +100,6 @@ public class TestSuiteComponent extends PrimImpl implements JUnitTestSuite, juni
 
     public void setUnless(boolean unlessValue) throws RemoteException {
         this.unlessValue = unlessValue;
-    }
-
-    public boolean getSubPackages() throws RemoteException {
-        return subPackages;
-    }
-
-    public void setSubPackages(boolean subPackages) throws RemoteException {
-        this.subPackages = subPackages;
     }
 
     /**
@@ -146,65 +130,48 @@ public class TestSuiteComponent extends PrimImpl implements JUnitTestSuite, juni
     protected void readConfiguration() throws SmartFrogException, RemoteException {
         ifValue=sfResolve(ATTRIBUTE_IF,ifValue,false);
         unlessValue=sfResolve(ATTRIBUTE_UNLESS,unlessValue,false);
-        subPackages=sfResolve(ATTR_SUBPACKAGES,subPackages,false);
         classes = flattenStringList((List)sfResolve(ATTR_CLASSES,classes,false),ATTR_CLASSES);
-        packageValue = sfResolve(ATTR_PACKAGE,packageValue,false);
-        regexp = sfResolve(ATTR_PATTERN,regexp,false);
 
-        processExclusions();
+        //package attribute names a package
+        packageValue = sfResolve(ATTR_PACKAGE,packageValue,false);
+        if(packageValue==null) {
+            packageValue="";
+        } else {
+            //add a dot at the end if we need it
+            if(packageValue.length()>0 && packageValue.charAt(packageValue.length()-1)!='.') {
+                packageValue+='.';
+            }
+        }
         buildClassList();
     }
 
+    /**
+     * build the list of classes to run
+     */
     protected void buildClassList() {
         testClasses = new HashMap();
         Iterator it=classes.iterator();
         while (it.hasNext()) {
             String testclass = (String) it.next();
-            maybeAddTest(testclass);
+            addTest(testclass);
         }
-
-        //now recurse through the packages
-        pattern=Pattern.compile(regexp+"\\.class");
-        //todo
-
     }
 
     /**
-     * add a test to the list if it is not there or excludes
+     * add a test to the list , prepending the package
      * @param classname
      */
-    private void maybeAddTest(String classname) {
-        if(!isExcluded(classname)
-            && testClasses.get(classname)==null) {
-            log.debug("adding test "+classname);
-            testClasses.put(classname,classname);
+    private void addTest(String classname) {
+        String fullname=packageValue+classname;
+
+        if(testClasses.get(fullname)==null) {
+            log.debug("adding test "+ fullname);
+            testClasses.put(fullname, fullname);
         }
     }
 
-    /**
-     * test for exclusion
-     * @param classname
-     * @return
-     */
-    private boolean isExcluded(String classname) {
-        return excludesMap.get(classname)!=null;
-    }
 
-    /**
-     * turns {@link excludesList} into a flattened hashmap of all entries.
-     * Creates and updates {@link #excludesMap}
-     * make sure the exclusion list of the right type
-     * @throws SmartFrogInitException if something is not a string or a list of strings
-     */
-    private void processExclusions() throws SmartFrogInitException, SmartFrogResolutionException, RemoteException {
-        excludesMap=new HashMap(excludesList.size());
-        final List list = flattenStringList((List) sfResolve(ATTR_EXCLUDES,(List)null,false), ATTR_EXCLUDES);
-        Iterator index=list.iterator();
-        while (index.hasNext()) {
-            Object element = index.next();
-            excludesMap.put(element,element);
-        }
-    }
+
 
     /**
      * flatten a string list, validating type as we go. recurses as much as we need to.
