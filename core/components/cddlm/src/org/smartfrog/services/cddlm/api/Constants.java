@@ -55,7 +55,7 @@ public class Constants {
     };
     public static final String SMARTFROG_HOMEPAGE = "http://smartfrog.org/";
     public static final String PRODUCT_NAME = "SmartFrog implementation";
-    public static final String CVS_INFO = "$ID: $";
+    public static final String CVS_INFO = "$Id$";
     public static final String SMARTFROG_SCHEMA = "smartfrog";
     public static final String ERROR_INVALID_SCHEMA = "invalid schema in URI: ";
     public static final String ERROR_NO_APPLICATION = "application is undefined";
