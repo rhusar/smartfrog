@@ -24,6 +24,7 @@ import java.io.InputStream;
 
 import org.smartfrog.SFSystem;
 import org.smartfrog.sfcore.common.SmartFrogParseException;
+import org.smartfrog.sfcore.common.SmartFrogCoreProperty;
 import org.smartfrog.sfcore.languages.sf.sfcomponentdescription.SFComponentDescription;
 import org.smartfrog.sfcore.parser.Phases;
 import org.smartfrog.sfcore.parser.StreamParser;
@@ -43,21 +44,27 @@ import org.smartfrog.sfcore.security.SFClassLoader;
  *  files
  */
 public class SFParser implements StreamParser {
+
+
    /**
-    *  Base property name for all parser related properties. SFSystem.propBase
-    *  followed by Parser.
+    * Default SF parser factory class
     */
-   public final static String propBase = SFSystem.propBase +
-         "sfcore.languages.sf.";
+   public final static String defaultSFFactoryClass =
+                            "org.smartfrog.sfcore.languages.sf.DefaultFactory";
+
+  /**
+   * Default SF parser Include Handler class
+   */
+   public final static String defaultSFIncludeHandlerClass =
+                      "org.smartfrog.sfcore.languages.sf.DefaultIncludeHandler";
 
    /**
     *  Factory class name system property key. This is the propBase +
     *  componentFactoryClass. This sets the parser to construct when getParser
     *  is called. Default is an instance of this class.
     */
-   public static String factoryClassName = SFSystem.getProperty(SFSystem.propBase +
-         propBase + "factoryClass",
-         "org.smartfrog.sfcore.languages.sf.DefaultFactory");
+   public static String factoryClassName = SFSystem.getProperty(
+         SmartFrogCoreProperty.sfParserSFFactoryClass,defaultSFFactoryClass);
 
    /**
     *  include handler class name system property key. This is the propBase +
@@ -65,9 +72,8 @@ public class SFParser implements StreamParser {
     *  getIncludeHandler is called. Default is an instance of
     *  DefaultIncludeHandler class.
     */
-   public static String includeHandlerClassName = SFSystem.getProperty(SFSystem.propBase +
-         propBase + "includeHandlerClass",
-         "org.smartfrog.sfcore.languages.sf.DefaultIncludeHandler");
+   public static String includeHandlerClassName = SFSystem.getProperty(
+         SmartFrogCoreProperty.sfParserSFIncludeHandlerClass, defaultSFIncludeHandlerClass);
 
    /**
     *  Stores the class for the factory.

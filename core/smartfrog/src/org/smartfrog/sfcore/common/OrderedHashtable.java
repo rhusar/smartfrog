@@ -25,7 +25,7 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
-import org.smartfrog.SFSystem;
+import org.smartfrog.sfcore.common.SmartFrogCoreProperty;
 
 
 /**
@@ -37,18 +37,14 @@ import org.smartfrog.SFSystem;
 public class OrderedHashtable extends Hashtable implements Copying,
     Serializable {
 
-    /**
-     * Property base for hashtable properties. Uses SFSystem.propBase as basis
-     */
-    public static final String propBase = SFSystem.propBase +
-        "sfcore.common.OrderedHashtable.";
+
 
     /**
      * Initial capacity for hashtables. Looks up
      * Common.OrderedHashtable.initCap (offset by SFSystem.propBase). Defaults
      * to 10 if not there.
      */
-    public static int initCap = Integer.getInteger(propBase + "initCap", 10)
+    public static int initCap = Integer.getInteger(SmartFrogCoreProperty.initCapOrderedHashTable, 10)
                                        .intValue();
 
     /**
@@ -56,7 +52,7 @@ public class OrderedHashtable extends Hashtable implements Copying,
      * Common.OrderedHashtable.loadFac (offset by SFSystem.propBase). Defaults
      * to 95(%) if not there.
      */
-    public static float loadFac = Integer.getInteger(propBase + "loadFac", 95)
+    public static float loadFac = Integer.getInteger(SmartFrogCoreProperty.loadFacOrderedHashTable, 95)
                                          .floatValue() / 100;
 
     /**
@@ -64,7 +60,7 @@ public class OrderedHashtable extends Hashtable implements Copying,
      * Common.OrderedHashtable.keysInc (offset by SFSystem.propBase). Defaults
      * to 5 if not there.
      */
-    public static int keysInc = Integer.getInteger(propBase + "keysInc", 5)
+    public static int keysInc = Integer.getInteger(SmartFrogCoreProperty.keysIncOrderedHashTable, 5)
                                        .intValue();
 
     /** Vector for ordered keys. */
@@ -126,7 +122,7 @@ public class OrderedHashtable extends Hashtable implements Copying,
      * Internal method to call the basic put method on hashtables. This will
      * NOT add the key into the ordered table. Used mainly by copy().
      * Overwrites Hashtable.put().
-     * 
+     *
      * @param key key of attribute to put
      * @param value value to put
      *

@@ -23,7 +23,8 @@ package org.smartfrog.sfcore.security;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.smartfrog.SFSystem;
+
+import org.smartfrog.sfcore.common.SmartFrogCoreProperty;
 
 
 /**
@@ -33,7 +34,7 @@ import org.smartfrog.SFSystem;
  */
 public class SFSecurityProperties {
     /** Base property name for all the SF security related properties. */
-    public static final String propBaseSecurity = SFSystem.propBase +
+    public static final String propBaseSecurity = SmartFrogCoreProperty.propBase +
         "sfcore.security.";
 
     /** Property name to activate SF security features .*/

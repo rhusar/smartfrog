@@ -25,6 +25,7 @@ import java.util.Enumeration;
 import java.util.Vector;
 
 import org.smartfrog.SFSystem;
+import org.smartfrog.sfcore.common.SmartFrogCoreProperty;
 import org.smartfrog.sfcore.common.Copying;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
@@ -37,24 +38,25 @@ import org.smartfrog.sfcore.parser.SFParser;
  * containing contexts called a, which has to be a component that contains an
  * attribute named b. &lt;br &gt; WARNING: References are not safe for use in
  * hashtables (and therefor as attribute keys) if they are modified, since the
- * hashCode is based on the first element.  
+ * hashCode is based on the first element.
  *
  */
 public class Reference implements Copying, Cloneable, Serializable {
 
     /**
      * Initial capacity for references. Looks up Reference.initCap (offset by
-     * SFSystem.propBase). Defaults to 5 if not there
+     * propBase). Defaults to 5 if not there
+     * @see Reference
      */
-    public static int initCap = Integer.getInteger(SFSystem.propBase +
-            "Reference.initCap", 5).intValue();
+    public static int initCap = Integer.getInteger(SmartFrogCoreProperty.initCapReference, 5).intValue();
 
     /**
      * Capacity increment for references. Looks up Reference.inc (offset by
-     * SFSystem.propBase). Defaults to 2 if not there
+     * propBase). Defaults to 2 if not there
+     * @see Reference
      */
-    public static int inc = Integer.getInteger(SFSystem.propBase +
-            "Reference.inc", 2).intValue();
+    public static int inc = Integer.getInteger(SmartFrogCoreProperty.incReference, 2).intValue();
+
 
     /** Actual reference. */
     protected Vector ref = new Vector(initCap, inc);
@@ -197,7 +199,7 @@ public class Reference implements Copying, Cloneable, Serializable {
      * @param eager new eager flag
      *
      * @return old eager flag
-     * 
+     *
      * @see #getEager
      */
     public boolean setEager(boolean eager) {
@@ -402,7 +404,7 @@ public class Reference implements Copying, Cloneable, Serializable {
     }
     /**
      * Returns string representation of the reference.
-     * Overrides Object.toString.    
+     * Overrides Object.toString.
      *
      * @return String representing the reference
      */
