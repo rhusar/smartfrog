@@ -164,9 +164,9 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
                                    , getSfCodeBase(classComponentDescription));
         } catch (Exception ex ){
             localLog=new LogToFileImpl(name,new Integer(currentLogLevel));
-            localLog.warn("Error init localLog for LogImpl",ex);
+            if (localLog.isWarnEnabled()) localLog.warn("Error init localLog for LogImpl",ex);
         }
-        localLog.trace(classComponentDescription.toString());
+        if (localLog.isTraceEnabled()) localLog.trace(classComponentDescription.toString());
         logName = name;
     }
 
