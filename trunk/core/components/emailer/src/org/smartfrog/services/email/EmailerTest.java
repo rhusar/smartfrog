@@ -54,7 +54,6 @@ public class EmailerTest extends PrimImpl implements Prim {
         String compName = (String) sfResolve("sfProcessComponentName", false);
         mailer = (Emailer) sfResolve("myMailer", mailer, false);
         assert (mailer != null);
-        send mail using preconfigured to, from and subject attributes
         mailer.sendEmail("This is "+ compName); 
     }
     
