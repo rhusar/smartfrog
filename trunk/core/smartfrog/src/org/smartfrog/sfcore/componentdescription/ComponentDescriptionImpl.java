@@ -628,7 +628,7 @@ public class ComponentDescriptionImpl implements Serializable, Cloneable,
         }
         try {
             if (phases==null) {
-                descr.sfResolvePhases().sfAsComponentDescription();
+                descr.sfResolvePhases();
 
             } else {
                 descr.sfResolvePhases(phases);
@@ -645,7 +645,16 @@ public class ComponentDescriptionImpl implements Serializable, Cloneable,
                                          formatMessage(
                 MSG_ERR_RESOLVE_PHASE), thr);
         }
-        return (ComponentDescription) descr.sfAsComponentDescription().sfResolve(ref);
+
+        Object obj = descr.sfAsComponentDescription().sfResolve(ref);
+        if (!(obj instanceof ComponentDescription)){
+           throw new SmartFrogResolutionException(null,null,"Error resolving '"
+                 +ref.toString()+"' in "+ url
+                 + ". The result is not a ComponentDescription, result: "
+                 +obj.toString()
+                 +" ("+obj.getClass().getName()+")" );
+        }
+        return (ComponentDescription) obj;
     }
 
 
