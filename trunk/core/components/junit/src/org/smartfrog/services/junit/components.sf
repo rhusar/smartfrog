@@ -1,0 +1,105 @@
+/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+/*
+ this file declares the junit components
+ */
+
+
+
+ /**
+  * Include the core smartfrog components.
+  */
+#include "/org/smartfrog/components.sf"
+#include "/org/smartfrog/predicates.sf"
+
+
+/**
+ * the schema for assertions
+ if: boolean
+ conditionally execute the test only when if=true
+ unless: boolean
+ conditionally execute the test only when unless=false
+ package
+ name of a package that contains multiple test cases/classes.
+ subpackages: boolean
+ optionally search down subpackages
+ excludes: String list
+ list of test cases classes not to execute.
+
+ */
+TestSuiteSchema extends Schema {
+    class extends OptionalString;
+    if extends OptionalBoolean;
+    unless extends OptionalBoolean;
+    subpackages extends OptionalBoolean;
+    package extends String;
+    excludes extends OptionalList;
+}
+
+/**
+ * test suites are purely informative; their aim in life is to
+ * store configuration information for the interest of the container.
+ * Actually, the implementation may choose to host the execution code in the test suite, but
+ * that is an implementation detail.
+ */
+TestSuite extends Prim {
+    testSuiteSchema extends TestSuiteSchema;
+    sfClass "org.smartfrog.services.junit.TestSuiteComponent";
+    if true;
+    unless false;
+    subpackages true;
+}
+
+/**
+ * this is a declaration of a test listener
+ */
+
+TestListener extends Prim {
+}
+
+ConsoleListener extends TestListener {
+    sfClass "org.smartfrog.services.junit.listeners.ConsoleListenerComponent";
+}
+
+XMLListener extends TestListener {
+    outputDirectory TBD;
+}
+
+/**
+ * and the test runner
+ */
+
+TestRunnerSchema extends Schema {
+    listener extends CD;
+    keepGoing extends OptionalBoolean;
+    fork extends OptionalBoolean;
+}
+
+/**
+ * the base test runner has a console listener automatically
+ */
+TestRunner extends Prim {
+    sfClass "org.smartfrog.services.junit.TestRunnerComponent";
+    testRunnerSchema extends TestRunnerSchema;
+    listener extends ConsoleListener ;
+}
+
+

@@ -20,15 +20,51 @@
 package org.smartfrog.services.junit;
 
 import java.rmi.Remote;
+import java.rmi.RemoteException;
+import java.util.List;
 
 
 /**
  * A test suite is a list of classes to run
+ * TestSuiteSchema extends Schema {
+ * class extends OptionalString;
+ * if extends OptionalBoolean;
+ * unless extends OptionalBoolean;
+ * subpackages extends OptionalBoolean;
+ * package extends String;
+ * excludes extends OptionalList;
+ * }
  * created 15-Apr-2004 11:51:51
  */
 
 
-public interface TestSuite extends Remote{
+public interface TestSuite extends Remote {
 
+    public static final String ATTRIBUTE_CLASS = "class";
+    public static final String ATTRIBUTE_IF = "if";
+    public static final String ATTRIBUTE_UNLESS = "unless";
+    public static final String ATTRIBUTE_SUBPACKAGES = "subpackages";
+    public static final String ATTRIBUTE_PACKAGE = "package";
+    public static final String ATTRIBUTE_EXCLUDES = "excludes";
+
+    String getTestClass() throws RemoteException;
+
+    void setTestClass(String testClass) throws RemoteException;
+
+    boolean getIf() throws RemoteException;
+
+    void setIf(boolean ifValue) throws RemoteException;
+
+    boolean getUnless() throws RemoteException;
+
+    void setUnless(boolean unlessValue) throws RemoteException;
+
+    boolean getSubPackages() throws RemoteException;
+
+    void setSubPackages(boolean subPackages) throws RemoteException;
+
+    List getExcludes() throws RemoteException;
+
+    void setExcludes(List excludes) throws RemoteException;
 
 }

@@ -17,41 +17,15 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.junit;
+package org.smartfrog.services.junit.listeners;
 
-import java.rmi.Remote;
-import java.rmi.RemoteException;
+import org.smartfrog.services.junit.TestListener;
 
 /**
- * This is the public testrunner interface
- * created 15-Apr-2004 11:51:44
+ * created 14-May-2004 15:41:25
  */
 
+public interface ConsoleListener extends TestListener {
 
-public interface TestRunner extends Remote {
-    /**
-     * name of the fork attribute
-     */
-    String ATTRIBUTE_FORK = "fork";
-    /**
-     * name of the listener
-     */
-    String ATTRIBUTE_LISTENER = "listener";
 
-    /**
-     * name of the keepgoing attr
-     */
-    String ATTRIBUTE_KEEPGOING = "keepgoing";
-
-    TestListener getListener() throws RemoteException;
-
-    void setListener(TestListener listener) throws RemoteException;
-
-    boolean getKeepGoing() throws RemoteException;
-
-    void setKeepGoing(boolean keepGoing) throws RemoteException;
-
-    boolean getFork() throws RemoteException;
-
-    void setFork(boolean fork) throws RemoteException;
 }
