@@ -10,7 +10,7 @@ if defined SFHOME goto continue1
 if defined SFPRIVATE goto continue2
   set SFPRIVATE=%SFHOME%\private
 :continue2
-if NOT (%1)==() GOTO usage
+
 set CLASSPATH=%SFHOME%\signedLib\smartfrog.jar;%SFHOME%\signedLib\sfServices.jar;%SFHOME%\signedLib\sfTestCases.jar;%CLASSPATH%  
 set SERVER=localhost:8080
 rem Please edit codebase if you have any other jar file in webserver 

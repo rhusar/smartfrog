@@ -6,7 +6,7 @@ if defined SFHOME goto continue1
   set SFHOME=%cd%
   cd bin
 :continue1
-if NOT (%1)==() GOTO usage
+
 set CLASSPATH=%SFHOME%\lib\smartfrog.jar;%SFHOME%\lib\sfServices.jar;%SFHOME%\lib\sfTestCases.jar;%CLASSPATH%
 rem set CLASSPATH=%SFHOME%\lib\smartfrog.jar;%CLASSPATH%
 

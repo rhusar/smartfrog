@@ -1,10 +1,6 @@
 if ! test $SFHOME; then export SFHOME=$PWD; fi
 if ! test $SFPRIVATE; then export SFPRIVATE=$SFHOME/private; fi
-if ! test $SFHOSTNAME; then export SFHOSTNAME=host1; fi
-if [ $# -ne 0 ];then
-echo "Insufficient argument(S) to use sfDaemon"
-echo "Usage: sfDaemon"
-exit
+if ! test $SFHOSTNAME; then export SFHOSTNAME=host1;
 fi
 export CLASSPATH=$SFHOME/signedLib/smartfrog.jar:$SFHOME$/signedLib/sfServices.jar:$SFHOME/signedLib/sfTestCases.jar:$CLASSPATH
 export SERVER=localhost:8080
