@@ -39,6 +39,7 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferencePart;
+import org.smartfrog.sfcore.common.*;
 
 /**
  * <p>
@@ -196,17 +197,23 @@ public class ThresholderImpl extends CompoundImpl implements Thresholder,
 
     public void setMinInstances(int i) {
         synchronized (setInstancesLock) {
-            if (i < 0) {
+            try {
+              if (i < 0) {
                 minInstances = 1;
-            } else {
+              }
+              else {
                 minInstances = i;
                 sfReplaceAttribute(MININSTANCES, new Integer(minInstances));
+              }
+
+              logger.logOptional(name, "set minimum instances to " +
+                                 minInstances);
+
+              setTargetInstances(targetInstances);
             }
-
-            logger.logOptional(name, "set minimum instances to " +
-                minInstances);
-
-            setTargetInstances(targetInstances);
+            catch (Exception ex) {
+              logger.log(name,"Trying set minimum instances to "+minInstances + ". "+ex.toString());
+            }
         }
     }
 

@@ -65,10 +65,13 @@ public class Attribute extends EventPrimImpl implements Prim {
         value = sfResolve("value");
 
         try {
-            if (value != null) {
+            if (name!=null){
+              if (value != null) {
                 component.sfReplaceAttribute(name, value);
-            } else {
+              }
+              else {
                 component.sfRemoveAttribute(name);
+              }
             }
         } catch (Exception e) {
             term = TerminationRecord.abnormal(e.toString(), id);

@@ -42,6 +42,7 @@ import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 
 import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.common.*;
 
 
 /**
@@ -88,10 +89,10 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
     //File workDir = null; //desired
     /** String name for env properties. */
     String[] envProp = null;
-    
+
     /** Vector used to store environment variables */
     Vector envVarsVector = null;
-    
+
 
     //optional
     /** Set of commands. */
@@ -233,7 +234,12 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
                 ex.printStackTrace();
             }
 
-            this.sfReplaceAttribute("status", "terminated");
+            try {
+              this.sfReplaceAttribute("status", "terminated");
+            }
+            catch (Exception ex1) {
+              //Ignore
+            }
         }
 
         termR = (new TerminationRecord(terminationType,

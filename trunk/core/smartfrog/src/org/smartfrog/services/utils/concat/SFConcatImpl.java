@@ -256,7 +256,11 @@ public class SFConcatImpl extends PrimImpl implements Prim, SFConcat {
      */
     public void append(Object obj) {
         concat.append(obj);
-        this.sfAddAttribute(this.ATR_CONCAT, concat.toString());
+        try {
+          this.sfAddAttribute(this.ATR_CONCAT, concat.toString());
+        } catch (Exception ex){
+          //Ignore
+        }
     }
 
     /** Returns the textual representaion.

@@ -27,6 +27,7 @@ import java.rmi.RemoteException;
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.RemoteReferenceResolver;
 import org.smartfrog.sfcore.reference.RemoteReferenceResolverHelper;
@@ -49,9 +50,10 @@ public interface Prim extends Liveness, RemoteReferenceResolver, RemoteReference
      * @return value if successfull, null otherwise
      *
      * @throws RemoteException In case of Remote/nework error
+     * @throws SmartFrogRuntimeException when name or value are null
      */
     public Object sfAddAttribute(Object name, Object value)
-        throws RemoteException;
+        throws SmartFrogRuntimeException, RemoteException;
 
     /**
      * Remove named attribute from component context. Non present attribute
@@ -62,8 +64,10 @@ public interface Prim extends Liveness, RemoteReferenceResolver, RemoteReference
      * @return the removed value if successfull, null otherwise
      *
      * @throws RemoteException In case of Remote/nework error
+     * @throws SmartFrogRuntimeException when name is null
      */
-    public Object sfRemoveAttribute(Object name) throws RemoteException;
+    public Object sfRemoveAttribute(Object name)
+        throws SmartFrogRuntimeException, RemoteException;
 
 
     /**
@@ -88,9 +92,10 @@ public interface Prim extends Liveness, RemoteReferenceResolver, RemoteReference
      * @return the old value if present, null otherwise
      *
      * @throws RemoteException In case of Remote/nework error
+     * @throws SmartFrogRuntimeException when name or value are null
      */
     public Object sfReplaceAttribute(Object name, Object value)
-        throws RemoteException;
+        throws SmartFrogRuntimeException, RemoteException;
 
     /**
      * Returns the context of this component.
