@@ -85,6 +85,12 @@ public class ErrorMessageBundle extends ListResourceBundle
         { MSG_TERMINATE_SUCCESS , "Successfully terminated components: {0}"},
         { MSG_UNHANDLED_EXCEPTION , "Unhandled exception: "},
         { MSG_URL_TO_PARSE_NOT_FOUND , "Unable to locate URL \"{0}\"\nReason: URL may be incorrect or file is misssing"},
+
+        { ILLEGAL_NUMERIC_PARAMETER , "Illegal numeric parameter"},
+        { ILLEGAL_STRING_PARAMETER  , "Illegal string parameter"},
+        { ILLEGAL_VECTOR_PARAMETER  , "Illegal vector parameter"},
+        { ILLEGAL_BOOLEAN_PARAMETER  , "Illegal boolean parameter"},
+        { MISSING_PARAMETER  , "Missing Parameter {0}"},
     };
     
     /**

@@ -224,4 +224,34 @@ public interface MessageKeys {
      */  
     public static String MSG_URL_TO_PARSE_NOT_FOUND 
                                                = "MSG_URL_TO_PARSE_NOT_FOUND";
+
+
+
+
+
+    /** 
+     * Message key: illegal numeric parameter to function.
+     */  
+    public static String ILLEGAL_NUMERIC_PARAMETER 
+                                               = "ILLEGAL_NUMERIC_PARAMETER";
+    /** 
+     * Message key: illegal string parameter to function.
+     */  
+    public static String ILLEGAL_STRING_PARAMETER 
+                                               = "ILLEGAL_STRING_PARAMETER";
+    /** 
+     * Message key: illegal numeric parameter to function.
+     */  
+    public static String ILLEGAL_VECTOR_PARAMETER 
+                                               = "ILLEGAL_VECTOR_PARAMETER";
+    /** 
+     * Message key: illegal boolean parameter to function.
+     */  
+    public static String ILLEGAL_BOOLEAN_PARAMETER 
+                                               = "ILLEGAL_BOOLEAN_PARAMETER";
+    /** 
+     * Message key: too many parameters to function.
+     */  
+    public static String MISSING_PARAMETER 
+                                               = "MISSING_PARAMETER";
 }
