@@ -76,8 +76,8 @@ public class LogToErrImpl implements LogToErr, Log, LogMessage, LogLevel, Serial
   /** Include package name in the log message */
   protected boolean showMethodCall = true;
 
-  /** Include package name in the log message */
-  protected boolean showStackTrace =true;
+  /** Include stack trace in the log message */
+  protected boolean showStackTrace =org.smartfrog.sfcore.common.Logger.logStackTrace;
 
   /** Used to format times */
   protected static DateFormat dateFormatter = null;
