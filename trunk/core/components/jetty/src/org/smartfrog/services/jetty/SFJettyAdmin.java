@@ -92,7 +92,7 @@ public class SFJettyAdmin extends PrimImpl implements JettyAdminIntf {
         }
         try {
             server.start();
-        } catch (MultiException mexp) {
+        } catch (Exception mexp) {
             throw new SmartFrogException(mexp);
         }
     }
