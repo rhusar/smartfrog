@@ -198,9 +198,14 @@ public class ConfigurationDescriptor implements MessageKeys{
           StringBuffer message = new StringBuffer();
           String result = "";
           if ((resultObject!=null)&&(resultObject instanceof Prim)){
-            message.append("'");
-            message.append(getResultObjectName().toString());
-            message.append("'");
+            try {
+              message.append("'");
+              message.append(getResultObjectName().toString());
+              message.append("'");
+            } catch(Exception ex){
+               message.append(SmartFrogCoreKeys.SF_ROOT_PROCESS);
+               message.append("'");
+            }
           } else if (getName()!=null) {
               message.append("'");
               message.append(getName().toString());
