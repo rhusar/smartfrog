@@ -570,7 +570,7 @@ For more information: www.smartfrog.org
 
   <target name="fetch-libraries" depends="init,init-common,setproxy" >
     <property file="libraries.properties" />
-    <libraries destdir="${maven.lib.dir}">
+      <libraries destdir="${maven.lib.dir}>
       <mavenrepository url="${maven.url}"/>
       <library project="xerces"
         archive="xercesImpl" 
