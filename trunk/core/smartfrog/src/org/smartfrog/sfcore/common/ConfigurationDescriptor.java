@@ -82,6 +82,15 @@ public class ConfigurationDescriptor implements MessageKeys{
      */
     private String subProcess = null;
 
+
+    /**
+     *  SmartFrog context than can be used by ACTIONS
+     */
+    private Context context=null;
+
+
+
+
     /**
      * class acting as an enumeration for results
      */
@@ -775,5 +784,30 @@ public class ConfigurationDescriptor implements MessageKeys{
         this.options = options;
     }
 
+    public void setOption(Object name, Object value) {
+       this.options.put(name, value);
+    }
 
+    public Object getOption(Object name){
+       return this.options.get(name);
+    }
+
+    public Context getContext (){
+       return context;
+    }
+
+    public void setContext(Context context){
+       this.context=context;
+    }
+
+    public Context setContextAttribute(Object name, Object value) {
+        if (this.context==null) this.context=new ContextImpl();
+        context.put(name,value);
+        return context;
+    }
+
+    public Object getContextAttribute(Object name){
+       if (context==null)  return null;
+       return context.get(name);
+    }
 }

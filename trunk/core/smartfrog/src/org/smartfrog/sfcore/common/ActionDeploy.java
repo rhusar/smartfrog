@@ -142,7 +142,7 @@ public class ActionDeploy extends ConfigurationAction {
         Prim prim = Deploy(configuration.getUrl(),
                            configuration.getName(),
                            targetP,
-                           null,
+                           configuration.getContext(),
                            configuration.getDeployReference());
         configuration.setSuccessfulResult();
         return prim;
