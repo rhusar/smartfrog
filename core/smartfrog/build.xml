@@ -62,9 +62,11 @@ relevant JAR files into the javacc subdirectory
 
     <echo message=""/>
     <echo message="==================================================================="/>
-    <echo message="= ${Name.System} ${version} "/>
+    <echo message="= ${Name.System} ${version}"/>
     <echo message="= ${Name.Company} "/>
     <echo message="==================================================================="/>
+    <echo message=""/>
+    <echo message="(${ant.version})"/>
     <available property="nice.task.present" classname="org.apache.tools.ant.taskdefs.Nice" />
   </target>
 
