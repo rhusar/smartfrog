@@ -936,6 +936,9 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
      * the full name for the new process. sfProcessINI attribute is passed as
      * the -i URL option to the sub-process indicating system properties to
      * use for the new process.
+     * Any property prefixed by 'org.smartfrog.sfcore.processcompound.jvm.'+NAME+property=value
+     * will be added  only to the subprocess named 'NAME' as a parameter
+     * for the JVM. The parameter will be "property+value". @see addProcessDefines
      *
      * @param name name of new process
      *
@@ -1004,8 +1007,12 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
      * entry for each of these. It modifies the sfProcessName property to be
      * that required. If security is on you also pass some security related
      * properties.
-     * Any property prefixed by 'org.smartfrog.sfcore.processcompound.D.'+NAME+property=value
-     * will be added  only to the subprocess named 'NAME'.
+     * Any property prefixed by 'org.smartfrog.sfcore.processcompound.jvm.'+NAME+property=value
+     * will be added  only to the subprocess named 'NAME' as a parameter
+     * for the JVM. The parameter will be "property+value".
+     * Example:
+     *  org.smartfrog.sfcore.processcompound.jvm.test.-X=runpri
+     *  will add the property '-Xrunpri' to the processCompound named 'test'.
      *
      * @param cmd command to append to
      * @param name name for subprocess
@@ -1018,35 +1025,42 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
 
         for (Enumeration e = props.keys(); e.hasMoreElements();) {
             String key = e.nextElement().toString();
-
-            if ((key.startsWith(SmartFrogCoreProperty.propBase)) &&
-                    (!(key.startsWith(SFSecurityProperties.propBaseSecurity)))) {
+            try {
+              if ( (key.startsWith(SmartFrogCoreProperty.propBase)) &&
+                  (! (key.startsWith(SFSecurityProperties.propBaseSecurity)))) {
                 //Logger.log("Checking: "+name.toString());
                 //Logger.log("Key: "+key.toString());
-                if (!key.equals(SmartFrogCoreProperty.propBaseSFProcess
-                               +SmartFrogCoreKeys.SF_PROCESS_NAME)) {
-                    //Add special parameters to named subprocesses
-                    //@todo add Junit test for this feature
-                    // prefixed by 'org.smartfrog.sfcore.processcompound.D.'+NAME+property=value
-                    String specialParameters = SmartFrogCoreProperty.propBaseSFProcess+"D."+name+".";
-                    //Logger.log("Testing: "+specialParameters);
-                    if (key.startsWith(specialParameters)){
-                        Object value = props.get(key);
-                        String keyS = key.toString().substring(specialParameters.length());
-                        cmd.addElement("-D"+keyS+"="+value.toString());
-                        //Logger.log("Added to"+name+": "+"-D"+keyS+"="+value.toString());
-                    } else {
-                        //Properties to overwrite processcompound.sf attributes
-                        Object value = props.get(key);
-                        cmd.addElement("-D"+key.toString()+"="+value.toString());
+                if (!key.equals(SmartFrogCoreProperty.propBaseSFProcess+ SmartFrogCoreKeys.SF_PROCESS_NAME)) {
+                  //Add special parameters to named subprocesses
+                  //@todo add Junit test for this feature
+                  //@todo test what happens with special caracters
+                  // prefixed by 'org.smartfrog.sfcore.processcompound.D.'+NAME+property=value
+                  String specialParameters = SmartFrogCoreProperty.propBaseSFProcess + "jvm." + name + ".";
+                  //Logger.log("Testing: "+specialParameters);
+                  //Logger.log("key: "+key);
+                  if (key.startsWith(specialParameters)) {
+                    Object value = props.get(key);
+                    String keyS = key.toString().substring(specialParameters.length());
+                    if (value == null) {
+                      value = "";
                     }
+                    cmd.addElement(keyS + value.toString());
+                    //Logger.log("Added to"+name+": "+"-D"+keyS+"="+value.toString());
+                  } else {
+                    //Properties to overwrite processcompound.sf attributes
+                    Object value = props.get(key);
+                    cmd.addElement("-D" + key.toString() + "=" + value.toString());
+                  }
                 } else {
-                    // Add property to name ProcessCompound
-                    cmd.addElement("-D" +
-                        (SmartFrogCoreProperty.propBaseSFProcess
-                        +SmartFrogCoreKeys.SF_PROCESS_NAME+"=") +
-                        name.toString());
+                  // Add property to name ProcessCompound
+                  cmd.addElement("-D" +
+                                 (SmartFrogCoreProperty.propBaseSFProcess
+                                  + SmartFrogCoreKeys.SF_PROCESS_NAME + "=") +
+                                 name.toString());
                 }
+              }
+            } catch (Exception ex) {
+                Logger.log(ex);
             }
         }
 
