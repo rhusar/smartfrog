@@ -1,0 +1,23 @@
+#include "org/smartfrog/components.sf";
+#include "org/smartfrog/services/jetty/components.sf";
+
+/** 
+ * This is an example of dynamic adding of listeners and contexts to 
+ * running jetty server
+ */ 
+context extends Prim {
+ sfClass "org.smartfrog.services.jetty.contexts.Servlet";
+ contextPath "/test2";
+ resourceBase ("C:\\ritu");
+}
+
+listener extends Prim {
+ sfClass "org.smartfrog.services.jetty.listeners.Socketlistener";
+ listenerPort 8085;
+ serverHost "localhost";
+}
+
+sfConfig extends Compound {
+      newlistener extends listener ;
+      newcontext extends context ;
+}
