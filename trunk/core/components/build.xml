@@ -154,6 +154,9 @@ For more information: www.smartfrog.org
     <delegate target="clean"/>
 	<delete dir="src"/> <!-- Forrest releated -->
 	<delete dir="build"/>  <!-- Forrest releated -->
+	<delete file="forrest.properties"/>
+	<delete file="status.properties"/>
+
 
   </target>
   
@@ -465,6 +468,7 @@ For more information: www.smartfrog.org
 
 	<target name="generatedoc" depends="init" description="Document Generation" if="env.FORREST_HOME">
     <ant antfile="documentation.xml" inheritall="false" />
+	<delete dir="build"/>  <!-- Forrest build dir -->
 	</target>
 
   <!-- =================================================================== -->
