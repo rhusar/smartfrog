@@ -188,8 +188,8 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * @throws SmartFrogException
      * @throws RemoteException
      */
-    protected ComponentDescription getClassComponentDescription (Object obj,
-          boolean addSystemProperties) throws SmartFrogException, RemoteException {
+    public static ComponentDescription getClassComponentDescription (Object obj,
+          boolean addSystemProperties) throws SmartFrogException {
         //Get Component description for this log class
         String className = obj.getClass().toString();
         className = className.substring(6).replace('.','/');
