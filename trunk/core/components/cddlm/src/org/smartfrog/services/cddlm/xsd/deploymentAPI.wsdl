@@ -2,6 +2,8 @@
 <wsdl:definitions 
 	targetNamespace="http://gridforum.org/cddlm/serviceAPI/2004/07/30" 
 	xmlns:api="http://gridforum.org/cddlm/serviceAPI/2004/07/30" 
+	xmlns:components="http://gridforum.org/cddlm/components/2004/07/30" 
+	xmlns:core="http://gridforum.org/cddlm/core/2004/07/30" 
 	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" 
 	xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" 
   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
@@ -228,8 +230,8 @@
       </xsd:documentation>
     </xsd:annotation> 
     <xsd:choice>
-      <xsd:element name="source" type="xsd:anyURI"/>
-      <xsd:any  processContents="lax" minOccurs="0" maxOccurs="1" namespace="##other"/>
+      <xsd:element name="source" type="xsd:anyURI"  minOccurs="1" maxOccurs="1"/>
+      <xsd:any  processContents="lax" minOccurs="1" maxOccurs="1" namespace="##other"/>
     </xsd:choice>    
   </xsd:complexType>
 
@@ -404,18 +406,13 @@
       </xsd:documentation>
     </xsd:annotation>  
     <xsd:sequence>
-      <element name="state" type="api:lifecycleStateEnum"/>
-      <element name="stateInfo" type="xsd:string"/>
+      <element name="state" type="api:lifecycleStateEnum" minOccurs="1" maxOccurs="1"/>
+      <element name="stateInfo" type="xsd:string"  minOccurs="1" maxOccurs="1"/>
       <element name="extendedState" type="xsd:any" minOccurs="0" processContents="lax"/>
     </xsd:sequence>
   </xsd:complexType>
         
-  <!--
-  	<element name="state" type="cdl:LifecycleState"/>
-    <element name="stateInfo" type="xsd:string"/>
-    <element name="extendedState" type="xsd:any"/>
-  -->
-  
+ 
   <!-- ============================================================= -->
   <!-- Requests and responses. These are the complex types that
   get sent/received as messages-->
