@@ -37,7 +37,8 @@ public interface RunShell extends Remote {
     /** String for shell command. */
     final static String varShellCommand = "shellCmd";
 
-    /** String for commands. They could be Strings or Vectors of Strings. */        final static String varCMDs = "cmd";
+    /** String for commands. They could be Strings or Vectors of Strings. */
+    final static String varCMDs = "cmd";
 
     /** String for exit command . They could be Strings or
      * Vectors of Strings. */
@@ -49,6 +50,11 @@ public interface RunShell extends Remote {
     /** String for env properties. They could be Strings or
      * Vectors of Strings. */
     final static String varEnvProp = "envProperties";
+
+    /**
+     * Vector of strings for arguments.
+     */
+    final static String varShellArguments = "shellArguments";
 
     /** ProcessWorkingDirectory. */
     final static String varSFWorkDir = "workDir";

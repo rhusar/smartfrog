@@ -279,8 +279,10 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
 
     /**
      *  Reads SF description = initial configuration.
+     * Override this to read/set properties before we read ours, but remember to call
+     * the superclass afterwards
      */
-    private void readSFAttributes() throws SmartFrogException, RemoteException {
+    protected void readSFAttributes() throws SmartFrogException, RemoteException {
 
         logger = sfResolve(varLogger,logger,false);
         printStack = sfResolve(varPrintStack, printStack,false);
@@ -498,16 +500,22 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
     }
 
     /**
+     *
      *  Read all shell Attributes in Vectors. If and attribute name ends with
      *  'b' then it is added to the previous one!
-     *
+     *  We also read in the shell arguments list as is.
      *@return    a vector conatining all shell attributes
      */
-    private Vector readShellAttributes() {
+    private Vector readShellAttributes() throws SmartFrogResolutionException, RemoteException {
         Vector shellCommandAttrs = new Vector();
         Object key = null;
         String auxString = "";
 
+        //read in an argument list
+        Vector arguments=(Vector)sfResolve(varShellArguments,(Vector)null,false);
+        if(arguments!=null) {
+            shellCommandAttrs.addAll(arguments);
+        }
         //System.out.println("reading Cmd Attributes...");
         for (Enumeration e = sfContext().keys(); e.hasMoreElements();) {
             key = e.nextElement();
