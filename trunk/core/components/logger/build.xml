@@ -53,9 +53,9 @@ For more information: www.smartfrog.org
     <!-- the compile time path includes axis-->
     <path id="compile.classpath">
       <path refid="smartfrog.classpath"/>
-      <fileset dir="${logger.lib.dir}">
+      <!--fileset dir="${logger.lib.dir}">
         <include name="**/*.jar"/>
-      </fileset>
+      </fileset -->
     </path>
     
     <path id="run.classpath">
