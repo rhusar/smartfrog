@@ -34,6 +34,7 @@
     </schedule>
 
     <log dir="../artifacts">
+       <merge dir="testharness/build/test/data" />
     <!--	    <merge dir="smartfrog/dist/tests/logs" /> -->
     </log>
     <publishers>
