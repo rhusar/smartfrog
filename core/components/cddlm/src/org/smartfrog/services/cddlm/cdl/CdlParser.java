@@ -57,13 +57,40 @@ public class CdlParser {
             throws SAXException {
         resourceLoader = loader;
         //we mandate Xerces, as the others cannot handle schema so well
-        XMLReader xerces = XmlHelper.createXmlParser(validate);
+        XMLReader xerces = createXercesParser(validate);
 
         if ( validate ) {
             CdlCatalog resolver = new CdlCatalog(loader);
             resolver.bind(xerces);
         }
         builder = new Builder(xerces, validate);
+    }
+
+    /**
+     * create our XML parser.
+     * We are relying on xerces here, and will fail if it is not found.
+     *
+     * @param validate
+     * @return
+     * @throws SAXException
+     */
+    private XMLReader createXercesParser(boolean validate) throws SAXException {
+        XMLReader xerces = null;
+        try {
+            xerces = XMLReaderFactory.createXMLReader("org.apache.xerces.parsers.SAXParser");
+            xerces.setFeature("http://apache.org/xml/features/validation/schema",
+                    validate);
+            xerces.setFeature("http://apache.org/xml/features/validation/schema-full-checking",
+                    validate);
+            xerces.setFeature("http://apache.org/xml/features/standard-uri-conformant", true);
+            xerces.setFeature("http://apache.org/xml/features/disallow-doctype-decl", false);
+            xerces.setFeature("http://xml.org/sax/features/external-general-entities", false);
+        } catch (SAXException e) {
+
+            throw e;
+
+        }
+        return xerces;
     }
 
 
