@@ -88,10 +88,10 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
     /**
      * Handles the event locally then forward to all registered EventSinks.
      *
-     * @param event java.lang.String
+     * @param event java.lang.Object
      * @see EventSink
      */
-    synchronized public void event(String event) {
+    synchronized public void event(Object event) {
         handleEvent(event);
         sendEvent(event);
     }
@@ -100,9 +100,9 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
      * Default implmentation of the event Handler hook to be overridden in
      * sub-classes. The default implementation does nothing.
      *
-     * @param event java.lang.String The event
+     * @param event java.lang.Object The event
      */
-    public void handleEvent(String event) {
+    public void handleEvent(Object event) {
         //try {
         //    System.out.println( sfCompleteName().toString() + " saw " + event );
         //} catch (Exception e) {}
@@ -114,7 +114,7 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
      *
      * @param event java.lang.String
      */
-    synchronized public void sendEvent(String event) {
+    synchronized public void sendEvent(Object event) {
         for (Enumeration e = sendTo.elements(); e.hasMoreElements();) {
             EventSink s = (EventSink) e.nextElement();
 

@@ -83,7 +83,12 @@ public class ProgressBarsImpl extends SFDisplay implements Prim, ProgressBars,
      *
      * @param event event
      */
-    public void handleEvent(String event) {
+    public void handleEvent(Object eventO) {
+        String event = "";
+        if (eventO instanceof String){
+           event = (String) eventO;
+        } else return;
+
         if (printEvents) {
             System.out.println(name + " received event " + event);
         }
@@ -94,10 +99,10 @@ public class ProgressBarsImpl extends SFDisplay implements Prim, ProgressBars,
             return;
         }
 
-        String key = getEventSender(event);
+        String key = (String) getEventSender(event);
         int total = getEventTotalItems(event);
         int item = getEventItem(event);
-        String msg = getEventMsg(event);
+        String msg = (String) getEventMsg(event);
 
         if (key.equals("")) {
             return;
@@ -144,7 +149,12 @@ public class ProgressBarsImpl extends SFDisplay implements Prim, ProgressBars,
      *
      * @return The eventSender value
      */
-    private String getEventSender(String msg) {
+    private Object getEventSender(Object msgO) {
+      String msg = "";
+      if (msgO instanceof String){
+         msg = (String) msgO;
+      } else return "";
+
         try {
             String sender = msg.substring(0, msg.indexOf(':'));
 
@@ -161,7 +171,12 @@ public class ProgressBarsImpl extends SFDisplay implements Prim, ProgressBars,
      *
      * @return The eventTotalItems value
      */
-    private int getEventTotalItems(String msg) {
+    private int getEventTotalItems(Object msgO) {
+        String msg = "";
+        if (msgO instanceof String){
+           msg = (String) msgO;
+        } else return -1;
+
         try {
             String item = msg.substring(msg.indexOf(':') + 1, msg.length());
             item = item.substring(item.indexOf(':') + 1, item.length());
@@ -180,7 +195,14 @@ public class ProgressBarsImpl extends SFDisplay implements Prim, ProgressBars,
      *
      * @return The eventItem value
      */
-    private int getEventItem(String msg) {
+    private int getEventItem(Object msgO) {
+
+      String msg = "";
+      if (msgO instanceof String){
+         msg = (String) msgO;
+      } else return -1;
+
+
         try {
             String item = msg.substring(msg.indexOf(':') + 1, msg.length());
             item = item.substring(0, item.indexOf(':'));
@@ -200,7 +222,12 @@ public class ProgressBarsImpl extends SFDisplay implements Prim, ProgressBars,
      *
      * @return The eventMsg value
      */
-    private String getEventMsg(String msg) {
+    private Object getEventMsg(Object msgO) {
+        String msg = "";
+        if (msgO instanceof String){
+           msg = (String) msgO;
+        } else return msgO;
+
         try {
             msg = msg.substring(msg.lastIndexOf(':') + 1, msg.length());
 
@@ -373,9 +400,9 @@ public class ProgressBarsImpl extends SFDisplay implements Prim, ProgressBars,
      * Implementation of the EventSink interface. Handle the event locally then
      * forward to all registered EventSinks
      *
-     * @param event java.lang.String
+     * @param event java.lang.Object
      */
-    public synchronized void event(String event) {
+    public synchronized void event(Object event) {
         handleEvent(event);
         sendEvent(event);
     }
@@ -384,9 +411,9 @@ public class ProgressBarsImpl extends SFDisplay implements Prim, ProgressBars,
      * Default implementation of the EventBus sendEvent method to forward all
      * events to registered EventSinks. Errors are ignored.
      *
-     * @param event java.lang.String
+     * @param event java.lang.Object
      */
-    public synchronized void sendEvent(String event) {
+    public synchronized void sendEvent(Object event) {
         try {
             for (Enumeration e = sendTo.elements(); e.hasMoreElements();) {
                 EventSink s = (EventSink) e.nextElement();

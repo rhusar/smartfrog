@@ -91,9 +91,9 @@ public class EventPrimImpl extends PrimImpl implements EventRegistration,
     /**
      * Handles the event locally then forwards to all registered EventSinks.
      *
-     * @param event java.lang.String
+     * @param event java.lang.Object
      */
-    synchronized public void event(String event) {
+    synchronized public void event(Object event) {
         handleEvent(event);
         sendEvent(event);
     }
@@ -104,7 +104,7 @@ public class EventPrimImpl extends PrimImpl implements EventRegistration,
      *
      * @param event java.lang.String The event
      */
-    public void handleEvent(String event) {
+    public void handleEvent(Object event) {
         //try {
         //    System.out.println( sfCompleteName().toString() + " saw " + event );
         //} catch (Exception e) {}
@@ -114,9 +114,9 @@ public class EventPrimImpl extends PrimImpl implements EventRegistration,
      * Default implementation of the EventBus sendEvent method to forward all
      * events to registered EventSinks. Errors are ignored.
      *
-     * @param event java.lang.String
+     * @param event java.lang.Object
      */
-    synchronized public void sendEvent(String event) {
+    synchronized public void sendEvent(Object event) {
         for (Enumeration e = sendTo.elements(); e.hasMoreElements();) {
             EventSink s = (EventSink) e.nextElement();
 
@@ -125,7 +125,7 @@ public class EventPrimImpl extends PrimImpl implements EventRegistration,
                 String infoStr=sfCompleteName().toString() + " sending " + event + " to " + s.toString();
                 if (log.isInfoEnabled())
                 	log.info(infoStr);
-               
+
                 s.event(event);
             } catch (RemoteException ex) {
             }
@@ -141,7 +141,7 @@ public class EventPrimImpl extends PrimImpl implements EventRegistration,
      * @throws SmartFrogDeploymentException In case of any error while
      *         deploying the component
      */
-    public synchronized void sfDeploy() throws SmartFrogException, 
+    public synchronized void sfDeploy() throws SmartFrogException,
     RemoteException {
         super.sfDeploy();
         log = sfGetProcessLog();
