@@ -1,4 +1,9 @@
 <!--
+<?xml version="1.0"?>
+<project name="testHarness" default="help-test">
+-->
+
+<!--
 /** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
@@ -22,3 +27,9 @@ For more information: www.smartfrog.org
 <target name="createtestharness" description="Compiles and Prepares test harness">
     <echo message= "Test Harness is not available yet"></echo>
 </target>
+
+<target name="help-test">
+<echo>  This is the intended site of the test harness.</echo>
+</target>
+
+<!--</project>-->
