@@ -576,12 +576,13 @@
   <!-- ========================================================== -->
   <!-- xsl the constants -->
   <!-- ========================================================== -->
-  <target name="xml-javaconstants" depends="xml-validate"
+  <target name="xml-javaconstants" depends="xml-validate,init"
     description="create java constants from XML">
     <!-- currently the package is hard coded into the XSL file, BTW -->
     <property name="constants.package" value="org.smartfrog.services.cddlm.generated.api"/>
     <property name="constants.package.path" value="org/smartfrog/services/cddlm/generated/api"/>
     <property name="constants.generated.dir" location="${soap.server.dir}/${constants.package.path}"/>
+    <property name="doc.generated.dir" location="${soap.server.dir}"/>
     <mkdir dir="${constants.generated.dir}"/>
     <property name="generated.constants.java"
       location="${soap.server.dir}/${constants.package.path}/DeployApiConstants.java"/>
@@ -590,6 +591,10 @@
       out="${generated.constants.java}"
       style="${transform.xsl}">
       <param name="package" expression="${constants.package}"/>
+    </xslt>
+    <xslt in="${constants.xml}"
+      out="${doc.generated.dir}/constants.html"
+      style="${constants.xml.dir}/createHtmlConstants.xsl">
     </xslt>
   </target>
 

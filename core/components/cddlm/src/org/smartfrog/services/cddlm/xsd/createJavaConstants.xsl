@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-  xmlns:err="http://gridforum.org/cddlm/serviceAPI/faultsets/2004/07/30" version="1.0">
+  xmlns:err="http://gridforum.org/cddlm/serviceAPI/faultsets/2004/10/11/" version="1.0">
   <xsl:output method="text" encoding="us-ascii"/>
 
   <xsl:template match="/err:faults">

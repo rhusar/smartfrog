@@ -28,7 +28,7 @@
 <!ATTLIST faults
     xmlns CDATA #REQUIRED>
 ]>
-<faults xmlns="http://gridforum.org/cddlm/serviceAPI/faultsets/2004/07/30">
+<faults xmlns="http://gridforum.org/cddlm/serviceAPI/faultsets/2004/10/11/">
 
   <constants>
 
@@ -40,10 +40,14 @@
       <description>Namespace of XML-CDL documents</description>
     </uri>
 
-    <uri name="CDL_API_NAMESPACE" value="http://gridforum.org/cddlm/serviceAPI/api/2004/07/30">
-      <description>Namespace of CDL deployment API</description>
+    <uri name="CDL_API_NAMESPACE" value="http://gridforum.org/cddlm/serviceAPI/api/2004/10/11/">
+      <description>Namespace of deployment API WSDL</description>
     </uri>
-
+		
+    <uri name="CDL_TYPES_NAMESPACE" value="http://gridforum.org/cddlm/serviceAPI/types/2004/10/11/">
+      <description>Namespace of deployment API types</description>
+    </uri>
+		
     <uri name="XPATH_NAMESPACE" value="http://www.w3.org/TR/1999/REC-xpath-19991116">
       <description>URI of XPath 1999</description>
     </uri>
@@ -56,12 +60,12 @@
       <description>Placeholder for ant namespace</description>
     </uri>
 
-    <uri name="OPTION_VALIDATE_ONLY" value="http://gridforum.org/cddlm/serviceAPI/options/validateOnly/2004/07/30">
+    <uri name="OPTION_VALIDATE_ONLY" value="http://gridforum.org/cddlm/serviceAPI/options/validateOnly/2004/10/11/">
       <description>URI of option to indicate that a descriptor should be validated, but not deployed
         "validation" is a per-language option</description>
     </uri>
 
-    <uri name="OPTION_PROPERTIES" value="http://gridforum.org/cddlm/serviceAPI/options/propertyMap/2004/07/30">
+    <uri name="OPTION_PROPERTIES" value="http://gridforum.org/cddlm/serviceAPI/options/propertyMap/2004/10/11/">
       <description>URI of option to include a property mapping</description>
     </uri>
 
@@ -72,7 +76,7 @@
       </description>
     </uri>
 
-    <uri name="OPTION_BLOCKING_DEPLOY" value="http://gridforum.org/cddlm/serviceAPI/options/blocking/2004/07/30">
+    <uri name="OPTION_BLOCKING_DEPLOY" value="http://gridforum.org/cddlm/serviceAPI/options/blocking/2004/10/11/">
       <description>
         Flag to indicate whether deployment should be blocking or non-blocking (default)
       </description>
@@ -96,11 +100,11 @@
     </string>
 
     <string name="CALLBACK_WS_NOTIFICATION" value="http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseNotification">
-      <description>name of ws-notification callback type</description>
+      <description>name of ws-notification notification type</description>
     </string>
 
     <string name="CALLBACK_WS_EVENTING" value="http://schemas.xmlsoap.org/ws/2004/08/eventing">
-      <description>name of ws-eventing callback type</description>
+      <description>name of ws-eventing notification type</description>
     </string>
 
     <string name="CALLBACK_CDDLM_PROTOTYPE" value="http://gridforum.org/cddlm/serviceAPI/notifications/2004/10/11/">
@@ -147,11 +151,11 @@
 
   <!-- this document lists standard faults of the deployment services -->
   <faultset name="CDDLM_FAULT"
-    namespace="http://gridforge.org/cddlm/smartfrog/faults/2004/07/30"
+    namespace="http://gridforge.org/cddlm/serviceAPI/faults/2004/10/11/"
     >
     <description>
       These are the faults that are explicitly part of the CDDLM deployment
-      api. They are returned by the endpoint when the message sent
+      API. They are returned by the endpoint when the message sent
       is (somehow) not compatible with the current implementation or state of
       the server.
     </description>
@@ -173,7 +177,7 @@
       <wiremessage>A mustUnderstand option was not understood</wiremessage>
       <errormessage>A mustUnderstand option was not understood</errormessage>
       <documentation>
-        An option was sent to this deployment endpoint with a mustUnderstand
+        An option was sent to this endpoint with a mustUnderstand
         header that was true, yet it was not understood.
         The particular header should be identified in the subcode.
       </documentation>
@@ -217,7 +221,7 @@
       <name>UNSUPPORTED_LANGUAGE</name>
       <code>unsupported-language</code>
       <wiremessage>The language is unsupported</wiremessage>
-      <errormessage>The deployment server does not support that language</errormessage>
+      <errormessage>The server does not support that language</errormessage>
       <documentation>
         The language (or language version) is not supported.
         The list of supported languages can be enumerated from the
@@ -227,11 +231,11 @@
 
     <fault>
       <name>UNSUPPORTED_CALLBACK</name>
-      <code>unsupported-callback</code>
-      <wiremessage>The callback option is not supported</wiremessage>
-      <errormessage>The deployment server does not support that callback mechanism</errormessage>
+      <code>unsupported-notification</code>
+      <wiremessage>The notification option is not supported</wiremessage>
+      <errormessage>The server does not support that notification mechanism</errormessage>
       <documentation>
-        The callback option request is not supported by this server.
+        The server does not support that notification mechanism.
       </documentation>
     </fault>
 
@@ -291,8 +295,8 @@
     <fault>
       <name>RUNTIME_EXCEPTION</name>
       <code>runtime-failure</code>
-      <wiremessage>An error has occured in the deployment run-time</wiremessage>
-      <errormessage>An error has occured in the deployment run-time</errormessage>
+      <wiremessage>An error has occurred in the deployment run-time</wiremessage>
+      <errormessage>An error has occurred in the deployment run-time</errormessage>
       <documentation>
         An internal fault has occurred in a deployment component
       </documentation>
@@ -301,10 +305,10 @@
     <fault>
       <name>LIFECYCLE_EXCEPTION</name>
       <code>lifecycle-exception</code>
-      <wiremessage>An error has occured during a lifecycle transition</wiremessage>
+      <wiremessage>An error has occurred during a lifecycle transition</wiremessage>
       <errormessage>An attempt to move a component to a new lifecycle stage failed</errormessage>
       <documentation>
-        An error occured while attempting to move a component to a new stage in
+        An error occurred while attempting to move a component to a new stage in
         the deployment lifecycle
       </documentation>
     </fault>
@@ -315,7 +319,7 @@
       <wiremessage>A liveness test on a component failed</wiremessage>
       <errormessage>An attempt to verify the liveness of a component failed</errormessage>
       <documentation>
-        An error occured while probing the liveness of a component.
+        An error occurred while probing the liveness of a component.
         This can mean it is in a terminated state, or that the component's internal health
         check failed.
       </documentation>
