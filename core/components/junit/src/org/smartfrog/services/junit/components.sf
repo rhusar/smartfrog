@@ -96,7 +96,7 @@ TestRunnerSchema extends Schema {
 /**
  * the base test runner has a console listener automatically
  */
-TestRunner extends Prim {
+TestRunner extends Compound {
     sfClass "org.smartfrog.services.junit.TestRunnerComponent";
     testRunnerSchema extends TestRunnerSchema;
     listener extends ConsoleListener ;

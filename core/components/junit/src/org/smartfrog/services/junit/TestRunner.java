@@ -54,4 +54,6 @@ public interface TestRunner extends Remote {
     boolean getFork() throws RemoteException;
 
     void setFork(boolean fork) throws RemoteException;
+
+    
 }

@@ -22,33 +22,35 @@ package org.smartfrog.services.junit;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogInitException;
 import org.smartfrog.sfcore.compound.CompoundImpl;
+import org.smartfrog.sfcore.utils.ComponentHelper;
+import org.smartfrog.sfcore.prim.Prim;
 
 import java.rmi.RemoteException;
+import java.util.Enumeration;
+import java.util.logging.Logger;
 
 /**
  * This is the test runner.
+ * It keeps all its public state in a configuration object that can be got/cloned and serialized to suites
  * created 15-Apr-2004 15:44:41
  */
 
 public class TestRunnerComponent extends CompoundImpl implements TestRunner {
 
+    private Logger log;
+    private ComponentHelper helper;
+
     public TestRunnerComponent() throws RemoteException {
+        helper = new ComponentHelper(this);
+        log=helper.getLogger();
     }
 
     /**
      * who listens to the tests?
+     * This is potentially remote
      */
-    private TestListener listener;
+    private RunnerConfiguration configuration=new RunnerConfiguration();
 
-    /**
-     * flag to identify whether the task should fail when it is time
-     */
-    private boolean keepGoing = true;
-
-    /**
-     * fork into a new process?
-     */
-    private boolean fork = false;
 
     /**
      * validate our settings, bail out if they are invalid
@@ -56,7 +58,7 @@ public class TestRunnerComponent extends CompoundImpl implements TestRunner {
      * @throws SmartFrogInitException
      */
     private void validate() throws SmartFrogInitException {
-        if (fork == true) {
+        if (configuration.getFork() == true) {
             throw new SmartFrogInitException("forking is not yet implemented");
         }
     }
@@ -86,39 +88,59 @@ public class TestRunnerComponent extends CompoundImpl implements TestRunner {
      */
     public synchronized void sfStart() throws SmartFrogException,
             RemoteException {
+        //this will deploy all our children, including the test suites
         super.sfStart();
-        Object o = sfResolve(ATTRIBUTE_LISTENER, listener, true);
+        Object o = sfResolve(ATTRIBUTE_LISTENER, configuration.getListener(), true);
         if (!(o instanceof TestListener)) {
             throw new SmartFrogException("The attribute " + ATTRIBUTE_LISTENER
                     + "must refer to an implementation of TestListener");
         }
-        listener = (TestListener) o;
-        fork = sfResolve(ATTRIBUTE_FORK, fork, false);
-        keepGoing = sfResolve(ATTRIBUTE_KEEPGOING, keepGoing, false);
+        configuration.setListener((TestListener) o);
+        configuration.setFork(sfResolve(ATTRIBUTE_FORK, configuration.getFork(), false));
+        configuration.setKeepGoing(sfResolve(ATTRIBUTE_KEEPGOING, configuration.getKeepGoing(), false));
         validate();
+        //TODO: execute the tests in all the suites attached to this class
+    }
+
+    protected void runAllTests() throws SmartFrogException, RemoteException {
+        Enumeration e=sfChildren();
+        while (e.hasMoreElements()) {
+            Object o = (Object) e.nextElement();
+            if(o instanceof TestSuite) {
+                TestSuite suiteComponent=(TestSuite) o;
+                suiteComponent.bind(getConfiguration());
+                suiteComponent.runTests();
+            }
+        }
     }
 
     public TestListener getListener() {
-        return listener;
+        return configuration.getListener();
     }
 
+
     public void setListener(TestListener listener) {
-        this.listener = listener;
+        configuration.setListener(listener);
     }
 
     public boolean getKeepGoing() {
-        return keepGoing;
+        return configuration.getKeepGoing();
     }
 
     public void setKeepGoing(boolean keepGoing) {
-        this.keepGoing = keepGoing;
+        configuration.setKeepGoing(keepGoing);
     }
 
     public boolean getFork() {
-        return fork;
+        return configuration.getFork();
     }
 
     public void setFork(boolean fork) {
-        this.fork = fork;
+        configuration.setFork(fork);
+    }
+
+
+    public RunnerConfiguration getConfiguration() {
+        return configuration;
     }
 }
