@@ -9,7 +9,7 @@
     <typedef uri="http://smartfrog.org/"
         resource="/org/smartfrog/tools/ant/tasks.xml"
         classpathref="smartfrog.classpath"
-        xmlns:sf="http://smartfrog.org/"
+        xmlns:sf="http://smartfrog.org/" />
 
         and use with
     -->
