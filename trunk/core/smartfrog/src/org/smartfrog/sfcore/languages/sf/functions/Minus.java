@@ -25,15 +25,16 @@ import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
 import org.smartfrog.sfcore.common.MessageUtil;
 
 /**
- * Defines the Minus function that sums each of its attributes type-caste to
- * integers, failure will result in an exception.
+ * Defines the Minus binary operator.
+ * Throws an exception if either operand is missing or not a number
  */
 public class Minus extends BaseBinaryOperator implements PhaseAction {
     /**
      * Differences two numbers.
      * @param a first number
      * @param b second number
-     * @return sum
+     * @return a-b
+     * @throws SmartFrogCompileResolutionException if the operands are not numbers
      */
     protected Object doOperator(Object a, Object b) throws SmartFrogCompileResolutionException {
 	if (!(a instanceof Number))

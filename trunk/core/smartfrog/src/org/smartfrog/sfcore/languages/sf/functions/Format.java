@@ -25,7 +25,10 @@ import org.smartfrog.sfcore.languages.sf.PhaseAction;
 /**
  * Defines the Format function that takes a format string and a set of 
  * parameters and creates a resultant string which has the values of the 
- * parameters embedded. 
+ * parameters embedded. At most 10 format parameters are allowed.
+ * The format string is called "format" and the parameter locations are
+ * defined using "$i" to indicate the ith parameter. The ith parameter is the
+ * attribute "si".
  */ 
 public class Format extends BaseFunction implements PhaseAction {
 

@@ -24,16 +24,18 @@ import org.smartfrog.sfcore.languages.sf.PhaseAction;
 import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
 import org.smartfrog.sfcore.common.MessageUtil;
 
+
 /**
- * Defines the Sum function that sums each of its attributes type-caste to
- * integers, failure will result in an exception.
+ * Defines the Product function that multiplies each of its attributes 
+ * with the same semantics as Java for its primitive types, failure will result in an exception.
  */
 public class Product extends BaseOperator implements PhaseAction {
     /**
      * Sums two numbers.
      * @param a first number
      * @param b second number
-     * @return sum
+     * @return product
+     * @throws SmartFrogCompileResolutionException if one of the parameters is not a Number
      */
     protected Object doOperator(Object a, Object b) throws SmartFrogCompileResolutionException {
 	if (!(a instanceof Number))

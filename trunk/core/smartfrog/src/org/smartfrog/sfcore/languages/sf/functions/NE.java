@@ -25,17 +25,17 @@ import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
 import org.smartfrog.sfcore.common.MessageUtil;
 
 /**
- * Defines the Minus function that sums each of its attributes type-caste to
- * integers, failure will result in an exception.
+ * Defines the Greater or Equals binary opeeration that compares its numeric attributes
+ *  left >= right
  */
 public class NE extends BaseBinaryOperator implements PhaseAction {
     /**
-     * Differences two numbers.
-     * @param a first number
-     * @param b second number
-     * @return sum
+     * Compares two numbers.
+     * @param a first object
+     * @param b second object
+     * @return boolean whether a!=b
      */
-    protected Object doOperator(Object a, Object b) throws SmartFrogCompileResolutionException {
+    protected Object doOperator(Object a, Object b) {
 		return new Boolean(!a.equals(b));
     }
 }

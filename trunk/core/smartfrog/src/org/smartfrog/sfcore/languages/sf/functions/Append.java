@@ -25,7 +25,7 @@ import java.util.Vector;
 
 /**
  * Defines the Append function that takes the vector attributes and puts them
- * together into a vector.
+ * together into a vector. Ignores non-vector attributes.
  */
 public class Append extends BaseFunction {
     /**
@@ -40,7 +40,7 @@ public class Append extends BaseFunction {
 
         for (Enumeration e = context.keys(); e.hasMoreElements();) {
             Object key = e.nextElement();
-            objValue = context.get(key); // may throw exception if not a vector
+            objValue = context.get(key); 
 
             if (objValue instanceof Vector) {
                 value = (Vector) objValue;
@@ -50,10 +50,6 @@ public class Append extends BaseFunction {
                         result.add(v.nextElement());
                     }
                 }
-            } else {
-                System.out.println("sfFunction.Append Warning: " + key + "=" +
-                    objValue.toString() + " ignored. Not a Vector. Class:" +
-                    objValue.getClass());
             }
         }
 

@@ -25,15 +25,16 @@ import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
 import org.smartfrog.sfcore.common.MessageUtil;
 
 /**
- * Defines the Minus function that sums each of its attributes type-caste to
- * integers, failure will result in an exception.
+ * Defines the unary operator not that negates its boolean parameter.
+ * The parameter attribute is "data" and an exception will be thrown if it
+ * doesn't exist or is not boolean
  */
 public class Not extends BaseUnaryOperator implements PhaseAction {
     /**
-     * Differences two numbers.
-     * @param a first number
-     * @param b second number
-     * @return sum
+     * Negate the parameter
+     * @param a a boolean
+     * @return the negation
+     * @throws SmartFrogCompileResolutionException if the parameter is not boolean
      */
     protected Object doOperator(Object a) throws SmartFrogCompileResolutionException {
 	if (!(a instanceof Boolean))
