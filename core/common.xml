@@ -36,6 +36,7 @@
     <!-- only here when running this task raw, to test targets inside -->
     <property name="ant.file.common" location="${ant.file}" />
     <!-- this will be set by the runtime during importation --> 
+    <!-- it is how we infer the base directory of the system -->
     <dirname property="antfile.dir" file="${ant.file.common}"/>
     <property name="core.dir" location="${antfile.dir}"/>
     
@@ -68,16 +69,7 @@
     <property name="extras.dir"
       location="${core.dir}/extras"/>
       
-      <!-- information about the ant tasks -->
-    <property name="smartfrog.tasks.prefix" value="smartfrog-tasks"/>      
-    <property name="smartfrog.tasks.name" value="${smartfrog.tasks.prefix}.jar"/>      
-    <property name="smartfrog.tasks.dist.dir"
-      location="${extras.dir}/ant/build/dist/"/>
-    <property name="smartfrog.tasks.lib.dir"
-      location="${smartfrog.tasks.dist.dir}/lib/"/>
-    <property name="smartfrog.tasks.jar"
-      location="${smartfrog.tasks.lib.dir}/${smartfrog.tasks.name}"/>
-
+      
       <!-- common directories -->
     <property name="src.dir" location="src"/>
     <property name="doc.dir" location="doc"/>
@@ -100,7 +92,23 @@
     <property name="jarfile.name" value="${project.name}${jarfile.suffix}.jar"/>
     <property name="target.jar" 
         location="${dist.lib.dir}/${jarfile.name}" />  
-        
+
+    <!-- standard location for distributed stuff; used when locating
+      other things -->
+    <property name="dist.lib.dir.relative" value="/build/dist/lib" />
+    
+      <!-- information about the ant tasks -->
+    <property name="smartfrog.tasks.prefix" value="smartfrog-tasks"/>      
+    <property name="smartfrog.tasks.name" value="${smartfrog.tasks.prefix}.jar"/>      
+    <property name="smartfrog.tasks.lib.dir"
+      location="${extras.dir}/ant/${dist.lib.dir.relative}"/>
+    <property name="smartfrog.tasks.jar"
+      location="${smartfrog.tasks.lib.dir}/${smartfrog.tasks.name}"/>
+
+
+      <!-- location of junit jar; override it if it is somewhere else-->
+    <property name="junit.jar" 
+      location="${ant.home}/lib/junit.jar" />
     
       <!-- turn on the tests. If you dont want this, set one (or both) to false)  in the unit tests-->
     <property name="system.tests" value="true" />
@@ -164,8 +172,6 @@
            includeantruntime="true"
            showoutput="true"
            >
-       <!-- turned off; ant bug # 27218  
-       <assertions enableSystemAssertions="true"/> -->
        <jvmarg value="-ea"/>
        <jvmarg value="-esa"/>
         <!-- #Tests take system property parameters -->
@@ -334,6 +340,27 @@
   </target>  
   
   <!-- ========================================================== -->
+  <!-- location of testharness; create a relevant path -->
+  <!-- ========================================================== -->
+  
+  <target name="use-smartfrog-testharness" depends="init-common" >
+        <!-- information about the test harness -->
+      <!-- needs to be in sync w/ testharness/build.xml -->
+    <property name="testharness.dir" 
+      location="${core.dir}/testharness" />
+    <property name="testharness.jar.name"
+      value="smartfrog-testharness.jar" /> 
+    <property name="testharness.jar"
+        location="${testharness.dir}/${dist.lib.dir.relative}/${testharness.jar.name}" /> 
+    <available file="${testharness.jar}" 
+      property="testharness.present" />
+    <fail unless="sfTasks.present">
+      Smartfrog testharness not found at 
+      ${testharness.jar}
+    </fail>      
+  </target>
+  
+  <!-- ========================================================== -->
   <!--  look for a local daemon. Sets the property  local.daemon.running if
     one is listening on port 3800-->
   <!-- ========================================================== -->
@@ -495,7 +522,7 @@
           srcdir="${test.dir}"
           destdir="${test.classes.dir}"
           />
-      <copy-useful-files src="${src.dir}" dest="${build.classes.dir}"/>
+      <copy-useful-files src="${test.dir}" dest="${build.classes.dir}"/>
   </target>  
 
 
@@ -521,10 +548,11 @@
  
   <!-- ========================================================== -->
   <!-- this is an override point -->
-  <!-- install the jar -->
+  <!-- install the jar, if we know where to put it -->
   <!-- ========================================================== -->
   <target name="install" depends="dist"
-    description="copy the jar file to the SmartFrog distribution directory">
+      if="smartfrog.dist.lib.dir"
+      description="copy the jar file to the SmartFrog distribution directory">
     <copy file="${target.jar}" todir="${smartfrog.dist.lib.dir}"/>
   </target>
   
