@@ -45,6 +45,7 @@ import java.rmi.RemoteException;
 import java.util.Enumeration;
 import java.util.Properties;
 import java.util.Vector;
+import java.rmi.ConnectException;
 
 
 /**
@@ -543,8 +544,17 @@ public class SFProcess implements MessageKeys {
                   throw new SmartFrogException("Error selecting target process '"+subProcess+"' in '"+target.sfCompleteName()+"'",ex);
                 }
             }
+        } catch (SmartFrogException sfex) {
+          throw SmartFrogException.forward(sfex);
+        } catch (UnknownHostException uhex) {
+          throw new SmartFrogException( MessageUtil.formatMessage(MSG_UNKNOWN_HOST,host), uhex);
+        } catch (ConnectException cex) {
+          throw new SmartFrogException(MessageUtil.formatMessage(MSG_CONNECT_ERR, host), cex);
+        } catch (RemoteException rmiEx) {
+          throw new SmartFrogException (MessageUtil.formatMessage(MSG_REMOTE_CONNECT_ERR,host), rmiEx);
         } catch (Throwable ex) {
-            throw SmartFrogException.forward(ex);
+          throw new SmartFrogException(MessageUtil.formatMessage(MSG_UNHANDLED_EXCEPTION), ex);
+          //throw SmartFrogException.forward(ex);
         }
         return target;
     }

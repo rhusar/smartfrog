@@ -37,9 +37,9 @@ public class ErrorMessageBundle extends ListResourceBundle
      */
     static final Object[][] contents = {
         { MSG_DEPLOY_COMP_TERMINATED,
-            "Component :{0} received deploy request after it is terminated" },
+            "Component: {0} received deploy request after it is terminated" },
         { MSG_START_COMP_TERMINATED,
-            "Component : {0} received start request after it is terminated" },
+            "Component: {0} received start request after it is terminated" },
         { MSG_FILE_NOT_FOUND, "Cannot find file {0}" },
         { MSG_NON_REP_ATTRIB, "Compound has a non-replaceable attribute {0}" },
         { MSG_NULL_DEF_METHOD, "{0} is null during {1}"},
@@ -72,9 +72,9 @@ public class ErrorMessageBundle extends ListResourceBundle
                              "Warning: stack trace logging disabled"},
         { MSG_UNKNOWN_HOST, "Unable to locate IP address of the host: {0}"},
         { MSG_CONNECT_ERR,
-        "Unable to connect to sfDaemon on: {0}.\nReason:sfDaemon may not be running on {0}"},
+        "Unable to connect to sfDaemon on: {0}.\nReason: sfDaemon may not be running on {0}"},
         { MSG_REMOTE_CONNECT_ERR,
-        "Unable to connect to sfDaemon on: {0}.\nReason:sfDaemon may not be authenticated properly"},
+        "Unable to connect to sfDaemon on: {0}.\nReason: sfDaemon may not be authenticated properly"},
         { MSG_PARENT_LOCATION_FAILED,
          "Failed to locate parent"},
         // Resolution Exception messages start
