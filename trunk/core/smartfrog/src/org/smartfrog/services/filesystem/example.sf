@@ -20,6 +20,6 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/services/filesystem/components.sf"
 
 sfConfig extends TouchFile {
-    file "test";
+    filename "test";
     age -1L;
 }
