@@ -22,18 +22,14 @@
 package org.smartfrog.services.cddlm;
 
 /**
- * Date: 10-Mar-2004
- * Time: 20:07:32
+ *         Date: 10-Mar-2004
+ *         Time: 20:07:32
  */
-public class SmartfrogHostedEndpoint {
-    /**
-     * name of whoever created this endpoint
-     */
+public class SmartFrogHostedEndpoint {
     static AxisImpl owner;
 
     /**
      * set the owner
-     *
      * @param owner
      */
     static void setOwner(AxisImpl owner) {

@@ -25,29 +25,10 @@ For more information: www.smartfrog.org
  */
 #include "org/smartfrog/components.sf"
 
-//and CDDLM
-#include "org/cddlm/components.sf"
-
-
-/**
- * Web Server is not bound to an object; it is just some
- * configuration base that could be common to many implementations
- * of a web server.
- */
-WebServerSchema extends Schema {
+ApacheAxisSchema extends Schema {
+    //same for port. Axis normally determines its state
+    //from incoming requests, but multi-tier systems force overrides
     port extends OptionalInteger;
-}
-
-WebServer extends Prim {
-    webServerSchema extends WebServerSchema;
-    port 8080;
-};
-
-/**
- * the axis schema.
- * a WSDD descriptor file is mandatory
- */
- ApacheAxisSchema extends Schema {
 
     //this is the axis configuration file for a service
     wsddDescriptor extends String;
@@ -60,8 +41,12 @@ WebServer extends Prim {
     sessions extends OptionalInteger;
 }
 
+WebServer extends Prim {
+    port 8080;
+};
+
 AxisServer extends WebServer {
-    sfClass "org.smartfrog.services.cddlm.AxisImpl";
+    //sfClass "org.smartfrog.services.cddlm.AxisImpl";
 	axisSchema extends ApacheAxisSchema;
     port 8080;
 };

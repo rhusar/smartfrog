@@ -29,9 +29,7 @@ import org.apache.axis.deployment.wsdd.WSDDDocument;
 import org.apache.axis.transport.http.SimpleAxisServer;
 import org.apache.axis.utils.XMLUtils;
 import org.apache.commons.logging.Log;
-import org.cddlm.components.LivenessPage;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
@@ -44,6 +42,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.ServerSocket;
+import java.net.URL;
 import java.rmi.RemoteException;
 
 /**
@@ -51,7 +50,7 @@ import java.rmi.RemoteException;
  * in multiple isolated instances in the same VM, as it uses static structures for
  * its axis server, thread pool, etc. It is not even clear that Axis is designed to run
  * multiple times in the same JVM/classloader.
- * <p/>
+ *
  * It may look like there is Apache code in here, from Axis' AutoRegisterServlet, but
  * that is because I wrote the Apache servlet; the registration code is pasted in from
  * the program I wrote from which I later extracted the AutoRegisterServlet.
@@ -60,7 +59,7 @@ import java.rmi.RemoteException;
  *         created 02-Mar-2004 17:28:31
  */
 
-public class AxisImpl extends PrimImpl implements Axis, Prim {
+public class AxisImpl extends PrimImpl implements Axis, Prim{
 
 
     /**
@@ -70,36 +69,28 @@ public class AxisImpl extends PrimImpl implements Axis, Prim {
 
     /**
      * name of a WSDDFile to use
+     *
      */
     private String wsddResource;
 
     /**
      * port to listen to
      */
-    private int port = 8080;
+    private int port=8080;
 
-    /**
-     * our log
-     */
-    private Log log = LogFactory.getLog(this.getClass().getName());
+    /** our log */
+    private Log log= LogFactory.getLog(this.getClass().getName());
 
-    /**
-     * max number of threads
-     */
-    private int threads = ThreadPool.DEFAULT_MAX_THREADS;
+    /** max number of threads */
+    private int threads= ThreadPool.DEFAULT_MAX_THREADS;
 
-    /**
-     * max no. of sessions
-     */
-    private int sessions = SimpleAxisServer.MAX_SESSIONS_DEFAULT;
+    /** max no. of sessions */
+    private int sessions= SimpleAxisServer.MAX_SESSIONS_DEFAULT;
 
-    private String livenessPage = "/";
-
-    private LivenessPage liveness;
+    private String livenessPage="/";
 
     /**
      * ctor is needed to throw an exception from a parent
-     *
      * @throws RemoteException
      */
 
@@ -133,21 +124,17 @@ public class AxisImpl extends PrimImpl implements Axis, Prim {
     public synchronized void sfStart() throws SmartFrogException,
             RemoteException {
         super.sfStart();
-        assert axis == null;
+        assert axis==null;
         //get stuff from the configuration
-        port = sfResolve(Axis.PORT, 8080, false);
-        wsddResource = sfResolve(Axis.WSDD_RESOURCE, "", true);
-        threads = sfResolve(Axis.THREADS, threads, false);
-        sessions = sfResolve(Axis.SESSIONS, sessions, false);
-        livenessPage = sfResolve(Axis.LIVENESS_PAGE, livenessPage, false);
-        liveness = new LivenessPage("http", "127.0.0.1", port, livenessPage);
-        liveness.setFollowRedirects(true);
-        liveness.setFetchErrorText(true);
-        liveness.onDeploy();
+        port=sfResolve(Axis.PORT,8080,false);
+        wsddResource=sfResolve(Axis.WSDD_RESOURCE,"",true);
+        threads=sfResolve(Axis.THREADS, threads,false);
+        sessions=sfResolve(Axis.SESSIONS,sessions,false);
+        livenessPage= sfResolve(Axis.LIVENESS_PAGE, livenessPage, false);
         log.info("Running Axis on port " + port + " with WSDD " + wsddResource);
-        log.info(" max threads=" + threads + " sessions=" + sessions);
+        log.info(" max threads="+threads+" sessions="+sessions);
         log.info(" liveness=" + livenessPage);
-        axis = new SimpleAxisServer(threads, sessions);
+        axis= new SimpleAxisServer(threads,sessions);
         registerResource(wsddResource);
         try {
             //register the resouce
@@ -163,7 +150,7 @@ public class AxisImpl extends PrimImpl implements Axis, Prim {
         } catch (Exception e) {
             stopAxis();
             //io trouble binding, axis itself being trouble
-            throw new SmartFrogLifecycleException("Could not start axis", e);
+            throw new SmartFrogException("while starting axis",e);
         }
     }
 
@@ -189,7 +176,7 @@ public class AxisImpl extends PrimImpl implements Axis, Prim {
      */
     public void sfPing(Object source) throws SmartFrogLivenessException {
         super.sfPing(source);
-        liveness.onPing();
+        hitLivenessPage();
     }
 
     /**
@@ -209,17 +196,17 @@ public class AxisImpl extends PrimImpl implements Axis, Prim {
      * and set axis to null as usual.
      */
     private void stopAxis() {
-        if (axis == null) {
-            return;
+        if(axis==null) {
+            return ;
         }
         try {
             log.info("stopping axis");
             axis.stop();
         } catch (Exception e) {
             //we cannot raise trouble on shutdown, but we can log it.
-            log.error("while stopping axis", e);
+            log.error("while stopping axis",e);
         } finally {
-            axis = null;
+            axis=null;
         }
     }
 
@@ -230,7 +217,7 @@ public class AxisImpl extends PrimImpl implements Axis, Prim {
      * @return
      */
     private WSDDDeployment getDeployment() {
-        assert axis != null;
+        assert axis!=null;
         WSDDDeployment deployment;
         AxisEngine engine = axis.getAxisServer();
         EngineConfiguration config = engine.getConfig();
@@ -257,8 +244,7 @@ public class AxisImpl extends PrimImpl implements Axis, Prim {
             if (deployment != null) {
                 wsddDoc.deploy(deployment);
             } else {
-                throw new SmartFrogException(
-                        "Failed to get Axis deployment system");
+                throw new SmartFrogException("Failed to get Axis deployment system");
             }
         } catch (ParserConfigurationException e) {
             throw new SmartFrogException(e);
@@ -279,12 +265,11 @@ public class AxisImpl extends PrimImpl implements Axis, Prim {
 
     /**
      * ignore any exception, but log it at a low level
-     *
      * @param ignored what to ignore
      */
     private void ignore(Exception ignored) {
-        if (log.isDebugEnabled()) {
-            log.debug("ignoring ", ignored);
+        if(log.isDebugEnabled()) {
+            log.debug("ignoring ",ignored);
         }
     }
 
@@ -298,9 +283,42 @@ public class AxisImpl extends PrimImpl implements Axis, Prim {
             throws SmartFrogException {
         InputStream in = SFClassLoader.getResourceAsStream(resourcename);
         if (in == null) {
-            throw new SmartFrogException("Not found: " + resourcename);
+            throw new SmartFrogException("Not found: "+resourcename);
         }
         registerStream(in);
     }
 
+    /**
+     * try and retrieve the liveness page.
+     * @throws SmartFrogLivenessException
+     */
+    public void hitLivenessPage() throws SmartFrogLivenessException {
+
+        InputStream instream=null;
+        if(livenessPage==null || livenessPage.length()==0) {
+            //do nothing on an undefined page
+            return;
+        }
+        String target = "http://127.0.0.1:" + port + "/" + livenessPage;
+        log.debug("Liveness check on" + target);
+        try {
+            URL page=new URL(target);
+            instream = page.openStream();
+            instream.read();
+        } catch (IOException exception) {
+            log.debug("Could not open "+target,
+                    exception);
+            throw new SmartFrogLivenessException(target,exception);
+        } finally {
+            try {
+                if(instream!=null) {
+                    instream.close();
+                }
+            } catch (IOException ignored) {
+
+            }
+
+        }
+
+    }
 }
