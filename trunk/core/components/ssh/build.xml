@@ -97,12 +97,12 @@ For more information: www.smartfrog.org
   <target name="dist" depends="compile" 
     description="create the jar files">
     <jar destfile="${target.jar}" basedir="${build.classes.dir}" includes="**/*"/>
-    <!--
     <copy toDir = "${dist.lib.dir}">
         <fileset dir ="${ssh.lib.dir}">
             <include name = "**/*.jar"/>
         </fileset>    
     </copy>
+    <!--
     <copy toDir = "${smartfrog.dist.lib.dir}">
         <fileset dir ="${dist.lib.dir}"> 
             <include name = "**/*.jar"/>
