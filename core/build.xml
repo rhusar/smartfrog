@@ -59,7 +59,7 @@ For more information: www.smartfrog.org
   <target name="test-testharness" depends="init" 
     description="test in test harness; only run system tests">
     <ant dir="${test.project}" target="test" inheritAll="false" >
-      <property name="system.test" value="false" />
+      <property name="system.tests" value="false" />
     </ant>
   </target>
 
@@ -169,10 +169,26 @@ For more information: www.smartfrog.org
     </java>
    </target>
 
-    <!--  Maven site:generate-->
-    <target name="mavenReport" depends="cvsupdate" description="run 'maven site:generate'">
+<!-- =================================================================== -->
+<!--  Maven site:generate-->
+<!-- =================================================================== -->
+  <target name="mavenReport" depends="cvsupdate" description="run 'maven site:generate'">
         <exec executable="maven" dir="${cruise.base.dir}">
             <arg line="site:generate" />
         </exec>
     </target>
+    
+    
+
+<!-- =================================================================== -->
+<!-- Gump target for distribution -->
+<!-- =================================================================== -->
+  <target name="gump-dist" depends="dist" />
+  
+<!-- =================================================================== -->
+<!-- Gump best practises say unit tests only -->
+<!-- =================================================================== -->
+  <target name="gump-test" depends="test" />
+  
+  
 </project>

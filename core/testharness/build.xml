@@ -84,7 +84,7 @@ For more information: www.smartfrog.org
   
   <!-- turn on the tests. If you dont want this, set one (or both) to false)  in the unit tests-->
   <property name="system.tests" value="true" />
-  <property name="unit.tests" value="false" />
+  <property name="unit.tests" value="true" />
   
 
   
@@ -99,13 +99,16 @@ For more information: www.smartfrog.org
     <mkdir dir="${test.datafiles.dir}" />
     <mkdir dir="${test.reports.dir}" />
     <mkdir dir="${test.src.dir}"  />
-      <condition property="system.tests.enabled">
-          <istrue value="${system.tests}"/>
-      </condition>
+    <condition property="system.tests.enabled">
+      <istrue value="${system.tests}"/>
+    </condition>
 
-      <condition property="unit.tests.enabled">
-          <istrue value="${unit.tests}"/>
-      </condition>      
+    <condition property="unit.tests.enabled">
+      <istrue value="${unit.tests}"/>
+    </condition>
+    
+    <echo>system.tests.enabled=${system.tests.enabled}</echo>
+    <echo>unit.tests.enabled=${unit.tests.enabled}</echo>
   </target>
 
   <target name="clean" description="clean up the test directories only">
