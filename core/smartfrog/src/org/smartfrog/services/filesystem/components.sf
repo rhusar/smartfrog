@@ -61,7 +61,16 @@ File extends Prim {
     sfClass "org.smartfrog.services.filesystem.FileImpl";
 }
 
-
+/*
+ name something that must be a directory and not a file
+  TODO: come up with a design for this. 
+ */
+ /*
+Directory extends File {
+    isDirectory "true";
+    isFile "false";
+}
+*/
 TouchFileSchema extends Schema {
     //filename; this must be in a platform-specific format
     filename extends OptionalString;

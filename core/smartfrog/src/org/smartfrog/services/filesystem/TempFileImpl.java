@@ -24,12 +24,12 @@ import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.utils.ComponentHelper;
+import org.smartfrog.sfcore.logging.LogFactory;
+import org.smartfrog.sfcore.logging.Log;
 
 import java.io.File;
 import java.io.IOException;
 import java.rmi.RemoteException;
-import java.util.logging.Logger;
-import java.util.logging.Level;
 
 /**
  * created 18-May-2004 11:46:09
@@ -47,7 +47,7 @@ public class TempFileImpl extends PrimImpl implements Prim, TempFile, FileIntf {
      */
     boolean delete=false;
 
-    Logger log;
+    Log log;
 
     public TempFileImpl() throws RemoteException {
     }
@@ -61,12 +61,12 @@ public class TempFileImpl extends PrimImpl implements Prim, TempFile, FileIntf {
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
-        log=new ComponentHelper(this).getLogger();
+        log=LogFactory.getOwnerLog(this,this);
         String prefix = sfResolve(ATTR_PREFIX, "", true);
         String suffix = sfResolve(ATTR_SUFFIX, (String) null, false);
         String dir = sfResolve(ATTR_DIRECTORY, (String) null, false);
         delete = sfResolve(ATTR_DELETE_ON_EXIT, delete, false);
-        log.log(Level.FINE,"creating temp file in dir ["+dir+"] prefix="+prefix+" suffix="+suffix);
+        log.debug("creating temp file in dir ["+dir+"] prefix="+prefix+" suffix="+suffix);
         try {
             if (dir == null) {
                 tempFile = File.createTempFile(prefix, suffix);
