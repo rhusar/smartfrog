@@ -21,13 +21,13 @@
 
 package org.smartfrog.tools.ant.test.unit;
 
+import org.smartfrog.tools.ant.PropertyFile;
 import org.smartfrog.tools.ant.test.TaskTestBase;
 
 /**
  * Test the parser
- * @author steve loughran
- *         Date: 25-Feb-2004
- *         Time: 23:48:51
+ *
+ * @author steve loughran Date: 25-Feb-2004 Time: 23:48:51
  */
 public class ParseTest extends TaskTestBase {
     public static final String SUCCESSFUL_PARSE = "SFParse: SUCCESSFUL";
@@ -46,11 +46,11 @@ public class ParseTest extends TaskTestBase {
     }
 
     public void testNoop() {
-        expectLogContaining("testNoop","No source files");
+        expectLogContaining("testNoop", "No source files");
     }
 
     public void testValid1() {
-        expectLogContaining("testValid1",SUCCESSFUL_PARSE);
+        expectLogContaining("testValid1", SUCCESSFUL_PARSE);
     }
 
     public void testValid2() {
@@ -69,14 +69,18 @@ public class ParseTest extends TaskTestBase {
     }
 
     public void testMissingFile() {
-        expectBuildExceptionContaining("testMissingFile", "not found", "File not found :");
+        expectBuildExceptionContaining("testMissingFile",
+                "not found",
+                "File not found :");
     }
+
     public void testTwoFiles() {
         expectBuildException("testTwoFiles", "parse failure");
     }
 
     public void testVerbose() {
-        expectLogContaining("testVerbose","sfClass \"org.smartfrog.sfcore.compound.CompoundImpl\";");
+        expectLogContaining("testVerbose",
+                "sfClass \"org.smartfrog.sfcore.compound.CompoundImpl\";");
     }
 
     public void testQuiet() {
@@ -89,6 +93,27 @@ public class ParseTest extends TaskTestBase {
         assertNotInLog("port 8080;");
     }
 
+    public void testEmptyPropertyFile() {
+        expectBuildExceptionContaining("testEmptyPropertyFile",
+                "empty propertyFile",
+                PropertyFile.ERROR_NO_FILE_ATTRIBUTE);
+    }
 
+    public void testNoProperty() {
+        expectBuildExceptionContaining("testNoProperty",
+                "undefined property in .SF file",
+                "parse failure");
+    }
 
+    public void testProperty() {
+        expectLogContaining("testProperty", SUCCESSFUL_PARSE);
+    }
+
+    public void testValidPropertyFile() {
+        expectLogContaining("testValidPropertyFile", SUCCESSFUL_PARSE);
+    }
+
+    public void testPropertySet() {
+        expectLogContaining("testPropertySet", SUCCESSFUL_PARSE);
+    }
 }
