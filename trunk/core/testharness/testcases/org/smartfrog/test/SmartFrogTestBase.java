@@ -38,6 +38,7 @@ import org.smartfrog.sfcore.common.ConfigurationDescriptor;
 import org.smartfrog.sfcore.common.MessageUtil;
 import org.smartfrog.sfcore.common.SmartFrogParseException;
 import org.smartfrog.sfcore.common.MessageKeys;
+import org.smartfrog.sfcore.common.SmartFrogInitException;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.sfcore.processcompound.SFProcess;
 import org.smartfrog.sfcore.prim.Prim;
@@ -94,13 +95,13 @@ public abstract class SmartFrogTestBase extends TestCase {
      * @param searchString string which must be found in the exception message
      * @throws RemoteException in the event of remote trouble.
      */
-    protected void deployExpectingException(String testURL,
+    protected Throwable deployExpectingException(String testURL,
                                             String appName,
                                             String exceptionName,
                                             String searchString) throws RemoteException,
             SmartFrogException, SFGeneralSecurityException,
             UnknownHostException {
-        deployExpectingException(testURL,
+        return deployExpectingException(testURL,
                 appName,
                 exceptionName,
                 searchString,
@@ -118,10 +119,10 @@ public abstract class SmartFrogTestBase extends TestCase {
      * @param containedExceptionName optional classname of a contained
      * exception; does not have to be the full name; a fraction will suffice.
      * @param containedExceptionText optional text in the contained fault.
-     * Ignored if the containedExceptionClass parametere is null.
      * @throws RemoteException in the event of remote trouble.
+     * @returns the exception that was returned
      */
-    protected void deployExpectingException(String testURL,
+    protected Throwable deployExpectingException(String testURL,
                                             String appName,
                                             String exceptionName,
                                             String searchString,
@@ -130,41 +131,22 @@ public abstract class SmartFrogTestBase extends TestCase {
             RemoteException, UnknownHostException, SFGeneralSecurityException {
         startSmartFrog();
         ConfigurationDescriptor cfgDesc =
-             new ConfigurationDescriptor(appName
-                                       , testURL,
-                 ConfigurationDescriptor.Action.DEPLOY
-                                       , hostname
-                                       , null);
+                createDeploymentConfigurationDescriptor(appName, testURL);
         Object deployedApp = null;
+        Throwable returnedFault=null;
         try {
+
             //Deploy and don't throw exception. Exception will be contained
             // in a ConfigurationDescriptor.
             deployedApp = SFSystem.runConfigurationDescriptor(cfgDesc,false);
             if ((deployedApp instanceof ConfigurationDescriptor) &&
-                (((ConfigurationDescriptor)deployedApp).resultException!=null)){
-                Throwable thr = ((ConfigurationDescriptor)deployedApp).resultException;
-                if( searchString!=null ) {
-                    assertContains(cfgDesc.statusString(), searchString);
-                }
-                if (containedExceptionName!=null) {
-                    Throwable cause = thr.getCause();
-                    assertNotNull("expected throwable of type "
-                                   +containedExceptionName,
-                                   cause);
-                    //verify the name
-//                    assertThrowableNamed(cause,
-//                                         containedExceptionName,
-//                                         cfgDesc.statusString());
-                    assertContains(cause.toString(),
-                                         containedExceptionName,
-                                         cfgDesc.statusString());
-
-                    if (containedExceptionText!=null) {
-                        assertContains(cause.toString(),
-                                       containedExceptionText,
-                                       cfgDesc.statusString());
-                    }
-                }
+                    (((ConfigurationDescriptor) deployedApp).resultException != null)) {
+                //we got an exception. let's take a look.
+                returnedFault = ((ConfigurationDescriptor) deployedApp).resultException;
+                assertFaultCauseAndTextContains(returnedFault, exceptionName, searchString, cfgDesc);
+                //get any underlying cause
+                Throwable cause = returnedFault.getCause();
+                assertFaultCauseAndTextContains(cause, containedExceptionName, containedExceptionText, cfgDesc);
 
             } else {
                 fail("We expected an exception here:"+exceptionName
@@ -173,6 +155,66 @@ public abstract class SmartFrogTestBase extends TestCase {
          } catch (Exception fault) {
             fail(fault.toString());
          }
+        return returnedFault;
+    }
+
+    /**
+     * assert that something we deployed contained the name and text we wanted.
+     * @param cause root cause. Can be null, if faultName and faultText are also null. It is an error if they are defined
+     * and the cause is null
+     * @param faultName substring that must be in the classname of the fault
+     * @param faultText substring that must be in the text of the fault
+     * @param cfgDesc what we were deploying; the status string is extracted for reporting purposes
+     */
+    private void assertFaultCauseAndTextContains(Throwable cause, String faultName,
+                                                 String faultText, ConfigurationDescriptor cfgDesc) {
+        String details = cfgDesc.statusString();
+        assertFaultCauseAndTextContains(cause, faultName, faultText, details);
+    }
+
+    /**
+     *
+     /**
+     * assert that something we deployed contained the name and text we wanted.
+     * @param cause root cause. Can be null, if faultName and faultText are also null. It is an error if they are defined
+     * and the cause is null
+     * @param faultName substring that must be in the classname of the fault
+     * @param faultText substring that must be in the text of the fault
+     * @param details status string for reporting purposes
+     */
+    private void assertFaultCauseAndTextContains(Throwable cause, String faultName,
+                                                 String faultText, String details) {
+        //if we wanted the name of a fault
+        if (faultName != null) {
+            //then look for the name of contained exception and see it matches what was
+            // asked for
+            assertNotNull("expected throwable of type "
+                    + faultName,
+                    cause);
+            //verify the name
+            assertThrowableNamed(cause,
+                    faultName,
+                    details);
+        }
+        //look for the exception text
+        if (faultText != null) {
+            assertNotNull("expected throwable containing text "
+                    + faultText,
+                    cause);
+
+            assertContains(cause.toString(),
+                    faultText,
+                    details);
+        }
+    }
+
+    private ConfigurationDescriptor createDeploymentConfigurationDescriptor(String appName, String testURL)
+            throws SmartFrogInitException {
+        return new ConfigurationDescriptor(appName
+                                               , testURL,
+                         ConfigurationDescriptor.Action.DEPLOY
+                                               , hostname
+                                               , null);
     }
 
     /**
@@ -182,7 +224,6 @@ public abstract class SmartFrogTestBase extends TestCase {
      */
     public void assertThrowableNamed(Throwable thrown,String name, String cfgDescMsg) {
         assertContains(thrown.getClass().getName(),name, cfgDescMsg);
-        //assertContains(thrown.toString(),name, cfgDescMsg);
     }
 
     /**
@@ -237,15 +278,9 @@ public abstract class SmartFrogTestBase extends TestCase {
      */
     protected Prim deployExpectingSuccess(String testURL, String appName)
                                                     throws Exception,Throwable {
-        ConfigurationDescriptor cfgDesc =
-                new ConfigurationDescriptor(appName,
-                                            testURL,
-                    ConfigurationDescriptor.Action.DEPLOY,
-                                            hostname,
-                                            null);
+
         try {
-            startSmartFrog();
-            Object deployedApp = SFSystem.runConfigurationDescriptor(cfgDesc,true);
+            Object deployedApp = deployApplication(appName, testURL);
 
             if (deployedApp instanceof Prim) {
                 return ((Prim) deployedApp);
@@ -263,6 +298,19 @@ public abstract class SmartFrogTestBase extends TestCase {
         fail("something odd came back");
         //fail throws a fault; this is here to keep the compiler happy.
         return null;
+    }
+
+    private Object deployApplication(String appName, String testURL) throws SmartFrogException, RemoteException,
+            SFGeneralSecurityException, UnknownHostException {
+        startSmartFrog();
+        ConfigurationDescriptor cfgDesc =
+                new ConfigurationDescriptor(appName,
+                        testURL,
+                        ConfigurationDescriptor.Action.DEPLOY,
+                        hostname,
+                        null);
+        Object deployedApp = SFSystem.runConfigurationDescriptor(cfgDesc,true);
+        return deployedApp;
     }
 
     /**

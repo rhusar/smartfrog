@@ -58,4 +58,13 @@ public interface BooleanValues extends Remote {
      * @throws RemoteException
      */
     public boolean getValue() throws RemoteException, SmartFrogResolutionException;
+
+    /**
+     * throw a runtime fault when invoking
+     * @return
+     * @throws RemoteException
+     * @throws java.lang.RuntimeException always.
+     */
+    public boolean throwRuntimeException() throws RemoteException;
+
 }

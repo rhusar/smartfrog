@@ -44,9 +44,10 @@ public class ReferenceSystemTest extends SmartFrogTestBase {
     public void testCaseTCN19() throws Exception {
         deployExpectingException(FILES+"tcn19.sf",
                 "tcn19",
-                "SmartFrogCompileResolutionException",
+                "SmartFrogDeploymentException",
                 "Failed to resolve 'attr ",
-                "java.lang.StackOverflowError", null);
+                "SmartFrogCompileResolutionException",
+                "java.lang.StackOverflowError");
     }
     
     public void testCaseTCN39() throws Exception {

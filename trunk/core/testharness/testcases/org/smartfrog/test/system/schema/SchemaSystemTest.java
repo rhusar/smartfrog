@@ -40,24 +40,32 @@ public class SchemaSystemTest extends SmartFrogTestBase {
     public void testCaseTCN43() throws Exception {
         deployExpectingException(FILES+"tcn43.sf",
                 "tcn43",
+                "SmartFrogDeploymentException",
+                null,
                 "SmartFrogCompileResolutionException",
                 "wrong class found for attribute z ");
     }
     public void testCaseTCN44() throws Exception {
         deployExpectingException(FILES+"tcn44.sf",
                 "tcn44",
+                "SmartFrogDeploymentException",
+                null,
                 "SmartFrogCompileResolutionException",
                 "non-reference value found for lazy attribute a");
     }
     public void testCaseTCN45() throws Exception {
         deployExpectingException(FILES+"tcn45.sf",
                 "tcn45",
+                "SmartFrogDeploymentException",
+                null,
                 "SmartFrogCompileResolutionException",
                 " non-optional attribute is missing: y ");
     }
     public void testCaseTCN46() throws Exception {
         deployExpectingException(FILES+"tcn46.sf",
                 "tcn46",
+                "SmartFrogDeploymentException",
+                null,
                 "SmartFrogCompileResolutionException",
                 " wrong class found for attribute x ");
     }

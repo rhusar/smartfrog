@@ -66,5 +66,16 @@ public class BooleanValuesImpl extends PrimImpl implements BooleanValues {
         return b;
     }
 
+    /**
+     * throw a runtime fault when invoking
+     *
+     * @return
+     * @throws java.rmi.RemoteException
+     * @throws RuntimeException         always.
+     */
+    public boolean throwRuntimeException() throws RemoteException {
+        throw new RuntimeException("invoked throwRuntimeException()");
+    }
+
 
 }

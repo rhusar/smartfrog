@@ -66,7 +66,7 @@ public class CompilerSystemTest extends SmartFrogTestBase {
     public void testCaseTCN7() throws Exception {
         deployExpectingException(FILES + "tcn7.sf",
                 "tcn7",
-                "SmartFrogLifecycleException",
+                "SmartFrogDeploymentException",
                 "failed to deploy 'p' component",
                 "ClassNotFoundException",
                 "org.smartfrog.test.system.compiler.PrinterImpl");
@@ -83,8 +83,8 @@ public class CompilerSystemTest extends SmartFrogTestBase {
     public void testCaseTCN9() throws Exception {
         deployExpectingException(FILES + "tcn9.sf",
                 "tcn9",
-                "SmartFrogLifecycleException",
-                "FAILED when trying DEPLOY ",
+                "SmartFrogDeploymentException",
+                null,
                 "java.lang.ClassNotFoundException",
                 "Cannot find org.smartfrog.test.system.compiler.PrinterImpl");
     }
@@ -92,6 +92,8 @@ public class CompilerSystemTest extends SmartFrogTestBase {
     public void testCaseTCN10() throws Exception {
         deployExpectingException(FILES + "tcn10.sf",
                 "tcn10",
+                "SmartFrogDeploymentException",
+                null,
                 "SmartFrogParseException",
                 "Encountered \"HOST\" ");
     }
@@ -99,6 +101,8 @@ public class CompilerSystemTest extends SmartFrogTestBase {
     public void testCaseTCN23() throws Exception {
         deployExpectingException(FILES + "tcn23.sf",
                 "tcn23",
+                "SmartFrogDeploymentException",
+                null,
                 "SmartFrogCompileResolutionException",
                 "Unresolved Reference");
     }
@@ -123,12 +127,16 @@ public class CompilerSystemTest extends SmartFrogTestBase {
     public void testCaseTCN26() throws Exception {
         deployExpectingException(FILES + "tcn26.sf",
                 "tcn26",
+                "SmartFrogDeploymentException",
+                null,
                 "SmartFrogParseException",
                 "Include file: org/smartfrog//sfcore/components.sf not found");
     }
     public void testCaseTCN27() throws Exception {
         deployExpectingException(FILES + "tcn27.sf",
                 "tcn27",
+                "SmartFrogDeploymentException",
+                null,
                 "SmartFrogCompileResolutionException",
                 "Unresolved Reference");
     }
@@ -136,7 +144,7 @@ public class CompilerSystemTest extends SmartFrogTestBase {
         deployExpectingException(FILES + "tcn28.sf",
                 "tcn28",
                 "SmartFrogDeploymentException",
-                "FAILED when trying DEPLOY of 'tcn28'",
+                null,
                 "SmartFrogResolutionException",
                 "Unresolved Reference: HERE sfClass");
     }

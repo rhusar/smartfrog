@@ -25,6 +25,7 @@ value true;
 
 sfConfig extends Assert {
     isFalse  value ;
+    message "truth and falsehood can sometimes be distinguished";
 }
 
 

@@ -39,7 +39,7 @@ public class NetworkFailureTest extends SmartFrogTestBase {
 
         deployExpectingException(FILES + "tcn50.sf",
                 "tcn50",
-                "SmartFrogException",
+                "SmartFrogDeploymentException",
                 "Unknown host: no-such-hostname",
                 "java.net.UnknownHostException",
                 "no-such-hostname");
@@ -49,7 +49,7 @@ public class NetworkFailureTest extends SmartFrogTestBase {
 
         deployExpectingException(FILES + "tcn51.sf",
                 "tcn51",
-                "SmartFrogException",
+                "SmartFrogDeploymentException",
                 "Connection refused",
                 "java.rmi.ConnectException",
                 "Connection refused");
@@ -60,7 +60,7 @@ public class NetworkFailureTest extends SmartFrogTestBase {
 
         deployExpectingException(FILES + "tcn51b.sf",
                 "tcn51b",
-                "SmartFrogException",
+                "SmartFrogDeploymentException",
                 "Connection refused to host: 216.239.59.99",
                 "java.rmi.ConnectException",
                 "Connection refused");

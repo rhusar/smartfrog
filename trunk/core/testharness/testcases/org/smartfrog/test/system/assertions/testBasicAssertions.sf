@@ -20,6 +20,8 @@ For more information: www.smartfrog.org
 
 #include "org/smartfrog/services/assertions/components.sf"
 
+
+
 sfConfig extends Assert {
     isTrue true;
     isFalse false;
