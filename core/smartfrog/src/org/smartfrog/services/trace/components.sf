@@ -70,7 +70,7 @@ TraceDisplay extends Display {
       positionDisplay "SW"; //Default C. (also N, S, SE, ...)
       redirectStd false; //Redirect System.out,.in,.err
       screenEditable false; //Editable?
-      stepTrace true; // Should ask for confirmation before stepping through?
+      stepTrace false; // Should ask for confirmation before stepping through?
 }
 // end TraceDisplay
 
