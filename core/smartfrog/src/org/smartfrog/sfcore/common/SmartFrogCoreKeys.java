@@ -102,7 +102,7 @@ public interface SmartFrogCoreKeys {
     public final static String SF_CLASS="sfClass";
 
     /**
-     * Attributed that determines the resolution root of a SmartFrog description
+     * Attribute that determines the resolution root of a SmartFrog description
      */
     public final static String SF_CONFIG="sfConfig";
 

@@ -38,9 +38,13 @@ public class ActionDetach extends ConfigurationAction{
       */
      public static Prim Detach(String name, ProcessCompound targetP)  throws SmartFrogException,
             RemoteException {
-            Prim targetC=(Prim) targetP.sfResolveWithParser(name);
-            targetC.sfDetach();
-            return targetC;
+            try {
+                Prim targetC = (Prim)targetP.sfResolveWithParser(name);
+                targetC.sfDetach();
+                return targetC;
+            } catch (Throwable thr) {
+                throw SmartFrogException.forward(thr);
+            }
      }
 
 

@@ -40,20 +40,32 @@ public class ActionTerminate extends ConfigurationAction{
       * @throws RemoteException In case of network/rmi error
       */
       public static Prim sfTerminate(String name, ProcessCompound targetP)
-            throws SmartFrogResolutionException, RemoteException  {
-         Prim targetC=(Prim) targetP.sfResolveWithParser(name);
-         boolean isRootProcess = false;
-         if (targetC instanceof ProcessCompound) {
-            isRootProcess = ((ProcessCompound)targetC).sfIsRoot();
-         }
-         try {
-             targetC.sfTerminate(new TerminationRecord(TerminationRecord.NORMAL,
-                     "External Management Action",
-                     targetP.sfCompleteName()));
-         } catch (RemoteException ex) {
-             HandleTerminationException(ex, isRootProcess);
-         }
-         return targetC;
+            throws SmartFrogException, RemoteException  {
+        Prim targetC;
+
+        try {
+            if (name==null) {
+                targetC = targetP;
+            } else {
+                targetC = (Prim)targetP.sfResolveWithParser(name);
+
+            }
+            boolean isRootProcess = false;
+            if (targetC instanceof ProcessCompound) {
+                isRootProcess = ((ProcessCompound)targetC).sfIsRoot();
+            }
+            try {
+                targetC.sfTerminate(new TerminationRecord(TerminationRecord.
+                    NORMAL,
+                    "External Management Action",
+                    targetP.sfCompleteName()));
+            } catch (RemoteException ex) {
+                HandleTerminationException(ex, isRootProcess);
+            }
+            return targetC;
+        } catch (Throwable thr) {
+            throw SmartFrogException.forward(thr);
+        }
      }
 
 

@@ -40,20 +40,26 @@ public class ActionDetachAndTerminate extends ConfigurationAction{
        * @throws RemoteException In case of network/rmi error
        */
        public static Prim DetachAndTerminate(String name, ProcessCompound targetP)
-             throws SmartFrogResolutionException, RemoteException  {
+             throws SmartFrogException, RemoteException  {
           Prim targetC=(Prim) targetP.sfResolveWithParser(name);
           boolean isRootProcess = false;
-          if (targetC instanceof ProcessCompound) {
-             isRootProcess = ((ProcessCompound)targetC).sfIsRoot();
-          }
-          try {
-              targetC.sfDetachAndTerminate(new TerminationRecord(TerminationRecord.NORMAL,
+        try {
+            if (targetC instanceof ProcessCompound) {
+                isRootProcess = ((ProcessCompound)targetC).sfIsRoot();
+            }
+            try {
+                targetC.sfDetachAndTerminate(new TerminationRecord(
+                    TerminationRecord.NORMAL,
                     "External Management Action",
                     targetP.sfCompleteName()));
-          } catch (RemoteException ex) {
-              HandleTerminationException(ex, isRootProcess);
-          }
-          return targetC;
+            } catch (RemoteException ex) {
+                HandleTerminationException(ex, isRootProcess);
+            }
+            return targetC;
+        } catch (Throwable thr) {
+                    throw SmartFrogException.forward(thr);
+        }
+
       }
 
 
