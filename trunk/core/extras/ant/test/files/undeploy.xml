@@ -39,7 +39,7 @@ ant -lib ../../build/dist/lib/smartfrog-tasks.jar -lib ../../../../smartfrog/dis
     
     <target name="testStopDaemon">
      <parallel>
-        <sf-startdaemon  timeout="${long.timeout}" failonerror="false">
+        <sf-startdaemon  timeout="${long.timeout}" failonerror="true">
         </sf-startdaemon>
         <sequential>
           <sf-block/>

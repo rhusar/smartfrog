@@ -19,6 +19,8 @@
  */
 package org.smartfrog.tools.ant.test;
 
+import org.apache.tools.ant.BuildException;
+
 /**
  * This test tests the daemon starting.
  * This is quite a functional test, as it runs new processes and things, which
@@ -69,8 +71,7 @@ public class StartTest extends TaskTestBase {
      */
     public void testBadHost() {
         expectBuildExceptionContaining("testBadHost", "host parameter",
-                "failed to start the smartfrog daemon");
-        assertInLog("java.net.UnknownHostException: no-such-hostname");
+                "host cannot be set on this task");
     }
 
     public void testDefaults() {
@@ -90,9 +91,14 @@ public class StartTest extends TaskTestBase {
 
      */
     public void testSpawn() {
-        executeTarget("testSpawn");
-        assertInLog("Standalone SmartFrog daemon started");
-        assertInLog("SmartFrog daemon terminated");
+        try {
+            executeTarget("testSpawn");
+            assertInLog("Standalone SmartFrog daemon started");
+            assertInLog("SmartFrog daemon terminated");
+        } catch (BuildException e) {
+            //older ant versions will not spawn
+            assertTrue(e.getMessage().indexOf("not compatible with spawn")>=0);
+        }
     }
 
 

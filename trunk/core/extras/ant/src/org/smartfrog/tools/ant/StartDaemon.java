@@ -53,7 +53,6 @@ public class StartDaemon extends DeployingTaskBase {
 
     public void init() throws BuildException {
         super.init();
-        setHost("localhost");
     }
 
     /**
@@ -66,7 +65,7 @@ public class StartDaemon extends DeployingTaskBase {
     }
 
     /**
-     * spawn flag, false by default.
+     * spawn flag, false by default. Needs Ant1.7 or later to work.
      */
     protected boolean spawn;
 
@@ -87,6 +86,8 @@ public class StartDaemon extends DeployingTaskBase {
      *          if something goes wrong with the build
      */
     public void execute() throws BuildException {
+        verifyHostUndefined();
+        setHost("localhost");
         setStandardSmartfrogProperties();
         //this is needed to start the registry. Without it you cannot shut
         //smartfrog down.

@@ -479,6 +479,21 @@ public abstract class SmartFrogTask extends TaskBase {
         execSmartfrog(failureText, "Problems running smartfrog JVM");
     }
 
+
+    /**
+     *  if we ask for localhost, set it to null.
+     * This avoids problems with anything that demands that localhost is
+     * undefined
+     */
+    protected void resetHostIfLocal() {
+
+        if ("localhost".equals(host) || "127.0.0.1".equals(host))
+        {
+            host = null;
+            return;
+        }
+
+    }
     /**
      * check no host;
      *
@@ -490,6 +505,8 @@ public abstract class SmartFrogTask extends TaskBase {
             throw new BuildException("host cannot be set on this task; it is set to "+host);
         }
     }
+
+
 
     /**
      * set the timeout for execution. This is incompatible with spawning.
