@@ -24,6 +24,7 @@ package org.smartfrog.test.system.examples;
 import org.smartfrog.test.SmartFrogTestBase;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.examples.arithnet.Input;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 
 import java.net.*;
 import java.io.*;
