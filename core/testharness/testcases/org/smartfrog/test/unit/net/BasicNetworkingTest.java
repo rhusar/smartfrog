@@ -23,6 +23,7 @@ import junit.framework.TestCase;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.logging.Logger;
 
 /**
  * created Jul 12, 2004 3:55:32 PM
@@ -30,8 +31,11 @@ import java.net.UnknownHostException;
 
 public class BasicNetworkingTest extends TestCase {
 
+    Logger log;
+
     public BasicNetworkingTest(String name) {
         super(name);
+        log=Logger.getLogger(name);
     }
 
     public void testHasHostname() throws UnknownHostException {
@@ -45,34 +49,52 @@ public class BasicNetworkingTest extends TestCase {
     public void testLocalhost() throws UnknownHostException {
         InetAddress addr;
         addr=InetAddress.getByName("localhost");
+        logAddr("localhost", addr);
     }
 
     public void testLoopback() throws UnknownHostException {
         InetAddress addr;
         addr = InetAddress.getByName(null);
+        logAddr("loopback", addr);
+        assertTrue(addr.isLoopbackAddress());
     }
 
     public void test127dot0dot0dot1() throws UnknownHostException {
         InetAddress addr;
         addr = InetAddress.getByName("127.0.0.1");
+        logAddr("127.0.0.1", addr);
+        assertTrue(addr.isLoopbackAddress());
     }
+
 
     /**
      * this only valid in an IPv6 context
      * @throws UnknownHostException
      */
     public void testIPv6() throws UnknownHostException {
-        InetAddress.getByName("::1");
+        InetAddress addr;
+        addr = InetAddress.getByName("::1");
+        logAddr("IPv6",addr);
+        assertTrue(addr.isLoopbackAddress());
     }
 
     public void testReverseDNSWorking() throws UnknownHostException {
         InetAddress addr = InetAddress.getLocalHost();
         String hostname=addr.getHostName();
+        logHostname(hostname);
     }
 
     public void testReverseDNSFullyWorking() throws UnknownHostException {
         InetAddress addr = InetAddress.getLocalHost();
         String hostname = addr.getCanonicalHostName();
+        logHostname(hostname);
     }
 
+    private void logHostname(String hostname) {
+        log.info("hostname =" + hostname);
+    }
+
+    private void logAddr(String type, InetAddress addr) {
+        log.info(type + ": " + addr.toString());
+    }
 }
