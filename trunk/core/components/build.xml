@@ -463,10 +463,57 @@ For more information: www.smartfrog.org
 	<target name="generatedoc" depends="init" description="Document Generation" if="env.FORREST_HOME">
     <ant antfile="documentation.xml" inheritall="false" />
 	</target>
+
+  <!-- =================================================================== -->
+  <!-- update version                                                      -->
+  <!-- =================================================================== -->
+  <target name="updateversion" depends="init-common, init">
+
+    <replace 
+    		file="buildRelease.xml"
+   		propertyFile="version.properties">
+  		<replacefilter 
+    		token="@version" 
+    		property="component.version"/>
+    </replace>
+
+    <macrodef name="updateversion" >
+      <attribute name="project" description="component to update"/>
+     <attribute name="compname" description="component to update"/> 
+     
+     <sequential>
+	<replace 
+    		file="@{project}/buildRelease.xml"
+   		propertyFile="version.properties">
+  		<replacefilter 
+    		token="@version" 
+    		property="@{compname}.version"/>
+	</replace>
+	<replace 
+		file="@{project}/doc/@{compname}_readme.sxw"
+   		propertyFile="version.properties">
+  		<replacefilter 
+    		token="version" 
+    		property="@{compname}.version"/>
+	</replace>
+      </sequential>
+    </macrodef>
+
+    <updateversion project="${emailer.project}" compname="emailer"/>
+    <updateversion project="${jetty.project}" compname="jetty" />
+    <updateversion project="${logger.project}" compname="logger" />
+    <updateversion project="${net.project}" compname="net"/>
+    <updateversion project="${scripting.project}" compname="scripting"/>
+    <updateversion project="${sfcoreloggers.project}" compname="sfcoreloggers"/>
+    <updateversion project="${slp.project}" compname="slp"/>
+    <updateversion project="${ssh.project}" compname="ssh"/>
+    <updateversion project="${utils.project}" compname="utils"/>
+  </target>
+
   <!-- =================================================================== -->
   <!--  Release                                                            -->
   <!-- =================================================================== -->
-  <target name="release"  depends=" verify-smartfrog,  clean, dist, initdist, copybuild, copybins, copylibs, copydocs, copycomponents, srczip, buildrelease " description="Creates clean new release">
+  <target name="release"  depends=" verify-smartfrog,  clean, updateversion, dist, initdist, copybuild, copybins, copylibs, copydocs, copycomponents, srczip, buildrelease " description="Creates clean new release">
 	  <copy tofile="${dist.dir}/build.xml" file="releaseBuild.xml"/>
   </target>
 
