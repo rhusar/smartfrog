@@ -568,17 +568,14 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
                     SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME,false), this);
             }
 
-            try {
-                // Look up delay, if not there never mind looking up factor
-                sfLivenessDelay = ((Number) sfResolve(refLivenessDelay)).intValue();
-                sfLivenessFactor = ((Number) sfResolve(refLivenessFactor)).intValue();
-                // copy in local description for efficiency when subcomponents looking up
-                sfReplaceAttribute(SmartFrogCoreKeys.SF_LIVENESS_DELAY, new Long (sfLivenessDelay) );
-                // copy in local description for efficiency when subcomponents looking up
-                sfReplaceAttribute(SmartFrogCoreKeys.SF_LIVENESS_FACTOR, new Integer (sfLivenessFactor));
-            } catch (SmartFrogResolutionException resex) {
-                // ignore, leave default
-            }
+            // Look up delay, if not there never mind looking up factor
+            sfLivenessDelay= sfResolve(refLivenessDelay,sfLivenessDelay,false);
+            sfLivenessFactor = sfResolve(refLivenessFactor,sfLivenessFactor,false);
+
+            // copy in local description for efficiency when subcomponents looking up
+            sfReplaceAttribute(SmartFrogCoreKeys.SF_LIVENESS_DELAY, new Long (sfLivenessDelay) );
+            // copy in local description for efficiency when subcomponents looking up
+            sfReplaceAttribute(SmartFrogCoreKeys.SF_LIVENESS_FACTOR, new Integer (sfLivenessFactor));
 
             sfLivenessCount = sfLivenessFactor;
 
@@ -794,7 +791,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
         }
 
         synchronized (this) {
-            if (sfIsTerminating) {
+            if (sfIsTerminating || sfIsTerminated) {
                 return;
             }
             isTerminating = true;
@@ -824,12 +821,9 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
             Logger.logQuietly(ex);
         }
 
-        synchronized (this) {
-            if (sfIsTerminated) {
-                return;
-            }
+        //synchronized (this) {
             sfIsTerminated = true;
-        }
+        //}
 
     }
 
