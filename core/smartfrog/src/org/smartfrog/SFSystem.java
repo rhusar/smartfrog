@@ -28,20 +28,21 @@ import org.smartfrog.sfcore.common.OptionSet;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.SmartFrogCoreProperty;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.logging.LogFactory;
+import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.sfcore.processcompound.SFProcess;
 import org.smartfrog.sfcore.security.SFClassLoader;
 import org.smartfrog.sfcore.security.SFGeneralSecurityException;
 import org.smartfrog.sfcore.security.SFSecurity;
+import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.prim.Prim;
 
-import org.smartfrog.sfcore.logging.LogSF;
-import org.smartfrog.sfcore.logging.LogFactory;
-
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
-import java.io.DataInputStream;
-import java.io.ByteArrayOutputStream;
 import java.net.UnknownHostException;
 import java.rmi.ConnectException;
 import java.rmi.RemoteException;
@@ -49,7 +50,6 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.Properties;
 import java.util.Vector;
-import org.smartfrog.sfcore.common.*;
 
 
 /**
@@ -68,6 +68,10 @@ import org.smartfrog.sfcore.common.*;
  * the command line, the main loop exits after deployment. This is good for
  * one shot deployment, with deployment occurring into other processes.
  * </p>
+ *
+ * <p>
+ * This class can be subclassed, but one must be very, very careful about doing so.
+ * </p>
  */
 public class SFSystem implements MessageKeys {
 
@@ -78,9 +82,14 @@ public class SFSystem implements MessageKeys {
     private static  LogSF sflog = null;
 
     /**
-     * value of the errror code returned during a failed exit
+     * value of the error code returned during a failed exit
      */
     private static final int EXIT_ERROR_CODE = -1;
+
+    /**
+     * root process. Will be null after termination.
+     */
+    private ProcessCompound rootProcess;
 
     /**
      * Entry point to get system properties. Works around a bug in some JVM's
@@ -164,7 +173,7 @@ public class SFSystem implements MessageKeys {
      */
     public static void readPropertyLogStackTrace() {
         String source = System.getProperty(SmartFrogCoreProperty.propLogStackTrace);
-        if ((source != null)&&(source.equals("true"))) {
+        if ("true".equals(source)) {
             Logger.logStackTrace = true;
             Logger.log(MessageUtil.
                     formatMessage(MSG_WARNING_STACKTRACE_ENABLED));
@@ -203,12 +212,13 @@ public class SFSystem implements MessageKeys {
     }
 
 
+
     /**
      * Prints given error string and exits system.
      *
      * @param str string to print on out
      */
-    public static void exitWith(String str) {
+    public void exitWith(String str) {
         if (str != null) {
             System.err.println(str);
         }
@@ -218,8 +228,17 @@ public class SFSystem implements MessageKeys {
     /**
      * Exits from the system.
      */
-    private static void exitWithError() {
-        System.exit(EXIT_ERROR_CODE);
+    protected void exitWithError() {
+        exit(EXIT_ERROR_CODE);
+    }
+
+    /**
+     * Exits from the system.
+     * This is the only place in the framework where System.exit() should be used.
+     * That way a subjclass can change exit behaviour (within limits)
+     */
+    protected void exit(int code) {
+        System.exit(code);
     }
 
     /**
@@ -227,11 +246,11 @@ public class SFSystem implements MessageKeys {
      *
      * @param somethingFailed flag to indicate trouble
      */
-    private static void exitWithStatus(boolean somethingFailed) {
+    private void exitWithStatus(boolean somethingFailed) {
         if(somethingFailed) {
             exitWithError();
         } else {
-            System.exit(0);
+            exit(0);
         }
     }
 
@@ -309,6 +328,16 @@ public class SFSystem implements MessageKeys {
      * details
      */
     public static void main(String[] args) {
+        SFSystem system=new SFSystem();
+        system.execute(args);
+    }
+
+
+    /**
+     * This is the implementation of the main function.
+     * @param args
+     */
+    public void execute(String args[]) {
 
         //First thing first: system gets initialized
         try {
@@ -323,7 +352,7 @@ public class SFSystem implements MessageKeys {
             exitWithError();
         }
 
-        ProcessCompound rootProcess = null;
+        setRootProcess(null);
 
         showVersionInfo();
 
@@ -335,7 +364,7 @@ public class SFSystem implements MessageKeys {
         }
         try {
 
-            rootProcess = runSmartFrog(opts.cfgDescriptors);
+            setRootProcess(runSmartFrog(opts.cfgDescriptors));
 
         } catch (SmartFrogException sfex) {
             Logger.log(sfex);
@@ -407,7 +436,7 @@ public class SFSystem implements MessageKeys {
      * @throws Exception if anything else went wrong
      */
 
-    public static ProcessCompound runSmartFrog(Vector cfgDescriptors) throws
+    public ProcessCompound runSmartFrog(Vector cfgDescriptors) throws
         Exception {
         ProcessCompound rootProcess;
         rootProcess = runSmartFrog();
@@ -429,7 +458,7 @@ public class SFSystem implements MessageKeys {
      * @throws RemoteException if something goes wrong during the communication
      * @throws SFGeneralSecurityException for security trouble
      */
-    public static ProcessCompound runSmartFrog()
+    public ProcessCompound runSmartFrog()
             throws SmartFrogException, UnknownHostException, ConnectException,
             RemoteException, SFGeneralSecurityException {
 
@@ -441,9 +470,13 @@ public class SFSystem implements MessageKeys {
         setOutputStreams();
 
         // Deploy process Compound
-        process = SFProcess.deployProcessCompound();
+        process = createRootProcess();
 
         return process;
+    }
+
+    protected ProcessCompound createRootProcess() throws SmartFrogException, RemoteException {
+        return SFProcess.deployProcessCompound(true);
     }
 
     /**
@@ -476,7 +509,7 @@ public class SFSystem implements MessageKeys {
     /**
      * Gets input stream for the given resource. Throws exception if stream is
      * null.
-     * @param resource Name of the resource. SF url valid.
+     * @param resourceSFURL Name of the resource. SF url valid.
      * @return Input stream for the resource
      * @throws SmartFrogException if input stream could not be created for the
      * resource
@@ -494,7 +527,7 @@ public class SFSystem implements MessageKeys {
     /**
      * Gets ByteArray for the given resource. Throws exception if stream is
      * null.
-     * @param resource Name of the resource. SF url valid.
+     * @param resourceSFURL Name of the resource. SF url valid.
      * @return ByteArray (byte []) with the resource data
      * @throws SmartFrogException if input stream could not be created for the
      * resource
@@ -517,5 +550,43 @@ public class SFSystem implements MessageKeys {
         }
     }
 
+    /**
+     * get the root process
+     * @return
+     */
+    public ProcessCompound getRootProcess() {
+        return rootProcess;
+    }
 
+    /**
+     * set the root process; this is called after it is started.
+     * @param rootProcess process compoond; may be
+     */
+    public void setRootProcess(ProcessCompound rootProcess) {
+        this.rootProcess = rootProcess;
+    }
+
+
+    /**
+     * terminate the system. the rootProcess field is set to null afterwards.
+     * Any error is dealt with by printing a stack trace to system.err.
+     * @param message message to send
+     */
+    public void terminateSystem(String message) {
+        try {
+            if (rootProcess != null) {
+                //we don't want a system exit any more
+                rootProcess.systemExitOnTermination(false);
+                //terminate
+                rootProcess.sfTerminate(new TerminationRecord(TerminationRecord.NORMAL,
+                        message,
+                        ((Prim) rootProcess).sfCompleteName()));
+            }
+        } catch (RemoteException e) {
+            e.printStackTrace(System.err);
+        } finally {
+            setRootProcess(null);
+        }
+
+    }
 }
