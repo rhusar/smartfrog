@@ -159,7 +159,6 @@ public class RunProcessImpl  extends Thread implements RunProcess {
         try {
             synchronized (this) {
                 if (sfLog.isDebugEnabled()){
-                    sfLog.debug("Cmd: "+ cmd.getCmdArray()+", "+ cmd.getEnvp()+", "+cmd.getFile());
                     sfLog.debug(cmd.toString());
                 }
                 process = runtime.exec(cmd.getCmdArray(), cmd.getEnvp(),
