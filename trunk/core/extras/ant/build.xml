@@ -172,7 +172,16 @@
     </sf-junit>
   </target>  
 
-  <target name="test" depends="run-tests"
+  <target name="notest" depends="want-testutil"
+    description="run unit tests"
+    unless="testutil.found">
+    <echo>
+      Ant test util jar, ant-testutil.jar was not found on the classpath or in
+      ${testutil.jar}
+    </echo>
+    </target>
+    
+  <target name="test" depends="run-tests,notest"
     description="run unit tests"
     if="testutil.found">
     

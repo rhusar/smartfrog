@@ -56,6 +56,7 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
      * codebase string
      */
     protected List codebase = new LinkedList();
+    public static final String ERROR_NO_APPLICATIONS_DECLARED = "No applications declared";
 
     /**
      * add a new application to the list.
@@ -91,7 +92,7 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
      */
     protected void checkApplicationsDeclared() {
         if (getApplicationCount() == 0) {
-            throw new BuildException("No applications declared");
+            throw new BuildException(ERROR_NO_APPLICATIONS_DECLARED);
         }
     }
 
@@ -154,6 +155,11 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
          * owner task
          */
         private Task owner;
+        public static final String ERROR_NO_APPLICATION_NAME = "no application name";
+        public static final String ERROR_NO_APPLICATION_DESCRIPTOR = "no descriptor provided for ";
+        public static final String ERROR_FILE_NOT_FOUND = "File does not exist: ";
+        public static final String ERROR_NO_WRITE = "could not write to: ";
+        public static final String APPLICATION_ENCODING = "UTF-8";
 
         public Application(Task owner) {
             this.owner = owner;
@@ -200,7 +206,7 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
          */
         public void setFile(File file) {
             if (!file.exists()) {
-                throw new BuildException("File " + file + " does not exist");
+                throw new BuildException(ERROR_FILE_NOT_FOUND+file);
             }
             descriptor = file.toString();
         }
@@ -218,12 +224,12 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
          */
         public void validate() {
             if (name == null) {
-                throw new BuildException("no application name");
+                throw new BuildException(ERROR_NO_APPLICATION_NAME);
             }
 
 
             if (descriptor == null) {
-                throw new BuildException("no descriptor provided for " + name);
+                throw new BuildException(ERROR_NO_APPLICATION_DESCRIPTOR + name);
             }
         }
 
@@ -248,14 +254,14 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
             PrintWriter printer = null;
             try {
                 out = new BufferedOutputStream(new FileOutputStream(tempfile));
-                writer = new OutputStreamWriter(out, "UTF-8");
+                writer = new OutputStreamWriter(out, APPLICATION_ENCODING);
                 printer = new PrintWriter(writer);
                 printer.write(this.text);
                 printer.flush();
                 //remember our name
                 setFile(tempfile);
             } catch (IOException e) {
-                throw new BuildException("could not write to " + tempfile, e);
+                throw new BuildException(ERROR_NO_WRITE + tempfile, e);
             } finally {
                 if (writer != null) {
                     try {
@@ -279,6 +285,9 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
          * location of a JAR file
          */
         private String location;
+        public static final String ERROR_UNDEFINED_CODEBASE = "Undefined codebase";
+        public static final String ERROR_FILE_NOT_FOUND = "Not found :";
+        public static final String ERROR_NOT_JAR_FILE = "Not a JAR file: ";
 
         /**
          * the URL of the JAR file
@@ -309,10 +318,10 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
          */
         public void setFile(File file) {
             if (!file.exists()) {
-                throw new BuildException("Not found :" + file);
+                throw new BuildException(ERROR_FILE_NOT_FOUND + file);
             }
             if (file.isDirectory()) {
-                throw new BuildException("Not a JAR file :" + file);
+                throw new BuildException(ERROR_NOT_JAR_FILE + file);
             }
             try {
                 setURL(file.toURL());
@@ -343,7 +352,7 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
                 Codebase codebase = (Codebase) it.next();
                 String l = codebase.getLocation();
                 if (l == null) {
-                    throw new BuildException("Undefined codebase");
+                    throw new BuildException(ERROR_UNDEFINED_CODEBASE);
                 }
                 results.append(l);
                 //space separated options here

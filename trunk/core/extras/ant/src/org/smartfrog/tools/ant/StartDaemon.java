@@ -46,6 +46,7 @@ import org.apache.tools.ant.Project;
  */
 
 public class StartDaemon extends DeployingTaskBase {
+    public static final String ERROR_FAILED_TO_START_DAEMON = "failed to start the smartfrog daemon";
 
     public StartDaemon() {
         setFailOnError(true);
@@ -98,7 +99,7 @@ public class StartDaemon extends DeployingTaskBase {
                     Project.MSG_VERBOSE);
         }
 
-        execSmartFrog("failed to start the smartfrog daemon");
+        execSmartFrog(ERROR_FAILED_TO_START_DAEMON);
         if (spawn) {
             //when spawning output gets lost, so we print something here
             log("Standalone SmartFrog daemon started");
