@@ -42,6 +42,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.ServerSocket;
+import java.net.URL;
 import java.rmi.RemoteException;
 
 /**
@@ -86,12 +87,15 @@ public class AxisImpl extends PrimImpl implements Axis, Prim{
     /** max no. of sessions */
     private int sessions= SimpleAxisServer.MAX_SESSIONS_DEFAULT;
 
+    private String livenessPage="/";
+
     /**
      * ctor is needed to throw an exception from a parent
      * @throws RemoteException
      */
 
     public AxisImpl() throws RemoteException {
+        DeploymentEndpoint.setOwner(this);
     }
 
     /**
@@ -126,8 +130,10 @@ public class AxisImpl extends PrimImpl implements Axis, Prim{
         wsddResource=sfResolve(Axis.WSDD_RESOURCE,"",true);
         threads=sfResolve(Axis.THREADS, threads,false);
         sessions=sfResolve(Axis.SESSIONS,sessions,false);
+        livenessPage= sfResolve(Axis.LIVENESS_PAGE, livenessPage, false);
         log.info("Running Axis on port " + port + " with WSDD " + wsddResource);
         log.info(" max threads="+threads+" sessions="+sessions);
+        log.info(" liveness=" + livenessPage);
         axis= new SimpleAxisServer(threads,sessions);
         registerResource(wsddResource);
         try {
@@ -170,6 +176,7 @@ public class AxisImpl extends PrimImpl implements Axis, Prim{
      */
     public void sfPing(Object source) throws SmartFrogLivenessException {
         super.sfPing(source);
+        hitLivenessPage();
     }
 
     /**
@@ -279,5 +286,39 @@ public class AxisImpl extends PrimImpl implements Axis, Prim{
             throw new SmartFrogException("Not found: "+resourcename);
         }
         registerStream(in);
+    }
+
+    /**
+     * try and retrieve the liveness page.
+     * @throws SmartFrogLivenessException
+     */
+    public void hitLivenessPage() throws SmartFrogLivenessException {
+
+        InputStream instream=null;
+        if(livenessPage==null || livenessPage.length()==0) {
+            //do nothing on an undefined page
+            return;
+        }
+        String target = "http://127.0.0.1:" + port + "/" + livenessPage;
+        log.debug("Liveness check on" + target);
+        try {
+            URL page=new URL(target);
+            instream = page.openStream();
+            instream.read();
+        } catch (IOException exception) {
+            log.debug("Could not open "+target,
+                    exception);
+            throw new SmartFrogLivenessException(target,exception);
+        } finally {
+            try {
+                if(instream!=null) {
+                    instream.close();
+                }
+            } catch (IOException ignored) {
+
+            }
+
+        }
+
     }
 }
