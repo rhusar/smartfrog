@@ -269,7 +269,7 @@ public class SFParse implements MessageKeys {
              Logger.log("Error detected. Check report.");
              exit();
            } else {
-               Logger.log( "SFParse: SUCCESFUL");
+               Logger.log( "SFParse: SUCCESSFUL");
            }
         } catch (Throwable thr){
            Logger.log(thr);
