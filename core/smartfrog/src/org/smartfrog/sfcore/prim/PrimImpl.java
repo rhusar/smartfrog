@@ -52,7 +52,7 @@ import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 
-import org.smartfrog.sfcore.reference.ReferenceResolverHelperImpl;
+import org.smartfrog.sfcore.reference.RemoteReferenceResolverHelperImpl;
 import java.rmi.NoSuchObjectException;
 
 /**
@@ -74,7 +74,7 @@ import java.rmi.NoSuchObjectException;
  * </p>
  *
  */
-public class PrimImpl extends ReferenceResolverHelperImpl implements Prim, MessageKeys {
+public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim, MessageKeys {
 
     /** Static attribute that hold the lifecycle hooks for sfDeploy. */
     public static PrimHookSet sfDeployHooks = new PrimHookSet();

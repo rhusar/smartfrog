@@ -28,6 +28,7 @@ import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.Copying;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferenceResolver;
+import org.smartfrog.sfcore.reference.ReferenceResolverHelper;
 
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 
@@ -37,7 +38,7 @@ import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
  * Components.
  * @see Copying
  */
-public interface ComponentDescription extends Copying, ReferenceResolver {
+public interface ComponentDescription extends Copying, ReferenceResolver, ReferenceResolverHelper {
 
     /**
      * Add an attribute to the component description context. Values should be
