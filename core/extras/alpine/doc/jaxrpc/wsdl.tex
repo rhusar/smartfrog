@@ -36,10 +36,11 @@ This has the following consequences.
 \begin{itemize}
 
 \item
-    There is no way to ensure that the published interface of a service
-    remains constant over time. Every redeployment of the service, every
-    upgrade of the SOAP stack or even the underlying Java runtime may
-    change the WSDL, and hence the interface.
+    
+There is no way to ensure that the published interface of a service
+remains constant over time. Every redeployment of the service, every
+upgrade of the SOAP stack or even the underlying Java runtime may
+change the WSDL, and hence the interface.
 
 \item
 
@@ -58,15 +59,17 @@ development, everything seems to work, until the service goes live and
 a customer using a different language attempts to import the WSDL and
 invoke the service.
 
-\item
-
-Not enough people have been hand-generating WSDL for the WSDL-to-Java
-side of the tool-chain to be broadly tested as well as it should.
+%% This is a problem, but its not a problem for people doing WSDL-last
+%% development: its a problem for everyone else
+% \item
+% 
+% Not enough people have been hand-generating WSDL for the WSDL-to-Java
+% side of the tool-chain to be broadly tested as well as it should.
 
     
 \end{itemize}
 
-The alternative to WSDL-last development is clearly, \emph{WSDL-first
+The alternative to WSDL-last development is clearly \emph{WSDL-first
 development}. Although this is the better approach from the perspective
 of portability and interface stability, web service developers are not
 pushed in this direction.
@@ -88,16 +91,16 @@ WSDL integration.
 
 Returning to the desiderata for SOAP, a WSDL-last process sacrifice
 interoperability for ease of service development. Perhaps WSDL is not
-the appropriate language for describing SOAP services; we are certainly
-not enthused about it. Yet the sole solution being advocated is not a
-major undertaking to fix WSDL's core flaws; it is to continue to
-encourage developers to hand over to their SOAP stacks the challenge of
-deriving a stable and portable service interface from the inherently
-unstable and unportable service implementation.
+the appropriate language for describing SOAP services (we are
+certainly not enthused about it), yet the sole solution being
+advocated is not a major undertaking to fix WSDL's core flaws, it is
+to continue to encourage developers to hand over to their SOAP stacks
+the challenge of deriving a stable and portable service interface from
+the inherently unstable and unportable service implementation.
 
-We are not proposing any changes to WSDL, merely mourning the fact that its
-over-complexity discourages wsdl-first, contract-driven development more
-aggressively than any IDL ever did. We do observe that once the type
-declarations of a service have been moved into their own document, WSDL becomes
-much more manageable. This is a pattern of service definition which we strongly
-encourage. 
+We are not proposing any changes to WSDL, merely mourning the fact
+that its over-complexity discourages WSDL-first, contract-driven
+development more aggressively than any previous IDL ever did. We do
+observe that once the type declarations of a service have been moved
+into their own document, WSDL becomes much more manageable. This is a
+pattern of service definition which we strongly encourage.
