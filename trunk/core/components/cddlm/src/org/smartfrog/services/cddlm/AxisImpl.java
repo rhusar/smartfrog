@@ -27,8 +27,6 @@ import org.apache.axis.deployment.wsdd.WSDDDeployment;
 import org.apache.axis.deployment.wsdd.WSDDDocument;
 import org.apache.axis.transport.http.SimpleAxisServer;
 import org.apache.axis.utils.XMLUtils;
-import org.apache.commons.logging.Log;
-import org.cddlm.components.CommonsLogFactory;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
@@ -37,6 +35,7 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.security.SFClassLoader;
+import org.smartfrog.sfcore.logging.Log;
 import org.w3c.dom.Document;
 
 import java.io.IOException;
@@ -114,7 +113,7 @@ public class AxisImpl extends PrimImpl implements Axis, Prim {
     public synchronized void sfDeploy() throws SmartFrogException,
             RemoteException {
         super.sfDeploy();
-        log = CommonsLogFactory.createLog(this);
+        log = sfGetApplicationLog();
     }
 
     /**
@@ -135,13 +134,6 @@ public class AxisImpl extends PrimImpl implements Axis, Prim {
         wsddResource = sfResolve(Axis.WSDD_RESOURCE, "", true);
         threads = sfResolve(Axis.THREADS, threads, false);
         sessions = sfResolve(Axis.SESSIONS, sessions, false);
-        /*
-        livenessPage = sfResolve(Axis.LIVENESS_PAGE, livenessPage, false);
-        liveness = new LivenessPageChecker("http", "127.0.0.1", port, livenessPage);
-        liveness.setFollowRedirects(true);
-        liveness.setFetchErrorText(true);
-        liveness.onDeploy();
-        */
         log.info("Running Axis on port " + port + " with WSDD " + wsddResource);
         log.info(" max threads=" + threads + " sessions=" + sessions);
         axis = new SimpleAxisServer(threads, sessions);

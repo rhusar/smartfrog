@@ -56,7 +56,7 @@ public class RunApplicationTask extends DeployingTaskBase {
         checkApplicationsDeclared();
         deployApplications();
         addExitFlag();
-        execSmartfrog("Could not run");
+        execSmartFrog("Could not run");
     }
 
 

@@ -20,13 +20,14 @@
 package org.smartfrog.services.cddlm;
 
 import org.apache.axis.AxisFault;
-import org.apache.axis.components.logger.LogFactory;
-import org.apache.commons.logging.Log;
 import org.smartfrog.SFSystem;
 import org.smartfrog.sfcore.common.ConfigurationDescriptor;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.sfcore.processcompound.SFProcess;
+import org.smartfrog.sfcore.logging.Log;
+import org.smartfrog.sfcore.logging.LogFactory;
+import org.smartfrog.sfcore.prim.Prim;
 
 import java.rmi.RemoteException;
 
@@ -41,8 +42,14 @@ public class DeploymentEndpoint extends SmartfrogHostedEndpoint {
     /**
      * our log
      */
-    private Log log = LogFactory.getLog(this.getClass().getName());
+    private Log log;
 
+    /**
+     * constructor sets up the log
+     */
+    public DeploymentEndpoint() {
+        log=LogFactory.getOwnerLog(owner, this);
+    }
 
     protected final static String[] languages = {
         "SmartFrog",
@@ -100,13 +107,54 @@ public class DeploymentEndpoint extends SmartfrogHostedEndpoint {
      */
     public String deployURL(String language, String hostname,
                             String application, String url, String[] codebase)
-            throws RemoteException {
-        verifySupported(language);
-        if (hostname.length() == 0) {
-            hostname = "localhost";
-        }
-
+            throws RemoteException, AxisFault {
+        hostname = patchHostname(hostname);
+        validateDeploymentParameters(language, application, url, hostname);
         return deployThroughActions(hostname, application, url, null);
+    }
+
+    /**
+     * set the hostname
+     * @param hostname
+     * @return
+     */
+    private String patchHostname(String hostname) {
+        if ( hostname == null || hostname.length() == 0 ) {
+            return "localhost";
+        } else {
+            return hostname;
+        }
+    }
+
+    /**
+     * validate our deploy parameters and throw a fault if they are invalid
+     * @param language
+     * @param application
+     * @param url
+     * @param hostname
+     * @throws AxisFault
+     */
+    private void validateDeploymentParameters(String language, String application, String url, String hostname)
+            throws AxisFault {
+        verifySupported(language);
+        if(isEmpty(application)) {
+            throw new AxisFault("Application is not specified");
+        }
+        if ( url== null ) {
+            throw new AxisFault("url is not specified");
+        }
+        if ( hostname == null ) {
+            throw new AxisFault("hostname is not specified");
+        }
+    }
+
+    /**
+     * test for a parameter being null or zero length
+     * @param param string to test
+     * @return true iff it is empty
+     */
+    private boolean isEmpty(String param) {
+        return param==null || param.length()==0;
     }
 
     /**
@@ -157,6 +205,9 @@ public class DeploymentEndpoint extends SmartfrogHostedEndpoint {
                                         String url,
                                         String[] codebase) throws AxisFault {
         try {
+            assert hostname!=null;
+            assert application!=null;
+            assert url!=null;
             ConfigurationDescriptor config = new ConfigurationDescriptor(
                     application, url);
             config.setHost(hostname);
@@ -194,13 +245,20 @@ public class DeploymentEndpoint extends SmartfrogHostedEndpoint {
      */
     public void undeploy(String hostname, String application) throws AxisFault {
 
+        hostname = patchHostname(hostname);
+        if(isEmpty(application)) {
+            throw new AxisFault("application is undefined");
+        }
         try {
             ConfigurationDescriptor config = new ConfigurationDescriptor();
             config.setHost(hostname);
+            config.setName(application);
             config.setActionType(ConfigurationDescriptor.Action.DETaTERM);
             log.info("Undeploying " + application + " on " + hostname);
             //deploy, throwing an exception if we cannot
-            config.execute(SFProcess.getProcessCompound());
+            final ProcessCompound processCompound = SFProcess.getProcessCompound();
+            assert processCompound!=null;
+            config.execute(processCompound);
             Object targetC = config.execute(null);
         } catch (SmartFrogException exception) {
             throw AxisFault.makeFault(exception);

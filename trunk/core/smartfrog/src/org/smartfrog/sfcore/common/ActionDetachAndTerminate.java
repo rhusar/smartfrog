@@ -41,6 +41,9 @@ public class ActionDetachAndTerminate extends ConfigurationAction{
        */
        public static Prim DetachAndTerminate(String name, ProcessCompound targetP)
              throws SmartFrogException, RemoteException  {
+        if(name==null) {
+            throw new SmartFrogException("No application name provided");
+        }
           Prim targetC=(Prim) targetP.sfResolveWithParser(name);
           boolean isRootProcess = false;
         try {

@@ -155,6 +155,11 @@ public abstract class SmartFrogTask extends TaskBase {
     private SecurityHolder securityHolder = new SecurityHolder();
 
     /**
+     * timeout
+     */
+    private long timeout=DEFAULT_TIMEOUT_VALUE;
+
+    /**
      * add a file to the list
      *
      * @param filename
@@ -487,7 +492,7 @@ public abstract class SmartFrogTask extends TaskBase {
      * @param errorText   text when return value!=0 && !=1-
      * @throws BuildException if the return value from java!=0
      */
-    protected void execSmartfrog(String failureText, String errorText) {
+    protected void execSmartFrog(String failureText, String errorText) {
         //adopt the classpath
         setupClasspath(smartfrog);
         //last minute fixup of error properties.
@@ -496,10 +501,15 @@ public abstract class SmartFrogTask extends TaskBase {
         if (failOnError) {
             smartfrog.setFailonerror(failOnError);
         }
+        //same for timeout
+        propagateTimeout();
+        //run it
         int err = smartfrog.executeJava();
+        //if we didnt want the error code, we are finished
         if (!failOnError) {
             return;
         }
+        //else, lets post-analyse the deployment
         switch (err) {
             case 0:
                 return;
@@ -519,8 +529,8 @@ public abstract class SmartFrogTask extends TaskBase {
      *
      * @param failureText text when smartfrog returns '1'
      */
-    protected void execSmartfrog(String failureText) {
-        execSmartfrog(failureText, "Problems running smartfrog JVM");
+    protected void execSmartFrog(String failureText) {
+        execSmartFrog(failureText, "Problems running smartfrog JVM");
     }
 
 
@@ -550,13 +560,19 @@ public abstract class SmartFrogTask extends TaskBase {
         }
     }
 
-
     /**
      * set the timeout for execution. This is incompatible with spawning.
-     *
      * @param timeout
      */
     public void setTimeout(long timeout) {
+        this.timeout = timeout;
+    }
+
+    /**
+     * propagate the timeout to the Java process. This is incompatible with spawning.
+     *
+     */
+    protected void propagateTimeout() {
         if (timeout > 0) {
             smartfrog.setTimeout(new Long(timeout));
         } else {

@@ -77,7 +77,7 @@ public class StopApplication extends SmartFrogTask {
         addApplicationCommand("-a", terminateCommand);
         //addApplicationCommand("-t",application);
         addExitFlag();
-        execSmartfrog("failed to terminate " + getApplication());
+        execSmartFrog("failed to terminate " + getApplication());
     }
 
 

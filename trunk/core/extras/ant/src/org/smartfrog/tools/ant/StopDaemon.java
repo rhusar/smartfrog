@@ -57,7 +57,7 @@ public class StopDaemon extends SmartFrogTask {
         String terminateCommand = ROOT_PROCESS + ":TERMINATE:::" + getHost() + ":";
         addApplicationCommand("-a", terminateCommand);
         addExitFlag();
-        execSmartfrog("failed to terminate " + ROOT_PROCESS);
+        execSmartFrog("failed to terminate " + ROOT_PROCESS);
     }
 
 
