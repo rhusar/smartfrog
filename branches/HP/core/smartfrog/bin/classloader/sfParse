@@ -1,0 +1,17 @@
+if ! test $SFHOME; then export SFHOME=$PWD; fi
+if [ -z $1 ];then
+echo "Insufficient arguments to use sfParse"
+echo "Usage: sfParse [-v] [-q] [-d] [-r] [-R] [{-f filename}|URL]"
+exit
+fi
+if [ $1 == "-f" ] && [ -z $2 ];then
+echo "Insufficient arguments to use sfParse"
+echo "Usage: sfParse [-v] [-q] [-d] [-r] [-R] [{-f filename}|URL]"
+exit
+fi
+export CLASSPATH=$SFHOME/lib/smartfrog.jar:$SFHOME/lib/sfServices.jar:$SFHOME/lib/sfTestCases.jar:$CLASSPATH
+export SERVER=eb97201.india.hp.com:8080
+# Please edit codebase if you have any other jar file in webserver
+export CODEBASE="http://$SERVER/sfExamples.jar"
+
+java -Dorg.smartfrog.iniFile=$SFHOME/bin/default.ini -Dorg.smartfrog.codebase=$CODEBASE org.smartfrog.SFParse $*

@@ -1,0 +1,15 @@
+if ! test $SFHOME; then export SFHOME=$PWD; fi
+if [ -z $1 ] ; then
+echo "Insufficent arguments to use sfRun"
+echo "Usage: sfRun (-c URL)* [-e]"
+exit
+fi
+if [ $1 == "-c" ] && [ -z $2 ];
+then 
+echo "Insufficent arguments to use sfRun"
+echo "Usage: sfRun (-c URL)* [-e]"
+exit
+fi 
+for i in $SFHOME/lib/*.jar; do CLASSPATH=$i:$CLASSPATH; done
+export CLASSPATH
+java -Dorg.smartfrog.iniFile=$SFHOME/bin/default.ini org.smartfrog.SFSystem $*
