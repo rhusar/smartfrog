@@ -152,6 +152,9 @@ For more information: www.smartfrog.org
   <target name="clean" depends="init, clean-dist"
     description="clean all projects">
     <delegate target="clean"/>
+	<delete dir="src"/> <!-- Forrest releated -->
+	<delete dir="build"/>  <!-- Forrest releated -->
+
   </target>
   
   <target name="test" depends="init"
@@ -506,12 +509,11 @@ For more information: www.smartfrog.org
   <!-- =================================================================== -->
   <!--  Release                                                            -->
   <!-- =================================================================== -->
-  <target name="release"  depends=" verify-smartfrog,  clean, updateversion, dist, initdist, copybuild, copybins, copylibs, copydocs, copycomponents, srczip, buildrelease " description="Creates clean new release">
+  <target name="release"  depends=" verify-smartfrog,  clean, updateversion, dist, initdist, copybuild, copybins, copylibs, copydocs, copycomponents, srczip,generatedoc, buildrelease " description="Creates clean new release">
 	  <copy tofile="${dist.dir}/build.xml" file="releaseBuild.xml"/>
   </target>
 
   <target name="default" depends="dist"/>
-
 
 
 
