@@ -12,4 +12,4 @@ then
 fi
 for i in $SFHOME/lib/*.jar; do CLASSPATH=$i:$CLASSPATH; done
 export CLASSPATH
-java -Dorg.smartfrog.iniFile=$SFHOME/bin/default.ini -Dorg.smartfrog.iniSFFile=$SFHOME/bin/default.sf -Dorg.smartfrog.sfcore.processcompound.sfProcessName=rootProcess org.smartfrog.SFSystem $*
+java -Dorg.smartfrog.iniFile=$SFHOME/bin/default.ini -Dorg.smartfrog.sfcore.processcompound.sfDefault.sfDefault1=$SFHOME/bin/default.sf -Dorg.smartfrog.sfcore.processcompound.sfProcessName=rootProcess org.smartfrog.SFSystem $*
