@@ -20,14 +20,6 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.os.runshell;
 
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.rmi.RemoteException;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.Vector;
-
 import org.smartfrog.services.display.PrintErrMsgInt;
 import org.smartfrog.services.display.PrintMsgInt;
 import org.smartfrog.services.utils.generic.OutputStreamIntf;
@@ -40,9 +32,18 @@ import org.smartfrog.sfcore.common.TerminatorThread;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.utils.ComponentHelper;
 
-import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.common.*;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.rmi.RemoteException;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.Vector;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 
 /**
@@ -66,7 +67,7 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
     //desired
     /** String name for process Id. */
     String processId = "";
-    /** String name for sheel prefix. */
+    /** String name for shell prefix. */
     String[] shellPrefix = { "" };
     /** String name for shell command. */
     String shellCommand = null;
@@ -132,8 +133,18 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
     TerminationRecord termR;
     /** Flag indicating detachment. */
     boolean shouldDetach = false;
-    /** flag indicating termination. */
+    /**
+     * flag indicating termination.
+     * whenever execution ends
+     */
     boolean shouldTerminate = true;
+
+    /**
+     * only relevion if the {@link #shouldTerminate}
+     * field is false.
+     */
+    boolean terminateOnFailure=false;
+
     /** logger value. */
     int logger = 2;
 
@@ -141,11 +152,19 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
     /** Flag indicating print stack. */
     boolean printStack = false;
 
+    /** log */
+    Logger log;
+
+    /** helper */
+    ComponentHelper helper;
+
     /**
      *  Constructor.
      * @exception  RemoteException  In case of network/rmi error
      */
     public RunShellImpl() throws RemoteException {
+        helper=new ComponentHelper(this);
+        log=helper.getLogger();
     }
 
     /**
@@ -162,35 +181,34 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
             readSFAttributes();
 
             //Create subProcess
-            subProcess = runtime.exec(this.createCmd(this.shellPrefix,
-                        this.shellCommand, this.shellCommandAtt), envProp,
-                    new File(workDir));
-            this.dos = new DataOutputStream(subProcess.getOutputStream());
+            File workDirFile = new File(workDir);
+            subProcess = runtime.exec(
+                    createCmd(shellPrefix,shellCommand, shellCommandAtt),
+                    envProp,
+                    workDirFile);
+            dos = new DataOutputStream(subProcess.getOutputStream());
 
             StreamGobbler outputGobbler;
             StreamGobbler errorGobbler;
+            OutputStream outputStream = null;
 
             // any output?
-            if (this.outputStreamObj != null) {
-                outputGobbler = new StreamGobbler(subProcess.getInputStream(),
-                        "[" + this.getNotifierId() + "] " + "OUT",
-                        outputStreamObj.getOutputStream(), printMsgImp);
-            } else {
-                outputGobbler = new StreamGobbler(subProcess.getInputStream(),
-                        "[" + this.getNotifierId() + "] " + "OUT", null,
-                        printMsgImp);
+            if (outputStreamObj != null) {
+                outputStream = outputStreamObj.getOutputStream();
             }
+            outputGobbler = new StreamGobbler(subProcess.getInputStream(),
+                    "[" + getNotifierId() + "] " + "OUT",
+                    outputStream, printMsgImp);
 
             // any error message?
-            if (this.errorStreamObj != null) {
-                errorGobbler = new StreamGobbler(subProcess.getErrorStream(),
-                        "[" + this.getNotifierId() + "] " + "ERR",
-                        errorStreamObj.getOutputStream(), printErrMsgImp);
+            if (errorStreamObj != null) {
+                outputStream = errorStreamObj.getOutputStream();
             } else {
-                errorGobbler = new StreamGobbler(subProcess.getErrorStream(),
-                        "[" + this.getNotifierId() + "] " + "ERR", null,
-                        printErrMsgImp);
+                outputStream = null;
             }
+            errorGobbler = new StreamGobbler(subProcess.getErrorStream(),
+                    "[" + getNotifierId() + "] " + "ERR",
+                    outputStream, printErrMsgImp);
 
             errorGobbler.setPassType(false);
             outputGobbler.setPassType(false);
@@ -202,7 +220,7 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
 
             //Start listener
             thread.start();
-            this.sfReplaceAttribute("status", "deployed");
+            sfReplaceAttribute(varStatus, "deployed");
         } catch (Throwable t) {
             throw SmartFrogLifecycleException.sfDeploy(t.getMessage(),t,this);
         }
@@ -212,8 +230,9 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
      *  Main processing method for the RunProcess object.
      */
     public void run() {
+        int exitVal = 0;
         try {
-            int exitVal = subProcess.waitFor();
+            exitVal = subProcess.waitFor();
 
             // wait until process finishes
             if (exitVal == 0) {
@@ -222,7 +241,8 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
                 terminationType = "abnormal";
             }
 
-            this.sfReplaceAttribute("status", "finished");
+            sfReplaceAttribute(varStatus, "finished");
+            sfReplaceAttribute(varExitValue,new Integer(exitVal));
             log("Finished: " + terminationType + ", ExitVal: " + exitVal, 3);
 
             //Thread.sleep(3*1000);
@@ -230,23 +250,30 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
             terminationType = "abnormal";
             log(ex.getMessage(), 2);
 
-            if (this.printStack) {
+            if (printStack) {
                 ex.printStackTrace();
             }
 
             try {
-              this.sfReplaceAttribute("status", "terminated");
+              sfReplaceAttribute(varStatus, "terminated");
             }
             catch (Exception ex1) {
               //Ignore
+                helper.logIgnoredException(ex1);
             }
         }
 
         termR = (new TerminationRecord(terminationType,
-                "Shell finished: " + this.getNotifierId(), null));
+                "Shell finished: " + getNotifierId(), null));
         TerminatorThread terminator = new TerminatorThread(this,termR);
-        if (shouldDetach)     terminator.detach();
-        if (!shouldTerminate) terminator.dontTerminate();
+        if (shouldDetach)   {
+            terminator.detach();
+        }
+        if (!shouldTerminate) {
+            if(!(terminateOnFailure && exitVal!=0)) {
+            terminator.dontTerminate();
+            }
+        }
         terminator.start();
     }
 
@@ -264,6 +291,7 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
 
         waitSignalGoAhead = sfResolve(varWaitSignalGoAhead,waitSignalGoAhead,false);
         shouldTerminate = sfResolve(varShouldTerminate,shouldTerminate,false);
+        terminateOnFailure = sfResolve(varTerminateOnFailure,terminateOnFailure,false);
         shouldDetach = sfResolve(varShouldDetach,shouldDetach,false);
         lineReturn = sfResolve(varLineReturn, lineReturn, false);
         processId = sfResolve(varSFProcessId, processId, false);
@@ -271,9 +299,8 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
         workDir = sfResolve(varSFWorkDir, workDir, false);
         exitCmd = sfResolve(varExitCmd, exitCmd, false);
         useExitCmd =sfResolve(varUseExitCmd, useExitCmd, false);
-        shellCommandAtt = this.readShellAttributes();
+        shellCommandAtt = readShellAttributes();
         cmds = readVarData(varCMDs);
-        //sfResolve(varEnvProp, envProp , false);
         envVarsVector = (Vector)sfResolve(varEnvProp, envVarsVector,
                                                                 false);
         if( (envVarsVector != null) && !(envVarsVector.isEmpty())) {
@@ -309,8 +336,8 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
     public synchronized void sfStart() throws SmartFrogException,
     RemoteException {
         super.sfStart();
-        this.sfReplaceAttribute("status", "running");
-        this.execBatch(this.cmds);
+        sfReplaceAttribute(varStatus, "running");
+        execBatch(cmds);
     }
 
     /**
@@ -326,20 +353,20 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
         } catch (IOException e) {
             log(e.getMessage(), 3);
 
-            if (this.printStack) {
+            if (printStack) {
                 e.printStackTrace();
             }
         }
 
         try {
             if (subProcess != null) {
-                this.subProcess.destroy();
-                this.subProcess = null;
+                subProcess.destroy();
+                subProcess = null;
             }
         } catch (Exception ex) {
             log(ex.getMessage(), 3);
 
-            if (this.printStack) {
+            if (printStack) {
                 ex.printStackTrace();
             }
         }
@@ -373,10 +400,7 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
                 dos.flush();
             } catch (IOException ex) {
                 log(ex.getMessage(), 1);
-
-                if (this.printStack) {
-                    ex.printStackTrace();
-                }
+                PrintExceptionStack(ex);
             }
         } else {
             log("Error: Stream closed. Shell probably terminated.", 1);
@@ -399,12 +423,12 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
             element = e.nextElement();
 
             if (element instanceof String) {
-                this.execCmd((String) element);
+                execCmd((String) element);
             }
         }
 
-        if (this.useExitCmd) {
-            this.execCmd(this.exitCmd);
+        if (useExitCmd) {
+            execCmd(exitCmd);
         }
 
         log("Executing Batch: DONE." + cmds, 3);
@@ -457,7 +481,7 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
                 } catch (Exception ex) {
                     log(ex.getMessage(), 2);
 
-                    if (this.printStack) {
+                    if (printStack) {
                         ex.printStackTrace();
                     }
                 }
@@ -508,10 +532,7 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
                     }
                 } catch (Exception ex) {
                     log(ex.getMessage(), 2);
-
-                    if (this.printStack) {
-                        ex.printStackTrace();
-                    }
+                    PrintExceptionStack(ex);
                 }
             }
         }
@@ -585,9 +606,7 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
             log("SFRunCommand.createCmd:Error creating Cmd.(" + e.getMessage() +
                 ")", 5);
 
-            if (this.printStack) {
-                e.printStackTrace();
-            }
+            PrintExceptionStack(e);
         }
 
         return cmd;
@@ -632,13 +651,17 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
             if (logger >= severity) {
                 //System.out.println("  LOG: Process "+ notifierId()+"  msg:" +
         //  message + ", serverity: "+ severity);
-                System.out.println("[" + this.getNotifierId() + "] " + "LOG" +
+                System.out.println("[" + getNotifierId() + "] " + "LOG" +
                     " > " + message + ", SFRunShell, " + severity);
             }
         } catch (Exception e) {
-            if (printStack != false) {
-                e.printStackTrace();
-            }
+            PrintExceptionStack(e);
+        }
+    }
+
+    private void PrintExceptionStack(Exception e) {
+        if (printStack != false) {
+            log.log(Level.SEVERE,"exception",e);
         }
     }
 

@@ -85,9 +85,22 @@ public interface RunShell extends Remote {
     final static String varLogger = "logLevel";
     /** Print Stack. */
     final static String varPrintStack = "printStack";
+    /**
+     * status attribute; runtime
+     */
+    String varStatus = "status";
 
+    /**
+     * our exit code
+     */
+    String varExitValue = "exitValue";
 
-     /**
+    /**
+     * terminate on failure
+     */
+    String varTerminateOnFailure = "terminateOnFailure";
+
+    /**
      *  Executes the given command.
      *
      * @param  cmd  command to be exceuted
