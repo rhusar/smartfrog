@@ -1,0 +1,137 @@
+<?xml version="1.0"?>
+<project name="SmartFrog" default="help" basedir=".">
+<!--
+/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+-->
+
+  <target name="help" description="help information">
+    <echo>
+    This is a primary build file for SmartFrog, which delegates down to 
+    specific components to do the work. It also contains support for
+    cruise control
+    </echo>
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- build a distribution                                                -->
+  <!-- =================================================================== -->
+  <target name="dist" depends="init" description="build a distribution">
+    <ant dir="${main.dir}" target="dist" inheritAll="false" />
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- test                                                                -->
+  <!-- =================================================================== -->
+  <target name="test" depends="init" description="test">
+    <ant dir="${main.dir}" target="sfParseTest" inheritAll="false" />
+  </target>
+
+  
+  <!-- =================================================================== -->
+  <!-- any common initialisations                                          -->
+  <!-- =================================================================== -->
+  <target name="init">
+    <property file="build.properties" />
+    <!-- look for a feature that only came in in ant 1.7alpha -->
+    <available property="nice.task.present" 
+      classname="org.apache.tools.ant.taskdefs.Nice" />
+    <property name="toplevel.dir" location=".." />
+    <property name="main.dir" location="smartfrog" />
+  </target>
+  
+  <!-- the following targets are for use in CruiseControl automated builds;
+       rather than for normal command line/IDE work. -->  
+
+       
+  <!-- =================================================================== -->
+  <!-- any cruise control initialisations                                          -->
+  <!-- =================================================================== -->
+    <target name="cc-init" depends="cc-set-build-priority">
+    <property name="cc.artifacts.dir" location="${toplevel.dir}/artifacts" />
+     <mkdir dir="${cc.artifacts.dir}"/>
+    </target>
+    
+  <!-- =================================================================== -->
+  <!-- -sets the priority to 3 unless overridden -this lowers the priority -->
+  <!-- of any non-forked code, but does nothing for execed apps            -->
+  <!-- =================================================================== -->
+    <target name="cc-set-build-priority" depends="init" if="nice.task.present" >
+      <property name="cc.nice.value" value="3" />
+      <nice newPriority="${cc.nice.value}" />
+    </target>
+    
+  <!-- =================================================================== -->
+  <!-- update code from CVS. Can overwrite this file too!                  -->
+  <!-- =================================================================== -->
+    <target name="cvsupdate" depends="cc-init"
+      description="update CVS; needs cvs on the command line">
+      <exec executable="cvs" failonerror="true">
+        <arg line="-r -z7 update -dP" />
+      </exec>
+    </target>
+
+  <!-- =================================================================== -->
+  <!-- incremental Cruise Control build                                    -->
+  <!-- =================================================================== -->
+       <target name="cc-incremental"
+	    depends="cvsupdate,dist"/>
+
+    <!-- =================================================================== -->
+    <!-- Cruise control test suite                                    -->
+    <!-- =================================================================== -->
+    <target name="cc-test"
+        depends="test"/>
+
+  <!-- =================================================================== -->
+  <!-- full clean Cruise Control build                                     -->
+  <!-- =================================================================== -->
+    <target name="cc-full"
+	    depends="cvsupdate,clean,cc-incremental,cc-test" />
+  
+  <!-- =================================================================== -->
+  <!-- Start cruise control from inside ant  -->
+  <!-- Currently we fork and use whichever version of ant is in CC, not -->
+  <!-- the version of Ant that is currently running. This is ugly, but -->
+  <!-- guarantees equivalence with the command line. -->
+  <!-- Override any of the properties to change location of cruise control -->
+  <!-- =================================================================== -->
+  <target name="cruise" depends="cc-init" description="run cruise control">
+    <property name="cruise.base.dir" location="../.." />
+    <property name="cruise.main.dir" location="${cruise.base.dir}/main"/>
+    <property name="cruise.lib.dir" location="${cruise.main.dir}/lib"/>
+    <property name="cruise.dist.dir" location="${cruise.main.dir}/dist"/>
+    <property name="cruise.config.file" location="cruisecontrol.xml"/>
+    <property name="cruise.control.port" value="7999"/>
+    <java fork="true" classname="CruiseControl" failonerror="true">
+      <classpath>
+        <fileset dir="${cruise.lib.dir}">
+          <include name="**/*.jar"/>
+        </fileset>
+        <fileset dir="${cruise.dist.dir}" includes="*.jar"/>
+      </classpath>
+      <arg value="-configfile"/>
+      <arg file="${cruise.config.file}"/>
+      <arg value="-port"/>
+      <arg value="${cruise.control.port}"/>
+    </java>
+  </target>
+  
+</project>
