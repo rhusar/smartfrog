@@ -81,8 +81,10 @@ public class ErrorMessageBundle extends ListResourceBundle
         { MSG_ILLEGAL_REFERENCE , "Illegal Reference"},
         { MSG_ILLEGAL_CLASS_TYPE , "Illegal ClassType"},
         // Resolution Exception messages end
-        { MSG_DEPLOY_SUCCESS , "Successfully deployed components: {0}"},
-        { MSG_TERMINATE_SUCCESS , "Successfully terminated components: {0}"},
+        { MSG_DEPLOY_SUCCESS , "Successfully deployed: {0}"},
+        { MSG_TERMINATE_SUCCESS , "Successfully terminated: {0}"},
+        { MSG_DETACH_SUCCESS , "Successfully detached component: {0}"},
+        { MSG_DETACH_TERMINATE_SUCCESS , "Successfully detatched and terminated: {0}"},
         { MSG_UNHANDLED_EXCEPTION , "Unhandled exception: "},
         { MSG_URL_TO_PARSE_NOT_FOUND , "Unable to locate URL \"{0}\"\nReason: URL may be incorrect or file is misssing"},
 
@@ -92,7 +94,7 @@ public class ErrorMessageBundle extends ListResourceBundle
         { ILLEGAL_BOOLEAN_PARAMETER  , "Illegal boolean parameter"},
         { MISSING_PARAMETER  , "Missing Parameter {0}"},
     };
-    
+
     /**
      * Gets the message array.
      * @return The message array.
