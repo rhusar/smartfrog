@@ -85,10 +85,12 @@ For more information: www.smartfrog.org
   <!-- clean all sub-projects                                              -->
   <!-- =================================================================== -->
   <target name="clean" depends="init" description="clean up">
+ 
     <forward2 dir="${main.project}" target="clean"  />
     <forward2 dir="${test.project}" target="clean"  />
+	<forward2 dir="${components.project}" target="clean"  /> 
     <forward2 dir="${ant.project}" target="clean"  />
-    <forward2 dir="${components.project}" target="clean"  /> 
+    
   </target>
 
   <!-- =================================================================== -->
