@@ -69,10 +69,10 @@ public class JettyTest
     public void testCaseTCN55() throws Exception {
         deployExpectingException(FILES+"tcn55.sf",
                                  "tcn55",
-                                 "SmartFrogLifecycleException",
-                                 "sfDeploy",
                                  "SmartFrogDeploymentException",
-                                 "SmartFrogResolutionException");
+                                 "unnamed component",
+                                 "SmartFrogCompileResolutionException",
+                                 "Unresolved Reference, data: [jettyhome");
     }
 
     public void testCaseTCN56() throws Exception {
@@ -87,10 +87,10 @@ public class JettyTest
     public void testCaseTCN57() throws Exception {
         deployExpectingException(FILES+"tcn57.sf",
                                  "tcn57",
-                                 "SmartFrogLifecycleException",
-                                 "sfStart",
-                                 "SmartFrogResolutionException",
-                                 "Illegal ClassType");
+                                 "SmartFrogDeploymentException",
+                                 "unnamed component",
+                                 "SmartFrogCompileResolutionException",
+                                 "error in schema: wrong class found for attribute 'server', expected: java.lang.String");
     }
 
     public void testCaseTCP19() throws Throwable {
