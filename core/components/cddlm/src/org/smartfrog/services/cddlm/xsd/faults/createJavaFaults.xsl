@@ -20,12 +20,10 @@ public class FaultCodes {
     */
     private FaultCodes() { }
 
-
     <xsl:apply-templates select="err:faultset"/>
 
 //end class
 }
-
 
   </xsl:template>
 
@@ -38,13 +36,10 @@ public class FaultCodes {
     <xsl:value-of select="err:description"/>
 */
 
-    public static final String
-    <xsl:value-of select="@name"/>_NAMESPACE =
-    &quot;
-    <xsl:value-of select="@namespace"/>&quot;;
+    public static final String <xsl:value-of select="@name"/>_NAMESPACE =
+    &quot;<xsl:value-of select="@namespace"/>&quot;;
 
     <xsl:apply-templates select="err:fault"/>
-
   </xsl:template>
 
 
@@ -56,29 +51,21 @@ public class FaultCodes {
     <xsl:value-of select="err:documentation"/>
      */
    
-     public static final String
-    <xsl:value-of select="err:name"/>_FAULTCODE =
-    &quot;
-    <xsl:value-of select="err:code"/>&quot;;
+     public static final String <xsl:value-of select="err:name"/>_FAULTCODE =
+    &quot;<xsl:value-of select="err:code"/>&quot;;
 
         /**
-        * text to go with the
-    <xsl:value-of select="err:code"/> error
+        * text to go with the <xsl:value-of select="err:code"/> error
         */
-     public static final String
-    <xsl:value-of select="err:name"/>_WIRE_MESSAGE =
-    &quot;
-    <xsl:value-of select="err:wiremessage"/>&quot;;
+     public static final String <xsl:value-of select="err:name"/>_WIRE_MESSAGE =
+    &quot; <xsl:value-of select="err:wiremessage"/>&quot;;
 
 
         /**
-        * text to go with the
-    <xsl:value-of select="err:code"/> error
+        * text to go with the <xsl:value-of select="err:code"/> error
         */
-     public static final String
-    <xsl:value-of select="err:name"/>_ERROR_MESSAGE =
-    &quot;
-    <xsl:value-of select="err:errormessage"/>&quot;;
+     public static final String <xsl:value-of select="err:name"/>_ERROR_MESSAGE =
+    &quot; <xsl:value-of select="err:errormessage"/>&quot;;
 
   </xsl:template>
 

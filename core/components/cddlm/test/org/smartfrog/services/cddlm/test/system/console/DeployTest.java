@@ -150,13 +150,7 @@ public class DeployTest extends ConsoleTestBase {
         try {
             URI uri = deploy(name, dd, options, null);
         } catch (AxisFault af) {
-            assertEquals(fault, af.getFaultCode());
-            if (text != null) {
-                String message = af.getFaultReason();
-                assertNotNull("fault reason is null", message);
-                assertTrue("expected [" + text + "] in " + message,
-                        message.indexOf(text) >= 0);
-            }
+            assertFaultMatches(af, fault, text);
         }
     }
 

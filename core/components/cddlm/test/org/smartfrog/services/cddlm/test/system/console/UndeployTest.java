@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2004 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -17,44 +17,48 @@
  For more information: www.smartfrog.org
 
  */
+
+
 package org.smartfrog.services.cddlm.test.system.console;
 
+import org.cddlm.client.console.Undeploy;
 import org.apache.axis.types.URI;
-import org.cddlm.client.console.ListApplications;
+import org.apache.axis.AxisFault;
+import org.smartfrog.services.cddlm.api.Constants;
 
-import java.io.IOException;
 import java.rmi.RemoteException;
 
 /**
- * created Sep 1, 2004 4:54:12 PM
+ * Date: 02-Sep-2004
+ * Time: 20:41:24
  */
+public class UndeployTest extends ConsoleTestBase {
 
-public class ListApplicationsTest extends ConsoleTestBase {
-    private ListApplications operation;
+    private Undeploy operation;
+    public static final String INVALID_URI = "http://invalid.example.org/undeploy/1";
 
     /**
      * Sets up the fixture, by creating an operation
      */
     protected void setUp() throws Exception {
         super.setUp();
-        operation = new ListApplications(getBinding(), getOut());
+        operation = new Undeploy(getBinding(), getOut());
     }
 
-    public void testExecute() throws RemoteException {
-        operation.execute();
-        final String text = getOutputBuffer();
-        System.out.println(text);
-        assertInText(text, ListApplications.DEPLOYED_TEXT);
+    public void testMissingApp() throws Exception{
+        try {
+            operation.undeploy(new URI(INVALID_URI),"termination");
+        } catch (AxisFault e) {
+            assertFaultMatches(e,Constants.FAULT_APPLICATION_NOT_FOUND,null);
+        }
     }
 
-    public void testValidCount() throws RemoteException {
-        URI[] apps = operation.listApplications();
-        assertNotNull("null list", apps);
-        assertTrue("length is at least zero", apps.length >= 0);
+    public void testMissingAppAndReason() throws Exception {
+        try {
+            operation.undeploy(new URI(INVALID_URI), null);
+        } catch (AxisFault e) {
+            assertFaultMatches(e, Constants.FAULT_APPLICATION_NOT_FOUND, null);
+        }
     }
 
-    public void testInnerMain() throws IOException {
-        boolean flag = ListApplications.innerMain(createBoundArguments());
-        assertTrue("failed", flag);
-    }
 }

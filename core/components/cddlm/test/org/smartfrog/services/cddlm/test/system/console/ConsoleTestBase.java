@@ -24,7 +24,9 @@ package org.smartfrog.services.cddlm.test.system.console;
 import junit.framework.TestCase;
 import org.cddlm.client.common.Constants;
 import org.cddlm.client.common.ServerBinding;
+import org.apache.axis.AxisFault;
 
+import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -152,5 +154,22 @@ public abstract class ConsoleTestBase extends TestCase {
         String[] args = new String[1];
         args[0] = getBinding().toCommandLineElement();
         return args;
+    }
+
+    /**
+     * assert that a fault has the relevant properties
+     * @param fault fault received
+     * @param faultCode fault code of the fault
+     * @param text optional text to look for in the reason
+     */
+    public static void assertFaultMatches(AxisFault fault, final QName faultCode, final String text) {
+        assertEquals(faultCode, fault.getFaultCode());
+        if (text != null) {
+            String message = fault.getFaultReason();
+            String faultAsString=fault.dumpToString();
+            assertNotNull("fault reason is null in "+faultAsString, message);
+            assertTrue("expected [" + text + "] in " + message+" in \n"+faultAsString,
+                    message.indexOf(text) >= 0);
+        }
     }
 }

@@ -22,6 +22,7 @@ package org.cddlm.client.console;
 import org.cddlm.client.common.ServerBinding;
 
 import java.io.PrintWriter;
+import java.io.File;
 import java.rmi.RemoteException;
 
 /**
@@ -29,6 +30,10 @@ import java.rmi.RemoteException;
  */
 
 public class Deploy extends ConsoleOperation {
+
+    String name;
+
+    File sourceFile;
 
     public Deploy(ServerBinding binding, PrintWriter out) {
         super(binding, out);
@@ -39,4 +44,31 @@ public class Deploy extends ConsoleOperation {
     }
 
 
+
+    /**
+     * entry point for this command line
+     *
+     * @param args command line arguments
+     */
+    public static void main(String[] args) {
+        boolean success = innerMain(args);
+        exit(success);
+    }
+
+    public static boolean innerMain(String[] args) {
+        ServerBinding server;
+        ConsoleOperation operation;
+        boolean success = false;
+        final PrintWriter pw = new PrintWriter(System.out);
+        try {
+            server = extractBindingFromCommandLine(args);
+            operation = new ListApplications(server, pw);
+            success = operation.doExecute();
+        } catch (Throwable e) {
+            e.printStackTrace(System.err);
+            success = false;
+        }
+        pw.flush();
+        return success;
+    }
 }

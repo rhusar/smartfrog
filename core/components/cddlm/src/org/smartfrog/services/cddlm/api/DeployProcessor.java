@@ -52,7 +52,6 @@ public class DeployProcessor extends Processor {
      */
     private static final Log log = LogFactory.getLog(DeployProcessor.class);
     private static final String WRONG_MESSAGE_ELEMENT_COUNT = "wrong number of message elements";
-    private static final String UNSUPPORTED_LANGUAGE = "Unsupported language";
 
     private _deployRequest request;
     private OptionProcessor options;

@@ -22,6 +22,10 @@ package org.smartfrog.services.cddlm.api;
 import org.smartfrog.services.axis.SmartFrogHostedEndpoint;
 import org.smartfrog.services.cddlm.generated.api.types.ApplicationStatusType;
 import org.smartfrog.services.cddlm.generated.api.types._applicationStatusRequest;
+import org.smartfrog.services.cddlm.generated.api.types.LifecycleStateEnum;
+import org.smartfrog.sfcore.prim.Prim;
+import org.apache.axis.types.NCName;
+import org.apache.axis.types.URI;
 
 import java.rmi.RemoteException;
 
@@ -36,10 +40,13 @@ public class ApplicationStatusProcessor extends Processor {
 
     public ApplicationStatusType applicationStatus(_applicationStatusRequest applicationStatus)
             throws RemoteException {
-        org.apache.axis.types.URI reference = applicationStatus.getApplication();
-        String application = extractApplicationFromURI(reference);
-        assert !isEmpty(application);
-        throwNotImplemented();
-        return null;
+        URI reference = applicationStatus.getApplication();
+        JobState job=lookupJob(reference);
+        Prim p=job.resolvePrimFromJob();
+        ApplicationStatusType status = new ApplicationStatusType();
+        status.setName(new NCName(job.getName()));
+        status.setState(LifecycleStateEnum.fromString("running"));
+        return status;
     }
+
 }

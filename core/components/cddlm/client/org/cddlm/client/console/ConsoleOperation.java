@@ -40,6 +40,7 @@ import org.cddlm.client.generated.api.types._deployResponse;
 import org.cddlm.client.generated.api.types._deploymentDescriptorType_data;
 import org.cddlm.client.generated.api.types._lookupApplicationRequest;
 import org.cddlm.client.generated.api.types._serverStatusRequest;
+import org.cddlm.client.generated.api.types._undeployRequest;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -159,7 +160,7 @@ public abstract class ConsoleOperation {
      * @return
      * @throws java.rmi.RemoteException
      */
-    ApplicationStatusType lookupApplicationStatus(URI app)
+    public ApplicationStatusType lookupApplicationStatus(URI app)
             throws RemoteException {
         _applicationStatusRequest request = new _applicationStatusRequest();
         request.setApplication(app);
@@ -174,7 +175,7 @@ public abstract class ConsoleOperation {
      * @return
      * @throws java.rmi.RemoteException
      */
-    ApplicationStatusType lookupApplicationStatus(String app)
+    public ApplicationStatusType lookupApplicationStatus(String app)
             throws RemoteException {
         return lookupApplicationStatus(lookupApplication(app));
     }
@@ -186,7 +187,7 @@ public abstract class ConsoleOperation {
      * @return
      * @throws java.rmi.RemoteException
      */
-    ApplicationStatusType lookupApplicationStatus(NCName app)
+    public ApplicationStatusType lookupApplicationStatus(NCName app)
             throws RemoteException {
         return lookupApplicationStatus(lookupApplication(app));
     }
@@ -340,6 +341,18 @@ public abstract class ConsoleOperation {
      */
     public URI lookupApplication(String name) throws RemoteException {
         return lookupApplication(makeName(name));
+    }
+
+    /**
+     * initiate an undeployment
+     * @param uri
+     * @param reason
+     * @return true if the process has commenced. Undeployment is asynchronous
+     * @throws RemoteException
+     */
+    public boolean undeploy(URI uri,String reason) throws RemoteException {
+        _undeployRequest undeploy=new _undeployRequest(uri,reason);
+        return getStub().undeploy(undeploy);
     }
 
 

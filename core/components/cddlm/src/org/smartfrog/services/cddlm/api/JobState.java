@@ -20,7 +20,9 @@
 package org.smartfrog.services.cddlm.api;
 
 import org.apache.axis.types.URI;
+import org.apache.axis.AxisFault;
 import org.smartfrog.services.cddlm.generated.api.types._deployRequest;
+import org.smartfrog.sfcore.prim.Prim;
 
 import java.lang.ref.WeakReference;
 
@@ -102,6 +104,21 @@ public class JobState {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    /**
+     * get the prim; raise a fault if it is terminated
+     * @return
+     * @throws AxisFault
+     */
+    public Prim resolvePrimFromJob() throws AxisFault {
+        Object weakRef = getPrimReference().get();
+        if ( weakRef == null ) {
+            //TODO return a terminated reference
+            throw Processor.raiseNoSuchApplicationFault("application is no longer active");
+        }
+        Prim prim = (Prim) weakRef;
+        return prim;
     }
 
     /**
