@@ -52,6 +52,9 @@ public class TempFileTest extends SmartFrogTestBase {
         assertTrue("found " + suffix + " in " + filename, filename.endsWith(suffix));
         assertTrue("found "+prefix+" in "+filename,file.getName().indexOf(prefix)==0);
         //now verify we clean up
+        assertTrue(file.exists());
+        terminateApplication(application);
+        assertFalse(file.exists());
 
     }
 
