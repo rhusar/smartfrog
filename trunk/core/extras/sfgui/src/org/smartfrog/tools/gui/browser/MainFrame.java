@@ -79,7 +79,7 @@ public class MainFrame extends JFrame implements ActionListener {
    /**
     *  Description of the Field
     */
-   public final static String version = "v0.7 r08";
+   public final static String version = "v0.7 r10";
    // This has to  be done properly !!!!!!!!!!!!!!! no static. Because of crap log.
    static PrintStream msg = System.out;
    static JLabel statusBar = new JLabel();
@@ -1355,7 +1355,7 @@ public class MainFrame extends JFrame implements ActionListener {
                if (osName.equals("Windows 2000") || osName.equals("Windows NT")|| osName.equals("Windows XP")) {
 
                   cmdGeneral = "cmd.exe /C";
-                  dir = " .\\" + batchDir + "\\";
+                  dir = ".\\" + batchDir + "\\";
 
                   if (this.securityCheckBox.isSelected()) {
                      dir = dir + cmdAddSecurity + "\\"  ;
@@ -1364,7 +1364,7 @@ public class MainFrame extends JFrame implements ActionListener {
 
                } else if (osName.equals("Windows 95") || osName.equals("Windows 98")) {
                   cmdGeneral = "command.exe /C";
-                  dir = " .\\" + batchDir + "\\";
+                  dir = ".\\" + batchDir + "\\";
                   if (this.securityCheckBox.isSelected()) {
                      dir = dir + cmdAddSecurity + "\\"  ;
                      cmdStop = dir + cmdAddSecurity + "\\"  ;
@@ -1372,7 +1372,7 @@ public class MainFrame extends JFrame implements ActionListener {
 
                } else {
                   cmdGeneral = "bash";
-                  dir = " ./" + batchDir + "/";
+                  dir = "./" + batchDir + "/";
                   if (this.securityCheckBox.isSelected()) {
                      dir = dir + cmdAddSecurity + "/"  ;
                      cmdStop = dir + cmdAddSecurity + "/"  ;
@@ -1384,7 +1384,7 @@ public class MainFrame extends JFrame implements ActionListener {
 //                      + this.processNameTextField.getText() + " "
 //                      +"\""+ file.getPath()+"\"" + " ";
 //ProcessName:DEPLOY:org/smartfrog/examples/counter/examplekk.sf::127.0.0.1:
-               cmdStart = cmdGeneral + " \"" + dir + "smartfrog\"" + " -a "
+               cmdStart = cmdGeneral + " " + dir + "smartfrog" + " -a "
                       +"\""+ this.processNameTextField.getText()+"\"" +":"
                       +cmdSFStart+":"
                       +"\""+ file.getPath()+"\""+":"
@@ -1397,7 +1397,7 @@ public class MainFrame extends JFrame implements ActionListener {
 //                      + this.processNameTextField.getText() + " "
 //                      + " ";
 //ProcessName:DEPLOY:org/smartfrog/examples/counter/examplekk.sf::127.0.0.1:
-                  cmdStop = cmdGeneral + " " +"\""+ dir + "smartfrog"+"\"" + " -a "
+                  cmdStop = cmdGeneral + " " + dir + "smartfrog" + " -a "
                          +"\""+ this.processNameTextField.getText()+"\"" +":"
                          +cmdSFStop+":"
                          +""+":"
@@ -1453,13 +1453,13 @@ public class MainFrame extends JFrame implements ActionListener {
             }
             if (osName.equals("Windows 2000") || osName.equals("Windows NT")|| osName.equals("Windows XP")) {
                cmdGeneral = "cmd.exe /C";
-               dir = " .\\" + batchDir + "\\";
+               dir = ".\\" + batchDir + "\\";
             } else if (osName.equals("Windows 95") || osName.equals("Windows 98")) {
                cmdGeneral = "command.exe /C";
-               dir = " .\\" + batchDir + "\\";
+               dir = ".\\" + batchDir + "\\";
             } else {
                cmdGeneral = "bash";
-               dir = " ./" + batchDir + "/";
+               dir = "./" + batchDir + "/";
             }
 
            cmdStart = cmdGeneral + " " + dir + "smartfrog" + " -a "
@@ -1469,7 +1469,7 @@ public class MainFrame extends JFrame implements ActionListener {
                   +":"
                   + this.hostNameTextField.getText() + ": -e";
 
-              cmdStop = cmdGeneral + " " + dir + "smartfrog" + " -a "
+              cmdStop = cmdGeneral + " " +dir + "smartfrog" + " -a "
                      +"\""+ this.processNameTextField.getText() +"\""+":"
                      +cmdSFStop+":"
                      +""+":"
