@@ -22,4 +22,6 @@ LogToLog4JImpl extends {
    //configuratorFile ""; //Optional. If not defined will try: "log4j.configuration" system env variable
    configureAndWatch false;
    configureAndWatchDelay 60000L; //Default 60 secs
+   setIniLog4JLoggerLevel false; //Optional. Don't set initial Log4J level.
+   ignoreSetLogLevel false; //Optional. It will ignore any external logLevel set
 }

@@ -62,10 +62,26 @@ public class LogToLog4JImpl implements LogToLog4J, Log, LogMessage, LogLevel, Se
 
   /** The LogToLog4J class name. */
   private static final String clazz = LogImpl.class.getName();
-
+  /**
+   * URL for Log4J configuration file
+   */
   Object configuratorURL = null;
+  /**
+   * Should Log4J configuration be refreshed?
+   */
   boolean configureAndWatch = false;
+  /**
+   * Refresh period for Log4J configuration
+   */
   long configureAndWatchDelay = 60 * 1000;
+  /**
+   * Method setLogLevel should ignore any call
+   */
+  boolean ignoreSetLogLevel=false;
+  /**
+   * Should we call setLogLevel during initialization
+   */
+  boolean setIniLog4JLoggerLevel=false;
 
   /**
    * Construct a simple log with given name and log level
@@ -95,15 +111,22 @@ public class LogToLog4JImpl implements LogToLog4J, Log, LogMessage, LogLevel, Se
 
   public LogToLog4JImpl(String name, Integer initialLogLevel, PrintStream out) throws Exception{
     try {
-      setOutstream(out);
+
       assert name!=null;
+      assert initialLogLevel!=null;
+
+      setOutstream(out);
+
       logName = name;
       if (logger==null) {
           logger = Logger.getLogger(name);
       }
-      setLevel(initialLogLevel.intValue());
       //Initial configurator to get output in case of failures
       org.apache.log4j.BasicConfigurator.configure();
+
+      if (setIniLog4JLoggerLevel){
+          setLevel(initialLogLevel.intValue());
+      }
       //Check Class and read configuration...including system.properties
       try {
           classComponentDescription = LogImpl.getClassComponentDescription(this, true);
@@ -122,14 +145,16 @@ public class LogToLog4JImpl implements LogToLog4J, Log, LogMessage, LogLevel, Se
 
       // Set initial log level after reading configuration to the lowest one
       // the most verbose of the two
-      if (getLevel()>=initialLogLevel.intValue()) {
-          setLevel(initialLogLevel.intValue());
+      if (setIniLog4JLoggerLevel){
+          if (getLevel()>=initialLogLevel.intValue()) {
+              setLevel(initialLogLevel.intValue());
+          }
       }
 
          //System.out.println(" Final level: "+ getLevel());
 
-      if (isDebugEnabled()) {
-          this.debug("LogToLog4JImpl logger: "+ logger.getName() +" ("+logger.getEffectiveLevel().toString()+") with configuration "+ configuratorURL);
+      if (isInfoEnabled()) {
+          this.info("LogToLog4JImpl logger: "+ logger.getName() +" ("+logger.getEffectiveLevel().toString()+") with configuration "+ configuratorURL+", setIniLog4JLoggerLevel: "+setIniLog4JLoggerLevel+", ignoreSetLogLevel: "+ignoreSetLogLevel );
       }
     } catch (Exception ex1) {
       if (isErrorEnabled()) this.error("", ex1);
@@ -258,6 +283,9 @@ public class LogToLog4JImpl implements LogToLog4J, Log, LogMessage, LogLevel, Se
         delay = (classComponentDescription.sfResolve(ATR_CONFIGURE_AND_WATCH_DELAY, delay, false));
         configureAndWatchDelay = (long)delay;
 
+        ignoreSetLogLevel = (classComponentDescription.sfResolve(this.ATR_INGNORE_SET_LOG_LEVEL, ignoreSetLogLevel, false));
+        setIniLog4JLoggerLevel = (classComponentDescription.sfResolve(ATR_SET_INI_LOG4J_LOGGER_LEVEL, setIniLog4JLoggerLevel, false));
+
     } catch (Exception ex1) {
         throw (SmartFrogLogException)SmartFrogLogException.forward(ex1);
     }
@@ -274,11 +302,20 @@ public class LogToLog4JImpl implements LogToLog4J, Log, LogMessage, LogLevel, Se
 
   /**
    * <p> Set logging level. </p>
+   * It only does the change when it is different
    *
    * @param currentLogLevel new logging level
    */
   public void setLevel(int currentLogLevel) {
-    logger.setLevel((Level)Level.toLevel(LOG4J_LEVELS[currentLogLevel]));
+    //Only do the change when it is different
+    if (ignoreSetLogLevel) return;
+    int level = getLevel();
+    if (level!=currentLogLevel){
+        //Level TRACE and DEBUG are the same in Log4J
+        if (!(((currentLogLevel==1)||(currentLogLevel==2))&& ((level==1)||(level==2)))){
+            logger.setLevel((Level) Level.toLevel(LOG4J_LEVELS[currentLogLevel]));
+        }
+    }
   }
 
   /**
