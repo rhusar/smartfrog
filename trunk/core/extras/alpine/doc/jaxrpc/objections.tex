@@ -291,14 +291,14 @@ direct access to the XML elements of a generic SOAP fault. Users of
 this mechanism can construct SOAP faults with arbitrary
 contents\footnote{In Apache Axis, this technique is used to add
 non-standard diagnostic elements such as hostname, HTTP error codes
-and stack trace to messages.} and process faults from arbitrary remote
-endpoints, regardless of their implementation type or version.
+and stack trace to messages.} and process faults from any remote
+endpoint, regardless of its implementation type or version.
 
-In contrast, the other fault processing feature mechanism offered by
-JAX-RPC aims to provide for loss-less marshalling of Java exceptions
-across the SOAP infrastructure. The implementation and platform
-dependence inherent in this represents the complete antithesis of the
-generic SOAP fault mechanism.
+In contrast, the other fault processing mechanism offered by JAX-RPC
+aims to provide for loss-less marshalling of Java exceptions across
+the SOAP infrastructure. The implementation and platform dependence
+inherent in this represents the complete antithesis of the generic
+SOAP fault mechanism.
 
 While this may seem a simpler approach for the application developer,
 mapping faults into Java exceptions with a specific static structure
@@ -324,13 +324,13 @@ We believe that the attempt JAX-RPC makes to seamlessly marshal faults
 is consistent with its general approach, but like so much of that
 approach, it undermines the interoperability and robustness of
 services created with it. By propagating Java's requirement that all
-posssible exceptions be declared into remote it exposes platform
-implementation details. Interoperability is a major strength of SOAP,
-yet here JAX-RPC tries too hard to mimic Java RMI, and abandons many
-of the gains SOAP would otherwise have over RMI. In our opinion, the
-only sensible approach for working with faults in JAX-RPC is to have
-services throw pure SOAP faults and leave it to the recipient to
-process them.
+posssible exceptions be declared into remote interfaces, it exposes
+platform implementation details. Interoperability is a major strength
+of SOAP, yet here JAX-RPC tries too hard to mimic Java RMI, and
+abandons many of the gains SOAP would otherwise have over RMI. In our
+opinion, the only sensible approach for working with faults in JAX-RPC
+is to have services throw pure SOAP faults and leave it to the
+recipient to process them.
 
 \subsection{SOAP is not just RPC}
 \label{objections:soap-not-just-rmi}
