@@ -121,7 +121,7 @@ public  class LogFactory {
      * @exception SmartFrogLogException if a suitable <code>Log</code>
      *  instance cannot be returned
      */
-    public static LogSF getProcessLog() throws SmartFrogLogException {
+    public static LogSF getProcessLog() {
        return getLog (SmartFrogCoreKeys.SF_CORE_LOG);
     }
 
