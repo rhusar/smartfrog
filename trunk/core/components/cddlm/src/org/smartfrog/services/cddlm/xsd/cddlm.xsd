@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!-- -->
-<xsd:schema targetNamespace="urn:cddlm/xml/0.1"
-  xmlns:cdl="urn:cddlm/xml/0.1"
-  xmlns="urn:cddlm/xml/0.1" xmlns:wsa="http://schemas.xmlsoap.org/ws/2003/03/addressing"
+<xsd:schema targetNamespace="http://gridforge.org/cddlm/xml/2004/07/30/"
+  xmlns:cdl="http://gridforge.org/cddlm/xml/2004/07/30/"
+  xmlns="http://gridforge.org/cddlm/xml/2004/07/30/" 
+  xmlns:wsa="http://schemas.xmlsoap.org/ws/2003/03/addressing"
   xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   elementFormDefault="qualified" attributeFormDefault="unqualified">
 

@@ -49,16 +49,16 @@ xmlns:wsbf="http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseFaults"
 
   <!-- low level type: XML with no validations, namespace = ##other -->
   <xsd:complexType name="unboundedXMLOtherNamespace">
-  <xsd:sequence>
-  <xsd:any processContents="lax" minOccurs="0" maxOccurs="unbounded" namespace="##other"/>
-  </xsd:sequence>
+    <xsd:sequence>
+      <xsd:any processContents="lax" minOccurs="0" maxOccurs="unbounded" namespace="##other"/>
+    </xsd:sequence>
   </xsd:complexType>
 
   <!-- low level type: XML with no validations, namespace = ##any  -->
   <xsd:complexType name="unboundedXMLAnyNamespace">
-  <xsd:sequence>
-  <xsd:any processContents="lax" minOccurs="0" maxOccurs="unbounded" namespace="##any"/>
-  </xsd:sequence>
+    <xsd:sequence>
+      <xsd:any processContents="lax" minOccurs="0" maxOccurs="unbounded" namespace="##any"/>
+    </xsd:sequence>
   </xsd:complexType>
 
   <!-- ============================================================= -->
@@ -354,6 +354,50 @@ xmlns:wsbf="http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseFaults"
     </xsd:sequence>
   </xsd:complexType>
 
+  <xsd:complexType name="serverInformationType">
+    <xsd:annotation>
+      <xsd:documentation>
+        This is static information about the server itself.
+
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="name" type="xsd:string">
+        <xsd:annotation>
+          <xsd:documentation>
+          Name of the implementation of the server
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+ 
+      <xsd:element name="build" type="xsd:string">
+        <xsd:annotation>
+          <xsd:documentation>
+          Build information: version, build number, build date, etc. 
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+ 
+      <xsd:element name="home" type="xsd:anyURI">
+      <xsd:annotation>
+        <xsd:documentation>
+        URL to a page providing support and docs for the server
+        </xsd:documentation>
+      </xsd:annotation>
+      </xsd:element>
+
+      <xsd:element name="diagnostics" type="types:unboundedXMLAnyNamespace" minOccurs="0">
+        <xsd:annotation>
+          <xsd:documentation>
+            Arbitrary diagnostic information.
+            Components used, result of local health checks etc.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+
+    </xsd:sequence>
+  </xsd:complexType>
+  
   <xsd:complexType name="staticServerStatusType">
     <xsd:annotation>
       <xsd:documentation>
@@ -362,6 +406,7 @@ xmlns:wsbf="http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseFaults"
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
+      <xsd:element name="server" type="types:serverInformationType" />
       <xsd:element name="languages" type="types:languageListType" />
       <xsd:element name="callbacks" type="types:callbackListType" />
     </xsd:sequence>

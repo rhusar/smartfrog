@@ -33,7 +33,7 @@
   <!-- ============================================================= -->
   
  <!-- import the types -->
- <import 
+ <wsdl:import 
     namespace="http://gridforum.org/cddlm/serviceAPI/types/2004/07/30" 
     location="deployAPIschema.xsd"/>
 
