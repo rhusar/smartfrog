@@ -10,4 +10,5 @@ java -Djava.security.manager -Djava.security.policy==$SFPRIVATE/sf.policy \
       -Dorg.smartfrog.sfcore.security.keyStoreName=$SFPRIVATE/$SFHOSTNAME/mykeys.st \
       -Dorg.smartfrog.sfcore.security.propFile=$SFPRIVATE/$SFHOSTNAME/SFSecurity.properties \
       -Dorg.smartfrog.sfcore.processcompound.sfProcessName=rootProcess \
-       org.smartfrog.SFSystem $*
+      -Dorg.smartfrog.iniFile=org/smartfrog/default.ini \
+      -Dorg.smartfrog.sfcore.processcompound.sfDefault.sfDefault=org/smartfrog/default.sf org.smartfrog.SFSystem $*
