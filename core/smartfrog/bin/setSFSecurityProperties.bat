@@ -6,7 +6,7 @@ rem #################################################################
 
 rem set default values if the user doesn't provide them
 if not defined SFPRIVATE set SFPRIVATE=%SFHOME%\private
-if not defined SFHOSTNAME set SFHOSTNAME=host3100
+if not defined SFHOSTNAME set SFHOSTNAME=host1
 
 rem ------------------------------------------------------
 rem SF ENV PROPERTIES  - Please edit with your preferences
