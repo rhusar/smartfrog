@@ -23,13 +23,9 @@
     </modificationset>
 
 
-
     <!-- the interval is seconds -->
     <schedule interval="600">
         <ant target="cc-full" antscript="ant" useLogger="true" />
-        <maven mavenscript="/home/cruise/maven/bin/maven"
-            goal="site:generate"
-            projectfile="/home/cruise/cruisecontrol/project.xml"/>
     </schedule>
 
     <log dir="../artifacts">
