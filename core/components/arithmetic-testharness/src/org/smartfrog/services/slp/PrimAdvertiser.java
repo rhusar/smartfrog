@@ -41,7 +41,7 @@ public class PrimAdvertiser extends SFSLPAdvertiser implements Prim{
  */
   public void sfDeploy() throws SmartFrogException, RemoteException {
     super.sfDeploy();
-    advertised = ((ComponentDescription) this.sfResolve(refToAdvertise)).getContext();
+    advertised = ((ComponentDescription) this.sfResolve(refToAdvertise)).sfContext();
     serviceURLPrefix = (String) sfResolve(refSURLPrefix);
   }
   /**

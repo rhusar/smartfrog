@@ -98,7 +98,7 @@ public class SFSLPLocator extends PrimImpl implements Prim{
  * If the looked-up reference is sfLocationResult, triggers a service type request
  * based on the component's service description.
  */
-  public Object sfResolve(Reference reference, int index) throws 
+  public Object sfResolve(Reference reference, int index) throws
                         SmartFrogResolutionException, RemoteException {
     ServiceLocationEnumeration res = null;
     try {
@@ -135,7 +135,7 @@ public class SFSLPLocator extends PrimImpl implements Prim{
   public String buildServiceQuery(ComponentDescription attributesRequirements){
     String result = "";
     if (attributesRequirements != null) {
-      Context cxt = attributesRequirements.getContext();
+      Context cxt = attributesRequirements.sfContext();
       if (cxt.size()!=0) {
         for(Enumeration e = cxt.keys(); e.hasMoreElements();){
           String att = (String) e.nextElement();
@@ -188,7 +188,7 @@ public class SFSLPLocator extends PrimImpl implements Prim{
  *  - sfServiceAttributes : a ComponentDescription describing a set of attribute/value pairs to be matched.
  */
   public synchronized ServiceLocationEnumeration discoverService(ComponentDescription serviceDescription) throws ServiceLocationException, RemoteException{
-    Context serviceInfo = serviceDescription.getContext();
+    Context serviceInfo = serviceDescription.sfContext();
     serviceType = new ServiceType((String) serviceInfo.get("sfServiceType"));
     if (!serviceType.isServiceURL()) {
       throw new ServiceLocationException(" URL is not a valid service URL ");
@@ -204,7 +204,7 @@ public class SFSLPLocator extends PrimImpl implements Prim{
   //  System.out.println(" Attempting to locate " + serviceType + " with scopes " + scopes + "matching "+ serviceQuery);
     ServiceLocationEnumeration results = getLocator().findServices(serviceType,scopes,serviceQuery);
     // and place them in the sfLocationResults attribute.
-    try { 
+    try {
         this.sfReplaceAttribute(refResults,results);
     }catch (SmartFrogRuntimeException sfrex) {
         throw new ServiceLocationException (sfrex.getMessage());

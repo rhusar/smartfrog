@@ -15,10 +15,10 @@ import java.rmi.*;
 import java.util.Vector;
 import java.util.Enumeration;
 /**
- * On each discovered compound, either deploy the component description 
+ * On each discovered compound, either deploy the component description
  * that is pointed by 'link' if it has not been already deployed.
- * Allows to set 'role-based deployment', where each compound advertised 
- * under a given name will, on its discovery by the SFSLP facility, receive 
+ * Allows to set 'role-based deployment', where each compound advertised
+ * under a given name will, on its discovery by the SFSLP facility, receive
  * a given component to deploy.
  *
  * @author Guillaume Mecheneau
@@ -40,8 +40,8 @@ public class OnPrimResults extends OnResults implements Prim{
   public void triggerActionOn(Object serviceProvider) throws Exception{
     if (serviceProvider instanceof Compound) {
       // get the description of the component to deploy
-      Object key = ((ComponentDescription) sfResolve("action")).getContext().keys().nextElement();
-      ComponentDescription action = (ComponentDescription)((ComponentDescription) sfResolve("action")).getContext().get(key);
+      Object key = ((ComponentDescription) sfResolve("action")).sfContext().keys().nextElement();
+      ComponentDescription action = (ComponentDescription)((ComponentDescription) sfResolve("action")).sfContext().get(key);
       // get the eventual link to be added to the context.
       ContextImpl ctxt = null;
       try {

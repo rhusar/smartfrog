@@ -333,7 +333,7 @@ public class SLPResultsCollector extends EventPrimImpl implements Prim{
    * On reception of an event, do not forward it.
    */
   synchronized public void event(String event) {
-	handleEvent(event);
+        handleEvent(event);
   }
  /**
    * Event handling : stop a query thread.
@@ -363,14 +363,14 @@ public class SLPResultsCollector extends EventPrimImpl implements Prim{
       name = sfCompleteName();
     } catch (Exception e) {e.printStackTrace();}
     try {
-      sendServiceURLEvent = ((Boolean)sfResolveId("sendURLEvent")).booleanValue();
-      sendServiceAttributesEvent = ((Boolean)sfResolveId("sendAttributesEvent")).booleanValue();
-      sendServiceDeregistrationEvent = ((Boolean) sfResolveId("sendDeregistration")).booleanValue();
+      sendServiceURLEvent = ((Boolean)sfResolveHere("sendURLEvent",false)).booleanValue();
+      sendServiceAttributesEvent = ((Boolean)sfResolveHere("sendAttributesEvent",false)).booleanValue();
+      sendServiceDeregistrationEvent = ((Boolean) sfResolveHere("sendDeregistration",false)).booleanValue();
     } catch (Exception e){
       System.out.println( "Default boolean values must be specified for sendURLEvent, sendAttributesEvent, and sendDeregistration");
       e.printStackTrace();
     }
-    Object disp = sfResolveId("display");
+    Object disp = sfResolveHere("display",false);
     if (disp != null) display = (disp instanceof String)?
         Boolean.valueOf((String)disp).booleanValue():
         ((Boolean)disp).booleanValue();

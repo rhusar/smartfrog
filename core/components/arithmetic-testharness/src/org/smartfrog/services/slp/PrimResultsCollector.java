@@ -29,7 +29,7 @@ public class PrimResultsCollector extends SLPResultsCollector implements Prim{
     synchronized(sema) {
       try{
         if (serviceComponent==null) {
-      	  sema.wait();
+          sema.wait();
         }
       }catch(Exception ex){}
     }
@@ -52,7 +52,7 @@ public class PrimResultsCollector extends SLPResultsCollector implements Prim{
    */
   public void sfDeploy() throws SmartFrogException , RemoteException{
     super.sfDeploy();
-    Object storage = sfResolveId("storeLastOnly");
+    Object storage = sfResolveHere("storeLastOnly",false);
     if (storage != null) {
        storeLastOnly = (storage instanceof String) ? Boolean.valueOf((String)storage).booleanValue(): ((Boolean)storage).booleanValue();
     }
@@ -107,7 +107,7 @@ public class PrimResultsCollector extends SLPResultsCollector implements Prim{
     }catch(Exception ex){}
 
   }
-  public Object sfResolve(Reference r, int index) throws 
+  public Object sfResolve(Reference r, int index) throws
                                SmartFrogResolutionException, RemoteException {
     if ("serviceComponent".equals(r.elementAt(index).toString())) {
       if (display) System.out.println("Component requested. Hold on...");
