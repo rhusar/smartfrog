@@ -155,31 +155,6 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
    }
 
 
-   //
-   // ComponentResolver
-   //
-
-   /**
-    *  Place resolves the component. This means iterating a number of times over
-    *  the description tree, and doing place resolution. Places attributes which
-    *  have a reference as a key in the right place.
-    *
-    * @throws  SmartFrogCompileResoutionException failed to place resolve
-    */
-   public void placeResolve() throws SmartFrogCompileResolutionException {
-      ResolutionState resState = new ResolutionState();
-
-      do {
-         resState.clear();
-         doPlaceResolve(resState);
-      } while (resState.moreToResolve());
-      if (resState.unresolved().size() > 0) {
-         throw SmartFrogCompileResolutionException.placeResolution(null,getCompleteName(),
-               resState.unresolved(),null);
-      }
-   }
-
-
     //
     // ReferenceResolver
     //
@@ -203,6 +178,32 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
     }
         return r.resolve(this, index);
     }
+
+
+
+   //
+   // ComponentResolver
+   //
+
+   /**
+    *  Place resolves the component. This means iterating a number of times over
+    *  the description tree, and doing place resolution. Places attributes which
+    *  have a reference as a key in the right place.
+    *
+    * @throws  SmartFrogCompileResoutionException failed to place resolve
+    */
+   public void placeResolve() throws SmartFrogCompileResolutionException {
+      ResolutionState resState = new ResolutionState();
+
+      do {
+         resState.clear();
+         doPlaceResolve(resState);
+      } while (resState.moreToResolve());
+      if (resState.unresolved().size() > 0) {
+         throw SmartFrogCompileResolutionException.placeResolution(null,getCompleteName(),
+               resState.unresolved(),null);
+      }
+   }
 
 
    /**
@@ -230,8 +231,9 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
                removals = new Vector(5);
              }
 
-             removals.addElement(key);
-             place( (Reference) key, value, resState);
+             if (place( (Reference) key, value, resState)) {
+		 removals.addElement(key);
+	     }
            } else if (value instanceof ComponentResolver) {
              // Attribute value is resolvable, ask it to resolve itself
              ( (ComponentResolver) value).doPlaceResolve(resState);
@@ -270,7 +272,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
     *@param  value     attribute value
     *@param  resState  resolution state
     */
-   protected void place(Reference key, Object value, ResolutionState resState) {
+   protected boolean place(Reference key, Object value, ResolutionState resState) {
       Object nam = ((HereReferencePart) key.lastElement()).value;
       ComponentDescription destDescription = null;
 
@@ -284,7 +286,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
          // as unresolved
          resState.addUnresolved(key, getCompleteName());
 
-         return;
+         return false;
       }
 
       // Found destination
@@ -300,6 +302,8 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
          // Remember to go and resolve the newly placed component
          resState.addUnresolved(value, destDescription.getCompleteName());
       }
+
+      return true;
    }
 
 
