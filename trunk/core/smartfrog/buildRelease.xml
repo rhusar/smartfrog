@@ -133,7 +133,8 @@ To Be Written
   <!-- Global properties                                                   -->
   <!-- =================================================================== -->
       <!-- Release Directories -->
-     <property name="src" value="src"/>            <!-- where the source is -->
+     <property name="bin" value="bin"/>           <!-- where the source is -->
+     <property name="src" value="src"/>           <!-- where the source is -->
      <property name="dist" value="dist"/>         <!-- where the files to zip go -->
      <property name="releases" value="releases"/> <!-- where the dated zips go, don't clean -->
      <property name="lib" value="lib"/>
@@ -146,6 +147,32 @@ To Be Written
      <property name="rmitargets" value="${basedir}/rmitargets"/>
 
   <!-- =================================================================== -->
+  <!-- FixCRLF for different platforms                                     -->
+  <!-- =================================================================== -->
+  <target name="fixCRLF">
+     <!-- OS dependant -->
+     <fixcrlf srcdir="${dist}/${bin}"
+       includes="**/**"
+       excludes="**/*.bat, **/default*"
+     />
+     <!-- OS dependant -->
+     <fixcrlf srcdir="${dist}/${bin}"
+       tab="remove"
+       tablength="4"
+       includes="**/default*"
+     />
+     <!-- Windows/Dos format -->
+     <fixcrlf srcdir="${dist}/${bin}"
+       eol="crlf"
+       includes="**/*.bat"
+     />
+     <!-- OS dependant -->
+     <fixcrlf srcdir="${dist}"
+       includes="**/*.txt"
+     />
+  </target>
+
+  <!-- =================================================================== -->
   <!-- initrelease                                                             -->
   <!-- =================================================================== -->
   <target name="initrelease">
@@ -154,7 +181,7 @@ To Be Written
   <!-- =================================================================== -->
   <!-- release                                                             -->
   <!-- =================================================================== -->
-  <target name="release" depends="init, initrelease" description="Creates zip with release packages">
+  <target name="release" depends="init, initrelease, fixCRLF" description="Creates zip with release packages">
     <zip destfile="../releases/${Name.System}.${version}.${DSTAMP}_DIST.zip">
        <zipfileset dir="." prefix="${Name.System}.${version}">
           <include name="${dist}/**"/>
@@ -167,7 +194,7 @@ To Be Written
         <include name="${dist}/docs/DefaultParser.html"/>
         <include name="${dist}/docs/dir.JPG"/>
         <include name="${dist}/docs/sfReference.pdf"/>
-        <include name="${dist}/docs/sfDynamicWebServerExample.pdf"/>        
+        <include name="${dist}/docs/sfDynamicWebServerExample.pdf"/>
         <include name="${dist}/docs/jdocs/**"/>
        </zipfileset>
     </zip>
@@ -180,7 +207,7 @@ To Be Written
         <include name="docs/DefaultParser.html"/>
         <include name="docs/dir.JPG"/>
         <include name="docs/sfReference.pdf"/>
-        <include name="docs/sfDynamicWebServerExample.pdf"/>                
+        <include name="docs/sfDynamicWebServerExample.pdf"/>
         <include name="lib/**"/>
         <include name="src/**"/>
         <include name="private/**"/>
@@ -213,7 +240,7 @@ To Be Written
         <include name="${dist}/docs/DefaultParser.html"/>
         <include name="${dist}/docs/dir.JPG"/>
         <include name="${dist}/docs/sfReference.pdf"/>
-        <include name="${dist}/docs/sfDynamicWebServerExample.pdf"/>                
+        <include name="${dist}/docs/sfDynamicWebServerExample.pdf"/>
         <include name="${dist}/docs/jdocs/**"/>
        </zipfileset>
     </zip>
@@ -235,7 +262,7 @@ To Be Written
         <include name="${dist}/docs/DefaultParser.html"/>
         <include name="${dist}/docs/dir.JPG"/>
         <include name="${dist}/docs/sfReference.pdf"/>
-        <include name="${dist}/docs/sfDynamicWebServerExample.pdf"/>         
+        <include name="${dist}/docs/sfDynamicWebServerExample.pdf"/>
         <include name="${dist}/docs/jdocs/**"/>
        </tarfileset>
        <tarfileset dir="." mode="755" prefix="${Name.System}.${version}">
@@ -258,7 +285,7 @@ To Be Written
         <include name="docs/DefaultParser.html"/>
         <include name="docs/dir.JPG"/>
         <include name="docs/sfReference.pdf"/>
-        <include name="docs/sfDynamicWebServerExample.pdf"/>                
+        <include name="docs/sfDynamicWebServerExample.pdf"/>
         <include name="lib/**"/>
         <include name="src/**"/>
         <include name="private/**"/>
@@ -305,7 +332,7 @@ To Be Written
         <include name="${dist}/docs/DefaultParser.html"/>
         <include name="${dist}/docs/dir.JPG"/>
         <include name="${dist}/docs/sfReference.pdf"/>
-        <include name="${dist}/docs/sfDynamicWebServerExample.pdf"/>                
+        <include name="${dist}/docs/sfDynamicWebServerExample.pdf"/>
         <include name="${dist}/docs/jdocs/**"/>
        </tarfileset>
        <tarfileset dir="." mode="755" prefix="${Name.System}.${version}">

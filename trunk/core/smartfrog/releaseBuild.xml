@@ -91,6 +91,7 @@ These are the meaningful targets for this build file:
     <echo message="   cleanCA         --> clean up the CA "/>
     <echo message="   newDaemon       --> create policy and identity for daemon "/>
     <echo message="   signJars        --> sign all the jar files "/>
+    <echo message="   fixCRLF         --> adapts CRLF to different OS"/>
     <echo message=""/>
     <echo message=" See the comments inside the build.xml file for more details."/>
     <echo message=""/>
@@ -150,6 +151,32 @@ These are the meaningful targets for this build file:
     <delete dir="${jdocs}"/>
   </target>
 
+  <!-- =================================================================== -->
+  <!-- FixCRLF for different platforms  only inside DIST!                  -->
+  <!-- =================================================================== -->
+
+  <target name="fixCRLF" description="adapts CRLF for different OS">
+     <!-- OS dependant -->
+     <fixcrlf srcdir="${dist}/${bin}"
+       includes="**/**"
+       excludes="**/*.bat,**/default*"
+     />
+     <!-- OS dependant -->
+     <fixcrlf srcdir="${dist}/${bin}"
+       tab="remove"
+       tablength="4"
+       includes="**/default*"
+     />
+     <!-- Windows/Dos format -->
+     <fixcrlf srcdir="${dist}/${bin}"
+       eol="crlf"
+       includes="**/*.bat"
+     />
+     <!-- OS dependant -->
+     <fixcrlf srcdir="${dist}"
+       includes="**/*.txt"
+     />
+  </target>
 
   <!-- =================================================================== -->
   <!--   Copy .sf  and gif files to "build" directories                                                                   -->

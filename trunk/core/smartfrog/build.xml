@@ -192,6 +192,33 @@ relevant JAR files into the javacc subdirectory
   </target>
 
   <!-- =================================================================== -->
+  <!-- FixCRLF for different platforms  only inside DIST!                  -->
+  <!-- =================================================================== -->
+
+  <target name="fixCRLF" depends="copybins" description="adapts CRLF for different OS">
+     <!-- OS dependant -->
+     <fixcrlf srcdir="${dist.dir}/${bin}"
+       includes="**/**"
+       excludes="**/*.bat,**/default*"
+     />
+     <!-- OS dependant -->
+     <fixcrlf srcdir="${dist.dir}/${bin}"
+       tab="remove"
+       tablength="4"
+       includes="**/default*"
+     />
+     <!-- Windows/Dos format -->
+     <fixcrlf srcdir="${dist.dir}/${bin}"
+       eol="crlf"
+       includes="**/*.bat"
+     />
+     <!-- OS dependant -->
+     <fixcrlf srcdir="${dist.dir}"
+       includes="**/*.txt"
+     />
+  </target>
+
+  <!-- =================================================================== -->
   <!--                                                                     -->
   <!-- =================================================================== -->
   <target name="initrelease" depends="init">
@@ -251,7 +278,7 @@ relevant JAR files into the javacc subdirectory
     </rmic>
 
   </target>
-  
+
   <!-- =================================================================== -->
   <!--   Copy default.sf and default.ini files to "src/org/smartfrog" directory -->
   <!--   so that they can be used with security on                         -->
@@ -260,10 +287,10 @@ relevant JAR files into the javacc subdirectory
     <copy todir="${build.classes.dir}/org/smartfrog">
       <fileset dir="${bin}">
         <include name="default.sf" />
-        <include name="default.ini" />        
+        <include name="default.ini" />
       </fileset>
-    </copy>  
-  </target>  
+    </copy>
+  </target>
 
   <!-- =================================================================== -->
   <!--   Copy .sf files to "build" directories                             -->
@@ -499,7 +526,7 @@ relevant JAR files into the javacc subdirectory
   <!--  DIST                                                               -->
   <!-- =================================================================== -->
   <target name="dist"
-    depends="build,initdist,jars,copylibs,copybins,copyPrivate,copydocs, copyexamples,copyTestCA,buildSetup"
+    depends="build,initdist,jars,copylibs,copybins,copyPrivate,copydocs, copyexamples,copyTestCA,buildSetup,fixCRLF"
     description="Prepares distribution package">
   </target>
 
