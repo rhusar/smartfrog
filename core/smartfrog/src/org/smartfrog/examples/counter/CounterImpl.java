@@ -29,6 +29,7 @@ import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.logging.LogSF;
 
 
 /**
@@ -57,6 +58,9 @@ public class CounterImpl extends PrimImpl implements Prim, Counter, Runnable {
     Thread action = null;
     /** sleep time */
     int sleeptime=1000;
+
+    LogSF logCore = null;
+    LogSF logApp = null;
 
     /**
      *  Shows debug messages.
@@ -92,6 +96,8 @@ public class CounterImpl extends PrimImpl implements Prim, Counter, Runnable {
     public synchronized void sfDeploy() throws SmartFrogException,
     RemoteException {
             super.sfDeploy();
+            logCore = sfGetProcessLog();
+            logApp = this.sfGetApplicationLog();
             /**
              *  Returns the complete name for Counter component from the root
              *  of application.If an exception is thrown it returns null
@@ -204,7 +210,7 @@ public class CounterImpl extends PrimImpl implements Prim, Counter, Runnable {
              */
         message = sfResolve(ATR_MESSAGE, message, false);
           /*
-          sleep time, >=0;. 
+          sleep time, >=0;.
           */
         sleeptime = sfResolve(ATR_SLEEP,sleeptime,false);
         if(sleeptime<0) {
@@ -222,9 +228,14 @@ public class CounterImpl extends PrimImpl implements Prim, Counter, Runnable {
     public void run() {
         try {
             while (limit >= counter) {
-                System.out.println("COUNTER: " + message + " " + counter);
+                //System.out.println("COUNTER: " + message + " " + counter);
+                String messageSt = ("COUNTER: " + message + " " + counter);
+                logApp.out(messageSt);
+                logCore.info(messageSt);
+                logApp.info(messageSt);
                 if(sleeptime>0) {
                     Thread.sleep(sleeptime);
+
                 }
                 counter++;
             }
@@ -254,7 +265,7 @@ public class CounterImpl extends PrimImpl implements Prim, Counter, Runnable {
                     format(new Date())));
             msg.append ("]> ");
             msg.append (message);
-            System.err.println(msg.toString());
+            logCore.error(msg.toString()+"\n");
         }
     }
 
@@ -275,6 +286,7 @@ public class CounterImpl extends PrimImpl implements Prim, Counter, Runnable {
             msg.append ("]> ");
             msg.append (message);
             System.out.println(msg.toString());
+            logCore.info(msg.toString()+"\n");
         }
     }
 
@@ -294,9 +306,9 @@ public class CounterImpl extends PrimImpl implements Prim, Counter, Runnable {
                     format(new Date())));
             msg.append ("]> ");
             msg.append (message);
-            msg.append("\n StackTrace: ");
-            msg.append(exception.getStackTrace().toString());
-            System.err.println(msg.toString());
+//            msg.append("\n StackTrace: ");
+//            msg.append(exception.getStackTrace().toString());
+            logCore.error(msg.toString()+"\n",exception);
         }
     }
 }
