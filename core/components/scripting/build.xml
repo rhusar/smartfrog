@@ -330,6 +330,7 @@ Reference URL:http://ant.apache.org
     </copy>  
 	 <antcall target="copybins"/>
 	  <copy tofile="${dist.dir}/build.xml" file="releaseBuild.xml"/>	
+	  <copy tofile="${dist.dir}/build.example.properties" file="build.example.properties"/>
 	</target>
 
 

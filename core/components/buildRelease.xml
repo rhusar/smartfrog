@@ -138,8 +138,7 @@ To use: ant -f buildRelease release
         <include name="build.xml"/>
         <include name="buildRelease.xml"/>
         <include name="releaseBuild.xml"/>
-        <include name="documentation.xml"/>
-	<include name="${dist}/**"/>
+    <include name="${dist}/**"/>
 	<include name="${dist}/docs/**"/>
 	<include name="${dist}/docs/jdocs/**"/>
 	<include name="${dist}/bin/**"/>
@@ -160,6 +159,11 @@ To use: ant -f buildRelease release
    <zipfileset dir=".." prefix="${Name.System}.${version}">
 	<include name="**/common.xml"/>
    </zipfileset>
+
+   <zipfileset dir="." prefix="${Name.System}.${version}">
+   <include name="build.example.properties"/>
+   </zipfileset>
+
    </zip>
 
     <tar tarfile="../releases/${Name.System}.${version}.${DSTAMP}_ALL.tar">
@@ -176,8 +180,7 @@ To use: ant -f buildRelease release
         <include name="build.xml"/>
         <include name="buildRelease.xml"/>
         <include name="releaseBuild.xml"/>
-        <include name="documentation.xml"/>
-	<include name="${dist}/**"/>
+    <include name="${dist}/**"/>
 	<include name="${dist}/docs/**"/>
 	<include name="${dist}/docs/jdocs/**"/>
 	<include name="${dist}/bin/**"/>
@@ -197,6 +200,11 @@ To use: ant -f buildRelease release
     <tarfileset dir=".." prefix="${Name.System}.${version}">
 	<include name="**/common.xml"/>
     </tarfileset>
+
+	 <tarfileset dir="." prefix="${Name.System}.${version}">
+   <include name="build.example.properties"/>
+   </tarfileset>
+
   </tar>
   
   <gzip src="../releases/${Name.System}.${version}.${DSTAMP}_ALL.tar" zipfile="../releases/${Name.System}.${version}.${DSTAMP}_ALL.tar.gz"/>

@@ -122,5 +122,6 @@ For more information: www.smartfrog.org
 		</fileset>
     </copy>   
 	 <copy tofile="${dist.dir}/build.xml" file="releaseBuild.xml"/>	
+	 <copy tofile="${dist.dir}/build.example.properties" file="build.example.properties"/>
 	</target>
 </project>
