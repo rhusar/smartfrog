@@ -150,7 +150,6 @@ public class SFSystem implements MessageKeys {
     public static void deployFrom(InputStream is, ProcessCompound target,
         Context c, String language) throws SmartFrogException, RemoteException {
         Prim comp = null;
-        Context nameContext = null;
         Phases top;
         try {
             top = new SFParser(language).sfParse(is);
@@ -219,7 +218,7 @@ public class SFSystem implements MessageKeys {
                 deployFrom(SFClassLoader.getResourceAsStream(source), target, null,
                            getLanguageFromUrl(source));
             } catch (SmartFrogParseException sfpex){
-                sfpex.add(sfpex.DATA, " URL '"+source+"'");
+                sfpex.add(SmartFrogParseException.DATA, " URL '"+source+"'");
                 throw sfpex;
             }
         }
@@ -235,7 +234,6 @@ public class SFSystem implements MessageKeys {
      */
     public static void deployFromURLsGiven(OptionSet opts,
                                            ProcessCompound target) {
-        ComponentDescription comp = null;
         Context nameContext = null;
         Enumeration names = opts.names.elements();
         String url = "";
@@ -281,8 +279,6 @@ public class SFSystem implements MessageKeys {
 
     /**
      * Deploy a single application URL.
-     * @todo there is almost no difference between this method and #deployFromURLsGiven; the latter could
-     * have its core replaced by this with some work.
      * @param appName name of the application
      * @param target the target process compound to request deployment
      * @throws SmartFrogException something went wrong with the deploy -this may contain a nested exception
@@ -291,7 +287,6 @@ public class SFSystem implements MessageKeys {
     private static void deployFromURL(String url, String appName,
          ProcessCompound target) throws SmartFrogException, RemoteException {
 
-        ComponentDescription comp = null;
         Context nameContext = null;
         nameContext = new ContextImpl();
         nameContext.put("sfProcessComponentName", appName);
@@ -396,12 +391,12 @@ public class SFSystem implements MessageKeys {
     /**
      * Get this object to terminate, after detaching itself from its parent.
      *
-     * @param status termination status
+     * @param opts
+     * @param target
      */
     public static void detachAndTerminate(OptionSet opts,
         ProcessCompound target) {
             Prim obj = null;
-            Reference tagetName = null;
             try {
                     obj = (Prim)target;
             } catch (Exception e) {
@@ -566,7 +561,7 @@ public class SFSystem implements MessageKeys {
     }
     /**
      * Gets the ProcessCompound running on the host.
-     * @param hostname Name of the host
+     * @param hostName Name of the host
      * @param remoteHost boolean indicating if the host is remote host
      * @return ProcessCompound
      */
@@ -616,7 +611,7 @@ public class SFSystem implements MessageKeys {
      * Bring up smartfrog and deploy a component on the specified host.
      * A useful little entry point for external programs and tests.
      * @param hostName host where to deploy
-     * @param url url to the component
+     * @param Url url to the component
      * @param appName application name
      * @param remoteHost host is a remote host or not
      * @throws SmartFrogException if any application error
