@@ -818,7 +818,7 @@
   <!-- ========================================================== -->    
  <target name="diagnostics" depends="init"
     description="build file diagnostics">
-    <echoproperties/>
+    <echoproperties format="xml"/>
   </target> 
 
  <target name="diag2" depends="init,verify-prerequisites">
