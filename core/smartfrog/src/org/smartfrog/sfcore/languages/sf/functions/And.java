@@ -25,15 +25,16 @@ import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
 import org.smartfrog.sfcore.common.MessageUtil;
 
 /**
- * Defines the Minus function that sums each of its attributes type-caste to
- * integers, failure will result in an exception.
+ * Defines the conjunction function 
  */
 public class And extends BaseOperator implements PhaseAction {
     /**
-     * Differences two numbers.
-     * @param a first number
-     * @param b second number
-     * @return sum
+     * Conjoins two booleans.
+     * @param a first boolean
+     * @param b second boolean
+     *
+     * @return the conjunction
+     * @throws SmartFrogCompileResolutionException if the types of the attributes are not correct
      */
     protected Object doOperator(Object a, Object b) throws SmartFrogCompileResolutionException {
 	if (!(a instanceof Boolean))

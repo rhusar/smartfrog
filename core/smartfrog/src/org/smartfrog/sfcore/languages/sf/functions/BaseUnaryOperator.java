@@ -28,7 +28,8 @@ import org.smartfrog.sfcore.languages.sf.PhaseAction;
 import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
 
 /**
- * Defines the baseoperator for the operator functions.
+ * Defines the base functionality for the unary operator functions.
+ * The data on which to operate is defined to be the attribute "data".
  */
 public abstract class BaseUnaryOperator extends BaseFunction implements PhaseAction {
 
@@ -41,7 +42,10 @@ public abstract class BaseUnaryOperator extends BaseFunction implements PhaseAct
      *  */
     protected abstract Object doOperator(Object a) throws SmartFrogCompileResolutionException;
 
-    /** Implements the functionality of base operator. */
+    /** Implements the functionality of base unary operator. 
+     * @return the result of applying the operator
+     * @throws SmartFrogCompileResolutionException if the attribute "data" does not exist or the  operator throws the exception
+     **/
     protected Object doFunction() throws SmartFrogCompileResolutionException {
 	Object data = context.get("data");
 

@@ -25,15 +25,16 @@ import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
 import org.smartfrog.sfcore.common.MessageUtil;
 
 /**
- * Defines the Sum function that sums each of its attributes type-caste to
- * integers, failure will result in an exception.
+ * Defines the function that  divides its "left" attribute by its "right" attribute.
+ * Each of its attributes mst be a number.
  */
 public class Divide extends BaseBinaryOperator implements PhaseAction {
     /**
      * Sums two numbers.
      * @param a first number
      * @param b second number
-     * @return sum
+     * @return division
+     * @throws SmartFrogCompileResolutionException if one of the parameters is not a number
      */
     protected Object doOperator(Object a, Object b) throws SmartFrogCompileResolutionException {
 	if (!(a instanceof Number))

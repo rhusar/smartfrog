@@ -44,7 +44,13 @@ public abstract class BaseBinaryOperator extends BaseFunction implements PhaseAc
     protected abstract Object doOperator(Object a, Object b) throws SmartFrogCompileResolutionException;
 
 
-    /** Implements the functionality of base operator. */
+    /** Implements the functionality of base operator.
+     *  it expects to find two attributes: left and right
+     * if these are not present it will throw an exception
+     * 
+     * @returns the result of the operation
+     * @throws SmartFrogCompileResolutionException if either of the required attributes are not present or the operation throws an exception
+     */
     protected Object doFunction() throws SmartFrogCompileResolutionException {
 	Object left = context.get("left");
 	Object right = context.get("right");

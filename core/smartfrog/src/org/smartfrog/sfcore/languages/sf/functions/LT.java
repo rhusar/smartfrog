@@ -24,16 +24,18 @@ import org.smartfrog.sfcore.languages.sf.PhaseAction;
 import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
 import org.smartfrog.sfcore.common.MessageUtil;
 
+
 /**
- * Defines the Minus function that sums each of its attributes type-caste to
- * integers, failure will result in an exception.
+ * Defines the less than binary opeeration that compares its numeric attributes
+ *  left < right
  */
 public class LT extends BaseBinaryOperator implements PhaseAction {
     /**
-     * Differences two numbers.
+     * Compares two numbers.
      * @param a first number
      * @param b second number
-     * @return sum
+     * @return boolean whether a<b
+     * @throws  SmartFrogCompileResolutionException if one of the parameters is not a number
      */
     protected Object doOperator(Object a, Object b) throws SmartFrogCompileResolutionException {
 	if (!(a instanceof Number))

@@ -38,6 +38,7 @@ public class IfThenElse extends BaseFunction implements PhaseAction, MessageKeys
      * The method to implement the functionality of the if-then-else function.
      *
      * @return an Object representing the answer
+     * @throws SmartFrogCompileResolutionException if any of the parameters are not there or of the wrong type
      *  */
     protected Object doFunction() throws SmartFrogCompileResolutionException {
 	Object ifObj = context.get("if");

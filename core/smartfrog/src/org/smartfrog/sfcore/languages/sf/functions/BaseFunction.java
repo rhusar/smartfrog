@@ -43,10 +43,17 @@ public abstract class BaseFunction implements PhaseAction, MessageKeys {
     /**
      * The method to implement the functionality of any function.
      *
-     * @return an Object
+     * @return the result of the function: an Object
+     * @throws SmartFrogCompileResolutionException
      * */
     protected abstract Object doFunction() throws SmartFrogCompileResolutionException;
 
+    /**
+     * Implementation of the phase action doit() method.
+     * Calls the (abstract) method doFunction and replaces this definition with the result.
+
+     * @throws SmartFrogCompileResolutionException if the doFunction method does.
+     */
     public void doit() throws SmartFrogCompileResolutionException {
         Object o = doFunction();
         ComponentDescription parent = (ComponentDescription) component.getParent();
@@ -55,6 +62,9 @@ public abstract class BaseFunction implements PhaseAction, MessageKeys {
         context.put(key, o);
     }
 
+    /**
+     * Prime the function with the necessary data
+     */
     public void forComponent(ComponentDescription cd) {
         component = cd;
 	name = cd.getCompleteName();

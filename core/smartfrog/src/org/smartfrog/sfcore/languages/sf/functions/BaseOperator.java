@@ -27,6 +27,9 @@ import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
 
 /**
  * Defines the baseoperator for the operator functions.
+ * The operator is assumed to be left associative (earlier attributes are "left"),
+ * and placed between all relevant attributes defined in the
+ * component description
  */
 public abstract class BaseOperator extends BaseFunction implements PhaseAction {
 
