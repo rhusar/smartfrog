@@ -88,6 +88,10 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
     //File workDir = null; //desired
     /** String name for env properties. */
     String[] envProp = null;
+    
+    /** Vector used to store environment variables */
+    Vector envVarsVector = null;
+    
 
     //optional
     /** Set of commands. */
@@ -263,7 +267,14 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
         useExitCmd =sfResolve(varUseExitCmd, useExitCmd, false);
         shellCommandAtt = this.readShellAttributes();
         cmds = this.readVarData(this.varCMDs);
-        sfResolve(varEnvProp, envProp , false);
+        //sfResolve(varEnvProp, envProp , false);
+        envVarsVector = (Vector)sfResolve(varEnvProp, envVarsVector,
+                                                                false);
+        if( (envVarsVector != null) && !(envVarsVector.isEmpty())) {
+            envVarsVector.trimToSize();
+            envProp = new String[envVarsVector.size()];
+            envVarsVector.copyInto(envProp);
+        }
 
         // Mandatory attributes
         try{
