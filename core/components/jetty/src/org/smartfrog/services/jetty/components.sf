@@ -43,7 +43,7 @@ CoreJettyServer extends Compound {
    sfClass "org.smartfrog.services.jetty.SFJetty";
    coreJettySchema extends CoreJettySchema;
    enableLogging false;
-   serverHost "localhost";
+   serverHost "null";
    //synchronous deploy/undeploy policy
    sfSyncTerminate true;
    port 8080;
@@ -90,7 +90,7 @@ JettyServletContext extends Compound {
 JettyWebApplicationSchema extends Schema {
 
     //webapp is a name of an app or a directory
-    webApp extends OptionalString;
+    warFile extends OptionalString;
 }
 
 JettyWebApplication extends JavaWebApplication {
@@ -113,7 +113,7 @@ JettyHandler extends Prim {
 JettyListenerSchema extends Schema {
     listenerPort extends Integer;
     serverHost extends String;
-    //server extends String;
+    server extends OptionalString;
 }
 
 JettyListener extends Prim {
