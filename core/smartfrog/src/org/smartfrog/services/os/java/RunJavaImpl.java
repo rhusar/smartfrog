@@ -39,7 +39,7 @@ import java.io.File;
 
 public class RunJavaImpl extends RunShellImpl implements RunJava {
 
-    PlatformHelper platform;
+    private PlatformHelper platform;
 
     public RunJavaImpl() throws RemoteException {
         platform = PlatformHelper.getLocalPlatform();
