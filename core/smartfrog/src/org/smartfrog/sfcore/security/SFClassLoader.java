@@ -358,7 +358,16 @@ public class SFClassLoader {
     static InputStream getResourceHelper(String resourceInJar, String codebase)
             throws ClassNotFoundException, IOException {
         ClassLoader cl = getClassLoader(codebase);
-
+        if (debug !=null) {
+            debug.println("ClassLoader for "+resourceInJar+" in jar "+codebase);
+            try {
+                debug.println("cl "+cl.getClass().getName());
+                debug.println("cl.getResource(resourceInJar): "+
+                          cl.getResource(resourceInJar).toString());
+            } catch (Throwable ex) {
+                ex.printStackTrace();
+            }
+        }
         return getURLAsStream(cl.getResource(resourceInJar));
     }
 
@@ -420,6 +429,7 @@ public class SFClassLoader {
      */
     static Object classLoaderHelper(String name, String codebase,
         boolean useDefaultCodebase, boolean isForName) {
+        if (debug != null) debug.println(" * classLoaderHelper: name "+name+", codebase "+codebase+", usedefaultcodebase "+useDefaultCodebase+", isforname "+isForName+", getTargetClassBase() "+getTargetClassBase());
         String msg = (isForName ? "forName" : "getResourceAsStream");
         Object result;
         // "default" equivalent to "not set".
@@ -429,17 +439,28 @@ public class SFClassLoader {
 
         //First, try the thread context class loader
         result = opHelperWithReporting(name, null, isForName, msg);
+         if (debug != null) {if (result!=null) debug.println("   - Using thread context class loader");};
+
         // Second try the default codebase (if enabled)
         if (result==null && (useDefaultCodebase) && (getTargetClassBase() != null)) {
             result = opHelperWithReporting(name, getTargetClassBase(), isForName, msg);
+             if (debug != null) debug.println("   - Using defaultCodeBase: "+getTargetClassBase());
         }
 
         //Last, try the class loader for the suggested codebase
         if (result==null && codebase != null) {
             result = opHelperWithReporting(name, codebase, isForName, msg);
-            return result;
+            if (debug != null) {
+                if (result!=null) {
+                    debug.println("   - Using suggested: "+codebase);
+                }
+            }
         }
-
+        if (debug != null) {
+            if (result==null) {
+                debug.println("   - Not luck in loading resource. Not found.");
+            }
+        }
         return result;
     }
 
@@ -457,25 +478,25 @@ public class SFClassLoader {
         Object result=null;
         try {
             result = opHelper(name, codebase, isForName);
-        } catch (SecurityException e) {
+        } catch (SecurityException se) {
             if (debug != null) {
                 debug.println("SecurityException loading "+name+" in " + codebase +
-                        " getting exception " + e.getMessage());
+                        " getting exception " + se.getMessage());
             }
 
-        } catch (LinkageError e) {
+        } catch (LinkageError le) {
             //we found the class, but could not handle it
             // We try next class loader throw e;
             if (debug != null) {
                 debug.println(msg + " found "+name+" in " + codebase +
-                    " getting exception " + e.getMessage());
+                    " getting exception " + le.getMessage());
             }
-        } catch (Throwable e) {
+        } catch (Throwable t) {
             //ClassNotFound or IOException
             // Not valid, continuing ...
             if (debug != null) {
                 debug.println(msg + " cannot find "+name+" in " + codebase +
-                    " getting exception " + e.getMessage());
+                    " getting exception " + t.getMessage());
             }
 
         }
