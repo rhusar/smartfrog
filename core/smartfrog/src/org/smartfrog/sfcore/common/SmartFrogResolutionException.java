@@ -381,7 +381,7 @@ public class SmartFrogResolutionException extends SmartFrogRuntimeException
         strb.append (shortClassName() +":: ");
         //strb.append ((((getMessage() == null) ? "" : getMessage())));
         if (getMessage()==null){
-            strb.append ((getCause() == null)  ? "" : getCause().getMessage());
+            strb.append ((getCause() == null)  ? "" : getCauseMessage(nm));
         } else {
             strb.append (getMessage());
 //            strb.append ((((getCause() == null) ) ? "" : (nm+"  cause: " +
@@ -415,4 +415,7 @@ public class SmartFrogResolutionException extends SmartFrogRuntimeException
 
         return strb.toString();
     }
+
+
+
 }

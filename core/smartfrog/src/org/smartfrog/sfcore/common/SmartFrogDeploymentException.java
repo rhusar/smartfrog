@@ -192,14 +192,6 @@ public class SmartFrogDeploymentException extends SmartFrogRuntimeException {
        return strb.toString();
     }
 
-    /**
-     * Returns the cause message.
-     *
-     * @return the cause message value
-     */
-    public String getCauseMessage(){
-        return this.getCause().toString();
-    }
 
     /**
      * Returns a string representation of the deployment exception.
@@ -213,10 +205,10 @@ public class SmartFrogDeploymentException extends SmartFrogRuntimeException {
         strb.append (""+ shortClassName() +": ");
         strb.append ((((getMessage() == null) ? "" : getMessage())));
         if (getMessage()==null){
-            strb.append ((getCause() == null)  ? "" : getCauseMessage());
+            strb.append ((getCause() == null)  ? "" : getCauseMessage(nm));
         } else {
             strb.append ((((getCause() == null) ) ? "" : (nm+"cause: " +
-            getCauseMessage())));
+            getCauseMessage(nm))));
         }
         strb.append ((((this.containsKey(REFERENCE)
                        && (this.get(REFERENCE)!=null)

@@ -36,7 +36,7 @@ public class SmartFrogException extends Exception {
 
     /** Attribute name for Exception. */
     public static final String EXCEPTION = "Exception";
-    
+
     /** Additional informational data. */
     public static final String DATA = "data";
 
@@ -46,7 +46,7 @@ public class SmartFrogException extends Exception {
 
     /** Attribute name for primContect in exceptioncontext. */
     public static final String PRIM_CONTEXT = "primContext";
-    
+
     /** Attribute name for primSFCompleteName in exceptioncontext. */
     public static final String PRIM_COMPLETE_NAME = "primSFCompleteName";
 
@@ -140,7 +140,7 @@ public class SmartFrogException extends Exception {
      * Gets the context associated with the exception.
      *
      * @return Exception context
-     * 
+     *
      * @see #setContext
      */
     public Context getContext() {
@@ -151,7 +151,7 @@ public class SmartFrogException extends Exception {
      * Sets the context associated with the exception.
      *
      * @param newContext The context associated with exception
-     
+
      * @see #getContext
      */
     public void setContext(Context newContext) {
@@ -178,9 +178,9 @@ public class SmartFrogException extends Exception {
     }
     /**
      * Gets the value of the attribute in the exception context.
-     
+
      * @param key name of the attribute to be retrieved from the error context
-     
+
      * @return value of the attribute
      */
     public Object get (Object key) {
@@ -279,10 +279,10 @@ public class SmartFrogException extends Exception {
         strb.append (shortClassName() +":: ");
         strb.append ((((getMessage() == null) ? "" : getMessage())));
         if (getMessage()==null){
-            strb.append ((getCause() == null)  ? "" : getCause().toString());
+            strb.append ((getCause() == null)  ? "" : getCauseMessage(nm));
         } else {
             strb.append ((((getCause() == null) ) ? "" : (nm+"cause: " +
-            getCause().toString())));
+            getCauseMessage(nm))));
         }
         strb.append ((((this.containsKey(DATA))) ? (nm+DATA+  ": "
                                                     + get(DATA)) : "" ));
@@ -291,6 +291,19 @@ public class SmartFrogException extends Exception {
         strb.append ((((this.containsKey(PRIM_CONTEXT))) ? (nm+PRIM_CONTEXT+
                                                   ": " + "included") : "" ));
         return strb.toString();
+    }
+
+    public String getCauseMessage(String nm) {
+        String causeText="";
+        Throwable cause = this.getCause();
+        if ((!(nm.startsWith(","))||(!nm.startsWith(":")))){
+             nm=nm+"   ";
+        }
+        if (cause instanceof SmartFrogException){
+           causeText = ((SmartFrogException)cause).toString(nm);
+        } else causeText=cause.toString();
+
+        return causeText;
     }
 
 
