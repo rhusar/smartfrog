@@ -1,5 +1,6 @@
 release 3.02.000_alpha
 -----------------------
+2004-Apr-7  Release date
 2004-Mar-19 New "smartfrog" shell script
 2004-Mar-19 New command entry points for framework
             - ConfigurationDescriptor
