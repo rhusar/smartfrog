@@ -37,14 +37,15 @@ import org.smartfrog.sfcore.processcompound.SFProcess;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
 
 import java.rmi.RemoteException;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * This is our SOAP service
- * @author steve loughran
  *         created 04-Mar-2004 13:44:57
  */
 
-public class DeploymentEndpoint extends SmartfrogHostedEndpoint {
+public class DeploymentEndpoint extends SmartFrogHostedEndpoint {
 
 
     /**
@@ -101,13 +102,15 @@ public class DeploymentEndpoint extends SmartfrogHostedEndpoint {
      * @return
      * @throws RemoteException
      */
-    public String deployURL(String language, String hostname, String application, String url) throws RemoteException
-            {
+    public String deployURL(String language, String hostname, String application, String url,String[] codebase)
+        throws RemoteException
+        {
         verifySupported(language);
         if(hostname.length() == 0) {
             hostname="localhost";
         }
-        return deployThroughActions(hostname, application, url);
+
+        return deployThroughActions(hostname, application, url,null);
     }
 
     /**
@@ -119,7 +122,8 @@ public class DeploymentEndpoint extends SmartfrogHostedEndpoint {
      * @throws AxisFault
      */
     private String deployThroughSFSystem(String hostname, String application,
-                                         String url) throws AxisFault {
+                                         String url
+                                         ) throws AxisFault {
         try {
             ConfigurationDescriptor config=new ConfigurationDescriptor(application,url);
             config.setHost(hostname);
@@ -149,12 +153,16 @@ public class DeploymentEndpoint extends SmartfrogHostedEndpoint {
      * @throws AxisFault
      */
     private String deployThroughActions(String hostname, String application,
-                                         String url) throws AxisFault {
+                                         String url,
+                                        String[] codebase) throws AxisFault {
         try {
             ConfigurationDescriptor config = new ConfigurationDescriptor(application, url);
             config.setHost(hostname);
             config.setActionType(ConfigurationDescriptor.Action.DEPLOY);
-            log.info("Deploying " + url + " to " + hostname);
+            log.info("Deploying " + url + " to " + hostname+ "as "+application);
+            if(codebase!=null) {
+                log.warn("codebase is not yet supported");
+            }
             //deploy, throwing an exception if we cannot
             config.execute(SFProcess.getProcessCompound());
             Object targetC = config.execute(null);

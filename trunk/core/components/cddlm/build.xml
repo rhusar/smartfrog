@@ -147,11 +147,10 @@ For more information: www.smartfrog.org
   <target name="start-daemon" depends="parse,dist" 
     description="parse the cddlm descriptor">
       <sf-startdaemon classpathref="run.classpath"
-        logStackTraces="true" >
+        logStackTraces="true" spawn="true">
         <assertions enableSystemAssertions="true">
           <enable/>
         </assertions>
-        <application name="cddlm" descriptor="/${deploy.sf}"/>
       </sf-startdaemon>
   </target>
 
@@ -167,6 +166,7 @@ For more information: www.smartfrog.org
         host="${deploy.host}"
         >
         <application name="cddlm" descriptor="/${deploy.sf}"/>
+        <codebase file="target.jar"/>
       </sf-deploy>
   </target>  
 
@@ -211,6 +211,6 @@ For more information: www.smartfrog.org
   <!-- ========================================================== -->
   <!-- default target -->
   <!-- ========================================================== -->
-  <target name="default" depends="run" description="default target" />
+  <target name="default" depends="deploy" description="default target" />
   
 </project>
