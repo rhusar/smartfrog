@@ -64,7 +64,7 @@ WebServer extends Sequence {
     actions extends LAZY {
 
         install extends Install {
-            ServerHost "serrano.hpl.hp.com";  // only set if this is not on the management station...
+            ServerHost "www.smartfrog.org";  // only set if this is not on the management station...
             ApacheTarLocation "/demoDownload/apache.tar";
             cgiScriptsLocation "/demoDownload/cgiScripts.tar";
             webPagesLocation "/demoDownload/webPages.tar";
