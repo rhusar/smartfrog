@@ -35,6 +35,7 @@ import org.smartfrog.sfcore.processcompound.SFProcess;
 import org.smartfrog.sfcore.security.SFClassLoader;
 import org.smartfrog.sfcore.security.SFGeneralSecurityException;
 import org.smartfrog.sfcore.security.SFSecurity;
+import org.smartfrog.sfcore.security.SFSecurityProperties;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.prim.Prim;
 
@@ -90,6 +91,8 @@ public class SFSystem implements MessageKeys {
      * root process. Will be null after termination.
      */
     private ProcessCompound rootProcess;
+    public static final String WARN_NO_SECURITY = "SmartFrog security is NOT active";
+    public static final String ERROR_NO_SECURITY_BUT_REQUIRED = "Smartfrog Security was not active, but was marked as required";
 
     /**
      * Entry point to get system properties. Works around a bug in some JVM's
@@ -494,8 +497,15 @@ public class SFSystem implements MessageKeys {
             sflog();
             // Notify status of Security
             if (!SFSecurity.isSecurityOn()){
-                if (sflog().isWarnEnabled())
-                  sflog().warn("SmartFrog security is NOT active");
+                String securityRequired = System.getProperty(SFSecurityProperties.propSecurityRequired,"false");
+                if(Boolean.parseBoolean(securityRequired)) {
+                    //we need security, but it is not enabled
+                    throw new SFGeneralSecurityException(ERROR_NO_SECURITY_BUT_REQUIRED);
+                }
+                if (sflog().isWarnEnabled()) {
+                    sflog().warn(WARN_NO_SECURITY);
+                }
+
             }
             // Set stackTracing
             readPropertyLogStackTrace();
@@ -509,7 +519,9 @@ public class SFSystem implements MessageKeys {
      * @return LogSF
      */
     public static LogSF sflog(){
-         if (sflog==null) sflog=LogFactory.sfGetProcessLog();
+         if (sflog==null) {
+             sflog=LogFactory.sfGetProcessLog();
+         }
          return sflog;
     }
 
