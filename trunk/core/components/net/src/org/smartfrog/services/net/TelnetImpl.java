@@ -33,6 +33,7 @@ import org.apache.commons.net.telnet.TelnetNotificationHandler;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.TerminatorThread;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
@@ -68,7 +69,8 @@ public class TelnetImpl extends PrimImpl implements Telnet,
     private String logFile = null;
     private Reference pwdProviderRef = new Reference("passwordProvider");
     private PasswordProvider pwdProvider = null;
-    
+    private boolean shouldTerminate = true;  // default 
+
     /**
      * Constructs TelnetImpl object.
      *
@@ -172,6 +174,13 @@ public class TelnetImpl extends PrimImpl implements Telnet,
                     }
                 }
             }
+            // check if it should terminate by itself
+            if(shouldTerminate) {
+                TerminationRecord termR = new TerminationRecord("normal",
+                "Telnet Session finished: ",sfCompleteName());
+                TerminatorThread terminator = new TerminatorThread(this,termR);
+                terminator.start();
+            }
         }catch (Exception e){
             throw SmartFrogLifecycleException.forward(e);
         }finally {
@@ -216,6 +225,7 @@ public class TelnetImpl extends PrimImpl implements Telnet,
         timeout = sfResolve(TIMEOUT, timeout, false);
         shellPrompt = sfResolve(SHELL_PROMPT, shellPrompt, false);
         logFile = sfResolve(LOG_FILE, logFile, false);
+        shouldTerminate = sfResolve(TERMINATE, shouldTerminate, false);
     }
     /**
      * Callback method called when TelnetClient receives an option

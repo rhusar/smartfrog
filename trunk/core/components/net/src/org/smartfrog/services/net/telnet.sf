@@ -59,5 +59,6 @@ TelnetSession extends Compound {
         port 23;
         // optional log file for the telnet session
         //logFile "telnetSession.log";
+        shouldTerminate true;
     }
 }
