@@ -53,4 +53,23 @@ public class EmailerTest
                                  "SmartFrogCompileResolutionException",
                                  "error in schema: non-optional attribute 'to' is missing");
     }
+
+    public void testCaseTCN66() throws Exception {
+        deployExpectingException(FILES+"tcn66.sf",
+                                 "tcn66",
+                                 "SmartFrogDeploymentException",
+                                 null,
+                                 "SmartFrogCompileResolutionException",
+                                 "error in schema: non-optional attribute 'from' is missing");
+    }
+
+    public void testCaseTCN67() throws Exception {
+        deployExpectingException(FILES+"tcn67.sf",
+                                 "tcn67",
+                                 "SmartFrogDeploymentException",
+                                 null,
+                                 "SmartFrogCompileResolutionException",
+                                 "error in schema: non-optional attribute 'smtpHost' is missing");
+    }
 }
+
