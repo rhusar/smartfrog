@@ -34,6 +34,7 @@ import org.smartfrog.sfcore.common.Logger;
 import org.smartfrog.sfcore.common.MessageKeys;
 import org.smartfrog.sfcore.common.MessageUtil;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
+import org.smartfrog.sfcore.common.SmartFrogCoreProperty;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
@@ -807,17 +808,15 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
         for (Enumeration e = props.keys(); e.hasMoreElements();) {
             String key = e.nextElement().toString();
 
-            if ((key.startsWith(SFSystem.propBase)) &&
+            if ((key.startsWith(SmartFrogCoreProperty.propBase)) &&
                     (!(key.startsWith(SFSecurityProperties.propBaseSecurity)))) {
-                if (!key.equals(SFSystem.propBase +
-                            "sfcore.processcompound.sfProcessName")) {
+                if (!key.equals(SmartFrogCoreProperty.sfProcessName)) {
                     Object value = props.get(key);
                     cmd.addElement("-D" + key.toString() + "=" +
                         value.toString());
                 } else {
                     cmd.addElement("-D" +
-                        (SFSystem.propBase +
-                        "sfcore.processcompound.sfProcessName=") +
+                        (SmartFrogCoreProperty.sfProcessName+"=") +
                         name.toString());
                 }
             }

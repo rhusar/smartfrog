@@ -32,6 +32,7 @@ import org.smartfrog.SFSystem;
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.ContextImpl;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
+import org.smartfrog.sfcore.common.SmartFrogCoreProperty;
 import org.smartfrog.sfcore.common.OrderedHashtable;
 import org.smartfrog.sfcore.common.MessageKeys;
 import org.smartfrog.sfcore.common.MessageUtil;
@@ -88,16 +89,7 @@ public class SFProcess implements MessageKeys {
     protected static final Reference refProcessCompound = new Reference(
                 "ProcessCompound");
 
-    /**
-     * Base for process compound property names
-     */
-    public static String propBase = SFSystem.propBase +"sfcore.processcompound.";
 
-    /**
-     * Base for process compound default property names to load default
-     * descriptions
-     */
-    public static String defaultDescPropBase = propBase + "sfDefault.";
 
     private SFProcess (){
     }
@@ -247,12 +239,12 @@ public class SFProcess implements MessageKeys {
         try {
             for (Enumeration e = props.keys(); e.hasMoreElements(); ) {
                 key = e.nextElement().toString();
-                if (key.startsWith(defaultDescPropBase)) {
+                if (key.startsWith(SmartFrogCoreProperty.defaultDescPropBase)) {
                     // Collects all properties refering to default descriptions that
                     // have to be deployed inmediately after process compound
                     // is started.
                     url = (String)props.get(key);
-                    name = key.substring(defaultDescPropBase.length());
+                    name = key.substring(SmartFrogCoreProperty.defaultDescPropBase.length());
                     nameContext = new ContextImpl();
                     nameContext.put("sfProcessComponentName", name);
                     ComponentDescription cd = ComponentDescriptionImpl.
@@ -279,12 +271,12 @@ public class SFProcess implements MessageKeys {
         String key=null;
         for (Enumeration e = props.keys(); e.hasMoreElements();) {
             key = e.nextElement().toString();
-            if (key.startsWith(defaultDescPropBase)) {
+            if (key.startsWith(SmartFrogCoreProperty.defaultDescPropBase)) {
                 // Collects all properties refering todefault descriptions that
                 // have to be deployed inmediately after process compound
                 // is started.
                 url = (String)props.get(key);
-                name = key.substring(defaultDescPropBase.length());
+                name = key.substring(SmartFrogCoreProperty.defaultDescPropBase.length());
                 //SFSystem.deployFromURL(url,name, comp);
                 ComponentDescription cd = ComponentDescriptionImpl.sfComponentDescription(url);
                 compDesc.getContext().put(name,cd);
@@ -411,11 +403,11 @@ public class SFProcess implements MessageKeys {
 
         for (Enumeration e = props.keys(); e.hasMoreElements();) {
             String key = e.nextElement().toString();
-            if (key.startsWith(defaultDescPropBase)) {
+            if (key.startsWith(SmartFrogCoreProperty.defaultDescPropBase)) {
 
               // Ignore, will be use to deploy  default descriptions.
 
-            } else if (key.startsWith(propBase)) {
+            } else if (key.startsWith(SmartFrogCoreProperty.propBaseSFProcess)) {
                 Object value = props.get(key);
 
                 try {
@@ -425,7 +417,7 @@ public class SFProcess implements MessageKeys {
                     // ignore, value is not a number
                 }
 
-                String cxtKey = key.substring(propBase.length());
+                String cxtKey = key.substring(SmartFrogCoreProperty.propBaseSFProcess.length());
                 processCompoundDescription.getContext().put(cxtKey, value);
             }
         }

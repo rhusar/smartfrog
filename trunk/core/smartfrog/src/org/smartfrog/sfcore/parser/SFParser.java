@@ -29,6 +29,7 @@ import org.smartfrog.SFSystem;
 import org.smartfrog.sfcore.common.MessageKeys;
 import org.smartfrog.sfcore.common.MessageUtil;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogCoreProperty;
 import org.smartfrog.sfcore.common.SmartFrogParseException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.reference.Reference;
@@ -49,18 +50,13 @@ import org.smartfrog.sfcore.security.SFClassLoader;
  *
  */
 public class SFParser implements Parser, MessageKeys {
-    /**
-     * Base property name for all parser related properties. SFSystem.propBase
-     * followed by Parser.
-     */
-    public static final String propBase = SFSystem.propBase + "sfcore.parser.";
+
 
     /**
      * Language name system property key. This is the propBase + Language. This
-     * sets the parser to construct no language is specified. Default is "sf"
+     * sets the parser to construct if no language is specified. Default is "sf"
      */
-    public static String language = SFSystem.getProperty(propBase +
-            "sfcore.language", "sf");
+    public static String language = SFSystem.getProperty( SmartFrogCoreProperty.parserLanguage, "sf");
 
     /** Define the language to use to be the default language. */
     private static String theLanguage = language;
@@ -68,10 +64,12 @@ public class SFParser implements Parser, MessageKeys {
     /**
      * The package prefix for all language implementations. This is the
      * propBase + LanguagesPackagePrefix. This sets the parser to construct
-     * when getParser is called. Default is "org.smartfrog.sfcore.languages.
+     * when getParser is called. Default is "org.smartfrog.sfcore.languages"
+     * defined in "SmartFrogCoreProperty.parserPackages".
      */
-    public String languagesPrefix = SFSystem.getProperty(propBase +
-            "LanguagesPackagePrefix", "org.smartfrog.sfcore.languages");
+    public String languagesPrefix = SFSystem.getProperty(
+                            SmartFrogCoreProperty.languagesPackagePrefix,
+                            SmartFrogCoreProperty.parserCorePackages);
 
     //
     // Parser

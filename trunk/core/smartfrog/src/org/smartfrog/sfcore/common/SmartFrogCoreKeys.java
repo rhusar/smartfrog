@@ -21,7 +21,7 @@ For more information: www.smartfrog.org
 package org.smartfrog.sfcore.common;
 
 /**
- * All the messages keys used in SmartFrog core system should be defined here.
+ * All the special key words used in SmartFrog core system should be defined here.
  */
 public interface SmartFrogCoreKeys {
 
@@ -170,5 +170,7 @@ public interface SmartFrogCoreKeys {
      * SmartFrog core key:
      */
     public final static String SF_BOOT_DATE = "sfBootDate";
+
+
 
 }

@@ -26,6 +26,7 @@ import java.util.Vector;
 
 import org.smartfrog.SFSystem;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
+import org.smartfrog.sfcore.common.SmartFrogCoreProperty;
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.MessageUtil;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
@@ -49,25 +50,20 @@ import org.smartfrog.sfcore.reference.ReferencePart;
  *
  */
 public class CompoundImpl extends PrimImpl implements Compound {
-    /**
-     * Property base for children vector properties. Uses SFSystem.propBase as
-     * basis
-     */
-    public static final String propBase = SFSystem.propBase +
-        "sfcore.compound.";
+
 
     /**
      * Initial capacity for child vector. Looks up Compound.childCap (offset by
-     * SFSystem.propBase). Defaults to 5 if not there
+     * SmartFrogCoreProperty.propBaseCompound). Defaults to 5 if not there
      */
-    public static int childCap = Integer.getInteger(propBase + "childCap", 5)
+    public static int childCap = Integer.getInteger(SmartFrogCoreProperty.compoundChildCap, 5)
                                         .intValue();
 
     /**
      * Capacity increment for child vector. Looks up Compound.childInc (offset
-     * by SFSystem.propBase). Defaults to 2 if not there
+     * by SmartFrogCoreProperty.propBaseCompound). Defaults to 2 if not there
      */
-    public static int childInc = Integer.getInteger(propBase + "childInc", 2)
+    public static int childInc = Integer.getInteger(SmartFrogCoreProperty.compoundChildInc, 2)
                                         .intValue();
 
     /** Maintains children on which life of compound depends (and vice versa). */
