@@ -1725,7 +1725,8 @@ public class PrimImpl extends Object implements Prim, MessageKeys {
 
             sfDeployWithHooks.applyHooks(this, null);
 
-        } catch (SmartFrogException sfex){
+        } catch (Exception sfex){
+	    new TerminatorThread(this, sfex, null).quietly().run();
             throw (SmartFrogDeploymentException)SmartFrogDeploymentException.forward (sfex);
         }
     }
