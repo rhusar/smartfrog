@@ -183,20 +183,63 @@ public class CompoundImpl extends PrimImpl implements Compound {
      */
     public Prim sfCreateNewChild(Object name, ComponentDescription cmp, Context parms)
         throws RemoteException, SmartFrogDeploymentException {
-    Prim comp = null;
-    try {
-        synchronized (this) {
-        if (!sfIsTerminated) {
-            comp = sfDeployComponentDescription(name, this, cmp, parms);
-            // it is now a child, so need to guard against double calling of lifecycle...
-            if (sfIsDeployed) comp.sfDeploy(); // otherwise let the deploy of this component do it...
-            if (sfIsStarted) comp.sfStart(); // otherwise let the start of this component do it...
-        }
-        }
-    } catch (Exception e) {
-        throw (SmartFrogDeploymentException) SmartFrogDeploymentException.forward(e);
+	Prim comp = null;
+	try {
+	    synchronized (this) {
+		if (!sfIsTerminated) {
+		    comp = sfDeployComponentDescription(name, this, cmp, parms);
+		    // it is now a child, so need to guard against double calling of lifecycle...
+		    if (sfIsDeployed) comp.sfDeploy(); // otherwise let the deploy of this component do it...
+		    if (sfIsStarted) comp.sfStart(); // otherwise let the start of this component do it...
+		}
+	    }
+	} catch (Exception e) {
+	    if (comp != null) {
+		try {
+		    sfDetachAndTerminate(TerminationRecord.abnormal("error during deployment" + e.getMessage(), sfCompleteName()));
+		} catch (Exception ex) {
+		    //@TODO log
+		}
+	    }
+	    throw (SmartFrogDeploymentException) SmartFrogDeploymentException.forward(e);
+	}
+	return comp;
     }
-    return comp;
+
+    /**
+     * A high-level component deployment method - creates a child of this
+     * Compound, running it through its entire lifecycle. This is the preferred way
+     * of creating new child components of a Compound. The method is safe against 
+     * multiple calls of lifecycle.
+     *
+     * @param cmp compiled component to deploy and start
+     * @param name name of attribute which the deployed component should adopt
+     * @param parms parameters for description
+     *
+     * @return deployed component if successfull
+     *
+     * @exception SmartFrogDeploymentException failed to deploy compiled 
+     * component
+     * @exception RemoteException In case of Remote/nework error
+     */
+    public Prim sfCreateNewApp(ComponentDescription cmp, Context parms)
+        throws RemoteException, SmartFrogDeploymentException {
+	Prim comp = null;
+	try {
+	    comp = sfDeployComponentDescription(null, null, cmp, parms);
+	    comp.sfDeploy();
+	    comp.sfStart();
+	} catch (Exception e) {
+	    if (comp != null) {
+		try {
+		    comp.sfTerminate(TerminationRecord.abnormal("error during deployment" + e.getMessage(), sfCompleteName()));
+		} catch (Exception ex) {
+		    //@TODO log
+		}
+	    }
+	    throw (SmartFrogDeploymentException) SmartFrogDeploymentException.forward(e);
+	}
+	return comp;
     }
 
 
