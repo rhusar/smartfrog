@@ -61,9 +61,7 @@
           that must include jdom and axis-->
         <path id="compile.classpath">
             <path refid="smartfrog.classpath"/>
-            <fileset dir="${axis.lib.dir}">
-                <include name="**/*.jar"/>
-            </fileset>
+
             <fileset dir="${lib.dir}">
               <include name="**/*.jar"/>
             </fileset>
@@ -88,6 +86,22 @@
         </path>
 
     </target>
+    
+    <target name="fetch-axis-files" if="axis.home"
+    depends="init"
+        description="fetch the latest axis distribution">
+        <copy todir="${lib.dir}">
+          <fileset dir="${axis.home}/build/lib" includes="*.jar">
+            <different targetdir="${lib.dir}" ignorefiletimes="true"/>
+          </fileset>
+        </copy>
+        <copy todir="${lib.dir}">
+          <fileset dir="${axis.home}/build/" includes="*.war">
+            <different targetdir="${lib.dir}"  ignorefiletimes="true" />
+          </fileset>
+        </copy>
+    </target>    
+    
 
     <!-- ========================================================== -->
     <!-- compile -->
@@ -183,6 +197,7 @@
         </sf-startdaemon>
     </target>
 
+    
     <target name="init-deploy-properties" depends="init">
         <property name="deploy.host" value="localhost"/>
         <property name="application.name" value="cddlm"/>
