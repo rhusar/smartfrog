@@ -35,11 +35,21 @@ For more information: www.smartfrog.org
  * the schema for assertions
  */
 AssertSchema extends Schema {
+    //a fact that must resolve to true
     isTrue extends OptionalBoolean;
+    //a fact that must be fale
     isFalse extends OptionalBoolean;
+    //the name of a reference which does not have to be defined, but when it
+    //is, the evaluatesTrue and evaluatesFalse checks apply
     reference extends OptionalCD;
+    //name of a boolean test() method that returns true when called on the reference
     evaluatesTrue extends OptionalString;
+    //name of a boolean test() method that returns false when called on the reference
     evaluatesFalse extends OptionalString;
+    //flag to enable startup checking (default: true)
+    checkOnStartup extends OptionalBoolean;
+    //flag to enable liveness checking (default: true)
+    checkOnLiveness extends OptionalBoolean;
 }
 
 /**
@@ -51,4 +61,6 @@ Assert extends Prim {
     sfClass "org.smartfrog.services.assertions.AssertComponent";
     isTrue true;
     isFalse false;
+    checkOnStartup true;
+    checkOnLiveness true;
 }

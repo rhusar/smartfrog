@@ -35,5 +35,10 @@ public interface Assert extends Remote {
     public static final String REFERENCE = "reference";
     public static final String EVALUATES_TRUE = "evaluatesTrue";
     public static final String EVALUATES_FALSE = "evaluatesFalse";
-    
+    public static final String CHECK_ON_STARTUP = "checkOnStartup";
+    /**
+     * check when we start up
+     */
+    public static final String CHECK_ON_LIVENESS = "checkOnLiveness";
+
 }
