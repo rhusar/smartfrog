@@ -89,8 +89,7 @@ public class TestInfo implements Serializable, Cloneable {
      * @param test
      */
     public TestInfo(Test test) {
-        init();
-        extractTestInfo(test);
+        this(test,null);
     }
 
     /**
@@ -102,7 +101,9 @@ public class TestInfo implements Serializable, Cloneable {
     public TestInfo(Test test, Throwable fault) {
         init();
         extractTestInfo(test);
-        addFaultInfo(fault);
+        if(fault!=null) {
+            addFaultInfo(fault);
+        }
     }
 
     /**

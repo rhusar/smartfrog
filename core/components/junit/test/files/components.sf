@@ -62,7 +62,7 @@ XmlTestRunner extends LocalJUnitTestRunner {
 TestAll extends LocalJUnitTestRunner {
 
     //mostTests extends MostTests;
-    tests extends ThrowingTest {
+    tests extends MostTests {
         name "tests";
     }
 }
@@ -75,6 +75,7 @@ MostTests extends TestBase {
     classes [
         FailureTest:classes,
         SuccessTest:classes,
+        SetupTearDownTests:classes,
         "ThrowingTest",
         "FunnyCharactersTest",
         "OutputTest"];
@@ -112,4 +113,13 @@ ThrowingTest extends TestBase {
 SuccessTest extends TestBase {
     name "SuccessTest";
     classes [name];
+}
+
+/**
+ * setup and teardown failures
+ */
+SetupTearDownTests extends TestBase {
+    name "SetupTearDownTests";
+    classes ["ErrorInSetupTest",
+        "ErrorInTeardownTest"];
 }

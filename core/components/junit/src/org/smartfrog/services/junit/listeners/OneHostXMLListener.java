@@ -34,6 +34,7 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.rmi.RemoteException;
 import java.util.Date;
+import java.util.HashMap;
 
 /**
  * This class listens to tests on a single host. The XML Listener forwards stuff
@@ -56,17 +57,21 @@ public class OneHostXMLListener implements XmlListener {
     private String hostname;
     private String suitename;
     private Date startTime;
+    private String preamble;
 
     private OutputStream out = null;
     private Writer xmlFile = null;
 
-    /**
-     * cache of last test failed; this is so that a failure will be logged as
-     * such, not as a success
-     */
-    private String lastTestFailed;
 
     private int testCount, errorCount, failureCount;
+
+    /**
+     * transient cache of tests.
+     * We only really buffer during listening, but cache it in case wierd
+     * race conditions or multiple sources complicate our lives.
+     */
+    private HashMap tests;
+
     protected static final String ENCODING = "UTF8";
     protected static final String XML_DECLARATION = "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n";
     protected static final String ERROR_OUTPUT_FILE_OPEN = "output file still open";
@@ -75,7 +80,7 @@ public class OneHostXMLListener implements XmlListener {
     protected static final String ROOT_ATTRS = "";
 
     protected static final String ROOT_CLOSE = "</" + ROOT_TAG + ">\n";
-    private String preamble;
+
     public static final String ERROR_LISTENER_CLOSED = "Attemped to log to a closed listener";
 
 
@@ -102,6 +107,7 @@ public class OneHostXMLListener implements XmlListener {
         this.suitename = suitename;
         this.startTime = startTime;
         this.preamble = preamble;
+        tests=new HashMap();
         open();
     }
 
@@ -219,6 +225,7 @@ public class OneHostXMLListener implements XmlListener {
     public void endSuite() throws RemoteException, SmartFrogException {
         try {
             close();
+            tests=null;
         } catch (IOException e) {
             throw SmartFrogException.forward(e);
         }
@@ -230,7 +237,8 @@ public class OneHostXMLListener implements XmlListener {
     public void addError(TestInfo test) throws RemoteException,
             SmartFrogException {
         errorCount++;
-        add("error", test);
+        tests.put(test.getText(),test);
+        //add("error", test);
     }
 
     /**
@@ -239,7 +247,8 @@ public class OneHostXMLListener implements XmlListener {
     public void addFailure(TestInfo test) throws RemoteException,
             SmartFrogException {
         failureCount++;
-        add("failure", test);
+        tests.put(test.getText(), test);
+//        add("failure", test);
     }
 
     /**
@@ -248,11 +257,19 @@ public class OneHostXMLListener implements XmlListener {
     public void endTest(TestInfo test) throws RemoteException,
             SmartFrogException {
         testCount++;
-        if (!test.getClassname().equals(lastTestFailed)) {
-            add("pass", test);
+        TestInfo cached=(TestInfo)tests.get(test.getText());
+        String type;
+        if(cached==null) {
+            type="pass";
         } else {
-            //do nothing, we have already processed this body
+            //it was a failure of some type. Lets copy the
+            //duration info and and set the type
+            //of the element appopriately.
+            type="fail";
+            cached.setEndTime(test.getEndTime());
+            test=cached;
         }
+        add(type,test);
     }
 
     /**
@@ -264,9 +281,7 @@ public class OneHostXMLListener implements XmlListener {
     }
 
     /**
-     * add a test. We work out from the test info whether or not it is a fault;
-     * if it is we set the {@link #lastTestFailed} to the name of the test
-     * (otherwise it is cleared)
+     * add a test.
      *
      * @param tag  element name
      * @param test test result to log
@@ -275,12 +290,6 @@ public class OneHostXMLListener implements XmlListener {
         if (!isOpen()) {
             //bail out on a closed operation
             throw new SmartFrogException(ERROR_LISTENER_CLOSED);
-        }
-        boolean success = test.hasFault();
-        if (!success) {
-            lastTestFailed = test.getClassname();
-        } else {
-            lastTestFailed = null;
         }
         String entry = toXML(tag, test);
         try {
@@ -424,12 +433,15 @@ public class OneHostXMLListener implements XmlListener {
      * @return
      */
     protected String toXML(String tag, TestInfo test) {
-        String fault = toXML(test.getFault());
+        String body = x("text", null,test.getText(),true);
+        if(test.getFault()!=null) {
+            body=body+'\n'+toXML(test.getFault());
+        }
         String classname = a("classname", test.getClassname());
         String duration = a("duration", Long.toString(test.getDuration()));
         return x(tag,
                 classname + " " + duration,
-                fault,
+                body,
                 false);
     }
 
