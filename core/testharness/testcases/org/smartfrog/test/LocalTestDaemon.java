@@ -62,8 +62,8 @@ public class LocalTestDaemon {
      */
     public LocalTestDaemon(String[] args)
             throws Exception, SmartFrogException, RemoteException, ConnectException {
-        OptionSet options = new OptionSet(args);
-        start(options);
+        OptionSet optionset = new OptionSet(args);
+        start(optionset);
     }
 
     /**
