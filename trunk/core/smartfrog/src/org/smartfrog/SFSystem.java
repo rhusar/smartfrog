@@ -427,7 +427,7 @@ public class SFSystem implements MessageKeys {
      * @param thr Throwable
      */
     public void printStackTrace(Throwable thr){
-      System.err.println(MessageUtil.formatMessage(this.MSG_STACKTRACE_FOLLOWS)+"' "+
+      System.err.println(MessageUtil.formatMessage(MSG_STACKTRACE_FOLLOWS)+"' "+
                          ConfigurationDescriptor.parseExceptionStackTrace(thr,"\n"+"   ")+" '");
     }
 
