@@ -1,8 +1,7 @@
 \section{Implications}
-\label{objections:implications}
+\label{implications}
 
 What are the implications of these problems?
-
 
 We believe that there are only two categories of people writing web
 services: those who know XML and want to work with it, and those who
@@ -28,10 +27,9 @@ code, which JAX-RPC encourages, by makes it very difficult to
 maintain version consistency of an interfaces, and creates significant
 interoperability problems. 
 
-
-On top of all of this, for users who do want to work with XML
+On top of all of this, for users who do want to work with the XML
 (typically those whose first project did not!) JAX-RPC is
-inappropriate because it hides everything.} Trying to integrate custom
+inappropriate because it hides everything. Trying to integrate custom
 XML documents with JAX-RPC serialisations is possible, but very hard
 work. In Apache Axis, DOM trees get recreated when assigning or
 extracting them from {\tt SoapMessageElement} implementations.
@@ -54,7 +52,7 @@ representation. The result is specifications such as WS-ResourceFramework
 % GLUE and the BEA JAX-RPC implementations have a reputation for being
 % faster and more reliable than the open source version.
 
-\subsubsection{The Future}
+\subsection{The Future}
 \label{objections:implications:future}
 
 JAX-RPC has become a cornerstone of Enterprise Java \cite{spec:J2EE-14}, in
@@ -79,9 +77,10 @@ shown to be fundamentally flawed.
 
 We understand the rationale for much of this. Working with raw XML is
 hard.  Writing good XML Schema documents is hard. WSDL is exceedingly
-painful to work with. However, we believe that if service developers do not write
-their XSD and WSDL definitions of messages, they will never have
-control of the messages that get sent over the wire, and without that
-control, interoperability and XML-based processing will be near-impossible.
+painful to work with. However, we believe that if service developers
+do not write their XSD and WSDL definitions of messages, they will
+never have control of the messages that get sent over the wire, and
+without that control, interoperability and loose coupling will remain
+out of reach.  
 
 %Instead the developers will be left at the mercy of JAX-RPC and JAX-B.
