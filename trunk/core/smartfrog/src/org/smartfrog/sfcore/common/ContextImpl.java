@@ -176,7 +176,7 @@ public class ContextImpl extends OrderedHashtable implements Context,
            if (value == null) {
                throw new SmartFrogContextException(
                MessageUtil.formatMessage(MessageKeys.MSG_NULL_DEF_METHOD, "'value'",
-                                         "sfAddAttribute"));
+                                         "sfAddAttribute name:'"+name+"'"));
            }
 
              return null;
