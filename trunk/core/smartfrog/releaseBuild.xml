@@ -62,7 +62,7 @@ These are the meaningful targets for this build file:
     <property name="Name" value="SmartFrog"/>
     <property name="name" value="(C) Copyright 1998-2003 Hewlett-Packard Development Company, LP"/>
     <property name="version" value="DIST"/>
-    <property name="Version" value="3.04.006.beta"/>
+    <property name="Version" value="3.04.008.beta"/>
     <property name="year" value=""/>
     <echo message=""/>
     <echo message="==================================================================="/>
