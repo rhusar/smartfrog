@@ -81,7 +81,7 @@ public class DoNothing extends EventPrimImpl implements Prim {
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
-        log = this.sfCoreLog();
+        log = this.sfGetCoreLog();
         myId = sfCompleteName().toString();
 
         try {

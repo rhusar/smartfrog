@@ -144,7 +144,7 @@ public class EventPrimImpl extends PrimImpl implements EventRegistration,
     public synchronized void sfDeploy() throws SmartFrogException,
     RemoteException {
         super.sfDeploy();
-        log = sfCoreLog();
+        log = sfGetCoreLog();
 
         /* find local registrations and register them */
         ComponentDescription sends = (ComponentDescription)
