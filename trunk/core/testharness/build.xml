@@ -232,4 +232,15 @@ For more information: www.smartfrog.org
     depends="run-tests,reports"
     description="compile and run all the tests"
     />
+
+  <target name="smartfrog-dist" 
+    depends="init"
+    >
+    <ant dir="../smartfrog" target="dist" inheritall="false"/>
+  </target> 
+    
+  <target name="buildtest" 
+    depends="smartfrog-dist,test"
+    description="compile the distribution, compile and run all the tests"
+    />    
 </project>

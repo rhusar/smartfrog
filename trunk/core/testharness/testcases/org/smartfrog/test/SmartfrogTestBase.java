@@ -25,6 +25,7 @@ import java.io.File;
 import java.rmi.RemoteException;
 import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.net.UnknownHostException;
 
 import org.smartfrog.SFSystem;
 import org.smartfrog.sfcore.common.SmartFrogException;
@@ -32,6 +33,7 @@ import org.smartfrog.sfcore.common.ConfigurationDescriptor;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.sfcore.processcompound.SFProcess;
 import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.security.SFGeneralSecurityException;
 
 /**
  * A base class for smartfrog tests
@@ -84,7 +86,9 @@ public abstract class SmartfrogTestBase extends TestCase {
     protected void deployExpectingException(String testURL,
                                             String appName,
                                             String exceptionName,
-                                            String searchString) throws RemoteException {
+                                            String searchString) throws RemoteException,
+            SmartFrogException, SFGeneralSecurityException,
+            UnknownHostException {
         deployExpectingException(testURL,
                 appName,
                 exceptionName,
@@ -107,47 +111,39 @@ public abstract class SmartfrogTestBase extends TestCase {
      * @throws RemoteException in the event of remote trouble.
      */
     protected void deployExpectingException(String testURL,
-                        String appName,
-                        String exceptionName,
-                        String searchString,
-                        String containedExceptionName,
-                        String containedExceptionText) throws RemoteException {
-        try {
-            ConfigurationDescriptor cfgDesc =
+                                            String appName,
+                                            String exceptionName,
+                                            String searchString,
+                                            String containedExceptionName,
+                                            String containedExceptionText) throws SmartFrogException,
+            RemoteException, UnknownHostException, SFGeneralSecurityException {
+        startSmartFrog();
+        ConfigurationDescriptor cfgDesc =
                 new ConfigurationDescriptor(appName, testURL,
-                                            ConfigurationDescriptor.Action.
-                                            DEPLOY, hostname, null);
-            Object deployedApp = SFSystem.runConfigurationDescriptor(cfgDesc,true);
-
-            if (deployedApp instanceof Prim) {
-            // No Exception
-                fail("We expected an exception here:"+exceptionName
-                +" but got an instance of "+deployedApp);
-            } else if (deployedApp instanceof ConfigurationDescriptor) {
-                Object exception = ((ConfigurationDescriptor)deployedApp).
-                    resultException;
-                if ((exception!=null) && (exception instanceof SmartFrogException)){
-                    SmartFrogException fault = (SmartFrogException) exception;
-                    String message = fault.getMessage();
-                    assertContains(message, searchString);
-                    if (containedExceptionName!=null) {
-                        Throwable cause = fault.getCause();
-                        assertNotNull("expected throwable of type "
-                                      +containedExceptionName,
-                                      cause);
-                        //verify the name
-                        assertThrowableNamed(cause, containedExceptionName);
-                        //verify the contained text
-                        if (containedExceptionText!=null) {
-                            String m2 = cause.getMessage();
-                            assertContains(m2, containedExceptionText);
-                        }
-                    }
-
+                        ConfigurationDescriptor.Action.
+                DEPLOY, hostname, null);
+        Object deployedApp = null;
+        try {
+            deployedApp = SFSystem.runConfigurationDescriptor(cfgDesc,true);
+            fail("We expected an exception here:" + exceptionName
+                    + " but got an instance of " + deployedApp);
+        } catch (SmartFrogException fault) {
+            String message = fault.getMessage();
+            assertContains(message, searchString);
+            if (containedExceptionName!=null) {
+                Throwable cause = fault.getCause();
+                assertNotNull("expected throwable of type "
+                        +containedExceptionName,
+                        cause);
+                //verify the name
+                assertThrowableNamed(cause, containedExceptionName);
+                //verify the contained text
+                if (containedExceptionText!=null) {
+                    String m2 = cause.getMessage();
+                    assertContains(m2, containedExceptionText);
                 }
-            }
-        } catch (SmartFrogException ex){
 
+            }
         }
     }
 
@@ -186,6 +182,11 @@ public abstract class SmartfrogTestBase extends TestCase {
     public void setHostname(String hostname) {
         this.hostname = hostname;
     }
+
+    public void startSmartFrog() throws SmartFrogException, RemoteException,
+            SFGeneralSecurityException, UnknownHostException {
+        SFSystem.runSmartFrog();
+    }
     /**
      * Deploys an application and returns the refence to deployed application.
      * @param testURL  URL to test
@@ -199,6 +200,7 @@ public abstract class SmartfrogTestBase extends TestCase {
                 new ConfigurationDescriptor(appName, testURL,
                         ConfigurationDescriptor.Action.DEPLOY, hostname, null);
         try {
+            startSmartFrog();
             Object deployedApp = SFSystem.runConfigurationDescriptor(cfgDesc,true);
 
             if (deployedApp instanceof Prim) {
