@@ -35,6 +35,8 @@
   <!-- Import common stuff -->
   <import file="${root.dir}/common.xml"/>
 
+  <property name="wrapper.jar" location="lib/wrapper.jar"/>
+
 
   <!-- ========================================================== -->
   <!-- ========================================================== -->
@@ -80,13 +82,31 @@
     description="build and run the daemon"
     />
 
-  <property name="root.dir" location="../.."/>
-  <!-- Import common stuff -->
-  <import file="${root.dir}/common.xml"/>
-
-
   <target name="declare-run.classpath"
     depends="declare-run.classpath-no-tests"/>
+
+  <property name="main" value="org.smartfrog.extras.wrapper.ServiceWrapper"/>
+
+  <target name="exec-java-only" depends="all,declare-run.classpath"
+    description="build and run the java executable only"
+    >
+    <java
+      classname="${main}"
+      fork="true"
+      failonerror="true"
+      >
+      <arg value="-debug"/>
+      <classpath>
+        <pathelement location="${wrapper.jar}"/>
+        <pathelement location="${target.jar}"/>
+      </classpath>
+    </java>
+  </target>
+
+  <property name="root.dir" location="../.."/>
+
+
+
 
   <!-- ========================================================== -->
   <!-- this is an override point -->
@@ -98,7 +118,12 @@
       basedir="${build.classes.dir}"
       includes="**/*"
       excludes="**/launcher/*"
-      />
+      >
+      <manifest>
+        <attribute name="Main-Class" value="${main}"/>
+        <attribute name="Sealed" value="true"/>
+      </manifest>
+    </jar>
     <echo>created package ${target.jar}</echo>
     <jar destfile="${secondary.jar}"
       basedir="${build.classes.dir}"

@@ -40,8 +40,6 @@ public interface WrappedEntryPoint {
 
     int getExitCode();
 
-    String[] getArgs();
-
     boolean isSystemExitOnRootProcessTermination();
 
     void setSystemExitOnRootProcessTermination(
@@ -56,4 +54,8 @@ public interface WrappedEntryPoint {
      * @todo make this configurable, somehow.
      */
     int getExpectedShutdownTime();
+
+    String[] getArgs();
+
+    void setArgs(String[] args);
 }

@@ -48,6 +48,9 @@ public class WrappedSFSystem extends SFSystem implements Runnable,
     private boolean systemExitOnRootProcessTermination = true;
     private static final int EXPECTED_SHUTDOWN_TIME = 60;
 
+    public WrappedSFSystem() {
+    }
+
     public WrappedSFSystem(String[] args) {
         this.args = args;
     }
@@ -101,6 +104,10 @@ public class WrappedSFSystem extends SFSystem implements Runnable,
 
     public String[] getArgs() {
         return args;
+    }
+
+    public void setArgs(String[] args) {
+        this.args = args;
     }
 
     public boolean isSystemExitOnRootProcessTermination() {
