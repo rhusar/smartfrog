@@ -239,6 +239,7 @@ public abstract class SmartFrogTask extends TaskBase {
      * @return
      */
     protected String getHost() {
+        if (host==null) return "";
         return host;
     }
 
