@@ -51,8 +51,6 @@ public class TouchFile extends PrimImpl implements Prim, TouchFileIntf {
     public synchronized void sfStart() throws SmartFrogException,
             RemoteException {
         super.sfStart();
-        //mark us as not existing beyond this call.
-        //new ComponentHelper(this).targetForTermination();
         touch();
     }
 

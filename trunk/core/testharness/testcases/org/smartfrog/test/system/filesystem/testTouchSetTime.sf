@@ -22,7 +22,7 @@ For more information: www.smartfrog.org
 
 sfConfig extends Compound {
 
-    temp1 extends TempFile {
+    temp1 extends TempFileWithCleanup {
         deleteOnExit true;
         prefix "temp1";
         suffix ".txt";
