@@ -8,7 +8,10 @@
 #export SFUSERHOME="$SFHOME/mylibs"
 
 # -- default.ini and default.sf without security --
-
-export SFDEFAULTINI=-Dorg.smartfrog.iniFile="$SFHOME/bin/default.ini"
-export SFDEFAULTSF=-Dorg.smartfrog.sfcore.processcompound.sfDefault.sfDefault="$SFHOME/bin/default.sf"
+if ! test "$SFDEFAULTINI";then 
+   export SFDEFAULTINI=-Dorg.smartfrog.iniFile="$SFHOME/bin/default.ini"
+fi
+if ! test "$SFDEFAULTSF";then     
+   export SFDEFAULTSF=-Dorg.smartfrog.sfcore.processcompound.sfDefault.sfDefault="$SFHOME/bin/default.sf"
+fi
 # -------------------End user properties---------------
