@@ -33,6 +33,8 @@ import java.rmi.RemoteException;
 
 public class ServerBinding implements Serializable {
 
+
+
     /**
      * url
      */
@@ -40,6 +42,16 @@ public class ServerBinding implements Serializable {
 
     private String username;
     private String password;
+
+
+    public ServerBinding() {
+    }
+
+    public ServerBinding(URL url) {
+        this.url = url;
+    }
+
+
 
     public URL getUrl() {
         return url;

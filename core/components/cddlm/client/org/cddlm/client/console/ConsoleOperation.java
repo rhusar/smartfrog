@@ -70,7 +70,7 @@ public abstract class ConsoleOperation {
      *
      * @throws RemoteException
      */
-    protected abstract void execute() throws RemoteException;
+    public abstract void execute() throws RemoteException;
 
     /**
      * log a throwable to the output stream
@@ -93,8 +93,6 @@ public abstract class ConsoleOperation {
         } catch (RemoteException e) {
             logThrowable(e);
             return false;
-        } finally {
-            stub = null;
-        }
+        } 
     }
 }
