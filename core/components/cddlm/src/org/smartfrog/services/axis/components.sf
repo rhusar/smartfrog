@@ -50,7 +50,7 @@ WebServer extends Prim {
  ApacheAxisSchema extends Schema {
 
     //this is the axis configuration file for a service
-    wsddDescriptor extends String;
+    wsddDescriptor extends OptionalString;
 
 	//number of threads to pool; equivalent to max number
 	//of callers
@@ -73,11 +73,25 @@ AxisServer extends WebServer {
  */
 AxisServiceSchema extends Schema {
 
+    serviceName extends String;
+    //port on this machine
     port extends Integer;
-    password extends String;
+    // username for admin
+    username extends OptionalString;
+    //password for admin
+    password extends OptionalString;
+    //name of web application
     webapp extends String;
+    //path under webapp to services
     servicePath extends String;
+    //admin service name
     adminService extends String;
+    //transport for admin service
+    transport extends OptionalString;
+    //protocol
+    protocol extends String;
+    //hostname.
+    hostname extends String;
 }
 
 
@@ -86,12 +100,14 @@ AxisServiceSchema extends Schema {
  * sets the defaults for things
  */
 AxisService extends Prim {
-
+    //sfClass "org.smartfrog.services.axis.AxisServiceImpl";
     serviceSchema extends AxisServiceSchema;
     port 8080;
-    servicePath "services/";
+    servicePath "services";
     adminService "axisAdmin";
     webapp "axis";
+    protocol "http";
+    hostname "localhost";
 }
 
 
@@ -101,7 +117,7 @@ AxisService extends Prim {
  */
 AxisServiceResourceSchema extends AxisServiceSchema {
     //this is the axis configuration file for a service
-    descriptorResource extends OptionalString;
+    descriptorResource extends String;
 }
 
 AxisServiceResource extends AxisService {
@@ -122,7 +138,7 @@ AxisServiceConfigurationSchema extends AxisServiceSchema {
 
 AxisServiceConfiguration extends AxisService {
     sfClass "org.smartfrog.services.axis.AxisServiceImpl";
-   axisServiceConfigurationSchema extends AxisServiceConfigurationSchema;
+    axisServiceConfigurationSchema extends AxisServiceConfigurationSchema;
 }
 
 

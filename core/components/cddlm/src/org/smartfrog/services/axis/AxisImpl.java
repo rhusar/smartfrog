@@ -40,6 +40,7 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.security.SFClassLoader;
+import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.w3c.dom.Document;
 
 import java.io.IOException;
@@ -60,7 +61,7 @@ import java.rmi.RemoteException;
  * created 02-Mar-2004 17:28:31
  */
 
-public class AxisImpl extends PrimImpl implements Axis, Prim {
+public class AxisImpl extends PrimImpl implements Axis {
 
 
     /**
@@ -146,7 +147,7 @@ public class AxisImpl extends PrimImpl implements Axis, Prim {
 
         try {
             //register the resouce
-            wsddResource = sfResolve(Axis.WSDD_RESOURCE, "", false);
+            wsddResource = sfResolve(Axis.WSDD_RESOURCE, (String)null, false);
             if(wsddResource!=null) {
                 log.info("registering WSDD " + wsddResource);
                 registerResource(wsddResource);
@@ -183,7 +184,6 @@ public class AxisImpl extends PrimImpl implements Axis, Prim {
      */
     public synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
-        assert axis != null;
         stopAxis();
     }
 
@@ -286,14 +286,8 @@ public class AxisImpl extends PrimImpl implements Axis, Prim {
      */
     public void registerResource(String resourcename)
             throws SmartFrogException, RemoteException {
-        String targetCodeBase = (String) sfResolve(SmartFrogCoreKeys.SF_CODE_BASE);
-
-        log.info("loading " + resourcename + " using codebase of " + targetCodeBase);
-        InputStream in = SFClassLoader.getResourceAsStream(resourcename, targetCodeBase, true);
-        if (in == null) {
-            throw new SmartFrogException("Not found: " + resourcename);
-        }
-        registerStream(in);
+        ComponentHelper helper= new ComponentHelper(this);
+        registerStream(helper.loadResource(resourcename));
     }
 
     /**

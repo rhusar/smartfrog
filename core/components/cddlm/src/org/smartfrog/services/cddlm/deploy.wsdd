@@ -13,11 +13,10 @@
   <service name="cddlm" style="wrapped" >
       <parameter name="wsdlTargetNamespace" value="http://smartfrog.org/cddlm"/>
       <parameter name="className" value="org.smartfrog.services.cddlm.DeploymentEndpoint"/>
-	  <parameter name="className" value="org.smartfrog.services.cddlm.DeploymentEndpoint"/>
 	  <parameter name="SingleSOAPVersion" value="1.2"/>
       <parameter name="allowedMethods" 
 	  	value="listLanguages deploy deployURL undeploy"/>
 	<documentation>This is the CDDLM deployment service</documentation>
-
   </service>
 </deployment>
+
