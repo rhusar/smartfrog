@@ -1,0 +1,13 @@
+if ! test $SFHOME; then export SFHOME=$PWD; fi
+if [ $# -ne 3 ] ; then
+echo "Insufficient arguments to use sfStart"
+echo "Usage: sfStart HostName ApplicationName URL"
+exit
+fi
+export CLASSPATH=$SFHOME/lib/smartfrog.jar:$SFHOME/lib/sfServices.jar:$SFHOME/lib/sfTestCases.jar:$CLASSPATH
+export SERVER=eb97201.india.hp.com:8080
+# Please edit codebase if you have any other jar file in webserver 
+export CODEBASE="http://$SERVER/sfExamples.jar"
+
+java -Dorg.smartfrog.iniFile=$SFHOME/bin/default.ini -Dorg.smartfrog.codebase=$CODEBASE org.smartfrog.SFSystem -h $1 -n $2 $3 -e
+
