@@ -142,7 +142,6 @@ class SARegistrationThread extends Thread {
         toRegisterWith = new LinkedList();
         toRemove = new LinkedList();
         timer = new Timer(true);
-        //System.out.println("SAReg: Starting timer...");
         long interval = REFRESH_INTERVAL*1000;
         timer.schedule(new SARefreshTimerTask(this), interval, interval);
         hasWorkToDo = false;
@@ -262,7 +261,7 @@ class SARegistrationThread extends Thread {
                 int newLifetime = e.getRemainingLifetime();
                 ServiceURL url = new ServiceURL(e.getURL().toString(), newLifetime);
                 if(!owner.registerService(url, e.getAttributes(), da)) {
-                    break; // Failed to contact DA. No need to continue.
+                    iter.remove(); // Failed to contact DA.
                 }
             }
         }
@@ -324,7 +323,7 @@ class SARegistrationThread extends Thread {
                 da = (DAInfo)iter.next();
                 // send registration...
                 if(!owner.deregisterService(u, da)) {
-                    break; // DA is down
+                    iter.remove(); // DA is down
                 }
             }
         }

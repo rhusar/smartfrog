@@ -48,6 +48,7 @@ public class SFSlpLocatorImpl extends PrimImpl implements Prim, SFSlpLocator {
     protected ServiceLocationEnumeration discoveryResults = null;
     protected int discoveryInterval = 0;
     protected int discoveryDelay = 0;
+    protected boolean returnAll = false;
     private Thread locatorThread = null;
     private Object wtSync = new Object();
     private volatile boolean amWaiting = true;
@@ -84,6 +85,7 @@ public class SFSlpLocatorImpl extends PrimImpl implements Prim, SFSlpLocator {
         // get locator configuration
         discoveryDelay = ((Integer)sfResolve("locator_discovery_delay")).intValue();
         discoveryInterval = ((Integer)sfResolve("locator_discovery_interval")).intValue();
+        returnAll = ((Boolean)sfResolve("locator_return_all")).booleanValue();
         
         // get parameters for service discovery.
         String srvTypeStr = sfResolve("serviceType").toString();

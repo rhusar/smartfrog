@@ -423,7 +423,6 @@ public class DirectoryAgent implements SlpUdpCallback, SLPMessageCallbacks {
         @return A SrvAck message saying if the registration went ok or not.
     */
     private SLPMessageHeader handleServiceRegistration(SLPInputStream sis, boolean isUDP) {
-        System.out.println("DA -> SrvReg");
         SLPSrvRegMessage msg = new SLPSrvRegMessage();
         SLPMessageHeader reply = null;
         int error = 0;

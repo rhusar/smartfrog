@@ -209,7 +209,6 @@ class SLPMessageSender implements SlpUdpCallback {
         weAreDone();
         stupidException = ServiceLocationException.INTERNAL_SYSTEM_ERROR;
         if(owner.CONFIG_LOG_ERRORS) owner.writeLog("Internal System Error: " +e.toString());
-        //return 0;
         return true;
     }
     
@@ -271,7 +270,6 @@ class SLPMessageSender implements SlpUdpCallback {
         Called by the timer when it is time to resend the message.
     */
     private synchronized void timerResendCallback() {
-        //System.out.println("SLPMessageSender -> resending message");
         try {
             communicator.send(thePacket);
         }catch(Exception e) { }
@@ -283,9 +281,7 @@ class SLPMessageSender implements SlpUdpCallback {
         Called by the timer when the maximum time to wait for replies have elapsed.
     */
     private synchronized void timerTimeoutCallback() {
-        //System.out.println("SLPMessageSender -> timeoutCallback...");
         if( (theRequest.getFlags() & SLPMessageHeader.FLAG_MCAST) == 0) {
-            System.out.println("TimeoutCallback -> DA seems to be down...");
             
             // set an error to indicate that the DA is down...
             stupidException = ServiceLocationException.DA_NOT_AVAILABLE;

@@ -297,9 +297,7 @@ class SLPDatabase {
         return toReturn;
     }
     
-    /**
-        NOT FULLY IMPLEMENTED
-     */
+    
     public synchronized Vector findServiceAttributes(ServiceType type, Locale loc, Vector tags) {
         Vector toReturn = new Vector();
         // go through database looking for services of the given type.
@@ -317,9 +315,6 @@ class SLPDatabase {
         return toReturn;
     }
     
-    /**
-        NOT FULLY IMPLEMENTED
-    */
     public synchronized Vector findServiceAttributes(ServiceURL url, Locale loc, Vector tags) {
         Vector toReturn = new Vector();
         // find the correct service
@@ -369,10 +364,8 @@ class SLPDatabase {
     private boolean attributeMatch(Vector attributes, String predicate) {
         // check if the set of attributes matches the predicate
         if(predicate.equals("")) {
-            //System.out.println("SLPDatabase -> No predicate given");
             return true; // no predicate given.
         }
-        //System.out.println("SLPDatabase -> Predicate = " + predicate);
         
         /*
          1) Build parse tree
@@ -405,7 +398,6 @@ class SLPDatabase {
     }
     
     private void appendAttributes(Vector attributes, Vector tags, Vector result) {
-        // TODO !
         // loop through attributes...
         for(Iterator it=attributes.iterator(); it.hasNext(); ) {
             ServiceLocationAttribute attr = (ServiceLocationAttribute)it.next();

@@ -30,39 +30,41 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import java.rmi.RemoteException;
+import java.util.Vector;
 
 public class SFSlpObjectLocatorImpl extends SFSlpLocatorImpl implements Prim, SFSlpObjectLocator {
     protected Object discoveredObject = null;
+    protected Vector allObjects = null;
     
     public SFSlpObjectLocatorImpl() throws RemoteException {
-        
+        super();
     }
     
     // need some extra code in sfResolve in order to find Prim components
     public synchronized Object sfResolve(Reference r, int index) throws SmartFrogResolutionException {
-        Object obj = null;
-        try {
-            obj = super.sfResolve(r, index);
-        }catch(Exception ex) {
-            ex.printStackTrace();
-            throw (SmartFrogResolutionException) SmartFrogResolutionException.forward(ex);
-        }
+        Object obj = super.sfResolve(r, index);
+                 
         if("HERE result".equals(r.elementAt(index).toString()) ) {
             discoveredObject = null;
+            boolean ok = false;
             if(discoveryResults != null) {
-                while(discoveredObject == null && discoveryResults.hasMoreElements()) {
+                if(returnAll) allObjects = new Vector();
+                while(discoveryResults.hasMoreElements()) {
                     ServiceURL theURL = (ServiceURL)discoveryResults.nextElement();
-                    try {
-                        discoveredObject = theURL.getURLPathObject();
-                    }catch(Exception ex) {
-                        discoveredObject = null;
+                    discoveredObject = theURL.getURLPathObject();
+                    if(discoveredObject != null) {
+                        ok = true;
+                        if(returnAll)allObjects.add(discoveredObject);
+                        else break;
                     }
                 }
             }
-            if(discoveredObject == null) {
+            if(!ok) {
                 throw new SmartFrogResolutionException("SLP: The requested service was not found");
             }
-            // return the discovered component
+            
+            // return the discovered component(s)
+            if(returnAll) return allObjects;
             return discoveredObject;
         }
         return obj;

@@ -113,7 +113,7 @@ public class SLPSrvReqMessage extends SLPMessageHeader {
         spiStr = "";
         // create string representations
         typeStr = type.toString();
-        scopeStr = scopes.toString().substring(1, scopes.toString().length()-1);
+        scopeStr = SLPUtil.vectorToString(scopes);
         // calculate length
         length += PRList.length() + 2; // PRList
         length += typeStr.length() +2; // service type
@@ -221,7 +221,7 @@ public class SLPSrvReqMessage extends SLPMessageHeader {
         }
         
         // create scope vector...
-        scopes = SLPUtil.parseScopes(scopeStr);
+        scopes = SLPUtil.stringToVector(scopeStr);
     }
     /**
         Writes the contents of the message to stdout.

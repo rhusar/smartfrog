@@ -95,11 +95,13 @@ public class ServiceURL implements java.io.Serializable {
         
         // parse host and port.
         String host = url.substring(index);
+        
         if(pathIndex != -1) {
             host = host.substring(0, pathIndex-index);
         }
-        
+                
         if(!host.equals("://")) {
+            System.out.println("Host: " + host);
             try {
                 uri = new URI("srv" + host);
             }catch(URISyntaxException ex) {

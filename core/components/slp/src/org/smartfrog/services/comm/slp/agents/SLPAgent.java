@@ -248,8 +248,6 @@ abstract class SLPAgent implements SlpUdpCallback, SLPMessageCallbacks {
         if(CONFIG_DA_DISCOVERY) {
             Random rnd = new Random();
             int start_wait = Math.abs(rnd.nextInt()%CONFIG_START_WAIT);
-            //daLocator = new DALocator(this, CONFIG_DA_FIND, start_wait);
-            //daLocator.start();
             daLocator = new Timer();
             daLocator.schedule(new TimerTask() {
                 public void run() {
@@ -336,7 +334,6 @@ abstract class SLPAgent implements SlpUdpCallback, SLPMessageCallbacks {
         SLPMessageSender ms = new SLPMessageSender(this, CONFIG_SLP_MTU, CONFIG_RETRY, null);
         try {
             ms.sendSLPMessage(daRequest, 
-                              //address, CONFIG_SLP_AGENTPORT,
                               CONFIG_SLP_MC_ADDR, CONFIG_SLP_PORT, CONFIG_MC_MAX,
                               unicastCommunicator);
         }catch(ServiceLocationException se) {
@@ -353,7 +350,6 @@ abstract class SLPAgent implements SlpUdpCallback, SLPMessageCallbacks {
         @return a DAInfo for the new DA, or a DA that has been down. null otherwise.
     */
     protected DAInfo recvDAAdvert(SLPInputStream sis) throws ServiceLocationException {
-        //System.out.println("SLPAgent -> Received DAAdvert");
         DAInfo added = null;
         SLPDAAdvMessage msg = new SLPDAAdvMessage();
         msg.fromInputStream(sis);
@@ -439,9 +435,5 @@ abstract class SLPAgent implements SlpUdpCallback, SLPMessageCallbacks {
     */
     public Vector getScopes() {
         return (Vector)supportedScopes.clone();
-    }
-    
-    protected void finalize() {
-        System.out.println("SLPAgent -> Finalize...");
     }
 }

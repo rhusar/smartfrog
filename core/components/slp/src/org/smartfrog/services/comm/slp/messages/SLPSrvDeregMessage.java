@@ -78,7 +78,7 @@ public class SLPSrvDeregMessage extends SLPMessageHeader {
         super(FUNCTION);
         urlEntry = new URLEntry(url, new Vector());
         this.scopes = scopes;
-        scopeStr = scopeStr = scopes.toString().substring(1, scopes.toString().length()-1);
+        scopeStr = SLPUtil.vectorToString(scopes);
         
         // calculate length;
         length += 2 + scopeStr.length();
@@ -121,7 +121,7 @@ public class SLPSrvDeregMessage extends SLPMessageHeader {
             throw new ServiceLocationException(ServiceLocationException.PARSE_ERROR);
         }
 
-        scopes = SLPUtil.parseScopes(scopeStr);
+        scopes = SLPUtil.stringToVector(scopeStr);
     }
 }
 

@@ -31,6 +31,7 @@ import org.smartfrog.sfcore.reference.*;
 import org.smartfrog.sfcore.common.*;
 
 import java.rmi.RemoteException;
+import java.util.Vector;
 
 /**
     Implements a SmartFrog locator for Prim components.
@@ -39,6 +40,7 @@ import java.rmi.RemoteException;
 */
 public class SFSlpPrimLocatorImpl extends SFSlpLocatorImpl implements Prim, SFSlpPrimLocator {
     private Prim discoveredPrim = null;
+    private Vector allPrims = null;
     
     public SFSlpPrimLocatorImpl() throws RemoteException {
         super();
@@ -46,40 +48,40 @@ public class SFSlpPrimLocatorImpl extends SFSlpLocatorImpl implements Prim, SFSl
     
     // need some extra code in sfResolve in order to find Prim components
     public synchronized Object sfResolve(Reference r, int index) throws SmartFrogResolutionException {
-        Object obj = null;
-        try {
-            obj = super.sfResolve(r, index);
-        }catch(Exception ex) {
-            ex.printStackTrace();
-            throw (SmartFrogResolutionException) SmartFrogResolutionException.forward(ex);
-        }
+        Object obj = super.sfResolve(r, index);
+        
         if("HERE result".equals(r.elementAt(index).toString()) ) {
-            discoveredPrim = null;
+            boolean ok = false;
             if(discoveryResults != null) {
-                while(discoveredPrim == null && discoveryResults.hasMoreElements()) {
+                if(returnAll) allPrims = new Vector();
+                while(discoveryResults.hasMoreElements()) {
+                    discoveredPrim = null;
                     ServiceURL theURL = (ServiceURL)discoveryResults.nextElement();
-                    try {
-                        discoveredPrim = getReferenceFromUrl(theURL);
-                    }catch(Exception ex) {
-                        discoveredPrim = null;
+                    discoveredPrim = getPrimFromURL(theURL);
+                    if(discoveredPrim != null) {
+                        ok = true;
+                        if(returnAll)allPrims.add(discoveredPrim);
+                        else break;
                     }
                 }
             }
-            if(discoveredPrim == null) {
+            if(!ok) {
                 throw new SmartFrogResolutionException("SLP: The requested service was not found");
             }
-            // return the discovered component
+            
+            // return the discovered component(s)
+            if(returnAll) return allPrims;
             return discoveredPrim;
         }
         return obj;
-    }    
+    }
     
-    protected Prim getReferenceFromUrl(ServiceURL url) throws Exception {
-        //String path = url.getURLPath();
-        //if(path.startsWith("/")) path = path.substring(1);
+    private Prim getPrimFromURL(ServiceURL url) {
+        Prim toReturn = null;
+        try {
+            toReturn = (Prim)sfResolveWithParser(url.getURLPath().substring(1));
+        }catch(Exception ex) { }
         
-        String reference = url.getURLPath().substring(1);
-
-        return (Prim)sfResolveWithParser(reference);
+        return toReturn;
     }
 }

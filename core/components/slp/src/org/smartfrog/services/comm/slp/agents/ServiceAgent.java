@@ -120,7 +120,6 @@ public class ServiceAgent extends SLPAgent implements Advertiser, SlpUdpCallback
         try {
             tcpListener = new SLPTcpServer(address, unicastCommunicator.getPort(), this);
             tcpListener.start();
-            //System.out.println("TcpListener started on port " + unicastCommunicator.getTransport().socket().getLocalPort());
         }catch(Exception e) {
             e.printStackTrace();
         }
@@ -195,13 +194,10 @@ public class ServiceAgent extends SLPAgent implements Advertiser, SlpUdpCallback
         switch(function) {
             case SLPMessageHeader.SLPMSG_SRVREQ:
                 return recvSrvReqMessage(sis, isUDP);
-                //break;
             case SLPMessageHeader.SLPMSG_SRVTYPE:
                 return recvSrvTypeReqMessage(sis, isUDP);
-                //break;
             case SLPMessageHeader.SLPMSG_ATTRREQ:
                 return recvAttrReqMessage(sis, isUDP);
-                //break;
             case SLPMessageHeader.SLPMSG_DAADV:
                 if(CONFIG_PASSIVE_DA) {
                     recvDAAdvert(sis);
@@ -229,7 +225,6 @@ public class ServiceAgent extends SLPAgent implements Advertiser, SlpUdpCallback
             msg.fromInputStream(sis);
             // if we have replied to this message before: do nothing.
             if(msg.getPRList().indexOf(address.getHostAddress()) != -1) {
-                //System.out.println("ServiceAgent -> Have replied to this before...");
                 return null; //have replied before...
             }
         }catch(ServiceLocationException e) {
@@ -279,7 +274,6 @@ public class ServiceAgent extends SLPAgent implements Advertiser, SlpUdpCallback
             msg.fromInputStream(sis);
             // if we have replied to this message before: do nothing.
             if(msg.getPRList().indexOf(address.getHostAddress()) != -1) {
-                //System.out.println("ServiceAgent -> Have replied to this before...");
                 return null; //have replied before...
             }
         }catch(ServiceLocationException e) {
@@ -314,7 +308,6 @@ public class ServiceAgent extends SLPAgent implements Advertiser, SlpUdpCallback
             msg.fromInputStream(sis);
             // if we have replied to this message before: do nothing.
             if(msg.getPRList().indexOf(address.getHostAddress()) != -1) {
-                //System.out.println("ServiceAgent -> Have replied to this before...");
                 return null; //have replied before...
             }
         }catch(ServiceLocationException e) {
@@ -468,7 +461,6 @@ public class ServiceAgent extends SLPAgent implements Advertiser, SlpUdpCallback
         returns the list of known DAs
     */
     protected Vector getDAList() {
-        //return (Vector)DAs.clone();
         return new Vector(DAs.values());
     }
     

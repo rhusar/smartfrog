@@ -41,3 +41,8 @@ SFSlpPrimLocator extends SFSlpLocator {
     serviceType ("service:sf-prim:" ++ concreteType);
 }
 
+SFSlpPrimVLocator extends SFSlpPrimLocator {
+    locator_return_all true;
+}
+
+
