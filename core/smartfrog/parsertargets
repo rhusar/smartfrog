@@ -5,11 +5,7 @@ org/smartfrog/services/management/example.sf
 org/smartfrog/services/trace/example.sf
 org/smartfrog/services/utils/concat/example.sf
 
-org/smartfrog/examples/dynamicwebserver/sf/serviceTemplate.sf
-org/smartfrog/examples/dynamicwebserver/sf/loadGeneratorTemplate.sf
-org/smartfrog/examples/dynamicwebserver/sf/installApacheIfNeeded.sf
-org/smartfrog/examples/dynamicwebserver/sf/ApacheInstallScript.sf
-org/smartfrog/examples/dynamicwebserver/sf/genericInstallScript.sf
+org/smartfrog/examples/dynamicwebserver/sf/system.sf
 
 org/smartfrog/examples/counter/example.sf
 org/smartfrog/examples/counter/example2.sf
