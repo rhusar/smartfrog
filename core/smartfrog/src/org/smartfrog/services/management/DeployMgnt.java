@@ -87,10 +87,10 @@ public class DeployMgnt {
      *
      *@param  obj  Reference to SF Component
      */
-    public static void terminate(Prim obj) {
+    public static void terminate(Prim obj, String type, String reason) {
         try {
-            TerminationRecord tr = new TerminationRecord(TerminationRecord.NORMAL,
-                    "External Management Action", null);
+            TerminationRecord tr = new TerminationRecord(type,
+                    reason, null);
             obj.sfTerminate(tr);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -102,10 +102,10 @@ public class DeployMgnt {
      *
      *@param  obj  Reference to SF Component
      */
-    public static void dTerminate(Prim obj) {
+    public static void dTerminate(Prim obj, String type, String reason) {
         try {
-            TerminationRecord tr = new TerminationRecord(TerminationRecord.NORMAL,
-                    "External Management Action", null);
+            TerminationRecord tr = new TerminationRecord(type,
+                    reason, null);
             obj.sfDetachAndTerminate(tr);
         } catch (Exception ex) {
             ex.printStackTrace();
