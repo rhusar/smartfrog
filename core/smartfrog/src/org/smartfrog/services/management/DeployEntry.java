@@ -207,7 +207,8 @@ public class DeployEntry implements Entry {
             try {
                 name = ((Prim) entry).sfCompleteName().toString();
             } catch (Exception ex) {
-                ex.printStackTrace();
+                System.out.println(""+ex.getMessage());
+                //@TODO Log
             }
         }
 
