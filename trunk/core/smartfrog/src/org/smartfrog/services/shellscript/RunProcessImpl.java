@@ -49,7 +49,7 @@ public class RunProcessImpl  extends Thread implements RunProcess {
 
     private int state = 0;
 
-    public int getState()
+    public int getProcessState()
     {
         return state;
     }
