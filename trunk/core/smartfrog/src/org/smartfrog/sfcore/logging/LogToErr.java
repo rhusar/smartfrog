@@ -124,7 +124,7 @@ public class LogToErr implements Log, LogMessage, Serializable {
     //To get from where this Log was call
     private static CallDetective detective = CallDetective.Factory.makeCallDetective();
     //Depth in StackTrace it will depend on how this Log is used and connected to LogImpl
-    int callDepth = 9;
+    int callDepth = 8;
 
     /**
      * Construct a simple log with given name.
