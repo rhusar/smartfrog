@@ -36,6 +36,10 @@ import org.smartfrog.sfcore.workflow.eventbus.EventPrimImpl;
  */
 public class Terminator extends EventPrimImpl implements Prim {
     TerminationRecord term = null;
+    public static final String TYPE = "type";
+    public static final String DESCRIPTION = "description";
+    public static final String DETACH_FIRST = "detachFirst";
+    public static final String KILL = "kill";
 
     /**
      * Constructs Terminator.
@@ -56,16 +60,16 @@ public class Terminator extends EventPrimImpl implements Prim {
         super.sfStart();
 
         Reference id = sfCompleteName();
-        String type = (String) sfResolve("type");
-        String description = (String) sfResolve("description");
-        boolean detachFist = ((Boolean) sfResolve("detachFirst")).
+        String type = (String) sfResolve(TYPE);
+        String description = (String) sfResolve(DESCRIPTION);
+        boolean detachFirst = ((Boolean) sfResolve(DETACH_FIRST)).
                                                             booleanValue();
         term = TerminationRecord.normal(id);
 
-        Prim kill = (Prim) sfResolve("kill");
+        Prim kill = (Prim) sfResolve(KILL);
 
         try {
-            if (detachFist) {
+            if (detachFirst) {
                 kill.sfDetachAndTerminate(new TerminationRecord(type,
                         description, id));
             } else {

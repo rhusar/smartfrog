@@ -34,6 +34,7 @@ import org.smartfrog.sfcore.workflow.eventbus.EventPrimImpl;
  */
 public class EventSend extends EventPrimImpl implements Prim {
     String event = "";
+    public static final String EVENT = "event";
 
     /**
      * Constructs EventSend.
@@ -53,7 +54,7 @@ public class EventSend extends EventPrimImpl implements Prim {
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
-        event = (String) sfResolve("event");
+        event = (String) sfResolve(EVENT);
     }
 
     /**
