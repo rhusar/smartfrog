@@ -1932,7 +1932,7 @@ public class PrimImpl extends Object implements Prim, MessageKeys {
 
     /**
      * Called from sub-component (normally) to indicate termination. Subclasses
-     * should implement usefull behavior.
+     * should implement useful behavior.
      *
      * @param status termination status
      * @param comp component that has terminated
