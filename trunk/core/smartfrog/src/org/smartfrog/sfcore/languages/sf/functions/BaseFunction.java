@@ -57,6 +57,7 @@ public abstract class BaseFunction implements PhaseAction, MessageKeys {
     public void doit() throws SmartFrogCompileResolutionException {
         Object o = doFunction();
         ComponentDescription parent = (ComponentDescription) component.sfParent();
+	if (o instanceof ComponentDescription) ((ComponentDescription) o).setParent(parent);
         Context parentContext = parent.sfContext();
         Object key = parentContext.keyFor(component);
         parentContext.put(key, o);
