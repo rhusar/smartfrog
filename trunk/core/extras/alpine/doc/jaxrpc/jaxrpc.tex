@@ -1,0 +1,392 @@
+\documentclass[draft]{paper}
+%twocolumn , a4, ,twoside
+
+%see http://ringlord.com/publications/latex-pdf-howto/
+\newif\ifpdf
+\ifx\pdfoutput\undefined
+    \pdffalse           % we are not running PDFLaTeX
+\else
+    \pdfoutput=1        % we are running PDFLaTeX
+    \pdftrue
+\fi
+%----------------------------------------------------------------------
+\ifpdf
+    \usepackage[pdftex,
+        colorlinks=true,
+        urlcolor=rltblue,       % \href{...}{...} external (URL)
+        filecolor=rltgreen,     % \href{...} local file
+        linkcolor=rltred,       % \ref{...} and \pageref{...}
+        pdftitle={The Trouble with JAX-RPC},
+        pdfauthor={Steve Loughran},
+        pdfsubject={Web Service Development},
+        pdfkeywords={Web Services, SOAP, WSDL, JAX-RPC, JAX-M},
+        pdfpagemode=None,
+        bookmarksopen=true]{hyperref}
+%        pagebackref,
+    \pdfcompresslevel=9
+    \usepackage[pdftex]{graphicx}
+\else
+    \usepackage[
+        colorlinks=true,
+        urlcolor=rltblue,               % \href{...}{...}
+        anchorcolor=rltbrightblue,
+        filecolor=rltgreen,             % \href*{...}
+        linkcolor=rltred,               % \ref{...} and \pageref{...}
+        menucolor=webdarkblue,
+        citecolor=webbrightgreen]{hyperref}
+    \usepackage{graphicx}
+\fi
+\usepackage{color}
+\definecolor{rltred}{rgb}{0.75,0,0}
+\definecolor{rltgreen}{rgb}{0,0.5,0}
+\definecolor{rltblue}{rgb}{0,0,0.75}
+\definecolor{rltbrightblue}{rgb}{0,0,1}
+\definecolor{webdarkblue}{rgb}{0,0,0.5}
+\definecolor{webbrightgreen}{rgb}{0,0,0.75}
+
+\begin{document}
+
+% line spacing of 1.5 lines
+%\renewcommand{\baselinestretch}{1.5}
+
+%gaps between paragraphs
+\setlength{\parskip}{3ex}
+
+%don't indent new paragraphs
+\parindent 0pt
+
+
+\title{The Trouble with JAX-RPC}
+\author{
+    Steve Loughran\\
+    HP Laboratories,\\
+    \\
+    slo@hplb.hpl.hp.com\\
+    }
+\maketitle
+\begin{abstract}
+
+This paper looks at the primary api for SOAP in Java, JAX-RPC, and
+shows how it is fundamentally flawed. The core problem is that attempting
+to make SOAP messaging resemble method calls on remote Java objects, leads
+to a whole variety of options. 
+
+First, it misleads users into thinking that JAX-RPC enables arbitrary Java classes
+to be exported as SOAP endpoints, exchanging abitrary Java data. Not only do 
+inexperienced users get caught out by the fact that this is not possible, 
+
+Secondly, the automatic generation of WSDL from Java code leads to a blurring
+of implentation with the interface specification, making it impossible to prevent
+unexpected contamination of interface and implementation.
+
+Even if a strict WSDL-first process is followed, the results prove unacceptable.
+The naming rules for generated classes and members have flaws that we will cover.
+Most seriously, this compile-time generation of java source from WSDL,
+be it client or server creates java code that is inordinately brittle. A single change
+in the XML Schema can result in generating a new set of classes that is not
+at all compatible with the predecessor -even if the existing code would still have worked.
+
+We believe that there has to be a better approach, and outline an alternative.
+
+
+
+\end{abstract}
+
+%\tableofcontents
+
+
+
+\section{Introduction: JAX-RPC}
+
+JAX-RPC is the acronym of ``Java API for XML-based RPC'' \cite{spec:JAX-RPC-11}, 
+one of the two official APIs for SOAP in Java. 
+The other, JAX-M, stands for ``Java API for XML Messaging'' \cite{spec:JAX-M-11}
+The two APIs represent alternate viewpoints. In JAX-M, the developer works with the
+XML body of the message, in JAX-RPC all the details of how the message is encoded
+is hidden, and the developer works with Java objects that are automatically mapped
+to and from XML data. 
+
+JAX-M is essentially defunct. There is no apparent work on a successor;
+instead the focus is on an improved version of JAX-RPC. 
+
+JAX-RPC is widely implemented, in the open source Apache Axis SOAP stack \cite{axis},
+along with commercial versions from vendors such as Sun, IBM and BEA. It is the de-jure
+and the de-facto standard for making and processing SOAP calls in Java. 
+
+
+\section{the hard lessons of service implementation}
+
+Both authors have recently been making independent implementations of a SOAP API
+for deployment. This API is defined by a set of XML Schema and WSDL files, the
+end result of which is a service endpoint which supports seven operations. The 
+operations permit suitably authenticated callers to deploy distributed applications
+to indivudual machines, or a whole grid fabric. This service was defined in the pure way, 
+by writing the XSD and WSDL files first, the goal being a platform-independent, highly
+interoperable deployment mechanism. 
+
+One of the features of this service was that it was intended to support 
+multiple deployment languages, and multiple deployment engines, each potentially
+with different capabilities and options. To this end, some features of the design
+stand out. 
+
+Firstly, the deployment payload is arbitrary XML. It is not appropriate 
+or possible for the service definition to declare what deployment languages are 
+supported. 
+
+Secondly, we defined an option mechanism, in which callers can set
+arbitrary options on a deployment. Each option can have a string, integer or XML value,
+and is identified in a set of options by a URI. We plan to define some normative options
+within the working group, and allow implementations to define new ones. 
+Following the example of the WebDAV and SOAP header designs, a 
+
+Thirdly, we need to raise lifecycle event notifications with callers. In the absence
+of a single, stable notification protocol, we chose to allow services to support multiple
+mechanism (again, each defined by arbitrary inline XML).
+
+The XSD file for the service messages is approximately 2000 lines, of which  seventy-five percent
+is either comment or XSD annotations. 
+
+\section{the tar pit of Object-XML Mapping}
+
+Ted Neward has described that \emph{"object-relational mapping is the Vietnam of
+Computer Science"}, by which he means that it is neer a problem you can declare
+victory over, merely invest more and more effort to get deeper into the
+quagmire.
+%http://www.neward.net/ted/weblog/index.jsp?date=20041003#1096871640048
+
+The problem of translating between XML and objects is similar, except there is
+less experience of dealing with the problem, and we have forgotten how many
+failed attempts there have been to solve the O/R mapping problem. We show that
+we forget this by using the terms \emph{serialization} and \emph{deserialization} 
+to describe the mapping stages, rather than the phrase \emph{O/X mapping}.
+
+At first glance, O/X mapping seems simple: convert 1:1 between Java and XML
+objects, create a DAG graph when serializing to rpc/encoded SOAP, a tree with
+doc/lit messages. Read or write between attributes and class fields, bind to
+children and that's it. Isn't it? 
+
+If only. Here are some of the problems.
+
+\begin{itemize}
+
+\item deciding which classes to use for an endpoint, and
+deciding which XML elements to use for a Java class. 
+
+\item deciding which types to use for the XML encoding. In rpc/enc messages,
+this type must be explicitly declared from the small set of possible types. In
+doc/lit messages, the type is omitted in messages. 
+
+\item generating the WSDL description of service types through introspection.
+
+\item map from XML names to valid Java names.
+
+\end{itemize}
+
+One particular problem is that the language of XML Schema is much richer than 
+the object model of Java. In Java, inheritance can extend a type, and change
+some existing semantics, but inheritance-by-restriction is not explictly
+supported. Whereas in XML Schema, it is simple to declare that a dog is a mammal 
+with four legs, and a three legged dog is a restriction where the number of legs
+must be three. 
+
+\subsection{The enum problem}
+
+One specific example that deserves special mention is how \verb$xsd:enumeration$
+declarations are mapped to Java. Prior to Java1.5, there was no explict
+\verb$enum$ clause in the language, so workarounds were developed. The JAX-RPC
+solution is that of a common pattern: to declare a class with a public static
+instance representing a valid enumeration value. The WSDL to Java code generates
+such a class, with the name of each static class taken from the name of each
+value in the enumeration. 
+
+This is a simple example of how O/X mapping should work. Except, what if the
+value of the one of the enumeration types is a reserved word, such as in the
+lifecycle state machine we wrote:
+
+\verb$
+  <xsd:simpleType name="lifecycleStateEnum">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="initialized"/>
+      <xsd:enumeration value="running"/>
+      <xsd:enumeration value="failed"/>
+      <xsd:enumeration value="terminated"/>
+      <xsd:enumeration value="null"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+$
+
+One element in the enumeration is reserved, \verb|null|, so the enumeration must
+now enumerate all states as \verb|value1|, \verb|value2|, and so on, for
+the entire list. This means the enumeration names in the Java source no longer 
+contains any value at all, other than the position number in the set. This is
+inordinately brittle, as any change to the enumeration could reorder the values,
+without the code detecting a change.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%pull this; no longer valid
+
+\subsection{the mystery of unsigned long}
+
+There is an \verb|unsignedLong| datatype in XML Schema. The JAX-RPC1.0 documents
+blissfully ignored this fact. Why so? Presumably because there is no way to
+represent an unsigned long in a simple java datatype. 
+
+The implication of this absence is that there was no guarantee that a Java
+application can make SOAP requests of a service which uses unsigned long
+numbers. This is unfortunate, as there is nothing to stop a C++ or .NET SOAP
+endpoint from using such numbers. This was a foundational barrier to
+cross-platform interoperability. 
+
+It has appeared in the JAX-RPC1.1 specification, for which we must be grateful,
+although we are still unable to use it our service for fear of a version1.1
+client attempting to talk to us
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{XSD validation}
+
+An XML schema document, as used to describe a doc/lit payload, can contain many
+declarations about what constitutes a valid XML document. \emph{Restrictions}
+can restrict the type of a value, such as the range of an integer from zero to
+ten. The \verb|minOccurs| and \verb|maxOccurs| declarations are used to declare
+what allowed number of occurences of an element are. None of these values are
+used. Restricted integer types are just mapped to normal integers, while element
+occurence declarations are ignored. 
+
+This means that the set of XML documents which an endpoint can receive, is
+significantly larger than the set of XML documents which its XML schema will
+declare that it can support. With no built-in validation, developers must either
+write validation logic themselves -and corresponding tests, or ignore the
+problem. Given that there is no warning that the problem occurs, we suspect that
+ignorance is the common process. Not writing the logic to recognise and reject
+illegal documents is not likely to show up in development -especially if a
+test-centric process is not followed- but is inevitable once a service goes live,
+and callers using other languages invoke the service. Such insidious defects,
+defects that only show up in production, are never welcome. 
+
+We note that there is a trivial solution to this problem, one that is common to
+other XML stacks. It is: validate incoming messages against the XML schema of
+the service. This is not done for performance, yet the effect is to hide
+defects.  
+
+
+
+\section{Fault processing}
+
+\footnote{Before we criticise faults, we must note that one of the authors has his name
+in the source of the AxisFault fault class, so may not be without blame
+himself.}
+
+JAX-RPC tries to marshall Java faults over the network, in such a way as they
+can be reconstituted at the far end into the same fault. To manage this is a
+somewhat complex process, as the classname of the fault must be exchanged as the
+fault code
+
+We believe that attempting to seamlessly marshall faults is a mistaken approach.
+It propagates the still controversial "declare all possible faults" rule of Java
+into remote interfaces, and so exposes platform implementation details into the
+service interface. If a service could only raise a normal SOAPFault, or
+developers were forced to declare and then implement custom wsdl:fault elements,
+then a service definition would be platform-neutral. 
+
+
+\section{Java RMI is the wrong metaphor}
+
+An overarching issue with JAX-RPC is not that it tries to make SOAP
+endpoint invocation look like a remote procedure call -that is a legitimate
+though model with well-known limitations.  No, the greater flaw with JAX-RPC is
+that it tries to make it look like Java RMI. Java RMI is a simple and effective
+mechanism for connecting Java classes running on different machines. It is an
+IDL-free communication mechanism, which relies on introspection to create proxy
+classes and to marshall classes. It works because the systems at both ends are
+Java, usually different pieces of a single larger application. 
+
+With common code, objects can be trivially serialized and sent over a network
+connection. Exceptions are just another type of object, and so too can be sent
+over the wire. There is no need for an IDL, as Java interface declarations can
+perform much of the same role. And as the recipient is a remote object, state is
+automatic. 
+
+
+JAX-RPC tries to reuse as much of the programming patterns of RMI. For example,
+the runtime will attempt to serialize classes marked as \verb|serializable|,
+ignoring those fields marked as \verb|transient|. It will even serialize complex
+compound objects, if possible. The user appears to have a reference to something
+like an object, though one that represents the current conversation with an endpoint,
+not a direct endpoint proxy. 
+
+
+We can see the consequence of this metaphor on the mailing list of users of
+Apache Axis. All too often, someone is confused by the errors displayed when
+they try and do something that they expect to work, such as send an low level
+class such as \verb|java.io.File| instance, or a \verb|javax.swing.JPanel|. The
+latter is serializable in RMI, yet clearly does not make sense for an
+interoperable web service. 
+
+
+\section{Implications}
+
+What are the implications of these problems?
+
+First, people are attempting to migrate RMI-based systems to Web Services. As
+the latest version of Enterprise Java is built on the Web Ser
+
+We also have to deal with attempts by people with
+existing RMI-systems who believe that a migration to web services will benefit
+them 
+
+
+  
+
+
+
+\section{the insidous illusion of method calls}
+
+\section{the danger of code-first service declaration}
+
+
+
+\section{JAX-RPC 2.0}
+
+JAX-RPC promises to correct some of the flaws, but not many. 
+An alternate O/X mapping is used, the JAX-B specification. This is independent
+from the SOAP Stack, but it still represents a compile-time declaration of what
+XML is to be expected. 
+
+
+It also retains the core metaphor of service invocation as methods, with the 
+payload of most invocations being Java objects that are somehow mapped to XML content.
+Furthermore, the automated generation of WSDL from Java source is hard. 
+
+We understand the rationale for much of this. Working with raw XML is hard. 
+Writing good XML Schema documents is hard. WSDL is exceedingly painful to work with,
+it is like an interface definition language only more verbose and more complex. 
+
+Yet if service developers do not go to the effort of writing their XSD and WSDL definitions
+of 
+
+\section{A proposed alternative}
+
+
+\section{Acknowledgements}
+
+Ias. Tim Ewald. Ted Neward.  
+
+
+---------------------------
+
+
+
+
+
+
+%pull in our bibliography
+
+\onecolumn
+
+%\bibliographystyle{plain}
+\bibliographystyle{alpha}
+\bibliography{bibliography}
+
+\end{document}
