@@ -60,6 +60,9 @@
     <property name="javac.deprecation.mode" value="true"/> 
     <property name="javac.debug.level" value="lines,vars,source" />
     <property name="javac.java.version" value="1.4" />
+    
+    <!-- assume the sun compiler -->
+    <property name="rmic.compiler" value="sun" />
     <path id="smartfrog.classpath">
       <fileset dir="${smartfrog.dist.lib.dir}">
         <include name="**/*.jar"/>
@@ -660,6 +663,7 @@
       <sf-rmic
           base="${build.classes.dir}"
           verify="true"
+          compiler="${rmic.compiler}"
           includes="**/*.class">
           <classpath refid="compile.classpath"/>
       </sf-rmic>
