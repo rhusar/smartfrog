@@ -46,7 +46,7 @@
       </td></tr>
 
       <tr><td><blockquote>
-        Ant task to stop a smartfrog daemon on a host As the daemon is just another process, this is implemented as a call to shut down the application named 'rootProcess'. By default this target raises an error when the daemon cannot be stopped,
+        Ant task to stop a smartfrog daemon on a host As the daemon is just another process, this is implemented as a call to shut down the application named 'rootProcess'. By default this target raises an error when the application cannot be stopped, and has a timeout set to the standard default value. {@link SmartFrogTask#DEFAULT_TIMEOUT_VALUE}.
       </blockquote></td></tr>
 
     </table>
@@ -92,9 +92,9 @@
           <font color="#000000" size="-1" face="arial,helvetica,sanserif">can this process spawn new processes?</font>
         </td>
         <td bgcolor="#eeeeee" valign="top" align="left">
-          <font color="#000000" size="-1" face="arial,helvetica,sanserif"></font>
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif">boolean</font>
         </td>
-        <td bgcolor="#eeeeee" valign="top" align="left" rowspan="12">
+        <td bgcolor="#eeeeee" valign="top" align="left" rowspan="15">
           <font color="#000000" size="-1" face="arial,helvetica,sanserif">Optional</font>
         </td>
     </tr>
@@ -128,7 +128,7 @@
           <font color="#000000" size="-1" face="arial,helvetica,sanserif">host</font>
         </td>
         <td bgcolor="#eeeeee" valign="top" align="left">
-          <font color="#000000" size="-1" face="arial,helvetica,sanserif">set the hostname to deploy to (optional)</font>
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif">set the hostname to deploy to (optional, defaults to localhost) Some tasks do not allow this to be set at all.</font>
         </td>
         <td bgcolor="#eeeeee" valign="top" align="left">
           <font color="#000000" size="-1" face="arial,helvetica,sanserif">String</font>
@@ -152,7 +152,7 @@
           <font color="#000000" size="-1" face="arial,helvetica,sanserif">inifile</font>
         </td>
         <td bgcolor="#eeeeee" valign="top" align="left">
-          <font color="#000000" size="-1" face="arial,helvetica,sanserif">An ini file can contain data that overrides the basic settings.</font>
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif">Name an ini file can contain data that overrides the basic settings.</font>
         </td>
         <td bgcolor="#eeeeee" valign="top" align="left">
           <font color="#000000" size="-1" face="arial,helvetica,sanserif">File</font>
@@ -164,7 +164,7 @@
           <font color="#000000" size="-1" face="arial,helvetica,sanserif">initialsmartfrogfile</font>
         </td>
         <td bgcolor="#eeeeee" valign="top" align="left">
-          <font color="#000000" size="-1" face="arial,helvetica,sanserif">the name of a smartfrog file to load</font>
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif">the name of a smartfrog file to load on startupe</font>
         </td>
         <td bgcolor="#eeeeee" valign="top" align="left">
           <font color="#000000" size="-1" face="arial,helvetica,sanserif">File</font>
@@ -188,7 +188,7 @@
           <font color="#000000" size="-1" face="arial,helvetica,sanserif">livenesscheckretries</font>
         </td>
         <td bgcolor="#eeeeee" valign="top" align="left">
-          <font color="#000000" size="-1" face="arial,helvetica,sanserif">retry count</font>
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif">retry count for liveness checks.</font>
         </td>
         <td bgcolor="#eeeeee" valign="top" align="left">
           <font color="#000000" size="-1" face="arial,helvetica,sanserif">int</font>
@@ -197,13 +197,49 @@
     <!-- Attribute -->
     <tr>
         <td bgcolor="#eeeeee" valign="top" align="left">
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif">logstacktraces</font>
+        </td>
+        <td bgcolor="#eeeeee" valign="top" align="left">
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif">should the runtime log stack traces?</font>
+        </td>
+        <td bgcolor="#eeeeee" valign="top" align="left">
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif">boolean</font>
+        </td>
+    </tr>
+    <!-- Attribute -->
+    <tr>
+        <td bgcolor="#eeeeee" valign="top" align="left">
           <font color="#000000" size="-1" face="arial,helvetica,sanserif">port</font>
         </td>
         <td bgcolor="#eeeeee" valign="top" align="left">
-          <font color="#000000" size="-1" face="arial,helvetica,sanserif">port of daemon</font>
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif">port of daemon; optional -default is 3800 Some tasks do not allow this to be set at all.</font>
         </td>
         <td bgcolor="#eeeeee" valign="top" align="left">
           <font color="#000000" size="-1" face="arial,helvetica,sanserif">int</font>
+        </td>
+    </tr>
+    <!-- Attribute -->
+    <tr>
+        <td bgcolor="#eeeeee" valign="top" align="left">
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif">securityref</font>
+        </td>
+        <td bgcolor="#eeeeee" valign="top" align="left">
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif">set a reference to the security types</font>
+        </td>
+        <td bgcolor="#eeeeee" valign="top" align="left">
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif">Reference</font>
+        </td>
+    </tr>
+    <!-- Attribute -->
+    <tr>
+        <td bgcolor="#eeeeee" valign="top" align="left">
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif">spawn</font>
+        </td>
+        <td bgcolor="#eeeeee" valign="top" align="left">
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif">sets the spawn flag. makes it hard (no, impossible!) to log outputs. only recommended for long-lived tasks, and complicates failonerror and timeout logic</font>
+        </td>
+        <td bgcolor="#eeeeee" valign="top" align="left">
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif">boolean</font>
         </td>
     </tr>
     <!-- Attribute -->
@@ -221,13 +257,13 @@
     <!-- Attribute -->
     <tr>
         <td bgcolor="#eeeeee" valign="top" align="left">
-          <font color="#000000" size="-1" face="arial,helvetica,sanserif">tasktimeout</font>
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif">timeout</font>
         </td>
         <td bgcolor="#eeeeee" valign="top" align="left">
-          <font color="#000000" size="-1" face="arial,helvetica,sanserif">set the timeout of a task, in seconds. After this time it will be killed.</font>
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif">set the timeout for execution. This is incompatible with spawning.</font>
         </td>
         <td bgcolor="#eeeeee" valign="top" align="left">
-          <font color="#000000" size="-1" face="arial,helvetica,sanserif">int</font>
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif">long</font>
         </td>
     </tr>
 
@@ -273,6 +309,36 @@
       </td></tr>
       <tr><td><blockquote>
         the classpath to run the parser
+ <!-- Ignore -->
+ <!-- Ignore -->
+
+      </blockquote></td></tr>
+    </table>
+    <!-- End Element -->
+    <!-- Start Element -->
+    <table border="0" cellspacing="0" cellpadding="2" width="100%">
+      <tr><td>&nbsp;</td></tr>
+      <tr><td bgcolor="#828DA6">
+        <font color="#ffffff" face="arial,helvetica.sanserif" size="-1">
+          <strong>propertyfile</strong> (org.smartfrog.tools.ant.PropertyFile)</font>
+      </td></tr>
+      <tr><td><blockquote>
+        add a property file to the JVM
+ <!-- Ignore -->
+ <!-- Ignore -->
+
+      </blockquote></td></tr>
+    </table>
+    <!-- End Element -->
+    <!-- Start Element -->
+    <table border="0" cellspacing="0" cellpadding="2" width="100%">
+      <tr><td>&nbsp;</td></tr>
+      <tr><td bgcolor="#828DA6">
+        <font color="#ffffff" face="arial,helvetica.sanserif" size="-1">
+          <strong>security</strong> (org.smartfrog.tools.ant.Security)</font>
+      </td></tr>
+      <tr><td><blockquote>
+        set a security definition
  <!-- Ignore -->
  <!-- Ignore -->
 

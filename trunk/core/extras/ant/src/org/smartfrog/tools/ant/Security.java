@@ -42,9 +42,16 @@ import java.util.Properties;
  */
 public class Security extends DataType {
 
+    //java security keystore
     private File keystore;
-    private File passFile;
+    //java security policy file
     private File policyFile;
+    //sf security resource
+    private String securityProperties;
+
+    //the identity to use
+    private String alias;
+
 
     public File getKeystore() {
         return keystore;
@@ -59,8 +66,8 @@ public class Security extends DataType {
         this.keystore = keystore;
     }
 
-    public File getPassFile() {
-        return passFile;
+    public String getSecurityProperties() {
+        return securityProperties;
     }
 
     /**
@@ -68,10 +75,18 @@ public class Security extends DataType {
      * org.smartfrog.sfcore.security.keyStorePassword=MkgzZVm9tyPdn77aWR54
      * org.smartfrog.sfcore.security.activate=true
      *
-     * @param passFile
+     * @param securityProperties
      */
-    public void setPassFile(File passFile) {
-        this.passFile = passFile;
+    public void setSecurityResource(String securityProperties) {
+        this.securityProperties = securityProperties;
+    }
+
+    /**
+     * Path to a file containing the security properties
+     * @param securityProperties
+     */
+    public void setSecurityFile(File securityProperties) {
+        this.securityProperties = securityProperties.getAbsolutePath();
     }
 
 
@@ -86,6 +101,23 @@ public class Security extends DataType {
      */
     public void setPolicyFile(File policyFile) {
         this.policyFile = policyFile;
+    }
+
+    public String getAlias() {
+        return alias;
+    }
+
+    public void setAlias(String alias) {
+        this.alias = alias;
+    }
+
+    /**
+     * test for this security declaration being empty
+     * @return true if it is completely undefined.
+     */
+    public boolean isEmpty() {
+        return keystore==null && policyFile==null && securityProperties==null
+                && alias==null;
     }
 
     /**
@@ -106,6 +138,7 @@ public class Security extends DataType {
         }
         return (Security) o;
     }
+
 
     /**
      * assert that a file must exist and be readable
@@ -134,11 +167,16 @@ public class Security extends DataType {
      * validate the settings.
      */
     public void validate() {
+        validateForSigning();
+        assertValidFile(policyFile, "PolicyFile");
+    }
+
+
+    /**
+     * validate the settings.
+     */
+    public void validateForSigning() {
         assertValidFile(keystore, "Keystore");
-        assertValidFile(passFile, "PassFile");
-        if(policyFile!=null) {
-            assertValidFile(policyFile, "PolicyFile");
-        }
     }
 
     /**
@@ -148,8 +186,8 @@ public class Security extends DataType {
         validate();
         task.addJVMProperty(SmartFrogJVMProperties.KEYSTORE_NAME,
                 keystore.getAbsolutePath());
-        task.addJVMProperty(SmartFrogJVMProperties.KEYSTORE_PROPFILE,
-                passFile.getAbsolutePath());
+        task.addSmartfrogPropertyIfDefined(SmartFrogJVMProperties.KEYSTORE_PROPFILE,
+                securityProperties);
         task.defineJVMArg("-Djava.security.manager");
         //the extra equals in the assignment forces it to overide all others
         if (policyFile != null) {
@@ -164,11 +202,12 @@ public class Security extends DataType {
      * @param signJar task to configure
      */
     public void applySecuritySettings(SignJar signJar) throws IOException {
-        validate();
+        validateForSigning();
         signJar.setKeystore(keystore.getAbsolutePath());
-        //todo: get the pass in.
-            Properties securityProps = loadPassFile();
-            signJar.setKeypass(securityProps.getProperty(SmartFrogJVMProperties.KEYSTORE_PASSWORD));
+        //get the pass in.
+        Properties securityProps = loadPassFile();
+        signJar.setKeypass(securityProps.getProperty(SmartFrogJVMProperties.KEYSTORE_PASSWORD));
+        signJar.setAlias(getAlias());
     }
 
     /**
@@ -180,7 +219,7 @@ public class Security extends DataType {
         Properties securityProps=new Properties();
         InputStream instream=null;
         try {
-            instream=new FileInputStream(passFile);
+            instream=new FileInputStream(securityProperties);
             securityProps.load(instream);
             return securityProps;
         } finally {
@@ -198,6 +237,6 @@ public class Security extends DataType {
      * @return a string representation of the object.
      */
     public String toString() {
-        return "Security: keystore="+keystore+" passfile="+passFile;
+        return "Security: keystore="+keystore+" passfile="+securityProperties;
     }
 }

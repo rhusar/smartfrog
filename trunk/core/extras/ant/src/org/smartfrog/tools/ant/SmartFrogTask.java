@@ -32,7 +32,6 @@ import org.apache.tools.ant.types.Reference;
 import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Properties;
 
 /**
  * Class to let ant task derivatives run smartfrog. How it invokes smartfrog is an implementation detail;
@@ -108,6 +107,8 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
      * ini file
      */
     protected File iniFile;
+
+    protected File securityFile;
 
     /**
      * our JVM
@@ -468,7 +469,6 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
      * Adds a set of properties as system properties.
      *
      * @param propset set of properties to add
-     * @since Ant 1.6
      */
     public void addSyspropertyset(PropertySet propset) {
         smartfrog.addSyspropertyset(propset);
@@ -538,6 +538,8 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
         //this is because pre Ant1.7, even setting this to false stops spawn working
         //delayed setting only when the flag is true reduces the need to flip the bit
         propagateSpawnIncompatibleSettings();
+        //do any security configurations we need
+        securityHolder.applySecuritySettings(this);
         //run it
         int err = smartfrog.executeJava();
         if (isSpawn()) {
@@ -548,7 +550,7 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
         if (!failOnError) {
             return;
         }
-        //else, lets post-analyse the deployment
+        //else, let's post-analyse the deployment
         switch (err) {
             case 0:
                 return;

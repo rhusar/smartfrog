@@ -31,8 +31,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -273,95 +271,6 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
             }
 
         }
-    }
-
-    /**
-     * this contains information pointing to the location of code.
-     * It can either be a URL or a file path to a Java file.
-     */
-    public static class Codebase {
-
-        /**
-         * location of a JAR file
-         */
-        private String location;
-        public static final String ERROR_UNDEFINED_CODEBASE = "Undefined codebase";
-        public static final String ERROR_FILE_NOT_FOUND = "Not found :";
-        public static final String ERROR_NOT_JAR_FILE = "Not a JAR file: ";
-
-        /**
-         * the URL of the JAR file
-         *
-         * @param url
-         */
-        public void setURL(String url) {
-            location = url;
-        }
-
-        /**
-         * provide a URL. This is for the convenience of programmatic access, not
-         * ant build files
-         *
-         * @param url
-         */
-        public void setURL(URL url) {
-            location = url.toExternalForm();
-        }
-
-        /**
-         * name a JAR file for addition to the path
-         * The path must be visible to the server process(es) at this location,
-         * which means it is either on a shared filestore, or you are only
-         * deploying to a local daemon.
-         *
-         * @param file
-         */
-        public void setFile(File file) {
-            if (!file.exists()) {
-                throw new BuildException(ERROR_FILE_NOT_FOUND + file);
-            }
-            if (file.isDirectory()) {
-                throw new BuildException(ERROR_NOT_JAR_FILE + file);
-            }
-            try {
-                setURL(file.toURL());
-            } catch (MalformedURLException e) {
-                throw new BuildException(e);
-            }
-        }
-
-        /**
-         * get the location
-         *
-         * @return
-         */
-        public String getLocation() {
-            return location;
-        }
-
-        /**
-         * take a list of codebase elements and then turn them into a string
-         *
-         * @param codebases
-         * @return
-         */
-        public static String getCodebaseString(List codebases) {
-            StringBuffer results = new StringBuffer();
-            Iterator it = codebases.iterator();
-            while (it.hasNext()) {
-                Codebase codebase = (Codebase) it.next();
-                String l = codebase.getLocation();
-                if (l == null) {
-                    throw new BuildException(ERROR_UNDEFINED_CODEBASE);
-                }
-                results.append(l);
-                //space separated options here
-                results.append(' ');
-            }
-            return new String(results);
-        }
-
-
     }
 
 }

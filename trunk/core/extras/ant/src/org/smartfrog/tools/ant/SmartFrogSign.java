@@ -30,9 +30,13 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * Sign a jar file(s)
- * Date: 19-Apr-2004
- * Time: 16:49:50
+ *
+ * @ant.task category="SmartFrog" name="sf-sign"
+ * Sign JAR files using the SmartFrog security configuration.
+ * This task is essentially a thin wrapper around Ant's <tt>signjar</tt> task,
+ * with integration with the SmartFrog security properties file, that being
+ * where the passphrase to unlock the keystore is extracted.
+ *
  */
 public class SmartFrogSign extends TaskBase {
 
@@ -40,7 +44,7 @@ public class SmartFrogSign extends TaskBase {
     /**
      * the task used for signing
      */
-    SignJar signer;
+    private SignJar signer;
 
     /**
      * our security holder
@@ -106,6 +110,17 @@ public class SmartFrogSign extends TaskBase {
     public void setVerbose(boolean verbose) {
         signer.setVerbose(verbose);
     }
+
+    /**
+     *  Set the maximum memory to be used by the jarsigner process
+     *
+     * @param maxMemory a string indicating the maximum memory according to the
+     *        JVM conventions (e.g. 128m is 128 Megabytes)
+     */ 
+    public void setMaxMemory(String maxMemory) {
+        signer.setMaxmemory(maxMemory);
+    }
+
 
     /**
      * Called by the project to let the task do its work. This method may be
