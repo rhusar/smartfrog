@@ -1,9 +1,18 @@
+#! /bin/sh
 if ! test $SFHOME; then export SFHOME=$PWD; fi
-if [ $# -ne 2 ];then
-echo "Insufficient arguments to use sfTerminate"
-echo "Usage: sfTerminate HostName ComponentName"
+if [ -z $1 ] ; then
+   echo "Insufficient arguments to use sfTerminate"
+   echo "Usage: sfTerminate HostName ComponentName"
 exit
-fi
+fi 
+if [ $# -eq 1 ] && [ $1 == "-?" ];then
+   echo "Usage: sfTerminate HostName ComponentName"
+   exit
+elif [ $# -ne 2 ];then
+   echo "Insufficient arguments to use sfTerminate"
+   echo "Usage: sfTerminate HostName ComponentName"
+   exit
+fi 
 export CLASSPATH=$SFHOME/lib/smartfrog.jar:$SFHOME/lib/sfServices.jar:$SFHOME/lib/sfTestCases.jar:$CLASSPATH
 export SERVER=localhost:8080
 # Please dit codebase if you have any other jar file in webserver

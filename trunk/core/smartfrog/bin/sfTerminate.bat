@@ -7,6 +7,7 @@ if defined SFHOME goto continue1
   cd bin
 :continue1
 if (%1) == () goto usage
+if (%1) == (-?) goto help
 if (%2) == () goto usage
 if exist "%SFHOME%\jre\bin\java.exe" set path=%SFHOME%\jre\bin
 call %SFHOME%\bin\setClassPath
@@ -16,6 +17,7 @@ java -Dorg.smartfrog.iniFile=%SFHOME%\bin\default.ini org.smartfrog.SFSystem -a 
 GOTO end
 :usage
 echo Insufficient arguments to use sfTerminate
+:help
 echo Usage: sfTerminate HostName ComponentName
 :end
 

@@ -11,6 +11,7 @@ if defined SFPRIVATE goto continue2
   set SFPRIVATE=%SFHOME%\private
 :continue2
 if (%1)==() GOTO usage
+if (%1)==(-?) GOTO help
 call %SFHOME%\bin\security\setClassPath
 if exist "%SFHOME%\jre\bin\java.exe" set path=%SFHOME%\jre\bin
 echo "Stopping sfDaemon in %1"
@@ -19,6 +20,7 @@ java -Djava.security.manager -Djava.security.policy==%SFHOME%\private\sf.policy 
 GOTO end
 :usage
 echo Insufficient arguments to use sfStopDaemon
+:help
 echo Usage: sfStopDaemon HostName
 :end 
 endlocal

@@ -1,16 +1,8 @@
+#! /bin/sh
 if ! test $SFHOME; then export SFHOME=$PWD; fi
 if ! test $SFPRIVATE; then export SFPRIVATE=$SFHOME/private; fi
 if ! test $SFHOSTNAME; then export SFHOSTNAME=host1; fi
-if [ -z $1 ];then
-echo "Insufficient argument(s) to use sfparse"
-echo "Usage: sfParse [-v] [-q] [-d] [-r] [-R] [{-f filename}|URL]"
-exit
-fi
-if [ $1 == "-f" ] && [ -z $@ ];then 
-echo "Insufficient argument(s) to use sfparse"
-echo "Usage: sfParse [-v] [-q] [-d] [-r] [-R] [{-f filename}|URL]"
-exit
-fi
+
 export CLASSPATH=$SFHOME/signedLib/smartfrog.jar:$SFHOME/signedLib/sfServices.jar:$SFHOME/signedLib/sfTestCases.jar:$CLASSPATH
 export SERVER=localhost:8080
 # Please edit codebase if you have any other jar file in webserver

@@ -1,11 +1,16 @@
+#! /bin/sh
 if ! test $SFHOME; then export SFHOME=$PWD; fi
 if ! test $SFPRIVATE; then export SFPRIVATE=$SFHOME/private; fi
 if ! test $SFHOSTNAME; then export SFHOSTNAME=host1; fi
-if [ -z $1 ];then
-echo "Insufficient argument(s) to use sfRun"
+if [ -z $1 ] ; then
+echo "Insufficent arguments to use sfRun"
 echo "Usage: sfRun URL [-e]"
 exit
-fi
+fi 
+if [ $1 == "-?" ];then
+echo "Usage: sfRun URL [-e]"
+exit
+fi 
 for i in $SFHOME/signedLib/*.jar; do CLASSPATH=$i:$CLASSPATH; done
 export CLASSPATH
 echo $CLASSPATH

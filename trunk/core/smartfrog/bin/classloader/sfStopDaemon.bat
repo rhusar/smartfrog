@@ -7,6 +7,7 @@ if defined SFHOME goto continue1
   cd bin
 :continue1
 if (%1)==() GOTO usage
+if (%1)==(-?) GOTO help
 if exist "%SFHOME%\jre\bin\java.exe" set path=%SFHOME%\jre\bin
 call %SFHOME%\bin\setClassPath
 echo "Stopping sfDaemon in %1"
@@ -14,6 +15,7 @@ java org.smartfrog.SFSystem -a rootProcess:TERMINATE:::%1: -e
 GOTO end
 :usage
 echo Insufficient arguments to use sfStopDaemon
+:help
 echo Usage: sfStopDaemon HostName
 :end 
 endlocal

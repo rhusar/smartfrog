@@ -12,6 +12,7 @@ if defined SFPRIVATE goto continue2
 :continue2
 
 if (%1) == () goto usage
+if (%1) == (-?) goto help
 if (%2) == () goto usage
 
 call %SFHOME%\bin\security\setClassPath
@@ -20,6 +21,7 @@ java -Djava.security.policy==%SFHOME%\private\sf.policy -Djava.security.manager 
 GOTO end
 :usage
 echo Insufficient arguments to use sfTerminate
+:help
 echo Usage: sfTerminate HostName ComponentName
 :end
 endlocal
