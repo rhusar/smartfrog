@@ -22,6 +22,8 @@ package org.smartfrog.sfcore.utils;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.logging.Log;
+import org.smartfrog.sfcore.logging.LogFactory;
 
 import java.rmi.RemoteException;
 import java.util.logging.Logger;
@@ -72,15 +74,12 @@ public class ComponentHelper {
     }
 
     /**
-     * get the relevant java1.4 logger for this component.
+     * get the relevant logger for this component.
      * When logging against a remote class, this is probably the classname of the proxy.
      * @return
      */
-    public Logger getLogger() {
-        String classname=owner.getClass().getName();
-        //todo: we could opt to use the name of the prim instead.
-        //String primname=owner.sfCompleteNameSafe();
-        return Logger.getLogger(classname);
+    public Log getLogger() {
+        return LogFactory.getOwnerLog(owner);
     }
 
     /**
@@ -88,7 +87,55 @@ public class ComponentHelper {
      * @param thrown
      */
     public void logIgnoredException(Throwable thrown) {
-        Logger log=getLogger();
-        log.log(Level.FINE,"ignoring ",thrown);
+        Log log=getLogger();
+        log.debug("ignoring ",thrown);
+    }
+
+    /**
+     * Returns the complete name for any component from the root of the
+     * application and does not throw any exception. If an exception is
+     * thrown it will return null
+     *
+     * @return reference of attribute names to this component or a null
+     */
+    public Reference completeNameOrNull() {
+        try {
+            return owner.sfCompleteName();
+        } catch (Throwable thr) {
+            return null;
+        }
+    }
+
+    /**
+     * Returns the complete name for any component from the root of the
+     * application and does not throw any exception. If an exception is
+     * thrown it will return a new empty reference.
+     *
+     * @return reference of attribute names to this component or an empty reference
+     */
+    public Reference completeNameSafe(Prim owner) {
+        Reference ref=completeNameOrNull();
+        if(ref==null) {
+            return new Reference();
+        } else {
+            return ref;
+        }
+    }
+
+
+    /**
+     * Returns the complete name for any component from the root of the
+     * application and does not throw any exception. If an exception is
+     * thrown it will return a new empty reference.
+     *
+     * @return reference of attribute names to this component or an empty reference
+     */
+    public static Reference completeNameSafeStatic(Prim owner) {
+        try {
+            return owner.sfCompleteName();
+        } catch (Throwable thr) {
+            // TODO: log a message to indicate that sfCompleteName failed!
+            return new Reference();
+        }
     }
 }
