@@ -184,5 +184,9 @@ public interface SmartFrogCoreKeys {
      */
     public final static String SF_CORE_LOG = "SFCORE_LOG";
 
+    /**
+     * Attribute name to get the name of the application logger.
+     */
+    public final static String SF_APP_LOG_NAME = "sfAppLogName";
 
 }
