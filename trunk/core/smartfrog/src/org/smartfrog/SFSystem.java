@@ -160,9 +160,9 @@ public class SFSystem implements MessageKeys {
             sysProps.put(key, props.get(key));
         }
         System.setProperties(sysProps);
-        if (sflog==null) sflog=LogFactory.sfGetProcessLog();
-        if (sflog.isTraceEnabled()){
-            sflog.trace("New system properties: " +sysProps.toString());
+
+        if (sflog().isTraceEnabled()){
+            sflog().trace("New system properties: " +sysProps.toString());
         }
     }
 
@@ -259,8 +259,7 @@ public class SFSystem implements MessageKeys {
      * Shows the version info of the SmartFrog system.
      */
     private static void showVersionInfo(){
-        System.out.println(Version.versionString);
-        System.out.println(Version.copyright);
+        sflog().out(Version.versionString+"\n"+Version.copyright);
     }
 
     /**
@@ -343,10 +342,9 @@ public class SFSystem implements MessageKeys {
         try {
             initSystem();
         } catch (Exception ex) {
-            if (sflog==null) sflog=LogFactory.sfGetProcessLog();
             try {
-                if (sflog.isErrorEnabled()) {
-                    sflog.error(ex);
+                if (sflog().isErrorEnabled()) {
+                    sflog().error(ex);
                 }
             } catch (Exception ex1) {ex1.printStackTrace();}
             exitWithError();
@@ -493,17 +491,26 @@ public class SFSystem implements MessageKeys {
             SFSecurity.initSecurity();
             // Read init properties
             readPropertiesFromIniFile();
-            if (sflog==null) sflog=LogFactory.sfGetProcessLog();
+            sflog();
             // Notify status of Security
             if (!SFSecurity.isSecurityOn()){
-                if (sflog.isWarnEnabled())
-                  sflog.warn("SmartFrog security is NOT active");
+                if (sflog().isWarnEnabled())
+                  sflog().warn("SmartFrog security is NOT active");
             }
             // Set stackTracing
             readPropertyLogStackTrace();
 
             alreadySystemInit = true;
         }
+    }
+
+    /**
+     *
+     * @return LogSF
+     */
+    public static LogSF sflog(){
+         if (sflog==null) sflog=LogFactory.sfGetProcessLog();
+         return sflog;
     }
 
     /**
