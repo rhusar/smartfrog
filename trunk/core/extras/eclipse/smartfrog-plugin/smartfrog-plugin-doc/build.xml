@@ -32,6 +32,8 @@
     <property name="doc.full.name" value="${doc.plugin.external.name}"/>
     <property name="doc.plugin.zip" value="${doc.plugin.zip.name}"/>
     <property name="doc.plugin.zip.root.name" value="${doc.full.name}"/>
+    <property name="doc.plugin.tar" value="${doc.plugin.tar.name}"/>
+    <property name="doc.plugin.tar.root.name" value="${doc.full.name}"/>
     <property name="doc.plugin.guts.dir" value="doc"/>
 
     <!-- Miscellaneous properties -->
@@ -116,8 +118,17 @@
 
     <target name="gather.doc.resources" depends="init">
         <mkdir dir="${temp.folder}/${doc.plugin.zip.root.name}"/>
+        <mkdir dir="${temp.folder}/${doc.plugin.tar.root.name}"/>
 
         <copy todir="${temp.folder}/${doc.plugin.zip.root.name}">
+            <fileset dir="${basedir}">
+                <exclude name=".*"/>
+                <exclude name="${build.dir}/**"/>
+            </fileset>
+            <fileset dir="${license.files.dir}"/>
+    </copy>
+
+    <copy todir="${temp.folder}/${doc.plugin.tar.root.name}">
             <fileset dir="${basedir}">
                 <exclude name=".*"/>
                 <exclude name="${build.dir}/**"/>
@@ -128,10 +139,19 @@
         <antcall target="copy.buildid.file">
             <param name="plugin.dest" value="${temp.folder}/${doc.plugin.zip.root.name}"/>
             <param name="plugin.name" value="${doc.full.name}"/>
+    </antcall>
+
+    <antcall target="copy.buildid.file">
+            <param name="plugin.dest" value="${temp.folder}/${doc.plugin.tar.root.name}"/>
+            <param name="plugin.name" value="${doc.full.name}"/>
         </antcall>
 
         <antcall target="zip.doc.plugin.guts">
             <param name="plugin.dest" value="${temp.folder}/${doc.plugin.zip.root.name}"/>
+    </antcall>
+
+     <antcall target="zip.doc.plugin.guts">
+            <param name="plugin.dest" value="${temp.folder}/${doc.plugin.tar.root.name}"/>
         </antcall>
     </target>
 
@@ -140,7 +160,10 @@
         depends="gather.doc.resources">
 
         <zip zipfile="${build.result.folder}/${doc.plugin.zip}"
-            basedir="${temp.folder}" filesonly="true"/>
+		basedir="${temp.folder}" filesonly="true"/>
+
+	<tar tarfile="${build.result.folder}/${doc.plugin.tar}"
+            basedir="${temp.folder}"/>
 
         <delete dir="${temp.folder}"/>
         <antcall target="refresh"/>

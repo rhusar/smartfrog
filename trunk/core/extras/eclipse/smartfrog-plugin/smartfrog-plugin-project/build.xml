@@ -314,8 +314,13 @@
 
     <target name="gather.bin.parts" depends="plugin.jar">
         <mkdir dir="${temp.folder}/${bin.plugin.zip.root.dir}"/>
+        <mkdir dir="${temp.folder}/${bin.plugin.tar.root.dir}"/>
         <copy file="${build.result.folder}/${bin.plugin.jar.name}"
             todir="${temp.folder}/${bin.plugin.zip.root.dir}">
+        	<fileset dir="${license.files.dir}"/>
+    	</copy>
+        <copy file="${build.result.folder}/${bin.plugin.jar.name}"
+            todir="${temp.folder}/${bin.plugin.tar.root.dir}">
         	<fileset dir="${license.files.dir}"/>
     	</copy>
     </target>
@@ -333,12 +338,20 @@
 
     <target name="gather.resources" depends="init">
         <mkdir dir="${temp.folder}/${bin.plugin.zip.root.dir}"/>
+        <mkdir dir="${temp.folder}/${bin.plugin.tar.root.dir}"/>
         <antcall target="custom.gather.resources">
             <param name="plugin.dest" value="${temp.folder}/${bin.plugin.zip.root.dir}"/>
+        </antcall>
+        <antcall target="custom.gather.resources">
+            <param name="plugin.dest" value="${temp.folder}/${bin.plugin.tar.root.dir}"/>
         </antcall>
 
         <antcall target="copy.buildid.file">
             <param name="plugin.dest" value="${temp.folder}/${bin.plugin.zip.root.dir}"/>
+            <param name="plugin.name" value="${bin.plugin.external.name}"/>
+        </antcall>
+        <antcall target="copy.buildid.file">
+            <param name="plugin.dest" value="${temp.folder}/${bin.plugin.tar.root.dir}"/>
             <param name="plugin.name" value="${bin.plugin.external.name}"/>
         </antcall>
 
@@ -350,6 +363,9 @@
 
         <zip zipfile="${build.result.folder}/${bin.plugin.zip.name}"
              basedir="${temp.folder}" filesonly="true"
+             excludes="${plugin}.jar.bin.log"/>
+        <tar tarfile="${build.result.folder}/${bin.plugin.tar.name}"
+             basedir="${temp.folder}" 
              excludes="${plugin}.jar.bin.log"/>
 
         <delete dir="${temp.folder}"/>
