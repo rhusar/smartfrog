@@ -974,13 +974,13 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
     protected Process startProcess(Object name) throws Exception {
         Vector runCmd = new Vector();
         addProcessJava(runCmd);
-        addProcessClassPath(runCmd);
+        addProcessClassPath(runCmd, name);
         addProcessDefines(runCmd, name);
         addProcessClassName(runCmd);
 
         String[] runCmdArray = new String[runCmd.size()];
         runCmd.copyInto(runCmdArray);
-        if (sflog().isTraceEnabled()) sflog().trace("startProcess.runCmd: "+runCmd.toString());
+        if (sflog().isTraceEnabled()) sflog().trace("startProcess["+name.toString()+"].runCmd: "+runCmd.toString());
         return Runtime.getRuntime().exec(runCmdArray);
     }
 
@@ -1016,8 +1016,11 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
      *
      * @exception Exception failed to construct classpath
      */
-    protected void addProcessClassPath(Vector cmd) throws Exception {
-        String res = SFSystem.getProperty("java.class.path", null);
+    protected void addProcessClassPath(Vector cmd, Object name) throws Exception {
+
+        String res = SFSystem.getProperty(SmartFrogCoreProperty.propBaseSFProcess + "java.class.path."+ name, null);
+
+        if (res==null) res = SFSystem.getProperty("java.class.path", null);
 
         if (res != null) {
             cmd.addElement("-classpath");
@@ -1035,6 +1038,8 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
      * Any property prefixed by 'org.smartfrog.sfcore.processcompound.jvm.'+NAME+property=value
      * will be added  only to the subprocess named 'NAME' as a parameter
      * for the JVM. The parameter will be "property+value".
+     * To change the class path in a SubProcess use:
+     * 'org.smartfrog.sfcore.processcompound.java.class.path.NAME'
      * Example:
      *  org.smartfrog.sfcore.processcompound.jvm.test.-X=runpri
      *  will add the property '-Xrunpri' to the processCompound named 'test'.
@@ -1056,11 +1061,20 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
                 //Logger.log("Checking: "+name.toString());
                 //Logger.log("Key: "+key.toString());
                 if (!key.equals(SmartFrogCoreProperty.propBaseSFProcess+ SmartFrogCoreKeys.SF_PROCESS_NAME)) {
+                  // Special case relsolved in addClassPath
+                  if (key.startsWith(SmartFrogCoreProperty.propBaseSFProcess + "java.class.path.")) {
+                      continue;
+                  }
                   //Add special parameters to named subprocesses
                   //@todo add Junit test for this feature
                   //@todo test what happens with special caracters
-                  // prefixed by 'org.smartfrog.sfcore.processcompound.D.'+NAME+property=value
+                  // prefixed by 'org.smartfrog.sfcore.processcompound.jvm.'+NAME+property=value
                   String specialParameters = SmartFrogCoreProperty.propBaseSFProcess + "jvm." + name + ".";
+                  //This will be ignored
+                  // The right way is to use: 'org.smartfrog.sfcore.processcompound.java.class.path.NAME';
+                  if (key.startsWith(specialParameters+ "java.class.path.")) {
+                      continue;
+                  }
                   //Logger.log("Testing: "+specialParameters);
                   //Logger.log("key: "+key);
                   if (key.startsWith(specialParameters)) {

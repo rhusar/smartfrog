@@ -1,7 +1,9 @@
-2004-Sep-20 New: filesystem/replacevar component
-
 release 3.04.005_beta -> CVS
 ---------------------
+2004-Oct-01 New: property to change classpath in a subProcess: 'org.smartfrog.sfcore.processcompound.java.class.path.NAME'
+2004-Sep-30 New: SFSetProperty component
+2004-Sep-30 Fix: PrimImpl.sfAttributes() was returning values
+2004-Sep-20 New: filesystem/replacevar component
 2004-Aug-25 New: modified buildRelease.xml to include javacc.
 2004-Aug-24 New: srcDir renamed to SFUSERCLASSPATH in shell scripts.
 2004-Aug-24 Fix: sfBootTime attribute in rootProcess compound, now added during sfDeploy() lifecycle step
