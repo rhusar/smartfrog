@@ -313,16 +313,18 @@ public class DeployEntry implements Entry {
                     try {
                         //Special case to show special info about he reference
                         if (value instanceof Reference) {
+                            String solvedValueClass="class not found";
                             try {
                               Object objSolvedValue = ( ( (Prim)entry).sfResolve( (Reference) value));
                               solvedValue=objSolvedValue.toString();
+                              solvedValueClass = objSolvedValue.getClass().toString();
                             }catch (Throwable rex) {
                               solvedValue = " Failed to relsove!: "+rex.toString();
                             }
                             StringBuffer text = new StringBuffer();
                             text.append(value.toString());
                             text.append("\n * Value resolved: \n" + solvedValue);
-                            text.append("\n" + "+ Solved Value class:" + solvedValue.getClass().toString());
+                            text.append("\n" + "+ Solved Value class:" +solvedValueClass);
                             text.append("\n\n" + "+ Value class:" + value.getClass().toString());
                             //data[index][1] = obj.toString() + " ["+auxValue+"]";
                             data[index][1] = text.toString();
