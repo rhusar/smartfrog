@@ -27,7 +27,15 @@ public class Evaluator extends NetElemImpl implements Remote {
   public int evaluate(String from, int value) {
     try {
       script.setRemote(from,new Integer(value));
-      return ((Integer) script.eval(operationString)).intValue();
+      int result = ((Integer) script.eval(operationString)).intValue();
+      System.out.println("--------------------------------------"
+                        +"\n EVALUATOR : "
+                        +"\n     - Operation: "+ operationString
+                        +"\n     - from: "+ value
+                        +"\n     - Result: " + result
+                        +"\n------------------------------------");
+      sfReplaceAttribute("result",new Integer(result));
+      return result;
     } catch (Exception ex){
     }
     return value;

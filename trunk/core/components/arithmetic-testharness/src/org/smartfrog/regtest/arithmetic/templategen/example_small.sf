@@ -14,7 +14,7 @@ Example1 extends Compound {
 
     Evaluator29 extends Evaluator {
       inputs:G extends Input;
-      operation "((((G*G)+G)*((18499+((-59680)+G))*G)))" ;		// use same variable as input name.
+      operation "((((G+G)+G)+((0+((0)+G))+G)))" ;		// use same variable as input name.
       outputs:value:to LAZY ATTRIB comparator:inputs:target;
     }
 
@@ -22,49 +22,49 @@ Example1 extends Compound {
       count ATTRIB numMatches;
       outputs:value:to LAZY ATTRIB printer:inputs:printVal;
     }
-    printer extends Printer { 
+    printer extends Printer {
 
     }
   }
 
 // Now all the nodes that implement the logic
-  Times28 extends Times {
+  Times28 extends Plus {
         sfProcessHost ATTRIB host28 ;
                       outputs:value:to LAZY ATTRIB   sink:comparator:inputs:candidate;
            }
   Plus19 extends Plus {
         sfProcessHost ATTRIB host19 ;
-                      outputs:value:to LAZY ATTRIB Times28:inputs:lhs; 
+                      outputs:value:to LAZY ATTRIB Times28:inputs:lhs;
            }
-  Times17 extends Times {
+  Times17 extends Plus {
         sfProcessHost ATTRIB host17 ;
-                      outputs:value:to LAZY ATTRIB Plus19:inputs:lhs; 
+                      outputs:value:to LAZY ATTRIB Plus19:inputs:lhs;
            }
-  Times27 extends Times {
+  Times27 extends Plus {
         sfProcessHost ATTRIB host27 ;
                 outputs:value:to LAZY ATTRIB Times28:inputs:rhs;
      }
   Plus25 extends Plus {
         sfProcessHost ATTRIB host25 ;
-                      outputs:value:to LAZY ATTRIB Times27:inputs:lhs; 
+                      outputs:value:to LAZY ATTRIB Times27:inputs:lhs;
            }
   Constant20 extends Constant {
         sfProcessHost ATTRIB host20 ;
-            constant 18499 ;
-                      outputs:value:to LAZY ATTRIB Plus25:inputs:lhs; 
+            constant 0 ;
+                      outputs:value:to LAZY ATTRIB Plus25:inputs:lhs;
            }
   Plus24 extends Plus {
         sfProcessHost ATTRIB host24 ;
                 outputs:value:to LAZY ATTRIB Plus25:inputs:rhs;
      }
-  Negate22 extends Negate {
-        sfProcessHost ATTRIB host22 ;
-                      outputs:value:to LAZY ATTRIB Plus24:inputs:lhs; 
-           }
+//  Negate22 extends Negate {
+//        sfProcessHost ATTRIB host22 ;
+//                      outputs:value:to LAZY ATTRIB Plus24:inputs:lhs;
+//           }
   Constant21 extends Constant {
         sfProcessHost ATTRIB host21 ;
-            constant 59680 ;
-                      outputs:value:to LAZY ATTRIB Negate22:inputs:lhs; 
+            constant 0 ;
+                      outputs:value:to LAZY ATTRIB Plus24:inputs:lhs;
            }
 
 // Finally the generator with all its outputs
@@ -72,18 +72,23 @@ Example1 extends Compound {
   source extends Compound {
     sfProcessHost ATTRIB host2;
 
-    generator extends Generator { 
-        outputs:value:to  LAZY ATTRIB  sink:Evaluator29:inputs:G;
-        outputs:Generator15  extends  Output;
-            outputs:Generator15:to LAZY ATTRIB Times17:inputs:lhs; 
+    generator extends Generator {
+            outputs:value:to  LAZY ATTRIB  sink:Evaluator29:inputs:G;
+            outputs:Generator15  extends  Output;
+
+            outputs:Generator15:to LAZY ATTRIB Times17:inputs:lhs;
             outputs:Generator16  extends  Output;
             outputs:Generator16:to LAZY ATTRIB Times17:inputs:rhs;
+
             outputs:Generator18  extends  Output;
             outputs:Generator18:to LAZY ATTRIB Plus19:inputs:rhs;
+
             outputs:Generator23  extends  Output;
             outputs:Generator23:to LAZY ATTRIB Plus24:inputs:rhs;
+
             outputs:Generator26  extends  Output;
             outputs:Generator26:to LAZY ATTRIB Times27:inputs:rhs;
+
         interval ATTRIB intervalGen; // speed it up a bit,a number every second
     min 1;
     max ATTRIB maxValueGen;
@@ -96,9 +101,9 @@ Example1 extends Compound {
  * here it is defined to contain Example1
  */
 
-sfConfig1 extends Compound { 
+sfConfig1 extends Compound {
   sfProcessHost ATTRIB host1;
-  //sfRootLocatorPort ATTRIB port;    
+  //sfRootLocatorPort ATTRIB port;
   numMatches 10;
   maxValueGen 10000;
   intervalGen 5;

@@ -9,6 +9,7 @@ public class Negate extends NetElemImpl implements Remote {
   }
 
   protected int evaluate(String from, int value) {
+        System.out.println("NEGATE:   Value: "+value +", Result: "+ (-value) +", "+sfCompleteNameSafe());
 	return -value;
   }
 }

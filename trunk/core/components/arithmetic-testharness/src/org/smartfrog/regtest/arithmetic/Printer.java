@@ -8,7 +8,7 @@ public class Printer extends NetElemImpl implements Remote {
   }
 
   public int evaluate(String from, int value) {
-	System.out.println(name + " received value " + value);
+	System.out.println( "PRINTER: received value " + value+", "+sfCompleteNameSafe());
 	return value;
   }
 }
