@@ -41,6 +41,9 @@ For more information: www.smartfrog.org
 CddlmSystem extends Compound {
     port 5050;
 
+    //so they terminate one after the other
+    sfSyncTerminate true;
+
     //our CDDLM description
     cddlm extends AxisServer {
         port PARENT:port;
@@ -58,6 +61,7 @@ CddlmSystem extends Compound {
     CddlmService extends AxisServiceResource {
         port PARENT:port;
         serviceName "cddlm";
-        descriptorResource "/org/smartfrog/services/cddlm/deploy.wsdd";
+        deployResource "/org/smartfrog/services/cddlm/deploy.wsdd";
+        undeployResource "/org/smartfrog/services/cddlm/undeploy.wsdd";
     }
 }

@@ -31,15 +31,12 @@ import org.apache.axis.utils.XMLUtils;
 import org.jdom.JDOMException;
 import org.jdom.output.DOMOutputter;
 import org.smartfrog.services.cddlm.DeploymentEndpoint;
-import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.logging.Log;
-import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.security.SFClassLoader;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.w3c.dom.Document;
 
@@ -142,13 +139,13 @@ public class AxisImpl extends PrimImpl implements Axis {
         log.info("Running Axis on port " + port);
         log.info(" max threads=" + threads + " sessions=" + sessions);
         axis = new SimpleAxisServer(threads, sessions);
-        String servicePath=DEFAULT_AXIS_SERVICE_PATH;
-        sfReplaceAttribute(Axis.SERVICE_PATH,servicePath);
+        String servicePath = DEFAULT_AXIS_SERVICE_PATH;
+        sfReplaceAttribute(Axis.SERVICE_PATH, servicePath);
 
         try {
             //register the resouce
-            wsddResource = sfResolve(Axis.WSDD_RESOURCE, (String)null, false);
-            if(wsddResource!=null) {
+            wsddResource = sfResolve(Axis.WSDD_RESOURCE, (String) null, false);
+            if (wsddResource != null) {
                 log.info("registering WSDD " + wsddResource);
                 registerResource(wsddResource);
             }
@@ -178,7 +175,7 @@ public class AxisImpl extends PrimImpl implements Axis {
     }
 
     /**
-     * Provides hook for subclasses to implement usefull termination behavior.
+     * shut down axis
      *
      * @param status termination status
      */
@@ -250,6 +247,7 @@ public class AxisImpl extends PrimImpl implements Axis {
 
     /**
      * deploy or undeploy a WSDD doc to a local JVM
+     *
      * @param wsddDoc
      * @throws SmartFrogException if anything went wrong
      */
@@ -286,7 +284,7 @@ public class AxisImpl extends PrimImpl implements Axis {
      */
     public void registerResource(String resourcename)
             throws SmartFrogException, RemoteException {
-        ComponentHelper helper= new ComponentHelper(this);
+        ComponentHelper helper = new ComponentHelper(this);
         registerStream(helper.loadResource(resourcename));
     }
 
@@ -295,13 +293,14 @@ public class AxisImpl extends PrimImpl implements Axis {
      * and then register it, an action which can cover deploy/and or undeploy,
      * depending on the payload.
      * Because the JDOM classes serialize, this is a remotable interface
+     *
      * @param wsdd
      */
     public void registerWSDDDocument(org.jdom.Document wsdd) throws SmartFrogException {
-        DOMOutputter outputter=new DOMOutputter();
+        DOMOutputter outputter = new DOMOutputter();
         try {
-            Document DomDoc=outputter.output(wsdd);
-            WSDDDocument wsddDoc=new WSDDDocument(DomDoc);
+            Document DomDoc = outputter.output(wsdd);
+            WSDDDocument wsddDoc = new WSDDDocument(DomDoc);
             deployOrUndeploy(wsddDoc);
         } catch (JDOMException e) {
             throw SmartFrogException.forward(e);

@@ -21,8 +21,6 @@
 
 package org.smartfrog.services.axis;
 
-import org.smartfrog.sfcore.reference.Reference;
-
 import java.rmi.Remote;
 
 /**
@@ -42,7 +40,12 @@ public interface AxisService extends Remote {
     /**
      * the name of a resource for the descriptor
      */
-    String DESCRIPTOR_RESOURCE ="descriptorResource";
+    String DEPLOY_RESOURCE = "deployResource";
+
+    /**
+     * undeployment resource
+     */
+    String UNDEPLOY_RESOURCE = "undeployResource";
 
     /**
      * runtime attr: service path
@@ -58,17 +61,17 @@ public interface AxisService extends Remote {
     /**
      * pass for admin
      */
-    String PASSWORD="password";
+    String PASSWORD = "password";
 
-    String WEBAPP="webapp";
+    String WEBAPP = "webapp";
 
 
-    String ADMIN_SERVICE="adminService";
+    String ADMIN_SERVICE = "adminService";
 
     //serviceName extends String;
-    String SERVICE_NAME="serviceName";
+    String SERVICE_NAME = "serviceName";
 
-    String PORT="port";
+    String PORT = "port";
 
     /**
      * runtime attr: path to WSDL. Usually service path plus servicename a query string
@@ -78,7 +81,7 @@ public interface AxisService extends Remote {
 
     String TRANSPORT = "transport";
 
-    String PROTOCOL ="protocol";
+    String PROTOCOL = "protocol";
 
-    String HOSTNAME="hostname";
+    String HOSTNAME = "hostname";
 }

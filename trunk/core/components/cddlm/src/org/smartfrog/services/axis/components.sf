@@ -96,6 +96,12 @@ AxisServiceSchema extends Schema {
 
 
 /**
+ * now define an axis service. this is a service that
+ * deploys and undeploys axis.
+ *
+ * Note that an Axis service does not by default include any liveness tests;
+ * it is the role of other components (such as the liveness page) to do so.
+ *
  * this is non instantiable, but
  * sets the defaults for things
  */
@@ -113,11 +119,13 @@ AxisService extends Prim {
 
 /**
  * now define an axis service. this is a service that
- * tells the system what to run
+ * deploys and undeploys axis
  */
 AxisServiceResourceSchema extends AxisServiceSchema {
     //this is the axis configuration file for a service
-    descriptorResource extends String;
+    deployResource extends String;
+    //and the undeployment resource
+    undeployResource extends String;
 }
 
 AxisServiceResource extends AxisService {
