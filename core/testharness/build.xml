@@ -142,6 +142,9 @@ For more information: www.smartfrog.org
       source="1.4"
       classpathref="compile.classpath"
       />
+      <rmic includesfile="rmitargets" base="${test.classes.dir}">
+          <classpath refid="compile.classpath"/>
+    </rmic>
     <copy todir="${test.classes.dir}">
       <fileset dir="${test.src.dir}"
         includes="**/*.xml,**/*.dtd,**/*.xsd,**/*.sf,**/*.properties" />
