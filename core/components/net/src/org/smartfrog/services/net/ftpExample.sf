@@ -21,6 +21,6 @@ For more information: www.smartfrog.org
 #include "org/smartfrog/components.sf"
 #include "org/smartfrog/services/net/ftp.sf"
 
-sfConfig extends FTPClient {
+sfConfig extends Compound {
     sampleFTPClient FTPClient;
 }

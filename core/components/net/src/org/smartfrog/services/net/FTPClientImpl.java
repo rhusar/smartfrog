@@ -43,7 +43,7 @@ import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
-
+import org.smartfrog.sfcore.reference.Reference;
 /**
  * This SmartFrog FTP Component uses Apache commons net library. It can be 
  * used in SmartFrog workflows to upload/download text or binary files.
@@ -64,8 +64,10 @@ public class FTPClientImpl extends PrimImpl implements SFFTPClient {
     private String transferType =  "get"; //default
     private Vector remoteFileList =  null; //list of files to transfer
     private Vector localFileList =  null; //list of files to transfer
-    FTPClient ftpClient = null; // Apache commons net's FTPClient
-
+    private FTPClient ftpClient = null; // Apache commons net's FTPClient
+    
+    private Reference pwdProviderRef = new Reference("passwordProvider");
+    private PasswordProvider pwdProvider = null;
     /**
      * Constructs FTPClientImpl object.
      *
@@ -102,8 +104,8 @@ public class FTPClientImpl extends PrimImpl implements SFFTPClient {
             ftpClient = new FTPClient(); 
             int reply; 
             
-            // read password from password file
-            password = readPassword();
+            // get password from password provider
+            password = pwdProvider.getPassword();
             
             ftpClient.connect(ftpServer);
             
@@ -188,10 +190,10 @@ public class FTPClientImpl extends PrimImpl implements SFFTPClient {
         // Mandatory attributes 
         ftpServer = sfResolve(FTP_HOST, ftpServer, true);
         user = sfResolve(USER, user, true);
-        passwordFile = sfResolve(PASSWORD_FILE, passwordFile, true);
+        //passwordFile = sfResolve(PASSWORD_FILE, passwordFile, true);
         remoteFileList = sfResolve(REMOTE_FILES, remoteFileList, true);
         localFileList = sfResolve(LOCAL_FILES, localFileList, true);
-
+        pwdProvider = (PasswordProvider) sfResolve(pwdProviderRef);
         // optional attributes
         transferType = sfResolve(TRANSFER_TYPE, transferType, false);
         transferMode = sfResolve(TRANSFER_MODE, transferMode, false);

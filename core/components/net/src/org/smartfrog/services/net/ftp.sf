@@ -19,39 +19,49 @@ For more information: www.smartfrog.org
 */
 
 #include "org/smartfrog/components.sf"
+#include "org/smartfrog/services/net/password.sf"
 
 /**
  * SmartFrog FTP component can be used in workflows to send and retrieve 
  * ascii and binary files.
  * Default transfer mode is ascii.
- * Due to security reasons it accepts password written in a file. 
  */
 
-FTPClient extends Prim {
-    sfClass "org.smartfrog.services.net.FTPClientImpl";
-    
-    // name of FTP host
-    ftpHost "ebnt171.india.hp.com";
-    
-    // login name in remote FTP server
-    username "ashish";
+FTPClient extends Compound {
+    PasswordProvider extends Password {
+    }
+    FTP extends Prim {
+        /* ========================================================
+         * Mandatory attributes 
+         *=========================================================
+         */
+        sfClass "org.smartfrog.services.net.FTPClientImpl";
+        
+        // name of FTP host
+        ftpHost "ebnt171.india.hp.com";
+        
+        // login name in remote FTP server
+        username "ashish";
 
-    // path to password file
-    // Full path is preferable else ensure that path is relative to
-    // the directory from where daemon has been started
-    passwordFile "e:\\cvs\\forge\\may03\\core\\smartfrog\\password.txt";
-    
-    // two possible values are "get" and "put" 
-    transferType "put";
-    //transferType "get";
+        // reference to password provider
+        passwordProvider LAZY PARENT:PasswordProvider;
 
-    // two possible values are "ascii" and "binary"
-    //transferMode "ascii";
-    transferMode "binary";
-    
-    // vector of local files 
-    localFiles ["e:\\temp\\ftptest\\core.zip","e:\\temp\\anatomy.pdf"];
+        // vector of local files 
+        localFiles ["e:\\temp\\one.txt","e:\\temp\\two.txt"];
 
-    // vector of remote files corresponding to local files.
-    remoteFiles ["/home/ashish/tmp/core.zip","/home/ashish/tmp/anatomy.pdf"];
+        // vector of remote files corresponding to local files.
+        remoteFiles ["/home/ashish/tmp/one.txt",
+                     "/home/ashish/tmp/two.txt"];
+        /* ========================================================
+         * Optional attributes 
+         *=========================================================
+         */
+         // two possible values are "get" and "put" 
+        //transferType "put";
+        transferType "get";
+
+        // two possible values are "ascii" and "binary"
+        //transferMode "binary";
+        transferMode "ascii";
+    }
 }
