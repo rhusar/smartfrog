@@ -22,7 +22,7 @@ package org.smartfrog.services.shellscript;
 
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import java.util.Vector;
+import java.util.List;
 
 /**
  * Iterface that provides the API to the script comopnent, allowing
@@ -38,9 +38,9 @@ import java.util.Vector;
  * the ScriptResult interface is returned, and this can be queried to find if the script has
  * compelted and obtain the resultant output, both error and normal.
  *
- * Commands to be executed are passed in as a vector the following format.
+ * Commands to be executed are passed in as a list the following format.
  * Each element is either a string, in which case it is treated as a command, or
- * a vector in which case the command is the space-separated "toString" of its elements.
+ * a list in which case the command is the space-separated "toString" of its elements.
  */
 public interface ScriptExecution {
     /**
@@ -59,9 +59,9 @@ public interface ScriptExecution {
     public ScriptLock lockShell(long timeout) throws SmartFrogException;
 
     /**
-     * submit  a vector of commands to the shell
+     * submit  a list of commands to the shell
      *
-     * @parameter commands the vector of commands
+     * @parameter commands the list of commands
      * @parameter lock the lock object receieved from the lockShell
      *
      * @returns the "future" ScriptResult implementation that allows the code to
@@ -70,7 +70,7 @@ public interface ScriptExecution {
      * @throws SmartFrogException if the lock object is not valid, i.e. if it is
      * not currently holding the l0ck
      */
-    public ScriptResults execute(Vector commands, ScriptLock lock) throws SmartFrogException;
+    public ScriptResults execute(List commands, ScriptLock lock) throws SmartFrogException;
 
     /**
      * relaese the lock on the shell
@@ -83,9 +83,9 @@ public interface ScriptExecution {
     public void releaseShell(ScriptLock lock) throws SmartFrogException;
 
     /**
-     * submit  a vector of commands to the shell as a single atomic lock/execute/unlock
+     * submit  a list of commands to the shell as a single atomic lock/execute/unlock
      *
-     * @param commands the vector of commands
+     * @param commands the list of commands
      * @param timeout max number of miliseconds to obtain the lock:
      *    0 is don't wait,
      *    -1 is wait forever
@@ -96,5 +96,5 @@ public interface ScriptExecution {
      * @throws SmartFrogException  if the lock is not obtained in the requisite
      * time
      */
-    public ScriptResults execute(Vector commands, long timeout) throws SmartFrogException;
+    public ScriptResults execute(List commands, long timeout) throws SmartFrogException;
 }

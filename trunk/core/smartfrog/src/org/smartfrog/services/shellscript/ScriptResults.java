@@ -22,7 +22,7 @@ package org.smartfrog.services.shellscript;
 
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import java.util.Vector;
+import java.util.List;
 
 /**
  * Iterface to the "future" object returned from submiting an execute request
@@ -30,8 +30,8 @@ import java.util.Vector;
  *
  * The resuts are structured in the vector of three elements as follows:
  *   first the result code of the final command in the vector - 0 if not supported in shell,
- *   second a vector of lines on stdout - empty if not supported in shell,
- *   third a vector of lines on stderr - empty if not supported in shell.
+ *   second a list of lines on stdout - empty if not supported in shell,
+ *   third a list of lines on stderr - empty if not supported in shell.
  */
 public interface ScriptResults {
     /**
@@ -49,11 +49,11 @@ public interface ScriptResults {
      * @returns a vector of results:
      * The resuts are structured in the vector of three elements as follows:
      *   first the result code of the final command in the vector - 0 if not supported in shell,
-     *   second a vector of lines on stdout - empty if not supported in shell,
-     *   third a vector of lines on stderr - empty if not supported in shell.
+     *   second a list of lines on stdout - empty if not supported in shell,
+     *   third a list of lines on stderr - empty if not supported in shell.
      *
      * @throws SmartFrogException if the results are not ready in time
      */
-    public Vector waitForResults(long timeout) throws SmartFrogException;
+    public List waitForResults(long timeout) throws SmartFrogException;
 
 }
