@@ -897,9 +897,9 @@ class Server {
         Vector tempConnections = (Vector) connections.clone();
 
         // Close all open connections
-        for (Enumeration enum = tempConnections.elements();
-                enum.hasMoreElements();) {
-            Connection connection = (Connection) enum.nextElement();
+        for (Enumeration connections = tempConnections.elements();
+                connections.hasMoreElements();) {
+            Connection connection = (Connection) connections.nextElement();
             connection.terminate();
         }
 
