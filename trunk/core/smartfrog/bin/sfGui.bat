@@ -23,13 +23,13 @@ rem set JAVA_HEAP_SIZE=64
 
 call "%SFHOME%\bin\setSFProperties"
 
-if defined srcDir set CLASSPATH=./lib/jdatastore.license;%srcDir%;%classpath%
+if defined srcDir set CLASSPATH=%srcDir%;%classpath%
 
-cd %SFHOME%
+cd "%SFHOME%"
 
-if exist "%SFHOME%\jre\bin\java.exe" set path=%SFHOME%\jre\bin
+if exist "%SFHOME%\jre\bin\java.exe" set path="%SFHOME%\jre\bin"
 
-java -cp %CLASSPATH% org.smartfrog.tools.gui.browser.SFGui %1 %2
+java -cp "%CLASSPATH%" org.smartfrog.tools.gui.browser.SFGui %1 %2
 
 cd %originalDir%
 set CLASSPATH=%originalClassPath%
