@@ -20,7 +20,6 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.parser;
 
-import java.rmi.RemoteException;
 import java.util.Vector;
 
 import org.smartfrog.sfcore.common.SmartFrogCompilationException;
@@ -47,7 +46,7 @@ public interface Phases {
      * @throws SmartFrogException error evaluating phases
      * @throws RemoteException In case of Remote/nework error
      * */
-    Phases sfResolvePhases() throws SmartFrogException, RemoteException;
+    Phases sfResolvePhases() throws SmartFrogException;
 
     /**
      * Evaluate the phase given in the parameter.
@@ -60,7 +59,7 @@ public interface Phases {
      * @throws RemoteException In case of Remote/nework error
      */
     Phases sfResolvePhase(String phase)
-        throws SmartFrogException, RemoteException;
+        throws SmartFrogException;
 
     /**
      * Evaluate the phases given in the parameter.
@@ -73,7 +72,7 @@ public interface Phases {
      * @throws RemoteException In case of Remote/nework error
      */
     Phases sfResolvePhases(Vector phases)
-        throws SmartFrogException, RemoteException;
+        throws SmartFrogException;
 
     /**
      * Return the phases required to be evaluated.
