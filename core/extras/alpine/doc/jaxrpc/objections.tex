@@ -17,7 +17,7 @@ We chose the term \emph{O/X mapping problem} to emphasise the
 similarities it has with the heavily studied O/R mapping
 problem\footnote{ \emph{"Object-relational mapping is the Vietnam of
 Computer Science"} - Ted Neward. He means that it's a problem you can
-never declare victory over, merely invest more and more effort to get
+never declare victory over, merely invest more and more effort in to get
 deeper into the quagmire.
 %http://www.neward.net/ted/weblog/index.jsp?date=20041003#1096871640048
 }.  There is less experience in mapping between XML and objects, and
@@ -32,8 +32,8 @@ messages. Read or write between attributes and class fields, bind to
 children and the conversion is complete. If only it were so
 straightforward. Here are just some of the problems:
 
-\todo{ideally each of these is discussed in a separate subsection
-the list should be adapted to be exhaustive. we can omit detail
+\todo{Ideally, each of these is discussed in a separate subsection
+the list should be adapted to be exhaustive. We can omit detail
 discussion of any that are especially obvious.}
 
 \begin{itemize}
@@ -58,11 +58,18 @@ We discuss some of these points in the following sections.
 
 One particular problem is that the language of XML Schema is much
 richer than the object model of Java. In Java, inheritance can extend
-a type, and change some existing semantics, but
-inheritance-by-restriction is not explictly supported. Whereas in XML
-Schema, it is simple to declare that a dog is a mammal with four legs,
-and a three legged dog is a restriction where the number of legs must
-be three.
+a type, and change some existing semantics, but derivation by
+restriction is not explictly supported. Java, in common with many
+object oriented programming environments, allows derived types to
+expand upon the capabilities of their parents, but not to decrease
+those capabilities.
+
+In the XML schema language, it is natural to declare that a dog is a
+mammal with four legs, and that a three legged dog is a restriction
+where the number of legs must be three. In Java this type of
+relationship cannot be explicitly modelled. \tocheck{As a more concrete
+example, consider declaring that a {\tt Shape} has a {\tt getArea()}
+method, and that a {\tt Point} is a {\tt Shape} without such a method}.
 
 \todo{This section would benefit from a discussion of why the
 fundamental differences in the type systems of the two representations
@@ -90,17 +97,17 @@ This is a simple example of how O/X mapping should work. Except, what if the
 value of the one of the enumeration types is a reserved word, such as in the
 lifecycle state machine we wrote:
 
-{\tt
- <xsd:simpleType name="lifecycleStateEnum">
-    <xsd:restriction base="xsd:string">
-      <xsd:enumeration value="initialized"/>
-      <xsd:enumeration value="running"/>
-      <xsd:enumeration value="failed"/>
-      <xsd:enumeration value="terminated"/>
-      <xsd:enumeration value="null"/>
-    </xsd:restriction>
-  </xsd:simpleType>
-}
+\begin{verbatim}
+<xsd:simpleType name="lifecycleStateEnum">
+  <xsd:restriction base="xsd:string"> 
+    <xsd:enumeration value="initialized"/> 
+    <xsd:enumeration value="running"/> 
+    <xsd:enumeration value="failed"/> 
+    <xsd:enumeration value="terminated"/> 
+    <xsd:enumeration value="null"/> 
+  </xsd:restriction>
+</xsd:simpleType>
+\end{verbatim}
 
 One element in the enumeration is reserved, \verb|null|, so the
 enumeration must now enumerate all states as \verb|value1|,

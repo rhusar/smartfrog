@@ -1,21 +1,37 @@
 \section{Alpine: a proposed alternative}
+\label{alpine}
 
 We are in the preliminary stages of designing an alternative SOAP
 stack for Java, by the name of \emph{Alpine}.
 
 \subsection{Manifesto}
+\label{alpine:manifesto}
 
-Our goal is a SOAP stack that is easy to use, client or server, 
-\emph{by Java developers who know XML}. 
+\tocheck{Our goal is to create a SOAP stack that is easy to use, robust, and
+maintainable. In order to do this, we opt to step away from the
+JAX-RPC, towards an approach which is XML centric. In avoiding O/X
+mapping we greatly decrease the volume and complexity of our code.
+Some may argue this will make Alpine more difficult to use, but
+experience shows us that simpler systems are typically more
+straightforward to work with, as they react in more predictable ways}.
 
-There will be no attempt to perform O/X mapping, so bypassing all the
-related problems. Similarly, a WSDL file must be hand written if it is
-desired, so there is no need (or option) to generate one through
-introspection.
+If a WSDL description of an Alpine-hosted service is required, the
+user will be required to write it: \tocheck{as we concluded in section
+\ref{objections:o-x:wsdl-gen} generating WSDL from Java introduces
+unwanted implementation dependencies and hampers interoperability.}
 
-Developers will be expected to use XPath specifications to work with
-contents of the message; we well depend upon XOM for our XML binding
+What will Alpine consist of then? With so much stripped out, a SOAP
+stack gets reduced to its essentials: a system for managing the flow
+of messages through a set of handlers, and libraries to handle
+transport across supported the protocols. Core compliance with the
+SOAP protocol will be provided, namely envelope validation and
+\verb|mustUnderstand| processing of headers. Developers will be
+expected to use XPath specifications to work with contents of the
+message; we will depend upon XOM for our XML binding
 \cite{harold:xom}.
+
+\subsection{Design Goals}
+\label{alpine:design}
 
 The full design goals are as follows:
 
@@ -40,13 +56,6 @@ These are delegated to other products.
 By removing extraneous yet useful features, we introduce dependencies
 on many other components to work correctly. Yet we also reduce
 development and support effort.
-
-What is alpine going to consist of then? With so much stripped out, a
-SOAP stack gets reduced to its essentials: a system for managing the
-flow of messages through a set of handlers, and transports libraries
-to handle transport across supported protocols. Core compliance with
-the SOAP protocol would be provided: envelope validation,
-\verb|mustUnderstand| processing of headers. 
 
 This is not going to be a SOAP stack for use by anyone who wants to
 make SOAP operations look like a remote procedure call; it is not
