@@ -23,6 +23,8 @@ import junit.framework.TestCase;
 
 import java.io.File;
 import java.rmi.RemoteException;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 import org.smartfrog.SFSystem;
 import org.smartfrog.sfcore.common.SmartFrogException;
@@ -115,10 +117,12 @@ public abstract class SmartfrogTestBase extends TestCase {
                 new ConfigurationDescriptor(appName, testURL,
                                             ConfigurationDescriptor.Action.
                                             DEPLOY, hostname, null);
-            Object deployedApp = SFSystem.runConfigurationDescriptor(cfgDesc);
+            Object deployedApp = SFSystem.runConfigurationDescriptor(cfgDesc,true);
 
             if (deployedApp instanceof Prim) {
             // No Exception
+                fail("We expected an exception here:"+exceptionName
+                +" but got an instance of "+deployedApp);
             } else if (deployedApp instanceof ConfigurationDescriptor) {
                 Object exception = ((ConfigurationDescriptor)deployedApp).
                     resultException;
@@ -190,29 +194,46 @@ public abstract class SmartfrogTestBase extends TestCase {
      * @throws RemoteException in the event of remote trouble.
      */
     protected Prim deployExpectingSuccess(String testURL, String appName)
-                                                    throws RemoteException {
-        Prim app = null;
-
-        try {
-
-            ConfigurationDescriptor cfgDesc =
+                                                    throws Exception,Throwable {
+        ConfigurationDescriptor cfgDesc =
                 new ConfigurationDescriptor(appName, testURL,
-                     ConfigurationDescriptor.Action.DEPLOY, hostname, null);
-            Object deployedApp = SFSystem.runConfigurationDescriptor(cfgDesc);
+                        ConfigurationDescriptor.Action.DEPLOY, hostname, null);
+        try {
+            Object deployedApp = SFSystem.runConfigurationDescriptor(cfgDesc,true);
 
             if (deployedApp instanceof Prim) {
-               return ((Prim) deployedApp);
-           } else if (deployedApp instanceof ConfigurationDescriptor) {
-                   Object exception = ((ConfigurationDescriptor)deployedApp).
-                       resultException;
-                   if ((exception!=null)&& (exception instanceof SmartFrogException)) {
-                       fail("Unable to deploy component, Error:"+
-                              ((SmartFrogException)exception).getMessage());
-                   }
-               }
-        }catch (SmartFrogException sfEx) {
-            fail("Unable to deploy component, Error:"+ sfEx.getMessage());
+                return ((Prim) deployedApp);
+            } else if (deployedApp instanceof ConfigurationDescriptor) {
+                Throwable exception = ((ConfigurationDescriptor)deployedApp).
+                        resultException;
+                if (exception!=null); {
+                    throw exception;
+                }
+            }
+        } catch (Throwable throwable) {
+            logChainedException(throwable);
+            throw throwable;
         }
-        return app;
+        fail("something odd came back");
+        //fail throws a fault; this is here to keep the compiler happy.
+        return null;
+    }
+
+    /**
+     * a Java1.4 log
+     */
+    private Logger log=Logger.getLogger(this.getClass().getName());
+
+    /**
+     * log a chained exception if there is one; do nothing if not.
+     * There because JUnit 3.8.1 is not aware of chaining (yet), presumably
+     * through a need to work with pre1.4 stuff
+     * @param throwable
+     */
+    protected void logChainedException(Throwable throwable) {
+        Throwable cause = throwable.getCause();
+        if(cause!=null) {
+            log.log(Level.SEVERE,"nested fault in "+throwable,cause);
+        }
     }
 }
