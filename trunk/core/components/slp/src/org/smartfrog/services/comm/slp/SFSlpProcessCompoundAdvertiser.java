@@ -29,5 +29,6 @@ package org.smartfrog.services.comm.slp;
 import java.rmi.Remote;
 
 public interface SFSlpProcessCompoundAdvertiser extends Remote {
+    public static final String PC_SERVICE_TYPE = "service:sf-processcompound";
 
 }

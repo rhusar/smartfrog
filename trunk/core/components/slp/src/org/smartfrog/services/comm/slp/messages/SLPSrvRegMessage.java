@@ -38,22 +38,22 @@ import java.io.*;
 
 /**
     This class represents a Service registration message.
- 
+ <pre>
   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  |         Service location header (function = SrvReg = 3)       |
  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- |                         <URL Entry>                           \
+ |                          URL Entry                            \
  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- | Length of service type string |          <service type>       \
+ | Length of service type string |           service type        \
  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- |    Length of <scope-list>     |         <scope-list>          \
+ |     Length of scope-list      |          scope-list           \
  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- |    Length of <attr-list>      |         <attr-list>           \
+ |     Length of attr-list       |          attr-list            \
  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  |# of AttrAuths |  Attribute Authentication blocks (if any)     \
  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- 
+ </pre>
  Note that authentication blocks are not currently supported
  by this implementation.
  

@@ -37,18 +37,18 @@ import org.smartfrog.services.comm.slp.util.SLPUtil;
 /**
     Implements the Service Deregistration message.
     This is sent from a SA to a DA when a service is to be deregistered.
- 
+ <pre>
   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  |           Service location header (function = SrvDeReg = 4)   |
  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- |   Length of <scope-list>      |             <scope-list>      \
+ |    Length of scope-list       |              scope-list       \
  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  |                          URL Entry                            \
  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- |     Length of <tag-list>      |             <tag-list>        \
+ |      Length of tag-list       |              tag-list         \
  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- 
+ </pre>
 */
 public class SLPSrvDeregMessage extends SLPMessageHeader {
     private static final int FUNCTION = SLPMessageHeader.SLPMSG_SRVDEREG;

@@ -79,8 +79,12 @@ public class SFSlpPrimLocatorImpl extends SFSlpLocatorImpl implements Prim, SFSl
     private Prim getPrimFromURL(ServiceURL url) {
         Prim toReturn = null;
         try {
-            toReturn = (Prim)sfResolveWithParser(url.getURLPath().substring(1));
-        }catch(Exception ex) { }
+            toReturn = (Prim)url.getURLPathObject();
+            toReturn.sfPing(this);
+        }catch(Exception ex) { 
+            // either not a correct URL, or the remote object has died.
+            toReturn = null; 
+        }
         
         return toReturn;
     }

@@ -27,10 +27,22 @@
 package org.smartfrog.services.comm.slp;
 
 import java.rmi.Remote;
+import java.rmi.RemoteException;
+import java.util.Vector;
 
 /**
 Interface for the ObjectAdvertiser component.
 */
 public interface SFSlpObjectAdvertiser extends Remote {
+    public static final String SERVICE_PREFIX = "service:";
     
+    /**
+        Register an object with the advertiser.
+    */
+    public void registerObject(Object o, String type, Vector attributes, int lifetime) throws ServiceLocationException, RemoteException;
+    
+    /**
+        Deregister an object.
+    */
+    public void deregisterObject(Object o) throws ServiceLocationException, RemoteException;
 }

@@ -31,26 +31,59 @@ import org.smartfrog.sfcore.reference.*;
 import org.smartfrog.sfcore.common.*;
 
 import java.rmi.RemoteException;
+import java.util.Vector;
+import java.util.Iterator;
 
 /**
 Advertises any serializable java object.
  The object is made part of the URL, and a copy can be created from the URL
  when a service reply is received.
  */
-public class SFSlpObjectAdvertiserImpl extends SFSlpAdvertiserImpl implements Prim, SFSlpObjectAdvertiser {
-    protected Object toAdvertise = null;
-    
+public class SFSlpObjectAdvertiserImpl extends SFSlpAdvertiserImpl implements Prim, SFSlpObjectAdvertiser {    
     public SFSlpObjectAdvertiserImpl() throws RemoteException {
         super();
     }
     
-    public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
-        // try {
-        super.sfDeploy();  
-        // get the object to advertise
-        toAdvertise = sfResolve("toAdvertise");
+    protected void buildURLs(Vector toAdvertise, Vector serviceTypes, Vector lifetimes) throws SmartFrogException, RemoteException {
+        Iterator srvIter = toAdvertise.iterator();
+        Iterator typeIter = serviceTypes.iterator();
+        Iterator lifeIter = lifetimes.iterator();
         
-        // create URL path (string representation of object)
-        serviceLocation = "/" + ServiceURL.objectToString(toAdvertise);
-    }  
+        while(srvIter.hasNext()) {
+            Object obj = srvIter.next();
+            if(obj instanceof Reference) {
+                obj = sfResolve((Reference)obj);
+            }
+                        
+            String location = ServiceURL.objectToString(obj);
+            String sType = (String)typeIter.next();
+            if(!sType.startsWith(SERVICE_PREFIX)) sType = SERVICE_PREFIX+sType;
+            int lifetime = ((Integer)lifeIter.next()).intValue();
+            
+            ServiceURL url = new ServiceURL(sType+":///"+location, lifetime);
+            serviceURLs.add(url);
+        }
+    }
+    
+    public void registerObject(Object obj, String type, Vector attributes, int lifetime) throws ServiceLocationException {
+        String location = ServiceURL.objectToString(obj);
+        String sType = type;
+        if(!sType.startsWith(SERVICE_PREFIX)) sType = SERVICE_PREFIX+sType;
+        
+        ServiceURL url = new ServiceURL(sType+":///"+location, lifetime);
+        advertiser.register(url, attributes);
+        serviceURLs.add(url);
+    }
+    
+    public void deregisterObject(Object obj) throws ServiceLocationException {
+        Iterator iter = serviceURLs.iterator();
+        while(iter.hasNext()) {
+            ServiceURL u = (ServiceURL)iter.next();
+            Object o = u.getURLPathObject();
+            if(o.equals(obj)) {
+                advertiser.deregister(u);
+                iter.remove();
+            }
+        }
+    }
 }

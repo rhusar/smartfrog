@@ -26,8 +26,21 @@
 
 package org.smartfrog.services.comm.slp;
 
+import org.smartfrog.sfcore.prim.Prim;
 import java.rmi.Remote;
+import java.rmi.RemoteException;
+import java.util.Vector;
 
 public interface SFSlpPrimAdvertiser extends Remote {
-
+    public static final String PRIM_SERVICE_TYPE = "service:sf-prim";
+    
+    /**
+        Registers the given prim with the advertiser.
+    */
+    public void registerPrim(Prim p, String type, Vector attributes, int lifetime) throws ServiceLocationException, RemoteException;
+    
+    /**
+        Deregister the Prim.
+    */
+    public void deregisterPrim(Prim p) throws ServiceLocationException, RemoteException;
 }

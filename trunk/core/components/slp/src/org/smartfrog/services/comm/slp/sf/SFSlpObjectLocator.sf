@@ -44,17 +44,10 @@ SFSlpObjectLocator extends SFSlpLocator {
     serviceType ("service:" ++ concreteType);
 }
 
-SFSlpReferenceLocator extends SFSlpObjectLocator {
-    serviceType ("service:sf-reference:" ++ concreteType);
-}
-
 SFSlpObjectVLocator extends SFSlpObjectLocator {
     locator_return_all true;
 }
 
-SFSlpReferenceVLocator extends SFSlpReferenceLocator {
-    locator_return_all true;
-}
 
 
 

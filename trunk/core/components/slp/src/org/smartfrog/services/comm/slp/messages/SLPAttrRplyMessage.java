@@ -38,18 +38,18 @@ import java.io.IOException;
 
 /**
 This class represents the SLP Attribute reply message.
- 
+ <pre>
   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  |       Service Location Header (function = AttrRply = 7)       |
  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- |         Error code            |    length of <attr-list>      |
+ |         Error code            |     length of attr-list       |
  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- |                         <attr-list>                           \
+ |                          attr-list                            \
  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  |# of AttrAuths |  Attribute Authentication Block (if present)  \
  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- 
+</pre>
  Note that authentication blocks are currently not supported by this
  implementation.
  

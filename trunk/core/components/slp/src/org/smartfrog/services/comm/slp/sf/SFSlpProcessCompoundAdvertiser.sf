@@ -32,9 +32,17 @@ SFSlpProcessCompoundAdvertiser extends SFSlpAdvertiser {
     // implementation
     sfClass "org.smartfrog.services.comm.slp.SFSlpProcessCompoundAdvertiserImpl";
     
-    concreteType ""; // the concrete service type.
-    // complete service type will be service:sf-processcompound:concreteType
-   
-    serviceType ("service:sf-processcompound:" ++ concreteType);
+    serviceTypes [""];
+    serviceLifetimes [-1];
+    serviceAttributes [ [] ];
+    
+    /*
+    The ProcessCompound advertiser does not care about the toAdvertise Vector, so 
+    it is safe to leave this empty (default).
+    The advertiser can only advertise ONE processcompound. So one serviceType should be given.
+    The service type is a single word.
+    e.g. serviceTypes ["pcadv"];
+    The full service type will automatically become service:sf-processcompound:pcadv (in this case).
+    */
 }
 

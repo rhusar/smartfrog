@@ -27,7 +27,22 @@
 package org.smartfrog.services.comm.slp;
 
 import java.rmi.Remote;
+import java.rmi.RemoteException;
+import java.util.Vector;
 
 public interface SFSlpAdvertiser extends Remote {
-
+    public static final String ATTRIB_SRVTYPE = "serviceTypes";
+    public static final String ATTRIB_TO_ADVERTISE = "toAdvertise";
+    public static final String ATTRIB_LIFETIME = "serviceLifetimes";
+    public static final String ATTRIB_ATTRIBUTES = "serviceAttributes";
+    
+    /**
+    Registers a service with the advertiser component.
+    */
+    public void register(ServiceURL url, Vector attributes) throws ServiceLocationException, RemoteException;
+    
+    /**
+    Deregisters a service.
+    */
+    public void deregister(ServiceURL url) throws ServiceLocationException, RemoteException;
 }

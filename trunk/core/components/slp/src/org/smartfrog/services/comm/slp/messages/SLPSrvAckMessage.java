@@ -37,14 +37,14 @@ import java.util.*;
     This class represents a SrvAck message.
     It offers the ability to write the message to an output stream, and read
     data back from an input stream.
- 
+ <pre>
   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  |          Service location header (function = SrvAck = 5)      |
  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  |       Error Code              |
  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- 
+ </pre>
 */
 public class SLPSrvAckMessage extends SLPMessageHeader {
     /**

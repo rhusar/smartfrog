@@ -26,79 +26,87 @@
 
 package org.smartfrog.services.comm.slp;
 
-import org.smartfrog.sfcore.prim.*;
-import org.smartfrog.sfcore.reference.*;
-import org.smartfrog.sfcore.common.*;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.common.SmartFrogException;
 
 import java.rmi.RemoteException;
+import java.rmi.server.RemoteStub;
+import java.util.Vector;
+import java.util.Iterator;
 
 /**
     Implements a SF advertiser for Prim components.
     The component to advertise is given in the description file.
 */
 public class SFSlpPrimAdvertiserImpl extends SFSlpAdvertiserImpl implements Prim, SFSlpPrimAdvertiser {
-    protected Prim toAdvertise = null;
-    protected Reference toAdvertiseRef = null;
-    protected ServiceURL referenceURL = null;
-    protected String referenceServiceType;
-    protected boolean advertiseComponent;
-    protected boolean advertiseReference;
-    
+   // protected Prim toAdvertise = null;
+        
     public SFSlpPrimAdvertiserImpl() throws RemoteException {
         super();
     }
     
-    // lifecycle methods...
-    public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
-        try {
-            super.sfDeploy();  
-            // get the component to advertise
-            toAdvertise = (Prim)sfResolve("toAdvertise");
-            referenceServiceType = (String)sfResolve("referenceServiceType");
-            advertiseComponent = ((Boolean)sfResolve("advertiseComponent")).booleanValue();
-            advertiseReference = ((Boolean)sfResolve("advertiseReference")).booleanValue();
+    protected void buildURLs(Vector toAdvertise, Vector serviceTypes, Vector lifetimes) throws SmartFrogException, RemoteException {
+        Iterator srvIter = toAdvertise.iterator();
+        Iterator typeIter = serviceTypes.iterator();
+        Iterator lifeIter = lifetimes.iterator();
+        
+        while(srvIter.hasNext()) {
+            Prim p = (Prim)sfResolve( (Reference)srvIter.next() );
+            RemoteStub s;
+            if(p instanceof RemoteStub) s = (RemoteStub)p;
+            else s = (RemoteStub)((PrimImpl)p).sfExportRef();
             
-            if(referenceServiceType.endsWith(":")) 
-                referenceServiceType = referenceServiceType.substring(0, referenceServiceType.length()-1);
+            String location = ServiceURL.objectToString(s);
+            String sType = (String)typeIter.next();
+            if(sType.indexOf(":") != -1) {
+                throw new SmartFrogException("SLP: The given service type for a Prim should be a single word.");
+            }    
             
-            toAdvertiseRef = toAdvertise.sfCompleteName();
+            if(sType.equals("")) sType = PRIM_SERVICE_TYPE;
+            else sType = PRIM_SERVICE_TYPE+":"+sType;
             
-            // build service URL
-            if(advertiseComponent) serviceLocation = "/" + toAdvertiseRef.toString();
-            else if(advertiseReference) {
-                serviceType = referenceServiceType;
-                serviceLocation = "/" + ServiceURL.objectToString(toAdvertiseRef);
-            }
-        }catch(Exception e) {
-            e.printStackTrace();
-            throw (SmartFrogException)SmartFrogException.forward(e);
-        }
-    }  
-    
-    public synchronized void sfStart() throws SmartFrogException, RemoteException {
-        super.sfStart();
-        if(advertiseComponent && advertiseReference) {
-            // need to advertise the reference since only one is 
-            // handled by the super class.
-            try {
-                // create url from type + location
-                referenceURL = new ServiceURL(referenceServiceType, toAdvertiseRef, serviceLifetime);
-                advertiser.register(referenceURL, serviceAttributes);
-            }catch(Exception ex) {
-                throw (SmartFrogException) SmartFrogException.forward(ex);
-            }
+            int lifetime = ((Integer)lifeIter.next()).intValue();
+            
+            ServiceURL url = new ServiceURL(sType+":///"+location, lifetime);
+            serviceURLs.add(url);
         }
     }
     
-    public synchronized void sfTerminateWith(TerminationRecord r) {
-        if(advertiseComponent && advertiseReference) {
-            // stop advertising reference.
-            try {
-                advertiser.deregister(referenceURL);
-            }catch(ServiceLocationException ex) { }
+    public void registerPrim(Prim p, String type, Vector attributes, int lifetime) throws ServiceLocationException {
+        RemoteStub s;
+        try {
+            if(p instanceof RemoteStub) s = (RemoteStub)p;
+            else s = (RemoteStub)((PrimImpl)p).sfExportRef();
+        }catch(SmartFrogException ex) {
+            throw new ServiceLocationException(ServiceLocationException.INVALID_REGISTRATION,
+                                               "Failed to get RemoteStub for Prim");
         }
         
-        super.sfTerminateWith(r);
+        String location = ServiceURL.objectToString(s);
+        if(type.indexOf(":") != -1) {
+            throw new ServiceLocationException(ServiceLocationException.INVALID_REGISTRATION,
+                                               "Service type not valid");
+        }
+        String srvType = PRIM_SERVICE_TYPE;
+        if(!type.equals("")) srvType += ":"+type;
+        
+        ServiceURL url = new ServiceURL(srvType+":///"+location, lifetime);
+        advertiser.register(url, attributes);
+        serviceURLs.add(url);
+    }
+    
+    public void deregisterPrim(Prim p) throws ServiceLocationException {
+        Iterator iter = serviceURLs.iterator();
+        while(iter.hasNext()) {
+            ServiceURL u = (ServiceURL)iter.next();
+            Prim prim = (Prim)u.getURLPathObject();
+            if(prim.equals(p)) {
+                advertiser.deregister(u);
+                iter.remove();
+            }
+        }
     }
 }   
 
