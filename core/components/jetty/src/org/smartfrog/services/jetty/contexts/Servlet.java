@@ -1,7 +1,7 @@
 package org.smartfrog.services.jetty.contexts;
 
 import java.rmi.RemoteException;
-
+import java.io.File;
 import org.mortbay.http.HttpServer;
 import org.mortbay.jetty.servlet.ServletHttpContext;
 import org.smartfrog.sfcore.common.Logger;
@@ -57,12 +57,13 @@ public class Servlet extends CompoundImpl implements ServletContextIntf {
        jettyhome = jettyHelper.findJettyHome();
        contextPath = sfResolve(contextPathRef, contextPath, true);
        resourceBase = sfResolve(resourceBaseRef,resourceBase, true);
-       resourceBase = (resourceBase.startsWith("/")
-            ? jettyhome.concat(resourceBase) : resourceBase);
+       if (! new File(resourceBase).exists()){ 
+         resourceBase = jettyhome.concat(resourceBase);
+       }
        classPath = sfResolve(classPathRef, classPath, false);
        if ( classPath != null) {
-       classPath = (classPath.startsWith("/")
-            ? jettyhome.concat(classPath) : classPath);
+	       if (!new File(classPath).exists())
+		       classPath = jettyhome.concat(classPath);
        }
        super.sfDeploy();      
        }

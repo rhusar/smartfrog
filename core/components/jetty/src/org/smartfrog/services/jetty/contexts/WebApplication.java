@@ -71,8 +71,8 @@ public class WebApplication extends PrimImpl implements JettyWebApplicationConte
        //if the file exists, it does not need to be anywhere
        webApp = sfResolve(webAppRef, webApp, false);
        if (webApp != null) {
-       webApp = (webApp.startsWith("/")
-            ? jettyhome.concat(webApp) : webApp);
+	       if (!new File(webApp).exists())
+		       webApp = jettyhome.concat(webApp);
        }
        //no webapp? look for the warfile
        if (webApp == null) {
