@@ -63,8 +63,10 @@
       <property name="xsd.path" 
         value="${component.package.path}/xsd"/>
 
+      <property name="xsd.dir"
+        location="${src.dir}/${xsd.path}"/>
       <property name="cddlm.xsd"
-        location="${src.dir}/${xsd.path}/cddlm.xsd" />
+        location="${xsd.dir}/cddlm.xsd" />
 
 
     </target>
@@ -183,7 +185,7 @@
     <!-- ========================================================== -->
     <!-- deploy; requires a host -->
     <!-- ========================================================== -->
-    <target name="deploy" depends="parse,dist,init-deploy-properties,undeploy"
+    <target name="deploy" depends="parse,dist,init-deploy-properties,undeploy,start-daemon-if-needed"
         description="deploy">
         <sf-tourl property="target.jar.url" file="${target.jar}">
             <fileset dir="${lib.dir}">
@@ -199,7 +201,7 @@
             <codebase url="${target.jar.url}"/>
             
             <application name="${application.name}">
-#include "org/smartfrog/services/cddlm/cddlm_on_jetty.sf"
+#include "/org/smartfrog/services/cddlm/api/standalone.sf"
   sfCodeBase PROPERTY org.smartfrog.codebase;         
             </application>
         </sf-deploy>
@@ -222,19 +224,24 @@
     <target name="init-soap" depends="init,init-deploy-properties,import-axis-tasks,init-proxy" >
       <!-- SOAP properties -->
       <property name="deploymentAPI.wsdl"
-        location="${src.dir}/${xsd.path}/deploymentAPI.wsdl" />
+        location="${xsd.dir}/deploymentAPI.wsdl" />
       <property name="callbackAPI.wsdl"
-        location="${src.dir}/${xsd.path}/callbackAPI.wsdl" />        
+        location="${xsd.dir}/callbackAPI.wsdl" />
       <property name="mapping.file"
-        location="${src.dir}/${xsd.path}/namespace-package-mapping.properties" />
-        
+        location="${xsd.dir}/namespace-package-mapping.properties" />
+      <property name="client.mapping.file"
+        location="${xsd.dir}/client-mapping.properties"/>
+
       <property name="soapapi.touch.file"
         location="${build.dir}/soapapi-uptodate.txt" />
 
       <property name="build.soap.dir" location="${build.dir}/soap"/>
-      
+      <property name="build.soap.client.dir" location="${build.dir}/soap/"/>
+
       <property name="soapapi.touch.file"
         location="${build.soap.dir}/soapapi-uptodate.txt" />
+      <property name="soapapi.client.touch.file"
+        location="${build.soap.dir}/soapapi.client-uptodate.txt"/>
       <property name="soap.server.dir" location="${build.soap.dir}/server"/>
       <property name="soap.client.dir" location="${build.soap.dir}/client"/>
       
@@ -324,9 +331,10 @@
       typemappingversion="1.2"
       implementationClassName="org.smartfrog.services.cddlm.api.DeploymentEndpoint"
       />
+    <!-- here the callback API is defined (client side -we are a caller-) -->
     <axis-wsdl2java
       output="${soap.server.dir}"
-      serverside="true"
+      serverside="false"
       url="${callbackAPI.wsdl}"
       verbose="true"
       all="false"
@@ -343,21 +351,72 @@
       />
    <!-- now delete the stub endpoint implementation classes in the generated file tree -->
    <!-- as we use the one in the main codebase, and want to eliminate confusion -->
-   <delete dir="${soap.server.dir}/org.smartfrog/services/cddlm/api" />  
+   <delete dir="${soap.server.dir}/org/smartfrog/services/cddlm/api" />
    <touch file="${soapapi.touch.file}"/>
   </target>
 
- 
+  <!-- =================================================================== -->
+  <!-- generate server WSDL from our WSDL document-->
+  <!-- =================================================================== -->
+
+  <target name="client-wsdl" depends="check-soapapi"
+    unless="soapapi.client.uptodate"
+    description="create server classes from WSDL">
+    <axis-wsdl2java
+      output="${soap.client.dir}"
+      serverside="false"
+      url="${deploymentAPI.wsdl}"
+      verbose="true"
+      all="false"
+      testcase="true"
+      namespacemappingfile="${client.mapping.file}"
+      skeletondeploy="false"
+      helpergen="false"
+      failonnetworkerrors="true"
+      noimports="false"
+      debug="false"
+      printstacktraceonfailure="false"
+      typemappingversion="1.2"
+      />
+    <axis-wsdl2java
+      output="${soap.client.dir}"
+      serverside="true"
+      url="${callbackAPI.wsdl}"
+      verbose="true"
+      all="false"
+      testcase="false"
+      namespacemappingfile="${client.mapping.file}"
+      skeletondeploy="true"
+      helpergen="true"
+      failonnetworkerrors="true"
+      noimports="false"
+      debug="false"
+      printstacktraceonfailure="false"
+      typemappingversion="1.2"
+      implementationClassName="org.cddlm.client.callbacks.CallbackEndpoint"
+      />
+    <!-- now delete the stub endpoint implementation classes in the generated file tree -->
+    <!-- as we use the one in the main codebase, and want to eliminate confusion -->
+    <delete dir="${soap.client.dir}/org/cddlm/client/callbacks"/>
+    <touch file="${soapapi.client.touch.file}"/>
+  </target>
+
   <!-- ========================================================== -->
   <!-- generate Dotnet client -->
+  <!-- for .NET only, not mono, as mono's WSDL is not up to the job, yet -->
   <!-- ========================================================== -->
    <target name="dotnet-client-wsdl" depends="init-soap,check-soapapi"
       unless="dotnet.uptodate"
       description="create the client-side C# code" >
-   
-     <wsdltodotnet URL="${deploymentAPI.wsdl.url}"
+
+     <wsdltodotnet srcfile="${deploymentAPI.wsdl}"
       destFile="${soap.dotnet.proxy.class}"
-      />
+      >
+       <schema file="${xsd.dir}/deployApiSchema.xsd"/>
+       <schema file="${xsd.dir}/ws-addressing.xsd"/>
+       <schema file="${xsd.dir}/WS-BaseFaults.xsd"/>
+       <schema file="${xsd.dir}/jsdl.xsd"/>
+     </wsdltodotnet>
    </target>
 
    
@@ -423,9 +482,12 @@
    <sf-junit
            errorProperty="test.failed"
            failureProperty="test.failed"
+           includeAntRuntime="true"
            >
         <sysproperty key="test.classes.dir"
             value="${test.classes.dir}" />
+     <sysproperty key="java.endorsed.dirs"
+       path="${lib.dir}"/>
      <classpath>
        <path refid="tests.run.classpath" />
      </classpath>

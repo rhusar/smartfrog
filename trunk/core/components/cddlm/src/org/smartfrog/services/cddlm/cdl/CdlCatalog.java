@@ -24,6 +24,9 @@ import org.apache.commons.logging.LogFactory;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.SAXNotSupportedException;
+import org.xml.sax.SAXNotRecognizedException;
 
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerException;
@@ -32,6 +35,7 @@ import javax.xml.transform.stream.StreamSource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.Iterator;
 
 /**
  * created Jul 15, 2004 3:58:11 PM
@@ -46,10 +50,23 @@ public class CdlCatalog implements URIResolver, EntityResolver {
 
     private static Log log = LogFactory.getLog(CdlCatalog.class);
 
+    private static final String XSD = "org/smartfrog/services/cddlm/xsd/";
+
+    private static final String CDDLM_MAPPINGS[] = {
+        Constants.CDL_NAMESPACE, Constants.CDDLM_XSD_FILENAME,
+        Constants.CDL_API_NAMESPACE, Constants.DEPLOY_API_SCHEMA_FILENAME,
+        Constants.WS_ADDRESSING_NAMESPACE, "ws-addressing.xsd",
+    };
+
     /**
      * where all the files really live
      */
-    private String packageBase = XSD;
+    private final static String packageBase = XSD;
+
+    /**
+     * property to set on the parser to fix a schema
+     */
+    public static final String SCHEMA_LOCATION = "http://apache.org/xml/properties/schema/external-schemaLocation";
 
     /**
      * map table
@@ -69,13 +86,6 @@ public class CdlCatalog implements URIResolver, EntityResolver {
         mappings = new HashMap();
     }
 
-    private static final String XSD = "org/smartfrog/services/cddlm/xsd/";
-
-    private static final String CDDLM_MAPPINGS[] = {
-        Constants.CDL_NAMESPACE, Constants.CDDLM_XSD_FILENAME,
-        Constants.CDL_API_NAMESPACE, Constants.DEPLOY_API_SCHEMA_FILENAME,
-        Constants.WS_ADDRESSING_NAMESPACE, "ws-addressing.xsd",
-    };
 
     /**
      * load in the standard CDDLM mappings
@@ -193,7 +203,6 @@ public class CdlCatalog implements URIResolver, EntityResolver {
             }
             return new InputSource(loader.loadResource(resource));
         }
-
     }
 
     /**
@@ -206,6 +215,10 @@ public class CdlCatalog implements URIResolver, EntityResolver {
         if ( !systemId.startsWith("file://") ) {
             return null;
         }
+        return extractLastPathElement(systemId);
+    }
+
+    private String extractLastPathElement(String systemId) {
         int lastSlash = systemId.lastIndexOf('/');
         if ( lastSlash == -1 ) {
             return null;
@@ -216,5 +229,37 @@ public class CdlCatalog implements URIResolver, EntityResolver {
         } else {
             return null;
         }
+    }
+
+    /**
+     * 	    parser.setProperty(
+     "http://apache.org/xml/properties/schema/external-schemaLocation",
+     "http: //domain.com/mynamespace mySchema.xsd");
+     * @param parser
+     */
+    public void setImportPaths(XMLReader parser)
+            throws SAXNotSupportedException, SAXNotRecognizedException {
+        String[] map= CDDLM_MAPPINGS;
+        StringBuffer buffer=new StringBuffer();
+        for (int i = 0; i < map.length; i += 2) {
+            String schema = map[i];
+            String filename = map[i + 1];
+            buffer.append(schema);
+            buffer.append(' ');
+            buffer.append(filename);
+            buffer.append(' ');
+        }
+        String s=new String(buffer);
+        parser.setProperty(SCHEMA_LOCATION, s);
+    }
+
+    /**
+     * bind an XML reader to this bunny
+     * @param parser
+     */
+    public void bind(XMLReader parser) throws SAXNotSupportedException,
+            SAXNotRecognizedException {
+        setImportPaths(parser);
+        parser.setEntityResolver(this);
     }
 }

@@ -45,12 +45,12 @@ public class DeploymentEndpoint extends SmartFrogHostedEndpoint
     /**
      * log for everything other than operations
      */
-    private static Log log = LogFactory.getLog(DeploymentEndpoint.class);
+    private static final Log log = LogFactory.getLog(DeploymentEndpoint.class);
 
     /**
      * log just for operational data
      */
-    private static Log operations = LogFactory.getLog(DeploymentEndpoint.class.getName() + ".OPERATIONS");
+    private static final Log operations = LogFactory.getLog(DeploymentEndpoint.class.getName() + ".OPERATIONS");
 
 
     public _deployResponse deploy(_deployRequest deploy)

@@ -34,9 +34,9 @@ public class CdlDocument {
     private Document document;
 
     private ParsingException exception;
-    public static final String ERROR_WRONG_NAMESPACE = "Document is not in CDL namespace";
+    public static final String ERROR_WRONG_NAMESPACE = "Cannot find the declaration of element 'cdl:cdl'";
     public static final String ERROR_WRONG_ROOT_ELEMENT = "Root element is not 'cdl'";
-    public static final String ERROR_BAD_PATHLANGUAGE = "unsupported path language";
+    public static final String ERROR_BAD_PATHLANGUAGE = "Attribute 'pathlanguage' is not allowed to appear in element 'cdl:cdl'";
     public static final String ERROR_NO_PATHLANGUAGE = "pathlanguage attribute not found";
 
 

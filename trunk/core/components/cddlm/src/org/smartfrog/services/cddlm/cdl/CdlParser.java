@@ -22,6 +22,7 @@ package org.smartfrog.services.cddlm.cdl;
 
 import nu.xom.Builder;
 import nu.xom.ParsingException;
+import nu.xom.Document;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
@@ -60,7 +61,7 @@ public class CdlParser {
 
         if ( validate ) {
             CdlCatalog resolver = new CdlCatalog(loader);
-            xerces.setEntityResolver(resolver);
+            resolver.bind(xerces);
         }
         builder = new Builder(xerces, validate);
     }
@@ -74,14 +75,21 @@ public class CdlParser {
      * @throws SAXException
      */
     private XMLReader createXercesParser(boolean validate) throws SAXException {
-        XMLReader xerces = XMLReaderFactory.createXMLReader("org.apache.xerces.parsers.SAXParser");
-        xerces.setFeature("http://apache.org/xml/features/validation/schema",
-                validate);
-        xerces.setFeature("http://apache.org/xml/features/validation/schema-full-checking",
-                validate);
-        xerces.setFeature("http://apache.org/xml/features/standard-uri-conformant", true);
-        xerces.setFeature("http://apache.org/xml/features/disallow-doctype-decl", false);
-        xerces.setFeature("http://xml.org/sax/features/external-general-entities", false);
+        XMLReader xerces = null;
+        try {
+            xerces = XMLReaderFactory.createXMLReader("org.apache.xerces.parsers.SAXParser");
+            xerces.setFeature("http://apache.org/xml/features/validation/schema",
+                    validate);
+            xerces.setFeature("http://apache.org/xml/features/validation/schema-full-checking",
+                    validate);
+            xerces.setFeature("http://apache.org/xml/features/standard-uri-conformant", true);
+            xerces.setFeature("http://apache.org/xml/features/disallow-doctype-decl", false);
+            xerces.setFeature("http://xml.org/sax/features/external-general-entities", false);
+        } catch (SAXException e) {
+
+            throw e;
+
+        }
         return xerces;
     }
 
@@ -108,7 +116,8 @@ public class CdlParser {
      * @throws ParsingException
      */
     public CdlDocument parseStream(InputStream instream) throws IOException, ParsingException {
-        return new CdlDocument(builder.build(instream));
+        Document doc = builder.build(instream);
+        return new CdlDocument(doc);
     }
 
     /**

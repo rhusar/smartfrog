@@ -82,23 +82,33 @@ public class CdlLoaderTest extends TestCase {
             if(text==null) {
                 text="";
             }
-            loading(filename);
-            CdlDocument doc=parser.parseResource(INVALID_RESOURCES+filename);
+            CdlDocument doc=load(INVALID_RESOURCES + filename);
+            fail("expected a validity failure with "+text);
         } catch (ParsingException e) {
             if(e.getMessage().indexOf(text)<0) {
+                log("expected "+text+" but got "+e.toString());
                 throw e;
             }
         }
     }
 
     private void loading(String filename) {
-        System.out.println(filename);
+        log(filename);
     }
 
+    public void log(String message) {
+
+    }
     protected void assertValid(String filename) throws IOException, ParsingException {
+        load(VALID_RESOURCES+filename);
+    }
+
+    protected CdlDocument load(String filename) throws IOException,
+            ParsingException {
         CdlDocument doc;
         loading(filename);
-        doc=parser.parseResource(VALID_RESOURCES+filename);
+        doc = parser.parseResource( filename);
+        return doc;
     }
 
     public void testWrongDocNamespace() throws Exception {
@@ -118,5 +128,15 @@ public class CdlLoaderTest extends TestCase {
         assertInvalid("wrong_root_elt_type.cdl", CdlDocument.ERROR_WRONG_ROOT_ELEMENT);
     }
 
+    public void testDuplicateNames() throws Exception {
+        CdlDocument doc = load(INVALID_RESOURCES + "duplicate-names.cdl");
+    }
 
+    public void testMissingFile() throws Exception  {
+        try {
+            assertInvalid("no-such-document.cdl","Not found");
+        } catch (IOException e) {
+            //expected
+        }
+    }
 }
