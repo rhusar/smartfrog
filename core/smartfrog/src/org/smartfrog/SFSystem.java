@@ -72,7 +72,7 @@ public class SFSystem implements MessageKeys {
     private static boolean alreadySystemInit = false;
 
     /** Core Log  */
-    private static  LogSF log = null;
+    private static  LogSF sflog = null;
 
     /**
      * value of the errror code returned during a failed exit
@@ -148,9 +148,9 @@ public class SFSystem implements MessageKeys {
             sysProps.put(key, props.get(key));
         }
         System.setProperties(sysProps);
-        if (log==null) log=LogFactory.sfGetProcessLog();
-        if (log.isTraceEnabled()){
-            log.trace("New system properties: " +sysProps.toString());
+        if (sflog==null) sflog=LogFactory.sfGetProcessLog();
+        if (sflog.isTraceEnabled()){
+            sflog.trace("New system properties: " +sysProps.toString());
         }
     }
 
@@ -311,15 +311,12 @@ public class SFSystem implements MessageKeys {
         try {
             initSystem();
         } catch (Exception ex) {
-            if (log==null) log=LogFactory.sfGetProcessLog();
+            if (sflog==null) sflog=LogFactory.sfGetProcessLog();
             try {
-                if (log.isErrorEnabled()) {
-                    log.error(ex);
+                if (sflog.isErrorEnabled()) {
+                    sflog.error(ex);
                 }
-            } catch (Exception ex1) {
-                ex1.printStackTrace();
-                ex.printStackTrace();
-            }
+            } catch (Exception ex1) {ex1.printStackTrace();}
             exitWithError();
         }
 
@@ -465,11 +462,11 @@ public class SFSystem implements MessageKeys {
             SFSecurity.initSecurity();
             // Read init properties
             readPropertiesFromIniFile();
-            if (log==null) log=LogFactory.sfGetProcessLog();
+            if (sflog==null) sflog=LogFactory.sfGetProcessLog();
             // Notify status of Security
             if (!SFSecurity.isSecurityOn()){
-                if (log.isWarnEnabled())
-                  log.warn("SmartFrog security is NOT active");
+                if (sflog.isWarnEnabled())
+                  sflog.warn("SmartFrog security is NOT active");
             }
             // Set stackTracing
             readPropertyLogStackTrace();
@@ -497,5 +494,6 @@ public class SFSystem implements MessageKeys {
         }
         return is;
     }
+
 
 }

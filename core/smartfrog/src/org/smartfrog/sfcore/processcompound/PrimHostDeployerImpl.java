@@ -30,6 +30,9 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimDeployerImpl;
 import org.smartfrog.sfcore.reference.Reference;
 
+import org.smartfrog.sfcore.logging.LogFactory;
+import org.smartfrog.sfcore.logging.LogSF;
+
 /**
  * Implements a specialized description deployer. This deployer uses the
  * sfProcessHost and sfRootLocatorPort attribute to locate the appropriate
@@ -41,6 +44,10 @@ import org.smartfrog.sfcore.reference.Reference;
  *
  */
 public class PrimHostDeployerImpl extends PrimDeployerImpl {
+
+    /** ProcessLog. This log is used to log into the core log: SF_CORE_LOG */
+    private LogSF  sflog = LogFactory.sfGetProcessLog();
+
     /** Efficiency holder of sfProcessHost attribute. */
     protected static final Reference refProcessHost =
         new Reference(SmartFrogCoreKeys.SF_PROCESS_HOST);
