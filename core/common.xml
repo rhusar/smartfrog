@@ -96,15 +96,32 @@
       <junit printsummary="no"
            fork="true"
            includeantruntime="true"
-           timeout="600"
+           showoutput="true"
            >
-        <assertions enableSystemAssertions="true"/>
+       <!-- turned off; ant bug # 27218  
+       <assertions enableSystemAssertions="true"/> -->
         <!-- #Tests take system property parameters -->
         <!-- #Formatters for capture and display -->
         <formatter type="xml"/>
         <formatter type="brief" usefile="false"/>
       </junit>
     </presetdef>
+    
+    
+    <macrodef name="sf-test-report">
+      <attribute name="data"/>
+      <attribute name="reports"/>
+      <attribute name="failed"/>
+      <sequential>
+        <junitreport todir="@{data}">
+        <fileset dir="@{data}">
+          <include name="TEST-*.xml"/>
+        </fileset>
+        <report format="frames" todir="@{reports}"/>
+        </junitreport>
+        <fail if="@{failed}">Unit tests failed see @{reports}</fail>
+      </sequential>
+    </macrodef>
     
     <!-- 
     Copy useful files from the source to dest directories. Use this for adding
@@ -143,7 +160,7 @@
     <property name="test.data.dir" location="${test.dir}/data"/>
     <property name="test.datafiles.dir" location="test/files"/>
     <property name="test.reports.dir" location="${test.dir}/reports"/>
-    <property name="test.src.dir" location="testcases" />
+    <property name="test.src.dir" location="test" />
     <mkdir dir="${test.dir}" />
     <mkdir dir="${test.classes.dir}" />
     <mkdir dir="${test.data.dir}" />
@@ -194,8 +211,8 @@
       Smartfrog tasks not found in 
       ${sftasks.fullpath}
     </fail>
-    <typedef uri="http://smartfrog.org/"
-      resource="org/smartfrog/tools/ant/tasks.xml"
+    <typedef 
+      resource="org/smartfrog/tools/ant/tasks.properties"
       classpathref="smartfrog.tasks.classpath"
       />
     
