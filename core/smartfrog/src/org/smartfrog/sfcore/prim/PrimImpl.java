@@ -105,6 +105,10 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
 
     /** Flag indicating that this component has been terminated. */
     protected boolean sfIsTerminated = false;
+    /** Flag indicating that this component termination is initiated. */
+    protected boolean sfIsTerminating = false;
+
+    boolean isTerminating = true;
 
     /** Flag indicating that this component has been deployed. */
     protected boolean sfIsDeployed = false;
@@ -773,6 +777,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     protected void terminateNotifying(TerminationRecord status, Prim comp) {
         // Provide ID to termination record
         // Note that it uses the name of the first component terminated not the actual caller id.
+
         if (status.id == null) {
             try {
                 status.id = this.sfCompleteNameSafe();
@@ -789,11 +794,10 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
         }
 
         synchronized (this) {
-            if (sfIsTerminated) {
+            if (sfIsTerminating) {
                 return;
             }
-            sfStopLivenessSender();
-            sfIsTerminated = true;
+            isTerminating = true;
         }
 
         try {
@@ -818,6 +822,13 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
         } catch (NoSuchObjectException ex) {
             // @TODO: Log. Ignore.
             Logger.logQuietly(ex);
+        }
+
+        synchronized (this) {
+            if (sfIsTerminated) {
+                return;
+            }
+            sfIsTerminated = true;
         }
 
     }
@@ -920,12 +931,16 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
      * @throws RemoteException for consistency with the {@link Liveness} interface
      */
     public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
-        if (sfIsTerminated) {
-            throw new SmartFrogLivenessException("Component Terminated");
-        }
 
         if ((source == null) || (sfParent == null)) {
+            if (sfIsTerminated) {
+                throw new SmartFrogLivenessException("Component Terminated");
+            }
             return;
+        }
+
+        if (sfIsTerminated && !source.equals(sfParent)) {
+            throw new SmartFrogLivenessException("Component Terminated");
         }
 
         if (source.equals(sfParent)) {
