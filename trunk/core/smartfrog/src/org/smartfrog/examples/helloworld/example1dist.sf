@@ -28,8 +28,11 @@ For more information: www.smartfrog.org
  * "myPrinter" on hostB
  */
 
-hostA "foo.hp.com";
-hostB "bar.hp.com";
+//hostA "foo.hp.com";
+//hostB "bar.hp.com";
+
+hostA "localhost";
+hostB "localhost";
 
 sfConfig extends Compound {  
     g extends Generator {
