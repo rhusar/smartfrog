@@ -168,7 +168,7 @@ public class SchemaDescription extends BasePredicate implements PhaseAction {
 
         try {
             description = (String) context.get(schemaDescription);
-            parent.sfAddAttribute("description",description);
+            parent.sfReplaceAttribute("description",description);
         } catch (Throwable e) {
             description = "";
         }

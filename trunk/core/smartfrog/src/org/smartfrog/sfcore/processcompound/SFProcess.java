@@ -290,14 +290,14 @@ public class SFProcess implements MessageKeys {
         for (Enumeration e = props.keys(); e.hasMoreElements();) {
             key = e.nextElement().toString();
             if (key.startsWith(SmartFrogCoreProperty.defaultDescPropBase)) {
-                // Collects all properties refering todefault descriptions that
+                // Collects all properties refering to default descriptions that
                 // have to be deployed inmediately after process compound
                 // is started.
                 url = (String)props.get(key);
                 name = key.substring(SmartFrogCoreProperty.defaultDescPropBase.length());
                 //SFSystem.deployFromURL(url,name, comp);
                 ComponentDescription cd = ComponentDescriptionImpl.sfComponentDescription(url);
-                compDesc.sfAddAttribute(name,cd); //.getContext().put(name,cd);
+                compDesc.sfReplaceAttribute(name,cd); //.getContext().put(name,cd);
             }
         }
     }
