@@ -27,7 +27,10 @@ import java.util.Properties;
 import java.util.Vector;
 
 import org.smartfrog.SFSystem;
+import org.smartfrog.sfcore.common.Context;
+import org.smartfrog.sfcore.common.ContextImpl;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
+import org.smartfrog.sfcore.common.OrderedHashtable;
 import org.smartfrog.sfcore.common.MessageKeys;
 import org.smartfrog.sfcore.common.MessageUtil;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
@@ -35,6 +38,7 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.common.Logger;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.parser.Phases;
 import org.smartfrog.sfcore.parser.SFParser;
 import org.smartfrog.sfcore.prim.Prim;
@@ -47,7 +51,7 @@ import sun.misc.SignalHandler;
 
 
 /**
- * Access point to the single allowed process compound for a VM. Itholds the
+ * Access point to the single allowed process compound for a VM. It holds the
  * single instance of the process compound. It also knows how to get
  * a process compound from a given host and process name by forwarding the
  * request to the process compound on that host. Thirdly it maintains a
@@ -85,9 +89,13 @@ public class SFProcess implements MessageKeys {
     /**
      * Base for process compound property names
      */
-    public static String propBase = SFSystem.propBase +
-        "sfcore.processcompound.";
+    public static String propBase = SFSystem.propBase +"sfcore.processcompound.";
 
+    /**
+     * Base for process compound default property names to load default
+     * descriptions
+     */
+    public static String defaultDescPropBase = propBase + "sfDefault.";
 
     private SFProcess (){
     }
@@ -167,14 +175,14 @@ public class SFProcess implements MessageKeys {
      * @exception Exception Failed to deploy component
      */
     protected static Prim deployComponent(ComponentDescription comp)
-        throws Exception {
+        throws SmartFrogException, RemoteException {
         Prim dComp = null;
 
         try {
             //comp.deployResolve();
             dComp = comp.deploy(null, null, null);
             dComp.sfDeploy();
-        } catch (Exception ex) {
+        } catch (SmartFrogException ex) {
             // Deployment failure, try terminating
             if (dComp != null) {
                 try {
@@ -185,7 +193,7 @@ public class SFProcess implements MessageKeys {
                 }
             }
 
-            throw (Exception) ex.fillInStackTrace();
+            throw (SmartFrogException) ex.fillInStackTrace();
         }
 
         return dComp;
@@ -204,7 +212,7 @@ public class SFProcess implements MessageKeys {
     protected static Prim startComponent(Prim comp) throws Exception {
         try {
             comp.sfStart();
-
+           //deployDefaultProcessDescriptions(comp);
             return comp;
         } catch (Exception ex) {
             Reference newRef = null;
@@ -215,13 +223,43 @@ public class SFProcess implements MessageKeys {
             }
 
             try {
-                comp.sfTerminate(TerminationRecord.abnormal(
-                        "Failed to start ", newRef));
+                TerminationRecord tr = TerminationRecord.abnormal(
+                        "Failed to start ", newRef);
+                Logger.log(newRef.toString(),tr,SmartFrogException.forward(ex));
+                comp.sfTerminate(tr);
             } catch (Exception termEx) {
                 // ignore
             }
 
             throw ex;
+        }
+    }
+
+    public static void deployDefaultProcessDescriptions(ProcessCompound comp)
+        throws SmartFrogException, RemoteException {
+        Properties props = System.getProperties();
+        Prim p;
+        Context nameContext = null;
+        String name =null;
+        String url=null;
+        String key=null;
+        for (Enumeration e = props.keys(); e.hasMoreElements();) {
+            key = e.nextElement().toString();
+            if (key.startsWith(defaultDescPropBase)) {
+                // Collects all properties refering todefault descriptions that
+                // have to be deployed inmediately after process compound
+                // is started.
+                url = (String)props.get(key);
+                name = key.substring(defaultDescPropBase.length());
+                nameContext = new ContextImpl();
+                nameContext.put("sfProcessComponentName", name);
+
+                //SFSystem.deployFromURL(url,name, comp);
+                ComponentDescription cd = getComponentDescription(url,null,null);
+                p = comp.sfDeployComponentDescription(null, null,cd,nameContext);
+                p.sfDeploy();
+                p.sfStart();
+            }
         }
     }
 
@@ -291,13 +329,18 @@ public class SFProcess implements MessageKeys {
 
         new InterruptHandler().bind("INT");
 
-        ComponentDescription descr = (ComponentDescription) getProcessCompoundDescription()
-                                                                .copy();
-        processCompound = (ProcessCompound) startComponent(deployComponent(
-                    descr));
+
+        ComponentDescription descr =
+              (ComponentDescription) getProcessCompoundDescription().copy();
+
+        processCompound = (ProcessCompound) startComponent(deployComponent(descr));
 
         return processCompound;
     }
+
+
+
+
 
     /**
      * Gets the description for the process compound. Retrieves the default
@@ -325,8 +368,11 @@ public class SFProcess implements MessageKeys {
 
         for (Enumeration e = props.keys(); e.hasMoreElements();) {
             String key = e.nextElement().toString();
+            if (key.startsWith(defaultDescPropBase)) {
 
-            if (key.startsWith(propBase)) {
+              // Ignore, will be use to deploy  default descriptions.
+
+            } else if (key.startsWith(propBase)) {
                 Object value = props.get(key);
 
                 try {
@@ -355,24 +401,78 @@ public class SFProcess implements MessageKeys {
      */
     public static ComponentDescription getCoreProcessCompoundDescription()
         throws SmartFrogException, RemoteException {
-        InputStream is = SFClassLoader.getResourceAsStream(
-                "org/smartfrog/sfcore/processcompound/processcompound.sf");
+        String urlProcessCompound =
+                "org/smartfrog/sfcore/processcompound/processcompound.sf";
+        Vector phases = new Vector();
+        phases.add("type");
+        phases.add("link");
+        return getComponentDescription(urlProcessCompound, phases, refProcessCompound);
+    }
+
+
+    /**
+     * Gets Component Description for URL after applying some parser phases
+     *
+     * @param String url to convert to ComponentDescription
+     * @param Vector parser phases to apply. If the vector is null, then all
+     *    the default phases are applied
+     * @param Rererence ref reference to resolve in Description.
+     *
+     * @return process compound description type and deployResolved
+     *
+     * @throws RemoteException In case of network/rmi error
+     * @throws SmartFrogRuntimeException In case of SmartFrog system error
+     */
+    public static ComponentDescription getComponentDescription(String url,
+                  Vector phases, Reference ref)
+        throws SmartFrogException, RemoteException {
+        InputStream is = SFClassLoader.getResourceAsStream(url);
 
         if (is == null) {
             throw new SmartFrogRuntimeException(MessageUtil.formatMessage(
                     MSG_INPUTSTREAM_NULL));
         }
 
-        Phases descr = (new SFParser("sf")).sfParse(is);
+        Phases descr = (new SFParser(getLanguageFromUrl(url))).sfParse(is);
+        if (phases==null) {
+            return descr.sfResolvePhases().sfAsComponentDescription();
+        } else {
+            descr.sfResolvePhases(phases);
+        }
 
-        Vector phases = new Vector();
-        phases.add("type");
-        phases.add("link");
-        descr.sfResolvePhases(phases);
+        if (ref==null) ref =  new Reference (SmartFrogCoreKeys.SF_CONFIG);
 
-        return (ComponentDescription) (descr.sfAsComponentDescription()
-                                            .sfResolve(refProcessCompound));
+        return (ComponentDescription) descr.sfAsComponentDescription().sfResolve(ref);
     }
+
+    /**
+     * Gets language grom the URL
+     *
+     * @param url URL passed to application
+     *
+     * @return Language string
+     *
+     * @throws SmartFrogException In case any error while getting the
+     *         language string
+     */
+    private static String getLanguageFromUrl(String url)
+        throws SmartFrogException {
+        if (url == null) {
+            throw new SmartFrogException(MessageUtil.formatMessage(
+                    MSG_NULL_URL));
+        }
+
+        int i = url.lastIndexOf('.');
+
+        if (i <= 0) {
+            // i.e. it cannot contain no "." or start with the only "."
+            throw new SmartFrogException(MessageUtil.formatMessage(
+                    MSG_LANG_NOT_FOUND, url));
+        } else {
+            return url.substring(i + 1);
+        }
+    }
+
 
     /**
      * Sets the description which will create the process compound if it has
