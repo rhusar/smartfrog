@@ -1,0 +1,17 @@
+#! /bin/sh
+if ! test $SFHOME; 
+then 
+    export SFHOME=$PWD;
+    echo SFHOME undefined, using $SFHOME as base directory;
+fi
+
+#for i in $SFHOME/lib/*.jar; do CLASSPATH=$i:$CLASSPATH; done
+#export CLASSPATH
+
+. $SFHOME/bin/setSFProperties
+if test $SFDEFAULTSF;
+then
+   export SFCMDPARAMETERS="$SFCMDPARAMETERS $SFDEFAULTSF"
+fi
+
+java -Dorg.smartfrog.sfcore.processcompound.sfProcessName=rootProcess $SFCMDPARAMETERS org.smartfrog.SFSystem $*
