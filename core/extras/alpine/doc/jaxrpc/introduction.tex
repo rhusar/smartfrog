@@ -8,14 +8,14 @@ characterise them as follows:
 \begin{enumerate}
 \item \textbf{simplicity}: It is intended to be easy to work with.
 \item \textbf{interoperability}: It is more interoperable than binary predecessors
+\item \textbf{XML-centric}: Built on XML, and intended to integrate
+with XML-based technologies.
 \item \textbf{extensibility}: \tocheck{The header construct allows extra data to be attached to a
 request, without breaking existing clients.}
 \item \textbf{self-describing}: Messages can contain type definitions alongside
 data, and provide human readable names.
 \item \textbf{flexibility}: Participants can handle variable amounts of
 incoming data.
-\item \textbf{XML-centric}: Inserting arbitrary XML inside a requests
-is easier.
 \item \textbf{long-haul}: It is designed to work through firewalls, over HTTP.
 \item \textbf{loosely-coupled}: Participants are not expected to share
 implementation code.
@@ -31,26 +31,65 @@ Communication with SOAP can be viewed as XML-based remote procedure
 calls, or as a way of submitting XML documents to remote URLs ( with
 optional responses coming back as XML documents). These two different
 perspectives represent the RPC-centric and message-centric
-viewpoints. An RPC-centric model appears to have become the primary
-focus of SOAP modelling in Java.
+viewpoints. The RPC-centric model has become the primary
+model of SOAP APIs in Java.
 
 The Java APIs representing the two different underlying perspectives
 are JAX-RPC\footnote{Java API for XML-based RPC}
-\cite{spec:JAX-RPC-11} and JAX-M\footnote{Java API for XML Messaging}
-\cite{spec:JAX-M-11}. In JAX-M, the developer works with the XML body
-of the message, in JAX-RPC all the details of how the message was
+\cite{spec:JAX-RPC-11} and JAXM\footnote{Java API for XML Messaging}
+\cite{spec:JAX-M-11}. 
+
+
+\subsubsection{JAXM}
+
+JAXM was written to support basic SOAP, and more complex scenarious
+such as asynchronous ebXML message exchange over SOAP, a requirement
+which introduces extra complexity to the design. 
+
+Over time, the ebXML focus of JAXM has declined, while the API itself
+has been renamed  SOAP with Attachments API for Java ---SAAJ \cite{spec:SAAJ-12}. 
+
+In JAXM/SAAJ, the developer has a Java interface, bound to a 
+class that represents the body of the message, with operations to
+manipulate the pieces. These operations include accessors and
+manipulators of the envelope, headers, the body and any binary attachments. In
+SAAJ, all these pieces of the model are accessed via interfaces which
+implement the DOM \cite{DOM} model of navigating around XML nodes.
+
+JAXM does not provide significant transport support. The primary method
+of receiving JAXM messages is to implement and deploy an HTTP servlet.
+The sole method of sending a servlet is to ask a
+\verb|SOAPConnectionFactory| for a \verb|SOAPConnection| instance, and
+then make a blocking call of the endpoint.
+
+JAXM is an orphan specification. Prior to it's SAAJ instantiation, it
+was too isolated from the rest of the Java XML APIs to be easy to use.
+It was also not oriented towards non-XML users, requiring detailed XML
+knowledge to work. Lacking any support for WSDL, it has received very
+little publicity, even though it could be more widely used.  
+
+\subsubsection{JAX-RPC}
+
+In JAX-RPC, all the details of how the message was
 encoded are hidden, and the developer works with Java objects created
 automatically from the XML data using a mapping process.
 
-JAX-M lives on in the form of \todo{.... finish this sentence!}
+Java classes can be automatically turned into SOAP endpoints, with each
+public method in the class exported as a SOAPAction; an operation with a
+request message and a response message. The message structure is
+described in a WSDL file, which can be hand-written, or automatically
+extracted from the Java classes through intospection.
 
-- there is no apparent work on a
-successor, with focus instead being placed on an improved version of
-JAX-RPC. JAX-RPC, in contrast, is widely implemented, both by open
+
+JAX-RPC is widely implemented, both by open
 source projects (for example Apache Axis \cite{axis}), and by
-commercial vendors like Sun, IBM and BEA.  The bias is such that, for
-Java development, SOAP has essentially become just an extension of
-XML-RPC \cite{spec:XML-RPC} with richer content.
+commercial vendors like Sun, IBM and BEA. The SOAP toolkits do all
+implement the appropriate version of JAXM/SAAJ to go alongside the RPC
+model, but this feature is not broadly covered. All the
+\emph{evangelisation} of SOAP focuses on JAXRPC, as do most of the
+examples in the vendors' documentation.
+
+The bias is such that, for Java development, JAXRPC is SOAP. 
 
 \subsection{The Hard Lessons of Service Implementation}
 \label{intro:experience}
@@ -58,7 +97,7 @@ XML-RPC \cite{spec:XML-RPC} with richer content.
 Both authors have recently been making independent implementations of
 a SOAP API for deployment. This API, specified in a set of XML Schema
 (XSD) \cite{spec:XSD} and Web Services Description Language (WSDL)
-files \cite{spec:WSDL} defines a service endpoint which providing
+files \cite{spec:WSDL-11} defines a service endpoint which providing
 seven operations. These operations permit suitably authenticated
 callers to deploy distributed applications to a grid fabric.
 

@@ -5,14 +5,13 @@
 \label{objections:o-x}
 
 O/X mapping\footnote{Object-XML mapping} attempts to turn an XML
-document into Java classes derived from the type information attached
-to nodes. This is distinct from the type of mapping performed by
-DOM\footnote{Document Object Model} implementations, in that the
-classes are ``serialised'' from the XML tree, not merely created to
-represent it (it is a semantic rather than syntactic mapping).  O/X
-mapping is an essential part of JAX-RPC, allowing method calls to be
-translated into SOAP requests, and responses translated back into Java
-objects.
+document into Java classes derived from the type information attached to
+nodes. This is distinct from the type of mapping performed by DOM
+implementations, in that the classes are ``serialised'' from the XML
+tree, not merely created to represent it (it is a semantic rather than
+syntactic mapping). O/X mapping is an essential part of JAX-RPC,
+allowing method calls to be translated into SOAP requests, and responses
+translated back into Java objects.
 
 We chose the term \emph{O/X mapping problem} to emphasise the
 similarities it has with the heavily studied O/R mapping
@@ -199,7 +198,12 @@ fault\footnote{Before we criticise faults, we must note that one of
 the authors has his name in the source of the {\tt AxisFault} class,
 so may not be without blame himself.}. To manage this is a somewhat
 complex process, as the class name of the fault must be exchanged as
-the fault code.
+the fault code. As faults are often immutable, the standard
+serialization mechanism of named getter and setter methods is replaced
+by one more exotic. Getter methods are used to extract the contents of a
+fault, a fault which must offer a constructor that takes every attribute
+in a parameter of the same name
+\footnote{this implicitly requires code to be built with debugging information.}. 
 
 We believe attempting to seamlessly marshall faults is a mistaken
 approach.  By propagating the still controversial ``declare all
