@@ -25,6 +25,7 @@ import org.smartfrog.tools.ant.Security;
 import org.apache.tools.ant.types.Reference;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
+import org.apache.tools.ant.taskdefs.Java;
 
 /**
  * Holder class for security for any task that needs it. This
@@ -83,5 +84,14 @@ public class SecurityHolder {
             return Security.resolveReference(owner.getProject(), securityRef);
         }
         return null;
+    }
+
+    /**
+     * apply whatever security settings are needed
+     */
+    public void addSecurityProperties(SmartFrogTask task) {
+        Security sec=getSecurity(task);
+        task.addSmartfrogProperty("","");
+
     }
 }
