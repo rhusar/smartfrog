@@ -298,24 +298,13 @@ public class SFSystem implements MessageKeys {
     }
 
     /**
-     * Runs  configuration descriptors
-     * @param cfgDescs Vector of ConfigurationDescriptors
-     * @see ConfigurationDescriptor
-     */
-    public static Object runConfigurationDescriptor(ConfigurationDescriptor configuration,
-                                                    boolean throwException) throws SmartFrogException {
-        //return runConfigurationDescriptorOld(configuration,throwException);
-        return runConfigurationDescriptorNew(configuration, throwException);
-
-    }
-    /**
      * run whatever action is configured
      * @param configuration
      * @param throwException
      * @return
      * @throws SmartFrogException
      */
-    public static Object runConfigurationDescriptorNew(ConfigurationDescriptor configuration,
+    public static Object runConfigurationDescriptor(ConfigurationDescriptor configuration,
                                                     boolean throwException) throws SmartFrogException {
 
         try {
