@@ -4,16 +4,15 @@
 \subsection{The O/X Mapping Problem}
 \label{objections:o-x}
 
-JAX-RPC attempts to turn an XML
-document into Java classes derived from the type information attached to
-nodes. This is distinct from the type of mapping performed by DOM
-implementations, in that the classes are ``serialised'' from the XML
-tree, not merely created to represent it (it is a semantic rather than
-syntactic mapping). This serialization/deserialization is an essential part of JAX-RPC,
-allowing method calls to be translated into SOAP requests, and responses
-translated back into Java objects.
+JAX-RPC attempts to turn an XML document into Java classes derived from the type
+information attached to nodes. This is distinct from the type of mapping
+performed by DOM implementations, in that the classes are ``serialised'' from
+the XML tree, not merely created to represent it (it is a semantic rather than
+syntactic mapping). This serialisation/deserialisation is an essential part of
+JAX-RPC, allowing method calls to be translated into SOAP requests, and
+responses translated back into Java objects.
 
-We believe that the term \emph{serialization} downplays the nature of
+We believe that the term \emph{serialisation} downplays the nature of
 the problem, likening it to the more tractable problem of creating a
 non-portable persistence format for a class. 
 
@@ -25,13 +24,12 @@ never declare victory over, merely invest more and more effort in to
 get deeper into the quagmire.
 %{\small \tt http://www.neward.net/ted/weblog/index.jsp?date=20041003#1096871640048}
 }. 
-Over a decade has been spent trying to map between records in 
-relational databases and language-level objects, and there is still no
-sign of an ideal solution.  
-There is significantly less experience in mapping between XML and objects, and
-rather than drawing on the experiences of the many failed attempts at
-O/R mapping, O/X mapping technologies appear destined to share a
-similar evolution.
+Over a decade has been spent trying to map between records in relational
+databases and language-level objects, and there is still no sign of an ideal
+solution. There is significantly less experience in mapping between XML and
+objects, and rather than drawing on the experiences of the many failed attempts
+at O/R mapping, O/X mapping technologies appear destined to share a similar
+evolution.
 
 At first glance, O/X mapping appears simple: create a Java object
 for each XML element, building a DAG\footnote{directed, acyclic graph}
@@ -56,25 +54,39 @@ identifiers differs between Java and XML.
 \subsubsection{XML Elements and Java Classes}
 \label{objections:o-x:xml-classes}
 
-The language of XML schema is much richer than the object model of
+The language of XMLSchema is much richer than the object model of
 Java. In Java, inheritance can extend a type, and change some existing
 semantics, but derivation by restriction is not explictly
 supported. Java, in common with many object oriented programming
 environments, allows derived types to expand upon the capabilities of
-their parents, but not to decrease them.
+their parents, but not to decrease them. That is, one can add attributes and
+methods, but not remove them. XML schema lets one extend a type by 
+restricting it, constraining attribute and element values.
 
-In the XML schema language, it is natural to declare that a dog is a
-mammal with four legs, and that a three legged dog is a restriction
-where the number of legs must be three. In Java this type of
-relationship cannot be explicitly modelled. \tocheck{As a more concrete
-example, consider declaring that a {\tt Shape} has a {\tt getArea()}
-method, and that a {\tt Point} is a {\tt Shape} without such a method}.
+This fundamental difference means that one cannot accurately model an
+XSD type hierarchy in a Java class hierarchy. All one can do is inaccurately
+model it. 
 
-\todo{This section would benefit from a discussion of why the
-fundamental differences in the type systems of the two representations
-mean that mappings, if achieved, will always be unstable. Some of the
-enumeration discussion below could migrate in here, but the
-enumeration discussion doesn't perhaps go far enough.}
+Here, for example, a postcode is modelled by restricting a string
+
+%\todo{more entertaining example. something like `us-beer' is a 
+%restriction of type `beer' where alcohol is a removed attribute}
+
+
+\begin{verbatim}
+<simpleType name="UKPostcode">
+ <restriction base="xsd:string">
+  <pattern value="[A-Z]{2}\d \d[A-Z]{2}"/>
+ </restriction>
+</simpleType>
+\end{verbatim}
+
+The actual result is going to be a simple class of type string; all restriction information
+will be lost in the transformation from WSDL to Java. 
+
+This is a fundamental difference, and one which would appear to remain
+intractible except in special cases addressed on a case-by-case
+basis.
 
 \subsubsection{Mapping XML Names to Java Identifiers}
 \label{objections:o-x:names}
@@ -97,19 +109,6 @@ generated code will no longer compile in the enhanced language. Such an
 upgrade will break any existing code that linked to classes using these
 names. 
 
-\subsubsection{Extension by Restriction}
-\label{objections:o-x:validation}
-
-XML is radically different from OO languages in that one can extend
-a type and remove features of the type in the process. 
-
-This is completely at odds with classes in conventional languages,
-where the act of subclassing results in a subclass that retains all the
-attributes of the superclass.
-
-This is a fundamental difference, and one which would appear to remain
-intractible except in special cases that are addressed on a case by case
-basis.
 
 \subsubsection{Enumerations}
 
@@ -381,6 +380,16 @@ XML documents with JAX-RPC serialisations is possible, but very hard
 work. In Apache Axis, DOM trees get recreated when assigning or
 extracting them from {\tt SoapMessageElement} implementations.
 
+Anonther consequence of the way the API gives the illusion of remote method
+invocation, could arguably be the appearance of specifications that present a
+``resource'' view of the remote system, where a remote resource consists of 
+attributes and operations: an object, by any other name. 
+A programming paradigm that presents remote services as local objects, may have
+created pressure to change the remote service model to match that local
+representation. The result is specifications such as WS-ResourceFramework
+\cite{spec:ws-rf}.
+ 
+
 % For the developers of proprietary implementations, this is not an
 % issue, and the inherent complexity of the implentation results in a
 % product the vendors can charge for. It is hard to get serialization,
@@ -392,7 +401,7 @@ extracting them from {\tt SoapMessageElement} implementations.
 \subsubsection{The Future}
 \label{objections:implications:future}
 
-JAX-RPC has moved to become the centerpiece of enterprise Java, in
+JAX-RPC has become a cornerstone of Enterprise Java, in
 which distributed communications based on RMI and CORBA are considered
 legacy protocols. That is not by itself a bad thing, but we believe
 that migration to web services should be done from a position of

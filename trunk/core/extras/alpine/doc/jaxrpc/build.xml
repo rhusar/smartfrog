@@ -86,9 +86,10 @@
         failonerror="true" 
         os="Linux">
       <arg file="jaxrpc.tex" />
-      <arg file="wsdl.tex" />
+      <arg file="abstract.tex" />
       <arg file="introduction.tex" />
       <arg file="objections.tex" />
+      <arg file="wsdl.tex" />
       <arg file="alpine.tex" />
     </exec>
   </target>      
