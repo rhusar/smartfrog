@@ -387,4 +387,13 @@ public class ConfigurationDescriptor implements MessageKeys{
         return resultType;
     }
 
+    public String getResultMessage() {
+        if (this.resultMessage!=null)
+            return resultMessage;
+        else if (this.resultException!=null)
+            return resultException.getMessage();
+        return "no message";
+    }
+
+
 }
