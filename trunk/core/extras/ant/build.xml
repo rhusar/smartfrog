@@ -44,7 +44,8 @@
     <copy-useful-files src="${src.dir}" dest="${build.classes.dir}" />
   </target>
   
-  <target name="dist" depends="compile">
+  <target name="dist" depends="compile"
+    description="make a distribution">
     <jar destfile="${target.jar}">
       <fileset dir="${build.classes.dir}" includes="**/*" />
     </jar>

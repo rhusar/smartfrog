@@ -28,10 +28,12 @@ import org.smartfrog.sfcore.common.Logger;
 import org.smartfrog.sfcore.common.MessageUtil;
 import org.smartfrog.sfcore.common.MessageKeys;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.ConfigurationDescriptor;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.common.ConfigurationDescriptor;
+import org.smartfrog.sfcore.processcompound.SFProcess;
 
 import java.rmi.RemoteException;
 
@@ -100,16 +102,21 @@ public class DeploymentEndpoint extends SmartfrogHostedEndpoint {
         }
         boolean remote= !"localhost".equalsIgnoreCase(hostname) ;
         try {
-            log.info("Deploying "+url+" to "+hostname);
-            SFSystem.runConfigurationDescriptor(
-              new ConfigurationDescriptor(application, url,
-                ConfigurationDescriptor.Action.DEPLOY,
-                hostname,null));
-            return "urn://"+ application;
+            ConfigurationDescriptor config=new ConfigurationDescriptor(application,url);
+            config.host=hostname;
+            config.setActionType(ConfigurationDescriptor.Action.DEPLOY);
+            log.info("Deploying " + url + " to " + hostname);
+            //deploy, throwing an exception if we cannot
+            SFProcess.getProcessCompound();
+            config.execute(SFProcess.getProcessCompound());
+            SFSystem.runConfigurationDescriptor(config,true);
+
+            //SFSystem.deployAComponent(hostname,url,application,remote);
+            return "urn://"+hostname+"/"+ application;
         } catch (SmartFrogException exception) {
             throw AxisFault.makeFault(exception);
-        } catch (Exception e) {
-            throw AxisFault.makeFault(e);
+        } catch (Exception exception) {
+            throw AxisFault.makeFault(exception);
         }
     }
 
