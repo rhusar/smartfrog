@@ -1,5 +1,7 @@
-release 3.04.005_beta CVS
+release 3.04.005_beta -> CVS
 ---------------------
+2004-Aug-24 New: srcDir renamed to SFUSERCLASSPATH in shell scripts.
+2004-Aug-24 Fix: sfBootTime attribute in rootProcess compound, now added during sfDeploy() lifecycle step
 2004-Aug-24 Fix: ; in setSFProperties. Script breaks when using srcDir variable.
 2004-Aug-23 Fix: race condition during component termination: sfPing and sfIsTerminated
 
