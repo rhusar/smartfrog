@@ -20,30 +20,27 @@
 package org.smartfrog.services.xml.impl;
 
 import nu.xom.Node;
-import nu.xom.XMLException;
 import nu.xom.ParentNode;
-import org.smartfrog.services.xml.interfaces.XmlNode;
 import org.smartfrog.services.xml.interfaces.LocalNode;
-import org.smartfrog.services.xml.interfaces.XmlElement;
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogLivenessException;
+import org.smartfrog.services.xml.interfaces.XmlNode;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
+import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.compound.CompoundImpl;
 import org.smartfrog.sfcore.prim.Prim;
 
 import java.rmi.RemoteException;
-import java.util.Enumeration;
 
 /**
  * Most of this class is an ugly cut and paste of {@link SimpleXmlNode}, now
- * with compound support added in. Blech.
+ * with compound support added in. Oh, for multiple inheritance :)
  */
-public abstract class CompoundXmlNode extends CompoundImpl implements XmlNode, LocalNode {
+public abstract class CompoundXmlNode extends CompoundImpl implements XmlNode,
+        LocalNode {
 
     /**
      * most of the work is delegated to the helper
      */
-    XmlNodeHelper helper = new XmlNodeHelper(this);
+    protected XmlNodeHelper helper = new XmlNodeHelper(this);
 
     public CompoundXmlNode() throws RemoteException {
     }
@@ -75,7 +72,7 @@ public abstract class CompoundXmlNode extends CompoundImpl implements XmlNode, L
         return helper.getNode();
     }
 
-    public  ParentNode getParentNode() {
+    public ParentNode getParentNode() {
         return (ParentNode) helper.getNode();
     }
 
@@ -92,7 +89,6 @@ public abstract class CompoundXmlNode extends CompoundImpl implements XmlNode, L
      * create a node of the appropriate type. This is called during deployment;
      *
      * @return a new node
-     *
      * @throws nu.xom.XMLException if needed
      */
     public abstract Node createNode() throws RemoteException,
@@ -125,14 +121,15 @@ public abstract class CompoundXmlNode extends CompoundImpl implements XmlNode, L
     }
 
     /**
-     * After calling the superclass (and so deploying all our children),
-     * we generate the XML
+     * After calling the superclass (and so deploying all our children), we
+     * generate the XML
      *
      * @throws org.smartfrog.sfcore.common.SmartFrogException
      *                                  error while deploying
      * @throws java.rmi.RemoteException In case of network/rmi error
      */
-    public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
+    public synchronized void sfDeploy() throws SmartFrogException,
+            RemoteException {
         super.sfDeploy();
 
         //now we add our children
@@ -144,28 +141,32 @@ public abstract class CompoundXmlNode extends CompoundImpl implements XmlNode, L
 
     /**
      * subclasses must implement their child processing logic here.
+     *
      * @throws SmartFrogException
      * @throws RemoteException
      */
-    protected abstract void addChildren() throws SmartFrogException, RemoteException ;
-
+    protected abstract void addChildren() throws SmartFrogException,
+            RemoteException;
 
 
     /**
      * add a child to this node.
+     *
      * @param node
      */
     public void appendChild(LocalNode node) {
-        Node xomNode=node.getNode();
+        Node xomNode = node.getNode();
         getParentNode().appendChild(xomNode);
     }
 
     /**
      * cast a prim to a {@link LocalNode} and add.
+     *
      * @param nodeAsPrim
      * @throws SmartFrogDeploymentException if of the wrong type
      */
-    public void appendChild(Prim nodeAsPrim) throws SmartFrogDeploymentException {
+    public void appendChild(Prim nodeAsPrim)
+            throws SmartFrogDeploymentException {
         if (!(nodeAsPrim instanceof LocalNode)) {
             throw new SmartFrogDeploymentException("not an XML tyoe",
                     nodeAsPrim);

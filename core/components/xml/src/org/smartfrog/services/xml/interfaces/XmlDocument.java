@@ -10,7 +10,12 @@ public interface XmlDocument extends XmlNode {
     /**
      * can be a string or a File instance/reference filename extends Optional
      */
-    static final String ATTR_FILENAME = "filename";
+    static final String ATTR_DESTFILE = "destFile";
+
+    /**
+     * can be a string or a File instance/reference filename extends Optional
+     */
+    static final String ATTR_SOURCEFILE = "sourceFile";
 
     /**
      * document type of type DocType; docType extends Optional

@@ -19,27 +19,31 @@
  */
 package org.smartfrog.services.xml.impl;
 
-import nu.xom.Node;
 import nu.xom.Document;
+import nu.xom.Node;
 import nu.xom.Serializer;
-import org.smartfrog.services.xml.interfaces.XmlDocument;
-import org.smartfrog.services.xml.interfaces.XmlElement;
-import org.smartfrog.services.xml.interfaces.LocalNode;
 import org.smartfrog.services.filesystem.FileImpl;
-import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.services.xml.interfaces.LocalNode;
+import org.smartfrog.services.xml.interfaces.XmlDocument;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
-import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.prim.Prim;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.rmi.RemoteException;
 import java.util.Enumeration;
-import java.io.*;
 
 /**
  * An XML Document. TODO
  */
 public class XmlDocumentImpl extends CompoundXmlNode implements XmlDocument {
+    public static final String ERROR_UNSUPPORTED_FEATURE = "Unsupported Feature";
 
     public XmlDocumentImpl() throws RemoteException {
     }
@@ -48,30 +52,31 @@ public class XmlDocumentImpl extends CompoundXmlNode implements XmlDocument {
      * create a node of the appropriate type. This is called during deployment;
      *
      * @return a new node
-     *
      * @throws nu.xom.XMLException if needed
      */
     public Node createNode() throws RemoteException, SmartFrogException {
         Prim root = resolveRoot();
         try {
-            XmlElementImpl element=(XmlElementImpl) root;
+            XmlElementImpl element = (XmlElementImpl) root;
             Document document = new Document(element.getElement());
             return document;
 
         } catch (ClassCastException e) {
             throw new SmartFrogRuntimeException(ATTR_ROOT
-                +"is not an XMLElement",e,this);
+                    + "is not an XMLElement", e, this);
 
         }
     }
 
-    private Prim resolveRoot() throws SmartFrogResolutionException, RemoteException {
+    private Prim resolveRoot() throws SmartFrogResolutionException,
+            RemoteException {
         Prim root = sfResolve(ATTR_ROOT, (Prim) null, true);
         return root;
     }
 
     /**
      * get the node typecast to a document
+     *
      * @return
      */
     public Document getDocument() {
@@ -80,21 +85,22 @@ public class XmlDocumentImpl extends CompoundXmlNode implements XmlDocument {
 
     /**
      * root is added when we create the document; this call does the others
+     *
      * @throws SmartFrogException
      * @throws RemoteException
      */
     protected void addChildren() throws SmartFrogException, RemoteException {
 
-        Prim root=resolveRoot();
+        Prim root = resolveRoot();
         //we still iterate through comments and things, but skip the root
         for (Enumeration e = sfChildren(); e.hasMoreElements();) {
             Object elem = e.nextElement();
-            if(!(elem instanceof Prim)) {
+            if (!(elem instanceof Prim)) {
                 continue;
             }
-            Prim p=(Prim) elem;
+            Prim p = (Prim) elem;
 
-            if (p instanceof LocalNode && p!=root) {
+            if (p instanceof LocalNode && p != root) {
                 LocalNode node = (LocalNode) elem;
                 appendChild(node);
             }
@@ -102,36 +108,49 @@ public class XmlDocumentImpl extends CompoundXmlNode implements XmlDocument {
     }
 
     /**
-     * After calling the superclass (and so deploying all our children),
-     * we generate the XML,
-     * Then save the document, if desired
+     * After calling the superclass (and so deploying all our children), we
+     * generate the XML, Then save the document, if desired
+     *
      * @throws org.smartfrog.sfcore.common.SmartFrogException
      *                                  error while deploying
      * @throws java.rmi.RemoteException In case of network/rmi error
      */
-    public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
+    public synchronized void sfDeploy() throws SmartFrogException,
+            RemoteException {
         super.sfDeploy();
 
         String encoding = sfResolve(ATTR_ENCODING, (String) null, true);
-        String filename = FileImpl.lookupAbsolutePath(this,
-                    ATTR_FILENAME,
-                    (String) null,
-                    null,
-                    false,
-                    null);
-        if(filename!=null) {
+        String sourceFilename = FileImpl.lookupAbsolutePath(this,
+                ATTR_SOURCEFILE,
+                (String) null,
+                null,
+                false,
+                null);
+        if (sourceFilename != null) {
+            throw new SmartFrogDeploymentException(ERROR_UNSUPPORTED_FEATURE,
+                    this);
+        }
+        String destFilename = FileImpl.lookupAbsolutePath(this,
+                ATTR_DESTFILE,
+                (String) null,
+                null,
+                false,
+                null);
+        if (destFilename != null) {
             //save to a file
+            getDocument().
         }
 
     }
 
-    protected void saveToFile(String filename,String encoding) throws IOException {
-        File file=new File(filename);
+    protected void saveToFile(String filename, String encoding)
+            throws IOException {
+        File file = new File(filename);
         FileOutputStream fileout;
         fileout = new FileOutputStream(file);
         OutputStream out;
         out = new BufferedOutputStream(fileout);
-        Serializer serializer=new Serializer(out,encoding);
+        Serializer serializer = new Serializer(out, encoding);
         serializer.write(getDocument());
     }
 }

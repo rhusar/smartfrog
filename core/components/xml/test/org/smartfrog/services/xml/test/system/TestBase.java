@@ -21,6 +21,12 @@
 
 package org.smartfrog.services.xml.test.system;
 
+import junit.framework.TestCase;
+
+/**
+ * base class for tests
+ */
 public abstract class TestBase extends TestCase {
-	
+
+
 }
