@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="forrest" default="default" basedir=".">
+<project name="forrestdocgeneration" default="default" basedir=".">
 
 
 <!--
@@ -37,11 +37,16 @@ For more information: www.smartfrog.org
 
   <property environment="env" />
   
-  <fail unless="${env.FORREST_HOME}">
+  <!--fail unless="${env.FORREST_HOME}">
   FORREST_HOME is not defined. 
   To create the documentation, you need Forrest 1.5.x on your system, and
   the environment variable FORREST_HOME set up to point to it.
-  </fail>
+  </fail-->
+
+	<property name="root.dir" location=".."  />
+
+	<!-- Import common stuff -->
+	<import file="${root.dir}/common.xml"/>
 
 	<property name="forrest.home"  location="${env.FORREST_HOME}"/>
   
@@ -49,15 +54,15 @@ For more information: www.smartfrog.org
 	<import file="${env.FORREST_HOME}/forrest.build.xml"/>
 	<import file="${env.FORREST_HOME}/forrest.antproxy.xml"/>
 	
-	<target name="init" depends="init-common,seed" >
+	<target name="init" depends="init-common" >
 		<echo level="verbose">Created forrest project template</echo>
     <property name="comp.home"  location="${smartfrog.components.dir}"/>
-    <property name="xdocs.dir"  location="${comp.home}/src/documentation/content/xdocs/smartfrogdoc"/>
+	 <property name="xdocs.skin.dir"  location="${comp.home}/src/documentation/content/xdocs"/>
+	 <property name="xdocs.dir"  location="${comp.home}/src/documentation/content/xdocs/smartfrogdoc"/>
     <property name="skin.dir" location="forrest_skin" />
     <macrodef name="forrest-component">
       <attribute name="component" description="component to copy"/>
-      <attribute name="includes" default="**/*" 
-        description="inclusion pattern; defaults to **/*"/>
+      <attribute name="includes" default="**/*" description="inclusion pattern; defaults to **/*"/>
       <sequential>
         <!--dest dir -->
         <mkdir dir="${xdocs.dir}/@{component}"/>
@@ -80,12 +85,25 @@ For more information: www.smartfrog.org
       file="${skin.dir}/forrest.properties" />
   </target>
   
-  <target name="prepare-docs" depends="seeedforrest,copy-properties">
+
+  	<target name="seedforrest" depends="seed" description="Creates forrest project template">
+		<echo>Created forrest project template</echo>
+			</target>
+			
+  <target name="prepare-docs" depends="seedforrest,copy-properties">
 		<mkdir dir="${xdocs.dir}"/>
+
 		<copy todir="${xdocs.dir}">
         <fileset dir="${skin.dir}">
 				 <include name="SFComponents.xml" />
 			</fileset>
+		</copy>	
+		<copy todir="${xdocs.skin.dir}">
+        <fileset dir="${skin.dir}">
+				 <include name="index.xml" />
+				 <include name="site.xml" />
+				 <include name="tabs.xml" />
+		</fileset>
 		</copy>	
     <forrest-component component="emailer" />
     <forrest-component component="jetty" />
@@ -96,15 +114,10 @@ For more information: www.smartfrog.org
     <forrest-component component="scripting" />
     <forrest-component component="slp" />
     <!-- <forrest-component component="cddlm" /> -->
-		<copy todir="${xdocs.dir}" overwrite="true">
-			<fileset file="${skin.dir}/site.xml" />
-			<fileset file="${skin.dir}/index.xml" />
-			<fileset file="${skin.dir}/tabs.xml" />
-		</copy>	
-	
-		<copy todir="${comp.home}/src/documentation" overwrite="true"
+
+	<copy todir="${comp.home}/src/documentation" overwrite="true"
       file="${skin.dir}/skinconf.xml">
-		</copy>
+	</copy>
     
     <copy todir="${xdocs.dir}/images">
 			<fileset dir="${skin.dir}">
@@ -117,8 +130,8 @@ For more information: www.smartfrog.org
  	</target>
 
     <target name="generate-site" depends="prepare-docs" >
-	  <ant target="site"/>
-  </target>
+	<antcall target="site"/>
+	</target>
     
     
 	<target name="copy-forrest-docs" depends="generate-site" >
