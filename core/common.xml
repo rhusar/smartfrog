@@ -50,9 +50,9 @@
     <!-- read these after the env settings -->
     <property file="${core.dir}/build.properties"/>
 
-    <fail unless="ant.home">Your IDE is not setting ant.home.
+<!--     <fail unless="ant.home">Your IDE is not setting ant.home.
         edit core/build.properties to set it to the base dir of Ant
-    </fail>
+    </fail> -->
     <property name="smartfrog.home" location="${core.dir}/smartfrog"/>
     <property name="smartfrog.dist.dir" location="${smartfrog.home}/dist" />
     <property name="smartfrog.dist.lib.dir" location="${smartfrog.dist.dir}/lib"/>
