@@ -1,5 +1,9 @@
 release 3.04.001_beta
 ---------------------
+2004-Aug-16 Add: New DATA keyword added to parser. Now "extends DATA" defines
+                 a ComponentDescription that won't be automatically deployed by
+                 the deployment engine.
+                 It is equivalent to "extend LAZY".
 2004-Aug-12 Add: SFClassLoader - Extra debugging messages with security.debug=true
 2004-Aug-12 Add: New methods to get access to attributes/values are now
                  available in Context/Prim/ComponentDescription:

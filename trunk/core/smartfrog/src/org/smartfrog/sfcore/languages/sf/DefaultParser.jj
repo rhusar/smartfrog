@@ -174,6 +174,7 @@ TOKEN : /* reserved words */
  | <UNIQUE: "--">
  | <EXTENDS: "extends">
  | <LAZY: "LAZY">
+ | <DATA: "DATA">
  | <ROOT: "ROOT">
  | <ATTRIB: "ATTRIB">
  | <HERE: "HERE">
@@ -324,7 +325,7 @@ Vector AttributeList() :
 }
 {
     res = AttributeListNoEOF() <EOF>
-	{ return res; }
+    { return res; }
 }
 
 /*
@@ -337,7 +338,7 @@ Reference Reference() :
 }
 {
     res = ReferenceNoEOF() <EOF>
-	{ return res; }
+    { return res; }
 }
 
 /*
@@ -406,9 +407,9 @@ void Name(Reference res) :
            res.addElement(ReferencePart.here("unique" + nextId++));
        }
      )
-    | 
+    |
      (
-       (t=<WORD> {res.addElement(ReferencePart.here(t.image));}) 
+       (t=<WORD> {res.addElement(ReferencePart.here(t.image));})
        [(<REFPARTSEP> Name(res))]
      )
 }
@@ -460,58 +461,58 @@ Object Operator() :
     String operator = "";
 }
 {
-    <OPSTART> 
-    ((<NOT> {operator = notOp; arity = 1;} a = SimpleValue() ) 
+    <OPSTART>
+    ((<NOT> {operator = notOp; arity = 1;} a = SimpleValue() )
      |
-     (a = SimpleValue() {v.add(a);}) [ 
-	 (	 
-	  ((<APPEND> {operator = appendOp; arity=0;}) (b = SimpleValue() {v.add(b);}) (<APPEND> (b = SimpleValue() {v.add(b);}))*) 
-         |((<CONCAT> {operator = concatOp; arity=0;}) (b = SimpleValue() {v.add(b);}) (<CONCAT> (b = SimpleValue() {v.add(b);}))*) 
-         |((<SUM> {operator = sumOp; arity=0;}) (b = SimpleValue() {v.add(b);}) (<SUM> (b = SimpleValue() {v.add(b);}))*) 
-         |((<TIMES> {operator = timesOp; arity=0;}) (b = SimpleValue() {v.add(b);}) (<TIMES> (b = SimpleValue() {v.add(b);}))*) 
-         |((<AND> {operator = andOp; arity=0;}) (b = SimpleValue() {v.add(b);}) (<AND> (b = SimpleValue() {v.add(b);}))*) 
-         |((<OR> {operator = orOp; arity=0;}) (b = SimpleValue() {v.add(b);}) (<OR> (b = SimpleValue() {v.add(b);}))*) 
+     (a = SimpleValue() {v.add(a);}) [
+     (
+      ((<APPEND> {operator = appendOp; arity=0;}) (b = SimpleValue() {v.add(b);}) (<APPEND> (b = SimpleValue() {v.add(b);}))*)
+         |((<CONCAT> {operator = concatOp; arity=0;}) (b = SimpleValue() {v.add(b);}) (<CONCAT> (b = SimpleValue() {v.add(b);}))*)
+         |((<SUM> {operator = sumOp; arity=0;}) (b = SimpleValue() {v.add(b);}) (<SUM> (b = SimpleValue() {v.add(b);}))*)
+         |((<TIMES> {operator = timesOp; arity=0;}) (b = SimpleValue() {v.add(b);}) (<TIMES> (b = SimpleValue() {v.add(b);}))*)
+         |((<AND> {operator = andOp; arity=0;}) (b = SimpleValue() {v.add(b);}) (<AND> (b = SimpleValue() {v.add(b);}))*)
+         |((<OR> {operator = orOp; arity=0;}) (b = SimpleValue() {v.add(b);}) (<OR> (b = SimpleValue() {v.add(b);}))*)
 
-	 |((<EQ> {operator = eqOp; arity=2;}) (b = SimpleValue()))
-	 |((<NE> {operator = neOp; arity=2;}) (b = SimpleValue()))
-	 |((<GE> {operator = geOp; arity=2;}) (b = SimpleValue()))
-	 |((<LE> {operator = leOp; arity=2;}) (b = SimpleValue()))
-	 |((<GT> {operator = gtOp; arity=2;}) (b = SimpleValue()))
-	 |((<LT> {operator = ltOp; arity=2;}) (b = SimpleValue()))
+     |((<EQ> {operator = eqOp; arity=2;}) (b = SimpleValue()))
+     |((<NE> {operator = neOp; arity=2;}) (b = SimpleValue()))
+     |((<GE> {operator = geOp; arity=2;}) (b = SimpleValue()))
+     |((<LE> {operator = leOp; arity=2;}) (b = SimpleValue()))
+     |((<GT> {operator = gtOp; arity=2;}) (b = SimpleValue()))
+     |((<LT> {operator = ltOp; arity=2;}) (b = SimpleValue()))
          |((<MINUS> {operator = minusOp; arity=2;}) (b = SimpleValue()))
          |((<DIV> {operator = divOp; arity=2;}) (b = SimpleValue()))
-	 )
+     )
       ]
     )
     <OPEND>
-    { 
-	if (operator.equals("")) {
-	    res = a;
-	} else {
-	    res = SFParser.componentFactory("default");
-	    if (arity==0) {
-		for (Enumeration e = v.elements(); e.hasMoreElements(); ) {
-		    Object attribute = e.nextElement();
-		    Reference name = new Reference(ReferencePart.here("unique" + nextId++));
-		    ((SFComponentDescription)res).sfContext().put(name, attribute);
-		    if (attribute instanceof SFComponentDescription)
-			((SFComponentDescription)attribute).setParent((SFComponentDescription)res);
-		}
-	    } else if (arity == 2) {
-		((SFComponentDescription)res).sfContext().put("left", a);
-		if (a instanceof SFComponentDescription)
-		    ((SFComponentDescription)a).setParent((SFComponentDescription)res);
-		((SFComponentDescription)res).sfContext().put("right", b);
-		if (b instanceof SFComponentDescription)
-		    ((SFComponentDescription)b).setParent((SFComponentDescription)res);
-	    } else { // (arity == 1)
-		((SFComponentDescription)res).sfContext().put("data", a);
-		if (a instanceof SFComponentDescription)
-		    ((SFComponentDescription)a).setParent((SFComponentDescription)res);
-	    }
-	    ((SFComponentDescription)res).sfContext().put("phase.function", operator);
-	}
-	return res;
+    {
+    if (operator.equals("")) {
+        res = a;
+    } else {
+        res = SFParser.componentFactory("default");
+        if (arity==0) {
+        for (Enumeration e = v.elements(); e.hasMoreElements(); ) {
+            Object attribute = e.nextElement();
+            Reference name = new Reference(ReferencePart.here("unique" + nextId++));
+            ((SFComponentDescription)res).sfContext().put(name, attribute);
+            if (attribute instanceof SFComponentDescription)
+            ((SFComponentDescription)attribute).setParent((SFComponentDescription)res);
+        }
+        } else if (arity == 2) {
+        ((SFComponentDescription)res).sfContext().put("left", a);
+        if (a instanceof SFComponentDescription)
+            ((SFComponentDescription)a).setParent((SFComponentDescription)res);
+        ((SFComponentDescription)res).sfContext().put("right", b);
+        if (b instanceof SFComponentDescription)
+            ((SFComponentDescription)b).setParent((SFComponentDescription)res);
+        } else { // (arity == 1)
+        ((SFComponentDescription)res).sfContext().put("data", a);
+        if (a instanceof SFComponentDescription)
+            ((SFComponentDescription)a).setParent((SFComponentDescription)res);
+        }
+        ((SFComponentDescription)res).sfContext().put("phase.function", operator);
+    }
+    return res;
     }
 }
 
@@ -523,21 +524,21 @@ Object IfThenElse() :
 {
     <IF> i = SimpleValue() <THEN> t = SimpleValue() <ELSE> e = SimpleValue() <FI>
     {
-	SFComponentDescription ifte = SFParser.componentFactory("default");
-	if (i instanceof SFComponentDescription)
-	    ((SFComponentDescription)i).setParent((SFComponentDescription)ifte);
+    SFComponentDescription ifte = SFParser.componentFactory("default");
+    if (i instanceof SFComponentDescription)
+        ((SFComponentDescription)i).setParent((SFComponentDescription)ifte);
 
-	if (t instanceof SFComponentDescription)
-	    ((SFComponentDescription)t).setParent((SFComponentDescription)ifte);
+    if (t instanceof SFComponentDescription)
+        ((SFComponentDescription)t).setParent((SFComponentDescription)ifte);
 
-	if (e instanceof SFComponentDescription)
-	    ((SFComponentDescription)e).setParent((SFComponentDescription)ifte);
+    if (e instanceof SFComponentDescription)
+        ((SFComponentDescription)e).setParent((SFComponentDescription)ifte);
 
-	ifte.sfContext().put("phase.function", ifThenElseOp);
-	ifte.sfContext().put("if", i);
-	ifte.sfContext().put("then", t);
-	ifte.sfContext().put("else", e);
-	return ifte;
+    ifte.sfContext().put("phase.function", ifThenElseOp);
+    ifte.sfContext().put("if", i);
+    ifte.sfContext().put("then", t);
+    ifte.sfContext().put("else", e);
+    return ifte;
     }
 }
 
@@ -571,7 +572,7 @@ SFComponentDescription ComponentType(String componentClass) :
       SFParser.componentFactory(componentClass);
 }
 {
-  ( EagerComponent(component) | LazyComponent(component) )
+  (EagerComponent(component)|LazyComponent(component)|DataComponent(component))
     { return component; }
 }
 
@@ -589,6 +590,13 @@ void LazyComponent(SFComponentDescription comp) :
   <LAZY> BaseComponent(comp) { comp.setEager(false); }
 }
 
+void DataComponent(SFComponentDescription comp) :
+{
+}
+{
+  <DATA> BaseComponent(comp) { comp.setEager(false); }
+}
+
 
 void BaseComponent(SFComponentDescription comp) :
 {
@@ -600,12 +608,12 @@ void BaseComponent(SFComponentDescription comp) :
   (<SEMICOLON>| (<LBRACE> AttributesNoEOF(comp) <RBRACE>) )
   {
       /*
-	if (protoType.size() > 0 &&
+    if (protoType.size() > 0 &&
         (protoType.firstElement() instanceof HereReferencePart)) {
-	HereReferencePart firstPart = (HereReferencePart)
+    HereReferencePart firstPart = (HereReferencePart)
         protoType.firstElement();
-	protoType.setElementAt(firstPart.asAttribReferencePart(), 0);
-	}
+    protoType.setElementAt(firstPart.asAttribReferencePart(), 0);
+    }
       */
     comp.setType(prototype.size() == 0 ? null : prototype);
   }
@@ -646,9 +654,9 @@ void ReferencePart(Reference ref) :
      ))
   | (<PROCESS> { ref.addElement(ReferencePart.process());})
   | (id=<WORD> { if (ref.size() == 0) // id in first position - treat as an attrib, not a here
-		     ref.addElement(ReferencePart.attrib(id.image));
+             ref.addElement(ReferencePart.attrib(id.image));
                  else
-		     ref.addElement(ReferencePart.here(id.image));
+             ref.addElement(ReferencePart.here(id.image));
                 })
 }
 
@@ -665,17 +673,17 @@ Object Basic() :
           [tmp=SimpleValue() { ((Vector)res).addElement(tmp); }
           (<COMMA> tmp=SimpleValue() { ((Vector)res).addElement(tmp); })*]
       <RBRACKET> {
-	  SFComponentDescription component =
-	      SFParser.componentFactory("default");
-	  for (Enumeration e = ((Vector)res).elements(); e.hasMoreElements(); ) {
-	      Object attribute = e.nextElement();
-	      Reference name = new Reference(ReferencePart.here("unique" + nextId++));
-	      component.sfContext().put(name, attribute);
-	      if (attribute instanceof SFComponentDescription)
-		  ((SFComponentDescription)attribute).setParent(component);
-	  }
-	  component.sfContext().put("phase.function", "org.smartfrog.sfcore.languages.sf.functions.Vector");
-	  res = component;
+      SFComponentDescription component =
+          SFParser.componentFactory("default");
+      for (Enumeration e = ((Vector)res).elements(); e.hasMoreElements(); ) {
+          Object attribute = e.nextElement();
+          Reference name = new Reference(ReferencePart.here("unique" + nextId++));
+          component.sfContext().put(name, attribute);
+          if (attribute instanceof SFComponentDescription)
+          ((SFComponentDescription)attribute).setParent(component);
+      }
+      component.sfContext().put("phase.function", "org.smartfrog.sfcore.languages.sf.functions.Vector");
+      res = component;
       })
     ) { return res; }
 }
