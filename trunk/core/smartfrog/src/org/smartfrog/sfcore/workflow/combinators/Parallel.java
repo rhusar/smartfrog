@@ -25,6 +25,7 @@ import java.util.Enumeration;
 
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.prim.Prim;
@@ -90,11 +91,15 @@ public class Parallel extends EventCompoundImpl implements Compound {
         // let any errors be thrown and caught by SmartFrog for abnormal termination  - including empty actions
         try {
             actionKeys = actions.keys();
-            while (actionKeys.hasMoreElements()) {
-                Object key = actionKeys.nextElement();
-                ComponentDescription act = (ComponentDescription)
-                                                            actions.get(key);
-                Prim comp = sfDeployComponentDescription(key, this, act, null);
+            try {
+                while (actionKeys.hasMoreElements()) {
+                    Object key = actionKeys.nextElement();
+                    ComponentDescription act = (ComponentDescription)
+                        actions.get(key);
+                    Prim comp = sfDeployComponentDescription(key, this, act, null);
+                }
+            } catch (java.util.NoSuchElementException nex){
+               throw new SmartFrogRuntimeException ("Empty actions",this);
             }
 
             //Actions are now children of parallel, they are deployed and
@@ -121,9 +126,9 @@ public class Parallel extends EventCompoundImpl implements Compound {
     }
 
     /**
-     * Terminates the component. It is invoked by sub-components at 
-     * termination. If normal termiantion, Parallel behaviour is to terminate 
-     * that comopnent but leave the others running if it is the last - 
+     * Terminates the component. It is invoked by sub-components at
+     * termination. If normal termiantion, Parallel behaviour is to terminate
+     * that comopnent but leave the others running if it is the last -
      * terminate normally. if an erroneous termination -
      * terminate immediately passing on the error
      *

@@ -25,6 +25,7 @@ import java.util.Enumeration;
 
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.prim.Prim;
@@ -91,7 +92,12 @@ public class Sequence extends EventCompoundImpl implements Compound {
             super.sfStart();
             // let any errors be thrown and caught by SmartFrog for abnormal
             // termination  - including empty actions
-            String componentName = (String)actionKeys.nextElement();
+            String componentName;
+            try {
+                componentName = (String)actionKeys.nextElement();
+            } catch (java.util.NoSuchElementException nex){
+               throw new SmartFrogRuntimeException ("Empty actions",this);
+            }
             ComponentDescription act = (ComponentDescription) actions.
                                 get(componentName);
             Prim comp = sfDeployComponentDescription(componentName, this, act,
@@ -101,7 +107,7 @@ public class Sequence extends EventCompoundImpl implements Compound {
     }
 
     /**
-     * Terminates the component. It is invoked by sub-components on 
+     * Terminates the component. It is invoked by sub-components on
      * termination. If normal termiantion, Sequence
      * behaviour is to start the next component if it is the last - terminate
      * normally. if an erroneous termination - terminate immediately passing
