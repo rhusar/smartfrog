@@ -272,4 +272,17 @@ public interface MessageKeys {
      */
     public static String MISSING_PARAMETER
                                                = "MISSING_PARAMETER";
+
+    /**
+     * Message key: copy of data in ComponentDescritpionImpl, etc,  failed
+     */
+    public static String COPY_FAILED
+                                               = "COPY_FAILED";
+
+    /**
+     * Message key: copy of data in ComponentDescritpionImpl, etc,  failed
+     */
+    public static String COPY_SERIALIZE_FAILED
+                                               = "COPY_SERIALIZE_FAILED";
+
 }
