@@ -27,6 +27,9 @@ import org.tanukisoftware.wrapper.WrapperManager;
  *
  * @see "http://wrapper.tanukisoftware.org/doc/english/introduction.html" Date:
  *      01-Oct-2004
+ *      <p/>
+ *      This design is intended to use -lib commands to extend the classpath
+ *      dynamically (because java service wrapper doesnt).
  */
 public class ServiceWrapper implements WrapperListener {
 
@@ -34,7 +37,10 @@ public class ServiceWrapper implements WrapperListener {
     private ServiceWrapper() {
     }
 
-    private WrappedSFSystem system;
+    /**
+     * our system, as described by an interface
+     */
+    private WrappedEntryPoint system;
 
     /**
      * The start method is called when the WrapperManager is signalled by the
@@ -54,11 +60,61 @@ public class ServiceWrapper implements WrapperListener {
      */
     public Integer start(String[] args) {
         //create a new system
-        system = new WrappedSFSystem(args);
-        system.setSystemExitOnRootProcessTermination(true);
-        system.run();
+        try {
+            system = InstantiateSmartFrog(args);
+            system.setSystemExitOnRootProcessTermination(true);
+            system.start();
+        } catch (LaunchException e) {
+            //something went wrong here.
+            System.err.println(e.toString());
+            e.printStackTrace(System.err);
+            return new Integer(e.exitCode);
+        }
         return null;
     }
+
+    public static final int WRAPPER_FAILURE_EXIT_CODE = -1;
+
+    /**
+     * this method contains the logic that loads a version of SmartFrog, based
+     * on what is on the command line.
+     *
+     * @param args
+     * @return
+     */
+    private WrappedEntryPoint InstantiateSmartFrog(String[] args)
+            throws LaunchException {
+
+        Launcher launcher = new Launcher();
+        WrappedEntryPoint wrappedEntryPoint = null;
+        try {
+            Launcher.LauncherInfo info = launcher.prelaunch(args);
+            wrappedEntryPoint = info.load();
+        } catch (Exception exception) {
+            throw new LaunchException(WRAPPER_FAILURE_EXIT_CODE,
+                    "Exception when executing " + makeCommandLine(args),
+                    exception);
+        }
+        return wrappedEntryPoint;
+    }
+
+    /**
+     * for diagnostics -turn the args into a flat command line
+     *
+     * @param args
+     * @return
+     */
+    private String makeCommandLine(String args[]) {
+        StringBuffer buffer = new StringBuffer();
+        buffer.append(Launcher.MAIN_CLASS);
+        buffer.append(" ");
+        for (int i = 0; i < args.length; i++) {
+            buffer.append(args[i]);
+            buffer.append(" ");
+        }
+        return buffer.toString();
+    }
+
 
     /**
      * Called when the application is shutting down.  The Wrapper assumes that
