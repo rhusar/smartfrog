@@ -25,22 +25,20 @@ public class Servlet extends CompoundImpl implements ServletContextIntf {
     Reference contextPathRef = new Reference(CONTEXT_PATH);
     Reference resourceBaseRef = new Reference(RESOURCE_BASE);
     Reference classPathRef = new Reference(CLASSPATH);
-    Reference serverNameRef = new Reference(SERVER);
     
     String jettyhome = ".";
     String contextPath = "/";
     String resourceBase = "\\demo\\docRoot";
     String classPath = null;
-    String serverName = null;
     String mapfromPath;
     String maptoPath;
 
 
     JettyHelper jettyHelper = new JettyHelper(this);
 
-   HttpServer server = null;
+    HttpServer server = null;
    
-   ServletHttpContext context;
+    ServletHttpContext context;
    
    /** Standard RMI constructor */
        public Servlet() throws RemoteException {
