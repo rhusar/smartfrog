@@ -67,7 +67,7 @@ For more information: www.smartfrog.org
 	 <tstamp/>
     <property name="Name.Company" value="(C) Copyright 1998-2004 Hewlett-Packard Development Company, LP"/>
     <property name="version" value="smartfrog components"/>
-    <property name="Version" value="1.00.000"/>
+    <property name="Version" value="@version"/>
     <property name="year" value="2004"/>
 	<property name="releases.dir" value="releases"/>
 
