@@ -42,6 +42,9 @@ public class SmartFrogResolutionException extends SmartFrogRuntimeException
     /** Attribute name for reference value classtype in exceptioncontext. */
     public final static String REFERENCE_OBJECT_CLASS_TYPE="referenceValueClassType";
 
+    /** Attribute name for reference value classtype in exceptioncontext. */
+    public final static String REFERENCE_OBJECT_RESOLVED="referenceValueResolved";
+
 
     /**
      * Constructs a SmartFrogResolutionException with message.
@@ -285,15 +288,17 @@ public class SmartFrogResolutionException extends SmartFrogRuntimeException
      *
      * @param ref ref causing the illegal reference
      * @param source The source that was trying to resolve the reference
+     * @param foundValue Object found by sfResolve
      * @param referenceValueType The reference value type
      * @param defaultValueType The default value type
      *
      * @return a resolution exception
      */
     public static SmartFrogResolutionException illegalClassType(Reference ref,
-        Reference source, String referenceValueType, String defaultValueType) {
+        Reference source,Object resolvedValue, String referenceValueType, String defaultValueType) {
         SmartFrogResolutionException srex = new SmartFrogResolutionException (ref, source,
                 MessageUtil.formatMessage(MSG_ILLEGAL_CLASS_TYPE));
+                srex.put(REFERENCE_OBJECT_RESOLVED,resolvedValue);
                 srex.put(REFERENCE_OBJECT_CLASS_TYPE,referenceValueType);
                 srex.put(DEFAULT_OBJECT_CLASS_TYPE,defaultValueType);
         return srex;
@@ -394,6 +399,8 @@ public class SmartFrogResolutionException extends SmartFrogRuntimeException
         strb.append((((this.containsKey(SOURCE)&&(this.get(SOURCE)!=null)
                             &&(((Reference)this.get(SOURCE)).size()!=0)))
                                ? (nm+SOURCE+  ": " + get(SOURCE)) : "" ));
+        strb.append((((this.containsKey(REFERENCE_OBJECT_RESOLVED))) ?
+                    (nm+REFERENCE_OBJECT_RESOLVED+  ": '" + get(REFERENCE_OBJECT_RESOLVED)+"'") : "" ));
         strb.append((((this.containsKey(REFERENCE_OBJECT_CLASS_TYPE))) ?
                     (nm+REFERENCE_OBJECT_CLASS_TYPE+  ": " + get(REFERENCE_OBJECT_CLASS_TYPE)) : "" ));
         strb.append((((this.containsKey(DEFAULT_OBJECT_CLASS_TYPE))) ?
