@@ -22,16 +22,22 @@ package org.smartfrog.sfcore.common;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
+import org.smartfrog.sfcore.processcompound.ProcessCompoundImpl;
 import org.smartfrog.sfcore.security.SFClassLoader;
 import org.smartfrog.sfcore.parser.SFParser;
 import org.smartfrog.sfcore.parser.Phases;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.reference.ReferencePart;
+import org.smartfrog.sfcore.reference.HereReferencePart;
+import org.smartfrog.sfcore.compound.Compound;
+
 
 import java.rmi.RemoteException;
 import java.io.InputStream;
 import java.io.IOException;
+import java.util.Date;
 
 
 public class ActionDeploy extends ConfigurationAction {
@@ -40,9 +46,12 @@ public class ActionDeploy extends ConfigurationAction {
     /**
       * Parses and deploys "sfConfig" from a resource to the target process
       * compound rethrows an exception if it fails, after trying to clean up.
+      * This method will check if parent is a rootProcess and it so, it will
+      * register "url" as a root component that will start its own liveness.
       *
       * @param url URL of resource to parse
       * @param appName name of the application
+      * @param parent parent for the new component. If null if will use 'target'.
       * @param target the target process compound to request deployment
       * @param c a context of additional attributes that should be set before
       *        deployment
@@ -51,7 +60,7 @@ public class ActionDeploy extends ConfigurationAction {
       * @exception SmartFrogException failure in some part of the process
       * @throws RemoteException In case of network/rmi error
       */
-     public static Prim Deploy(String url, String appName, ProcessCompound target,
+     public static Prim Deploy(String url, String appName,Prim parent, Compound target,
          Context c, Reference deployReference) throws SmartFrogException, RemoteException {
          Prim comp = null;
          Phases top;
@@ -59,20 +68,42 @@ public class ActionDeploy extends ConfigurationAction {
          long deployTime = 0;
          long parseTime = 0;
 
-         if (Logger.logStackTrace) {
+//         if (Logger.logStackTrace) {
              deployTime = System.currentTimeMillis();
-         }
+//         }
          if (c==null) c = new ContextImpl();
-         if (appName!=null) c.put("sfProcessComponentName", appName);
+
+           // Checks if 'parent' is a processCompound. If parent is a process compound
+           // the parentage is made null and it is registered as an attribute, not a
+           // child, so it is a root component and starts is own liveness
+           if ((parent!=null)&&(parent instanceof ProcessCompound)){
+               // This component will be a root component
+               parent=null;
+
+           } else if ((parent!=null)&&(parent instanceof Compound)&&(appName==null)){
+             //From ProcessCompoundImpl. Creates  name for unnamed components...
+             appName = SmartFrogCoreKeys.SF_UNNAMED + (new Date()).getTime() + "_" +
+                ProcessCompoundImpl.registrationNumber++;
+
+          }
+          // This is needed so that the root component is properly named
+          // when registering with the ProcessCompound
+          if ((parent==null)&&(appName!=null)) c.put("sfProcessComponentName", appName);
+
+              // The processCompound/Compound is used to do the deployment!
+          if ((parent!=null)&&(parent instanceof Compound)){
+            target = (Compound)parent;
+          }
+
 
          try {
              ComponentDescription cd;
              try {
                  cd = ComponentDescriptionImpl.sfComponentDescription(url,null,deployReference);
-                 if (Logger.logStackTrace) {
+//                 if (Logger.logStackTrace) {
                      parseTime = System.currentTimeMillis()-deployTime;
                      deployTime = System.currentTimeMillis();
-                 }
+//                 }
              } catch (SmartFrogException sfex) {
                  if (sfex instanceof SmartFrogDeploymentException)
                      throw sfex;
@@ -83,7 +114,8 @@ public class ActionDeploy extends ConfigurationAction {
                         comp,
                         c);
              }
-             comp = target.sfDeployComponentDescription(null, null, cd, c);
+             comp = target.sfDeployComponentDescription(appName, parent, cd, c);
+             //comp = target.sfDeployComponentDescription(null, parent, cd, c);
              try {
                  comp.sfDeploy();
              } catch (Throwable thr){
@@ -119,7 +151,7 @@ public class ActionDeploy extends ConfigurationAction {
                 throw ((SmartFrogException) SmartFrogException.forward(e));
        }
 
-       if (Logger.logStackTrace) {
+//       if (Logger.logStackTrace) {
            deployTime = System.currentTimeMillis()-deployTime;
            try {
                comp.sfAddAttribute("sfParseTime",new Long(parseTime));
@@ -127,7 +159,7 @@ public class ActionDeploy extends ConfigurationAction {
            } catch (Exception ex){
              //ignored, this is only information
            }
-       }
+//       }
        return comp;
      }
 
@@ -139,8 +171,32 @@ public class ActionDeploy extends ConfigurationAction {
      */
     public Object execute(ProcessCompound targetP, ConfigurationDescriptor configuration)
        throws SmartFrogException, RemoteException {
+       Prim parent = null;
+       String name = configuration.getName();
+       Reference ref = null;
+       //Placement
+       if (name !=null) {
+         if (name.endsWith(":")){
+            ref = Reference.fromString(name.substring(0,name.length()-1));
+            parent = (Prim) targetP.sfResolve(ref);
+            name = null;
+         }  else {
+           ref = Reference.fromString(name);
+           if (ref.size() > 1) {
+             ReferencePart refPart = ref.lastElement();
+             name = refPart.toString();
+             name = name.substring(
+                 name.lastIndexOf(HereReferencePart.HERE + " ") +
+                 HereReferencePart.HERE.length() + 1);
+             ref.removeElement(refPart);
+             parent = (Prim) targetP.sfResolve(ref);
+           }
+         }
+       }
+        //System.out.println("Parent: "+parent.toString()+" for "+name);
         Prim prim = Deploy(configuration.getUrl(),
-                           configuration.getName(),
+                           name,
+                           parent,
                            targetP,
                            configuration.getContext(),
                            configuration.getDeployReference());
