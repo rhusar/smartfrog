@@ -39,13 +39,12 @@ public class LogToFile extends LogToErr {
      * @param name log name
      * @param intialLogLevel level to log at
      */
-    public LogToFile(String name, int initialLogLevel) {
+    public LogToFile(String name, Integer initialLogLevel) {
         super();
         assert name != null;
-        assert initialLogLevel >= 0;
         logName = name;
         // Set initial log level
-        setLevel(initialLogLevel);
+        setLevel(initialLogLevel.intValue());
 
         PrintStream out=null;
         try {

@@ -3,12 +3,27 @@ package org.smartfrog.sfcore.logging;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLogException;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
+import org.smartfrog.sfcore.reference.Reference;
 
+import org.smartfrog.sfcore.security.SFClassLoader;
+import org.smartfrog.sfcore.common.MessageKeys;
+import org.smartfrog.sfcore.common.MessageUtil;
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
+
+
+import java.util.Properties;
+import java.lang.Double;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.rmi.RemoteException;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Vector;
+
 
 /**
  * A simple logging interface abstracting logging APIs based in Apache Jakarta
@@ -16,6 +31,9 @@ import java.util.Hashtable;
  *
  */
 public class LogImpl implements LogSF, LogRegistration, Serializable {
+
+    //Configuration for LogImpl class
+    ComponentDescription classComponentDescription = null;
 
     /** Default Log object */
     protected Log localLog = null;
@@ -54,6 +72,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
           getObjectMethod("fatal", new Class[] {Object.class});
       private static final Method FATAL_O_T =
           getObjectMethod("fatal", new Class[] {Object.class, Throwable.class});
+
 
     /**
      * Gets the corresponding method of java.lang.Object.
@@ -110,9 +129,22 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * @param name
      */
     public LogImpl (String name){
-        //@TODO: load the default class from a SF definition
+        //@TODO: improve error protection
+        //@TODO: read configuration parameters from component description also localLog has to be configured
+        //Check Class and read configuration...
+
         // Similar for default deployer.
-        localLog=new LogToErr(name,this.LOG_LEVEL_INFO);
+        //localLog=new LogToErr(name,this.LOG_LEVEL_INFO);
+        try {
+            classComponentDescription = getClassComponentDescription(this, true);
+            localLog = getLocalLog(name
+                                   , ((Integer)classComponentDescription.sfResolve(new Reference("logLevel")))
+                                   , (String)classComponentDescription.sfResolve(new Reference("localLoggerClass"))
+                                   , getSfCodeBase(classComponentDescription));
+        } catch (Exception ex ){
+            localLog=new LogToFile(name,new Integer(LOG_LEVEL_INFO));
+            localLog.warn("Error init localLog for LogImpl",ex);
+        }
         logName = name;
     }
 
@@ -123,6 +155,98 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
     protected Hashtable registeredLogs = new Hashtable();
 
     //LogImpl configuration
+
+
+    /**
+     *  Gets configuration description for Obj class. The short class name will
+     *  be used to locate its Reference.
+     * TSystem properties that start with same package name as obj  are added to
+     * ComponentDescription if addSystemProperties is true.
+     * @param obj which class Component description has to be read
+     * @param addSystemProperties to select if to add system properties
+     * @return Component Description
+     * @throws SmartFrogException
+     * @throws RemoteException
+     */
+    protected ComponentDescription getClassComponentDescription (Object obj,
+          boolean addSystemProperties) throws SmartFrogException, RemoteException {
+        //Get Component description for this log class
+        String className = obj.getClass().toString();
+        className = className.substring(6).replace('.','/');
+        String urlDescription = className+".sf";
+        Reference selectedRef = new Reference (className.substring(className.lastIndexOf("/")+1));
+        Vector phases = new Vector();
+        phases.add("type");
+        phases.add("link");
+        phases.add("function");
+        // Get componentDescription and
+        ComponentDescription cmpDesc = ComponentDescriptionImpl.sfComponentDescription(
+                                                                   urlDescription.toLowerCase()
+                                                                 , phases
+                                                                 , selectedRef);
+        if (addSystemProperties){
+            //add properties that start with package name.
+            cmpDesc = ComponentDescriptionImpl.addSystemProperties(
+                       obj.getClass().toString().substring(6)+"."
+                     , cmpDesc
+                    );
+
+        }
+        return cmpDesc;
+    }
+
+   protected Log getLocalLog(String name, Integer logLevel, String targetClassName , String targetCodeBase)
+          throws SmartFrogLogException{
+          try {
+            Class deplClass = SFClassLoader.forName(targetClassName, targetCodeBase, true);
+
+            Class[] deplConstArgsTypes = { name.getClass(), logLevel.getClass() };
+
+            Constructor deplConst = deplClass.getConstructor(deplConstArgsTypes);
+
+            Object[] deplConstArgs = { name, logLevel};
+
+            return (Log) deplConst.newInstance(deplConstArgs);
+        } catch (NoSuchMethodException nsmetexcp) {
+            throw new SmartFrogLogException(MessageUtil.formatMessage(
+                    MessageKeys.MSG_METHOD_NOT_FOUND, targetClassName, "getConstructor()"),
+                nsmetexcp);
+        } catch (ClassNotFoundException cnfexcp) {
+            throw new SmartFrogLogException(MessageUtil.formatMessage(
+                    MessageKeys.MSG_CLASS_NOT_FOUND, targetClassName), cnfexcp);
+        } catch (InstantiationException instexcp) {
+            throw new SmartFrogLogException(MessageUtil.formatMessage(
+                    MessageKeys.MSG_INSTANTIATION_ERROR, targetClassName), instexcp);
+        } catch (IllegalAccessException illaexcp) {
+            throw new SmartFrogLogException(MessageUtil.formatMessage(
+                    MessageKeys.MSG_ILLEGAL_ACCESS, targetClassName, "newInstance()"), illaexcp);
+        } catch (InvocationTargetException intarexcp) {
+            throw new SmartFrogLogException(MessageUtil.formatMessage(
+                    MessageKeys.MSG_INVOCATION_TARGET, targetClassName), intarexcp);
+
+       } catch (Exception ex){
+          throw (SmartFrogLogException)SmartFrogLogException.forward(ex);
+       }
+   }
+
+   /**
+    * Gets the class code base by resolving the sfCodeBase attribute in the
+    * given description.
+    *
+    * @param desc Description in which we resolve the code base.
+    *
+    * @return class code base for that description.
+    */
+   protected String getSfCodeBase(ComponentDescription desc) {
+       try {
+           return (String) desc.sfResolve(new Reference(SmartFrogCoreKeys.SF_CODE_BASE));
+       } catch (Exception e) {
+           // Not found, return null...
+       }
+
+       return null;
+   }
+
 
     /**
      * <p> Set logging level. </p>
