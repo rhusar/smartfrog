@@ -272,7 +272,7 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
         exitCmd = sfResolve(varExitCmd, exitCmd, false);
         useExitCmd =sfResolve(varUseExitCmd, useExitCmd, false);
         shellCommandAtt = this.readShellAttributes();
-        cmds = this.readVarData(this.varCMDs);
+        cmds = readVarData(varCMDs);
         //sfResolve(varEnvProp, envProp , false);
         envVarsVector = (Vector)sfResolve(varEnvProp, envVarsVector,
                                                                 false);
@@ -480,7 +480,7 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
      *@return    a vector conatining all shell attributes
      */
     private Vector readShellAttributes() {
-        Vector shellCommandAtt = new Vector();
+        Vector shellCommandAttrs = new Vector();
         Object key = null;
         String auxString = "";
 
@@ -497,12 +497,12 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
                             //shellCommandAtt = shellCommandAtt + "" +
                 //sfResolve((String)key);
                 //former code when shellCommandAtt was a String
-                            auxString = (String) shellCommandAtt.lastElement() +
+                            auxString = (String) shellCommandAttrs.lastElement() +
                                 (sfResolve((String) key)).toString();
-                            shellCommandAtt.remove(shellCommandAtt.size() - 1);
-                            shellCommandAtt.add(auxString);
+                            shellCommandAttrs.remove(shellCommandAttrs.size() - 1);
+                            shellCommandAttrs.add(auxString);
                         } else {
-                            shellCommandAtt.add((sfResolve((String) key)).
+                            shellCommandAttrs.add((sfResolve((String) key)).
                         toString());
                         }
                     }
@@ -516,7 +516,7 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
             }
         }
 
-        return shellCommandAtt;
+        return shellCommandAttrs;
     }
 
     /**

@@ -264,7 +264,7 @@ public class ThresholderImpl extends CompoundImpl implements Thresholder,
                 String server = (String) servers.elementAt(currentInstances);
 
                 Context instanceContext = new ContextImpl();
-                instanceContext.put(this.SF_PROCESS_HOST, server);
+                instanceContext.put(SF_PROCESS_HOST, server);
 
                 logger.logOptional(name, "instance being created");
                 deployed = sfDeployComponentDescription(componentNamePrefix +
@@ -399,7 +399,7 @@ public class ThresholderImpl extends CompoundImpl implements Thresholder,
                     }
 
                     logger.logOptional(name, "poller sleeping");
-                    this.sleep(pollFrequency);
+                    sleep(pollFrequency);
                     logger.logOptional(name, "poller awake");
                 } catch (Exception e) {
                     logger.logOptional(name, "excpetion caught in the poller");

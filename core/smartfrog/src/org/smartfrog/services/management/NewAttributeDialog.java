@@ -75,21 +75,21 @@ public class NewAttributeDialog extends JDialog {
         "Long", "Float", "Double"
     };
     /** Integer value for string. */
-    final int STRING = 0;
+    static final int STRING = 0;
     /** Integer value for integer. */
-    final int INTEGER = 1;
+    static final int INTEGER = 1;
     /** Integer value for boolean. */
-    final int BOOLEAN = 2;
+    static final int BOOLEAN = 2;
     /** Integer value for component description. */
-    final int COMPONENT_DESCRIPTION = 3;
+    static final int COMPONENT_DESCRIPTION = 3;
     /** Integer value for reference. */
-    final int REFERENCE = 4;
+    static final int REFERENCE = 4;
     /** Integer value for long. */
-    final int LONG = 5;
+    static final int LONG = 5;
     /** Integer value for float. */
-    final int FLOAT = 6;
+    static final int FLOAT = 6;
     /** Integer value for double. */
-    final int DOUBLE = 7;
+    static final int DOUBLE = 7;
 
     //final int VECTOR = 3;
     private JComboBox TypejComboBox = new JComboBox(componentTypes);

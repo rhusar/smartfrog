@@ -49,13 +49,13 @@ public class SFParser implements StreamParser {
    /**
     * Default SF parser factory class
     */
-   public final static String defaultSFFactoryClass =
+   public static final String defaultSFFactoryClass =
                             "org.smartfrog.sfcore.languages.sf.DefaultFactory";
 
   /**
    * Default SF parser Include Handler class
    */
-   public final static String defaultSFIncludeHandlerClass =
+   public static final String defaultSFIncludeHandlerClass =
                       "org.smartfrog.sfcore.languages.sf.DefaultIncludeHandler";
 
    /**

@@ -46,8 +46,8 @@ public class Constant extends NetElemImpl implements Remote {
             super.sfStart();
             addValue(((Integer) sfResolve("constant")).intValue());
         } catch (SmartFrogException sfex) {
-            Reference name = sfCompleteNameSafe();
-            terminateComponent(this, sfex, name);
+            Reference refName = sfCompleteNameSafe();
+            terminateComponent(this, sfex, refName);
             throw sfex;
         }
     }

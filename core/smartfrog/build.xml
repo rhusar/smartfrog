@@ -60,13 +60,14 @@ relevant JAR files into the javacc subdirectory
     <property name="Version" value="3.02.002.beta"/>
     <property name="year" value="2004"/>
 
-    <echo message=""/>
-    <echo message="==================================================================="/>
-    <echo message="= ${Name.System} ${version}"/>
-    <echo message="= ${Name.Company} "/>
-    <echo message="==================================================================="/>
-    <echo message=""/>
-    <echo message="(${ant.version})"/>
+    <echo level="verbose">
+===================================================================
+= ${Name.System} ${version}"
+= ${Name.Company} 
+===================================================================
+
+(${ant.version})
+</echo>
     <available property="nice.task.present" classname="org.apache.tools.ant.taskdefs.Nice" />
   </target>
 
@@ -240,7 +241,8 @@ relevant JAR files into the javacc subdirectory
   <!-- =================================================================== -->
   <!--   Compiles source directory                                         -->
   <!-- =================================================================== -->
-  <target name="compile" depends="initbuild,createParser" description="Compiles the contributed source code">
+  <target name="compile-source" depends="initbuild,createParser" 
+    description="Compiles the source code">
     <!-- use better dependency logic -->
 <!--     <depend srcdir="${src.dir}"
       destdir="${build.classes.dir}"
@@ -254,14 +256,15 @@ relevant JAR files into the javacc subdirectory
       destdir="${build.classes.dir}"
       debug="${javac.debug.mode}"
       debuglevel="${javac.debug.level}"
-      nowarn="true"
       includeAntRuntime="false"
       source="${javac.java.version}"
       target="${javac.java.version}"
       >
       <classpath refid="smartfrog.class.path"/>
     </javac>
+  </target>
 
+  <target name="compile-rmi" depends="compile-source" >    
     <!-- the RMI compile is split in two, as the compiler could not
         handle it otherwise.
         It is tempting to run these in parallel, to get speedup on multiway
@@ -278,6 +281,10 @@ relevant JAR files into the javacc subdirectory
     </rmic>
 
   </target>
+  
+  <target name="compile" depends="compile-rmi" 
+    description="Compiles the source code"/>
+
 
   <!-- =================================================================== -->
   <!--   Copy default.sf and default.ini files to "src/org/smartfrog" directory -->

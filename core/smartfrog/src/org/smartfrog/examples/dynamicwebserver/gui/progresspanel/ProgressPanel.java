@@ -122,7 +122,7 @@ public class ProgressPanel extends JPanel {
      * @param total Description of the Parameter
      */
     void createBalls(int total) {
-        for (int i = 0; i < total; i++) {
+        for (int c = 0; c < total; c++) {
             addBall();
         }
     }

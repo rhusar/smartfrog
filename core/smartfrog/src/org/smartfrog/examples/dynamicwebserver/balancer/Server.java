@@ -67,7 +67,7 @@ class ConnectionRelay implements Runnable {
     private DelayedWriter delayedWriter; // Object to handle delayed writes caused by fill of write buffer
     private Thread thread;
     private volatile boolean running = true;
-    private final int BUFFER_SIZE = 128 * 1024;
+    private static final int BUFFER_SIZE = 128 * 1024;
 
     ConnectionRelay(Server server, boolean halfClose) {
         this.server = server;
@@ -132,7 +132,7 @@ class ConnectionRelay implements Runnable {
         Iterator iter;
         Connection conn;
         SocketChannel client;
-        SocketChannel server;
+        SocketChannel serverSocket;
         boolean didSomething = false;
 
         synchronized (newConnections) {
@@ -143,19 +143,19 @@ class ConnectionRelay implements Runnable {
                 iter.remove();
 
                 client = conn.getClientSocket();
-                server = conn.getServerSocket();
+                serverSocket = conn.getServerSocket();
 
                 try {
                     //Logger.logOptional("Setting channels to non-blocking mode");
                     client.configureBlocking(false);
-                    server.configureBlocking(false);
+                    serverSocket.configureBlocking(false);
 
                     //Logger.logOptional("Registering channels with selector");
                     client.register(selector, SelectionKey.OP_READ);
-                    server.register(selector, SelectionKey.OP_READ);
+                    serverSocket.register(selector, SelectionKey.OP_READ);
 
                     clients.put(client, conn);
-                    servers.put(server, conn);
+                    servers.put(serverSocket, conn);
                 } catch (IOException e) {
                     //Logger.err("Error configuring channels: " + e.getMessage());
                     // There was a problem, so forcibly terminate the connection
@@ -897,9 +897,9 @@ class Server {
         Vector tempConnections = (Vector) connections.clone();
 
         // Close all open connections
-        for (Enumeration connections = tempConnections.elements();
-                connections.hasMoreElements();) {
-            Connection connection = (Connection) connections.nextElement();
+        for (Enumeration connectionEnum = tempConnections.elements();
+                connectionEnum.hasMoreElements();) {
+            Connection connection = (Connection) connectionEnum.nextElement();
             connection.terminate();
         }
 

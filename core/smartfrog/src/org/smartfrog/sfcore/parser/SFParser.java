@@ -96,7 +96,7 @@ public class SFParser implements Parser, MessageKeys {
      * @throws SmartFrogException error crearing instance of parser
      */
     public SFParser(String languageOrUrl) throws SmartFrogException {
-        theLanguage = this.getLanguageFromUrl(language);
+        theLanguage = getLanguageFromUrl(language);
         parser = getParser();
     }
 
@@ -151,7 +151,7 @@ public class SFParser implements Parser, MessageKeys {
      * contains the parsed components. Includes should be handled by some
      * default include handler.
      *
-     * @param String url to resource to parse and compile from
+     * @param url to resource to parse and compile from
      *
      * @return Phases root component containing parsed component(s)
      *
@@ -238,7 +238,7 @@ public class SFParser implements Parser, MessageKeys {
       *
       * @return Language string
       *
-      * @throws SmartFrogException In case any error while getting the
+      * @throws SmartFrogParseException In case any error while getting the
       *         language string
       */
      public static String getLanguageFromUrl(String url)

@@ -184,8 +184,8 @@ public class ApacheImpl extends CompoundImpl implements Compound, Apache,
              //end if (needRestart)
 
             try {
-                thread.sleep(interCheckTime * 1000);
-            } catch (Exception e) {
+                Thread.sleep(interCheckTime * 1000);
+            } catch (InterruptedException ignored) {
             }
 
             try {

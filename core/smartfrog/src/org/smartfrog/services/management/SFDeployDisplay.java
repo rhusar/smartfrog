@@ -126,7 +126,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
          int width, String positionDisplay, final boolean showRootProcess,
          final String hostname, final int port, boolean shouldSystemExit)
           throws Exception {
-      final JButton refresh;
+      final JButton refreshButton;
       JMenu jMenuMng = new JMenu();
       final JCheckBoxMenuItem jCheckBoxMenuItemShowRootProcessPanel = new JCheckBoxMenuItem();
       String infoConnection = ("sfManagementConsole connecting to " +
@@ -141,28 +141,28 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
          //System.out.println("");
       }
 
-      final Display display;
+      final Display newDisplay;
 
       if (org.smartfrog.services.display.WindowUtilities.areGraphicsAvailable()) {
-         display = new Display(nameDisplay, null);
-         display.setShouldSystemExit(shouldSystemExit);
-         display.setVisible(false);
-         display.setSize(width, height);
+         newDisplay = new Display(nameDisplay, null);
+         newDisplay.setShouldSystemExit(shouldSystemExit);
+         newDisplay.setVisible(false);
+         newDisplay.setSize(width, height);
          org.smartfrog.services.display.WindowUtilities.setPositionDisplay(null,
-               display, positionDisplay);
+               newDisplay, positionDisplay);
 
          // Button for Refresh view ...
-         refresh = new JButton();
-         refresh.setText("Reload panels");
-         refresh.setActionCommand("refreshButton");
-         refresh.addActionListener(
+         refreshButton = new JButton();
+         refreshButton.setText("Reload panels");
+         refreshButton.setActionCommand("refreshButton");
+         refreshButton.addActionListener(
             new ActionListener() {
                public void actionPerformed(ActionEvent e) {
                   //System.out.println("ActionEvent SFDEployDisplay: "+ e);
                   if ((e.getActionCommand()).equals("refreshButton")) {
-                     display.cleanAddedPanels();
+                     newDisplay.cleanAddedPanels();
                      try {
-                        addProcessesPanels(display, jCheckBoxMenuItemShowRootProcessPanel.isSelected(), //showRootProcess,
+                        addProcessesPanels(newDisplay, jCheckBoxMenuItemShowRootProcessPanel.isSelected(), //showRootProcess,
                               hostname, port);
                      } catch (Exception ex) {
                         Logger.log(ex);
@@ -174,25 +174,25 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
                   }
                }
             });
-         display.mainToolBar.add(refresh);
-         display.showToolbar(true);
+         newDisplay.mainToolBar.add(refreshButton);
+         newDisplay.showToolbar(true);
          // Add deployTreePanel menu items
          jMenuMng.setText("Mng. Console");
-         display.jMenuBarDisplay.add(jMenuMng);
+         newDisplay.jMenuBarDisplay.add(jMenuMng);
          jCheckBoxMenuItemShowRootProcessPanel.setSelected(showRootProcess);
          jCheckBoxMenuItemShowRootProcessPanel.setText("Show rootProcess");
          jCheckBoxMenuItemShowRootProcessPanel.setAccelerator(javax.swing.KeyStroke.getKeyStroke(77, java.awt.event.KeyEvent.CTRL_MASK | java.awt.event.KeyEvent.ALT_MASK, false));
          jCheckBoxMenuItemShowRootProcessPanel.addActionListener(new ActionListener() {
                public void actionPerformed(ActionEvent e) {
-                            refresh.doClick();
+                            refreshButton.doClick();
                }
          });
          jMenuMng.add(jCheckBoxMenuItemShowRootProcessPanel);
 
-         display.setVisible(true);
-         addProcessesPanels(display, showRootProcess, hostname, port);
+         newDisplay.setVisible(true);
+         addProcessesPanels(newDisplay, showRootProcess, hostname, port);
 
-         return display;
+         return newDisplay;
       }
 
       return null;
@@ -234,14 +234,14 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
       int indexPanel = 0;
 
       // Adding pannels
-      JPanel panelTree = null;
+      JPanel deployPanel = null;
 
       if (addRootProcessPanel) {
-         panelTree = new DeployTreePanel(SFProcess.getRootLocator()
+         deployPanel = new DeployTreePanel(SFProcess.getRootLocator()
                .getRootProcessCompound(InetAddress.getByName(
                hostname), port), true);
-         panelTree.setEnabled(true);
-         display.tabPane.add(panelTree, "rootProcess...", indexPanel++);
+         deployPanel.setEnabled(true);
+         display.tabPane.add(deployPanel, "rootProcess...", indexPanel++);
       }
 
       Context context = SFProcess.getRootLocator()
@@ -260,9 +260,9 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
          //System.out.println("* " + key + ": " + value.toString());
          if (value instanceof Prim) {
             if (((Prim) value).sfParent() == null) {
-               panelTree = new DeployTreePanel(value, false);
-               panelTree.setEnabled(true);
-               display.tabPane.add(panelTree, key, indexPanel++);
+               deployPanel = new DeployTreePanel(value, false);
+               deployPanel.setEnabled(true);
+               display.tabPane.add(deployPanel, key, indexPanel++);
             }
          }
       }

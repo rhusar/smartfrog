@@ -74,23 +74,23 @@ public class SFConcatImpl extends PrimImpl implements Prim, SFConcat {
 
             if (!createReference) {
                 try {
-                    this.sfAddAttribute(this.ATR_CONCAT, concat.toString());
+                    this.sfAddAttribute(ATR_CONCAT, concat.toString());
                 } catch (Exception ex) {
                     error("SFConcat.sfDeploy", ex.toString());
 
                     if (debug) {
-                        this.sfAddAttribute(this.ATR_CONCAT, "error");
+                        this.sfAddAttribute(ATR_CONCAT, "error");
                     }
                 }
             } else {
                 try {
-                    this.sfAddAttribute(this.ATR_REFERENCE,
+                    this.sfAddAttribute(ATR_REFERENCE,
                         Reference.fromString(concat.toString()));
                 } catch (Exception ex) {
                     error("SFConcat.sfDeploy", ex.toString());
 
                     if (debug) {
-                        this.sfAddAttribute(this.ATR_REFERENCE, "error");
+                        this.sfAddAttribute(ATR_REFERENCE, "error");
                     }
                 }
             }
@@ -98,12 +98,12 @@ public class SFConcatImpl extends PrimImpl implements Prim, SFConcat {
             if (debug) {
                 if (createReference) {
                     log("SFConcat.sfDeploy",
-                        "reference solved: " + this.sfResolve(this.REF_REFERENCE) +
+                        "reference solved: " + this.sfResolve(REF_REFERENCE) +
                         ", reference: " +
-                        this.sfContext.get(this.ATR_REFERENCE));
+                        this.sfContext.get(ATR_REFERENCE));
                 } else {
                     log("SFConcat.sfDeploy",
-                        "concat: " + this.sfContext.get(this.ATR_CONCAT));
+                        "concat: " + this.sfContext.get(ATR_CONCAT));
                 }
             }
 
@@ -257,7 +257,7 @@ public class SFConcatImpl extends PrimImpl implements Prim, SFConcat {
     public void append(Object obj) {
         concat.append(obj);
         try {
-          this.sfAddAttribute(this.ATR_CONCAT, concat.toString());
+          this.sfAddAttribute(ATR_CONCAT, concat.toString());
         } catch (Exception ex){
           //Ignore
         }
