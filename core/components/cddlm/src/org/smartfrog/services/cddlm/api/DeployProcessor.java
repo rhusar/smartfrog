@@ -20,6 +20,7 @@
 package org.smartfrog.services.cddlm.api;
 
 import org.apache.axis.AxisFault;
+import org.apache.axis.message.MessageElement;
 import org.apache.axis.types.URI;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -32,7 +33,9 @@ import org.smartfrog.services.cddlm.generated.api.types._deploymentDescriptorTyp
 import org.smartfrog.sfcore.common.ConfigurationDescriptor;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.processcompound.SFProcess;
+import org.w3c.dom.Element;
 
+import javax.xml.namespace.QName;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -51,6 +54,8 @@ public class DeployProcessor extends Processor {
      * log
      */
     private static final Log log = LogFactory.getLog(DeployProcessor.class);
+    private static final String WRONG_MESSAGE_ELEMENT_COUNT = "wrong number of message elements";
+    private static final String UNSUPPORTED_LANGUAGE = "Unsupported language";
 
     public DeployProcessor(SmartFrogHostedEndpoint owner) {
         super(owner);
@@ -75,17 +80,76 @@ public class DeployProcessor extends Processor {
             deploySmartFrog(deploy);
 
         }
-        URI applicationReference = makeURIFromApplication(applicationName);
+        //create a new jobstate
+        JobState jobState=new JobState(deploy);
+        URI applicationReference = jobState.getUri();
+        //add it to the store
+        ServerInstance.currentInstance().getJobs().add(jobState);
         _deployResponse response = new _deployResponse(applicationReference);
         return response;
 
+    }
+
+    /**
+     * process a smartfrog deployment
+     *
+     * @param deploy
+     * @throws AxisFault
+     */
+    public void determineLanguageAndDeploy(_deployRequest deploy) throws AxisFault {
+        DeploymentDescriptorType descriptor= deploy.getDescriptor();
+        MessageElement[] messageElements=descriptor.getData().get_any();
+        if(messageElements.length!=1) {
+            throw raiseBadArgumentFault(WRONG_MESSAGE_ELEMENT_COUNT);
+        }
+
+        MessageElement elt= messageElements[0];
+        elt.getNamespaceURI();
+        QName qname=elt.getQName();
+        int lan=determineLanguage(qname);
+        if(lan==Constants.LANGUAGE_UNKNOWN) {
+            throw raiseBadArgumentFault(UNSUPPORTED_LANGUAGE);
+        }
+        switch(lan) {
+            case Constants.LANGUAGE_UNKNOWN:
+                throw raiseBadArgumentFault(UNSUPPORTED_LANGUAGE);
+            case Constants.LANGUAGE_SMARTFROG:
+                throw raiseBadArgumentFault(UNSUPPORTED_LANGUAGE);
+            case Constants.LANGUAGE_XML_CDL:
+                throw raiseBadArgumentFault(UNSUPPORTED_LANGUAGE);
+                //break;
+            default:
+                throw raiseBadArgumentFault(UNSUPPORTED_LANGUAGE);
+        }
+
+
+    }
+
+    private AxisFault raiseBadArgumentFault(String message) {
+        return raiseFault(Constants.CDDLM_BAD_ARGUMENT, message);
     }
 
     private URL makeURL(URI source) throws MalformedURLException {
         return new URL(source.toString());
     }
 
+    public static int determineLanguage( QName qname) {
+        String uri=qname.getNamespaceURI();
+        int l=Constants.LANGUAGE_UNKNOWN;
+        for(int i=0;i<Constants.LANGUAGE_NAMESPACES.length;i++ ) {
+            if(Constants.LANGUAGE_NAMESPACES[i].equals(uri)) {
+                l=i;
+                break;
+            }
+        }
+        return l;
+    }
 
+    /**
+     * process a smartfrog deployment
+     * @param deploy
+     * @throws AxisFault
+     */
     public void deploySmartFrog(_deployRequest deploy)
             throws AxisFault {
         try {
@@ -96,12 +160,19 @@ public class DeployProcessor extends Processor {
             log.info("processing descriptor " + descriptor);
             File tempFile = saveStringToFile(descriptor, ".sf");
             String url = tempFile.toURI().toURL().toExternalForm();
-            deployThroughSFSystem(null, deploy.getName().toString(), url, null);
+            deployThroughSFSystem(null, applicationName, url, null);
         } catch (IOException e) {
             throw AxisFault.makeFault(e);
         }
     }
 
+    /**
+     * save a string to a file
+     * @param descriptor
+     * @param extension
+     * @return
+     * @throws IOException
+     */
     private File saveStringToFile(String descriptor, String extension) throws IOException {
         File tempFile = File.createTempFile("deploy", extension);
         OutputStream out = null;
@@ -145,7 +216,7 @@ public class DeployProcessor extends Processor {
      * @return
      * @throws AxisFault
      */
-    private String deployThroughSFSystem(String hostname, String application,
+    private void deployThroughSFSystem(String hostname, String application,
                                          String url,
                                          String subprocess) throws AxisFault {
         try {
@@ -160,8 +231,6 @@ public class DeployProcessor extends Processor {
             config.execute(SFProcess.getProcessCompound());
             SFSystem.runConfigurationDescriptor(config, true);
 
-            //SFSystem.deployAComponent(hostname,url,application,remote);
-            return "urn://" + hostname + "/" + application;
         } catch (SmartFrogException exception) {
             throw AxisFault.makeFault(exception);
         } catch (Exception exception) {

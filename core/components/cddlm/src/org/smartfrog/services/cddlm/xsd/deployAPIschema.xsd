@@ -214,7 +214,7 @@
       <xsd:element name="data">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:any processContents="lax" namespace="##other"/>
+            <xsd:any processContents="lax" namespace="##other" minOccurs="1" maxOccurs="1"  />
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>

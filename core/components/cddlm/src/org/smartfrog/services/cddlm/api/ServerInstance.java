@@ -78,11 +78,11 @@ public class ServerInstance {
         //callbacks are easy
         CallbackListType callbacks = new CallbackListType(Constants.CALLBACKS);
 
-        StaticServerStatusType staticStatus;
-        staticStatus = new StaticServerStatusType(serverInfo,
+        StaticServerStatusType status;
+        status = new StaticServerStatusType(serverInfo,
                 languages,
                 callbacks);
-        return staticStatus;
+        return status;
     }
 
     public JobRepository getJobs() {

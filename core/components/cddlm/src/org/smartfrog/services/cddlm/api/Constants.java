@@ -19,6 +19,8 @@
  */
 package org.smartfrog.services.cddlm.api;
 
+import javax.xml.namespace.QName;
+
 /**
  * created Aug 4, 2004 10:34:47 AM
  */
@@ -29,6 +31,22 @@ public class Constants {
         "XML-CDL", "0.3", org.smartfrog.services.cddlm.cdl.Constants.CDL_NAMESPACE,
         "Apache Ant", "1.7", org.smartfrog.services.cddlm.cdl.Constants.ANT_NAMESPACE
     };
+
+    public static final String[] LANGUAGE_NAMESPACES = {
+        org.smartfrog.services.cddlm.cdl.Constants.SMARTFROG_NAMESPACE,
+        org.smartfrog.services.cddlm.cdl.Constants.CDL_NAMESPACE,
+        org.smartfrog.services.cddlm.cdl.Constants.ANT_NAMESPACE
+    };
+
+    /**
+     * these consts must match the position above
+     */
+    public static final int LANGUAGE_UNKNOWN = -1;
+    public static final int LANGUAGE_SMARTFROG = 0;
+    public static final int LANGUAGE_XML_CDL =1;
+    public static final int LANGUAGE_ANT =2;
+
+
     public static final String WS_NOTIFICATION = "ws-notification";
     public static final String CDDLM_CALLBACKS = "cddlm-prototype";
     public static final String WS_EVENTING = "ws-eventing";
@@ -41,4 +59,9 @@ public class Constants {
     public static final String SMARTFROG_SCHEMA = "smartfrog";
     public static final String ERROR_INVALID_SCHEMA = "invalid schema in URI: ";
     public static final String ERROR_NO_APPLICATION = "application is undefined";
+
+    public static final String CDDLM_FAULT_NAMESPACE = org.smartfrog.services.cddlm.cdl.Constants.SMARTFROG_NAMESPACE;
+
+    public static final QName CDDLM_BAD_ARGUMENT = new QName(CDDLM_FAULT_NAMESPACE,"bad-argument");
+    public static final QName CDDLM_CAUGHT_EXCEPTION = new QName(CDDLM_FAULT_NAMESPACE, "caught-exception");
 }
