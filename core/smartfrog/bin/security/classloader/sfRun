@@ -2,19 +2,15 @@ if ! test $SFHOME; then export SFHOME=$PWD; fi
 if ! test $SFPRIVATE; then export SFPRIVATE=$SFHOME/private; fi
 if ! test $SFHOSTNAME; then export SFHOSTNAME=host1; fi
 if [ -z $1 ];then
-echo "Insufficient argument(s) to use sfparse"
-echo "Usage: sfParse [-v] [-q] [-d] [-r] [-R] [{-f filename}|URL]"
-exit
-fi
-if [ $1 == "-f" ] && [ -z $@ ];then 
-echo "Insufficient argument(s) to use sfparse"
-echo "Usage: sfParse [-v] [-q] [-d] [-r] [-R] [{-f filename}|URL]"
+echo "Insufficient argument(s) to use sfRun"
+echo "Usage: sfRun URL [-e]"
 exit
 fi
 export CLASSPATH=$SFHOME/signedLib/smartfrog.jar:$SFHOME/signedLib/sfServices.jar:$SFHOME/signedLib/sfTestCases.jar:$CLASSPATH
 export SERVER=localhost:8080
-# Please edit codebase if you have any other jar file in webserver
+# please edit codebase if you have any other jar file in webserver
 export CODEBASE="http://$SERVER/sfExamples.jar"
+
 java -Djava.security.manager -Djava.security.policy==$SFPRIVATE/sf.policy \
       -Dorg.smartfrog.sfcore.security.keyStoreName=$SFPRIVATE/$SFHOSTNAME/mykeys.st \
       -Dorg.smartfrog.sfcore.security.propFile=$SFPRIVATE/$SFHOSTNAME/SFSecurity.properties \
@@ -22,4 +18,4 @@ java -Djava.security.manager -Djava.security.policy==$SFPRIVATE/sf.policy \
       -Djava.security.debug=scl \
       -Djava.rmi.server.logCalls=true \
       -Dsun.rmi.loader.logLevel=VERBOSE \
-      -Dorg.smartfrog.codebase=$CODEBASE org.smartfrog.SFParse $* 
+      -Dorg.smartfrog.codebase=$CODEBASE org.smartfrog.SFSystem  -a :DEPLOY:$1::: $2
