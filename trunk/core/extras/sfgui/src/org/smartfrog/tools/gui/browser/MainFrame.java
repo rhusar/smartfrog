@@ -79,7 +79,7 @@ public class MainFrame extends JFrame implements ActionListener {
    /**
     *  Description of the Field
     */
-   public final static String version = "v0.7 r04";
+   public final static String version = "v0.7 r06";
    // This has to  be done properly !!!!!!!!!!!!!!! no static. Because of crap log.
    static PrintStream msg = System.out;
    static JLabel statusBar = new JLabel();
@@ -125,8 +125,8 @@ public class MainFrame extends JFrame implements ActionListener {
    private String sfDaemonDefSFFile = "./bin/default.sf";
    //"sfDaemon";
    private String sfDaemonFile = "./bin/daemon.sf";
-   private String cmdSFStart = "sfStart";
-   private String cmdSFStop = "sfTerminate";
+   private String cmdSFStart = "DEPLOY";
+   private String cmdSFStop = "TERMINATE";
    private String cmdAddSecurity = "security";
    //lookAndFeel
    private String lookAndFeel = "kunststoff";
@@ -377,9 +377,9 @@ public class MainFrame extends JFrame implements ActionListener {
    }
 
     public void setEclipseMode(){
-         int indexPanel = jTabbedPanelNorth.indexOfTab(panelNameSFFile);
+        //int indexPanel = jTabbedPanelNorth.indexOfTab(panelNameSFFile);
         jTextAreaSFFile.setEditable(false);
-        jTabbedPanelNorth.remove(indexPanel);
+        //jTabbedPanelNorth.remove(indexPanel);
         jButtonOpen.hide();
         jButtonSave.hide();
         jMenuItemOpen.hide();
@@ -1379,15 +1379,33 @@ public class MainFrame extends JFrame implements ActionListener {
                   }
 
                }
-               cmdStart = cmdGeneral + " " + dir + cmdStart + " "
-                      + this.hostNameTextField.getText() + " "
-                      + this.processNameTextField.getText() + " "
-                      +"\""+ file.getPath()+"\"" + " ";
-               cmdStop = cmdGeneral + " " + dir + cmdStop + " "
-                      + this.hostNameTextField.getText() + " "
-                      + this.processNameTextField.getText() + " "
-                      + " ";
-//                    runCmd = new RunProcess(cmd);
+//               cmdStart = cmdGeneral + " " + dir + cmdStart + " "
+//                      + this.hostNameTextField.getText() + " "
+//                      + this.processNameTextField.getText() + " "
+//                      +"\""+ file.getPath()+"\"" + " ";
+//ProcessName:DEPLOY:org/smartfrog/examples/counter/examplekk.sf::127.0.0.1:
+               cmdStart = cmdGeneral + " " + dir + "smartfrog" + " -a "
+                      + this.processNameTextField.getText() +":"
+                      +cmdSFStart+":"
+                      +"\""+ file.getPath()+"\""+":"
+                      +":"
+                      + this.hostNameTextField.getText() + ": -e";
+
+
+//               cmdStop = cmdGeneral + " " + dir + cmdStop + " "
+//                      + this.hostNameTextField.getText() + " "
+//                      + this.processNameTextField.getText() + " "
+//                      + " ";
+//ProcessName:DEPLOY:org/smartfrog/examples/counter/examplekk.sf::127.0.0.1:
+                  cmdStop = cmdGeneral + " " + dir + "smartfrog" + " -a "
+                         + this.processNameTextField.getText() +":"
+                         +cmdSFStop+":"
+                         +""+":"
+                         +":"
+                         + this.hostNameTextField.getText() + ": -e";
+
+
+
                jTabbedPanelNorth.setSelectedIndex(jTabbedPanelNorth.indexOfTab("output"));
 //                    // Select Output
 //                    runCmd.start();
@@ -1443,14 +1461,31 @@ public class MainFrame extends JFrame implements ActionListener {
                cmdGeneral = "bash";
                dir = " ./" + batchDir + "/";
             }
-            cmdStart = cmdGeneral + " " + dir + cmdStart + " "
-                   + this.hostNameTextField.getText() + " "
-                   + this.processNameTextField.getText() + " "
-                   +"\"" +sfFilePath +"\""+ " ";
-            cmdStop = cmdGeneral + " " + dir + cmdStop + " "
-                   + this.hostNameTextField.getText() + " "
-                   + this.processNameTextField.getText() + " "
-                   + " ";
+//            cmdStart = cmdGeneral + " " + dir + cmdStart + " "
+//                   + this.hostNameTextField.getText() + " "
+//                   + this.processNameTextField.getText() + " "
+//                   +"\"" +sfFilePath +"\""+ " ";
+//            cmdStop = cmdGeneral + " " + dir + cmdStop + " "
+//                   + this.hostNameTextField.getText() + " "
+//                   + this.processNameTextField.getText() + " "
+//                   + " ";
+
+           cmdStart = cmdGeneral + " " + dir + "smartfrog" + " -a "
+                  + this.processNameTextField.getText() +":"
+                  +cmdSFStart+":"
+                  +"\""+ sfFilePath+"\""+":"
+                  +":"
+                  + this.hostNameTextField.getText() + ": -e";
+
+              cmdStop = cmdGeneral + " " + dir + "smartfrog" + " -a "
+                     + this.processNameTextField.getText() +":"
+                     +cmdSFStop+":"
+                     +""+":"
+                     +":"
+                     + this.hostNameTextField.getText() + ": -e";
+
+
+
             jTabbedPanelNorth.setSelectedIndex(jTabbedPanelNorth.indexOfTab("output"));
             //jTabbedPanelNorth.setSelectedIndex(2);
             auxProcess = new InfoProcess(this.processNameTextField.getText() + "(" + this.hostNameTextField.getText() + ")", cmdStart, " ", cmdStop, " ", ".", null);

@@ -14,8 +14,8 @@ rem cmdSFDaemon=-Dorg.smartfrog.sfcore.processcompound.sfProcessName=
 rem SFDaemonProcessName=rootProcess
 rem SFDaemonDefIniFile=./bin/default.ini
 rem SFDaemonDefSFFile=./bin/default.sf
-rem cmdSFStart=sfStart
-rem cmdSFStop=sfTerminate
+rem cmdSFStart=DEPLOY
+rem cmdSFStop=TERMINATE
 rem suffixSecureScrip=security
 rem cmdBrowserURL=http://127.0.0.1:8080/
 rem cmdBrowserWin=explorer
