@@ -23,6 +23,13 @@ package org.smartfrog.sfcore.common;
 import java.util.Vector;
 
 import org.smartfrog.Version;
+import org.smartfrog.sfcore.common.Logger;
+import org.smartfrog.sfcore.common.ConfigurationDescriptor;
+import org.smartfrog.sfcore.common.SmartFrogInitException;
+import java.io.LineNumberInputStream;
+import java.io.LineNumberReader;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 
 
 /**
@@ -40,7 +47,7 @@ public class OptionSet {
 
     /** Usage string for SFSystem. */
     public String usage = "\n" +
-        " Usage: java -D... org.smartfrog.SFSystem [-h HOST_NAME [-p PROCESS_NAME]] (-t NAME)* (-d NAME)* (-T NAME)* (-c URL | -n NAME URL)* [-e]\n" +
+        " Usage: java -D... org.smartfrog.SFSystem [-h HOST_NAME [-p PROCESS_NAME]] [-a URL_DESCRIPTOR] [-f FILE_URL] (-t NAME)* (-d NAME)* (-T NAME)* (-c URL | -n NAME URL)* [-e]\n" +
         "    or: java -D... org.smartfrog.SFSystem -?";
 
     /** Help string for SFSystem. */
@@ -50,7 +57,8 @@ public class OptionSet {
         "\n" +
         "    -p PROCESS_NAME: name by which the application should be known\n" +
         "                    in the sfDaemon where it is deployed" + "\n" +
-        "                    (-p must be accompanied by -h)" + "\n" +
+        "                    (-p must be accompanied by -h)" +
+        "\n" +
         "    -t NAME:        terminates the application named by 'NAME'" +
         "\n" +
         "    -d NAME:        detaches the component named by 'NAME' from the SmartFrog system and then terminates it" +
@@ -60,7 +68,14 @@ public class OptionSet {
         "    -c URL:         to deploy up the SF text at 'URL' using a random name" +
         "\n" +
         "    -n NAME URL:    to deploy up the SF text at 'URL' using 'NAME' for the name" +
-        "\n" + "    -e:             exit after deployment is finished" + "\n" +
+        "\n" +
+        "    -a URL_DESCRIPTOR: descriptor of the application template to deploy.\n" +
+       "       ex. counterEx:DEPLOY:org/.../example.sf:sfConfig:localhost:process" +
+        "\n" +
+        "    -f FILE_URL: file url with the ConfigurationDescriptors to deploy" +
+        "\n" +
+
+        "    -e:             exit after deployment is finished" + "\n" +
         " To stop sfDaemon use: -h HOST_NAME -t rootProcess";
 
     /** Error string for SFSystem. */
@@ -80,18 +95,22 @@ public class OptionSet {
 
     /** Vector for named applications given as -t options on the commandline. */
     public Vector terminations = new Vector();
-    
+
     /** Vector for named components given as -d options on the commandline. */
     public Vector detaching = new Vector();
 
     /** Vector for named components given as -T options on the commandline. */
     public Vector terminating = new Vector();
-    
+
     /** Vector for applications to be deployed. */
     public Vector configs = new Vector();
 
     /** Vector for name of the applications to be deployed. */
     public Vector names = new Vector();
+
+
+    /** Vector for configurationDescriptors to be deployed. */
+    public Vector cfgDescriptors = new Vector();
 
     /** Flag indicating the exit status of the application. */
     public boolean exit = false;
@@ -103,6 +122,9 @@ public class OptionSet {
      */
     public OptionSet(String[] args) {
         int i = 0;
+        String name;
+        String url;
+        String deployRef;
 
         while ((i < args.length) & (errorString == null)) {
             try {
@@ -110,7 +132,6 @@ public class OptionSet {
                     switch (args[i].charAt(1)) {
                     case '?':
                         errorString = "SFSystem help" + help;
-
                         break;
 
                     case 'h':
@@ -142,43 +163,83 @@ public class OptionSet {
                         break;
 
                     case 't':
-                        terminations.add(args[++i]);
-
+                        name = args[++i];
+                        cfgDescriptors.add(
+                            new ConfigurationDescriptor(name,
+                                                        null,
+                                ConfigurationDescriptor.Action.TERMINATE,
+                                                        host,
+                                                        subprocess));
+                        terminations.add(name);
                         break;
                     case 'd':
-                        detaching.add(args[++i]);
-
+                        name = args[++i];
+                        cfgDescriptors.add(
+                            new ConfigurationDescriptor(name,
+                                                        null,
+                                ConfigurationDescriptor.Action.DETACH,
+                                                        host,
+                                                        subprocess));
+                        detaching.add(name);
                         break;
-                    
-                    case 'T':
-                        terminating.add(args[++i]);
 
+                    case 'T':
+                        name = args[++i];
+                        terminating.add(args[++i]);
+                        cfgDescriptors.add(
+                             new ConfigurationDescriptor(name,
+                                                         null,
+                         ConfigurationDescriptor.Action.TERMINATE,
+                                                         host,
+                                                         subprocess));
                         break;
 
                     case 'c':
-                        configs.add(args[++i]);
+                        url = args[++i];
+                        configs.add(url);
                         names.add(null);
-
+                        cfgDescriptors.add(
+                            new ConfigurationDescriptor(null,
+                                                        url,
+                                ConfigurationDescriptor.Action.DEPLOY,
+                                                         host,
+                                                         subprocess));
                     break;
 
-                    case 'n':
+                    case 'a':
+                        try {
+                            this.cfgDescriptors.add(new ConfigurationDescriptor(args[++i]));
+                        } catch (SmartFrogInitException ex){Logger.log(ex);}
+                        break;
 
+                    case 'f':
+                        try {
+                            this.readCfgDescriptorsFile(args[++i]);
+                        } catch (SmartFrogInitException ex){Logger.log(ex);}
+                         break;
+
+                    case 'n':
                         if (args[i+1].charAt(0)==optionFlagIndicator) {
                             errorString = "SFSystem help" + help;
                         }
                         else {
-                            String name = args[++i];
+                             name = args[++i];
                             if (args[i+1].charAt(0)==optionFlagIndicator)
                                 errorString = "SFSystem help" + help;
-                                        configs.add(args[++i]);
+                                        url = args[++i];
+                                        configs.add(url);
                                         names.add(name);
+                                        cfgDescriptors.add(
+                                            new ConfigurationDescriptor(name,
+                                                                        url,
+                                                ConfigurationDescriptor.Action.DEPLOY,
+                                                                        host,
+                                                                        subprocess));
                         }
-
                         break;
 
                     case 'e':
                         exit = true;
-
                         break;
 
                     default:
@@ -191,7 +252,11 @@ public class OptionSet {
 
                 i++;
             } catch (Exception e) {
-                errorString = "illegal format for options ";
+                //protects from dodgy shell scripts
+                if (!(e instanceof java.lang.ArrayIndexOutOfBoundsException)){
+                   errorString = "illegal format for options ";
+                }
+                Logger.logQuietly(e);
             }
         }
 
@@ -202,6 +267,36 @@ public class OptionSet {
         if (errorString != null) {
             errorString += usage;
         }
+    }
+
+    private void readCfgDescriptorsFile(String fileURL) throws SmartFrogException{
+        String line;
+        LineNumberReader file=null;
+        try {
+            file =
+            new LineNumberReader (
+               new BufferedReader(new InputStreamReader(
+               (org.smartfrog.SFSystem.getInputStreamForResource(fileURL)))));
+            //Loop through each line and add non-blank
+            //lines to the Vector
+            while ( (line = file.readLine()) != null) {
+               try {
+                   if (line.trim().length()>0){
+                     //Logger.log(" Reading and Creating: "+line);
+                     this.cfgDescriptors.add(new ConfigurationDescriptor(line));
+                     //Logger.log(" result: " + this.cfgDescriptors.lastElement().toString());
+                   }
+               } catch (SmartFrogInitException ex){Logger.log(ex);}
+            }
+        }  catch (Exception e) {
+            Logger.log(e);
+                throw SmartFrogException.forward(e);
+        } finally {
+            try {
+                file.close();
+            } catch (Exception ex){Logger.logQuietly(ex);}
+        }
+
     }
 
     /*
