@@ -123,13 +123,14 @@ public class CallbackProcessor extends Processor {
         if (appURI == null) {
             throw raiseBadArgumentFault(ERROR_NO_APPLICATION);
         }
-        JobState job = lookupJobNonFaulting(appURI);
+        JobState job;
+        /*
+        job = lookupJobNonFaulting(appURI);
         if(job==null && request.getCallback()==null) {
             return true;
-        } else {
-            //force a failure
-            lookupJob(appURI);
         }
+        */
+        job = lookupJob(appURI);
 
         process(job, request.getCallback(), false);
 
