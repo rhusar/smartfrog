@@ -1,0 +1,15 @@
+if ! test $SFHOME; then export SFHOME=$PWD; fi
+if ! test $SFPRIVATE; then export SFPRIVATE=$SFHOME/private; fi
+if ! test $SFHOSTNAME; then export SFHOSTNAME=host1; fi
+if [ $# -ne 3 ];
+then
+echo " Insufficient argument(s) to use sfStart"
+echo "Usage: sfStart HostName ApplicationName URL"
+exit
+fi
+for i in $SFHOME/signedLib/*.jar; do CLASSPATH=$i:$CLASSPATH; done
+export CLASSPATH
+java  -Djava.security.manager -Djava.security.policy==$SFPRIVATE/sf.policy \
+      -Dorg.smartfrog.sfcore.security.keyStoreName=$SFPRIVATE/$SFHOSTNAME/mykeys.st \
+      -Dorg.smartfrog.sfcore.security.propFile=$SFPRIVATE/$SFHOSTNAME/SFSecurity.properties \
+     org.smartfrog.SFSystem -h $1 -n $2 $3 -e
