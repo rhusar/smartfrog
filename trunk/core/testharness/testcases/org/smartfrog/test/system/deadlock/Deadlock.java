@@ -20,11 +20,10 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.test.system.deadlock;
 
-import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.reference.ReferencePart;
+import java.rmi.Remote;
 
 
-public interface Deadlock {
+public interface Deadlock extends Remote {
     // Attribute names
     final static String ATTR1 = "attr";
 

@@ -38,5 +38,8 @@ org/smartfrog/services/filesystem/MkdirImpl.class
 org/smartfrog/services/www/LivenessPageComponent.class
 org/smartfrog/services/filesystem/replacevar/SFReplaceFileVar.class
 org/smartfrog/services/utils/setproperty/SFSetPropertyImpl.class
+org/smartfrog/services/os/java/RunJavaImpl.class
+org/smartfrog/services/os/java/JavaPackageImpl.class
+
 
 
