@@ -41,7 +41,7 @@ For more information: www.smartfrog.org
   <target name="init" 
     depends="init-standard-output-dirs,use-smartfrog-tasks,use-smartfrog-testharness">
           
-    <property name="deploy.sf" value="test/files/success.sf" />
+    <property name="deploy.sf" value="files/success.sf" />
     <property name="default.ini" location="test/files/default.ini"/>
     <property name="default.sf" location="test/files/default.sf"/>
 
@@ -58,15 +58,33 @@ For more information: www.smartfrog.org
     </path>    
   </target>
   
+  
+  <!-- ========================================================== -->
+  <!-- create a distro. 
+       we want both sf-junit and the test har -->
+  <!-- ========================================================== -->
+  <target name="dist" depends="package,package-tests"
+    description="create a distribution">
+
+  </target>    
+    
+  
   <!-- ========================================================== -->
   <!-- parse the file -->
   <!-- ========================================================== -->
   <target name="parse" depends="init,dist" 
     description="parse the deployment descriptor">
-        <sf-parse quiet="true">
-            <classpath path="${target.jar}"/>
-            <source dir="${build.classes.dir}"
-                includes="org/smartfrog/services/**/*.sf">
+        <property name="parse.quiet" value="true" />
+        <sf-parse quiet="${parse.quiet}">
+            <classpath path="${target.jar}:${test.jar}"/>
+            <!-- source files -->
+            <source dir="${src.dir}"
+                includes="org/smartfrog/services/junit/example.sf">
+            </source>
+            <!-- test files -->
+            <source dir="${test.src.dir}">
+             <include name="files/*.sf" />
+             <exclude name="files/components.sf" />
             </source>
         </sf-parse>    
   </target>
@@ -99,17 +117,20 @@ For more information: www.smartfrog.org
     <!-- ========================================================== -->
     <!-- deploy; requires a host -->
     <!-- ========================================================== -->
-    <target name="deploy" depends="dist,init-deploy-properties"
+    <target name="deploy" depends="parse,init-deploy-properties"
         description="deploy">
-        <sf-tourl property="target.jar.url" file="${target.jar}">
+        <sf-tourl property="codebase" >
+          <fileset file="${target.jar}"/>
+          <fileset file="${test.jar}"/>
+          <fileset file="${junit.jar}"/>
         </sf-tourl>
-        <sf-tourl property="junit.jar.url" file="${junit.jar}"/>
-        <property name="codebase" 
-         value="${target.jar.url} ${junit.jar.url}" />
-        <echo> codebase= ${codebase}</echo>
+        <echo>
+        deploying to ${deploy.host}
+        codebase=${codebase}</echo>
         <sf-deploy classpathref="run.classpath"
             logStackTraces="true"
             host="${deploy.host}"
+            timeout="30000"
             >
             <codebase url="${codebase}"/>
             

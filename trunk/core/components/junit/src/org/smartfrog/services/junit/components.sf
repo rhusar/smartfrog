@@ -82,24 +82,6 @@ JUnitTestSuite extends TestSuite {
     sfClass "org.smartfrog.services.junit.JUnitTestSuiteImpl";
 }
 
-
-/**
- * This is a forked JUnit instance. We offer all the JUnit attributes
- * and the java attrs too. The latter are all bound to a
- * forkedJVM component that lives underneath.
- */
-ForkedJUnitTestSuite extends JUnitTestSuite {
-    //insert the JVM
-    //javaSchema extends JavaSchema;
-    sfClass "org.smartfrog.services.junit.ForkedJunitTestRunner";
-//    subpackages true;
-//    pattern "*Test.class";
-    forkedJVM extends Java {
-        classname "org.smartfrog.services.junit.ForkedJVM";
-    }
-}
-
-
 /**
  * this is a declaration of a test listener
  */
@@ -107,10 +89,16 @@ ForkedJUnitTestSuite extends JUnitTestSuite {
 TestListener extends Prim {
 }
 
+/**
+ * console listener just outputs to the console
+ */
 ConsoleListener extends TestListener {
     sfClass "org.smartfrog.services.junit.listeners.ConsoleListenerComponent";
 }
 
+/**
+ * XML listener is the most complex beast
+ */
 XMLListenerSchema extends Schema {
 /** output directories are compusory and can be a path or a File ref*/
     outputDirectory extends Compulsory ;
@@ -123,9 +111,12 @@ XMLListenerSchema extends Schema {
 XMLListener extends TestListener {
     schema extends XMLListenerSchema;
     sfClass "org.smartfrog.services.junit.listeners.OneHostXMLListener";
-    useHostname "true";
+    useHostname true;
 }
 
+/**
+ * this is the one we use for testing. It buffers stuff and can be queried about it
+ */
 BufferingListener extends TestListener {
     sfClass "org.smartfrog.services.junit.listeners.BufferingListenerComponent";
 }

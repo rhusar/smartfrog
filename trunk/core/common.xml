@@ -125,6 +125,15 @@
     <property name="jarfile.name" value="${project.name}${jarfile.suffix}.jar"/>
     <property name="target.jar" 
         location="${dist.lib.dir}/${jarfile.name}" />  
+        
+<!--     name JAR files that tests go into. this is for signing all
+    test code (inc deployment descriptors) for deployment onto secure
+    boxes
+ -->
+    <property name="test.jar.name" value="${project.name}-test.jar"/>
+    <property name="test.jar" 
+        location="${dist.lib.dir}/${test.jar.name}" />  
+            
 
     <!-- standard location for distributed stuff; used when locating
       other things -->
@@ -521,7 +530,7 @@
     <property name="testharness.dir" 
       location="${core.dir}/testharness" />
     <property name="testharness.jar.name"
-      value="smartfrog-testharness.jar" /> 
+      value="sf-testharness.jar" /> 
     <property name="testharness.jar"
         location="${testharness.dir}/${dist.lib.dir.relative}/${testharness.jar.name}" /> 
     <available file="${testharness.jar}" 
@@ -591,7 +600,7 @@
   <target name="shutdown"
     depends="use-smartfrog-tasks"
     description="shut down a local smartfrog daemon">
-    <sf-stopdaemon failonerror="false" />
+    <sf-stopdaemon timeout="60000" failonerror="false" />
   </target> 
   
  
@@ -718,7 +727,7 @@
   <target name="compile-tests"
       depends="package,assert-smartfrog-testharness,declare-tests.compile.classpath">
       <depend 
-          srcdir="${build.test.dir}"
+          srcdir="${test.src.dir}"
           destdir="${test.classes.dir}"
           cache="${build.test.dir}/depends"
           closure="yes"/>
@@ -733,21 +742,34 @@
 
   <!-- ========================================================== -->
   <!-- this is an override point -->
-  <!-- create the jar ${target.jar}-->
+  <!-- create the JAR ${target.jar}-->
   <!-- ========================================================== -->
   <target name="package" depends="compile,rmi"
-      description="create the jar files">
+      description="create the JAR files">
       <jar destfile="${target.jar}" 
         basedir="${build.classes.dir}" 
         includes="**/*"/>
       <echo level="verbose">created package ${target.jar}</echo>
+  </target>  
+
+  <!-- ========================================================== -->
+  <!-- this is an override point -->
+  <!-- create the test jar ${test.jar}-->
+  <!-- ========================================================== -->
+  <target name="package-tests" depends="compile-tests"
+      description="create the JAR file for the tests">
+      <jar destfile="${test.jar}" 
+        basedir="${test.classes.dir}" 
+        includes="**/*"/>
+      <echo level="verbose">created package ${test.jar}</echo>
   </target>  
   
   <!-- ========================================================== -->
   <!-- this is an override point -->
   <!-- everything for distribution -->
   <!-- ========================================================== -->
-  <target name="dist" depends="package">
+  <target name="dist" depends="package"
+    description="create a distribution">
 
   </target>    
     
