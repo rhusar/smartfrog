@@ -25,9 +25,9 @@ package org.smartfrog.services.cddlm.api;
 
 public class Constants {
     public static final String[] LANGUAGES = {
-        "SmartFrog", "1.0", "http://gridforge.org/cddlm/smartfrog/2004/07/30",
-        "XML-CDL", "0.3", "http://gridforge.org/cddlm/xml/2004/07/30/",
-        "Apache Ant", "1.7", "http://ant.apache.org/xsd"
+        "SmartFrog", "1.0", org.smartfrog.services.cddlm.cdl.Constants.SMARTFROG_NAMESPACE,
+        "XML-CDL", "0.3", org.smartfrog.services.cddlm.cdl.Constants.CDL_NAMESPACE,
+        "Apache Ant", "1.7", org.smartfrog.services.cddlm.cdl.Constants.ANT_NAMESPACE
     };
     public static final String  WS_NOTIFICATION="ws-notification";
     public static final String  CDDLM_CALLBACKS= "cddlm-prototype";
@@ -38,4 +38,7 @@ public class Constants {
     public static final String SMARTFROG_HOMEPAGE = "http://smartfrog.org/";
     public static final String PRODUCT_NAME = "SmartFrog implementation";
     public static final String CVS_INFO = "$ID$ $NAME$ $REVISION$";
+    public static final String SMARTFROG_SCHEMA = "smartfrog";
+    public static final String ERROR_INVALID_SCHEMA = "invalid schema in URI: ";
+    public static final String ERROR_NO_APPLICATION = "application is undefined";
 }

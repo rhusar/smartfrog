@@ -27,6 +27,7 @@ import org.smartfrog.services.cddlm.generated.api.types.StaticServerStatusType;
 import org.smartfrog.services.cddlm.generated.api.types.DynamicServerStatusType;
 import org.smartfrog.services.cddlm.generated.api.types._languageListType_language;
 import org.smartfrog.services.cddlm.generated.api.types.CallbackListType;
+import org.smartfrog.services.axis.SmartFrogHostedEndpoint;
 import org.apache.axis.types.URI;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -37,8 +38,16 @@ import java.rmi.RemoteException;
  * created Aug 4, 2004 10:15:34 AM
  */
 
-public class ServerStatusHandler {
-    private Log log = LogFactory.getLog(this.getClass());
+public class ServerStatusProcessor  extends Processor {
+
+    public ServerStatusProcessor(SmartFrogHostedEndpoint owner) {
+        super(owner);
+    }
+
+    /**
+     * log
+     */
+    private static final Log log = LogFactory.getLog(ServerStatusProcessor.class);
 
     /**
      * generate the server status information
@@ -50,7 +59,7 @@ public class ServerStatusHandler {
             throws RemoteException {
         ServerInformationType serverInfo = new ServerInformationType();
         serverInfo.setName(Constants.PRODUCT_NAME);
-        serverInfo.setHome(EndpointHelper.makeURI(Constants.SMARTFROG_HOMEPAGE));
+        serverInfo.setHome(makeURI(Constants.SMARTFROG_HOMEPAGE));
         serverInfo.setDiagnostics(null);
         serverInfo.setBuild(getBuildInfo());
 
@@ -61,7 +70,7 @@ public class ServerStatusHandler {
         for(int i=0;i+2<Constants.LANGUAGES.length;i+=3) {
             String name = Constants.LANGUAGES[i];
             String version = Constants.LANGUAGES[i+1];
-            URI namespace = EndpointHelper.makeURI(Constants.LANGUAGES[i+2]);
+            URI namespace = makeURI(Constants.LANGUAGES[i+2]);
             list[counter++]=new _languageListType_language(name,
                     version,
                     namespace);

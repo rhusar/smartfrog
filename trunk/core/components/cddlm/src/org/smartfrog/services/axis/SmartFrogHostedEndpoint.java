@@ -27,11 +27,11 @@ import org.smartfrog.services.cddlm.DeploymentEndpoint;
  * Date: 10-Mar-2004
  * Time: 20:07:32
  */
-public class SmartfrogHostedEndpoint {
+public class SmartFrogHostedEndpoint {
     /**
      * name of whoever created this endpoint
      */
-    protected static AxisImpl owner;
+    private static AxisImpl owner;
 
     /**
      * set the owner
@@ -44,4 +44,11 @@ public class SmartfrogHostedEndpoint {
         DeploymentEndpoint.owner = owner;
     }
 
+    /**
+     * get the owner
+     * @return
+     */
+    public static AxisImpl getOwner() {
+        return owner;
+    }
 }

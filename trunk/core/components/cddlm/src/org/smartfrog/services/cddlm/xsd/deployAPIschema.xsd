@@ -4,7 +4,6 @@
       xmlns:types="http://gridforum.org/cddlm/serviceAPI/types/2004/07/30"
             xmlns="http://gridforum.org/cddlm/serviceAPI/types/2004/07/30"
         xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-        xmlns:cdl="urn:cddlm/xml/0.1"
         xmlns:wsa="http://schemas.xmlsoap.org/ws/2003/03/addressing"
 >
 <!--
@@ -201,7 +200,13 @@ xmlns:wsbf="http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseFaults"
     </xsd:annotation>
     <xsd:choice>
       <xsd:element name="source" type="xsd:anyURI"  />
-      <xsd:any  processContents="lax"  namespace="##other"/>
+      <xsd:element name="data" >
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:any processContents="lax" namespace="##other"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
     </xsd:choice>
   </xsd:complexType>
 

@@ -30,15 +30,19 @@ public class Constants {
     public static final String CDDLM_XSD_FILENAME = "cddlm.xsd";
     public static final String DEPLOY_API_SCHEMA_FILENAME = "deployAPIschema.xsd";
 
+
     private Constants() {
     }
 
-    public static final String CDL_NAMESPACE="urn:cddlm/xml/0.1";
+    public static final String CDL_NAMESPACE="http://gridforge.org/cddlm/xml/2004/07/30/";
 
-    public static final String CDL_API_NAMESPACE = "urn:cddlm/api/0.1";
+    public static final String CDL_API_NAMESPACE = "http://gridforum.org/cddlm/serviceAPI/api/2004/07/30";
 
     public static final String CDL_ELT_CDL="cdl";
 
     public static final String XPATH_URI="http://www.w3.org/TR/1999/REC-xpath-19991116";
 
+    public static final String SMARTFROG_NAMESPACE= "http://gridforge.org/cddlm/smartfrog/2004/07/30";
+
+    public static final String ANT_NAMESPACE="http://ant.apache.org/xsd/1.7";
 }

@@ -21,7 +21,7 @@ package org.smartfrog.services.cddlm;
 
 import org.apache.axis.AxisFault;
 import org.smartfrog.SFSystem;
-import org.smartfrog.services.axis.SmartfrogHostedEndpoint;
+import org.smartfrog.services.axis.SmartFrogHostedEndpoint;
 import org.smartfrog.sfcore.common.ConfigurationDescriptor;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.logging.Log;
@@ -42,7 +42,7 @@ import java.rmi.RemoteException;
  * created 04-Mar-2004 13:44:57
  */
 
-public class DeploymentEndpoint extends SmartfrogHostedEndpoint {
+public class DeploymentEndpoint extends SmartFrogHostedEndpoint {
 
 
     /**
@@ -54,7 +54,7 @@ public class DeploymentEndpoint extends SmartfrogHostedEndpoint {
      * constructor sets up the log
      */
     public DeploymentEndpoint() {
-        log=LogFactory.getOwnerLog(owner, this);
+        log=LogFactory.getOwnerLog(getOwner(), this);
     }
 
     protected final static String[] languages = {

@@ -101,7 +101,7 @@ public class AxisImpl extends PrimImpl implements Axis {
      */
 
     public AxisImpl() throws RemoteException {
-        DeploymentEndpoint.setOwner(this);
+        SmartFrogHostedEndpoint.setOwner(this);
     }
 
     /**

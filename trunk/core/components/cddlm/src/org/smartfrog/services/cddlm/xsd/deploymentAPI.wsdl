@@ -6,10 +6,7 @@
 	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" 
 	xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" 
   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-  xmlns:cdl="urn:cddlm/xml/0.1"
-  xmlns:wsa="http://schemas.xmlsoap.org/ws/2003/03/addressing"
-
-  >
+  > 
 
   <!--
   xmlns:jsdl="http://www.gridforum.org/JSDL"
