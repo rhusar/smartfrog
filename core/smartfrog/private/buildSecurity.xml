@@ -25,6 +25,8 @@ For more information: www.smartfrog.org
 
 <!-- CA related properties -->
   <property name="dist.testCA.dir" location="testCA"/>
+  <property name="dist.dir" location="."/>
+  <property name="dist.signedLib.dir" location="signedLib"/>
   <property name="disttestCA" value="${dist.testCA.dir}"/>
 <!-- dist.dir and others are set by surrounding build.xml -->
 <!--   <property name="disttestCA" value="${dist.testCA.dir}"/>
@@ -36,7 +38,7 @@ For more information: www.smartfrog.org
 
   <!-- REVISIT if the private dir is already defined, this assigment is harmless.
     if it is unassigned, it takes.-->
-  <property name="dist.private.dir" location="private"/>
+  <property name="dist.private.dir" value="${dist.dir}/${private}"/>
   <property name="dist.lib.dir" location="lib"/>
 
   <property name="CA" location="${dist.private.dir}/${CAFromPrivate}"/>
