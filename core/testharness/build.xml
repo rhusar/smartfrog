@@ -142,7 +142,7 @@ For more information: www.smartfrog.org
         <sysproperty key="java.util.config.logging.config.file"
           file="${test.classes.dir}/org/smartfrog/test/logging.properties" />
         <sysproperty key="org.smartfrog.iniFile"
-          file="${test.classes.dir}/org/smartfrog/test/default.ini" />
+            file="${build.classes.dir}/org/smartfrog/default.ini" />
         <sysproperty key="org.smartfrog.sfcore.processcompound.sfDefault.sfDefault"
           file="${test.classes.dir}/org/smartfrog/test/default.sf" />
       </sf-startdaemon>
