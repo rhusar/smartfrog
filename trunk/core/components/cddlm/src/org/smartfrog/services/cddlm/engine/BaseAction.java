@@ -30,7 +30,7 @@ import java.rmi.RemoteException;
 public abstract class BaseAction implements Action {
 
     public void execute() throws SmartFrogException, RemoteException {
-
+        notifyAll();
     }
 
     public synchronized void block(long timeout) throws InterruptedException {

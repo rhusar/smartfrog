@@ -49,8 +49,9 @@ public class TestAction extends BaseAction {
      */
     public synchronized void execute() throws SmartFrogException,
             RemoteException {
+        super.execute();
         counter++;
-        notifyAll();
+
     }
 
 }

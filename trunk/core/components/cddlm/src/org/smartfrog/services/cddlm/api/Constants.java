@@ -59,7 +59,7 @@ public class Constants {
      * list of all the options we support.
      */
     public static final String[] SUPPORTED_OPTIONS = {
-        DeployApiConstants.OPTION_BLOCKING_DEPLOY,
+//        DeployApiConstants.OPTION_BLOCKING_DEPLOY,
         DeployApiConstants.OPTION_NAME,
         DeployApiConstants.OPTION_PROPERTIES,
         DeployApiConstants.OPTION_VALIDATE_ONLY
