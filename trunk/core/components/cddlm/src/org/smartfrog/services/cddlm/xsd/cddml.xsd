@@ -1,10 +1,163 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!-- -->
-<xs:schema targetNamespace="urn:cddlm/xml/0.1" xmlns="urn:cddlm/xml/0.1" xmlns:wsa="http://schemas.xmlsoap.org/ws/2003/03/addressing"
+<xs:schema targetNamespace="urn:cddlm/xml/0.1"
+  xmlns:cdl="urn:cddlm/xml/0.1"
+  xmlns="urn:cddlm/xml/0.1" xmlns:wsa="http://schemas.xmlsoap.org/ws/2003/03/addressing"
   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   elementFormDefault="qualified" attributeFormDefault="unqualified">
-  <xs:import namespace="http://schemas.xmlsoap.org/ws/2003/03/addressing" schemaLocation="http://schemas.xmlsoap.org/ws/2003/03/addressing"/>
+  <xs:import namespace="http://schemas.xmlsoap.org/ws/2003/03/addressing"
+    schemaLocation="http://schemas.xmlsoap.org/ws/2003/03/addressing"/>
+
+
+  <!-- ============================================================= -->
+  <!-- Layout note -->
+  <!-- This schema is split into attributes and elements-->
+  <!-- each group is listed in alphabetical order -->
+  <!-- please keep this consistent -->
+  <!-- ============================================================= -->
+
+
+  <!-- ============================================================= -->
+  <!-- BEGIN SIMPLETYPES -->
+  <!-- ============================================================= -->
+
+  <!-- ============================================================= -->
+  <!-- propertyModeType sets requirements on a configurable component: ?-->
+  <!-- ============================================================= -->
+
+  <xs:simpleType name="propertyModeType">
+    <xs:annotation>
+      <xs:documentation>
+        -required: The user of the configurable component MUST assign values of this property.
+        -optional: The user of the configurable component MAY assign values of this property.
+        -automatic: The value of this property is given by the implementation of a components
+          in deployment time. Users of configurable components MUST NOT assign values of this property but
+        MAY refer to this property with (lazy) references.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="required"/>
+      <xs:enumeration value="optional"/>
+      <xs:enumeration value="automatic"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+
+  <!-- ============================================================= -->
+  <!-- propertyModeType sets requirements on a configurable component: ?-->
+  <!-- ============================================================= -->
+  <xs:simpleType name="lifetimeType" >
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="deployment"/>
+      <xs:enumeration value="optional"/>
+      <xs:enumeration value="automatic"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+
+  <!-- ============================================================= -->
+  <!-- propertyModeType sets requirements on a configurable component: ?-->
+  <!-- ============================================================= -->
+  <xs:simpleType name="namingType">
+    <xs:restriction base="xs:string">
+      <!-- TODO: pattern of a-zA-Z0-9._- -->
+      <xs:pattern value="[\p{L}\-\.][\p{L}\-\.\P{Nd}]*"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!-- ============================================================= -->
+  <!-- END SIMPLETYPES -->
+  <!-- ============================================================= -->
+
+  <!-- ============================================================= -->
+  <!-- BEGIN ATTRIBUTES-->
+  <!-- Attributes can be attached to other XML elements, as well -->
+  <!--     as CDL elements -->
+  <!-- ============================================================= -->
+
+  <!-- ============================================================= -->
+  <!-- The @cdl:extends attribute defines inheritance-->
+  <!-- ============================================================= -->
+  <xs:attribute name="extends" type="xs:QName">
+    <xs:annotation>
+      <xs:documentation>
+      The @cdl:extends attribute is used in a property list to inherit an
+      existing property list.
+      </xs:documentation>
+    </xs:annotation>
+  </xs:attribute>
+
+  <!-- ============================================================= -->
+  <!-- The @cdl:mode attribute-->
+  <!-- ============================================================= -->
+
+  <xs:attribute name="mode" type="cdl:propertyModeType">
+    <xs:annotation>
+      <xs:documentation>
+      mode of assigment
+      </xs:documentation>
+    </xs:annotation>
+  </xs:attribute>
+
+
+  <!-- ============================================================= -->
+  <!-- The @cdl:name attribute-->
+  <!-- ============================================================= -->
+
+  <xs:attribute name="name" type="xs:NCName">
+    <xs:annotation>
+      <xs:documentation>
+      A unique name for the attribute
+      </xs:documentation>
+    </xs:annotation>
+  </xs:attribute>
+
+  <!-- ============================================================= -->
+  <!-- The @cdl:ref attribute-->
+  <!-- ============================================================= -->
+
+  <xs:attribute name="ref" type="xs:string">
+    <xs:annotation>
+      <xs:documentation>
+      A reference in the language specified by @cdl:pathlanguage
+      </xs:documentation>
+    </xs:annotation>
+  </xs:attribute>
+
+  <!-- ============================================================= -->
+  <!-- The @cdl:refroot attribute-->
+  <!-- ============================================================= -->
+
+  <xs:attribute name="refroot" type="xs:QName">
+    <xs:annotation>
+      <xs:documentation>
+        This specifies the reference root for reference resolution.
+        The default value is the QName of the property list that includes
+        this node in its descendant.
+      </xs:documentation>
+    </xs:annotation>
+  </xs:attribute>
+
+
+  <!-- ============================================================= -->
+  <!-- END ATTRIBUTES-->
+  <!-- ============================================================= -->
+
+
+  <!-- ============================================================= -->
+  <!-- BEGIN ELEMENTS -->
+  <!-- ============================================================= -->
+
+  <!-- ============================================================= -->
+  <!-- -->
+  <!-- ============================================================= -->
+
   <xs:element name="assert" type="xs:QName"/>
+
+  <!-- ============================================================= -->
+  <!-- -->
+  <!-- ============================================================= -->
+
   <xs:element name="assertions">
     <xs:complexType>
       <xs:sequence>
@@ -13,6 +166,11 @@
       <xs:attribute name="language" type="xs:QName" use="required"/>
     </xs:complexType>
   </xs:element>
+
+  <!-- ============================================================= -->
+  <!-- -->
+  <!-- ============================================================= -->
+
   <xs:element name="assign">
     <xs:complexType>
       <xs:sequence>
@@ -21,6 +179,10 @@
       </xs:sequence>
     </xs:complexType>
   </xs:element>
+
+  <!-- ============================================================= -->
+  <!-- an attribute -->
+  <!-- ============================================================= -->
   <xs:element name="attribute">
     <xs:annotation>
       <xs:documentation>
@@ -40,7 +202,17 @@
       </xs:sequence>
     </xs:complexType>
   </xs:element>
+
+  <!-- ============================================================= -->
+  <!-- an attribute name -->
+  <!-- ============================================================= -->
+
   <xs:element name="attributeName" type="xs:QName"/>
+
+  <!-- ============================================================= -->
+  <!-- an attribute set is a set of attributes-->
+  <!-- ============================================================= -->
+
   <xs:element name="attributeSet">
     <xs:complexType mixed="true">
       <xs:choice minOccurs="0" maxOccurs="unbounded">
@@ -50,17 +222,48 @@
       <xs:attribute name="extends" type="xs:QName" use="optional"/>
     </xs:complexType>
   </xs:element>
+
+
+  <!-- ============================================================= -->
+  <!-- This is the base declaration; cdl -->
+  <!-- ============================================================= -->
+
   <xs:element name="cdl">
+    <xs:annotation>
+      <xs:documentation>
+        This is the root element.
+        It has imports, types, configuration, a system and services
+        (all optional)
+      </xs:documentation>
+    </xs:annotation>
     <xs:complexType>
       <xs:sequence>
-        <xs:element ref="import"/>
-        <xs:element ref="types"/>
-        <xs:element ref="configuration"/>
-        <xs:element ref="system"/>
-        <xs:element ref="services"/>
+        <xs:element ref="import" minOccurs="0" />
+        <xs:element ref="types" minOccurs="0" />
+        <xs:element ref="configuration" minOccurs="0" />
+        <xs:element ref="system" minOccurs="0" />
+        <xs:element ref="services" minOccurs="0" />
       </xs:sequence>
+
+      <!-- path language declaration-->
+      <xs:attribute name="pathlanguage"
+        type="xs:anyURI"
+        use="optional"
+        default="http://www.w3.org/TR/1999/REC-xpath-19991116"
+        >
+      <xs:annotation>
+        <xs:documentation>
+      The path language for reference resolution is XPath1.0 by default
+        </xs:documentation>
+      </xs:annotation>
+      </xs:attribute>
     </xs:complexType>
   </xs:element>
+
+  <!-- ============================================================= -->
+  <!-- -->
+  <!-- ============================================================= -->
+
   <xs:element name="component">
     <xs:complexType>
       <xs:sequence>
@@ -71,6 +274,11 @@
       <xs:attribute name="name" type="xs:QName" use="required"/>
     </xs:complexType>
   </xs:element>
+
+  <!-- ============================================================= -->
+  <!-- -->
+  <!-- ============================================================= -->
+
   <xs:element name="configuration">
     <xs:complexType mixed="true">
       <xs:choice minOccurs="0" maxOccurs="unbounded">
@@ -81,6 +289,10 @@
       </xs:choice>
     </xs:complexType>
   </xs:element>
+  <!-- ============================================================= -->
+  <!-- -->
+  <!-- ============================================================= -->
+
   <xs:element name="dependencies">
     <xs:complexType>
       <xs:sequence>
@@ -89,10 +301,25 @@
       <xs:attribute name="language" type="xs:QName" use="required"/>
     </xs:complexType>
   </xs:element>
+
+  <!-- ============================================================= -->
+  <!-- -->
+  <!-- ============================================================= -->
+
   <xs:element name="deployAfter" type="xs:QName"/>
+
+  <!-- ============================================================= -->
+  <!-- -->
+  <!-- ============================================================= -->
+
   <xs:element name="expression">
     <xs:complexType/>
   </xs:element>
+
+
+  <!-- ============================================================= -->
+  <!-- -->
+  <!-- ============================================================= -->
   <xs:element name="from">
     <xs:complexType>
       <xs:choice>
@@ -101,10 +328,23 @@
       </xs:choice>
     </xs:complexType>
   </xs:element>
+
+  <!-- ============================================================= -->
+  <!-- import external CDL -->
+  <!-- ============================================================= -->
+
   <xs:element name="import">
-    <xs:complexType/>
+    <xs:complexType>
+      <xs:attribute name="namespace" type="xs:anyURI" use="required"/>
+      <xs:attribute name="location" type="xs:anyURI" use="required"/>
+    </xs:complexType>
   </xs:element>
-  <!--	<xs:simpleType name="lifetimeType" base=""></xs:simpleType> -->
+
+
+  <!-- ============================================================= -->
+  <!-- -->
+  <!-- ============================================================= -->
+
   <xs:element name="lifetime" type="xs:string" default="deployment">
     <xs:annotation>
       <xs:documentation>
@@ -116,7 +356,29 @@ The default lifetime is "deployment"
       </xs:documentation>
     </xs:annotation>
   </xs:element>
+
+
+  <!-- ============================================================= -->
+  <!-- include -->
+  <!-- ============================================================= -->
+  <xs:element name="include">
+    <xs:complexType>
+      <xs:attribute name="location" type="xs:anyURI" use="required"/>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- ============================================================= -->
+  <!-- -->
+  <!-- ============================================================= -->
+
+
   <xs:element name="name" type="xs:string"/>
+
+
+  <!-- ============================================================= -->
+  <!-- -->
+  <!-- ============================================================= -->
+
   <xs:element name="reference">
     <xs:complexType>
       <xs:sequence>
@@ -126,6 +388,26 @@ The default lifetime is "deployment"
       <xs:attribute name="name" type="xs:QName" use="required"/>
     </xs:complexType>
   </xs:element>
+
+  <!-- ============================================================= -->
+  <!-- propertyList; the basis for things-->
+  <!-- ============================================================= -->
+
+  <xs:element name="propertyList">
+    <xs:complexType>
+      <xs:attribute name="name" type="cdl:name" use="optional"/>
+      <xs:attribute name="extends" type="cdl:extends" use="optional"/>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- ============================================================= -->
+  <!-- -->
+  <!-- ============================================================= -->
+
+  <!-- ============================================================= -->
+  <!-- -->
+  <!-- ============================================================= -->
+
   <xs:element name="service">
     <xs:complexType>
       <xs:sequence>
@@ -133,6 +415,11 @@ The default lifetime is "deployment"
       </xs:sequence>
     </xs:complexType>
   </xs:element>
+
+  <!-- ============================================================= -->
+  <!-- -->
+  <!-- ============================================================= -->
+
   <xs:element name="services">
     <xs:complexType>
       <xs:sequence>
@@ -140,16 +427,31 @@ The default lifetime is "deployment"
       </xs:sequence>
     </xs:complexType>
   </xs:element>
+
+  <!-- ============================================================= -->
+  <!-- -->
+  <!-- ============================================================= -->
+
   <xs:element name="startAfter" type="xs:QName"/>
-  <xs:element name="system">
-    <xs:complexType>
+
+  <!-- ============================================================= -->
+  <!-- -->
+  <!-- ============================================================= -->
+
+  <xs:element name="system" type="cdl:propertyList" >
+<!--    <xs:complexType>
       <xs:choice maxOccurs="unbounded">
         <xs:element ref="component"/>
         <xs:element ref="system"/>
       </xs:choice>
       <xs:attribute name="name" type="xs:QName"/>
-    </xs:complexType>
+    </xs:complexType>-->
   </xs:element>
+
+  <!-- ============================================================= -->
+  <!-- -->
+  <!-- ============================================================= -->
+
   <xs:element name="to">
     <xs:complexType>
       <xs:sequence>
@@ -157,6 +459,11 @@ The default lifetime is "deployment"
       </xs:sequence>
     </xs:complexType>
   </xs:element>
+
+  <!-- ============================================================= -->
+  <!-- -->
+  <!-- ============================================================= -->
+
   <xs:element name="type">
     <xs:simpleType>
       <xs:restriction base="xs:QName">
@@ -165,16 +472,20 @@ The default lifetime is "deployment"
       </xs:restriction>
     </xs:simpleType>
   </xs:element>
+
+  <!-- ============================================================= -->
+  <!-- -->
+  <!-- ============================================================= -->
+
   <xs:element name="types">
     <xs:complexType/>
   </xs:element>
+
+
   <xs:element name="use" type="xs:string"/>
-  <xs:element name="value">
-    <xs:simpleType>
-      <xs:restriction base="xs:string">
-        <xs:enumeration value="100"/>
-        <xs:enumeration value="xsd:any"/>
-      </xs:restriction>
-    </xs:simpleType>
-  </xs:element>
+
+  <!-- ============================================================= -->
+  <!-- -->
+  <!-- ============================================================= -->
+  <xs:element name="value" type="xs:string"/>
 </xs:schema>
