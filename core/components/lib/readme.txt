@@ -1,1 +1,0 @@
-Include in this directory the external jar files needed by the smartfrog components.
