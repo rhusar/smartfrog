@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <wsdl:definitions 
 	targetNamespace="http://smartfrog.org/cddlm" 
-	xmlns:impl="http://smartfrog.org/cddlm"
 	xmlns:api="http://smartfrog.org/cddlm" 
-	xmlns:tns1="http://smartfrog.org/cddlm" 
 	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" 
 	xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" 
   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
@@ -20,10 +18,11 @@
     Version: 0.1. 
     This is an initial draft for the first demonstration-grade prototypes. 
     It may change completely in future. 
+
+
+    In the annotations of this document, MAY, SHOULD and MUST have the
+    same strict meaning as in IETF documents (TODO: insert reference)
     
-    WSDL created by Apache Axis version: 1.2beta2
-    Built on Jul 14, 2004 (13:52:26 BST)
-    Then extended by Steve Loughran
 </wsdl:documentation>
      
   <!-- ============================================================= -->
@@ -228,7 +227,7 @@
     </xsd:sequence>
   </xsd:complexType>
   
-  <xsd:complexType name="serverStatusType">
+  <xsd:complexType name="statusType">
     <xsd:annotation>
       <xsd:documentation>
         This is the server status response. If the endpoint returns with anything
@@ -299,22 +298,60 @@
       <xsd:annotation>
         <xsd:documentation>
           This is our deployment request.
-          Rather than have so many typed options, we could just take a set of
-          (name,value) properties and pa
+          Rather than have so many typed options, 
+          a core few mandatory options are specified inline, and the rest
+          are referred to in the deployment_options map.
+          TODO: what if a deployment option is not understood by the destination?
+          Do we need a mustUnderstand flag?
         </xsd:documentation>
       </xsd:annotation>
      <xsd:sequence>
-      <xsd:element name="jsdl" type="api:jsdlType"/>
-      <xsd:element name="hostname" type="xsd:string"/>
+      <xsd:element name="jsdl" type="api:jsdlType">
+        <xsd:annotation>
+          <xsd:documentation>
+          </xsd:documentation>
+        </xsd:annotation>  
+      </xsd:element>
+
       <xsd:element name="application" type="api:applicationNameType"/>
       <xsd:element name="descriptor" type="api:deploymentDescriptorType"/>
       <xsd:element name="callbackType" type="api:callbackEnum"/>
       <xsd:element name="callbackAddress" type="api:callbackAddressType"/>
-      <xsd:element name="synchronous" type="xsd:boolean"/>
-      <xsd:element name="options" type="api:propertyMapType">
+      <xsd:element name="hostname" type="xsd:string"/>
+      <xsd:element name="synchronous" type="xsd:boolean">
+        <xsd:annotation>
+          <xsd:documentation>
+            A flag to indicate whether deployment should be synchronous or not.
+            synchronous deployment implies the call does not return until the
+            deployment as initiated. The return from the call will then be
+            a valid reference to an application.
+            
+            An asynchronous deployment implies that the deployment has been queued
+            for deployment at the next possible opportunity, and that callbacks
+            will include information about the status of the deployment. 
+            
+            There are no guarantees in async deployment as to whether or not
+            the deployment descriptor is parsed or validated during the synchronous
+            part of the call.
+          </xsd:documentation>
+        </xsd:annotation>  
       </xsd:element>
-      <xsd:element name="properties" type="api:propertyMapType"/>
-      
+      <xsd:element name="deployment_options" type="api:propertyMapType">
+        <xsd:annotation>
+          <xsd:documentation>
+          This is for optional deployment options. 
+          </xsd:documentation>
+        </xsd:annotation>  
+      </xsd:element>
+      <xsd:element name="properties" type="api:propertyMapType">
+        <xsd:annotation>
+          <xsd:documentation>
+            This is for properties that are to be passed directly to the 
+            deployment engine, using whatever property binding mechanism is
+            included in the language. 
+          </xsd:documentation>
+        </xsd:annotation>  
+      </xsd:element>
      </xsd:sequence>
     </xsd:complexType>
    </xsd:element>
@@ -326,10 +363,13 @@
         This is our deployment response. 
         It consists of a reference to the application, which can be used
         for future references.
+        For an asynchronous deployment, the reference may be nil. This means 
+        that a reference cannot be returned until the deployment is complete. 
         </xsd:documentation>
       </xsd:annotation>      
      <xsd:sequence>
-      <xsd:element name="applicationReference" type="api:applicationReferenceType"/>
+      <xsd:element name="applicationReference" type="api:applicationReferenceType"
+        nillable="true"/>
      </xsd:sequence>
     </xsd:complexType>
    </xsd:element>
@@ -344,13 +384,12 @@
      <xsd:sequence>
       <xsd:element name="application" type="api:applicationNameOrReferenceType"/>      
       <xsd:element name="reason" type="xsd:string"/>
-      <xsd:element name="hostname" type="xsd:string"/>
       <xsd:element name="synchronous" type="xsd:boolean"/>
      </xsd:sequence>
     </xsd:complexType>   
    </xsd:element>   
 
-   <xsd:element name="undeployResponse" type="api:serverStatusType" >
+   <xsd:element name="undeployResponse" type="api:statusType" >
    </xsd:element>      
    
    <xsd:element name="listLanguagesRequest">
@@ -386,10 +425,44 @@
     <xsd:complexType/>
    </xsd:element>   
 
-   <xsd:element name="serverStatusResponse" type="api:serverStatusType" >
+   <xsd:element name="serverStatusResponse" type="api:statusType" >
    </xsd:element>   
 
+   <xsd:element name="applicationStatusRequest">
+      <xsd:annotation>
+        <xsd:documentation>
+        Request the status of an individual application
+        </xsd:documentation>
+      </xsd:annotation>     
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="application" type="api:applicationNameOrReferenceType"/>
+      </xsd:sequence> 
+    </xsd:complexType>
+   </xsd:element>   
+  
+   <xsd:element name="applicationStatusResponse" type="api:statusType" >
+   </xsd:element>      
 
+   <xsd:element name="lookupApplicationRequest">
+      <xsd:annotation>
+        <xsd:documentation>
+        Look up an application: pass in the name and get a reference back
+        (or an error, if there is no such application or security prevents
+         the caller seeing it)
+        </xsd:documentation>
+      </xsd:annotation>     
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="application" type="api:applicationNameOrReferenceType"/>
+      </xsd:sequence> 
+    </xsd:complexType>
+   </xsd:element>   
+  
+   <xsd:element name="lookupApplicationResponse" type="api:applicationReferenceType" >
+   </xsd:element>      
+   
+   
    
   <!-- ============================================================= -->
   <!-- end schema-->
@@ -402,8 +475,6 @@
   <!-- ============================================================= -->
   
  </wsdl:types>
-
-  
 
   <!-- ============================================================= -->
   <!-- begin WSDL message types-->
@@ -440,6 +511,24 @@
  <wsdl:message name="serverStatusResponse">
   <wsdl:part element="api:serverStatusResponse" name="response"/>
  </wsdl:message> 
+
+ <wsdl:message name="applicationStatusRequest">
+  <wsdl:part element="api:applicationStatusRequest" name="applicationStatus"/>
+ </wsdl:message>
+ 
+ <wsdl:message name="applicationStatusResponse">
+  <wsdl:part element="api:applicationStatusResponse" name="response"/>
+ </wsdl:message> 
+
+ <wsdl:message name="lookupApplicationRequest">
+  <wsdl:part element="api:lookupApplicationRequest" name="lookupApplication"/>
+ </wsdl:message>
+ 
+ <wsdl:message name="lookupApplicationResponse">
+  <wsdl:part element="api:lookupApplicationResponse" name="response"/>
+ </wsdl:message> 
+ 
+  
  
   <!-- ============================================================= -->
   <!-- begin WSDL operations -->
@@ -470,6 +559,21 @@
    <wsdl:input message="api:serverStatusRequest" name="serverStatusRequest"/>
    <wsdl:output message="api:serverStatusResponse" name="serverStatusResponse"/>
   </wsdl:operation>
+  
+  <!--  application status -->
+  <wsdl:operation name="applicationStatus">
+   <wsdl:input message="api:applicationStatusRequest" name="applicationStatusRequest"/>
+   <wsdl:output message="api:applicationStatusResponse" name="applicationStatusResponse"/>
+  </wsdl:operation>
+  
+    
+  
+  <!--  lookup application -->
+  <wsdl:operation name="lookupApplication">
+   <wsdl:input message="api:lookupApplicationRequest" name="lookupApplicationRequest"/>
+   <wsdl:output message="api:lookupApplicationResponse" name="lookupApplicationResponse"/>
+  </wsdl:operation>
+  
   
  </wsdl:portType>
  
@@ -522,7 +626,29 @@
       <wsdlsoap:body use="literal"/>
     </wsdl:output>
   </wsdl:operation>  
+
+
+  <wsdl:operation name="applicationStatus">
+    <wsdlsoap:operation soapAction=""/>
+    <wsdl:input name="applicationStatusRequest">
+      <wsdlsoap:body use="literal"/>
+    </wsdl:input>
+    <wsdl:output name="applicationStatusResponse">
+      <wsdlsoap:body use="literal"/>
+    </wsdl:output>
+  </wsdl:operation>  
+
   
+  <wsdl:operation name="lookupApplication">
+    <wsdlsoap:operation soapAction=""/>
+    <wsdl:input name="lookupApplicationRequest">
+      <wsdlsoap:body use="literal"/>
+    </wsdl:input>
+    <wsdl:output name="lookupApplicationResponse">
+      <wsdlsoap:body use="literal"/>
+    </wsdl:output>
+  </wsdl:operation>  
+
  </wsdl:binding>
  
   <!-- ============================================================= -->

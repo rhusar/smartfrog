@@ -23,6 +23,7 @@ package org.smartfrog.sfcore.workflow.components;
 import java.rmi.RemoteException;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.TerminatorThread;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
@@ -35,7 +36,7 @@ import org.smartfrog.sfcore.workflow.eventbus.EventPrimImpl;
  * returns the failure Attributes are documented in Terminator.sf
  */
 public class Terminator extends EventPrimImpl implements Prim {
-    TerminationRecord term = null;
+    private TerminationRecord term = null;
     public static final String TYPE = "type";
     public static final String DESCRIPTION = "description";
     public static final String DETACH_FIRST = "detachFirst";
@@ -80,12 +81,8 @@ public class Terminator extends EventPrimImpl implements Prim {
             term = TerminationRecord.abnormal(e.toString(), id);
         }
 
-        Runnable terminator = new Runnable() {
-                public void run() {
-                    sfTerminate(term);
-                }
-            };
-
-        new Thread(terminator).start();
+        //now we terminate ourself.
+        TerminatorThread terminator = new TerminatorThread(this,term);
+        terminator.start();
     }
 }

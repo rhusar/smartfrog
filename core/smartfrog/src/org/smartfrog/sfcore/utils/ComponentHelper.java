@@ -27,6 +27,7 @@ import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.TerminatorThread;
 import org.smartfrog.sfcore.security.SFClassLoader;
 
 import java.rmi.RemoteException;
@@ -65,29 +66,18 @@ public class ComponentHelper {
      * as {@link Prim#sfTerminate} and {@link Prim#sfStart()} are synchronized,
      * the thread blocks until sfStart has finished.
      * Note that we detach before terminating; this stops our timely end propagating.
-     * @todo what about TerminatorThread; does that do this better?
      */
     public void targetForTermination() {
-        //spawn the thread to terminate normally
-        Runnable terminator = new Runnable() {
-            public void run() {
-                Reference name;
-                try {
-                    name = owner.sfCompleteName();
-                } catch (RemoteException e) {
-                    name = null;
 
-                }
-                try {
-                    owner.sfDetachAndTerminate(TerminationRecord.normal(name));
-                } catch (RemoteException e) {
-                    //we cannot rethrow this as it is not in the signature of the interface
-                    logIgnoredException(e);
-                }
-            }
-        };
-
-        new Thread(terminator).start();
+        Reference name;
+        try {
+            name = owner.sfCompleteName();
+        } catch (RemoteException e) {
+            name = null;
+        }
+        TerminatorThread terminator;
+        terminator=new TerminatorThread(owner, TerminationRecord.normal(name));
+        terminator.start();
     }
 
     /**
