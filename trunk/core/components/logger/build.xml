@@ -99,6 +99,23 @@ For more information: www.smartfrog.org
 
 
   <target name="declare-run.classpath" 
-    depends="declare-run.classpath-no-tests" />  
+    depends="declare-run.classpath-no-tests" /> 
+
+
+ <!-- ========================================================== -->
+  <!-- dist : create the jar -->
+  <!-- ========================================================== -->
+	<target name="dist" depends="common.dist" description="create the jar files">
+	
+		 <copy todir = "${dist.doc.dir}">
+        <fileset dir ="${doc.dir}" />
+    </copy>   
+		 <copy todir = "${dist.src.dir}">
+        <fileset dir ="${src.dir}">
+		  <include name="**/example*"/>
+		</fileset>
+    </copy>   
+	</target>
+	
   
 </project>
