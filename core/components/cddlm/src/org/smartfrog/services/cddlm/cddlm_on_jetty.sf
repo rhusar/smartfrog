@@ -80,20 +80,20 @@ sfConfig extends Compound {
         AxisWebApp extends JettyWebApplication {
             webApp LAZY warFile:absolutePath;
             contextPath "/axis";
-            //server LAZY jettyServer;
         }
 
     }
-/*
+
     cddlmService extends CddlmService {
         port PARENT:port;
     }
 
 
     //fetch the WSDL every so often, just to see that we are happy
+/*
     wsdlFetch extends FetchCddlmWSDL {
         port PARENT:port;
     }
-*/
+    */
 }
 

@@ -19,9 +19,12 @@
  */
 package org.smartfrog.services.cddlm.cdl;
 
-import org.jdom.Document;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
+
+
+import nu.xom.Builder;
+import nu.xom.Document;
+import nu.xom.ValidityException;
+import nu.xom.ParsingException;
 
 import java.io.File;
 import java.io.IOException;
@@ -41,7 +44,7 @@ public class CdlParser {
     /**
      * builder class
       */
-    private SAXBuilder builder;
+    private Builder builder;
 
     /**
      * create a parser;
@@ -51,7 +54,7 @@ public class CdlParser {
      */
     public CdlParser(ResourceLoader loader, boolean validate) {
         resourceLoader = loader;
-        builder = new SAXBuilder(validate);
+        builder = new Builder(validate);
     }
 
 
@@ -61,9 +64,9 @@ public class CdlParser {
      * @param filename
      * @return
      * @throws IOException
-     * @throws JDOMException
+     * @throws ParsingException
      */
-    public Document parseFile(String filename) throws IOException, JDOMException {
+    public Document parseFile(String filename) throws IOException,  ParsingException {
         File f = new File(filename);
         return builder.build(f);
     }
@@ -73,10 +76,10 @@ public class CdlParser {
      * @param instream
      * @return
      * @throws IOException
-     * @throws JDOMException
+     * @throws ParsingException
      */
-    public Document parseStream(InputStream instream) throws IOException,
-            JDOMException {
+    public Document parseStream(InputStream instream) throws IOException, ParsingException
+             {
         return builder.build(instream);
     }
 
@@ -85,9 +88,9 @@ public class CdlParser {
      * @param resource
      * @return
      * @throws IOException
-     * @throws JDOMException
+     * @throws ParsingException
      */
-    public Document parseResource(String resource) throws IOException, JDOMException {
+    public Document parseResource(String resource) throws IOException, ParsingException {
         InputStream in = resourceLoader.loadResource(resource);
         return parseStream(in);
     }

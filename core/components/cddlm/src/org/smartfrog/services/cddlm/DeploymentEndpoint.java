@@ -30,6 +30,12 @@ import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.sfcore.processcompound.SFProcess;
 
 import java.rmi.RemoteException;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.BufferedOutputStream;
+import java.io.FileOutputStream;
+import java.io.PrintWriter;
 
 /**
  * This is our SOAP service
@@ -53,7 +59,7 @@ public class DeploymentEndpoint extends SmartfrogHostedEndpoint {
 
     protected final static String[] languages = {
         "SmartFrog",
-        "CDDLM-XML"
+        "CDL"
     };
 
     /**
@@ -89,10 +95,30 @@ public class DeploymentEndpoint extends SmartfrogHostedEndpoint {
      * @param data
      * @throws AxisFault
      */
-    public void deploy(String language, String hostname, String application,
-                       String data) throws AxisFault {
+    public String deploy(String language, String hostname, String application,
+                       String data) throws IOException {
         verifySupported(language);
-        throw new AxisFault("Not yet implemented");
+        File tempFile=File.createTempFile("deploy",".txt");
+        OutputStream out = null;
+        try {
+            out=new BufferedOutputStream(new FileOutputStream(tempFile));
+            PrintWriter pw=new PrintWriter(out);
+            pw.write(data);
+            pw.flush();
+            pw.close();
+            out.close();
+            out=null;
+            String url=tempFile.toURI().toURL().toExternalForm();
+            return deployThroughActions(hostname, application, url, null);
+        } finally {
+            if(out!=null) {
+                try {
+                    out.close();
+                } finally {
+                }
+            }
+            tempFile.delete();
+        }
     }
 
     /**
@@ -140,10 +166,10 @@ public class DeploymentEndpoint extends SmartfrogHostedEndpoint {
         if(isEmpty(application)) {
             throw new AxisFault("Application is not specified");
         }
-        if ( url== null ) {
+        if ( isEmpty(url) ) {
             throw new AxisFault("url is not specified");
         }
-        if ( hostname == null ) {
+        if ( isEmpty(hostname)) {
             throw new AxisFault("hostname is not specified");
         }
     }
@@ -193,7 +219,7 @@ public class DeploymentEndpoint extends SmartfrogHostedEndpoint {
 
 
     /**
-     * first pass impl of deployment; use sfsystem
+     * deploy by creating an action and executing it
      *
      * @param hostname
      * @param application
