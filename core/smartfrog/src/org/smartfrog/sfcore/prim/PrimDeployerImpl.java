@@ -181,10 +181,15 @@ public class PrimDeployerImpl implements ComponentDeployer, MessageKeys {
                 name =target.sfResolveHere(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME,false);
             }
             ComponentDescription cdInfo = new ComponentDescriptionImpl(null,new ContextImpl(),false);
-            cdInfo.sfAddAttribute("sfCodeBase", targetCodeBase);
-            cdInfo.sfAddAttribute("java.class.path", System.getProperty("java.class.path"));
-            cdInfo.sfAddAttribute("org.smartfrog.sfcore.processcompound.sfProcessName",
-               System.getProperty("org.smartfrog.sfcore.processcompound.sfProcessName"));
+            try {
+              if (targetCodeBase != null) cdInfo.sfAddAttribute("sfCodeBase",
+                  targetCodeBase);
+              cdInfo.sfAddAttribute("java.class.path",System.getProperty("java.class.path"));
+              cdInfo.sfAddAttribute("org.smartfrog.sfcore.processcompound.sfProcessName",
+                  System.getProperty("org.smartfrog.sfcore.processcompound.sfProcessName"));
+            } catch (SmartFrogException sfex){
+              if (sflog.isDebugEnabled()) sflog.debug("",sfex);
+            }
             throw new SmartFrogDeploymentException (refClass,null,name,target,null,"Class not found", cnfex, cdInfo);
         }
 
