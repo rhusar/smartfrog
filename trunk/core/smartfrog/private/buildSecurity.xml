@@ -32,6 +32,12 @@ For more information: www.smartfrog.org
   <property name="distlib" value="${dist.lib.dir}"/>
  -->
   <property name="CAFromPrivate" value="ca"/>
+  
+  <!-- REVISIT if the private dir is already defined, this assigment is harmless. 
+    if it is unassigned, it takes.-->
+  <property name="dist.private.dir" location="private"/>
+  <property name="dist.lib.dir" location="lib"/>
+  
   <property name="CA" location="${dist.private.dir}/${CAFromPrivate}"/>
   <property name="CAsubdir" value="demoCA"/>
 
