@@ -364,17 +364,16 @@ public class SFSystem implements MessageKeys {
 
             try {
                 ((Prim) target.sfResolveHere(term)).
-                        sfTerminate(new TerminationRecord(
-                                "management action", "forced to terminate", targetName));
+                    sfTerminate(new TerminationRecord("normal",
+                    "External Management Action", targetName));
             } catch (ClassCastException cce) {
                 errorTermination = true;
                 try {
                     if (term.equals("rootProcess")) {
                         ((Prim) target.sfResolve((Reference) target.
                                 sfResolveHere(term))).
-                                sfTerminate(new TerminationRecord(
-                                        "management action",
-                                        "sfDaemon forced to terminate ", targetName));
+                                    sfTerminate(new TerminationRecord("normal",
+                                    "External Management Action", targetName));
                     }
                 } catch (Exception ex) {
                     //TODO: Check exception handling
@@ -402,6 +401,7 @@ public class SFSystem implements MessageKeys {
     public static void detachAndTerminate(OptionSet opts,
         ProcessCompound target) {
             Prim obj = null;
+            Reference tagetName = null;
             try {
                     obj = (Prim)target;
             } catch (Exception e) {
@@ -410,10 +410,12 @@ public class SFSystem implements MessageKeys {
                 // log stack trace
                 Logger.log(e);
             }
+
             StringTokenizer st = null;
             String token = null;
-            TerminationRecord tr = new TerminationRecord("management action",
-                         "force to terminate", null);
+
+            TerminationRecord tr = new TerminationRecord("normal",
+                    "External Management Action", null);
             for (Enumeration detachs = opts.detaching.elements();
                 detachs.hasMoreElements();) {
                      String detach = (String) detachs.nextElement();
