@@ -1,4 +1,14 @@
-release 3.04.006_beta 
+release 3.04.008_beta
+---------------------
+2004-Oct-15 Release date
+2004-Oct-15 Fix: sfAddAttribute  @return previous value for name or null if none
+2004-Oct-15 Fix: Schema - vector parsing
+2004-Oct-15 Fix: unamed component registration in remote parent
+2004-Oct-12 Imp: PrimDeployerImpl improved ClassNotFound error message
+2004-Oct-12 Fix: Configuration descriptor problem when using "" to define URL.
+                 This affected Linux shell scripts.
+
+release 3.04.006_beta
 ---------------------
 2004-Oct-11 Release date
 2004-Oct-07 Add: sfResolve methods will return null when they find SFNull and an object is returned
@@ -6,13 +16,13 @@ release 3.04.006_beta
 2004-Oct-07 New: Container component - like parallel but ignore abnormal termination
 2004-Oct-07 Fix: Parentage problems in vector function
 2004-Oct-04 Fix: In logging path attribute was read after the file was created
-2004-Oct-03 Add: Some patches to make it possible for subclasses of SFSystem to change core behaviour, 
+2004-Oct-03 Add: Some patches to make it possible for subclasses of SFSystem to change core behaviour,
                  and to make hooking onto control-C optional in SFProcess
 2004-Oct-01 New: JavaPackage component
 2004-Oct-01 New: property to change classpath in a subProcess: 'org.smartfrog.sfcore.processcompound.java.class.path.NAME'
 2004-Sep-30 New: SFSetProperty component
 2004-Sep-30 Fix: PrimImpl.sfAttributes() was returning values
-2004-Sep-29 Fix: Improved shell scripts to take care of spaces in codebase for different jar files 
+2004-Sep-29 Fix: Improved shell scripts to take care of spaces in codebase for different jar files
                  and spaces in smartfrog dist path
 2004-Sep-20 New: filesystem/replacevar component
 2004-Aug-25 New: modified buildRelease.xml to include javacc
