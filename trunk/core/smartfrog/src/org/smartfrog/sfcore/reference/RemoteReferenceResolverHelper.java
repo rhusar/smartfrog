@@ -319,7 +319,7 @@ public interface RemoteReferenceResolverHelper extends Remote {
      *        present in the description. If it is mandatory and not found it
      *        triggers a ResolutionException
      *
-     * @return String for attribute value or null if not found
+     * @return String for attribute value, null if SFNull is found or null if not found
      *
      * @throws SmartFrogResolutionException if invalid reference of reference
      * not resolvable
@@ -339,7 +339,7 @@ public interface RemoteReferenceResolverHelper extends Remote {
      *        present in the description. If it is mandatory and not found it
      *        triggers a ResolutionException
      *
-     * @return Vector for attribute value or null if not found
+     * @return Vector for attribute value, null if SFNull is found or null if not found
      *
      * @throws SmartFrogResolutionException if invalid reference of reference
      * not resolvable
@@ -359,7 +359,7 @@ public interface RemoteReferenceResolverHelper extends Remote {
      *        present in the description. If it is mandatory and not found it
      *        triggers a ResolutionException
      *
-     * @return String[] for attribute value or null if not found
+     * @return String[] for attribute value, null if SFNull is found or null if not found
      *
      * @throws SmartFrogResolutionException if invalid reference of reference
      * not resolvable
@@ -380,7 +380,7 @@ public interface RemoteReferenceResolverHelper extends Remote {
      *        present in the description. If it is mandatory and not found it
      *        triggers a SmartFrogResolutionException
      *
-     * @return java.net.InetAddress for attribute value or defaultValue if not
+     * @return java.net.InetAddress for attribute value, null if SFNull is found or defaultValue if not
      *         found
      *
      * @throws SmartFrogResolutionException if invalid reference of reference
@@ -403,7 +403,7 @@ public interface RemoteReferenceResolverHelper extends Remote {
      *        present in the description. If it is mandatory and not found it
      *        triggers a SmartFrogResolutionException
      *
-     * @return SmartFrog ComponentDescription for attribute value or
+     * @return SmartFrog ComponentDescription for attribute value, null if SFNull is found or
      *         defaultValue if not found
      *
      * @throws SmartFrogResolutionException if invalid reference of reference
@@ -426,7 +426,7 @@ public interface RemoteReferenceResolverHelper extends Remote {
      *        present in the description. If it is mandatory and not found it
      *        triggers a SmartFrogResolutionException
      *
-     * @return SmartFrog Reference for attribute value or defaultValue if not
+     * @return SmartFrog Reference for attribute value, null if SFNull is found or defaultValue if not
      *         found
      *
      * @throws SmartFrogResolutionException if invalid reference of reference
@@ -448,7 +448,7 @@ public interface RemoteReferenceResolverHelper extends Remote {
      *        present in the description. If it is mandatory and not found it
      *        triggers a SmartFrogResolutionException
      *
-     * @return SmartFrog Prim for attribute value or defaultValue if not
+     * @return SmartFrog Prim for attribute value, null if SFNull is found or defaultValue if not
      *         found
      *
      * @throws SmartFrogResolutionException if invalid reference of reference
@@ -470,7 +470,7 @@ public interface RemoteReferenceResolverHelper extends Remote {
      *        present in the description. If it is mandatory and not found it
      *        triggers a SmartFrogResolutionException
      *
-     * @return SmartFrog Compound for attribute value or defaultValue if not
+     * @return SmartFrog Compound for attribute value, null if SFNull is found or defaultValue if not
      *         found
      *
      * @throws SmartFrogResolutionException if invalid reference of reference
@@ -491,7 +491,7 @@ public interface RemoteReferenceResolverHelper extends Remote {
      *        present in the description. If it is mandatory and not found it
      *        triggers a ResolutionException
      *
-     * @return String[] for attribute value or null if not found
+     * @return String[] for attribute value, null if SFNull is found or null if not found
      *
      * @throws SmartFrogResolutionException if invalid reference of reference
      * not resolvable
@@ -708,7 +708,7 @@ public interface RemoteReferenceResolverHelper extends Remote {
      *        present in the description. If it is mandatory and not found it
      *        triggers a ResolutionException
      *
-     * @return String for attribute value or null if not found
+     * @return String for attribute value, null if SFNull is found or null if not found
      *
      * @throws SmartFrogResolutionException if invalid reference of reference
      * not resolvable or resolve value &lt;minValue or resolveValue
@@ -729,7 +729,7 @@ public interface RemoteReferenceResolverHelper extends Remote {
      *        present in the description. If it is mandatory and not found it
      *        triggers a ResolutionException
      *
-     * @return Vector for attribute value or null if not found
+     * @return Vector for attribute value, null if SFNull is found or null if not found
      *
      * @throws SmartFrogResolutionException if invalid reference of reference
      * not resolvable
@@ -749,7 +749,7 @@ public interface RemoteReferenceResolverHelper extends Remote {
      *        present in the description. If it is mandatory and not found it
      *        triggers a ResolutionException
      *
-     * @return String[] for attribute value or null if not found
+     * @return String[] for attribute value, null if SFNull is found or null if not found
      *
      * @throws SmartFrogResolutionException if invalid reference of reference
      * not resolvable
@@ -770,7 +770,7 @@ public interface RemoteReferenceResolverHelper extends Remote {
      *        present in the description. If it is mandatory and not found it
      *        triggers a SmartFrogResolutionException
      *
-     * @return java.net.InetAddress for attribute value or defaultValue if not
+     * @return java.net.InetAddress for attribute value, null if SFNull is found or defaultValue if not
      * found
      *
      * @throws SmartFrogResolutionException if invalid reference of reference
@@ -793,7 +793,7 @@ public interface RemoteReferenceResolverHelper extends Remote {
      *        present in the description. If it is mandatory and not found it
      *        triggers a SmartFrogResolutionException
      *
-     * @return ComponentDescription for attribute value or defaultValue if not
+     * @return ComponentDescription for attribute value, null if SFNull is found or defaultValue if not
      *         found
      *
      * @throws SmartFrogResolutionException if invalid reference of reference
@@ -815,7 +815,7 @@ public interface RemoteReferenceResolverHelper extends Remote {
      *        present in the description. If it is mandatory and not found it
      *        triggers a SmartFrogResolutionException
      *
-     * @return Reference for attribute value or defaultValue if not found
+     * @return Reference for attribute value, null if SFNull is found or defaultValue if not found
      *
      * @throws SmartFrogResolutionException if invalid reference of reference
      * not resolvable
@@ -835,7 +835,7 @@ public interface RemoteReferenceResolverHelper extends Remote {
      *        present in the description. If it is mandatory and not found it
      *        triggers a SmartFrogResolutionException
      *
-     * @return Prim for attribute value or defaultValue if not found
+     * @return Prim for attribute value, null if SFNull is found or defaultValue if not found
      *
      * @throws SmartFrogResolutionException if invalid reference of reference
      * not resolvable
@@ -855,7 +855,7 @@ public interface RemoteReferenceResolverHelper extends Remote {
      *        present in the description. If it is mandatory and not found it
      *        triggers a SmartFrogResolutionException
      *
-     * @return Compound for attribute value or defaultValue if not found
+     * @return Compound for attribute value, null if SFNull is found or defaultValue if not found
      *
      * @throws SmartFrogResolutionException if invalid reference of reference
      * not resolvable
@@ -876,7 +876,7 @@ public interface RemoteReferenceResolverHelper extends Remote {
      *        present in the description. If it is mandatory and not found it
      *        triggers a ResolutionException
      *
-     * @return java Object for attribute value or null if not found
+     * @return java Object for attribute value, null if SFNull is found or null if not found
      *
      * @throws SmartFrogResolutionException if invalid reference of reference
      * not resolvable
