@@ -19,11 +19,14 @@
  */
 package org.cddlm.components;
 
+import java.rmi.Remote;
+import java.rmi.RemoteException;
+
 
 /**
  * created 27-Apr-2004 11:33:13
  */
-public interface PlatformInformation {
+public interface PlatformInformation extends Remote {
     /*
     processor;
     OS;
@@ -68,40 +71,40 @@ public interface PlatformInformation {
      *
      * @return
      */
-    public String getProcessor();
+    public String getProcessor() throws RemoteException;
 
     /**
      * OS name
      *
      * @return
      */
-    public String getOS();
+    public String getOS() throws RemoteException;
 
     /**
      * OS family
      *
      * @return
      */
-    public String getFamily();
+    public String getFamily() throws RemoteException;
 
     /**
      * file separator
      *
      * @return "/", "\" or whatever the file separator is
      */
-    public String getFileSeparator();
+    public String getFileSeparator() throws RemoteException;
 
     /**
      * get the line separator
      *
      * @return \n, \r and whatever mainframes have
      */
-    public String getLineSeparator();
+    public String getLineSeparator() throws RemoteException;
 
     /**
      * get the path separator
      *
      * @return
      */
-    public String getPathSeparator();
+    public String getPathSeparator() throws RemoteException;
 }

@@ -14,11 +14,13 @@
  */
 package org.cddlm.components;
 
+import java.rmi.Remote;
+
 
 /**
  * created 28-Apr-2004 11:40:33
  */
-public interface Assert {
+public interface Assert extends Remote {
     //~ Static fields/initializers ---------------------------------------------
 
     /*

@@ -22,6 +22,7 @@ package org.cddlm.components;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.prim.Prim;
 
 import java.rmi.RemoteException;
 
@@ -34,23 +35,13 @@ import java.rmi.RemoteException;
  * GET with remote access, too.
  * created 21-Apr-2004 13:46:23
  */
-public class LivenessPageComponent extends PrimImpl {
-    public final static String URL = "url";
-    public final static String HOST = "host";
-    public final static String PORT = "port";
-    public final static String PROTOCOL = "protocol";
-    public final static String PAGE = "page";
-    public final static String FOLLOW_REDIRECTS = "followRedirects";
-    public final static String FETCH_ERROR_TEXT = "fetchErrorText";
-    public final static String MINIMUM_RESPONSE_CODE = "minimumResponseCode";
-    public final static String MAXIMUM_RESPONSE_CODE = "maximumResponseCode";
-    public final static String CHECK_FREQUENCY = "checkFrequency";
+public class LivenessPageComponent extends PrimImpl implements LivenessPage {
 
     /**
      * the class that contains all the checking code. This is on the side
      * for reuse in other components.
      */
-    LivenessPage livenessPage;
+    LivenessPageChecker livenessPage;
 
     /**
      * how often to check
@@ -83,7 +74,7 @@ public class LivenessPageComponent extends PrimImpl {
     public synchronized void sfDeploy()
             throws SmartFrogException, RemoteException {
         super.sfDeploy();
-        livenessPage = new LivenessPage();
+        livenessPage = new LivenessPageChecker();
 
         String url = sfResolve(URL, (String) null, false);
 

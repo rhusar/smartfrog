@@ -29,7 +29,7 @@ import org.apache.axis.deployment.wsdd.WSDDDocument;
 import org.apache.axis.transport.http.SimpleAxisServer;
 import org.apache.axis.utils.XMLUtils;
 import org.apache.commons.logging.Log;
-import org.cddlm.components.LivenessPage;
+import org.cddlm.components.LivenessPageChecker;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
@@ -95,7 +95,7 @@ public class AxisImpl extends PrimImpl implements Axis, Prim {
 
     private String livenessPage = "/";
 
-    private LivenessPage liveness;
+    private LivenessPageChecker liveness;
 
     /**
      * ctor is needed to throw an exception from a parent
@@ -140,7 +140,7 @@ public class AxisImpl extends PrimImpl implements Axis, Prim {
         threads = sfResolve(Axis.THREADS, threads, false);
         sessions = sfResolve(Axis.SESSIONS, sessions, false);
         livenessPage = sfResolve(Axis.LIVENESS_PAGE, livenessPage, false);
-        liveness = new LivenessPage("http", "127.0.0.1", port, livenessPage);
+        liveness = new LivenessPageChecker("http", "127.0.0.1", port, livenessPage);
         liveness.setFollowRedirects(true);
         liveness.setFetchErrorText(true);
         liveness.onDeploy();
