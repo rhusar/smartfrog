@@ -190,6 +190,7 @@ To Be Written
         <include name="lib/**"/>
         <include name="src/**"/>
         <include name="build.xml"/>
+        <include name="buildRelease.xml"/>
         <include name="releaseBuild.xml"/>
         <include name="rmitargets"/>
         <include name="rmitargetsExamples"/>
@@ -254,6 +255,7 @@ To Be Written
         <include name="lib/**"/>
         <include name="src/**"/>
         <include name="build.xml"/>
+        <include name="buildRelease.xml"/>
         <include name="releaseBuild.xml"/>
         <include name="rmitargets"/>
         <include name="rmitargetsExamples"/>
