@@ -57,6 +57,7 @@ import org.smartfrog.sfcore.reference.RemoteReferenceResolverHelperImpl;
 import java.rmi.NoSuchObjectException;
 import java.net.*;
 
+
 /**
  * Defines the base class for all deployed components. A deployed component
  * knows how to react to termination, deployment requests and heart beats.
@@ -562,12 +563,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
                 ((ChildMinder) sfParent).sfAddChild(this);
             }
 
-            //Registers component with local ProcessCompound
-            if (sfIsRemote(sfParent)||
-                (sfContext.containsKey(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME))) {
-                    SFProcess.getProcessCompound().sfRegister(sfResolveHere(
-                       SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME, false), this);
-            }
+            registerWithProcessCompound();
 
             // Look up delay, if not there never mind looking up factor
             sfLivenessDelay= sfResolve(refLivenessDelay,sfLivenessDelay,false);
@@ -593,6 +589,20 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
             Logger.log(sfex);
             new TerminatorThread(this, sfex, null).quietly().run();
             throw (SmartFrogDeploymentException)SmartFrogDeploymentException.forward (sfex);
+        }
+    }
+
+    protected void registerWithProcessCompound() throws RemoteException, SmartFrogException {
+        //Registers component with local ProcessCompound
+        if ((sfParent==null)||
+            sfIsRemote(sfParent)||
+            sfContext.containsKey(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME)) {
+            try {
+                SFProcess.getProcessCompound().sfRegister(sfResolveHere(
+                    SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME, false), this);
+            } catch (Exception ex) {
+                throw (SmartFrogDeploymentException)SmartFrogDeploymentException.forward (ex);
+            }
         }
     }
 
