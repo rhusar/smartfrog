@@ -25,12 +25,17 @@ package org.smartfrog.services.email;
 import javax.mail.Message;
 import javax.mail.Session;
 import javax.mail.Transport;
+import javax.mail.Multipart;
 import javax.mail.MessagingException;
-import javax.activation.*;
-import javax.mail.internet.*;
+import javax.activation.FileDataSource;
+import javax.activation.DataHandler;
 import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
 import java.util.Properties;
 import java.util.Date;
+import java.util.Vector;
 
 import java.rmi.RemoteException;
 
@@ -42,19 +47,31 @@ import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 
 /**
- * EmailerImpl is a SmartFrog component which provides utility methods to send 
- * singlepart and multipart email messages.
- * This component can be deployed as any SmartFrog component and then used by
- * other components to send single and multi part email messages.
+ * Emailer component can be used in two modes.
+ * 1. As a standard workflow component ( Sends email only once when sfStart
+ *    lifecycle method is executed. In this mode other components in the work-
+ *    flow may not be aware of Emailer component. Can be useful in applications
+ *    installations using SF, where sequence workflow installs the
+ *    application and emailer sends the log file of the installation through
+ *    email. Please see exampleUsageAsWFComp.sf for sample usage.
+ * 2. As a Utility component, where sendEmail API can be invoked multiple times 
+ *    by other components deployed under the same parent. In this mode the 
+ *    component has to provide email attributes at run-time. Please see 
+ *    example.sf for sample usage.     
+ *
  * @author Ashish Awasthi
  */ 
 public class EmailerImpl extends PrimImpl implements Emailer {
     private String toList; // comma separated list of email ids     
     private String ccList =""; // comma separated list, default is blank
-    private String defaultFrom;
+    private String from;
     private String host;     // SMTP host
-    private String defaultSubject;
+    private String subject;
+    private Vector attachmentList = null; // attachments file name
+    private boolean runAsWorkFlowComponent = false; // by default
     private Session session = null;
+    private String message = "SmartFrog Message";
+    
     private final String PROP_HOST_NAME = "mail.smtp.host";
 
     /**
@@ -84,6 +101,28 @@ public class EmailerImpl extends PrimImpl implements Emailer {
     }
     
     /**
+     * Sends email using attributes specified in the SmartFrog description
+     * of the component.
+     *
+     * @throws SmartFrogException in case of error in sending email
+     * @throws RemoteException in case of network/emi error
+     */ 
+    public synchronized void sfStart() throws SmartFrogException, 
+                                                          RemoteException {
+        // send mail only when it is part of workflow and user has set 
+        // boolean attribute "runAsWorkFlowComponent"                   
+        if(runAsWorkFlowComponent) {
+            if(attachmentList == null)
+                sendEmail(toList ,ccList, from, subject, message); 
+            else {
+                sendEmailWithAttachments(toList ,ccList, from, subject,
+                                         message, attachmentList); 
+            }
+        }
+        super.sfStart();
+    }
+    
+    /**
      * Life cycle method for terminating the SmartFrog component.
      * @param tr Termination record
      */ 
@@ -92,18 +131,29 @@ public class EmailerImpl extends PrimImpl implements Emailer {
     }
     
     /**
-     * Reads the SmartFrog attributes
+     * Reads SmartFrog attributes.
+     * @throws SmartFrogResolutionException if failed to read any 
+     * attribute or a mandatory attribute is not defined.
+     * @throws RemoteException in case of network/rmi error
      */
     private void readSFAttributes() throws SmartFrogResolutionException,
                                                              RemoteException{
+        // mandatory attributes
         toList = sfResolve(TO, toList, true); 
-        ccList = sfResolve(CC, ccList, false); 
-        defaultFrom = sfResolve(FROM, defaultFrom, false); 
+        runAsWorkFlowComponent = sfResolve(RUNASWFCOMPONENT, 
+                                        runAsWorkFlowComponent, true);
         host = sfResolve(SMTP_HOST, host, true); 
-        defaultSubject =  sfResolve(SUBJECT, defaultSubject, false);
+        
+        // optional attributes
+        ccList = sfResolve(CC, ccList, false); 
+        from = sfResolve(FROM, from, false); 
+        subject =  sfResolve(SUBJECT, subject, false);
+        message =  sfResolve(MESSAGE, message, false);
+        attachmentList = (Vector) sfResolve(ATTACHMENTS, attachmentList,false);
     }
 
-    // Utility methods to send Emails
+    // Utility methods to send Emails used when Emailer is to be used multiple
+    // times by other components.
 
     /**
      * Sends a single part message using to, from subject attributes defined in
@@ -115,21 +165,21 @@ public class EmailerImpl extends PrimImpl implements Emailer {
     public void sendEmail(String message) 
                             throws SmartFrogException, RemoteException {
         //use default to, from and subject
-        sendEmail(toList, ccList, defaultFrom, defaultSubject, message);
+        sendEmail(toList, ccList, from, subject, message);
     }
     
     /**
      * Sends a single part message using to, from attributes defined in
      * the Emailer component
-     * @param subject The subject text that overrides the default value
+     * @param sub The subject text that overrides the default value
      * @param message Message body
      * @throws SmartFrogException if any error while sending the email
      * @throws RemoteException if any rmi or network error
      */
-    public void sendEmail(String subject, String message) 
+    public void sendEmail(String sub, String msg) 
                             throws SmartFrogException, RemoteException {
         //use default to and from email addresses
-        sendEmail(toList, ccList, defaultFrom, subject, message);
+        sendEmail(toList, ccList, from, sub, msg);
     }
 
     /**
@@ -143,19 +193,16 @@ public class EmailerImpl extends PrimImpl implements Emailer {
      * @throws RemoteException if any rmi or network error
      */
     public void sendEmail(String to ,String cc, 
-                        String from, String subject, String message) 
+                        String from, String sub, String msg) 
                                 throws SmartFrogException, RemoteException {
        try {
-           Message msg = constructSinglePartMessage(to, cc,from, subject, 
-                                                                    message);
-           sendMessage(msg); 
+           Message emailMsg = constructSinglepartMessage(to, cc,from, sub,msg);
+           sendMessage(emailMsg); 
        }catch (MessagingException mex) {
             throw new SmartFrogException(mex);
        }
     }
 
-    
-    
     /**
      * Sends an email message
      * @param mailMessage Email Message
@@ -169,7 +216,7 @@ public class EmailerImpl extends PrimImpl implements Emailer {
      * Constructs single part email message.
      * @return Mail message
      */
-    private Message constructSinglePartMessage(String to, String cc, 
+    private Message constructSinglepartMessage(String to, String cc, 
             String from, String subject, String msgText) 
                                                 throws MessagingException{
         if (( to == null) || to.equals("")) {
@@ -193,6 +240,81 @@ public class EmailerImpl extends PrimImpl implements Emailer {
 	    msg.setSubject(subject);
 	    msg.setSentDate(new Date());
 	    msg.setText(msgText);
+        return msg;
+    }
+    /**
+     * Sends Email with the attachment.
+     * @param to to addresses
+     * @param cc cc addresses
+     * @param from from address
+     * @param subject the subject
+     * @param message the message body
+     * @param attachments vector of attachments 
+     * @throws SmartFrogException if unable to send email
+     */
+    public void sendEmailWithAttachments(String to, String cc, String from,
+                String subject, String msg, Vector attachments) 
+                    throws SmartFrogException {
+        try {
+            Message emailMsg = constructMultipartMessage(to, cc, from, subject,
+                                msg, attachments);
+            sendMessage(emailMsg);
+        }catch (MessagingException mex) {
+            throw new SmartFrogException(mex);
+        }
+    }
+    
+    /**
+     * Constructs Multipart email message.
+     * @return Mail message
+     */
+    private Message constructMultipartMessage(String to, String cc, 
+            String from, String subject, String msgText, Vector attachments) 
+                                                throws MessagingException{
+        if (( to == null) || to.equals("")) {
+            throw new MessagingException("To address list can not be null");
+        }
+        if (( from == null) || from.equals("")) {
+            throw new MessagingException("From address can not be null");
+        }
+            
+	    Message msg = new MimeMessage(session);
+        
+	    msg.setFrom(new InternetAddress(from));
+        
+	    InternetAddress[] toAddress = InternetAddress.parse(toList);
+	    msg.setRecipients(Message.RecipientType.TO, toAddress);
+
+        if ((cc != null) && (!cc.equals(""))) {
+            InternetAddress[] ccAddress = InternetAddress.parse(cc);
+            msg.setRecipients(Message.RecipientType.CC, ccAddress);
+        }
+	    msg.setSubject(subject);
+	    msg.setSentDate(new Date());
+
+   	    // create the Multipart and add its parts to it
+	    Multipart mp = new MimeMultipart();
+
+   	    // create and fill the first message part
+	    MimeBodyPart mbp1 = new MimeBodyPart();
+        
+	    mbp1.setText(msgText);
+        mp.addBodyPart(mbp1);
+        
+        // create and add MIME body parts for all the attachments
+        for (int i = 0; i < attachments.size() ; i ++ ) {
+            String fileName = (String) attachments.get(i);
+            
+            MimeBodyPart mbp = new MimeBodyPart();
+
+            // attach the file to the message
+            FileDataSource fds = new FileDataSource(fileName);
+            mbp.setDataHandler(new DataHandler(fds));
+            mbp.setFileName(fds.getName());
+            mp.addBodyPart(mbp);
+        }
+	    // add the Multipart to the message
+	    msg.setContent(mp);
         return msg;
     }
 }
