@@ -17,7 +17,6 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-
 /**
  * schema stuff
  */
@@ -34,22 +33,28 @@ For more information: www.smartfrog.org
 
 #include "/org/smartfrog/services/cddlm/components.sf"
 
-/**
- * the actual deployment 
- * sets the threads and sessions
- */
-CddlmSystem extends Compound {
+
+//jetty
+#include "org/smartfrog/services/jetty/components.sf";
+
+sfConfig extends Compound {
+
+    host "localhost"
+
     port 5050;
 
     //so they terminate one after the other
     sfSyncTerminate true;
 
     //our CDDLM description
+    /*
     cddlm extends AxisServer {
         port PARENT:port;
         threads 4;
         sessions 8;
         }
+    */
+
 
     //fetch the WSDL every so often, just to see that we are happy
     wsdlFetch extends FetchCddlmWSDL {
@@ -59,5 +64,70 @@ CddlmSystem extends Compound {
     cddlmService extends CddlmService {
         port PARENT:port;
     }
+
+    adminServer extends HttpServerAdmin {
+     httpserverHost PARENT:host; // mandatory
+    }
+
+
+    JettyServer extends HttpServer {
+        jettyhome ROOT:jetty_home;
+        serverHost PARENT:host;
+
+        contexts  "";
+        listeners "";
+
+        AxisWebApp extends JettyWebApplication {
+            webApp (axishome ++ "") 
+
+            "axis.war";
+            contextPath "axis"
+        }
+
+    }
+
+
+
 }
 
+
+/**
+ * Specify the jetty home path here
+ */
+ //no: set this as a property when you deploy!
+ //jetty_home "C:\\jetty\\Jetty-4.2.18";
+
+A extends Prim {
+ sfClass "org.smartfrog.services.jetty.contexts.Servlet";
+ contextPath "/test";
+ resourceBase ("D:\\cvs");
+}
+
+sfConfig extends Compound {
+
+}
+
+
+/**
+ * Specify the jetty home path here
+ */
+jetty_home "C:\\jetty\\Jetty-4.2.18";
+
+A extends Prim {
+ sfClass "org.smartfrog.services.jetty.contexts.Servlet";
+ contextPath "/test";
+ resourceBase ("D:\\cvs");
+}
+
+sfConfig extends Compound {
+     adminServer extends HttpServerAdmin {
+         httpserverHost "localhost"; // mandatory
+     }
+     httpServer extends HttpServer {
+      jettyhome ROOT:jetty_home; // mandatory
+      serverHost "localhost"; //mandatory
+      contexts extends Contexts{
+         -- extends A;
+      }
+    }
+}

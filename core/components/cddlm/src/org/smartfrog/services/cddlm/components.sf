@@ -27,12 +27,21 @@ For more information: www.smartfrog.org
 
 //include axis
 #include "/org/smartfrog/services/axis/components.sf"
+//web stuff
+#include "/org/smartfrog/services/www/components.sf"
 
-//and CDDLM
-//#include "org/cddlm/components.sf"
 
 
-CDDLM extends AxisServer {
-    wsddDescriptor "/org/smartfrog/services/cddlm/deploy.wsdd";
-};
 
+    CddlmService extends AxisServiceResource {
+        serviceName "cddlm";
+        deployResource "/org/smartfrog/services/cddlm/deploy.wsdd";
+        undeployResource "/org/smartfrog/services/cddlm/undeploy.wsdd";
+    }
+
+
+    //fetch the WSDL every so often, just to see that we are happy
+    FetchCddlmWSDL extends LivenessPage {
+        page "axis/services/cddlm?wsdl";
+        checkFrequency 10;
+    }

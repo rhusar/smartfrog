@@ -25,23 +25,9 @@ For more information: www.smartfrog.org
  */
 #include "/org/smartfrog/components.sf"
 
-//and liveness
-#include "/org/smartfrog/services/axis/livenessPage.sf"
+//liveness and webserver
+#include "/org/smartfrog/services/www/components.sf"
 
-
-/**
- * Web Server is not bound to an object; it is just some
- * configuration base that could be common to many implementations
- * of a web server.
- */
-WebServerSchema extends Schema {
-    port extends OptionalInteger;
-}
-
-WebServer extends Prim {
-    webServerSchema extends WebServerSchema;
-    port 8080;
-};
 
 /**
  * the axis schema.
@@ -59,6 +45,10 @@ WebServer extends Prim {
 	//sessions to keep active
     sessions extends OptionalInteger;
 }
+
+/**
+the axis server implements the schema
+*/
 
 AxisServer extends WebServer {
     sfClass "org.smartfrog.services.axis.AxisImpl";
