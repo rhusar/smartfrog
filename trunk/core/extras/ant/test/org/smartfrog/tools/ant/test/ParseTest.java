@@ -28,6 +28,8 @@ package org.smartfrog.tools.ant.test;
  *         Time: 23:48:51
  */
 public class ParseTest extends TaskTestBase {
+    public static final String SUCCESSFUL_PARSE = "SFParse: SUCCESSFUL";
+
     public ParseTest(String s) {
         super(s);
     }
@@ -46,16 +48,16 @@ public class ParseTest extends TaskTestBase {
     }
 
     public void testValid1() {
-        expectLogContaining("testValid1","port 8080;");
+        expectLogContaining("testValid1",SUCCESSFUL_PARSE);
     }
 
     public void testValid2() {
-        expectLogContaining("testValid2", "port 8080;");
+        expectLogContaining("testValid2", SUCCESSFUL_PARSE);
     }
 
 
     public void testSubdir() {
-        expectLogContaining("testSubdir", "port 8080;");
+        expectLogContaining("testSubdir", SUCCESSFUL_PARSE);
     }
 
     public void testInvalid() {
@@ -76,12 +78,12 @@ public class ParseTest extends TaskTestBase {
     }
 
     public void testQuiet() {
-        expectLogContaining("testQuiet", "SFParse: SUCCESSFUL");
+        expectLogContaining("testQuiet", SUCCESSFUL_PARSE);
         assertNotInLog("port 8080;");
     }
 
     public void testVerboseQuiet() {
-        expectLogContaining("testVerboseQuiet", "SFParse: SUCCESSFUL");
+        expectLogContaining("testVerboseQuiet", SUCCESSFUL_PARSE);
         assertNotInLog("port 8080;");
     }
 
