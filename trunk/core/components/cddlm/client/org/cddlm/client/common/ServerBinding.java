@@ -104,4 +104,12 @@ public class ServerBinding implements Serializable {
         return binding;
     }
 
+    public String toString() {
+        if(url==null) {
+            return "(unbound)";
+        } else {
+            return url.toExternalForm();
+        }
+    }
+
 }

@@ -471,7 +471,7 @@
   <!-- ========================================================== -->
   <!-- system tests -->
   <!-- ========================================================== -->
-  <target name="system-tests" depends="parse,dist"
+  <target name="system-tests" depends="init"
     description="run system tests"
     if="system.tests.enabled">
     <parallel>
@@ -491,7 +491,7 @@
         -->
         <sf-waitfordaemon maxwait="10" timeoutproperty="daemon.missing"/>
         <fail if="daemon.missing">No daemon</fail>
-        <!-- get the WSDL -->
+        <antcall target="run-system-tests"/>
 
         <!-- conditionally stop the daemon -->
         <antcall target="stop-daemon-if-started"/>
@@ -500,7 +500,32 @@
     </parallel>
   </target>
 
-    
+  <!-- ========================================================== -->
+  <!-- system tests run against a local host-->
+  <!-- ========================================================== -->
+  <target name="run-system-tests" depends="compile-tests,deploy"
+    description="compile and run the system tests">
+    <sf-junit
+      errorProperty="test.failed"
+      failureProperty="test.failed"
+      includeAntRuntime="true"
+      >
+      <sysproperty key="test.classes.dir"
+        value="${test.classes.dir}"/>
+      <sysproperty key="java.endorsed.dirs"
+        path="${lib.dir}"/>
+      <classpath>
+        <path refid="tests.run.classpath"/>
+      </classpath>
+      <batchtest todir="${test.data.dir}">
+        <!-- bulk test case -->
+        <fileset dir="${test.classes.dir}">
+          <include name="org/smartfrog/services/cddlm/test/system/**/*Test.class"/>
+        </fileset>
+      </batchtest>
+    </sf-junit>
+  </target>
+
   <!-- ========================================================== -->
   <!-- this is an override point -->
   <!-- unit tests : anything which does not need deployment to run-->

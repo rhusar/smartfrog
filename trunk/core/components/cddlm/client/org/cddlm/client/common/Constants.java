@@ -32,4 +32,5 @@ public class Constants {
     public static final int DEFAULT_SERVICE_PORT = 5050;
 
 
+    public static final String DEFAULT_PROTOCOL = "http";
 }

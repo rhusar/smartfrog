@@ -23,6 +23,7 @@ import org.cddlm.client.common.ServerBinding;
 import org.cddlm.client.generated.api.endpoint.CddlmSoapBindingStub;
 
 import java.io.PrintWriter;
+import java.io.IOException;
 import java.rmi.RemoteException;
 
 /**
@@ -79,6 +80,7 @@ public abstract class ConsoleOperation {
      */
     public void logThrowable(Throwable t) {
         t.printStackTrace(out);
+        out.flush();
     }
 
     /**
@@ -89,10 +91,23 @@ public abstract class ConsoleOperation {
     public boolean doExecute() {
         try {
             execute();
+            out.flush();
             return true;
         } catch (RemoteException e) {
             logThrowable(e);
             return false;
         } 
     }
+
+    /**
+     * TODO: parse command line looking for values
+     * @param args command line arguments; look for -url url
+     * @return
+     */
+    public static ServerBinding extractBindingFromCommandLine(String[] args)
+            throws IOException {
+        return ServerBinding.createDefaultBinding();
+    }
+
+
 }
