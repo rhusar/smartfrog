@@ -54,6 +54,7 @@ public class CompilerSystemTest extends SmartfrogTestBase {
                 "java.lang.ClassCastException",
                 null);
     }
+
 // Changes in the SF Language made this test obsolete.
 //    public void testCaseTCN6() throws Exception {
 //        deployExpectingException(FILES + "tcn6.sf",
@@ -71,12 +72,13 @@ public class CompilerSystemTest extends SmartfrogTestBase {
                 "org.smartfrog.test.system.compiler.PrinterImpl");
     }
 
-    public void testCaseTCN8() throws Exception {
-        deployExpectingException(FILES + "tcn8.sf",
-                "tcn8",
-                "SmartFrogCompileResolutionException",
-                "Unresolved Reference");
-    }
+// Changes in the SF Language made this test obsolete.
+//    public void testCaseTCN8() throws Exception {
+//        deployExpectingException(FILES + "tcn8.sf",
+//            "tcn8",
+//            "SmartFrogCompileResolutionException",
+//            "Unresolved Reference");
+//    }
 
     public void testCaseTCN9() throws Exception {
         deployExpectingException(FILES + "tcn9.sf",
