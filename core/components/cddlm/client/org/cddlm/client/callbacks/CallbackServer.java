@@ -49,6 +49,7 @@ import java.util.Hashtable;
  * Time: 20:40:23
  */
 public class CallbackServer {
+    public static final String ENDPOINT_PATH_ON_SERVER = "/axis/services/callbacks";
 
     public CallbackServer() {
     }
@@ -81,7 +82,7 @@ public class CallbackServer {
      */
     private int port = CALLBACK_PORT;
 
-    private int threads = 1;
+    private int threads = 4;
 
     public synchronized void start() throws Exception {
         assert axis==null;
@@ -197,7 +198,7 @@ public class CallbackServer {
             return false;
         }
         DeploymentCallbackEndpoint handler=(DeploymentCallbackEndpoint) mapping.get(key);
-        if(key==null) {
+        if(handler==null) {
             return false;
         }
         return handler.callback(callback);
@@ -213,7 +214,7 @@ public class CallbackServer {
         }
         // serverSocket.getInetAddress().getHostName();
         assert hostName!=null;
-        String url="http://"+hostName+":"+port+"/axis/callbacks";
+        String url="http://"+hostName+":"+port+ENDPOINT_PATH_ON_SERVER;
         return url;
     }
 }

@@ -21,6 +21,7 @@ package org.smartfrog.services.cddlm.api;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.axis.types.URI;
 import org.smartfrog.services.cddlm.engine.JobState;
 import org.smartfrog.services.cddlm.engine.NotificationAction;
 import org.smartfrog.services.cddlm.engine.ServerInstance;
@@ -38,6 +39,14 @@ import java.net.URL;
 
 public class CddlmCallbackRaiser extends CallbackRaiser {
 
+
+    private URI application;
+
+    private String identifier;
+
+    private URL callbackURL;
+
+
     /**
      * log
      */
@@ -47,6 +56,17 @@ public class CddlmCallbackRaiser extends CallbackRaiser {
      * how long we generally sleep.
      */
     private static final int DEMO_SLEEP_TIME_IN_SECONDS = 3;
+
+
+    public CddlmCallbackRaiser(URI application, URL callbackURL, String identifier) {
+        this.application = application;
+        this.callbackURL = callbackURL;
+        this.identifier = identifier;
+    }
+
+    public CddlmCallbackRaiser(JobState job) {
+        this(job.getUri(),job.getCallbackURL(), job.getCallbackIdentifier());
+    }
 
     /**
      * raise an event
@@ -58,15 +78,13 @@ public class CddlmCallbackRaiser extends CallbackRaiser {
             SmartFrogException sfe)  {
         ServerInstance server = ServerInstance.currentInstance();
         _lifecycleEventCallbackRequest event = new _lifecycleEventCallbackRequest();
-        event.setApplicationReference(job.getUri());
-        event.setIdentifier(job.getCallbackIdentifier());
+        event.setApplicationReference(application);
+        event.setIdentifier(identifier);
         ApplicationStatusType status = job.createApplicationStatus();
         event.setStatus(status);
         event.setTimestamp(BigInteger.valueOf(System.currentTimeMillis()/1000));
-        URL callbackURL = job.getCallbackURL();
         NotificationAction action = new NotificationAction(callbackURL,
                 event);
-        action.setSleepTime(DEMO_SLEEP_TIME_IN_SECONDS);
         log.info("queuing "+status.getState()+" event to "+callbackURL);
         server.queue(action);
     }

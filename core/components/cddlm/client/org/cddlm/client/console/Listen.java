@@ -22,6 +22,7 @@
 package org.cddlm.client.console;
 
 import org.apache.axis.message.MessageElement;
+import org.apache.axis.types.URI;
 import org.cddlm.client.callbacks.CallbackServer;
 import org.cddlm.client.common.ServerBinding;
 import org.smartfrog.services.cddlm.generated.api.callbacks.DeploymentCallbackEndpoint;
@@ -44,7 +45,7 @@ public class Listen extends ConsoleOperation
 
     int messageCount = 0;
 
-    int timeout = 0;
+    int timeout = 5*60;
 
     public Listen(ServerBinding binding, PrintWriter out, String[] args) {
         super(binding, out);
@@ -103,7 +104,8 @@ public class Listen extends ConsoleOperation
             aboutToWait();
             //now ask for
             try {
-                Thread.sleep(timeout * 1000);
+                int millis = timeout * 1000;
+                sleep(millis);
             } catch (InterruptedException e) {
 
             }
@@ -112,10 +114,14 @@ public class Listen extends ConsoleOperation
         } finally {
             //shutdown code
             server.stop();
-            if (identifier != null) {
+            if ( identifier != null ) {
                 CallbackServer.removeMapping(identifier);
             }
         }
+    }
+
+    protected void sleep(int millis) throws InterruptedException {
+        Thread.sleep(millis);
     }
 
     /**
@@ -123,7 +129,7 @@ public class Listen extends ConsoleOperation
      * been set at this point
      */
 
-    protected void aboutToWait() {
+    protected void aboutToWait() throws IOException  {
 
     }
 
@@ -134,13 +140,12 @@ public class Listen extends ConsoleOperation
      * @return
      * @throws RemoteException
      */
-    public synchronized boolean callback(
-            _lifecycleEventCallbackRequest callback) throws RemoteException {
+    public synchronized boolean callback(_lifecycleEventCallbackRequest callback) throws RemoteException {
         messageCount++;
         lastMessage = callback;
         processCallback(callback);
         this.notifyAll();
-        return false;
+        return true;
     }
 
     /**
@@ -150,23 +155,32 @@ public class Listen extends ConsoleOperation
      */
     protected void processCallback(_lifecycleEventCallbackRequest callback) {
         BigInteger timestamp = callback.getTimestamp();
-        if (timestamp != null) {
+        if ( timestamp != null ) {
             long utc = timestamp.longValue();
             Date date = new Date(utc * 1000);
             out.println("time:   " + date.toString());
         }
+        URI app = callback.getApplicationReference();
+        out.println("uri:    " + ((app != null) ? app.toString() : "(null)"));
+
         ApplicationStatusType status = callback.getStatus();
-        out.println("event:  " + status.getState());
-        if (status.getStateInfo() != null) {
-            out.println("info :" + status.getStateInfo());
-        }
-        if (status.getExtendedState() != null) {
-            MessageElement[] any = status.getExtendedState().get_any();
-            for (int i = 0; i < any.length; i++) {
-                out.println(any[i].toString());
+        out.println("event:  "
+                + ((status != null) ?
+                status.getState().toString()
+                : "(null)"));
+        if ( status != null ) {
+            if ( status.getStateInfo() != null ) {
+                out.println("info :" + status.getStateInfo());
+            }
+            if ( status.getExtendedState() != null ) {
+                MessageElement[] any = status.getExtendedState().get_any();
+                for ( int i = 0; i < any.length; i++ ) {
+                    out.println(any[i].toString());
+                }
             }
         }
         out.println();
+        out.flush();
     }
 
     /**
@@ -179,7 +193,7 @@ public class Listen extends ConsoleOperation
      */
     public synchronized boolean blockForMessages(long timeout)
             throws InterruptedException {
-        if (messageCount <= 0) {
+        if ( messageCount <= 0 ) {
             wait(timeout);
         }
         return messageCount > 0;

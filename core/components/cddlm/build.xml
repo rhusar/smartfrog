@@ -373,6 +373,7 @@
       implementationClassName="org.smartfrog.services.cddlm.api.DeploymentEndpoint"
       />
     <!-- here the callback API is defined (client side -we are a caller-) -->
+    <property name="callback.implementation" value="org.cddlm.client.callbacks.CallbackEndpoint" />
     <axis-wsdl2java
       output="${soap.server.dir}"
       serverside="false"
@@ -388,7 +389,7 @@
       debug="false"
       printstacktraceonfailure="false"
       typemappingversion="${type.mapping}"
-      implementationClassName="org.smartfrog.services.cddlm.api.CallbackEndpoint"
+      implementationClassName="${callback.implementation}"
       />
     <axis-wsdl2java
       output="${soap.server.dir}"
@@ -405,15 +406,17 @@
       debug="false"
       printstacktraceonfailure="false"
       typemappingversion="${type.mapping}"
-      implementationClassName="org.smartfrog.services.cddlm.api.CallbackEndpoint"
+      implementationClassName="${callback.implementation}"
       />      
     <!-- now delete the stub endpoint implementation classes in the generated file tree -->
     <!-- as we use the one in the main codebase, and want to eliminate confusion -->
     <delete dir="${soap.server.dir}/org/smartfrog/services/cddlm/api"/>
+    <delete file="${soap.server.dir}/org/cddlm/client/callbacks/CallbackEndpoint.java"/>
     <touch file="${soapapi.touch.file}"/>
   </target>
 
-  <target name="touch-wsdl" depends="init-soap">
+  <target name="touch-wsdl" depends="init-soap"
+      description="force a wsdl rebuild by deleting the marker file" >
     <delete file="${soapapi.touch.file}"/>
   </target>
 
@@ -455,20 +458,11 @@
       closure="yes"/>
     <sf-javac
       classpathref="compile.classpath"
-      srcdir="${src.dir}:${soap.server.dir}"
+      srcdir="${src.dir}:${soap.server.dir}:${client.src.dir}"
       destdir="${build.classes.dir}"
       />
     <copy-useful-files src="${src.dir}" dest="${build.classes.dir}"/>
     <copy-useful-files src="${soap.server.dir}" dest="${build.classes.dir}"/>
-    <depend srcdir="${client.src.dir}"
-      destdir="${build.client.classes.dir}"
-      cache="${build.client.dir}/depends"
-      closure="yes"/>
-    <sf-javac
-      classpathref="client.compile.classpath"
-      srcdir="${client.src.dir}"
-      destdir="${build.client.classes.dir}"
-      />
     <copy-useful-files src="${client.src.dir}" dest="${build.client.classes.dir}"/>
   </target>
 
@@ -607,7 +601,7 @@
     <property name="host" value="localhost"/>
     <property name="port" value="5050"/>
     <property name="url" value="http://${host}:${port}/axis/services/cddlm"/>
-    <property name="url.command" value="-url:${uri}"/>
+    <property name="url.command" value="-url:${url}"/>
     <presetdef name="operation">
       <java
         fork="true"
@@ -657,5 +651,13 @@
       <arg file="${file}"/>
     </operation>
   </target>
+  
+  <target name="demo-listen" depends="demo-init"
+    description="listen for application events; set uri property">
+    <operation classname="${console.package}.Listen">
+      <arg value="${url.command}"/>
+      <arg value="${uri}"/>
+    </operation>
+  </target>  
 
 </project>

@@ -47,10 +47,11 @@ public class NotificationAction extends BaseAction {
      */
     private _lifecycleEventCallbackRequest message;
 
+    public static final int DEFAULT_TIMEOUT = 10*60*1000;
     /**
      * callback timeout
      */
-    private Integer timeout;
+    private Integer timeout=new Integer(DEFAULT_TIMEOUT);
 
     /**
      * sleep time. this is mostly for demos
@@ -123,7 +124,8 @@ public class NotificationAction extends BaseAction {
         if (timeout != null) {
             callback.setTimeout(timeout.intValue());
         }
-        log.info("sending notification to "+url);
+        String path = url.toString();
+        log.info("sending notification to "+path+" # "+message.getIdentifier());
         callback.callback(message);
     }
 

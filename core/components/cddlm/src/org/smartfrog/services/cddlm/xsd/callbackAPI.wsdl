@@ -91,4 +91,12 @@
   <!-- end WSDL definitions-->
   <!-- ============================================================= -->
 
+  <wsdl:service name="CDDLMCallbackService">
+    <wsdl:documentation>
+      This is a sample CDDLM callback service, and is only for testing
+    </wsdl:documentation>
+    <wsdl:port binding="DeploymentCallbackSoapBinding" name="callbacks">
+      <wsdlsoap:address location="http://127.0.0.1:5051/axis/services/callbacks"/>
+    </wsdl:port>
+  </wsdl:service>
 </wsdl:definitions>

@@ -12,7 +12,7 @@
 
   <!-- Services from CDDLMDeploymentService callback service -->
 
-  <service name="cddlm" provider="java:RPC" style="document" use="literal">
+  <service name="callbacks" provider="java:RPC" style="document" use="literal">
     <parameter name="wsdlTargetNamespace" value="http://gridforum.org/cddlm/serviceAPI/callbacks/2004/07/30"/>
     <parameter name="wsdlServiceElement" value="CDDLMLifecycleCallbacks"/>
     <parameter name="wsdlServicePort" value="callbacks"/>
@@ -23,22 +23,6 @@
 
     <wsdlFile>/org/smartfrog/services/cddlm/xsd/callbackAPI.wsdl</wsdlFile>
 
-    <typeMapping
-      xmlns:ns="http://gridforum.org/cddlm/serviceAPI/types/2004/07/30"
-      qname="ns:jsdlType"
-      type="java:org.smartfrog.services.cddlm.generated.api.types.JsdlType"
-      serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
-      deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
-      encodingStyle=""
-      />
-    <typeMapping
-      xmlns:ns="http://gridforum.org/cddlm/serviceAPI/types/2004/07/30"
-      qname="ns:>serverStatusRequest"
-      type="java:org.smartfrog.services.cddlm.generated.api.types._serverStatusRequest"
-      serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
-      deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
-      encodingStyle=""
-      />
     <typeMapping
       xmlns:ns="http://schemas.xmlsoap.org/ws/2003/03/addressing"
       qname="ns:EndpointReferenceType"
@@ -75,14 +59,6 @@
       xmlns:ns="http://gridforum.org/cddlm/serviceAPI/types/2004/07/30"
       qname="ns:>lifecycleEventCallbackRequest"
       type="java:org.smartfrog.services.cddlm.generated.api.types._lifecycleEventCallbackRequest"
-      serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
-      deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
-      encodingStyle=""
-      />
-    <typeMapping
-      xmlns:ns="http://gridforum.org/cddlm/serviceAPI/types/2004/07/30"
-      qname="ns:languageListType"
-      type="java:org.smartfrog.services.cddlm.generated.api.types.LanguageListType"
       serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
       deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
       encodingStyle=""
@@ -137,32 +113,8 @@
       />
     <typeMapping
       xmlns:ns="http://gridforum.org/cddlm/serviceAPI/types/2004/07/30"
-      qname="ns:optionMapType"
-      type="java:org.smartfrog.services.cddlm.generated.api.types.OptionMapType"
-      serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
-      deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
-      encodingStyle=""
-      />
-    <typeMapping
-      xmlns:ns="http://gridforum.org/cddlm/serviceAPI/types/2004/07/30"
       qname="ns:unboundedXMLOtherNamespace"
       type="java:org.smartfrog.services.cddlm.generated.api.types.UnboundedXMLOtherNamespace"
-      serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
-      deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
-      encodingStyle=""
-      />
-    <typeMapping
-      xmlns:ns="http://gridforum.org/cddlm/serviceAPI/types/2004/07/30"
-      qname="ns:remoteDescriptorType"
-      type="java:org.apache.axis.types.URI"
-      serializer="org.apache.axis.encoding.ser.SimpleSerializerFactory"
-      deserializer="org.apache.axis.encoding.ser.SimpleDeserializerFactory"
-      encodingStyle=""
-      />
-    <typeMapping
-      xmlns:ns="http://gridforum.org/cddlm/serviceAPI/types/2004/07/30"
-      qname="ns:deploymentDescriptorType"
-      type="java:org.smartfrog.services.cddlm.generated.api.types.DeploymentDescriptorType"
       serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
       deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
       encodingStyle=""
@@ -185,30 +137,6 @@
       />
     <typeMapping
       xmlns:ns="http://gridforum.org/cddlm/serviceAPI/types/2004/07/30"
-      qname="ns:>languageListType>language"
-      type="java:org.smartfrog.services.cddlm.generated.api.types._languageListType_language"
-      serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
-      deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
-      encodingStyle=""
-      />
-    <typeMapping
-      xmlns:ns="http://gridforum.org/cddlm/serviceAPI/types/2004/07/30"
-      qname="ns:dynamicServerStatusType"
-      type="java:org.smartfrog.services.cddlm.generated.api.types.DynamicServerStatusType"
-      serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
-      deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
-      encodingStyle=""
-      />
-    <typeMapping
-      xmlns:ns="http://gridforum.org/cddlm/serviceAPI/types/2004/07/30"
-      qname="ns:>undeployRequest"
-      type="java:org.smartfrog.services.cddlm.generated.api.types._undeployRequest"
-      serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
-      deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
-      encodingStyle=""
-      />
-    <typeMapping
-      xmlns:ns="http://gridforum.org/cddlm/serviceAPI/types/2004/07/30"
       qname="ns:applicationNameOrReferenceType"
       type="java:org.smartfrog.services.cddlm.generated.api.types.ApplicationNameOrReferenceType"
       serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
@@ -217,32 +145,8 @@
       />
     <typeMapping
       xmlns:ns="http://gridforum.org/cddlm/serviceAPI/types/2004/07/30"
-      qname="ns:>lookupApplicationRequest"
-      type="java:org.smartfrog.services.cddlm.generated.api.types._lookupApplicationRequest"
-      serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
-      deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
-      encodingStyle=""
-      />
-    <typeMapping
-      xmlns:ns="http://gridforum.org/cddlm/serviceAPI/types/2004/07/30"
-      qname="ns:optionType"
-      type="java:org.smartfrog.services.cddlm.generated.api.types.OptionType"
-      serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
-      deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
-      encodingStyle=""
-      />
-    <typeMapping
-      xmlns:ns="http://gridforum.org/cddlm/serviceAPI/types/2004/07/30"
       qname="ns:callbackInformationType"
       type="java:org.smartfrog.services.cddlm.generated.api.types.CallbackInformationType"
-      serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
-      deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
-      encodingStyle=""
-      />
-    <typeMapping
-      xmlns:ns="http://gridforum.org/cddlm/serviceAPI/types/2004/07/30"
-      qname="ns:staticServerStatusType"
-      type="java:org.smartfrog.services.cddlm.generated.api.types.StaticServerStatusType"
       serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
       deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
       encodingStyle=""
@@ -264,30 +168,6 @@
       encodingStyle=""
       />
     <typeMapping
-      xmlns:ns="http://gridforum.org/cddlm/serviceAPI/types/2004/07/30"
-      qname="ns:>deployRequest"
-      type="java:org.smartfrog.services.cddlm.generated.api.types._deployRequest"
-      serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
-      deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
-      encodingStyle=""
-      />
-    <typeMapping
-      xmlns:ns="http://gridforum.org/cddlm/serviceAPI/types/2004/07/30"
-      qname="ns:propertyMapType"
-      type="java:org.smartfrog.services.cddlm.generated.api.types.PropertyMapType"
-      serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
-      deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
-      encodingStyle=""
-      />
-    <typeMapping
-      xmlns:ns="http://gridforum.org/cddlm/serviceAPI/types/2004/07/30"
-      qname="ns:serverStatusType"
-      type="java:org.smartfrog.services.cddlm.generated.api.types.ServerStatusType"
-      serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
-      deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
-      encodingStyle=""
-      />
-    <typeMapping
       xmlns:ns="http://schemas.xmlsoap.org/ws/2003/03/addressing"
       qname="ns:AttributedURI"
       type="java:org.apache.axis.types.URI"
@@ -301,22 +181,6 @@
       type="java:org.smartfrog.services.cddlm.generated.api.types.CallbackEnum"
       serializer="org.apache.axis.encoding.ser.EnumSerializerFactory"
       deserializer="org.apache.axis.encoding.ser.EnumDeserializerFactory"
-      encodingStyle=""
-      />
-    <typeMapping
-      xmlns:ns="http://gridforum.org/cddlm/serviceAPI/types/2004/07/30"
-      qname="ns:serverInformationType"
-      type="java:org.smartfrog.services.cddlm.generated.api.types.ServerInformationType"
-      serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
-      deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
-      encodingStyle=""
-      />
-    <typeMapping
-      xmlns:ns="http://gridforum.org/cddlm/serviceAPI/types/2004/07/30"
-      qname="ns:>deployResponse"
-      type="java:org.smartfrog.services.cddlm.generated.api.types._deployResponse"
-      serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
-      deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
       encodingStyle=""
       />
     <typeMapping
