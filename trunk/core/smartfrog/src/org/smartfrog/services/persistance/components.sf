@@ -31,8 +31,6 @@ For more information: www.smartfrog.org
 
 SFPersist extends Prim {
     sfClass "org.smartfrog.services.persistance.SFPersist";
-    sfExport false;
-
     persistSchema extends Schema {
 
         //this is the axis configuration file for a service
