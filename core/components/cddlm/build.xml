@@ -53,7 +53,7 @@
         value="org/smartfrog/services/cddlm"/>
   
       <property name="deploy.sf" 
-        value="${component.package.path}/cddlm_on_jetty.sf"/>
+        value="${component.package.path}/api/standalone.sf"/>
       <property name="default.ini" location="test/files/default.ini"/>
       <property name="default.sf" location="test/files/default.sf"/>
 
@@ -247,7 +247,8 @@
       <mkdir dir="${soap.client.dir}"/>
       <mkdir dir="${soap.dotnet.dir}"/>
       
-      
+     <sf-tourl property="deploymentAPI.wsdl.url" file="${deploymentAPI.wsdl}"/>
+     <sf-tourl property="callbackAPI.wsdl.url" file="${callbackAPI.wsdl}"/>
     </target>
     
 
@@ -292,7 +293,11 @@
        >
        <srcfiles dir="${src.dir}/${xsd.path}" includes="*.xsd,*.wsdl"/>
      </uptodate>
-       
+     <uptodate property="dotnet.uptodate"
+       targetfile="${soap.dotnet.proxy.class}"
+       >
+       <srcfiles dir="${src.dir}/${xsd.path}" includes="*.xsd,*.wsdl"/>
+     </uptodate>       
    </target>
 
     <!-- =================================================================== -->
@@ -319,7 +324,6 @@
       typemappingversion="1.2"
       implementationClassName="org.smartfrog.services.cddlm.api.DeploymentEndpoint"
       />
-      <sleep seconds="5"/>
     <axis-wsdl2java
       output="${soap.server.dir}"
       serverside="true"
@@ -335,20 +339,22 @@
       debug="false"
       printstacktraceonfailure="false"
       typemappingversion="1.2"
-      implementationClassName="org.smartfrog.services.cddlm.api.DeploymentEndpoint"
+      implementationClassName="org.smartfrog.services.cddlm.api.CallbackEndpoint"
       />
-      
+   <!-- now delete the stub endpoint implementation classes in the generated file tree -->
+   <!-- as we use the one in the main codebase, and want to eliminate confusion -->
+   <delete dir="${soap.server.dir}/org.smartfrog/services/cddlm/api" />  
    <touch file="${soapapi.touch.file}"/>
   </target>
   
   <!-- yes, they really can't spell parseable -->
-   <target name="dotnet-client-wsdl" depends="init-soap"
+   <target name="dotnet-client-wsdl" depends="init-soap,check-soapapi"
+      unless="dotnet.uptodate"
       description="create the client-side C# code" >
-     <wsdltodotnet srcFile="${deploymentAPI.wsdl}"
+   
+     <wsdltodotnet URL="${deploymentAPI.wsdl.url}"
       destFile="${soap.dotnet.proxy.class}"
-      extraoptions="/parsableerrors"
       />
-      <!-- extraoptions="/protocol:SOAP12" -->
    </target>
 
    
