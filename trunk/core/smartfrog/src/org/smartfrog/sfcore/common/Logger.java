@@ -104,6 +104,20 @@ public class Logger implements MessageKeys {
     }
 
     /**
+     * Logs the Exception messages when org.smartfrog.logStackTrace=true.
+     *
+     * @param msg the message in the context of the exception
+     * @param ex a Throwable object to be logged
+     *
+     */
+    public static void logQuietly(String msg, Throwable ex){
+        if (logStackTrace) {
+          log("QUIET- "+msg);
+          log("QUIET- ", ex);
+        }
+    }
+
+    /**
      * Logs the customized message and exception.
      *
      * @param msg the message in the context of the exception
