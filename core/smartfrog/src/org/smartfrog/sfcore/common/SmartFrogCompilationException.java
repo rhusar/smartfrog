@@ -20,6 +20,8 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.common;
 
+import java.io.Serializable;
+
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
 
@@ -28,10 +30,10 @@ import org.smartfrog.sfcore.reference.Reference;
  * during the compilation of smartfrog component's description.
  *
  */
-public class SmartFrogCompilationException extends SmartFrogException {
+public class SmartFrogCompilationException extends SmartFrogException implements Serializable {
 
     /**
-    *  Attribute name in exceptioncontext: The source that was trying to 
+    *  Attribute name in exceptioncontext: The source that was trying to
     *  resolve the reference.
     */
     public static final String SOURCE = "source";
@@ -56,7 +58,7 @@ public class SmartFrogCompilationException extends SmartFrogException {
      * Constructs a SmartFrogCompilationException with message.
      *
      * @param message exception message
-     * @param source an Object: source of this exception 
+     * @param source an Object: source of this exception
      */
     public SmartFrogCompilationException(String message, Object source) {
         super(message);
@@ -76,7 +78,7 @@ public class SmartFrogCompilationException extends SmartFrogException {
      * Constructs a SmartFrogCompilationException with cause.
      *
      * @param cause exception causing this exception
-     * @param source an Object: source of this exception 
+     * @param source an Object: source of this exception
      */
     public SmartFrogCompilationException(Throwable cause, Object source) {
         super(cause);
@@ -90,7 +92,7 @@ public class SmartFrogCompilationException extends SmartFrogException {
      *
      * @param cause exception causing this exception
      * @param sfObject component that encountered exception
-     * @param source an Object: source of this exception 
+     * @param source an Object: source of this exception
      */
     public SmartFrogCompilationException(Throwable cause, Prim sfObject, Object source) {
         super(cause, sfObject);
@@ -102,7 +104,7 @@ public class SmartFrogCompilationException extends SmartFrogException {
      *
      * @param message exception message
      * @param cause exception causing this exception
-     * @param source an Object: source of this exception 
+     * @param source an Object: source of this exception
      */
     public SmartFrogCompilationException(String message, Throwable cause, Object source) {
         super(message, cause);
@@ -125,7 +127,7 @@ public class SmartFrogCompilationException extends SmartFrogException {
      *
      * @param message message
      * @param sfObject component that encountered exception
-     * @param source an Object: source of this exception 
+     * @param source an Object: source of this exception
      */
     public SmartFrogCompilationException(String message, Prim sfObject, Object source) {
         super(message, sfObject);
@@ -139,7 +141,7 @@ public class SmartFrogCompilationException extends SmartFrogException {
      * @param message message
      * @param cause exception causing this exception
      * @param sfObject component that encountered exception
-     * @param source an Object: source of this exception 
+     * @param source an Object: source of this exception
      */
     public SmartFrogCompilationException(String message, Throwable cause,
         Prim sfObject,Object source) {

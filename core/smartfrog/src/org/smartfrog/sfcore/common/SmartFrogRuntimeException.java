@@ -21,6 +21,7 @@ For more information: www.smartfrog.org
 package org.smartfrog.sfcore.common;
 
 import java.rmi.RemoteException;
+import java.io.Serializable;
 
 import org.smartfrog.sfcore.prim.Prim;
 
@@ -29,7 +30,7 @@ import org.smartfrog.sfcore.prim.Prim;
  * while running a SmartFrog component.
  *
  */
-public class SmartFrogRuntimeException extends SmartFrogException {
+public class SmartFrogRuntimeException extends SmartFrogException implements Serializable {
 
     /** Attribute name for reference in exceptioncontext. */
     public static final String REFERENCE = "reference";

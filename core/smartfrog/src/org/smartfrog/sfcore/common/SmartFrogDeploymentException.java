@@ -21,6 +21,8 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.common;
 
+import java.io.Serializable;
+
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
@@ -30,7 +32,7 @@ import org.smartfrog.sfcore.reference.Reference;
  * SmartFrog tree from a description fails.
  *
  */
-public class SmartFrogDeploymentException extends SmartFrogRuntimeException {
+public class SmartFrogDeploymentException extends SmartFrogRuntimeException implements Serializable {
 
     /** String name for the deployed component description. */
     public final static String COMPONENT_DESCRIPTION =

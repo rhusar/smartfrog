@@ -20,6 +20,8 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.common;
 
+import java.io.Serializable;
+
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
 
@@ -29,7 +31,7 @@ import org.smartfrog.sfcore.reference.Reference;
  *
  */
 public class SmartFrogResolutionException extends SmartFrogRuntimeException
-                                                     implements MessageKeys {
+                                                     implements MessageKeys, Serializable {
     /** Attribute name for path in exceptioncontext. */
     public final static String PATH="path";
 
