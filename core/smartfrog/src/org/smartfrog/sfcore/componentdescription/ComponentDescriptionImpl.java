@@ -72,7 +72,9 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
     /** Whether this description is eager or lazy. */
     public boolean eager;
 
-    /** Log is initialized before the sfResolve is added */
+    /** Log: it cannot be initialized before LogImpl is ready
+     * LogImpl uses ComponentDescription.sfResolve to read its initial
+     * configuration */
     private static  LogSF log = null;
 
 
