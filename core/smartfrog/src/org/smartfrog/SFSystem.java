@@ -248,7 +248,7 @@ public class SFSystem implements MessageKeys {
 
     /**
      * Runs a configuration descripor trapping any possible exception
-     * @param cfgDesc Vector of ConfigurationDescriptors
+     * @param cfgDesc ConfigurationDescriptor
      * @see ConfigurationDescriptor
      */
     public static Object runConfigurationDescriptor (ConfigurationDescriptor cfgDesc) {
@@ -344,7 +344,7 @@ public class SFSystem implements MessageKeys {
                  somethingFailed = true;
              }
              Logger.log(" - "+(cfgDesc).statusString()+"\n");
-             Logger.logQuietly(cfgDesc.resultException);
+             //Logger.logQuietly(cfgDesc.resultException);
          }
         // Check for exit flag
         if (opts.exit) {

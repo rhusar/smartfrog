@@ -100,7 +100,7 @@ public class Logger implements MessageKeys {
      * @param ex a Throwable object to be logged
      */
     public static void logQuietly(Throwable ex){
-        if (logStackTrace) log(ex);
+        if (logStackTrace) log("QUIET ",ex);
     }
 
     /**

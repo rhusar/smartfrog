@@ -75,8 +75,7 @@ public class PrimDeployerImpl implements ComponentDeployer, MessageKeys {
      * @throws SmartFrogDeploymentException In case of any error while
      *         deploying the component
      */
-    protected Prim deploy(Prim parent)
-        throws SmartFrogDeploymentException {
+    protected Prim deploy(Prim parent) throws SmartFrogDeploymentException {
         Context cxt = null;
 
         try {
