@@ -102,6 +102,14 @@ For more information: www.smartfrog.org
   <target name="declare-run.classpath" 
     depends="declare-run.classpath-no-tests" /> 
 
+<!-- ========================================================== -->
+  <!-- clean -->
+  <!-- ========================================================== -->
+
+ <target name="clean" depends="init,common.clean" description="clean up build ,dist and releases" >
+   	<property name="releases.dir" value="releases"/>
+    <delete dir="${releases.dir}"  />  
+ </target>  
 
   <!-- ========================================================== -->
 		<!-- dist : create the jar -->
@@ -116,5 +124,6 @@ For more information: www.smartfrog.org
 		  <include name="**/examples/**"/>
 		</fileset>
     </copy>   
+	 <copy tofile="${dist.dir}/build.xml" file="releaseBuild.xml"/>	
 	</target>
 </project>
