@@ -64,30 +64,35 @@ public class FileImpl extends FileUsingComponentImpl implements FileIntf {
      */
     public void bind() throws RemoteException, SmartFrogRuntimeException {
 
-        PlatformHelper platform= PlatformHelper.getLocalPlatform();
-        String filename = sfResolve(varFilename,(String)null,true);
-        filename=platform.convertFilename(filename);
         boolean debugEnabled = log.isDebugEnabled();
-        if(debugEnabled) {
-            log.debug("file="+filename);
-        }
-        String dir= sfResolve(varDir, (String) null, false);
-        File file;
-        if(dir!=null) {
-            dir= platform.convertFilename(dir);
-            if ( debugEnabled ) {
+
+        File parentDir = null;
+        String dir = lookupAbsolutePath(this,
+                varDir,
+                (String) null,
+                (File) null,
+                false,
+                null);
+        if (dir != null) {
+            if (debugEnabled) {
                 log.debug("dir=" + dir);
             }
-            File parent=new File(dir);
-            file=new File(parent,filename);
-        } else {
-            file=new File(filename);
+            parentDir = new File(dir);
         }
+        String filename = lookupAbsolutePath(this,
+                        varFilename,
+                        (String) null,
+                        parentDir,
+                        true,
+                        null);
+
+        File file=new File(parentDir,filename);
         if ( debugEnabled ) {
             log.debug("absolute file=" + file.toString());
         }
         bind(file);
 
+        //now test our state
 
         mustExist =getBool(varMustExist,false,false);
         mustRead = getBool(varMustWrite, false, false);

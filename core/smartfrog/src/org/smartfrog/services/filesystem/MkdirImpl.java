@@ -30,7 +30,7 @@ import java.rmi.RemoteException;
  * created 21-Jun-2004 16:52:40
  */
 
-public class MkdirImpl extends PrimImpl implements Mkdir {
+public class MkdirImpl extends FileUsingComponentImpl implements Mkdir {
     public MkdirImpl() throws RemoteException {
     }
 
@@ -47,12 +47,25 @@ public class MkdirImpl extends PrimImpl implements Mkdir {
 
         String dir;
 
-        dir=FileImpl.lookupAbsolutePath(this,DIR,(String)null,(File)null,true,null);
+        File parentDir=null;
+        String parent;
+        parent= FileImpl.lookupAbsolutePath(this,
+                ATTR_PARENT,
+                (String) null,
+                (File) null,
+                false,
+                null);
+        if (parent!=null) {
+            parentDir=new File(parent);
+        }
+
+        dir=FileImpl.lookupAbsolutePath(this,ATTR_DIR,(String)null,parentDir,true,null);
         File directory=new File(dir);
         directory.mkdirs();
         if(!directory.exists() || !directory.isDirectory()) {
             throw new SmartFrogDeploymentException("Failed to create directory "+dir);
         }
+        bind(directory);
 
     }
 }
