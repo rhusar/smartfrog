@@ -29,7 +29,7 @@ import java.net.*;
 import java.io.*;
 
 /**
- * JUnit test class for test cases related to "jetty" component
+ * JUnit test class for test cases for "arithnet" example
  */
 public class ArithnetTest
     extends SmartFrogTestBase {
