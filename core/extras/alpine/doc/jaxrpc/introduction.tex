@@ -102,13 +102,13 @@ class, a behaviour that superficially resembles Java RMI
 \ref{objections:soap-not-rmi}.
 
 One good architectural feature of JAX-RPC is the \emph{handler chain},
-which consists of an ordered sequence of classes which are configured
-to manage requests and responses. Using the handler chain, it is
-possible to add support for new SOAP headers to existing services, or
-to apply extra diagnostics. The dispatch of operations to Java
-methods, Enterprise Java Bean methods or other destinations is actually implemented by
-specific handlers, making the handler chain the foundation for the
-rest of the system.
+which consists of an ordered sequence of classes which are configured to
+manage requests and responses. Using the handler chain, it is possible
+to add support for new SOAP headers to existing services, or to apply
+extra diagnostics. The dispatch of operations to Java methods,
+Enterprise Java Bean methods or other destinations is actually
+implemented by specific handlers, making the handler chain the
+foundation for the rest of the system.
 
 JAX-RPC is widely implemented, both by open source projects (for
 example Apache Axis \cite{apache:axis}), and by commercial vendors

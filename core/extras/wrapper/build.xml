@@ -59,6 +59,7 @@
 
   <target name="all" depends="dist,fetch-libraries"/>
 
+  <!-- run the batch file to start the console -->
   <target name="run-dos" depends="all">
     <exec dir="bin" executable="cmd.exe" os="windows"
       failonerror="true">
@@ -66,14 +67,15 @@
     </exec>
   </target>
 
-  <target name="run-unix" depends="all">
+  <!-- run the unix service wrapper on Linux -->
+  <target name="run-linux" depends="all">
     <exec dir="bin" executable="sh" os="Linux" failonerror="true">
       <arg value="sfservice"/>
       <arg value="console"/>
     </exec>
   </target>
 
-  <target name="run" depends="run-dos,run-unix"
+  <target name="run" depends="run-dos,run-linux"
     description="build and run the daemon"
     />
 
