@@ -21,13 +21,13 @@ package org.smartfrog.services.cddlm;
 
 import org.apache.axis.AxisFault;
 import org.smartfrog.SFSystem;
+import org.smartfrog.services.axis.SmartfrogHostedEndpoint;
 import org.smartfrog.sfcore.common.ConfigurationDescriptor;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.processcompound.ProcessCompound;
-import org.smartfrog.sfcore.processcompound.SFProcess;
 import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.logging.LogFactory;
-import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.processcompound.ProcessCompound;
+import org.smartfrog.sfcore.processcompound.SFProcess;
 
 import java.rmi.RemoteException;
 

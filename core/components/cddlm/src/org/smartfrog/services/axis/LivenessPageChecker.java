@@ -11,9 +11,8 @@
  * write to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
  * Boston, MA  02111-1307  USA For more information: www.smartfrog.org
  */
-package org.cddlm.components;
+package org.smartfrog.services.axis;
 
-import org.apache.commons.logging.Log;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.prim.Prim;
@@ -26,8 +25,10 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.rmi.RemoteException;
-import java.util.logging.Logger;
+import java.util.Iterator;
+import java.util.Vector;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -89,6 +90,8 @@ public class LivenessPageChecker implements LivenessPage {
      * flag to set if you want to fetch the remote error message
      */
     protected boolean fetchErrorText = true;
+
+    protected String queries=null;
 
     /**
      * our log
@@ -175,6 +178,9 @@ public class LivenessPageChecker implements LivenessPage {
      */
     protected void makeURL() throws SmartFrogDeploymentException {
         String target = protocol + "://" + host + ':' + port + '/' + page;
+        if(queries!=null) {
+            target+=queries;
+        }
         bindToURL(target);
     }
 
@@ -507,5 +513,42 @@ public class LivenessPageChecker implements LivenessPage {
      */
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    /**
+     * extract a query string from the parameters
+     * @param params
+     */
+    public void buildQueryString(Vector params) {
+
+        StringBuffer query=null;
+        if(params!=null) {
+            Iterator it=params.iterator();
+            while ( it.hasNext() ) {
+                if ( query != null ) {
+                    query.append('&');
+                } else {
+                    query = new StringBuffer();
+                }
+                Object o = (Object) it.next();
+                if(o instanceof Vector && ((Vector)o).size()>1) {
+                    Vector nested=(Vector) o;
+                    String name=nested.elementAt(0).toString();
+                    String value=nested.elementAt(1).toString();
+                    query.append(name);
+                    query.append('=');
+                    query.append(value);
+                } else {
+                    String term=o.toString();
+                    query.append(term);
+                }
+            }
+        }
+        if(query==null) {
+            queries=null;
+        } else {
+            queries="?"+query;
+        }
+
     }
 }

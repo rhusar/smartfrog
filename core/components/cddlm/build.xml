@@ -25,14 +25,6 @@
 
     <description>
      Build file for CDDLM.
-     Important: set ${axis.lib.dir} to point to the directory of axis that contains
-     the following files
-      axis.jar
-      wsdl4j.jar
-      commons-discovery.jar
-      commons-logging.jar
-      log4j.jar (optional)
-     This is usually ws-axis/java/build/lib in a source distribution.
      
      After deploying, get the WSDL From
      http://localhost:5050/axis/services/cddlm?wsdl
@@ -62,13 +54,18 @@
         <property name="default.ini" location="test/files/default.ini"/>
         <property name="default.sf" location="test/files/default.sf"/>
 
+        <property name="lib.dir" location="lib"/>
+        <property name="generated.dir" location="build/generated"/>
 
-
-        <!-- the compile time path includes axis-->
+        <!-- the compile time path includes everything in the lib directory. 
+          that must include jdom and axis-->
         <path id="compile.classpath">
             <path refid="smartfrog.classpath"/>
             <fileset dir="${axis.lib.dir}">
                 <include name="**/*.jar"/>
+            </fileset>
+            <fileset dir="${lib.dir}">
+              <include name="**/*.jar"/>
             </fileset>
         </path>
 
@@ -149,7 +146,6 @@
     <target name="parse-tests" depends="init,dist"
         description="parse the test descriptor">
 
-
         <sf-parse quiet="true">
             <classpath path="${target.jar}"/>
             <source dir="${build.classes.dir}"
@@ -190,6 +186,7 @@
     <target name="init-deploy-properties" depends="init">
         <property name="deploy.host" value="localhost"/>
         <property name="application.name" value="cddlm"/>
+        <property name="axis.port" value="5050"/>
     </target>
 
     <!-- ========================================================== -->
@@ -197,8 +194,6 @@
     <!-- ========================================================== -->
     <target name="deploy" depends="parse,dist,init-deploy-properties,undeploy"
         description="deploy">
-        <property name="deploy.host" value="localhost"/>
-        <property name="application.name" value="cddlm"/>
         <sf-tourl property="target.jar.url" file="${target.jar}">
             <fileset dir="${axis.lib.dir}">
                 <include name="**/*.jar"/>
@@ -209,12 +204,14 @@
             logStackTraces="true"
             host="${deploy.host}"
             >
+            <!-- <JVMProperty key="axis.port" value="${axis.port}" /> -->
             <codebase url="${target.jar.url}"/>
             <application name="${application.name}">
 #include "org/smartfrog/services/cddlm/cddlm.sf"
   sfCodeBase "${target.jar.url}";
 
 sfConfig extends CddlmSystem {
+  port ${axis.port};
 }            
             </application>
         </sf-deploy>
@@ -232,9 +229,23 @@ sfConfig extends CddlmSystem {
     <!-- ========================================================== -->
     <!-- -->
     <!-- ========================================================== -->
-    <target name="create-WSDL" depends="dist">
-        <axis-java2wsdl>
-        </axis-java2wsdl>
+    <target name="wsdl" depends="init,init-deploy-properties" 
+      description="fetch the WSDL From a deployed service and create test+client classes">
+        <mkdir dir="${generated.dir}"/>
+        <axis-wsdl2java 
+          url="http://localhost:${axis.port}/axis/services/cddlm?wsdl"
+          testcase="true"
+          typemappingversion="1.2"
+          failonnetworkerrors="true"
+          output="${generated.dir}"
+          />
+        <axis-wsdl2java 
+          url="http://localhost:${axis.port}/axis/services/AdminService?wsdl"
+          testcase="false"
+          typemappingversion="1.2"
+          failonnetworkerrors="true"
+          output="${generated.dir}"
+          />          
     </target>
 
 

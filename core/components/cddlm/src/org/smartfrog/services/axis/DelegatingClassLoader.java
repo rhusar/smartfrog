@@ -17,7 +17,7 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.cddlm;
+package org.smartfrog.services.axis;
 
 import java.io.IOException;
 import java.io.InputStream;

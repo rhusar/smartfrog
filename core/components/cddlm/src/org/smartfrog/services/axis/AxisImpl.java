@@ -17,9 +17,10 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.cddlm;
+package org.smartfrog.services.axis;
 
 import org.apache.axis.AxisEngine;
+import org.apache.axis.ConfigurationException;
 import org.apache.axis.EngineConfiguration;
 import org.apache.axis.WSDDEngineConfiguration;
 import org.apache.axis.components.threadpool.ThreadPool;
@@ -27,15 +28,18 @@ import org.apache.axis.deployment.wsdd.WSDDDeployment;
 import org.apache.axis.deployment.wsdd.WSDDDocument;
 import org.apache.axis.transport.http.SimpleAxisServer;
 import org.apache.axis.utils.XMLUtils;
+import org.jdom.JDOMException;
+import org.jdom.output.DOMOutputter;
+import org.smartfrog.services.cddlm.DeploymentEndpoint;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
+import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.security.SFClassLoader;
-import org.smartfrog.sfcore.logging.Log;
 import org.w3c.dom.Document;
 
 import java.io.IOException;
@@ -88,6 +92,7 @@ public class AxisImpl extends PrimImpl implements Axis, Prim {
      * max no. of sessions
      */
     private int sessions = SimpleAxisServer.MAX_SESSIONS_DEFAULT;
+    protected static final String DEFAULT_AXIS_SERVICE_PATH = "/axis/services/";
 
 
     /**
@@ -117,8 +122,8 @@ public class AxisImpl extends PrimImpl implements Axis, Prim {
     }
 
     /**
-     * Can be called to start components. Subclasses should override to provide
-     * functionality Do not block in this call, but spawn off any main loops!
+     * Start deployment. we deploy before calling our parent, because
+     * we want to
      *
      * @throws org.smartfrog.sfcore.common.SmartFrogException
      *                                  failure while starting
@@ -131,28 +136,32 @@ public class AxisImpl extends PrimImpl implements Axis, Prim {
         assert axis == null;
         //get stuff from the configuration
         port = sfResolve(Axis.PORT, 8080, false);
-        wsddResource = sfResolve(Axis.WSDD_RESOURCE, "", true);
         threads = sfResolve(Axis.THREADS, threads, false);
         sessions = sfResolve(Axis.SESSIONS, sessions, false);
-        log.info("Running Axis on port " + port + " with WSDD " + wsddResource);
+        log.info("Running Axis on port " + port);
         log.info(" max threads=" + threads + " sessions=" + sessions);
         axis = new SimpleAxisServer(threads, sessions);
-        registerResource(wsddResource);
+        String servicePath=DEFAULT_AXIS_SERVICE_PATH;
+        sfReplaceAttribute(Axis.SERVICE_PATH,servicePath);
+
         try {
             //register the resouce
+            wsddResource = sfResolve(Axis.WSDD_RESOURCE, "", false);
+            if(wsddResource!=null) {
+                log.info("registering WSDD " + wsddResource);
+                registerResource(wsddResource);
+            }
 
-            //if we registered, run the service
+            //run the service
             ServerSocket ss = null;
             ss = new ServerSocket(port);
             axis.setServerSocket(ss);
             axis.start();
-        } catch (SmartFrogException rethrow) {
-            stopAxis();
-            throw rethrow;
+
         } catch (Exception e) {
             stopAxis();
             //io trouble binding, axis itself being trouble
-            throw new SmartFrogLifecycleException("Could not start axis", e);
+            throw SmartFrogLifecycleException.forward(e);
         }
     }
 
@@ -227,13 +236,7 @@ public class AxisImpl extends PrimImpl implements Axis, Prim {
         try {
             Document doc = XMLUtils.newDocument(instream);
             WSDDDocument wsddDoc = new WSDDDocument(doc);
-            WSDDDeployment deployment;
-            deployment = getDeployment();
-            if (deployment != null) {
-                wsddDoc.deploy(deployment);
-            } else {
-                throw new SmartFrogException("Failed to get Axis deployment system");
-            }
+            deployOrUndeploy(wsddDoc);
         } catch (Exception e) {
             throw SmartFrogException.forward(e);
         } finally {
@@ -242,6 +245,25 @@ public class AxisImpl extends PrimImpl implements Axis, Prim {
             } catch (IOException ignored) {
                 ignore(ignored);
             }
+        }
+    }
+
+    /**
+     * deploy or undeploy a WSDD doc to a local JVM
+     * @param wsddDoc
+     * @throws SmartFrogException if anything went wrong
+     */
+    private void deployOrUndeploy(WSDDDocument wsddDoc) throws ConfigurationException, SmartFrogException {
+        try {
+            WSDDDeployment deployment;
+            deployment = getDeployment();
+            if (deployment != null) {
+                wsddDoc.deploy(deployment);
+            } else {
+                throw new SmartFrogException("Failed to get Axis deployment system");
+            }
+        } catch (ConfigurationException e) {
+            throw SmartFrogException.forward(e);
         }
     }
 
@@ -259,7 +281,7 @@ public class AxisImpl extends PrimImpl implements Axis, Prim {
     /**
      * register a resource
      *
-     * @param resourcename
+     * @param resourcename name of resource on the classpath
      * @throws SmartFrogException
      */
     public void registerResource(String resourcename)
@@ -274,4 +296,53 @@ public class AxisImpl extends PrimImpl implements Axis, Prim {
         registerStream(in);
     }
 
+    /**
+     * parse the string, which must contain a valid XML document,
+     * and then register it, an action which can cover deploy/and or undeploy,
+     * depending on the payload.
+     * Because the JDOM classes serialize, this is a remotable interface
+     * @param wsdd
+     */
+    public void registerWSDDDocument(org.jdom.Document wsdd) throws SmartFrogException {
+        DOMOutputter outputter=new DOMOutputter();
+        try {
+            Document DomDoc=outputter.output(wsdd);
+            WSDDDocument wsddDoc=new WSDDDocument(DomDoc);
+            deployOrUndeploy(wsddDoc);
+        } catch (JDOMException e) {
+            throw SmartFrogException.forward(e);
+        } catch (ConfigurationException e) {
+            throw SmartFrogException.forward(e);
+        }
+    }
+
+    /**
+     * this is an override point for subcomponents. The usual aim is to check the
+     * type of parts being deployed, and so be fussier than a classic Compound instance.
+     * If an exception is thrown in this method, it terminates deployment of the parent, so do
+     * not use lightly. To skip deployment of a component, just return false.
+     * <p/>
+     * For example, to not deploy any children from an enumeration of nested components, return false from
+     * all queries.
+     * <p/>
+     * The base implementation of this method always returns true: deploy all components
+     *
+     * @param key       the attribute name of the component
+     * @param component what is to deploy
+     * @return true if this component is to be deployed, false if not, an exception for noisy failure
+     * @throws org.smartfrog.sfcore.common.SmartFrogDeploymentException
+     *
+     * @throws java.rmi.RemoteException
+     */
+    /*
+    protected boolean sfTestForDeployment(Object key, ComponentDescription component)
+            throws SmartFrogDeploymentException, RemoteException {
+        if(component instanceof AxisService) {
+            return true;
+        } else {
+            log.warn("Ignoring child component "+key);
+            return false;
+        }
+    }
+    */
 }

@@ -17,39 +17,27 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.cddlm;
+package org.smartfrog.services.axis;
 
 import java.rmi.Remote;
 
 /**
- * This is the remotable interface.
- * @author steve loughran
- *         created 02-Mar-2004 17:28:23
+ * created 28-Apr-2004 17:41:06
  */
 
 
-public interface Axis extends Remote {
+public interface LivenessPage extends Remote {
 
-    /**
-     * port string
-     */
-    public final static String PORT="port";
-
-    /**
-     * name of wsdd file
-     */
-
-    public final static String WSDD_RESOURCE="wsddDescriptor";
-
-    /**
-     * maximum number of threads
-     */
-    public final static String THREADS="threads";
-
-    /**
-     * maximum number of sessions
-     */
-    public final static String SESSIONS="sessions";
-
-    public final static String LIVENESS_PAGE="livenessPage";
+    String URL = "url";
+    String HOST = "host";
+    String PORT = "port";
+    String PROTOCOL = "protocol";
+    String PAGE = "page";
+    String FOLLOW_REDIRECTS = "followRedirects";
+    String FETCH_ERROR_TEXT = "fetchErrorText";
+    String MINIMUM_RESPONSE_CODE = "minimumResponseCode";
+    String MAXIMUM_RESPONSE_CODE = "maximumResponseCode";
+    String CHECK_FREQUENCY = "checkFrequency";
+    String ENABLED = "enabled";
+    String QUERIES = "queries";
 }
