@@ -23,6 +23,7 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.utils.ComponentHelper;
+import org.smartfrog.sfcore.logging.Log;
 
 import java.rmi.RemoteException;
 import java.util.logging.Logger;
@@ -111,7 +112,7 @@ public class LivenessPageComponent extends PrimImpl implements LivenessPage {
     /**
      * a log
      */
-    Logger log;
+    Log log;
 
     /**
      * Liveness call in to check if this component is still alive.
