@@ -20,12 +20,21 @@
 package org.smartfrog.services.junit;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogInitException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.security.SFClassLoader;
 
 import java.rmi.RemoteException;
 import java.util.List;
+import java.util.LinkedList;
+import java.util.Vector;
+import java.util.Iterator;
+import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.regex.Pattern;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.lang.reflect.Method;
@@ -38,18 +47,18 @@ import junit.framework.AssertionFailedError;
 
 
 /**
- * Implementation of the test suite component.
+ * Implementation of the Junit test suite component.
  * This is where tests are actually run; we bring up Junit internally and run it here
  * created 14-May-2004 15:14:23
  */
 
-public class TestSuiteComponent extends PrimImpl implements TestSuite, junit.framework.TestListener {
+public class TestSuiteComponent extends PrimImpl implements JUnitTestSuite, junit.framework.TestListener {
 
     private Logger log;
 
     private ComponentHelper helper;
 
-    private String testClass;
+    private List classes;
 
     private boolean ifValue;
 
@@ -57,28 +66,32 @@ public class TestSuiteComponent extends PrimImpl implements TestSuite, junit.fra
 
     private boolean subPackages;
 
-    private List excludes;
+    private String packageValue;
 
-    RunnerConfiguration configuration;
+    private List excludesList;
+
+    private HashMap excludesMap;
+
+    private RunnerConfiguration configuration;
 
     private int errors = 0;
     private int failures = 0;
     private int testsRun = 0;
 
 
+    /**
+     * test class list we build up
+     */
+    private HashMap testClasses;
+    private String regexp;
+    private Pattern pattern;
 
     public TestSuiteComponent() throws RemoteException {
         helper = new ComponentHelper(this);
         log = helper.getLogger();
     }
 
-    public String getTestClass() throws RemoteException {
-        return testClass;
-    }
 
-    public void setTestClass(String testClass) throws RemoteException {
-        this.testClass = testClass;
-    }
 
     public boolean getIf() throws RemoteException {
         return ifValue;
@@ -104,14 +117,6 @@ public class TestSuiteComponent extends PrimImpl implements TestSuite, junit.fra
         this.subPackages = subPackages;
     }
 
-    public List getExcludes() throws RemoteException {
-        return excludes;
-    }
-
-    public void setExcludes(List excludes) throws RemoteException {
-        this.excludes = excludes;
-    }
-
     /**
      * bind to the configuration. A null parameter means 'stop binding'
      *
@@ -121,6 +126,7 @@ public class TestSuiteComponent extends PrimImpl implements TestSuite, junit.fra
     public void bind(RunnerConfiguration configuration) throws RemoteException {
         this.configuration = configuration;
     }
+
 
     /**
      * Can be called to start components. Subclasses should override to provide
@@ -132,12 +138,100 @@ public class TestSuiteComponent extends PrimImpl implements TestSuite, junit.fra
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
+        readConfiguration();
+        runTests();
     }
 
+    protected void readConfiguration() throws SmartFrogException, RemoteException {
+        ifValue=sfResolve(ATTRIBUTE_IF,ifValue,false);
+        unlessValue=sfResolve(ATTRIBUTE_UNLESS,unlessValue,false);
+        subPackages=sfResolve(ATTR_SUBPACKAGES,subPackages,false);
+        classes = flattenStringList((List)sfResolve(ATTR_CLASSES,classes,false),ATTR_CLASSES);
+        packageValue = sfResolve(ATTR_PACKAGE,packageValue,false);
+        regexp = sfResolve(ATTR_PATTERN,regexp,false);
+
+        processExclusions();
+        buildClassList();
+    }
+
+    protected void buildClassList() {
+        testClasses = new HashMap();
+        Iterator it=classes.iterator();
+        while (it.hasNext()) {
+            String testclass = (String) it.next();
+            maybeAddTest(testclass);
+        }
+
+        //now recurse through the packages
+        pattern=Pattern.compile(regexp+"\\.class");
+        //todo
+
+    }
+
+    /**
+     * add a test to the list if it is not there or excludes
+     * @param classname
+     */
+    private void maybeAddTest(String classname) {
+        if(!isExcluded(classname)
+            && testClasses.get(classname)==null) {
+            log.fine("adding test "+classname);
+            testClasses.put(classname,classname);
+        }
+    }
+
+    /**
+     * test for exclusion
+     * @param classname
+     * @return
+     */
+    private boolean isExcluded(String classname) {
+        return excludesMap.get(classname)!=null;
+    }
+
+    /**
+     * turns {@link excludesList} into a flattened hashmap of all entries.
+     * Creates and updates {@link #excludesMap}
+     * make sure the exclusion list of the right type
+     * @throws SmartFrogInitException if something is not a string or a list of strings
+     */
+    private void processExclusions() throws SmartFrogInitException, SmartFrogResolutionException, RemoteException {
+        excludesMap=new HashMap(excludesList.size());
+        final List list = flattenStringList((List) sfResolve(ATTR_EXCLUDES,(List)null,false), ATTR_EXCLUDES);
+        Iterator index=list.iterator();
+        while (index.hasNext()) {
+            Object element = index.next();
+            excludesMap.put(element,element);
+        }
+    }
+
+    /**
+     * flatten a string list, validating type as we go. recurses as much as we need to.
+     * At its most efficient if no flattening is needed.
+     * @param src
+     * @param name
+     * @return
+     * @throws SmartFrogInitException
+     */
+    private List flattenStringList(final List src,String name) throws SmartFrogInitException {
+        List dest=new ArrayList(src.size());
+        Iterator index = src.iterator();
+        while (index.hasNext()) {
+            Object element = (Object) index.next();
+            if (element instanceof List) {
+                dest.addAll(flattenStringList((List)element,name));
+            } else if (!(element instanceof String)) {
+                throw new SmartFrogInitException("An element in "
+                        + name + " is not string: " + element.toString());
+            }
+            dest.add(element);
+        }
+        return dest;
+    }
 
     /**
      * run the test
-     *
+     * bail out if we were interrupted.
      * @return true iff all tests passed
      * @throws java.rmi.RemoteException
      */
@@ -146,11 +240,39 @@ public class TestSuiteComponent extends PrimImpl implements TestSuite, junit.fra
             throw new SmartFrogException("TestSuite has not been configured yet");
         }
 
-        return false;
+        if(!getIf() || getUnless()) {
+            log.fine("Skipping test as conditions preclude it");
+            return true;
+        }
+
+        boolean failed=false;
+        Iterator it= testClasses.keySet().iterator();
+        while (it.hasNext()) {
+            String classname = (String) it.next();
+            try {
+                testSingleClass(classname);
+            } catch (ClassNotFoundException e) {
+                throw SmartFrogException.forward(e);
+            } catch (IllegalAccessException e) {
+                throw SmartFrogException.forward(e);
+            } catch (InvocationTargetException e) {
+                throw SmartFrogException.forward(e);
+            }
+            if(Thread.currentThread().isInterrupted()) {
+                log.fine("Interrupted test thread");
+                return false;
+            }
+            failed = failures > 0 || errors > 0;
+            if(failed && !configuration.getKeepGoing()) {
+                return false;
+            }
+        }
+        return !failed;
     }
 
+
     /**
-     * test a single class 
+     * test a single class
      * @param classname
      * @throws ClassNotFoundException
      * @throws IllegalAccessException
@@ -158,13 +280,13 @@ public class TestSuiteComponent extends PrimImpl implements TestSuite, junit.fra
      */
     void testSingleClass(String classname) throws ClassNotFoundException, IllegalAccessException,
             InvocationTargetException {
+        log.fine("testing "+classname);
         Test tests;
         Class clazz=loadTestClass(classname);
         tests=extractTest(clazz);
         TestResult result=new TestResult();
         result.addListener(this);
         tests.run(result);
-
     }
 
 

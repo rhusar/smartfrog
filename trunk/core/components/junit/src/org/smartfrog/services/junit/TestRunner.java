@@ -19,6 +19,8 @@
  */
 package org.smartfrog.services.junit;
 
+import org.smartfrog.sfcore.common.SmartFrogException;
+
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
@@ -32,28 +34,44 @@ public interface TestRunner extends Remote {
     /**
      * name of the fork attribute
      */
-    String ATTRIBUTE_FORK = "fork";
+    String ATTR_FORK = "fork";
     /**
      * name of the listener
      */
-    String ATTRIBUTE_LISTENER = "listener";
+    String ATTR_LISTENER = "listener";
 
     /**
      * name of the keepgoing attr
      */
-    String ATTRIBUTE_KEEPGOING = "keepgoing";
+    String ATTR_KEEPGOING = "keepgoing";
+
+    /**
+     * should deploy fail if there is an error?
+     */
+    String ATTR_FAILONERROR = "failOnError";
+
+    /**
+     * read only -after start
+     */
+    String ATTR_ERRORS  = "errors";
+
+    /**
+     * read only -after start
+     */
+    String ATTR_FAILURES = "failures";
+
+    String ATTR_THREAD_PRIORITY="threadPriority";
+
 
     TestListener getListener() throws RemoteException;
 
     void setListener(TestListener listener) throws RemoteException;
 
-    boolean getKeepGoing() throws RemoteException;
+    /**
+     * run the test
+     *
+     * @throws RemoteException
+     */
+    boolean runTests() throws RemoteException, SmartFrogException;
 
-    void setKeepGoing(boolean keepGoing) throws RemoteException;
-
-    boolean getFork() throws RemoteException;
-
-    void setFork(boolean fork) throws RemoteException;
-
-    
 }

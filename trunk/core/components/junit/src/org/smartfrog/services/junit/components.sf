@@ -32,7 +32,7 @@ For more information: www.smartfrog.org
 
 
 /**
- * the schema for assertions
+ * the schema for tests
  if: boolean
  conditionally execute the test only when if=true
  unless: boolean
@@ -45,27 +45,39 @@ For more information: www.smartfrog.org
  list of test cases classes not to execute.
 
  */
+
 TestSuiteSchema extends Schema {
-    class extends OptionalString;
     if extends OptionalBoolean;
     unless extends OptionalBoolean;
+}
+
+JUnitTestSuiteSchema extends Schema {
+    classes extends OptionalVector;
     subpackages extends OptionalBoolean;
     package extends String;
-    excludes extends OptionalList;
+    excludes extends OptionalVector;
+    pattern extends OptionalString;
 }
 
 /**
- * test suites are purely informative; their aim in life is to
- * store configuration information for the interest of the container.
- * Actually, the implementation may choose to host the execution code in the test suite, but
- * that is an implementation detail.
+ * test suites run the tests; different frameworks can have different suites
  */
 TestSuite extends Prim {
     testSuiteSchema extends TestSuiteSchema;
-    sfClass "org.smartfrog.services.junit.TestSuiteComponent";
     if true;
     unless false;
+}
+
+
+/**
+ * This is the JUnit test suite; it runs the junit tests in all classes that are in the
+ * package tree with the matching pattern, and/or the named class
+ */
+JUnitTestSuite extends TestSuite {
+    junitTestSuiteSchema extends JUnitTestSuiteSchema;
+    sfClass "org.smartfrog.services.junit.TestSuiteComponent";
     subpackages true;
+    pattern "*Test.class";
 }
 
 /**
@@ -91,6 +103,8 @@ TestRunnerSchema extends Schema {
     listener extends CD;
     keepGoing extends OptionalBoolean;
     fork extends OptionalBoolean;
+    failOnError extends OptionalBoolean;
+    threadPriority extends Integer;
 }
 
 /**
@@ -100,6 +114,8 @@ TestRunner extends Compound {
     sfClass "org.smartfrog.services.junit.TestRunnerComponent";
     testRunnerSchema extends TestRunnerSchema;
     listener extends ConsoleListener ;
+    failOnError true;
+
 }
 
 

@@ -19,36 +19,18 @@
  */
 package org.smartfrog.services.junit;
 
-import org.smartfrog.sfcore.common.SmartFrogException;
-
-import java.rmi.Remote;
-import java.rmi.RemoteException;
-import java.util.List;
-
-
 /**
- * A test suite is anything that is testable
- * created 15-Apr-2004 11:51:51
+ * This is the junit specific test suite interface
+ * created 20-May-2004 11:08:18
  */
 
 
-public interface TestSuite extends Remote {
-
-    public static final String ATTRIBUTE_IF = "if";
-    public static final String ATTRIBUTE_UNLESS = "unless";
+public interface JUnitTestSuite extends TestSuite {
 
 
-    /**
-     * bind to the configuration. A null parameter means 'stop binding'
-     * @param configuration
-     * @throws RemoteException
-     */
-    void bind(RunnerConfiguration configuration) throws RemoteException;
-
-    /**
-     * run the test
-     * @throws RemoteException
-     */
-    boolean runTests() throws RemoteException, SmartFrogException;
-
+    static final String ATTR_CLASSES = "classes";
+    static final String ATTR_SUBPACKAGES = "subpackages";
+    static final String ATTR_PACKAGE = "package";
+    static final String ATTR_EXCLUDES = "excludes";
+    static final String ATTR_PATTERN = "pattern";
 }
