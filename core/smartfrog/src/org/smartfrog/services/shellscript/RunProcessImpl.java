@@ -69,6 +69,19 @@ public class RunProcessImpl  extends Thread implements RunProcess {
       state = newState;
     }
 
+    public synchronized void waitForReady(long time){
+      while (!ready()){
+        try {
+          wait(time);
+        } catch (InterruptedException ex) {
+        }
+        if (time==0) break;
+        if (sfLog.isDebugEnabled()){
+          sfLog.debug("WaitForReady");
+        }
+      }
+    }
+
     private String stateToString( int state )
     {
         String s = null;
@@ -146,7 +159,8 @@ public class RunProcessImpl  extends Thread implements RunProcess {
         try {
             synchronized (this) {
                 if (sfLog.isDebugEnabled()){
-                    sfLog.trace("Cmd: "+ cmd.getCmdArray()+", "+ cmd.getEnvp()+", "+cmd.getFile());
+                    sfLog.debug("Cmd: "+ cmd.getCmdArray()+", "+ cmd.getEnvp()+", "+cmd.getFile());
+                    sfLog.debug(cmd.toString());
                 }
                 process = runtime.exec(cmd.getCmdArray(), cmd.getEnvp(),
                                        cmd.getFile());
@@ -172,16 +186,14 @@ public class RunProcessImpl  extends Thread implements RunProcess {
             // nothing else to do anyway but tidy up.
             if (process!=null) {
                 setState(STATE_PROCESSING);
+                this.notifyAll();
                 exitValue = process.waitFor();
-                if (sfLog.isInfoEnabled()){
-                  sfLog.info("exit = " + exitValue);
-                }
             } else {
+                this.notifyAll();
                 if (sfLog.isWarnEnabled()){
                       sfLog.warn("process null");
                 }
             }
-            this.notify();
           } //synchronized
 
         } catch (Throwable t) {
@@ -189,12 +201,6 @@ public class RunProcessImpl  extends Thread implements RunProcess {
             sfLog.error("failed to complete execution", t);
           }
         }
-
-        // Transitioning to INACTIVE here may result in a situation where the FP is
-        // still tidying up when a startApplication() call is received.  Since a new
-        // process is created this should not cause any particular problems but there
-        // may be an unexpected ordering of events, e.g. applicationStarted followed
-        // by an applicationStopped from a previous FP run.
 
         int endState = state;
 
@@ -214,10 +220,12 @@ public class RunProcessImpl  extends Thread implements RunProcess {
                     process = null;
                 }
 
-                // If the packet completed normally then now that we have tidied up after
-                // ourselves we can send the packetCompleted event.
+                // If the exec completed normally then now that we have tidied up.
                 if (endState==STATE_PROCESSING&&exitValue==0) {
                     //Done!
+                    if (sfLog.isDebugEnabled()){
+                        sfLog.debug("Succesful complete!");
+                    }
                 } else {
                   // Something went wrong,
                   String message = null;
@@ -234,7 +242,6 @@ public class RunProcessImpl  extends Thread implements RunProcess {
                     sfLog.warn(message);
                   }
                 }
-
                 // Regardless of what happens, make sure to indicate that the application
                 // has stopped.
             } catch (Throwable t) {
@@ -242,6 +249,9 @@ public class RunProcessImpl  extends Thread implements RunProcess {
                 sfLog.error("failed to release resources", t);
               }
             }
+        }
+        if (sfLog.isInfoEnabled()){
+            sfLog.info("exit code = " + exitValue);
         }
     }
 
@@ -275,10 +285,8 @@ public class RunProcessImpl  extends Thread implements RunProcess {
         waitForFilters();
         stdoutFilter = null;
         stderrFilter = null;
-        if (sfLog.isTraceEnabled()) {
-          sfLog.trace("Application log stopped @ "
-                     + dateFormatter.format(new Date()) +
-                     " -------------------------------------------------");
+        if (sfLog.isDebugEnabled()) {
+          sfLog.debug("Application log stopped");// @ "+ dateFormatter.format(new Date()));
         }
     }
 
@@ -320,8 +328,8 @@ public class RunProcessImpl  extends Thread implements RunProcess {
           bothFinished = true;
       }
 
-      if (sfLog.isTraceEnabled()) {
-        sfLog.trace("filters stopped");
+      if (sfLog.isDebugEnabled()) {
+        sfLog.debug("filters stopped");
       }
 
     }
@@ -342,21 +350,21 @@ public class RunProcessImpl  extends Thread implements RunProcess {
         // If the process has already been created then kill it.
         if (!killRequested) {
           if (sfLog.isTraceEnabled()) {
-            sfLog.trace("kill" + ID + " -- terminating process");
+            sfLog.trace("kill" + " -- terminating process");
           }
           killRequested = true;
           process.destroy();
 
           try {
             if (sfLog.isTraceEnabled()) {
-              sfLog.trace("kill" + ID + " -- waiting for exit");
+              sfLog.trace("kill" + " -- waiting for exit");
             }
             process.waitFor();
           } catch (InterruptedException e) {
           }
 
           if (sfLog.isDebugEnabled()) {
-            sfLog.debug("kill" + ID+ " -- exit = " + process.exitValue());
+            sfLog.debug("kill"+ " -- exit = " + process.exitValue());
           }
           process = null;
           try {
@@ -386,7 +394,7 @@ public class RunProcessImpl  extends Thread implements RunProcess {
            if (processDos != null) {
              try {
                if (sfLog.isDebugEnabled()) {
-                 sfLog.debug("Executing: " + cmd);
+                 sfLog.debug("Executing IN command: " + command);
                }
                processDos.writeBytes(command);
                processDos.flush();

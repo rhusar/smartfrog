@@ -36,9 +36,11 @@ public class FilterImpl extends Thread {
     //--- BufferFiller
     private class BufferFiller extends Thread {
     private boolean stopRequested = false;
+    private LogSF sfLog = LogFactory.sfGetProcessLog(); //Temp log until getting its own.
 
     public BufferFiller() {
-      super("BufferFiller(" + name + ")_" + ID);
+      super("BufferFiller-Filter(" + name + ")_" + ID);
+      sfLog = LogFactory.getLog("BufferFiller-Filter(" + name + ")_" + ID);
     }
 
     public void stopRequest() {
@@ -59,7 +61,6 @@ public class FilterImpl extends Thread {
             // to realise that the stream it is reading from has gone away.
             // If we check that there is something to read detect this
             // situation immediately, at the cost of a Thread.sleep()
-            //
 
             //
             // Even if stopRequested is true, we should continue until the
@@ -83,33 +84,41 @@ public class FilterImpl extends Thread {
                 break;
               }
 
-              //
               // Nothing to read?  Then wait a little.
-              //
-
               try {
                 Thread.sleep(10);
               } catch (InterruptedException e) {
               }
             }
           } catch (IOException e) {
-            // log.error("run"+ ID + " -- problem reading output", e);
-            stopRequested = true;
+              if (sfLog.isErrorEnabled()) {
+                  sfLog.error("problem reading output", e);
+              }
+              stopRequested = true;
           }
         }
 
         try {
-          //log.info(ID + " -- closing input stream");
+          if (sfLog.isTraceEnabled()){
+             sfLog.trace("closing input stream");
+          }
           reader.close();
           iStream.close();
           in.close();
         } catch (IOException e) {
-          //log.error ( "run"+ID + " -- failed to close input stream", e);
+            if (sfLog.isErrorEnabled()){
+              sfLog.error("failed to close input stream", e);
+            }
         }
       } catch (Throwable t) {
-        //log.error(ID+ " -- unexpected exception",t);
+          if (sfLog.isErrorEnabled()){
+            sfLog.error("unexpected exception",t);
+          }
       }
-      //log.info(ID + " -- stopped");
+      if (sfLog.isTraceEnabled()){
+        sfLog.trace("stopped");
+      }
+
     }
   }
 
@@ -166,14 +175,12 @@ public class FilterImpl extends Thread {
             line = (String) buffer.firstElement();
             buffer.removeElementAt(0);
           }
-          // This trace is very useful for debugging but now application output
-          if (sfLog.isInfoEnabled()){
-            sfLog.info(line );
+          // This trace is very useful for debugging but application output
+          if (sfLog.isDebugEnabled()){
+            sfLog.debug(line );
           }
 
-          //
           // Now actually do the filtering.
-          //
           filter(line, this.filters);
 
         } else {
@@ -201,14 +208,15 @@ public class FilterImpl extends Thread {
       //log.info("run"+ID + " -- stopping buffer filler");
       bufferFiller.stopRequest();
       bufferFiller.join();
+      if (sfLog.isDebugEnabled()){
+            sfLog.debug("buffer filler stopped");
+      }
     } catch (Exception e) {
       if (sfLog.isErrorEnabled()){
         sfLog.error("problems stoped buffer filler", e);
       }
     }
-    if (sfLog.isInfoEnabled()){
-      sfLog.info("buffer filler stopped");
-    }
+
   }
 
   // Compares line with filters[] set
