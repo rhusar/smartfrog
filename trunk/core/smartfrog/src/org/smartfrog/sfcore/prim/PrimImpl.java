@@ -304,15 +304,10 @@ public class PrimImpl extends Object implements Prim, MessageKeys {
     public synchronized Object sfRemoveAttribute(Object name)
         throws SmartFrogRuntimeException, RemoteException {
         if (name == null) {
-          if (name == null) {
               throw new SmartFrogRuntimeException(
               MessageUtil.formatMessage(MSG_NULL_DEF_METHOD, "'name'",
-                                        "sfRemoveAttribute"), this);
-          }
-
-            return null;
+                                      "sfRemoveAttribute"), this);
         }
-
         return sfContext.remove(name);
     }
 
@@ -1718,6 +1713,12 @@ public class PrimImpl extends Object implements Prim, MessageKeys {
                 ((ChildMinder) sfParent).sfAddChild(this);
             }
 
+            //Registers component with local ProcessCompound
+            if (sfContext.containsKey(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME)) {
+                SFProcess.getProcessCompound().sfRegister(sfResolveId(
+                    SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME), this);
+            }
+
             try {
                 // Look up delay, if not there never mind looking up factor
                 sfLivenessDelay = ((Number) sfResolve(refLivenessDelay)).intValue();
@@ -1842,7 +1843,7 @@ public class PrimImpl extends Object implements Prim, MessageKeys {
                     MSG_DEPLOY_COMP_TERMINATED, componentId.toString()),
                 this);
         }
-    sfIsDeployed = true;
+        sfIsDeployed = true;
         sfDeployHooks.applyHooks(this, null);
     }
 
@@ -1860,7 +1861,7 @@ public class PrimImpl extends Object implements Prim, MessageKeys {
                     MSG_START_COMP_TERMINATED, this.sfCompleteNameSafe().toString()),
                 this);
         }
-    sfIsStarted = true;
+        sfIsStarted = true;
         sfStartHooks.applyHooks(this, null);
     }
 
@@ -1892,19 +1893,33 @@ public class PrimImpl extends Object implements Prim, MessageKeys {
 
     /**
      * Provides hook for subclasses to implement usefull termination behavior.
-     *
+     * RMI Unexports Component (if ever exported)
+     * Deregisters component from local process compound (if ever registered)
      * @param status termination status
      */
     public synchronized void sfTerminateWith(TerminationRecord status) {
+        org.smartfrog.sfcore.common.Logger.log (this.sfCompleteNameSafe().toString(),status);
+
+        try {
+            sfTerminateWithHooks.applyHooks(this, status);
+        } catch (Exception ex) {
+            // @TODO: Log. Ignore.
+            Logger.logQuietly(ex);
+        }
+
+        //UnExports this component
         try {
             org.smartfrog.sfcore.security.SecureRemoteObject.unexportObject(this, true);
         } catch (NoSuchObjectException ex) {
             // @TODO: Log. Ignore.
+            Logger.logQuietly(ex);
         }
-        org.smartfrog.sfcore.common.Logger.log (this.sfCompleteNameSafe().toString(),status);
+        // Deregisters this component from local ProcessCompound (if ever registered)
         try {
-            sfTerminateWithHooks.applyHooks(this, status);
-        } catch (Exception e) {
+            SFProcess.getProcessCompound().sfDeRegister(this);
+        } catch (Exception ex) {
+            // @TODO: Log. Ignore.
+            Logger.logQuietly(ex);
         }
     }
 
@@ -1955,11 +1970,16 @@ public class PrimImpl extends Object implements Prim, MessageKeys {
                 Logger.logQuietly(ex);
             }
         }
+
     }
 
     /**
      * Get this object to detach from its parent. Calls sfStartLivenessSender
      * since this component might now be eligible for a liveness sender.
+     * Every detached component will be re-parented with its local
+     * ProcessCompound.The detached component will be registed using
+     * "sfProcessComponentName" value or a random name if it does not exist.
+     * It sends sfParantageChanged() notification.
      *
      * @throws SmartFrogException detachment failed
      * @throws RemoteException In case of network/rmi error
@@ -1970,12 +1990,16 @@ public class PrimImpl extends Object implements Prim, MessageKeys {
             return;
         }
         try {
+            //First remove child
+            ((ChildMinder) sfParent).sfRemoveChild(this);
+            //Second register child with ProcessCompound if needed
+            //(ProcessCompound will have a temporal parentage with application
+            // root components and then it will detach!). Keep this order!)
             if (!(SFProcess.getProcessCompound().sfContainsChild(this))) {
                 //Registers with local process compound!
                SFProcess.getProcessCompound().sfRegister(this.sfResolveId(
                    SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME), this);
             }
-            ((ChildMinder) sfParent).sfRemoveChild(this);
             sfParent = null;
             sfStartLivenessSender();
             sfParentageChanged();
