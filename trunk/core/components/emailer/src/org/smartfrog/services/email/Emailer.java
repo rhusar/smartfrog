@@ -35,10 +35,11 @@ public interface Emailer extends Prim {
     public static String CC = "cc";
     public static String FROM = "from";
     public static String SUBJECT = "subject";
-    public static String BODY_TEXT = "message";
+    public static String MESSAGE = "message";
     public static String ATTACHMENTS = "attachments";
     public static String SMTP_HOST = "smtpHost";
     public static String CHARSET = "charset";
+    public static String RUNASWFCOMPONENT = "runAsWorkFlowComponent";
     
      /**
      * Sends a single part message using to, from subject attributes defined in
