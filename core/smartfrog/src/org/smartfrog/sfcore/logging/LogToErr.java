@@ -566,7 +566,7 @@ public class LogToErr implements Log, LogMessage, LogLevel, Serializable {
      */
     public void err(Object message, Throwable t) {
           outstream.println(message.toString());
-          t.printStackTrace();
+          t.printStackTrace(outstream);
     }
 
     /**
