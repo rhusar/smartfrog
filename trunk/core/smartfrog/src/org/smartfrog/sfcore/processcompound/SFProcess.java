@@ -25,6 +25,8 @@ import java.rmi.RemoteException;
 import java.util.Enumeration;
 import java.util.Properties;
 import java.util.Vector;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 import org.smartfrog.SFSystem;
 import org.smartfrog.sfcore.common.Context;
@@ -239,26 +241,33 @@ public class SFProcess implements MessageKeys {
         Properties props = System.getProperties();
         Prim p;
         Context nameContext = null;
-        String name =null;
-        String url=null;
-        String key=null;
-        for (Enumeration e = props.keys(); e.hasMoreElements();) {
-            key = e.nextElement().toString();
-            if (key.startsWith(defaultDescPropBase)) {
-                // Collects all properties refering todefault descriptions that
-                // have to be deployed inmediately after process compound
-                // is started.
-                url = (String)props.get(key);
-                name = key.substring(defaultDescPropBase.length());
-                nameContext = new ContextImpl();
-                nameContext.put("sfProcessComponentName", name);
-
-                //SFSystem.deployFromURL(url,name, comp);
-                ComponentDescription cd = ComponentDescriptionImpl.getComponentDescription(url);
-                p = comp.sfDeployComponentDescription(null, null,cd,nameContext);
-                p.sfDeploy();
-                p.sfStart();
+        String name = null;
+        String url = null;
+        String key = null;
+        try {
+            for (Enumeration e = props.keys(); e.hasMoreElements(); ) {
+                key = e.nextElement().toString();
+                if (key.startsWith(defaultDescPropBase)) {
+                    // Collects all properties refering to default descriptions that
+                    // have to be deployed inmediately after process compound
+                    // is started.
+                    url = (String)props.get(key);
+                    name = key.substring(defaultDescPropBase.length());
+                    nameContext = new ContextImpl();
+                    nameContext.put("sfProcessComponentName", name);
+                    ComponentDescription cd = ComponentDescriptionImpl.
+                        sfComponentDescription(url.trim());
+                    p = comp.sfDeployComponentDescription(null, null, cd,
+                        nameContext);
+                    p.sfDeploy();
+                    p.sfStart();
+                }
             }
+
+        } catch (SmartFrogException sfex){
+           if (sfex instanceof SmartFrogDeploymentException) throw sfex;
+           else throw new SmartFrogDeploymentException
+             ("deploying default description for '" + key+"'", sfex,comp,nameContext);
         }
     }
 
@@ -277,7 +286,7 @@ public class SFProcess implements MessageKeys {
                 url = (String)props.get(key);
                 name = key.substring(defaultDescPropBase.length());
                 //SFSystem.deployFromURL(url,name, comp);
-                ComponentDescription cd = ComponentDescriptionImpl.getComponentDescription(url);
+                ComponentDescription cd = ComponentDescriptionImpl.sfComponentDescription(url);
                 compDesc.getContext().put(name,cd);
             }
         }
@@ -364,6 +373,7 @@ public class SFProcess implements MessageKeys {
         // @TODO fix after refactoring ProcessCompound.
         deployDefaultProcessDescriptions((ProcessCompound)processCompound);
 
+
         return processCompound;
     }
 
@@ -439,7 +449,7 @@ public class SFProcess implements MessageKeys {
         Vector phases = new Vector();
         phases.add("type");
         phases.add("link");
-        return ComponentDescriptionImpl.getComponentDescription(urlProcessCompound, phases, refProcessCompound);
+        return ComponentDescriptionImpl.sfComponentDescription(urlProcessCompound, phases, refProcessCompound);
     }
 
 
@@ -452,4 +462,57 @@ public class SFProcess implements MessageKeys {
     public static void setProcessCompoundDescription(ComponentDescription descr) {
         processCompoundDescription = descr;
     }
+
+    /**
+     * Select target process compound using host and subprocess names
+     *
+     * @param host host name. If null, assumes localhost.
+     * @param subProcess subProcess name (optional; can be null)
+     * @return ProcessCompound the target process compound
+     * @throws SmartFrogException In case of SmartFrog system error
+     */
+    public static ProcessCompound sfSelectTargetProcess(String host,
+        String subProcess) throws SmartFrogException, RemoteException {
+        try {
+            if (host==null) {
+                return sfSelectTargetProcess(host,
+                                           subProcess);
+            } else {
+                return sfSelectTargetProcess(InetAddress.getByName(host),
+                                           subProcess);
+            }
+        } catch (UnknownHostException uhex) {
+            throw new SmartFrogException(MessageUtil.formatMessage(
+                MSG_UNKNOWN_HOST, host), uhex);
+        }
+
+    }
+
+    /**
+     * Select target process compound using host InetAddress and subprocess name
+     *
+     * @param host host InetAddress object. If null, assumes localhost.
+     * @param subProcess subProcess name (optional; can be null)
+     * @return ProcessCompound the target process compound
+     * @throws SmartFrogException In case of SmartFrog system error
+     */
+    public static ProcessCompound sfSelectTargetProcess(InetAddress host,
+                                                      String subProcess)
+            throws SmartFrogException, RemoteException {
+        ProcessCompound target = null;
+        try {
+            target = SFProcess.getProcessCompound();
+            if (host != null) {
+                target = SFProcess.getRootLocator().
+                        getRootProcessCompound(host);
+            }
+            if (subProcess != null) {
+                target = (ProcessCompound) target.sfResolveHere(subProcess);
+            }
+        } catch (Exception ex) {
+            throw SmartFrogException.forward(ex);
+        }
+        return target;
+    }
+
 }

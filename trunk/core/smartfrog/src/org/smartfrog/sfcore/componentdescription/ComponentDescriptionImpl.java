@@ -571,17 +571,17 @@ public class ComponentDescriptionImpl implements Serializable, Cloneable,
      * @throws RemoteException In case of network/rmi error
      * @throws SmartFrogRuntimeException In case of SmartFrog system error
      */
-    public static ComponentDescription getComponentDescription(String url)
+    public static ComponentDescription sfComponentDescription(String url)
         throws SmartFrogException, RemoteException {
-        return getComponentDescription(url,null,null);
+        return sfComponentDescription(url,null,null);
     }
-
 
     /**
      * Utility method that gets Component Description for URL after applying
      * some parser phases
      *
-     * @param String url to convert to ComponentDescription
+     * @param String url to convert to ComponentDescription. The url is used to
+     *              select the parser selecting any ending after the last '.'
      * @param Vector parser phases to apply. If the vector is null, then all
      *    the default phases are applied
      * @param Rererence ref reference to resolve in Description.
@@ -591,20 +591,60 @@ public class ComponentDescriptionImpl implements Serializable, Cloneable,
      * @throws RemoteException In case of network/rmi error
      * @throws SmartFrogRuntimeException In case of SmartFrog system error
      */
-    public static ComponentDescription getComponentDescription(String url,
+    public static ComponentDescription sfComponentDescription(String url,
                   Vector phases, Reference ref)
         throws SmartFrogException, RemoteException {
+        String language = url;
+        return sfComponentDescription(url,language, phases, ref);
+    }
 
-        Phases descr = (new SFParser(url)).sfParseResource(url);
-
-        if (phases==null) {
-            return descr.sfResolvePhases().sfAsComponentDescription();
-        } else {
-            descr.sfResolvePhases(phases);
+    /**
+     * Utility method that gets Component Description for URL after applying
+     * some parser phases
+     *
+     * @param String url to convert to ComponentDescription
+     * @param String language to select appropriate parser
+     * @param Vector parser phases to apply. If the vector is null, then all
+     *    the default phases are applied
+     * @param Rererence ref reference to resolve in Description. If ref is null
+     *        'sfConfig' reference is used by default.
+     *
+     * @return process compound description 'phases' Resolved
+     *
+     * @throws RemoteException In case of network/rmi error
+     * @throws SmartFrogRuntimeException In case of SmartFrog system error
+     */
+    public static ComponentDescription sfComponentDescription(String url,
+                  String language, Vector phases, Reference ref)
+        throws SmartFrogException, RemoteException {
+        Phases descr = null;
+        try {
+            descr = (new SFParser(language)).sfParseResource(url);
+        } catch (SmartFrogException sfex) {
+            throw sfex;
+        } catch (Throwable thr) {
+            throw new SmartFrogException(MessageUtil.
+                                         formatMessage(MSG_ERR_PARSE), thr);
         }
+        try {
+            if (phases==null) {
+                descr.sfResolvePhases().sfAsComponentDescription();
 
-        if (ref==null) ref =  new Reference (SmartFrogCoreKeys.SF_CONFIG);
+            } else {
+                descr.sfResolvePhases(phases);
+            }
 
+            if (ref==null)
+                ref = new Reference(SmartFrogCoreKeys.SF_CONFIG);
+        } catch (SmartFrogException sfex) {
+            throw sfex;
+        } catch (RemoteException rex) {
+            throw rex;
+        } catch (Throwable thr) {
+            throw new SmartFrogException(MessageUtil.
+                                         formatMessage(
+                MSG_ERR_RESOLVE_PHASE), thr);
+        }
         return (ComponentDescription) descr.sfAsComponentDescription().sfResolve(ref);
     }
 
