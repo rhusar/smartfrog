@@ -19,7 +19,6 @@
  */
 package org.smartfrog.tools.ant;
 
-import org.apache.tools.ant.Task;
 import org.apache.tools.ant.BuildException;
 
 /**

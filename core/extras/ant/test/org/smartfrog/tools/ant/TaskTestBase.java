@@ -60,4 +60,13 @@ public abstract class TaskTestBase extends BuildFileTest {
         String filename=getBuildFile();
         configureProject(basedir+"/"+ filename);
     }
+
+
+    /**
+     * assert that some text is not in the log
+     * @param text
+     */
+    public void assertNotInLog(String text) {
+        assertTrue(text,getLog().indexOf(text)==-1);
+    }
 }
