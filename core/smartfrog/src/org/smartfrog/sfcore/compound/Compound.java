@@ -43,14 +43,14 @@ public interface Compound extends Prim, ChildMinder {
      * if the component registers. Note that the remaining lifecycle methods must
      * still be invoked on the created component - namely sfDeploy() and sfStart().
      * This is primarily an internal method - the prefered method for end users is
-     * @sfCreateNewChild.
+     * {@link #sfCreateNewChild}.
      *
      * @param cmp compiled component to deploy
      * @param parent of deployed component
      * @param name name of  attribute which the deployed component should adopt
      * @param parms parameters for description
      *
-     * @return deployed component if successfull
+     * @return deployed component if successful
      *
      * @exception SmartFrogDeploymentException failed to deploy compiled 
      * component
@@ -70,7 +70,7 @@ public interface Compound extends Prim, ChildMinder {
      * @param name name of attribute which the deployed component should adopt
      * @param parms parameters for description
      *
-     * @return deployed component if successfull
+     * @return deployed component if successful
      *
      * @exception SmartFrogDeploymentException failed to deploy compiled 
      * component
@@ -85,10 +85,9 @@ public interface Compound extends Prim, ChildMinder {
      * of creating new applications.
      *
      * @param cmp compiled component to deploy and start
-     * @param name name of attribute which the deployed component should adopt
      * @param parms parameters for description
      *
-     * @return deployed component if successfull
+     * @return deployed component if successful
      *
      * @exception SmartFrogDeploymentException failed to deploy compiled 
      * component

@@ -145,6 +145,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
                     newRef = parent.sfCompleteName();
                 } catch (Exception ex){
                     // LOG ex
+                    ignoreThrowable("could not get complete name", ex);
                 }
             }
             if ((dex.get(SmartFrogDeploymentException.OBJECT_NAME))!=null) {
@@ -207,12 +208,14 @@ public class CompoundImpl extends PrimImpl implements Compound {
         }
         }
     } catch (Exception e) {
-        if (comp != null) {
-        try {
-            comp.sfDetachAndTerminate(TerminationRecord.abnormal("error during deployment" + e.getMessage(), sfCompleteName()));
-        } catch (Exception ex) {
-            //@TODO log
-        }
+        if ( comp != null ) {
+            try {
+                comp.sfDetachAndTerminate(TerminationRecord.abnormal("error during deployment" + e.getMessage(),
+                        sfCompleteName()));
+            } catch (Exception ex) {
+                //log
+                ignoreThrowable("during termination", ex);
+            }
         }
         throw (SmartFrogDeploymentException) SmartFrogDeploymentException.forward(e);
     }
@@ -225,10 +228,9 @@ public class CompoundImpl extends PrimImpl implements Compound {
      * of creating new app.
      *
      * @param cmp compiled component to deploy and start
-     * @param name name of attribute which the deployed component should adopt
      * @param parms parameters for description
      *
-     * @return deployed component if successfull
+     * @return deployed component if successful
      *
      * @exception SmartFrogDeploymentException failed to deploy compiled
      * component
@@ -236,33 +238,35 @@ public class CompoundImpl extends PrimImpl implements Compound {
      */
     public Prim sfCreateNewApp(ComponentDescription cmp, Context parms)
         throws RemoteException, SmartFrogDeploymentException {
-    Prim comp = null;
-    try {
-        comp = sfDeployComponentDescription(null, null, cmp, parms);
-
+        Prim comp = null;
         try {
-            comp.sfDeploy();
-        } catch (Exception ex) {
-           throw SmartFrogLifecycleException.sfDeploy("Failed to create a new app.",ex,this);
-        }
+            comp = sfDeployComponentDescription(null, null, cmp, parms);
 
-        try {
-            comp.sfStart(); // otherwise let the start of this component do it...
-        } catch (Exception ex) {
-           throw SmartFrogLifecycleException.sfStart("Failed to create a new app.",ex,this);
-        }
+            try {
+                comp.sfDeploy();
+            } catch (Exception ex) {
+                throw SmartFrogLifecycleException.sfDeploy("Failed to create a new app.", ex, this);
+            }
 
-    } catch (Exception e) {
-        if (comp != null) {
-        try {
-            comp.sfTerminate(TerminationRecord.abnormal("error during deployment" + e.getMessage(), sfCompleteName()));
-        } catch (Exception ex) {
-            //@TODO log
+            try {
+                comp.sfStart(); // otherwise let the start of this component do it...
+            } catch (Exception ex) {
+                throw SmartFrogLifecycleException.sfStart("Failed to create a new app.", ex, this);
+            }
+
+        } catch (Exception e) {
+            if ( comp != null ) {
+                try {
+                    comp.sfTerminate(TerminationRecord.abnormal("error during deployment" + e.getMessage(),
+                            sfCompleteName()));
+                } catch (Exception ex) {
+                    //log
+                    ignoreThrowable("could not terminate", ex);
+                }
+            }
+            throw (SmartFrogDeploymentException) SmartFrogDeploymentException.forward(e);
         }
-        }
-        throw (SmartFrogDeploymentException) SmartFrogDeploymentException.forward(e);
-    }
-    return comp;
+        return comp;
     }
 
 
@@ -410,10 +414,11 @@ public class CompoundImpl extends PrimImpl implements Compound {
                 }
             }
         } catch (SmartFrogException sfex){
-            sfex.printStackTrace();
+            //log
+            sfGetProcessLog().error("caught on deployment", sfex);
             throw sfex;
         } catch (Throwable thr) {
-            thr.printStackTrace();
+            sfGetProcessLog().error("caught on deployment", thr);
             throw SmartFrogLifecycleException.sfDeploy(null,thr, (Prim)this);
         }
     }
@@ -489,8 +494,9 @@ public class CompoundImpl extends PrimImpl implements Compound {
             try {
                 ((Prim)sfChildren.elementAt(i)).sfTerminateQuietlyWith(status);
             } catch (Exception ex) {
-            //@TODO: Log
-            // ignore
+                // Log
+                ignoreThrowable("ignoring during termination", ex);
+                // ignore
             }
         }
     }
@@ -508,6 +514,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
                 (new TerminatorThread((Prim)(sfChildren.elementAt(i)),status).quietly()).start();
             } catch (Exception ex) {
             //@TODO: Log
+                ignoreThrowable("ignoring during termination", ex);
             // ignore
             }
         }
@@ -605,40 +612,15 @@ public class CompoundImpl extends PrimImpl implements Compound {
         super.sfParentageChanged();
     }
 
-//    Deprecated and replaced with: common/TerminatorThread
-//    /**
-//     * Implements an asynchronous sfTerminateQuietlyWith call
-//     */
-//    private class TerminateCall implements Runnable {
-//        /**
-//         * Reference to component.
-//         */
-//        private Prim target;
-//
-//        /**
-//         * Termination record.
-//         */
-//        private TerminationRecord record;
-//
-//        /**
-//         * Constructs TerminateCall with component and termination record.
-//         */
-//        public TerminateCall(Prim target, TerminationRecord record) {
-//            this.target = target;
-//            this.record = record;
-//            (new Thread(this)).start();
-//        }
-//        /**
-//         * Runs the thread.
-//         */
-//        public void run() {
-//            try {
-//                target.sfTerminateQuietlyWith(record);
-//            } catch (Exception remex) {
-//                // ignore
-//            }
-//        }
-//    }
+
+    /**
+     * handler for any throwable/exception whose throwing is being ignored
+     * @param message
+     * @param thrown
+     */
+    private void ignoreThrowable(String message,Throwable thrown) {
+        sfGetProcessLog().ignore(message, thrown);
+    }
 
     /**
      * Implements an asynchronous dump call
