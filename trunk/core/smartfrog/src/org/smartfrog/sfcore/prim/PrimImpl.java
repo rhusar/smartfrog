@@ -2187,7 +2187,7 @@ public class PrimImpl extends Object implements Prim, MessageKeys {
             //Get root Log name
             String sfLogName = ((Prim)sfResolveWithParser(SmartFrogCoreKeys.SF_ROOT)).sfCompleteName().toString();
             // add attribute
-            sfAddAttribute(SmartFrogCoreKeys.SF_ROOT,sfLogName);
+            sfAddAttribute(SmartFrogCoreKeys.SF_APP_LOG_NAME,sfLogName);
             return sfGetLog(sfLogName);
         }
 
