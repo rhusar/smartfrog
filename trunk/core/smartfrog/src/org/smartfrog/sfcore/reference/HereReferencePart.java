@@ -23,6 +23,11 @@ package org.smartfrog.sfcore.reference;
 
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 
+import java.rmi.MarshalledObject;
+import java.io.*;
+import org.smartfrog.sfcore.logging.LogFactory;
+import org.smartfrog.sfcore.logging.LogSF;
+
 /**
  * Implements the most basic of reference parts. This reference part knows how
  * to resolve itself to the value of a given id in a given reference resolver.
@@ -33,7 +38,49 @@ public class HereReferencePart extends ReferencePart {
     public static final String HERE = "HERE";
 
     /** Value for here part. */
-    public Object value = null;
+    private Object value = null;
+
+    private boolean wasMarshalled = false;
+
+    public Object getValue() {
+        if (value instanceof MarshalledObject && !wasMarshalled) {
+            try {
+                return ((MarshalledObject)value).get();
+            } catch (ClassNotFoundException ex) {
+                if (sfGetProcessLog().isErrorEnabled()) {
+                   sfGetProcessLog().error("HereReferencePart.getValue()",ex);
+                 }
+                return null;
+            } catch (IOException ex) {
+                if (sfGetProcessLog().isErrorEnabled()) {
+                   sfGetProcessLog().error("HereReferencePart.getValue()",ex);
+                 }
+                return null;
+            }
+        } else {
+            return value;
+        }
+    }
+
+    public Object setValue (Object value){
+        Object oldValue = getValue();
+        if (value instanceof MarshalledObject){
+            wasMarshalled = true;
+            this.value=value;
+        } else {
+            try {
+                this.value = new MarshalledObject(value);
+            } catch (IOException ex) {
+                if (sfGetProcessLog().isErrorEnabled()) {
+                    sfGetProcessLog().error("HereReferencePart.getValue()",
+                                            ex);
+                }
+                this.value= value;
+            }
+        }
+        return oldValue;
+    }
+
 
     /**
      * Constructs HereReferencePart with a here part.
@@ -41,7 +88,7 @@ public class HereReferencePart extends ReferencePart {
      * @param v value for here part
      */
     public HereReferencePart(Object v) {
-        this.value = v;
+        this.setValue(v);
     }
 
     /**
@@ -52,7 +99,7 @@ public class HereReferencePart extends ReferencePart {
      * @return attrib reference part
      */
     public ReferencePart asAttribReferencePart() {
-        return ReferencePart.attrib(value);
+        return ReferencePart.attrib(getValue());
     }
 
     /**
@@ -65,7 +112,7 @@ public class HereReferencePart extends ReferencePart {
             return "";
         }
 
-        return HERE + " " + value.toString();
+        return HERE + " " + getValue().toString();
     }
 
     /**
@@ -78,9 +125,9 @@ public class HereReferencePart extends ReferencePart {
     public String toString(int index) {
 	if (value == null) return "";
 	if (index == 0)
-	    return HERE + ' ' + value.toString();
+	    return HERE + ' ' + getValue().toString();
 	else
-	    return value.toString();
+	    return getValue().toString();
     }
 
     /**
@@ -89,7 +136,7 @@ public class HereReferencePart extends ReferencePart {
      * @return hash code for part
      */
     public int hashCode() {
-        return value.hashCode();
+        return getValue().hashCode();
     }
 
     /**
@@ -102,7 +149,7 @@ public class HereReferencePart extends ReferencePart {
      */
     public boolean equals(Object refPart) {
         return refPart.getClass().equals(this.getClass()) &&
-        ((HereReferencePart) refPart).value.equals(value);
+        ((HereReferencePart) refPart).getValue().equals(getValue());
     }
 
     /**
@@ -120,7 +167,7 @@ public class HereReferencePart extends ReferencePart {
     public Object resolve(ReferenceResolver rr, Reference r, int index)
         throws SmartFrogResolutionException {
         // Find here
-        Object result = rr.sfResolveHere(value,false);
+        Object result = rr.sfResolveHere(getValue(),false);
 
         if (result == null) {
             throw SmartFrogResolutionException.notFound(r, null);
@@ -156,7 +203,7 @@ public class HereReferencePart extends ReferencePart {
         throws SmartFrogResolutionException {
         try {
             // Find here
-            Object result = rr.sfResolveHere(value,false);
+            Object result = rr.sfResolveHere(getValue(),false);
 
             if (result == null) {
                 throw SmartFrogResolutionException.notFound(r, null);
@@ -178,5 +225,18 @@ public class HereReferencePart extends ReferencePart {
         } catch (Exception ex){
             throw (SmartFrogResolutionException)SmartFrogResolutionException.forward(ex);
         }
+    }
+
+   private LogSF sflog = null;
+
+    /**
+     *  To get the sfCore logger
+     * @return Logger implementing LogSF and Log
+     */
+    public LogSF sfGetProcessLog() {
+       if (sflog==null) {
+           sflog =  LogFactory.sfGetProcessLog();
+       }
+       return sflog;
     }
 }

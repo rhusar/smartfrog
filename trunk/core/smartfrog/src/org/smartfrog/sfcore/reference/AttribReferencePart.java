@@ -58,11 +58,11 @@ public class AttribReferencePart extends HereReferencePart {
      * @return stringified reference part
      */
     public String toString() {
-        return ATTRIB + ' ' + value.toString();
+        return ATTRIB + ' ' + getValue().toString();
     }
 
     /**
-     * Return a string which is a representation of the reference part in a reference in the 
+     * Return a string which is a representation of the reference part in a reference in the
      * index position given.
      *
      * @param index the position in the reference
@@ -70,9 +70,9 @@ public class AttribReferencePart extends HereReferencePart {
      */
     public String toString(int index) {
 	if (index == 0)
-	    return value.toString();
+	    return getValue().toString();
 	else
-	    return ATTRIB + ' ' + value.toString();
+	    return ATTRIB + ' ' + getValue().toString();
     }
 
     /**

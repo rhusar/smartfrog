@@ -273,7 +273,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
     *@param  resState  resolution state
     */
    protected boolean place(Reference key, Object value, ResolutionState resState) {
-      Object nam = ((HereReferencePart) key.lastElement()).value;
+      Object nam = ((HereReferencePart) key.lastElement()).getValue();
       ComponentDescription destDescription = null;
 
       try {
@@ -554,7 +554,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
     public void writeOn(Writer ps, int indent) throws IOException {
 	ps.write("extends " + (getEager() ? "" : "LAZY ") +
                ((getType() == null) ? "" : getType().toString()));
-	
+
 	if (context.size() > 0) {
 	    ps.write(" {\n");
 	    context.writeOn(ps, indent+1);
