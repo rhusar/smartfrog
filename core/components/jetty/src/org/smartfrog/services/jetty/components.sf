@@ -13,6 +13,7 @@ HttpServer extends Compound {
    sfClass "org.smartfrog.services.jetty.SFJetty";
    jettyhome "null";
    serverHost "null";
+   server "Jetty Server";
    listeners extends Listeners; //optional
    contexts extends Contexts;   //optional
    
@@ -43,6 +44,7 @@ HttpServerAdmin extends Prim {
 
 JettyServletContextSchema extends Schema {
     resourceBase extends String;
+    server extends String;
 }
 
 JettyServletContext extends Compound {
@@ -58,6 +60,7 @@ JettyServletContext extends Compound {
 JettyWebApplicationSchema extends Schema {
     contextPath extends String;
     webApp extends String;
+    server extends String;
 }
 
 JettyWebApplication extends Prim {
@@ -80,6 +83,7 @@ JettyHandler extends Prim {
 JettyListenerSchema extends Schema {
     listenerPort extends Integer;
     serverHost extends String;
+    server extends String;
 }
 
 JettyListener extends Prim {
@@ -123,23 +127,27 @@ Contexts extends Compound {
 context1 extends JettyWebApplication {
  contextPath "/";
  webApp (jettyhome ++ "/demo/webapps/root");
+ server PARENT:PARENT:server;
 }
 
 context2 extends JettyWebApplication {
  contextPath "/jetty";
  webApp (jettyhome ++ "/demo/webapps/jetty");
+ server PARENT:PARENT:server;
 }
 
 context3 extends JettyWebApplication {
  contextPath "/examples";
  webApp (jettyhome ++ "/demo/webapps/examples");
  requestId true; //optional
+ server PARENT:PARENT:server;
 }
 
 context4 extends JettyServletContext {
  contextPath "/demo";
  resourceBase (jettyhome ++ "/demo/docroot");
  classPath (jettyhome ++ "/demo/servlets"); 
+ server PARENT:PARENT:server;
  handlers extends Handlers; //optional
  servlets extends Servlets; //optional
 }
@@ -147,11 +155,13 @@ context4 extends JettyServletContext {
 context5 extends JettyServletContext {
  contextPath "/javadoc";
  resourceBase (jettyhome ++ "/javadoc");
+ server PARENT:PARENT:server;
 }
 
 context6 extends JettyServletContext {
  contextPath "/cgi-bin";
  resourceBase (jettyhome ++ "/cgi-bin");
+ server PARENT:PARENT:server;
  servlets extends CGI; //optional
 }
 
@@ -265,12 +275,14 @@ Listeners extends Compound {
 listener1 extends JettyListener {
  listenerPort 8080;
  serverHost PARENT:PARENT:serverHost;
+ server PARENT:PARENT:server;
 }
 
 listener2 extends JettyListener {
  sfClass "org.smartfrog.services.jetty.listeners.AJPlistener";
  listenerPort 8009;
  serverHost PARENT:PARENT:serverHost;
+ server PARENT:PARENT:server;
 }
 
 

@@ -24,11 +24,13 @@ public class Servlet extends CompoundImpl implements ServletContextIntf {
     Reference contextPathRef = new Reference(CONTEXT_PATH);
     Reference resourceBaseRef = new Reference(RESOURCE_BASE);
     Reference classPathRef = new Reference(CLASSPATH);
-
+    Reference serverNameRef = new Reference(SERVER);
+    
     String jettyhome = ".";
     String contextPath = "/";
     String resourceBase = "\\demo\\docRoot";
-    String classPath = "null";
+    String classPath = null;
+    String serverName = null;
     String mapfromPath;
     String maptoPath;
 
@@ -51,8 +53,9 @@ public class Servlet extends CompoundImpl implements ServletContextIntf {
    public void sfDeploy() throws SmartFrogException, RemoteException {
        context =  new ServletHttpContext();
        sfAddAttribute(CONTEXT, context);
+       serverName = sfResolve(serverNameRef, serverName, true);
        process = SFProcess.getProcessCompound();
-       server = (HttpServer)process.sfResolveId(JettyIntf.JETTY_SERVER);
+       server = (HttpServer)process.sfResolveId(serverName);
        jettyhome = (String)process.sfResolveId(JettyIntf.JETTY_HOME);
        contextPath = sfResolve(contextPathRef, contextPath, true);
        resourceBase = sfResolve(resourceBaseRef, 

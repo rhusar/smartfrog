@@ -31,4 +31,5 @@ public interface ServletContextIntf extends Remote {
     public static final String RESOURCE_BASE = "resourceBase";
     public static final String CLASSPATH = "classPath";
     String CONTEXT = "Context";
+    String SERVER = "server";
 }

@@ -28,11 +28,12 @@ public class WebApplication extends PrimImpl implements JettyWebApplicationConte
     Reference contextPathRef = new Reference(CONTEXT_PATH);
     Reference webAppRef = new Reference(WEBAPP);
     Reference requestIdRef = new Reference(REQUEST_ID);
-   
-
+    Reference serverNameRef = new Reference(SERVER);
+    
    String jettyhome = ".";
    String contextPath = "/";
    String webApp = null;
+   String serverName = null;
    boolean requestId = false;
 
    ProcessCompound process = null;
@@ -53,8 +54,10 @@ public class WebApplication extends PrimImpl implements JettyWebApplicationConte
    */ 
    public void sfDeploy() throws SmartFrogException, RemoteException {
        super.sfDeploy();
+       serverName = sfResolve(serverNameRef, serverName, true);
        process = SFProcess.getProcessCompound();
-       server = (HttpServer)process.sfResolveId(JettyIntf.JETTY_SERVER); 
+       //server = (HttpServer)process.sfResolveId(JettyIntf.JETTY_SERVER); 
+       server = (HttpServer)process.sfResolveId(serverName); 
        jettyhome = (String)process.sfResolveId(JettyIntf.JETTY_HOME);
        /* no, doesnt work w/ resolveID
        jettyhome = FileImpl.lookupAbsolutePath(this, JettyIntf.JETTY_HOME,
@@ -66,12 +69,12 @@ public class WebApplication extends PrimImpl implements JettyWebApplicationConte
        contextPath = sfResolve(contextPathRef, contextPath, true);
        //fetch the webapp reference by doing filename resolution
        //if the file exists, it does not need to be anywhere
-       //webApp = sfResolve(webAppRef, webApp, true);
-       FileImpl.lookupAbsolutePath(this,webAppRef,null,new File(jettyhome),true,PlatformHelper.getLocalPlatform());
+       webApp = sfResolve(webAppRef, jettyhome + webApp, true);
+      /* FileImpl.lookupAbsolutePath(this,webAppRef,null,new File(jettyhome),true,PlatformHelper.getLocalPlatform());
        File webappFile=new File(webApp);
        if(!webappFile.exists()) {
 
-       }
+       }*/
        requestId = sfResolve(requestIdRef, requestId, false);
    }
 

@@ -11,10 +11,12 @@
  */
 jetty_home "C:\\jetty\\Jetty-4.2.18";
 
-A extends Prim {
- sfClass "org.smartfrog.services.jetty.contexts.Servlet";
+server "Jetty Server";
+
+A extends JettyServletContext {
  contextPath "/test";
  resourceBase ("D:\\cvs");
+ server ROOT:server;
 }
 
 sfConfig extends Compound {
