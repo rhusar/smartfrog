@@ -70,42 +70,21 @@ GenericInstallScript extends Sequence {
     //-------------------------------------
     // the url to the tar file
     //-------------------------------------
-    location extends concat {
-        -- "http://";
-        -- ATTRIB webServerHost;
-        -- ":";
-        -- ATTRIB webServerPort;
-        -- ATTRIB tarLocation;
-    }
+    location ("http://" ++ webServerHost ++ ":" ++ webServerPort ++ tarLocation);
 
     //-------------------------------------
     // script to move to home and untar
     //-------------------------------------
-    prefixUntarScript extends vector {
-        -- ATTRIB cdInstallLocation;
-        -- ATTRIB untarFile;
-    }
+    prefixUntarScript [ ("cd " ++ installLocation), 
+                        ("tar -xf " ++ file) ];
 
     //-------------------------------------
     // build the complete script
     //-------------------------------------
-    completeInstallScript extends append {
-        -- ATTRIB prefixUntarScript;
-        -- ATTRIB installScript;
-        -- ["exit 0"];
-    }
+    completeInstallScript (prefixUntarScript <> 
+                           installScript     <> 
+                           ["exit 0"]);
 
-    //-------------------------------------
-    // constructions of the scripts lines
-    //-------------------------------------
-    cdInstallLocation extends concat {
-        -- "cd ";
-        -- ATTRIB installLocation;
-    }
-    untarFile extends concat {
-        -- "tar -xf ";
-        -- ATTRIB file;
-    }
 
     //-------------------------------------
     // the core should be a sequence of :
@@ -114,40 +93,25 @@ GenericInstallScript extends Sequence {
     //-------------------------------------
     actions extends LAZY {
         startEvent extends EventSend {
-            sendTo:top LAZY PARENT;
-            event extends concat {
-                -- ATTRIB name;
-                msg ":1:2:downloading";
-            }
+            sendTo:top  LAZY PARENT;
+            event       (name ++ ":1:2:downloading");
         }
         download extends Downloader {
-            url ATTRIB location;
-            toLocalFile extends concat {
-                -- ATTRIB installLocation;
-                -- ATTRIB file;
-            }
+            url         location;
+            toLocalFile (installLocation ++ file);
         }
         downloadEvent extends EventSend {
-            sendTo:top LAZY PARENT;
-            event extends concat {
-                -- ATTRIB name;
-                msg ":2:2: download complete, installing";
-            }
+            sendTo:top  LAZY PARENT;
+            event       (name ++ ":2:2: download complete, installing");
         }
         script extends BashShellScript {
-            processName ATTRIB name;
-            cmd ATTRIB completeInstallScript;
+            processName  name;
+            cmd          completeInstallScript;
         }
         completeEvent extends EventSend {
-            sendTo:top LAZY PARENT;
-            event extends concat {
-                -- ATTRIB name;
-                msg ":3:2:install complete";
-            }
+            sendTo:top  LAZY PARENT;
+            event       (name ++ ":3:2:install complete");
         }
     }
 }
 
-
-// provide this for testing - normally overridden after include
-sfConfig extends GenericInstallScript ;

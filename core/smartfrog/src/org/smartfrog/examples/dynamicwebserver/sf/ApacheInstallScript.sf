@@ -48,82 +48,67 @@ ApacheInstallScript extends GenericInstallScript {
     //-------------------------------------
     // parameter defining prefix for event notification
     //-------------------------------------
+
     name "apache";
+
+
+    //-----------------------------------------------------------------------------
+    // below this is the body of the template, these are not expected to be changed
+    //-----------------------------------------------------------------------------
 
     //----------------------------------
     // the install script to be run
     //----------------------------------
 
-    installScript extends vector {
-        -- ATTRIB cdApacheHome;
-        -- ATTRIB configureScript;
-        -- ATTRIB makeScript;
-    }
-
-    //-------------------------------------
-    // constructions of the scripts lines
-    //-------------------------------------
-
-    cdApacheHome extends concat {
-        -- "cd ";
-        -- ATTRIB home;
-    }
-    configureScript "./configure";
-    makeScript "make install";
+    installScript  [ ("cd " ++ home),
+                     "./configure", 
+                     "make install" ];
 
 
-    actions:startEvent:event:msg ":1:4:Apache download started";
-    actions:downloadEvent:event:msg ":2:4:Apache downloaded, starting install";
-    action:completeEvent:event:msg ":3:4:Apache install complete, downloading data";
+
+
+    //----------------------------------
+    // specialise the messages from the generic install script
+    //----------------------------------
+
+    actions:startEvent:event    (name ++ ":1:4:Apache download started");
+    actions:downloadEvent:event (name ++ ":2:4:Apache downloaded, starting install");
+    action:completeEvent:event  (name ++ ":3:4:Apache install complete, downloading data");
+
+    //----------------------------------
+    // add additional steps to the generic install script workflow
+    //----------------------------------
 
 
     actions:downloadCGI extends Downloader {
-        url extends concat {
-            -- "http://";
-            -- ATTRIB webServerHost;
-            -- ":";
-            -- ATTRIB webServerPort;
-            -- ATTRIB cgiScriptsLocation;
-        }
+        url         ("http://" ++ webServerHost ++ ":" ++ webServerPort ++ cgiScriptsLocation);
         toLocalFile "/usr/local/apache/cgi-bin/cgiScripts.tar";
     }
 
     actions:untarCGI extends BashShellScript {
-        processName ATTRIB name;
-        cmd ["cd /usr/local/apache/cgi-bin", "tar -xf cgiScripts.tar", "exit 0"];
+        processName   name;
+        cmd           ["cd /usr/local/apache/cgi-bin", "tar -xf cgiScripts.tar", "exit 0"];
     }
 
     actions:cgiEvent extends EventSend {
-        sendTo:top LAZY PARENT;
-        event extends concat {
-            -- ATTRIB name;
-            msg ":4:4: cgi download complete, loading pages";
-        }
+        sendTo:top  LAZY PARENT;
+        event       (name ++ ":4:4: cgi download complete, loading pages");
     }
 
     actions:downloadPages extends Downloader {
-        url extends concat {
-            -- "http://";
-            -- ATTRIB webServerHost;
-            -- ":";
-            -- ATTRIB webServerPort;
-            -- ATTRIB webPagesLocation;
-        }
-        toLocalFile "/usr/local/apache/htdocs/webPages.tar";
+        url          ("http://" ++  webServerHost ++ ":" ++ webServerPort ++ webPagesLocation);
+        toLocalFile  "/usr/local/apache/htdocs/webPages.tar";
     }
 
     actions:untarPages extends BashShellScript {
-        processName ATTRIB name;
-        cmd ["cd /usr/local/apache/htdocs", "tar -xf webPages.tar", "exit 0"];
+        processName  name;
+        cmd          ["cd /usr/local/apache/htdocs", "tar -xf webPages.tar", "exit 0"];
     }
 
 
     actions:webPagesEvent extends EventSend {
-        sendTo:top LAZY PARENT;
-        event extends concat {
-            -- ATTRIB name;
-            msg ":5:4: Apache install complete";
-        }
+        sendTo:top   LAZY PARENT;
+        event        (name ++ ":5:4: Apache install complete");
     }
 
     actions:delayTermination extends DoNothing {
@@ -133,15 +118,11 @@ ApacheInstallScript extends GenericInstallScript {
 }
 
 
-
-
-
-
-
-
-
-
-
+//----------------------------------
+// Simulate the entire workflow, generating the correct events
+// then delaying termination to hold the display up for a while
+// This whole workflow is useful for demos..
+//----------------------------------
 
 
 
@@ -150,43 +131,28 @@ SimulatedApacheInstallScript extends Sequence {
 
     actions extends LAZY {
         e1 extends EventSend {
-            sendTo:top LAZY PARENT;
-            event extends concat {
-                -- ATTRIB name;
-                msg ":1:4: ";
-            }
+            sendTo:top  LAZY PARENT;
+            event       (name ++ ":1:4: ");
         }
 
         e2 extends EventSend {
-            sendTo:top LAZY PARENT;
-            event extends concat {
-                -- ATTRIB name;
-                msg ":2:4: ";
-            }
+            sendTo:top  LAZY PARENT;
+            event       (name ++ ":2:4: ");
         }
 
         e3 extends EventSend {
-            sendTo:top LAZY PARENT;
-            event extends concat {
-                -- ATTRIB name;
-                msg ":3:4: ";
-            }
+            sendTo:top  LAZY PARENT;
+            event       (name ++ ":3:4: ");
         }
 
         e4 extends EventSend {
-            sendTo:top LAZY PARENT;
-            event extends concat {
-                -- ATTRIB name;
-                msg ":4:4: ";
-            }
+            sendTo:top  LAZY PARENT;
+            event       (name ++ ":4:4: ");
         }
 
         e5 extends EventSend {
-            sendTo:top LAZY PARENT;
-            event extends concat {
-                -- ATTRIB name;
-                msg ":5:4: Apache already installed";
-            }
+            sendTo:top  LAZY PARENT;
+            event       (name ++ ":5:4: Apache already installed");
         }
 
         delayTermination extends DoNothing {
@@ -195,17 +161,3 @@ SimulatedApacheInstallScript extends Sequence {
     }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-sfConfig extends ApacheInstallScript ;

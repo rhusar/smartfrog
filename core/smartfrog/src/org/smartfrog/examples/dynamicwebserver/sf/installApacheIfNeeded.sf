@@ -32,11 +32,15 @@ Install extends Compound {
     // is running on the local host,
     // and that an x server is also running locally
 
-    ServerHost LAZY sfHost;
+    ServerHost LAZY sfHost; // pick up the local host name
     ServerPort 80;
 
-    //IP addresses or host names of remote hosts, need to be set
-    ApacheHost;
+    // IP addresses or host names of remote hosts, need to be set
+    // if the workflow is not being run on the correct host
+
+    // the event printer display will run locally even if the install is done remotely
+    ApacheHost "localhost";
+
 
     eventPrinter extends DisplayProgress {
         terminationType "none";
@@ -49,27 +53,18 @@ Install extends Compound {
         filename "/usr/local/apache";
 
         ifSo extends LAZY SimulatedApacheInstallScript {
-            sendTo:printer LAZY ATTRIB eventPrinter;
+            sendTo:printer LAZY eventPrinter;
         }
 
         ifNot extends LAZY ApacheInstallScript {
-            sendTo:printer LAZY ATTRIB eventPrinter;
-            tarLocation ATTRIB ApacheTarLocation;
+            sfProcessHost ApacheHost; // do the install on the correct host...
+
+            sendTo:printer LAZY eventPrinter;
+            tarLocation ApacheTarLocation;
             webPagesLocation PARENT:ATTRIB webPagesLocation;
             cgiScriptsLocation PARENT:ATTRIB cgiScriptsLocation;
-            sfProcessHost ATTRIB ApacheHost;
-            webServerHost ATTRIB ServerHost;
-            webServerPort ATTRIB ServerPort;
+            webServerHost ServerHost;
+            webServerPort ServerPort;
         }
     }
-}
-
-sfConfig extends Install {
-    ServerHost "www.smartfrog.org";  // only set if this is not on the management station...
-
-    ApacheTarLocation "/demoDownload/apache.tar";
-    cgiScriptsLocation "/demoDownload/cgiScripts.tar";
-    webPagesLocation "/demoDownload/webPages.tar";
-
-    ApacheHost "localhost";
 }
