@@ -433,7 +433,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
 
 
    /**
-    *  Deploy resolve a description. This involves iterating over the
+    *  'Link' resolve a description. This involves iterating over the
     *  description tree a number of times and looking at the attribute values.
     *  If the value is an eager reference, it is resolved. The resulting value
     *  replaces the reference as the attribute value
@@ -457,7 +457,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
 
 
    /**
-    *  Internal method to do recursion on deploy resolution.
+    *  Internal method to do recursion on link resolution.
     *
     * @param  resState  resolution state
     *
