@@ -18,62 +18,112 @@ For more information: www.smartfrog.org
 
 */
 
-#include "/org/smartfrog/examples/dynamicwebserver/sf/nodes.sf"
+#include "/org/smartfrog/components.sf"
+#include "/org/smartfrog/functions.sf"
+#include "/org/smartfrog/predicates.sf"
+
+
 #include "/org/smartfrog/examples/dynamicwebserver/stresstest/components.sf"
 #include "/org/smartfrog/examples/dynamicwebserver/logging/components.sf"
 
-theLoadGenerator extends StressTester {
-    //logTo LAZY ATTRIB logger;
-    controlGui LAZY ATTRIB stressControlGui;
-    host ATTRIB balancerHost;
+/*
+ * The following global values must be defined in the included location 
+ * for this file, otherwise errors will be thrown.
+ */
 
-    port ATTRIB webPort;
-    page "/cgi-bin/u1";
+// the host on which the load generators will run
+stressTestHost     TBD;
+
+// the host on which the load balancer will run
+balancerHost       TBD;
+
+// the cgi script to use for loading the web servers
+loadingCgi         TBD;
+
+/*
+ * Definition of the load generators and control gui
+ * These components generate load for the web servers
+ * and so trigger the creation of new web servers
+ */
 
 
-    factor PARENT:ATTRIB factor;
-    frequncy PARENT:ATTRIB frequency;
+// a single load generator
+aLoadGenerator extends StressTester {
+    //logTo LAZY PARENT:logTo;
+    controlGui LAZY PARENT:controlGui;
+
+    host PARENT:host;
+    port PARENT:port;
+    page PARENT:page;
+
+    factor   PARENT:factor;
+    frequncy PARENT:frequency;
+
+    verbose PARENT:verbose;
+}
+
+// a commonly-parameterised set of load generators
+LoadGeneratorSet extends Compound {
+    logTo      LAZY PARENT:logTo;
+    controlGui LAZY PARENT:controlGui;
+
+    host PARENT:host;
+    port PARENT:port;
+    page PARENT:page;
+
+    factor   PARENT:factor;
+    frequency PARENT:frequency;
+
+    verbose PARENT:verbose;
+
+    l0  extends aLoadGenerator;
+    l1  extends aLoadGenerator;
+    l2  extends aLoadGenerator;
+    l3  extends aLoadGenerator;
+    l4  extends aLoadGenerator;
+    l5  extends aLoadGenerator;
+    l6  extends aLoadGenerator;
+    l7  extends aLoadGenerator;
+    l8  extends aLoadGenerator;
+    l9  extends aLoadGenerator;
+    l10 extends aLoadGenerator;
+    l11 extends aLoadGenerator;
+    l12 extends aLoadGenerator;
+    l13 extends aLoadGenerator;
+    l14 extends aLoadGenerator;
 }
 
 
-LoadGeneratorSet extends Compound {
-    l0 extends theLoadGenerator;
-    l1 extends theLoadGenerator;
-    l2 extends theLoadGenerator;
-    l3 extends theLoadGenerator;
-    l4 extends theLoadGenerator;
-    l5 extends theLoadGenerator;
-    l6 extends theLoadGenerator;
-    l7 extends theLoadGenerator;
-    l8 extends theLoadGenerator;
-    l9 extends theLoadGenerator;
-    l10 extends theLoadGenerator;
-    l11 extends theLoadGenerator;
-    l12 extends theLoadGenerator;
-    l13 extends theLoadGenerator;
-    l14 extends theLoadGenerator;}
-
-
+// the overall template - the gui and the set of load generators
 LoadGeneratorTemplate extends Compound {
-    sfLivenessDelay 0;
-    factor 30;
-    frequency 0;
-    verbose false;
+    // sfLivenessDelay 0;
+
+    factor          30;
+    frequency       0;
+    verbose         false;
+
+    host balancerHost;
+    port 80;
+    page loadingCgi;
+
 
     logger extends Logger {
-        //verbose true;
+        verbose PARENT:verbose;
     }
 
     stressControlGui extends StressControlGui {
-       logTo LAZY ATTRIB logger;
-       name "stress test load control";
-       initialValue ATTRIB frequency;
-       id 1;
+        verbose PARENT:verbose;
+        // logTo        LAZY logger;
+        name         "stress test load control";
+        initialValue frequency;
+        id           1;
     }
-}
 
-sfConfig extends LoadGeneratorTemplate {
-    ls extends LoadGeneratorSet {sfProcessHost ATTRIB stressTestHost;}
+    loadGenerators extends LoadGeneratorSet {
+	// logTo LAZY logger;
+	sfProcessHost stressTestHost;
+        controlGui LAZY stressControlGui;
+    }
 }
 
 
