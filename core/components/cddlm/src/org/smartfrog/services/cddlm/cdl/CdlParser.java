@@ -38,6 +38,9 @@ public class CdlParser {
      */
     private ResourceLoader resourceLoader;
 
+    /**
+     * builder class
+      */
     private SAXBuilder builder;
 
     /**
@@ -65,11 +68,25 @@ public class CdlParser {
         return builder.build(f);
     }
 
+    /**
+     * parse a stream that we are provided
+     * @param instream
+     * @return
+     * @throws IOException
+     * @throws JDOMException
+     */
     Document parseStream(InputStream instream) throws IOException,
             JDOMException {
         return builder.build(instream);
     }
 
+    /**
+     * load and parse a resoure through our current resource loader
+     * @param resource
+     * @return
+     * @throws IOException
+     * @throws JDOMException
+     */
     Document parseResource(String resource) throws IOException, JDOMException {
         InputStream in = resourceLoader.loadResource(resource);
         return parseStream(in);

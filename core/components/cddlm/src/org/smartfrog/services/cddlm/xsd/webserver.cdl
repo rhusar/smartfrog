@@ -1,74 +1,21 @@
 <?xml version="1.0"?>
-<cdl xmlns="urn:cddlm/xml/0.1"
-  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-  xmlns:wsa="http://schemas.xmlsoap.org/ws/2003/03/addressing"
+<cdl:cdl xmlns:cdl="urn:cddlm/xml/0.1"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="urn:cddlm/xml/0.1 cddml.xsd">
-  <import/>
-  <types/>
-  <configuration>
-    <import/>
-    <attributeSet name="xsd:NCName" extends="xsd:QName">
-      <attribute/>
-      <attribute>
-        <name>xsd:string</name>
-        <type>xsd:QName</type>
-        <lifetime>{deployment|runtime|dynamic}</lifetime>
-        <use>{required|optional|readonly}</use>
-        <value>xsd:any</value>
-      </attribute>
-      <attribute>
-        <name>MaxClients</name>
-        <type>xsd:integer</type>
-        <value>100</value>
-      </attribute>
-    </attributeSet>
-    <dependencies language="xsd:anyURI">
-      <assign>
-        <to>
-          <reference name="xsd:NCName">
-            <attributeSet>xsd:QName</attributeSet>
-            <attributeName>xsd:string</attributeName>
-          </reference>
-        </to>
-        <from>
-          <reference name="xsd:NCName">
-            <attributeSet>xsd:QName</attributeSet>
-            <attributeName>xsd:string</attributeName>
-          </reference>
-        </from>
-      </assign>
-      <assign>
-        <to>
-          <reference name="xsd:NCName">
-            <attributeSet>xsd:QName</attributeSet>
-            <attributeName>xsd:string</attributeName>
-          </reference>
-        </to>
-        <from>
-          <expression/>
-        </from>
-      </assign>
-    </dependencies>
-    <assertions language="xsd:anyURI">
-      <assert>xsd:any</assert>
-    </assertions>
-  </configuration>
-  <system>
-    <component name="xsd:NCName">
-      <configuration>xsd:QName</configuration>
-      <deployAfter>xsd:QName</deployAfter>
-      <startAfter>xsd:QName</startAfter>
-    </component>
-    <system name="xsd:NCName">
-      <component name="xsd:NCName">
-        <configuration>xsd:QName</configuration>
-        <deployAfter>xsd:QName</deployAfter>
-        <startAfter>xsd:QName</startAfter>
-      </component>
-    </system>
-  </system>
-  <services>
-    <service component="xsd:QName">wsa:EndpointReference</service>
-  </services>
-</cdl>
+  <!--<import/>-->
+  <cdl:types/>
+  <cdl:configuration>
+    <cdl:component name="server">
+      <port>8080</port>
+      <security>true</security>
+    </cdl:component>
+    <cdl:component name="tomcat" extends="server">
+      <basedir>
+      </basedir>
+    </cdl:component>
+
+ </cdl:configuration>
+  <cdl:system>
+  </cdl:system>
+</cdl:cdl>
