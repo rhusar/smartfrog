@@ -126,7 +126,7 @@ public class RunJavaUtils {
      * @param source
      * @return
      */
-    public static String makeString(Vector source) {
+    public static String makeSpaceSeparatedString(Vector source) {
         //the classpath; space separated values
         StringBuffer buffer = new StringBuffer();
         Iterator uris = source.iterator();
@@ -139,5 +139,27 @@ public class RunJavaUtils {
         }
         return buffer.toString();
     }
+
+    /**
+     * convert a classname to a resource
+     * @param classname
+     * @return resource
+     */
+    public static String makeResource(String classname) {
+        assert (classname!=null && classname.length()>0);
+        StringBuffer buffer=new StringBuffer(classname.length()+7);
+        buffer.append('/');
+        for(int i=0;i<classname.length();i++) {
+            char c=classname.charAt(i);
+            if(c=='.') {
+                c='/';
+            }
+            buffer.append(c);
+        }
+        buffer.append(".class");
+        return buffer.toString();
+    }
+
+
 
 }

@@ -43,6 +43,8 @@ public interface JavaPackage extends Remote {
     final String ATTR_REQUIRED_CLASSES="requiredClasses";
     final String ATTR_REQUIRED_RESOURCES = "requiredResources";
     final String ATTR_SOURCE = "source";
+    final String ATTR_URICLASSPATH = "uriClasspath";
+    final String ATTR_URICLASSPATHLIST = "uriClasspathList";
     final String ATTR_CLASSPATH = "classpath";
     final String ATTR_CLASSPATHLIST = "classpathList";
     final String ATTR_USECODEBASE ="useCodebase";
@@ -51,5 +53,5 @@ public interface JavaPackage extends Remote {
      * get the vector of uris
      * @return
      */
-    public Vector getClasspathList() throws RemoteException;
+    public Vector getUriClasspathList() throws RemoteException;
 }

@@ -40,8 +40,8 @@ public class JavaPackageTest extends SmartFrogTestBase {
         try {
             application = deployExpectingSuccess(FILES +
                             "testSimplePackage.sf", "testSimplePackage");
-            assertStringAttributeExists(application,JavaPackage.ATTR_CLASSPATH);
-            assertAttributeExists(application, JavaPackage.ATTR_CLASSPATHLIST);
+            assertStringAttributeExists(application,JavaPackage.ATTR_URICLASSPATH);
+            assertAttributeExists(application, JavaPackage.ATTR_URICLASSPATHLIST);
         } finally {
             terminateApplication(application);
         }
