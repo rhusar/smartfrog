@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<wsdl:definitions 
+	targetNamespace="http://gridforum.org/cddlm/serviceAPI/callbacks/2004/07/30" 
+  xmlns:types="http://gridforum.org/cddlm/serviceAPI/types/2004/07/30"
+	xmlns:api="http://gridforum.org/cddlm/serviceAPI/2004/07/30" 
+	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" 
+	xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" 
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns:cdl="urn:cddlm/xml/0.1"
+  xmlns:wsa="http://schemas.xmlsoap.org/ws/2003/03/addressing"
+  xmlns:jsdl="http://www.gridforum.org/JSDL"
+  >
+  
+  <!-- ============================================================= -->
+<wsdl:documentation >  
+    This is the WSDL Describing the simple callback service API that
+    a caller must use if it wishes to receive notification callbacks
+    on a non-WS-Notification system.
+    
+    2004-07-30
+    This is an initial draft for the first demonstration-grade prototypes. 
+    We expect WS-Notification to obsolete this callback protocol, as
+    it is so inherently limited.
+
+
+    The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL
+    NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED",  "MAY", and
+    "OPTIONAL" in this document are to be interpreted as described in
+    RFC 2119.
+    http://www.ietf.org/rfc/rfc2119.txt
+      
+</wsdl:documentation>
+     
+  <!-- ============================================================= -->
+  <!-- BEGIN IMPORTS -->
+  <!-- ============================================================= -->
+  
+ <!-- import the types -->
+ <import 
+    namespace="http://gridforum.org/cddlm/serviceAPI/types/2004/07/30" 
+    schemaLocation="deployAPIschema.xsd"/>
+
+
+  <!-- ============================================================= -->
+  <!-- begin WSDL message types-->
+  <!-- ============================================================= -->
+
+ <wsdl:message name="callbackRequest">
+  <wsdl:part name="callback" element="types:LifecycleEventCallbackRequest" />
+ </wsdl:message>
+ 
+ <wsdl:message name="callbackResponse">
+  <wsdl:part name="response" element="types:LifecycleEventCallbackResponse" />
+ </wsdl:message> 
+ 
+  <!-- ============================================================= -->
+  <!-- begin WSDL operations -->
+  <!-- ============================================================= -->
+  
+
+ <wsdl:portType name="DeploymentCallbackEndpoint">
+ 
+  <!-- deploy -->
+  <wsdl:operation name="callback">
+   <wsdl:input message="api:callbackRequest" name="callbackRequest"/>
+   <wsdl:output message="api:callbackResponse" name="callbackRequest"/>
+  </wsdl:operation>
+</wsdl:portType>
+ 
+ 
+  <!-- ============================================================= -->
+  <!-- Bind WSDL to doc/lit SOAP1.2 -->
+  <!-- ============================================================= -->
+ 
+ <wsdl:binding name="DeploymentCallbackSoapBinding" type="DeploymentCallbackEndpoint">
+ 
+  <wsdlsoap:binding style="document" 
+    transport="http://schemas.xmlsoap.org/soap/http"/>
+    
+    <!-- deploy -->
+  <wsdl:operation name="callback">
+    <wsdlsoap:operation soapAction=""/>
+    <wsdl:input name="callbackRequest">
+      <wsdlsoap:body use="literal"/>
+    </wsdl:input>
+    <wsdl:output name="callbackRequest">
+      <wsdlsoap:body use="literal"/>
+    </wsdl:output>
+  </wsdl:operation>
+  
+</wsdl:binding>
+
+  <!-- ============================================================= -->
+  <!-- end WSDL definitions-->
+  <!-- ============================================================= -->
+
+</wsdl:definitions>
