@@ -43,12 +43,12 @@ public interface ConfigurationDescriptorTestURLs {
     String urlTest04  ="\"HOST \"127.0.0.1\":sfDefault:Julio1B\":DEPLOY:org/smartfrog/examples/counter/example.sf::localhost:";
     String urlTest05  ="\"HOST localhost:Julio2\":DEPLOY:org/smartfrog/examples/counter/example.sf::localhost:";
     String urlTest06  ="\"HOST localhost:rootProcess:Julio3\":DEPLOY:org/smartfrog/examples/counter/example.sf::localhost:";
-    String urlTest07  ="\"HOST localhost:sfDefault:SubProcessInDefault1\":DEPLOY:org/smartfrog/examples/subprocesses/subprocess.sf::localhost:";
-    String urlTest07b  ="\"HOST localhost:sfDefault:SubProcessInDefault1\":TERMINATE:org/smartfrog/examples/subprocesses/subprocess.sf::localhost:";
+    String urlTest07   ="\"HOST localhost:sfDefault:SubProcessInDefault1\":DEPLOY:org/smartfrog/examples/subprocesses/subprocess.sf::localhost:";
+    String urlTest07b  ="\"HOST localhost:sfDefault:SubProcessInDefault1\":TERMINATE:::localhost:";
     String urlTest08  ="\"HOST localhost:first:CounterInFirst1ROOT\":DEPLOY:org/smartfrog/examples/counter/example.sf::localhost:";
     String urlTest09  ="\"HOST localhost:first:CounterInFirst1FIST\":DEPLOY:org/smartfrog/examples/counter/example.sf::localhost:first";
     String urlTest10  ="counterEx3:DEPLOY:org/smartfrog/examples/counter/example2.sf:\"testLevel1:counterToSucceed\":localhost:";
-    String urlTest11  ="\"HOST \"127.0.0.1\":sfDefault:Julio1B\":DEPLOY:org/smartfrog/examples/counter/example2.sf:\"testLevel1:counterToSucceed\":localhost:";
+    String urlTest11  ="\"HOST \"127.0.0.1\":sfDefault:Julio2B\":DEPLOY:org/smartfrog/examples/counter/example2.sf:\"testLevel1:counterToSucceed\":localhost:";
     String urlTest12  ="\"HOST localhost:SubProcessInRootProcess2\":DEPLOY:org/smartfrog/examples/subprocesses/subprocess.sf::localhost:";
     String urlTest12b  ="\"HOST localhost:SubProcessInRootProcess2\":TERMINATE:org/smartfrog/examples/subprocesses/subprocess.sf::localhost:";
 
