@@ -30,9 +30,7 @@ For more information: www.smartfrog.org
    <!-- override point -->
   <property file="build.properties" />
 
-   <property name="emailer.lib.dir" location="lib" description=
-                        "place to put third party libraries"/>
-       
+      
   
   <property name="root.dir" location="../.."  />
     <!-- Import common stuff -->
@@ -45,7 +43,7 @@ For more information: www.smartfrog.org
           
    
     <!-- the compile time path includes axis-->
-    <path id="compile.classpath">
+<!--     <path id="compile.classpath">
       <path refid="smartfrog.classpath"/>
       <fileset dir="${emailer.lib.dir}">
         <include name="**/*.jar"/>
@@ -56,7 +54,7 @@ For more information: www.smartfrog.org
       <path refid="compile.classpath"/>
       <path location="${target.jar}" />
     </path>  
-    
+ -->    
   </target>
 
   <!-- ========================================================== -->
@@ -65,13 +63,8 @@ For more information: www.smartfrog.org
   <target name="dist" depends="common.dist" 
     description="create the jar files">
     <copy todir = "${dist.lib.dir}">
-        <fileset dir ="${emailer.lib.dir}" />
+        <fileset dir ="${lib.dir}" />
     </copy>          
   </target>
-
-  <!-- ========================================================== -->
-  <!-- default target -->
-  <!-- ========================================================== -->
-  <target name="default" depends="dist" description="default target" />
 
 </project>

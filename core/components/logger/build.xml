@@ -31,9 +31,7 @@ For more information: www.smartfrog.org
    <!-- override point -->
   <property file="build.properties" />
 
-   <property name="logger.lib.dir" location="lib" description=
-                        "place to put third party libraries"/>
-       
+      
   
   <property name="root.dir" location="../.."  />
     <!-- Import common stuff -->
@@ -43,21 +41,11 @@ For more information: www.smartfrog.org
   <!-- ========================================================== -->
   <!-- ========================================================== -->
   <target name="init" depends="init-standard-output-dirs,use-smartfrog-tasks">
-          
-    <!-- the compile time path includes axis-->
-    <path id="compile.classpath">
-      <path refid="smartfrog.classpath"/>
-      <!--fileset dir="${logger.lib.dir}">
-        <include name="**/*.jar"/>
-      </fileset -->
-    </path>
-    
-    <path id="run.classpath">
-      <path refid="compile.classpath"/>
-      <path location="${target.jar}" />
-    </path>  
     
   </target>
     
-
+  
+  <target name="declare-run.classpath" 
+    depends="declare-run.classpath-no-tests" />  
+  
 </project>

@@ -30,11 +30,8 @@ For more information: www.smartfrog.org
    <!-- override point -->
   <property file="build.properties" />
 
-  <!-- this component keeps its test files in a different place from the 
-       rest, for historical reasons (i.e. it is nothing but test) -->  
-   <property name="test.src.dir" location="testcases" />
-   <property name="ssh.lib.dir" location="lib" description=
-                        "place to put third party libraries"/>
+<!--    <property name="ssh.lib.dir" location="lib" description=
+                        "place to put third party libraries"/> -->
        
   
   <property name="root.dir" location="../.."  />
@@ -53,7 +50,7 @@ For more information: www.smartfrog.org
     
     
     <!-- the compile time path includes ssh-->
-    <path id="compile.classpath">
+<!--     <path id="compile.classpath">
       <path refid="smartfrog.classpath"/>
       <fileset dir="${ssh.lib.dir}">
         <include name="**/*.jar"/>
@@ -63,7 +60,7 @@ For more information: www.smartfrog.org
     <path id="run.classpath">
       <path refid="compile.classpath"/>
       <path location="${target.jar}" />
-    </path>  
+    </path>   -->
     
   </target>
   
@@ -91,7 +88,7 @@ For more information: www.smartfrog.org
   <target name="dist" depends="common.dist" 
     description="create the jar files">
     <copy toDir = "${dist.lib.dir}">
-        <fileset dir ="${ssh.lib.dir}">
+        <fileset dir ="${lib.dir}">
             <include name = "**/*.jar"/>
         </fileset>    
     </copy>

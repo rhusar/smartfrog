@@ -73,14 +73,18 @@
       <!-- common directories -->
     <property name="src.dir" location="src"/>
     <property name="doc.dir" location="doc"/>
+    <property name="lib.dir" location="lib" />
+    <property name="test.src.dir" location="test" />
+    
+    <!--generated stuff --> 
     <property name="build.dir" location="build"/>
     <property name="build.classes.dir" location="${build.dir}/classes"/>
+    <property name="build.test.dir" location="${build.dir}/test"/>
     <property name="test.dir" location="${build.dir}/test"/>
-    <property name="test.classes.dir" location="${test.dir}/classes"/>
-    <property name="test.data.dir" location="${test.dir}/data"/>
+    <property name="test.classes.dir" location="${build.test.dir}/classes"/>
+    <property name="test.data.dir" location="${build.test.dir}/data"/>
     <property name="test.datafiles.dir" location="test/files"/>
-    <property name="test.reports.dir" location="${test.dir}/reports"/>
-    <property name="test.src.dir" location="test" />
+    <property name="test.reports.dir" location="${build.test.dir}/reports"/>
     <property name="dist.dir" location="${build.dir}/dist"/>
     <property name="dist.lib.dir" location="${build.dir}/dist/lib"/>
     <property name="dist.doc.dir" location="${build.dir}/dist/doc"/>
@@ -105,7 +109,7 @@
     <property name="smartfrog.tasks.jar"
       location="${smartfrog.tasks.lib.dir}/${smartfrog.tasks.name}"/>
 
-
+    
       <!-- location of junit jar; override it if it is somewhere else-->
     <property name="junit.jar" 
       location="${ant.home}/lib/junit.jar" />
@@ -122,6 +126,7 @@
       <istrue value="${unit.tests}"/>
     </condition>
 
+    <echo >In project ${project.name}</echo>
     <echo level="verbose">system.tests.enabled=${system.tests.enabled}</echo>
     <echo level="verbose">unit.tests.enabled=${unit.tests.enabled}</echo>
     
@@ -264,6 +269,91 @@
     <mkdir dir="${dist.doc.dir}"/>
   </target>
   
+  
+  
+  <!-- ========================================================== -->
+  <!-- this set of classpath targets is done to allow override of -->
+  <!-- any stage of the process, with all the dependent classpaths -->
+  <!-- being set up right, automatically -->
+    <!-- define the common compile classpath, which includes
+        smartfrog and our lib dir -->
+  <!-- ========================================================== -->
+        
+  <target name="declare-base.compile.classpath" depends="init" >  
+    <path id="base.compile.classpath">
+      <path refid="smartfrog.classpath"/>
+    </path>
+  </target>
+    
+  
+  <target name="probe-lib-dir" depends="init">
+    <available file="${lib.dir}" type="dir" property="lib.dir.found" /> 
+  </target>
+
+  <target name="declare-compile.classpath-lib-dir" 
+    depends="declare-base.compile.classpath,probe-lib-dir" 
+    if="lib.dir.found">  
+    <path id="compile.classpath">
+      <path refid="base.compile.classpath"/>
+      <fileset dir="${lib.dir}">
+        <include name="**/*.jar"/>
+      </fileset>
+    </path>    
+  </target>
+  
+  <target name="declare-compile.classpath-no-lib-dir" 
+    depends="declare-base.compile.classpath,probe-lib-dir" 
+    unless="lib.dir.found">  
+    <path id="compile.classpath">
+      <path refid="base.compile.classpath"/>
+    </path>    
+  </target>
+ 
+ <target name="declare-compile.classpath" 
+    depends="declare-compile.classpath-no-lib-dir,declare-compile.classpath-lib-dir" >  
+  </target>
+  
+  <target name="declare-exec.classpath" depends="declare-compile.classpath" >  
+    <path id="exec.classpath">
+      <path refid="compile.classpath"/>
+      <pathelement location="${build.classes.dir}"/>
+    </path>    
+  </target>
+
+  <target name="declare-tests.compile.classpath" 
+      depends="declare-exec.classpath,use-smartfrog-testharness" >  
+    <path id="tests.compile.classpath">
+      <path refid="exec.classpath"/>
+      <pathelement location="${junit.jar}"/>
+      <pathelement location="${testharness.jar}"/>
+    </path>
+    <property name="tests.compile.classpath.value" refid="tests.compile.classpath"/>
+    <echo level="verbose">tests.compile.classpath=${tests.compile.classpath.value}</echo>
+  </target>
+   
+  <target name="declare-tests.run.classpath" depends="declare-tests.compile.classpath" >  
+    <path id="tests.run.classpath">
+      <path refid="tests.compile.classpath"/>
+      <pathelement location="${test.classes.dir}"/>
+    </path>
+    <property name="tests.run.classpath.value" refid="tests.run.classpath"/>
+    <echo level="verbose">tests.run.classpath=${tests.run.classpath.value}</echo>
+  </target>
+
+  <target name="declare-run.classpath" depends="declare-tests.run.classpath" >  
+    <path id="run.classpath">
+      <path refid="tests.run.classpath"/>
+    </path>
+  </target>
+
+  <target name="declare-run.classpath-no-tests" depends="declare-exec.classpath" >  
+    <path id="run.classpath">
+      <path refid="exec.classpath"/>
+    </path>
+  </target>
+  
+  <target name="declare-classpaths" depends="declare-run.classpath"  />
+  
   <!-- ========================================================== -->
   <!-- cleanup target -->
   <!-- ========================================================== -->
@@ -320,7 +410,6 @@
       resource="org/smartfrog/tools/ant/tasks.properties"
       classpathref="smartfrog.tasks.classpath"
       />
-     
   </target>
 
   <!-- ========================================================== -->
@@ -354,7 +443,13 @@
         location="${testharness.dir}/${dist.lib.dir.relative}/${testharness.jar.name}" /> 
     <available file="${testharness.jar}" 
       property="testharness.present" />
-    <fail unless="sfTasks.present">
+  </target>
+
+  <!-- ========================================================== -->
+  <!-- verify that the testharness is present-->
+  <!-- ========================================================== -->  
+  <target name="assert-smartfrog-testharness" depends="use-smartfrog-testharness" >
+    <fail unless="testharness.present">
       Smartfrog testharness not found at 
       ${testharness.jar}
     </fail>      
@@ -467,15 +562,16 @@
       value="The prerequisite classes for this project were not found"/>
     <fail>${verify.fail.message}</fail>
   </target>  
-  
-  
 
+
+
+  
   <!-- ========================================================== -->
   <!-- this is an override point -->
   <!-- compile everything, copy useful files over-->
   <!-- ========================================================== -->
   <target name="compile"
-      depends="init,assert-smartfrog,assert-prerequisites">
+      depends="init,declare-classpaths,assert-smartfrog,assert-prerequisites">
       <depend srcdir="${src.dir}"
           destdir="${build.classes.dir}"
           cache="${build.dir}/depends"
@@ -512,17 +608,18 @@
   <!-- compile everything, copy useful files over-->
   <!-- ========================================================== -->
   <target name="compile-tests"
-      depends="package">
-      <depend srcdir="${test.dir}"
+      depends="package,assert-smartfrog-testharness,declare-tests.compile.classpath">
+      <depend 
+          srcdir="${build.test.dir}"
           destdir="${test.classes.dir}"
           cache="${build.test.dir}/depends"
           closure="yes"/>
       <sf-javac
-          classpathref="run.classpath"
-          srcdir="${test.dir}"
+          srcdir="${test.src.dir}"
           destdir="${test.classes.dir}"
+          classpathref="tests.compile.classpath"
           />
-      <copy-useful-files src="${test.dir}" dest="${build.classes.dir}"/>
+      <copy-useful-files src="${test.src.dir}" dest="${test.classes.dir}"/>
   </target>  
 
 
@@ -535,6 +632,7 @@
       <jar destfile="${target.jar}" 
         basedir="${build.classes.dir}" 
         includes="**/*"/>
+      <echo level="verbose">created package ${target.jar}</echo>
   </target>  
   
   <!-- ========================================================== -->
@@ -554,6 +652,8 @@
       if="smartfrog.dist.lib.dir"
       description="copy the jar file to the SmartFrog distribution directory">
     <copy file="${target.jar}" todir="${smartfrog.dist.lib.dir}"/>
+    <copy-useful-files src="${lib.dir}" 
+	    pattern="**/*.jar" dest="${smartfrog.dist.lib.dir}" failonerror="false"/>       
   </target>
   
   <!-- ========================================================== -->
@@ -653,6 +753,13 @@
  <target name="diagnostics" depends="init"
     description="build file diagnostics">
     <echoproperties/>
+  </target> 
+
+ <target name="diag2" depends="init">
+    <echo>
+      build file ${ant.project.name}
+      base dir ${basedir}
+    </echo>
   </target> 
   
    <!-- ========================================================== -->
