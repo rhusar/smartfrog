@@ -9,6 +9,7 @@ import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.mortbay.http.HttpServer;
 import org.mortbay.http.SocketListener;
 import org.mortbay.jetty.servlet.ServletHttpContext;
@@ -19,7 +20,7 @@ import org.mortbay.http.SecurityConstraint;
 import org.mortbay.util.MultiException;
 
 /**
- * A wrapper for a Jetty http server.
+ * A wrapper for a Jetty http server for admin configurations
  * @author Ritu Sabharwal
  */
 
@@ -28,7 +29,7 @@ public class SFJettyAdmin extends PrimImpl implements Prim {
   Reference httpserverHostRef = new Reference("httpserverHost");
   Reference contextPathRef = new Reference("contextPath");
   
-  int listenerPort;
+  int listenerPort = 8081;
   String httpserverHost;
   String contextPath;
   
@@ -51,81 +52,81 @@ public class SFJettyAdmin extends PrimImpl implements Prim {
 
   /**
    * Deploy the SFJettyAdmin component
+   * @exception  SmartFrogException In case of error while starting  
+   * @exception  RemoteException In case of network/rmi error  
    */
   public void sfDeploy() throws SmartFrogException, RemoteException {
-    try {
-    super.sfDeploy();
-    server = new HttpServer();
-    listenerPort = sfResolve(listenerPortRef,8081,false);
-    httpserverHost = sfResolve(httpserverHostRef, "localhost", false);
-    contextPath = sfResolve(contextPathRef, "/", false);
-    configureHttpServer();
-    } catch (Exception ex){ 
-       ex.printStackTrace();
-    }
-   
+	  try {
+		  super.sfDeploy();
+		  server = new HttpServer();
+    	          listenerPort = sfResolve(listenerPortRef,listenerPort,false);
+                  httpserverHost = sfResolve(httpserverHostRef, "null", 
+				  true);
+                  contextPath = sfResolve(contextPathRef, "/", false);
+                  configureHttpServer();
+	  } catch (Exception ex){
+		  throw SmartFrogDeploymentException.forward(ex); 
+	  }
   }
 
-   /**
-     * sfStart: starts Jetty Http server.
-     * 
-     * @exception  SmartFrogException In case of error while starting  
-     * @exception  RemoteException In case of network/rmi error  
-     */
-    public synchronized void sfStart() throws SmartFrogException, 
-    RemoteException {
-        super.sfStart();
-	try {
-		server.start();
-    	} catch (MultiException mexp) {
-        	throw new SmartFrogException(mexp);
-        }
-    }
-    
-/**
- * Configure the http server
- */
-  public void configureHttpServer() {
-    try {
-         listener.setPort(listenerPort);
-         listener.setHost(httpserverHost);
-         server.addListener(listener);
-
-         
-         admin_realm.put("admin","admin");
-         admin_realm.addUserToRole("admin","server-administrator");
-         server.addRealm(admin_realm);
-         realmcontext.setContextPath(contextPath);
-         realmcontext.setRealmName("Admin Realm");
-         realmcontext.setAuthenticator(new BasicAuthenticator());
-         realmcontext.addHandler(new SecurityHandler());
-         realmcontext.addSecurityConstraint("/",
-		    new SecurityConstraint("Admin","server-administrator"));
-         realmcontext.addServlet("Debug","/Debug/*","org.mortbay.servlet.Debug");
-         realmcontext.addServlet("Admin","/","org.mortbay.servlet.AdminServlet");
-         realmcontext.setAttribute("org.mortbay.http.HttpServer",
-		    realmcontext.getHttpServer());
-         server.addContext(realmcontext);
-         server.setAnonymous(true);
-   } catch (Exception ex) {
-	    ex.printStackTrace();
+  /**
+   * sfStart: starts Jetty Http server.
+   * 
+   * @exception  SmartFrogException In case of error while starting  
+   * @exception  RemoteException In case of network/rmi error  
+   */
+   public synchronized void sfStart() throws SmartFrogException, 
+   RemoteException {
+	   super.sfStart();
+	   try {
+		   server.start();
+	   } catch (MultiException mexp) {
+		   throw new SmartFrogException(mexp);
+	   }
    }
-  }
+    
+  /**
+   * Configure the http server for admin configurations
+   */
+   public void configureHttpServer() throws SmartFrogException{
+	   try {
+		   listener.setPort(listenerPort);
+                   listener.setHost(httpserverHost);
+                   server.addListener(listener);
+                   admin_realm.put("admin","admin");
+                   admin_realm.addUserToRole("admin","server-administrator");
+                   server.addRealm(admin_realm);
+                   realmcontext.setContextPath(contextPath);
+                   realmcontext.setRealmName("Admin Realm");
+                   realmcontext.setAuthenticator(new BasicAuthenticator());
+                   realmcontext.addHandler(new SecurityHandler());
+                   realmcontext.addSecurityConstraint("/",
+				   new SecurityConstraint("Admin",
+					   "server-administrator"));
+                   realmcontext.addServlet("Debug","/Debug/*",
+				   "org.mortbay.servlet.Debug");
+                   realmcontext.addServlet("Admin","/",
+				   "org.mortbay.servlet.AdminServlet");
+                   realmcontext.setAttribute("org.mortbay.http.HttpServer",
+		   realmcontext.getHttpServer());
+                   server.addContext(realmcontext);
+                   server.setAnonymous(true);
+	   } catch (Exception ex) {
+		   throw SmartFrogException.forward(ex);	
+	   }
+   }
 
- /**
- * Termination phase
- */
+  /**
+   * Termination phase
+   */
   public void sfTerminateWith(TerminationRecord status) {
-   server.removeListener(listener);
-   server.removeContext(realmcontext);
-    try {
-      server.stop();
-    } catch (InterruptedException ie) {
-	   // throw ie;
-	   Logger.log(" Interrupted on server termination " + ie);
-	   ie.printStackTrace();
-    // throw new SmartFrogException(" Interrupted on server termination " + ie);
-    }
-    super.sfTerminateWith(status);
+	  server.removeListener(listener);
+	  server.removeContext(realmcontext);
+	  try {
+		  server.stop();
+	  } catch (InterruptedException ie) {
+		  Logger.log(" Interrupted on server termination " + ie);
+	  }
+	  super.sfTerminateWith(status);
   }
 }
