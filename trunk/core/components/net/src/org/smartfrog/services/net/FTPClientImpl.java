@@ -112,8 +112,8 @@ public class FTPClientImpl extends PrimImpl implements SFFTPClient {
             ftpClient.connect(ftpServer);
             
             reply = ftpClient.getReplyCode();
-
-            if (!FTPReply.isPositiveCompletion(reply)) {
+            
+	    if (!FTPReply.isPositiveCompletion(reply)) {
                 ftpClient.disconnect();
                 throw new SmartFrogLifecycleException("FTP Server:["
                         + ftpServer+ "] refused connection");
@@ -137,7 +137,7 @@ public class FTPClientImpl extends PrimImpl implements SFFTPClient {
             if(transferType.equalsIgnoreCase(GET)) {
                 getFiles(remoteFileList, localFileList);
             }else if(transferType.equalsIgnoreCase(PUT)) {
-                putFiles(remoteFileList, localFileList);
+		    putFiles(remoteFileList, localFileList);
             }else {
                 throw new SmartFrogLifecycleException(
                      "Unsupported transfer type:"+ transferType);
