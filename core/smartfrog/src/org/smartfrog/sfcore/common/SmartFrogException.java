@@ -89,6 +89,23 @@ public class SmartFrogException extends Exception {
     }
 
     /**
+     * To forward SmartFrog exceptions instead of chain them.
+     * If thr is an instance of SmartFrogException then the exception is returned
+     * without any modification, if not a new SmartFrogException is created
+     * with message as a paramenter
+     * @param thr throwable object to be forwarded
+     * @return Throwable that is a SmartFrogException
+     */
+    public static SmartFrogException forward (String message, Throwable thr){
+        if (thr instanceof SmartFrogException) {
+            return (SmartFrogException)thr;
+        } else {
+            return new SmartFrogException(message, thr);
+        }
+    }
+
+
+    /**
      * Constructs a SmartFrogException with specified message and cause.
      *
      * @param message exception message
