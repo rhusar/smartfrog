@@ -170,7 +170,6 @@ public abstract class SmartfrogTestBase extends TestCase {
     }
     /**
      * Deploys an application and returns the refence to deployed application.
-     * TODO: deployAComponent should return reference to deployed application
      * @param testURL  URL to test
      * @param appName  Application name
      * @return Reference to deployed application
@@ -180,28 +179,10 @@ public abstract class SmartfrogTestBase extends TestCase {
                                                     throws RemoteException {
         Prim app = null;                                                    
         try {
-            SFSystem.deployAComponent(hostname, testURL, appName, false);
-            app = getLocalApplicationReference(appName);
+            app = SFSystem.deployAComponent(hostname, testURL, appName, false);
         }catch (SmartFrogException sfEx) {
-            // should never throw exception
             fail("Unable to deploy component, Error:"+ sfEx.getMessage());
         }
         return app;
     }
-    
-    /**
-     * Gets reference to application deployed in local process compound.
-     * @param appName Application name deployed in process compound
-     * @return Reference to deployed application
-     * @throws SmartFrogException in the event of any trouble
-     * @throws RemoteException in the event of remote trouble. 
-     */
-    private Prim getLocalApplicationReference (String appName) 
-                                    throws SmartFrogException, RemoteException{
-        // get reference to process compound
-        ProcessCompound pc = SFProcess.getProcessCompound();
-        // get reference to application
-        Prim comp = (Prim) pc.sfResolveHere(appName);
-        return comp;
-    } 
 }
