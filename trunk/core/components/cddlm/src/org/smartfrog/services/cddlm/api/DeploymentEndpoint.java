@@ -93,12 +93,12 @@ public class DeploymentEndpoint extends SmartFrogHostedEndpoint
             _applicationStatusRequest applicationStatus)
             throws RemoteException {
         try {
-            operations.info("entering lookupApplication");
+            operations.info("entering applicationStatus");
             ApplicationStatusProcessor processor = new ApplicationStatusProcessor(
                     this);
             return processor.applicationStatus(applicationStatus);
         } finally {
-            operations.info("exiting lookupApplication");
+            operations.info("exiting applicationStatus");
         }
     }
 

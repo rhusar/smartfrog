@@ -63,12 +63,12 @@ public class Processor {
      * @return
      * @throws RuntimeException if the URL was malformed
      */
-    public static URI makeURI(String url) {
+    public static URI makeURI(String url) throws AxisFault {
         URI uri;
         try {
             uri = new URI(url);
         } catch (URI.MalformedURIException e) {
-            return makeRuntimeException(url, e);
+           throw raiseNoSuchApplicationFault(url);
         }
         return uri;
     }
@@ -130,6 +130,21 @@ public class Processor {
     }
 
     /**
+     * look up a job in the repository
+     * @param jobURI
+     * @return the jobstate reference
+     * @throws AxisFault if there is no such job
+     */
+    public JobState lookupJob(URI jobURI) throws AxisFault {
+        JobRepository jobs = ServerInstance.currentInstance().getJobs();
+        JobState jobState = jobs.lookup(jobURI);
+        if(jobState==null) {
+            raiseNoSuchApplicationFault(jobURI.toString());
+        }
+        return jobState;
+    }
+
+    /**
      * test for a parameter being null or zero length
      *
      * @param param string to test
@@ -170,15 +185,15 @@ public class Processor {
         return fault;
     }
 
-    protected AxisFault raiseUnsupportedLanguageFault(String message) {
+    protected static AxisFault raiseUnsupportedLanguageFault(String message) {
         return raiseFault(Constants.FAULT_UNSUPPORTED_LANGUAGE, message);
     }
 
-    protected AxisFault raiseBadArgumentFault(String message) {
+    protected static AxisFault raiseBadArgumentFault(String message) {
         return raiseFault(Constants.FAULT_BAD_ARGUMENT, message);
     }
 
-    protected AxisFault raiseNoSuchApplicationFault(String message) {
+    protected static AxisFault raiseNoSuchApplicationFault(String message) {
         return raiseFault(Constants.FAULT_APPLICATION_NOT_FOUND, message);
     }
 

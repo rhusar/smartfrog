@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2004 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -17,19 +17,31 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.cddlm.api;
 
-import org.smartfrog.services.axis.SmartFrogHostedEndpoint;
+
+package org.cddlm.client.console;
+
+import org.cddlm.client.common.ServerBinding;
+
+import java.io.PrintWriter;
+import java.rmi.RemoteException;
 
 /**
- * created Sep 2, 2004 5:42:51 PM
+ * Date: 02-Sep-2004
+ * Time: 20:48:02
  */
+public class Lookup extends ConsoleOperation {
 
-public class CallbackProcessor extends Processor {
-
-    public CallbackProcessor(SmartFrogHostedEndpoint owner) {
-        super(owner);
+    public Lookup(ServerBinding binding, PrintWriter out) {
+        super(binding, out);
     }
+
+    /**
+     * execute this operation, or throw a remote exception
+     *
+     * @throws java.rmi.RemoteException
+     */
+    public void execute() throws RemoteException {
+    }
+
 }
-
-

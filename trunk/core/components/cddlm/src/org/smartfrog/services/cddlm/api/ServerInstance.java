@@ -22,6 +22,7 @@
 package org.smartfrog.services.cddlm.api;
 
 import org.apache.axis.types.URI;
+import org.apache.axis.AxisFault;
 import org.smartfrog.services.cddlm.generated.api.types.CallbackListType;
 import org.smartfrog.services.cddlm.generated.api.types.LanguageListType;
 import org.smartfrog.services.cddlm.generated.api.types.ServerInformationType;
@@ -54,10 +55,14 @@ public class ServerInstance {
     }
 
 
-    private StaticServerStatusType createStaticStatusInfo() {
+    private StaticServerStatusType createStaticStatusInfo()  {
         ServerInformationType serverInfo = new ServerInformationType();
         serverInfo.setName(Constants.PRODUCT_NAME);
-        serverInfo.setHome(Processor.makeURI(Constants.SMARTFROG_HOMEPAGE));
+        try {
+            serverInfo.setHome(Processor.makeURI(Constants.SMARTFROG_HOMEPAGE));
+        } catch (AxisFault axisFault) {
+            throw new RuntimeException(axisFault);
+        }
         serverInfo.setDiagnostics(null);
         serverInfo.setBuild(Constants.CVS_INFO);
         serverInfo.setLocation("unknown");
@@ -71,7 +76,13 @@ public class ServerInstance {
         for (int i = 0; i + 2 < Constants.LANGUAGES.length; i += 3) {
             String name = Constants.LANGUAGES[i];
             String version = Constants.LANGUAGES[i + 1];
-            URI namespace = Processor.makeURI(Constants.LANGUAGES[i + 2]);
+            URI namespace = null;
+            try {
+                namespace = Processor.makeURI(Constants.LANGUAGES[i + 2]);
+            } catch (AxisFault axisFault) {
+                throw new RuntimeException(axisFault);
+
+            }
             list[counter++] = new _languageListType_language(name,
                     version,
                     namespace);

@@ -20,6 +20,7 @@
 package org.smartfrog.services.cddlm.api;
 
 import org.apache.axis.AxisFault;
+import org.apache.axis.types.URI;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.smartfrog.services.axis.SmartFrogHostedEndpoint;
@@ -28,6 +29,7 @@ import org.smartfrog.sfcore.common.ConfigurationDescriptor;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.sfcore.processcompound.SFProcess;
+import org.smartfrog.sfcore.prim.Prim;
 
 import java.rmi.RemoteException;
 
@@ -44,9 +46,16 @@ public class UndeployProcessor extends Processor {
     public UndeployProcessor(SmartFrogHostedEndpoint owner) {
         super(owner);
     }
-
     public boolean undeploy(_undeployRequest undeploy) throws RemoteException {
-        final org.apache.axis.types.URI appURI = undeploy.getApplication();
+        final URI appURI = undeploy.getApplication();
+        JobState job = lookupJob(appURI);
+        Prim p = job.resolvePrimFromJob();
+        throwNotImplemented();
+        return true;
+    }
+
+    public boolean undeploy2(_undeployRequest undeploy) throws RemoteException {
+        final URI appURI = undeploy.getApplication();
         String application = extractApplicationFromURI(appURI);
         if (isEmpty(application)) {
             throw raiseNoSuchApplicationFault(appURI.toString());
