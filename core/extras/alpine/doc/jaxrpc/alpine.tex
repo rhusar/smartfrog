@@ -7,13 +7,14 @@ stack for Java, by the name of \emph{Alpine}.
 \subsection{Manifesto}
 \label{alpine:manifesto}
 
-\tocheck{Our goal is to create a SOAP stack that is easy to use, robust, and
-maintainable. In order to do this, we opt to step away from the
-JAX-RPC, towards an approach which is XML centric. In avoiding O/X
-mapping we greatly decrease the volume and complexity of our code.
-Some may argue this will make Alpine more difficult to use, but
-experience shows us that simpler systems are typically more
-straightforward to work with, as they react in more predictable ways}.
+Our goal is to create a SOAP stack that is easy to use, robust, and
+maintainable. In order to do this, we are adopting an XML centric approach.
+Alpine will make no attempt to map between XML and custom Java classes, instead
+providing access to the SOAP messages using modern Java XML classes. By avoiding
+O/X mapping we greatly decrease the volume and complexity of our code. Some may
+argue this will make Alpine more difficult to use, but experience shows us that
+simpler systems are typically more straightforward to work with, as they react
+in more predictable ways.
 
 If a WSDL description of an Alpine-hosted service is required, the
 user will be required to write it: as we concluded in section
@@ -50,22 +51,24 @@ The full design goals are as follows:
 \item Adopt the the handler chain pattern of Axis/JAX-RPC
 \item Target SOAP1.2 (POST) only, WS-I 1.1
 \item Document/literal only
-\item Java 1.5 or later 
-\item Server side and client side, with both sides looking similar. 
-\item No support for JAX-RPC or JAX-M/SAAJ.
-\item Configurable only procedurally -or through JMX. 
+\item Runs Server-side, client-side, and as an intermediary. 
+\item No support for JAX-RPC or JAX-M/SAAJ APIs.
+\item Configurable only procedurally -or through JMX.
+\item Permit dynamic handler chain configuration during message processing.
 \item One supported parser: Xerces
+\item Java 1.5 or later 
 
 \item No provision of side features such as a built in HTTP server , or
-declarative configuration mechanism.
-
-These are delegated to other products.
+declarative configuration mechanism. These are delegated to other products.
 \end{enumerate}
+
+The core this design is likely to resemble JAX-M/SAAJ in in terms of classes,
+integrated with a handler chain based on the JAX-RPC/Axis model.  
+
 
 \subsection{XSD validation}
 \label{alpine:validation}
-
-An XML schema document, as used to describe a document literal
+An XML schema document, as used to describe a document/literal
 payload, can contain many declarations about what constitutes a valid
 XML document. \emph{Restrictions} can restrict the type of a value,
 such as the range of an integer from zero to ten. The \verb|minOccurs|
@@ -75,8 +78,8 @@ used. Restricted integer types are just mapped to normal integers,
 while element occurence declarations are ignored.
 
 This means that the set of XML documents which an endpoint can
-receive, is significantly larger than the set of XML documents which
-its XML schema will declare that it can support. With no built-in
+receive is significantly larger than the set of XML documents which
+its XML schema considers valid. With no built-in
 validation, developers must either write validation logic themselves
 -and corresponding tests, or ignore the problem. Given that there is
 no warning that the problem occurs, we suspect that ignorance is the
@@ -91,6 +94,7 @@ We note that there is a trivial solution to this problem, one that is
 common to other XML stacks. It is: validate incoming messages against
 the XML schema of the service. This is not done for performance, yet
 the effect is to hide defects.
+
 
 \subsection{A Community SOAP Stack}
 \label{alpine:community}
