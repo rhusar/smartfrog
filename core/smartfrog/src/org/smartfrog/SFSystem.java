@@ -262,7 +262,7 @@ public class SFSystem implements MessageKeys {
      * Shows the version info of the SmartFrog system.
      */
     private static void showVersionInfo(){
-        sflog().out(Version.versionString+"\n"+Version.copyright);
+        sflog().out(Version.versionString()+"\n"+Version.copyright());
     }
 
     /**

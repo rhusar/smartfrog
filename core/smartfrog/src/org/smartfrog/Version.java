@@ -20,26 +20,87 @@ For more information: www.smartfrog.org
 
 package org.smartfrog;
 
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
+import org.smartfrog.sfcore.logging.LogToFileImpl;
+import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.logging.LogFactory;
+
 /**
  * Version class provides version and copyright strings for SmartFrog System.
  */
 public class Version {
 
-    private final static String name=        "SmartFrog";
-    private final static String majorRelease="3";
-    private final static String minorRelease="04";
-    private final static String build=       "017"; // odd numbers are development versions
-    private final static String status=      "beta"; //alpha, beta, stable
+    /** SmartFrog attribute name. Value = {@value} */
+    final static String ATR_NAME = "name";
+    /** SmartFrog attribute name. Value = {@value} */
+    final static String ATR_MAJOR_RELEASE = "majorRelease";
+    /** SmartFrog attribute name. Value = {@value} */
+    final static String ATR_MINOR_RELEASE = "minorRelease";
+    /** SmartFrog attribute name. Value = {@value} */
+    final static String ATR_BUILD = "build";
+    /** SmartFrog attribute name. Value = {@value} */
+    final static String ATR_STATUS = "status";
+    /** SmartFrog attribute name. Value = {@value} */
+    final static String COPYRIGHT = "copyright";
 
-    /** The version String for the SmartFrog system. */
-    public final static String versionString =
-                    name+" "+majorRelease+"."+minorRelease+"."+build+"_"+status;
 
-
+    // Dont' change this. MODIFY version.sf in same package!!!!!!!!!!!!!!!!!!!
+    private static String name=        "SmartFrog";
+    private static String majorRelease="3";
+    private static String minorRelease="4";
+    private static String build=       "17"; // odd numbers are development versions
+    private static String status=      ""; //alpha, beta, stable
+    // Dont' change this. MODIFY version.sf in same package!!!!!!!!!!!!!!!!!!!
     /** The copyright String for the SmartFrog system. */
-    public final static String copyright = "(C) Copyright 1998-2005 Hewlett-Packard Development Company, LP";
+    private static String copyright = "(C) Copyright 1998-2005 HP Development Company, LP";
+
+    private static boolean initialized=false;
 
     private Version(){
+        init();
+    }
+
+    private synchronized void  init() {
+        if (initialized) return;
+        try {
+            //Check Class and read configuration...NOT including system.properties
+            ComponentDescription classComponentDescription = ComponentDescriptionImpl.
+                getClassComponentDescription(this, false, null);
+
+            name = classComponentDescription.sfResolve(ATR_NAME, name , true);
+            majorRelease = classComponentDescription.sfResolve(ATR_MAJOR_RELEASE, majorRelease , false);
+            minorRelease = classComponentDescription.sfResolve(ATR_MINOR_RELEASE, minorRelease , false);
+            build = classComponentDescription.sfResolve(ATR_BUILD, build , false);
+            status = classComponentDescription.sfResolve(ATR_STATUS, status , false);
+            copyright = classComponentDescription.sfResolve(COPYRIGHT, copyright , false);
+            initialized=true;
+        } catch (Exception ex) {
+            if (sfGetProcessLog().isWarnEnabled())
+                sfGetProcessLog().warn(
+                "Error during init of "+ this.getClass().toString()+"",
+                ex);
+        }
+    }
+
+    public static String versionString(){
+        //init();
+        if (!initialized) new Version();
+        return name+" "+majorRelease+"."+minorRelease+"."+build+"_"+status;
+    }
+
+    public static String copyright(){
+        //init();
+        if (!initialized) new Version();
+        return copyright;
+    }
+    /**
+     *  To get the sfCore logger
+     * @return Logger implementing LogSF and Log
+     */
+    private LogSF sfGetProcessLog() {
+       LogSF sflog  =  LogFactory.sfGetProcessLog();
+       return sflog;
     }
 
     /**
@@ -48,6 +109,6 @@ public class Version {
      * @param args command line arguments.
      */
     public static void main(String[] args) {
-        System.out.print(versionString);
+        System.out.print(versionString());
     }
 }

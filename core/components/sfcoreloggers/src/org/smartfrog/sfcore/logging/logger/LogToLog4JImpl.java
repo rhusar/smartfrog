@@ -182,8 +182,7 @@ public class LogToLog4JImpl implements LogToLog4J, Log, LogMessage, LogLevel, Se
               if (((java.net.URL) configuratorURL).getFile().endsWith(".xml")) {
                   //Initial configurator is removed
                   org.apache.log4j.BasicConfigurator.resetConfiguration();
-                  org.apache.log4j.xml.DOMConfigurator.configure((java.net.
-                          URL) configuratorURL);
+                  org.apache.log4j.xml.DOMConfigurator.configure((java.net.URL) configuratorURL);
                   if (isTraceEnabled()) {
                       this.out("LogToLog4JImpl: Using Log4J.xml.DOMConfigurator with URL " + configuratorURL.toString());
                   }

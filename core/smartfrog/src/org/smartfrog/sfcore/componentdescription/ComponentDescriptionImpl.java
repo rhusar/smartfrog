@@ -300,7 +300,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * This is so that attribute resolution works through the component description
      * in to the Prim hierarchy. For typenig reasons, the PrimParent has to be handled
      * specially and not through the normal interface (due to RemoteExceptions in the interface).
-     * 
+     *
      * Gets the parent for this description.
      *
      * @return component parent description
@@ -317,7 +317,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * This is so that attribute resolution works through the component description
      * in to the Prim hierarchy. For typenig reasons, the PrimParent has to be handled
      * specially and not through the normal interface (due to RemoteExceptions in the interface).
-     * 
+     *
      * Sets parent for this component.
      *
      * @param parent new parent component
@@ -417,7 +417,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      */
     public Object sfResolveParent() {
 	if (sfParent() == null)
-	    if (sfPrimParent() == null) 
+	    if (sfPrimParent() == null)
 		return null;
 	    else
 		return sfPrimParent();
@@ -548,7 +548,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      */
     public void writeOn(Writer ps, int indent) throws IOException {
 	ps.write("extends " + (getEager() ? "" : "LAZY "));
-	
+
 	if (context.size() > 0) {
 	    ps.write(" {\n");
 	    context.writeOn(ps, indent+1);
@@ -791,6 +791,51 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
         }
         return compDesc;
     }
+
+    /**
+     *  Gets configuration description for Obj class. The short class name will
+     *  be used to locate its Reference. Name of the description file will be in lower case.
+     *  System properties that start with same package name as obj  are added to
+     * ComponentDescription if addSystemProperties is true.
+     * @param obj which class Component description has to be read
+     * @param addSystemProperties to select if to add system properties
+     * @param newPhases parser phases to apply to component description
+     *  Takes default when vector is null. Default: type, link, function, predicate.
+     * @return Component Description
+     * @throws SmartFrogException
+     * @throws RemoteException
+     */
+    public static ComponentDescription getClassComponentDescription (Object obj,
+          boolean addSystemProperties, Vector newPhases) throws SmartFrogException {
+        //Get Component description for this log class
+        String className = obj.getClass().toString();
+        className = className.substring(6).replace('.','/');
+        String urlDescription = className+".sf";
+        Reference selectedRef = new Reference (className.substring(className.lastIndexOf("/")+1));
+        Vector phases = new Vector();
+        if (newPhases!=null){
+            phases = newPhases;
+        } else {
+            phases.add("type");
+            phases.add("link");
+            phases.add("function");
+            phases.add("predicate");
+        }
+        // Get componentDescription and
+        ComponentDescription cmpDesc = ComponentDescriptionImpl.sfComponentDescription(
+                                                                   urlDescription.toLowerCase()
+                                                                 , phases
+                                                                 , selectedRef);
+        if (addSystemProperties){
+            //add properties that start with package name.
+            cmpDesc = ComponentDescriptionImpl.addSystemProperties(
+                       obj.getClass().toString().substring(6)+"."
+                     , cmpDesc);
+        }
+
+        return cmpDesc;
+    }
+
 
     /** Special method to be used only by LogFactory to initialize log in
      *  ComponentDescription.

@@ -924,7 +924,7 @@ public class Display extends JFrame implements ActionListener, KeyListener {
    void info() {
       out.println("");
       out.println("*****************************************************");
-      out.println("* "+org.smartfrog.Version.versionString+
+      out.println("* "+org.smartfrog.Version.versionString()+
                   " - (C) Copyright Hewlett-Packard Development Company, LP *");
       out.println("*****************************************************");
       out.println("* Java Version:   " + System.getProperty("java.version"));
