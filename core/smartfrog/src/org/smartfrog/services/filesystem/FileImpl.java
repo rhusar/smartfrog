@@ -238,7 +238,7 @@ public class FileImpl extends PrimImpl implements FileIntf {
             //at this point the type is not supported. So
             //we have to advise the caller that they have an illegal type.
             Reference owner;
-            owner= ComponentHelper.completeNameSafeStatic(component);
+            owner= ComponentHelper.completeNameSafe(component);
             throw SmartFrogResolutionException.illegalClassType(attribute,owner);
         }
     }
