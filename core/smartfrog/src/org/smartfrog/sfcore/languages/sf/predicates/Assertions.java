@@ -48,7 +48,7 @@ public class Assertions extends BasePredicate implements PhaseAction {
     protected void doPredicate() throws SmartFrogCompileResolutionException {
         String description = "";
 
-        ref = component.getCompleteName();
+        ref = component.sfCompleteName();
         ComponentDescription parent = (ComponentDescription) component.getParent();
 
 
@@ -57,21 +57,21 @@ public class Assertions extends BasePredicate implements PhaseAction {
             Object value = context.get(key);
             try {
                 if (!key.toString().startsWith("phase")) {
-		    if (value instanceof Boolean) {
-			if (!((Boolean)value).booleanValue()) { // invalid assertion (ignore if valid!)
-			    throw new SmartFrogCompileResolutionException (
-				"Assertion failure: " + key + " (" + value + ")",
-				null, ref, "predicate", null
-				);
-			}
-		    } else { // wrong type for assertion
-			throw new SmartFrogCompileResolutionException (
-			    "Assertion type is not a boolean: " + key + " (" + description + ")",
-			    null, ref, "predicate", null
-			    );
-		    }
-		}
-	    } catch (Throwable e) {
+            if (value instanceof Boolean) {
+            if (!((Boolean)value).booleanValue()) { // invalid assertion (ignore if valid!)
+                throw new SmartFrogCompileResolutionException (
+                "Assertion failure: " + key + " (" + value + ")",
+                null, ref, "predicate", null
+                );
+            }
+            } else { // wrong type for assertion
+            throw new SmartFrogCompileResolutionException (
+                "Assertion type is not a boolean: " + key + " (" + description + ")",
+                null, ref, "predicate", null
+                );
+            }
+        }
+        } catch (Throwable e) {
                 if (!(e instanceof SmartFrogCompileResolutionException))
                     throw new SmartFrogCompileResolutionException (
                         "unknown error in checking assertinos (" + description + ")" , e, ref, "predicate", null

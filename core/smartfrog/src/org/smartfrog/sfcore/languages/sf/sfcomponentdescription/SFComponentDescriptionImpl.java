@@ -200,7 +200,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
          doPlaceResolve(resState);
       } while (resState.moreToResolve());
       if (resState.unresolved().size() > 0) {
-         throw SmartFrogCompileResolutionException.placeResolution(null,getCompleteName(),
+         throw SmartFrogCompileResolutionException.placeResolution(null,sfCompleteName(),
                resState.unresolved(),null);
       }
    }
@@ -232,8 +232,8 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
              }
 
              if (place( (Reference) key, value, resState)) {
-		 removals.addElement(key);
-	     }
+         removals.addElement(key);
+         }
            } else if (value instanceof ComponentResolver) {
              // Attribute value is resolvable, ask it to resolve itself
              ( (ComponentResolver) value).doPlaceResolve(resState);
@@ -248,7 +248,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
              msg.append(". Possible cause: cyclic reference.");
            }
            throw new SmartFrogCompileResolutionException(msg.toString(), thr,
-               getCompleteName(), null, resState.unresolved());
+               sfCompleteName(), null, resState.unresolved());
          }
       }
 
@@ -284,7 +284,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
       } catch (Exception rex) {
          // If we can't find the target component we leave the attribute
          // as unresolved
-         resState.addUnresolved(key, getCompleteName());
+         resState.addUnresolved(key, sfCompleteName());
 
          return false;
       }
@@ -300,7 +300,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
          ((ComponentDescription) value).setParent(destDescription);
 
          // Remember to go and resolve the newly placed component
-         resState.addUnresolved(value, destDescription.getCompleteName());
+         resState.addUnresolved(value, destDescription.sfCompleteName());
       }
 
       return true;
@@ -325,7 +325,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
       if (resState.unresolved().size() > 0) {
          throw SmartFrogCompileResolutionException.typeResolution(
                  MessageUtil.formatMessage(MSG_UNRESOLVED_REFERENCE),
-                 getCompleteName(),
+                 sfCompleteName(),
                  resState.unresolved(),null);
       }
    }
@@ -361,7 +361,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
               msg.append (". Possible cause: cyclic reference.");
            }
            throw new SmartFrogCompileResolutionException(msg.toString(), thr,
-               getCompleteName(), null, resState.unresolved());
+               sfCompleteName(), null, resState.unresolved());
          }
       }
    }
@@ -393,7 +393,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
             superTypeRef = type;
          }
       } catch (Exception excpt) {
-         resState.addUnresolved(superTypeRef, getCompleteName());
+         resState.addUnresolved(superTypeRef, sfCompleteName());
       }
 
       return superTypeRef == null;
@@ -457,7 +457,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
       if (resState.unresolved().size() > 0) {
          throw SmartFrogCompileResolutionException.linkResolution(
                  MessageUtil.formatMessage(MSG_UNRESOLVED_REFERENCE),
-                 getCompleteName(), resState.unresolved(),null);
+                 sfCompleteName(), resState.unresolved(),null);
       }
    }
 
@@ -494,13 +494,13 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
                   if (result instanceof SFComponentDescription) {
                      ((ComponentDescription) result).setParent(this);
                      resState.haveResolved(true);
-                     resState.addUnresolved(((SFComponentDescription) result).getCompleteName());
+                     resState.addUnresolved(((SFComponentDescription) result).sfCompleteName());
                   }
                }
 
                context.put(key, result);
             } catch (Exception resex) {
-               resState.addUnresolved(value, getCompleteName());
+               resState.addUnresolved(value, sfCompleteName());
             } catch (Throwable thr){
               StringBuffer msg = new StringBuffer("Failed to resolve '");
               msg.append(key.toString());
@@ -511,7 +511,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
                 msg.append(". Possible cause: cyclic reference.");
               }
               throw new SmartFrogCompileResolutionException(msg.toString(), thr,
-                  getCompleteName(), null, resState.unresolved());
+                  sfCompleteName(), null, resState.unresolved());
 
             }
          }

@@ -198,7 +198,7 @@ public class SFProcess implements MessageKeys {
             if (dComp != null) {
                 try {
                     dComp.sfTerminate(TerminationRecord.abnormal(
-                            "Deployment Failure: " + ex, comp.getCompleteName()));
+                            "Deployment Failure: " + ex, comp.sfCompleteName()));
                 } catch (Exception termex) {
                     // ignore
                 }

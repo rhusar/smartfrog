@@ -251,7 +251,7 @@ public class Schema extends BasePredicate implements PhaseAction {
     protected void doPredicate() throws SmartFrogCompileResolutionException {
         String description = "";
 
-        ref = component.getCompleteName();
+        ref = component.sfCompleteName();
         ComponentDescription parent = (ComponentDescription) component.getParent();
 
 

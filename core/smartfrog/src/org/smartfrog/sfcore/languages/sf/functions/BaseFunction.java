@@ -38,7 +38,7 @@ public abstract class BaseFunction implements PhaseAction, MessageKeys {
     protected Context context;
 
     /** The name of the component for exceptions */
-    protected Reference name; 
+    protected Reference name;
 
     /**
      * The method to implement the functionality of any function.
@@ -67,7 +67,7 @@ public abstract class BaseFunction implements PhaseAction, MessageKeys {
      */
     public void forComponent(ComponentDescription cd) {
         component = cd;
-	name = cd.getCompleteName();
+    name = cd.sfCompleteName();
         context = cd.getContext();
     }
 }

@@ -39,7 +39,7 @@ public class TBD extends BasePredicate implements PhaseAction {
      * @throws SmartFrogCompileResolutionException Executing this is an error...
      */
     protected void doPredicate() throws SmartFrogCompileResolutionException {
-       Reference ref = component.getCompleteName();
+       Reference ref = component.sfCompleteName();
        throw new SmartFrogCompileResolutionException (
                                  "attribute is still TBD (to be defined)", null, ref, "predicate", null
                                  );
