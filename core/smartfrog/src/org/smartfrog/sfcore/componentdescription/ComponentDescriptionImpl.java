@@ -26,6 +26,7 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Enumeration;
 import java.util.Vector;
+import java.util.Properties;
 
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.Context;
@@ -561,5 +562,32 @@ public class ComponentDescriptionImpl implements Serializable, Cloneable,
         return (ComponentDescription) obj;
     }
 
+    /**
+     * Adds system properties to component description.
+     * Uses startWith parameter as filter.
+     *
+     * @param startWith system property label (ex. org.smartfrog)
+     * @param compDesc configuration description where to add system properties.
+     * @return this configuration description with system properties added.
+     */
+    public static ComponentDescription addSystemProperties(String startWith,
+        ComponentDescription compDesc) {
+        Properties props = System.getProperties();
+        for (Enumeration e = props.keys(); e.hasMoreElements(); ) {
+            String key = e.nextElement().toString();
+            if (key.startsWith(startWith)) {
+                Object value = props.get(key);
+                try {
+                    // convert to number
+                    value = Double.valueOf((String)value);
+                } catch (Exception ex) {
+                // ignore, value is not a number
+                }
+                String cxtKey = key.substring(startWith.length());
+                compDesc.getContext().put(cxtKey, value);
+            }
+        }
+        return compDesc;
+    }
 
 }
