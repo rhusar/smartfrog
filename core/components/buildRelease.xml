@@ -152,6 +152,10 @@ To use: ant -f buildRelease release
         <exclude name="**/Cvs" />
         <exclude name="**/.#*" />
         <exclude name="**/*.*~" />
+		<exclude name="**/releases/**"/>
+		<exclude name="**/build/**"/>
+		<exclude name="**/test/**"/>
+
    </zipfileset>
    <zipfileset dir=".." prefix="${Name.System}.${version}">
 	<include name="**/common.xml"/>
@@ -186,6 +190,9 @@ To use: ant -f buildRelease release
         <exclude name="**/Cvs" />
         <exclude name="**/.#*" />
         <exclude name="**/*.*~" />
+		<exclude name="**/releases/**"/>
+		<exclude name="**/build/**"/>
+		<exclude name="**/test/**"/>
     </tarfileset>
     <tarfileset dir=".." prefix="${Name.System}.${version}">
 	<include name="**/common.xml"/>
@@ -268,7 +275,7 @@ To use: ant -f buildRelease release
 	
 
 	<macrodef name="copyreleasestars" >
-      <attribute name="project" description="component to copy"/>
+      <aettribute name="project" description="component to copy"/>
       <attribute name="releasesdir" default="${releases.dir}" />
       <attribute name="includes" default="**/*DIST.tar.gz" />
       
@@ -298,6 +305,8 @@ To use: ant -f buildRelease release
   
   <gzip src="../releases/${Name.System}.${version}.${DSTAMP}_DIST.tar" zipfile="../releases/${Name.System}.${version}.${DSTAMP}_DIST.tar.gz"/>
   <delete file="../releases/${Name.System}.${version}.${DSTAMP}_DIST.tar"/>
+  <delete dir="${releases.dir}"/>
+  
   </target>
 
 
