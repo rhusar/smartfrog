@@ -138,11 +138,15 @@ For more information: www.smartfrog.org
   <target name="start-daemon-if-needed-with-logging"
     depends="use-smartfrog-tasks,probe-local-daemon"
     unless="local.daemon.running">
+      <property name="smartfrog.iniFile"
+            location="${test.classes.dir}/org/smartfrog/test/default.ini" />
+      <available file="${smartfrog.iniFile}" property="inifile.found"/>
+      <fail unless="inifile.found">No file:${smartfrog.iniFile}</fail> 
       <sf-startdaemon  failonerror="false">
         <sysproperty key="java.util.config.logging.config.file"
           file="${test.classes.dir}/org/smartfrog/test/logging.properties" />
         <sysproperty key="org.smartfrog.iniFile"
-            file="${build.classes.dir}/org/smartfrog/default.ini" />
+            file="${smartfrog.iniFile}" />
         <sysproperty key="org.smartfrog.sfcore.processcompound.sfDefault.sfDefault"
           file="${test.classes.dir}/org/smartfrog/test/default.sf" />
       </sf-startdaemon>
