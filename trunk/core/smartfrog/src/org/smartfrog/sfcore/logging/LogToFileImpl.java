@@ -21,6 +21,8 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.logging;
 
+import org.smartfrog.sfcore.common.SmartFrogException;
+
 import java.io.PrintStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -64,11 +66,23 @@ public class LogToFileImpl extends LogToErrImpl implements LogToFile {
      * @param intialLogLevel level to log at
      */
     public LogToFileImpl (String name, Integer initialLogLevel) {
-        super();
-        assert name != null;
-        logName = name;
-        // Set initial log level
-        setLevel(initialLogLevel.intValue());
+        super(name,initialLogLevel);
+//        assert name != null;
+//        logName = name;
+//        // Set initial log level
+//        setLevel(initialLogLevel.intValue());
+
+//        //Check Class and read configuration...including system.properties
+//        try {
+//          classComponentDescription = LogImpl.getClassComponentDescription(this, true);
+//        } catch (SmartFrogException ex) {
+//           this.warn(ex.toString());
+//        }
+//        try {
+//          readSFAttributes();
+//        } catch (SmartFrogException ex1) {
+//           this.error("",ex1);
+//        }
 
         PrintStream out=null;
         try {
@@ -87,7 +101,30 @@ public class LogToFileImpl extends LogToErrImpl implements LogToFile {
                 ex1.printStackTrace();
             }
         }
+//        setLevel(initialLogLevel.intValue());
     }
+
+
+    /**
+     *  Reads optional and mandatory attributes.
+     *
+     * @exception  SmartFrogException error while reading attributes
+     * @exception  RemoteException In case of network/rmi error
+     */
+    protected void readSFAttributes() throws SmartFrogException {
+        super.readSFAttributes();
+        if (classComponentDescription==null) return;
+        //Optional attributes.
+        try {
+          path = classComponentDescription.sfResolve(ATR_PATH,path, false);
+          logFileExtension =classComponentDescription.sfResolve(ATR_LOG_FILE_EXTENSION,logFileExtension, false);
+          datedName =classComponentDescription.sfResolve(ATR_USE_DATED_FILE_NAME,datedName, false);
+          redirectSystemOutputs = classComponentDescription.sfResolve(ATR_REDIRECT_SYSTEM_OUTPUTS,redirectSystemOutputs, false);
+        } catch (Exception sex){
+           this.warn("",sex);;
+        }
+    }
+
 
     /**
      * Creates the file using attributes.
