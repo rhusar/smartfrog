@@ -19,6 +19,7 @@
  */
 package org.smartfrog.services.jetty.contexts;
 
+
 import org.smartfrog.services.www.JavaWebApplication;
 
 import java.rmi.Remote;
