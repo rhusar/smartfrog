@@ -411,7 +411,7 @@ component.path :=
   <!-- =================================================================== -->
   <!--  Release                                                            -->
   <!-- =================================================================== -->
-  <target name="release"  depends="clean, copy-files, dist, initdist, copylibs, copydocs, copycomponents, srczip, jdocs " description="Creates clean new release">
+  <target name="release"  depends="clean, copy-files, dist, initdist, copylibs, copydocs, copycomponents, srczip, jdocs, generatedoc " description="Creates clean new release">
 	  <copy tofile="${dist.dir}/build.xml" file="build.xml"/>
 	  <copy tofile="${dist.dir}/buildRelease.xml" file="buildRelease.xml"/>
 	  <copy tofile="${dist.dir}/common.xml" file="common.xml"/>
@@ -427,41 +427,62 @@ component.path :=
 
 	<property environment="env"/>
 	<property name="forrest.home"  location="${env.FORREST_HOME}"/>
+	
 	<import file="${env.FORREST_HOME}/forrest.build.xml"/>
-		<import file="${env.FORREST_HOME}/forrest.antproxy.xml"/>
+	<import file="${env.FORREST_HOME}/forrest.antproxy.xml"/>
 	
 	<target name="seedforrest" depends="seed" description="Creates forrest project template">
 		<echo>Created forrest project template</echo>
 			</target>
 	<property name="comp.home"  location="${SFHOME}/../../components"/>
 	
-		<target name="Collectcompdocs">
-	
+<target name="Collectcompdocs">
+	<delete>
+	    <fileset dir="${comp.home}" includes="forrest.properties"/>
+	</delete>
+		<copy todir="${comp.home}">
+        <fileset dir="./forrest_skin">
+				 <include name="forrest.properties" />
+			</fileset>
+		</copy>	
 		<mkdir dir="${comp.home}/src/documentation/content/xdocs/smarfrogdoc"/>
-
-		<mkdir dir="${comp.home}/src/documentation/content/xdocs/smarfrogdoc/cddlm"/>
+		<copy todir="${comp.home}/src/documentation/content/xdocs/smarfrogdoc">
+        <fileset dir="./forrest_skin">
+				 <include name="SFComponents.xml" />
+			</fileset>
+		</copy>	
+		<!--mkdir dir="${comp.home}/src/documentation/content/xdocs/smarfrogdoc/cddlm"/>
 		<copy todir="${comp.home}/src/documentation/content/xdocs/smarfrogdoc/cddlm">
         <fileset dir="./cddlm/doc">
 			<include name="**/*.*" />
 		</fileset>
-		</copy>	
+		</copy-->	
 		<mkdir dir="${comp.home}/src/documentation/content/xdocs/smarfrogdoc/emailer"/>
 		<copy todir="${comp.home}/src/documentation/content/xdocs/smarfrogdoc/emailer">
         	<fileset dir="./emailer/doc">
-        <include name="**/*.*" />
-		</fileset>
+				 <include name="**/*.*" />
+			</fileset>
+			<fileset dir="./forrest_skin">
+				 <include name="emailer.xml" />
+			</fileset>
 		</copy>	
 		<mkdir dir="${comp.home}/src/documentation/content/xdocs/smarfrogdoc/jetty"/>
 		<copy todir="${comp.home}/src/documentation/content/xdocs/smarfrogdoc/jetty">
          <fileset dir="./jetty/doc">
         <include name="**/*.*" />
       </fileset>
+	  	<fileset dir="./forrest_skin">
+				 <include name="jetty.xml" />
+			</fileset>
 		</copy>	
 		<mkdir dir="${comp.home}/src/documentation/content/xdocs/smarfrogdoc/logger"/>
 		<copy todir="${comp.home}/src/documentation/content/xdocs/smarfrogdoc/logger">
         <fileset dir="./logger/doc">
          <include name="**/*.*" />
       </fileset>
+	  	<fileset dir="./forrest_skin">
+				 <include name="logger.xml" />
+			</fileset>
 	  	</copy>	
 
 		<mkdir dir="${comp.home}/src/documentation/content/xdocs/smarfrogdoc/net"/>
@@ -469,31 +490,78 @@ component.path :=
         <fileset dir="./net/doc">
          <include name="**/*.*" />
       </fileset>
+	  	<fileset dir="./forrest_skin">
+				 <include name="net.xml" />
+			</fileset>
 		</copy>
 		<mkdir dir="${comp.home}/src/documentation/content/xdocs/smarfrogdoc/ssh"/>
 		<copy todir="${comp.home}/src/documentation/content/xdocs/smarfrogdoc/ssh">
         <fileset dir="./ssh/doc">
         <include name="**/*.*"/>
       </fileset>
+	  	<fileset dir="./forrest_skin">
+				 <include name="ssh.xml" />
+			</fileset>
 		</copy>	
 		<mkdir dir="${comp.home}/src/documentation/content/xdocs/smarfrogdoc/utils"/>
 		<copy todir="${comp.home}/src/documentation/content/xdocs/smarfrogdoc/utils">
          <fileset dir="./utils/doc">
         <include name="**/*.*" />
       </fileset>
+	  	<fileset dir="./forrest_skin">
+				 <include name="utils.xml" />
+			</fileset>
 		</copy>	
  		<mkdir dir="${comp.home}/src/documentation/content/xdocs/smarfrogdoc/scripting"/>
 		<copy todir="${comp.home}/src/documentation/content/xdocs/smarfrogdoc/scripting">
        <fileset dir="./scripting/docs">
-        <include name="**/*.*" />
+        <include name="**/*.sxw" />
       </fileset>
+	  	<fileset dir="./forrest_skin">
+				 <include name="scripting.xml" />
+			</fileset>
 		</copy>	
 		<mkdir dir="${comp.home}/src/documentation/content/xdocs/smarfrogdoc/slp"/>
 		<copy todir="${comp.home}/src/documentation/content/xdocs/smarfrogdoc/slp">
         <fileset dir="./slp/docs">
         <include name="**/*.sxw" />
       </fileset>
+	  	<fileset dir="./forrest_skin">
+				 <include name="slp.xml" />
+			</fileset>
 		</copy>	
+	
+	<delete>
+    <fileset dir="${comp.home}/src/documentation/content/xdocs" includes="index.xml"/>
+	<fileset dir="${comp.home}/src/documentation/content/xdocs" includes="site.xml"/>
+	<fileset dir="${comp.home}/src/documentation/content/xdocs" includes="tabs.xml"/>
+	<fileset dir="${comp.home}/src/documentation" includes="skinconf.xml"/>
+	</delete>
+		
+		<copy todir="${comp.home}/src/documentation/content/xdocs">
+			<fileset dir="./forrest_skin">
+				 <include name="site.xml" />
+				</fileset>
+				<fileset dir="./forrest_skin">
+					 <include name="index.xml" />
+				</fileset>
+				<fileset dir="./forrest_skin">
+				 <include name="tabs.xml" />
+			</fileset>
+		</copy>	
+	
+		<copy todir="${comp.home}/src/documentation">
+			<fileset dir="./forrest_skin">
+				 <include name="skinconf.xml" />
+				</fileset>
+		</copy>	
+			<copy todir="${comp.home}/src/documentation/content/xdocs/images">
+			<fileset dir="./forrest_skin">
+				 <include name="sf.*" />
+				</fileset>
+		</copy>	
+	
+	
 		<echo>${comp.home}</echo>
  	</target>
 
@@ -501,16 +569,21 @@ component.path :=
 	<ant target="site"/>
 		</target>
 	<target name="copyforrestdocs">
-	<echo>Forrest site docs Copied</echo>
+
 		<copy todir="${dist.docs.dir}">
       <fileset dir="${comp.home}/build/site">
 	     <include name="**/*.*" />
+		 <exclude name="samples/*.*"/>
+		 <exclude name="test1.html"/>
+		 <exclude name="test2.html"/>
+		 <exclude name="hello.pdf"/>
 		</fileset>
     </copy>
+		<echo>Forrest site docs Copied</echo>
 	</target>
 
 	<target name="generatedoc" depends="seedforrest, Collectcompdocs , generatesite , copyforrestdocs" description="Document Generation">
-	<echo>Forrest Documents Copied</echo>
+	<echo>Forrest Documents Generated</echo>
 	</target>
 
 
