@@ -437,7 +437,7 @@ public class SFSystem implements MessageKeys {
      * @throws UnknownHostException if the target host is unknown
      * @throws ConnectException if the remote system's SmartFrog daemon is unreachable
      * @throws RemoteException if something goes wrong during the communication
-     * @throws Exception if anything else went wrong
+     * @throws SFGeneralSecurityException for security trouble
      */
     public static ProcessCompound runSmartFrog()
             throws SmartFrogException, UnknownHostException, ConnectException,
@@ -461,6 +461,13 @@ public class SFSystem implements MessageKeys {
         return process;
     }
 
+    /**
+     * initialise the system.  Turn security on, read properties from an ini file
+     * and then look at stack tracing.
+     * This method is idempotent and synchronised; you can only init the system once.
+     * @throws SmartFrogException
+     * @throws SFGeneralSecurityException
+     */
     synchronized public static void initSystem() throws SmartFrogException,
         SFGeneralSecurityException {
         if (!alreadySystemInit) {
