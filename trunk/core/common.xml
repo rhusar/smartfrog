@@ -17,6 +17,11 @@
   
 </description>
 
+  <!-- ========================================================== -->
+  <!-- common init loads in various settings, 
+       declaring paths and properties, and preset/macro tasks
+       but not the smartfrog custom tasks -->
+  <!-- ========================================================== -->
 
   <target name="init-common">
     <property file="build.properties"/>
@@ -55,6 +60,18 @@
     <property name="smartfrog.tasks.jar"
       location="${extras.dir}/ant/build/dist/lib/${smartfrog.tasks.name}"/>
 
+      <!-- common directories -->
+    <property name="src.dir" location="src"/>
+    <property name="build.dir" location="build"/>
+    <property name="build.classes.dir" location="${build.dir}/classes"/>
+    <property name="test.dir" location="${build.dir}/test"/>
+    <property name="test.classes.dir" location="${test.dir}/classes"/>
+    <property name="test.data.dir" location="${test.dir}/data"/>
+    <property name="test.datafiles.dir" location="test/files"/>
+    <property name="test.reports.dir" location="${test.dir}/reports"/>
+    <property name="test.src.dir" location="test" />
+    <property name="dist.dir" location="${build.dir}/dist"/>
+    <property name="dist.lib.dir" location="${build.dir}/dist/lib"/>
     
     
     <!-- define a new javac task with new default options -->  
@@ -123,6 +140,15 @@
       </condition>
     </presetdef>
     
+    <!-- wait for 10 seconds for a daemon. Set maxwait to a different
+    value for more or less time, timeoutproperty to the name of a property
+    to set on failure -->
+    <presetdef name="sf-waitfordaemon">
+        <waitfor maxwait="10" maxwaitunit="second">
+            <socket server="localhost" port="3800"/>
+        </waitfor>
+    </presetdef>
+    
     <!-- reporting wrapper -->
     <macrodef name="sf-test-report">
       <attribute name="data"/>
@@ -148,7 +174,7 @@
     <macrodef name="copy-useful-files">
      <attribute name="src"/>
      <attribute name="dest"/>
-     <attribute name="pattern" default="**/*.xml,**/*.dtd,**/*.xsd,**/*.sf,**/*.properties" />
+     <attribute name="pattern" default="**/*.xml,**/*.dtd,**/*.xsd,**/*.sf,**/*.properties,**/*.wsdd" />
      <sequential>
        <echo level="verbose">copying @{pattern} from @{src} to @{dest}</echo>
        <copy todir="@{dest}">
@@ -158,45 +184,46 @@
       </sequential>
     </macrodef>
     
+    <!-- rmic configuration -->
+    <presetdef name="sf-rmic">
+      <rmic 
+        verify="true"
+        stubversion="1.2" />
+    </presetdef>
   </target>
 
-<!-- 
-  This target is used to set up the standard output for builds and tests and things
-  Set up any property before calling it to override. 
- --> 
-  <target name="init-standard-output-dirs" >
-    <property name="build.dir" location="build"/>
-    <property name="build.classes.dir" location="${build.dir}/classes"/>
+  <!-- ========================================================== -->
+  <!-- 
+    This target is used to set up the standard output for builds and tests and things
+   --> 
+  <!-- ========================================================== -->
+  <target name="init-standard-output-dirs" depends="init-common">
     <mkdir dir="${build.dir}" />    
     <mkdir dir="${build.classes.dir}" />    
     
     
-    <property name="test.dir" location="${build.dir}/test"/>
-    <property name="test.classes.dir" location="${test.dir}/classes"/>
-    <property name="test.data.dir" location="${test.dir}/data"/>
-    <property name="test.datafiles.dir" location="test/files"/>
-    <property name="test.reports.dir" location="${test.dir}/reports"/>
-    <property name="test.src.dir" location="test" />
     <mkdir dir="${test.dir}" />
     <mkdir dir="${test.classes.dir}" />
     <mkdir dir="${test.data.dir}" />
     <mkdir dir="${test.datafiles.dir}" />
     <mkdir dir="${test.reports.dir}" />
     
-    <property name="dist.dir" location="${build.dir}/dist"/>
-    <property name="dist.lib.dir" location="${build.dir}/dist/lib"/>
     <mkdir dir="${dist.dir}"/>
     <mkdir dir="${dist.lib.dir}"/>
   </target>
   
+  <!-- ========================================================== -->
   <!-- cleanup target -->
+  <!-- ========================================================== -->
   <target name="clean" description="clean up build and dist"
       depends="init-standard-output-dirs">
     <delete dir="${build.dir}" />    
     <delete dir="${dist.dir}"  />    
   </target>  
    
+  <!-- ========================================================== -->
   <!-- probe for the smartfrog binaries existing in the dist dir. -->
+  <!-- ========================================================== -->
     
   <target name="verify-smartfrog"  depends="init-common"
     description="verify smartfrog is present, fail if not">
@@ -212,7 +239,9 @@
     <echo level="verbose">Smartfrog found in ${smartfrog.dist.lib.dir}</echo>
   </target>
 
+  <!-- ========================================================== -->
   <!-- probe for tasks and use them if they are found; fail if not -->
+  <!-- ========================================================== -->
   <target name="use-smartfrog-tasks" depends="init-common"
     description="declare the classpath and imports for the smartfrog tasks">
     <path id="smartfrog.tasks.classpath">
@@ -234,5 +263,39 @@
       />
   </target>
     
+  
+  <!-- ========================================================== -->
+  <!--  look for a local daemon. Sets the property  local.daemon.running if
+    one is listening on port 3800-->
+  <!-- ========================================================== -->
+  <target name="probe-local-daemon" depends="init-common">
+    <sf-daemonfound property="local.daemon.running" />
+  </target>
+
+  <!-- ========================================================== -->
+  <!-- conditionally start the daemon if one was not found already  -->
+  <!-- ========================================================== -->
+  <target name="start-daemon-if-needed" 
+    depends="use-smartfrog-tasks,probe-local-daemon"
+    unless="local.daemon.running">
+      <sf-startdaemon  />
+  </target>
+  
+  <!-- ========================================================== -->
+  <!-- this is the counterpoint to start-daemon-if-needed 
+    if the probe did not find a daemon, then we shut down any daemon
+    that we created.-->
+  <!-- ========================================================== -->
+  <target name="stop-daemon-if-started"
+    depends="use-smartfrog-tasks"
+    unless="local.daemon.running" >
+    <sf-stopdaemon failonerror="false" />
+  </target>  
+  
+  <target name="shutdown"
+    depends="use-smartfrog-tasks"
+    description="shut down a local smartfrog daemon">
+    <sf-stopdaemon failonerror="false" />
+  </target> 
   
 </project>   

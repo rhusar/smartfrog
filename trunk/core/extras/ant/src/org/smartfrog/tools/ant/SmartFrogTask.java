@@ -24,6 +24,7 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.taskdefs.Java;
 import org.apache.tools.ant.types.Environment;
 import org.apache.tools.ant.types.PropertySet;
+import org.apache.tools.ant.types.Assertions;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -321,6 +322,14 @@ public abstract class SmartFrogTask extends TaskBase {
         this.taskTimeout = taskTimeout;
     }
 
+    /**
+     * assertions to enable in this program
+     *
+     * @param asserts assertion set
+     */
+    public void addAssertions(Assertions asserts) {
+        smartfrog.addAssertions(asserts);
+    }
     /**
      * adds the ini file by setting the appropriate system property
      */

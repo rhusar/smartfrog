@@ -82,6 +82,14 @@ ant -lib ../../build/dist/lib/smartfrog-tasks.jar -lib ../../../../smartfrog/dis
         <application name="app" file="subdir/subfile.sf"/>
       </sf-run>
     </target>
-
+    
+    <target name="testAssertions">
+      <sf-run >
+        <application name="app" descriptor="${resource.sf}"/>
+        <assertions enableSystemAssertions="true">
+          <enable/>
+        </assertions>
+      </sf-run>
+    </target> 
     
 </project>      
