@@ -40,6 +40,8 @@ import org.smartfrog.sfcore.logging.LogFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.io.DataInputStream;
+import java.io.ByteArrayOutputStream;
 import java.net.UnknownHostException;
 import java.rmi.ConnectException;
 import java.rmi.RemoteException;
@@ -478,21 +480,50 @@ public class SFSystem implements MessageKeys {
     /**
      * Gets input stream for the given resource. Throws exception if stream is
      * null.
-     * @param resource Name of the resource
+     * @param resource Name of the resource. SF url valid.
      * @return Input stream for the resource
      * @throws SmartFrogException if input stream could not be created for the
      * resource
      * @see SFClassLoader
      */
-    public static InputStream getInputStreamForResource(String resource)
+    public static InputStream getInputStreamForResource(String resourceSFURL)
                                                 throws SmartFrogException{
         InputStream  is = null;
-        is = SFClassLoader.getResourceAsStream(resource);
+        is = SFClassLoader.getResourceAsStream(resourceSFURL);
         if(is == null) {
             throw new SmartFrogException(MessageUtil.
-                    formatMessage(MSG_FILE_NOT_FOUND, resource));
+                    formatMessage(MSG_FILE_NOT_FOUND, resourceSFURL));
         }
         return is;
+    }
+
+    /**
+     * Gets ByteArray for the given resource. Throws exception if stream is
+     * null.
+     * @param resource Name of the resource. SF url valid.
+     * @return ByteArray (byte []) with the resource data
+     * @throws SmartFrogException if input stream could not be created for the
+     * resource
+     * @see SFClassLoader
+     */
+    public static byte[] getByteArrayForResource(String resourceSFURL) throws
+        SmartFrogException {
+        try {
+            DataInputStream iStrm = new DataInputStream(
+                getInputStreamForResource(
+                resourceSFURL));
+            byte resourceData[];
+            ByteArrayOutputStream bStrm = new ByteArrayOutputStream();
+            int ch;
+            while ((ch = iStrm.read())!=-1) {
+                bStrm.write(ch);
+            }
+            resourceData = bStrm.toByteArray();
+            bStrm.close();
+            return resourceData;
+        } catch (IOException ex) {
+            throw SmartFrogException.forward(ex);
+        }
     }
 
 
