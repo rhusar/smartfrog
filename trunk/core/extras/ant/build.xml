@@ -52,6 +52,9 @@
       or other projects will not work.
     </fail>
 
+    <!-- purge any existing task file, assuming it is not in use-->
+    <delete file="${smartfrog.dist.lib.dir}/${smartfrog.tasks.name}"
+      failonerror="false" />
   </target>
     
 

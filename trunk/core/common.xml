@@ -439,7 +439,7 @@
   <target name="use-smartfrog-tasks" depends="init-common"
     description="declare the classpath and imports for the smartfrog tasks">
     <path id="smartfrog.tasks.classpath">
-      <path refid="smartfrog.core.classpath"/>
+      <path refid="smartfrog.classpath"/>
       <path refid="smartfrog.components.classpath"/>
       <pathelement location="${smartfrog.tasks.jar}"/>
     </path>
