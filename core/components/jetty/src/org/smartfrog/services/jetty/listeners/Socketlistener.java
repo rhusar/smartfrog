@@ -11,6 +11,7 @@ import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.sfcore.processcompound.SFProcess;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.services.jetty.JettyHelper;
 import org.mortbay.http.SocketListener;
 import org.mortbay.http.HttpServer;
@@ -37,32 +38,37 @@ public class Socketlistener extends PrimImpl implements SocketListenerIntf {
 
   /** Standard RMI constructor */
   public Socketlistener() throws RemoteException {
-	  super();
+          super();
   }
-  
+
   /**
    * Deploy the SocketListener listener
-   * @exception  SmartFrogException In case of error while deploying  
-   * @exception  RemoteException In case of network/rmi error  
+   * @exception  SmartFrogException In case of error while deploying
+   * @exception  RemoteException In case of network/rmi error
    */
   public void sfDeploy() throws SmartFrogException, RemoteException {
-	  super.sfDeploy();
+          super.sfDeploy();
   }
 
   /**
    * sfStart: adds the SocketListener to the jetty server
-   * 
-   * @exception  SmartFrogException In case of error while starting  
-   * @exception  RemoteException In case of network/rmi error 
-   */  
+   *
+   * @exception  SmartFrogException In case of error while starting
+   * @exception  RemoteException In case of network/rmi error
+   */
   public void sfStart() throws SmartFrogException, RemoteException {
       super.sfStart();
-      listenerPort = sfResolve(listenerPortRef, listenerPort, true);
-      serverHost = sfResolve(serverHostRef, serverHost, true);
-      jettyHelper.bindToServer();
-      addlistener(listenerPort, serverHost);
+      try {
+        listenerPort = sfResolve(listenerPortRef, listenerPort, true);
+        jettyHelper.bindToServer();
+        addlistener(listenerPort, serverHost);
+        // Optional. If null or not defined, then it listens using all network interfaces
+        serverHost = sfResolve(serverHostRef, serverHost, false);
+        } catch (Exception ex) {
+            throw SmartFrogDeploymentException.forward(ex);
+        }
   }
-      
+
   /**
    * Termination phase
    */
@@ -70,20 +76,20 @@ public class Socketlistener extends PrimImpl implements SocketListenerIntf {
       jettyHelper.terminateListener(listener);
       super.sfTerminateWith(status);
   }
-  
+
   /**
    * Add the listener to the http server
-   * @exception  RemoteException In case of network/rmi error 
-   */  
+   * @exception  RemoteException In case of network/rmi error
+   */
   public void addlistener(int listenerPort, String serverHost) throws
           SmartFrogException, RemoteException {
-	  try {
+          try {
           listener = new SocketListener();
           listener.setPort(listenerPort);
           listener.setHost(serverHost);
           jettyHelper.addAndStartListener(listener);
-	  } catch (UnknownHostException unex) {
-		   throw SmartFrogException.forward(unex);	
-	  }
-  } 	
+          } catch (UnknownHostException unex) {
+                   throw SmartFrogException.forward(unex);
+          }
+  }
 }

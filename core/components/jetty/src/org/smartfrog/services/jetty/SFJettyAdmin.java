@@ -31,7 +31,7 @@ public class SFJettyAdmin extends PrimImpl implements JettyAdminIntf {
     Reference contextPathRef = new Reference(CONTEXT_PATH);
 
     int listenerPort = 8081;
-    String httpserverHost;
+    String httpserverHost=null;
     String contextPath;
 
     /**
@@ -83,8 +83,8 @@ public class SFJettyAdmin extends PrimImpl implements JettyAdminIntf {
         try {
             server = new HttpServer();
             listenerPort = sfResolve(listenerPortRef, listenerPort, true);
-            httpserverHost = sfResolve(httpserverHostRef, "null",
-                    true);
+            httpserverHost = sfResolve(httpserverHostRef, httpserverHost,
+                    false);
             contextPath = sfResolve(contextPathRef, "/", false);
             configureHttpServer();
         } catch (Exception ex) {
