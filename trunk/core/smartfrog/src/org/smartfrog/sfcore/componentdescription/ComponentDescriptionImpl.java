@@ -666,8 +666,8 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
                 } catch (Exception ex) {
                 // ignore, value is not a number
                 }
-                if ((value.toString().startsWith("true"))||
-                    (value.toString().startsWith("false"))){
+                if ((value.toString().equals("true"))||
+                    (value.toString().equals("false"))){
                   try {
                     // convert to boolean
                     value = Boolean.valueOf( (String) value);
