@@ -165,7 +165,7 @@ public class SFLogToFile extends PrimImpl implements Prim, PrintMsgInt,
             termR = new TerminationRecord("normal",
                     "Not deployed in rootProcess", this.sfCompleteName());
 
-            TerminatorThread terminator = new TerminatorThread(this,termR);
+            TerminatorThread terminator = new TerminatorThread(this,termR).detach();
             terminator.start();
             }
     }
