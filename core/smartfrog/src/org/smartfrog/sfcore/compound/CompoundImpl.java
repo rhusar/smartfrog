@@ -569,7 +569,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
      * Parentage changed in component hierachy. A notification is sent to all
      * children.
      */
-    public synchronized void sfParentageChanged() throws RemoteException {
+    public void sfParentageChanged() throws RemoteException {
         for (Enumeration e = sfChildren(); e.hasMoreElements();) {
              Prim p = (Prim)(e.nextElement());
              p.sfParentageChanged();
