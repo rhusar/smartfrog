@@ -101,6 +101,7 @@ ant -lib ..\..\build\dist\lib\smartfrog-tasks.jar -lib ..\..\..\..\smartfrog\dis
           <application name="app" file="valid.sf"/>
         </sf-startdaemon>
         <sequential>
+          <sf-block/>
           <sleep milliseconds="${medium.timeout}"/>
            <sf-stopdaemon />
         </sequential>
