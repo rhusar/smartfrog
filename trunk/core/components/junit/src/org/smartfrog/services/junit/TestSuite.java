@@ -34,6 +34,7 @@ import java.util.List;
 
 public interface TestSuite extends Remote, TestResultAttributes  {
 
+    public String ATTR_NAME = "name";
     public String ATTR_IF = "if";
     public String ATTR_UNLESS = "unless";
 
@@ -43,7 +44,7 @@ public interface TestSuite extends Remote, TestResultAttributes  {
      * @param configuration
      * @throws RemoteException
      */
-    void bind(RunnerConfiguration configuration) throws RemoteException;
+    void bind(RunnerConfiguration configuration) throws RemoteException, SmartFrogException;
 
     /**
      * run the test

@@ -18,25 +18,21 @@
 
  */
 
-
 package org.smartfrog.services.junit.test.targets;
 
 import junit.framework.TestCase;
 
 /**
- * This test fails
- * Date: 05-Jul-2004
- * Time: 22:08:54
+ * Test system.out, system.err output
  */
-public class FailureTest extends TestCase {
+public class OutputTest extends TestCase {
 
-    public FailureTest(String s) {
-        super(s);
+    public void testOut() {
+        System.out.println("printing to System.out");
     }
 
-    public void testFailure() {
-        assertTrue("expected failure",false);
+    public void testErr() {
+        System.out.println("printing to System.err");
     }
 
-    
 }

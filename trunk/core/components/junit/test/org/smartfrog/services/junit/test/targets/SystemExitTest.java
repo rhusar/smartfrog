@@ -17,26 +17,18 @@
  For more information: www.smartfrog.org
 
  */
-
-
 package org.smartfrog.services.junit.test.targets;
 
 import junit.framework.TestCase;
 
 /**
- * This test fails
- * Date: 05-Jul-2004
- * Time: 22:08:54
+ * This is a tricky test as it calls system.exit to shut down the VM.
+ * It is only picked up if there ia security manager to catch it
+ * or you fork the JVM and detect a JVM outage
  */
-public class FailureTest extends TestCase {
+public class SystemExitTest extends TestCase {
 
-    public FailureTest(String s) {
-        super(s);
+    public void testExit() {
+        System.exit(0);
     }
-
-    public void testFailure() {
-        assertTrue("expected failure",false);
-    }
-
-    
 }

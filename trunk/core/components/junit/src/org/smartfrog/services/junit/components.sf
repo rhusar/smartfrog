@@ -48,6 +48,7 @@ For more information: www.smartfrog.org
  */
 
 TestSuiteSchema extends Schema {
+    name extends String;
     if extends OptionalBoolean;
     unless extends OptionalBoolean;
 }
@@ -77,6 +78,7 @@ TestSuite extends Prim {
  */
 JUnitTestSuite extends TestSuite {
     junitTestSuiteSchema extends JUnitTestSuiteSchema;
+    name "JUnit";
     sfClass "org.smartfrog.services.junit.JUnitTestSuiteImpl";
 }
 
@@ -112,10 +114,14 @@ ConsoleListener extends TestListener {
 XMLListenerSchema extends Schema {
 /** output directories are compusory and can be a path or a File ref*/
     outputDirectory extends Compulsory ;
+    //outputFile extends Compulsory ;
+    //XML preamble: comments, XSLT references, etc.
+    preamble extends OptionalString;
     useHostname extends Boolean;
 }
 
 XMLListener extends TestListener {
+    schema extends XMLListenerSchema;
     sfClass "org.smartfrog.services.junit.listeners.OneHostXMLListener";
     useHostname "true";
 }

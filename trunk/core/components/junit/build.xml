@@ -77,7 +77,7 @@ For more information: www.smartfrog.org
     <!-- ========================================================== -->
     <target name="init-deploy-properties" depends="init">
       <property name="deploy.host" value="localhost"/>
-      <property name="application.name" value="{project.name}"/>
+      <property name="application.name" value="${project.name}"/>
     </target>
     
   <!-- ========================================================== -->
@@ -102,10 +102,7 @@ For more information: www.smartfrog.org
     <target name="deploy" depends="dist,init-deploy-properties"
         description="deploy">
         <sf-tourl property="target.jar.url" file="${target.jar}">
-<!--           <filelist>
-            <file name="${junit.jar}"/>
-          </filelist>
- -->        </sf-tourl>
+        </sf-tourl>
         <sf-tourl property="junit.jar.url" file="${junit.jar}"/>
         <property name="codebase" 
          value="${target.jar.url} ${junit.jar.url}" />

@@ -22,7 +22,7 @@ package org.smartfrog.services.junit;
 import java.io.Serializable;
 
 /**
- * This is the configuration to turn
+ * This is the configuration to run
  * created 17-May-2004 17:22:03
  * The clone policy creates a shallow clone, and retains the same listener
  */
@@ -33,24 +33,19 @@ public class RunnerConfiguration implements Serializable, Cloneable {
      * who listens to the tests?
      * This is potentially remote
      */
-    private TestListener listener;
+    private TestListenerFactory listenerFactory;
 
     /**
      * flag to identify whether the task should fail when it is time
      */
     private boolean keepGoing = true;
 
-    /**
-     * fork into a new process?
-     */
-    private boolean fork = false;
-
-    public TestListener getListener() {
-        return listener;
+    public TestListenerFactory getListenerFactory() {
+        return listenerFactory;
     }
 
-    public void setListener(TestListener listener) {
-        this.listener = listener;
+    public void setListenerFactory(TestListenerFactory listenerFactory) {
+        this.listenerFactory = listenerFactory;
     }
 
     public boolean getKeepGoing() {
@@ -60,15 +55,6 @@ public class RunnerConfiguration implements Serializable, Cloneable {
     public void setKeepGoing(boolean keepGoing) {
         this.keepGoing = keepGoing;
     }
-
-    public boolean getFork() {
-        return fork;
-    }
-
-    public void setFork(boolean fork) {
-        this.fork = fork;
-    }
-
 
     /**
      * the shallow clone copies all the simple settings, but shares the test listener.

@@ -31,6 +31,11 @@ import java.io.Serializable;
 public class TestInfo implements Serializable, Cloneable {
 
     /**
+     * session info to use when forwarding
+     */
+    private String sessionID;
+
+    /**
      * text from Test.toString();
      *
      * @serial
@@ -181,6 +186,14 @@ public class TestInfo implements Serializable, Cloneable {
 
     public void setFault(ThrowableTraceInfo fault) {
         this.fault = fault;
+    }
+
+    public String getSessionID() {
+        return sessionID;
+    }
+
+    public void setSessionID(String sessionID) {
+        this.sessionID = sessionID;
     }
 
     /**

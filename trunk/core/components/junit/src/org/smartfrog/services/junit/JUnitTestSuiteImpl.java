@@ -38,6 +38,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
+import java.net.UnknownHostException;
 
 
 
@@ -67,11 +68,16 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite, juni
     private Statistics stats;
 
 
+    private String hostname;
+
+    private String suitename;
 
     /**
      * test class list we build up
      */
     private HashMap testClasses;
+
+    private TestListener listener;
 
     public JUnitTestSuiteImpl() throws RemoteException {
         helper = new ComponentHelper(this);
@@ -146,14 +152,22 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite, juni
         } else {
             //add a dot at the end if we need it
             if(packageValue.length()>0 && packageValue.charAt(packageValue.length()-1)!='.') {
-                packageValue+='.';
+                packageValue= packageValue+'.';
             }
         }
         buildClassList();
+        try {
+            hostname=java.net.InetAddress.getLocalHost().getHostName();
+        } catch (UnknownHostException e) {
+            hostname="localhost";
+        }
+        //name
+        suitename=sfResolve(ATTR_NAME,(String)null,true);
     }
 
     /**
-     * build the list of classes to run
+     * build the list of classes to run.
+     * At this point the list is already flat.
      */
     protected void buildClassList() {
         testClasses = new HashMap();
@@ -217,31 +231,45 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite, juni
             return true;
         }
 
-        boolean failed=false;
-        Iterator it= testClasses.keySet().iterator();
-        while (it.hasNext()) {
-            String classname = (String) it.next();
-            try {
-                testSingleClass(classname);
-                updateResultAttributes(false);
-            } catch (ClassNotFoundException e) {
-                throw SmartFrogException.forward(e);
-            } catch (IllegalAccessException e) {
-                throw SmartFrogException.forward(e);
-            } catch (InvocationTargetException e) {
-                throw SmartFrogException.forward(e);
+        //bind to our listener
+        listener=configuration.getListenerFactory().listen(hostname,suitename,System.currentTimeMillis());
+
+        //now run all the tests
+        try {
+            boolean failed=false;
+            Iterator it= testClasses.keySet().iterator();
+            while (it.hasNext()) {
+                String classname = (String) it.next();
+                try {
+                    testSingleClass(classname);
+                    updateResultAttributes(false);
+                } catch (ClassNotFoundException e) {
+                    throw SmartFrogException.forward(e);
+                } catch (IllegalAccessException e) {
+                    throw SmartFrogException.forward(e);
+                } catch (InvocationTargetException e) {
+                    throw SmartFrogException.forward(e);
+                }
+                if(Thread.currentThread().isInterrupted()) {
+                    log.debug("Interrupted test thread");
+                    return false;
+                }
+                updateResultAttributes(true);
+                failed = !stats.isSuccessful();
+                if(failed && !configuration.getKeepGoing()) {
+                    return false;
+                }
             }
-            if(Thread.currentThread().isInterrupted()) {
-                log.debug("Interrupted test thread");
-                return false;
-            }
-            updateResultAttributes(true);
-            failed = !stats.isSuccessful();
-            if(failed && !configuration.getKeepGoing()) {
-                return false;
-            }
+            return !failed;
+        } finally {
+            //as we exit, we mark the listener as null and end the suite.
+            TestListener l = getListener();
+            //mark the listener as null first, so that any failure to end the
+            //suite doesnt affect our deref
+            listener = null;
+            //end the suite.
+            l.endSuite();
         }
-        return !failed;
     }
 
     /**
@@ -308,7 +336,7 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite, juni
      * @return
      */
     public TestListener getListener() {
-        return configuration.getListener();
+        return listener;
     }
 
     /**
@@ -321,6 +349,8 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite, juni
             getListener().addError(info);
         } catch (RemoteException e) {
             IgnoreRemoteFault(e);
+        } catch (SmartFrogException e) {
+            IgnoreRemoteFault(e);
         }
     }
 
@@ -328,7 +358,7 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite, juni
      * ignore a remote fault by logging it
      * @param e
      */
-    private void IgnoreRemoteFault(RemoteException e) {
+    private void IgnoreRemoteFault(Exception e) {
         log.warn("ignoring",e);
     }
 
@@ -341,6 +371,8 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite, juni
         try {
             getListener().addFailure(info);
         } catch (RemoteException e) {
+            IgnoreRemoteFault(e);
+        } catch (SmartFrogException e) {
             IgnoreRemoteFault(e);
         }
     }
@@ -355,6 +387,8 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite, juni
             getListener().endTest(info);
         } catch (RemoteException e) {
             IgnoreRemoteFault(e);
+        } catch (SmartFrogException e) {
+            IgnoreRemoteFault(e);
         }
     }
 
@@ -367,6 +401,8 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite, juni
         try {
             getListener().startTest(info);
         } catch (RemoteException e) {
+            IgnoreRemoteFault(e);
+        } catch (SmartFrogException e) {
             IgnoreRemoteFault(e);
         }
     }

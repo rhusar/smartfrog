@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2004 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -25,42 +25,25 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 /**
- * This is the public testrunner interface
- * created 15-Apr-2004 11:51:44
+ * This is a factory for remote listeners.
+ * Whenever a caller connects to a remote listener, it should ask the factory
+ * for a listener instance. This will return a new remote interface
+ * {@link TestListener}, which is used for listening.
  */
 
+public interface TestListenerFactory extends Remote {
 
-public interface TestRunner extends Remote , TestResultAttributes
- {
 
     /**
-     * name of the listener
-     */
-    String ATTR_LISTENER = "listener";
-
-    /**
-     * name of the keepgoing attr
-     */
-    String ATTR_KEEPGOING = "keepgoing";
-
-    /**
-     * should deploy fail if there is an error?
-     */
-    String ATTR_FAILONERROR = "failOnError";
-
-
-    String ATTR_THREAD_PRIORITY="threadPriority";
-
-
-    TestListenerFactory getListenerFactory() throws RemoteException;
-
-    void setListenerFactory(TestListenerFactory listener) throws RemoteException;
-
-    /**
-     * run the test
+     * bind to a caller
      *
-     * @throws RemoteException
+     * @param hostname  name of host
+     * @param suitename name of test suite
+     * @param timestamp start timestamp (UTC)
+     *
+     * @return a listener to talk to
      */
-    boolean runTests() throws RemoteException, SmartFrogException;
+    TestListener listen(String hostname, String suitename, long timestamp)
+            throws RemoteException, SmartFrogException;
 
 }

@@ -23,6 +23,7 @@ package org.smartfrog.services.junit.listeners;
 
 import org.smartfrog.services.junit.TestListener;
 import org.smartfrog.services.junit.TestInfo;
+import org.smartfrog.services.junit.TestListenerFactory;
 
 import java.rmi.RemoteException;
 
@@ -38,7 +39,7 @@ import java.rmi.RemoteException;
  * Time: 17:08:37
  */
 
-public interface BufferingListener extends TestListener {
+public interface BufferingListener extends TestListenerFactory {
 
     /**
      * get the number of errors
@@ -118,4 +119,20 @@ public interface BufferingListener extends TestListener {
      * @throws RemoteException
      */
     boolean testsWereSuccessful() throws RemoteException;
+
+    /**
+     * get the number of times that callers started listening
+     *
+     * @return and interface that should have events reported to it
+     *
+     * @throws RemoteException
+     */
+    int getSessionStartCount() throws RemoteException;
+
+    /**
+     * get the number of times that callers ended listening
+     * @return
+     * @throws RemoteException
+     */
+    int getSessionEndCount() throws RemoteException;
 }

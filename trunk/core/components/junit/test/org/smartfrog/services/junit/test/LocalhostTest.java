@@ -55,6 +55,9 @@ public class LocalhostTest extends TestRunnerTestBase {
             spinTillFinished(listener, 1);
 
             assertTrue("tests run",listener.getStartCount()==1);
+            assertTrue("session started", listener.getSessionStartCount() == 1);
+            assertTrue("session ended",
+                    listener.getSessionEndCount() == 1);
             assertTrue("all tests passed", listener.testsWereSuccessful());
 
         } finally {

@@ -18,26 +18,18 @@ For more information: www.smartfrog.org
 
 */
 
-#include "/org/smartfrog/components.sf"
-#include "/org/smartfrog/predicates.sf"
-#include "/org/smartfrog/services/junit/components.sf"
+#include "/files/components.sf"
 
     /**
      * run all tests in the suite. Then analyse the results
      * that are stored in the listener
      */
 
-sfConfig extends TestRunner {
+sfConfig extends testAll {
 
     //buffer the results
 
     listener extends BufferingListener;
 
-
-    //run the rigged tests
-    tests extends JUnitTestSuite {
-        package "org.smartfrog.services.junit.test.targets";
-        classes ["FailureTest","SuccessTest","ThrowingTest"];
-    }
 
 }
