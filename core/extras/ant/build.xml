@@ -105,7 +105,8 @@
     <path id="tests.compile.classpath">
       <path refid="smartfrog.classpath"/>
       <pathelement location="${smartfrog.tasks.jar}"/>
-      <path refid="testutil.classpath"/>
+      <path refid="testutil.classpath"
+      />
     </path>
     
     <sf-javac-with-ant 
@@ -118,25 +119,34 @@
   </target>
   
   <!-- run the tests -->
-  <target name="test" depends="compile-tests,want-testutil"
-    description="run unit tests"
+  <target name="run-tests" depends="compile-tests,want-testutil"
     if="testutil.found">
+    <path id="tests.run.classpath">
+      <path refid="tests.compile.classpath"/>
+      <pathelement location="${test.classes.dir}"/>
+      <pathelement path="${java.class.path}"/>        
+    </path>
+
     <sf-junit 
            errorProperty="test.failed"
            failureProperty="test.failed" 
+           includeantruntime="true"
            >
+       <classpath 
+          refid="tests.run.classpath"/>
         <sysproperty key="test.files.dir"
             value="${test.src.dir}/files" />
-      <classpath>
-        <path refid="tests.compile.classpath"/>
-        <pathelement location="${test.classes.dir}"/>
-      </classpath>
       <batchtest todir="${test.data.dir}" >
         <fileset dir="${test.classes.dir}">
           <include name="**/*Test.class" />
        </fileset>
       </batchtest>
     </sf-junit>
+  </target>  
+
+  <target name="test" depends="run-tests"
+    description="run unit tests"
+    if="testutil.found">
     
     <!-- generate the reports-->
     <sf-test-report data="${test.data.dir}"
