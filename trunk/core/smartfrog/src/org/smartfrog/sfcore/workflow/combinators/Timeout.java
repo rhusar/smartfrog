@@ -70,7 +70,7 @@ public class Timeout extends EventCompoundImpl implements Compound {
      * Deploys the component and reads configuration attributes.
      *
      * @throws RemoteException In case of network/rmi error
-     * @throws SmartFrogDeploymentException In case of any error while
+     * @throws SmartFrogException In case of any error while
      *         deploying the component
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
@@ -84,7 +84,7 @@ public class Timeout extends EventCompoundImpl implements Compound {
      * Deploys and manages the component and starts the timer.
      *
      * @throws RemoteException In case of network/rmi error
-     * @throws SmartFrogLifecycleException In case of any error while  starting
+     * @throws SmartFrogException In case of any error while  starting
      *         the component
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {

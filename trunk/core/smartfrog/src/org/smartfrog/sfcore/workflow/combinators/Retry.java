@@ -69,7 +69,7 @@ public class Retry extends EventCompoundImpl implements Compound {
      * Reads the basic configuration of the component and deploys it.
      *
      * @throws RemoteException In case of network/rmi error
-     * @throws SmartFrogDeploymentException In case of any error while
+     * @throws SmartFrogException In case of any error while
      *         deploying the component
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {

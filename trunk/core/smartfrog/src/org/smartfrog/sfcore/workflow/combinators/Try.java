@@ -67,7 +67,7 @@ public class Try extends EventCompoundImpl implements Compound {
      * Overrides EventCOmpoundImpl.sfStart.
      *
      * @throws RemoteException In case of network/rmi error
-     * @throws SmartFrogDeploymentException In case of any error while
+     * @throws SmartFrogException In case of any error while
      *         deploying the component
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
@@ -80,7 +80,7 @@ public class Try extends EventCompoundImpl implements Compound {
      * Deploys and manages the primary subcomponent.
      *
      * @throws RemoteException In case of network/rmi error
-     * @throws SmartFrogLifecycleException In case of any error while  starting
+     * @throws SmartFrogException In case of any error while  starting
      *         the component
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
