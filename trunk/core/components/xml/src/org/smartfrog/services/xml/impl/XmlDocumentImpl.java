@@ -20,10 +20,21 @@
 package org.smartfrog.services.xml.impl;
 
 import nu.xom.Node;
+import nu.xom.Document;
+import nu.xom.Serializer;
 import org.smartfrog.services.xml.interfaces.XmlDocument;
+import org.smartfrog.services.xml.interfaces.XmlElement;
+import org.smartfrog.services.xml.interfaces.LocalNode;
+import org.smartfrog.services.filesystem.FileImpl;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.prim.Prim;
 
 import java.rmi.RemoteException;
+import java.util.Enumeration;
+import java.io.*;
 
 /**
  * An XML Document. TODO
@@ -40,9 +51,87 @@ public class XmlDocumentImpl extends CompoundXmlNode implements XmlDocument {
      *
      * @throws nu.xom.XMLException if needed
      */
-    protected Node createNode() throws RemoteException, SmartFrogException {
-        return null;
+    public Node createNode() throws RemoteException, SmartFrogException {
+        Prim root = resolveRoot();
+        try {
+            XmlElementImpl element=(XmlElementImpl) root;
+            Document document = new Document(element.getElement());
+            return document;
+
+        } catch (ClassCastException e) {
+            throw new SmartFrogRuntimeException(ATTR_ROOT
+                +"is not an XMLElement",e,this);
+
+        }
     }
 
+    private Prim resolveRoot() throws SmartFrogResolutionException, RemoteException {
+        Prim root = sfResolve(ATTR_ROOT, (Prim) null, true);
+        return root;
+    }
 
+    /**
+     * get the node typecast to a document
+     * @return
+     */
+    public Document getDocument() {
+        return (Document) getNode();
+    }
+
+    /**
+     * root is added when we create the document; this call does the others
+     * @throws SmartFrogException
+     * @throws RemoteException
+     */
+    protected void addChildren() throws SmartFrogException, RemoteException {
+
+        Prim root=resolveRoot();
+        //we still iterate through comments and things, but skip the root
+        for (Enumeration e = sfChildren(); e.hasMoreElements();) {
+            Object elem = e.nextElement();
+            if(!(elem instanceof Prim)) {
+                continue;
+            }
+            Prim p=(Prim) elem;
+
+            if (p instanceof LocalNode && p!=root) {
+                LocalNode node = (LocalNode) elem;
+                appendChild(node);
+            }
+        }
+    }
+
+    /**
+     * After calling the superclass (and so deploying all our children),
+     * we generate the XML,
+     * Then save the document, if desired
+     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     *                                  error while deploying
+     * @throws java.rmi.RemoteException In case of network/rmi error
+     */
+    public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
+        super.sfDeploy();
+
+        String encoding = sfResolve(ATTR_ENCODING, (String) null, true);
+        String filename = FileImpl.lookupAbsolutePath(this,
+                    ATTR_FILENAME,
+                    (String) null,
+                    null,
+                    false,
+                    null);
+        if(filename!=null) {
+            //save to a file
+        }
+
+    }
+
+    protected void saveToFile(String filename,String encoding) throws IOException {
+        File file=new File(filename);
+        FileOutputStream fileout;
+        fileout = new FileOutputStream(file);
+        OutputStream out;
+        out = new BufferedOutputStream(fileout);
+        Serializer serializer=new Serializer(out,encoding);
+        serializer.write(getDocument());
+    }
 }

@@ -3,7 +3,7 @@ package org.smartfrog.services.xml.interfaces;
 /**
  * Namespace declaration
  */
-public interface XmlNameSpaceDeclaration {
+public interface XmlNamespaceDeclaration {
 
     /**
      * namespace extends String;

@@ -43,7 +43,7 @@ public abstract class XmlAttributeImpl extends SimpleXmlNode
      *
      * @throws nu.xom.XMLException if needed
      */
-    protected Node createNode() throws RemoteException, SmartFrogException {
+    public Node createNode() throws RemoteException, SmartFrogException {
         String localname = sfResolve(ATTR_LOCALNAME, (String) null, true);
         String namespace = sfResolve(ATTR_NAMESPACE, (String) null, false);
         String value = sfResolve(ATTR_VALUE, "", true);

@@ -38,7 +38,7 @@ public class XmlCommentImpl extends SimpleXmlNode implements XmlComment {
      *
      * @return a Node of type {@link nu.xom.Comment}
      */
-    protected Node createNode() throws RemoteException, SmartFrogException {
+    public Node createNode() throws RemoteException, SmartFrogException {
         String text = sfResolve(ATTR_COMMENT, "", true);
         return new Comment(text);
     }

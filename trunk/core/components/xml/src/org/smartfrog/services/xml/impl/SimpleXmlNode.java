@@ -3,6 +3,7 @@ package org.smartfrog.services.xml.impl;
 import nu.xom.Node;
 import nu.xom.XMLException;
 import org.smartfrog.services.xml.interfaces.XmlNode;
+import org.smartfrog.services.xml.interfaces.LocalNode;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.prim.PrimImpl;
@@ -12,23 +13,12 @@ import java.rmi.RemoteException;
 /**
  * This node contains whatever
  */
-public abstract class SimpleXmlNode extends PrimImpl implements XmlNode {
+public abstract class SimpleXmlNode extends PrimImpl implements XmlNode, LocalNode {
 
     /**
-     * this is our underlying node.
+     * most of the work is delegated to the helper
      */
-    private Node node;
-
-    /**
-     * XML data.
-     */
-    private String xml;
-
-    /**
-     * text of the message when wrapping a {@link XMLException} with a {@link
-     * SmartFrogException}
-     */
-    public static final String ERROR_XML_FAULT = "XML exception when creating node or generating XML";
+    XmlNodeHelper helper=new XmlNodeHelper(this);
 
     /**
      * empty constructor
@@ -44,7 +34,7 @@ public abstract class SimpleXmlNode extends PrimImpl implements XmlNode {
      * @param node
      */
     public void setNode(Node node) {
-        this.node = node;
+        helper.setNode(node);
     }
 
     /**
@@ -53,7 +43,7 @@ public abstract class SimpleXmlNode extends PrimImpl implements XmlNode {
      * @param xml
      */
     public void setXml(String xml) {
-        this.xml = xml;
+        helper.setXml(xml);
     }
 
     /**
@@ -62,7 +52,7 @@ public abstract class SimpleXmlNode extends PrimImpl implements XmlNode {
      * @return
      */
     public Node getNode() {
-        return node;
+        return helper.getNode();
     }
 
     /**
@@ -71,18 +61,8 @@ public abstract class SimpleXmlNode extends PrimImpl implements XmlNode {
      * @return the XML; may be null
      */
     public String getXml() {
-        return xml;
+        return helper.getXml();
     }
-
-    /**
-     * create a node of the appropriate type. This is called during deployment;
-     *
-     * @return a new node
-     *
-     * @throws XMLException if needed
-     */
-    protected abstract Node createNode() throws RemoteException,
-            SmartFrogException;
 
     /**
      * generate XML from the doc. This always triggers a recalculate of
@@ -96,18 +76,7 @@ public abstract class SimpleXmlNode extends PrimImpl implements XmlNode {
      *                            XMLExceptions
      */
     public String toXML() throws RemoteException, SmartFrogException {
-        try {
-            if (node == null) {
-                //demand create the node
-                node = createNode();
-            }
-            xml = node.toXML();
-        } catch (XMLException e) {
-            throw new SmartFrogException(ERROR_XML_FAULT, e, this);
-        }
-        this.sfReplaceAttribute(ATTR_XML, xml);
-        validate();
-        return xml;
+        return helper.toXML();
     }
 
     /**
@@ -119,12 +88,19 @@ public abstract class SimpleXmlNode extends PrimImpl implements XmlNode {
      */
     public void validate() throws SmartFrogException,
             RemoteException {
-        boolean valid = sfResolve(ATTR_VALID, true, true);
-        if (!valid) {
-            throw new SmartFrogLivenessException("XML fails validity test :"
-                    + xml,
-                    this);
-        }
+        helper.validate();
+    }
+
+    /**
+     * After calling the superclass, we generate the XML
+     *
+     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     *                                  error while deploying
+     * @throws java.rmi.RemoteException In case of network/rmi error
+     */
+    public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
+        super.sfDeploy();
+        toXML();
     }
 
 }

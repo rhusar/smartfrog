@@ -22,9 +22,11 @@ package org.smartfrog.services.xml.impl;
 import nu.xom.Element;
 import nu.xom.Node;
 import org.smartfrog.services.xml.interfaces.XmlElement;
+import org.smartfrog.services.xml.interfaces.LocalNode;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
 import java.rmi.RemoteException;
+import java.util.Enumeration;
 
 /**
  * Probably the most complex of all the nodes, the element implementation
@@ -41,11 +43,52 @@ public class XmlElementImpl extends CompoundXmlNode implements XmlElement {
      *
      * @throws nu.xom.XMLException if needed
      */
-    protected Node createNode() throws RemoteException, SmartFrogException {
+    public Node createNode() throws RemoteException, SmartFrogException {
         String localname = sfResolve(ATTR_LOCALNAME, (String) null, true);
         String namespace = sfResolve(ATTR_NAMESPACE, (String) null, false);
         Element element = new Element(localname, namespace);
-        //TODO: recurse
         return element;
     }
+
+    /**
+     * Get the node as an element
+     * @return the node typecast to an element
+     */
+    public Element getElement() {
+        return (Element) getNode();
+    }
+
+    /**
+     *
+     * @throws SmartFrogException
+     * @throws RemoteException
+     */
+    protected void addChildren() throws SmartFrogException, RemoteException {
+        for (Enumeration e = sfChildren(); e.hasMoreElements();) {
+            Object elem = e.nextElement();
+            if (elem instanceof LocalNode) {
+                LocalNode node = (LocalNode) elem;
+                appendChild(node);
+            } else if(elem instanceof XmlNamespaceDeclarationImpl) {
+                //namespaces are special
+                XmlNamespaceDeclarationImpl declaration = (XmlNamespaceDeclarationImpl) elem;
+                declaration.addDeclaration(getElement());
+            }
+        }
+    }
+
+    /**
+     * add all children as a node
+     */
+    /*
+    protected void addAllChildNodes() {
+        for (Enumeration e = sfChildren(); e.hasMoreElements();) {
+            Object elem = e.nextElement();
+            if (elem instanceof LocalNode) {
+                LocalNode node = (LocalNode) elem;
+                appendChild(node);
+            }
+        }
+    }
+    */
 }

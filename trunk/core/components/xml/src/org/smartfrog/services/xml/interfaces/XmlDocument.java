@@ -22,12 +22,6 @@ public interface XmlDocument extends XmlNode {
     static final String ATTR_ENCODING = "encoding";
 
     /**
-     * flag to trigger generation when we deploy generateOnDeploy extends
-     * Boolean;
-     */
-    static final String ATTR_GENERATE_ON_DEPLOY = "generateOnDeploy";
-
-    /**
      * root node must be a Document Node. root extends Compulsory
      */
     static final String ATTR_ROOT = "root";

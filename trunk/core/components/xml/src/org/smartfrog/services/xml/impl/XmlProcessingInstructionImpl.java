@@ -40,7 +40,7 @@ public class XmlProcessingInstructionImpl extends SimpleXmlNode
      *
      * @return a Node of type {@link nu.xom.ProcessingInstruction}
      */
-    protected Node createNode() throws RemoteException, SmartFrogException {
+    public Node createNode() throws RemoteException, SmartFrogException {
         String target = sfResolve(ATTR_TARGET, "", true);
         String data = sfResolve(ATTR_DATA, "", true);
         return new ProcessingInstruction(target, data);
