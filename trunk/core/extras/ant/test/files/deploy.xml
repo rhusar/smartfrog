@@ -105,4 +105,30 @@ ant -lib ../../build/dist/lib/smartfrog-tasks.jar -lib ../../../../smartfrog/dis
       </parallel>
     </target>    
     
+    <target name="testDeployInline">
+     <parallel>
+        <sf-startdaemon  timeout="${long.timeout}" >
+        </sf-startdaemon>
+        <sequential>
+          <sf-block/>
+          <antcall target="testResource" />
+        </sequential>
+      </parallel>
+    </target>   
+    
+    <target name="testInline">
+    <property name="port" value="8080"/>
+      <sf-deploy >
+        <application name="app">
+#include "org/smartfrog/components.sf"
+
+Server extends Prim {
+	port ${port};
+}
+
+sfConfig extends Server{
+}        
+        </application>
+      </sf-deploy>
+    </target>    
 </project>      

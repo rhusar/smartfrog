@@ -8,7 +8,7 @@
   on Ant1.5! 
   
   To build and run the tests, you need ant-testutil.jar, which you get
-  by running "ant test-jar" in Ant
+  by running "ant test-jar" in Ant or from http://gump.covalent.net/jars/latest/ant/ant-testutil.jar
   
 </description>
 
@@ -20,8 +20,12 @@
   <target name="init" 
     depends="init-common,verify-smartfrog,init-standard-output-dirs">
     <property name="src.dir" location="src"/>
-    <property name="target.name" value="{smartfrog.tasks.name}"/>
+    <property name="target.name" value="${smartfrog.tasks.name}"/>
     <property name="target.jar" location="${smartfrog.tasks.jar}" />
+    <property name="dist.tar" 
+      location="${smartfrog.tasks.dist.dir}/${smartfrog.tasks.prefix}.tar" />
+    <property name="dist.zip" 
+      location="${smartfrog.tasks.dist.dir}/${smartfrog.tasks.prefix}.zip" />
     <condition property="system.tests.enabled">
       <istrue value="${system.tests}"/>
     </condition>    
@@ -46,14 +50,14 @@
     <copy-useful-files src="${src.dir}" dest="${build.classes.dir}" />
   </target>
   
-  <target name="dist" depends="compile"
-    description="make a distribution">
+  <target name="package" depends="compile"
+    description="make the jar">
     <jar destfile="${target.jar}">
       <fileset dir="${build.classes.dir}" includes="**/*" />
     </jar>
   </target>
   
-  <target name="test1" depends="dist,use-smartfrog-tasks">
+  <target name="test1" depends="package,use-smartfrog-tasks">
     <sf-parse />
     <parallel>
       <sf-startdaemon 
@@ -70,12 +74,12 @@
     
   </target>
   
-  <target name="stopdaemon" depends="dist,use-smartfrog-tasks">
+  <target name="stopdaemon" depends="package,use-smartfrog-tasks">
     <sf-stopdaemon 
       classpathref="smartfrog.tasks.classpath"/>
   </target>
   
-  <target name="default" depends="dist,test">
+  <target name="default" depends="package,test">
     <!-- todo -->
   </target>  
   
@@ -111,7 +115,7 @@
   </target>
   
   <target name="compile-tests" 
-      depends="init,want-testutil,dist,use-smartfrog-tasks"
+      depends="init,want-testutil,package,use-smartfrog-tasks"
       if="testutil.found">
       <!-- set up a new path with the tasks and testutil -->
     <property name="test.src.dir" location="test/files"/>
@@ -174,6 +178,11 @@
       failed="test.failed"/>
 
   </target>  
+
+<!-- ==================================================================== -->
+<!-- this little section hacks into Ant's own CVS tree to hand off document
+  generation. It is nasty because the automated docgen is not quite production
+  ready -->
   
 
   <!-- this target does the extra xdocs initialisation -->
@@ -234,5 +243,31 @@
     <property name="docs.dest" location="${build.docs.dir}"/>
   </ant>  
 </target>  
+<!-- ==================================================================== -->
+<!-- end xdocs support -->
+<!-- ==================================================================== -->
   
+<target name="dist" depends="test,zip,tar" 
+  description="Create a full distribution" />
+
+  <!-- do all prework -->
+<target name="prepare-for-dist" depends="package">
+  <copy todir="${dist.doc.dir}">
+    <fileset dir="${doc.dir}">
+      <include name="**/*.sxw"/>
+      <include name="**/*.sxi"/>
+      <include name="**/*.html"/>
+    </fileset>
+  </copy>
+  
+</target>
+
+<target name="zip" depends="prepare-for-dist" 
+  description="Create a zip file distribution" >
+</target>
+
+<target name="tar" depends="prepare-for-dist" 
+  description="Create a tar file distribution" >
+</target>
+
 </project>   
