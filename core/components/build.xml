@@ -155,7 +155,7 @@ For more information: www.smartfrog.org
 	<delete dir="src"/> <!-- Forrest releated -->
 	<delete dir="build"/>  <!-- Forrest releated -->
 	<delete file="forrest.properties"/>
-	<delete file="status.properties"/>
+	<delete file="status.xml"/>
 
 
   </target>
