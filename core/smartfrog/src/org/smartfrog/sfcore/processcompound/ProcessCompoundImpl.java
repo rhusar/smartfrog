@@ -705,6 +705,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
                 r.addElement(ReferencePart.host((canonicalHostName)));
 
                 Object key = sfParent.sfAttributeKeyFor(this);
+                System.out.println("PC completeName got "+ key);
 
                 if (key!=null) {
                     r.addElement(ReferencePart.here(key));
@@ -860,6 +861,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
             } catch (SmartFrogResolutionException e) {
                 if (sflog().isTraceEnabled()) sflog().trace(" Creating a new ProcessCompound: "+ name.toString());
                 pc = addNewProcessCompound(name, cd);
+                pc.sfParentageChanged();
             }
         } else { // I am a child process - find in the parent
             pc = ((ProcessCompound) sfParent()).sfResolveProcess(name, cd);
