@@ -60,7 +60,7 @@ Reference URL:http://ant.apache.org
   <property name="is.component" value="true"  />
 
 
-   <property name="doc.dir" location="docs"/>
+   <!--property name="doc.dir" location="docs"/-->
 
 
   <!-- =================================================================== -->
