@@ -2,6 +2,7 @@
 <html>
 <head>
 <title>Compiere Error</title>
+<link href="standard.css" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 <h1>Compiere Error</h1>
