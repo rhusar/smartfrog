@@ -316,14 +316,14 @@ public class ConfigurationDescriptor implements MessageKeys{
               (((resultMessage!=null)||
                 (resultException!=null))&&(this.resultType!=Result.SUCCESSFUL))) {
                   messageError = new StringBuffer();
-                  messageError.append("\n   Error:");
+                  messageError.append("\n   Result:");
                   if ((resultMessage!=null)&&(resultMessage.toString().trim()!="")) {
                      messageError.append(lineSeparator);
-                     messageError.append(resultMessage.toString());
+                     messageError.append("Message: '"+ resultMessage.toString()+"'");
                   }
                   if (resultException!=null) {
                       messageError.append(lineSeparator);
-                      messageError.append(parseException(resultException,lineSeparator));
+                      messageError.append("Exception: '"+parseException(resultException,lineSeparator)+"'");
                   }
                   if (originalSFACT!=null) {
                     messageError.append(lineSeparator);
