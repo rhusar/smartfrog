@@ -29,6 +29,7 @@ import org.smartfrog.sfcore.languages.sf.PhaseAction;
 import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferencePart;
+import org.smartfrog.sfcore.security.SFClassLoader;
 
 
 
@@ -77,7 +78,7 @@ public class Schema extends BasePredicate implements PhaseAction {
                             throws SmartFrogCompileResolutionException {
         boolean optional = true;
         String binding = "anyBinding";
-        String valueClass = "anyClass";
+        Object valueClass = "anyClass";
         String description = "";
 
         String errorString = "error in schema";
@@ -107,7 +108,7 @@ public class Schema extends BasePredicate implements PhaseAction {
         }
 
         try {
-            valueClass = (String) predicate.sfResolve(classRef);
+            valueClass =  predicate.sfResolve(classRef);
         } catch (Throwable e) {
             throw new SmartFrogCompileResolutionException (
                      errorString + "error reading class for attribute '" + name+"'", e, ref, "predicate", null
@@ -120,17 +121,26 @@ public class Schema extends BasePredicate implements PhaseAction {
             description = "";
         }
 
+        checkSchemaClass(name,attributes, optional, binding,
+                             valueClass, description, errorString);
+    }
+
+    private void checkSchemaClass(Object name, ComponentDescription attributes,
+                                  boolean optional, String binding,
+                                  Object schemaClass, String description,
+                                  String errorString) throws SmartFrogCompileResolutionException {
         try {
             try {
-                Object testvalue = attributes.sfResolve(new Reference(ReferencePart.here(name)));
-                String testvalueClass = testvalue.getClass().getName();
+
+                Object testValue = attributes.sfResolve(new Reference(ReferencePart.here(name)));
+                String testvalueClass = testValue.getClass().getName();
 
                 if (testvalueClass.equals("org.smartfrog.sfcore.reference.Reference")) {
                     boolean condition =
                         binding.equals("lazy") ||
                         binding.equals("anyBinding") ||
-                        valueClass.equals("anyClass") ||
-                        (binding.equals("eager") &&  valueClass.equals(testvalueClass));
+                        schemaClass.equals("anyClass") ||
+                        (binding.equals("eager") &&  isValidClass(schemaClass,testValue));
 
                     if (!condition)
                         throw new SmartFrogCompileResolutionException (
@@ -142,14 +152,13 @@ public class Schema extends BasePredicate implements PhaseAction {
                                errorString + "non-reference value found for lazy attribute " + getNameAndDescription(name,description)+"",
                                null, ref, "predicate", null
                             );
-                      //else if (!(valueClass.equals("anyClass")) && !(java.lang.Class.forName(valueClass).isAssignableFrom(testvalue.getClass())))
-                      else if (!(isValidClass(valueClass,testvalue)))
+                      //else if (!(valueClass.equals("anyClass")) && !(SFClassLoader.forName(valueClass).isAssignableFrom(testvalue.getClass())))
+                      else if (!(isValidClass(schemaClass,testValue)))
                         throw new SmartFrogCompileResolutionException (
-                               errorString + "wrong class found for attribute " + getNameAndDescription(name,description)+ ", expected: " + valueClass + ", found: " + testvalueClass,
+                               errorString + "wrong class found for attribute " + getNameAndDescription(name,description)+ ", expected: " + schemaClass + ", found: " + testvalueClass,
                                null, ref, "predicate", null
                             );
                 }
-
 
             } catch (SmartFrogResolutionException re) {
                 if (!optional) {
@@ -168,21 +177,25 @@ public class Schema extends BasePredicate implements PhaseAction {
         }
     }
 
-    protected boolean isValidClass (Vector schemaClass, Object foundClassToValidate) throws java.lang.ClassNotFoundException {
-      boolean isValid = false;
-      for (Enumeration keys = schemaClass.elements(); keys.hasMoreElements();) {
-          if (isValidClass(keys.nextElement().toString(),foundClassToValidate)){
-             isValid = true;
-             break;
-          }
-      }
-      return isValid;
+
+    protected boolean isValidClass (Object schemaClass, Object foundClassToValidate) throws java.lang.ClassNotFoundException {
+        if (schemaClass instanceof String ) {
+           return isValidClass ((String) schemaClass, foundClassToValidate);
+        } else {
+            Vector schemaClassV = (Vector) schemaClass;
+            for (Enumeration keys = schemaClassV.elements(); keys.hasMoreElements(); ) {
+               if (isValidClass(keys.nextElement().toString(),foundClassToValidate)){
+                   return true;
+               }
+            }
+        }
+        return false;
     }
-//else if (!(valueClass.equals("anyClass")) && !(java.lang.Class.forName(valueClass).isAssignableFrom(testvalue.getClass())))
+
     protected boolean isValidClass (String schemaClass, Object foundClassToValidate) throws java.lang.ClassNotFoundException {
         return ((schemaClass.equals("anyClass"))
                 ||
-                (java.lang.Class.forName(schemaClass).isAssignableFrom(foundClassToValidate.getClass())));
+                (SFClassLoader.forName(schemaClass).isAssignableFrom(foundClassToValidate.getClass())));
     }
 
     protected String getNameAndDescription (Object name, String description){
