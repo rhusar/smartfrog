@@ -12,7 +12,7 @@ if exist "%SFHOME%\jre\bin\java.exe" set path=%SFHOME%\jre\bin
 rem call %SFHOME%\bin\setClassPath
 call "%SFHOME%\bin\setSFProperties"
 
-rem sfDefault files only need it in sfDaemon and sfRun
+rem sfDefault files are only needed in sfDaemon and sfRun
 if defined SFDEFAULTSF  set SFCMDPARAMETERS=%SFCMDPARAMETERS% %SFDEFAULTSF%
 
 java %SFCMDPARAMETERS% org.smartfrog.SFSystem  -a :DEPLOY:%1::: %2
