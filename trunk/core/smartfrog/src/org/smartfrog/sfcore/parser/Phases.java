@@ -30,11 +30,11 @@ import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 /**
  * Defines the Phases interface. Objects that implement this interface are
  * created by the parser. The phases may then be invoked and the finally the
- * resultant Phases instance may be converted to a ComponentDescritpion for
- * handing to the SmartFrog deployment engine.
+ * resultant Phases instance may be converted to a simple class implementing
+ * only ComponentDescritpion for handing to the SmartFrog deployment engine.
  *
  */
-public interface Phases {
+public interface Phases extends ComponentDescription {
     /**
      * Evaluate all the phases required of the description implementing the
      * interface. The list of phases is defined as a default for the language
