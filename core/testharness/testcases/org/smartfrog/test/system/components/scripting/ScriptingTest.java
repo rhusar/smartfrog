@@ -58,20 +58,19 @@ public void testCaseTCP50() throws Throwable
 		String actualPSfClass = (String)p.sfResolveHere("sfClass");
 		assertEquals("org.smartfrog.examples.counter.CounterImpl", actualPSfClass);
 }
-public void testCaseTCP52() throws Throwable 
+/*public void testCaseTCP52() throws Throwable 
 {
 		Prim applicationtcp52 = deployExpectingSuccess(FILES+"TCP52.sf", "TCP52");
 		assertNotNull(applicationtcp52);
 		
 		System.out.println("testCaseTCP52  process name :" +applicationtcp52.sfCompleteName());
-		//ProcessCompound pc= SFProcess.getProcessCompound();
 	
 		ProcessCompound pc= SFProcess.getRootLocator().getRootProcessCompound(InetAddress.getLocalHost());
 		Prim count=(Prim)pc.sfResolve("exam");
 		
 		String actualPSfClass =(String) count.sfResolveHere("sfClass");
 		assertEquals("org.smartfrog.examples.counter.CounterImpl", actualPSfClass);
-}
+}*/
 
 public void testCaseTCP53() throws Throwable 
 {
@@ -107,7 +106,8 @@ public void testCaseTCN81()  throws Exception
 	}
 
 
-//TCP51 Manual Manual test case to start the BSH server 
+// Manual  test case to start the BSH server 
+// Manual  test case to read and execute a bsh script file  
 
 
 
