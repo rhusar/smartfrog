@@ -33,16 +33,15 @@ import org.smartfrog.services.cddlm.generated.api.types.UnboundedXMLAnyNamespace
 import java.util.Properties;
 
 /**
- * this processor extracts options from the request.
- * If any option is marked mustUnderstand and is not understood, it throws
- * a fault
- * created Aug 13, 2004 1:53:05 PM
+ * this processor extracts options from the request. If any option is marked
+ * mustUnderstand and is not understood, it throws a fault created Aug 13, 2004
+ * 1:53:05 PM
  */
 
-public class OptionProcessor extends Processor{
+public class OptionProcessor extends Processor {
 
-    private Properties propertyMap= new Properties();
-    private boolean validateOnly=false;
+    private Properties propertyMap = new Properties();
+    private boolean validateOnly = false;
 
     private static final URI propertyURI;
     private static final URI validateURI;
@@ -50,9 +49,11 @@ public class OptionProcessor extends Processor{
     static {
         try {
             propertyURI =
-                new URI(org.smartfrog.services.cddlm.cdl.Constants.OPTION_PROPERTIES);
+                    new URI(
+                            org.smartfrog.services.cddlm.cdl.Constants.OPTION_PROPERTIES);
             validateURI =
-                new URI(org.smartfrog.services.cddlm.cdl.Constants.OPTION_VALIDATE_ONLY);
+                    new URI(
+                            org.smartfrog.services.cddlm.cdl.Constants.OPTION_VALIDATE_ONLY);
         } catch (URI.MalformedURIException e) {
             throw new RuntimeException(e);
         }
@@ -68,12 +69,16 @@ public class OptionProcessor extends Processor{
     }
 
     /**
-     * run through the option list. Ignore options we know nothing of
-     * but bail out on things that are unknown and marked MustUnderstand
+     * run through the option list. Ignore options we know nothing of but bail
+     * out on things that are unknown and marked MustUnderstand
+     *
      * @param options
      * @throws AxisFault
      */
     public void process(OptionMapType options) throws AxisFault {
+        if (options == null) {
+            return;
+        }
         OptionType[] array = options.getOption();
         int len = array.length;
         for (int i = 0; i < len; i++) {
@@ -94,7 +99,7 @@ public class OptionProcessor extends Processor{
             }
             if (!processed) {
                 //not processed
-                if (log.isDebugEnabled()) log.debug("Ignored header "+name);
+                if (log.isDebugEnabled()) log.debug("Ignored header " + name);
                 if (option.isMustUnderstand()) {
                     log.warn("failed to process option " + name);
                     raiseFault(Constants.FAULT_NOTUNDERSTOOD, name);
@@ -105,23 +110,23 @@ public class OptionProcessor extends Processor{
 
     private void processValidateOption(OptionType option) throws AxisFault {
         assertNoXml(option);
-        validateOnly=option.is_boolean();
-        if (log.isDebugEnabled()) log.debug("validateOnly :="+validateOnly);
+        validateOnly = option.is_boolean();
+        if (log.isDebugEnabled()) log.debug("validateOnly :=" + validateOnly);
     }
 
     private void processPropertiesOption(OptionType option) throws AxisFault {
         UnboundedXMLAnyNamespace xml = option.getXml();
         MessageElement[] contents = xml.get_any();
-        if(contents.length>1) {
+        if (contents.length > 1) {
             throw raiseBadPropertiesData();
         }
-        if(contents.length<=0) {
+        if (contents.length <= 0) {
             log.debug("empty data in properties");
             return;
         }
-        MessageElement element=contents[0];
+        MessageElement element = contents[0];
         final String message = "when parsing properties XML";
-        Document doc=null;
+        Document doc = null;
         parseMessageFragment(element, message);
 
         //TODO
@@ -130,21 +135,21 @@ public class OptionProcessor extends Processor{
     }
 
     private AxisFault raiseBadPropertiesData() {
-        return raiseBadArgumentFault("wrong structure of the properties option");
+        return raiseBadArgumentFault(
+                "wrong structure of the properties option");
     }
 
     /**
      * assert the xml element is empty
+     *
      * @param option
      * @throws AxisFault
      */
     private void assertNoXml(OptionType option) throws AxisFault {
-        if(option.getXml()!=null) {
-            raiseBadArgumentFault("No XML allowed in "+option.getName());
+        if (option.getXml() != null) {
+            raiseBadArgumentFault("No XML allowed in " + option.getName());
         }
     }
-
-
 
 
 }

@@ -19,17 +19,26 @@
  */
 package org.cddlm.client.console;
 
+import org.apache.axis.types.NCName;
 import org.apache.axis.types.URI;
 import org.cddlm.client.common.ServerBinding;
 import org.cddlm.client.generated.api.endpoint.CddlmSoapBindingStub;
 import org.cddlm.client.generated.api.types.ApplicationReferenceListType;
 import org.cddlm.client.generated.api.types.ApplicationStatusType;
+import org.cddlm.client.generated.api.types.CallbackInformationType;
+import org.cddlm.client.generated.api.types.DeploymentDescriptorType;
 import org.cddlm.client.generated.api.types.EmptyElementType;
+import org.cddlm.client.generated.api.types.JsdlType;
+import org.cddlm.client.generated.api.types.OptionMapType;
 import org.cddlm.client.generated.api.types.ServerStatusType;
 import org.cddlm.client.generated.api.types._applicationStatusRequest;
+import org.cddlm.client.generated.api.types._deployRequest;
+import org.cddlm.client.generated.api.types._deployResponse;
+import org.cddlm.client.generated.api.types._deploymentDescriptorType_data;
 import org.cddlm.client.generated.api.types._serverStatusRequest;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.rmi.RemoteException;
 
@@ -166,13 +175,52 @@ public abstract class ConsoleOperation {
         return status;
     }
 
+
+    /**
+     * deploy a named application, or return an exception
+     *
+     * @param name
+     * @param descriptor
+     * @param options
+     * @return
+     * @throws RemoteException
+     */
+    public URI deploy(String name,
+                      DeploymentDescriptorType descriptor,
+                      OptionMapType options) throws RemoteException {
+        JsdlType jsdl = new JsdlType();
+        NCName ncname = makeName(name);
+        CallbackInformationType callbackInfo = null;
+        _deployRequest request = new _deployRequest(jsdl,
+                ncname,
+                descriptor,
+                callbackInfo,
+                options);
+        _deployResponse response = getStub().deploy(request);
+        return response.getApplicationReference();
+
+    }
+
+    public DeploymentDescriptorType createSmartFrogDescriptorFromStream(
+            InputStream in) {
+        DeploymentDescriptorType descriptor = new DeploymentDescriptorType();
+        _deploymentDescriptorType_data data = new _deploymentDescriptorType_data();
+        //TODO: create a real descriptor
+        return descriptor;
+    }
+
+
+    public NCName makeName(String name) {
+        return new NCName(name);
+    }
+
     /**
      * exit, use success flag to choose the return time. This method does not
      * return
      *
      * @param success success flag
      */
-    static void exit(boolean success) {
+    protected static void exit(boolean success) {
         Runtime.getRuntime().exit(success ? 0 : -1);
     }
 }
