@@ -1,28 +1,29 @@
 \section{Implications}
 \label{implications}
 
-
-We believe that there are only two categories of people writing web
-services: those who know XML and want to work with it, and those who
-don't but end up doing so anyway. JAX-RPC provides a sugar coated
+We believe that only two categories of web service developer exist:
+those who are comfortable with XML and want to work with it, and those
+who aren't but end up doing so anyway. JAX-RPC provides a sugar coated
 wrapping that encourages developers who are relatively unfamiliar with
 XML to bite. Yet, as anyone who has written a web service of any
 complexity knows, the XML must be faced and understood eventually. In
 practise, the task of creating a real web service is made more
-difficult, not less, by the huge volume of code JAX-RPC introduces.
+difficult, not less, by the huge volume of code JAX-RPC introduces
+into a project.
 
 JAX-RPC only superficially benefits developers who do not want to work
 with XML: by hiding all the details, and giving developers a model of
-remote method calls via serialised Java graphs, JAX-RPC makes it harder
-to write true, interoperable SOAP services. Not only that, but it
-introduces the O/X mapping problem, while retaining an invocation model
-that is inappropriate for long-distance networks and slow
+remote method calls via serialised Java graphs, JAX-RPC makes it
+harder to write true, interoperable SOAP services. Not only that, but
+it introduces the O/X mapping problem, while retaining an invocation
+model that is inappropriate for long-distance networks and slow
 communications.
 
-We argue that JAX-RPC greatly complicates users' software by introducing a
-complex and fickle serialisation system. The generation of WSDL from Java code,
-which JAX-RPC encourages, makes it very difficult to maintain version
-consistency of an interfaces, and creates significant interoperability problems.
+We argue that JAX-RPC greatly complicates users' software by
+introducing a complex and fickle serialisation system. The generation
+of WSDL from Java code, which JAX-RPC encourages, makes it very
+difficult to maintain version consistency of an interfaces, and
+creates significant interoperability problems.
 
 On top of all of this, for users who do want to work with the XML
 (typically those whose first project did not!) JAX-RPC is
@@ -43,21 +44,21 @@ they attempt to do, they will fall into the traps that JAX-RPC creates
 for them.
 
 The forthcoming 2.0 release of the JAX-RPC specification promises to
-correct some of these flaws, but does it correct enough? An alternate
-O/X mapping, JAX-B\footnote{Java Architecture for XML Binding}, is
-used which is independent of the SOAP stack, but still represents a
-compile-time declaration of what XML is to be expected. The 2.0
-release also retains the core metaphor of service invocation as method
-invocation, with the payload of most invocations being Java objects
-that are somehow mapped to XML content. The automated generation of
-WSDL from Java source is retained, despite this problem having been
-shown to be fundamentally flawed.
+correct some of these flaws, it is unclear whether it corrects
+sufficiently many of them. An alternate O/X mapping, JAX-B, the Java
+Architecture for XML Binding, is introduced which is a compile-time
+declaration of what XML is to be expected, but is independent of the
+SOAP stack. The 2.0 release also retains the core metaphor of service
+calls as method invocation, with the payload of most invocations
+being Java objects that are somehow mapped to XML content. The
+automated generation of WSDL from Java source is retained, despite
+this problem having been shown to be fundamentally flawed.
 
 We understand the rationale for much of this. Working with raw XML is
 hard.  Writing good XML Schema documents is hard. WSDL is exceedingly
-painful to work with. However, we believe that if service developers
-do not write their XSD and WSDL definitions of messages, they will
-never have control of the messages that get sent over the wire, and
+painful to work with. However, we believe that if developers do not
+create the XSD and WSDL definitions of their service, they will never
+have control of the messages that get sent over the wire, and that
 without that control, interoperability and loose coupling will remain
-out of reach.  
+out of reach.
 
