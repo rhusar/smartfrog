@@ -905,7 +905,19 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
         }
 
         // Locate timeout
-        long timeout = 1000 * ((Number) sfResolveHere(SmartFrogCoreKeys.SF_PROCESS_TIMEOUT)).intValue();
+        Object timeoutObj = null;
+        long timeout = 0L;
+        try {
+            timeoutObj = sfResolveHere(SmartFrogCoreKeys.SF_PROCESS_TIMEOUT);
+            timeout = 1000*  ((Number)timeoutObj).intValue();
+        } catch (ClassCastException ccex) {
+            throw SmartFrogResolutionException.illegalClassType(
+                Reference.fromString(SmartFrogCoreKeys.SF_PROCESS_TIMEOUT),
+                this.sfCompleteName(),
+                timeoutObj,
+                timeoutObj.getClass().getName(),
+                "java.lang.Integer");
+        }
 
         // Start process
         Process process = startProcess(name);
