@@ -180,7 +180,7 @@ public class SFConcatImpl extends PrimImpl implements Prim, SFConcat {
         Object value = null;
         StringBuffer auxString = new StringBuffer();
 
-        for (Enumeration e = compDesc.getContext().elements();
+        for (Enumeration e = compDesc.sfContext().elements();
                 e.hasMoreElements();) {
             value = e.nextElement();
 
