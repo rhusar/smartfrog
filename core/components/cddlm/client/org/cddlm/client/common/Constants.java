@@ -27,7 +27,7 @@ public class Constants {
 
     public static final String DEFAULT_HOST = "127.0.0.1";
 
-    public static final String DEFAULT_PATH = "axis/services/cddlm";
+    public static final String DEFAULT_PATH = "/axis/services/cddlm";
 
     public static final int DEFAULT_SERVICE_PORT = 5050;
 
