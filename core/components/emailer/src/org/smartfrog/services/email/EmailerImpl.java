@@ -45,6 +45,7 @@ import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.common.TerminatorThread;
 
 /**
  * Emailer component can be used in two modes.
@@ -53,11 +54,14 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
  *    flow may not be aware of Emailer component. Can be useful in applications
  *    installations using SF, where sequence workflow installs the
  *    application and emailer sends the log file of the installation through
- *    email. Please see exampleUsageAsWFComp.sf for sample usage.
+ *    email. It terminates itself after sending the mail. Please see 
+ *    exampleUsageAsWFComp.sf for sample usage.
  * 2. As a Utility component, where sendEmail API can be invoked multiple times 
  *    by other components deployed under the same parent. In this mode the 
- *    component has to provide email attributes at run-time. Please see 
- *    example.sf for sample usage.     
+ *    component has to provide email attributes at run-time. 
+ *    In this mode it does not terminate itself but stays deployed so that
+ *    other component could use email utility. 
+ *    Please see example.sf for sample usage.     
  *
  * @author Ashish Awasthi
  */ 
@@ -68,7 +72,7 @@ public class EmailerImpl extends PrimImpl implements Emailer {
     private String host;     // SMTP host
     private String subject;
     private Vector attachmentList = null; // attachments file name
-    private boolean runAsWorkFlowComponent = false; // by default
+    private boolean runAsWorkFlowComponent = true; // by default
     private Session session = null;
     private String message = "SmartFrog Message";
     
@@ -120,6 +124,12 @@ public class EmailerImpl extends PrimImpl implements Emailer {
             }
         }
         super.sfStart();
+        if(runAsWorkFlowComponent) {
+            TerminationRecord termR = new TerminationRecord("normal",
+                "Emailer finished: ",sfCompleteName());
+            TerminatorThread terminator = new TerminatorThread(this,termR);
+            terminator.start();
+        }
     }
     
     /**

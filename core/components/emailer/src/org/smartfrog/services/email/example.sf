@@ -24,6 +24,7 @@ For more information: www.smartfrog.org
 Example extends Compound {
     mailer extends Emailer {
         smtpHost "mysmtphost.india.hp.com";
+        runAsWorkFlowComponent false; 
     }
     Foo extends Prim {
         sfClass "org.smartfrog.services.email.EmailerTest";
