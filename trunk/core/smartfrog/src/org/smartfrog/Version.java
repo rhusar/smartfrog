@@ -29,6 +29,9 @@ public class Version {
     /** The copyright String for the SmartFrog system. */
     public final static String copyright = "(C) Copyright 1998-2004 Hewlett-Packard Development Company, LP";
 
+    private Version(){
+    }
+
     /**
      * Method invoked to print the version info.
      *

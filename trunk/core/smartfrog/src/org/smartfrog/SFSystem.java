@@ -103,6 +103,8 @@ public class SFSystem implements MessageKeys {
     public static final String propLogStackTrace = propBase +
         "logger.logStackTrace";
 
+    private SFSystem(){
+    }
 
     /**
      * Gets language grom the URL

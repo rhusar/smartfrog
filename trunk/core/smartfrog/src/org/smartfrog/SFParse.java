@@ -57,6 +57,9 @@ public class SFParse implements MessageKeys {
 
     static Vector errorReport = new Vector();
 
+    private SFParse(){
+    }
+
     /**
      * Gets language grom the URL
      *

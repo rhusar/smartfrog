@@ -34,6 +34,9 @@ import javax.swing.table.TableColumnModel;
  */
 public class TableUtilities {
 
+    private TableUtilities(){
+    }
+
    /**
     *Calculates the required width of a table column
     *
