@@ -394,9 +394,9 @@ public class ComponentDescriptionImpl implements Serializable, Cloneable,
     protected void writeBasicValueOn(Writer ps, int indent, Object value)
         throws IOException {
         if (value instanceof String) {
-            ps.write("\"" + value.toString() + "\"");
+            ps.write("\"" + unfixEscapes((String)value) + "\"");
         } else if (value instanceof Vector) {
-            ps.write('[');
+            ps.write("[|");
 
             for (Enumeration e = ((Vector) value).elements();
                     e.hasMoreElements();) {
@@ -407,7 +407,7 @@ public class ComponentDescriptionImpl implements Serializable, Cloneable,
                 }
             }
 
-            ps.write("]");
+            ps.write("|]");
         } else if (value instanceof Long) {
             ps.write(value.toString() + 'L');
         } else if (value instanceof Double) {
@@ -415,6 +415,23 @@ public class ComponentDescriptionImpl implements Serializable, Cloneable,
         } else {
             ps.write(value.toString());
         }
+    }
+
+    private String unfixEscapes(String s) {
+	System.out.println(s);
+	s = s.replaceAll("\\\\", "\\\\\\\\");
+	System.out.println(s);
+	s = s.replaceAll("\n", "\\\\n");
+	System.out.println(s);
+	s = s.replaceAll("\t", "\\\\t");
+	System.out.println(s);
+	s = s.replaceAll("\b", "\\\\b");
+	System.out.println(s);
+	s = s.replaceAll("\r", "\\\\r");
+	System.out.println(s);
+	s = s.replaceAll("\f", "\\\\f");
+	System.out.println(s);
+	return s;
     }
 
     /**
