@@ -19,7 +19,7 @@ For more information: www.smartfrog.org
 */
 
 /*
- this declares useful CDDLM components
+ this file declares assertions
  */
 
 
@@ -27,11 +27,9 @@ For more information: www.smartfrog.org
  /**
   * Include the core smartfrog components.
   */
-#include "/org/smartfrog/components.sf"
-#include "/org/smartfrog/predicates.sf"
+ #include "/org/smartfrog/components.sf"
+ #include "/org/smartfrog/predicates.sf"
 
-/*
- * now include the CDDLM components
- */
-#include "/org/cddlm/components/platformInformation.sf"
-#include "/org/cddlm/components/livenessPage.sf"
+BooleanValues extends Prim {
+    sfClass "org.smartfrog.test.system.assertions.BooleanValuesImpl";
+}

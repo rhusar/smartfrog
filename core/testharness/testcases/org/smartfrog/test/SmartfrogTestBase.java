@@ -143,7 +143,9 @@ public abstract class SmartFrogTestBase extends TestCase {
             if ((deployedApp instanceof ConfigurationDescriptor) &&
                 (((ConfigurationDescriptor)deployedApp).resultException!=null)){
                 Throwable thr = ((ConfigurationDescriptor)deployedApp).resultException;
-                assertContains(cfgDesc.statusString(), searchString);
+                if( searchString!=null ) {
+                    assertContains(cfgDesc.statusString(), searchString);
+                }
                 if (containedExceptionName!=null) {
                     Throwable cause = thr.getCause();
                     assertNotNull("expected throwable of type "

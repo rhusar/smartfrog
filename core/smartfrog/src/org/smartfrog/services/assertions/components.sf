@@ -19,7 +19,7 @@ For more information: www.smartfrog.org
 */
 
 /*
- this declares useful CDDLM components
+ this file declares assertions
  */
 
 
@@ -27,11 +27,28 @@ For more information: www.smartfrog.org
  /**
   * Include the core smartfrog components.
   */
-#include "/org/smartfrog/components.sf"
-#include "/org/smartfrog/predicates.sf"
+ #include "/org/smartfrog/components.sf"
+ #include "/org/smartfrog/predicates.sf"
 
-/*
- * now include the CDDLM components
+
+/**
+ * the schema for assertions
  */
-#include "/org/cddlm/components/platformInformation.sf"
-#include "/org/cddlm/components/livenessPage.sf"
+AssertSchema extends Schema {
+    isTrue extends OptionalBoolean;
+    isFalse extends OptionalBoolean;
+    reference extends OptionalCD;
+    evaluatesTrue extends OptionalString;
+    evaluatesFalse extends OptionalString;
+}
+
+/**
+ * the assert component can be used to declare invariants which
+ * must hold for the system to be valid
+ */
+Assert extends Prim {
+    assertSchema extends Schema;
+    sfClass "org.smartfrog.services.assertions.AssertComponent";
+    isTrue true;
+    isFalse false;
+}
