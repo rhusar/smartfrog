@@ -21,7 +21,7 @@ sfConfig extends Compound {
      adminServer extends HttpServerAdmin {
          httpserverHost "localhost"; // mandatory
      } 
-     httpserver extends HttpServer {
+     httpServer extends HttpServer {
       jettyhome ROOT:jetty_home; // mandatory
       serverHost "localhost"; //mandatory
       contexts extends Contexts{
