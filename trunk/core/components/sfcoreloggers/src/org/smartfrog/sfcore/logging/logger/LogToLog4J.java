@@ -23,8 +23,14 @@ package org.smartfrog.sfcore.logging.logger;
 /**
  */
 public interface LogToLog4J {
-    /** String name for optional attribute "propertyConfigurator". */
+    /** String name for optional attribute "configuratorFile". */
     final static String ATR_CONFIGURATOR_FILE = "configuratorFile";
-    final static String ATR_CONFIGURE_AND_WATCH = "configureAndWatch";
+    /** String name for optional attribute "configureAndWatch". */
+    final static String ATR_CONFIGURE_AND_WATCH = "configureAndWatch"
+    /** String name for optional attribute "configureAndWatchDelay". */;
     final static String ATR_CONFIGURE_AND_WATCH_DELAY = "configureAndWatchDelay";
+    /** String name for optional attribute "setLog4JLoggerLevel". */
+    final static String ATR_SET_INI_LOG4J_LOGGER_LEVEL = "setIniLog4JLoggerLevel";
+    /** String name for optional attribute "setLog4JLoggerLevel". */
+    final static String ATR_INGNORE_SET_LOG_LEVEL = "ignoreSetLogLevel";
 }
