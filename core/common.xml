@@ -40,9 +40,9 @@
     <dirname property="antfile.dir" file="${ant.file.common}"/>
     <property name="core.dir" location="${antfile.dir}"/>
     
-		<!-- This is to decide the directory strecture for the components, and default is false -->
-	<property name="is.component" value="false"  />
-	<echo> Is component "${is.component}" </echo>
+    <!-- This is to decide the directory strecture for the components, and default is false -->
+    <property name="is.component" value="false"  />
+    <echo> Is component "${is.component}" </echo>
 
     <!-- the common.properties file lets you provide a single declaration of
     overrides (like the compiler settings) that apply across
@@ -70,7 +70,7 @@
     <property name="javac.java.version" value="1.4" />
     
 
-	    <!-- assume the sun compiler -->
+    <!-- assume the sun compiler -->
     <property name="rmic.compiler" value="sun" />
 
     <fileset id="smartfrog.core.fileset"
@@ -96,14 +96,23 @@
     
     <property name="extras.dir"
       location="${core.dir}/extras"/>
+    <property name="maven.lib.dir"
+      location="${smartfrog.components.dir}/mavenlib"/>
+    <property name="maven.url"
+      value="http://ibiblio.org/maven/"/>
       
       
-      <!-- common directories -->
+      
+      
+      
+      <!-- common directories are relative to the build file loaded-->
     <property name="src.dir" location="src"/>
-	 <property name="bin.dir" location="bin"/>
+    <property name="bin.dir" location="bin"/>
     <property name="doc.dir" location="doc"/>
     <property name="lib.dir" location="lib" />
     <property name="test.src.dir" location="test" />
+    <property name="lib.dir" location="lib" />
+    
     
     <!--generated stuff --> 
     <property name="build.dir" location="build"/>
@@ -115,42 +124,40 @@
     <property name="test.datafiles.dir" location="test/files"/>
     <property name="test.reports.dir" location="${build.test.dir}/reports"/>
   
-<!--Logic to have conditional directory strecture for components -->
-	<!--property name="dist.dir" value="${build.dir}/dist"/--> 
-	<condition property="dist.dir" value="dist">
-	<istrue value="${is.component}"/>
-	</condition>
-  
-  	<property name="dist.dir" value="${build.dir}/dist"/>
-	<condition property="dist.lib.dir" value="${dist.dir}/lib">
-	<istrue value="${is.component}"/>
-	</condition>
+    <!--Logic to have conditional directory strecture for components -->
+    <!--property name="dist.dir" value="${build.dir}/dist"/--> 
+    <condition property="dist.dir" value="dist">
+      <istrue value="${is.component}"/>
+    </condition>
     
-	<property name="dist.lib.dir" location="${build.dir}/dist/lib"/>
+    <property name="dist.dir" value="${build.dir}/dist"/>
+    <condition property="dist.lib.dir" value="${dist.dir}/lib">
+      <istrue value="${is.component}"/>
+    </condition>
+      
+    <property name="dist.lib.dir" location="${build.dir}/dist/lib"/>
+      
+    <condition property="dist.doc.dir" value="${dist.dir}/docs">
+      <istrue value="${is.component}"/>
+    </condition>
+    <property name="dist.doc.dir" location="${build.dir}/dist/doc"/>
     
-	<condition property="dist.doc.dir" value="${dist.dir}/docs">
-	<istrue value="${is.component}"/>
-	</condition>
-
-	<property name="dist.doc.dir" location="${build.dir}/dist/doc"/>
-
     <condition property="dist.jdocs.dir" value="${dist.dir}/docs/jdocs">
-	<istrue value="${is.component}"/>
-	</condition>
-	
-	<property name="dist.jdocs.dir" location="${build.dir}/dist/docs/jdocs"/>
-
+      <istrue value="${is.component}"/>
+    </condition>
+    <property name="dist.jdocs.dir" location="${build.dir}/dist/docs/jdocs"/>
+    
     <condition property="dist.bin.dir" value="${dist.dir}/bin">
-	<istrue value="${is.component}"/>
-	</condition>
+      <istrue value="${is.component}"/>
+    </condition>
+    
+    <property name="dist.bin.dir" location="${build.dir}/dist/bin"/>
+    
+    <condition property="dist.src.dir" value="${dist.dir}/src">
+      <istrue value="${is.component}"/>
+    </condition>
 
-	<property name="dist.bin.dir" location="${build.dir}/dist/bin"/>
-
-	<condition property="dist.src.dir" value="${dist.dir}/src">
-	<istrue value="${is.component}"/>
-	</condition>
-	
-	<property name="dist.src.dir" location="${build.dir}/dist/src"/>
+    <property name="dist.src.dir" location="${build.dir}/dist/src"/>
 
     <!-- build the name of our JAR file from the name of the project.
       override any of this stuff for alternate naming -->

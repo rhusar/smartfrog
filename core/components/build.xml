@@ -26,16 +26,16 @@ For more information: www.smartfrog.org
 
 <description>
      Build file for components.
-	 Each component supported must have the following targets in 
-	 its build.xml
-	 	maybe-dist        distribute if prereqs are met
-		maybe-test      	test if prereqs are met
-    maybe-install     conditional install
-    clean             clean up the output dirs
-		
-  The easiest way to do this is import root.dir/common.xml 
-  as a common build file; it provides template operations for this process.  
-	 
+     Each component supported must have the following targets in 
+     its build.xml
+      maybe-dist        distribute if prereqs are met
+      maybe-test        test if prereqs are met
+      maybe-install     conditional install
+      clean             clean up the output dirs
+      
+    The easiest way to do this is import root.dir/common.xml 
+    as a common build file; it provides template operations for this process.  
+     
 </description>
  <!-- ========================================================== -->
  <!--
@@ -69,10 +69,10 @@ For more information: www.smartfrog.org
 
   <property name="root.dir" location=".."  />
 
-	<!-- Import common stuff -->
-	<import file="${root.dir}/common.xml"/>
+  <!-- Import common stuff -->
+  <import file="${root.dir}/common.xml"/>
 
- <property name="is.component" value="true"  />
+  <property name="is.component" value="true"  />
 
   <!-- ========================================================== -->
   <!-- initialisation -->
@@ -125,22 +125,22 @@ For more information: www.smartfrog.org
       <pathelement location="${slp.project}"/>
       <pathelement location="${scripting.project}"/>
       <pathelement location="${sfcoreloggers.project}"/>
-	  <!--pathelement location="${arithmetic-testharness.project}"/-->
+    <!--pathelement location="${arithmetic-testharness.project}"/-->
       <!--pathelement location="${junit.project}"/-->
       <!--pathelement location="${cddlm.project}"/-->
       <!--pathelement location="${releasetest.project}"/-->
-	 </path>
+    </path>
     <property name="component.path.asproperty"
       refid="component.path"/>
     <echo level="verbose">component.path :=   ${component.path.asproperty}    </echo>
     
-	<presetdef name="delegate">
+  <presetdef name="delegate">
       <subant buildpathref="component.path"
         antfile="build.xml"
         inheritall ="false" inheritrefs="false"/>
     </presetdef>
   
-	<presetdef name="delegateBuild">
+  <presetdef name="delegateBuild">
       <subant buildpathref="component.path"
         antfile="buildRelease.xml"
         inheritall ="false" inheritrefs="false"/>
@@ -152,10 +152,10 @@ For more information: www.smartfrog.org
   <target name="clean" depends="init, clean-dist"
     description="clean all projects">
     <delegate target="clean"/>
-	<delete dir="src"/> <!-- Forrest releated -->
-	<delete dir="build"/>  <!-- Forrest releated -->
-	<delete file="forrest.properties"/>
-	<delete file="status.xml"/>
+  <delete dir="src"/> <!-- Forrest releated -->
+  <delete dir="build"/>  <!-- Forrest releated -->
+  <delete file="forrest.properties"/>
+  <delete file="status.xml"/>
 
 
   </target>
@@ -186,9 +186,9 @@ For more information: www.smartfrog.org
   </target>
 
 
-	<target name="buildrelease" depends ="init" description="buildRelease fopr all components" >
-	  <delegateBuild target="maybe-buildrelease"/>
-	</target>
+  <target name="buildrelease" depends ="init" description="buildRelease fopr all components" >
+    <delegateBuild target="maybe-buildrelease"/>
+  </target>
 
 
  
@@ -197,8 +197,8 @@ For more information: www.smartfrog.org
   <!-- clean jdocs                                                               -->
   <!-- =================================================================== -->
   <target name="clean-dist" description="Cleans the dist and build directories">
-	  <delete dir="${comp.dist.dir}"/>
-	  <delete dir="${build.dir}"/>
+    <delete dir="${comp.dist.dir}"/>
+    <delete dir="${build.dir}"/>
   </target>
   
    <!-- =================================================================== -->
@@ -235,19 +235,19 @@ For more information: www.smartfrog.org
              doctitle="${Name.System}"
              bottom="${Name.Company}"
              source="${javac.java.version}"
-	     >
-	   <sourcepath> 
-		   <!--pathelement path="${cddlm.project}/${src}"/-->
-		   <pathelement path="${emailer.project}/${src}"/>
-		   <pathelement path="${jetty.project}/${src}"/>
-		   <pathelement path="${logger.project}/${src}"/>
-		   <pathelement path="${net.project}/${src}"/>
-		   <pathelement path="${scripting.project}/${src}"/>
-		   <pathelement path="${sfcoreloggers.project}/${src}"/>
-		   <pathelement path="${slp.project}/${src}"/>
-		   <pathelement path="${ssh.project}/${src}"/>
-		   <pathelement path="${utils.project}/${src}"/>
-	    </sourcepath>     
+       >
+     <sourcepath> 
+       <!--pathelement path="${cddlm.project}/${src}"/-->
+       <pathelement path="${emailer.project}/${src}"/>
+       <pathelement path="${jetty.project}/${src}"/>
+       <pathelement path="${logger.project}/${src}"/>
+       <pathelement path="${net.project}/${src}"/>
+       <pathelement path="${scripting.project}/${src}"/>
+       <pathelement path="${sfcoreloggers.project}/${src}"/>
+       <pathelement path="${slp.project}/${src}"/>
+       <pathelement path="${ssh.project}/${src}"/>
+       <pathelement path="${utils.project}/${src}"/>
+      </sourcepath>     
       <group title="SmartFrog Component Packages" packages="org.smartfrog.*"/>
     </javadoc>
 
@@ -466,10 +466,10 @@ For more information: www.smartfrog.org
   <!-- =================================================================== -->
   
 
-	<target name="generatedoc" depends="init" description="Document Generation" if="env.FORREST_HOME">
+  <target name="generatedoc" depends="init" description="Document Generation" if="env.FORREST_HOME">
     <ant antfile="documentation.xml" inheritall="false" />
-	<delete dir="build"/>  <!-- Forrest build dir -->
-	</target>
+  <delete dir="build"/>  <!-- Forrest build dir -->
+  </target>
 
   <!-- =================================================================== -->
   <!-- update version                                                      -->
@@ -477,19 +477,19 @@ For more information: www.smartfrog.org
  <target name="updateversion" depends="init-common, init">
     <property name="skin.dir" location="forrest_skin" />
     <replace 
-    		file="buildRelease.xml"
-   		propertyFile="version.properties">
-  		<replacefilter 
-    		token="@version" 
-    		property="component.version"/>
+        file="buildRelease.xml"
+      propertyFile="version.properties">
+      <replacefilter 
+        token="@version" 
+        property="component.version"/>
     </replace>
 
-	<replace 
-    		file="releaseBuild.xml"
-   		propertyFile="version.properties">
-  		<replacefilter 
-    		token="@version" 
-    		property="component.version"/>
+  <replace 
+        file="releaseBuild.xml"
+      propertyFile="version.properties">
+      <replacefilter 
+        token="@version" 
+        property="component.version"/>
     </replace>
 
     <macrodef name="updateversion" >
@@ -497,45 +497,45 @@ For more information: www.smartfrog.org
      <attribute name="compname" description="component to update"/> 
      
      <sequential>
-	<replace 
-    		file="@{project}/buildRelease.xml"
-   		propertyFile="version.properties">
-  		<replacefilter 
-    		token="@version" 
-    		property="@{compname}.version"/>
-	</replace>
-	
-	<replace 
-    		file="@{project}/build.xml"
-   		propertyFile="version.properties">
-  		<replacefilter 
-    		token="@version" 
-    		property="@{compname}.version"/>
-	</replace>
+  <replace 
+        file="@{project}/buildRelease.xml"
+      propertyFile="version.properties">
+      <replacefilter 
+        token="@version" 
+        property="@{compname}.version"/>
+  </replace>
+  
+  <replace 
+        file="@{project}/build.xml"
+      propertyFile="version.properties">
+      <replacefilter 
+        token="@version" 
+        property="@{compname}.version"/>
+  </replace>
 
-	<replace 
-    		file="@{project}/releaseBuild.xml"
-   		propertyFile="version.properties">
-  		<replacefilter 
-    		token="@version" 
-    		property="@{compname}.version"/>
-	</replace>
-	
-	
-	
-	<replace 
-    		file="${skin.dir}/SFComponents.xml"
-   		propertyFile="version.properties">
-  		<replacefilter 
-    		token="@{compname}-ver" 
-    		property="@{compname}.version"/>
-			<replacefilter 
-    		token="@{compname}-minver" 
-    		property="@{compname}.minversion"/>
-			<!--replacefilter 
-    		token="@{compname}-maxver" 
-    		property="@{compname}.maxversion"/-->
-	</replace>
+  <replace 
+        file="@{project}/releaseBuild.xml"
+      propertyFile="version.properties">
+      <replacefilter 
+        token="@version" 
+        property="@{compname}.version"/>
+  </replace>
+  
+  
+  
+  <replace 
+        file="${skin.dir}/SFComponents.xml"
+      propertyFile="version.properties">
+      <replacefilter 
+        token="@{compname}-ver" 
+        property="@{compname}.version"/>
+      <replacefilter 
+        token="@{compname}-minver" 
+        property="@{compname}.minversion"/>
+      <!--replacefilter 
+        token="@{compname}-maxver" 
+        property="@{compname}.maxversion"/-->
+  </replace>
       </sequential>
 
     </macrodef>
@@ -556,12 +556,48 @@ For more information: www.smartfrog.org
   <!--  Release                                                            -->
   <!-- =================================================================== -->
   <target name="release"  depends=" verify-smartfrog,  clean, updateversion, dist, initdist, copybuild, copybins, copylibs, copydocs, copycomponents, srczip,generatedoc, buildrelease " description="Creates clean new release">
-	  <copy tofile="${dist.dir}/build.xml" file="releaseBuild.xml"/>
-	   <copy tofile="${dist.dir}/build.example.properties" file="build.example.properties"/>
+    <copy tofile="${dist.dir}/build.xml" file="releaseBuild.xml"/>
+     <copy tofile="${dist.dir}/build.example.properties" file="build.example.properties"/>
   </target>
 
-  <target name="default" depends="dist"/>
+  <target name="default" depends="dist"
+    description="default target creates a distribution" />
+    
+  <!-- =================================================================== -->
+  <!--  Library update                                                     -->
+  <!-- =================================================================== -->
+    
 
+  <target name="fetch-libraries" depends="init,init-common" >
+    <property file="libraries.properties" />
+    <libraries destDir="${maven.lib.dir}">
+      <mavenrepository url="${maven.url}"/>
+      <library project="xerces"  
+        version="${xerces.version}" />
+      <library project="xom"  
+        version="${xom.version}" />
+      <library project="jaxen"  
+        version="${jaxen.version}" />
+      <library project="commons-net"  
+        version="${commons-net.version}" />
+      <library project="junit"  
+        version="${junit.version}" />
+      <library project="log4j"  
+        version="${log4j.version}" />
+      <library project="bsh"  
+        version="${bsh.version}" />
+      <library project="rhino"  
+        version="${rhino.version}" />
+      <library project="velocity"  
+        version="${velocity.version}" />
+      <library project="ant" archive="ant-testutil"  
+        version="${ant-testutil.version}" />
+<!-- 
+      <library project=""  
+        version="${.version}" archive=""/>
+       -->  
+    </libraries>
+  </target>
 
 
 </project>
