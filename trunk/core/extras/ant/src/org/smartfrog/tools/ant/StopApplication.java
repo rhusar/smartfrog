@@ -35,6 +35,7 @@ public class StopApplication extends SmartFrogTask {
         setHost("localhost");
         setFailOnError(true);
     }
+
     protected String getApplication() {
         return application;
     }
@@ -56,12 +57,12 @@ public class StopApplication extends SmartFrogTask {
      */
     public void execute() throws BuildException {
         setStandardSmartfrogProperties();
-        //addHostname();
-        String terminateCommand =       application+":"    //NAME
+        verifyApplicationName(application);
+        String terminateCommand = application+":"    //NAME
               +"TERMINATE"+":"   //Action: DEPLOY,TERMINATE,DETACH,DETaTERM
               +""+":"            //URL
               +""+":"            // sfConfig or empty
-              +host+":"          // host
+              +getHost()+":"          // host
               +"";              // subprocess
         addApplicationCommand("-a", terminateCommand);
         //addApplicationCommand("-t",application);

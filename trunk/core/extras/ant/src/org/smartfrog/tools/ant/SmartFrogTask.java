@@ -61,7 +61,7 @@ public abstract class SmartFrogTask extends TaskBase {
     /**
      * name of host
      */
-    protected String host="";
+    private String host=null;
 
 
     /**
@@ -372,11 +372,23 @@ public abstract class SmartFrogTask extends TaskBase {
      * @throws BuildException if there is no app name
      */
     protected  void addApplicationCommand(String command, String name) {
-        if(name==null || name.length()==0) {
-            throw new BuildException("Missing application name");
-        }
+        verifyApplicationName(name);
         addArg(command);
         addArg(name);
+    }
+
+    /**
+     * verify the app name is valid by whatever logic we have
+     * current asserts that it is non null
+     * @param application
+     * @throws BuildException when unhappy
+     *
+     */
+    protected void verifyApplicationName(String application)
+        throws BuildException{
+        if(application==null || application.length()==0) {
+            throw new BuildException("Missing application name");
+        }
     }
 
 
@@ -551,6 +563,7 @@ public abstract class SmartFrogTask extends TaskBase {
             }
             return new String(results);
         }
+
 
     }
 
