@@ -23,6 +23,7 @@ package org.smartfrog.services.cddlm.test.unit.cdl;
 import junit.framework.TestCase;
 import nu.xom.Document;
 import nu.xom.ParsingException;
+import nu.xom.ValidityException;
 import org.smartfrog.services.cddlm.cdl.CdlDocument;
 import org.smartfrog.services.cddlm.cdl.CdlParser;
 import org.smartfrog.services.cddlm.cdl.ResourceLoader;
@@ -78,13 +79,14 @@ public class CdlLoaderTest extends TestCase {
 
     protected void assertInvalid(String filename,String text) throws IOException, ParsingException {
         try {
+            if(text==null) {
+                text="";
+            }
             loading(filename);
             CdlDocument doc=parser.parseResource(INVALID_RESOURCES+filename);
         } catch (ParsingException e) {
-            if(text!=null) {
-                if(e.getMessage().indexOf(text)<0) {
-                    throw e;
-                }
+            if(e.getMessage().indexOf(text)<0) {
+                throw e;
             }
         }
     }

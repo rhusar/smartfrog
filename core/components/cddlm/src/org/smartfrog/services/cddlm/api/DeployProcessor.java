@@ -19,29 +19,28 @@
  */
 package org.smartfrog.services.cddlm.api;
 
+import org.apache.axis.AxisFault;
+import org.apache.axis.types.URI;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.axis.types.URI;
-import org.apache.axis.AxisFault;
+import org.smartfrog.SFSystem;
 import org.smartfrog.services.axis.SmartFrogHostedEndpoint;
-import org.smartfrog.services.cddlm.generated.api.types._deployResponse;
-import org.smartfrog.services.cddlm.generated.api.types._deployRequest;
 import org.smartfrog.services.cddlm.generated.api.types.DeploymentDescriptorType;
-import org.smartfrog.services.cddlm.generated.api.types.UnboundedXMLOtherNamespace;
+import org.smartfrog.services.cddlm.generated.api.types._deployRequest;
+import org.smartfrog.services.cddlm.generated.api.types._deployResponse;
 import org.smartfrog.services.cddlm.generated.api.types._deploymentDescriptorType_data;
 import org.smartfrog.sfcore.common.ConfigurationDescriptor;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.processcompound.SFProcess;
-import org.smartfrog.SFSystem;
 
-import java.io.File;
-import java.io.OutputStream;
 import java.io.BufferedOutputStream;
+import java.io.File;
 import java.io.FileOutputStream;
-import java.io.PrintWriter;
 import java.io.IOException;
-import java.net.URL;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.net.MalformedURLException;
+import java.net.URL;
 
 /**
  * created Aug 4, 2004 3:58:37 PM

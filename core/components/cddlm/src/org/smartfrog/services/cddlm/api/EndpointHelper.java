@@ -19,11 +19,7 @@
  */
 package org.smartfrog.services.cddlm.api;
 
-import org.apache.axis.types.URI;
-import org.apache.axis.AxisFault;
-import org.apache.axis.utils.NetworkUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
 
 /**
  * created Aug 4, 2004 10:22:41 AM

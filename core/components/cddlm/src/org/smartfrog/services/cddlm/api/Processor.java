@@ -19,11 +19,12 @@
  */
 package org.smartfrog.services.cddlm.api;
 
-import org.smartfrog.services.axis.SmartFrogHostedEndpoint;
+import org.apache.axis.AxisFault;
+import org.apache.axis.types.URI;
+import org.apache.axis.types.NCName;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.axis.types.URI;
-import org.apache.axis.AxisFault;
+import org.smartfrog.services.axis.SmartFrogHostedEndpoint;
 
 /**
  * created Aug 4, 2004 3:59:42 PM
@@ -88,6 +89,17 @@ public class Processor {
         } catch (URI.MalformedURIException e) {
             return makeRuntimeException(application, e);
         }
+    }
+
+    /**
+     * turn an application into a valid URI
+     *
+     * @param application
+     * @return a URI that can be used as a reference
+     * @throws RuntimeException if the URL was malformed
+     */
+    public static URI makeURIFromApplication(NCName application) {
+        return makeURIFromApplication(application.toString());
     }
 
     /**

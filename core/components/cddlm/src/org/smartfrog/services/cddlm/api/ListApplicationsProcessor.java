@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2004 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -17,34 +17,42 @@
  For more information: www.smartfrog.org
 
  */
+
+
 package org.smartfrog.services.cddlm.api;
 
-import org.apache.axis.types.URI;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.axis.types.URI;
 import org.smartfrog.services.axis.SmartFrogHostedEndpoint;
-import org.smartfrog.services.cddlm.generated.api.types._lookupApplicationRequest;
+import org.smartfrog.services.cddlm.generated.api.types.ApplicationReferenceListType;
+import org.smartfrog.services.cddlm.generated.api.types.EmptyElementType;
 
 import java.rmi.RemoteException;
+import java.util.Iterator;
 
 /**
- * created Aug 4, 2004 4:26:22 PM
+ * Date: 10-Aug-2004
+ * Time: 21:18:05
  */
+public class ListApplicationsProcessor extends Processor {
 
-public class LookupApplicationProcessor  extends Processor {
-    /**
-     * log
-     */
-    private static final Log log = LogFactory.getLog(DeployProcessor.class);
-
-    public LookupApplicationProcessor(SmartFrogHostedEndpoint owner) {
+    public ListApplicationsProcessor(SmartFrogHostedEndpoint owner) {
         super(owner);
     }
 
-    public URI lookupApplication(_lookupApplicationRequest lookupApplication)
-            throws RemoteException {
-        org.apache.axis.types.NCName appname = lookupApplication.getApplication();
-        return makeURI(appname.toString());
+    /**
+     * list all apps in the repository
+     * @param listApplications
+     * @return
+     * @throws RemoteException
+     */
+    public ApplicationReferenceListType listApplications(EmptyElementType listApplications) throws RemoteException {
+
+        JobRepository jobs = ServerInstance.currentInstance().getJobs();
+        URI[] uriList =jobs.listJobs();
+        ApplicationReferenceListType results = new ApplicationReferenceListType(uriList);
+        return results;
     }
 
 }
