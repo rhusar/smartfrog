@@ -30,6 +30,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.xml.sax.helpers.XMLReaderFactory;
+import org.xml.sax.XMLReader;
+import org.xml.sax.SAXNotSupportedException;
+import org.xml.sax.SAXNotRecognizedException;
+import org.xml.sax.SAXException;
+import org.apache.xml.resolver.tools.CatalogResolver;
+
 /**
  * JDom based utility to parse CDL files. created Jul 1, 2004 1:49:31 PM
  */
@@ -52,9 +59,17 @@ public class CdlParser {
      * @param loader   resource loader algorithm
      * @param validate validation logic.
      */
-    public CdlParser(ResourceLoader loader, boolean validate) {
+    public CdlParser(ResourceLoader loader, boolean validate)
+            throws SAXException {
         resourceLoader = loader;
-        builder = new Builder(validate);
+        //we mandate Xerces, as the others cannot handle schema so well
+        XMLReader xerces = XMLReaderFactory.createXMLReader("org.apache.xerces.parsers.SAXParser");
+        xerces.setFeature("http://apache.org/xml/features/validation/schema",
+                    validate);
+        CatalogResolver resolver=new CatalogResolver();
+        resolver.namespaceAware=true;
+        xerces.setEntityResolver(resolver);
+        builder = new Builder(xerces,validate);
     }
 
 
@@ -66,9 +81,9 @@ public class CdlParser {
      * @throws IOException
      * @throws ParsingException
      */
-    public Document parseFile(String filename) throws IOException,  ParsingException {
+    public CdlDocument parseFile(String filename) throws IOException,  ParsingException {
         File f = new File(filename);
-        return builder.build(f);
+        return new CdlDocument(builder.build(f));
     }
 
     /**
@@ -78,9 +93,9 @@ public class CdlParser {
      * @throws IOException
      * @throws ParsingException
      */
-    public Document parseStream(InputStream instream) throws IOException, ParsingException
+    public CdlDocument parseStream(InputStream instream) throws IOException, ParsingException
              {
-        return builder.build(instream);
+        return new CdlDocument(builder.build(instream));
     }
 
     /**
@@ -90,7 +105,7 @@ public class CdlParser {
      * @throws IOException
      * @throws ParsingException
      */
-    public Document parseResource(String resource) throws IOException, ParsingException {
+    public CdlDocument parseResource(String resource) throws IOException, ParsingException {
         InputStream in = resourceLoader.loadResource(resource);
         return parseStream(in);
     }
