@@ -109,5 +109,10 @@ For more information: www.smartfrog.org
 		 <copy todir = "${dist.doc.dir}">
         <fileset dir ="${doc.dir}" />
     </copy>   
+		 <copy todir = "${dist.src.dir}">
+        <fileset dir ="${src.dir}">
+		  <include name="**/example*"/>
+		</fileset>
+    </copy>   
 	</target>
 </project>
