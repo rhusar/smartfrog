@@ -23,12 +23,19 @@ package org.smartfrog.services.cddlm.test.system.console;
 
 import org.apache.axis.types.URI;
 import org.cddlm.client.console.Listen;
+import org.cddlm.client.callbacks.CallbackServer;
+import org.cddlm.client.common.ServerBinding;
 import org.smartfrog.services.cddlm.generated.api.types.ApplicationStatusType;
 import org.smartfrog.services.cddlm.generated.api.types.DeploymentDescriptorType;
 import org.smartfrog.services.cddlm.generated.api.types.LifecycleStateEnum;
 import org.smartfrog.services.cddlm.generated.api.types._lifecycleEventCallbackRequest;
+import org.smartfrog.services.cddlm.generated.api.callbacks.DeploymentCallbackSoapBindingStub;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.HttpURLConnection;
 
 /**
  * Date: 16-Sep-2004
@@ -51,7 +58,67 @@ public class ListenTest extends DeployingTestBase  {
     }
 
 
-    public void testListenInit() throws Exception {
+    public void testServer() throws Exception {
+        CallbackServer server = new CallbackServer();
+        server.start();
+        String url = server.getCallbackURL();
+        try {
+            assertPageExists(url);
+            assertPageExists(url+"?wsdl");
+        } finally {
+            server.stop();
+        }
+    }
+
+    public void testUnboundLoopback() throws Exception {
+        CallbackServer server = new CallbackServer();
+        server.start();
+        String url = server.getCallbackURL();
+        try {
+            DeploymentCallbackSoapBindingStub callback = new DeploymentCallbackSoapBindingStub(new URL(url), null);
+            callback.setTimeout(2*60*1000);
+            _lifecycleEventCallbackRequest message;
+            message=new _lifecycleEventCallbackRequest();
+            boolean result = callback.callback(message);
+            assertFalse("Expected failure",result);
+        } finally {
+            server.stop();
+        }
+    }
+
+    public void testBoundLoopback() throws Exception {
+        CallbackServer server = new CallbackServer();
+        server.start();
+        String url = server.getCallbackURL();
+        String key=CallbackServer.addMapping(listen);
+        try {
+            DeploymentCallbackSoapBindingStub callback = new DeploymentCallbackSoapBindingStub(new URL(url), null);
+            callback.setTimeout(2 * 60 * 1000);
+            _lifecycleEventCallbackRequest message;
+            message = new _lifecycleEventCallbackRequest();
+            message.setIdentifier(key);
+            boolean result = callback.callback(message);
+            assertTrue("Expected successful dispatch", result);
+            assertTrue("Expected a received message",listen.getMessageCount()>0);
+        } finally {
+            server.stop();
+        }
+    }
+
+
+    private void assertPageExists(String remoteURL) throws IOException {
+        URL source=new URL(remoteURL);
+        URLConnection connection=source.openConnection();
+        connection.connect();
+        if ( connection instanceof HttpURLConnection ) {
+            HttpURLConnection httpConnection = (HttpURLConnection) connection;
+            int response= httpConnection.getResponseCode();
+            assertEquals("Got error code "+response+" at "+remoteURL,
+                    200,response);
+        }
+    }
+
+    public void NotestListenInit() throws Exception {
         DeploymentDescriptorType dt = createSimpleDescriptor();
         URI uri = null;
         uri = deploy(dt);
@@ -65,12 +132,14 @@ public class ListenTest extends DeployingTestBase  {
         DeploymentDescriptorType dt = createSimpleDescriptor();
         URI uri = null;
         uri = deploy(dt);
-        listen.setUri(uri);
+        listen = new UndeployingListener(getBinding(), getOut(), uri);
         listen.setTimeout(TIMEOUT_SECONDS);
-        ListenThread listener=new ListenThread(listen);
-        new Thread(listener).start();
-        undeploy(uri);
-        assertTrue("message received",listen.blockForMessages(TIMEOUT_SECONDS));
+        listen.execute();
+        assertTrue("message received",listen.getMessageCount()>0);
+        assertTerminationMessageReceived();
+    }
+
+    private void assertTerminationMessageReceived() {
         _lifecycleEventCallbackRequest message=listen.getLastMessage();
         assertNotNull(message);
         ApplicationStatusType status = message.getStatus();
@@ -81,6 +150,9 @@ public class ListenTest extends DeployingTestBase  {
         assertNotNull(message.getTimestamp());
     }
 
+    /**
+     * thread that executes listener in a separate thread from the rest of the test
+     */
     public static class ListenThread implements Runnable {
         Listen listen;
         IOException fault;
@@ -96,5 +168,34 @@ public class ListenTest extends DeployingTestBase  {
                 fault=e;
             }
         }
+    }
+
+
+    public static class UndeployingListener extends Listen {
+
+
+        public UndeployingListener(ServerBinding binding, PrintWriter out,URI uri) {
+            super(binding, out);
+            setUri(uri);
+        }
+
+        /**
+         * after starting the server, but before waiting, we begin to wait
+         * @throws IOException
+         */
+        protected void aboutToWait() throws IOException {
+            ApplicationStatusType status = lookupApplicationStatus(uri);
+            undeploy(uri, UNDEPLOY_REASON);
+        }
+
+        /**
+         * we only wait for one message, not an indefinate amount
+         * @param millis
+         * @throws InterruptedException
+         */
+        protected void sleep(int millis) throws InterruptedException {
+            blockForMessages(millis);
+        }
+
     }
 }

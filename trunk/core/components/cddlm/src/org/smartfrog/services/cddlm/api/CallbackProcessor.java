@@ -61,15 +61,15 @@ public class CallbackProcessor extends Processor {
      * called by DeployProcessor
      *
      * @param job
-     * @param callbacks
+     * @param callbackInfo
      * @param required
      * @throws AxisFault
      */
-    public void process(JobState job, CallbackInformationType callbacks,
+    public void process(JobState job, CallbackInformationType callbackInfo,
             boolean required)
             throws AxisFault {
         CallbackEnum type = null;
-        if (callbacks == null) {
+        if (callbackInfo == null) {
             if (!required) {
                 job.clearCallbackData();
                 return;
@@ -78,7 +78,7 @@ public class CallbackProcessor extends Processor {
             }
         }
 
-        type = callbacks.getType();
+        type = callbackInfo.getType();
         if (type == null) {
             throw raiseBadArgumentFault(ERROR_NO_CALLBACK_TYPE);
         }
@@ -88,7 +88,7 @@ public class CallbackProcessor extends Processor {
                     DeployApiConstants.UNSUPPORTED_CALLBACK_WIRE_MESSAGE);
         }
 
-        CallbackAddressType address = callbacks.getAddress();
+        CallbackAddressType address = callbackInfo.getAddress();
         if (address == null) {
             throw raiseBadArgumentFault(ERROR_NO_ADDRESS);
         }
@@ -104,24 +104,34 @@ public class CallbackProcessor extends Processor {
             throw raiseBadArgumentFault(
                     ERROR_BAD_CALLBACK_URL + uri.toString());
         }
+        String identifier= callbackInfo.getIdentifier();
         log.info("sending callbacks to "+url);
+        job.setCallbackInformation(callbackInfo);
         job.setCallbackURL(url);
         job.setCallbackType(type.getValue());
-        job.setCallbackRaiser(new CddlmCallbackRaiser());
-
+        job.setCallbackIdentifier(identifier);
+        CddlmCallbackRaiser callbackRaiser = new CddlmCallbackRaiser(job);
+        job.setCallbackRaiser(callbackRaiser);
     }
 
     /**
      * handle the request from the endpoint by looking up the app and handing
      * off to our internal process method
      */
-    public boolean process(_setCallbackRequest setCallback) throws AxisFault {
-        final URI appURI = setCallback.getApplication();
+    public boolean process(_setCallbackRequest request) throws AxisFault {
+        final URI appURI = request.getApplication();
         if (appURI == null) {
             throw raiseBadArgumentFault(ERROR_NO_APPLICATION);
         }
-        JobState job = lookupJob(appURI);
-        process(job, setCallback.getCallback(), false);
+        JobState job = lookupJobNonFaulting(appURI);
+        if(job==null && request.getCallback()==null) {
+            return true;
+        } else {
+            //force a failure
+            lookupJob(appURI);
+        }
+
+        process(job, request.getCallback(), false);
 
         return true;
     }

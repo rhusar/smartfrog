@@ -23,6 +23,8 @@ import org.apache.axis.message.MessageElement;
 import org.cddlm.client.common.ServerBinding;
 import org.smartfrog.services.cddlm.generated.api.types.ApplicationStatusType;
 import org.smartfrog.services.cddlm.generated.api.types.UnboundedXMLOtherNamespace;
+import org.smartfrog.services.cddlm.generated.api.types.CallbackInformationType;
+import org.smartfrog.services.cddlm.generated.api.types.CallbackAddressType;
 
 import java.io.PrintWriter;
 import java.rmi.RemoteException;
@@ -50,6 +52,17 @@ public class ApplicationStatus extends ConsoleOperation {
         out.println("name:   " + status.getName());
         out.println("status: " + status.getState());
         out.println("info: " + status.getStateInfo());
+        CallbackInformationType callbackInfo = status.getCallback();
+        if(callbackInfo!=null) {
+            out.println(        "callback: "+callbackInfo.getType());
+            CallbackAddressType address = callbackInfo.getAddress();
+            if ( address != null ) {
+                if ( address.getUri() != null ) {
+                    out.println("url:      " + address.getUri());
+                }
+            }
+            out.println(        "identifier:"+callbackInfo.getIdentifier());
+        }
         UnboundedXMLOtherNamespace extendedState = status.getExtendedState();
         if (extendedState != null) {
             MessageElement[] any = extendedState.get_any();

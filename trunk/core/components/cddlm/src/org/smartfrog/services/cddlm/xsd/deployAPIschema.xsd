@@ -607,6 +607,7 @@
     <xsd:sequence>
       <xsd:element name="reference" type="types:applicationReferenceType"/>
       <xsd:element name="name" type="types:applicationNameType" minOccurs="0"/>
+      <xsd:element name="callback" type="types:callbackInformationType" minOccurs="0"/>
       <xsd:element name="state" type="types:lifecycleStateEnum"/>
       <xsd:element name="stateInfo" type="xsd:string"/>
       <xsd:element name="extendedState" minOccurs="0" type="types:unboundedXMLOtherNamespace"/>
@@ -786,6 +787,10 @@
           Request to redefine the callback mechanism/address for an application.
           The new value will remain valid until changed or the application
           is undeployed.
+
+          Naming an application without providing a callback means that the user is
+          unsubscribing; it is not an error if the application does not exist on an unsubscription
+          request, but it is an error if the application does not exist on a subscription.
         </xsd:documentation>
       </xsd:annotation>
       <xsd:sequence>

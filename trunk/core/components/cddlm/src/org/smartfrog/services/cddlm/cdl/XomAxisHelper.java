@@ -33,6 +33,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.List;
+import java.util.Iterator;
 
 /**
  * Code to convert from Xom to a message element graph.
@@ -50,8 +52,32 @@ public class XomAxisHelper {
      * @return
      */
     public static MessageElement[] toArray(MessageElement element) {
+        if(element==null) {
+            return null;
+        }
         MessageElement[] array = new MessageElement[1];
         array[0] = element;
+        return array;
+    }
+
+    /**
+     * turn a list into an array, return null if empty
+     * @param list
+     * @return
+     */
+    public static MessageElement[] toArray(List list) {
+        if(list==null || list.size()==0) {
+            return null;
+        }
+        MessageElement[] array = new MessageElement[list.size()];
+        Iterator it=list.iterator();
+        int count=0;
+        while ( it.hasNext() ) {
+            MessageElement element = (MessageElement) it.next();
+            array[count]=element;
+            count++;
+        }
+
         return array;
     }
 

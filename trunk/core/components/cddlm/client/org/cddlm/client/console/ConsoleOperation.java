@@ -24,6 +24,7 @@ import org.apache.axis.message.MessageElement;
 import org.apache.axis.message.Text;
 import org.apache.axis.types.NCName;
 import org.apache.axis.types.URI;
+import org.apache.axis.AxisFault;
 import org.cddlm.client.common.Constants;
 import org.cddlm.client.common.ServerBinding;
 import org.smartfrog.services.cddlm.cdl.CdlDocument;
@@ -544,7 +545,17 @@ public abstract class ConsoleOperation {
             throws RemoteException {
         _setCallbackRequest request = new _setCallbackRequest(application,
                 null);
-        return setCallback(request);
+        try {
+            return setCallback(request);
+        } catch (AxisFault e) {
+            if(DeployApiConstants.FAULT_NO_SUCH_APPLICATION.equals(e.getFaultCode())) {
+                //do nothing, as this is a common event
+                return false;
+            } else {
+                //anything else
+                throw e;
+            }
+        }
     }
 
     /**

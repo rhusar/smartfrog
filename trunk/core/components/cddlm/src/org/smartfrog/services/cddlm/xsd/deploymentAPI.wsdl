@@ -272,20 +272,19 @@
   <!-- begin WSDL service declaration -->
   <!-- this is just a sample declaration; the real location of the service -->
   <!-- has to be determined through other means -->
+  <!-- it is for testing only -->
   <!-- ============================================================= -->
 
 
-  <!--
   <wsdl:service name="CDDLMDeploymentService">
     <wsdl:documentation >
       This is a sample CDDLM deployment service, and is only for testing
     </wsdl:documentation>
     <wsdl:port binding="api:cddlmSoapBinding" name="cddlm">
-     <wsdlsoap:address location="http://localhost:5050/axis/services/cddlm"/>
+     <wsdlsoap:address location="http://127.0.0.1:5050/axis/services/cddlm"/>
     </wsdl:port>
    </wsdl:service>
-   -->
- 
+
  
   <!-- ============================================================= -->
   <!-- end WSDL definitions-->

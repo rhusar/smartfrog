@@ -47,10 +47,12 @@ public class BufferingLogImpl extends LogToErrImpl implements BufferingLog {
      */
     protected void readSFAttributes() throws SmartFrogException {
         super.readSFAttributes();
+        /*
         if ( classComponentDescription == null ) {
             return;
         }
         limit= classComponentDescription.sfResolve(ATTR_LIMIT, limit, true);
+        */
     }
 
 

@@ -29,17 +29,27 @@ import org.smartfrog.services.cddlm.api.CallbackRaiser;
 import org.smartfrog.services.cddlm.api.OptionProcessor;
 import org.smartfrog.services.cddlm.api.Processor;
 import org.smartfrog.services.cddlm.cdl.CdlDocument;
+import org.smartfrog.services.cddlm.cdl.XomAxisHelper;
 import org.smartfrog.services.cddlm.generated.api.types.ApplicationStatusType;
 import org.smartfrog.services.cddlm.generated.api.types.DeploymentDescriptorType;
 import org.smartfrog.services.cddlm.generated.api.types.LifecycleStateEnum;
 import org.smartfrog.services.cddlm.generated.api.types._deployRequest;
+import org.smartfrog.services.cddlm.generated.api.types.UnboundedXMLOtherNamespace;
+import org.smartfrog.services.cddlm.generated.api.types.CallbackInformationType;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.xml.sax.SAXException;
 
 import javax.xml.namespace.QName;
+import javax.xml.parsers.ParserConfigurationException;
 import java.lang.ref.WeakReference;
 import java.net.URL;
 import java.rmi.RemoteException;
+import java.util.List;
+import java.util.LinkedList;
+import java.io.IOException;
+
+import nu.xom.ParsingException;
 
 /**
  * created Aug 5, 2004 3:00:26 PM
@@ -147,6 +157,8 @@ public class JobState {
      */
     private URL callbackURL;
 
+    private CallbackInformationType callbackInformation;
+
     /**
      * enter terminated state
      */
@@ -181,6 +193,15 @@ public class JobState {
         callbackIdentifier = null;
         callbackType = null;
         callbackURL = null;
+        callbackInformation = null;
+    }
+
+    public CallbackInformationType getCallbackInformation() {
+        return callbackInformation;
+    }
+
+    public void setCallbackInformation(CallbackInformationType callbackInformation) {
+        this.callbackInformation = callbackInformation;
     }
 
     public WeakReference getPrimReference() {
@@ -389,7 +410,29 @@ public class JobState {
         status.setReference(getUri());
         status.setState(getState());
         status.setStateInfo(stateInfo);
-
+        status.setCallback(callbackInformation);
+        List extras=new LinkedList();
+        /*
+        if(callbackURL!=null) {
+            try {
+                StringBuffer buffer=new StringBuffer();
+                buffer.append("<callback xmlns='http://smartfrog.org'>");
+                buffer.append("<url>");
+                buffer.append(callbackURL);
+                buffer.append("</url>");
+                if(callbackIdentifier!=null) {
+                    buffer.append("<id>");
+                    buffer.append(callbackIdentifier);
+                    buffer.append("</id>");
+                }
+                buffer.append("</callback>");
+                MessageElement me = XomAxisHelper.parseAndConvert(buffer.toString());
+                extras.add(me);
+            } catch (Exception e) {
+                log.info("ignoring",e);
+            }
+        }
+        */
         if (fault != null) {
             /* TODO: implement. this doesnt compile on jikes
             MessageContext msgContext = MessageContext.getCurrentContext();
@@ -409,6 +452,13 @@ public class JobState {
                 log.warn(e);
             }
             */
+        }
+        //add our extra state
+        MessageElement[] elements=XomAxisHelper.toArray(extras);
+        if(elements!=null) {
+            UnboundedXMLOtherNamespace extendedState = new UnboundedXMLOtherNamespace();
+            extendedState.set_any(elements);
+            status.setExtendedState(extendedState);
         }
         return status;
     }
