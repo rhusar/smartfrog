@@ -20,15 +20,13 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.test;
 
-import org.smartfrog.sfcore.processcompound.ProcessCompound;
-import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.SFSystem;
 import org.smartfrog.sfcore.common.OptionSet;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.SFSystem;
+import org.smartfrog.sfcore.processcompound.ProcessCompound;
 
-import java.rmi.RemoteException;
 import java.rmi.ConnectException;
+import java.rmi.RemoteException;
 
 /**
  * A test daemon runs smartfrog. When the object is disposed/finalised, it
@@ -95,6 +93,8 @@ public class LocalTestDaemon {
         }
     }
 
+    private SFSystem system;
+
     /**
      * the process we are running
      */
@@ -125,6 +125,7 @@ public class LocalTestDaemon {
      */
     public synchronized void detach() {
         this.process=null;
+        this.system=null;
     }
 
     /**
@@ -141,7 +142,8 @@ public class LocalTestDaemon {
             throw new Exception("Already running a daemon here");
         }
         this.options=optionset;
-        process=SFSystem.runSmartFrog(options.cfgDescriptors);
+        system=new SFSystem();
+        process=system.runSmartFrog(options.cfgDescriptors);
     }
 
     /**
@@ -153,22 +155,8 @@ public class LocalTestDaemon {
         if(!isRunning() ) {
             return;
         }
-        Reference targetName;
-        try {
-            targetName = (process.sfCompleteName());
-        } catch (Exception ex) {
-            targetName=null;
-        }
-        TerminationRecord status= new TerminationRecord(
-                "test complete",
-                "sfDaemon forced to terminate ", targetName);
-
-        try {
-            process.sfTerminate(status);
-        } finally {
-            //whether this worked or not, we are finished here.
-            detach();
-        }
+        system.terminateSystem("test complete");
+        detach();
     }
 
     /**
