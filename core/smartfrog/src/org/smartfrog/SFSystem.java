@@ -297,7 +297,7 @@ public class SFSystem implements MessageKeys {
      * @throws SmartFrogException something went wrong with the deploy -this may contain a nested exception
      * @throws RemoteException if anything went wrong over the net
      */
-    private static Prim deployFromURL(String url, String appName, ProcessCompound target)
+    public static Prim deployFromURL(String url, String appName, ProcessCompound target)
         throws SmartFrogException, RemoteException {
 
         /* @Todo there is almost no difference between this method and
@@ -651,7 +651,7 @@ public class SFSystem implements MessageKeys {
      * @param remoteHost boolean indicating if the host is remote host
      * @return ProcessCompound
      */
-    private static ProcessCompound getTargetProcessCompound(String hostName,
+    public static ProcessCompound getTargetProcessCompound(String hostName,
             boolean remoteHost) throws SmartFrogException, RemoteException {
         ProcessCompound target = null;
         try {
@@ -715,7 +715,7 @@ public class SFSystem implements MessageKeys {
      * Bring up smartfrog and deploy a component on the specified host.
      * A useful little entry point for external programs and tests.
      * @param hostName host where to deploy
-     * @param url url to the component
+     * @param Url url to the component
      * @param appName application name
      * @param remoteHost host is a remote host or not
      * @return Reference to deployed application

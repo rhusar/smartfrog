@@ -113,4 +113,12 @@ public class RunTest extends TaskTestBase {
         assertLogContaining("Reference not found, Unresolved Reference: sfClass");
     }
 
+    /**
+     * assertions get passed down
+     */
+    public void testAssertions() {
+        executeTarget("testAssertions");
+        assertLogContaining("Successfully deployed components: [app]");
+        assertLogContaining("goodbye");
+    }
 }

@@ -94,30 +94,11 @@ For more information: www.smartfrog.org
   </target>
   
 
-    <!--  look for a local daemon. Sets the property  local.daemon.running if
-  one is listening on port 3800-->
-  <target name="probe-local-daemon" depends="init-common">
-    <sf-daemonfound property="local.daemon.running" />
-  </target>
-
-  <!-- conditionally start the daemon if one was not found already  -->
-  <target name="start-daemon-if-needed" 
-    depends="use-smartfrog-tasks,probe-local-daemon"
-    unless="local.daemon.running">
-      <sf-startdaemon  />
-  </target>
-  
-  <!-- this is the counterpoint to start-daemon-if-needed 
-    if the probe did not find a daemon, then we shut down any daemon
-    that we created.-->
-  <target name="stop-daemon-if-started"
-    depends="use-smartfrog-tasks"
-    unless="local.daemon.running" >
-    <sf-stopdaemon failonerror="false" />
-  </target>  
 
   
+  <!-- ========================================================== -->
   <!-- compile the tests -->
+  <!-- ========================================================== -->
   <target name="compile-tests" 
     depends="verify-smartfrog,init,init-common">
     <depend srcdir="${test.src.dir}"
@@ -133,8 +114,10 @@ For more information: www.smartfrog.org
     <copy-useful-files src="${test.src.dir}" dest="${test.classes.dir}" />
   </target>
 
+  <!-- ========================================================== -->
   <!-- compile the RMI. This is separate from the other compile, so that unit 
        tests dont depend on it -->
+  <!-- ========================================================== -->
   <target name="compile-RMI" 
     depends="verify-smartfrog,init,init-common">
     <rmic includesfile="rmitargets" base="${test.classes.dir}">
@@ -142,7 +125,9 @@ For more information: www.smartfrog.org
     </rmic>
   </target>  
   
+  <!-- ========================================================== -->
   <!-- run the unit tests tests -->
+  <!-- ========================================================== -->
   <target name="unit-tests" depends="compile-tests"
     description="run unit tests">
     <sf-junit 
@@ -167,6 +152,7 @@ For more information: www.smartfrog.org
   </target>
   
   
+  <!-- ========================================================== -->
   <!-- system tests are more complex than the unit tests as they need a 
        functional smartfrog daemon. We bring this up by 
        conditionally booting the daemon if one was not there already,
@@ -174,6 +160,7 @@ For more information: www.smartfrog.org
        The daemon is started in a separate thread from the junit task, so that
        it runs in the ant UI.
        -->
+  <!-- ========================================================== -->
   <target name="system-tests" depends="compile-tests,compile-RMI,probe-local-daemon"
     description="run system tests"
     if="system.tests.enabled">
@@ -192,9 +179,8 @@ For more information: www.smartfrog.org
           without this the first tests will fail as there is no
           sf daemon around
         -->
-        <waitfor maxwait="10" maxwaitunit="second">
-          <socket server="localhost" port="3800"/>
-        </waitfor>
+        <sf-waitfordaemon maxwait="10" timeoutproperty="daemon.missing" />
+        <fail if="daemon.missing">No daemon</fail>
         <!-- run the tests -->
         <sf-junit 
                errorProperty="test.failed"
@@ -222,7 +208,9 @@ For more information: www.smartfrog.org
     </parallel>
   </target>
   
-    <!-- generate the reports-->
+  <!-- ========================================================== -->
+  <!-- generate the reports-->
+  <!-- ========================================================== -->
   
   <target name="reports" depends="init" 
     description="generate the test reports" >    
@@ -232,10 +220,14 @@ For more information: www.smartfrog.org
   </target>
 
     
+  <!-- ========================================================== -->
+  <!-- ========================================================== -->
   <target name="run-tests"
     depends="unit-tests,system-tests" />  
 
-    <!-- public entry point does all tests and the reports -->
+  <!-- ========================================================== -->
+  <!-- public entry point does all tests and the reports -->
+  <!-- ========================================================== -->
   <target name="test" 
     depends="run-tests,reports"
     description="compile and run all the tests"
