@@ -153,7 +153,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
 
          // Button for Refresh view ...
          refreshButton = new JButton();
-         refreshButton.setText("Reload panels");
+         refreshButton.setText("Refresh");
          refreshButton.setActionCommand("refreshButton");
          refreshButton.addActionListener(
             new ActionListener() {
