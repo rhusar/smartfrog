@@ -12,6 +12,7 @@ if defined SFPRIVATE goto continue2
 :continue2
 
 if (%1) == () goto usage
+if (%1) == (-?) goto help
 if (%2) == () goto usage
 if (%3) == () goto usage
 
@@ -21,6 +22,7 @@ java -Djava.security.policy==%SFHOME%\private\sf.policy -Djava.security.manager 
 GOTO end
 :usage
 echo Insufficient arguments to use sfStart 
+:help
 echo Usage: sfStart HostName ApplicationName URL
 :end
 endlocal

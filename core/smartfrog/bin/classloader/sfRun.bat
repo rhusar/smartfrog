@@ -6,8 +6,8 @@ if defined SFHOME goto continue1
   set SFHOME=%cd%
   cd bin
 :continue1
-if NOT (%1)==(-c) GOTO usage 
-if (%2)==() GOTO usage 
+if (%1)==() GOTO usage 
+if (%1)==(-?) GOTO help  
 set CLASSPATH=%SFHOME%\lib\smartfrog.jar;%SFHOME%\lib\sfServices.jar;%SFHOME%\lib\sfTestCases.jar;%CLASSPATH%
 
 set SERVER=localhost:8080
@@ -20,6 +20,7 @@ java -Dorg.smartfrog.iniFile=%SFHOME%\bin\default.ini -Dorg.smartfrog.codebase=%
 GOTO end
 :usage
 echo Insufficient arguments to use sfRun
+:help
 echo Usage: sfRun URL [-e]
 :end
 endlocal

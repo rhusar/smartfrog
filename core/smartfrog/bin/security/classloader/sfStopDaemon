@@ -1,11 +1,21 @@
+#! /bin/sh
 if ! test $SFHOME; then export SFHOME=$PWD; fi
 if ! test $SFPRIVATE; then export SFPRIVATE=$SFHOME/private; fi
 if ! test $SFHOSTNAME; then export SFHOSTNAME=host1; fi
-if { $# -ne 1 ];then
-echo "Insufficient arguments to use sfStopDaemon"
-echo "Usage: sfStopDaemon HostName"
-exit
-fi
+if [ -z $1 ] ; then
+   echo "Insufficient arguments to use sfStopDaemon"
+   echo "Usage: sfStopDaemon HostName"
+   exit
+fi 
+if [ $# -eq 1 ] && [ $1 == "-?" ];then
+   echo "Usage: sfStopDaemon HostName"
+   exit
+elif [ $# -ne 1 ];then
+   echo "Insufficient arguments to use sfStopDaemon"
+   echo "Usage: sfStopDaemon HostName"
+   exit
+fi 
+
 export CLASSPATH=$SFHOME/signedLib/smartfrog.jar:$SFHOME/signedLib/sfServices.jar:$SFHOME/signedLib/sfTestCases.jar:$CLASSPATH
 export SERVER=localhost:8080
 # Please edit codebase if you have any other jar file in webserver

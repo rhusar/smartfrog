@@ -1,36 +1,7 @@
+#! /bin/sh
 if ! test $SFHOME; then export SFHOME=$PWD; fi
 
-print_usage()
-{
-echo "Insufficient arguments to use smartfrog"
-     echo "Usage smartfrog [-a URL_DESCRIPTOR] [-f FILE_URL] [-e]"
-     echo "  -a URL_DESCRIPTOR: descriptor of the application template to deploy"
-     echo "     ex. Deploy a description:-" 
-     echo "        -a counterEx:DEPLOY:org/.../example.sf:sfConfig:localhost:process "
-     echo "     ex. Terminate local sfDaemon:-" 
-     echo "        -a rootProcess:TERMINATE:::localhost:"
-     echo "     Format for URL_DESCRIPTOR: name:ACTION:url:target:HOST:PROCESS"
-     echo "          - name: name where to apply ACTION"
-     echo "          - ACTION: possible actions: DEPLOY, TERMINATE, DETACH, DETaTERM"
-     echo "          - url: description used by ACTION"
-     echo "          - target: for now only 'sfConfig' or 'empty' are considered"
-     echo "          - HOST: host name or IP where to apply ACTION. When empty it assumes localhost"
-     echo "          - PROCESS: processname where to apply ACTION. When empty it assumes rootProcess"
-     echo "  -f FILE_URL: file url with the ConfigurationDescriptors to deploy"
-     echo "  -e: exit after deployment is finished"
-}
 
-if [ -n $1 ]; 
-then
-     if(! test $1 == "-a" -o $1 == "-f" -o $1 == "-e" );then
-     print_usage
-     exit
-     fi
-     if(([ $1 = "-a" ] && [ -z $2 ]) || ([ $1 = "-f" ] && [ -z $2 ]) || ([ $1 =\= "-e" ] && [ -n $2 ]));then	
-     print_usage
-     exit
-     fi
-fi
 for i in $SFHOME/lib/*.jar; do CLASSPATH=$i:$CLASSPATH; done
 export CLASSPATH
 java -Dorg.smartfrog.iniFile=$SFHOME/bin/default.ini org.smartfrog.SFSystem $*

@@ -7,6 +7,7 @@ if defined SFHOME goto continue1
   cd bin
 :continue1
 if (%1) == () goto usage
+if (%1) == (-?) goto help
 if (%2) == () goto usage
 if (%3) == () goto usage
 set CLASSPATH=%SFHOME%\lib\smartfrog.jar;%SFHOME%\lib\sfServices.jar;%SFHOME%\lib\sfTestCases.jar;%CLASSPATH%
@@ -21,6 +22,7 @@ java -Dorg.smartfrog.iniFile=%SFHOME%\bin\default.ini -Dorg.smartfrog.codebase=%
 GOTO end
 :usage
 echo Insufficient arguments to use sfStart 
+:help
 echo Usage: sfStart HostName ApplicationName URL
 :end
 endlocal

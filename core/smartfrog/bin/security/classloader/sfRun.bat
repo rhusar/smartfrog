@@ -12,6 +12,7 @@ if defined SFPRIVATE goto continue2
 :continue2
 
 if (%1)==() GOTO usage 
+if (%1)==(-?) GOTO help 
 
 set CLASSPATH=%SFHOME%\signedLib\smartfrog.jar;%SFHOME%\signedLib\sfServices.jar;%SFHOME%\signedLib\sfTestCases.jar;%CLASSPATH%  
 set SERVER=localhost:8080
@@ -22,6 +23,7 @@ java -Djava.security.manager -Djava.security.policy==%SFHOME%\private\sf.policy 
 GOTO end
 :usage
 echo Insufficient arguments to use sfRun
+:help
 echo Usage: sfRun URL [-e]
 :end
 endlocal

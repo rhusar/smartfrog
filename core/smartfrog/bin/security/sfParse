@@ -1,16 +1,8 @@
+#! /bin/sh
 if ! test $SFHOME; then export SFHOME=$PWD; fi
 if ! test $SFPRIVATE; then export SFPRIVATE=$SFHOME/private; fi
 if ! test $SFHOSTNAME; then export SFHOSTNAME=host1; fi
-if [ -z $1 ];then
-echo "Insufficient argument(s) to use sfParse"
-echo "Usage: sfParse [-v] [-q] [-d] [-r] [-R] [{-f filename}|URL]"
-exit
-fi
-if [ $1 == "-f" ] && [ -z $2 ];then
-echo "Insufficient argument(s) to use sfParse"
-echo "Usage: sfParse [-v] [-q] [-d] [-r] [-R] [{-f filename}|URL]"
-exit
-fi
+
 for i in $SFHOME/signedLib/*.jar; do CLASSPATH=$i:$CLASSPATH; done
 export CLASSPATH
 echo $CLASSPATH

@@ -1,14 +1,5 @@
+#! /bin/sh
 if ! test $SFHOME; then export SFHOME=$PWD; fi
-if [ -z $1 ]; then
-echo "Insufficient arguments to use sfParse"
-echo "Usage: sfParse [-v] [-q] [-d] [-r] [-R] [{-f filename}|URL]"
-exit
-fi
-if [ $1 == "-f" ] && [ -z $2 ]; then
-echo "Insufficient arguments to use sfParse"
-echo "Usage: sfParse [-v] [-q] [-d] [-r] [-R] [{-f filename}|URL]"
-exit
-fi
 for i in $SFHOME/lib/*.jar; do CLASSPATH=$i:$CLASSPATH; done
 export CLASSPATH
 java -Dorg.smartfrog.iniFile=$SFHOME/bin/default.ini  org.smartfrog.SFParse $*
