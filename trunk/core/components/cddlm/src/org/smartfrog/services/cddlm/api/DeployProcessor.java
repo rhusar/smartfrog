@@ -29,11 +29,9 @@ import org.smartfrog.services.axis.SmartFrogHostedEndpoint;
 import org.smartfrog.services.cddlm.generated.api.types.DeploymentDescriptorType;
 import org.smartfrog.services.cddlm.generated.api.types._deployRequest;
 import org.smartfrog.services.cddlm.generated.api.types._deployResponse;
-import org.smartfrog.services.cddlm.generated.api.types._deploymentDescriptorType_data;
 import org.smartfrog.sfcore.common.ConfigurationDescriptor;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.processcompound.SFProcess;
-import org.w3c.dom.Element;
 
 import javax.xml.namespace.QName;
 import java.io.BufferedOutputStream;
@@ -42,12 +40,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.net.MalformedURLException;
-import java.net.URL;
 
 /**
- * This class is *NOT* re-entrant. Create one for each deployment.
- * created Aug 4, 2004 3:58:37 PM
+ * This class is *NOT* re-entrant. Create one for each deployment. created Aug
+ * 4, 2004 3:58:37 PM
  */
 
 public class DeployProcessor extends Processor {
@@ -74,7 +70,7 @@ public class DeployProcessor extends Processor {
     }
 
     public _deployResponse deploy(_deployRequest deploy) throws AxisFault {
-        request=deploy;
+        request = deploy;
         //get the options out the way
         options = new OptionProcessor(getOwner());
         options.process(deploy.getOptions());
@@ -86,7 +82,7 @@ public class DeployProcessor extends Processor {
         //this is our URI
         URI applicationReference = jobState.getUri();
 
-        if ( source != null ) {
+        if (source != null) {
             throwNotImplemented();
         } else {
             //here we deploy inline
@@ -105,17 +101,17 @@ public class DeployProcessor extends Processor {
      * @throws AxisFault
      */
     public void determineLanguageAndDeploy() throws AxisFault {
-        DeploymentDescriptorType descriptor= request.getDescriptor();
-        MessageElement[] messageElements=descriptor.getData().get_any();
-        if(messageElements.length!=1) {
+        DeploymentDescriptorType descriptor = request.getDescriptor();
+        MessageElement[] messageElements = descriptor.getData().get_any();
+        if (messageElements.length != 1) {
             throw raiseBadArgumentFault(WRONG_MESSAGE_ELEMENT_COUNT);
         }
 
-        MessageElement descriptorData= messageElements[0];
+        MessageElement descriptorData = messageElements[0];
         descriptorData.getNamespaceURI();
-        QName qname=descriptorData.getQName();
-        int lan=determineLanguage(qname);
-        switch(lan) {
+        QName qname = descriptorData.getQName();
+        int lan = determineLanguage(qname);
+        switch (lan) {
             case Constants.LANGUAGE_UNKNOWN:
                 throw raiseUnsupportedLanguageFault(UNSUPPORTED_LANGUAGE);
             case Constants.LANGUAGE_SMARTFROG:
@@ -150,29 +146,32 @@ public class DeployProcessor extends Processor {
         }
         return l;
     }
+
     private void deployCDL(MessageElement elt) throws AxisFault {
         throw raiseUnsupportedLanguageFault(UNSUPPORTED_LANGUAGE);
     }
 
     /**
      * ant deployment
-     * @todo
+     *
      * @param elt
      * @throws AxisFault
+     * @todo
      */
-    private void deployAnt( MessageElement elt)
+    private void deployAnt(MessageElement elt)
             throws AxisFault {
 
         throw raiseUnsupportedLanguageFault(UNSUPPORTED_LANGUAGE);
     }
 
 
-
     /**
      * process a smartfrog deployment of type <smartfrog></smartfrog>
+     *
      * @throws AxisFault
      */
-    private void deploySmartFrog(MessageElement descriptorElement) throws AxisFault {
+    private void deploySmartFrog(MessageElement descriptorElement)
+            throws AxisFault {
         descriptorElement.getValue();
 
         throwNotImplemented();
@@ -198,12 +197,14 @@ public class DeployProcessor extends Processor {
 
     /**
      * save a string to a file
+     *
      * @param descriptor
      * @param extension
      * @return
      * @throws IOException
      */
-    private File saveStringToFile(String descriptor, String extension) throws IOException {
+    private File saveStringToFile(String descriptor, String extension)
+            throws IOException {
         File tempFile = File.createTempFile("deploy", extension);
         OutputStream out = null;
         try {
@@ -217,7 +218,7 @@ public class DeployProcessor extends Processor {
             out = null;
             return tempFile;
         } finally {
-            close(out);
+            closeQuietly(out);
         }
 
     }
@@ -228,8 +229,8 @@ public class DeployProcessor extends Processor {
      *
      * @param out output; can be null
      */
-    private void close(OutputStream out) {
-        if ( out != null ) {
+    private static void closeQuietly(OutputStream out) {
+        if (out != null) {
             try {
                 out.close();
             } catch (IOException e) {
@@ -247,13 +248,14 @@ public class DeployProcessor extends Processor {
      * @throws AxisFault
      */
     private void deployThroughSFSystem(String hostname, String application,
-                                         String url,
-                                         String subprocess) throws AxisFault {
+                                       String url,
+                                       String subprocess) throws AxisFault {
         try {
-            ConfigurationDescriptor config = new ConfigurationDescriptor(application, url);
+            ConfigurationDescriptor config = new ConfigurationDescriptor(
+                    application, url);
             config.setHost(hostname);
             config.setActionType(ConfigurationDescriptor.Action.DEPLOY);
-            if ( subprocess != null ) {
+            if (subprocess != null) {
                 config.setSubProcess(subprocess);
             }
             log.info("Deploying " + url + " to " + hostname);

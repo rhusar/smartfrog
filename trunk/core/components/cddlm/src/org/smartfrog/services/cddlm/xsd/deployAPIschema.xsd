@@ -214,7 +214,7 @@
       <xsd:element name="data">
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:any processContents="lax" namespace="##other" minOccurs="1" maxOccurs="1"  />
+            <xsd:any processContents="lax" namespace="##other" minOccurs="1" maxOccurs="1"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -564,7 +564,7 @@
   <!-- option elements -->
   <!-- ============================================================= -->
 
-  <xsd:element name="PropertyMapOption" type="types:propertyMapType" >
+  <xsd:element name="PropertyMapOption" type="types:propertyMapType">
     <xsd:annotation>
       <xsd:appinfo>
         http://gridforum.org/cddlm/serviceAPI/options/propertyMap/2004/07/30
@@ -574,21 +574,21 @@
       </xsd:documentation>
     </xsd:annotation>
   </xsd:element>
-<!--
-  not needed, we just use boolean on the option instead.
-  <xsd:element name="ValidateOnlyOption" type="xsd:boolean">
-    <xsd:annotation>
-      <xsd:appinfo>
-        http://gridforum.org/cddlm/serviceAPI/options/validateOnly/2004/07/30
-      </xsd:appinfo>
-      <xsd:documentation>
-        this is the contents of a validateOnly option.
-        If set to true, a runtime that understands the message must
-        only validate the message and deployment descriptor, and not execute it.
-      </xsd:documentation>
-    </xsd:annotation>
-  </xsd:element>
--->
+  <!--
+    not needed, we just use boolean on the option instead.
+    <xsd:element name="ValidateOnlyOption" type="xsd:boolean">
+      <xsd:annotation>
+        <xsd:appinfo>
+          http://gridforum.org/cddlm/serviceAPI/options/validateOnly/2004/07/30
+        </xsd:appinfo>
+        <xsd:documentation>
+          this is the contents of a validateOnly option.
+          If set to true, a runtime that understands the message must
+          only validate the message and deployment descriptor, and not execute it.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:element>
+  -->
 
 
   <!-- ============================================================= -->
@@ -672,7 +672,14 @@
   <!-- ============================================================= -->
   <!-- ============================================================= -->
 
-  <xsd:element name="serverStatusRequest" type="types:emptyElementType"/>
+  <xsd:element name="serverStatusRequest">
+    <xsd:annotation>
+      <xsd:documentation>
+        This is an empty message
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType/>
+  </xsd:element>
 
   <!-- ============================================================= -->
   <!-- ============================================================= -->

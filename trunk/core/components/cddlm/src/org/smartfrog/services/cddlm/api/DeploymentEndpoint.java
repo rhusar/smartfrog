@@ -31,6 +31,7 @@ import org.smartfrog.services.cddlm.generated.api.types._applicationStatusReques
 import org.smartfrog.services.cddlm.generated.api.types._deployRequest;
 import org.smartfrog.services.cddlm.generated.api.types._deployResponse;
 import org.smartfrog.services.cddlm.generated.api.types._lookupApplicationRequest;
+import org.smartfrog.services.cddlm.generated.api.types._serverStatusRequest;
 import org.smartfrog.services.cddlm.generated.api.types._undeployRequest;
 
 import java.rmi.RemoteException;
@@ -50,7 +51,8 @@ public class DeploymentEndpoint extends SmartFrogHostedEndpoint
     /**
      * log just for operational data
      */
-    private static final Log operations = LogFactory.getLog(DeploymentEndpoint.class.getName() + ".OPERATIONS");
+    private static final Log operations = LogFactory.getLog(
+            DeploymentEndpoint.class.getName() + ".OPERATIONS");
 
 
     public _deployResponse deploy(_deployRequest deploy)
@@ -74,21 +76,26 @@ public class DeploymentEndpoint extends SmartFrogHostedEndpoint
         }
     }
 
-    public ServerStatusType serverStatus(EmptyElementType serverStatus) throws RemoteException {
+
+    public ServerStatusType serverStatus(_serverStatusRequest serverStatus)
+            throws RemoteException {
         try {
             operations.info("entering serverStatus");
-            ServerStatusProcessor serverStatusProcessor = new ServerStatusProcessor(this);
+            ServerStatusProcessor serverStatusProcessor = new ServerStatusProcessor(
+                    this);
             return serverStatusProcessor.serverStatus(serverStatus);
         } finally {
             operations.info("exiting serverStatus");
         }
     }
 
-    public ApplicationStatusType applicationStatus(_applicationStatusRequest applicationStatus)
+    public ApplicationStatusType applicationStatus(
+            _applicationStatusRequest applicationStatus)
             throws RemoteException {
         try {
             operations.info("entering lookupApplication");
-            ApplicationStatusProcessor processor = new ApplicationStatusProcessor(this);
+            ApplicationStatusProcessor processor = new ApplicationStatusProcessor(
+                    this);
             return processor.applicationStatus(applicationStatus);
         } finally {
             operations.info("exiting lookupApplication");
@@ -99,17 +106,20 @@ public class DeploymentEndpoint extends SmartFrogHostedEndpoint
             throws RemoteException {
         try {
             operations.info("entering lookupApplication");
-            LookupApplicationProcessor processor = new LookupApplicationProcessor(this);
+            LookupApplicationProcessor processor = new LookupApplicationProcessor(
+                    this);
             return processor.lookupApplication(lookupApplication);
         } finally {
             operations.info("exiting lookupApplication");
         }
     }
 
-    public ApplicationReferenceListType listApplications(EmptyElementType listApplications) throws RemoteException {
+    public ApplicationReferenceListType listApplications(
+            EmptyElementType listApplications) throws RemoteException {
         try {
             operations.info("entering listApplications");
-            ListApplicationsProcessor processor = new ListApplicationsProcessor(this);
+            ListApplicationsProcessor processor = new ListApplicationsProcessor(
+                    this);
             return processor.listApplications(listApplications);
         } finally {
             operations.info("exiting listApplications");
