@@ -53,12 +53,22 @@ public class ConfigurationDescriptor implements MessageKeys{
      */
     ConfigurationAction action;
 
+    /**
+     * application/component name
+     */
     public String name = null;
+    /**
+     * resource to use during action. Usually a sf description
+     */
     public String url = null;
-   // public String deployReference = null;
 
-    // Location
+    /**
+     * host were to apply action. Can be null and then no rootProcess is used.
+     */
     public String host = null;
+    /**
+     * subProcess were to apply action. Can be null.
+     */
     public String subProcess = null;
 
     public static class Result {
@@ -72,22 +82,44 @@ public class ConfigurationDescriptor implements MessageKeys{
                                "UNKNOWN"};
      }
 
-    private int resultType = Result.UNDEFINED;
-    private String resultMessage = null;
-    public Throwable resultException = null;
+     /**
+      * Result type for action
+      */
+     private int resultType = Result.UNDEFINED;
+     /**
+      * Result message for action
+      */
+     private String resultMessage = null;
+     /**
+      * Result exception for action
+      */
+     public Throwable resultException = null;
+     /**
+      * Extra parameters for action
+      */
+     public Hashtable options = new Hashtable();
 
-    public Hashtable options = new Hashtable();
+     /**
+      *   Special Options for SF1 Language
+      */
+     public static class SF1Options {
+         static String SFCONFIGREF = "sfConfigRef";
+     }
 
-    //Special Options for SF1 Language
-    public static class SF1Options {
-            static String SFCONFIGREF= "sfConfigRef";
-    }
-
+    /**
+     * To String
+     * @return
+     */
     public String toString() {
         //return toString(", \n");
         return toString(", ");
     }
 
+    /**
+     * To String
+     * @param separator
+     * @return
+     */
     public String toString(String separator){
         StringBuffer str = new StringBuffer();
         if (name!=null) {
@@ -100,7 +132,7 @@ public class ConfigurationDescriptor implements MessageKeys{
             str.append(separator);
             str.append(" u:"); str.append(url.toString());
         }
-        if (getDeployReference()!=null) {
+        if ((getDeployReference()!=null)&&(getDeployReference().size()>0)) {
             str.append(separator);
             str.append(" d:"); str.append(getDeployReference().toString());
         }
@@ -126,10 +158,19 @@ public class ConfigurationDescriptor implements MessageKeys{
         return str.toString();
     }
 
+    /**
+     *  Gets status message using ', ' as separator
+     * @return status message
+     */
     public String statusString (){
        String separator= ", ";
        return statusString(separator);
     }
+    /**
+     * Gets status message
+     * @param separator
+     * @return message
+     */
     public String statusString(String separator){
           StringBuffer message = new StringBuffer();
           String result = null;
@@ -190,11 +231,11 @@ public class ConfigurationDescriptor implements MessageKeys{
               messageError.append(message);
               if (resultMessage!=null) {
                   messageError.append(separator);
-                  messageError.append(" Error:"); messageError.append(resultMessage.toString());
+                  messageError.append("\n   Error:"); messageError.append(resultMessage.toString());
               }
               if (resultException!=null) {
                   messageError.append(separator);
-                  messageError.append(" Exception:"); messageError.append(resultException.getMessage());
+                  messageError.append("\n   Exception:"); messageError.append(resultException.getMessage());
               }
               result= messageError.toString();
           }
@@ -204,6 +245,24 @@ public class ConfigurationDescriptor implements MessageKeys{
 
     String token = ":";
 
+    /**
+     * Creates a Configuration Descriptor using a deployment URL
+     * @param deploymentURL Format: 'name:ACTION:url:sfConfig:HOST:PROCESS'
+     *      - name: name where to apply ACTION
+     *      - ACTION: possible actions: DEPLOY, TERMINATE, DETACH, DETaTERM
+     *      - url: description used by ACTION
+     *      - target: for now only 'sfConfig' or 'empty' are considered.
+     *      - HOST: host name or IP where to apply ACTION. When empty it assumes localhost.
+     *      - PROCESS: process namewhere to apply ACTION. When empty it assumes rootProcess\n" +
+     *     ex. Deploy a description
+     *        counterEx:DEPLOY:org/.../example.sf:sfConfig:localhost:process
+     *     ex. Terminate local sfDaemon
+     *        rootProcess:TERMINATE:::localhost:
+     *
+     * @throws SmartFrogInitException
+     *
+     * @todo fix this text for JavaDocs
+     */
     public ConfigurationDescriptor (String deploymentURL) throws SmartFrogInitException {
         try {
             if (deploymentURL==null)
@@ -303,13 +362,26 @@ public class ConfigurationDescriptor implements MessageKeys{
         }
     }
 
-
+    /**
+     *
+     * @param name application/component name
+     * @param url resource to use during action. Usually a sf description
+     */
     public ConfigurationDescriptor (String name, String url){
         if (url == null) return;
         this.url = url;
         this.name=name;
     }
 
+    /**
+     *
+     * @param name application/component name
+     * @param url resource to use during action. Usually a sf description
+     * @param actionType @see Action inner class for valid types
+     * @param host host were to apply action. Can be null and then no rootProcess is used.
+     * @param subProcess subProcess were to apply action. Can be null.
+     * @throws SmartFrogInitException
+     */
     public ConfigurationDescriptor (String name, String url,int actionType,String host, String subProcess)
             throws SmartFrogInitException{
 
@@ -320,6 +392,16 @@ public class ConfigurationDescriptor implements MessageKeys{
         this.subProcess=subProcess;
     }
 
+    /**
+     * Creates Configuration Descriptor
+     * @param name application/component name
+     * @param url resource to use during action. Usually a sf description
+     * @param actionType @see Action inner class for valid types
+     * @param deployReference reference used for final resolve of a configuration
+     * @param host host were to apply action. Can be null and then no rootProcess is used.
+     * @param subProcess subProcess were to apply action. Can be null.
+     * @throws SmartFrogInitException when a parameter is wrongly defined
+     */
     public ConfigurationDescriptor (String name, String url,int actionType,
                                     String deployReference ,String host, String subProcess)
             throws SmartFrogInitException{
@@ -334,6 +416,11 @@ public class ConfigurationDescriptor implements MessageKeys{
         this.subProcess=subProcess;
     }
 
+    /**
+     * Gets defined use for final resolve of a configuration
+     * @return deployReference
+     * @see Reference
+     */
     private Reference getDeployReference(){
         String key = SF1Options.SFCONFIGREF;
         if (options.containsKey(key)){
@@ -342,16 +429,33 @@ public class ConfigurationDescriptor implements MessageKeys{
         return null;
     }
 
+    /**
+     * Sets reference use for final resolve of a configuration
+     * By default is will use 'sfConfig'.
+     * @see Reference
+     * @param reference
+     */
     private void setDeployReference(String reference){
         if (reference.equals(" ")){
             return;
         }
         this.options.put(SF1Options.SFCONFIGREF, new Reference (reference));
     }
+
+    /**
+     * Gets action type
+     * @return
+     */
     public int getActionType(){
         return actionType;
     }
 
+    /**
+     * To set all attributes for any result
+     * @param type Type of result @see Result inner class
+     * @param message result message
+     * @param thr result exception if it existed
+     */
     public void setResult(int type, String message, Throwable thr) {
         if ((type<0)||(type>Result.type.length)) {
             try {
@@ -364,6 +468,9 @@ public class ConfigurationDescriptor implements MessageKeys{
         if (thr!=null) this.resultException = thr;
     }
 
+    /**
+     * Sets result as SUCCESSFULL
+     */
     public void setSuccessfulResult(){
       this.resultType=Result.SUCCESSFUL;
     }
@@ -395,6 +502,13 @@ public class ConfigurationDescriptor implements MessageKeys{
         }
     }
 
+
+    /**
+     * Sets action type.
+     * @throws SmartFrogInitException it the type is not valid
+     * @see Action inner class for valid types
+     */
+
     public void setActionType(String type) throws SmartFrogInitException {
         if (type.equals(Action.type[Action.DEPLOY])) {
             setActionType(Action.DEPLOY);
@@ -414,6 +528,12 @@ public class ConfigurationDescriptor implements MessageKeys{
         return resultType;
     }
 
+    /**
+     * Parses resultMessage and resultException and generates one
+     * message.
+     * @return message
+     *
+     */
     public String getResultMessage() {
         if (this.resultMessage!=null)
             return resultMessage;
@@ -423,7 +543,7 @@ public class ConfigurationDescriptor implements MessageKeys{
     }
 
     /**
-     * perform the nominated action
+     * Performs the nominated action
      * @param targetProcess optional target process; set to null to
      * hand off process lookup to the ConfigurationAction subclass.
      * @return the object created from the operation

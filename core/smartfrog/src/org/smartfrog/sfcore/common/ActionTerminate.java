@@ -20,41 +20,58 @@
 package org.smartfrog.sfcore.common;
 
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
+import org.smartfrog.sfcore.processcompound.SFProcess;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 
 import java.rmi.RemoteException;
 
-/**
- * @author steve loughran
- *         created 18-Mar-2004 10:52:51
- */
 
 public class ActionTerminate extends ConfigurationAction{
+
+
     /**
-     * this has to be implemented by subclasses; execute a configuration command against
-     * a specified target.
-     * This version looks up the target and notes if it was a root process or not.
-     * then
-     *
+      * Terminates name from component targetP
+      *
+      * @param appName name of the application
+      * @param target the target process compound to request deployment
+      * @return Reference to detached component
+      * @exception SmartFrogException failure in some part of the process
+      * @throws RemoteException In case of network/rmi error
+      */
+      public static Prim sfTerminate(String name, ProcessCompound targetP)
+            throws SmartFrogResolutionException, RemoteException  {
+         Prim targetC=(Prim) targetP.sfResolveWithParser(name);
+         boolean isRootProcess = false;
+         if (targetC instanceof ProcessCompound) {
+            isRootProcess = ((ProcessCompound)targetC).sfIsRoot();
+         }
+         try {
+             targetC.sfTerminate(new TerminationRecord(TerminationRecord.NORMAL,
+                     "External Management Action",
+                     targetP.sfCompleteName()));
+         } catch (RemoteException ex) {
+             HandleTerminationException(ex, isRootProcess);
+         }
+         return targetC;
+     }
+
+
+    /**
+      * Terminate action
      * @param targetP       target process
      * @param configuration
      */
     public Object execute(ProcessCompound targetP,
                           ConfigurationDescriptor configuration) throws SmartFrogException,
             RemoteException {
-        Prim targetC = LookupTarget(targetP, configuration);
-        boolean isRootProcess = IsRootProcess(targetC);
-        String name = targetC.sfCompleteName().toString();
-        try {
-            targetC.sfTerminate(new TerminationRecord(TerminationRecord.NORMAL,
-                    "External Management Action",
-                    targetP.sfCompleteName()));
-        } catch (RemoteException ex) {
-            HandleTerminationException(ex, isRootProcess, configuration);
-        }
+        if (targetP==null) targetP=
+           SFProcess.sfSelectTargetProcess(configuration.host,configuration.subProcess);
+        Prim targetC = sfTerminate(configuration.name,targetP);
         configuration.setSuccessfulResult();
         return targetC;
     }
+
+
 
 }
