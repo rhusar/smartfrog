@@ -1,0 +1,3 @@
+#include "com/hp/sfServices/scripting/scriptPrim.sf"
+#include "com/hp/sfServices/scripting/heartbeat.sf"
+#include "com/hp/sfServices/scripting/button.sf"

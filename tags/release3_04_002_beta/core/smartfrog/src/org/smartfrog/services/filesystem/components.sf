@@ -1,0 +1,143 @@
+/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+#include "/org/smartfrog/components.sf"
+#include "/org/smartfrog/predicates.sf"
+
+/**
+ * platform independent file
+ * set the name and optionally the dir; get the absolute path in a
+ * platform independent manner
+ *
+ * The mustXXX attributes are characteristics of the files which must always hold
+ */
+
+
+FileSchema extends Schema {
+
+    filename extends OptionalString;
+    dir extends OptionalString;
+
+    //file must always exist
+    mustExist extends OptionalBoolean;
+    //the process must have read access
+    mustRead  extends OptionalBoolean;
+    //the file must be writeable
+    mustWrite  extends OptionalBoolean;
+
+    /* added at deploy time
+    exists: Boolean
+    absolutePath: String
+    URI: String
+    isFile
+    isDirectory
+    isHidden
+    timestamp: long
+    length: long
+    isEmpty: bool
+
+    */
+
+}
+
+File extends Prim {
+    fileSchema extends Schema;
+    sfClass "org.smartfrog.services.filesystem.FileImpl";
+}
+
+/*
+ name something that must be a directory and not a file
+  TODO: come up with a design for this. 
+ */
+ /*
+Directory extends File {
+    isDirectory "true";
+    isFile "false";
+}
+*/
+TouchFileSchema extends Schema {
+    //filename; this must be in a platform-specific format
+    filename extends OptionalString;
+
+    //file is a file instance
+    file extends OptionalCD;
+
+    //age of file, seconds since 1970-01-01; a value of -1 indicates
+    //current timestamp, as does omitting the value
+    timestamp extends OptionalLong;
+}
+
+/**
+ * the TouchFile component exits immediately after creation.
+ * it takes a file and an age
+ */
+TouchFile extends Prim {
+    touchFileSchema extends TouchFileSchema;
+    sfClass "org.smartfrog.services.filesystem.TouchFile";
+}
+
+/**
+ * tempfile
+ */
+TempFileSchema extends Schema {
+    //prefix should be three or more characters long
+    prefix extends String;
+    //suffix, like ".tmp"
+    suffix extends OptionalString;
+    //a directory. If not specified, the temp directory for this JVM will
+    //be used.
+    dir extends OptionalString;
+    //delete flag
+    deleteOnExit extends OptionalBoolean;
+}
+
+/**
+ * the temp file component creates a temporary file on deployment.
+ * this interface also implements the same interface as File, so that the
+ * getAbsolutePath() call works on it to give an absolute path.
+ * and absolutePath is set to the absolute path. None of the other
+ * attributes of File are set
+ */
+TempFile extends Prim {
+    tempFileSchema extends TempFileSchema;
+    sfClass "org.smartfrog.services.filesystem.TempFileImpl";
+}
+
+/**
+ * A temp file which auto cleans up
+ */
+TempFileWithCleanup extends TempFile {
+    deleteOnExit true;
+}
+
+MkdirSchema extends Schema {
+    //file is a file or a string.
+    dir extends Compulsory;
+}
+
+/**
+ * mkdir creates a directory where one did not exist before.
+ * and does nothing if it did.
+ * deployment fails if the directory name exists and is not a directory.
+ * Note: no checks for writeability are made
+ */
+Mkdir extends Prim {
+    mkdirSchema extends MkdirSchema;
+    sfClass "org.smartfrog.services.filesystem.MkdirImpl";
+}

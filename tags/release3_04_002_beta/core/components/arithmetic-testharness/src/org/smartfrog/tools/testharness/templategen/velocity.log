@@ -1,0 +1,23 @@
+Tue Apr 13 14:21:32 GMT+05:30 2004 AvalonLogSystem initialized using logfile E:\cvs\forge\mar11\core\components\arithmetic-testharness\src\org\smartfrog\tools\testharness\templategen\velocity.log
+Tue Apr 13 14:21:32 GMT+05:30 2004   [info]   [info] Default Properties File: org\apache\velocity\runtime\defaults\velocity.properties
+Tue Apr 13 14:21:32 GMT+05:30 2004   [info] Resource Loader Instantiated: org.apache.velocity.runtime.resource.loader.FileResourceLoader
+Tue Apr 13 14:21:32 GMT+05:30 2004   [info] FileResourceLoader : initialization starting.
+Tue Apr 13 14:21:32 GMT+05:30 2004   [info] FileResourceLoader : adding path '.'
+Tue Apr 13 14:21:32 GMT+05:30 2004   [info] FileResourceLoader : initialization complete.
+Tue Apr 13 14:21:32 GMT+05:30 2004   [info] Loaded Pluggable Directive: org.apache.velocity.runtime.directive.Literal
+Tue Apr 13 14:21:32 GMT+05:30 2004   [info] Loaded Pluggable Directive: org.apache.velocity.runtime.directive.Macro
+Tue Apr 13 14:21:32 GMT+05:30 2004   [info] Loaded Pluggable Directive: org.apache.velocity.runtime.directive.Parse
+Tue Apr 13 14:21:32 GMT+05:30 2004   [info] Loaded Pluggable Directive: org.apache.velocity.runtime.directive.Include
+Tue Apr 13 14:21:32 GMT+05:30 2004   [info] Loaded Pluggable Directive: org.apache.velocity.runtime.directive.Foreach
+Tue Apr 13 14:21:32 GMT+05:30 2004   [info] Created: 20 parsers.
+Tue Apr 13 14:21:32 GMT+05:30 2004   [info] Velocimacro : initialization starting.
+Tue Apr 13 14:21:32 GMT+05:30 2004   [info] Velocimacro : adding VMs from VM library template : VM_global_library.vm
+Tue Apr 13 14:21:32 GMT+05:30 2004  [error] ResourceManager : unable to find resource 'VM_global_library.vm' in any resource loader.
+Tue Apr 13 14:21:32 GMT+05:30 2004   [info] Velocimacro : error using  VM library template VM_global_library.vm : org.apache.velocity.exception.ResourceNotFoundException: Unable to find resource 'VM_global_library.vm'
+Tue Apr 13 14:21:32 GMT+05:30 2004   [info] Velocimacro : allowInline = true : VMs can be defined inline in templates
+Tue Apr 13 14:21:32 GMT+05:30 2004   [info] Velocimacro : allowInlineToOverride = false : VMs defined inline may NOT replace previous VM definitions
+Tue Apr 13 14:21:32 GMT+05:30 2004   [info] Velocimacro : allowInlineLocal = false : VMs defined inline will be  global in scope if allowed.
+Tue Apr 13 14:21:32 GMT+05:30 2004   [info] Velocimacro : messages on  : VM system will output logging messages
+Tue Apr 13 14:21:32 GMT+05:30 2004   [info] Velocimacro : initialization complete.
+Tue Apr 13 14:21:32 GMT+05:30 2004   [info] Velocity successfully started.
+Tue Apr 13 14:21:32 GMT+05:30 2004   [info] ResourceManager : found templateSerrano.vm with loader org.apache.velocity.runtime.resource.loader.FileResourceLoader
