@@ -31,6 +31,7 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.logging.LogSF;
 
 
 /**
@@ -44,14 +45,16 @@ public class EventPrimImpl extends PrimImpl implements EventRegistration,
     static Reference sendRef = new Reference("sendTo");
     Vector receiveFrom = new Vector();
     Vector sendTo = new Vector();
+ LogSF log = null;
 
     /**
      * Constructs EventPrimImpl.
      *
      * @throws RemoteException In case of RMI or network failure.
      */
-    public EventPrimImpl() throws RemoteException {
+    public EventPrimImpl() throws RemoteException, SmartFrogException {
         super();
+        log = this.sfGetProcessLog();
     }
 
     /**
@@ -117,8 +120,11 @@ public class EventPrimImpl extends PrimImpl implements EventRegistration,
             EventSink s = (EventSink) e.nextElement();
 
             try {
-                System.out.println(sfCompleteName().toString() + " sending " +
-                    event + " to " + s.toString());
+                //System.out.println(sfCompleteName().toString() + " sending " + event + " to " + s.toString());
+                String infoStr=sfCompleteName().toString() + " sending " + event + " to " + s.toString();
+                if (log.isInfoEnabled())
+                	log.info(infoStr);
+               
                 s.event(event);
             } catch (RemoteException ex) {
             }

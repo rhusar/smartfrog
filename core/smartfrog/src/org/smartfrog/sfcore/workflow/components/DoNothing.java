@@ -26,6 +26,7 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.workflow.eventbus.EventPrimImpl;
+import org.smartfrog.sfcore.logging.LogSF;
 
 
 /**
@@ -43,15 +44,18 @@ public class DoNothing extends EventPrimImpl implements Prim {
     public static final String TERMINATION_TYPE = "terminationType";
     public static final String MESSAGE = "message";
     public static final String PRINT_EVENTS = "printEvents";
+    LogSF log = null;
 
     /**
      * Constructs DoNothing.
      *
      * @throws RemoteException The required remote exception
      */
-    public DoNothing() throws RemoteException {
+    public DoNothing() throws RemoteException ,SmartFrogException{
         super();
+        log = this.sfGetApplicationLog();
     }
+
 
     /**
      * Print the receipt of any event for debugging.
@@ -61,7 +65,10 @@ public class DoNothing extends EventPrimImpl implements Prim {
      */
     public void handleEvent(String event) {
         if (printEvents) {
-            System.out.println(myId + " received event " + event);
+           //  System.out.println(myId + " received event " + event);
+        	String infoStr=myId + " received event " + event;
+            if (log.isInfoEnabled())
+            	log.info(infoStr);
         }
     }
 
@@ -112,7 +119,10 @@ public class DoNothing extends EventPrimImpl implements Prim {
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         if (message != null) {
-            System.out.println(message);
+   // System.out.println(message);
+           String infoStr=message;
+            if (log.isInfoEnabled())
+            	log.info(infoStr);
         }
 
         Runnable terminator = new Runnable() {

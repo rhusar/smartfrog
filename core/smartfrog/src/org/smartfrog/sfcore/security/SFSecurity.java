@@ -25,6 +25,9 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.RMISocketFactory;
+import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.logging.LogFactory;
+
 
 
 /**
@@ -109,8 +112,10 @@ public class SFSecurity {
                     securityOn = true;
                 } else {
                     // Activate a security manager that allows everything.
-                    System.out.println(
-                        "Warning: SmartFrog security is NOT active");
+                   // System.out.println("Warning: SmartFrog security is NOT active");
+	              LogSF log=LogFactory.getLog("SFSecurityLog");
+                      if (log.isWarnEnabled())
+		 	log.warn("SmartFrog security is NOT active");
                     System.setSecurityManager(new DummySecurityManager());
                     securityOn = false;
                 }

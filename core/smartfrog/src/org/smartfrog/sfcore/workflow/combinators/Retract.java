@@ -26,6 +26,8 @@ import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
+import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.common.SmartFrogException;
 
 
 /**
@@ -38,8 +40,11 @@ public class Retract extends EventCompoundImpl implements Compound {
      *
      * @throws RemoteException In case of RMI or network error.
      */
-    public Retract() throws RemoteException {
+    LogSF log = null;
+    public Retract() throws RemoteException , SmartFrogException {
         super();
+	log = this.sfGetProcessLog();
+
     }
 
     /**
@@ -54,8 +59,10 @@ public class Retract extends EventCompoundImpl implements Compound {
             try {
                 ((Prim) sfChildren.elementAt(i)).sfTerminateQuietlyWith(status);
             } catch (Exception ex) {
-                System.out.println(
-                    "Exception while terminating one of the children");
+               // System.out.println("Exception while terminating one of the children");
+	          String errStr="Exception while terminating one of the children";
+                  if (log.isErrorEnabled())
+                	log.error(errStr);
                 ex.printStackTrace();
             }
         }
