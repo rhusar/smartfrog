@@ -375,7 +375,7 @@ public abstract class SmartFrogTestBase extends TestCase {
         }
         fail("something odd came back");
         //fail throws a fault; this is here to keep the compiler happy.
-        return null;
+2        return null;
     }
 
 
