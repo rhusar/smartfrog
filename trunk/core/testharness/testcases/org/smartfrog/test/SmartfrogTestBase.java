@@ -26,6 +26,7 @@ import java.rmi.RemoteException;
 
 import org.smartfrog.SFSystem;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.ConfigurationDescriptor;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.sfcore.processcompound.SFProcess;
 import org.smartfrog.sfcore.prim.Prim;
@@ -74,7 +75,7 @@ public abstract class SmartfrogTestBase extends TestCase {
      * Deploy a component, expecting a smartfrog exception.
      * @param testURL   URL to test
      * @param appName   name of test app
-     * @param exceptionName name of the exception thrown 
+     * @param exceptionName name of the exception thrown
      * @param searchString string which must be found in the exception message
      * @throws RemoteException in the event of remote trouble.
      */
@@ -91,15 +92,15 @@ public abstract class SmartfrogTestBase extends TestCase {
     }
     /**
      * Deploy a component, expecting a smartfrog exception. You can
-     * also specify the classname of a contained fault -which, if specified, 
+     * also specify the classname of a contained fault -which, if specified,
      * must be contained, and some text to be searched for in this exception.
      * @param testURL   URL to test
      * @param appName   name of test app
      * @param exceptionName name of the exception thrown
      * @param searchString string which must be found in the exception message
-     * @param containedExceptionName optional classname of a contained 
+     * @param containedExceptionName optional classname of a contained
      * exception; does not have to be the full name; a fraction will suffice.
-     * @param containedExceptionText optional text in the contained fault. 
+     * @param containedExceptionText optional text in the contained fault.
      * Ignored if the containedExceptionClass parametere is null.
      * @throws RemoteException in the event of remote trouble.
      */
@@ -110,25 +111,38 @@ public abstract class SmartfrogTestBase extends TestCase {
                         String containedExceptionName,
                         String containedExceptionText) throws RemoteException {
         try {
-            SFSystem.deployAComponent(hostname,
-                    testURL, appName,
-                    false);
-        } catch (SmartFrogException fault) {
-            String message = fault.getMessage();
-            assertContains(message,searchString);
-            if(containedExceptionName!=null) {
-                Throwable cause=fault.getCause();
-                assertNotNull("expected throwable of type "
-                        +containedExceptionName,
-                        cause);
-                //verify the name
-                assertThrowableNamed(cause,containedExceptionName);
-                //verify the contained text
-                if(containedExceptionText!=null) {
-                    String m2 = cause.getMessage();
-                    assertContains(m2,containedExceptionText);
+            ConfigurationDescriptor cfgDesc =
+                new ConfigurationDescriptor(appName, testURL,
+                                            ConfigurationDescriptor.Action.
+                                            DEPLOY, hostname, null);
+            Object deployedApp = SFSystem.runConfigurationDescriptor(cfgDesc);
+
+            if (deployedApp instanceof Prim) {
+            // No Exception
+            } else if (deployedApp instanceof ConfigurationDescriptor) {
+                Object exception = ((ConfigurationDescriptor)deployedApp).
+                    resultException;
+                if ((exception!=null) && (exception instanceof SmartFrogException)){
+                    SmartFrogException fault = (SmartFrogException) exception;
+                    String message = fault.getMessage();
+                    assertContains(message, searchString);
+                    if (containedExceptionName!=null) {
+                        Throwable cause = fault.getCause();
+                        assertNotNull("expected throwable of type "
+                                      +containedExceptionName,
+                                      cause);
+                        //verify the name
+                        assertThrowableNamed(cause, containedExceptionName);
+                        //verify the contained text
+                        if (containedExceptionText!=null) {
+                            String m2 = cause.getMessage();
+                            assertContains(m2, containedExceptionText);
+                        }
+                    }
+
                 }
             }
+        } catch (SmartFrogException ex){
 
         }
     }
@@ -173,13 +187,29 @@ public abstract class SmartfrogTestBase extends TestCase {
      * @param testURL  URL to test
      * @param appName  Application name
      * @return Reference to deployed application
-     * @throws RemoteException in the event of remote trouble. 
+     * @throws RemoteException in the event of remote trouble.
      */
-    protected Prim deployExpectingSuccess(String testURL, String appName) 
+    protected Prim deployExpectingSuccess(String testURL, String appName)
                                                     throws RemoteException {
-        Prim app = null;                                                    
+        Prim app = null;
+
         try {
-            app = SFSystem.deployAComponent(hostname, testURL, appName, false);
+
+            ConfigurationDescriptor cfgDesc =
+                new ConfigurationDescriptor(appName, testURL,
+                     ConfigurationDescriptor.Action.DEPLOY, hostname, null);
+            Object deployedApp = SFSystem.runConfigurationDescriptor(cfgDesc);
+
+            if (deployedApp instanceof Prim) {
+               return ((Prim) deployedApp);
+           } else if (deployedApp instanceof ConfigurationDescriptor) {
+                   Object exception = ((ConfigurationDescriptor)deployedApp).
+                       resultException;
+                   if ((exception!=null)&& (exception instanceof SmartFrogException)) {
+                       fail("Unable to deploy component, Error:"+
+                              ((SmartFrogException)exception).getMessage());
+                   }
+               }
         }catch (SmartFrogException sfEx) {
             fail("Unable to deploy component, Error:"+ sfEx.getMessage());
         }
