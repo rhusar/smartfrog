@@ -1,0 +1,98 @@
+<?xml version="1.0" ?>
+<project name="paper" default="default" >
+<description>
+  creates a pdf or dvi copy of our paper 
+</description>
+
+<!-- 
+  we have some fun her as
+  different latexes have different command line args. 
+  The settings here support Latex on Linux and MikText
+  -->
+
+  <property file="build.properties"/>
+  <property environment="env"/>
+  <property name="doc.dir" location="../../build/docs"/>
+
+  <property name="title"
+    value="jaxrpc"/>
+    
+  <target name="init" depends="configure-latex">
+    <mkdir dir="${doc.dir}"/>
+
+  </target>
+
+
+  <target name="pick-version">
+    <condition property="is.miktex">
+      <os family="windows" />
+    </condition>
+  </target>
+  
+  <target name="configure-for-miktex" if="is.miktex" depends="pick-version">
+    <property name="tex.error.output" value= "-c-style-errors" />
+    <property name="tex.silent" value="-silent" />
+  </target>
+
+  <target name="configure-for-unix"  unless="is.miktex" depends="pick-version">
+    <property name="tex.error.output" value="-file-line-error-style" />
+    <property name="tex.silent" value="" />
+  </target>
+  
+  <target name="configure-latex" depends="configure-for-miktex,configure-for-unix" />
+  
+  <target name="clean">
+  </target>
+
+
+  <target name="default" depends="docs"
+      description="default build" />
+
+  <target name="docs" depends="dvi,bibtex,pdf" description="do all"/>
+
+    <!-- call latex -->
+  <target name="pdf" depends="init" description="PDF">
+    <exec executable="pdflatex" 
+        failonerror="true">
+      <!-- <arg value="-silent"/> -->
+      <arg value="${tex.error.output}"/>
+      <arg value="-interaction" />
+      <arg value="nonstopmode"/>
+      <arg file="${title}.tex" />
+    </exec>
+
+  </target>
+
+    <!-- call latex -->
+  <target name="dvi" depends="init" description="dvi">
+    <exec executable="latex" 
+        failonerror="true">
+      <arg value="${tex.error.output}"/>
+      <arg value="-interaction" />
+      <arg value="nonstopmode"/>
+      <arg file="${title}.tex" />
+    </exec>
+  </target>
+
+  <target name="bibtex" description="bibliography">
+    <exec executable="bibtex" 
+        failonerror="true">
+      <arg file="${title}" />
+    </exec>
+  </target>    
+
+  <target name="wc" description="word count (approx)">
+    <exec executable="wc" 
+        failonerror="true" 
+        os="Linux">
+      <arg file="jaxrpc.tex" />
+      <arg file="abstract.tex" />
+      <arg file="introduction.tex" />
+      <arg file="objections.tex" />
+      <arg file="implications.tex" />
+      <arg file="wsdl.tex" />
+      <arg file="alpine.tex" />
+    </exec>
+  </target>      
+  
+</project>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://gridforum.org/cddlm/serviceAPI/notifications/2004/10/11/"
+  xmlns:types="http://gridforum.org/cddlm/serviceAPI/notifications/2004/10/11/"
+  xmlns="http://gridforum.org/cddlm/serviceAPI/notifications/2004/10/11/"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  elementFormDefault="qualified">
+  <!--
+  xmlns:jsdl="http://www.gridforum.org/JSDL"
+  xmlns:wsbf="http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseFaults"
+    -->
+  <!-- ============================================================= -->
+  <xsd:annotation>
+    <xsd:documentation>
+  
+    This is the XSD describing the types of the CDDLM service API
+
+    Version: 0.1.
+    This is a prototype callback for notification events
+
+
+    The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL
+    NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED",  "MAY", and
+    "OPTIONAL" in this document are to be interpreted as described in
+    RFC 2119.
+    http://www.ietf.org/rfc/rfc2119.txt
+
+    </xsd:documentation>
+  </xsd:annotation>
+<!-- ============================================================= -->
+
+  <!-- ============================================================= -->
+  <!-- information for a subscription -->
+  <!-- ============================================================= -->
+  <xsd:complexType name="prototypeSubscriptionRequest">
+    <xsd:annotation>
+      <xsd:documentation>
+      Information needed to subscribe to CDDLM prototypes
+        address: URL of endpoint
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="address" type="xsd:anyURI"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+</xsd:schema>
