@@ -59,7 +59,7 @@ public class DeployEntry implements Entry {
      *
      *@param  entry  object entry.
      */
-    public DeployEntry(Object entry, boolean rootProcessPanel) {
+    public DeployEntry(Object entry, boolean showRootProcessName) {
         try {
             //         if (entry instanceof Prim){
             //            this.entry=(Prim)entry;
@@ -67,8 +67,7 @@ public class DeployEntry implements Entry {
             //            this.entry = (Compound) entry;
             //         }
             this.entry = (Object) entry;
-            this.showRootProcessName= rootProcessPanel;
-
+            this.showRootProcessName = showRootProcessName;
             //System.out.println("Entry created with "+this.toString());
         } catch (Exception ex) {
             System.out.println("sfManagementConsole (DeployEntry1): "+ex.toString());
@@ -764,15 +763,16 @@ public class DeployEntry implements Entry {
      */
     private DeployEntry obj2Entry(Object value) {
         try {
+            boolean newShowRootProcessName = (this.showRootProcessName&&(entry instanceof ProcessCompound));
             if (value instanceof Prim) {
-                return (new DeployEntry(value,this.showRootProcessName));
+                return (new DeployEntry(value,newShowRootProcessName));
             } else if (value instanceof Reference) {
                 do {
                     ((Reference) value).setEager(true);
                     value = ((Prim) entry).sfResolve((Reference) value);
                 } while (value instanceof Reference);
 
-                return (new DeployEntry(value,this.showRootProcessName));
+                return (new DeployEntry(value,newShowRootProcessName));
             }
         } catch (Exception ex) {
             System.out.println("Error building mgt info: " + ex);

@@ -25,6 +25,7 @@ import java.util.Vector;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
+import org.smartfrog.sfcore.processcompound.ProcessCompound;
 
 /**
  * DeployTreeModelSF is the deployable tree model for SmartFrog component
@@ -69,7 +70,8 @@ public class DeployTreeModelSF implements TreeModel {
      */
     public DeployTreeModelSF(Object entry, boolean showRootProcessName) {
         try {
-            this.entry = new DeployEntry(entry, showRootProcessName);
+           boolean newShowRootProcessName = (showRootProcessName&&(entry instanceof ProcessCompound));
+            this.entry = new DeployEntry(entry, newShowRootProcessName);
             this.listeners = new Vector();
 
             //System.out.println("DeployTreeModel created");
