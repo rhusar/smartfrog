@@ -4,10 +4,12 @@
 export SERVER=localhost:8080
 # Please edit codebase if you have any other jar file in webserver 
 export CODEBASE="http://$SERVER/sfExamples.jar" 
-
+ 
+export SFLIBPATH=$SFHOME/lib 
 #------------------------------------------------------
 # SF ENV PROPERTIES  - Please edit with your preferences
 # ------------------------------------------------------
+#export SFUSERHOME=$SFHOME/mylibs
 
 if ! test $SFDEFAULTINI; then
     export SFDEFAULTINI="-Dorg.smartfrog.iniFile=org/smartfrog/default.ini"
@@ -15,24 +17,35 @@ fi
 if ! test $SFDEFAULTSF; then
     export SFDEFAULTSF="-Dorg.smartfrog.sfcore.processcompound.sfDefault.sfDefault=org/smartfrog/default.sf"
 fi
-# if ! test $SFSECURITY;then
-#export SFSECURITY="-Djava.security.policy==$SFHOME/private/sf.policy -Djava.security.manager -Dorg.smartfrog.sfcore.security.keyStoreName=$SFPRIVATE/mykeys.st -Dorg.smartfrog.sfcore.security.propFile=$SFPRIVATE/SFSecurity.properties"
+#if ! test $SFSECURITY;then
+#export SFSECURITY="-Djava.security.policy==$SFHOME/private/sf.policy -Djava.security.manager -Dorg.smartfrog.sfcore.security.keyStoreName=$SFHOME/private/mykeys.st -Dorg.smartfrog.sfcore.security.propFile=$SFHOME/private/SFSecurity.properties"
 #fi
 # if ! test $SFCODEBASE;then
-#export SFCODEBASE="-Dorg.smartfrog.codebase=$CODEBASE"
+#	export SFCODEBASE="-Dorg.smartfrog.codebase=$CODEBASE"
 #fi
 
 # ------------------------------------------------------
 
-export SFCMDPARAMETERS=
-
-if test $SFSECURITY; then
+if test "$SFSECURITY"; then
  	export SFCMDPARAMETERS="$SFCMDPARAMETERS $SFSECURITY"
 fi
-if test $SFDEFAULTINI; then
+if test "$SFDEFAULTINI"; then
 	export SFCMDPARAMETERS="$SFCMDPARAMETERS $SFDEFAULTINI"
 fi
-if test $SFCODEBASE; then
+if test "$SFCODEBASE"; then
 	export SFCMDPARAMETERS="$SFCMDPARAMETERS $SFCODEBASE"
+fi
+
+if test "$SFSECURITY"; then
+	export SFLIBPATH=$SFHOME/signedLib
+fi
+
+for i in $SFLIBPATH/*.jar; do CLASSPATH=$i:$CLASSPATH; done
+export CLASSPATH
+
+if test "$SFUSERHOME"; then
+	export SFLIBPATH=$SFUSERHOME
+	for i in $SFLIBPATH/*.jar; do CLASSPATH=$i:$CLASSPATH; done
+	export CLASSPATH
 fi
 

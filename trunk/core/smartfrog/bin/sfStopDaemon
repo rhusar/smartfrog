@@ -13,8 +13,8 @@ elif [ $# -ne 1 ];then
    echo "Usage: sfStopDaemon HostName"
    exit
 fi 
-for i in $SFHOME/lib/*.jar; do CLASSPATH=$i:$CLASSPATH; done
-export CLASSPATH
+#for i in $SFHOME/lib/*.jar; do CLASSPATH=$i:$CLASSPATH; done
+#export CLASSPATH
 
 . $SFHOME/bin/setSFProperties
 

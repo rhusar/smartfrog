@@ -2,8 +2,8 @@
 if ! test $SFHOME; then export SFHOME=$PWD; fi
 
 
-for i in $SFHOME/lib/*.jar; do CLASSPATH=$i:$CLASSPATH; done
-export CLASSPATH
+#for i in $SFHOME/lib/*.jar; do CLASSPATH=$i:$CLASSPATH; done
+#export CLASSPATH
 
 . $SFHOME/bin/setSFProperties
 
