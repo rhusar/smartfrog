@@ -24,6 +24,8 @@ import java.rmi.RemoteException;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.Logger;
+
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.prim.Prim;
@@ -38,6 +40,15 @@ import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
  * Attributes are documented in onEvent.sf
  */
 public class OnEvent extends EventCompoundImpl implements Compound {
+
+    /* whether to handle a single event, or multiple */
+    boolean singleEvent = false;
+
+    /* whether the event handler should continue to handle events */
+    boolean finished = false;
+
+    /* ensure that each child event handler is differently named */
+    int index = 0;
 
     /**
      * Constructs OnEvent.
@@ -56,6 +67,11 @@ public class OnEvent extends EventCompoundImpl implements Compound {
     public void handleEvent(String event) {
         ComponentDescription act;
 
+	synchronized (this) {
+	    if (finished) return;
+	    if (singleEvent) finished = true; // even if not known how to handle...
+	}
+
         try {
             String name = "otherwise";
             try {
@@ -65,11 +81,54 @@ public class OnEvent extends EventCompoundImpl implements Compound {
                 act = (ComponentDescription) sfResolve(name);
             }
 
-	    sfCreateNewChild(name+"_actionRunning", act, null);
+	    sfCreateNewChild(name+index++, act, null);
 
-        } catch (Exception e) {
+        } catch (SmartFrogResolutionException e) {
+	    // no handler - log and ignore
+	    Logger.log(this.sfCompleteNameSafe()+"ignoring unknown event " + event);
+	} catch (Exception e) {
+            // error in  handler - log and ignore
             sfTerminate(TerminationRecord.abnormal(
                     "error in event handler for event " + event, null));
+        }
+    }
+
+    public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
+	singleEvent = sfResolve("singleEvent", false, false);
+    }
+
+    public synchronized void sfTerminateWith(TerminationRecord tr) {
+	finished = true;
+	super.sfTerminateWith(tr);
+    }
+
+
+    /**
+     * It is invoked by sub-components at termination. If normal termiantion, 
+     * and OnEvent is not in single event mode, then it simply accepts
+     * the child termination. Otherwsie it terminates itself as well, 
+     * propagating child event handler termination status.
+     *
+     * @param status termination status of sender
+     * @param comp sender of termination
+     */
+    public void sfTerminatedWith(TerminationRecord status, Prim comp) {
+        if (sfContainsChild(comp)) {
+            try {
+		if (singleEvent) {
+		    super.sfTerminatedWith(status, comp);
+		}
+
+                if (!(status.errorType.equals("normal".intern()))) {
+		    super.sfTerminatedWith(status, comp);
+                } else {
+                    sfRemoveChild(comp);
+                }
+            } catch (Exception e) {
+                Logger.log(this.sfCompleteNameSafe()+" - error handling child event handler termination ",e );
+                sfTerminate(TerminationRecord.abnormal(
+                        "error handling child event handler termination " + e, sfCompleteNameSafe()));
+            }
         }
     }
 }
