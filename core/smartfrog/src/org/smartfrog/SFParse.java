@@ -102,7 +102,6 @@ public class SFParse implements MessageKeys {
 
             Vector phases;
 
-            //SFSecurity.initSecurity();
             Phases top;
             try {
               InputStream is = SFClassLoader.getResourceAsStream(fileUrl);
@@ -282,7 +281,7 @@ public class SFParse implements MessageKeys {
      */
     private static void exit() {
         Logger.log( "SFParse: FAILED");
-        System.exit(1);
+        System.exit(-1);
     }
 
     /**

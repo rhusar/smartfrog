@@ -1,0 +1,205 @@
+<?xml version="1.0"?>
+<project name="common" basedir=".">
+  
+<description>
+  This is not a standalone build file; nor is it an XML fragment for 
+  inclusion into other build files. It is a self contained build file
+  for importing and overriding in subsidiary build files. 
+  
+  This build file is Ant1.6+ only. import did not exist before then.
+  
+  When ant 1.6 imports stuff into a project, the value of ".", the project
+  directory is that of the importing project, not the imported. But it sets
+  a property ant.file.PROJECTNAME to that of the directory of the imported 
+  project, where PROJECTNAME is not the filename, but the name of the project
+  in the XML declaratio.
+  
+  
+</description>
+
+
+  <target name="init-common">
+    <property file="common.properties"/>
+    
+    <!-- this is where we work out the base directory    -->
+    <!-- only here when running this task raw, to test targets inside -->
+    <property name="ant.file.common" location="${ant.file}" />
+    <!-- this will be set by the runtime during importation --> 
+    <dirname property="antfile.dir" file="${ant.file.common}"/>
+    <property name="core.dir" location="${antfile.dir}"/>
+    <property name="smartfrog.home" location="${core.dir}/smartfrog"/>
+    <property name="smartfrog.dist.dir" location="${smartfrog.home}/dist"/>
+    <property name="smartfrog.dist.lib.dir" location="${smartfrog.dist.dir}/lib"/>
+    <!-- Compile options for Smartfrog Release -->
+    <property name="javac.debug.mode" value="true"/> 
+    <property name="javac.deprecation.mode" value="true"/> 
+    <property name="javac.debug.level" value="lines,vars,source" />
+    <property name="javac.java.version" value="1.4" />
+    <path id="smartfrog.classpath">
+      <fileset dir="${smartfrog.dist.lib.dir}">
+        <include name="**/*.jar"/>
+      </fileset>       
+    </path>
+    
+    <property name="extras.dir"
+      location="${core.dir}/extras"/>
+      
+    <property name="smartfrog.tasks.name" value="smartfrog-tasks.jar"/>      
+    <property name="smartfrog.tasks.jar"
+      location="${extras.dir}/ant/build/dist/lib/${smartfrog.tasks.name}"/>
+
+    
+    
+    <!-- define a new javac task with new default options -->  
+    <presetdef name="sf-javac">
+       <javac debug="${javac.debug.mode}" 
+            deprecation="${javac.deprecation.mode}"
+            source="${javac.java.version}"
+            target="${javac.java.version}"
+            includeAntRuntime="false"
+            includes="**/*.java"
+            >
+       </javac>
+    </presetdef>
+    
+    
+    
+    <!-- an extension of the previous javac, this with ant classpath included -->
+    <presetdef name="sf-javac-with-ant">
+       <sf-javac  
+            includeAntRuntime="true" />
+    </presetdef>    
+    
+    
+    <!-- a new version of the java task that always forks, does not include
+    the ant runtime by default, and fails on any error -->
+    <presetdef name="sf-java">
+      <java 
+        includeantruntime="false"
+        fork="true"
+        failonerror="true"
+        >
+       </java>
+    </presetdef>
+    
+    <!-- junit wrapper;
+      enables forking, turns assertions on in the code, 
+      and enables XML output.
+      Timeout is set to 10 minutes, so we dont ever hang.
+      User is still required to 
+        -specify failure properties 
+        -provide test or batch test patterns
+        -set up the classpath. Dont forget to 
+        include a reference to smartfrog.classpath to get the core stuff
+      --> 
+    <presetdef name="sf-junit">
+      <junit printsummary="no"
+           fork="true"
+           includeantruntime="true"
+           timeout="600"
+           >
+        <assertions enableSystemAssertions="true"/>
+        <!-- #Tests take system property parameters -->
+        <!-- #Formatters for capture and display -->
+        <formatter type="xml"/>
+        <formatter type="brief" usefile="false"/>
+      </junit>
+    </presetdef>
+    
+    <!-- 
+    Copy useful files from the source to dest directories. Use this for adding
+    extra stuff to the bin directory. By default it pulls in 
+    **/*.xml,**/*.dtd,**/*.xsd,**/*.sf,**/*.properties; 
+    override the pattern property to set more
+     -->
+    <macrodef name="copy-useful-files">
+     <attribute name="src"/>
+     <attribute name="dest"/>
+     <attribute name="pattern" default="**/*.xml,**/*.dtd,**/*.xsd,**/*.sf,**/*.properties" />
+     <sequential>
+       <echo level="verbose">copying @{pattern} from @{src} to @{dest}</echo>
+       <copy todir="@{dest}">
+         <fileset dir="@{src}"
+           includes="@{pattern}"/>
+        </copy>
+      </sequential>
+    </macrodef>
+    
+  </target>
+
+<!-- 
+  This target is used to set up the standard output for builds and tests and things
+  Set up any property before calling it to override. 
+ --> 
+  <target name="init-standard-output-dirs" >
+    <property name="build.dir" location="build"/>
+    <property name="build.classes.dir" location="${build.dir}/classes"/>
+    <mkdir dir="${build.dir}" />    
+    <mkdir dir="${build.classes.dir}" />    
+    
+    
+    <property name="test.dir" location="${build.dir}/test"/>
+    <property name="test.classes.dir" location="${test.dir}/classes"/>
+    <property name="test.data.dir" location="${test.dir}/data"/>
+    <property name="test.datafiles.dir" location="test/files"/>
+    <property name="test.reports.dir" location="${test.dir}/reports"/>
+    <property name="test.src.dir" location="testcases" />
+    <mkdir dir="${test.dir}" />
+    <mkdir dir="${test.classes.dir}" />
+    <mkdir dir="${test.data.dir}" />
+    <mkdir dir="${test.datafiles.dir}" />
+    <mkdir dir="${test.reports.dir}" />
+    
+    <property name="dist.dir" location="${build.dir}/dist"/>
+    <property name="dist.lib.dir" location="${build.dir}/dist/lib"/>
+    <mkdir dir="${dist.dir}"/>
+    <mkdir dir="${dist.lib.dir}"/>
+  </target>
+  
+  <target name="clean" description="clean up build and dist"
+      depends="init-standard-output-dirs">
+    <delete dir="${build.dir}" />    
+    <delete dir="${dist.dir}"  />    
+  </target>  
+   
+  <!-- probe for the smartfrog binaries existing in the dist dir. -->
+    
+  <target name="verify-smartfrog"  depends="init-common"
+    description="verify smartfrog is present, fail if not">
+    <available 
+      classname="org.smartfrog.SFSystem" 
+      classpathref="smartfrog.classpath" 
+      property="sfSystem.present"/>
+    <property name="sfjars.fullpath" refid="smartfrog.classpath"/>
+    <fail unless="sfSystem.present">
+      Smartfrog entry point not found in 
+      ${sfjars.fullpath}
+    </fail>
+    <echo level="verbose">Smartfrog found in ${smartfrog.dist.lib.dir}</echo>
+  </target>
+
+  
+  <target name="use-smartfrog-tasks" depends="init-common"
+    description="declare the classpath and imports for the smartfrog tasks">
+    <path id="smartfrog.tasks.classpath">
+      <path refid="smartfrog.classpath"/>
+      <pathelement location="${smartfrog.tasks.jar}"/>
+    </path>
+    <available 
+      classname="org.smartfrog.tools.ant.Parse" 
+      classpathref="smartfrog.tasks.classpath" 
+      property="sfTasks.present"/>
+    <property name="sftasks.fullpath" refid="smartfrog.tasks.classpath"/>
+    <fail unless="sfTasks.present">
+      Smartfrog tasks not found in 
+      ${sftasks.fullpath}
+    </fail>
+    <typedef uri="http://smartfrog.org/"
+      resource="org/smartfrog/tools/ant/tasks.xml"
+      classpathref="smartfrog.tasks.classpath"
+      />
+    
+  </target>
+    
+  
+</project>   

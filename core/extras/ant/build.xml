@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<project name="ant_tasks" default="default" basedir=".">
+  
+<description>
+  Build file for Ant tasks for Smartfrog
+
+  This build file is Ant1.6+ only. Do not complain when it breaks
+  on Ant1.5! 
+  
+</description>
+
+<property name="root.dir" location="../.."  />
+
+<!-- Import common stuff -->
+<import file="${root.dir}/common.xml"/>
+
+  <target name="init" 
+    depends="init-common,verify-smartfrog,init-standard-output-dirs">
+    <property name="src.dir" location="src"/>
+    <property name="target.name" value="{smartfrog.tasks.name}"/>
+    <property name="target.jar" location="${smartfrog.tasks.jar}" />
+  </target>
+
+  <target name="compile" depends="init">
+    <sf-javac-with-ant 
+      srcdir="${src.dir}"
+      destdir="${build.classes.dir}"
+      classpathref="smartfrog.classpath"
+      >
+    </sf-javac-with-ant>
+    <copy-useful-files src="${src.dir}" dest="${build.classes.dir}" />
+  </target>
+  
+  <target name="dist" depends="compile">
+    <jar destfile="${target.jar}">
+      <fileset dir="${build.classes.dir}" includes="**/*" />
+    </jar>
+  </target>
+  
+  <target name="test" depends="dist,use-smartfrog-tasks">
+    <!-- todo -->
+  </target>
+  
+  <target name="default" depends="dist,test">
+    <!-- todo -->
+  </target>  
+  
+</project>   
