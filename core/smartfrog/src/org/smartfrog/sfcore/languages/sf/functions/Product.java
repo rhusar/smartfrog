@@ -23,14 +23,14 @@ package org.smartfrog.sfcore.languages.sf.functions;
 import org.smartfrog.sfcore.languages.sf.PhaseAction;
 
 /**
- * Defines the Product function that multiplies each of its attributes 
- * type-caste to integers, failure will result in an exception. 
- */ 
+ * Defines the Product function that multiplies each of its attributes
+ * type-caste to integers, failure will result in an exception.
+ */
 public class Product extends BaseOperator implements PhaseAction {
     /**
      * Multiplies the input parameters.
-     * @param  first input parameter 
-     * @param  second input parameter 
+     * @param  a first input parameter
+     * @param  b second input parameter
      * @return the product
      */
     protected Object doOperator(Object a, Object b) {

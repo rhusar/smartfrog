@@ -56,7 +56,7 @@ public class Generator extends NetElemImpl implements Remote {
 
     /**
      * Constructs Generator object
-     * @throws RemoteException if unable to construct Generator object 
+     * @throws RemoteException if unable to construct Generator object
      * remotely.
      */
     public Generator() throws java.rmi.RemoteException {
@@ -87,7 +87,7 @@ public class Generator extends NetElemImpl implements Remote {
     }
     /**
      * Life cycle method for component termination.
-     * @param the reson that lead to component termination
+     * @param tr the reson that lead to component termination
      */
     public synchronized void sfTerminateWith(TerminationRecord tr) {
         try {
@@ -99,7 +99,7 @@ public class Generator extends NetElemImpl implements Remote {
         }
         super.sfTerminateWith(tr);
     }
-    
+
     /**
      * Inner class that acts as a thread and adds an integer to the current
      * value vector maintained by the parent object NetElemImpl with the

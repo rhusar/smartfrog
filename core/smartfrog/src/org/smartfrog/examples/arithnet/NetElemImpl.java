@@ -37,10 +37,10 @@ import org.smartfrog.sfcore.reference.Reference;
 
 /**
  *  Defines the basic methods for the netcomponents.
- *  
+ *
  *  Make the class abstract as the evaluate() method must be completed correctly
  *  before use.
- */ 
+ */
 public abstract class NetElemImpl extends CompoundImpl implements Compound,
     NetElem, Remote {
     /**
@@ -61,7 +61,7 @@ public abstract class NetElemImpl extends CompoundImpl implements Compound,
     Vector currentValues = new Vector();
 
     /** Need a thread to decouple incoming RPC thread in from the RPCs out
-     * otherwise the RPCs will block until the entire NetElem tree has been 
+     * otherwise the RPCs will block until the entire NetElem tree has been
      * traversed
      */
     Thread outputer = null;
@@ -70,16 +70,16 @@ public abstract class NetElemImpl extends CompoundImpl implements Compound,
      * Constructs NetElemImpl object.
      *
      * @throws RemoteException In case of network/rmi error.
-     */ 
+     */
     public NetElemImpl() throws RemoteException {
         super();
     }
-    
+
     /**
      * Adds the given value to the current values and notifys all.
      *
      * @param i value to be added
-     */ 
+     */
     protected void addValue(int i) {
         synchronized (currentValues) {
             currentValues.addElement(new Integer(i));
@@ -89,7 +89,7 @@ public abstract class NetElemImpl extends CompoundImpl implements Compound,
 
     /**
      * Outputs all the current values.
-     */ 
+     */
     protected void doOutputs() {
         while (true) {
             try {
@@ -144,7 +144,7 @@ public abstract class NetElemImpl extends CompoundImpl implements Compound,
      * @param value the value
      *
      * @return the evaluated value
-     */ 
+     */
     protected int evaluate(String from, int value) {
         return value; // by default do nothing
     }
@@ -152,8 +152,8 @@ public abstract class NetElemImpl extends CompoundImpl implements Compound,
     // lifecycle methods
     /**
      * Deploys the component.
-     * @throws SmartFrogException if framework is unable to deploy the 
-     * component 
+     * @throws SmartFrogException if framework is unable to deploy the
+     * component
      * @throws RemoteException if remote or network error
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
@@ -182,8 +182,8 @@ public abstract class NetElemImpl extends CompoundImpl implements Compound,
     }
     /**
      * Starts the component.
-     * @throws SmartFrogException if framework is unable to start the 
-     * component 
+     * @throws SmartFrogException if framework is unable to start the
+     * component
      * @throws RemoteException if remote or network error
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
@@ -201,7 +201,7 @@ public abstract class NetElemImpl extends CompoundImpl implements Compound,
     }
     /**
      * Terminates the component.
-     * @param information about the component termination
+     * @param tr information about the component termination
      */
 
     public synchronized void sfTerminateWith(TerminationRecord tr) {

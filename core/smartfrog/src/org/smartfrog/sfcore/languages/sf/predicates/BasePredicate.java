@@ -31,7 +31,7 @@ import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
  */
 public abstract class BasePredicate implements PhaseAction {
 
-    /** Flag indicating to keep predicate or not. 
+    /** Flag indicating to keep predicate or not.
      */
     public static boolean keepPredicates = false;
 
@@ -48,7 +48,7 @@ public abstract class BasePredicate implements PhaseAction {
      * schema
      */
     protected abstract void doPredicate() throws SmartFrogCompileResolutionException;
-    
+
     /**
      * Default implementation of doit method.
      */
@@ -61,7 +61,7 @@ public abstract class BasePredicate implements PhaseAction {
     }
     /**
      * Sets the component.
-     * @param component description
+     * @param cd component description
      */
     public void forComponent(ComponentDescription cd) {
         component = cd;

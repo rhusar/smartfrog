@@ -23,14 +23,14 @@ package org.smartfrog.sfcore.languages.sf.functions;
 import org.smartfrog.sfcore.languages.sf.PhaseAction;
 
 /**
- * Defines the Sum function that sums each of its attributes type-caste to 
- * integers, failure will result in an exception. 
- */ 
+ * Defines the Sum function that sums each of its attributes type-caste to
+ * integers, failure will result in an exception.
+ */
 public class Sum extends BaseOperator implements PhaseAction {
     /**
      * Sums two numbers.
-     * @param first number
-     * @param second number
+     * @param a first number
+     * @param b second number
      * @return sum
      */
     protected Object doOperator(Object a, Object b) {

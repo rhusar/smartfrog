@@ -55,11 +55,11 @@ public class GameArenaWrapper extends EventPrimImpl implements Prim, Linker {
     /** Window size. */
     Dimension windowSize;
 
-    /** 
+    /**
      * Standard constructor for SmartFrog components.
      *
      * @throws RemoteException In case of network/rmi error
-     */ 
+     */
     public GameArenaWrapper() throws RemoteException {
     }
 
@@ -68,9 +68,9 @@ public class GameArenaWrapper extends EventPrimImpl implements Prim, Linker {
      * Overrides EventPrimImpl.sfDeploy.
      *
      * @throws SmartFrogException In case of error while deploying
-     * @throws RemoteException In case of network/rmi error 
+     * @throws RemoteException In case of network/rmi error
      */
-    public synchronized void sfDeploy() throws SmartFrogException, 
+    public synchronized void sfDeploy() throws SmartFrogException,
     RemoteException {
         try {
             super.sfDeploy();
@@ -105,9 +105,9 @@ public class GameArenaWrapper extends EventPrimImpl implements Prim, Linker {
      * Build a game frame and start the game.
      *
      * @throws SmartFrogException In case of error while starting
-     * @throws RemoteException In case of network/rmi error 
+     * @throws RemoteException In case of network/rmi error
      */
-    public synchronized void sfStart() throws SmartFrogException, 
+    public synchronized void sfStart() throws SmartFrogException,
     RemoteException {
         try {
             super.sfStart();
@@ -149,8 +149,8 @@ public class GameArenaWrapper extends EventPrimImpl implements Prim, Linker {
     /**
      * sfTerminate.
      *
-     * @param t TerminationRecord object
-     */ 
+     * @param tr TerminationRecord object
+     */
     public synchronized void sfTerminateWith(TerminationRecord tr) {
         System.out.println(" Ending game");
         // check if gameArena is initialized
@@ -197,7 +197,7 @@ public class GameArenaWrapper extends EventPrimImpl implements Prim, Linker {
         if (opponent != null) {
             try {
                 // hand it over to the opponent.
-                opponent.incomingBall(xBallPos, yBallPos, xBallSpeed, 
+                opponent.incomingBall(xBallPos, yBallPos, xBallSpeed,
                 yBallSpeed);
 
                 //hide the ball on this host
@@ -213,7 +213,7 @@ public class GameArenaWrapper extends EventPrimImpl implements Prim, Linker {
 
     /**
      * Handle an incoming message.
-     * If the message received indicates that a new player has been located, 
+     * If the message received indicates that a new player has been located,
      * set it as the opponent if :
      * - it is a different component
      * - and if it does not already have an opponent.
@@ -225,7 +225,7 @@ public class GameArenaWrapper extends EventPrimImpl implements Prim, Linker {
     // the advertiser itself.
         if (event.equals("service:sfPongPlayer")) {
             try {
-                // the 'opponent' attribute is a lazy link to the 
+                // the 'opponent' attribute is a lazy link to the
         // resultsCollector's results vector  in the advertised case
                 Vector allResults = (Vector) sfResolve("opponent");
 
@@ -259,7 +259,7 @@ public class GameArenaWrapper extends EventPrimImpl implements Prim, Linker {
      * already exists.
      * @param opponent opponent
      *
-     * @throws RemoteException in case of network/rmi error 
+     * @throws RemoteException in case of network/rmi error
      * @return true if the operation is successful (i.e if the opponent was not
      * already set)
      */
