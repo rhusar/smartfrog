@@ -19,10 +19,10 @@
  */
 package org.cddlm.components;
 
+import org.apache.commons.logging.Log;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.prim.PrimImpl;
-import org.smartfrog.sfcore.prim.Prim;
 
 import java.rmi.RemoteException;
 
@@ -74,21 +74,18 @@ public class LivenessPageComponent extends PrimImpl implements LivenessPage {
     public synchronized void sfDeploy()
             throws SmartFrogException, RemoteException {
         super.sfDeploy();
-        livenessPage = new LivenessPageChecker();
+        livenessPage = new LivenessPageChecker(this);
 
         String url = sfResolve(URL, (String) null, false);
 
         if (url != null) {
             livenessPage.bindToURL(url);
         } else {
-            livenessPage.setHost(
-                    sfResolve(HOST, livenessPage.getHost(), false));
-            livenessPage.setPort(
-                    sfResolve(PORT, livenessPage.getPort(), false));
+            livenessPage.setHost(sfResolve(HOST, livenessPage.getHost(), false));
+            livenessPage.setPort(sfResolve(PORT, livenessPage.getPort(), false));
             livenessPage.setProtocol(sfResolve(PROTOCOL,
                     livenessPage.getProtocol(), false));
-            livenessPage.setPage(
-                    sfResolve(PAGE, livenessPage.getPage(), false));
+            livenessPage.setPage(sfResolve(PAGE, livenessPage.getPage(), false));
         }
 
         livenessPage.setFollowRedirects(sfResolve(PROTOCOL,
@@ -105,7 +102,15 @@ public class LivenessPageComponent extends PrimImpl implements LivenessPage {
 
         //now tell the liveness page it is deployed
         livenessPage.onDeploy();
+
+        log = CommonsLogFactory.createLog(this);
+        log.info("Deployed " + toString());
     }
+
+    /**
+     * a log
+     */
+    Log log;
 
     /**
      * Liveness call in to check if this component is still alive.
@@ -124,6 +129,18 @@ public class LivenessPageComponent extends PrimImpl implements LivenessPage {
 
             //hand off to our liveness helper class
             livenessPage.onPing();
+        }
+    }
+
+    /**
+     * @return string form for this component
+     */
+    public String toString() {
+        //delegate
+        if (livenessPage != null) {
+            return livenessPage.toString();
+        } else {
+            return "undeployed liveness checker";
         }
     }
 }

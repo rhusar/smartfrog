@@ -22,14 +22,14 @@ package org.smartfrog.services.cddlm;
 import org.apache.axis.AxisEngine;
 import org.apache.axis.EngineConfiguration;
 import org.apache.axis.WSDDEngineConfiguration;
-import org.apache.axis.components.logger.LogFactory;
 import org.apache.axis.components.threadpool.ThreadPool;
 import org.apache.axis.deployment.wsdd.WSDDDeployment;
 import org.apache.axis.deployment.wsdd.WSDDDocument;
 import org.apache.axis.transport.http.SimpleAxisServer;
 import org.apache.axis.utils.XMLUtils;
 import org.apache.commons.logging.Log;
-import org.cddlm.components.LivenessPageChecker;
+import org.cddlm.components.CommonsLogFactory;
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
@@ -38,9 +38,7 @@ import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.security.SFClassLoader;
 import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
 
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.ServerSocket;
@@ -55,8 +53,8 @@ import java.rmi.RemoteException;
  * It may look like there is Apache code in here, from Axis' AutoRegisterServlet, but
  * that is because I wrote the Apache servlet; the registration code is pasted in from
  * the program I wrote from which I later extracted the AutoRegisterServlet.
- *
- *         created 02-Mar-2004 17:28:31
+ * <p/>
+ * created 02-Mar-2004 17:28:31
  */
 
 public class AxisImpl extends PrimImpl implements Axis, Prim {
@@ -80,7 +78,7 @@ public class AxisImpl extends PrimImpl implements Axis, Prim {
     /**
      * our log
      */
-    private Log log = LogFactory.getLog(this.getClass().getName());
+    private Log log;
 
     /**
      * max number of threads
@@ -92,9 +90,6 @@ public class AxisImpl extends PrimImpl implements Axis, Prim {
      */
     private int sessions = SimpleAxisServer.MAX_SESSIONS_DEFAULT;
 
-    private String livenessPage = "/";
-
-    private LivenessPageChecker liveness;
 
     /**
      * ctor is needed to throw an exception from a parent
@@ -119,6 +114,7 @@ public class AxisImpl extends PrimImpl implements Axis, Prim {
     public synchronized void sfDeploy() throws SmartFrogException,
             RemoteException {
         super.sfDeploy();
+        log = CommonsLogFactory.createLog(this);
     }
 
     /**
@@ -132,20 +128,22 @@ public class AxisImpl extends PrimImpl implements Axis, Prim {
     public synchronized void sfStart() throws SmartFrogException,
             RemoteException {
         super.sfStart();
+        assert log != null;
         assert axis == null;
         //get stuff from the configuration
         port = sfResolve(Axis.PORT, 8080, false);
         wsddResource = sfResolve(Axis.WSDD_RESOURCE, "", true);
         threads = sfResolve(Axis.THREADS, threads, false);
         sessions = sfResolve(Axis.SESSIONS, sessions, false);
+        /*
         livenessPage = sfResolve(Axis.LIVENESS_PAGE, livenessPage, false);
         liveness = new LivenessPageChecker("http", "127.0.0.1", port, livenessPage);
         liveness.setFollowRedirects(true);
         liveness.setFetchErrorText(true);
         liveness.onDeploy();
+        */
         log.info("Running Axis on port " + port + " with WSDD " + wsddResource);
         log.info(" max threads=" + threads + " sessions=" + sessions);
-        log.info(" liveness=" + livenessPage);
         axis = new SimpleAxisServer(threads, sessions);
         registerResource(wsddResource);
         try {
@@ -168,13 +166,13 @@ public class AxisImpl extends PrimImpl implements Axis, Prim {
 
     /**
      * Liveness call in to check if this component is still alive.
+     *
      * @param source source of call
      * @throws org.smartfrog.sfcore.common.SmartFrogLivenessException
      *          component is terminated
      */
     public void sfPing(Object source) throws SmartFrogLivenessException {
         super.sfPing(source);
-        liveness.onPing();
     }
 
     /**
@@ -242,8 +240,7 @@ public class AxisImpl extends PrimImpl implements Axis, Prim {
             if (deployment != null) {
                 wsddDoc.deploy(deployment);
             } else {
-                throw new SmartFrogException(
-                        "Failed to get Axis deployment system");
+                throw new SmartFrogException("Failed to get Axis deployment system");
             }
         } catch (Exception e) {
             throw SmartFrogException.forward(e);
@@ -274,8 +271,11 @@ public class AxisImpl extends PrimImpl implements Axis, Prim {
      * @throws SmartFrogException
      */
     public void registerResource(String resourcename)
-            throws SmartFrogException {
-        InputStream in = SFClassLoader.getResourceAsStream(resourcename);
+            throws SmartFrogException, RemoteException {
+        String targetCodeBase = (String) sfResolve(SmartFrogCoreKeys.SF_CODE_BASE);
+
+        log.info("loading " + resourcename + " using codebase of " + targetCodeBase);
+        InputStream in = SFClassLoader.getResourceAsStream(resourcename, targetCodeBase, true);
         if (in == null) {
             throw new SmartFrogException("Not found: " + resourcename);
         }

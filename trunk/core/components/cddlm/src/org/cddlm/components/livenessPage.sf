@@ -66,6 +66,9 @@ For more information: www.smartfrog.org
      //check frequency. This is the number of pings between checks
      //and so lets us probe less often than normal. default=1
      checkFrequency extends OptionalInteger;
+
+     //flag to say that the check is on/off; useful during development
+     enabled extends OptionalBoolean;
  }
 
  /*

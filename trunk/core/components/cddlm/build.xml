@@ -187,20 +187,30 @@
         </sf-startdaemon>
     </target>
 
+    <target name="init-deploy-properties" depends="init">
+        <property name="deploy.host" value="localhost"/>
+        <property name="application.name" value="cddlm"/>
+    </target>
 
     <!-- ========================================================== -->
     <!-- deploy; requires a host -->
     <!-- ========================================================== -->
-    <target name="deploy" depends="parse,dist"
-        description="parse the cddlm descriptor">
+    <target name="deploy" depends="parse,dist,init-deploy-properties,undeploy"
+        description="deploy">
         <property name="deploy.host" value="localhost"/>
-        <sf-tourl property="target.jar.url" file="${target.jar}"/>
+        <property name="application.name" value="cddlm"/>
+        <sf-tourl property="target.jar.url" file="${target.jar}">
+            <fileset dir="${axis.lib.dir}">
+                <include name="**/*.jar"/>
+            </fileset>
+        </sf-tourl>
+        <echo> codebase= ${target.jar.url}</echo>
         <sf-deploy classpathref="run.classpath"
             logStackTraces="true"
             host="${deploy.host}"
             >
             <codebase url="${target.jar.url}"/>
-            <application name="cddlm">
+            <application name="${application.name}">
 #include "org/smartfrog/services/cddlm/cddlm.sf"
   sfCodeBase "${target.jar.url}";
 
@@ -210,9 +220,17 @@ sfConfig extends CddlmSystem {
         </sf-deploy>
     </target>
 
+    <!-- ========================================================== -->
+    <!-- undeploy the application if it is running -->
+    <!-- ========================================================== -->
+    <target name="undeploy" depends="init-deploy-properties"
+        description="undeploy the application if it is running">
+        <sf-undeploy host="${deploy.host}" application="${application.name}"
+            failonerror="false"/>
+    </target>
 
     <!-- ========================================================== -->
-    <!-- deploy; requires a host -->
+    <!-- -->
     <!-- ========================================================== -->
     <target name="create-WSDL" depends="dist">
         <axis-java2wsdl>

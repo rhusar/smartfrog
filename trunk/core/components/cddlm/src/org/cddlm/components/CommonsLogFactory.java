@@ -19,24 +19,35 @@
  */
 package org.cddlm.components;
 
-import java.rmi.Remote;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.smartfrog.sfcore.prim.Prim;
 
 /**
- * created 28-Apr-2004 17:41:06
+ * Place for commons log instaces
+ * created 29-Apr-2004 17:19:36
  */
 
+public class CommonsLogFactory {
+    /**
+     * create a new log for a prim instance
+     *
+     * @param instance
+     * @return
+     */
+    public static Log createLog(Prim instance) {
+        return LogFactory.getLog(instance.getClass().getName());
+    }
 
-public interface LivenessPage extends Remote {
+    /**
+     * create a log of the given name
+     *
+     * @param instance
+     * @param name
+     * @return
+     */
+    public static Log createLog(Prim instance, String name) {
+        return LogFactory.getLog(name);
+    }
 
-    String URL = "url";
-    String HOST = "host";
-    String PORT = "port";
-    String PROTOCOL = "protocol";
-    String PAGE = "page";
-    String FOLLOW_REDIRECTS = "followRedirects";
-    String FETCH_ERROR_TEXT = "fetchErrorText";
-    String MINIMUM_RESPONSE_CODE = "minimumResponseCode";
-    String MAXIMUM_RESPONSE_CODE = "maximumResponseCode";
-    String CHECK_FREQUENCY = "checkFrequency";
-    String ENABLED = "enabled";
 }
