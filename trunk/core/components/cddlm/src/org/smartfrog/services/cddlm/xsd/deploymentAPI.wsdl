@@ -34,6 +34,22 @@
     xmlns="http://www.w3.org/2001/XMLSchema">
     
   <!-- ============================================================= -->
+  <!-- BEGIN IMPORTS -->
+  <!-- ============================================================= -->
+    
+  <import 
+    namespace="urn:cddlm/xml/0.1" 
+    schemaLocation="cddlm.xsd"/> 
+
+  <import 
+    namespace="http://schemas.xmlsoap.org/ws/2003/03/addressing" 
+    schemaLocation="ws-addressing.xsd"/>
+    
+  <import 
+    namespace="http://www.gridforum.org/JSDL" 
+    schemaLocation="jsdl.xsd"/> 
+    
+  <!-- ============================================================= -->
   <!-- BEGIN SIMPLETYPES -->
   <!-- ============================================================= -->
     
