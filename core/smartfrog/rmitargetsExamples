@@ -1,4 +1,5 @@
 org/smartfrog/examples/counter/CounterImpl.class
+org/smartfrog/examples/persistance/PersistantCounterImpl.class
 org/smartfrog/examples/arraycompound/ArrayCompoundImpl.class
 org/smartfrog/examples/arithnet/Generator.class
 org/smartfrog/examples/arithnet/Constant.class
