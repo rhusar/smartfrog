@@ -153,19 +153,14 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
         try {
             //Check Class and read configuration...including system.properties
             classComponentDescription = getClassComponentDescription(this, true);
-            Integer logLevel = new Integer (currentLogLevel);
-            try {
-                 logLevel = new Integer(((Number)(
-                    classComponentDescription.sfResolve(new Reference(
-                    "logLevel")))).intValue());
-            } catch (ClassCastException cce){
-                //ignore //@TODO put in log
-            }
+            setLevel( classComponentDescription.sfResolve(ATR_LOG_LEVEL,getLevel(),false));
             localLog = getLocalLog(name
-                                   , logLevel
-                                   , (String)classComponentDescription.sfResolve(new Reference("localLoggerClass"))
+                                   , new Integer(currentLogLevel)
+                                   , (String) classComponentDescription.sfResolve(
+                                            ATR_LOCAL_LOGGER_CLASS
+                                           ,"org.smartfrog.sfcore.logging.LogToFileImpl"
+                                           ,false)
                                    , getSfCodeBase(classComponentDescription));
-            setLevel(logLevel.intValue());
         } catch (Exception ex ){
             localLog=new LogToFileImpl(name,new Integer(currentLogLevel));
             localLog.warn("Error init localLog for LogImpl",ex);
