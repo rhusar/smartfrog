@@ -72,7 +72,7 @@ public class CounterImpl extends PrimImpl implements Prim, Counter, Runnable {
     /**
      *  Should pause during sfDeploy and sfStart?
      */
-    protected boolean pause = true;
+    protected boolean pause = false;
 
     /**
      *  Terminates component when counter reaches limit
@@ -349,13 +349,10 @@ public class CounterImpl extends PrimImpl implements Prim, Counter, Runnable {
                 counter++;
             }
             if (terminate) {
-              if (logApp.isInfoEnabled())logApp.info("Count completed. Terminating now: "+ this.sfCompleteNameSafe());
-              sfTerminate(TerminationRecord.normal(this.sfCompleteNameSafe()));
+                new org.smartfrog.sfcore.common.TerminatorThread(this, TerminationRecord.normal(this.sfCompleteNameSafe())).start();
             }
             //end while
-            if (logApp.isInfoEnabled()) logApp.info("Count completed. While Finished: "+ this.sfCompleteNameSafe());
         } catch (InterruptedException ie) {
-            if (logApp.isErrorEnabled()) logApp.err(null,ie);
             exception("run", ie);
         }
 
