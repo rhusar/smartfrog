@@ -50,6 +50,8 @@ public class ConfigurationDescriptor implements MessageKeys{
                       "DETACH",
                       "DETaTERM"};
     }
+
+    private String lineSeparator="\n    ";
     /**
      Action type; one of the Action enumerations. Initially set to
      #Action.UNDEFINED
@@ -184,10 +186,12 @@ public class ConfigurationDescriptor implements MessageKeys{
      */
     public String statusString(String separator){
           StringBuffer message = new StringBuffer();
-          String result = null;
+          String result = "";
 
           if (getName()!=null) {
-              message.append(""); message.append(getName().toString());
+              message.append("'");
+              message.append(getName().toString());
+              message.append("'");
           }
 
           if (getUrl()!=null) {
@@ -241,13 +245,12 @@ public class ConfigurationDescriptor implements MessageKeys{
               messageError.append(" of ");
               messageError.append(message);
               if ((resultMessage!=null)||(resultException!=null)) {
-                  messageError.append(separator);
                   messageError.append("\n   Error:");
-                  if (resultMessage!=null) {
-                     resultMessage.toString();
+                  if ((resultMessage!=null)&&(resultMessage.toString().trim()!="")) {
+                     messageError.append(lineSeparator+resultMessage.toString());
                   }
                   if (resultException!=null) {
-                      messageError.append("\n   "+parseException(resultException));
+                      messageError.append(lineSeparator+parseException(resultException,lineSeparator));
                   }
               }
               result= messageError.toString();
@@ -260,7 +263,7 @@ public class ConfigurationDescriptor implements MessageKeys{
      * @param thr Exception
      * @return message
      */
-    private String parseException (Throwable thr){
+    private String parseException (Throwable thr, String lineSeparator){
         StringBuffer messageError = new StringBuffer();
         if (thr instanceof SmartFrogException){
             //messageError.append(((SmartFrogException)thr).toString("\n   "));
@@ -275,15 +278,18 @@ public class ConfigurationDescriptor implements MessageKeys{
             messageError.append(MessageUtil.formatMessage(MSG_REMOTE_CONNECT_ERR,host));
         } else if (thr instanceof Exception) {
             //Logger.log(MessageUtil.formatMessage(MSG_UNHANDLED_EXCEPTION), ex);
-            messageError.append(MessageUtil.formatMessage(MSG_UNHANDLED_EXCEPTION));
+            messageError.append(MessageUtil.formatMessage(MSG_UNHANDLED_EXCEPTION)
+            );
         }
 
         if (thr instanceof SmartFrogException) {
-            messageError.append("  ");
-            messageError.append(((SmartFrogException)thr).toString("\n     "));
+            //messageError.append(lineSeparator);
+            messageError.append(((SmartFrogException)thr).toString(lineSeparator));
         } else {
-            messageError.append("\n     ");
-            messageError.append(thr.toString());
+            if ( thr !=null) {
+                //messageError.append(lineSeparator);
+                messageError.append(thr.toString());
+            }
         }
         return messageError.toString();
     }
