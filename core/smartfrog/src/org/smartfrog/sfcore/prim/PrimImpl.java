@@ -23,7 +23,6 @@ package org.smartfrog.sfcore.prim;
 import java.net.InetAddress;
 import java.rmi.RemoteException;
 import java.rmi.server.RemoteStub;
-import java.util.Vector;
 import java.util.Enumeration;
 import java.util.Iterator;
 
@@ -41,11 +40,9 @@ import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.common.SmartFrogContextException;
 import org.smartfrog.sfcore.common.TerminatorThread;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.processcompound.SFProcess;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferencePart;
-import org.smartfrog.sfcore.reference.RemoteReferenceResolver;
 import org.smartfrog.sfcore.security.SFGeneralSecurityException;
 import org.smartfrog.sfcore.security.SecureRemoteObject;
 

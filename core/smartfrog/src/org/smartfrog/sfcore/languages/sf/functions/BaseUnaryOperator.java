@@ -20,9 +20,6 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.languages.sf.functions;
 
-import java.util.Enumeration;
-
-import org.smartfrog.sfcore.common.MessageKeys;
 import org.smartfrog.sfcore.common.MessageUtil;
 import org.smartfrog.sfcore.languages.sf.PhaseAction;
 import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
@@ -42,7 +39,7 @@ public abstract class BaseUnaryOperator extends BaseFunction implements PhaseAct
      *  */
     protected abstract Object doOperator(Object a) throws SmartFrogCompileResolutionException;
 
-    /** Implements the functionality of base unary operator. 
+    /** Implements the functionality of base unary operator.
      * @return the result of applying the operator
      * @throws SmartFrogCompileResolutionException if the attribute "data" does not exist or the  operator throws the exception
      **/
@@ -50,7 +47,7 @@ public abstract class BaseUnaryOperator extends BaseFunction implements PhaseAct
 	Object data = context.get("data");
 
 	if (data == null)
-	    throw new SmartFrogCompileResolutionException(MessageUtil.formatMessage(MISSING_PARAMETER, "data"), 
+	    throw new SmartFrogCompileResolutionException(MessageUtil.formatMessage(MISSING_PARAMETER, "data"),
 							  null, name, "function", null);
 
 	return doOperator(data);

@@ -26,7 +26,6 @@ import java.util.Enumeration;
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
-import org.smartfrog.sfcore.common.Logger;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.prim.Prim;
@@ -160,7 +159,6 @@ public class Container extends EventCompoundImpl implements Compound {
      */
     protected void sfLivenessFailure(Object source, Object target,
 				     Throwable failure) {
-
 	if (target.equals(sfParent)) {
 	    super.sfLivenessFailure(source, target, failure);
 	} else {

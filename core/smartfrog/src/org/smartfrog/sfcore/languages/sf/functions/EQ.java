@@ -21,8 +21,7 @@ For more information: www.smartfrog.org
 package org.smartfrog.sfcore.languages.sf.functions;
 
 import org.smartfrog.sfcore.languages.sf.PhaseAction;
-import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
-import org.smartfrog.sfcore.common.MessageUtil;
+
 
 /**
  * Defines the equality binary operator. Defined using equals, not ==.

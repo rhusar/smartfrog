@@ -23,16 +23,16 @@ package org.smartfrog.sfcore.processcompound;
 import java.net.InetAddress;
 import java.rmi.RemoteException;
 import java.rmi.registry.Registry;
+import java.rmi.NotBoundException;
 
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.MessageKeys;
 import org.smartfrog.sfcore.common.MessageUtil;
-import org.smartfrog.sfcore.common.SmartFrogCoreProperty;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.security.SFSecurity;
-import java.rmi.*;
+
 
 
 

@@ -24,7 +24,6 @@ import java.io.Serializable;
 import java.util.Enumeration;
 import java.util.Vector;
 
-import org.smartfrog.SFSystem;
 import org.smartfrog.sfcore.common.SmartFrogCoreProperty;
 import org.smartfrog.sfcore.common.Copying;
 import org.smartfrog.sfcore.common.SmartFrogException;

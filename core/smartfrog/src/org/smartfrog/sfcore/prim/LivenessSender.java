@@ -44,12 +44,13 @@ public class LivenessSender extends Timer {
      */
     public LivenessSender(Liveness target, long delay, String name) {
         super(delay);
+        this.name=name;
         this.target = target;
     }
 
     /**
      * Timer behaviour. Send liveness message to target. Target should handle
-     * any exceptions in the sfPing method. They are ignore here.
+     * any exceptions in the sfPing method. They are ignored here.
      *
      */
     protected void timerTick() {

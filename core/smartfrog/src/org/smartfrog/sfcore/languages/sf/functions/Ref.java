@@ -5,7 +5,7 @@ import org.smartfrog.sfcore.languages.sf.PhaseAction;
 import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
 import org.smartfrog.sfcore.languages.sf.functions.BaseFunction;
 import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.common.SFNull;
+
 /**
  * Defines the unary operator not that negates its boolean parameter.
  * The parameter attribute is "data" and an exception will be thrown if it
@@ -29,13 +29,13 @@ public class Ref extends BaseFunction implements PhaseAction {
 	    } catch (ClassCastException e) {
 		reference = null;
 	    }
-	    
+
 	    try {
 		lazy = ((Boolean) context.get("lazy")).booleanValue();
 	    } catch (Exception e) {
 		lazy = false;
 	    }
-	    
+
 	    r = new Reference(reference, true);
 	    if (lazy) {
 		r.setEager(false);
