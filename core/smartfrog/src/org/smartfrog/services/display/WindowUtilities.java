@@ -95,7 +95,7 @@ public class WindowUtilities {
    public static boolean testGraphics() {
       try {
          Frame f = new Frame();
-         f.setVisible(true);
+         f.setVisible(false);
          f.dispose();
          System.out.println("Graphics mode available");
 
