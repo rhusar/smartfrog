@@ -50,9 +50,9 @@ public class CompilerSystemTest extends SmartfrogTestBase {
         deployExpectingException(FILES+"tcn47.sf",
                 "tcn47",
                 "SmartFrogDeploymentException",
-                "FAILED when trying DEPLOY",
-                "SmartFrogResolutionException",
-                "The result is not a ComponentDescription");
+                "Wrong class when resolving 'HERE sfClass'",
+                "java.lang.ClassCastException",
+                null);
     }
 
     public void testCaseTCN6() throws Exception {
