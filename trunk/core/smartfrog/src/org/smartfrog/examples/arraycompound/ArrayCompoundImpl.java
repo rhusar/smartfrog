@@ -48,6 +48,7 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.compound.CompoundImpl;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
@@ -116,7 +117,7 @@ public class ArrayCompoundImpl extends CompoundImpl implements Compound, ArrayCo
         try {
             Context sfHostContext = new ContextImpl();
             sfHostContext.sfAddAttribute("sfProcessHost", hostname);
-            p = this.sfCreateNewChild(hostname,parent, template, sfHostContext);
+            p = this.sfCreateNewChild(hostname,parent, (ComponentDescription) ((ComponentDescriptionImpl)template).clone(), sfHostContext);
         } catch (Exception e) {
             if (sflog().isErrorEnabled()) {
                 sflog().error("deployTemplate: "+hostname, e);
