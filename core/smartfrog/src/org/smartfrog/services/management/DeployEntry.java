@@ -33,6 +33,7 @@ import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.sfcore.processcompound.SFProcess;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
+import java.rmi.RemoteException;
 
 //import org.smartfrog.sfcore.parser.*;
 
@@ -625,19 +626,46 @@ public class DeployEntry implements Entry {
      */
     private String getRDNProcessCompound() {
         //Special case when Entry is Registered in ProcessCompound.
+        String entryName ="";
+        ProcessCompound pcEntry=null;
         try {
-            Context context = SFProcess.getRootLocator()
-            .getRootProcessCompound(((Prim)this.entry).sfDeployedHost()
-                                    ).sfContext();
-            if (context.contains(this.getEntry())) {
-                return  (String)context.keyFor(this.getEntry());
+            //Now every component can register with its local processCompound
+            // and therefore it should be shown in this way.
+            //Find ProcessCompound where entry is deployed
+            StringBuffer refStr = new StringBuffer();
+            refStr.append("HOST \"");
+            refStr.append(((Prim)entry).sfDeployedHost().getCanonicalHostName());
+            refStr.append("\":");
+            refStr.append(((Prim)entry).sfDeployedProcessName());
+            Reference refPC = Reference.fromString(refStr.toString());
+            // enty host
+            pcEntry = (ProcessCompound)((Prim)entry).sfResolve(refPC);
+            try {
+              Object prim = ((Prim)entry).sfResolve( ((Prim) entry).sfCompleteName());
+              if (pcEntry.sfContainsValue(prim)) {
+                entryName =  (String)pcEntry.sfAttributeKeyFor(prim);
+              }
+            } catch (Exception ex2) {
+              if (pcEntry.sfContainsValue(this.getEntry())) {
+                  entryName =  (String)pcEntry.sfAttributeKeyFor(this.getEntry());
+              }
             }
+
         } catch (Exception ex) {
             //@Todo log this.
-            //ex.printStackTrace();
+            ex.printStackTrace();
         }
-        return "";
+//        try {
+//          String pcEntryName="null";
+//          if (pcEntry !=null){
+//            pcEntryName=pcEntry.sfCompleteName().toString();
+//          }
+//          System.out.println("Entry name = " + entryName + ", " + ( (Prim) entry).sfCompleteName()+", PC: "+pcEntryName);
+//        } catch (RemoteException ex1) {
+//        }
+        return entryName;
     }
+
 
 
 
