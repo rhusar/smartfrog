@@ -251,6 +251,7 @@ public class SFProcess implements MessageKeys {
                     nameContext.put(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME, name);
                     ComponentDescription cd = ComponentDescriptionImpl.
                         sfComponentDescription(url.trim());
+                    // Parent is null: default descriptions are root components
                     p = comp.sfDeployComponentDescription(null, null, cd,
                         nameContext);
                     p.sfDeploy();
