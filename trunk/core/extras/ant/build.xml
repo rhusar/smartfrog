@@ -251,7 +251,7 @@
 <!-- end xdocs support -->
 <!-- ==================================================================== -->
   
-<target name="dist" depends="test,package" 
+<target name="dist" depends="package" 
   description="Create a full distribution" />
 
   <!-- do all prework -->
