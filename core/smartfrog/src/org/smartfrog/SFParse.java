@@ -249,8 +249,11 @@ public class SFParse implements MessageKeys {
             //SFSystem.readPropertiesFromIniFile();
 
             if (opts.errorString != null) {
-                if (opts.help) { Logger.log( "Help: \n"+opts.errorString);
-                } else {Logger.log( "Error: "+opts.errorString);}
+                if (opts.help) {
+                    Logger.log( "Help: \n"+opts.errorString);
+                } else {
+                    Logger.log( "Error: "+opts.errorString);
+                }
                 exit();
             }
 

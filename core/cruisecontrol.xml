@@ -35,6 +35,7 @@
 
     <log dir="../artifacts">
        <merge dir="testharness/build/test/data" />
+       <merge dir="extras/ant/build/test/data" />
     <!--	    <merge dir="smartfrog/dist/tests/logs" /> -->
     </log>
     <publishers>

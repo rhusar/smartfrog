@@ -19,7 +19,7 @@
 
 
   <target name="init-common">
-    <property file="common.properties"/>
+    <property file="build.properties"/>
     
     <!-- this is where we work out the base directory    -->
     <!-- only here when running this task raw, to test targets inside -->
@@ -27,6 +27,12 @@
     <!-- this will be set by the runtime during importation --> 
     <dirname property="antfile.dir" file="${ant.file.common}"/>
     <property name="core.dir" location="${antfile.dir}"/>
+    
+    <!-- the common.properties file lets you provide a single declaration of
+    overrides (like the compiler settings) that apply across
+    all projects that use this common file-->
+    <property file="${core.dir}/common.properties"/>
+    
     <property name="smartfrog.home" location="${core.dir}/smartfrog"/>
     <property name="smartfrog.dist.dir" location="${smartfrog.home}/dist"/>
     <property name="smartfrog.dist.lib.dir" location="${smartfrog.dist.dir}/lib"/>
@@ -44,6 +50,7 @@
     <property name="extras.dir"
       location="${core.dir}/extras"/>
       
+      <!-- information about the ant tasks -->
     <property name="smartfrog.tasks.name" value="smartfrog-tasks.jar"/>      
     <property name="smartfrog.tasks.jar"
       location="${extras.dir}/ant/build/dist/lib/${smartfrog.tasks.name}"/>
@@ -53,6 +60,7 @@
     <!-- define a new javac task with new default options -->  
     <presetdef name="sf-javac">
        <javac debug="${javac.debug.mode}" 
+            nowarn="true"  
             deprecation="${javac.deprecation.mode}"
             source="${javac.java.version}"
             target="${javac.java.version}"
@@ -67,7 +75,7 @@
     <!-- an extension of the previous javac, this with ant classpath included -->
     <presetdef name="sf-javac-with-ant">
        <sf-javac  
-            includeAntRuntime="true" />
+          includeAntRuntime="true" />
     </presetdef>    
     
     
@@ -107,7 +115,15 @@
       </junit>
     </presetdef>
     
+    <!-- testing for a server being present; set a property to set -->
     
+    <presetdef name="sf-daemonfound">
+      <condition >
+        <socket port="3800" server="localhost" />
+      </condition>
+    </presetdef>
+    
+    <!-- reporting wrapper -->
     <macrodef name="sf-test-report">
       <attribute name="data"/>
       <attribute name="reports"/>
@@ -173,6 +189,7 @@
     <mkdir dir="${dist.lib.dir}"/>
   </target>
   
+  <!-- cleanup target -->
   <target name="clean" description="clean up build and dist"
       depends="init-standard-output-dirs">
     <delete dir="${build.dir}" />    
@@ -195,7 +212,7 @@
     <echo level="verbose">Smartfrog found in ${smartfrog.dist.lib.dir}</echo>
   </target>
 
-  
+  <!-- probe for tasks and use them if they are found; fail if not -->
   <target name="use-smartfrog-tasks" depends="init-common"
     description="declare the classpath and imports for the smartfrog tasks">
     <path id="smartfrog.tasks.classpath">
@@ -215,7 +232,6 @@
       resource="org/smartfrog/tools/ant/tasks.properties"
       classpathref="smartfrog.tasks.classpath"
       />
-    
   </target>
     
   
