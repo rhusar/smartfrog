@@ -32,10 +32,13 @@ import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.componentdescription.ComponentDeployer;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
+import org.smartfrog.sfcore.common.ContextImpl;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.security.SFClassLoader;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.logging.LogSF;
+
 
 /**
  * This class implements the deployment semantics for primitives. This means
@@ -177,7 +180,10 @@ public class PrimDeployerImpl implements ComponentDeployer, MessageKeys {
             if (target.sfContext().containsKey(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME)) {
                 name =target.sfResolveHere(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME,false);
             }
-            throw new SmartFrogDeploymentException (refClass,null,name,target,null,"Class not found", cnfex, targetCodeBase);
+            ComponentDescription cdInfo = new ComponentDescriptionImpl(null,new ContextImpl(),false);
+            cdInfo.sfAddAttribute("sfCodeBase", targetCodeBase);
+            cdInfo.sfAddAttribute("java.class.path", System.getProperty("java.class.path"));
+            throw new SmartFrogDeploymentException (refClass,null,name,target,null,"Class not found", cnfex, cdInfo);
         }
 
     }
