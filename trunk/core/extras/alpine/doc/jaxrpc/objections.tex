@@ -1,0 +1,345 @@
+\section{The Fundamental Flaws of JAX-RPC}
+\label{objections:top}
+
+\subsection{The O/X Mapping Problem}
+\label{objections:o-x}
+
+O/X mapping\footnote{Object-XML mapping} attempts to turn an XML
+document into Java classes derived from the type information attached
+to nodes. This is distinct from the type of mapping performed by
+DOM\footnote{Document Object Model} in that the classes are
+``serialised'' from the XML tree, not merely created to represent it. 
+O/X mapping is an essential part of JAX-RPC, allowing method calls to
+be translated into SOAP requests, and responses translated back into
+Java objects.
+
+We chose the term \emph{O/X mapping problem} to emphasise the
+similarities it has with the heavily studied O/R mapping
+problem\footnote{ \emph{"Object-relational mapping is the Vietnam of
+Computer Science"} - Ted Neward. He means that it's a problem you can
+never declare victory over, merely invest more and more effort to get
+deeper into the quagmire.
+%http://www.neward.net/ted/weblog/index.jsp?date=20041003#1096871640048
+}
+There is less experience in mapping between XML and objects, and
+rather than drawing on the experiences of the many failed attempts at
+O/R mapping problem, O/X mapping technologies appear destined to share
+a similar evolution.
+
+At first glance, O/X mapping appears simple: create a Java object
+for each XML element, building a DAG\footnote{directed, acyclic graph}
+when serializing to rpc/encoded SOAP or a tree with document/literal
+messages. Read or write between attributes and class fields, bind to
+children and the conversion is complete. If only it were so
+straightforward. Here are just some of the problems:
+
+\emph{ideally each of these is discussed in a separate subsection
+the list should be adapted to be exhaustive. we can omit detail
+discussion of any that are especially obvious.}
+
+\begin{itemize}
+
+\item deciding which classes to use for an endpoint, and
+deciding which XML elements to use for a Java class. 
+
+\item deciding which types to use for the XML encoding. In rpc/encoded messages,
+this type must be explicitly declared from the small set of possible types. In
+document/literal messages, the type is omitted in messages. 
+
+\item determining the XML names of types and values. In JAX-RPC, this is
+done through Java Introspection.
+
+\item Generating the WSDL description of a service and its types,
+again through Java Introspection.
+
+\item map from XML names to valid Java names.
+
+\end{itemize}
+
+We discuss some of these points in the following sections.
+
+\subsubsection{XML Elements and Java Classes}
+\label{objections:o-x:xml-classes}
+
+One particular problem is that the language of XML Schema is much
+richer than the object model of Java. In Java, inheritance can extend
+a type, and change some existing semantics, but
+inheritance-by-restriction is not explictly supported. Whereas in XML
+Schema, it is simple to declare that a dog is a mammal with four legs,
+and a three legged dog is a restriction where the number of legs must
+be three.
+
+\emph{This section would benefit from a discussion of why the
+fundamental differences in the type systems of the two representations
+mean that mappings, if achieved, will always be unstable. Some of the
+enumeration discussion below could migrate in here, but the
+enumeration discussion doesn't perhaps go far enough.}
+
+\subsubsection{Mapping XML QNames to Java Identifiers}
+\label{objections:o-x:names}
+
+\emph{Need to discuss the particular difficulties involved in mapping
+XML QNames to Java identifiers, this will set the scene for the
+following discussion of enumerations}.
+
+One specific example that deserves special mention is how
+\verb$xsd:enumeration$ declarations are mapped to Java. Prior to
+Java1.5, there was no explict \verb$enum$ clause in the language, so
+workarounds were developed. The JAX-RPC solution is that of a common
+pattern: to declare a class with a public static instance representing
+a valid enumeration value. The WSDL to Java code generates such a
+class, with the name of each static class taken from the name of each
+value in the enumeration.
+
+This is a simple example of how O/X mapping should work. Except, what if the
+value of the one of the enumeration types is a reserved word, such as in the
+lifecycle state machine we wrote:
+
+
+ %<xsd:simpleType name="lifecycleStateEnum">
+%    <xsd:restriction base="xsd:string">
+%      <xsd:enumeration value="initialized"/>
+%      <xsd:enumeration value="running"/>
+%      <xsd:enumeration value="failed"/>
+%      <xsd:enumeration value="terminated"/>
+%      <xsd:enumeration value="null"/>
+%    </xsd:restriction>
+%  </xsd:simpleType>
+%$
+
+One element in the enumeration is reserved, \verb|null|, so the
+enumeration must now enumerate all states as \verb|value1|,
+\verb|value2|, and so on, for the entire list. This means the
+enumeration names in the Java source no longer contains any value at
+all, other than the position number in the set. This is inordinately
+brittle, as any change to the enumeration could reorder the values,
+without the code detecting a change.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%pull this; no longer valid
+% 
+% \subsection{the mystery of unsigned long}
+% 
+% There is an \verb|unsignedLong| datatype in XML Schema. The JAX-RPC1.0 documents
+% blissfully ignored this fact. Why so? Presumably because there is no way to
+% represent an unsigned long in a simple java datatype. 
+% 
+% The implication of this absence is that there was no guarantee that a Java
+% application can make SOAP requests of a service which uses unsigned long
+% numbers. This is unfortunate, as there is nothing to stop a C++ or .NET SOAP
+% endpoint from using such numbers. This was a foundational barrier to
+% cross-platform interoperability. 
+% 
+% It has appeared in the JAX-RPC1.1 specification, for which we must be grateful,
+% although we are still unable to use it our service for fear of a version1.1
+% client attempting to talk to us
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsubsection{Automatically Generating WSDL from Java}
+\label{objections:o-x:wsdl-gen}
+
+\emph{Why is Java2WSDL mapping hard? Why is it a bad idea? How is it
+vulnerable to interopability problems or to brittleness problems?}
+
+\subsection{SOAP is not RMI}
+\label{soap-not-rmi}
+
+JAX-RPC suffers from a greater flaw than those classically associated
+with RPC invocation: it tries to make the communications look like
+Java RMI. Java RMI is a simple and effective mechanism for connecting
+Java classes running on different machines. It is an IDL-free
+communication mechanism, which relies on introspection to create proxy
+classes and to marshall classes. It works because the systems at both
+ends are Java, usually different pieces of a single larger
+application.
+
+With synchronized versions of common code, objects can be trivially
+serialized and sent over a network connection. Exceptions are just
+another type of object, and so too can be sent over the wire. There is
+no need for an IDL, as Java interface declarations can perform much of
+the same role. And as the recipient is a remote object, state is
+automatic.
+
+JAX-RPC tries to reuse many of the programming patterns of RMI. For
+example, the runtime will attempt to serialize classes marked as
+\verb|serializable|, ignoring those fields marked as
+\verb|transient|. It will even serialize complex compound objects where
+possible. The user appears to have a reference to something like an
+object, though one that represents the current conversation with an
+endpoint, not a direct endpoint proxy.
+
+When a message gets delivered to its endpoint, the normal handler for
+dispatching the message creates an instance of the relevant Java class
+and then dispatches the request to it. The message is turned into an
+invocation of an instance of a remote object, which certainly looks
+like RMI, even if the lifecycle of the class is radically different.
+
+%% I want to find a new home for these paragraphs but I can't decide
+%% where it is yet
+%%
+% We can see the consequence of this metaphor on the mailing list of
+% users of Apache Axis. All too often, someone is confused by the errors
+% displayed when they try and do something that they expect to work,
+% such as send an low level class such as \verb|java.io.File| instance,
+% or a \verb|javax.swing.JPanel|. The latter is serializable in RMI, yet
+% clearly does not make sense for an interoperable web service.
+%
+% While it would be easy to laugh at their naiive and unrealistic
+% expectations, we have to recognise that these users have been led to
+% such expectations through a combination of marketing "Web Services!
+% They're easy!" and the fact that JAX-RPC creates the illusion of being
+% just like RMI. It is often even relatively easy to write the code that
+% looks like a SOAP service, and then try and deploy it, only to find at
+% runtime that the introspection system rejects Java classes as
+% unacceptable, or the serialization logic raises deserialization
+% exceptions when inbound messages are processed. A quick perusal of the
+% Apache Axis user
+% list\footnote{http://mail-archives.apache.org/eyebrowse/SummarizeList?listId=209}
+% will demonstrate that these (along with deployment failures) are the
+% most common problems
+
+\subsubsection{Blocking RPC is often inappropriate}
+
+On a fast network, RPC invocation is often a good choice as a
+communication paradigm. Other models of communication are harder to
+code, and the benefits are not apparent.
+
+It is only when working over long-haul connections, or with large
+content (eg fifteen megabyte attachments) that the limitations
+of RPC patterns become clear. The only option we currently have is to
+split network communication into a separate thread from any
+interactive GUI thread, keeping the front end usable. While this keeps
+the front end responsive, JAX-RPC provides no way to give the user
+effective feedback or control over the communications. Specifically,
+there is no way to receive progress notifications or cancel an active
+call, even though the underlying transport code invariably permits
+such features.
+
+\subsubsection{Fault processing}
+
+JAX-RPC tries to marshall Java faults over the network, in such a way
+that they can be reconstituted at the far end into the same
+fault\footnote{Before we criticise faults, we must note that one of
+the authors has his name in the source of the {\tt AxisFault} fault
+class, so may not be without blame himself.}. To manage this is a
+somewhat complex process, as the classname of the fault must be
+exchanged as the fault code.
+
+We believe that attempting to seamlessly marshall faults is a mistaken
+approach.  It propagates the still controversial "declare all possible
+faults" rule of Java into remote interfaces, and so exposes platform
+implementation details into the service interface. If a service could
+only raise a normal {\tt SOAPFault}, or developers were forced to
+declare and then implement custom WSDL fault elements, then a service
+definition would be platform-neutral.
+
+As well as the marshalled faults, the specification includes one
+standard fault, {\tt SoapFaultException}.
+
+\subsection{Implications}
+
+What are the implications of these problems?
+
+Let's put those people writing web services into two categories: those
+who know and want to work with XML, and those who don't. 
+
+JAX-RPC only benefits those who do not want to work with XML, by hiding
+all the details, giving developers a model of remote method calls of
+serialized java graphs. We have argued that this is a mistake, 
+as it leads to O/X mapping problems, and retains an invocation model
+that is inappropriate to long-distance networks or slow communications. 
+
+JAX-RPC may hide the details of the XML, but instead present the users
+with serialization errors, interoperability problems, and the challenge
+of trying to maintain version consistency when the interface is derived
+solely from introspection of the implementation classes.
+
+
+For users who do want to work with XML, JAX-RPC is inappropriate because
+it hides everything. Trying to integrate custom XML documents with
+JAX-RPC serializations is possible, but very hard work and somewhat
+inefficient, as DOM trees get recreated when assigning or extracting DOM
+trees from SoapMessageElement implementations -at least with Apache
+Axis.
+
+There is one further problem with the JAX-RPC design and open source
+projects. By isolating all the XML in the implementation, it creates a
+big gulf between the exceedingly complex implementation code -low level
+SAX and DOM processing, code generation from WSDL metadata, WSDL
+generation from introspection, fault processing- and the end user code.
+This makes it hard for end users to become developers, which is exactly
+what open source platforms want. Open source projects succeed from the
+contributions of the users, so depend upon users who are able and
+willing to understand the implementation. JAX-RPC, by its very nature,
+places too hard a boundary between end users and developers.
+
+For the developers of proprietary implementations, this is not an issue,
+and the inherent complexity of the implentation results in a product the
+vendors can charge for. It is hard to get serialization,
+interoperability, WSDL processing and introspection right, and then
+there is the performance issue. Perhaps this is why both webMethods GLUE
+and the BEA JAX-RPC implementations have a reputation for being faster
+and more reliable than the open source version. 
+
+It can only get worse. JAX-RPC has moved to become the centerpiece of
+enterprise Java, in which RMI- and CORBA- based distributed
+communications are considered legacy protocols. That is not by itself a
+bad thing, but we believe that migration to Web Service should be done
+from a position of understanding the XML and the message. Instead, more
+and more developers will feel obliged to write Web Service accessors to
+their code, and in doing so, fall into the traps that JAX-RPC creates
+for them.
+
+\subsubsection{The Future: JAX-RPC 2.0}
+
+The forthcoming 2.0 release of the JAX-RPC specification promises to
+correct some of these flaws, but does it correct enough? An alternate
+O/X mapping is used: JAX-B\footnote{Java Architecture for XML
+Binding}, which is independent of the SOAP Stack, but still represents
+a compile-time declaration of what XML is to be expected. The 2.0
+release also retains the core metaphor of service invocation as method
+invocation, with the payload of most invocations being Java objects
+that are somehow mapped to XML content. The automated generation of
+WSDL from Java source is retained, despite this problem having been
+shown to be hard.
+
+We understand the rationale for much of this. Working with raw XML is
+hard.  Writing good XML Schema documents is hard. WSDL is exceedingly
+painful to work with\footnote{We'd be tempted to say it's like an
+interface definition language, only more complex and
+verbose!}. However, we believe that if service developers do not go to
+the effort of writing their XSD and WSDL definitions of messages, then
+they will never have control of the format of the messages that get
+sent over the wire. Without that control, interoperability and
+XML-based processing will be hard. Instead the developers will be left
+at the mercy of JAX-RPC and JAX-B.
+
+% \subsection{XSD validation}
+%
+% An XML schema document, as used to describe a doc/lit payload, can
+% contain many declarations about what constitutes a valid XML
+% document. \emph{Restrictions} can restrict the type of a value, such
+% as the range of an integer from zero to ten. The \verb|minOccurs| and
+% \verb|maxOccurs| declarations are used to declare what allowed number
+% of occurences of an element are. None of these values are
+% used. Restricted integer types are just mapped to normal integers,
+% while element occurence declarations are ignored.
+
+% This means that the set of XML documents which an endpoint can
+% receive, is significantly larger than the set of XML documents which
+% its XML schema will declare that it can support. With no built-in
+% validation, developers must either write validation logic themselves
+% -and corresponding tests, or ignore the problem. Given that there is
+% no warning that the problem occurs, we suspect that ignorance is the
+% common process. Not writing the logic to recognise and reject illegal
+% documents is not likely to show up in development -especially if a
+% test-centric process is not followed- but is inevitable once a service
+% goes live, and callers using other languages invoke the service. Such
+% insidious defects, defects that only show up in production, are never
+% welcome.
+
+% We note that there is a trivial solution to this problem, one that is
+% common to other XML stacks. It is: validate incoming messages against
+% the XML schema of the service. This is not done for performance, yet
+% the effect is to hide defects.

@@ -1,0 +1,119 @@
+\section{Introduction}
+\label{intro:top}
+
+We must recall that the core rationales for using SOAP were as
+follows:
+\begin{enumerate}
+\item simplicity: SOAP was to be easy to work with.
+\item interoperability: more interoperable than binary predecessors
+\item extensibility: the SOAP header allowed extra data to be attached to a
+request. 
+\item self-describing: messages could contain type definitions with the
+data, and provide human readable names.
+\item flexibility: participants could handle variable amounts of
+incoming data.
+\item XML-centric: which should make it easier to insert arbitrary XML
+inside a request.
+\item long-haul: designed to work through firewalls, over HTTP.
+\item loosely-coupled: participants were not expected to share
+implementation code.
+\end{enumerate}
+
+We will refer to these criteria throughout our discussion, as the
+desiderata against which any SOAP technology should be judged.
+
+%% these two paragraphs belong somewhere else, in a detail discussion
+%% of some kind. leaving them here for now
+% SOAP strove to overcome many of the failings of precursor technologies
+% like CORBA and DCOM. These technologies work well over local area
+% networks, and enable rich bidirectional communications, but are not
+% completely cross platform\footnote{Albeit for political rather than
+% technical reasons}, and ended up being used to produce distributed
+% object systems that were too \emph{tightly coupled}. 
+
+% Tight coupling has proven to be a bad thing in a distributed
+% system. If components are too tightly coupled, it implies that the
+% separate components have merged to become one large system, one which
+% cannot be treated except as a whole. And in a sufficiently large
+% system, it is impossible to co-ordinate the whole \cite{deutsch,
+% jini}. The move towards SOAP and a service oriented architecture was
+% advocated as a means of dealing with loose organisational coupling, by
+% forcing a loose data coupling between applications.
+
+\subsection{SOAP in Java}
+\label{intro:java}
+
+Communication with SOAP can be viewed as XML-based remote procedure
+calls, or as a way of submitting XML documents to remote URLs ( with
+optional responses coming back as XML documents). These two different
+perspectives represent the RPC-centric and message-centric
+viewpoints. An RPC-centric model appears to have become the primary
+focus of SOAP modelling in Java.
+
+The Java APIs representing the two different underlying perspectives
+are JAX-RPC\footnote{Java API for XML-based RPC}
+\cite{spec:JAX-RPC-11} and JAX-M\footnote{Java API for XML Messaging}
+\cite{spec:JAX-M-11}. In JAX-M, the developer works with the XML body
+of the message, in JAX-RPC all the details of how the message was
+encoded are hidden, and the developer works with Java objects created
+automatically from the XML data using a mapping process.
+
+JAX-M lives on in the form of  
+
+- there is no apparent work on a
+successor, with focus instead being placed on an improved version of
+JAX-RPC. JAX-RPC, in contrast, is widely implemented, both by open
+source projects (for example Apache Axis \cite{axis}), and by
+commercial vendors like Sun, IBM and BEA.  The bias is such that, for
+Java development, SOAP has essentially become just an extension of
+XML-RPC \cite{spec:XML-RPC} with richer content.
+
+\subsection{The Hard Lessons of Service Implementation}
+\label{intro:experience}
+
+Both authors have recently been making independent implementations of
+a SOAP API for deployment. This API is defined by a set of XML Schema
+(XSD)
+\cite{spec:XSD}
+and Web Services Description Language (WSDL) files \cite{spec:WSDL}
+, the end result of which is a service endpoint which
+supports seven operations. The operations permit suitably
+authenticated callers to deploy distributed applications to indivudual
+machines, or a whole grid fabric. This service was defined in the pure
+way, by writing the XSD and WSDL files first, the goal being a
+platform-independent, highly interoperable deployment mechanism.
+
+One of the features of this service was that it was intended to
+support multiple deployment languages, and multiple deployment
+engines, each potentially with different capabilities and options. To
+this end, some features of the design stand out.
+
+Firstly, the deployment payload is arbitrary XML. It is not
+appropriate or possible for the service definition to declare what
+deployment languages are supported.
+
+Secondly, we defined an option mechanism, in which callers can set
+arbitrary options on a deployment. Each option can have a string,
+integer or XML value, and is identified in a set of options by a
+URI. We plan to define some normative options within the working
+group, and allow implementations to define new ones.  Following the
+example of the WebDAV and SOAP header designs, options can be ignored
+unless their \verb|mustUnderstand| attribute is set. With a few well
+known option types defined for the nested XML option, we wanted
+ to treat options just like other received data, and use the XML to Java
+mapping facility of the classes. 
+
+Thirdly, we need to raise lifecycle event notifications with
+callers. In the absence of a single, stable notification protocol, we
+chose to allow services to support multiple mechanism (again, each
+defined by arbitrary inline XML).
+
+The XSD file for the service messages is approximately 2000 lines, of
+which seventy-five percent is either comment or XSD annotations. That it
+takes that many lines to describe a relatively simple service is a
+fault of  XML Schema, and clearly one reason why \emph{schema first}
+service design is so unpopular. Note that SOAP1.2 permits alternate XML
+type systems for message elements, so that Relax NG \cite{spec:RelaxNG}
+could be used in place of XML Schema, perhaps with greater success. 
+
+
