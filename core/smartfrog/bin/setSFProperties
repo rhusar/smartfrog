@@ -75,5 +75,5 @@ if test "$SFUSERHOME4"; then
 fi
 
 if test "$srcDir"; then
-    export CLASSPATH=$srcDir;$CLASSPATH
+    export CLASSPATH=$srcDir:$CLASSPATH
 fi
