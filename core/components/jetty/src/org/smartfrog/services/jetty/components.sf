@@ -11,9 +11,6 @@
 
 HttpServer extends Compound {
    sfClass "org.smartfrog.services.jetty.SFJetty";
-   jettyhome "null";
-   serverHost "null";
-   server "Jetty Server";
    listeners extends Listeners; //optional
    contexts extends Contexts;   //optional
    

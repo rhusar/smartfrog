@@ -71,7 +71,7 @@ public class SFJettyAdmin extends PrimImpl implements JettyAdminIntf {
         try {
             super.sfDeploy();
             server = new HttpServer();
-            listenerPort = sfResolve(listenerPortRef, listenerPort, false);
+            listenerPort = sfResolve(listenerPortRef, listenerPort, true);
             httpserverHost = sfResolve(httpserverHostRef, "null",
                     true);
             contextPath = sfResolve(contextPathRef, "/", false);
