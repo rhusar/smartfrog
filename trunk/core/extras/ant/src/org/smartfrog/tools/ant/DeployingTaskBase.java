@@ -20,11 +20,22 @@
 package org.smartfrog.tools.ant;
 
 import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Task;
+import org.apache.tools.ant.util.FileUtils;
 
 import java.io.File;
+import java.io.BufferedOutputStream;
+import java.io.OutputStream;
+import java.io.FileOutputStream;
+import java.io.PrintWriter;
+import java.io.OutputStreamWriter;
+import java.io.FileNotFoundException;
+import java.io.UnsupportedEncodingException;
+import java.io.IOException;
 import java.util.List;
 import java.util.LinkedList;
 import java.util.Iterator;
+import java.nio.charset.Charset;
 
 /**
  * This class is used as an extended base for those tasks that do deployment, as it supports
@@ -43,12 +54,25 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
 
     /**
      * add a new application to the list.
-     * @param application
      */
-    public void addApplication(Application application) {
+    public Application createApplication() {
+        Application application=createNewApplication();
         applications.add(application);
+        return  application;
     }
 
+    /**
+     * application factory is here for easy overriding
+     * @return
+     */
+    protected Application createNewApplication() {
+        return new Application(this);
+    }
+
+    /**
+     * get the count of applications
+     * @return
+     */
     protected int getApplicationCount() {
         return applications.size();
     }
@@ -85,6 +109,12 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
      */
     public static class Application {
 
+        private Task owner;
+
+        public Application(Task owner) {
+            this.owner = owner;
+        }
+
         /**
          * name of app
          */
@@ -94,6 +124,8 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
          * descriptor: File, url, resource
          */
         private String descriptor;
+
+        private String text;
 
         /**
          * name of the app
@@ -136,9 +168,42 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
                 throw new BuildException("no application name");
             }
 
+
             if(descriptor==null) {
                 throw new BuildException("no descriptor provided for "+name);
             }
+        }
+
+        /**
+         * set text inside. This will get saved.
+         * @param text
+         */
+        public void addText(String text) {
+            this.text=owner.getProject().replaceProperties(text);
+            File tempfile=FileUtils.newFileUtils().createTempFile("deploy",".sf",null);
+            OutputStream out=null;
+            OutputStreamWriter writer=null;
+            PrintWriter printer=null;
+            try {
+                out=new BufferedOutputStream(new FileOutputStream(tempfile));
+                writer = new OutputStreamWriter(out,"UTF-8");
+                printer = new PrintWriter(writer);
+                printer.write(this.text);
+                printer.flush();
+                //remember our name
+                setFile(tempfile);
+            } catch (IOException e) {
+                throw new BuildException("could not write to "+tempfile,e);
+            } finally {
+                if(writer !=null) {
+                    try {
+                        writer.close();
+                    } catch (IOException ignored) {
+
+                    }
+                }
+            }
+
         }
     }
 
