@@ -19,6 +19,8 @@
  */
 package org.smartfrog.services.cddlm.api;
 
+import org.smartfrog.services.cddlm.generated.faults.FaultCodes;
+
 import javax.xml.namespace.QName;
 
 /**
@@ -60,18 +62,21 @@ public class Constants {
     public static final String ERROR_INVALID_SCHEMA = "invalid schema in URI: ";
     public static final String ERROR_NO_APPLICATION = "application is undefined";
 
-    public static final String CDDLM_FAULT_NAMESPACE = org.smartfrog.services.cddlm.cdl.Constants.SMARTFROG_NAMESPACE;
+    public static final String CDDLM_FAULT_NAMESPACE = FaultCodes.CDDLM_FAULTS_NAMESPACE;
 
     public static final QName FAULT_BAD_ARGUMENT = new QName(
-            CDDLM_FAULT_NAMESPACE, "bad-argument");
+            CDDLM_FAULT_NAMESPACE, FaultCodes.BAD_ARGUMENT_FAULTCODE);
     public static final QName FAULT_NESTED_EXCEPTION = new QName(
-            CDDLM_FAULT_NAMESPACE, "nested-exception");
+            CDDLM_FAULT_NAMESPACE, FaultCodes.NESTED_EXCEPTION_FAULTCODE);
     public static final QName FAULT_APPLICATION_NOT_FOUND = new QName(
-            CDDLM_FAULT_NAMESPACE, "no-such-application");
+            CDDLM_FAULT_NAMESPACE, FaultCodes.NO_SUCH_APPLICATION_FAULTCODE);
     public static final QName FAULT_WRONG_APP_STATE = new QName(
-            CDDLM_FAULT_NAMESPACE, "wrong-application-state");
+            CDDLM_FAULT_NAMESPACE,
+            FaultCodes.WRONG_APPLICATION_STATE_FAULTCODE);
     public static final QName FAULT_UNSUPPORTED_LANGUAGE = new QName(
-            CDDLM_FAULT_NAMESPACE, "unsupported-language");
+            CDDLM_FAULT_NAMESPACE, FaultCodes.UNSUPPORTED_LANGUAGE_FAULTCODE);
+    public static final QName FAULT_UNSUPPORTED_CALLBACK = new QName(
+            CDDLM_FAULT_NAMESPACE, FaultCodes.UNSUPPORTED_CALLBACK_FAULTCODE);
     public static final QName FAULT_NOTUNDERSTOOD = new QName(
-            CDDLM_FAULT_NAMESPACE, "not-understood");
+            CDDLM_FAULT_NAMESPACE, FaultCodes.NOT_UNDERSTOOD_FAULTCODE);
 }

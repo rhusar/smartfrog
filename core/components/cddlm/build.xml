@@ -67,6 +67,10 @@
       location="${src.dir}/${xsd.path}"/>
     <property name="cddlm.xsd"
       location="${xsd.dir}/cddlm.xsd"/>
+    <property name="faults.xml.dir"
+      location="${xsd.dir}/faults"/>
+    <property name="faults.xml" location="${faults.xml.dir}/faults.xml"/>
+      
 
     <!-- declare client information -->
     <property name="client.package.base" value="org.cddlm.client"/>
@@ -75,6 +79,32 @@
     <property name="build.client.classes.dir" value="${build.client.dir}/classes"/>
     <mkdir dir="${build.client.dir}"/>
     <mkdir dir="${build.client.classes.dir}"/>
+
+    <!-- SOAP properties -->
+    <property name="deployAPIschema.xsd"
+      location="${xsd.dir}/deployAPI.xsd"/>
+    <property name="deploymentAPI.wsdl"
+      location="${xsd.dir}/deploymentAPI.wsdl"/>
+    <property name="callbackAPI.wsdl"
+      location="${xsd.dir}/callbackAPI.wsdl"/>
+    <property name="mapping.file"
+      location="${xsd.dir}/namespace-package-mapping.properties"/>
+    <property name="client.mapping.file"
+      location="${xsd.dir}/client-mapping.properties"/>
+
+    <property name="soapapi.touch.file"
+      location="${build.dir}/soapapi-uptodate.txt"/>
+
+    <property name="build.soap.dir" location="${build.dir}/soap"/>
+    <property name="build.soap.client.dir" location="${build.dir}/soap/"/>
+    <property name="soap.server.dir" location="${build.soap.dir}/server"/>
+    <property name="soap.client.dir" location="${build.soap.dir}/client"/>
+    <property name="soap.dotnet.dir" location="${build.soap.dir}/dotnet"/>
+
+    <mkdir dir="${build.soap.dir}"/>
+    <mkdir dir="${soap.server.dir}"/>
+    <mkdir dir="${soap.client.dir}"/>
+    <mkdir dir="${soap.dotnet.dir}"/>
 
   </target>
 
@@ -229,37 +259,13 @@
   <!-- =================================================================== -->
 
   <target name="init-soap" depends="init,init-deploy-properties,import-axis-tasks,init-proxy">
-    <!-- SOAP properties -->
-    <property name="deploymentAPI.wsdl"
-      location="${xsd.dir}/deploymentAPI.wsdl"/>
-    <property name="callbackAPI.wsdl"
-      location="${xsd.dir}/callbackAPI.wsdl"/>
-    <property name="mapping.file"
-      location="${xsd.dir}/namespace-package-mapping.properties"/>
-    <property name="client.mapping.file"
-      location="${xsd.dir}/client-mapping.properties"/>
-
-    <property name="soapapi.touch.file"
-      location="${build.dir}/soapapi-uptodate.txt"/>
-
-    <property name="build.soap.dir" location="${build.dir}/soap"/>
-    <property name="build.soap.client.dir" location="${build.dir}/soap/"/>
 
     <property name="soapapi.touch.file"
       location="${build.soap.dir}/soapapi-uptodate.txt"/>
     <property name="soapapi.client.touch.file"
       location="${build.soap.dir}/soapapi.client-uptodate.txt"/>
-    <property name="soap.server.dir" location="${build.soap.dir}/server"/>
-    <property name="soap.client.dir" location="${build.soap.dir}/client"/>
-
-    <property name="soap.dotnet.dir" location="${build.soap.dir}/dotnet"/>
     <property name="soap.dotnet.proxy.class"
       location="${soap.dotnet.dir}/deployProxy.cs"/>
-
-    <mkdir dir="${build.soap.dir}"/>
-    <mkdir dir="${soap.server.dir}"/>
-    <mkdir dir="${soap.client.dir}"/>
-    <mkdir dir="${soap.dotnet.dir}"/>
 
     <sf-tourl property="deploymentAPI.wsdl.url" file="${deploymentAPI.wsdl}"/>
     <sf-tourl property="callbackAPI.wsdl.url" file="${callbackAPI.wsdl}"/>
@@ -435,7 +441,7 @@
   <!-- compile everything, copy useful files over-->
   <!-- ========================================================== -->
   <target name="compile"
-    depends="pre-compile,server-wsdl">
+    depends="pre-compile,server-wsdl,xml-javafaults">
     <depend srcdir="${src.dir}"
       destdir="${build.classes.dir}"
       cache="${build.dir}/depends"
@@ -553,5 +559,24 @@
     </sf-junit>
   </target>
 
+  <target name="xml-validate" description="validate the XML against the DTD"
+    depends="init">
+    <xmlvalidate file="${faults.xml}">
+    </xmlvalidate>
+  </target>
 
+  <target name="xml-javafaults" depends="xml-validate">
+    <!-- currently the package is hard coded into the XSL file, BTW -->
+    <property name="faults.package" value="org.smartfrog.services.cddlm.generated.faults"/>
+    <property name="faults.package.path" value="org/smartfrog/services/cddlm/generated/faults"/>
+    <property name="faults.generated.dir" location="${soap.server.dir}/${faults.package.path}"/>
+    <mkdir dir="${faults.generated.dir}"/>
+    <property name="generated.faults.java"
+      location="${soap.server.dir}/${faults.package.path}/FaultCodes.java"/>
+    <xslt in="${faults.xml}"
+      out="${generated.faults.java}"
+      style="${faults.xml.dir}/createJavaFaults.xsl">
+      <param name="package" expression="${faults.package}"/>
+    </xslt>
+  </target>
 </project>

@@ -19,6 +19,8 @@
  */
 package org.smartfrog.services.cddlm.api;
 
+import nu.xom.Builder;
+import nu.xom.Document;
 import org.apache.axis.AxisFault;
 import org.apache.axis.message.MessageElement;
 import org.apache.axis.types.NCName;
@@ -28,13 +30,10 @@ import org.apache.commons.logging.LogFactory;
 import org.smartfrog.services.axis.SmartFrogHostedEndpoint;
 
 import javax.xml.namespace.QName;
-import java.net.URL;
-import java.net.MalformedURLException;
 import java.io.Reader;
 import java.io.StringReader;
-
-import nu.xom.Document;
-import nu.xom.Builder;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 /**
  * created Aug 4, 2004 3:59:42 PM
@@ -123,7 +122,7 @@ public class Processor {
      * @throws org.apache.axis.AxisFault if the URI was invalid.
      */
     public static String extractApplicationFromURI(URI uri) throws AxisFault {
-        if ( !Constants.SMARTFROG_SCHEMA.equals(uri.getScheme()) ) {
+        if (!Constants.SMARTFROG_SCHEMA.equals(uri.getScheme())) {
             throw new AxisFault(Constants.ERROR_INVALID_SCHEMA + uri);
         }
         String application = uri.getSchemeSpecificPart();
@@ -141,29 +140,31 @@ public class Processor {
     }
 
 
-/**
- * construct a fault for throwing
- *
- * @param code    qname for the error
- * @param message text message
- * @return a fault ready to throw
- */
-public static AxisFault raiseFault(QName code,String message) {
-    return raiseFault(code,message,null);
-}
+    /**
+     * construct a fault for throwing
+     *
+     * @param code    qname for the error
+     * @param message text message
+     * @return a fault ready to throw
+     */
+    public static AxisFault raiseFault(QName code, String message) {
+        return raiseFault(code, message, null);
+    }
 
     /**
      * construct a fault for throwing
-     * @param code qname for the error
+     *
+     * @param code    qname for the error
      * @param message text message
-     * @param thrown optional nested fault
+     * @param thrown  optional nested fault
      * @return a fault ready to throw
      */
-    public static AxisFault raiseFault(QName code, String message,Throwable thrown) {
-        AxisFault fault=new AxisFault();
+    public static AxisFault raiseFault(QName code, String message,
+                                       Throwable thrown) {
+        AxisFault fault = new AxisFault();
         fault.setFaultCode(code);
         fault.setFaultReason(message);
-        if(thrown!=null) {
+        if (thrown != null) {
             fault.initCause(thrown);
         }
         return fault;
@@ -177,12 +178,16 @@ public static AxisFault raiseFault(QName code,String message) {
         return raiseFault(Constants.FAULT_BAD_ARGUMENT, message);
     }
 
+    protected AxisFault raiseNoSuchApplicationFault(String message) {
+        return raiseFault(Constants.FAULT_APPLICATION_NOT_FOUND, message);
+    }
+
     protected URL makeURL(URI source) throws MalformedURLException {
         return new URL(source.toString());
     }
 
-    public  AxisFault raiseNestedFault(Exception e, String message) {
-        AxisFault fault=AxisFault.makeFault(e);
+    public AxisFault raiseNestedFault(Exception e, String message) {
+        AxisFault fault = AxisFault.makeFault(e);
         fault.setFaultReason(message);
         fault.setFaultCode(Constants.FAULT_NESTED_EXCEPTION);
         return fault;
@@ -190,23 +195,25 @@ public static AxisFault raiseFault(QName code,String message) {
 
     /**
      * parse a message fragment and turn it into a Xom document
+     *
      * @param element
      * @param message
      * @return
      * @throws org.apache.axis.AxisFault
      */
     protected Document parseMessageFragment(MessageElement element,
-                                      final String message) throws AxisFault {
+                                            final String message)
+            throws AxisFault {
         Document doc;
         try {
-            String subdoc=element.getAsString();
+            String subdoc = element.getAsString();
             Builder builder = new Builder(false);
             Reader reader = new StringReader(subdoc);
             doc = builder.build(reader);
             return doc;
 
         } catch (Exception e) {
-            throw raiseNestedFault(e,message);
+            throw raiseNestedFault(e, message);
 
         }
     }

@@ -49,11 +49,11 @@ public class OptionProcessor extends Processor {
     static {
         try {
             propertyURI =
-                    new URI(
-                            org.smartfrog.services.cddlm.cdl.Constants.OPTION_PROPERTIES);
+            new URI(
+                    org.smartfrog.services.cddlm.cdl.Constants.OPTION_PROPERTIES);
             validateURI =
-                    new URI(
-                            org.smartfrog.services.cddlm.cdl.Constants.OPTION_VALIDATE_ONLY);
+            new URI(
+                    org.smartfrog.services.cddlm.cdl.Constants.OPTION_VALIDATE_ONLY);
         } catch (URI.MalformedURIException e) {
             throw new RuntimeException(e);
         }
@@ -99,10 +99,12 @@ public class OptionProcessor extends Processor {
             }
             if (!processed) {
                 //not processed
-                if (log.isDebugEnabled()) log.debug("Ignored header " + name);
+                if (log.isDebugEnabled()) {
+                    log.debug("Ignored header " + name);
+                }
                 if (option.isMustUnderstand()) {
                     log.warn("failed to process option " + name);
-                    raiseFault(Constants.FAULT_NOTUNDERSTOOD, name);
+                    throw raiseFault(Constants.FAULT_NOTUNDERSTOOD, name);
                 }
             }
         }
@@ -111,7 +113,9 @@ public class OptionProcessor extends Processor {
     private void processValidateOption(OptionType option) throws AxisFault {
         assertNoXml(option);
         validateOnly = option.is_boolean();
-        if (log.isDebugEnabled()) log.debug("validateOnly :=" + validateOnly);
+        if (log.isDebugEnabled()) {
+            log.debug("validateOnly :=" + validateOnly);
+        }
     }
 
     private void processPropertiesOption(OptionType option) throws AxisFault {

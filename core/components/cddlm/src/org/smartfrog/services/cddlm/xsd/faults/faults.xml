@@ -1,19 +1,35 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE faults [
 <!ELEMENT code (#PCDATA)>
-<!ELEMENT faultset (fault)*>
+<!ELEMENT faultset (description|fault)*>
 <!ATTLIST faultset
-    namespace CDATA #REQUIRED>
+    name CDATA #REQUIRED
+    namespace CDATA #REQUIRED
+ >
 <!ELEMENT errormessage (#PCDATA)>
-<!ELEMENT fault (code|wiremessage|errormessage|documentation)*>
+<!ELEMENT fault (name|code|wiremessage|errormessage|documentation)*>
 <!ELEMENT wiremessage (#PCDATA)>
 <!ELEMENT documentation (#PCDATA)>
+<!ELEMENT description (#PCDATA)>
+<!ELEMENT name (#PCDATA)>
 <!ELEMENT faults (faultset)*>
+<!ATTLIST faults
+  xmlns	CDATA	#IMPLIED	
+ >
 ]>
-<faults>
+<faults xmlns="http://gridforum.org/cddlm/serviceAPI/faultsets/2004/07/30">
   <!-- this document lists standard faults of the deployment services -->
-  <faultset namespace="http://gridforge.org/cddlm/smartfrog/2004/07/30">
+  <faultset name="CDDLM_FAULTS"
+    namespace="http://gridforge.org/cddlm/smartfrog/faults/2004/07/30"
+    >
+    <description>
+      These are the faults that are explicitly part of the CDDLM deployment
+      api. They are returned by the endpoint when the message sent
+      is (somehow) not compatible with the current implementation or state of
+      the server.
+    </description>
     <fault>
+      <name>BAD_ARGUMENT</name>
       <code>bad-argument</code>
       <wiremessage>bad argument</wiremessage>
       <errormessage>A bad argument was sent in a message</errormessage>
@@ -25,6 +41,7 @@
       </documentation>
     </fault>
     <fault>
+      <name>NOT_UNDERSTOOD</name>
       <code>not-understood</code>
       <wiremessage>A mustUnderstand option was not understood</wiremessage>
       <errormessage>A mustUnderstand option was not understood</errormessage>
@@ -36,14 +53,17 @@
     </fault>
 
     <fault>
+      <name>NESTED_EXCEPTION</name>
       <code>nested-exception</code>
       <wiremessage>nested-exception</wiremessage>
       <errormessage>This message contains a nested exception</errormessage>
       <documentation>
+      A nested exception is being thrown.
       </documentation>
     </fault>
 
     <fault>
+      <name>NO_SUCH_APPLICATION</name>
       <code>no-such-application</code>
       <wiremessage>The specified application was not found</wiremessage>
       <errormessage>There is no such application running in the deployment system</errormessage>
@@ -54,6 +74,7 @@
     </fault>
 
     <fault>
+      <name>WRONG_APPLICATION_STATE</name>
       <code>wrong-application-state</code>
       <wiremessage>The application is in the wrong state for the operation.</wiremessage>
       <errormessage>The application is in the wrong state for the operation.</errormessage>
@@ -66,6 +87,7 @@
 
 
     <fault>
+      <name>UNSUPPORTED_LANGUAGE</name>
       <code>unsupported-language</code>
       <wiremessage>The language is unsupported</wiremessage>
       <errormessage>The deployment server does not support that language</errormessage>
@@ -77,6 +99,7 @@
     </fault>
 
     <fault>
+      <name>UNSUPPORTED_CALLBACK</name>
       <code>unsupported-callback</code>
       <wiremessage>The callback option is not supported</wiremessage>
       <errormessage>The deployment server does not support that callback mechanism</errormessage>
@@ -88,6 +111,7 @@
 
     <!--
         <fault>
+          <name></name>
           <code></code>
           <wiremessage></wiremessage>
           <errormessage></errormessage>

@@ -110,20 +110,21 @@ public class DeployProcessor extends Processor {
         MessageElement descriptorData = messageElements[0];
         descriptorData.getNamespaceURI();
         QName qname = descriptorData.getQName();
+        String languageAsString = qname.toString();
         int lan = determineLanguage(qname);
         switch (lan) {
-            case Constants.LANGUAGE_UNKNOWN:
-                throw raiseUnsupportedLanguageFault(UNSUPPORTED_LANGUAGE);
             case Constants.LANGUAGE_SMARTFROG:
-                throw raiseUnsupportedLanguageFault(UNSUPPORTED_LANGUAGE);
+                deploySmartFrog(descriptorData);
+                break;
             case Constants.LANGUAGE_XML_CDL:
                 deployCDL(descriptorData);
                 break;
             case Constants.LANGUAGE_ANT:
                 deployAnt(descriptorData);
                 break;
+            case Constants.LANGUAGE_UNKNOWN:
             default:
-                throw raiseUnsupportedLanguageFault(UNSUPPORTED_LANGUAGE);
+                throw raiseUnsupportedLanguageFault(languageAsString);
         }
 
 
@@ -148,7 +149,7 @@ public class DeployProcessor extends Processor {
     }
 
     private void deployCDL(MessageElement elt) throws AxisFault {
-        throw raiseUnsupportedLanguageFault(UNSUPPORTED_LANGUAGE);
+        throw raiseUnsupportedLanguageFault("CDL is unsupported");
     }
 
     /**
@@ -161,7 +162,7 @@ public class DeployProcessor extends Processor {
     private void deployAnt(MessageElement elt)
             throws AxisFault {
 
-        throw raiseUnsupportedLanguageFault(UNSUPPORTED_LANGUAGE);
+        throw raiseUnsupportedLanguageFault("Ant is unsupported");
     }
 
 
@@ -174,7 +175,8 @@ public class DeployProcessor extends Processor {
             throws AxisFault {
         descriptorElement.getValue();
 
-        throwNotImplemented();
+        throw raiseUnsupportedLanguageFault(
+                "Smartfrog is currently unsupported");
 
 /*
 
