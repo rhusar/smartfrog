@@ -67,6 +67,7 @@ public class ParserHelper {
             boolean doctypes,
             boolean secure)
             throws SAXException {
+        
         XMLReader xerces = createBaseXercesInstance();
         setFeature(xerces,
                 FEATURE_SECURE_PROCESSING,

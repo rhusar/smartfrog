@@ -40,7 +40,6 @@ public abstract class XmlAttributeImpl extends SimpleXmlNode
      * create a node of the appropriate type. This is called during deployment;
      *
      * @return a new node of type {@link Attribute}
-     *
      * @throws nu.xom.XMLException if needed
      */
     public Node createNode() throws RemoteException, SmartFrogException {

@@ -46,6 +46,7 @@ public class XmlDocumentImpl extends CompoundXmlNode implements XmlDocument {
     public static final String ERROR_UNSUPPORTED_FEATURE = "Unsupported Feature";
     public static final String ERROR_NO_SAVE = "Failed to save to ";
     public static final String UTF8 = "UTF-8";
+    public static final String ERROR_WRONG_TYPE = "is not an XMLElement";
 
     public XmlDocumentImpl() throws RemoteException {
     }
@@ -60,12 +61,14 @@ public class XmlDocumentImpl extends CompoundXmlNode implements XmlDocument {
         Prim root = resolveRoot();
         try {
             XmlElementImpl element = (XmlElementImpl) root;
-            Document document = new Document(element.getElement());
+            Document document;
+
+            document = new Document(element.getElement());
             return document;
 
         } catch (ClassCastException e) {
             throw new SmartFrogRuntimeException(ATTR_ROOT
-                    + "is not an XMLElement", e, this);
+                    + ERROR_WRONG_TYPE, e, this);
 
         }
     }
@@ -152,6 +155,7 @@ public class XmlDocumentImpl extends CompoundXmlNode implements XmlDocument {
 
     /**
      * internal save routine
+     *
      * @param filename
      * @param encoding
      * @throws IOException
@@ -174,7 +178,7 @@ public class XmlDocumentImpl extends CompoundXmlNode implements XmlDocument {
      * @throws RemoteException
      */
     public void save(String filename) throws RemoteException, IOException {
-        save(filename,UTF8);
+        save(filename, UTF8);
     }
 
     /**
