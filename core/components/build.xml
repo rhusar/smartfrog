@@ -68,10 +68,15 @@ For more information: www.smartfrog.org
   <property file="build.properties" />
 
   
+<property name="root.dir" location=".."  />
+
+<!-- Import common stuff -->
+<import file="${root.dir}/common.xml"/>
+
   <!-- ========================================================== -->
   <!-- initialisation -->
   <!-- ========================================================== -->
-  <target name="init" >
+  <target name="init"  depends="verify-smartfrog" >
     <!-- add new components here, in alphabetical order. this is
       not where dependency logic is imposed -->
     <property name="arithmetic-testharness.project" location="arithmetic-testharness" />
