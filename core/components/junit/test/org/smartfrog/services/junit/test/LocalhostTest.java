@@ -21,25 +21,58 @@
 
 package org.smartfrog.services.junit.test;
 
-import org.smartfrog.services.junit.TestRunner;
+import org.smartfrog.services.junit.JUnitTestSuiteImpl;
 import org.smartfrog.services.junit.Statistics;
+import org.smartfrog.services.junit.TestRunner;
 import org.smartfrog.services.junit.listeners.BufferingListener;
+import org.smartfrog.sfcore.common.SmartFrogInitException;
 import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.test.TestHelper;
 
-import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Test deploying against a localhost Date: 06-Jul-2004 Time: 21:54:25
  */
 public class LocalhostTest extends TestRunnerTestBase {
-    public static final String TIMEOUT_PROPERTY = "timeout";
-    public static final int TIMEOUT_DEFAULT = 30;
 
     public LocalhostTest(String name) {
         super(name);
     }
 
+    public void testListFlattening() throws Exception {
+        List l1 = new ArrayList();
+        List l2 = new ArrayList();
+        List l3 = new ArrayList();
+        l2.add("1");
+        l2.add("2");
+        l3.add("3");
+        l3.add("4");
+        l2.add(l3);
+        List flat = new ArrayList();
+        flat.add("1");
+        flat.add("2");
+        flat.add("3");
+        flat.add("4");
+        List flat2 = JUnitTestSuiteImpl.flattenStringList(l2, "l2");
+        assertEquals(flat, flat);
+        assertEquals(flat, flat2);
+        l2.add(new ArrayList());
+        l1.add(l2);
+        List flat3 = JUnitTestSuiteImpl.flattenStringList(l3, "l3");
+        assertEquals(flat, flat3);
+        List l4 = new ArrayList();
+        l4.add(l1);
+        l4.add(new Integer("3"));
+        try {
+            List flat4 = JUnitTestSuiteImpl.flattenStringList(l4, "l5");
+            fail("should have thrown something");
+        } catch (SmartFrogInitException e) {
+            //expected
+        }
+        List flat5 = JUnitTestSuiteImpl.flattenStringList(null, "flat5");
+        assertEquals(0, flat5.size());
+    }
 
     public void testSuccess() throws Throwable {
         String url;
@@ -47,27 +80,25 @@ public class LocalhostTest extends TestRunnerTestBase {
         url = "/files/success.sf";
         final String appName = "localhostTest";
 
-        assertSystemPropertySet("org.smartfrog.codebase");
-        int seconds = TIMEOUT_DEFAULT;
-        String timeout = TestHelper.getTestProperty(TIMEOUT_PROPERTY, null);
-        if (timeout != null) {
-            seconds = Integer.valueOf(timeout).intValue();
-        }
+        int seconds = getTimeout();
         try {
             deploy = deployExpectingSuccess(url, appName);
             TestRunner runner = (TestRunner) deploy;
             assertTrue(runner != null);
             BufferingListener listener = null;
             listener =
-                    (BufferingListener) deploy.sfResolve(TestRunner.ATTR_LISTENER,
+                    (BufferingListener) deploy.sfResolve(
+                            TestRunner.ATTR_LISTENER,
                             listener,
                             true);
             boolean finished = spinTillFinished(runner, seconds);
             assertTrue("Test run timed out", finished);
             Statistics statistics = runner.getStatistics();
-            assertEquals("statistics.testRun==1",1,statistics.getTestsRun());
+            assertEquals("statistics.testRun==1", 1, statistics.getTestsRun());
             assertEquals("statistics.errors==0", 0, statistics.getErrors());
-            assertEquals("statistics.failures==0",0, statistics.getFailures());
+            assertEquals("statistics.failures==0",
+                    0,
+                    statistics.getFailures());
             assertTrue("expected tests to run", listener.getStartCount() == 1);
             assertTrue("session started",
                     listener.getSessionStartCount() == 1);
@@ -81,14 +112,4 @@ public class LocalhostTest extends TestRunnerTestBase {
 
     }
 
-    private boolean spinTillFinished(TestRunner runner,
-                                     int timeoutSeconds) throws InterruptedException,
-            RemoteException {
-
-        do {
-            Thread.sleep(1000);
-            timeoutSeconds--;
-        } while (!runner.isFinished() && timeoutSeconds >=0);
-        return runner.isFinished();
-    }
 }

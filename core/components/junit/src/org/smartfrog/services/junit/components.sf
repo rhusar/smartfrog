@@ -78,7 +78,7 @@ TestSuite extends Prim {
  */
 JUnitTestSuite extends TestSuite {
     junitTestSuiteSchema extends JUnitTestSuiteSchema;
-    name "JUnit";
+    //name "JUnit";
     sfClass "org.smartfrog.services.junit.JUnitTestSuiteImpl";
 }
 
@@ -110,7 +110,7 @@ XMLListenerSchema extends Schema {
 
 XMLListener extends TestListener {
     schema extends XMLListenerSchema;
-    sfClass "org.smartfrog.services.junit.listeners.OneHostXMLListener";
+    sfClass "org.smartfrog.services.junit.listeners.XmlListenerComponent";
     useHostname true;
 }
 

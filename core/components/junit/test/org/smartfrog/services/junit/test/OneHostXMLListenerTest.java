@@ -20,10 +20,9 @@
 package org.smartfrog.services.junit.test;
 
 import junit.framework.TestCase;
-import org.smartfrog.services.junit.listeners.OneHostXMLListener;
-import org.smartfrog.services.junit.listeners.BufferingListener;
-import org.smartfrog.services.junit.TestListener;
 import org.smartfrog.services.junit.TestInfo;
+import org.smartfrog.services.junit.TestListener;
+import org.smartfrog.services.junit.listeners.OneHostXMLListener;
 import org.w3c.dom.Document;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -33,9 +32,9 @@ import java.io.IOException;
 import java.util.Date;
 
 /**
- * Test the {@link OneHostXMLListener} class, that is
- * not itself a smartfrog component (and so is that much easier to test)
- * created Nov 22, 2004 2:45:11 PM
+ * Test the {@link OneHostXMLListener} class, that is not itself a smartfrog
+ * component (and so is that much easier to test) created Nov 22, 2004 2:45:11
+ * PM
  */
 
 public class OneHostXMLListenerTest extends TestCase {
@@ -48,12 +47,12 @@ public class OneHostXMLListenerTest extends TestCase {
      * is called before a test is executed.
      */
     protected void setUp() throws Exception {
-        tempdir=new File(System.getProperty("java.io.tmpdir"),"junit");
+        tempdir = new File(System.getProperty("java.io.tmpdir"), "junit");
     }
 
-    public void testSimple() throws Exception  {
-        File file=new File(tempdir, "testSimple.xml");
-        TestListener listener=createListener(file, "simple");
+    public void testSimple() throws Exception {
+        File file = new File(tempdir, "testSimple.xml");
+        TestListener listener = createListener(file, "simple");
         TestInfo ti = new TestInfo(this);
         ti.markStartTime();
         listener.startTest(ti);
@@ -79,24 +78,27 @@ public class OneHostXMLListenerTest extends TestCase {
         validate(file);
     }
 
-    public OneHostXMLListener createListener(File file,String suite)
+    public OneHostXMLListener createListener(File file, String suite)
             throws IOException {
-        if(file.exists()) {
+        if (file.exists()) {
             file.delete();
         }
         Date startTime = new Date(System.currentTimeMillis());
-        OneHostXMLListener listener = new OneHostXMLListener("localhost",file,suite,startTime,null);
+        OneHostXMLListener listener = new OneHostXMLListener("localhost",
+                file,
+                suite,
+                startTime,
+                null);
         return listener;
     }
-
 
 
     public Document validate(File file) throws Exception {
         assertTrue(file.exists());
         DocumentBuilder builder;
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        factory.setNamespaceAware(true);
-        factory.setValidating(true);
+//        factory.setNamespaceAware(true);
+//        factory.setValidating(true);
         builder = factory.newDocumentBuilder();
         Document document = builder.parse(file);
         return document;

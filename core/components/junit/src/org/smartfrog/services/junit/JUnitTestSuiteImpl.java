@@ -64,7 +64,7 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
 
     private RunnerConfiguration configuration;
 
-    private Statistics stats=new Statistics();
+    private Statistics stats = new Statistics();
 
 
     private String hostname;
@@ -106,7 +106,7 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
      * @throws java.rmi.RemoteException
      */
     public void bind(RunnerConfiguration configuration) throws RemoteException {
-        log(suitename+" binding to test runner");
+        log(suitename + " binding to test runner");
         this.configuration = configuration;
     }
 
@@ -142,6 +142,7 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
 
     /**
      * read in our configuration
+     *
      * @throws SmartFrogException
      * @throws RemoteException
      */
@@ -149,11 +150,11 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
             RemoteException {
         ifValue = sfResolve(ATTR_IF, ifValue, false);
         unlessValue = sfResolve(ATTR_UNLESS, unlessValue, false);
-        classes =
-                flattenStringList((List) sfResolve(ATTR_CLASSES,
-                        classes,
-                        false),
-                        ATTR_CLASSES);
+        List nestedClasses = (List) sfResolve(ATTR_CLASSES,
+                (List) null,
+                false);
+        classes = flattenStringList(nestedClasses,
+                ATTR_CLASSES);
 
         //package attribute names a package
         packageValue = sfResolve(ATTR_PACKAGE, packageValue, false);
@@ -185,7 +186,8 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
         testClasses = new HashMap();
         Iterator it = classes.iterator();
         while (it.hasNext()) {
-            String testclass = (String) it.next();
+            Object o = it.next();
+            String testclass = (String) o;
             addTest(testclass);
         }
     }
@@ -212,17 +214,27 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
      * @return
      * @throws SmartFrogInitException
      */
-    private List flattenStringList(final List src, String name)
+    public static List flattenStringList(final List src, String name)
             throws SmartFrogInitException {
+        if (src == null) {
+            return new ArrayList(0);
+        }
         List dest = new ArrayList(src.size());
         Iterator index = src.iterator();
         while (index.hasNext()) {
             Object element = index.next();
             if (element instanceof List) {
-                dest.addAll(flattenStringList((List) element, name));
+                List l2 = flattenStringList((List) element, name);
+                for (Iterator i2 = l2.iterator(); i2.hasNext();) {
+                    dest.add(i2.next());
+                }
             } else if (!(element instanceof String)) {
-                throw new SmartFrogInitException("An element in "
-                        + name + " is not string: " + element.toString());
+                throw new SmartFrogInitException(
+                        "An element in "
+                        +
+                        name +
+                        " is not string or a list: " +
+                        element.toString());
             }
             dest.add(element);
         }
@@ -253,9 +265,9 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
 
         //bind to our listener
         TestListenerFactory listenerFactory = configuration.getListenerFactory();
-        listener =listenerFactory.listen(hostname,
-                        suitename,
-                        System.currentTimeMillis());
+        listener = listenerFactory.listen(hostname,
+                suitename,
+                System.currentTimeMillis());
 
         //now run all the tests
         try {
