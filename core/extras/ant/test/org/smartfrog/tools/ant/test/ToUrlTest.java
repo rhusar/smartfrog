@@ -19,6 +19,8 @@
  */
 package org.smartfrog.tools.ant.test;
 
+import org.smartfrog.tools.ant.ToUrlTask;
+
 import java.net.URL;
 import java.io.InputStream;
 import java.io.IOException;
@@ -79,5 +81,33 @@ public class ToUrlTest extends TaskTestBase {
         instream.close();
     }
 
+    public void testIllegalCombinations() {
+        executeTarget("testIllegalCombinations");
+        assertPropertyContains("testIllegalCombinations", "/foo");
+        assertPropertyContains("testIllegalCombinations", ".xml");
+    }
 
+    public void testFileset() {
+        executeTarget("testFileset");
+        assertPropertyContains("testFileset", ".xml ");
+        String result = getProperty("testFileset");
+        assertPropertyEndsWith("testFileset", ".xml");
+    }
+
+    public void testFilesetSeparator() {
+        executeTarget("testFilesetSeparator");
+        assertPropertyContains("testFilesetSeparator", ".xml\",\"");
+        assertPropertyEndsWith("testFilesetSeparator", ".xml");
+    }
+
+    /**
+     * assert that a property ends with
+     * @param property
+     * @param ending
+     */
+    private void assertPropertyEndsWith(String property, String ending) {
+        String result = getProperty(property);
+        String substring = result.substring(result.length() - ending.length());
+        assertEquals(ending, substring);
+    }
 }
