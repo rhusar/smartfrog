@@ -34,23 +34,39 @@ For more information: www.smartfrog.org
   <!-- build a distribution                                                -->
   <!-- =================================================================== -->
   <target name="dist" depends="init" description="build a distribution">
-    <ant dir="${main.dir}" target="dist" inheritAll="false" />
+    <ant dir="${main.project}" target="dist" inheritAll="false" />
   </target>
 
-  <!-- =================================================================== -->
-  <!-- test                                                                -->
-  <!-- =================================================================== -->
-  <target name="test" depends="init" description="test">
-    <ant dir="${main.dir}" target="sfParseTest" inheritAll="false" />
-  </target>
 
   <!-- =================================================================== -->
   <!-- build a distribution                                                -->
   <!-- =================================================================== -->
   <target name="clean" depends="init" description="clean up">
-    <ant dir="${main.dir}" target="clean" inheritAll="false" />
+    <ant dir="${main.project}" target="clean" inheritAll="false" />
   </target>  
   
+  
+  <!-- =================================================================== -->
+  <!-- test in the main project                                            -->
+  <!-- =================================================================== -->
+  <target name="test-main" depends="init" description="test in main project">
+    <ant dir="${main.project}" target="sfParseTest" inheritAll="false" />
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- test in the harness                                                 -->
+  <!-- =================================================================== -->
+  <target name="test-testharness" depends="init" description="test in main project">
+    <ant dir="${test.project}" target="test" inheritAll="false" />
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- test all                                                            -->
+  <!-- =================================================================== -->
+  <target name="test" depends="test-main,test-testharness" 
+    description="test everything"/>
+  
+    
   <!-- =================================================================== -->
   <!-- any common initialisations                                          -->
   <!-- =================================================================== -->
@@ -60,7 +76,8 @@ For more information: www.smartfrog.org
     <available property="nice.task.present" 
       classname="org.apache.tools.ant.taskdefs.Nice" />
     <property name="toplevel.dir" location=".." />
-    <property name="main.dir" location="smartfrog" />
+    <property name="main.project" location="smartfrog" />
+    <property name="test.project" location="testharness" />
   </target>
   
   <!-- the following targets are for use in CruiseControl automated builds;
@@ -74,9 +91,9 @@ For more information: www.smartfrog.org
       <property name="cc.artifacts.dir" location="${toplevel.dir}/artifacts" />
       <mkdir dir="${cc.artifacts.dir}"/>
       <property name="cruise.base.dir" location="${toplevel.dir}" />
-      <property name="cruise.main.dir" location="${cruise.base.dir}/main"/>
-      <property name="cruise.lib.dir" location="${cruise.main.dir}/lib"/>
-      <property name="cruise.dist.dir" location="${cruise.main.dir}/dist"/>
+      <property name="cruise.main.project" location="${cruise.base.dir}/main"/>
+      <property name="cruise.lib.dir" location="${cruise.main.project}/lib"/>
+      <property name="cruise.dist.dir" location="${cruise.main.project}/dist"/>
       <property name="cruise.config.file" location="cruisecontrol.xml"/>
       <property name="cruise.control.port" value="7999"/>
     </target>
@@ -133,7 +150,7 @@ For more information: www.smartfrog.org
       </and>
     </condition>
     <fail unless="cc.found" >
-      Cruise Control was not found in ${cruise.main.dir}
+      Cruise Control was not found in ${cruise.main.project}
     </fail>
     <java fork="true" classname="CruiseControl" failonerror="true">
       <classpath>
