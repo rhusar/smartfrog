@@ -129,7 +129,7 @@ public abstract class TaskTestBase extends BuildFileTest {
 
     protected void expectDeployed(String target,String appname) {
         executeTarget(target);
-        assertInLog("Successfully deployed: "+appname);
+        assertInLog("Successfully deployed: '"+appname+"'");
     }
 
 }

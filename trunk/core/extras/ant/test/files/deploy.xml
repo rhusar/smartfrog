@@ -59,6 +59,11 @@ ant -lib ../../build/dist/lib/smartfrog-tasks.jar -lib ../../../../smartfrog/dis
       </sf-deploy>
     </target>
 
+    <target name="testConnectionRefused">
+      <sf-deploy host="www.google.com" logStackTraces="true">
+        <application name="app" descriptor="${resource.sf}"/>
+      </sf-deploy>
+    </target>
     
     <target name="testResource">
       <sf-deploy >
