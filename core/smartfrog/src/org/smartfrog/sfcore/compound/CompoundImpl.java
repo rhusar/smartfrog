@@ -120,6 +120,31 @@ public class CompoundImpl extends PrimImpl implements Compound {
                                 formatMessage(MSG_NON_REP_ATTRIB, name), null,null);
             }
             // try to deploy
+            if (sflog().isTraceEnabled()){
+              StringBuffer message = new StringBuffer();
+              try {
+                message.append(this.sfCompleteNameSafe());
+                message.append(" is deploying: ");
+                if (name != null) {
+                  message.append(name);
+                } else {
+                  message.append("no-name");
+                }
+                if (parent != null) {
+                  message.append(", Parent: ");
+                  message.append(parent.sfCompleteName());
+                }
+                message.append(", Component description: ");
+                message.append(cmp.toString());
+                if (parms != null) {
+                  message.append(", Params: ");
+                  message.append(parms.toString());
+                }
+              } catch (Exception ex1) {
+                sflog().trace("",ex1);
+              }
+              sflog().trace(message.toString());
+            }
             Prim result = SFDeployer.deploy(cmp, null, parent, parms);
 
             if (parent != null){
