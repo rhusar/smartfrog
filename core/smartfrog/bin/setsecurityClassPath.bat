@@ -1,7 +1,7 @@
 @echo off
 
 if defined SFHOME goto continue1
-  if exist "%cd%\setClassPath.bat" cd ..
+  if exist "%cd%\setsecurityClassPath.bat" cd ..
   set SFHOME=%cd%
   cd bin
 :continue1
