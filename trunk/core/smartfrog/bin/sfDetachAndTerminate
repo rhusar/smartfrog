@@ -1,5 +1,11 @@
 #!/bin/sh
-if ! test $SFHOME; then export SFHOME=$PWD; fi
+if [ -z "$SFHOME" -o ! -d "$SFHOME" ] ; then
+    #echo "$0"
+    SFHOME=`dirname "$0"`/..
+    SFHOME=`cd "$SFHOME" && pwd`
+    export SFHOME;
+    echo SFHOME undefined, using $SFHOME as base directory;
+fi
 if [ -z $1 ] ; then
   echo "Insufficient arguments to use sfDetachAndTerminate"
   echo "Usage: sfDetachAndTerminate HostName ComponentName"
