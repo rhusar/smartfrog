@@ -677,7 +677,7 @@ public class SFSystem implements MessageKeys {
         }
         try {
 
-            rootProcess = runSmartFrog(opts);
+            rootProcess = runSmartFrog(opts.cfgDescriptors);
 
         } catch (SmartFrogException sfex) {
             Logger.log(sfex);
@@ -736,7 +736,8 @@ public class SFSystem implements MessageKeys {
      * Run SmartFrog as configured. This call does not exit smartfrog, even if the OptionSet requests it.
      * This entry point exists so that alternate entry points (e.g. Ant Tasks) can start the system.
      * Important: things like the output streams can be redirected if the
-     * @param  OptionSet opts with list of ConfigurationDescriptors
+     * @param  Vector of Configuration  opts with list of ConfigurationDescriptors
+     *         @see ConfigurationDescriptor
      * @return the root process
      * @throws SmartFrogException for a specific SmartFrog problem
      * @throws UnknownHostException if the target host is unknown
@@ -745,13 +746,12 @@ public class SFSystem implements MessageKeys {
      * @throws Exception if anything else went wrong
      */
 
-    public static ProcessCompound runSmartFrog(OptionSet opts) throws
+    public static ProcessCompound runSmartFrog(Vector cfgDescriptors) throws
         Exception {
         ProcessCompound rootProcess;
         rootProcess = runSmartFrog();
-
-        if (opts.cfgDescriptors!=null){
-            runConfigurationDescriptors(opts.cfgDescriptors);
+        if (cfgDescriptors!=null){
+            runConfigurationDescriptors(cfgDescriptors);
         }
         return rootProcess;
     }

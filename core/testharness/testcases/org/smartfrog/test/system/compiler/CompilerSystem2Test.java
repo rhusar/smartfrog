@@ -47,6 +47,6 @@ public class CompilerSystem2Test extends LocalJVMTestBase {
 
             OptionSet options=new OptionSet(args);
 
-            SFSystem.runSmartFrog(options);
+            SFSystem.runSmartFrog(options.cfgDescriptors);
     }
 }
