@@ -151,7 +151,8 @@ public class AssertComponent extends PrimImpl implements Assert {
      * @throws org.smartfrog.sfcore.common.SmartFrogLivenessException
      *          component is terminated
      */
-    public void sfPing(Object source) throws SmartFrogLivenessException {
+    public void sfPing(Object source) throws SmartFrogLivenessException,
+                                                            RemoteException {
         super.sfPing(source);
 
         try {
