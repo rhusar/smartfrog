@@ -55,5 +55,7 @@ SFSlpAdvertiser extends Prim {
     serviceLifetime -1; // a positive integer, or -1 to indicate a permanent lifetime
     serviceAttributes []; // Vector of service attributes
                             // example: [["s1a1", "s1a1v1", "s1a1v2"], ["s1a2", "s1a2v1"]];
+                            
+    advertiseReference false; 
 }
 

@@ -56,12 +56,15 @@ public class SFSlpAdvertiserImpl extends PrimImpl implements Prim, SFSlpAdvertis
     protected int serviceLifetime;
     /** The advertised object. (String/Prim/Integer/Boolean...) */
     protected Object toAdvertise;
+    /** Advertise reference ? */
+    protected boolean advertiseReference;
     
     // references.
     public static final Reference toAdvertiseRef = new Reference("toAdvertise");
     public static final Reference serviceTypeRef = new Reference("serviceType");
     public static final Reference serviceAttributeRef = new Reference("serviceAttributes");
     public static final Reference serviceLifetimeRef = new Reference("serviceLifetime");
+    public static final Reference advertiseReferenceRef = new Reference("advertiseReference");
     
     public SFSlpAdvertiserImpl() throws RemoteException {
         super();
@@ -73,10 +76,12 @@ public class SFSlpAdvertiserImpl extends PrimImpl implements Prim, SFSlpAdvertis
         Properties p = getSlpConfiguration();
         
         // get properties for the service to advertise.
-        toAdvertise = sfResolve(toAdvertiseRef);
+        System.out.println("AdvRef: " + toAdvertiseRef.toString());
+        toAdvertise = sfContext().get("toAdvertise"); //sfResolve(toAdvertiseRef);
         serviceType = (String)sfResolve(serviceTypeRef);
         serviceAttributes = (Vector)sfResolve(serviceAttributeRef);
         serviceLifetime = ((Integer)sfResolve(serviceLifetimeRef)).intValue();
+        advertiseReference = ((Boolean)sfResolve(advertiseReferenceRef)).booleanValue();
         
         // convert attributes to ServiceLocationAttribute objects.
         Iterator iter = serviceAttributes.iterator();
@@ -86,6 +91,20 @@ public class SFSlpAdvertiserImpl extends PrimImpl implements Prim, SFSlpAdvertis
             String id = (String)v.remove(0); // remove id.
             ServiceLocationAttribute a = new ServiceLocationAttribute(id, v);
             serviceAttributes.add(a);
+        }
+        
+        // check if we want to advertise reference.
+        if(toAdvertise instanceof Reference) {
+            if(advertiseReference) {
+                // build reference to advertise
+                Reference ref = sfCompleteName(); 
+                ref.addElements( (Reference)toAdvertise ); 
+                toAdvertise = ref;
+            }
+            else {
+                // get the object to advertise
+                toAdvertise = sfResolve(toAdvertiseRef);
+            }
         }
         
         // build URL.
