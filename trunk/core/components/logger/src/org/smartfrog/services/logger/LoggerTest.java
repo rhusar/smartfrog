@@ -87,7 +87,7 @@ public class LoggerTest extends PrimImpl implements Prim {
      */
     protected SFLogger getDefaultLogger() throws SmartFrogException, 
                                                               RemoteException{
-        SFLogger logger = (SFLogger) sfResolve("mylogger", false);
-        return logger;
+        SFLogger log = (SFLogger) sfResolve("mylogger", false);
+        return log;
     }
 }
