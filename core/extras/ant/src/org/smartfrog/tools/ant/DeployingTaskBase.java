@@ -152,14 +152,14 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
         /**
          * owner task
          */
-        private Task owner;
+        private TaskBase owner;
         public static final String ERROR_NO_APPLICATION_NAME = "no application name";
         public static final String ERROR_NO_APPLICATION_DESCRIPTOR = "no descriptor provided for ";
         public static final String ERROR_FILE_NOT_FOUND = "File does not exist: ";
         public static final String ERROR_NO_WRITE = "could not write to: ";
         public static final String APPLICATION_ENCODING = "UTF-8";
 
-        public Application(Task owner) {
+        public Application(TaskBase owner) {
             this.owner = owner;
         }
 
@@ -244,7 +244,13 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
             File tempfile = FileUtils.newFileUtils().createTempFile("deploy",
                     ".sf", null);
             //mark for cleanup later
-            tempfile.deleteOnExit();
+            if(owner.isDebug()) {
+                owner.log("Application temporary files is "+tempfile);
+                owner.log("This is not deleted in debug mode");
+            } else {
+                //no debugging, kill the file after we exit ant. 
+                tempfile.deleteOnExit();
+            }
             owner.log("Saving to temporary file "+tempfile,Project.MSG_VERBOSE);
             owner.log(text, Project.MSG_VERBOSE);
             OutputStream out = null;

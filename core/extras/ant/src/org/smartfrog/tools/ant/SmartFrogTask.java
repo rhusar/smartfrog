@@ -28,10 +28,13 @@ import org.apache.tools.ant.types.Commandline;
 import org.apache.tools.ant.types.Environment;
 import org.apache.tools.ant.types.PropertySet;
 import org.apache.tools.ant.types.Reference;
+import org.apache.tools.ant.types.CommandlineJava;
 
 import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
+import java.lang.reflect.Method;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * Class to let ant task derivatives run smartfrog. How it invokes smartfrog is an implementation detail;
@@ -61,6 +64,7 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
      * spawn flag, false by default. Needs Ant1.7 or later to work.
      */
     private boolean spawn;
+
     public static final String MESSAGE_SPAWNED_DAEMON = "Spawned SmartFrog daemon started";
     public static final String MESSAGE_IGNORING_FAILONERROR = "ignoring failonerror setting for spawned application";
     public static final String MESSAGE_IGNORING_TIMEOUT = "ignoring timeout setting for spawned application";
@@ -86,6 +90,7 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
      * @throws BuildException
      */
     public void init() throws BuildException {
+        super.init();
         smartfrog = getBaseJavaTask();
         setFailOnError(true);
         setTimeout(DEFAULT_TIMEOUT_VALUE);
@@ -540,6 +545,15 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
         propagateSpawnIncompatibleSettings();
         //do any security configurations we need
         securityHolder.applySecuritySettings(this);
+
+        //last minute logging
+        if(isDebug()) {
+            log("Command: "+getCommandLine());
+
+
+
+        }
+
         //run it
         int err = smartfrog.executeJava();
         if (isSpawn()) {
@@ -569,6 +583,21 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
                 throw new BuildException(errorText + " - error code " + err);
         }
 
+    }
+
+    /**
+     * get the command line; return null when the method is absent (ant1.6 and earlier)
+     * @return a command line or null for old Ant versions
+     */
+    protected String getCommandLine() {
+        try {
+            Method method=Java.class.getMethod("getCommandLine",new Class[0]);
+            CommandlineJava commandLine = (CommandlineJava)
+                    method.invoke(smartfrog,new Object[0]);
+            return commandLine.describeJavaCommand();
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     /**
