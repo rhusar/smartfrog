@@ -48,37 +48,25 @@
     <!-- ========================================================== -->
     <target name="init" depends="init-standard-output-dirs,use-smartfrog-tasks">
 
-        <property name="deploy.sf" 
-          value="org/smartfrog/services/cddlm/cddlm_on_jetty.sf"/>
+      <!-- package info -->
+      <property name="component.package.path" 
+        value="org/smartfrog/services/cddlm"/>
+  
+      <property name="deploy.sf" 
+        value="${component.package.path}/cddlm_on_jetty.sf"/>
+      <property name="default.ini" location="test/files/default.ini"/>
+      <property name="default.sf" location="test/files/default.sf"/>
 
-        <property name="default.ini" location="test/files/default.ini"/>
-        <property name="default.sf" location="test/files/default.sf"/>
+      
 
-        <property name="generated.dir" location="build/generated"/>
+      <!-- schema config -->
+      <property name="xsd.path" 
+        value="${component.package.path}/xsd"/>
 
-        <!-- the compile time path includes everything in the lib directory. 
-          that must include jdom and axis-->
-<!--         <path id="compile.classpath">
-            <path refid="smartfrog.classpath"/>
-
-            <fileset dir="${lib.dir}">
-              <include name="**/*.jar"/>
-            </fileset>
-        </path> -->
+      <property name="cddlm.xsd"
+        location="${src.dir}/${xsd.path}/cddlm.xsd" />
 
 
-
-        <!-- set up the runtime path -->
-<!--         <path id="run.classpath">
-            <path refid="compile.classpath"/>
-            <path location="${target.jar}"/>
-        </path>
-
-        <path id="test.classpath">
-            <path refid="run.classpath"/>
-            <pathelement location="${test.classes.dir}"/>
-        </path> -->
-        
     </target>
     
     
@@ -178,9 +166,9 @@
     <!-- ========================================================== -->
     <!-- start the daemon -->
     <!-- ========================================================== -->
-    <target name="start-daemon" depends="parse,dist,start-daemon-if-needed"
+<!--     <target name="start-daemon" depends="parse,dist,start-daemon-if-needed"
         description="start the daemon">
-    </target>
+    </target> -->
 
     
     <!-- ========================================================== -->
@@ -226,10 +214,46 @@
             failonerror="false"/>
     </target>
 
+
+    <!-- =================================================================== -->
+    <!-- SOAP -->
+    <!-- =================================================================== -->
+
+    <target name="init-soap" depends="init,init-deploy-properties,import-axis-tasks" >
+      <!-- SOAP properties -->
+      <property name="deploymentAPI.wsdl"
+        location="${src.dir}/${xsd.path}/deploymentAPI.wsdl" />
+        
+      <property name="mapping.file"
+        location="${src.dir}/${xsd.path}/namespace-package-mapping.properties" />
+        
+      <property name="soapapi.touch.file"
+        location="${build.dir}/soapapi-uptodate.txt" />
+
+      <property name="build.soap.dir" location="${build.dir}/soap"/>
+      
+      <property name="soapapi.touch.file"
+        location="${build.soap.dir}/soapapi-uptodate.txt" />
+      <property name="soap.server.dir" location="${build.soap.dir}/server"/>
+      <property name="soap.client.dir" location="${build.soap.dir}/client"/>
+      
+      <property name="soap.dotnet.dir"  location="${build.soap.dir}/dotnet"/>
+      <property name="soap.dotnet.proxy.class"  
+        location="${soap.dotnet.dir}/deployProxy.cs"/>
+      
+      <mkdir dir="${build.soap.dir}"/>
+      <mkdir dir="${soap.server.dir}"/>
+      <mkdir dir="${soap.client.dir}"/>
+      <mkdir dir="${soap.dotnet.dir}"/>
+      
+      
+    </target>
+    
+
     <!-- ========================================================== -->
     <!-- -->
     <!-- ========================================================== -->
-    <target name="wsdl" depends="init,init-deploy-properties,import-axis-tasks" 
+    <target name="download-wsdl" depends="init-soap" 
       description="fetch the WSDL From a deployed service and create test+client classes">
         <mkdir dir="${generated.dir}"/>
         <axis-wsdl2java 
@@ -237,17 +261,64 @@
           testcase="true"
           typemappingversion="1.2"
           failonnetworkerrors="true"
-          output="${generated.dir}"
+          output="${soap.server.dir}"
           />
-        <axis-wsdl2java 
-          url="http://localhost:${axis.port}/axis/services/AdminService?wsdl"
-          testcase="false"
-          typemappingversion="1.2"
-          failonnetworkerrors="true"
-          output="${generated.dir}"
-          />          
     </target>
 
+    <!-- ========================================================== -->
+    <!-- -->
+    <!-- ========================================================== -->
+    <target name="generate-wsdl" depends="init-soap" 
+      description="fetch the WSDL From a deployed service and create test+client classes">
+        <mkdir dir="${generated.dir}"/>
+        <axis-wsdl2java 
+          url="http://localhost:${axis.port}/axis/services/cddlm?wsdl"
+          testcase="true"
+          typemappingversion="1.2"
+          failonnetworkerrors="true"
+          output="${soap.server.dir}"
+          />
+    </target>
+    
+        
+    <!-- =================================================================== -->
+    <!-- probe that the wsdl file is up to date with the generated code -->
+    <!-- =================================================================== -->
+    
+   <target name="check-soapapi"  depends="init-soap" >
+     <uptodate property="soapapi.uptodate"
+       targetfile="${soapapi.touch.file}"
+       srcfile="${deploymentAPI.wsdl}" />
+   </target>
+
+
+  <target name="server-wsdl" depends="check-soapapi"
+      unless="soapapi.uptodate"
+      description="create server classes from WSDL">
+    <axis-wsdl2java
+      output="${soap.server.dir}"
+      serverside="true"
+      url="${deploymentAPI.wsdl}"
+      verbose="true"
+      all="true"
+      testcase="false"
+      namespacemappingfile="${mapping.file}"
+      skeletondeploy="true"
+      helpergen="true"
+      failonnetworkerrors="true"
+      noimports="true"
+      debug="true"
+      printstacktraceonfailure="false"
+      >
+    </axis-wsdl2java>
+   <touch file="${soapapi.touch.file}"/>
+  </target>
+  
+   <target name="dotnet-client-wsdl" depends="init-soap">
+     <wsdltodotnet srcFile="${deploymentAPI.wsdl}"
+      destFile="${soap.dotnet.proxy.class}"
+      extraoptions="/parsableerrors /protocol:SOAP12"/>
+   </target>
 
     <!-- ========================================================== -->
     <!-- system tests -->
