@@ -170,8 +170,8 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
         try {
            result = sfContext.sfResolveAttribute(name);
            try {
-               if (sfCoreLog().isTraceEnabled()) {
-                   sfCoreLog().trace(sfCompleteNameSafe()+ " sfResolved HERE '"+name.toString()+"' to '"+ result.toString()+"'");
+               if (sfGetCoreLog().isTraceEnabled()) {
+                   sfGetCoreLog().trace(sfCompleteNameSafe()+ " sfResolved HERE '"+name.toString()+"' to '"+ result.toString()+"'");
                }
            } catch (Exception ex) {ex.printStackTrace();} //ignore
 
@@ -229,8 +229,8 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
         throws SmartFrogResolutionException, RemoteException {
         Object obj = sfResolve(r, 0);
         try {
-            if (sfCoreLog().isTraceEnabled()) {
-                sfCoreLog().trace(sfCompleteNameSafe()+ " sfResolved '"+r.toString()+"' to '"+ obj.toString()+"'");
+            if (sfGetCoreLog().isTraceEnabled()) {
+                sfGetCoreLog().trace(sfCompleteNameSafe()+ " sfResolved '"+r.toString()+"' to '"+ obj.toString()+"'");
             }
         } catch (Exception ex) {ex.printStackTrace();} //ignore
         return obj;
@@ -1134,15 +1134,6 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
         terminator.start();
     }
 
-
-    /**
-     *  To get the sfCore logger
-     * @return Logger implementing LogSF and Log
-     */
-    public LogSF sfCoreLog() {
-       return LogFactory.sfGetProcessLog();
-    }
-
     /**
      *  To log into sfCore logger. This method should be used to log Core messages
      *
@@ -1165,7 +1156,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
         try {
           return sfGetApplicationLog();
         } catch (Exception ex) {
-          return sfCoreLog();
+          return sfGetCoreLog();
         }
        }
     }
@@ -1192,6 +1183,14 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
      */
     public LogSF sfGetLog (String name) throws SmartFrogException, RemoteException {
        return LogFactory.getLog(name);
+    }
+
+    /**
+     *  To get the sfCore logger
+     * @return Logger implementing LogSF and Log
+     */
+    public LogSF sfGetCoreLog() {
+       return LogFactory.sfGetProcessLog();
     }
 
     /**

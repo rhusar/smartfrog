@@ -542,7 +542,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
             }
         } catch (Throwable thr) {
             Reference name = sfCompleteNameSafe();
-            sfCoreLog().error("caught on deployment ("+name.toString()+")", thr);
+            sfGetCoreLog().error("caught on deployment ("+name.toString()+")", thr);
             throw SmartFrogLifecycleException.forward(thr);
         }
     }
@@ -577,7 +577,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
                // any exception causes termination
                Reference name = sfCompleteNameSafe();
                sfTerminate(TerminationRecord.abnormal("Compound sfStart failure: " + thr, name));
-               sfCoreLog().error("caught on start ("+name.toString()+")", thr);
+               sfGetCoreLog().error("caught on start ("+name.toString()+")", thr);
                throw SmartFrogLifecycleException.forward(thr);
          }
     }
@@ -762,7 +762,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
      * @param thrown
      */
     private void ignoreThrowable(String message,Throwable thrown) {
-        sfCoreLog().ignore(message, thrown);
+        sfGetCoreLog().ignore(message, thrown);
     }
 
     /**

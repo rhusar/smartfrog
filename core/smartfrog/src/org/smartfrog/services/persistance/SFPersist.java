@@ -83,7 +83,7 @@ public class SFPersist extends PrimImpl implements Prim {
             RemoteException {
         super.sfDeploy();
 
-        log = sfCoreLog();
+        log = sfGetCoreLog();
 
 	directory = sfResolve("directory", directory, false);
     }
