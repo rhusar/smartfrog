@@ -71,9 +71,9 @@
   </xsd:simpleType>
 
   <!-- ============================================================= -->
-  <!-- refrootTrype ?-->
+  <!-- refrootType ?-->
   <!-- ============================================================= -->
-  <xsd:simpleType name="refrootTrype">
+  <xsd:simpleType name="refrootType">
     <xsd:annotation>
       <xsd:documentation>
         Root references for references
@@ -159,7 +159,7 @@
   <!-- The @cdl:refroot attribute-->
   <!-- ============================================================= -->
 
-  <xsd:attribute name="refroot" type="cdl:refrootTrype">
+  <xsd:attribute name="refroot" type="cdl:refrootType">
     <xsd:annotation>
       <xsd:documentation>
         This specifies the reference root for reference resolution.
@@ -315,7 +315,7 @@
     </xsd:annotation>
     <xsd:attribute name="let" type="xsd:NCName" use="required"/>
     <xsd:attribute name="refroot" type="cdl:refType" use="required"/>
-    <xsd:attribute name="ref" type="cdl:refrootTrype" use="required"/>
+    <xsd:attribute name="ref" type="cdl:refrootType" use="required"/>
   </xsd:complexType>
 
   <xsd:element name="assert" >
