@@ -115,7 +115,9 @@ public class ToUrlTask extends Task {
             String[] files=scanner.getIncludedFiles();
             for(int i=0;i<files.length;i++) {
                 File f=new File(scanner.getBasedir(), files[i]);
-                urls.append(toURL(f));
+                String asUrl = toURL(f);
+                urls.append(asUrl);
+                log(asUrl,Project.MSG_DEBUG);
                 urls.append(separator);
                 count++;
             }
