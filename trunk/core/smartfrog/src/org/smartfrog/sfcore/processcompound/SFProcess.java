@@ -168,7 +168,8 @@ public class SFProcess implements MessageKeys {
      *
      * @return Prim
      *
-     * @exception Exception Failed to deploy component
+     * @throws SmartFrogException Failed to deploy component
+     * @throws RemoteException trouble on the wire
      */
     protected static Prim deployComponent(ComponentDescription comp)
         throws SmartFrogException, RemoteException {
