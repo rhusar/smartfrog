@@ -106,10 +106,8 @@ public class RandomSequence extends EventCompoundImpl implements Compound {
         actionKeys.removeElement(randomKey);
 
         // deploy and start the component
-        Prim comp = sfDeployComponentDescription(randomKey.toString(), this,
-                (ComponentDescription) act.copy(), null);
-        comp.sfDeploy();
-        comp.sfStart();
+        sfCreateNewChild(randomKey.toString(),
+			 (ComponentDescription) act.copy(), null);
     }
 
     /**

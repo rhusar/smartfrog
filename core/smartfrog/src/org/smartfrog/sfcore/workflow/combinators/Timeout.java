@@ -56,6 +56,7 @@ public class Timeout extends EventCompoundImpl implements Compound {
     int time;
     Reference name;
     Thread timer;
+    boolean terminated = false;
 
     /**
      * Constructs Timeout.
@@ -100,17 +101,14 @@ public class Timeout extends EventCompoundImpl implements Compound {
                             } catch (Exception e) {
                             }
 
-                            sfTerminate(TerminationRecord.abnormal(
-                                    "timeout occurred", name));
+                            if (!terminated) 
+				sfTerminate(TerminationRecord.abnormal("timeout occurred", name));
                         }
                     }
                 });
         timer.start();
 
-        Prim comp = sfDeployComponentDescription(name+"_actionRunning", this, action,
-                null);
-        comp.sfDeploy();
-        comp.sfStart();
+        sfCreateNewChild(name+"_actionRunning", action, null);
     }
 
     /**
@@ -125,7 +123,8 @@ public class Timeout extends EventCompoundImpl implements Compound {
         if (sfContainsChild(comp)) {
             if (timer != null) {
                 try {
-                    timer.stop();
+		    terminated = true;
+                    timer.interrupt();
                 } catch (Exception e) {
                 }
             }

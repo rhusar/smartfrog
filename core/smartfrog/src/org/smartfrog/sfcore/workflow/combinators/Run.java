@@ -110,29 +110,16 @@ public class Run extends EventCompoundImpl implements Compound {
             super.sfStart();
 
             if (parent != null) {
-                comp = parent.sfDeployComponentDescription(asName, parent,
-                        action, null);
+                comp = parent.sfCreateNewChild(asName, action, null);
             } else {
-                comp = sfDeployComponentDescription(null, null, action, null);
-            }
-            try {
-                comp.sfDeploy();
-            } catch (Throwable thr){
-                throw SmartFrogLifecycleException.sfDeploy("",thr,null);
-            }
-            try {
-                comp.sfStart();
-            } catch (Throwable thr){
-                throw SmartFrogLifecycleException.sfStart("",thr,null);
-            }
+                comp = sfCreateNewApp(action, null);
+	    }
         } catch (Throwable e) {
             if (comp != null) {
                 Reference compName = null;
                 try {
                     compName = comp.sfCompleteName();
                 }catch (Exception ex ) {
-                    //ignore
-                    //log message
                 }
                 try {
                      String compNameStr ="";

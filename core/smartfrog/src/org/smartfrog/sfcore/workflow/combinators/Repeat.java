@@ -82,10 +82,8 @@ public class Repeat extends EventCompoundImpl implements Compound {
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        Prim comp = sfDeployComponentDescription(name+"_actionRunning", this,
-                (ComponentDescription) action.copy(), null);
-        comp.sfDeploy();
-        comp.sfStart();
+        sfCreateNewChild(name+"_actionRunning",
+			 (ComponentDescription) action.copy(), null);
     }
 
     /**
@@ -104,10 +102,8 @@ public class Repeat extends EventCompoundImpl implements Compound {
 
                 if (status.errorType.equals("normal".intern())) {
                     if (currentRepeats++ < repeat) {
-                        Prim c = sfDeployComponentDescription(name+"_actionRunning"+currentRepeats, this,
-                                (ComponentDescription) action.copy(), null);
-                        c.sfDeploy();
-                        c.sfStart();
+                        sfCreateNewChild(name+"_actionRunning"+currentRepeats,
+					 (ComponentDescription) action.copy(), null);
                     } else {
                         //System.out.println("terminated correctly: reached number of repeat " + name.toString());
                         sfTerminate(TerminationRecord.normal(name));

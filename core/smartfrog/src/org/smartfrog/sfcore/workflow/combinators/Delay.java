@@ -77,6 +77,11 @@ public class Delay extends EventCompoundImpl implements Compound {
     Thread timer;
 
     /**
+     * Indication that the component has been terminated before the time fires
+     */
+    private boolean terminated = false;
+
+    /**
      * Constructs Delay object.
      *
      * @throws java.rmi.RemoteException In case of RMI or network failure.
@@ -117,16 +122,17 @@ public class Delay extends EventCompoundImpl implements Compound {
                         } catch (Exception e) {
                             // ignore
                         }
-                        try {
-                            Prim comp = sfDeployComponentDescription(name+"_actionRunning",
-                                    Delay.this, action, null);
-                            comp.sfDeploy();
-                            comp.sfStart();
-                        } catch (Exception e) {
-                            sfTerminate(TerminationRecord.abnormal(
-                                    "error in launching delayed component",
-                                    null));
-                        }
+			if (!terminated) {
+			    try {
+				synchronized (this) {
+				    (Delay.this).sfCreateNewChild(name+"_actionRunning", action, null);
+				}
+			    } catch (Exception e) {
+				(Delay.this).sfTerminate(TerminationRecord.abnormal(
+					    "error in launching delayed component",
+					    null));
+			    }
+			}
                     }
                 }
                 });
@@ -141,11 +147,12 @@ public class Delay extends EventCompoundImpl implements Compound {
      * @param status termination status of sender
      * @param comp sender of termination
      */
-    public void sfTerminatedWith(TerminationRecord status, Prim comp) {
+    public synchronized void sfTerminatedWith(TerminationRecord status, Prim comp) {
         if (sfContainsChild(comp)) {
             if (timer != null) {
                 try {
-                    timer.stop();
+		    terminated = true;
+                    timer.interrupt();
                 } catch (Exception e) {
                     //ignore
                 }
