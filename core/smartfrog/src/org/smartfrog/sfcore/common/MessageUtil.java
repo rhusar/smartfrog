@@ -38,7 +38,10 @@ public final class MessageUtil {
      * Resource Bundle holding the messages.
      */
     private static final ResourceBundle myResources = ResourceBundle.getBundle(MESSAGE_BUNDLE);
-    
+
+    private MessageUtil(){
+    }
+
     /**
      * Gets the message string for the message key.
      * @param the message key

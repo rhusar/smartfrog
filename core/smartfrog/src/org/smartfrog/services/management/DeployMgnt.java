@@ -33,7 +33,7 @@ public class DeployMgnt {
     /**
      *  Constructs the DeployMgnt object
      */
-    public DeployMgnt() {
+    private DeployMgnt() {
     }
 
     /**

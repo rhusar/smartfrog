@@ -36,6 +36,9 @@ public class Logger implements MessageKeys {
      */
     public static boolean logStackTrace = false;
 
+    private Logger(){
+    }
+
     /**
      * Logs the message on the standard output.
      *

@@ -50,6 +50,10 @@ public class WindowUtilities {
     */
    protected static boolean graphicsAvailable;
 
+
+   private WindowUtilities(){
+   }
+
    static {
       graphicsAvailable = testGraphics();
    }
