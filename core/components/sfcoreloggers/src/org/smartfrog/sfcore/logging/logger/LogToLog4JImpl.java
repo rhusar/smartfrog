@@ -31,6 +31,7 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLogException;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 
 import java.io.PrintStream;
 import java.io.Serializable;
@@ -130,7 +131,7 @@ public class LogToLog4JImpl implements LogToLog4J, Log, LogMessage, LogLevel, Se
       }
       //Check Class and read configuration...including system.properties
       try {
-          classComponentDescription = LogImpl.getClassComponentDescription(this, true);
+          classComponentDescription = ComponentDescriptionImpl.getClassComponentDescription(this, true,null);
           if (isTraceEnabled()&& this.getClass().toString().endsWith("LogToLog4JImpl")) {
               trace(this.getClass().toString()+" '"+name+ "' using ComponentDescription:\n"+ classComponentDescription.toString());
           }
