@@ -115,40 +115,6 @@ ant -lib ..\..\build\dist\lib\smartfrog-tasks.jar -lib ..\..\..\..\smartfrog\dis
 
 
 
-  <target name="testEmptyPropertyFile">
-    <sf-startdaemon timeout="${timeout}">
-      <propertyFile/>
-    </sf-startdaemon>
-  </target>
 
-  <target name="testMissingNonOptionalPropertyFile">
-    <sf-startdaemon timeout="${timeout}">
-      <propertyFile file="missing" optional="false"/>
-    </sf-startdaemon>
-  </target>
-
-  <target name="testMissingOptionalPropertyFile">
-    <sf-startdaemon timeout="${timeout}">
-      <propertyFile file="missing" optional="true"/>
-    </sf-startdaemon>
-  </target>
-
-  <!--
-  we test two things here. First, that properties get loaded
-  secondly, that inline files are expanded and executed
-  -->
-  <target name="testValidPropertyFile">
-    <sf-startdaemon timeout="${timeout}">
-      <propertyFile file="loaded.properties"/>
-      <application name="EqualsTest">
-#include "/org/smartfrog/services/assertions/components.sf"
-
-sfConfig extends Assert {
-        equalsString1 "test";
-        equalsString2 PROPERTY test.text;
-}
-      </application>
-    </sf-startdaemon>
-  </target>
 
 </project>

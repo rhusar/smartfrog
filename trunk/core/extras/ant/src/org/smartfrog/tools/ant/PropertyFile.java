@@ -22,6 +22,7 @@ package org.smartfrog.tools.ant;
 import org.apache.tools.ant.types.DataType;
 import org.apache.tools.ant.types.Environment;
 import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Java;
 
 import java.io.File;
@@ -40,7 +41,7 @@ import java.util.ListIterator;
  * created Jul 26, 2004 1:01:50 PM
  */
 
-public class PropertyFile /* extends DataType */ implements Cloneable {
+public class PropertyFile  extends DataType  implements Cloneable {
 
     /**
      * filename
@@ -54,6 +55,8 @@ public class PropertyFile /* extends DataType */ implements Cloneable {
     public static final String ERROR_NO_FILE_ATTRIBUTE = "No file specified";
     public static final String ERROR_FILE_LOAD_FAILED = "Failed to load ";
     public static final String ERROR_FILE_NOT_FOUND = "File not found: ";
+    public static final String MESSAGE_ABSENT_FILE = "Skipped absent (optional) file ";
+    public static final String MESSAGE_LOADING_FILE = "Loading property file";
 
     public void setFile(File file) {
         this.file = file;
@@ -75,11 +78,13 @@ public class PropertyFile /* extends DataType */ implements Cloneable {
         }
         if(!file.exists()) {
             if(optional) {
+                getProject().log(MESSAGE_ABSENT_FILE+file,Project.MSG_VERBOSE);
                 return props;
             } else {
                 throw new BuildException(ERROR_FILE_NOT_FOUND+file);
             }
         }
+        getProject().log(MESSAGE_LOADING_FILE + file, Project.MSG_VERBOSE);
         BufferedInputStream inStream = null;
         try {
             inStream=new BufferedInputStream(new FileInputStream(file));
@@ -112,6 +117,7 @@ public class PropertyFile /* extends DataType */ implements Cloneable {
             String name = (String) en.nextElement();
             String value=props.getProperty(name);
             Environment.Variable sysProp=new Environment.Variable();
+            getProject().log("Setting property "+name+"="+value, Project.MSG_DEBUG);
             sysProp.setKey(name);
             sysProp.setValue(value);
             jvm.addSysproperty(sysProp);

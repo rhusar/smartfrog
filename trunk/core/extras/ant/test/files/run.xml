@@ -102,5 +102,43 @@ sfConfig extends Server{
         </application>
       </sf-run>
     </target>
-    
-</project>      
+
+  <target name="testEmptyPropertyFile">
+    <sf-run timeout="${timeout}">
+      <propertyFile/>
+    </sf-run>
+  </target>
+
+  <target name="testMissingNonOptionalPropertyFile">
+    <sf-run timeout="${timeout}">
+      <propertyFile file="missing" optional="false"/>
+      <application name="app" file="valid.sf"/>
+    </sf-run>
+  </target>
+
+  <target name="testMissingOptionalPropertyFile">
+    <sf-run timeout="${timeout}">
+      <propertyFile file="missing" optional="true"/>
+      <application name="app" file="valid.sf"/>
+    </sf-run>
+  </target>
+
+  <!--
+  we test two things here. First, that properties get loaded
+  secondly, that inline files are expanded and executed
+  -->
+  <target name="testValidPropertyFile">
+    <sf-run timeout="${timeout}">
+      <propertyFile file="loaded.properties"/>
+      <application name="EqualsTest">
+#include "/org/smartfrog/services/assertions/components.sf"
+
+sfConfig extends Assert {
+        equalsString1 "test";
+        equalsString2 PROPERTY test.text;
+}
+      </application>
+    </sf-run>
+  </target>
+
+</project>

@@ -149,22 +149,5 @@ public class StartTest extends TaskTestBase {
         assertInLog("SmartFrog [rootProcess] dead");
     }
 
-    public void testEmptyPropertyFile() {
-        expectBuildExceptionContaining("testEmptyPropertyFile",
-                "empty propertyFile",
-                PropertyFile.ERROR_NO_FILE_ATTRIBUTE);
-    }
 
-    public void testMissingNonOptionalPropertyFile() {
-        expectBuildExceptionContaining("testMissingNonOptionalPropertyFile",
-                "empty propertyFile",
-                PropertyFile.ERROR_FILE_NOT_FOUND);
-    }
-    public void testMissingOptionalPropertyFile() {
-        executeTarget("testMissingOptionalPropertyFile");
-    }
-
-    public void testValidPropertyFile() {
-        executeTarget("testValidPropertyFile");
-    }
 }
