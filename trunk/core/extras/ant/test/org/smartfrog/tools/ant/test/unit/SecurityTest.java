@@ -55,11 +55,11 @@ public class SecurityTest extends TaskTestBase {
     }
 
     public void testEmpty() {
-        expectLogContaining("testEmpty",SmartFrogSign.MESSAGE_EMPTY_SECURITY);
+        expectLogContaining("testEmpty",SmartFrogSign.MESSAGE_NO_SECURITY);
     }
 
     public void testEmpty2() {
-        expectLogContaining("testEmpty2", SmartFrogSign.MESSAGE_EMPTY_SECURITY);
+        expectLogContaining("testEmpty2", SmartFrogSign.MESSAGE_NO_SECURITY);
     }
     public void testNoProperties() {
         expectBuildException("testNoProperties",

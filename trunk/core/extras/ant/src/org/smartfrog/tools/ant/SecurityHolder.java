@@ -47,6 +47,10 @@ public class SecurityHolder {
      * reference to security
      */
     private Reference securityRef;
+
+    /**
+     * error string used in JUnit test cases
+     */
     public static final String ERROR_MULTIPLE_DECLARATIONS = "Multiple security declarations";
 
     /**
@@ -61,13 +65,13 @@ public class SecurityHolder {
     /**
      * set a security definition
      *
-     * @param security
+     * @param securityElement
      */
-    public void addSecurity(Security security) {
-        if (this.security != null || this.securityRef != null) {
+    public void addSecurity(Security securityElement) {
+        if (security != null || securityRef != null) {
             throw new BuildException(ERROR_MULTIPLE_DECLARATIONS);
         }
-        this.security = security;
+        security = securityElement;
     }
 
     /**
@@ -92,6 +96,10 @@ public class SecurityHolder {
     public boolean applySecuritySettings(SmartFrogTask task) {
         Security sec = getSecurity(task);
         if (sec == null) {
+            return false;
+        }
+        if(!sec.isEnabled()) {
+            //we are disabled; do not apply
             return false;
         }
         //hand off to the task

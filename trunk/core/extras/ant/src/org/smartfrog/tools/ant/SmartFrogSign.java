@@ -28,6 +28,8 @@ import org.apache.tools.ant.types.Reference;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  *
@@ -52,7 +54,8 @@ public class SmartFrogSign extends TaskBase {
     private SecurityHolder securityHolder = new SecurityHolder();
     public static final String ERROR_NO_SECURITY_SETTINGS = "No security settings provided";
     public static final String ERROR_COULD_NOT_APPLY_SETTINGS = "Could not apply security settings with ";
-    public static final String MESSAGE_EMPTY_SECURITY = "Empty security: signing skipped";
+    public static final String MESSAGE_NO_SECURITY = "security empty or disabled: signing skipped";
+    public static final String E_NO_SETDESTDIR = "setDestDir is only supported on Ant1.7 and later";
 
 
     /**
@@ -65,8 +68,8 @@ public class SmartFrogSign extends TaskBase {
     public void init() throws BuildException {
 
         //create a signer task
-        signer = (SignJar) getProject().createTask("signjar");
-        signer.setTaskName(this.getTaskName());
+        signer= new SignJar();
+        bindToChild(signer);
     }
 
     /**
@@ -139,6 +142,42 @@ public class SmartFrogSign extends TaskBase {
         signer.setMaxmemory(maxMemory);
     }
 
+    /**
+     * The current implementation use reflection to look for destDir method,
+     * as it is a recent addition to Ant's signjar task. Once we can rely on
+     * Ant1.7 at build and run time, we can go to direct invocation
+     * @param destDir
+     */
+    public void setDestDir(File destDir) {
+        /**
+         the following code does nothing but
+         signer.setDestDir(destDir);
+        */
+        Class classes[]=new Class[1];
+        classes[0]=File.class;
+        Method setdestdir;
+        try {
+            setdestdir = signer.getClass().getMethod("setDestDir",classes);
+        } catch (NoSuchMethodException e) {
+            throw new BuildException(E_NO_SETDESTDIR);
+        }
+        Object params[]=new Object[1];
+        params[0]=destDir;
+        try {
+            setdestdir.invoke(signer,params);
+        } catch (IllegalAccessException e) {
+            throw new BuildException("Calling setDestDir",e);
+        } catch (InvocationTargetException e) {
+            Throwable t=e.getTargetException();
+            //treat buildExceptions specially
+            if(t instanceof BuildException) {
+                throw (BuildException) t;
+            } else {
+                throw new BuildException("Calling setDestDir",t);
+            }
+        }
+    }
+
 
     /**
      * Called by the project to let the task do its work. This method may be
@@ -155,8 +194,8 @@ public class SmartFrogSign extends TaskBase {
         if (sec == null) {
             throw new BuildException(ERROR_NO_SECURITY_SETTINGS);
         }
-        if(sec.isEmpty()) {
-            log(MESSAGE_EMPTY_SECURITY);
+        if(!sec.isEnabled() || sec.isEmpty()) {
+            log(MESSAGE_NO_SECURITY);
             return;
         }
         try {
