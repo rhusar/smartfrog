@@ -2,15 +2,11 @@
 <cdl:cdl xmlns:cdl="http://gridforge.org/cddlm/xml/2004/07/30/"
   xmlns:xs="http://www.w3.org/2001/XMLSchema"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://gridforge.org/cddlm/xml/2004/07/30/ cddml.xsd">
-  <!--<import/>-->
-  <cdl:types>
- </cdl:types>
-  <cdl:configuration>
-
-  <!-- 
-  this file is illegal as it has duplicate names
-  -->
+  xsi:schemaLocation="http://gridforge.org/cddlm/xml/2004/07/30/ cddlm.xsd">
+  <cdl:configuration xmlns="urn:other">
+  <cdl:documentation>
+    this file is illegal as it has duplicate names
+  </cdl:documentation>
     <webapps name="webapp-base">
       <app>security</app>
       <app>logging</app>

@@ -66,9 +66,43 @@ public class CdlCatalogTest extends TestCase {
     }
 
     public void testSaxResolve() throws IOException, SAXException {
-        InputSource src=catalog.resolveEntity("",Constants.CDL_API_NAMESPACE);
-        assertTrue(src != null);
+        assertResolved(Constants.CDL_API_NAMESPACE);
     }
+
+    private void assertResolved(String uri) throws SAXException, IOException {
+        InputSource src=catalog.resolveEntity("",uri);
+        assertTrue("Did not resolve "+uri,src != null);
+    }
+
+    private void assertNotResolved(String uri) throws SAXException, IOException {
+        InputSource src = catalog.resolveEntity("", uri);
+        assertTrue("Did not want to resolve " + uri, src == null);
+    }
+
+    public void testResolveFile() throws IOException, SAXException {
+        assertResolved("file://cddlm.xsd");
+    }
+
+    public void testResolveFile2() throws IOException, SAXException {
+        assertResolved("file:///dir/subdir/cddlm.xsd");
+    }
+
+    public void testNoResolveFile3() throws IOException, SAXException {
+        assertNotResolved("file://cddlm.xsd/");
+    }
+
+    public void testNoResolveFile4() throws IOException, SAXException {
+        assertNotResolved("file://");
+    }
+
+    public void testNoResolveEmptyString() throws IOException, SAXException {
+        assertNotResolved("");
+    }
+
+    public void testNoResolveNull() throws IOException, SAXException {
+        assertNotResolved("");
+    }
+
 }
 
 

@@ -43,13 +43,20 @@ public class CdlCatalog implements URIResolver,EntityResolver {
     private ResourceLoader loader;
 
 
+    /**
+     * where all the files really live
+     */
+    private String packageBase =XSD;
+
+    /**
+     * map table
+     */
     private HashMap mappings;
 
     public CdlCatalog(ResourceLoader loader) {
         this.loader = loader;
         resetMap();
         loadCDDLMMappings();
-
     }
 
     /**
@@ -62,10 +69,9 @@ public class CdlCatalog implements URIResolver,EntityResolver {
     private static final String XSD="org/smartfrog/services/cddlm/xsd/";
 
     private static final String CDDLM_MAPPINGS[] ={
-      Constants.CDL_NAMESPACE,XSD+Constants.CDDLM_XSD_FILENAME,
-      Constants.CDL_API_NAMESPACE, XSD + Constants.DEPLOY_API_SCHEMA_FILENAME,
-      Constants.WS_ADDRESSING_NAMESPACE,
-        XSD + "ws-addressing.xsd",
+      Constants.CDL_NAMESPACE,Constants.CDDLM_XSD_FILENAME,
+      Constants.CDL_API_NAMESPACE, Constants.DEPLOY_API_SCHEMA_FILENAME,
+      Constants.WS_ADDRESSING_NAMESPACE, "ws-addressing.xsd",
     };
 
     /**
@@ -82,7 +88,10 @@ public class CdlCatalog implements URIResolver,EntityResolver {
     public void loadMappings(String map[]) {
         assert map.length%2==0;
         for(int i=0;i<map.length;i+=2) {
-            mappings.put(map[i],map[i+1]);
+            String schema = map[i];
+            String filename = map[i+1];
+            mappings.put(schema,filename);
+            mappings.put(filename,filename);
         }
     }
     /**
@@ -93,7 +102,7 @@ public class CdlCatalog implements URIResolver,EntityResolver {
     public String lookup(String uri) {
         Object value = mappings.get(uri);
         if(value!=null) {
-            return (String)value;
+            return packageBase + (String)value;
         } else {
             return null;
         }
@@ -163,10 +172,35 @@ public class CdlCatalog implements URIResolver,EntityResolver {
             throws SAXException, IOException {
         String resource = lookup(systemId);
         if(resource==null) {
+            String filename=getFilenameFromSystemID(systemId);
+            if(filename!=null) {
+                return resolveEntity(publicId,filename);
+            }
             return null;
         } else {
             return new InputSource(loader.loadResource(resource));
         }
 
+    }
+
+    /**
+     * extract any filename from this file.
+     * @param systemId
+     * @return
+     */
+    String getFilenameFromSystemID(String systemId) {
+        if(!systemId.startsWith("file://")) {
+            return null;
+        }
+        int lastSlash=systemId.lastIndexOf('/');
+        if(lastSlash==-1) {
+            return null;
+        }
+        String endString=systemId.substring(lastSlash+1);
+        if(endString.length()>0) {
+            return endString;
+        } else {
+            return null;
+        }
     }
 }
