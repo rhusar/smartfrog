@@ -758,7 +758,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
      * @throws RemoteException In case of network/rmi error
      *
      */
-    public synchronized boolean sfDeRegister(Prim comp)
+    public boolean sfDeRegister(Prim comp)
         throws SmartFrogException, RemoteException {
         boolean success= false;
         if (sfContext.contains(comp)){
