@@ -423,9 +423,9 @@ public class SFSystem implements MessageKeys {
     }
 
     /**
-     * Run SmartFrog as configured. This call does not exit smartfrog, even if the OptionSet requests it.
+     * Run SmartFrog as configured. This call does not exit SmartFrog, even if the OptionSet requests it.
      * This entry point exists so that alternate entry points (e.g. Ant Tasks) can start the system.
-     * Important: things like the output streams can be redirected if the
+     * Important: things like the output streams can be redirected inside this call
      * @param  cfgDescriptors Vector of Configuration  opts with list of ConfigurationDescriptors
      *         @see ConfigurationDescriptor
      * @return the root process
@@ -450,7 +450,7 @@ public class SFSystem implements MessageKeys {
     /**
      * Run SmartFrog as configured. This call does not exit smartfrog, even if the OptionSet requests it.
      * This entry point exists so that alternate entry points (e.g. Ant Tasks) can start the system.
-     * Important: things like the output streams can be redirected if the
+     * Important: things like the output streams can be redirected.
      * @return the root process
      * @throws SmartFrogException for a specific SmartFrog problem
      * @throws UnknownHostException if the target host is unknown

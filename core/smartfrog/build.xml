@@ -421,10 +421,10 @@ relevant JAR files into the javacc subdirectory
     </copy>
    <chmod dir="${dist.bin.dir}"
           perm="ugo+rx"
-          excludes="**/*.ico, **/*.ini, **/*.sf*"/>
+          excludes="**/*.ico, **/*.ini, **/*.sf*,**/*.bat"/>
    <chmod dir="${dist.bin.dir}/security"
           perm="ugo+rx"
-          excludes="**/*.ico, **/*.ini, **/*.sf*"/>
+          excludes="**/*.ico, **/*.ini, **/*.sf*,**/*.bat"/>
   </target>
 
 

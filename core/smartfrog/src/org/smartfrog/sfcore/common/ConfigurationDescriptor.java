@@ -39,17 +39,26 @@ import org.smartfrog.sfcore.common.MessageUtil;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
 
 public class ConfigurationDescriptor implements MessageKeys{
+
+    /**
+     * an enumeration of our options
+     */
     public static class Action {
+        private Action() {
+        }
+
         final static public int DEPLOY=0;
         final static public int TERMINATE=1;
         final static public int UNDEFINED=2;
         final static public int DETACH=3;
         final static public int DETaTERM=4;
+        public static final int PING=5;
         static public String[] type= {"DEPLOY",
                       "TERMINATE",
                       "UNDEFINED",
                       "DETACH",
-                      "DETaTERM"};
+                      "DETaTERM",
+                       "PING"};
     }
 
 
@@ -98,6 +107,9 @@ public class ConfigurationDescriptor implements MessageKeys{
      * class acting as an enumeration for results
      */
     public static class Result {
+        private Result() {
+        }
+
         final static public int SUCCESSFUL=0;
         final static public int FAILED=1;
         final static public int UNDEFINED=2;
@@ -375,10 +387,11 @@ public class ConfigurationDescriptor implements MessageKeys{
     /**
      * Creates a Configuration Descriptor using a deployment URL
      * @param deploymentURL Format: 'name:ACTION:url:sfConfig:HOST:PROCESS'
+     * <pre>
      *      - name: name where to apply ACTION
      *            ex. foo
      *            ex. "HOST localhost:foo"
-     *      - ACTION: possible actions: DEPLOY, TERMINATE, DETACH, DETaTERM
+     *      - ACTION: possible actions: DEPLOY, TERMINATE, DETACH, DETaTERM, PING
      *      - url: description used by ACTION
      *            ex. /home/sf/foo.sf
      *            ex. c:\sf\foo.sf
@@ -390,14 +403,14 @@ public class ConfigurationDescriptor implements MessageKeys{
      *            ex: localhost
      *            ex: 127.0.0.1
      *      - PROCESS: process namewhere to apply ACTION. When empty it assumes rootProcess
-     *
      *     ex1: Deploy a description in local daemon
      *        counterEx:DEPLOY:org/smartfrog/examples/counter/example.sf::localhost:
      *     ex2. Terminate local sfDaemon
      *        rootProcess:TERMINATE:::localhost:
      *     ex3: Deploy "counterToSucceed" from counter/example2.sf
      *        counterEx3:DEPLOY:org/smartfrog/examples/counter/example2.sf:"testLevel1:counterToSucceed":localhost:
-     *
+     *</pre>
+     * @see Action
      * @throws SmartFrogInitException
      *
      * @todo fix this text for JavaDocs
@@ -642,8 +655,8 @@ public class ConfigurationDescriptor implements MessageKeys{
     }
 
     /**
-     * set the action type. this also sets the #action attribute
-     * which is needed to do the actual execution.
+     * set the action type. this also sets the {@link #action} attribute
+     * to an instance of the action which is needed to do the actual execution.
      *
      * @param type
      * @throws SmartFrogInitException
@@ -663,6 +676,9 @@ public class ConfigurationDescriptor implements MessageKeys{
             case Action.DETaTERM:
                 action = new ActionDetachAndTerminate();
                 break;
+            case Action.PING:
+                action = new ActionPing();
+                break;
             default:
                 throw new SmartFrogInitException("Action type unknown");
         }
@@ -676,17 +692,14 @@ public class ConfigurationDescriptor implements MessageKeys{
      */
 
     public void setActionType(String type) throws SmartFrogInitException {
-        if (type.equals(Action.type[Action.DEPLOY])) {
-            setActionType(Action.DEPLOY);
-        } else if (type.equals(Action.type[Action.DETACH])) {
-            setActionType(Action.DETACH);
-        } else if (type.equals(Action.type[Action.DETaTERM])) {
-            setActionType(Action.DETaTERM);
-        } else if (type.equals(Action.type[Action.TERMINATE])) {
-            setActionType(Action.TERMINATE);
-        } else {
-            throw new SmartFrogInitException("Action type unknown: "+ type);
+        for (int i=0;i<Action.type.length;i++) {
+            if(Action.type[i].equals(type)) {
+                setActionType(i);
+                return;
+            }
         }
+        //only get here on failure
+        throw new SmartFrogInitException("Action type unknown: " + type);
     }
 
 

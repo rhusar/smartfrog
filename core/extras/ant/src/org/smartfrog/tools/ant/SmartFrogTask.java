@@ -531,7 +531,7 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
      * @param errorText   text when return value!=0 && !=1-
      * @throws BuildException if the return value from java!=0
      */
-    protected void execSmartFrog(String failureText, String errorText) {
+    protected boolean execSmartFrog(String failureText, String errorText) {
         //adopt the classpath
         setupClasspath(smartfrog);
         //last minute fixup of error properties.
@@ -546,21 +546,26 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
             //when spawning output gets lost, so we print something here
             log(MESSAGE_SPAWNED_DAEMON);
         }
-        //if we didnt want the error code, we are finished
-        if (!failOnError) {
-            return;
-        }
         //else, let's post-analyse the deployment
         switch (err) {
             case 0:
-                return;
+                //success
+                return true;
+            case -1:
+            case 255:
                 //-1 is an expected error, but
                 //for some reason smartfrog on HP-UX returns something else.
                 //so we catch 255 as well.
-            case -1:
-            case 255:
+                if (!failOnError) {
+                    return false;
+                }
+
                 throw new BuildException(failureText);
             default:
+                //any other error code is an odd one
+                if (!failOnError) {
+                    return false;
+                }
                 throw new BuildException(errorText + " - error code " + err);
         }
 
@@ -603,8 +608,8 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
      *
      * @param failureText text when smartfrog returns '1'
      */
-    protected void execSmartFrog(String failureText) {
-        execSmartFrog(failureText, "Problems running smartfrog JVM");
+    protected boolean execSmartFrog(String failureText) {
+        return execSmartFrog(failureText, "Problems running smartfrog JVM");
     }
 
 

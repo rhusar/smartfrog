@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="parse">
+<project name="parse" default="teardown">
 
 <description>
  Tests for the parse. 

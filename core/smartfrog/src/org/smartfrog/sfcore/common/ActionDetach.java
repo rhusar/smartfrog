@@ -30,8 +30,8 @@ public class ActionDetach extends ConfigurationAction{
     /**
       * Detaches appName from component target
       *
-      * @param appName name of the application
-      * @param target the target process compound to request deployment
+      * @param name name of the application
+      * @param targetP the target process compound to request deployment
       * @return Reference to detached component
       * @exception SmartFrogException failure in some part of the process
       * @throws RemoteException In case of network/rmi error

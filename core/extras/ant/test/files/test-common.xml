@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="test-common">
+<project name="test-common" default="teardown">
 
 
   <typedef 
