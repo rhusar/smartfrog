@@ -102,9 +102,6 @@
       value="http://ibiblio.org/maven/"/>
       
       
-      
-      
-      
       <!-- common directories are relative to the build file loaded-->
     <property name="src.dir" location="src"/>
     <property name="bin.dir" location="bin"/>
@@ -466,8 +463,13 @@
       <path refid="exec.classpath"/>
     </path>
   </target>
-  
-  <target name="declare-classpaths" depends="declare-run.classpath"  />
+
+  <!-- This target explicitly lists all dependencies so that if anyone starts overriding
+    declarations, it doesnt matter if they omit dependencies. After this target, all classpaths
+    are defined-->  
+  <target name="declare-classpaths" 
+    depends=
+     "declare-base.compile.classpath,declare-compile.classpath,declare-exec.classpath,declare-tests.compile.classpath,declare-tests.run.classpath,declare-tests.run.classpath,declare-run.classpath-no-tests,declare-run.classpath"/>
   
   <!-- ========================================================== -->
   <!-- cleanup target -->

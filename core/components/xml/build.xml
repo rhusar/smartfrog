@@ -82,8 +82,41 @@
       <path refid="base.compile.classpath"/>
       <path refid="libraries.path"/>
     </path>
+    <property name="compile.classpath.value" refid="exec.classpath"/>
+    <echo level="verbose">compile.classpath=${compile.classpath.value}</echo>
   </target>
   
+  <!-- this is the classpath for running the daemon -->
+  
+  <target name="declare-run.classpath" depends="init" >  
+    <path id="run.classpath">
+       <path refid="smartfrog.classpath"/>
+    </path>
+    <sf-tourl property="run.classpath.value">
+      <path refid="run.classpath"/>
+    </sf-tourl>
+    <echo level="verbose">
+        run.classpath=
+        ${run.classpath.value}</echo>    
+  </target>  
+  
+  <target name="declare-exec.classpath" depends="declare-compile.classpath" >  
+    <path id="exec.classpath">
+      <path refid="compile.classpath"/>
+      <pathelement location="${target.jar}"/>
+    </path>    
+    <property name="exec.classpath.value" refid="exec.classpath"/>
+    <echo level="verbose">exec.classpath=${exec.classpath.value}</echo>
+  </target>  
+  
+  <target name="declare-tests.run.classpath" depends="declare-tests.compile.classpath" >  
+    <path id="tests.run.classpath">
+      <path refid="tests.compile.classpath"/>
+      <pathelement location="${test.jar}"/>
+    </path>
+    <property name="tests.run.classpath.value" refid="tests.run.classpath"/>
+    <echo level="verbose">tests.run.classpath=${tests.run.classpath.value}</echo>
+  </target>  
   
   <!-- ========================================================== -->
   <!-- create a distro. 
@@ -106,8 +139,10 @@
       <sysproperty key="org.smartfrog.codebase"
         value="${codebase}"/>
       <!-- source files -->
-      <source dir="${test.src.dir}"
-        includes="org/smartfrog/services/xml/test/files/testDocument.sf">
+      <source dir="${test.src.dir}/org/smartfrog/services/xml/test/files/"
+        >
+        <include name="testDocument.sf" />
+        <include name="textNode.sf" />
       </source>
       <!-- test files -->
       <!--       <source dir="${test.src.dir}">
@@ -131,7 +166,7 @@
   <!-- set-->
   <!-- ========================================================== -->
   <target name="init-codebase" depends="init-deploy-properties"
-    description="deploy">
+    description="set up the codebase property">
     <sf-tourl property="codebase">
       <fileset file="${target.jar}"/>
       <fileset file="${test.jar}"/>
@@ -155,8 +190,8 @@
       <codebase url="${codebase}"/>
 
       <application name="${application.name}">
-              #include "/${deploy.sf}"
               sfCodeBase PROPERTY org.smartfrog.codebase;
+              #include "/${deploy.sf}"
       </application>
     </sf-deploy>
   </target>
@@ -201,7 +236,7 @@
           >
           <classpath>
             <path refid="tests.run.classpath"/>
-            <pathelement location="${test.classes.dir}"/>
+            <!-- <pathelement location="${test.classes.dir}"/> -->
           </classpath>
           <sysproperty key="org.smartfrog.codebase" value="${codebase}"/>
           <syspropertyset>
@@ -213,7 +248,7 @@
           <batchtest todir="${test.data.dir}" unless="testcase">
             <!-- bulk test case -->
             <fileset dir="${test.classes.dir}">
-              <include name="org/smartfrog/services/xml/test/*Test.class"/>
+              <include name="org/smartfrog/services/xml/test/**/*Test.class"/>
             </fileset>
           </batchtest>
         </sf-junit>

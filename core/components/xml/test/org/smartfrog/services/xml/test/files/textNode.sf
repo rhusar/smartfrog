@@ -29,9 +29,9 @@ HEWLETT-PACKARD FOR ANY REASON WHATSOEVER, RELATING TO THE SOFTWARE OR
 ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 
 */
+sfCodeBase PROPERTY org.smartfrog.codebase;
 
 #include "org/smartfrog/services/xml/components.sf"
-
 
 /**
  * test a document
@@ -40,14 +40,18 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 rootDoc extends XmlDocument {
 
     root extends XmlElement {
-        textElement extends XmlText {
-            text "this is a nested text element";
-        }
-        
+        textElement ROOT:textElement;
     }
 
 }
 
 
+textElement extends XmlTextNode {
+    text "this is a nested text element";
+}
+
+
 sfConfig extends rootDoc ;
+
+sfConfig extends textElement ;
     

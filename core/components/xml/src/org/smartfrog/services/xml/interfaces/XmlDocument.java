@@ -1,5 +1,8 @@
 package org.smartfrog.services.xml.interfaces;
 
+import java.rmi.RemoteException;
+import java.io.IOException;
+
 
 /**
  * XML Document
@@ -30,4 +33,22 @@ public interface XmlDocument extends XmlNode {
      * root node must be a Document Node. root extends Compulsory
      */
     static final String ATTR_ROOT = "root";
+
+    /**
+     * save a document to a file
+     * @param filename
+     * @param encoding
+     * @throws RemoteException
+     */
+    void save(String filename, String encoding) throws RemoteException,IOException ;
+
+    /**
+     * save a document to a file, utf-8 encoded
+     *
+     * @param filename
+     * @throws RemoteException
+     */
+    void save(String filename) throws RemoteException,
+            IOException;
+
 }
