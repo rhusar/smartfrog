@@ -136,8 +136,8 @@ public class CompilerSystemTest extends SmartfrogTestBase {
         deployExpectingException(FILES + "tcn28.sf",
                 "tcn28",
                 "SmartFrogDeploymentException",
-                "failed to deploy 'tcn28' component",
+                "FAILED when trying DEPLOY of 'tcn28'",
                 "SmartFrogResolutionException",
-                "Reference not found");
+                "Unresolved Reference: HERE sfClass ");
     }
 }
