@@ -51,8 +51,8 @@
         defaultsuffix="@sf.net"
         reportsuccess="false" 
         spamwhilebroken="true"
-        skipusers="true"
-        subjectprefix="[CC-SmartFrog]" 
+        skipusers="false"
+        subjectprefix="[Cruise:SmartFrog]" 
         >
         </email>
     </publishers>
