@@ -228,7 +228,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
                 result = super.sfDeployComponentDescription(name, parent, cmp, parms);
             }
 
-            sfRegister(result.sfResolveId(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME), result);
+  //          sfRegister(result.sfResolveId(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME), result);
 
             return result;
         } catch (Exception sfex){
@@ -541,6 +541,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
      */
     public synchronized Object sfRegister(Object name, Prim comp)
         throws SmartFrogException, RemoteException {
+
         if ((name != null) && (sfContext.containsKey(name))) {
             throw SmartFrogResolutionException.generic(sfCompleteNameSafe(),
                 "Name '" + name + "' already used");
@@ -566,6 +567,30 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
 
         return compName;
     }
+
+    /**
+     * DeRegisters a deployed component
+     *
+     * @param comp component to register
+     * @return true if child is removed successfully else false
+     *
+     * @throws SmartFrogException when component was not registered
+     * @throws RemoteException In case of network/rmi error
+     *
+     */
+    public synchronized boolean sfDeRegister(Prim comp)
+        throws SmartFrogException, RemoteException {
+        boolean success= true;
+        if (sfContext.contains(comp)){
+           sfContext.remove(sfContext.keyFor(comp));
+           success=true;
+        }
+        if (sfContainsChild(comp)){
+          success= sfRemoveChild(comp);
+        }
+        return success;
+    }
+
 
     /**
      * Tries to find an attribute in the local context. If the attribute is not
