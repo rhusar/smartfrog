@@ -189,6 +189,15 @@ public class CompoundImpl extends PrimImpl implements Compound {
     try {
         synchronized (this) {
         if (!sfIsTerminated) {
+            if (sflog().isTraceEnabled()) {
+                try {
+                    sflog().trace("Creating new Child for: "+
+                                  sfCompleteNameSafe()+", with description: "+
+                                  cmp.toString()+", and parameters: "+parms);
+                } catch (Exception ex1) {
+                    sflog().trace(ex1.toString());
+                }
+            }
             comp = sfDeployComponentDescription(name, this, cmp, parms);
             // it is now a child, so need to guard against double calling of lifecycle...
             if (sfIsDeployed) {
@@ -219,6 +228,13 @@ public class CompoundImpl extends PrimImpl implements Compound {
         }
         throw (SmartFrogDeploymentException) SmartFrogDeploymentException.forward(e);
     }
+    if (sflog().isTraceEnabled()) {
+        try {
+            sflog().trace("New child: "+comp.sfCompleteName()+ " created, deployed and started.");
+        } catch (Exception ex1) {
+            sflog().trace(ex1.toString());
+        }
+    }
     return comp;
     }
 
@@ -240,6 +256,15 @@ public class CompoundImpl extends PrimImpl implements Compound {
         throws RemoteException, SmartFrogDeploymentException {
         Prim comp = null;
         try {
+            if (sflog().isTraceEnabled()) {
+                try {
+                    sflog().trace("Creating new application from: "+
+                                  sfCompleteNameSafe()+", with description: "+
+                                  cmp.toString()+", and parameters: "+parms);
+                } catch (Exception ex1) {
+                    sflog().trace(ex1.toString());
+                }
+            }
             comp = sfDeployComponentDescription(null, null, cmp, parms);
 
             try {
@@ -265,6 +290,13 @@ public class CompoundImpl extends PrimImpl implements Compound {
                 }
             }
             throw (SmartFrogDeploymentException) SmartFrogDeploymentException.forward(e);
+        }
+        if (sflog().isTraceEnabled()) {
+            try {
+                sflog().trace("New App: "+comp.sfCompleteName()+ " created, deployed and started.");
+            } catch (Exception ex1) {
+                sflog().trace(ex1.toString());
+            }
         }
         return comp;
     }
