@@ -20,7 +20,6 @@
 package org.smartfrog.services.cddlm.api;
 
 import org.apache.axis.AxisFault;
-import org.apache.axis.message.MessageElement;
 import org.apache.axis.types.NCName;
 import org.apache.axis.types.URI;
 import org.apache.commons.logging.Log;
@@ -28,13 +27,6 @@ import org.apache.commons.logging.LogFactory;
 import org.smartfrog.services.axis.SmartFrogHostedEndpoint;
 
 import javax.xml.namespace.QName;
-import java.net.URL;
-import java.net.MalformedURLException;
-import java.io.Reader;
-import java.io.StringReader;
-
-import nu.xom.Document;
-import nu.xom.Builder;
 
 /**
  * created Aug 4, 2004 3:59:42 PM
@@ -167,47 +159,5 @@ public static AxisFault raiseFault(QName code,String message) {
             fault.initCause(thrown);
         }
         return fault;
-    }
-
-    protected AxisFault raiseUnsupportedLanguageFault(String message) {
-        return raiseFault(Constants.FAULT_UNSUPPORTED_LANGUAGE, message);
-    }
-
-    protected AxisFault raiseBadArgumentFault(String message) {
-        return raiseFault(Constants.FAULT_BAD_ARGUMENT, message);
-    }
-
-    protected URL makeURL(URI source) throws MalformedURLException {
-        return new URL(source.toString());
-    }
-
-    public  AxisFault raiseNestedFault(Exception e, String message) {
-        AxisFault fault=AxisFault.makeFault(e);
-        fault.setFaultReason(message);
-        fault.setFaultCode(Constants.FAULT_NESTED_EXCEPTION);
-        return fault;
-    }
-
-    /**
-     * parse a message fragment and turn it into a Xom document
-     * @param element
-     * @param message
-     * @return
-     * @throws org.apache.axis.AxisFault
-     */
-    protected Document parseMessageFragment(MessageElement element,
-                                      final String message) throws AxisFault {
-        Document doc;
-        try {
-            String subdoc=element.getAsString();
-            Builder builder = new Builder(false);
-            Reader reader = new StringReader(subdoc);
-            doc = builder.build(reader);
-            return doc;
-
-        } catch (Exception e) {
-            throw raiseNestedFault(e,message);
-
-        }
     }
 }

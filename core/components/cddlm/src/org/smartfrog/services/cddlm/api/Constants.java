@@ -62,10 +62,6 @@ public class Constants {
 
     public static final String CDDLM_FAULT_NAMESPACE = org.smartfrog.services.cddlm.cdl.Constants.SMARTFROG_NAMESPACE;
 
-    public static final QName FAULT_BAD_ARGUMENT = new QName(CDDLM_FAULT_NAMESPACE,"bad-argument");
-    public static final QName FAULT_NESTED_EXCEPTION = new QName(CDDLM_FAULT_NAMESPACE, "nested-exception");
-    public static final QName FAULT_APPLICATION_NOT_FOUND = new QName(CDDLM_FAULT_NAMESPACE, "no-such-application");
-    public static final QName FAULT_WRONG_APP_STATE = new QName(CDDLM_FAULT_NAMESPACE, "wrong-application-state");
-    public static final QName FAULT_UNSUPPORTED_LANGUAGE = new QName(CDDLM_FAULT_NAMESPACE, "unsupported-language");
-    public static final QName FAULT_NOTUNDERSTOOD = new QName(CDDLM_FAULT_NAMESPACE, "not-understood");
- }
+    public static final QName CDDLM_BAD_ARGUMENT = new QName(CDDLM_FAULT_NAMESPACE,"bad-argument");
+    public static final QName CDDLM_CAUGHT_EXCEPTION = new QName(CDDLM_FAULT_NAMESPACE, "caught-exception");
+}
