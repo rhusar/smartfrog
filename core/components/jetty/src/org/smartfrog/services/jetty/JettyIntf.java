@@ -34,4 +34,6 @@ public interface JettyIntf extends Remote {
     String JETTY_SERVER = "Jetty Server";
     
     String SERVER = "server";
+
+    String ENABLE_LOGGING="enableLogging";
 }

@@ -12,6 +12,7 @@ import org.smartfrog.sfcore.compound.CompoundImpl;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.services.jetty.JettyIntf;
+import org.smartfrog.services.jetty.JettyHelper;
 import org.mortbay.http.handler.ResourceHandler;
 
 
@@ -34,7 +35,8 @@ public class Servlet extends CompoundImpl implements ServletContextIntf {
     String mapfromPath;
     String maptoPath;
 
-   ProcessCompound process = null;
+
+    JettyHelper jettyHelper = new JettyHelper(this);
 
    HttpServer server = null;
    
@@ -53,10 +55,8 @@ public class Servlet extends CompoundImpl implements ServletContextIntf {
    public void sfDeploy() throws SmartFrogException, RemoteException {
        context =  new ServletHttpContext();
        sfAddAttribute(CONTEXT, context);
-       serverName = sfResolve(serverNameRef, serverName, true);
-       process = SFProcess.getProcessCompound();
-       server = (HttpServer)process.sfResolveId(serverName);
-       jettyhome = (String)process.sfResolveId(JettyIntf.JETTY_HOME);
+       server = jettyHelper.findJettyServer(true);
+       jettyhome = jettyHelper.findJettyHome();
        contextPath = sfResolve(contextPathRef, contextPath, true);
        resourceBase = sfResolve(resourceBaseRef, 
 		       jettyhome + resourceBase, true);

@@ -17,7 +17,7 @@ import java.rmi.RemoteException;
  */
 
 
-public class HTAccess extends PrimImpl implements HTAccessIntf {
+public class HTAccess extends HandlerImpl implements HTAccessIntf {
     protected Reference accessFileRef = new Reference(ACCESS_FILE);
 
     protected String accessFile = ".htaccess";
@@ -41,10 +41,6 @@ public class HTAccess extends PrimImpl implements HTAccessIntf {
         super.sfDeploy();
         accessFile = sfResolve(accessFileRef, accessFile, false);
         hthandler.setAccessFile(accessFile);
-        Prim parent = this.sfParent();
-        Prim grandParent = parent.sfParent();
-        ServletHttpContext cxt = (ServletHttpContext) grandParent.
-                sfResolveId(ServletContextIntf.CONTEXT);
-        cxt.addHandler(hthandler);
+        addHandler(hthandler);
     }
 }

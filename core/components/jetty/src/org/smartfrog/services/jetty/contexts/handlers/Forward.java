@@ -16,16 +16,15 @@ import org.mortbay.jetty.servlet.ServletHttpContext;
  */
 
 
-public class Forward extends PrimImpl implements ForwardIntf {
-    Reference mapfromPathRef = new Reference(MAP_FROM_PATH);
-    Reference maptoPathRef = new Reference(MAP_TO_PATH);
-   
-   String mapfromPath = "/forward/*";
-   String maptoPath = "/dump";
-   
-   ForwardHandler fwdhandler = new ForwardHandler();
-   ServletHttpContext a;   
-   
+public class Forward extends HandlerImpl  implements ForwardIntf {
+    private Reference mapfromPathRef = new Reference(MAP_FROM_PATH);
+    private Reference maptoPathRef = new Reference(MAP_TO_PATH);
+
+    private String mapfromPath = "/forward/*";
+    private String maptoPath = "/dump";
+
+    private ForwardHandler fwdhandler = new ForwardHandler();
+
   
   /** Standard RMI constructor */
    public Forward() throws RemoteException {
@@ -42,11 +41,7 @@ public class Forward extends PrimImpl implements ForwardIntf {
        
        mapfromPath = sfResolve(mapfromPathRef, mapfromPath, false);
        maptoPath = sfResolve(maptoPathRef, maptoPath, false);
-       fwdhandler.addForward(mapfromPath,maptoPath);
-       Prim parent = this.sfParent();
-       Prim grandParent = parent.sfParent();
-       ServletHttpContext cxt = (ServletHttpContext)grandParent.
-	       				sfResolveId(ServletContextIntf.CONTEXT);
-       cxt.addHandler(fwdhandler);  
+       fwdhandler.addForward(mapfromPath, maptoPath);
+       addHandler(fwdhandler);
    }
 }
