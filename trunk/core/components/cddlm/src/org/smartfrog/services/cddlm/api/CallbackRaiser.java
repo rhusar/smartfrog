@@ -19,8 +19,8 @@
  */
 package org.smartfrog.services.cddlm.api;
 
-import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.prim.Prim;
 
 /**
  * created Aug 5, 2004 3:01:45 PM

@@ -115,10 +115,18 @@
  
  <wsdl:message name="lookupApplicationResponse">
   <wsdl:part element="types:lookupApplicationResponse" name="response"/>
- </wsdl:message> 
- 
-  
- 
+ </wsdl:message>
+
+  <wsdl:message name="listApplicationsRequest">
+    <wsdl:part element="types:listApplicationsRequest" name="listApplications"/>
+  </wsdl:message>
+
+  <wsdl:message name="listApplicationsResponse">
+    <wsdl:part element="types:listApplicationsResponse" name="response"/>
+  </wsdl:message>
+
+
+
   <!-- ============================================================= -->
   <!-- begin WSDL operations -->
   <!-- ============================================================= -->
@@ -156,8 +164,13 @@
    <wsdl:input message="api:lookupApplicationRequest" name="lookupApplicationRequest"/>
    <wsdl:output message="api:lookupApplicationResponse" name="lookupApplicationResponse"/>
   </wsdl:operation>
-  
-  
+
+   <!--  lookup application -->
+   <wsdl:operation name="listApplications">
+     <wsdl:input message="api:listApplicationsRequest" name="listApplicationsRequest"/>
+     <wsdl:output message="api:listApplicationsResponse" name="listApplicationsResponse"/>
+   </wsdl:operation>
+
  </wsdl:portType>
  
  
@@ -220,7 +233,17 @@
     <wsdl:output name="lookupApplicationResponse">
       <wsdlsoap:body use="literal"/>
     </wsdl:output>
-  </wsdl:operation>  
+  </wsdl:operation>
+
+   <wsdl:operation name="listApplications">
+     <wsdlsoap:operation soapAction=""/>
+     <wsdl:input name="listApplicationsRequest">
+       <wsdlsoap:body use="literal"/>
+     </wsdl:input>
+     <wsdl:output name="listApplicationsResponse">
+       <wsdlsoap:body use="literal"/>
+     </wsdl:output>
+   </wsdl:operation>
 
  </wsdl:binding>
  
@@ -231,7 +254,8 @@
   <!-- ============================================================= -->
 
  
- <wsdl:service name="CDDLMDeploymentService">
+<!--
+<wsdl:service name="CDDLMDeploymentService">
   <wsdl:documentation >
     This is a sample CDDLM deployment service, and is only for testing
   </wsdl:documentation>
@@ -239,6 +263,7 @@
    <wsdlsoap:address location="http://localhost:5050/axis/services/cddlm"/>
   </wsdl:port>
  </wsdl:service>
+ -->
  
  
   <!-- ============================================================= -->

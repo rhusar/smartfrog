@@ -22,6 +22,8 @@ package org.smartfrog.services.cddlm.cdl;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
 
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerException;
@@ -42,6 +44,7 @@ public class CdlCatalog implements URIResolver,EntityResolver {
      */
     private ResourceLoader loader;
 
+    private static Log log=LogFactory.getLog(CdlCatalog.class);
 
     /**
      * where all the files really live
@@ -170,14 +173,21 @@ public class CdlCatalog implements URIResolver,EntityResolver {
      */
     public InputSource resolveEntity(String publicId, String systemId)
             throws SAXException, IOException {
+        if(log.isDebugEnabled()) {
+            log.debug("resolving "+systemId);
+        }
         String resource = lookup(systemId);
         if(resource==null) {
             String filename=getFilenameFromSystemID(systemId);
             if(filename!=null) {
                 return resolveEntity(publicId,filename);
             }
+            log.debug("no match");
             return null;
         } else {
+            if ( log.isDebugEnabled() ) {
+                log.debug("resolved to " + resource);
+            }
             return new InputSource(loader.loadResource(resource));
         }
 

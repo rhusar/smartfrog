@@ -19,18 +19,18 @@
  */
 package org.smartfrog.services.cddlm.api;
 
-import org.smartfrog.services.cddlm.generated.api.types.ServerStatusType;
-import org.smartfrog.services.cddlm.generated.api.types._serverStatusRequest;
-import org.smartfrog.services.cddlm.generated.api.types.ServerInformationType;
-import org.smartfrog.services.cddlm.generated.api.types.LanguageListType;
-import org.smartfrog.services.cddlm.generated.api.types.StaticServerStatusType;
-import org.smartfrog.services.cddlm.generated.api.types.DynamicServerStatusType;
-import org.smartfrog.services.cddlm.generated.api.types._languageListType_language;
-import org.smartfrog.services.cddlm.generated.api.types.CallbackListType;
-import org.smartfrog.services.axis.SmartFrogHostedEndpoint;
 import org.apache.axis.types.URI;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.smartfrog.services.axis.SmartFrogHostedEndpoint;
+import org.smartfrog.services.cddlm.generated.api.types.CallbackListType;
+import org.smartfrog.services.cddlm.generated.api.types.DynamicServerStatusType;
+import org.smartfrog.services.cddlm.generated.api.types.EmptyElementType;
+import org.smartfrog.services.cddlm.generated.api.types.LanguageListType;
+import org.smartfrog.services.cddlm.generated.api.types.ServerInformationType;
+import org.smartfrog.services.cddlm.generated.api.types.ServerStatusType;
+import org.smartfrog.services.cddlm.generated.api.types.StaticServerStatusType;
+import org.smartfrog.services.cddlm.generated.api.types._languageListType_language;
 
 import java.rmi.RemoteException;
 
@@ -38,7 +38,7 @@ import java.rmi.RemoteException;
  * created Aug 4, 2004 10:15:34 AM
  */
 
-public class ServerStatusProcessor  extends Processor {
+public class ServerStatusProcessor extends Processor {
 
     public ServerStatusProcessor(SmartFrogHostedEndpoint owner) {
         super(owner);
@@ -55,36 +55,10 @@ public class ServerStatusProcessor  extends Processor {
      * @return
      * @throws RemoteException
      */
-    public ServerStatusType serverStatus(_serverStatusRequest serverStatus)
+    public ServerStatusType serverStatus(EmptyElementType serverStatus)
             throws RemoteException {
-        ServerInformationType serverInfo = new ServerInformationType();
-        serverInfo.setName(Constants.PRODUCT_NAME);
-        serverInfo.setHome(makeURI(Constants.SMARTFROG_HOMEPAGE));
-        serverInfo.setDiagnostics(null);
-        serverInfo.setBuild(getBuildInfo());
-
-        //languages
-        //creating the array before sending
-        _languageListType_language[] list=new _languageListType_language[Constants.LANGUAGES.length/3];
-        int counter=0;
-        for(int i=0;i+2<Constants.LANGUAGES.length;i+=3) {
-            String name = Constants.LANGUAGES[i];
-            String version = Constants.LANGUAGES[i+1];
-            URI namespace = makeURI(Constants.LANGUAGES[i+2]);
-            list[counter++]=new _languageListType_language(name,
-                    version,
-                    namespace);
-        }
-        LanguageListType languages = new LanguageListType(list);
-
-        //callbacks are easy
-        CallbackListType callbacks=new CallbackListType(Constants.CALLBACKS);
-
-        StaticServerStatusType staticStatus;
-        staticStatus = new StaticServerStatusType(serverInfo,
-                languages,
-                callbacks);
-
+        StaticServerStatusType staticStatus = ServerInstance.currentInstance().
+                getStaticServerStatus();
 
         DynamicServerStatusType dynamicStatus = new DynamicServerStatusType();
         ServerStatusType status = new ServerStatusType(staticStatus,
@@ -93,7 +67,5 @@ public class ServerStatusProcessor  extends Processor {
         return status;
     }
 
-    private static String getBuildInfo() {
-        return Constants.CVS_INFO;
-    }
+
 }

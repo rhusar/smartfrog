@@ -19,11 +19,114 @@
  */
 package org.smartfrog.services.cddlm.api;
 
+import org.apache.axis.types.URI;
+import org.smartfrog.services.cddlm.generated.api.types.ApplicationReferenceListType;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
 /**
  * This class remembers what got deployed by whom. It retains weak references to running
  * apps, for easy purging.
  * created Aug 5, 2004 2:59:38 PM
  */
 
-public class JobRepository {
+public class JobRepository implements Map {
+
+    HashMap jobs= new HashMap();
+
+    public void clear() {
+        jobs.clear();
+    }
+
+    public boolean containsKey(Object key) {
+        return jobs.containsKey(key);
+    }
+
+    public boolean containsValue(Object value) {
+        return jobs.containsValue(value);
+    }
+
+    public Set entrySet() {
+        return jobs.entrySet();
+    }
+
+    public boolean equals(Object o) {
+        return jobs.equals(o);
+    }
+
+    public Object get(Object key) {
+        return jobs.get(key);
+    }
+
+    public int hashCode() {
+        return jobs.hashCode();
+    }
+
+    public boolean isEmpty() {
+        return jobs.isEmpty();
+    }
+
+    public Set keySet() {
+        return jobs.keySet();
+    }
+
+    public Object put(Object key, Object value) {
+        return jobs.put(key, value);
+    }
+
+    public void putAll(Map t) {
+        jobs.putAll(t);
+    }
+
+    public Object remove(Object key) {
+        return jobs.remove(key);
+    }
+
+    public int size() {
+        return jobs.size();
+    }
+
+    public Collection values() {
+        return jobs.values();
+    }
+
+    public void add(JobState job) {
+        put(job.getUri().toString(), job);
+    }
+
+    /**
+     * lookup by uri
+     * @param uri job uri
+     * @return
+     */
+    public JobState lookup(URI uri) {
+        return (JobState)get(uri.toString());
+    }
+
+    public void remove(URI uri) {
+        remove(uri.toString());
+    }
+
+    public Iterator iterator() {
+        return values().iterator();
+    }
+
+    /**
+     * list all the jobs
+     * @return
+     */
+    public URI[] listJobs() {
+        URI[] uriList = new URI[size()];
+        Iterator it = iterator();
+        int counter = 0;
+        while ( it.hasNext() ) {
+            JobState jobState = (JobState) it.next();
+            uriList[counter++] = jobState.getUri();
+        }
+        return uriList;
+    }
 }

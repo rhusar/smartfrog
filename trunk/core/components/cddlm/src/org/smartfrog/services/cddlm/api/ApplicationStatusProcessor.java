@@ -19,9 +19,9 @@
  */
 package org.smartfrog.services.cddlm.api;
 
+import org.smartfrog.services.axis.SmartFrogHostedEndpoint;
 import org.smartfrog.services.cddlm.generated.api.types.ApplicationStatusType;
 import org.smartfrog.services.cddlm.generated.api.types._applicationStatusRequest;
-import org.smartfrog.services.axis.SmartFrogHostedEndpoint;
 
 import java.rmi.RemoteException;
 
