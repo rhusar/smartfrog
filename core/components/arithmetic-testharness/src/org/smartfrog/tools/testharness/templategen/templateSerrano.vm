@@ -171,7 +171,7 @@ Scheduler extends SchedulerCompound {
         
         doStopApps extends TestRunCommand  { 
           processName "stopApps";
-          startAtt_01 "-cp";
+         /* startAtt_01 "-cp";
           startAtt_02 ATTRIB classPath;
           startAtt_03a "-Dorg.smartfrog.sfcore.processcompound.sfRootLocatorPort=";
           startAtt_03b ATTRIB port;
@@ -183,13 +183,24 @@ Scheduler extends SchedulerCompound {
           startAtt_06a "-Dorg.smartfrog.sfcore.security.propFile=";
           startAtt_06b ATTRIB secPropFile;  
 #end
+		  */
+   	      startAtt_01 "-cp";
+          startAtt_02 ATTRIB classPath;
+          startAtt_03a "-Dorg.smartfrog.sfcore.processcompound.sfRootLocatorPort=";
+          startAtt_03b ATTRIB port;
           startAtt_07 "org.smartfrog.SFSystem";
+          startAtt_08 "-a";
+          startAtt_09 "sfConfig:TERMINATE:::localhost:";//ATTRIB sfProcessHost;
+          startAtt_12 "-e";
+          startAtt_13 "";
+		 
+		 /* startAtt_07 "org.smartfrog.SFSystem";
           startAtt_08 "-h";
           startAtt_09 "localhost";//ATTRIB sfProcessHost;
           startAtt_10 "-t";
           startAtt_11 "sfConfig";
           startAtt_12 "-e";
-          startAtt_13 "";
+          startAtt_13 "";*/
         }                
       }
     }
