@@ -129,7 +129,8 @@ public class DeployTest extends TaskTestBase {
      */
     public void testDeployFile() {
         expectBuildExceptionContaining("testDeployFile", "expected timeout", "Timeout");
-        assertInLog("rootProcess failed to deploy 'app' component");
+        //assertInLog("rootProcess failed to deploy 'app' component");
+        assertInLog("FAILED when trying DEPLOY of 'app'");
         assertInLog("Reference not found, Unresolved Reference");
     }
 
