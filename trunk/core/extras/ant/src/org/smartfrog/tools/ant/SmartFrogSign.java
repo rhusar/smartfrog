@@ -52,6 +52,7 @@ public class SmartFrogSign extends TaskBase {
     private SecurityHolder securityHolder = new SecurityHolder();
     public static final String ERROR_NO_SECURITY_SETTINGS = "No security settings provided";
     public static final String ERROR_COULD_NOT_APPLY_SETTINGS = "Could not apply security settings with ";
+    public static final String MESSAGE_EMPTY_SECURITY = "Empty security: signing skipped";
 
 
     /**
@@ -91,7 +92,15 @@ public class SmartFrogSign extends TaskBase {
      *
      * @param file
      */
-    public void setFile(File file) {
+    public void setJar(File file) {
+        signer.setJar(file);
+    }
+
+    /**
+     * name the jar to sign
+     * @param file
+     */
+    public void setSignedJar(File file) {
         signer.setSignedjar(file);
     }
 
@@ -109,6 +118,15 @@ public class SmartFrogSign extends TaskBase {
      */
     public void setVerbose(boolean verbose) {
         signer.setVerbose(verbose);
+    }
+
+    /**
+     * flag to control whether the presence of a signature file means a JAR is signed
+     * and so does not need resigning
+     * @param lazy
+     */
+    public void setLazy(boolean lazy) {
+        signer.setLazy(true);
     }
 
     /**
@@ -136,6 +154,9 @@ public class SmartFrogSign extends TaskBase {
         Security sec = securityHolder.getSecurity(this);
         if (sec == null) {
             throw new BuildException(ERROR_NO_SECURITY_SETTINGS);
+        }
+        if(sec.isEmpty()) {
+            log(MESSAGE_EMPTY_SECURITY);
         }
         try {
             sec.applySecuritySettings(signer);

@@ -47,6 +47,7 @@ public class SecurityHolder {
      * reference to security
      */
     private Reference securityRef;
+    public static final String ERROR_MULTIPLE_DECLARATIONS = "Multiple security declarations";
 
     /**
      * set a reference to the security types
@@ -64,7 +65,7 @@ public class SecurityHolder {
      */
     public void addSecurity(Security security) {
         if (this.security != null || this.securityRef != null) {
-            throw new BuildException("Multiple security settings");
+            throw new BuildException(ERROR_MULTIPLE_DECLARATIONS);
         }
         this.security = security;
     }
@@ -77,7 +78,7 @@ public class SecurityHolder {
      */
     public Security getSecurity(Task owner) {
         if (security != null) {
-            return security;
+            return security.resolve();
         }
         if (securityRef != null) {
             return Security.resolveReference(owner.getProject(), securityRef);
