@@ -139,6 +139,9 @@ AxisServiceConfiguration extends AxisService {
     axisServiceConfigurationSchema extends AxisServiceConfigurationSchema;
 }
 
+
+
+
 /**
 
  in server-config.wsdd, a section like
@@ -348,3 +351,13 @@ WrappedDescriptor extends WsddDescriptor {
 TypeMappingElementSchema extends Schema {
 
 }
+
+
+/*
+<service name="AdminService" provider="java:MSG">
+  <parameter name="className" value="org.apache.axis.util.Admin"/>
+  <parameter name="allowedMethods" value="*"/>
+  <parameter name="enableRemoteAdmin" value="true"/>
+</service>
+*/
+

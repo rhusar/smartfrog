@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <wsdl:definitions 
-	targetNamespace="http://smartfrog.org/cddlm" 
-	xmlns:api="http://smartfrog.org/cddlm" 
+	targetNamespace="http://gridforum.org/cddlm/serviceAPI/2004/07/30" 
+	xmlns:api="http://gridforum.org/cddlm/serviceAPI/2004/07/30" 
 	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" 
 	xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" 
   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
@@ -91,7 +91,7 @@
       
 
   <xsd:schema elementFormDefault="qualified" 
-    targetNamespace="http://smartfrog.org/cddlm" 
+    targetNamespace="http://gridforum.org/cddlm/serviceAPI/2004/07/30" 
     >
 <!--     
   <xsd:import 
@@ -122,27 +122,24 @@
       <xsd:enumeration value="ws-eventing"/>
     </xsd:restriction>
   </xsd:simpleType>
+ 
 
-  <xsd:simpleType name="languageEnum">
+  <xsd:simpleType name="lifecycleStateEnum">
     <xsd:annotation>
       <xsd:documentation>
-      Enumeration of supported callback language types. Any
-      unexpected type constitutes an error and should be
-      flagged. 
-        -smartfrog
-        -cdl
-      Commentary: we could make this self describing from the name
-      of the deployment descriptor
-        
+      Enumeration of lifecycle states.
       </xsd:documentation>
     </xsd:annotation>
     <xsd:restriction base="xsd:string">
-      <xsd:enumeration value="smartfrog"/>
-      <xsd:enumeration value="cdl"/>
+      <xsd:enumeration value="null"/>
+      <xsd:enumeration value="instantiated"/>
+      <xsd:enumeration value="initialized"/>
+      <xsd:enumeration value="running"/>
+      <xsd:enumeration value="failed"/>
+      <xsd:enumeration value="terminated"/>
     </xsd:restriction>
-  </xsd:simpleType>
+  </xsd:simpleType>  
   
-
   <!-- ============================================================= -->
   <!-- naming rules for application -->
   <!-- ============================================================= -->
@@ -225,37 +222,17 @@
     attribute
   -->  
   <xsd:complexType name="deploymentDescriptorType">
-    <xsd:sequence>
-      <xsd:any  processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
-    </xsd:sequence>
-  </xsd:complexType>
-
-<!--   
-  <xsd:complexType name="cdlDeploymentDescriptorType" type="cdl:cdlDocumentType">
-  </xsd:complexType>  
-  
- 
-  <xsd:complexType name="smartFrogDeploymentDescriptorType">
-      <xsd:annotation>
+    <xsd:annotation>
       <xsd:documentation>
-        SmartFrog deployment Descriptor. 
-        Contains the payload as a string, the language version as an attribute
+      A deployment descriptor is either arbitrary XML, or a URL to arbitrary XML
       </xsd:documentation>
-    </xsd:annotation>  
-      <xsd:element name="smartfrog" type="xsd:string" 
-        minOccurs="0" maxOccurs="1"/>
-    <xsd:attribute name="version" type="xsd:string" use="required"/>
+    </xsd:annotation> 
+    <xsd:choice>
+      <xsd:element name="source" type="xsd:anyURI"/>
+      <xsd:any  processContents="lax" minOccurs="0" maxOccurs="1" namespace="##other"/>
+    </xsd:choice>    
   </xsd:complexType>
 
-  <xsd:complexType name="deploymentDescriptorType">
-    <xsd:choice>
-      <xsd:element name="remoteURL" type="api:remoteDescriptorType"/>
-      <xsd:element name="smartfrog" type="api:smartFrogDeploymentDescriptorType"/>
-      <xsd:element ref="cdl:cdl"/>
-      <xsd:any  processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
-    </xsd:choice>
-  </xsd:complexType>  
--->
 
   <!-- TODO: incorporate JSDL into the specification -->
   <xsd:complexType name="jsdlType">
@@ -270,23 +247,7 @@
       </xsd:documentation>
     </xsd:annotation>    
     <xsd:sequence>
-      <xsd:any  processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
-    </xsd:sequence>
-  </xsd:complexType>
-  
-  <xsd:complexType name="statusType">
-    <xsd:annotation>
-      <xsd:documentation>
-        This is the server status response. If the endpoint returns with anything
-        then the system is partially alive; a SOAPFault is always a sign of failure
-        from the perspective of the far end or the transport. 
-        Interpretation of a server status into a proper health metric is left to
-        tools of the caller's choice.
-      </xsd:documentation>
-    </xsd:annotation>  
-    <xsd:sequence>
-        <!-- namespace="##other" -->
-      <xsd:any  processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:any  processContents="lax" minOccurs="0" maxOccurs="unbounded" namespace="##other"/>
     </xsd:sequence>
   </xsd:complexType>
   
@@ -334,7 +295,127 @@
   </xsd:complexType>  
   
   
+  <!-- ============================================================= -->
+  <!-- Server status -->
+  <!-- this section includes various lists of server information -->
+  <!-- which are returned in the server status response -->
+  <!-- ============================================================= -->
       
+  <xsd:complexType name="languageListType">
+    <xsd:annotation>
+      <xsd:documentation>
+        This is the list of supported languages
+      </xsd:documentation>
+    </xsd:annotation>        
+    <xsd:sequence>
+      <xsd:element name="language" minOccurs="1" maxOccurs="unbounded">
+        <xsd:annotation>
+          <xsd:documentation>
+            A language is defined by a name and version, and a namespace.
+            It is the namespace itself that defines the language; the name
+            and version are for the benefit of humans.
+          </xsd:documentation>
+        </xsd:annotation>            
+        <xsd:sequence>
+          <xsd:element name="name" type="xsd:string"/>
+          <xsd:element name="version" type="xsd:string" />
+          <xsd:element name="namespace" type="xsd:anyURI" />
+        </xsd:sequence>
+      </xsd:element>
+    </xsd:sequence>  
+  </xsd:complexType>
+
+  <xsd:complexType name="callbackListType">
+    <xsd:annotation>
+      <xsd:documentation>
+        This is the list of supported callback mechanisms
+      </xsd:documentation>
+    </xsd:annotation>        
+    <xsd:sequence>
+      <xsd:element name="callback" minOccurs="1" maxOccurs="unbounded" 
+          type="xsd:string">
+      </xsd:element>
+    </xsd:sequence>  
+  </xsd:complexType>  
+  
+  <xsd:complexType name="staticServerStatusType">
+    <xsd:annotation>
+      <xsd:documentation>
+        Static status should be constant for the life of
+        this instance of the service, while dynamic information is viewed as transient.
+      </xsd:documentation>
+    </xsd:annotation>  
+    <xsd:sequence>
+      <element name="languages" type="api:languageListType" />
+      <element name="callbacks" type="api:callbackListType" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="dynamicServerStatusType">
+    <xsd:annotation>
+      <xsd:documentation>
+        Dynamic status contents are undefined; service is free to provide
+        any information they like. 
+        This could be declared as a WS-RF property. 
+      </xsd:documentation>
+    </xsd:annotation>  
+    <xsd:sequence>
+        <!-- -->
+      <xsd:any  processContents="lax" minOccurs="0" maxOccurs="unbounded" namespace="##other"/>
+    </xsd:sequence>
+  </xsd:complexType>
+    
+  
+  <xsd:complexType name="serverStatusType">
+    <xsd:annotation>
+      <xsd:documentation>
+        This is the server status response. If the endpoint returns with anything
+        then the system is partially alive; a SOAPFault is always a sign of failure
+        from the perspective of the far end or the transport. 
+        It consists of static status and 
+        dynamic status. Static status should beconstant for the life of
+        this instance of the service, while dynamic information is viewed as transient.
+        Interpretation of a server status into a proper health metric is left to
+        tools of the caller's choice. 
+      </xsd:documentation>
+    </xsd:annotation>  
+    <xsd:sequence>
+      <element name="static" type="api:StaticServerStatusType"/>
+      <element name="dynamic" type="api:dynamicServerStatusType" minoccurs="0"/>
+    </xsd:sequence>
+  </xsd:complexType>
+      
+  <!-- ============================================================= -->
+  <!-- application status -->
+  <!-- ============================================================= -->
+  
+  
+  <xsd:complexType name="applicationStatusType">
+    <xsd:annotation>
+      <xsd:documentation>
+        This is the application status response. If the endpoint returns with anything
+        then the system is partially alive; a SOAPFault is always a sign of failure
+        from the perspective of the far end or the transport. 
+        It consists of static status and 
+        dynamic status. Static status should beconstant for the life of
+        this instance of the service, while dynamic information is viewed as transient.
+        Interpretation of a server status into a proper health metric is left to
+        tools of the caller's choice. 
+      </xsd:documentation>
+    </xsd:annotation>  
+    <xsd:sequence>
+      <element name="state" type="api:lifecycleStateEnum"/>
+      <element name="stateInfo" type="xsd:string"/>
+      <element name="extendedState" type="xsd:any" minOccurs="0" processContents="lax"/>
+    </xsd:sequence>
+  </xsd:complexType>
+        
+  <!--
+  	<element name="state" type="cdl:LifecycleState"/>
+    <element name="stateInfo" type="xsd:string"/>
+    <element name="extendedState" type="xsd:any"/>
+  -->
+  
   <!-- ============================================================= -->
   <!-- Requests and responses. These are the complex types that
   get sent/received as messages-->
@@ -364,7 +445,6 @@
       <xsd:element name="descriptor" type="api:deploymentDescriptorType"/>
       <xsd:element name="callbackType" type="api:callbackEnum"/>
       <xsd:element name="callbackAddress" type="api:callbackAddressType"/>
-      <xsd:element name="hostname" type="xsd:string"/>
       <xsd:element name="synchronous" type="xsd:boolean">
         <xsd:annotation>
           <xsd:documentation>
@@ -387,6 +467,7 @@
         <xsd:annotation>
           <xsd:documentation>
           This is for optional deployment options. 
+          hostname: name of a host to deploy onto, if not this one
           </xsd:documentation>
         </xsd:annotation>  
       </xsd:element>
@@ -431,37 +512,14 @@
      <xsd:sequence>
       <xsd:element name="application" type="api:applicationNameOrReferenceType"/>      
       <xsd:element name="reason" type="xsd:string"/>
-      <xsd:element name="synchronous" type="xsd:boolean"/>
      </xsd:sequence>
     </xsd:complexType>   
    </xsd:element>   
 
-   <xsd:element name="undeployResponse" type="api:statusType" >
+   <!-- there isnt really much to say here -->
+   <xsd:element name="undeployResponse" type="xsd:string" >
    </xsd:element>      
-   
-   <xsd:element name="listLanguagesRequest">
-      <xsd:annotation>
-        <xsd:documentation>
-        This is an empty message
-        </xsd:documentation>
-      </xsd:annotation>     
-    <xsd:complexType/>
-   </xsd:element>
-   
-   
-   <xsd:element name="listLanguagesResponse">
-    <xsd:complexType>
-      <xsd:annotation>
-        <xsd:documentation>
-        The list of languages that is supported
-        </xsd:documentation>
-      </xsd:annotation>      
-     <xsd:sequence>
-      <xsd:element name="listLanguagesReturn" type="xsd:string"
-        maxOccurs="unbounded" minOccurs="1"/>
-     </xsd:sequence>
-    </xsd:complexType>
-   </xsd:element>
+  
    
    <xsd:element name="serverStatusRequest">
       <xsd:annotation>
@@ -472,7 +530,7 @@
     <xsd:complexType/>
    </xsd:element>   
 
-   <xsd:element name="serverStatusResponse" type="api:statusType" >
+   <xsd:element name="serverStatusResponse" type="api:serverStatusType" >
    </xsd:element>   
 
    <xsd:element name="applicationStatusRequest">
@@ -483,12 +541,12 @@
       </xsd:annotation>     
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="application" type="api:applicationNameOrReferenceType"/>
+        <xsd:element name="application" type="api:applicationReferenceType"/>
       </xsd:sequence> 
     </xsd:complexType>
    </xsd:element>   
   
-   <xsd:element name="applicationStatusResponse" type="api:statusType" >
+   <xsd:element name="applicationStatusResponse" type="api:applicationStatusType" >
    </xsd:element>      
 
    <xsd:element name="lookupApplicationRequest">
@@ -543,14 +601,6 @@
   <wsdl:part element="api:undeployResponse" name="response"/>
  </wsdl:message> 
  
- <wsdl:message name="listLanguagesRequest">
-  <wsdl:part element="api:listLanguagesRequest" name="request"/>
- </wsdl:message>
-
- <wsdl:message name="listLanguagesResponse">
-  <wsdl:part element="api:listLanguagesResponse" name="languages"/>
- </wsdl:message>
- 
  <wsdl:message name="serverStatusRequest">
   <wsdl:part element="api:serverStatusRequest" name="serverStatus"/>
  </wsdl:message>
@@ -588,13 +638,7 @@
    <wsdl:input message="api:deployRequest" name="deployRequest"/>
    <wsdl:output message="api:deployResponse" name="deployResponse"/>
   </wsdl:operation>
-  
-  <!-- list languages -->
-  <wsdl:operation name="listLanguages">
-   <wsdl:input message="api:listLanguagesRequest" name="listLanguagesRequest"/>
-   <wsdl:output message="api:listLanguagesResponse" name="listLanguagesResponse"/>
-  </wsdl:operation>
-  
+
   <!-- undeploy -->
   <wsdl:operation name="undeploy">
    <wsdl:input message="api:undeployRequest" name="undeployRequest"/>
@@ -650,16 +694,6 @@
       <wsdlsoap:body use="literal"/>
     </wsdl:input>
     <wsdl:output name="undeployResponse">
-      <wsdlsoap:body use="literal"/>
-    </wsdl:output>
-  </wsdl:operation>
-
-  <wsdl:operation name="listLanguages">
-    <wsdlsoap:operation soapAction=""/>
-    <wsdl:input name="listLanguagesRequest">
-      <wsdlsoap:body use="literal"/>
-    </wsdl:input>
-    <wsdl:output name="listLanguagesResponse">
       <wsdlsoap:body use="literal"/>
     </wsdl:output>
   </wsdl:operation>
