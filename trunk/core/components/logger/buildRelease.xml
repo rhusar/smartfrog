@@ -186,7 +186,7 @@ To Be Written
     <zip destfile="releases/${Name.System}.${version}.${DSTAMP}_ALL.zip">
        <zipfileset dir="." prefix="${Name.System}.${version}">
         <include name="bin/**"/>
-        <include name="docs/logger_readme*"/>
+        <include name="doc/logger_readme*"/>
         <include name="lib/**"/>
         <include name="src/**"/>
         <include name="build.xml"/>
@@ -250,7 +250,7 @@ To Be Written
 		<include name="bin/**/*.sf"/>
         <include name="bin/**/*.bat"/>
         <include name="bin/**/*.ini"/>
-		<include name="docs/logger_readme*"/>
+		<include name="doc/logger_readme*"/>
         <include name="lib/**"/>
         <include name="src/**"/>
         <include name="build.xml"/>
