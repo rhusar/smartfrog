@@ -606,10 +606,11 @@ public class ComponentDescriptionImpl implements Serializable, Cloneable,
      * @param String language to select appropriate parser
      * @param Vector parser phases to apply. If the vector is null, then all
      *    the default phases are applied
-     * @param Rererence ref reference to resolve in Description. If ref is null
-     *        'sfConfig' reference is used by default.
+     * @param Rererence ref reference to resolve in ComponentDescription.
+     *        If ref is null the whole result ComponentDescription is returned.
      *
-     * @return process compound description 'phases' Resolved
+     * @return process the selected ComponentDescription after compound
+     *         description 'phases' are resolved
      *
      * @throws RemoteException In case of network/rmi error
      * @throws SmartFrogRuntimeException In case of SmartFrog system error
@@ -628,14 +629,12 @@ public class ComponentDescriptionImpl implements Serializable, Cloneable,
         }
         try {
             if (phases==null) {
-                descr.sfResolvePhases();
+               descr = descr.sfResolvePhases();
 
             } else {
-                descr.sfResolvePhases(phases);
+               descr = descr.sfResolvePhases(phases);
             }
 
-            if (ref==null)
-                ref = new Reference(SmartFrogCoreKeys.SF_CONFIG);
         } catch (SmartFrogException sfex) {
             throw sfex;
         } catch (RemoteException rex) {
@@ -645,12 +644,16 @@ public class ComponentDescriptionImpl implements Serializable, Cloneable,
                                          formatMessage(
                 MSG_ERR_RESOLVE_PHASE), thr);
         }
-
-        Object obj = descr.sfAsComponentDescription().sfResolve(ref);
+        Object obj=null;
+        if (ref !=null) {
+            obj = descr.sfAsComponentDescription().sfResolve(ref);
+        } else {
+            obj = descr.sfAsComponentDescription();
+        }
         if (!(obj instanceof ComponentDescription)){
            throw new SmartFrogResolutionException(null,null,"Error resolving '"
                  +ref.toString()+"' in "+ url
-                 + ". The result is not a ComponentDescription, result: "
+                 + ". The result is not a ComponentDescription, resolved to: "
                  +obj.toString()
                  +" ("+obj.getClass().getName()+")" );
         }
