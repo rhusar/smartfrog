@@ -138,11 +138,12 @@ public class RunTest extends TaskTestBase {
     }
 
     public void testMissingOptionalPropertyFile() {
-        expectDeployed("testMissingOptionalPropertyFile", "app");
-        executeTarget("testMissingOptionalPropertyFile");
+        expectDeployed("testMissingOptionalPropertyFile", "testMissingOptionalPropertyFile");
     }
 
     public void testValidPropertyFile() {
-        expectDeployed("testValidPropertyFile","app");
+        expectDeployed("testValidPropertyFile","EqualsTest");
     }
+
+
 }

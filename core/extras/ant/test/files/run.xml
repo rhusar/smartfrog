@@ -10,6 +10,8 @@
 ant -lib ../../build/dist/lib/smartfrog-tasks.jar -lib ../../../../smartfrog/dist/lib/smartfrog.jar -f run.xml testNoParams
 
 ant -lib ../../build/dist/lib/smartfrog-tasks.jar -lib ../../../../smartfrog/dist/lib/smartfrog.jar -lib ../../../../smartfrog/dist/lib/sfExamples.jar -f run.xml testResource
+
+ant -lib ../../build/dist/lib/smartfrog-tasks.jar -lib ../../../../smartfrog/dist/lib/smartfrog.jar -lib ../../../../smartfrog/dist/lib/sfServices.jar -f run.xml testMissingOptionalPropertyFile
 </description>
 
     <import file="test-common.xml" />
@@ -119,7 +121,14 @@ sfConfig extends Server{
   <target name="testMissingOptionalPropertyFile">
     <sf-run timeout="${timeout}">
       <propertyFile file="missing" optional="true"/>
-      <application name="app" file="valid.sf"/>
+      <application name="testMissingOptionalPropertyFile">
+#include "/org/smartfrog/services/assertions/components.sf"
+
+sfConfig extends Assert {
+        equalsString1 "test";
+        equalsString2 "test";
+}
+      </application>
     </sf-run>
   </target>
 
