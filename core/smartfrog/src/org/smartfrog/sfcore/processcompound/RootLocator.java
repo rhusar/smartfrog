@@ -64,7 +64,10 @@ public interface RootLocator {
 
 
     /**
-     * Gets the root process compound for a given host.
+     * Gets the root process compound for a given host. If
+     * the passed host is null the root process compound for the local host is
+     * looked up.
+
      *
      * @param host host to get root compound for
      *
