@@ -1,3 +1,5 @@
+2004-Sep-20 New: filesystem/replacevar component
+
 release 3.04.005_beta -> CVS
 ---------------------
 2004-Aug-25 New: modified buildRelease.xml to include javacc.
