@@ -37,7 +37,6 @@
       <currentbuildstatuspublisher file="../artifacts/currentbuildstatus.txt"/>
 
       <artifactspublisher
-        file="./cruisecontrol.log"
         dir="./smartfrog/dist"
         dest="../artifacts" />
 
