@@ -105,12 +105,29 @@ public class SFProcess implements MessageKeys {
      *
      * @throws Exception if failed to set root locator
      */
-    public static void setRootLocator(RootLocator c) throws Exception {
+    public synchronized static void setRootLocator(RootLocator c) throws Exception {
         if (rootLocator != null) {
             throw new Exception("Root locator already set");
         }
         rootLocator = c;
     }
+
+
+    /**
+     * Sets the single instance of process compound for this process.
+     * The ProcessCompound can only be set once.
+     *
+     * @param c root locator to use.
+     *
+     * @throws Exception if failed to set process compound
+     */
+    public synchronized static void setProcessCompound (ProcessCompound pc) throws Exception {
+        if (processCompound != null) {
+            throw new Exception("ProcessCompound already set");
+        }
+        processCompound = pc;
+    }
+
 
     /**
      * Gets the root locator for this process. If the root locator is not set a
@@ -359,7 +376,9 @@ public class SFProcess implements MessageKeys {
               (ComponentDescription) getProcessCompoundDescription().copy();
 
         try {
-            processCompound = (ProcessCompound) startComponent(deployComponent(descr));
+            // A process compound sets processcompound in SFProcess at the end of its
+            // sfStart lifecycle method! Setting it twice will result in a exception!
+            startComponent(deployComponent(descr));
         } catch (Exception e) {
             throw SmartFrogDeploymentException.forward(e);
         }
