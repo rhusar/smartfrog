@@ -49,7 +49,7 @@ public class PropertyReferencePart extends HereReferencePart {
      * @return stringified reference part
      */
     public String toString() {
-        return PROPERTY + ' ' + super.toString();
+        return PROPERTY + ' ' + value.toString();
     }
 
     /**
