@@ -24,7 +24,8 @@ For more information: www.smartfrog.org
   <property name="defaultCAPassword" value="pleasechange2"/>
 
 <!-- CA related properties -->
-
+  <property name="dist.testCA.dir" location="testCA"/>
+  <property name="disttestCA" value="${dist.testCA.dir}"/>
 <!-- dist.dir and others are set by surrounding build.xml -->
 <!--   <property name="disttestCA" value="${dist.testCA.dir}"/>
   <property name="dist.private.dir" value="${dist.dir}/${private}"/>
@@ -32,12 +33,12 @@ For more information: www.smartfrog.org
   <property name="distlib" value="${dist.lib.dir}"/>
  -->
   <property name="CAFromPrivate" value="ca"/>
-  
-  <!-- REVISIT if the private dir is already defined, this assigment is harmless. 
+
+  <!-- REVISIT if the private dir is already defined, this assigment is harmless.
     if it is unassigned, it takes.-->
   <property name="dist.private.dir" location="private"/>
   <property name="dist.lib.dir" location="lib"/>
-  
+
   <property name="CA" location="${dist.private.dir}/${CAFromPrivate}"/>
   <property name="CAsubdir" value="demoCA"/>
 
@@ -243,7 +244,7 @@ For more information: www.smartfrog.org
       <param name="jarname" value="${dist.lib.dir}/sfServices.jar"/>
       <param name="signedjarname" value="${dist.signedLib.dir}/sfServices.jar"/>
   </antcall>
-    
+
   <!-- don't sign those considered insecure, or not required -->
   <!--
   -->
