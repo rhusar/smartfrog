@@ -19,16 +19,27 @@
  */
 package org.smartfrog.services.cddlm.api;
 
-import org.apache.axis.types.URI;
-import org.apache.axis.AxisFault;
-import org.apache.axis.utils.NetworkUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.smartfrog.services.cddlm.generated.api.types.ApplicationStatusType;
+import org.smartfrog.services.cddlm.generated.api.types._applicationStatusRequest;
+import org.smartfrog.services.axis.SmartFrogHostedEndpoint;
+
+import java.rmi.RemoteException;
 
 /**
- * created Aug 4, 2004 10:22:41 AM
+ * created Aug 4, 2004 4:28:35 PM
  */
 
-public class EndpointHelper {
+public class ApplicationStatusProcessor extends Processor {
+    public ApplicationStatusProcessor(SmartFrogHostedEndpoint owner) {
+        super(owner);
+    }
 
+    public ApplicationStatusType applicationStatus(_applicationStatusRequest applicationStatus)
+            throws RemoteException {
+        org.apache.axis.types.URI reference = applicationStatus.getApplication();
+        String application=extractApplicationFromURI(reference);
+        assert !isEmpty(application);
+        throwNotImplemented();
+        return null;
+    }
 }

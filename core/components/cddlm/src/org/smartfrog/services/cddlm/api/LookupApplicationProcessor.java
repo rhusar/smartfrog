@@ -19,16 +19,32 @@
  */
 package org.smartfrog.services.cddlm.api;
 
-import org.apache.axis.types.URI;
-import org.apache.axis.AxisFault;
-import org.apache.axis.utils.NetworkUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.axis.types.URI;
+import org.smartfrog.services.axis.SmartFrogHostedEndpoint;
+import org.smartfrog.services.cddlm.generated.api.types._lookupApplicationRequest;
+
+import java.rmi.RemoteException;
 
 /**
- * created Aug 4, 2004 10:22:41 AM
+ * created Aug 4, 2004 4:26:22 PM
  */
 
-public class EndpointHelper {
+public class LookupApplicationProcessor  extends Processor {
+    /**
+     * log
+     */
+    private static final Log log = LogFactory.getLog(DeployProcessor.class);
+
+    public LookupApplicationProcessor(SmartFrogHostedEndpoint owner) {
+        super(owner);
+    }
+
+    public URI lookupApplication(_lookupApplicationRequest lookupApplication)
+            throws RemoteException {
+        org.apache.axis.types.NCName appname = lookupApplication.getApplication();
+        return makeURI(appname.toString());
+    }
 
 }

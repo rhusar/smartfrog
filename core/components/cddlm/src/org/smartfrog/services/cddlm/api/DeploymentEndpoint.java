@@ -19,22 +19,19 @@
  */
 package org.smartfrog.services.cddlm.api;
 
-import org.smartfrog.services.cddlm.generated.api.types._deployResponse;
-import org.smartfrog.services.cddlm.generated.api.types._deployRequest;
-import org.smartfrog.services.cddlm.generated.api.types._undeployRequest;
-import org.smartfrog.services.cddlm.generated.api.types.ServerStatusType;
-import org.smartfrog.services.cddlm.generated.api.types._serverStatusRequest;
-import org.smartfrog.services.cddlm.generated.api.types.ApplicationStatusType;
-import org.smartfrog.services.cddlm.generated.api.types._applicationStatusRequest;
-import org.smartfrog.services.cddlm.generated.api.types._lookupApplicationRequest;
-import org.smartfrog.services.cddlm.generated.api.types.StaticServerStatusType;
-import org.smartfrog.services.cddlm.generated.api.types.DynamicServerStatusType;
-import org.smartfrog.services.cddlm.generated.api.types.ServerInformationType;
-import org.smartfrog.services.cddlm.generated.api.types.LanguageListType;
-import org.apache.axis.types.URI;
 import org.apache.axis.AxisFault;
+import org.apache.axis.types.URI;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.smartfrog.services.axis.SmartFrogHostedEndpoint;
+import org.smartfrog.services.cddlm.generated.api.types.ApplicationStatusType;
+import org.smartfrog.services.cddlm.generated.api.types.ServerStatusType;
+import org.smartfrog.services.cddlm.generated.api.types._applicationStatusRequest;
+import org.smartfrog.services.cddlm.generated.api.types._deployRequest;
+import org.smartfrog.services.cddlm.generated.api.types._deployResponse;
+import org.smartfrog.services.cddlm.generated.api.types._lookupApplicationRequest;
+import org.smartfrog.services.cddlm.generated.api.types._serverStatusRequest;
+import org.smartfrog.services.cddlm.generated.api.types._undeployRequest;
 
 import java.rmi.RemoteException;
 
@@ -42,7 +39,7 @@ import java.rmi.RemoteException;
  * created Aug 4, 2004 9:49:56 AM
  */
 
-public class DeploymentEndpoint implements org.smartfrog.services.cddlm.generated.api.endpoint.DeploymentEndpoint {
+public class DeploymentEndpoint extends SmartFrogHostedEndpoint implements org.smartfrog.services.cddlm.generated.api.endpoint.DeploymentEndpoint {
 
     /**
      * log for everything other than operations
@@ -54,43 +51,62 @@ public class DeploymentEndpoint implements org.smartfrog.services.cddlm.generate
      */
     private Log operations = LogFactory.getLog(this.getClass().getName()+".OPERATIONS");
 
-    private ServerStatusHandler serverStatusHandler=new ServerStatusHandler();
+
 
     public _deployResponse deploy(_deployRequest deploy)
             throws RemoteException {
-        throwNotImplemented();
-        return null;
+        try {
+            operations.info("entering deploy");
+            DeployProcessor processor = new DeployProcessor(this);
+            return processor.deploy(deploy);
+        } finally {
+            operations.info("exiting deploy");
+        }
     }
 
     public boolean undeploy(_undeployRequest undeploy) throws RemoteException {
-        throwNotImplemented();
-        return false;
+        try {
+            operations.info("entering undeploy");
+            UndeployProcessor processor = new UndeployProcessor(this);
+            return processor.undeploy(undeploy);
+        } finally {
+            operations.info("exiting undeploy");
+        }
     }
 
     public ServerStatusType serverStatus(_serverStatusRequest serverStatus)
             throws RemoteException {
-        operations.info("entering serverStatus");
-        return  serverStatusHandler.serverStatus(serverStatus);
+        try {
+            operations.info("entering serverStatus");
+            ServerStatusProcessor serverStatusProcessor = new ServerStatusProcessor(this);
+            return  serverStatusProcessor.serverStatus(serverStatus);
+        }
+        finally {
+            operations.info("exiting serverStatus");
+        }
     }
 
     public ApplicationStatusType applicationStatus(
             _applicationStatusRequest applicationStatus)
             throws RemoteException {
-        throwNotImplemented();
-        return null;
+        try {
+            operations.info("entering lookupApplication");
+            ApplicationStatusProcessor processor = new ApplicationStatusProcessor(this);
+            return processor.applicationStatus(applicationStatus);
+        } finally {
+            operations.info("exiting lookupApplication");
+        }
     }
 
     public URI lookupApplication(_lookupApplicationRequest lookupApplication)
             throws RemoteException {
-        throwNotImplemented();
-        return null;
+        try {
+            operations.info("entering lookupApplication");
+            LookupApplicationProcessor processor = new LookupApplicationProcessor(this);
+            return processor.lookupApplication(lookupApplication);
+        } finally {
+            operations.info("exiting lookupApplication");
+        }
     }
 
-    /**
-     * indicate that something is not implemented by throwing a fault
-     * @throws AxisFault with an error message
-     */
-    private void throwNotImplemented() throws AxisFault {
-        throw new AxisFault("This feature is not yet implemented");
-    }
 }
