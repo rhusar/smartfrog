@@ -199,7 +199,7 @@ public class Schema extends BasePredicate implements PhaseAction {
      * @param foundClassToValidate object which class has to be validated against
      * the predicate
      * @return if the class found is complaint with schema or not.
-     * @throws java.lang.ClassNotFoundException
+     * @throws java.lang.ClassNotFoundExceptionx
      */
     protected boolean isValidClass (Object schemaClass, Object foundClassToValidate)
        throws java.lang.ClassNotFoundException, SmartFrogException {
@@ -214,7 +214,7 @@ public class Schema extends BasePredicate implements PhaseAction {
             }
         } else{
             throw new SmartFrogException (
-                      " wrong type in sfClass schema definition. Only String or Vector [String,..] are allowed");
+                      " wrong type in Class schema attribute. Only String or Vector [String,..] are allowed");
         }
         return false;
     }
