@@ -57,7 +57,13 @@ public class Servlet extends CompoundImpl implements ServletContextIntf {
        jettyhome = jettyHelper.findJettyHome();
        contextPath = sfResolve(contextPathRef, contextPath, true);
        resourceBase = sfResolve(resourceBaseRef,resourceBase, true);
+       resourceBase = (resourceBase.startsWith("/")
+            ? jettyhome.concat(resourceBase) : resourceBase);
        classPath = sfResolve(classPathRef, classPath, false);
+       if ( classPath != null) {
+       classPath = (classPath.startsWith("/")
+            ? jettyhome.concat(classPath) : classPath);
+       }
        super.sfDeploy();      
        }
 
