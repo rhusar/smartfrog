@@ -26,13 +26,22 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JComponent;
 import javax.swing.JMenuItem;
+
 import javax.swing.JPopupMenu;
+import javax.swing.JDialog;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JTree;
 import javax.swing.tree.TreePath;
+import java.awt.Frame;
 
 import org.smartfrog.sfcore.prim.TerminationRecord;
 
 import org.smartfrog.sfcore.prim.Prim;
+import java.rmi.Remote;
+import java.rmi.RemoteException;
+
+
 
 /**
  * Popup Tree UI component.
@@ -63,6 +72,9 @@ public class PopUpTree extends JComponent implements ActionListener {
     /** Item for Tree popup menu - detach. */
     JMenuItem menuItemDetach = new JMenuItem();
 
+    /** Item for Tree popup menu - detach. */
+    JMenuItem menuItemDumpContext = new JMenuItem();
+
     /**
      *  Constructs PopUpTree object
      */
@@ -83,6 +95,7 @@ public class PopUpTree extends JComponent implements ActionListener {
         menuItemTerminateNormal.setText("Terminate Component - NORMAL");
         menuItemTerminateAbnormal.setText("Terminate Component - ABNORMAL");
         menuItemDTerminate.setText("Detach and Terminate Comp");
+        menuItemDumpContext.setText("Dump Component Context");
 
         // Tree: options
         //      popupTree.add(menuItemAddAttribute);
@@ -93,6 +106,8 @@ public class PopUpTree extends JComponent implements ActionListener {
         popupTree.add(menuItemDTerminate);
         popupTree.add(menuItemDetach);
 
+        popupTree.add(menuItemDumpContext);
+
         // Add action listeners for tree popup
         menuItemAddAttribute.addActionListener(this);
 
@@ -102,6 +117,8 @@ public class PopUpTree extends JComponent implements ActionListener {
         menuItemTerminateAbnormal.addActionListener(this);
         menuItemDTerminate.addActionListener(this);
         menuItemDetach.addActionListener(this);
+
+        menuItemDumpContext.addActionListener(this);
     }
 
     /**
@@ -168,7 +185,17 @@ public class PopUpTree extends JComponent implements ActionListener {
             detach((((DeployEntry) (tpath.getLastPathComponent())).getEntry()));
 
             // Entry pointed in the tree
+        } else if (source == menuItemDumpContext) {
+            try {
+                //@Todo show this info in a more elegant way!
+                Prim objPrim = ((Prim)(((DeployEntry)(tpath.getLastPathComponent())).getEntry()));
+                String message = objPrim.sfContext().toString().replace(',','\n');
+                modalDialog("Context info for "+ objPrim.sfCompleteName(), message, "", source);
+
+            } catch (RemoteException ex) {
+            }
         }
+
     }
 
     /**
@@ -216,7 +243,7 @@ public class PopUpTree extends JComponent implements ActionListener {
      *  Adds a feature to the Attrib attribute of the PopUpTree object
      */
     void addAttrib() {
-        System.out.println("ADD ATTRIBUTE! To Complete!!!!!!!!!!1");
+        System.out.println("ADD ATTRIBUTE! @Todo Complete!!!!!!!!!!1");
     }
 
     /**
@@ -261,4 +288,32 @@ public class PopUpTree extends JComponent implements ActionListener {
             // To do: automatic Refresh ;-)
         }
     }
+
+
+    /**
+     * Prepares option dialog box
+     *
+     *@param  title    title displayed on the dialog box
+     *@param  message  message to be displayed
+     *@param defaultValue default value
+     */
+    private void modalDialog(String title, String message,
+            String defaultValue, Object source) {
+        /**
+         *  Scrollpane to hold the display's screen.
+         */
+        JScrollPane scrollPane = new JScrollPane();
+        /**
+         *  Display's screen object.
+         */
+        JTextArea screen = new JTextArea(message);
+        Frame parent = new Frame();
+        JDialog pane = new JDialog(parent,title,true);
+        pane.setSize(300,400);
+        pane.setResizable(true);
+        pane.getContentPane().add(scrollPane);
+        scrollPane.getViewport().add(screen, null);
+        pane.show(true);
+    }
+
 }
