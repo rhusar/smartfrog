@@ -199,7 +199,7 @@ public class FunctionsSystemTest extends SmartfrogTestBase {
             Prim appl = deployExpectingSuccess(FILES + "tcp17.sf", "tcp17");
             assertNotNull(appl);
             String actual = (String)(appl.sfResolve("today"));
-            assertContains(expected, actual);
+            assertContains(expected, actual.substring(1, 8));
         }catch (Exception ex) {
             fail(ex.getMessage());
         }
