@@ -26,37 +26,47 @@ import org.mortbay.util.MultiException;
 public class SFJetty extends CompoundImpl implements JettyIntf {
 
     protected Reference jettyhomeRef = new Reference(JETTY_HOME);
-    Reference serverNameRef = new Reference(SERVER);
- 
-  /**  Jetty home path */
-  protected String jettyhome;
+    protected Reference serverNameRef = new Reference(SERVER);
 
-  String serverName = null;
-  
-  /** The Http server */
-  HttpServer server;
+    /**
+     * Jetty home path
+     */
+    protected String jettyhome;
 
-  /** Standard RMI constructor */
-  public SFJetty() throws RemoteException {
-    super();
-  }
+    protected String serverName = null;
+
+    protected JettyHelper jettyHelper = new JettyHelper(this);
+
+    /**
+     * The Http server
+     */
+    protected HttpServer server;
+
+    protected boolean enableLogging=false;
+
+    /**
+     * Standard RMI constructor
+     */
+    public SFJetty() throws RemoteException {
+        super();
+    }
 
   /**
-   * Deploy the SFJetty component
+   * Deploy the SFJetty component and publish the information
    * @exception  SmartFrogException In case of error while deploying  
    * @exception  RemoteException In case of network/rmi error  
    */
   public void sfDeploy() throws SmartFrogException, RemoteException {
     try {
-	   server = new HttpServer();
-	   serverName = sfResolve(serverNameRef, serverName, true);
-	   ProcessCompound process = SFProcess.getProcessCompound();
-	   process.sfAddAttribute(serverName, server);
-	   jettyhome = sfResolve(jettyhomeRef,jettyhome,true);
-           process.sfAddAttribute(jettyhome, jettyhome);
-	   configureHttpServer();
-           super.sfDeploy();
-           
+        super.sfDeploy();
+        server = new HttpServer();
+        serverName = sfResolve(serverNameRef, serverName, true);
+        jettyHelper.cacheJettyServer(serverName, server);
+        jettyhome = sfResolve(jettyhomeRef, jettyhome, true);
+        jettyHelper.cacheJettyHome(jettyhome);
+        enableLogging=sfResolve(ENABLE_LOGGING,enableLogging,true);
+        configureHttpServer();
+
     } catch (Exception ex){ 
        throw SmartFrogDeploymentException.forward(ex);
     }
@@ -81,26 +91,22 @@ public class SFJetty extends CompoundImpl implements JettyIntf {
   /**
    * Configure the http server
    */
-  public void configureHttpServer() throws SmartFrogException{
+  public void configureHttpServer() throws SmartFrogException {
       try {
-          /*
-          server.addRealm(new HashUserRealm("Jetty Demo Realm", jettyhome
-                  + "/etc/demoRealm.properties"));
-          server.addRealm(new HashUserRealm("Example Form-Based Authentication Area",
-                  jettyhome + "/etc/examplesRealm.properties"));
-          */
-          NCSARequestLog requestlog = new NCSARequestLog();
-          requestlog.setFilename(jettyhome +
-                  "/logs/yyyy_mm_dd.request.log");
-          requestlog.setBuffered(false);
-          requestlog.setRetainDays(90);
-          requestlog.setAppend(true);
-          requestlog.setExtended(true);
-          requestlog.setLogTimeZone("GMT");
-          String[] paths = {"/jetty/images/*",
-                            "/demo/images/*", "*.css"};
-          requestlog.setIgnorePaths(paths);
-          server.setRequestLog(requestlog);
+          if(enableLogging) {
+              NCSARequestLog requestlog = new NCSARequestLog();
+              requestlog.setFilename(jettyhome +
+                      "/logs/yyyy_mm_dd.request.log");
+              requestlog.setBuffered(false);
+              requestlog.setRetainDays(90);
+              requestlog.setAppend(true);
+              requestlog.setExtended(true);
+              requestlog.setLogTimeZone("GMT");
+              String[] paths = {"/jetty/images/*",
+                                "/demo/images/*", "*.css"};
+              requestlog.setIgnorePaths(paths);
+              server.setRequestLog(requestlog);
+          }
       } catch (Exception ex) {
           throw SmartFrogException.forward(ex);
       }

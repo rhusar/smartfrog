@@ -8,6 +8,7 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.services.jetty.JettyHelper;
 import org.mortbay.jetty.servlet.ServletHttpContext;
 import org.mortbay.jetty.servlet.ServletHolder;
 
@@ -31,6 +32,7 @@ public class Servlet extends PrimImpl implements JettyServlet {
     Vector initParams = null;
 
     ServletHolder holder = new ServletHolder();
+    JettyHelper jettyHelper = new JettyHelper(this);
 
     /**
      * Standard RMI constructor
@@ -52,10 +54,10 @@ public class Servlet extends PrimImpl implements JettyServlet {
             pathSpec = sfResolve(pathSpecRef, pathSpec, true);
             className = sfResolve(classNameRef, className, true);
             initParams = sfResolve(initParamsRef, initParams, false);
-            Prim parent = this.sfParent();
-            Prim grandParent = parent.sfParent();
-            ServletHttpContext cxt = (ServletHttpContext) grandParent.
-                    sfResolveId("Context");
+
+            ServletHttpContext cxt;
+            cxt=jettyHelper.getServletContext(true);
+
             holder = cxt.addServlet(name, pathSpec, className);
             if (initParams != null) {
                 for (Enumeration en = initParams.elements();

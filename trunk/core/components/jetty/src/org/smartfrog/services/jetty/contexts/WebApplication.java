@@ -8,9 +8,11 @@ import org.mortbay.jetty.servlet.WebApplicationContext;
 import org.mortbay.jetty.servlet.AbstractSessionManager;
 import org.mortbay.jetty.servlet.ServletHandler;
 import org.smartfrog.services.jetty.JettyIntf;
+import org.smartfrog.services.jetty.JettyHelper;
 import org.smartfrog.services.filesystem.FileImpl;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.Logger;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
@@ -28,15 +30,13 @@ public class WebApplication extends PrimImpl implements JettyWebApplicationConte
     Reference contextPathRef = new Reference(CONTEXT_PATH);
     Reference webAppRef = new Reference(WEBAPP);
     Reference requestIdRef = new Reference(REQUEST_ID);
-    Reference serverNameRef = new Reference(SERVER);
-    
+    JettyHelper jettyHelper=new JettyHelper(this);
    String jettyhome = ".";
    String contextPath = "/";
    String webApp = null;
    String serverName = null;
    boolean requestId = false;
 
-   ProcessCompound process = null;
 
    HttpServer server = null;
    
@@ -54,11 +54,8 @@ public class WebApplication extends PrimImpl implements JettyWebApplicationConte
    */ 
    public void sfDeploy() throws SmartFrogException, RemoteException {
        super.sfDeploy();
-       serverName = sfResolve(serverNameRef, serverName, true);
-       process = SFProcess.getProcessCompound();
-       //server = (HttpServer)process.sfResolveId(JettyIntf.JETTY_SERVER); 
-       server = (HttpServer)process.sfResolveId(serverName); 
-       jettyhome = (String)process.sfResolveId(JettyIntf.JETTY_HOME);
+       server = jettyHelper.findJettyServer(true);
+       jettyhome = jettyHelper.findJettyHome();
        /* no, doesnt work w/ resolveID
        jettyhome = FileImpl.lookupAbsolutePath(this, JettyIntf.JETTY_HOME,
                null,
@@ -69,12 +66,17 @@ public class WebApplication extends PrimImpl implements JettyWebApplicationConte
        contextPath = sfResolve(contextPathRef, contextPath, true);
        //fetch the webapp reference by doing filename resolution
        //if the file exists, it does not need to be anywhere
-       webApp = sfResolve(webAppRef, jettyhome + webApp, true);
-      /* FileImpl.lookupAbsolutePath(this,webAppRef,null,new File(jettyhome),true,PlatformHelper.getLocalPlatform());
+       webApp = sfResolve(webAppRef, webApp, false);
+       //no webapp? look for the warfile
+       if(webApp==null) {
+           webApp = FileImpl.lookupAbsolutePath(this, WARFILE, null, null, true,null);
+       }
+       //sanity check
        File webappFile=new File(webApp);
        if(!webappFile.exists()) {
-
-       }*/
+            throw new SmartFrogDeploymentException("Web application "+webappFile+" was not found");
+       }
+       //request ID
        requestId = sfResolve(requestIdRef, requestId, false);
    }
 

@@ -5,15 +5,46 @@
 //liveness and webserver
 #include "/org/smartfrog/services/www/components.sf"
 
+/*
+ * The jetty components consist of
+ * Listeners for incoming requests
+*/
+
 /**
- * This component is a minimal http server.
+ * This component is a jetty http server, with
+ * the standard listeners and contexts
  */ 
 
-HttpServer extends Compound {
+HttpServer extends CoreJettyServer {
    sfClass "org.smartfrog.services.jetty.SFJetty";
    listeners extends Listeners; //optional
    contexts extends Contexts;   //optional
-   
+   //if logging is enabled, then it logs to jettyhome/logs.
+   enableLogging true;
+   port 8080;
+}
+
+/**
+ * schema for the base jetty server extends
+ * base webserver schema
+ */
+CoreJettySchema extends WebServerSchema {
+    server extends OptionalString;
+    jettyhome extends String;
+    enableLogging extends Boolean;
+    serverHost extends String;
+}
+
+/**
+ * this is jetty with no running listeners or contexts.
+ * It is implemented as a compound; you can add anything underneath it and they
+ * will be deployed.
+ */
+CoreJettyServer extends Compound {
+   sfClass "org.smartfrog.services.jetty.SFJetty";
+   coreJettySchema extends CoreJettySchema;
+   enableLogging false;
+   serverHost "localhost";
 }
 
 /**
@@ -55,8 +86,13 @@ JettyServletContext extends Compound {
  * and a a path to its home directory
  */
 JettyWebApplicationSchema extends Schema {
+    //where to deploy under the server
     contextPath extends String;
-    webApp extends String;
+
+    //webapp is a name of an app or a directory
+    webApp extends OptionalString;
+    //warFile can also refer to a file reference
+    warFile extends Optional;
     server extends String;
 }
 
@@ -268,13 +304,19 @@ Listeners extends Compound {
    Listener2 ATTRIB listener2;
 }
 
-
+/**
+ * this listens on a direct port
+ */
 listener1 extends JettyListener {
- listenerPort 8080;
+ listenerPort PARENT:PARENT:port;
  serverHost PARENT:PARENT:serverHost;
  server PARENT:PARENT:server;
 }
 
+/**
+ * this fields requests handed off from Apache HTTPD
+ * this is not a secure protocol, and the port must not be externally visible.
+ */
 listener2 extends JettyListener {
  sfClass "org.smartfrog.services.jetty.listeners.AJPlistener";
  listenerPort 8009;
