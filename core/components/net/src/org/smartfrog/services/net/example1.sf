@@ -18,26 +18,18 @@ For more information: www.smartfrog.org
 
 */
 
-package org.smartfrog.services.net;
+#include "org/smartfrog/components.sf"
+#include "org/smartfrog/services/net/telnet.sf"
 
-import java.rmi.RemoteException;
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.common.SmartFrogException;
-
-/**
- * SmartFrog Telnet client Interface. 
- * @author Ashish Awasthi
- */ 
-public interface Telnet extends Prim {
-    
-    //SmartFrog attributes 
-    public static String HOST = "host";
-    public static String PORT = "port";
-    public static String USER = "username";
-    public static String TELNET_PASSWORD = "telnetPassword";
-    public static String COMMANDS = "commands";
-    public static String TIMEOUT = "timeout";
-    public static String SHELL_PROMPT = "shellPrompt";
-    public static String LOG_FILE = "logFile";
-    public static String CMDS_FAILURE_MSGS = "cmdsFailureMsgs";
+sfConfig extends Compound {
+    sampleTelnet extends TelnetSession {
+        Telnet:commands ["cd /home/ashish/cvs",
+                         "mkdir may17"
+                        ];
+        Telnet:cmdsFailureMsgs ["No such file or directory", 
+                                "cannot create directory `may17': File exists"
+                                ];
+        // optional log file for the telnet session
+        Telnet:logFile "spy.log";
+    }
 }

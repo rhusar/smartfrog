@@ -37,6 +37,10 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.services.utils.generic.OutputStreamIntf;
+import org.smartfrog.services.utils.generic.StreamGobbler;
+import org.smartfrog.services.utils.generic.StreamIntf;
+
 /**
  * SmartFrog implementation of telnet component. It uses apache commons net 
  * libraries 1.2.
@@ -55,6 +59,7 @@ public class TelnetImpl extends PrimImpl implements Telnet,
     private String shellPrompt = "$";
     private int port = DEFAULT_PORT;
     private Vector commandsList = null;
+    private Vector cmdsFailureMsgs = null;
     private TelnetClient client = null;
     private OutputStream opStream = null;
     private InputStream inpStream = null;
@@ -87,10 +92,11 @@ public class TelnetImpl extends PrimImpl implements Telnet,
     }
     
     /**
-     * Sends or retrieve files over FTP using attributes specified in the 
-     * SmartFrog description of the component.
+     * Connects to remote host and executes commands.
      *
-     * @throws SmartFrogException in case of error in sending email
+     * @throws SmartFrogException in case of error in connecting to remote host
+     * ,executing commands or command output is same as failure message 
+     * provided in the component desciption. 
      * @throws RemoteException in case of network/emi error
      */ 
     public synchronized void sfStart() throws SmartFrogException, 
@@ -140,7 +146,11 @@ public class TelnetImpl extends PrimImpl implements Telnet,
             }
             
             client.registerSpyStream(fout);
-            // Execute commands
+            boolean checkCmdExecStatus = false;
+            if ((cmdsFailureMsgs != null) && (!cmdsFailureMsgs.isEmpty())) {
+                checkCmdExecStatus = true;
+            }
+                // Execute commands
             for (int i = 0 ; i <commandsList.size() ; i++ ) {
                 String cmd = (String) commandsList.get(i);
                 cmd = cmd + "\n";
@@ -151,10 +161,21 @@ public class TelnetImpl extends PrimImpl implements Telnet,
                 }catch (InterruptedException e) {
                     //ignore
                 }
+                // check if command was successfully executed
+                if(checkCmdExecStatus) {
+                String errMsg = (String) cmdsFailureMsgs.get(i);
+                    boolean execError = waitForString(inpStream, errMsg,
+                                                         timeout);
+                    if (execError) {
+                        // throw exception
+                        throw new SmartFrogTelnetException(cmd, errMsg);
+                    }
+                }
             }
-            client.stopSpyStream();
         }catch (Exception e){
             throw SmartFrogLifecycleException.forward(e);
+        }finally {
+                client.stopSpyStream();
         }
     }
     
@@ -188,6 +209,7 @@ public class TelnetImpl extends PrimImpl implements Telnet,
         pwdProvider = (PasswordProvider) sfResolve(pwdProviderRef);
         password = pwdProvider.getPassword();
         commandsList = sfResolve(COMMANDS, commandsList, true);
+        cmdsFailureMsgs = sfResolve(CMDS_FAILURE_MSGS, cmdsFailureMsgs, false);
 
         //optional attributes
         port = sfResolve(PORT, port, false);
@@ -248,7 +270,6 @@ public class TelnetImpl extends PrimImpl implements Telnet,
                 Thread.sleep(500);
             }
         }
-
         if(readbytes.indexOf(end) >= 0) {
             return true;
         }

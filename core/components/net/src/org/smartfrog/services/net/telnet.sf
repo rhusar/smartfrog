@@ -40,9 +40,11 @@ TelnetSession extends Compound {
         username "ashish";
 
         // write comma separated commands in the order of execution
-        commands ["pwd",
-                  "mkdir may14"
-                 ];
+        commands [];
+        // expected failure message for the commands 
+        // Note: error message should be in same order of commands
+        cmdsFailureMsgs [];
+
         // reference to password provider
         passwordProvider LAZY PARENT:PasswordProvider;
 
