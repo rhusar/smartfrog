@@ -252,21 +252,21 @@ public class CompoundImpl extends PrimImpl implements Compound {
                                 throws SmartFrogDeploymentException, RemoteException {
         super.sfDeployWith(parent, cxt);
 
-	try { // if an exception is thrown in the super call - the termination is already handled
-	    for (Enumeration e = sfContext().keys(); e.hasMoreElements();) {
-		Object key = e.nextElement();
-		Object elem = sfContext.get(key);
-		
+    try { // if an exception is thrown in the super call - the termination is already handled
+        for (Enumeration e = sfContext().keys(); e.hasMoreElements();) {
+        Object key = e.nextElement();
+        Object elem = sfContext.get(key);
+
                 if ((elem instanceof ComponentDescription) &&
-		    (((ComponentDescription) elem).getEager())) {
+            (((ComponentDescription) elem).getEager())) {
                     sfDeployComponentDescription(key, this,
-						 (ComponentDescription) elem, null);
+                         (ComponentDescription) elem, null);
                 }
-	    }
-	} catch (Exception sfex) {
-	    new TerminatorThread(this, sfex, null).quietly().run();
+        }
+    } catch (Exception sfex) {
+        new TerminatorThread(this, sfex, null).quietly().run();
             throw (SmartFrogDeploymentException)SmartFrogDeploymentException.forward (sfex);
-	}
+    }
     }
 
     /**
@@ -279,15 +279,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         try {
-            Object st = sfResolveId(SmartFrogCoreKeys.SF_SYNC_TERMINATE);
-
-            if (st == null) {
-                sfSyncTerminate = false;
-            } else if (st instanceof String) {
-                sfSyncTerminate = Boolean.valueOf((String) st).booleanValue();
-            } else {
-                sfSyncTerminate = ((Boolean) st).booleanValue();
-            }
+            sfSyncTerminate = sfResolve(SmartFrogCoreKeys.SF_SYNC_TERMINATE,false,false);
 
             super.sfDeploy();
 
@@ -357,6 +349,12 @@ public class CompoundImpl extends PrimImpl implements Compound {
      * @param status termination status
      */
     public synchronized void sfTerminateWith(TerminationRecord status) {
+        //Reevalution of sfSynchTermite to get runtime changes.
+        try {
+            sfSyncTerminate = sfResolve(SmartFrogCoreKeys.SF_SYNC_TERMINATE, sfSyncTerminate, false);
+        } catch (Exception sfrex){
+          //Ignore
+        }
         if (sfSyncTerminate) {
             sfSyncTerminateWith(status);
         } else {
@@ -368,31 +366,49 @@ public class CompoundImpl extends PrimImpl implements Compound {
 
     /**
      * Iterates over children telling each of them to terminate quietly with
-     * given status.
+     * given status. It iterates from the last one in the context to the first
+     * one.
      *
      * @param status status to terminate with
      */
     protected void sfSyncTerminateWith(TerminationRecord status) {
-        for (Enumeration e = sfChildren(); e.hasMoreElements();)
-            try {
-                ((Prim) e.nextElement()).sfTerminateQuietlyWith(status);
-            } catch (Exception ex) {
-                // ignore
-            }
+
+        Vector children = new Vector();
+        for (Enumeration e = sfChildren(); e.hasMoreElements();) {
+            children.add((Prim)e.nextElement());
+        }
+        for (int i= children.size(); i>0; ) {
+          i--;
+          try {
+              ((Prim)(children.remove(i))).sfTerminateQuietlyWith(status);
+          } catch (Exception ex) {
+              //@TODO: Log
+            // ignore
+          }
+        }
+
     }
 
     /**
      * Terminate children asynchronously using a seperate thread for each call.
+     * It iterates from the last one in the context to the first one.
      *
      * @param status status to terminate with
      */
     protected void sfASyncTerminateWith(TerminationRecord status) {
-        for (Enumeration e = sfChildren(); e.hasMoreElements();)
-            try {
-                new TerminateCall((Prim) e.nextElement(), status);
-            } catch (Exception ex) {
-                // ignore
-            }
+        Vector children = new Vector();
+        for (Enumeration e = sfChildren(); e.hasMoreElements();) {
+            children.add((Prim)e.nextElement());
+        }
+        for (int i= children.size(); i>0; ) {
+          i--;
+          try {
+                new TerminateCall((Prim)(children.remove(i)), status);
+          } catch (Exception ex) {
+              //@TODO: Log
+            // ignore
+          }
+        }
     }
 
     /**
@@ -440,7 +456,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
      *
      * @exception SmartFrogLivenessException liveness failed
      */
-    public void sfPing(Object source) throws SmartFrogLivenessException, 
+    public void sfPing(Object source) throws SmartFrogLivenessException,
                                                             RemoteException {
         super.sfPing(source);
 
