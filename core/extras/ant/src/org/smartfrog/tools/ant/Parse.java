@@ -170,6 +170,7 @@ public class Parse extends TaskBase implements SysPropertyAdder {
         }
 
         //now save them to a file.
+        //NB: ignore the deprecation, as this is the only 1.6 compatible tactic
         File tempFile = FileUtils.newFileUtils().createTempFile("parse",
                 ".txt", null);
         PrintWriter out = null;
