@@ -164,8 +164,6 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
      * @exception  RemoteException  In case of network/rmi error
      */
     public RunShellImpl() throws RemoteException {
-        helper=new ComponentHelper(this);
-        log=helper.getLogger();
     }
 
     /**
@@ -179,6 +177,8 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
     RemoteException {
         try {
             super.sfDeploy();
+            helper=new ComponentHelper(this);
+            log=helper.getLogger();
             readSFAttributes();
 
             //Create subProcess
