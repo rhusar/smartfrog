@@ -426,7 +426,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
      * @throws RemoteException In case of Remote/nework error
      */
     public  Iterator sfAttributes() throws RemoteException{
-        return sfContext.sfValues();
+        return sfContext.sfAttributes();
     }
 
     /**
