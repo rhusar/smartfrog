@@ -104,10 +104,10 @@ public class SmartFrogLifecycleException extends SmartFrogRuntimeException imple
      */
     static public SmartFrogLifecycleException sfDeploy(String message, Throwable cause,
             Prim sfObject) {
-        try {
-            return (SmartFrogLifecycleException)SmartFrogLifecycleException.forward("sfDeploy: "+message, cause, sfObject);
-        } catch (Throwable ex) {
-            return (SmartFrogLifecycleException)SmartFrogLifecycleException.forward("sfDeploy: "+message, cause);
+       try {
+            return (SmartFrogLifecycleException)SmartFrogLifecycleException.forward("[sfDeploy] "+message, cause, sfObject);
+        } catch (Throwable thr) {
+            return (SmartFrogLifecycleException)SmartFrogLifecycleException.forward("[sfDeploy] "+message, cause);
         }
     }
 
@@ -123,9 +123,9 @@ public class SmartFrogLifecycleException extends SmartFrogRuntimeException imple
     static public SmartFrogLifecycleException sfStart(String message, Throwable cause,
             Prim sfObject) {
         try {
-            return (SmartFrogLifecycleException)SmartFrogLifecycleException.forward("sfStart: "+message, cause, sfObject);
-        } catch (Throwable ex) {
-            return (SmartFrogLifecycleException)SmartFrogLifecycleException.forward("sfStart: "+message, cause);
+            return (SmartFrogLifecycleException)SmartFrogLifecycleException.forward("[sfStart] "+message, cause, sfObject);
+        } catch (Throwable thr) {
+            return (SmartFrogLifecycleException)SmartFrogLifecycleException.forward("[sfStart] "+message, cause);
         }
     }
 
@@ -141,9 +141,13 @@ public class SmartFrogLifecycleException extends SmartFrogRuntimeException imple
      */
     static public SmartFrogLifecycleException sfTerminate (String message, Throwable cause,
             Prim sfObject) {
+        try {
+            return (SmartFrogLifecycleException)SmartFrogLifecycleException.forward("[sfTerminate] "+message, cause,
+                        sfObject);
+        } catch (Throwable thr) {
+           return (SmartFrogLifecycleException)SmartFrogLifecycleException.forward( "[sfTerminate] " + message, cause);
+        }
 
-        return (SmartFrogLifecycleException)SmartFrogLifecycleException.forward( "sfTerminate: " + message, cause,
-            sfObject);
     }
 
     /**
@@ -173,6 +177,25 @@ public class SmartFrogLifecycleException extends SmartFrogRuntimeException imple
             return (SmartFrogLifecycleException)thr;
         } else {
             return new SmartFrogLifecycleException (thr);
+        }
+    }
+
+    /**
+     * To forward SmartFrog exceptions instead of chain them.
+     * If thr is an instance of SmartFrogLifecycleException then the exception is returned
+     * without any modification, if not a new SmartFrogException is created
+     * with message as a paramenter
+     * @param thr throwable object to be forwarded
+     * @return Throwable that is a SmartFrogException
+     */
+    public static SmartFrogException forward (String message, Throwable thr){
+        if (thr instanceof SmartFrogLifecycleException) {
+            if (message!=null){
+                ((SmartFrogLifecycleException)thr).add("msg: ",message);
+            }
+            return (SmartFrogLifecycleException)thr;
+        } else {
+            return new SmartFrogLifecycleException(message, thr);
         }
     }
 
