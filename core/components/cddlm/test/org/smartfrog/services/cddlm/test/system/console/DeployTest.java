@@ -98,14 +98,23 @@ public class DeployTest extends ConsoleTestBase {
     }
 
     public void testEmptyDeploy() throws Exception {
-        URI uri = deploy("null", null, null, null);
-
+        deployExpectingFault("broken",
+                null,
+                null,
+                null,
+                FaultCodes.FAULT_BAD_ARGUMENT,
+                null);
     }
 
     public void testBrokenDeploy() throws IOException {
-        DeploymentDescriptorType dt = operation.createSmartFrogDescriptor(
+        DeploymentDescriptorType dd = operation.createSmartFrogDescriptor(
                 BROKEN_DESCRIPTOR);
-        URI uri = deploy("broken", dt, null, null);
+        deployExpectingFault("broken",
+                dd,
+                null,
+                null,
+                FaultCodes.FAULT_DEPLOYMENT_FAILURE,
+                null);
     }
 
     private URI deploy(String name,
