@@ -322,8 +322,8 @@ public class DeployEntry implements Entry {
                             StringBuffer text = new StringBuffer();
                             text.append(value.toString());
                             text.append("\n * Value resolved: \n" + solvedValue);
-                            text.append("\n\n" + "+ Value class:" +
-                            value.getClass().toString());
+                            text.append("\n\n" + "+ Value class:" + value.getClass().toString());
+                            text.append("\n" + "+ Solved Value class:" + solvedValue.getClass().toString());
                             //data[index][1] = obj.toString() + " ["+auxValue+"]";
                             data[index][1] = text.toString();
                         } else {
