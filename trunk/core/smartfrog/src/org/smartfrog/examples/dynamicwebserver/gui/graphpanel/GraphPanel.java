@@ -38,6 +38,10 @@ import java.awt.image.BufferedImage;
 import javax.swing.JPanel;
 
 
+import org.smartfrog.SFSystem;
+import java.io.DataInputStream;
+import java.io.ByteArrayOutputStream;
+
 /**
  * A panel to display a graph. It uses two arrays, one for x axis, a second one
  * for the y axis.
@@ -145,16 +149,17 @@ public class GraphPanel extends JPanel implements ComponentListener,
     public int[] yData;
 
     // images composing the bar
-    protected Image topBar;
+    protected Image topBar=null;
 
     // images composing the bar
-    protected Image middleBar;
+    protected Image middleBar=null;
 
     // images composing the bar
-    protected Image bottomBar;
+    protected Image bottomBar=null;
 
     // image for the background
-    protected Image backgroundImage;
+    protected Image backgroundImage=null;
+
     boolean filledDisplay = false;
     protected int xBarOffset = 10;
     protected int yBarSize = 10;
@@ -192,15 +197,20 @@ public class GraphPanel extends JPanel implements ComponentListener,
 
     public void initImages() {
         try {
-            topBar = java.awt.Toolkit.getDefaultToolkit().getImage(org.smartfrog.examples.dynamicwebserver.gui.graphpanel.GraphPanel.class.getResource(
-                        "top.gif"));
-            bottomBar = java.awt.Toolkit.getDefaultToolkit().getImage(org.smartfrog.examples.dynamicwebserver.gui.graphpanel.GraphPanel.class.getResource(
-                        "bottom.gif"));
-            middleBar = java.awt.Toolkit.getDefaultToolkit().getImage(org.smartfrog.examples.dynamicwebserver.gui.graphpanel.GraphPanel.class.getResource(
-                        "middle.gif"));
-            backgroundImage = java.awt.Toolkit.getDefaultToolkit().getImage(org.smartfrog.examples.dynamicwebserver.gui.graphpanel.GraphPanel.class.getResource(
-                        "background.gif"));
-
+            String imagesPath = this.getClass().getPackage().getName()+".";
+            imagesPath=imagesPath.replace('.','/');
+//            topBar = java.awt.Toolkit.getDefaultToolkit().getImage(org.smartfrog.examples.dynamicwebserver.gui.graphpanel.GraphPanel.class.getResource(
+//                        "top.gif"));
+//            bottomBar = java.awt.Toolkit.getDefaultToolkit().getImage(org.smartfrog.examples.dynamicwebserver.gui.graphpanel.GraphPanel.class.getResource(
+//                        "bottom.gif"));
+            //middleBar = java.awt.Toolkit.getDefaultToolkit().getImage(org.smartfrog.examples.dynamicwebserver.gui.graphpanel.GraphPanel.class.getResource(
+//                        "middle.gif"));
+//            backgroundImage = java.awt.Toolkit.getDefaultToolkit().getImage(org.smartfrog.examples.dynamicwebserver.gui.graphpanel.GraphPanel.class.getResource(
+//                        "background.gif"));
+            topBar = createImage(imagesPath+"top.gif");
+            bottomBar = createImage(imagesPath+"bottom.gif");
+            middleBar = createImage(imagesPath+"middle.gif");
+            backgroundImage = createImage(imagesPath+"background.gif");
             try {
                 MediaTracker tracker = new MediaTracker(this);
                 tracker.addImage(topBar, 0);
@@ -213,7 +223,35 @@ public class GraphPanel extends JPanel implements ComponentListener,
                 iex.printStackTrace();
             }
         } catch (Exception e) {
+            e.printStackTrace();
         }
+    }
+
+
+    public Image createImage(String SFURL) {
+        try {
+            DataInputStream iStrm = new DataInputStream(SFSystem.getInputStreamForResource(SFURL));
+
+            byte imageData[];
+            ByteArrayOutputStream bStrm = new ByteArrayOutputStream();
+
+            int ch;
+
+            while ((ch = iStrm.read())!=-1) {
+                bStrm.write(ch);
+            }
+
+            imageData = bStrm.toByteArray();
+            bStrm.close();
+
+            Image img = java.awt.Toolkit.getDefaultToolkit().createImage(imageData, 0, imageData.length);
+
+            return img;
+        } catch (Exception e) {
+            // @todo Log
+            System.out.println("Warning (GrapPanel:createImage): "+e.getMessage());
+        }
+        return null;
     }
 
     /**
@@ -372,52 +410,57 @@ public class GraphPanel extends JPanel implements ComponentListener,
     }
 
     public void update(Graphics g) {
-        Graphics2D g2 = (Graphics2D) g;
-        Dimension dim = getSize();
-        int w = dim.width;
-        int h = dim.height;
+        try {
+            Graphics2D g2 = (Graphics2D)g;
+            Dimension dim = getSize();
+            int w = dim.width;
+            int h = dim.height;
 
-        // if the graph has not been drawn or the size has changed,
-        // initialize the graph
-        if (firstTime || dirty) {
-            // create the buffered image & its graphics
-            bi = (BufferedImage) createImage(w, h);
-            graphicsHandle = bi.createGraphics();
-            graphicsHandle.setColor(Color.black);
-            graphicsHandle.setStroke(new BasicStroke(5.0f));
+            // if the graph has not been drawn or the size has changed,
+            // initialize the graph
+            if (firstTime||dirty) {
+                // create the buffered image & its graphics
+                bi = (BufferedImage)createImage(w, h);
+                graphicsHandle = bi.createGraphics();
+                graphicsHandle.setColor(Color.black);
+                graphicsHandle.setStroke(new BasicStroke(5.0f));
 
-            // set up antialiasing
-            graphicsHandle.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-                RenderingHints.VALUE_ANTIALIAS_ON);
+                // set up antialiasing
+                graphicsHandle.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                                                RenderingHints.
+                                                VALUE_ANTIALIAS_ON);
 
-            // drawing area
-            area = new Rectangle(dim);
+                // drawing area
+                area = new Rectangle(dim);
 
-            // it's not first time anymore, but following functions may
-            // use the dirty flag : unset it at the end of the draw phase
-            firstTime = false;
+                // it's not first time anymore, but following functions may
+                // use the dirty flag : unset it at the end of the draw phase
+                firstTime = false;
+            }
+
+            // Clears the rectangle that was previously drawn.
+            graphicsHandle.setColor(backgroundColor);
+            graphicsHandle.clearRect(0, 0, area.width, area.height);
+
+            if (backgroundImage!=null) {
+                graphicsHandle.drawImage(backgroundImage, 0, 0, area.width,
+                                         area.height, this);
+            } else {
+                // Draws and fills the newly positioned rectangle to the buffer.
+                graphicsHandle.fillRect(0, 0, area.width, area.height);
+            }
+
+            // Draws the content of the panel on to the buffered image's graphics
+            drawPanel(graphicsHandle);
+
+            // Draws the buffered image to the screen.
+            g2.drawImage(bi, 0, 0, this);
+
+            // if dirty was true, we give a chance to any of the previous function to do some work
+            dirty = false;
+        } catch (Throwable ex) {
+            ex.printStackTrace();
         }
-
-        // Clears the rectangle that was previously drawn.
-        graphicsHandle.setColor(backgroundColor);
-        graphicsHandle.clearRect(0, 0, area.width, area.height);
-
-        if (backgroundImage != null) {
-            graphicsHandle.drawImage(backgroundImage, 0, 0, area.width,
-                area.height, this);
-        } else {
-            // Draws and fills the newly positioned rectangle to the buffer.
-            graphicsHandle.fillRect(0, 0, area.width, area.height);
-        }
-
-        // Draws the content of the panel on to the buffered image's graphics
-        drawPanel(graphicsHandle);
-
-        // Draws the buffered image to the screen.
-        g2.drawImage(bi, 0, 0, this);
-
-        // if dirty was true, we give a chance to any of the previous function to do some work
-        dirty = false;
     }
 
     /**
