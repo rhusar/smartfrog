@@ -29,8 +29,6 @@ import java.util.StringTokenizer;
 
 /**
  * Taken from the ant launcher and reworked
- *
- * @since Ant 1.6
  */
 public class Launcher {
     /**
@@ -39,10 +37,9 @@ public class Launcher {
     public static final String SFHOME_PROPERTY = "sf.home";
 
     /**
-     * The Ant Library Directory property
+     * The Ant Home property
      */
-    public static final String ANTLIBDIR_PROPERTY = "ant.library.dir";
-
+    public static final String SFHOME_ENV_VARIABLE = "SFHOME";
 
     /**
      * The startup class that is to be run
@@ -185,13 +182,13 @@ public class Launcher {
         // determine ant library directory for system jars: use property
         // or default using location of ant-launcher.jar
         File antLibDir = null;
-        String antLibDirProperty = System.getProperty(ANTLIBDIR_PROPERTY);
+        String antLibDirProperty = System.getProperty(SFHOME_PROPERTY);
         if (antLibDirProperty != null) {
             antLibDir = new File(antLibDirProperty);
         }
         if ((antLibDir == null) || !antLibDir.exists()) {
             antLibDir = jarDir;
-            System.setProperty(ANTLIBDIR_PROPERTY,
+            System.setProperty(SFHOME_PROPERTY,
                     antLibDir.getAbsolutePath());
         }
         URL[] systemJars = Locator.getLocationURLs(antLibDir);
