@@ -23,9 +23,10 @@ import org.tanukisoftware.wrapper.WrapperListener;
 import org.tanukisoftware.wrapper.WrapperManager;
 
 /**
- * User: slo
- * Date: 01-Oct-2004
- * Time: 20:12:21
+ * Hosting of SmartFrog under Java Service Wrapper.
+ *
+ * @see "http://wrapper.tanukisoftware.org/doc/english/introduction.html" Date:
+ *      01-Oct-2004
  */
 public class ServiceWrapper implements WrapperListener {
 
@@ -37,9 +38,8 @@ public class ServiceWrapper implements WrapperListener {
 
     /**
      * The start method is called when the WrapperManager is signalled by the
-     * native wrapper code that it can start its application.  This
-     * method call is expected to return, so a new thread should be launched
-     * if necessary.
+     * native wrapper code that it can start its application.  This method call
+     * is expected to return, so a new thread should be launched if necessary.
      * <p/>
      * If this method throws an exception the Wrapper will shutdown the current
      * JVM in an error state and then relaunch a new JVM.  It is the
@@ -48,9 +48,9 @@ public class ServiceWrapper implements WrapperListener {
      * stopping.
      *
      * @param args List of arguments used to initialize the application.
-     * @return Any error code if the application should exit on completion
-     *         of the start method.  If there were no problems then this
-     *         method should return null.
+     * @return Any error code if the application should exit on completion of
+     *         the start method.  If there were no problems then this method
+     *         should return null.
      */
     public Integer start(String[] args) {
         //create a new system
@@ -62,16 +62,16 @@ public class ServiceWrapper implements WrapperListener {
 
     /**
      * Called when the application is shutting down.  The Wrapper assumes that
-     * this method will return fairly quickly.  If the shutdown code code
-     * could potentially take a long time, then WrapperManager.stopping()
-     * should be called to extend the timeout period.  If for some reason,
-     * the stop method can not return, then it must call
-     * WrapperManager.stopped() to avoid warning messages from the Wrapper.
+     * this method will return fairly quickly.  If the shutdown code code could
+     * potentially take a long time, then WrapperManager.stopping() should be
+     * called to extend the timeout period.  If for some reason, the stop method
+     * can not return, then it must call WrapperManager.stopped() to avoid
+     * warning messages from the Wrapper.
      * <p/>
-     * WARNING - Directly calling System.exit in this method will result in
-     * a deadlock in cases where this method is called from within a shutdown
-     * hook.  This method will be invoked by a shutdown hook if the JVM
-     * shutdown was originally initiated by a call to System.exit.
+     * WARNING - Directly calling System.exit in this method will result in a
+     * deadlock in cases where this method is called from within a shutdown
+     * hook.  This method will be invoked by a shutdown hook if the JVM shutdown
+     * was originally initiated by a call to System.exit.
      *
      * @param exitCode The suggested exit code that will be returned to the OS
      *                 when the JVM exits.
@@ -97,30 +97,29 @@ public class ServiceWrapper implements WrapperListener {
      * The WRAPPER_CTRL_C_EVENT will be called whether or not the JVM is
      * controlled by the Wrapper.  If controlled by the Wrapper, it is
      * undetermined as to whether the Wrapper or the JVM will receive this
-     * signal first, but the Wrapper will always initiate a shutdown.  In
-     * most cases, the implementation of this method should call
-     * WrapperManager.stop() to initiate a shutdown from within the JVM.
-     * The WrapperManager will always handle the shutdown correctly whether
-     * shutdown is initiated from the Wrapper, within the JVM or both.
-     * By calling stop here, it will ensure that the application will behave
-     * correctly when run standalone, without the Wrapper.
+     * signal first, but the Wrapper will always initiate a shutdown.  In most
+     * cases, the implementation of this method should call
+     * WrapperManager.stop() to initiate a shutdown from within the JVM. The
+     * WrapperManager will always handle the shutdown correctly whether shutdown
+     * is initiated from the Wrapper, within the JVM or both. By calling stop
+     * here, it will ensure that the application will behave correctly when run
+     * standalone, without the Wrapper.
      * <p/>
      * WRAPPER_CTRL_CLOSE_EVENT, WRAPPER_CTRL_LOGOFF_EVENT, and
      * WRAPPER_CTRL_SHUTDOWN_EVENT events will only be encountered on Windows
      * systems.  Like the WRAPPER_CTRL_C_EVENT event, it is undetermined as to
      * whether the Wrapper or JVM will receive the signal first.  All signals
-     * will be triggered by the OS whether the JVM is being run as an NT
-     * service or as a console application.  If the JVM is running as a
-     * console application, the Application must respond to the CLOSE and
-     * LOGOFF events by calling WrapperManager.stop() in a timely manner.
-     * In these cases, Windows will wait for the JVM process to exit before
-     * moving on to signal the next process.  If the JVM process does not exit
-     * within a reasonable amount of time, Windows will pop up a message box
-     * for the user asking if they wish to wait for the process or exit or
-     * forcibly close it.  The JVM must call stop() in response to the
-     * SHUTDOWN method whether running as a console or NT service.  Usually,
-     * the LOGOFF event should be ignored when the Wrapper is running as an
-     * NT service.
+     * will be triggered by the OS whether the JVM is being run as an NT service
+     * or as a console application.  If the JVM is running as a console
+     * application, the Application must respond to the CLOSE and LOGOFF events
+     * by calling WrapperManager.stop() in a timely manner. In these cases,
+     * Windows will wait for the JVM process to exit before moving on to signal
+     * the next process.  If the JVM process does not exit within a reasonable
+     * amount of time, Windows will pop up a message box for the user asking if
+     * they wish to wait for the process or exit or forcibly close it.  The JVM
+     * must call stop() in response to the SHUTDOWN method whether running as a
+     * console or NT service.  Usually, the LOGOFF event should be ignored when
+     * the Wrapper is running as an NT service.
      *
      * @param event The system control signal.
      * @see WrapperManager#controlEvent(int)
