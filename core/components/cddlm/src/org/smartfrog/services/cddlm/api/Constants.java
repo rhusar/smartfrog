@@ -19,7 +19,8 @@
  */
 package org.smartfrog.services.cddlm.api;
 
-import org.smartfrog.services.cddlm.generated.faults.FaultCodes;
+import org.smartfrog.services.cddlm.generated.api.DeployApiConstants;
+import org.smartfrog.services.cddlm.generated.api.DeployApiConstants;
 
 /**
  * created Aug 4, 2004 10:34:47 AM
@@ -27,15 +28,15 @@ import org.smartfrog.services.cddlm.generated.faults.FaultCodes;
 
 public class Constants {
     public static final String[] LANGUAGES = {
-        "SmartFrog", "1.0", FaultCodes.SMARTFROG_NAMESPACE,
-        "XML-CDL", "0.3", FaultCodes.XML_CDL_NAMESPACE,
-        "Apache Ant", "1.7", FaultCodes.ANT_NAMESPACE
+        "SmartFrog", "1.0", DeployApiConstants.SMARTFROG_NAMESPACE,
+        "XML-CDL", "0.3", DeployApiConstants.XML_CDL_NAMESPACE,
+        "Apache Ant", "1.7", DeployApiConstants.ANT_NAMESPACE
     };
 
     public static final String[] LANGUAGE_NAMESPACES = {
-        FaultCodes.SMARTFROG_NAMESPACE,
-        FaultCodes.XML_CDL_NAMESPACE,
-        FaultCodes.ANT_NAMESPACE
+        DeployApiConstants.SMARTFROG_NAMESPACE,
+        DeployApiConstants.XML_CDL_NAMESPACE,
+        DeployApiConstants.ANT_NAMESPACE
     };
 
     /**
@@ -60,7 +61,7 @@ public class Constants {
     public static final String ERROR_INVALID_SCHEMA = "invalid schema in URI: ";
     public static final String ERROR_NO_APPLICATION = "application is undefined";
 
-    public static final String CDDLM_FAULT_NAMESPACE = FaultCodes.CDDLM_FAULT_NAMESPACE;
+    public static final String CDDLM_FAULT_NAMESPACE = DeployApiConstants.CDDLM_FAULT_NAMESPACE;
 /*
     public static final QName FAULT_BAD_ARGUMENT = FaultCodes.FAULT_BAD_ARGUMENT;
     public static final QName FAULT_NESTED_EXCEPTION = FaultCodes.FAULT_NESTED_EXCEPTION

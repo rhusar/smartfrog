@@ -25,7 +25,8 @@ import org.apache.axis.AxisFault;
 import org.apache.axis.types.URI;
 import org.cddlm.client.console.Undeploy;
 import org.cddlm.client.console.ConsoleOperation;
-import org.smartfrog.services.cddlm.generated.faults.FaultCodes;
+import org.smartfrog.services.cddlm.generated.api.DeployApiConstants;
+import org.smartfrog.services.cddlm.generated.api.DeployApiConstants;
 
 /**
  * Date: 02-Sep-2004 Time: 20:41:24
@@ -56,7 +57,7 @@ public class UndeployTest extends ConsoleTestBase {
         try {
             operation.undeploy(new URI(INVALID_URI), "termination");
         } catch (AxisFault e) {
-            assertFaultMatches(e, FaultCodes.FAULT_NO_SUCH_APPLICATION, null);
+            assertFaultMatches(e, DeployApiConstants.FAULT_NO_SUCH_APPLICATION, null);
         }
     }
 
@@ -64,7 +65,7 @@ public class UndeployTest extends ConsoleTestBase {
         try {
             operation.undeploy(new URI(INVALID_URI), null);
         } catch (AxisFault e) {
-            assertFaultMatches(e, FaultCodes.FAULT_NO_SUCH_APPLICATION, null);
+            assertFaultMatches(e, DeployApiConstants.FAULT_NO_SUCH_APPLICATION, null);
         }
     }
 

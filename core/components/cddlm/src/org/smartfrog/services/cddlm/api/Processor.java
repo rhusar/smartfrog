@@ -27,7 +27,8 @@ import org.apache.axis.types.URI;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.smartfrog.services.axis.SmartFrogHostedEndpoint;
-import org.smartfrog.services.cddlm.generated.faults.FaultCodes;
+import org.smartfrog.services.cddlm.generated.api.DeployApiConstants;
+import org.smartfrog.services.cddlm.generated.api.DeployApiConstants;
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.SmartFrogCompilationException;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
@@ -185,19 +186,19 @@ public class Processor {
     }
 
     protected static AxisFault raiseUnsupportedLanguageFault(String message) {
-        return raiseFault(FaultCodes.FAULT_UNSUPPORTED_LANGUAGE, message);
+        return raiseFault(DeployApiConstants.FAULT_UNSUPPORTED_LANGUAGE, message);
     }
 
     protected static AxisFault raiseUnsupportedCallbackFault(String message) {
-        return raiseFault(FaultCodes.FAULT_UNSUPPORTED_CALLBACK, message);
+        return raiseFault(DeployApiConstants.FAULT_UNSUPPORTED_CALLBACK, message);
     }
 
     protected static AxisFault raiseBadArgumentFault(String message) {
-        return raiseFault(FaultCodes.FAULT_BAD_ARGUMENT, message);
+        return raiseFault(DeployApiConstants.FAULT_BAD_ARGUMENT, message);
     }
 
     protected static AxisFault raiseNoSuchApplicationFault(String message) {
-        return raiseFault(FaultCodes.FAULT_NO_SUCH_APPLICATION, message);
+        return raiseFault(DeployApiConstants.FAULT_NO_SUCH_APPLICATION, message);
     }
 
     protected URL makeURL(URI source) throws MalformedURLException {
@@ -207,7 +208,7 @@ public class Processor {
     public AxisFault raiseNestedFault(Exception e, String message) {
         AxisFault fault = AxisFault.makeFault(e);
         fault.setFaultReason(message);
-        fault.setFaultCode(FaultCodes.FAULT_NESTED_EXCEPTION);
+        fault.setFaultCode(DeployApiConstants.FAULT_NESTED_EXCEPTION);
         return fault;
     }
 
@@ -244,35 +245,35 @@ public class Processor {
      */
     public AxisFault translateSmartFrogException(SmartFrogException exception) {
         AxisFault fault = AxisFault.makeFault(exception);
-        QName faultCode = FaultCodes.FAULT_NESTED_EXCEPTION;
+        QName faultCode = DeployApiConstants.FAULT_NESTED_EXCEPTION;
         //compilation and subclasses
         if (exception instanceof SmartFrogCompilationException) {
-            faultCode = FaultCodes.FAULT_DESCRIPTOR_PARSE_ERROR;
+            faultCode = DeployApiConstants.FAULT_DESCRIPTOR_PARSE_ERROR;
             SmartFrogCompilationException ex = (SmartFrogCompilationException) exception;
         }
         if (exception instanceof SmartFrogParseException) {
-            faultCode = FaultCodes.FAULT_DESCRIPTOR_PARSE_ERROR;
+            faultCode = DeployApiConstants.FAULT_DESCRIPTOR_PARSE_ERROR;
         }
         if (exception instanceof SmartFrogCompileResolutionException) {
-            faultCode = FaultCodes.FAULT_COMPILE_RESOLUTION_FAILURE;
+            faultCode = DeployApiConstants.FAULT_COMPILE_RESOLUTION_FAILURE;
         }
         //init failure
         if (exception instanceof SmartFrogInitException) {
-            faultCode = FaultCodes.FAULT_INITIALIZATION_FAILURE;
+            faultCode = DeployApiConstants.FAULT_INITIALIZATION_FAILURE;
         }
 
         //runtime faults
         if (exception instanceof SmartFrogRuntimeException) {
-            faultCode = FaultCodes.FAULT_RUNTIME_EXCEPTION;
+            faultCode = DeployApiConstants.FAULT_RUNTIME_EXCEPTION;
         }
         if (exception instanceof SmartFrogResolutionException) {
-            faultCode = FaultCodes.FAULT_RESOLUTION_FAILURE;
+            faultCode = DeployApiConstants.FAULT_RESOLUTION_FAILURE;
         }
         if (exception instanceof SmartFrogLivenessException) {
-            faultCode = FaultCodes.FAULT_LIVENESS_EXCEPTION;
+            faultCode = DeployApiConstants.FAULT_LIVENESS_EXCEPTION;
         }
         if (exception instanceof SmartFrogDeploymentException) {
-            faultCode = FaultCodes.FAULT_DEPLOYMENT_FAILURE;
+            faultCode = DeployApiConstants.FAULT_DEPLOYMENT_FAILURE;
         }
         //TODO: add the other runtime faults
 
@@ -286,7 +287,7 @@ public class Processor {
             //TODO: escape local parts that are not valid.
             final String localPart = key.toString();
             fault.addFaultDetail(
-                    new QName(FaultCodes.SMARTFROG_NAMESPACE, localPart)
+                    new QName(DeployApiConstants.SMARTFROG_NAMESPACE, localPart)
                     , value.toString());
         }
 

@@ -44,7 +44,7 @@ import org.cddlm.client.generated.api.types._languageListType_language;
 import org.cddlm.client.generated.api.types._lookupApplicationRequest;
 import org.cddlm.client.generated.api.types._serverStatusRequest;
 import org.cddlm.client.generated.api.types._undeployRequest;
-import org.smartfrog.services.cddlm.generated.faults.FaultCodes;
+import org.smartfrog.services.cddlm.generated.api.DeployApiConstants;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -250,13 +250,13 @@ public abstract class ConsoleOperation {
      *
      * @param options
      * @param name
-     * @throws RuntimeException if we cannot turn {@link FaultCodes#OPTION_NAME}
+     * @throws RuntimeException if we cannot turn {@link DeployApiConstants#OPTION_NAME}
      *                          into a URI
      */
     public static void addNameOption(Options options, String name) {
         try {
             OptionType o = options.createNamedOption(
-                    new URI(FaultCodes.OPTION_NAME), true);
+                    new URI(DeployApiConstants.OPTION_NAME), true);
             o.setString(name);
         } catch (URI.MalformedURIException e) {
             throw new RuntimeException(e);

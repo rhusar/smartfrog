@@ -26,7 +26,8 @@ import org.apache.axis.types.URI;
 import org.cddlm.client.console.Lookup;
 import org.cddlm.client.console.ConsoleOperation;
 import org.cddlm.client.generated.api.types.ApplicationStatusType;
-import org.smartfrog.services.cddlm.generated.faults.FaultCodes;
+import org.smartfrog.services.cddlm.generated.api.DeployApiConstants;
+import org.smartfrog.services.cddlm.generated.api.DeployApiConstants;
 
 import java.rmi.RemoteException;
 
@@ -60,7 +61,7 @@ public class LookupApplicationsTest extends ConsoleTestBase {
             URI uri = operation.lookupApplication("noname");
         } catch (AxisFault fault) {
             assertFaultMatches(fault,
-                    FaultCodes.FAULT_NO_SUCH_APPLICATION,
+                    DeployApiConstants.FAULT_NO_SUCH_APPLICATION,
                     null);
         }
     }

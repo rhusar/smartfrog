@@ -30,7 +30,8 @@ import org.cddlm.client.generated.api.types.DynamicServerStatusType;
 import org.cddlm.client.generated.api.types.ServerInformationType;
 import org.cddlm.client.generated.api.types.ServerStatusType;
 import org.cddlm.client.generated.api.types.StaticServerStatusType;
-import org.smartfrog.services.cddlm.generated.faults.FaultCodes;
+import org.smartfrog.services.cddlm.generated.api.DeployApiConstants;
+import org.smartfrog.services.cddlm.generated.api.DeployApiConstants;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
@@ -78,15 +79,15 @@ public class ServerStatusTest extends ConsoleTestBase {
     }
 
     public void testSmartFrogLanguage() throws RemoteException {
-        assertSupportedLanguage(FaultCodes.SMARTFROG_NAMESPACE);
+        assertSupportedLanguage(DeployApiConstants.SMARTFROG_NAMESPACE);
     }
 
     public void testXMLCDLLanguage() throws RemoteException {
-        assertSupportedLanguage(FaultCodes.XML_CDL_NAMESPACE);
+        assertSupportedLanguage(DeployApiConstants.XML_CDL_NAMESPACE);
     }
 
     public void testUnsupportedLanguage() throws RemoteException {
-        String languageURI = FaultCodes.XPATH_NAMESPACE;
+        String languageURI = DeployApiConstants.XPATH_NAMESPACE;
         boolean found = operation.supportsLanguage(languageURI);
         assertFalse("supported :" + languageURI, found);
     }

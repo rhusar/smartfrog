@@ -29,7 +29,7 @@ import org.smartfrog.services.axis.SmartFrogHostedEndpoint;
 import org.smartfrog.services.cddlm.generated.api.types.OptionMapType;
 import org.smartfrog.services.cddlm.generated.api.types.OptionType;
 import org.smartfrog.services.cddlm.generated.api.types.UnboundedXMLAnyNamespace;
-import org.smartfrog.services.cddlm.generated.faults.FaultCodes;
+import org.smartfrog.services.cddlm.generated.api.DeployApiConstants;
 
 import java.util.Properties;
 
@@ -53,11 +53,11 @@ public class OptionProcessor extends Processor {
     static {
         try {
             propertyURI =
-                    new URI(FaultCodes.OPTION_PROPERTIES);
+                    new URI(DeployApiConstants.OPTION_PROPERTIES);
             validateURI =
-                    new URI(FaultCodes.OPTION_VALIDATE_ONLY);
+                    new URI(DeployApiConstants.OPTION_VALIDATE_ONLY);
             nameURI =
-                    new URI(FaultCodes.OPTION_NAME);
+                    new URI(DeployApiConstants.OPTION_NAME);
         } catch (URI.MalformedURIException e) {
             throw new RuntimeException(e);
         }
@@ -131,7 +131,7 @@ public class OptionProcessor extends Processor {
         URI uri = option.getName();
         final String uriName = uri.toString();
         log.warn("failed to process option " + uriName);
-        throw raiseFault(FaultCodes.FAULT_NOT_UNDERSTOOD,
+        throw raiseFault(DeployApiConstants.FAULT_NOT_UNDERSTOOD,
                 "Did not recognise the mustUnderstand option" + uriName);
     }
 
