@@ -75,6 +75,11 @@
             <path location="${target.jar}"/>
         </path>
 
+        <path id="test.classpath">
+            <path refid="run.classpath"/>
+            <pathelement location="${test.classes.dir}"/>
+        </path>
+        
     </target>
     
     
@@ -277,4 +282,29 @@
         </parallel>
     </target>
 
+    
+  <!-- ========================================================== -->
+  <!-- this is an override point -->
+  <!-- unit tests : anything which does not need deployment to run-->
+  <!-- ========================================================== -->
+  <target name="unit-tests" depends="compile-tests" if="unit.tests.enabled"
+    description="run the unit tests">
+   <sf-junit
+           errorProperty="test.failed"
+           failureProperty="test.failed"
+           >
+        <sysproperty key="test.classes.dir"
+            value="${test.classes.dir}" />
+      <classpath>
+        <path refid="test.classpath"/>
+        <pathelement location="${test.classes.dir}"/>
+      </classpath>
+      <batchtest todir="${test.data.dir}" if="unit.tests.enabled">
+        <!-- bulk test case -->
+        <fileset dir="${test.classes.dir}">
+          <include name="org/smartfrog/services/cddlm/test/unit/**/*Test.class" />
+       </fileset>
+      </batchtest>
+    </sf-junit>    
+    </target>     
 </project>

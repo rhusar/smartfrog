@@ -63,7 +63,7 @@ public class CdlParser {
      * @throws IOException
      * @throws JDOMException
      */
-    Document parseFile(String filename) throws IOException, JDOMException {
+    public Document parseFile(String filename) throws IOException, JDOMException {
         File f = new File(filename);
         return builder.build(f);
     }
@@ -75,7 +75,7 @@ public class CdlParser {
      * @throws IOException
      * @throws JDOMException
      */
-    Document parseStream(InputStream instream) throws IOException,
+    public Document parseStream(InputStream instream) throws IOException,
             JDOMException {
         return builder.build(instream);
     }
@@ -87,7 +87,7 @@ public class CdlParser {
      * @throws IOException
      * @throws JDOMException
      */
-    Document parseResource(String resource) throws IOException, JDOMException {
+    public Document parseResource(String resource) throws IOException, JDOMException {
         InputStream in = resourceLoader.loadResource(resource);
         return parseStream(in);
     }
