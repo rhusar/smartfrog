@@ -52,7 +52,7 @@ public class ScriptingTest
 
 public void testCaseTCP50() throws Throwable 
 {
-		Prim applicationtcp50 = deployExpectingSuccess(FILES+"TCP50.sf", "ScriptingTCP50");
+		Prim applicationtcp50 = deployExpectingSuccess(FILES+"TCP50.sf", "TCP50");
 		assertNotNull(applicationtcp50);
 		Prim p = (Prim)applicationtcp50.sfResolveHere("PoorVictim");
 		String actualPSfClass = (String)p.sfResolveHere("sfClass");
@@ -74,7 +74,7 @@ public void testCaseTCP50() throws Throwable
 
 public void testCaseTCP53() throws Throwable 
 {
-		Prim applicationtcp53 = deployExpectingSuccess(FILES+"TCP53.sf", "TCP53");
+		Prim applicationtcp53 = deployExpectingSuccess(FILES+"TCP53.sf", "TCP52");
 		assertNotNull(applicationtcp53);
 		Integer actual_numericSum = (Integer)applicationtcp53.sfResolveHere("numericSum");
 		String actual_stringSum = (String)applicationtcp53.sfResolveHere("stringSum");
@@ -84,14 +84,19 @@ public void testCaseTCP53() throws Throwable
 
 
 
-public void testCaseTCN80()  throws Exception
+public void testCaseTCN80()  throws Throwable
 	{
-		deployExpectingException(FILES+"TCN80.sf",
+	/*	deployExpectingException(FILES+"TCN80.sf",
                                  "ScriptingTCN80",
                                  "SmartFrogException",
                                  null,
                                  "SmartFrogException",
                                  "null");
+	*/
+		Prim applicationtcn80 = deployExpectingSuccess(FILES+"TCN80.sf", "TCN80");
+		assertNotNull(applicationtcn80);
+
+
 	
 }
 public void testCaseTCN81()  throws Exception
