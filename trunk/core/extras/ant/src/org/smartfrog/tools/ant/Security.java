@@ -258,7 +258,13 @@ public class Security extends DataType {
             securityProps.load(instream);
             return securityProps;
         } finally {
-            FileUtils.close(instream);
+            if (instream != null) {
+                try {
+                    instream.close();
+                } catch (IOException ioex) {
+                    //ignore
+                }
+            }
         }
     }
 
