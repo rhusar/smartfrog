@@ -18,38 +18,37 @@ For more information: www.smartfrog.org
 
 */
 
-/**
- * schema stuff
- */
-#include "/org/smartfrog/predicates.sf"
-
-/**
- * Include the core smartfrog components.
- */
-#include "org/smartfrog/components.sf"
-
-/**
- * Include the CDDLM components.
+/*
+ this file declares assertions
  */
 
-#include "org/smartfrog/services/cddlm/components.sf"
+
+
+ /**
+  * Include the core smartfrog components.
+  */
+ #include "/org/smartfrog/components.sf"
+ #include "/org/smartfrog/predicates.sf"
+
 
 /**
- * the actual deployment 
- * sets the threads and sessions
+ * the schema for assertions
  */
-sfConfig extends Compound {
-    //our CDDLM description
-    cddlm extends CDDLM {
-        port 5050;
-        threads 4;
-        sessions 8;
-        }
+AssertSchema extends Schema {
+    isTrue extends OptionalBoolean;
+    isFalse extends OptionalBoolean;
+    reference extends OptionalCD;
+    evaluatesTrue extends OptionalString;
+    evaluatesFalse extends OptionalString;
+}
 
-    //fetch the WSDL every so often, just to see that we are happy
-    wsdlFetch extends LivenessPage {
-        port PARENT:cddlm:port;
-        page "axis/services/cddlm/?wsdl";
-        checkFrequency 10;
-    }
+/**
+ * the assert component can be used to declare invariants which
+ * must hold for the system to be valid
+ */
+Assert extends Prim {
+    assertSchema extends Schema;
+    sfClass "org.cddlm.components.AssertComponent";
+    isTrue true;
+    isFalse false;
 }

@@ -18,38 +18,21 @@ For more information: www.smartfrog.org
 
 */
 
-/**
- * schema stuff
+/*
+ this declares useful CDDLM components
  */
+
+
+
+ /**
+  * Include the core smartfrog components.
+  */
+#include "/org/smartfrog/components.sf"
 #include "/org/smartfrog/predicates.sf"
 
-/**
- * Include the core smartfrog components.
+/*
+ * now include the CDDLM components
  */
-#include "org/smartfrog/components.sf"
-
-/**
- * Include the CDDLM components.
- */
-
-#include "org/smartfrog/services/cddlm/components.sf"
-
-/**
- * the actual deployment 
- * sets the threads and sessions
- */
-sfConfig extends Compound {
-    //our CDDLM description
-    cddlm extends CDDLM {
-        port 5050;
-        threads 4;
-        sessions 8;
-        }
-
-    //fetch the WSDL every so often, just to see that we are happy
-    wsdlFetch extends LivenessPage {
-        port PARENT:cddlm:port;
-        page "axis/services/cddlm/?wsdl";
-        checkFrequency 10;
-    }
-}
+#include "/org/cddlm/components/platformInformation.sf"
+#include "/org/cddlm/components/assert.sf"
+#include "/org/cddlm/components/livenessPage.sf"
