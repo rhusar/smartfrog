@@ -135,10 +135,21 @@ For more information: www.smartfrog.org
   <!-- ========================================================== -->
   <!-- create the jar -->
   <!-- ========================================================== -->
-  <target name="dist" depends="common.dist"  description="create the jar files">
+  <target name="dist" depends="common.dist,jdocs"  description="create the jar files">
     <copy todir = "${dist.lib.dir}">
         <fileset dir ="${lib.dir}" />
-    </copy>          
+    </copy> 
+	<copy todir = "${dist.doc.dir}">
+        <fileset dir ="${doc.dir}" />
+    </copy>   
+		 <copy todir = "${dist.src.dir}">
+        <fileset dir ="${src.dir}">
+		  <include name="**/telnetExample*"/>
+		  <include name="**/ftpExample*"/>
+		  <include name="**/example*"/>
+
+		</fileset>
+    </copy>   
   </target>
 
 </project>
