@@ -44,9 +44,14 @@ import org.smartfrog.sfcore.reference.Reference;
  * required event handling.
  */
 public class EventQueue extends EventPrimImpl implements Prim {
-    Thread sender = null;
+    SenderThread sender = null;
 
     private class SenderThread extends Thread {
+	private boolean finished = false;
+
+	public void finished() {
+	    finished = true;
+	}
 
 	private void doAll() {
 	    int index = messageIndex;
@@ -72,7 +77,7 @@ public class EventQueue extends EventPrimImpl implements Prim {
 	}
 
 	private boolean allDone() {
-	    // notesynchronized with messages already
+	    // note: synchronized with messages already
 	    synchronized (registrationMessages) {
 		for (Enumeration e = registrationMessages.keys(); e.hasMoreElements();) {
 		    EventSink s = (EventSink)e.nextElement();
@@ -87,7 +92,7 @@ public class EventQueue extends EventPrimImpl implements Prim {
 	}
 
 	public void run() {
-	    while (true) {
+	    while (!finished) {
 		synchronized (messages) {
 		    if (allDone()) 
 			try {
@@ -95,7 +100,7 @@ public class EventQueue extends EventPrimImpl implements Prim {
 			} catch (InterruptedException e) {
 			}
 		}
-		doAll();
+		if (!finished) doAll();
 	    }
 	}
     }
@@ -192,7 +197,8 @@ public class EventQueue extends EventPrimImpl implements Prim {
     public synchronized void sfTerminateWith(TerminationRecord status, Prim comp) {
 
 	try {
-	    sender.stop();
+	    sender.finished();
+	    sender.interrupt();
 	} catch (Exception e) {}
 
         super.sfTerminatedWith(status, comp);
