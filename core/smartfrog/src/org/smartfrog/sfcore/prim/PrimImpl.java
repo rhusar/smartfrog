@@ -1835,7 +1835,7 @@ public class PrimImpl extends Object implements Prim, MessageKeys {
                     MSG_DEPLOY_COMP_TERMINATED, componentId.toString()),
                 this);
         }
-	sfIsDeployed = true;
+    sfIsDeployed = true;
         sfDeployHooks.applyHooks(this, null);
     }
 
@@ -1853,7 +1853,7 @@ public class PrimImpl extends Object implements Prim, MessageKeys {
                     MSG_START_COMP_TERMINATED, this.sfCompleteNameSafe().toString()),
                 this);
         }
-	sfIsStarted = true;
+    sfIsStarted = true;
         sfStartHooks.applyHooks(this, null);
     }
 
@@ -2170,14 +2170,27 @@ public class PrimImpl extends Object implements Prim, MessageKeys {
 
     /**
      *  To get application logger using ROOT name.
-     *    @todo should we use prim name and get a hierarchy of logs?
+     *  The name used is cached in attritube @see SmartFrogCoreKeys.SF_APP_LOG_NAME
+     *  If this attribute has been pre-set then it is used to get the applition logger,
+     *  otherwise ROOT cannonical name is used.
      *
      * @return Logger implementing LogSF and Log
      * @throws SmartFrogException
      * @throws RemoteException
      */
     public LogSF sfGetApplicationLog() throws SmartFrogException, RemoteException{
-         return sfGetLog(((Prim)sfResolveWithParser(SmartFrogCoreKeys.SF_ROOT)).sfCompleteName().toString());
+        //@todo should we use prim name and get a hierarchy of logs?
+         //this.sfResolveHere(SmartFrogCoreKeys.SF_APP_LOG_NAME);
+        try {
+            return sfGetLog(sfResolve(SmartFrogCoreKeys.SF_APP_LOG_NAME, "", true));
+        } catch (SmartFrogResolutionException ex) {
+            //Get root Log name
+            String sfLogName = ((Prim)sfResolveWithParser(SmartFrogCoreKeys.SF_ROOT)).sfCompleteName().toString();
+            // add attribute
+            sfAddAttribute(SmartFrogCoreKeys.SF_ROOT,sfLogName);
+            return sfGetLog(sfLogName);
+        }
+
     }
 
 }
