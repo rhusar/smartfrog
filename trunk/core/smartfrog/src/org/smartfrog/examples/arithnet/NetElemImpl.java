@@ -24,8 +24,10 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.Enumeration;
 import java.util.Vector;
-
 import org.smartfrog.sfcore.common.Context;
+
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
+
 import org.smartfrog.sfcore.common.Logger;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.compound.Compound;
@@ -172,7 +174,7 @@ public abstract class NetElemImpl extends CompoundImpl implements Compound,
             System.out.println(name + " deployed");
         } catch (SmartFrogException sfex) {
             // add the context in case of failure
-            sfex.put("sfDeployFailure", this.sfContext);
+            sfex.put(SmartFrogCoreKeys.SF_DEPLOY_FAILURE, this.sfContext);
 
             // trigger termination of component
             Reference name = sfCompleteNameSafe();
@@ -191,7 +193,7 @@ public abstract class NetElemImpl extends CompoundImpl implements Compound,
             super.sfStart();
         } catch (SmartFrogException sfex) {
             // add the context in case of failure
-            sfex.put("sfStartFailure", this.sfContext);
+            sfex.put(SmartFrogCoreKeys.SF_START_FAILURE, this.sfContext);
 
             // trigger termination of component
             Reference name = sfCompleteNameSafe();

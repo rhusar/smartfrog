@@ -23,6 +23,7 @@ package org.smartfrog.sfcore.reference;
 
 
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 
 /**
  * Implements the root reference part.
@@ -30,7 +31,7 @@ import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 public class RootReferencePart extends ReferencePart {
 
     /** String representation of this part. */
-    public static final String ROOT = "ROOT";
+    public static final String ROOT = SmartFrogCoreKeys.SF_ROOT;
 
     /**
      * Returns a string representation of the reference part.

@@ -24,6 +24,7 @@ import java.net.InetAddress;
 import java.rmi.RemoteException;
 import java.rmi.registry.Registry;
 
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.MessageKeys;
 import org.smartfrog.sfcore.common.MessageUtil;
 import org.smartfrog.sfcore.common.SmartFrogException;
@@ -56,19 +57,19 @@ public class DefaultRootLocatorImpl implements RootLocator, MessageKeys {
 
     /**
      * Gets the port of RMI registry on which input process compound is running.
-     * 
-     * @param c Instance of process compound 
-     * 
+     *
+     * @param c Instance of process compound
+     *
      * @return port number
      *
-     * @throws SmartFrogException fails to get the registry port 
+     * @throws SmartFrogException fails to get the registry port
      * @throws RemoteException In case of network/rmi error
      */
     protected static int getRegistryPort(ProcessCompound c)
         throws SmartFrogException, RemoteException {
         // TODO: check for class cast exception
         if (registryPort == -1) {
-            registryPort = ((Number) c.sfResolveId("sfRootLocatorPort")).intValue();
+            registryPort = ((Number) c.sfResolveId(SmartFrogCoreKeys.SF_ROOT_LOCATOR_PORT)).intValue();
         }
 
         return registryPort;
@@ -84,7 +85,7 @@ public class DefaultRootLocatorImpl implements RootLocator, MessageKeys {
      * @throws SmartFrogException could not create locator or bind compound
      * @throws RemoteException In case of network/rmi error
      *
-     * @see #getRootProcessCompound 
+     * @see #getRootProcessCompound
      */
     public void setRootProcessCompound(ProcessCompound c)
         throws SmartFrogException, RemoteException {
@@ -114,8 +115,8 @@ public class DefaultRootLocatorImpl implements RootLocator, MessageKeys {
      * @return the root process compound on given host
      *
      * @throws Exception if error locating root process compound on host
-     * 
-     * @see #setRootProcessCompound 
+     *
+     * @see #setRootProcessCompound
      */
     public ProcessCompound getRootProcessCompound(InetAddress hostAddress)
         throws Exception {
@@ -157,8 +158,8 @@ public class DefaultRootLocatorImpl implements RootLocator, MessageKeys {
      * @return the root process compound on given host
      *
      * @throws Exception error locating root process compound on host
-     * 
-     * @see #setRootProcessCompound 
+     *
+     * @see #setRootProcessCompound
      */
     public ProcessCompound getRootProcessCompound(InetAddress hostAddress,
         int portNum) throws Exception {

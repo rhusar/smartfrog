@@ -27,6 +27,8 @@ import java.rmi.RemoteException;
 import java.util.Enumeration;
 import java.util.Vector;
 
+
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.MessageKeys;
 import org.smartfrog.sfcore.common.MessageUtil;
@@ -60,7 +62,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
    /**
     * Reference to sfConfig attribute
     */
-   Reference sfConfigRef = new Reference("sfConfig");
+   Reference sfConfigRef = new Reference(SmartFrogCoreKeys.SF_CONFIG);
 
    /**
     *  type of description. The type field is used as a prototype for this

@@ -26,6 +26,7 @@ import java.rmi.server.RemoteStub;
 import java.util.Vector;
 import java.util.Enumeration;
 
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.Logger;
 import org.smartfrog.sfcore.common.MessageKeys;
@@ -80,11 +81,11 @@ public class PrimImpl extends Object implements Prim, MessageKeys {
 
     /** Reference used to look up sfLivenessDelay attributes. */
     protected static final Reference refLivenessDelay = new Reference(ReferencePart.attrib(
-                "sfLivenessDelay"));
+                SmartFrogCoreKeys.SF_LIVENESS_DELAY));
 
     /** Reference used to look up sfLivenessFactor attributes. */
     protected static final Reference refLivenessFactor = new Reference(ReferencePart.attrib(
-                "sfLivenessFactor"));
+                SmartFrogCoreKeys.SF_LIVENESS_FACTOR));
 
     /** Flag indicating that this component has been terminated. */
     protected boolean sfIsTerminated = false;
@@ -233,7 +234,7 @@ public class PrimImpl extends Object implements Prim, MessageKeys {
                 "org.smartfrog.sfcore.processcompound.sfProcessName");
 
         if (value == null) {
-            return "ROOT";
+            return SmartFrogCoreKeys.SF_ROOT;
         } else {
             return value;
         }
@@ -1620,31 +1621,31 @@ public class PrimImpl extends Object implements Prim, MessageKeys {
             sfParent = parent;
             sfContext = cxt;
 
-	    /* @TODO Would like to do this, but requires Prim to be a ComponentDescription
-	     * which is a good idea in anycase, but requires a refactoring of the interfaces
-	     *
-	     * in the mean time reference resolution from a CD is bounded to that CD hierarchy
-	     * and cannot move between this and the Component hierarchy
-	     * 
-	     * Could do this by providing a proxy which implements CD and forwards the resovlve
-	     * requests to the Prim...
-	     *
+        /* @TODO Would like to do this, but requires Prim to be a ComponentDescription
+         * which is a good idea in anycase, but requires a refactoring of the interfaces
+         *
+         * in the mean time reference resolution from a CD is bounded to that CD hierarchy
+         * and cannot move between this and the Component hierarchy
+         *
+         * Could do this by providing a proxy which implements CD and forwards the resovlve
+         * requests to the Prim...
+         *
 
-	    // set the parent link of any contained component description to this Prim
-	    // so that references work
-	    for (Enumeration e = sfContext.keys(); e.hasMoreElements();) {
-		Object value = sfContext.get(e.nextElement());
+        // set the parent link of any contained component description to this Prim
+        // so that references work
+        for (Enumeration e = sfContext.keys(); e.hasMoreElements();) {
+        Object value = sfContext.get(e.nextElement());
 
-		if (value instanceof ComponentDescription) {
-		    ((ComponentDescription) value).setParent(this);
-		}
-	    }
+        if (value instanceof ComponentDescription) {
+            ((ComponentDescription) value).setParent(this);
+        }
+        }
 
-	    */
+        */
 
 
             boolean es; // allow exportRef to be defined by string (backward compatability) or boolean
-            Object eso = sfResolveId("sfExport");
+            Object eso = sfResolveId(SmartFrogCoreKeys.SF_EXPORT);
 
             if (eso == null) {
                 es = true;
@@ -1667,9 +1668,9 @@ public class PrimImpl extends Object implements Prim, MessageKeys {
                 sfLivenessDelay = ((Number) sfResolve(refLivenessDelay)).intValue();
                 sfLivenessFactor = ((Number) sfResolve(refLivenessFactor)).intValue();
                 // copy in local description for efficiency when subcomponents looking up
-                sfReplaceAttribute("sfLivenessDelay", new Long (sfLivenessDelay) );
+                sfReplaceAttribute(SmartFrogCoreKeys.SF_LIVENESS_DELAY, new Long (sfLivenessDelay) );
                 // copy in local description for efficiency when subcomponents looking up
-                sfReplaceAttribute("sfLivenessFactor", new Integer (sfLivenessFactor));
+                sfReplaceAttribute(SmartFrogCoreKeys.SF_LIVENESS_FACTOR, new Integer (sfLivenessFactor));
             } catch (SmartFrogResolutionException resex) {
                 // ignore, leave default
             }
@@ -1680,8 +1681,8 @@ public class PrimImpl extends Object implements Prim, MessageKeys {
             sfStartLivenessSender();
 
 
-            sfReplaceAttribute("sfHost", sfDeployedHost());
-            sfReplaceAttribute("sfProcess", sfDeployedProcessName());
+            sfReplaceAttribute(SmartFrogCoreKeys.SF_HOST, sfDeployedHost());
+            sfReplaceAttribute(SmartFrogCoreKeys.SF_PROCESS, sfDeployedProcessName());
 
             sfDeployWithHooks.applyHooks(this, null);
 

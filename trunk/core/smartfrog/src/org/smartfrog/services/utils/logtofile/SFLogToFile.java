@@ -30,6 +30,7 @@ import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.common.TerminatorThread;
@@ -68,7 +69,7 @@ public class SFLogToFile extends PrimImpl implements Prim, PrintMsgInt,
     /** Flag indicating whether logOnlyInRootProcess or not. */
     boolean logOnlyInRootProcess;
     /** Reference for processName. */
-    Reference processNameRef = new Reference("sfProcess");
+    Reference processNameRef = new Reference(SmartFrogCoreKeys.SF_PROCESS);
     /** String name for processName. */
     String processName;
     /** Reference for useDate. */
@@ -137,7 +138,7 @@ public class SFLogToFile extends PrimImpl implements Prim, PrintMsgInt,
 
         // create the file & redirect the outputs
         try {
-            if (processName.equals("rootProcess") ||
+            if (processName.equals(SmartFrogCoreKeys.SF_ROOT_PROCESS) ||
                                         !logOnlyInRootProcess) {
                 createFile();
                 redirectOutputs();
@@ -246,7 +247,7 @@ public class SFLogToFile extends PrimImpl implements Prim, PrintMsgInt,
      *  @param t TerminationRecord object
      */
     public synchronized void sfTerminateWith(TerminationRecord t) {
-        if (processName.equals("rootProcess")) {
+        if (processName.equals(SmartFrogCoreKeys.SF_ROOT_PROCESS)) {
             try {
                 System.setErr(originalSysErr);
                 System.setOut(originalSysOut);

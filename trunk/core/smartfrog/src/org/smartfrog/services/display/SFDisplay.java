@@ -34,6 +34,7 @@ import javax.swing.Timer;
 
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
@@ -118,7 +119,7 @@ public class SFDisplay extends PrimImpl implements Prim, PrintMsgInt,
 
    /** If auto clean, should save screen content? */
    boolean autoSave = true;
-   /** String valuse for directory. */ 
+   /** String valuse for directory. */
    String directoryAutoSave = "./";
    /** Flag indicating to show IP or not. */
    boolean showIP = false;
@@ -155,7 +156,7 @@ public class SFDisplay extends PrimImpl implements Prim, PrintMsgInt,
     *attributes or deploying the components
     *@throws  RemoteException     if there is any rmi or network error
     */
-    public synchronized void sfDeploy() throws SmartFrogException, 
+    public synchronized void sfDeploy() throws SmartFrogException,
     RemoteException {
         super.sfDeploy();
         try {
@@ -169,7 +170,7 @@ public class SFDisplay extends PrimImpl implements Prim, PrintMsgInt,
                 nameDisplay = nameDisplay.replace('/', '_');
             }
             if (showSfProcessName) {
-                sfProcessName = sfResolve("sfProcess", sfProcessName, false);
+                sfProcessName = sfResolve(SmartFrogCoreKeys.SF_PROCESS, sfProcessName, false);
 
                 if (sfProcessName == null) {
                      nameDisplay = "[" + "" + "] " + nameDisplay;
@@ -307,7 +308,7 @@ public class SFDisplay extends PrimImpl implements Prim, PrintMsgInt,
     * @throws  RemoteException if any remote or network error occurs while
     * starting the component
     */
-   public synchronized void sfStart() throws SmartFrogException, 
+   public synchronized void sfStart() throws SmartFrogException,
    RemoteException {
        super.sfStart();
    }
@@ -421,7 +422,7 @@ public class SFDisplay extends PrimImpl implements Prim, PrintMsgInt,
     * before the message.
     *
     *@param  msg  Message
-    *@return  Formatted message 
+    *@return  Formatted message
     */
    private String formatMsg(String msg) {
       //msg = msg + ", [" + (new SimpleDateFormat("HH:mm:ss.SSS dd/MM/yy").

@@ -22,6 +22,7 @@ package org.smartfrog.examples.spawn;
 
 import java.rmi.RemoteException;
 
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
@@ -92,7 +93,7 @@ public class Spawn extends CompoundImpl implements Prim{
         }
       }catch (SmartFrogException sfex) {
             // add the context in case of failure
-            sfex.put("sfStartFailure", this.sfContext);
+            sfex.put(SmartFrogCoreKeys.SF_START_FAILURE, this.sfContext);
             // trigger termination of component
             Reference name = sfCompleteNameSafe();
             terminateComponent(this, sfex, name);

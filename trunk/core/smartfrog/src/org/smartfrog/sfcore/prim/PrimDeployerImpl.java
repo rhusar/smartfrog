@@ -22,6 +22,7 @@ package org.smartfrog.sfcore.prim;
 
 import java.util.Enumeration;
 
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.MessageKeys;
 import org.smartfrog.sfcore.common.MessageUtil;
@@ -44,11 +45,11 @@ import org.smartfrog.sfcore.security.SFClassLoader;
 public class PrimDeployerImpl implements ComponentDeployer, MessageKeys {
     /** Efficiency holder of sfClass reference. */
     protected static final Reference refClass = new Reference(
-                "sfClass");
+                SmartFrogCoreKeys.SF_CLASS);
 
     /** Efficiency holder of sfCodeBase reference. */
     protected static final Reference refCodeBase = new Reference(
-                "sfCodeBase");
+                SmartFrogCoreKeys.SF_CODE_BASE);
 
     /** The target description to work of. */
     public ComponentDescription target;
@@ -157,8 +158,8 @@ public class PrimDeployerImpl implements ComponentDeployer, MessageKeys {
             throw resex;
         } catch (java.lang.ClassNotFoundException cnfex){
             Object name = null;
-            if (target.getContext().containsKey("sfProcessComponentName")) {
-                name =target.getContext().get("sfProcessComponentName");
+            if (target.getContext().containsKey(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME)) {
+                name =target.getContext().get(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME);
             }
             throw new SmartFrogDeploymentException (refClass,null,name,target,null,"Class not found", cnfex, targetCodeBase);
         }

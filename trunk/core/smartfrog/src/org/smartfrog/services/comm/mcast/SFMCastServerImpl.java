@@ -20,6 +20,7 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.comm.mcast;
 
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -93,9 +94,9 @@ public class SFMCastServerImpl extends PrimImpl implements Prim, SFMCastServer,
     RemoteException {
         super.sfDeploy();
         TerminationRecord termR;
-                String processName = sfResolve("sfProcess", "", false);
-                if ((onlyInRoot)&& (processName.equals("rootProcess"))) {
-                    termR = new TerminationRecord("normal",
+                String processName = sfResolve(SmartFrogCoreKeys.SF_PROCESS, "", false);
+                if ((onlyInRoot)&& (processName.equals(SmartFrogCoreKeys.SF_ROOT_PROCESS))) {
+                    termR = new TerminationRecord(TerminationRecord.NORMAL,
                                                   "Not deployed in rootProcess",
                                                   this.sfCompleteName());
 

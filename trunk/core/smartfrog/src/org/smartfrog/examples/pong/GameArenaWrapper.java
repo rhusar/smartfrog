@@ -29,6 +29,7 @@ import java.util.Enumeration;
 import java.util.Vector;
 
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.prim.Prim;
@@ -87,7 +88,7 @@ public class GameArenaWrapper extends EventPrimImpl implements Prim, Linker {
                     ((Integer) dim.elementAt(1)).intValue());
         } catch (SmartFrogException sfex) {
             // add the context in case of failure
-            sfex.put("sfDeployFailure", this.sfContext);
+            sfex.put(SmartFrogCoreKeys.SF_DEPLOY_FAILURE, this.sfContext);
 
             // terminate component
             Reference name = sfCompleteNameSafe();
@@ -133,7 +134,7 @@ public class GameArenaWrapper extends EventPrimImpl implements Prim, Linker {
             gameArena.startGame();
         } catch (SmartFrogException sfex) {
             // add the context in case of failure
-            sfex.put("sfStartFailure", this.sfContext);
+            sfex.put(SmartFrogCoreKeys.SF_START_FAILURE, this.sfContext);
             Reference name = sfCompleteNameSafe();
             // trigger termination of component
             terminateComponent(this, sfex, name);

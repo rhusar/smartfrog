@@ -70,7 +70,7 @@ public class SFSecurityProperties {
     public static final String propUseCodebaseOnly = "java.rmi.server.useCodebaseOnly";
 
     /**
-     * Property name to a built-in java rmi property that makes remote object
+     * Property name to a built-in java rmi property that makes remote object\z
      * IDs difficult to guess.
      */
     public static final String propRandomIDs = "java.rmi.server.randomIDs";

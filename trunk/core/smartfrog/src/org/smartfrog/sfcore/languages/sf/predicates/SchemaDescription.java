@@ -23,6 +23,7 @@ package org.smartfrog.sfcore.languages.sf.predicates;
 
 import java.util.Enumeration;
 
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.languages.sf.PhaseAction;
@@ -38,7 +39,7 @@ public class SchemaDescription extends BasePredicate implements PhaseAction {
     Reference ref;
     Reference parentref;
 
-    private String schemaDescription = "sfSchemaDescription";
+    private String schemaDescription = SmartFrogCoreKeys.SF_SCHEMA_DESCRIPTION;
 
     private Reference optionalRef = new Reference(ReferencePart.here("optional"));
     private Reference bindingRef = new Reference(ReferencePart.here("binding"));
@@ -133,10 +134,10 @@ public class SchemaDescription extends BasePredicate implements PhaseAction {
         }
     }
 
-    
+
     /**
      * Applies predicates.
-     * @throws SmartFrogCompileResolutionException if error while applying 
+     * @throws SmartFrogCompileResolutionException if error while applying
      * predicates
      */
 

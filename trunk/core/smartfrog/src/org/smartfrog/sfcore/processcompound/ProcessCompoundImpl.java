@@ -33,6 +33,7 @@ import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.Logger;
 import org.smartfrog.sfcore.common.MessageKeys;
 import org.smartfrog.sfcore.common.MessageUtil;
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
@@ -109,7 +110,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
      * the process to be GCed. If this is set to 0, the GC is disabled.
      */
     protected int gcTimeout = -1;
-    /** The countdown to check the gcTimeout. */ 
+    /** The countdown to check the gcTimeout. */
     protected int countdown = 0;
 
 
@@ -143,7 +144,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
      *
      * @param parent parent process compound to register with
      *
-     * @exception SmartFrogException failed to register with parent 
+     * @exception SmartFrogException failed to register with parent
      */
     protected void sfRegisterWithParent(ProcessCompound parent)
         throws SmartFrogException {
@@ -157,7 +158,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
             throw new SmartFrogRuntimeException(MSG_FAILED_TO_CONTACT_PARENT,
                 rex, this);
         } catch (SmartFrogException resex) {
-            resex.put("sfProcessName", sfProcessName);
+            resex.put(SmartFrogCoreKeys.SF_PROCESS_NAME, sfProcessName);
             throw resex;
         }
     }
@@ -178,15 +179,15 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
 
         if (sfParent != null) {
             return (ProcessCompound) sfParent;
-	}
-   
+    }
+
         if (sfProcessName == null) {
             return null;
         }
 
         try {
             root = SFProcess.getRootLocator().getRootProcessCompound(null,
-                    ((Number) sfResolveId("sfRootLocatorPort")).intValue());
+                    ((Number) sfResolveId(SmartFrogCoreKeys.SF_ROOT_LOCATOR_PORT)).intValue());
         } catch (Throwable t){
             throw (SmartFrogRuntimeException)SmartFrogRuntimeException.forward(t);
         }
@@ -208,7 +209,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
      *
      * @return newly deployed component
      *
-     * @exception SmartFrogDeploymentException failed to deploy compiled 
+     * @exception SmartFrogDeploymentException failed to deploy compiled
      * component
      */
     public Prim sfDeployComponentDescription(Object name, Prim parent,
@@ -226,7 +227,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
                 result = super.sfDeployComponentDescription(name, parent, cmp, parms);
             }
 
-            sfRegister(result.sfResolveId("sfProcessComponentName"), result);
+            sfRegister(result.sfResolveId(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME), result);
 
             return result;
         } catch (Exception sfex){
@@ -258,10 +259,10 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
             sfContext = cxt;
 
             // find name for this process. If found, get parent
-            sfProcessName = (String) sfResolveId("sfProcessName");
+            sfProcessName = (String) sfResolveId(SmartFrogCoreKeys.SF_PROCESS_NAME);
 
             if (sfProcessName != null) {
-                if (sfProcessName.equals("rootProcess")) {
+                if (sfProcessName.equals(SmartFrogCoreKeys.SF_ROOT_PROCESS)) {
                     sfIsRoot = true;
                 } else {
                     try {
@@ -279,7 +280,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
                 super.sfDeployWith(sfParent, sfContext);
             } catch (SmartFrogDeploymentException sfex) {
                 if (sfProcessName != null) {
-                    sfex.put("sfProcessName", sfProcessName);
+                    sfex.put(SmartFrogCoreKeys.SF_PROCESS_NAME, sfProcessName);
                 }
 
                 sfex.put("sfDeployWith", "failed");
@@ -309,21 +310,21 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
      * @throws RemoteException In case of Remote/nework error
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
-	super.sfStart();
+    super.sfStart();
 
-	// the last act is to inform the root process compound that the
-	// subprocess is now ready for action - only done if not the root
-	try {
-	    if (!sfIsRoot()) {
-		ProcessCompound parent = sfLocateParent();
-		if (parent != null) {
-		    parent.sfNotifySubprocessReady(sfProcessName);
-		}
-	    }
-	} catch (RemoteException rex) {
-	    throw new SmartFrogRuntimeException(MSG_FAILED_TO_CONTACT_PARENT,
-						rex, this);
-	} 
+    // the last act is to inform the root process compound that the
+    // subprocess is now ready for action - only done if not the root
+    try {
+        if (!sfIsRoot()) {
+        ProcessCompound parent = sfLocateParent();
+        if (parent != null) {
+            parent.sfNotifySubprocessReady(sfProcessName);
+        }
+        }
+    } catch (RemoteException rex) {
+        throw new SmartFrogRuntimeException(MSG_FAILED_TO_CONTACT_PARENT,
+                        rex, this);
+    }
     }
 
     /**
@@ -335,7 +336,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
      * @param comp component that terminated
      */
     public void sfTerminatedWith(TerminationRecord rec, Prim comp) {
-	sfRemoveAttribute(sfAttributeKeyFor(comp));
+    sfRemoveAttribute(sfAttributeKeyFor(comp));
     }
 
     /**
@@ -375,8 +376,8 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
         //System.out.println("terminating with " + rec.toString());
         if (systemExit) {
             try {
-                String name = "sfProcessName";
-                name = sfResolve("sfProcessName", name, false);
+                String name = SmartFrogCoreKeys.SF_PROCESS_NAME;
+                name = sfResolve(SmartFrogCoreKeys.SF_PROCESS_NAME, name, false);
                 if (Logger.logStackTrace) {
                     Logger.log(MessageUtil.formatMessage(MSG_SF_DEAD, name)+" "+ new Date(System.currentTimeMillis()));
                 } else {
@@ -426,7 +427,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
 
         if (gcTimeout == -1) {
             try {
-                gcTimeout = ((Integer) sfResolveHere("sfSubprocessGCTimeout")).intValue();
+                gcTimeout = ((Integer) sfResolveHere(SmartFrogCoreKeys.SF_SUBPROCESS_GC_TIMEOUT)).intValue();
             } catch (SmartFrogResolutionException r) {
                 gcTimeout = 0;
             }
@@ -476,11 +477,11 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
         Reference r;
         r = new Reference();
 
-        String canonicalHostName = "sfHost";
+        String canonicalHostName = SmartFrogCoreKeys.SF_HOST;
 
         try {
             // read sfHost attribute. Faster that using sfDeployedHost().
-            canonicalHostName = ((java.net.InetAddress) sfResolveId("sfHost")).getCanonicalHostName();
+            canonicalHostName = ((java.net.InetAddress) sfResolveId(canonicalHostName)).getCanonicalHostName();
         } catch (NullPointerException exSfHost) {
             canonicalHostName = this.sfDeployedHost().getCanonicalHostName();
         }
@@ -491,7 +492,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
             if (this.sfProcessName() == null) {
                 // Process created when using sfDeployFrom (use by sfStart &
                 //  sfRun)
-                r.addElement(ReferencePart.here("sfRunProcess"));
+                r.addElement(ReferencePart.here(SmartFrogCoreKeys.SF_RUN_PROCESS));
             } else {
                 r.addElement(ReferencePart.here(this.sfProcessName()));
             }
@@ -537,7 +538,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
             // Make up a name for the component first get complete name of
             // component
             // Add a timestamp to the end and convert to string
-            compName = "unnamed_" + (new Date()).getTime() + "_" +
+            compName = SmartFrogCoreKeys.SF_UNNAMED + (new Date()).getTime() + "_" +
                 registrationNumber++;
         }
 
@@ -554,7 +555,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
 
     /**
      * Tries to find an attribute in the local context. If the attribute is not
-     * found the thread will wait for a notification from sfNotifySubprocessReady 
+     * found the thread will wait for a notification from sfNotifySubprocessReady
      * or until given timeout expires. Used to wait for a new process
      * compound to appear.
      *
@@ -570,29 +571,29 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
         throws Exception {
         long endTime = (new Date()).getTime() + timeout;
 
-	synchronized (processLocks) {
-	    while (true) {
-		try {
-		    // try to return the attribute value
-		    // if name in locks => process not ready, pretend not found...
-		    if (processLocks.contains(name)) {
-			throw SmartFrogResolutionException.notFound(new Reference(name),
-								    sfCompleteNameSafe());
-		    }
-		    else
-			return sfResolveHere(name);
-		} catch (SmartFrogResolutionException ex) {
-		    // not found, wait for leftover timeout
-		    long now = (new Date()).getTime();
-		    
-		    if (now >= endTime) {
-			throw ex;
-		    }
-		    processLocks.add(name);
-		    processLocks.wait(endTime - now);
-		}
-	    }
-	}
+    synchronized (processLocks) {
+        while (true) {
+        try {
+            // try to return the attribute value
+            // if name in locks => process not ready, pretend not found...
+            if (processLocks.contains(name)) {
+            throw SmartFrogResolutionException.notFound(new Reference(name),
+                                    sfCompleteNameSafe());
+            }
+            else
+            return sfResolveHere(name);
+        } catch (SmartFrogResolutionException ex) {
+            // not found, wait for leftover timeout
+            long now = (new Date()).getTime();
+
+            if (now >= endTime) {
+            throw ex;
+            }
+            processLocks.add(name);
+            processLocks.wait(endTime - now);
+        }
+        }
+    }
     }
 
     /**
@@ -601,16 +602,16 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
      *
      * @param name the name of the subprocess
      * @throws RemoteException if there is any network or remote error
-     * 
+     *
      */
     public void sfNotifySubprocessReady(String name)
         throws RemoteException {
 
         // Notify any waiting threads that an attribute was added
-	synchronized (processLocks) {
-	    processLocks.remove(name);
-	    processLocks.notifyAll();
-	}
+    synchronized (processLocks) {
+        processLocks.remove(name);
+        processLocks.notifyAll();
+    }
     }
 
     /**
@@ -664,7 +665,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
         // Check if process creation is allowed
         boolean allowProcess;
 
-        Object ap = sfResolveHere("sfProcessAllow");
+        Object ap = sfResolveHere(SmartFrogCoreKeys.SF_PROCESS_ALLOW);
 
         if (ap == null) {
             allowProcess = false;
@@ -681,7 +682,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
         }
 
         // Locate timeout
-        long timeout = 1000 * ((Number) sfResolveHere("sfProcessTimeout")).intValue();
+        long timeout = 1000 * ((Number) sfResolveHere(SmartFrogCoreKeys.SF_PROCESS_TIMEOUT)).intValue();
 
         // Start process
         Process process = startProcess(name);
@@ -754,7 +755,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
      * @exception Exception failed to construct java command
      */
     protected void addProcessJava(Vector cmd) throws Exception {
-        cmd.addElement((String) sfResolveHere("sfProcessJava"));
+        cmd.addElement((String) sfResolveHere(SmartFrogCoreKeys.SF_PROCESS_JAVA));
     }
 
     /**
@@ -766,7 +767,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
      * @exception Exception failed to construct classname
      */
     protected void addProcessClassName(Vector cmd) throws Exception {
-        cmd.addElement((String) sfResolveHere("sfProcessClass"));
+        cmd.addElement((String) sfResolveHere(SmartFrogCoreKeys.SF_PROCESS_CLASS));
     }
 
     /**

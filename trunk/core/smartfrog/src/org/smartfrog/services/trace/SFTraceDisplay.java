@@ -33,6 +33,7 @@ import org.smartfrog.services.display.SFDisplay;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.processcompound.SFProcess;
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 
 
 /**
@@ -65,19 +66,19 @@ public class SFTraceDisplay extends SFDisplay implements ActionListener {
      * @throws SmartFrogException In case of error while deployment
      * @throws RemoteException In case of Remote/nework error
      */
-    public synchronized void sfDeploy() throws SmartFrogException, 
+    public synchronized void sfDeploy() throws SmartFrogException,
     RemoteException {
 //        try {
             super.sfDeploy();
 
             // We add the new Tree component here
             //panel Tree Class. Example to extend Display ;-)
-            String rootDN = "ROOT";
+            String rootDN = SmartFrogCoreKeys.SF_ROOT;
             String rootLocatorPort = "";
 
             try {
                 rootLocatorPort = SFProcess.getProcessCompound()
-                                           .sfResolve("sfRootLocatorPort")
+                                           .sfResolve(SmartFrogCoreKeys.SF_ROOT_LOCATOR_PORT)
                                            .toString();
             } catch (Exception ex) {
                 System.out.println("Exception deployment:" + ex.toString());
@@ -107,7 +108,7 @@ public class SFTraceDisplay extends SFDisplay implements ActionListener {
      * @throws SmartFrogException In case of error while starting the component
      * @throws RemoteException In case of Remote/nework error
      */
-    public synchronized void sfStart() throws SmartFrogException, 
+    public synchronized void sfStart() throws SmartFrogException,
     RemoteException {
         super.sfStart();
     }

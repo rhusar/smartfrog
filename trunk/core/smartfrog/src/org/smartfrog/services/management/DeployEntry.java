@@ -24,6 +24,7 @@ import java.util.Enumeration;
 
 import org.smartfrog.services.trace.Entry;
 import org.smartfrog.sfcore.common.Context;
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
@@ -31,6 +32,7 @@ import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.sfcore.processcompound.SFProcess;
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 
 //import org.smartfrog.sfcore.parser.*;
 
@@ -115,7 +117,7 @@ public class DeployEntry implements Entry {
         //Test
         System.out.println("Starting...a new adventure.");
 
-        DeployEntry entry = new DeployEntry("ROOT");
+        DeployEntry entry = new DeployEntry(SmartFrogCoreKeys.SF_ROOT);
         System.out.println("...Finished");
     }
 
@@ -145,9 +147,9 @@ public class DeployEntry implements Entry {
         // Needs to the the real ROOT of the system
         try {
             if (entry instanceof Compound) {
-                return (new DeployEntry(((Compound) entry).sfResolveWithParser("ROOT"), this.showRootProcessName));
+                return (new DeployEntry(((Compound) entry).sfResolveWithParser(SmartFrogCoreKeys.SF_ROOT), this.showRootProcessName));
             } else {
-                return (new DeployEntry(((Prim) entry).sfResolveWithParser("ROOT"),this.showRootProcessName));
+                return (new DeployEntry(((Prim) entry).sfResolveWithParser(SmartFrogCoreKeys.SF_ROOT),this.showRootProcessName));
             }
 
             //return entry;

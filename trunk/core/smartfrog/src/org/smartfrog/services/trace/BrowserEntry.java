@@ -24,6 +24,8 @@ package org.smartfrog.services.trace;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
+
 
 /**
  *  BrowserEntry represents a node in a BrowseTreeModel.
@@ -229,7 +231,7 @@ public final class BrowserEntry implements Entry {
         System.out.println("    ParentDN:" +
             this.getParentDN(this.getMsgDN(msg)));
         System.out.println("    getMsgChild4Parent(System): " +
-            getMsgChild4Parent("ROOT", getMsgDN(msg)));
+            getMsgChild4Parent(SmartFrogCoreKeys.SF_ROOT, getMsgDN(msg)));
         System.out.println("    getMsgChild4Parent(System): " +
             getMsgChild4Parent("ROOT:System", getMsgDN(msg)));
         System.out.println("    getMsgChild4Parent(System:foo): " +
@@ -684,7 +686,7 @@ public final class BrowserEntry implements Entry {
         //Test
         System.out.println("Starting...a new adventure.");
 
-        BrowserEntry entry = new BrowserEntry("ROOT");
+        BrowserEntry entry = new BrowserEntry(SmartFrogCoreKeys.SF_ROOT);
         System.out.println(
             "Adding: ROOT:System -------------------------------------------");
         entry.add(

@@ -34,6 +34,7 @@ import javax.swing.JCheckBoxMenuItem;
 import org.smartfrog.services.display.Display;
 import org.smartfrog.services.display.SFDisplay;
 import org.smartfrog.sfcore.common.Context;
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
@@ -41,6 +42,7 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.processcompound.SFProcess;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.services.display.WindowUtilities;
+import org.smartfrog.sfcore.common.Logger;
 
 
 /**
@@ -71,7 +73,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
     *@throws  Exception  If any error
     */
    public static void main(String[] args) throws Exception {
-      System.out.println("Starting management window...");
+      Logger.log("Starting management window...");
 
       String nameDisplay = "sfManagementConsole";
       int height = 440;
@@ -99,7 +101,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
          exitWith("Error in SFDeployDisplay.main():" + e);
       }
 
-      System.out.println("Running.");
+      Logger.log("Running.");
    }
 
 
@@ -134,7 +136,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
             hostname + ":" + port + "]";
 
       if (showRootProcess) {
-         System.out.println(" showing rootProcess");
+         Logger.log(" showing rootProcess");
       } else {
          //System.out.println("");
       }
@@ -163,8 +165,9 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
                         addProcessesPanels(display, jCheckBoxMenuItemShowRootProcessPanel.isSelected(), //showRootProcess,
                               hostname, port);
                      } catch (Exception ex) {
-                        System.err.println();
-                        ex.printStackTrace();
+                        Logger.log(ex);
+//                        System.err.println();
+//                        ex.printStackTrace();
                         exitWith("Error in SFDeployDisplay.refresh():" +
                               ex);
                      }
@@ -277,7 +280,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
          super.sfDeploy();
 
          // We add the new Tree component here
-         Object root = this.sfResolveWithParser("ROOT");
+         Object root = this.sfResolveWithParser(SmartFrogCoreKeys.SF_ROOT);
 
          //root= new CompoundImpl();
          //System.out.println("Root: "+root.toString());
@@ -346,11 +349,11 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
    public void refresh() {
       try {
          //System.out.println("Refreshing info");
-         Object root = this.sfResolve("ROOT",true);
+         Object root = this.sfResolve(SmartFrogCoreKeys.SF_ROOT,true);
          ((DeployTreePanel) panelTree).setModel(root);
          ((DeployTreePanel) panelTree).refresh();
       } catch (Throwable ex) {
-         System.out.println("Failure refresh() SFDeployDisplay!");
+         Logger.log("Failure refresh() SFDeployDisplay!");
          ex.printStackTrace();
       }
    }
@@ -362,7 +365,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
     *@param  e  action event
     */
    public void actionPerformed(ActionEvent e) {
-      System.out.println("ActionEvent SFDEployDisplay: "+ e);
+      Logger.log("ActionEvent SFDEployDisplay: "+ e);
       if ((e.getActionCommand()).equals("refreshButton")) {
          refresh(e);
       }
