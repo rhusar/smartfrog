@@ -410,7 +410,7 @@ public class Reference implements Copying, Cloneable, Serializable {
         String res = (eager ? "" : "LAZY ");
 
         for (int i = 0; i < ref.size(); i++)
-            res += (elementAt(i).toString() +
+            res += (elementAt(i).toString(i) +
             ((i < (ref.size() - 1)) ? ":" : ""));
 
         return res;

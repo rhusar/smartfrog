@@ -62,6 +62,20 @@ public class AttribReferencePart extends HereReferencePart {
     }
 
     /**
+     * Return a string which is a representation of the reference part in a reference in the 
+     * index position given.
+     *
+     * @param index the position in the reference
+     * @return the representation
+     */
+    public String toString(int index) {
+	if (index == 0)
+	    return value.toString();
+	else
+	    return ATTRIB + ' ' + value.toString();
+    }
+
+    /**
      * Returns hashcode of this part. This is the hashCode of the stored value
      * plus the ATTRIB hashcode
      *
