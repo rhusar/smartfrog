@@ -81,28 +81,23 @@ public interface MessageKeys {
     /**
      * Message key: failed to find parent location.
      */
-    public static String MSG_PARENT_LOCATION_FAILED
-                                    = "MSG_PARENT_LOCATION_FAILED";
+    public static String MSG_PARENT_LOCATION_FAILED = "MSG_PARENT_LOCATION_FAILED";
     /**
      * Message key: failed to contact parent.
      */
-    public static String MSG_FAILED_TO_CONTACT_PARENT
-                                    = "MSG_FAILED_TO_CONTACT_PARENT";
+    public static String MSG_FAILED_TO_CONTACT_PARENT = "MSG_FAILED_TO_CONTACT_PARENT";
     /**
      * Message key: failure in deploywith phase.
      */
-    public static String MSG_DEPLOYWITH_PHASE_FAILED
-                                    = "MSG_DEPLOYWITH_PHASE_FAILED";
+    public static String MSG_DEPLOYWITH_PHASE_FAILED = "MSG_DEPLOYWITH_PHASE_FAILED";
     /**
      * Message key: failure in object registration.
      */
-    public static String MSG_OBJECT_REGISTRATION_FAILED
-                                    = "MSG_OBJECT_REGISTRATION_FAILED";
+    public static String MSG_OBJECT_REGISTRATION_FAILED  = "MSG_OBJECT_REGISTRATION_FAILED";
     /**
      * Message key: failure in starting liveness thread.
      */
-    public static String MSG_LIVENESS_START_FAILED
-                                    = "MSG_LIVENESS_START_FAILED";
+    public static String MSG_LIVENESS_START_FAILED = "MSG_LIVENESS_START_FAILED";
     /**
      * Message key: failure in hook action.
      */
@@ -160,6 +155,7 @@ public interface MessageKeys {
      * Message key: smartfrog ready.
      */
     public static String MSG_SF_READY = "MSG_SF_READY";
+
     /**
      * Message key: smartfrog dead.
      */
@@ -235,8 +231,7 @@ public interface MessageKeys {
     /**
      * Message key: reference is not a smartfrog component.
      */
-    public static String MSG_NOT_COMPONENT_REFERENCE
-                                            = "MSG_NOT_COMPONENT_REFERENCE";
+    public static String MSG_NOT_COMPONENT_REFERENCE = "MSG_NOT_COMPONENT_REFERENCE";
     /**
      * Message key: illegal reference.
      */
@@ -253,50 +248,38 @@ public interface MessageKeys {
     /**
      * Message key: url not found for parsing.
      */
-    public static String MSG_URL_TO_PARSE_NOT_FOUND
-                                               = "MSG_URL_TO_PARSE_NOT_FOUND";
-
-
-
-
+    public static String MSG_URL_TO_PARSE_NOT_FOUND  = "MSG_URL_TO_PARSE_NOT_FOUND";
 
     /**
      * Message key: illegal numeric parameter to function.
      */
-    public static String ILLEGAL_NUMERIC_PARAMETER
-                                               = "ILLEGAL_NUMERIC_PARAMETER";
+    public static String ILLEGAL_NUMERIC_PARAMETER = "ILLEGAL_NUMERIC_PARAMETER";
     /**
      * Message key: illegal string parameter to function.
      */
-    public static String ILLEGAL_STRING_PARAMETER
-                                               = "ILLEGAL_STRING_PARAMETER";
+    public static String ILLEGAL_STRING_PARAMETER  = "ILLEGAL_STRING_PARAMETER";
     /**
      * Message key: illegal numeric parameter to function.
      */
-    public static String ILLEGAL_VECTOR_PARAMETER
-                                               = "ILLEGAL_VECTOR_PARAMETER";
+    public static String ILLEGAL_VECTOR_PARAMETER  = "ILLEGAL_VECTOR_PARAMETER";
     /**
      * Message key: illegal boolean parameter to function.
      */
-    public static String ILLEGAL_BOOLEAN_PARAMETER
-                                               = "ILLEGAL_BOOLEAN_PARAMETER";
+    public static String ILLEGAL_BOOLEAN_PARAMETER  = "ILLEGAL_BOOLEAN_PARAMETER";
     /**
      * Message key: too many parameters to function.
      */
-    public static String MISSING_PARAMETER
-                                               = "MISSING_PARAMETER";
+    public static String MISSING_PARAMETER = "MISSING_PARAMETER";
 
     /**
      * Message key: copy of data in ComponentDescritpionImpl, etc,  failed
      */
-    public static String COPY_FAILED
-                                               = "COPY_FAILED";
+    public static String COPY_FAILED = "COPY_FAILED";
 
     /**
      * Message key: copy of data in ComponentDescritpionImpl, etc,  failed
      */
-    public static String COPY_SERIALIZE_FAILED
-                                               = "COPY_SERIALIZE_FAILED";
+    public static String COPY_SERIALIZE_FAILED = "COPY_SERIALIZE_FAILED";
 
     /**
      * Message key: Failed to get InetAddress of the localhost

@@ -208,6 +208,12 @@ public interface SmartFrogCoreKeys {
      */
     public final static String SF_BOOT_DATE = "sfBootDate";
 
+    /**
+     * Attribute that holds version of the root process daemon
+     *
+     * Value {@value}
+     */
+    public final static String SF_VERSION = "sfVersion";
 
 
     // Strings used to name certain things in the framework
