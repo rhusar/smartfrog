@@ -486,13 +486,11 @@ public class SFSystem implements MessageKeys {
      * resource
      * @see SFClassLoader
      */
-    public static InputStream getInputStreamForResource(String resourceSFURL)
-                                                throws SmartFrogException{
+    public static InputStream getInputStreamForResource(String resourceSFURL) throws SmartFrogException {
         InputStream  is = null;
         is = SFClassLoader.getResourceAsStream(resourceSFURL);
         if(is == null) {
-            throw new SmartFrogException(MessageUtil.
-                    formatMessage(MSG_FILE_NOT_FOUND, resourceSFURL));
+            throw new SmartFrogException(MessageUtil.formatMessage(MSG_FILE_NOT_FOUND, resourceSFURL));
         }
         return is;
     }
@@ -506,12 +504,9 @@ public class SFSystem implements MessageKeys {
      * resource
      * @see SFClassLoader
      */
-    public static byte[] getByteArrayForResource(String resourceSFURL) throws
-        SmartFrogException {
+    public static byte[] getByteArrayForResource(String resourceSFURL) throws SmartFrogException {
         try {
-            DataInputStream iStrm = new DataInputStream(
-                getInputStreamForResource(
-                resourceSFURL));
+            DataInputStream iStrm = new DataInputStream(getInputStreamForResource(resourceSFURL));
             byte resourceData[];
             ByteArrayOutputStream bStrm = new ByteArrayOutputStream();
             int ch;
