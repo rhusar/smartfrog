@@ -29,6 +29,7 @@ import org.smartfrog.sfcore.common.MessageUtil;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.componentdescription.ComponentDeployer;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.reference.Reference;
@@ -153,7 +154,7 @@ public class PrimDeployerImpl implements ComponentDeployer, MessageKeys {
             // We look in the default code base if everything else fails.
             return SFClassLoader.forName(targetClassName,targetCodeBase, true);
         } catch (SmartFrogResolutionException resex) {
-            resex.put(resex.SOURCE, target.getCompleteName());
+            resex.put(SmartFrogRuntimeException.SOURCE, target.getCompleteName());
             resex.fillInStackTrace();
 
             throw resex;
