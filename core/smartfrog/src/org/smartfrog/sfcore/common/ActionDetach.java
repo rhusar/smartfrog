@@ -59,10 +59,19 @@ public class ActionDetach extends ConfigurationAction{
     public Object execute(ProcessCompound targetP,
                           ConfigurationDescriptor configuration) throws SmartFrogException,
             RemoteException {
-            if (targetP==null)
-               targetP = SFProcess.sfSelectTargetProcess(configuration.getHost(),
-                       configuration.getSubProcess());
-            Prim result = Detach(configuration.getName(), targetP);
+            Prim result=null;
+            try {
+                if (targetP==null)
+                    targetP = SFProcess.sfSelectTargetProcess(configuration.getHost(),
+                        configuration.getSubProcess());
+                result = Detach(configuration.getName(), targetP);
+            } catch (SmartFrogException sex){
+                 configuration.setResult(ConfigurationDescriptor.Result.FAILED,null,sex);
+                 throw sex;
+             } catch (RemoteException rex){
+                 configuration.setResult(ConfigurationDescriptor.Result.FAILED,null,rex);
+                 throw rex;
+            }
             configuration.setSuccessfulResult();
             return result;
 
