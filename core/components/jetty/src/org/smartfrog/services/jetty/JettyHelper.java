@@ -25,7 +25,6 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
-import org.smartfrog.sfcore.common.Logger;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.processcompound.SFProcess;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
@@ -87,7 +86,7 @@ public class JettyHelper extends ComponentHelper {
 
     /**
      * look for the jetty component by
-     * -looking for a server component that implements it 
+     * -looking for a server component that implements it
      * -probing for a parent
      * @throws SmartFrogResolutionException
      * @throws RemoteException
@@ -228,7 +227,10 @@ public class JettyHelper extends ComponentHelper {
             try {
                 context.stop();
             } catch (Exception ex) {
-                Logger.log(" Interrupted on context termination ", ex);
+              if (getLogger().isErrorEnabled()){
+                getLogger().error(" Interrupted on context termination ", ex);
+              }
+              // Logger.log(" Interrupted on context termination ", ex);
             }
             if ( httpServer != null ) {
                 httpServer.removeContext(context);
@@ -245,7 +247,10 @@ public class JettyHelper extends ComponentHelper {
             try {
                 listener.stop();
             } catch (Exception ex) {
-                Logger.log(" Interrupted on listener termination ", ex);
+                if (getLogger().isErrorEnabled()){
+                  getLogger().error(" Interrupted on listener termination ", ex);
+                }
+                //Logger.log(" Interrupted on listener termination ", ex);
             }
             removeListener(listener);
         }

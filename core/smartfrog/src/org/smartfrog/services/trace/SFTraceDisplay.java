@@ -156,7 +156,10 @@ public class SFTraceDisplay extends SFDisplay implements ActionListener {
         try {
             ((TraceTreePanel) panelTree).refresh();
         } catch (Exception ex) {
-            Logger.logQuietly("Failure refresh() SFTraceDisplay!",ex);
+            if (sflog().isIgnoreEnabled()){
+              sflog().ignore("Failure refresh() SFTraceDisplay!",ex);
+            }
+            //Logger.logQuietly("Failure refresh() SFTraceDisplay!",ex);
         }
     }
 

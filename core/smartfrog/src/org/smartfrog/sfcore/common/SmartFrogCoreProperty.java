@@ -78,6 +78,14 @@ public class SmartFrogCoreProperty {
     public static final String propLogStackTrace = propBase +
         "logger.logStackTrace";
 
+    /** Property name for logging Liveness .
+     *
+     *  Value {@value}
+     *  @see org.smartfrog.SFSystem
+     *  */
+    public static final String propLogLiveness = propBase +
+        "logger.logSfPing";
+
 
     // Reference
 

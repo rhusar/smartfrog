@@ -86,12 +86,17 @@ public class OnEvent extends EventCompoundImpl implements Compound {
 
         } catch (SmartFrogResolutionException e) {
 	    // no handler - log and ignore
-	    Logger.log(this.sfCompleteNameSafe()+"ignoring unknown event " + event);
+	    //Logger.log(this.sfCompleteNameSafe()+" ignoring unknown event " + event);
+            if (sflog().isIgnoreEnabled()){
+              sflog().ignore(this.sfCompleteNameSafe()+" - ignoring unknown event " + event,e);
+            }
 	} catch (Exception e) {
             // error in  handler - terminate...
-            sfTerminate(TerminationRecord.abnormal(
-                "error in event handler for event " + event, null));
-        } 
+            if (sflog().isErrorEnabled()){
+              sflog().error(this.sfCompleteNameSafe()+" - error in event handler for event " + event ,e);
+            }
+            sfTerminate(TerminationRecord.abnormal( "error in event handler for event " + event, null));
+        }
     }
 
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
@@ -106,9 +111,9 @@ public class OnEvent extends EventCompoundImpl implements Compound {
 
 
     /**
-     * It is invoked by sub-components at termination. If normal termiantion, 
+     * It is invoked by sub-components at termination. If normal termiantion,
      * and OnEvent is not in single event mode, then it simply accepts
-     * the child termination. Otherwsie it terminates itself as well, 
+     * the child termination. Otherwsie it terminates itself as well,
      * propagating child event handler termination status.
      *
      * @param status termination status of sender
@@ -128,7 +133,10 @@ public class OnEvent extends EventCompoundImpl implements Compound {
                     sfRemoveChild(comp);
                 }
             } catch (Exception e) {
-                Logger.log(this.sfCompleteNameSafe()+" - error handling child event handler termination ",e );
+//                Logger.log(this.sfCompleteNameSafe()+" - error handling child event handler termination ",e );
+                if (sflog().isErrorEnabled()){
+                  sflog().error(this.sfCompleteNameSafe()+" - error handling child event handler termination ",e);
+                }
                 sfTerminate(TerminationRecord.abnormal(
                         "error handling child event handler termination " + e, sfCompleteNameSafe()));
             }

@@ -206,7 +206,10 @@ public class SFMCastClientImpl extends PrimImpl implements Prim, SFMCastClient,
               }
               //this.sfReplaceAttribute(this.ATR_SERVERS,cd);
             } catch (SmartFrogRuntimeException ex1) {
-               Logger.log(ex1);
+               //Logger.log(ex1);
+               if (sflog().isErrorEnabled()){
+                 sflog().error(ex1);
+               }
             }
             try {
               Vector v = new Vector();

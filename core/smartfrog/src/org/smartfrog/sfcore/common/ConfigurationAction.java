@@ -25,6 +25,7 @@ import org.smartfrog.sfcore.processcompound.SFProcess;
 
 import java.net.InetAddress;
 import java.rmi.RemoteException;
+import org.smartfrog.SFSystem;
 
 /**
  * This code contains the methods to do things from configurations.
@@ -93,10 +94,16 @@ public abstract class ConfigurationAction {
         //TODO: Check exception handling
         if ((ex.getCause() instanceof java.net.SocketException) ||
                 (ex.getCause() instanceof java.io.EOFException)) {
-            Logger.log(MessageUtil.formatMessage(MessageKeys.MSG_SF_TERMINATED));
+            //Logger.log(MessageUtil.formatMessage(MessageKeys.MSG_SF_TERMINATED));
+            if (SFSystem.sflog().isTraceEnabled()) {
+              SFSystem.sflog().trace(MessageUtil.formatMessage(MessageKeys.MSG_SF_TERMINATED));
+            }
             return true;
         } else {
-            Logger.log(ex);
+            //Logger.log(ex);
+            if (SFSystem.sflog().isTraceEnabled()) {
+              SFSystem.sflog().trace(ex);
+            }
         }
         return false;
     }

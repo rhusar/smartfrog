@@ -46,6 +46,8 @@ import java.util.Enumeration;
 import java.util.Properties;
 import java.util.Vector;
 import java.rmi.ConnectException;
+import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.logging.LogFactory;
 
 
 /**
@@ -72,6 +74,7 @@ public class SFProcess implements MessageKeys {
      * Root locator to get and set the root process compound for this HOST
      */
     protected static RootLocator rootLocator;
+
     /**
      * Reference to root locator class.
      */
@@ -85,6 +88,10 @@ public class SFProcess implements MessageKeys {
                 "ProcessCompound");
 
 
+    /** ProcessLog. This log is used to log into the core log: SF_CORE_LOG
+     *  It can be replaced using sfSetLog()
+     */
+    private LogSF sflog = LogFactory.sfGetProcessLog();
 
     private SFProcess (){
     }
@@ -229,7 +236,10 @@ public class SFProcess implements MessageKeys {
             try {
                 TerminationRecord tr = TerminationRecord.abnormal(
                         "Failed to start ", newRef);
-                Logger.log(newRef.toString(),tr,SmartFrogException.forward(ex));
+                //Logger.log(newRef.toString(),tr,SmartFrogException.forward(ex));
+                if (LogFactory.sfGetProcessLog().isErrorEnabled()) {
+                  LogFactory.sfGetProcessLog().error(newRef.toString(),SmartFrogException.forward(ex),tr);
+                }
                 comp.sfTerminate(tr);
             } catch (Exception termEx) {
                 // ignore
@@ -310,19 +320,28 @@ public class SFProcess implements MessageKeys {
                 processCompoundTerminated = true;
                 if (processCompound != null) {
                     try {
-                        Logger.log("Terminating sfDaemon gracefully!!");
+                        //Logger.log("Terminating sfDaemon gracefully!!");
+                        LogFactory.sfGetProcessLog().out("Terminating sfDaemon gracefully!!");
                         processCompound.sfTerminate(new TerminationRecord(TerminationRecord.NORMAL,
                                 "sfDaemon forced to terminate ",
                                 ((Prim) processCompound).sfCompleteName()));
                     } catch (RemoteException re) {
-                        Logger.log(re);
+                        //Logger.log(re);
                         //log and ignore
+                        if (LogFactory.sfGetProcessLog().isIgnoreEnabled()) {
+                          LogFactory.sfGetProcessLog().ignore(re);
+                        }
+
                     } catch (Throwable thr) {
-                        Logger.log(thr);
+                        //Logger.log(thr);
+                        if (LogFactory.sfGetProcessLog().isIgnoreEnabled()) {
+                          LogFactory.sfGetProcessLog().ignore(thr);
+                        }
                     }
                 }
             } else {
-                Logger.log("sfDaemon killed!");
+                //Logger.log("sfDaemon killed!");
+                LogFactory.sfGetProcessLog().out("sfDaemon killed!");
                 System.exit(0);
             }
         }
@@ -339,8 +358,9 @@ public class SFProcess implements MessageKeys {
                 oldHandler=Signal.handle(new Signal(name), this);
             } catch (IllegalArgumentException e) {
                 //this happens when binding fails. In this situation, warn, but keep going
-                Logger.log("Failed to set control-C handler -is JVM running with -Xrs set?");
-                Logger.log(e);
+                LogFactory.sfGetProcessLog().err("Failed to set control-C handler -is JVM running with -Xrs set?",e);
+//                Logger.log("Failed to set control-C handler -is JVM running with -Xrs set?");
+//                Logger.log(e);
             }
         }
     }

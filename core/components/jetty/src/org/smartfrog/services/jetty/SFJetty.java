@@ -53,8 +53,8 @@ public class SFJetty extends CompoundImpl implements Compound,JettyIntf {
 
   /**
    * Deploy the SFJetty component and publish the information
-   * @exception  SmartFrogException In case of error while deploying  
-   * @exception  RemoteException In case of network/rmi error  
+   * @exception  SmartFrogException In case of error while deploying
+   * @exception  RemoteException In case of network/rmi error
    */
   public void sfDeploy() throws SmartFrogException, RemoteException {
     try {
@@ -67,18 +67,18 @@ public class SFJetty extends CompoundImpl implements Compound,JettyIntf {
         configureHttpServer();
         super.sfDeploy();
 
-    } catch (Exception ex){ 
+    } catch (Exception ex){
        throw SmartFrogDeploymentException.forward(ex);
     }
   }
 
   /**
    * sfStart: starts Jetty Http server.
-   * 
-   * @exception  SmartFrogException In case of error while starting  
-   * @exception  RemoteException In case of network/rmi error 
+   *
+   * @exception  SmartFrogException In case of error while starting
+   * @exception  RemoteException In case of network/rmi error
    */
-   public synchronized void sfStart() throws SmartFrogException, 
+   public synchronized void sfStart() throws SmartFrogException,
    RemoteException {
 	   super.sfStart();
 	   try {
@@ -87,7 +87,7 @@ public class SFJetty extends CompoundImpl implements Compound,JettyIntf {
 		   throw SmartFrogException.forward(mexp);
 	   }
    }
-    
+
   /**
    * Configure the http server
    */
@@ -121,7 +121,10 @@ public class SFJetty extends CompoundImpl implements Compound,JettyIntf {
 		    server.stop();
           }
 	  } catch (InterruptedException ie) {
-		  Logger.log(" Interrupted on server termination " , ie);
+            if (sflog().isErrorEnabled()){
+              sflog().error(" Interrupted on server termination " , ie);
+            }
+//            Logger.log(" Interrupted on server termination " , ie);
 	  }
 	  super.sfTerminateWith(status);
   }

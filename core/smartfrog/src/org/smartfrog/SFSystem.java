@@ -171,20 +171,6 @@ public class SFSystem implements MessageKeys {
 
 
     /**
-     * Reads System property "org.smartfrog.logger.logStrackTrace" and
-     * updates Logger with the value to enable stack tracing.
-     */
-    public static void readPropertyLogStackTrace() {
-        String source = System.getProperty(SmartFrogCoreProperty.propLogStackTrace);
-        if ("true".equals(source)) {
-            Logger.logStackTrace = true;
-            Logger.log(MessageUtil.
-                    formatMessage(MSG_WARNING_STACKTRACE_ENABLED));
-        }
-    }
-
-
-    /**
      * Sets stdout and stderr streams to different streams if class names
      * specified in system properties. Uses System.setErr and setOut to set
      * the <b>PrintStream</b>s which form stderr and stdout
@@ -287,7 +273,10 @@ public class SFSystem implements MessageKeys {
         try {
             return runConfigurationDescriptor(cfgDesc, false);
         } catch (SmartFrogException ex) {
-            Logger.logQuietly(ex);
+            if (sflog().isIgnoreEnabled()){
+              sflog().ignore(ex);
+            }
+            //Logger.logQuietly(ex);
         }
         return null;
     }
@@ -313,7 +302,10 @@ public class SFSystem implements MessageKeys {
                 configuration.setResult(ConfigurationDescriptor.Result.FAILED, null,
                         thrown);
             } else {
-                Logger.logQuietly(thrown);
+                //Logger.logQuietly(thrown);
+                if (sflog().isIgnoreEnabled()){
+                  sflog().ignore(thrown);
+                }
             }
             if (throwException) {
                 throw SmartFrogException.forward(thrown);
@@ -361,30 +353,28 @@ public class SFSystem implements MessageKeys {
         OptionSet opts = new OptionSet(args);
 
         if (opts.errorString != null) {
-            Logger.log(opts.errorString);
+            sflog().out(opts.errorString);
             exitWithError();
         }
         try {
-
             setRootProcess(runSmartFrog(opts.cfgDescriptors));
-
         } catch (SmartFrogException sfex) {
-            Logger.log(sfex);
+            sflog().out(sfex);
             exitWithError();
         } catch (UnknownHostException uhex) {
-            Logger.log(MessageUtil.formatMessage(MSG_UNKNOWN_HOST, opts.host), uhex);
+            sflog().err(MessageUtil.formatMessage(MSG_UNKNOWN_HOST, opts.host), uhex);
             exitWithError();
         } catch (ConnectException cex) {
-            Logger.log(MessageUtil.formatMessage(MSG_CONNECT_ERR, opts.host), cex);
+            sflog().err(MessageUtil.formatMessage(MSG_CONNECT_ERR, opts.host), cex);
             exitWithError();
         } catch (RemoteException rmiEx) {
             // log stack trace
-            Logger.log(MessageUtil.formatMessage(MSG_REMOTE_CONNECT_ERR,
+            sflog().err(MessageUtil.formatMessage(MSG_REMOTE_CONNECT_ERR,
                     opts.host), rmiEx);
             exitWithError();
         } catch (Exception ex) {
             //log stack trace
-            Logger.log(MessageUtil.
+            sflog().err(MessageUtil.
                     formatMessage(MSG_UNHANDLED_EXCEPTION), ex);
             exitWithError();
         }
@@ -398,15 +388,18 @@ public class SFSystem implements MessageKeys {
              if (cfgDesc.getResultType()==ConfigurationDescriptor.Result.FAILED) {
                  somethingFailed = true;
              }
-             Logger.log(" - "+(cfgDesc).statusString()+"\n");
-             Logger.logQuietly(cfgDesc.resultException);
+             sflog().out(" - "+(cfgDesc).statusString()+"\n");
+             //Logger.logQuietly(cfgDesc.resultException);
+             if (sflog().isIgnoreEnabled()){
+               sflog().ignore(cfgDesc.resultException);
+            }
          }
         // Check for exit flag
         if (opts.exit) {
             exitWithStatus(somethingFailed);
         } else {
-            //Logger.log(MessageUtil.formatMessage(MSG_SF_READY));
-            if (Logger.logStackTrace) {
+            //sflog().out(MessageUtil.formatMessage(MSG_SF_READY));
+            if (true) {
                 String name = "";
                 int port =0;
                 try {
@@ -417,9 +410,9 @@ public class SFSystem implements MessageKeys {
                 } catch (Exception ex) {
                     //ignore.
                 }
-                Logger.log(MessageUtil.formatMessage(MSG_SF_READY, "[" + name + ":"+ port+"]") + " " + new Date(System.currentTimeMillis()));
+                sflog().out(MessageUtil.formatMessage(MSG_SF_READY, "[" + name + ":"+ port+"]") + " " + new Date(System.currentTimeMillis()));
             } else {
-                Logger.log(MessageUtil.formatMessage(MSG_SF_READY, ""));
+                sflog().out(MessageUtil.formatMessage(MSG_SF_READY, ""));
             }
         }
     }
@@ -509,8 +502,8 @@ public class SFSystem implements MessageKeys {
                 }
 
             }
-            // Set stackTracing
-            readPropertyLogStackTrace();
+            // Init logging properties
+            Logger.init();
 
             alreadySystemInit = true;
         }
