@@ -309,7 +309,7 @@ public class DeployEntry implements Entry {
                 name = e.nextElement().toString();
                 value = c.get(name);
 
-                if (isAttribute(value)) {
+                if (!isChild(value)) {
                     try {
                         //Special case to show special info about he reference
                         if (value instanceof Reference) {
@@ -373,7 +373,7 @@ public class DeployEntry implements Entry {
                   name = e.nextElement().toString();
                   obj = c.get(name);
 
-                  if (! (isAttribute(obj))) {
+                  if ((isChild(obj))) {
                     //&& !name.toString().endsWith("URL"))
                     data[index][0] = name;
 
@@ -540,7 +540,7 @@ public class DeployEntry implements Entry {
                 name = e.nextElement().toString();
                 obj = c.get(name);
 
-                if (isAttribute(obj)) {
+                if (!isChild(obj)) {
                     //&& !name.toString().endsWith("URL"))
                     counter++;
                 }
@@ -567,7 +567,7 @@ public class DeployEntry implements Entry {
                 try {
                   name = e.nextElement().toString();
                   obj = c.get(name);
-                  if (! (isAttribute(obj))) {
+                  if ((isChild(obj))) {
                     //&& !name.toString().endsWith("URL"))
                     counter++;
                   }
@@ -719,18 +719,27 @@ public class DeployEntry implements Entry {
     }
 
     /**
-     * Checks if the input object is an attribute
+     * Checks if the input object is an attribute not a child
      *
      *@param  obj  inp object
      *@return      true if it is an attribute else false
      */
-    private boolean isAttribute(Object obj) {
-        if (!(obj instanceof Prim)) {
-            //&& !name.toString().endsWith("URL"))
+    private boolean isChild(Object obj) {
+//        if (!(obj instanceof Prim)) {
+//            //&& !name.toString().endsWith("URL"))
+//            return true;
+//        }
+//
+//        return false;
+        try {
+          if ( (obj instanceof Prim) &&
+              ( (Compound) entry).sfContainsChild( (org.smartfrog.sfcore.prim. Liveness) obj)) {
             return true;
+          }
+        } catch (RemoteException ex) {
         }
-
         return false;
+
     }
 
     /**
