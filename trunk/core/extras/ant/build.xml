@@ -40,6 +40,9 @@
       </not>
     </condition>   
     <echo>system.tests.enabled=${system.tests.enabled}</echo>
+    <property name="testutil.jar" 
+      location="${ant.home}/build/lib/ant-testutil.jar"/>
+    
   </target>
     
 
@@ -87,16 +90,36 @@
     <!-- todo -->
   </target>  
   
-  <target name="find-testutil" depends="init">
-    <property name="testutil.jar" 
-      location="${ant.home}/build/lib/ant-testutil.jar"/>
-    <path id="testutil.classpath">
+
+  <!-- override common -->  
+  <target name="declare-tests.compile.classpath" 
+      depends="declare-exec.classpath" >
+      
+    <path id="tests.compile.classpath">
+      <path refid="exec.classpath"/>
       <pathelement location="${testutil.jar}"/>
+      <pathelement location="${junit.jar}"/>
     </path>
+    <property name="tests.compile.classpath.value" refid="tests.compile.classpath"/>
+    <echo level="verbose">tests.compile.classpath=${tests.compile.classpath.value}</echo>
+  </target>
+  
+  
+  <target name="declare-tests.run.classpath" depends="declare-tests.compile.classpath" >  
+    <path id="tests.run.classpath">
+      <path refid="tests.compile.classpath"/>
+      <pathelement location="${test.classes.dir}"/>
+      <!-- <pathelement path="${java.class.path}"/>        --> 
+    </path>
+    <property name="tests.run.classpath.value" refid="tests.run.classpath"/>
+    <echo level="verbose">tests.run.classpath=${tests.run.classpath.value}</echo>
+  </target>
+  
+  <target name="find-testutil" depends="declare-classpaths">
     
     <available property="testutil.found"
       classname="org.apache.tools.ant.BuildFileTest" 
-      classpathref="testutil.classpath"
+      classpathref="tests.compile.classpath"
       ignoresystemclasses="false"/>
   </target>
 
@@ -107,7 +130,8 @@
   
   <target name="want-testutil" unless="testutil.found" depends="find-testutil">
     <echo level="error">
-    Ant testutil classes not found in ${testutil.jar}
+    Ant testutil classes not found in ${tests.compile.classpath}
+    or ${testutil.jar}
     The dependent stages of this build will be skipped.
     To build this file, run "ant test-jar" in 
     ant's source directory,
@@ -118,16 +142,12 @@
     </echo>
   </target>
   
+<!--     <target name="compile-tests" 
+      depends="want-testutil,common.compile-tests"
+      if="testutil.found"/> -->
   <target name="compile-tests" 
       depends="init,want-testutil,package,use-smartfrog-tasks"
       if="testutil.found">
-      <!-- set up a new path with the tasks and testutil -->
-    <property name="test.src.dir" location="test/files"/>
-    <path id="tests.compile.classpath">
-      <path refid="smartfrog.classpath"/>
-      <pathelement location="${smartfrog.tasks.jar}"/>
-      <path refid="testutil.classpath"/>
-    </path>
     
     <sf-javac-with-ant 
       srcdir="${test.src.dir}"
@@ -135,7 +155,7 @@
       classpathref="tests.compile.classpath"
       >
     </sf-javac-with-ant>
-    <copy-useful-files src="${src.dir}" dest="${build.classes.dir}" />
+    <copy-useful-files src="${test.src.dir}" dest="${test.classes.dir}"/>
   </target>
   
   <!-- 
@@ -147,11 +167,6 @@
   -->
   <target name="run-tests" depends="compile-tests,want-testutil"
     if="testutil.found">
-    <path id="tests.run.classpath">
-      <path refid="tests.compile.classpath"/>
-      <pathelement location="${test.classes.dir}"/>
-      <pathelement path="${java.class.path}"/>        
-    </path>
     <property name="filter.trace" value="true"/>
     <sf-junit 
            errorProperty="test.failed"

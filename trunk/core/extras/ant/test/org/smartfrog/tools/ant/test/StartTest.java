@@ -34,6 +34,7 @@ import org.smartfrog.tools.ant.SmartFrogTask;
  */
 
 public class StartTest extends TaskTestBase {
+    public static final String ROOT_PROCESS_TERMINATION_MESSAGE = "SmartFrog [rootProcess] dead";
 
     /**
      * constructor
@@ -80,31 +81,31 @@ public class StartTest extends TaskTestBase {
 	
 	public void testIncompatibleLivenessDelay() 
 	{
-		expectExceptionWithLogContaining("testIncompatibleLivenessDelay", "SmartFrog [rootProcess] dead");
+		expectExceptionWithLogContaining("testIncompatibleLivenessDelay", ROOT_PROCESS_TERMINATION_MESSAGE);
 	}
 	public void testIncompatibleLivenessFactor() 
 	{
-		expectExceptionWithLogContaining("testIncompatibleLivenessFactor", "SmartFrog [rootProcess] dead");
+		expectExceptionWithLogContaining("testIncompatibleLivenessFactor", ROOT_PROCESS_TERMINATION_MESSAGE);
 	}
 	public void testIncompatibleLogStackTraces() 
 	{
-		expectExceptionWithLogContaining("testIncompatibleLogStackTraces", "SmartFrog [rootProcess] dead");
+		expectExceptionWithLogContaining("testIncompatibleLogStackTraces", ROOT_PROCESS_TERMINATION_MESSAGE);
 	}
 	public void testIncompatibleProcessAllow() 
 	{
-		expectExceptionWithLogContaining("testIncompatibleProcessAllow", "SmartFrog [rootProcess] dead");
+		expectExceptionWithLogContaining("testIncompatibleProcessAllow", ROOT_PROCESS_TERMINATION_MESSAGE);
 	}
 	public void testIncompatibleProcessTimeout() 
 	{
-		expectExceptionWithLogContaining("testIncompatibleProcessTimeOut", "SmartFrog [rootProcess] dead");
+		expectExceptionWithLogContaining("testIncompatibleProcessTimeOut", ROOT_PROCESS_TERMINATION_MESSAGE);
 	}
 	public void testIncompatibleLoggerClass() 
 	{
-		expectExceptionWithLogContaining("testIncompatibleLoggerClass", "SmartFrog [rootProcess] dead");
+		expectExceptionWithLogContaining("testIncompatibleLoggerClass", ROOT_PROCESS_TERMINATION_MESSAGE);
 	}
 	public void testIncompatibleLogLevel() 
 	{
-		expectExceptionWithLogContaining("testIncompatibleLogLevel", "SmartFrog [rootProcess] dead");
+		expectExceptionWithLogContaining("testIncompatibleLogLevel", ROOT_PROCESS_TERMINATION_MESSAGE);
 	}
 	
 	
@@ -169,7 +170,7 @@ public class StartTest extends TaskTestBase {
         assertInLog("FAILED when trying DEPLOY of 'app'");
         assertInLog("Reference not found");
         assertInLog("Unresolved Reference: HERE sfClass");
-        assertInLog("SmartFrog [rootProcess] dead");
+        assertTerminationInLog();
     }
 
     public void testResource() {
@@ -179,7 +180,7 @@ public class StartTest extends TaskTestBase {
     }
 
     private void assertTerminationInLog() {
-        assertInLog("SmartFrog [rootProcess] dead");
+        assertInLog(ROOT_PROCESS_TERMINATION_MESSAGE);
     }
 
 
