@@ -1,12 +1,13 @@
 \begin{abstract}
 
 This paper examines the current SOAP APIs in Java, and in particular
+the \emph{Java API for XML-based RPC}, commonly abbreviated to 
 JAX-RPC, which is effectively the standard for SOAP messaging on the
 Java platform. We claim that JAX-RPC, and indeed any SOAP API that
-relies on a perfect mapping between XML Schema types and native
+relies on a perfect two-way mapping between XML data and native
 language objects is fundamentally flawed. Furthermore, we claim that
-the attempt JAX-RPC makes to extend the RMI metaphor to SOAP services
-is misguided. 
+the attempt JAX-RPC makes to extend the remote method invocation 
+metaphor to SOAP services is equally misguided. 
 
 This paper sets out our reasoning, based on experience with JAX-RPC
 and SOAP, and in the light of previous distributed object
