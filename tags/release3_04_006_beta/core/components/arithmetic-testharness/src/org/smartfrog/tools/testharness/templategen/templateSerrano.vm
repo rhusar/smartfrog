@@ -1,0 +1,261 @@
+#set ($mainJar = "smartfrog.jar")
+#if ($securityOn)
+  #set ($libSubdir = "signedLib/") 
+
+  #if ($dynamicLoadingOn) 
+    #set ($libJars = [])
+    #set ($httpJars = ["sfRegTest.jar","bsh-1.1a17.jar","sfTools.jar","sfServices.jar"])
+  #else 
+    ## security is ON and  DL is OFF
+    #set ($libJars = ["sfTools.jar","sfRegTest.jar","bsh-1.1a17.jar","sfServices.jar"])
+  #end
+
+#else 
+##  security is NOT on
+  #set ($libSubdir = "lib/") 
+
+  #if ($dynamicLoadingOn) 
+    #set ($libJars = [])
+    #set ($httpJars = ["sfRegTest.jar","sfServices.jar","sfTools.jar","bsh-1.1a17.jar","SFGuiTools.jar","SFGuiBrowser.jar"])
+  #else
+    ## security AND DL are OFF
+    #set ($libJars = ["sfServices.jar","sfTools.jar","sfRegTest.jar","bsh-1.1a17.jar","SFGuiTools.jar","SFGuiBrowser.jar"])
+
+  #end
+#end
+
+\#include "org/smartfrog/components.sf"
+\#include "org/smartfrog/sfcore/workflow/components.sf"
+ 
+\#include "org/smartfrog/services/runcmd/components.sf"
+
+\#include "org/smartfrog/tools/testharness/components.sf"
+\#include "org/smartfrog/services/trace/components.sf"
+
+TestRunCommand extends RunCommand {
+    startCmd ATTRIB command;
+    shouldTerminate "true";
+    workDir ATTRIB workingDirectory;
+    envProperties ATTRIB allEnvProperties;    
+    outputStream LAZY ATTRIB globalOutput;
+        logLevel 5;
+}
+
+MonitoredDaemon extends Compound {
+
+  daemonOutput extends  NotifyOutputFilterPrim {
+
+    scheduler LAZY ATTRIB globalScheduler;
+    processId ATTRIB daemonName;
+    fileNameOutput ATTRIB daemonFileOutput;
+  }
+  
+    doStartDaemon extends TestRunCommand { //RunCommand
+    processName ATTRIB daemonName;
+    startAtt_01 "-cp";
+    startAtt_02 ATTRIB classPath;
+    startAtt_03a "-Dorg.smartfrog.sfcore.processcompound.sfRootLocatorPort=";
+    startAtt_03b ATTRIB port;
+    startAtt_04a "";//    startAtt_04a "-Dorg.smartfrog.iniFile=";
+    startAtt_04b ""; //startAtt_04b ATTRIB iniFile;
+    startAtt_05a ""; //-Dorg.smartfrog.sfcore.iniSFFile=";
+    startAtt_05b ""; // ATTRIB iniSFFile;
+    startAtt_06a "-Dorg.smartfrog.sfcore.processcompound.sfProcessName=";
+    startAtt_06b "rootProcess";
+#if ($securityOn)
+    startAtt_07a "-Djava.security.policy==";
+    startAtt_07b ATTRIB secPolicy;
+    startAtt_08a "-Dorg.smartfrog.sfcore.security.keyStoreName=";
+    startAtt_08b ATTRIB secKeyStore;
+    startAtt_09a "-Dorg.smartfrog.sfcore.security.propFile=";
+    startAtt_09b ATTRIB secPropFile;
+//    startAtt_47 "-Dorg.smartfrog.sfcore.security.debug=true";
+//    startAtt_48 "-Djava.security.debug=policy";
+//    startAtt_49 "-Djavax.net.debug=ssl";
+#end
+#if ($dynamicLoadingOn)
+    startAtt_10a "-Dorg.smartfrog.sfcore.codebase=";
+    startAtt_10b ATTRIB httpCodebase;
+#if ($securityOn)
+//    startAtt_90a "-Djava.rmi.server.codebase=";
+//    startAtt_90b ATTRIB httpCodebase;
+#end
+#end
+    startAtt_12a "";
+    startAtt_12b "";
+    startAtt_14a "";
+    startAtt_14b "";
+    startAtt_20 "org.smartfrog.SFSystem"; 
+    startAtt_21 "";
+    startAtt_22 "";
+    startAtt_31  "";     
+    outputStream LAZY ATTRIB daemonOutput;
+  }
+}
+
+#if ($dynamicLoadingOn)
+PrincipalMonitoredDaemon extends MonitoredDaemon {
+//       doStartDaemon:startAtt_12a "-Dorg.smartfrog.iniSFFile=";
+//       doStartDaemon:startAtt_12b "org/smartfrog/SFDynaServer/dynadaemon.sf";    //tocheck 
+      doStartDaemon:startAtt_21 "-c";
+      doStartDaemon:startAtt_22 "org/smartfrog/services/codeserver/dynadaemon.sf";    //tocheck
+       doStartDaemon:startAtt_14a "-DDSHOMEBASE=";
+       doStartDaemon:startAtt_14b "${principalDaemon.sfHome}$libSubdir";
+}
+#end
+
+
+Scheduler extends SchedulerCompound {
+  
+  // bind global variables.
+  numberOfAcks ATTRIB numDaemons;
+
+  globalOutput extends  NotifyOutputFilterPrim {
+    processId ATTRIB globalProcess;
+    fileNameOutput ATTRIB globalFileOutput;
+  }
+  //  mainOutput extends  NotifyOutputFilterPrim {
+  //  fileNameOutput "main.out";
+  //}    
+
+  main extends Sequence {
+    actions extends LAZY {
+      // Just wait until daemons ready
+      waitForDaemons  extends SynchCompound {
+        terminateTag "waitForDaemons";
+        reallyDoNothing extends DoNothing {
+          time 0;
+        }                
+      }
+           
+      // Do the sfStarts.
+      startApps extends SynchCompound {
+        terminateTag "startApps";
+                
+        doStartApps extends TestRunCommand { 
+          processName "startApps";
+          startAtt_01 "-cp";
+          startAtt_02 ATTRIB classPath;
+          startAtt_03a "-Dorg.smartfrog.sfcore.processcompound.sfRootLocatorPort=";
+          startAtt_03b ATTRIB port;
+#if ($securityOn)
+          startAtt_04a "-Djava.security.policy==";
+          startAtt_04b ATTRIB secPolicy;
+          startAtt_05a "-Dorg.smartfrog.sfcore.security.keyStoreName=";
+          startAtt_05b ATTRIB secKeyStore;
+          startAtt_06a "-Dorg.smartfrog.sfcore.security.propFile=";
+          startAtt_06b ATTRIB secPropFile;
+//          startAtt_47 "-Dorg.smartfrog.sfcore.security.debug=true";
+//          startAtt_48 "-Djava.security.debug=policy";
+#end
+#if ($dynamicLoadingOn)
+          startAtt_10a "-Dorg.smartfrog.sfcore.codebase=";
+          startAtt_10b ATTRIB httpCodebase;
+#if ($securityOn)
+//          startAtt_90a "-Djava.rmi.server.codebase=";
+//          startAtt_90b ATTRIB httpCodebase;
+#end
+#end
+          startAtt_17 "org.smartfrog.SFSystem";
+          startAtt_18 "-h";
+          startAtt_19 "localhost";//ATTRIB sfProcessHost;
+          startAtt_20 "-n";
+          startAtt_21 "sfConfig";
+          startAtt_22 ATTRIB appName;
+          startAtt_23 "-e";
+          startAtt_24 "";
+        }                
+      }
+
+      // Do the sfStops.
+      stopApps extends SynchCompound {
+        terminateTag "stopApps";
+        
+        doStopApps extends TestRunCommand  { 
+          processName "stopApps";
+          startAtt_01 "-cp";
+          startAtt_02 ATTRIB classPath;
+          startAtt_03a "-Dorg.smartfrog.sfcore.processcompound.sfRootLocatorPort=";
+          startAtt_03b ATTRIB port;
+#if ($securityOn)
+          startAtt_04a "-Djava.security.policy==";
+          startAtt_04b ATTRIB secPolicy;
+          startAtt_05a "-Dorg.smartfrog.sfcore.security.keyStoreName=";
+          startAtt_05b ATTRIB secKeyStore;
+          startAtt_06a "-Dorg.smartfrog.sfcore.security.propFile=";
+          startAtt_06b ATTRIB secPropFile;  
+#end
+          startAtt_07 "org.smartfrog.SFSystem";
+          startAtt_08 "-h";
+          startAtt_09 "localhost";//ATTRIB sfProcessHost;
+          startAtt_10 "-t";
+          startAtt_11 "sfConfig";
+          startAtt_12 "-e";
+          startAtt_13 "";
+        }                
+      }
+    }
+  }
+  allDaemons extends Parallel {
+    actions extends LAZY {
+
+#foreach ($daemon in $allDaemons)
+      $daemon.name extends $daemon.type {
+        sfProcessHost "$daemon.host";
+        daemonFileOutput "${daemon.sfHome}daemon.out";
+        daemonName "$daemon.name";
+        workingDirectory "${daemon.sfHome}";
+#if ($daemon.isLinux())
+        allEnvProperties ["SFHOME=${daemon.sfHome}",
+                         "JAVA_HOME=/usr/java/j2sdk1.4.2_03",
+                         "PATH=/usr/java/j2sdk1.4.2_03/bin:/usr/local/bin:/usr/bin:/bin:."];
+        classPath "${daemon.sfHome}${libSubdir}${mainJar}#foreach ($jar in $libJars):${daemon.sfHome}${libSubdir}${jar}#end"; 
+#else
+        command "java";
+        allEnvProperties ["SFHOME=${daemon.sfHome}",
+                         "JAVA_HOME=C:\\j2sdk1.4.2_03","WINDIR=C:\\WINNT", 
+                            "systemroot=C:\\WINNT",
+                            "PATH=C:\\j2sdk1.4.2_03\\bin;.;"];
+        classPath "${daemon.sfHome}${libSubdir}${mainJar}#foreach ($jar in $libJars);${daemon.sfHome}${libSubdir}${jar}#end"; 
+#end
+
+#if ($securityOn)
+        secPolicy "${daemon.sfHome}private/sf.policy";
+        secKeyStore "${daemon.sfHome}private/local/mykeys.st";
+        secPropFile "${daemon.sfHome}private/local/SFsecurity.properties";
+#end
+      }
+#end
+    }
+  }
+}
+
+TemplateSerrano extends Compound {
+  // Default values for all the runCommand
+  sfProcessHost "${principalDaemon.host}";
+  command "java";
+  workingDirectory  "${principalDaemon.sfHome}";
+  allEnvProperties ["SFHOME=${principalDaemon.sfHome}",
+                   "JAVA_HOME=/usr/java/j2sdk1.4.2_03",
+                    "PATH=/usr/java/j2sdk1.4.2_03/bin:/usr/local/bin:/usr/bin:/bin:."];
+  classPath "${principalDaemon.sfHome}${libSubdir}${mainJar}#foreach ($jar in $libJars):${principalDaemon.sfHome}${libSubdir}${jar}#end";
+#if ($dynamicLoadingOn)
+  httpCodebase "#foreach ($jar in $httpJars)http://${principalDaemon.host}:8080/${jar} #end";
+#end
+#if ($securityOn)
+        secPolicy "${principalDaemon.sfHome}private/sf.policy";
+        secKeyStore "${principalDaemon.sfHome}private/local/mykeys.st";
+        secPropFile "${principalDaemon.sfHome}private/local/SFsecurity.properties";
+#end
+
+  port 3801;
+  //iniSFFile "org/smartfrog/sfcore/default.sf";
+  // Application that we are testing. this is set from outside.
+  // appName "org/smartfrog/examples/example1TH.sf";
+  globalProcess "Scheduler";
+  globalFileOutput "${principalDaemon.sfHome}scheduler";
+  globalScheduler extends Scheduler;
+  //  trace extends Trace;
+  // Global definitions...
+  numDaemons ${numberDaemons};
+}

@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<antlib>
+    <!-- ant1.6+ antlib declaration for the classes
+    use with the declaration xmlns:axis="antlib:org.smartfrog.tools.ant.tasks" to
+    trigger ant's autoload of this file, provided the relevant jars
+    are in the antlib directory, or a dir stated with -lib on the command line"
+    Alternatively, load with something like
+
+    <typedef uri="http://smartfrog.org/"
+        resource="/org/smartfrog/tools/ant/tasks.xml"
+        classpathref="smartfrog.classpath"
+        xmlns:sf="http://smartfrog.org/" />
+
+        and use with
+    -->
+    <taskdef name="parse" classname="org.smartfrog.tools.ant.Parse"/>
+    <taskdef name="undeploy" classname="org.smartfrog.tools.ant.StopApplication"/>
+    <taskdef name="stopdaemon" classname="org.smartfrog.tools.ant.StopDaemon"/>
+    <taskdef name="startdaemon" classname="org.smartfrog.tools.ant.StartDaemon"/>
+    <taskdef name="deploy" classname="org.smartfrog.tools.ant.StartApplication"/>
+    <taskdef name="run" classname="org.smartfrog.tools.ant.RunApplicationTask"/>
+    <taskdef name="tourl" classname="org.smartfrog.tools.ant.ToUrlTask"/>
+    <taskdef name="sign" classname="org.smartfrog.tools.ant.SmartFrogSign"/>
+
+    <!-- this is the security declaration -->
+    <typedef name="security" classname="org.smartfrog.tools.ant.Security"/>
+</antlib>

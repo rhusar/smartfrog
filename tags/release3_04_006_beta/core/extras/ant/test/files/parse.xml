@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<project name="parse">
+
+<description>
+ Tests for the parse. 
+ 
+ command line invocation
+ ant -lib ..\..\build\dist\lib\smartfrog-tasks.jar -lib ..\..\..\..\smartfrog\dist\lib\smartfrog.jar -f parse.xml testNoop
+
+ant -lib ../../build/dist/lib/smartfrog-tasks.jar -lib ../../../../smartfrog/dist/lib/smartfrog.jar -f parse.xml testNoop 
+</description>
+
+  <import file="test-common.xml" />
+
+  <target name="testNoop">
+    <sf-parse/>
+  </target>
+    
+  <target name="testValid1">
+    <sf-parse>
+      <source file="valid.sf"/>
+    </sf-parse>
+  </target>
+
+  <target name="testValid2">
+    <sf-parse 
+      file="valid.sf"/>
+  </target>
+
+  <target name="testInvalid">
+    <sf-parse 
+      file="invalid.sf"/>
+  </target>
+
+  <target name="testMissingFile">
+    <sf-parse 
+      file="nonexistent-file.sf"/>
+  </target>  
+
+  <target name="testSubdir">
+    <sf-parse 
+      file="subdir/subfile.sf"/>
+  </target>    
+  
+  <target name="testTwoFiles">
+    <sf-parse>
+      <source dir="." includes="*id.sf"/>
+    </sf-parse>
+  </target>
+
+  <target name="testVerbose">
+    <sf-parse verbose="true"
+      file="valid.sf"/>
+  </target>
+
+  <target name="testQuiet">
+    <sf-parse quiet="true"
+      file="valid.sf"/>
+  </target>
+
+  <target name="testVerboseQuiet">
+    <sf-parse quiet="true" verbose="true"
+      file="valid.sf"/>
+  </target>
+  
+</project> 
