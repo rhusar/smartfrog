@@ -299,6 +299,14 @@ public class SFSystem implements MessageKeys {
      */
     public static void main(String[] args) {
 
+        //Fist thing first: system gets initialized
+        try {
+            initSystem();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            exitWithError();
+        }
+
         ProcessCompound rootProcess = null;
 
         showVersionInfo();
