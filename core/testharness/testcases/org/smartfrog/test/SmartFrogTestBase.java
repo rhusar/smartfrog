@@ -122,6 +122,8 @@ public abstract class SmartFrogTestBase extends TestCase {
                 null,
                 null);
     }
+
+
     /**
      * Deploy a component, expecting a smartfrog exception. You can
      * also specify the classname of a contained fault -which, if specified,
@@ -296,10 +298,19 @@ public abstract class SmartFrogTestBase extends TestCase {
         this.hostname = hostname;
     }
 
+    /**
+     * start smartfrog if it isnt already
+     *
+     * @throws SmartFrogException
+     * @throws RemoteException
+     * @throws SFGeneralSecurityException
+     * @throws UnknownHostException
+     */
     public void startSmartFrog() throws SmartFrogException, RemoteException,
             SFGeneralSecurityException, UnknownHostException {
         SFSystem.runSmartFrog();
     }
+
     /**
      * Deploys an application and returns the refence to deployed application.
      * @param testURL  URL to test
@@ -335,6 +346,16 @@ public abstract class SmartFrogTestBase extends TestCase {
         return null;
     }
 
+    /**
+     * internal helper to test stuff
+     * @param appName
+     * @param testURL
+     * @return
+     * @throws SmartFrogException
+     * @throws RemoteException
+     * @throws SFGeneralSecurityException
+     * @throws UnknownHostException
+     */
     private Object deployApplication(String appName, String testURL) throws SmartFrogException, RemoteException,
             SFGeneralSecurityException, UnknownHostException {
         startSmartFrog();
@@ -486,6 +507,9 @@ public abstract class SmartFrogTestBase extends TestCase {
      * @throws java.rmi.RemoteException on network trouble
      */
     public void terminateApplication(Prim application) throws RemoteException {
+        if(application==null) {
+            return ;
+        }
         Reference name;
         try {
             name = application.sfCompleteName();
