@@ -43,6 +43,7 @@ public class ParserHelper {
      */
     private static final Log log = LogFactory.getLog(ParserHelper.class);
 
+    private static final String FEATURE_SECURE_PROCESSING = "http://javax.xml.XMLConstants/feature/secure-processing";
     /**
      * parser of choice is Apache Xerces; fallback is Sun xerces.
      */
@@ -52,7 +53,7 @@ public class ParserHelper {
     /**
      * what ships with Java1.5
      */
-    public static final String SUN_PARSER_NAME = "com.sun.apache.xerces.parsers.SAXParser";
+    public static final String SUN_PARSER_NAME = "com.sun.org.apache.xerces.internal.parsers.SAXParser";
 
     /**
      * create our XML parser. We are relying on xerces here, and will fail if it
@@ -64,15 +65,12 @@ public class ParserHelper {
      */
     public static XMLReader createXmlParser(boolean validate,
             boolean doctypes,
-            boolean entities)
+            boolean secure)
             throws SAXException {
-        XMLReader xerces = null;
-        try {
-            xerces = XMLReaderFactory.createXMLReader(XERCES_PARSER_NAME);
-        } catch (SAXException e) {
-            xerces = XMLReaderFactory.createXMLReader(SUN_PARSER_NAME);
-
-        }
+        XMLReader xerces = createBaseXercesInstance();
+        setFeature(xerces,
+                FEATURE_SECURE_PROCESSING,
+                secure);
         setFeature(xerces,
                 "http://apache.org/xml/features/validation/schema",
                 validate);
@@ -87,7 +85,24 @@ public class ParserHelper {
                 doctypes);
         setFeature(xerces,
                 "http://xml.org/sax/features/external-general-entities",
-                entities);
+                !secure);
+        return xerces;
+    }
+
+    /**
+     * create Xerces. look first for xerces, then for the sun version
+     *
+     * @return a copy of Xerces
+     * @throws SAXException if neither implementation coudl be loaded
+     */
+    public static XMLReader createBaseXercesInstance() throws SAXException {
+        XMLReader xerces = null;
+        try {
+            xerces = XMLReaderFactory.createXMLReader(XERCES_PARSER_NAME);
+        } catch (SAXException e) {
+            log.debug("Failed to find Xerces", e);
+            xerces = XMLReaderFactory.createXMLReader(SUN_PARSER_NAME);
+        }
         return xerces;
     }
 

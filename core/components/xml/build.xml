@@ -52,23 +52,23 @@
   <!-- set everything up to download stuff to the maven repo -->
   <!-- ========================================================== -->
   <target name="libraries" depends="setproxy">
-    <property file="libraries.properties" />
-    <property file="${smartfrog.components.dir}/libraries.properties" />
-    <libraries destdir="${maven.lib.dir}" 
+    <property file="libraries.properties"/>
+    <property file="${smartfrog.components.dir}/libraries.properties"/>
+    <libraries destdir="${maven.lib.dir}"
       pathID="libraries.path">
       <mavenrepository url="${maven.url}"/>
       <library project="xerces"
-        archive="xercesImpl" 
-        version="${xerces.version}" />
+        archive="xercesImpl"
+        version="${xerces.version}"/>
       <library project="xerces"
-        archive="xmlParserAPIs" 
-        version="${xerces.version}" />
-      <library project="xom"  
-        version="${xom.version}" /> 
-      <library project="jaxen"  
-        version="${jaxen.version}" />
-      <library project="junit"  
-        version="${junit.version}" />
+        archive="xmlParserAPIs"
+        version="${xerces.version}"/>
+      <library project="xom"
+        version="${xom.version}"/>
+      <library project="jaxen"
+        version="${jaxen.version}"/>
+      <library project="junit"
+        version="${junit.version}"/>
     </libraries>
   </target>
     
@@ -106,14 +106,15 @@
       <sysproperty key="org.smartfrog.codebase"
         value="${codebase}"/>
       <!-- source files -->
-      <source dir="${src.dir}"
-        includes="org/smartfrog/services/junit/example.sf">
+      <source dir="${test.src.dir}"
+        includes="org/smartfrog/services/xml/test/files/testDocument.sf">
       </source>
       <!-- test files -->
-      <source dir="${test.src.dir}">
-        <include name="files/*.sf"/>
-        <exclude name="files/components.sf"/>
-      </source>
+      <!--       <source dir="${test.src.dir}">
+              <include name="**/*.sf"/>
+              <exclude name="files/components.sf"/>
+            </source>
+       -->
     </sf-parse>
   </target>
 
@@ -134,7 +135,7 @@
     <sf-tourl property="codebase">
       <fileset file="${target.jar}"/>
       <fileset file="${test.jar}"/>
-      <fileset file="${junit.jar}"/>
+      <path refid="libraries.path"/>
     </sf-tourl>
     <echo>
         deploying to ${deploy.host}
@@ -212,7 +213,7 @@
           <batchtest todir="${test.data.dir}" unless="testcase">
             <!-- bulk test case -->
             <fileset dir="${test.classes.dir}">
-              <include name="org/smartfrog/services/junit/test/*Test.class"/>
+              <include name="org/smartfrog/services/xml/test/*Test.class"/>
             </fileset>
           </batchtest>
         </sf-junit>

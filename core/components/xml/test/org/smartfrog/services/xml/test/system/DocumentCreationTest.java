@@ -1,4 +1,4 @@
-/** (C) Copyright 2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -17,22 +17,17 @@
  For more information: www.smartfrog.org
 
  */
-
-
 package org.smartfrog.services.xml.test.system;
 
-import org.smartfrog.test.SmartFrogTestBase;
-
 /**
- * base class for tests; currently extends the smartfrog testbase
+ * created 27-Jan-2005 14:02:01
  */
-public abstract class TestBase extends SmartFrogTestBase {
 
-    protected TestBase(String name) {
+public class DocumentCreationTest extends TestBase {
+
+    public DocumentCreationTest(String name) {
         super(name);
     }
-
-    public static final String FILE_BASE = "/org/smartfrog/services/xml/test/files/";
 
 
 }

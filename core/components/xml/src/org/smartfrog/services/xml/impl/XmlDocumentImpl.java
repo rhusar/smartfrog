@@ -44,6 +44,7 @@ import java.util.Enumeration;
  */
 public class XmlDocumentImpl extends CompoundXmlNode implements XmlDocument {
     public static final String ERROR_UNSUPPORTED_FEATURE = "Unsupported Feature";
+    public static final String ERROR_NO_SAVE = "Failed to save to ";
 
     public XmlDocumentImpl() throws RemoteException {
     }
@@ -137,8 +138,13 @@ public class XmlDocumentImpl extends CompoundXmlNode implements XmlDocument {
                 false,
                 null);
         if (destFilename != null) {
-            //save to a file
-            getDocument().
+            try {
+                saveToFile(destFilename, encoding);
+            } catch (IOException e) {
+                throw new SmartFrogDeploymentException(
+                        ERROR_NO_SAVE + destFilename, e);
+
+            }
         }
 
     }
