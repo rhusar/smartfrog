@@ -299,7 +299,7 @@ public class SFTrace extends PrimImpl implements Prim {
             }
 
             if (printMsgImp == null) {
-		log.info("sfTrace: " + msg);
+		log.out("sfTrace: " + msg);
             } else {
                 try {
                     printMsgImp.printMsg(msg + "\n");
