@@ -3,7 +3,7 @@
 <plugin
    id="org.smartfrog.tools.doc"
    name="%pluginName"
-   version="1.0.0.Beta"
+   version="1.0.1"
    provider-name="%providerName">
 
    <requires>
