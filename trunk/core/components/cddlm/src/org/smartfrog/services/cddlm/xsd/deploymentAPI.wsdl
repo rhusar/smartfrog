@@ -169,7 +169,7 @@
     </xsd:sequence>
   </xsd:complexType>
   
-  <xsd:complexType name="callbackType">
+  <xsd:complexType name="callbackAddressType">
     <xsd:annotation>
       <xsd:documentation>
       holder for different callback types
@@ -177,7 +177,7 @@
     </xsd:annotation>    
     <xsd:choice>
       <xsd:element name="uri" type="xsd:anyURI"/>
-      <xsd:element name="address" type="api:address"/>
+      <xsd:element name="address" type="api:addressType"/>
       <xsd:any  processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
     </xsd:choice>
   </xsd:complexType>    
@@ -309,7 +309,7 @@
       <xsd:element name="application" type="api:applicationNameType"/>
       <xsd:element name="descriptor" type="api:deploymentDescriptorType"/>
       <xsd:element name="callbackType" type="api:callbackEnum"/>
-      <xsd:element name="callbackAddress" type="xsd:string"/>
+      <xsd:element name="callbackAddress" type="api:callbackAddressType"/>
       <xsd:element name="synchronous" type="xsd:boolean"/>
       <xsd:element name="options" type="api:propertyMapType">
       </xsd:element>
@@ -426,7 +426,7 @@
  </wsdl:message> 
  
  <wsdl:message name="listLanguagesRequest">
-  <wsdl:part element="api:listLanguages" name="request"/>
+  <wsdl:part element="api:listLanguagesRequest" name="request"/>
  </wsdl:message>
 
  <wsdl:message name="listLanguagesResponse">
