@@ -6,7 +6,7 @@ if defined SFHOME goto continue1
   set SFHOME=%cd%
   cd bin
 :continue1
-if NOT (%1)==() GOTO usage
+
 if exist "%SFHOME%\jre\bin\java.exe" set path=%SFHOME%\jre\bin
 call %SFHOME%\bin\setClassPath
 java -Dorg.smartfrog.sfcore.processcompound.sfProcessName=rootProcess -Dorg.smartfrog.iniFile=%SFHOME%\bin\default.ini -Dorg.smartfrog.sfcore.processcompound.sfDefault.sfDefault=%SFHOME%\bin\default.sf org.smartfrog.SFSystem %1 %2 %3 %4 %5 %6 %7 %8 %9

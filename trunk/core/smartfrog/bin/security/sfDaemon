@@ -1,11 +1,6 @@
 if ! test $SFHOME; then export SFHOME=$PWD; fi
 if ! test $SFPRIVATE; then export SFPRIVATE=$SFHOME/private; fi
-if ! test $SFHOSTNAME; then export SFHOSTNAME=host1; fi
-if [ $# -ne 0 ];
-then
-echo "Insufficient argument(s) to use sfDaemon"
-echo "Usage: sfDaemon"
-exit
+if ! test $SFHOSTNAME; then export SFHOSTNAME=host1; 
 fi
 for i in $SFHOME/signedLib/*.jar; do CLASSPATH=$i:$CLASSPATH; done
 export CLASSPATH

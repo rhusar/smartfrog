@@ -1,8 +1,4 @@
-if ! test $SFHOME; then export SFHOME=$PWD; fi
-if [ $# -ne 0 ]; then
-echo "Insufficient argument(s) to use sfDaemon"
-echo "Usage: sfDaemon"
-exit
+if ! test $SFHOME; then export SFHOME=$PWD;
 fi
 export CLASSPATH=$SFHOME/lib/smartfrog.jar:$SFHOME/lib/sfServices.jar:$SFHOME/lib/sfTestCases.jar:$CLASSPATH
 export SERVER=localhost:8080
