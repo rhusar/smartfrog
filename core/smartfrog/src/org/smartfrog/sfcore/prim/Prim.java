@@ -20,20 +20,18 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.prim;
 
-import java.net.InetAddress;
-import java.rmi.Remote;
-import java.rmi.RemoteException;
-import java.util.Iterator;
-
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.RemoteReferenceResolver;
 import org.smartfrog.sfcore.reference.RemoteReferenceResolverHelper;
 
-import org.smartfrog.sfcore.logging.LogSF;
+import java.net.InetAddress;
+import java.rmi.Remote;
+import java.rmi.RemoteException;
+import java.util.Iterator;
 
 
 /**
@@ -297,7 +295,6 @@ public interface Prim extends Liveness, RemoteReferenceResolver, RemoteReference
     /**
      *  To get the sfCore logger
      * @return Logger implementing LogSF and Log
-     * @throws SmartFrogException
      * @throws RemoteException
      */
     public LogSF sfGetProcessLog() throws RemoteException;
@@ -305,7 +302,6 @@ public interface Prim extends Liveness, RemoteReferenceResolver, RemoteReference
     /**
      *  To log into sfCore logger. This method should be used to log Core messages
      * @return Logger implementing LogSF and Log
-     * @throws SmartFrogException
      * @throws RemoteException
      */
     public LogSF sflog() throws RemoteException;

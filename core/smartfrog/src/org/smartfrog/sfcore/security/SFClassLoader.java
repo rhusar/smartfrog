@@ -20,6 +20,8 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.security;
 
+import org.smartfrog.sfcore.common.SmartFrogCoreProperty;
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
@@ -48,7 +50,7 @@ public class SFClassLoader {
      * separated URLS) from which we download componenents and their
      * descriptions.
      */
-    public static final String SF_CODEBASE_PROPERTY = "org.smartfrog.codebase";
+    public static final String SF_CODEBASE_PROPERTY = SmartFrogCoreProperty.propBase+"codebase";
 
     /** Space separated urls from which we download the components */
     private static String targetClassBase = null;
@@ -229,7 +231,7 @@ public class SFClassLoader {
      *
      * @return Stream that points to that resource
      *
-     * @throws Exception The resource does not exist or it does not meet the
+     * @throws ClassNotFoundException The resource does not exist or it does not meet the
      *            security requirements.
      */
     protected static InputStream getURLAsStream(URL resourceURL)
@@ -353,7 +355,7 @@ public class SFClassLoader {
      *
      * @return input stream to the resource
      *
-     * @throws Exception if unable to locate the resource
+     * @throws ClassNotFoundException if unable to locate the resource
      */
     static InputStream getResourceHelper(String resourceInJar, String codebase)
             throws ClassNotFoundException, IOException {
