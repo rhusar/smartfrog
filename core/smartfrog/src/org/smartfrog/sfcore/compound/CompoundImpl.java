@@ -408,7 +408,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
 
     /**
      * Iterates over children telling each of them to terminate quietly with
-     * given status. It iterates from the last one in the context to the first
+     * given status. It iterates from the last one created to the first
      * one.
      *
      * @param status status to terminate with
@@ -426,7 +426,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
 
     /**
      * Terminate children asynchronously using a seperate thread for each call.
-     * It iterates from the last one in the context to the first one.
+     * It iterates from the last one created to the first one.
      *
      * @param status status to terminate with
      */
