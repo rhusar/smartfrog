@@ -20,10 +20,55 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/components.sf"
 #include "/org/smartfrog/predicates.sf"
 
+/**
+ * platform independent file
+ * set the name and optionally the dir; get the absolute path in a
+ * platform independent manner
+ *
+ * The mustXXX attributes are characteristics of the files which must always hold
+ */
+
+
+FileSchema extends Schema {
+
+    filename extends OptionalString;
+    dir extends OptionalString;
+
+    //file must always exist
+    mustExist extends OptionalBoolean;
+    //the process must have read access
+    mustRead  extends OptionalBoolean;
+    //the file must be writeable
+    mustWrite  extends OptionalBoolean;
+
+    /* added at deploy time
+    exists: Boolean
+    absolutePath: String
+    URI: String
+    isFile
+    isDirectory
+    isHidden
+    timestamp: long
+    length: long
+    isEmpty: bool
+
+    */
+
+}
+
+File extends Prim {
+    fileSchema extends Schema;
+    sfClass "org.smartfrog.services.filesystem.FileImpl";
+}
+
 
 TouchFileSchema extends Schema {
     //filename; this must be in a platform-specific format
-    filename extends String;
+    filename extends OptionalString;
+
+    //file is a file instance
+    file extends OptionalCD;
+
     //age of file, seconds since 1970-01-01; a value of -1 indicates
     //current timestamp, as does omitting the value
     timestamp extends OptionalLong;
@@ -38,6 +83,9 @@ TouchFile extends Prim {
     sfClass "org.smartfrog.services.filesystem.TouchFile";
 }
 
+/**
+ * tempfile
+ */
 TempFileSchema extends Schema {
     //prefix should be three or more characters long
     prefix extends String;
@@ -52,6 +100,10 @@ TempFileSchema extends Schema {
 
 /**
  * the temp file component creates a temporary file on deployment.
+ * this interface also implements the same interface as File, so that the
+ * getAbsolutePath() call works on it to give an absolute path.
+ * and absolutePath is set to the absolute path. None of the other
+ * attributes of File are set
  */
 TempFile extends Prim {
     tempFileSchema extends TempFileSchema;

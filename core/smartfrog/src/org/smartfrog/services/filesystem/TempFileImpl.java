@@ -35,7 +35,7 @@ import java.util.logging.Level;
  * created 18-May-2004 11:46:09
  */
 
-public class TempFileImpl extends PrimImpl implements Prim, TempFile {
+public class TempFileImpl extends PrimImpl implements Prim, TempFile, FileIntf {
 
     /**
      * the temp file that was created
@@ -77,7 +77,10 @@ public class TempFileImpl extends PrimImpl implements Prim, TempFile {
             throw SmartFrogException.forward(e);
 
         }
+        sfReplaceAttribute(ATTR_FILENAME, tempFile.toString());
+        sfReplaceAttribute(varAbsolutePath,tempFile.getAbsolutePath());
         sfContext().put(ATTR_FILENAME, tempFile.toString());
+
     }
 
     /**
@@ -119,6 +122,10 @@ public class TempFileImpl extends PrimImpl implements Prim, TempFile {
      */
     public String getFilename() {
         return tempFile.toString();
+    }
+
+    public String getAbsolutePath() throws RemoteException {
+        return tempFile.getAbsolutePath();
     }
 
 }
