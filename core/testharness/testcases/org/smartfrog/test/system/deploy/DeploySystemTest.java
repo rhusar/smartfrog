@@ -36,17 +36,14 @@ public class DeploySystemTest extends SmartFrogTestBase {
         super(s);
     }
 
-// @todo - Put this test back an debug it random failures.
-
-//
-//    public void testCaseTCN1() throws Exception {
-//        deployExpectingException(FILES+"tcn1.sf",
-//                "tcn1",
-//                "SmartFrogLifecycleException",
-//                "sfDeploy",
-//                "SmartFrogResolutionException",
-//                "Reference not found");
-//    }
+    public void testCaseTCN1() throws Exception {
+        deployExpectingException(FILES+"tcn1.sf",
+                "tcn1",
+                "SmartFrogLifecycleException",
+                "sfDeploy",
+                "SmartFrogResolutionException",
+                "Reference not found");
+    }
 
     public void testCaseTCN2() throws Exception {
         deployExpectingException(FILES+"tcn2.sf",
