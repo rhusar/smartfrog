@@ -67,10 +67,6 @@ public class OnEvent extends EventCompoundImpl implements Compound {
     public void handleEvent(String event) {
         ComponentDescription act;
 
-	synchronized (this) {
-	    if (finished) return;
-	    if (singleEvent) finished = true; // even if not known how to handle...
-	}
 
         try {
             String name = "otherwise";
@@ -81,19 +77,21 @@ public class OnEvent extends EventCompoundImpl implements Compound {
                 act = (ComponentDescription) sfResolve(name);
             }
 
+	    synchronized (this) {
+		if (finished) return;
+		if (singleEvent) finished = true;
+	    }
+
 	    sfCreateNewChild(name+index++, act, null);
 
         } catch (SmartFrogResolutionException e) {
 	    // no handler - log and ignore
 	    Logger.log(this.sfCompleteNameSafe()+"ignoring unknown event " + event);
-            // if there is no handler, and it is finished (in principle this is only if singleEvent)
-	    if (finished) sfTerminate(TerminationRecord.abnormal("terminating in single event after unknown event " + event, 
-                                                                 sfCompleteNameSafe()));
 	} catch (Exception e) {
-            // error in  handler - log and ignore
+            // error in  handler - terminate...
             sfTerminate(TerminationRecord.abnormal(
                 "error in event handler for event " + event, null));
-        }
+        } 
     }
 
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
