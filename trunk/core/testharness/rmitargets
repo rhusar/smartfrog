@@ -24,3 +24,5 @@ org/smartfrog/test/system/stress/Spawn.class
 org/smartfrog/test/system/prim/Dummy.class
 org/smartfrog/test/system/reference/ReferenceHelper.class
 org/smartfrog/test/system/schema/SchemaHelper.class
+org/smartfrog/test/system/schema/SchemaHelper.class
+org/smartfrog/test/system/deadlock/DeadlockImpl
