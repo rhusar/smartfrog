@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="smartfrog-tasks" default="default" basedir=".">
+<project name="sf-tasks" default="default" basedir=".">
   
 <description>
   Build file for Ant tasks for Smartfrog
@@ -40,9 +40,18 @@
       </not>
     </condition>   
     <echo>system.tests.enabled=${system.tests.enabled}</echo>
-    <property name="testutil.jar" 
-      location="${ant.home}/build/lib/ant-testutil.jar"/>
-    
+
+    <condition property="jar.name.correct">
+      <equals arg1="${ant.project.name}"
+        arg2="${smartfrog.tasks.prefix}">
+      </equals>
+    </condition>
+    <fail unless="jar.name.correct">
+      The name of the project ${ant.project.name} needs to match
+      the property smartfrog.tasks.prefix (=${smartfrog.tasks.prefix})
+      or other projects will not work.
+    </fail>
+
   </target>
     
 
