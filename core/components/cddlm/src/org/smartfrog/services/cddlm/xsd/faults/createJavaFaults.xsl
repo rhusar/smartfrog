@@ -40,8 +40,7 @@ public class FaultCodes {
 
     public static final String
     <xsl:value-of select="@name"/>_NAMESPACE =
-    &quot;
-    <xsl:value-of select="@namespace"/>&quot;;
+    &quot;<xsl:value-of select="@namespace"/>&quot;;
 
     <xsl:apply-templates select="err:fault"/>
   </xsl:template>
@@ -57,8 +56,7 @@ public class FaultCodes {
    
      public static final String
     <xsl:value-of select="err:name"/>_FAULTCODE =
-    &quot;
-    <xsl:value-of select="err:code"/>&quot;;
+    &quot;<xsl:value-of select="err:code"/>&quot;;
 
         /**
         * text to go with the
@@ -66,8 +64,7 @@ public class FaultCodes {
         */
      public static final String
     <xsl:value-of select="err:name"/>_WIRE_MESSAGE =
-    &quot;
-    <xsl:value-of select="err:wiremessage"/>&quot;;
+    &quot;<xsl:value-of select="err:wiremessage"/>&quot;;
 
 
         /**
@@ -76,14 +73,13 @@ public class FaultCodes {
         */
      public static final String
     <xsl:value-of select="err:name"/>_ERROR_MESSAGE =
-    &quot;
-    <xsl:value-of select="err:errormessage"/>&quot;;
+    &quot;<xsl:value-of select="err:errormessage"/>&quot;;
 
       /**
     <xsl:value-of select="err:documentation"/>
      */
-    public static final QName FAULT_
-    <xsl:value-of select="err:name"/>=
+    public static final QName
+      FAULT_<xsl:value-of select="err:name"/>=
             new QName(CDDLM_FAULT_NAMESPACE,
     <xsl:value-of select="err:name"/>_FAULTCODE);
   </xsl:template>
@@ -105,8 +101,7 @@ public class FaultCodes {
 
     public static final String
     <xsl:value-of select="@name"/> =
-    &quot;
-    <xsl:value-of select="@value"/>&quot;;
+    &quot;<xsl:value-of select="@value"/>&quot;;
   </xsl:template>
   <xsl:template match="err:string">
 
@@ -116,8 +111,7 @@ public class FaultCodes {
 
     public static final String
     <xsl:value-of select="@name"/> =
-    &quot;
-    <xsl:value-of select="@value"/>&quot;;
+    &quot;<xsl:value-of select="@value"/>&quot;;
   </xsl:template>
   <xsl:template match="err:int">
 
