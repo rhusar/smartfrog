@@ -41,7 +41,7 @@ public class ErrorMessageBundle extends ListResourceBundle
         { MSG_START_COMP_TERMINATED,
             "Component : {0} received start request after it is terminated" },
         { MSG_FILE_NOT_FOUND, "Cannot find file {0}" },
-        { MSG_NON_REP_ATTRIB, "Compound has a non-replacable attribute {0}" },
+        { MSG_NON_REP_ATTRIB, "Compound has a non-replaceable attribute {0}" },
         { MSG_NULL_DEF_METHOD, "{0} is null during {1}"},
         { MSG_CLASS_NOT_FOUND, "Class {0} could not be found" },
         { MSG_INSTANTIATION_ERROR, "Class {0} cannot be instantiated" },
@@ -78,6 +78,7 @@ public class ErrorMessageBundle extends ListResourceBundle
         // Resolution Exception messages start
         { MSG_UNRESOLVED_REFERENCE , "Unresolved Reference"},
         { MSG_NOT_FOUND_REFERENCE , "Reference not found"},
+        { MSG_NOT_FOUND_ATTRIBUTE , "Attribute '{0}' not found"},
         { MSG_NOT_VALUE_REFERENCE , "Reference with no value"},
         { MSG_NOT_COMPONENT_REFERENCE , "Reference is not a SmartFrog Component"},
         { MSG_ILLEGAL_REFERENCE , "Illegal Reference"},

@@ -216,6 +216,9 @@ public interface MessageKeys {
      */
     public static String MSG_NOT_FOUND_REFERENCE = "MSG_NOT_FOUND_REFERENCE";
     /**
+     * Message key: attribute not found.
+     */    public static String MSG_NOT_FOUND_ATTRIBUTE = "MSG_NOT_FOUND_ATTRIBUTE";
+    /**
      * Message key: reference with no value.
      */
     public static String MSG_NOT_VALUE_REFERENCE = "MSG_NOT_VALUE_REFERENCE";
@@ -284,7 +287,7 @@ public interface MessageKeys {
      */
     public static String COPY_SERIALIZE_FAILED
                                                = "COPY_SERIALIZE_FAILED";
-    
+
     /**
      * Message key: Failed to get InetAddress of the localhost
      */
