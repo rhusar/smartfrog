@@ -24,6 +24,7 @@ import java.rmi.RemoteException;
 import java.util.Enumeration;
 import java.util.Vector;
 
+import org.smartfrog.sfcore.common.TerminatorThread;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.SmartFrogCoreProperty;
 import org.smartfrog.sfcore.common.Context;
@@ -251,16 +252,21 @@ public class CompoundImpl extends PrimImpl implements Compound {
                                 throws SmartFrogDeploymentException, RemoteException {
         super.sfDeployWith(parent, cxt);
 
-        for (Enumeration e = sfContext().keys(); e.hasMoreElements();) {
-            Object key = e.nextElement();
-            Object elem = sfContext.get(key);
-
+	try { // if an exception is thrown in the super call - the termination is already handled
+	    for (Enumeration e = sfContext().keys(); e.hasMoreElements();) {
+		Object key = e.nextElement();
+		Object elem = sfContext.get(key);
+		
                 if ((elem instanceof ComponentDescription) &&
-                        (((ComponentDescription) elem).getEager())) {
+		    (((ComponentDescription) elem).getEager())) {
                     sfDeployComponentDescription(key, this,
-                        (ComponentDescription) elem, null);
+						 (ComponentDescription) elem, null);
                 }
-        }
+	    }
+	} catch (Exception sfex) {
+	    new TerminatorThread(this, sfex, null).quietly().run();
+            throw (SmartFrogDeploymentException)SmartFrogDeploymentException.forward (sfex);
+	}
     }
 
     /**
