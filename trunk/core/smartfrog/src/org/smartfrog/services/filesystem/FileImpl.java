@@ -28,6 +28,7 @@ import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.utils.PlatformHelper;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.logging.Log;
 
 import java.rmi.RemoteException;
 import java.io.File;
@@ -44,7 +45,11 @@ public class FileImpl extends PrimImpl implements FileIntf {
     private boolean mustRead;
     private boolean mustWrite;
     private boolean exists;
-
+    /**
+     * a log
+     */
+    private Log log;
+    
     public FileImpl() throws RemoteException {
     }
 
@@ -63,14 +68,25 @@ public class FileImpl extends PrimImpl implements FileIntf {
         PlatformHelper platform= PlatformHelper.getLocalPlatform();
         String filename = sfResolve(varFilename,(String)null,true);
         filename=platform.convertFilename(filename);
+        boolean debugEnabled = log.isDebugEnabled();
+        if(debugEnabled) {
+            log.debug("file="+filename);
+        }
         String dir= sfResolve(varDir, (String) null, false);
         if(dir!=null) {
             dir= platform.convertFilename(dir);
+            if ( debugEnabled ) {
+                log.debug("dir=" + dir);
+            }
             File parent=new File(dir);
             file=new File(parent,filename);
         } else {
             file=new File(filename);
         }
+        if ( debugEnabled ) {
+            log.debug("absolute file=" + file.toString());
+        }
+
 
         mustExist =getBool(varMustExist,false,false);
         mustRead = getBool(varMustWrite, false, false);
@@ -84,10 +100,17 @@ public class FileImpl extends PrimImpl implements FileIntf {
         long length;
         if(exists) {
             isDirectory = file.isDirectory();
+            if(isDirectory && debugEnabled ) {
+                log.debug("file is a directory");
+            }
             isFile = file.isFile();
+            if(isFile && debugEnabled ) {
+                log.debug("file is a normal file");
+            }
             timestamp = file.lastModified();
             length = file.length();
         } else {
+            if(debugEnabled) log.debug("file does not exist");
             isDirectory=isFile=false;
             timestamp=-1;
             length=0;
@@ -110,7 +133,18 @@ public class FileImpl extends PrimImpl implements FileIntf {
 
     }
 
+    private void setAttribute(String attr, String  value) throws SmartFrogRuntimeException, RemoteException {
+        if ( log.isDebugEnabled() ) {
+            log.debug(attr + " = " + value);
+        }
+        sfReplaceAttribute(attr, value);
+    }
+
+
     private void setAttribute(String attr, boolean flag) throws SmartFrogRuntimeException, RemoteException {
+        if ( log.isDebugEnabled() ) {
+            log.debug(attr + " = " + flag);
+        }
         sfReplaceAttribute(attr,new Boolean(flag));
     }
 
@@ -129,6 +163,9 @@ public class FileImpl extends PrimImpl implements FileIntf {
         return b.booleanValue();
     }
     private void setAttribute(String attr, long value) throws SmartFrogRuntimeException, RemoteException {
+        if(log.isDebugEnabled() ) {
+            log.debug(attr+" = "+ value);
+        }
         sfReplaceAttribute(attr, new Long(value));
     }
 
@@ -144,6 +181,7 @@ public class FileImpl extends PrimImpl implements FileIntf {
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
+        log= sfGetApplicationLog();
         bind();
     }
 
@@ -167,6 +205,10 @@ public class FileImpl extends PrimImpl implements FileIntf {
      */
     public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
+        if ( log.isDebugEnabled() ) {
+            log.debug("liveness check will look for "+file.toString());
+        }
+
         if(mustExist && !file.exists()) {
             throw new SmartFrogLivenessException("File "+file.getAbsolutePath()+" does not exist");
         }
