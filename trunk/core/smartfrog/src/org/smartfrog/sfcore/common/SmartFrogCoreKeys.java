@@ -27,134 +27,184 @@ public interface SmartFrogCoreKeys {
 
     /**
      * Attribute used to determine the host to use to
-     * locate the root process compound on that host
+     * locate the root process compound on that host.
+     * 
+     * Value {@value}
      * @see PrimHostDeployerImpl
      */
     public final static String SF_PROCESS_HOST = "sfProcessHost";
 
     /**
-     * Attribute used to determine the process/subprocess name where a component runs
+     * Attribute used to determine the process/subprocess name where a component runs.
+     *
+     * Value {@value}
      */
     public final static String SF_PROCESS = "sfProcess";
 
 
 
     /**
-     * Attribute used to name a process/subprocess
+     * Attribute used to name a process/subprocess.
+     *
+     * Value {@value}
      */
     public final static String SF_PROCESS_NAME = "sfProcessName";
 
     /**
-     * Attribute used to name a component
+     * Attribute used to name a component.
+     *
+     * Value {@value}
      */
     public final static String SF_PROCESS_COMPONENT_NAME = "sfProcessComponentName";
 
     /**
-     * Registry port used by the rootProcess daemon
+     * Registry port used by the rootProcess daemon.
+     *
+     * Value {@value}
      */
     public final static String SF_ROOT_LOCATOR_PORT = "sfRootLocatorPort";
 
     /**
-     * Attribute with garbage collection time out for SubProcesses
+     * Attribute with garbage collection time out for SubProcesses.
+     *
+     * Value {@value}
      */
     public final static String SF_SUBPROCESS_GC_TIMEOUT = "sfSubprocessGCTimeout";
 
     /**
-     * Attribute used to determine the host address where a component runs
+     * Attribute used to determine the host address where a component runs.
+     *
+     * Value {@value}
      */
     public final static String SF_HOST = "sfHost";
 
     /**
-     * Attribute used to define if subProcesses can be used
+     * Attribute used to define if subProcesses can be used.
+     *
+     * Value {@value}
      */
     public final static String SF_PROCESS_ALLOW ="sfProcessAllow";
 
     /**
      * Attribute used to define what  subProcesses attributes to overwrite when
-     * it is deployed
+     * it is deployed.
+     *
+     * Value {@value}
      */
     public final static String SF_PROCESS_CONFIG ="sfProcessConfig";
 
     /**
-     * Attribute with subprocess deployment timeout
+     * Attribute with subprocess deployment timeout.
+     *
+     * Value {@value}
      */
     public final static String SF_PROCESS_TIMEOUT ="sfProcessTimeout";
 
     /**
-     *  Attribute that holds the process java start command
+     *  Attribute that holds the process java start command.
+     *
+     * Value {@value}
      */
     public final static String SF_PROCESS_JAVA ="sfProcessJava";
 
     /**
-     * Attribute that holds the class name for subprocesses
+     * Attribute that holds the class name for subprocesses.
+     *
+     * Value {@value}
      */
     public final static String SF_PROCESS_CLASS ="sfProcessClass";
     /**
-     * Attribute that holds the class name for subprocesses
+     * Attribute that holds the class name for subprocesses.
+     *
+     * Value {@value}
      */
     public final static String SF_PROCESS_CLASSPATH ="sfProcessClassPath";
     /**
-     * Attribute that holds the class name for subprocesses
+     * Attribute that holds the class name for subprocesses.
+     *
+     * Value {@value}
      */
     public final static String SF_PROCESS_REPLACE_CLASSPATH ="sfProcessReplaceClassPath";
 
     /**
-     * Attribute that holds the class name for deployer
+     * Attribute that holds the class name for deployer.
+     *
+     * Value {@value}
      */
     public final static String SF_DEPLOYER_CLASS ="sfDeployerClass";
 
     /**
      * Attribute that determines asynchronous or synchronous termination
-     * of compound
-     * @see CompoundImpl
+     * of compound.
+     *
+     * Value {@value}
+     * @see org.smartfrog.sfcore.compound.CompoundImpl
      */
     public final static String SF_SYNC_TERMINATE = "sfSyncTerminate";
 
     /**
-     * Attribute that holds the class that implements a component
+     * Attribute that holds the class that implements a component.
+     *
+     * Value {@value}
      */
     public final static String SF_CLASS="sfClass";
 
     /**
-     * Attribute that determines the resolution root of a SmartFrog description
+     * Attribute that determines the resolution root of a SmartFrog description.
+     *
+     * Value {@value}
      */
     public final static String SF_CONFIG="sfConfig";
 
 
     /**
-     * Attritute that determines the definition of a schema
+     * Attritute that determines the definition of a schema.
+     *
+     * Value {@value}
      */
     public final static String SF_SCHEMA_DESCRIPTION="sfSchemaDescription";
 
     /**
-     * Attribute that defines the codebase for a component
+     * Attribute that defines the codebase for a component.
+     *
+     * Value {@value}
      */
     public final static String SF_CODE_BASE = "sfCodeBase";
 
 
     /**
      * Attribute that defines how often to send liveness in seconds.
+     *
+     * Value {@value}
      */
     public final static String SF_LIVENESS_DELAY= "sfLivenessDelay";
 
     /**
-     * Attribute that defines how many multiples of livenss delay to wait
-     * till a liveness failure of the parent is declared
+     * Attribute that defines how many multiples of liveness delay to wait
+     * till a liveness failure of the parent is declared.
+     *
+     * Value {@value}
      */
     public final static String SF_LIVENESS_FACTOR="sfLivenessFactor";
 
     /**
-     * Attribute that defines if a component has to accept remote method calls
+     * Attribute that defines if a component has to accept remote method calls.
+     *
+     * Value {@value}
      */
     public final static String SF_EXPORT="sfExport";
 
     /**
-     * Attribute that defines the root locator class
+     * Attribute that defines the root locator class.
+     *
+     * Value {@value}
      */
     public final static String SF_ROOT_LOCATOR_CLASS = "sfRootLocatorClass";
 
     /**
-     * Attribute that hold the boot time of the root process daemon
+     * Attribute that hold the boot time of the root process daemon.
+     *
+     * Value {@value}
      */
     public final static String SF_BOOT_DATE = "sfBootDate";
 
@@ -163,43 +213,59 @@ public interface SmartFrogCoreKeys {
     // Strings used to name certain things in the framework
 
     /**
-     * Name used to name root process
+     * Name used to name root process.
+     *
+     * Value {@value}
      */
     public final static String SF_ROOT_PROCESS = "rootProcess";
 
     /**
      * Name used to refer to the root reference in a particular hierachy of
-     * components or description
+     * components or description.
+     *
+     * Value {@value}
      */
     public final static String SF_ROOT = "ROOT";
 
     /**
-     * Name used to name a root process deployed without registry
+     * Name used to name a root process deployed without registry.
+     *
+     * Value {@value}
      */
     public final static String SF_RUN_PROCESS = "sfRunProcess";
 
     /**
-     * Name used to prefix the name of unnamed deployments
+     * Name used to prefix the name of unnamed deployments.
+     *
+     * Value {@value}
      */
     public final static String SF_UNNAMED = "unnamed_";
 
     /**
-     * Name to name a deploy phase failure
+     * Name to name a deploy phase failure.
+     *
+     * Value {@value}
      */
     public final static String SF_DEPLOY_FAILURE = "sfDeployFailure";
 
     /**
-     * Name to name a start phase failure
+     * Name to name a start phase failure.
+     *
+     * Value {@value}
      */
     public final static String SF_START_FAILURE = "sfStartFailure";
 
     /**
-     * Name to name a start phase failure
+     * Name to name a start phase failure.
+     *
+     * Value {@value}
      */
     public final static String SF_CORE_LOG = "SFCORE_LOG";
 
     /**
      * Attribute name to get the name of the application logger.
+     *
+     * Value {@value}
      */
     public final static String SF_APP_LOG_NAME = "sfAppLogName";
 
