@@ -1,34 +1,35 @@
 \section{Introduction}
 \label{introduction}
 
-In any discussion of SOAP-based technologies, it is important to
-remember the core reasons for adopting SOAP originally. We
-characterise them as follows:
+In beginning any discussion of SOAP-based technologies, it is 
+valuable to review the core features which made adopting SOAP
+attractive initially. We briefly characterise these as follows:
 
 \begin{enumerate}
-\item simplicity: It is intended to be easy to work with.
+\item Simplicity: It is intended to be easy to work with.
 
-\item interoperability: It is more interoperable than binary
-predecessors
+\item Interoperability: It is more interoperable than binary
+predecessors.
 
-\item XML-centric: Built on XML, and intended to integrate with
-XML-based technologies.
-
-\item extensibility: The envelope/header/body structure
+\item Extensibility: The envelope/header/body structure
 allows extra data to be attached to a request, potentially without
 breaking existing systems.
 
-\item self-describing: Messages can contain type definitions
+\item Self-describing: Messages can contain type definitions
 alongside data, and provide human readable names.
 
-\item flexibility: Participants can handle variable amounts
+\item Flexibility: Participants can handle variable amounts
 of incoming data.
 
-\item long-haul: It is designed to work through firewalls,
+\item Long-haul: It is designed to work through firewalls,
 over HTTP.
 
-\item loosely-coupled: Participants are not expected to share
+\item Loosely-coupled: Participants are not expected to share
 implementation code.
+
+\item XML-centric: Built on XML and intended to integrate with
+XML-based technologies.
+
 \end{enumerate}
 
 We will refer to these criteria throughout our discussion, as the
@@ -47,7 +48,7 @@ become the primary model of SOAP APIs.
 The Java APIs representing the two different underlying perspectives
 are JAX-RPC\footnote{Java API for XML-based RPC}
 \cite{spec:JAX-RPC-11} and JAXM\footnote{Java API for XML Messaging}
-\cite{spec:JAX-M-11}. We look at each of these in turn.
+\cite{spec:JAX-M-11}. We review each of these in turn.
 
 \subsubsection{JAXM}
 \label{intro:jaxm}
@@ -67,22 +68,23 @@ pieces. These include accessors and manipulators for the envelope,
 headers, body and any binary attachments.
 
 JAXM does not provide significant transport support: the primary
-method of receiving JAXM messages is to implement and deploy an HTTP
+method of receiving JAXM messages is to implement and deploy a HTTP
 servlet.  The sole method of sending a message is to ask a
 {\tt SOAPConnectionFactory} for a {\tt SOAPConnection} instance, and
 then make a blocking call of the endpoint.
 
-JAXM is an orphan specification. If ebXML had taken off, perhaps it
-would be more popular, and message-centric SOAP development in Java
-commonplace. Instead JAX-RPC is touted as the recommended way to work
-with SOAP in Java. 
+JAXM has become an orphan specification. Had ebXML been more
+successful, it is conceivable that JAXM might have proven more
+popular, and made message-centric SOAP development in Java
+commonplace. As it is, JAX-RPC is touted as the recommended way to
+work with SOAP in Java.
 
 \subsubsection{JAX-RPC}
 \label{intro:jax-rpc}
 
 In JAX-RPC\footnote{The current edition of the JAX-RPC specification
-is version 1.1, and this is the version we discuss here. JAX-RPC2.0
-is discussed in section \ref{implications:future}}, all the details of
+is version 1.1, and this is the version we discuss here. JAX-RPC 2.0
+is discussed in section \ref{implications:future}.}, all the details of
 how a message was encoded are hidden, and the developer works with
 Java objects created automatically from the XML data using a
 semi-standardised mapping process. Java classes can be automatically
@@ -94,21 +96,21 @@ through introspection.
 
 Client side proxy classes can be generated from the WSDL files, proxy
 classes which again provide a method for every operation the service
-supports. In Java-Java communications, the result is that methods
-called on the proxy class result in the passing of the method
-parameters to remote methods on an instance of the implementation
-class, a behaviour that superficially resembles Java RMI
-\cite{paper:RMI}. We will return to this in section
+supports. In communications between systems running on the Java
+platform, the result is that methods called on the proxy class result
+in the passing of the method parameters to remote methods on an
+instance of the implementation class, a behaviour that superficially
+resembles Java RMI \cite{paper:RMI}. We will return to this in section
 \ref{objections:soap-not-rmi}.
 
 One good architectural feature of JAX-RPC is the \emph{handler chain},
-which consists of an ordered sequence of classes which are configured to
-manage requests and responses. Using the handler chain, it is possible
-to add support for new SOAP headers to existing services, or to apply
-extra diagnostics. The dispatch of operations to Java methods,
-Enterprise Java Bean methods or other destinations is actually
-implemented by specific handlers, making the handler chain the
-foundation for the rest of the system.
+which consists of an ordered sequence of classes which are configured
+to manage requests and responses. Using the handler chain, it is
+possible to add support for new SOAP headers to existing services, or
+to apply extra diagnostics, in a relatively transparent fashion. The
+dispatch of operations to Java methods, Enterprise Java Bean methods
+or other destinations is generally implemented by specific handlers,
+making the handler chain the foundation for the rest of the system.
 
 JAX-RPC is widely implemented, both by open source projects (for
 example Apache Axis \cite{apache:axis}), and by commercial vendors
@@ -118,7 +120,8 @@ feature is neither broadly promoted nor used. All the
 \emph{evangelisation} of SOAP focuses on JAX-RPC, as do most of the
 examples in the vendors' documentation.
 
-The bias is such that, for Java development, JAX-RPC \emph{is} SOAP. 
+The bias is such that, for Java development, it is widely seen that
+JAX-RPC \emph{is} SOAP.
 
 \subsection{The Hard Lessons of Service Implementation}
 \label{intro:experience}
@@ -131,14 +134,14 @@ a service endpoint providing seven operations, which permit suitably
 authenticated callers to deploy distributed applications onto a grid
 fabric.
 
-This service was defined in a ``pure way'', by writing the XSD and
-WSDL files first. This approach is believed to aid in creating a
-platform-independent system, and represents current best
-practise. However, the XSD file for the service messages is
+The development of this service was performed in a ``pure way'', by
+creating the XSD and WSDL files first. This approach is believed to
+aid in creating a platform-independent system, and represents current
+best practise. However, the XSD file for the service messages is
 approximately 2000 lines, including all the comments and annotations
 needed to make it comprehensible. That it takes so many lines to
 describe a relatively simple service is clearly one reason why this
-approach, despite its superiority of output, is so unpopular.
+approach, despite its alleged superiority of output, is so unpopular.
 
 Many problems were encountered turning this WSDL specification into
 functional clients and servers, problems that we attribute to JAX-RPC.
