@@ -209,7 +209,7 @@ public class PrimDeployerImpl implements ComponentDeployer, MessageKeys {
             for (Enumeration e = params.keys(); e.hasMoreElements();) {
                 Object key = e.nextElement();
                 try {
-                  target.sfAddAttribute(key, params.get(key));
+                  target.sfReplaceAttribute(key, params.get(key));
                 } catch (SmartFrogRuntimeException ex) {
                   throw (SmartFrogDeploymentException)SmartFrogDeploymentException.forward(ex);
                 }
