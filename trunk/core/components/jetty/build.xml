@@ -98,7 +98,6 @@ For more information: www.smartfrog.org
           value="No Jetty found"/>    
   </target>
   
- 
     <!-- ========================================================== -->
     <!-- parse the file -->
     <!-- ========================================================== -->
@@ -159,7 +158,7 @@ For more information: www.smartfrog.org
     <!--  Java Docs for all                                                -->
     <echo message=""/>
     <echo message="------------------------------------------------------------------------"/>
-    <echo message="  Creating Java Docs for ${Name.System} ${version} [${dist.dir}/${jdocs}]"/>
+    <echo message="  Creating Java Docs for ${Name.System} ${version} [${dist.jdocs.dir}]"/>
     <echo message="------------------------------------------------------------------------"/>
     <mkdir dir="${dist.jdocs.dir}"/>
     <javadoc packagenames="org.smartfrog.*"
@@ -173,14 +172,11 @@ For more information: www.smartfrog.org
            Footer="${Name.System} ${version} ${Version}"
            doctitle="${Name.System}"
            bottom="${Name.Company}"
-           source="${javac.runtime.target}"
+           source="1.4"
            >
       <group title="SmartFrog Packages" packages="org.smartfrog.*"/>
       <classpath>
-          <fileset dir="${smartfrog.dist.lib.dir}">
-              <include name="**/*.jar"/>
-          </fileset>
-		   <fileset dir="${dist.lib.dir}">
+	<fileset dir="${dist.lib.dir}">
               <include name="**/*.jar"/>
           </fileset>
       </classpath>

@@ -177,8 +177,8 @@ To Be Written
           <exclude name="${dist}/classes/**"/>
        </zipfileset>
 		<zipfileset dir="." prefix="${Name.System}.${version}">
-        <include name="${dist}/docs/emailer_readme*"/>
-        <!--include name="${dist}/docs/jdocs/**"/-->
+        <include name="${dist}/docs/sfinstaller_readme*"/>
+        <include name="${dist}/docs/jdocs/**"/>
        </zipfileset>
 	   
     </zip>
@@ -230,7 +230,7 @@ To Be Written
         </tarfileset>
       <tarfileset dir="." prefix="${Name.System}.${version}">
        <include name="${dist}/docs/sfinstaller_readme*"/>
-       <!--include name="${dist}/docs/jdocs/**"/-->
+       <include name="${dist}/docs/jdocs/**"/>
        </tarfileset>
        <tarfileset dir="." mode="755" prefix="${Name.System}.${version}">
          <include name="${dist}/bin/**"/>
