@@ -24,10 +24,10 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Java;
 import org.apache.tools.ant.types.Assertions;
+import org.apache.tools.ant.types.Commandline;
 import org.apache.tools.ant.types.Environment;
 import org.apache.tools.ant.types.PropertySet;
 import org.apache.tools.ant.types.Reference;
-import org.apache.tools.ant.types.Commandline;
 
 import java.io.File;
 import java.util.LinkedList;
@@ -174,7 +174,8 @@ public abstract class SmartFrogTask extends TaskBase {
 
 
     /**
-     * set the hostname to deploy to (optional)
+     * set the hostname to deploy to (optional, defaults to localhost)
+     * Some tasks do not allow this to be set at all.
      *
      * @param host
      */
@@ -185,6 +186,7 @@ public abstract class SmartFrogTask extends TaskBase {
 
     /**
      * port of daemon; optional -default is 3800
+     * Some tasks do not allow this to be set at all.
      *
      * @param port
      */
@@ -240,8 +242,7 @@ public abstract class SmartFrogTask extends TaskBase {
                 throw new BuildException("Not found: " + initialSmartFrogFile);
             }
             if (!initialSmartFrogFile.isFile()) {
-                throw new BuildException(
-                        "Unexpected file type: " + initialSmartFrogFile);
+                throw new BuildException("Unexpected file type: " + initialSmartFrogFile);
             }
         }
 
@@ -368,23 +369,17 @@ public abstract class SmartFrogTask extends TaskBase {
     protected void setStandardSmartfrogProperties() {
         addSmartfrogPropertyIfDefined("org.smartfrog.logger.logStackTrace",
                 logStackTraces);
-        addSmartfrogPropertyIfDefined(
-                "org.smartfrog.ProcessCompound.sfRootLocatorPort",
+        addSmartfrogPropertyIfDefined("org.smartfrog.ProcessCompound.sfRootLocatorPort",
                 port);
-        addSmartfrogPropertyIfDefined(
-                "org.smartfrog.ProcessCompound.sfLivenessDelay",
+        addSmartfrogPropertyIfDefined("org.smartfrog.ProcessCompound.sfLivenessDelay",
                 livenessCheckPeriod);
-        addSmartfrogPropertyIfDefined(
-                "org.smartfrog.ProcessCompound.sfLivenessFactor",
+        addSmartfrogPropertyIfDefined("org.smartfrog.ProcessCompound.sfLivenessFactor",
                 livenessCheckRetries);
-        addSmartfrogPropertyIfDefined(
-                "org.smartfrog.ProcessCompound.sfProcessAllow",
+        addSmartfrogPropertyIfDefined("org.smartfrog.ProcessCompound.sfProcessAllow",
                 allowSpawning);
-        addSmartfrogPropertyIfDefined(
-                "org.smartfrog.ProcessCompound.sfProcessTimeout",
+        addSmartfrogPropertyIfDefined("org.smartfrog.ProcessCompound.sfProcessTimeout",
                 spawnTimeout);
-        addSmartfrogPropertyIfDefined(
-                "org.smartfrog.sfcore.processcompound.sfDefault.sfDefault",
+        addSmartfrogPropertyIfDefined("org.smartfrog.sfcore.processcompound.sfDefault.sfDefault",
                 initialSmartFrogFile);
     }
 
@@ -453,6 +448,7 @@ public abstract class SmartFrogTask extends TaskBase {
      * this is a convenience method for things that work
      * with the task -it defines a new JVM arg with the
      * string value.
+     *
      * @param argument
      */
     public void defineJVMArg(String argument) {
@@ -462,6 +458,7 @@ public abstract class SmartFrogTask extends TaskBase {
     /**
      * part of the ANT interface; this method
      * creates a JVM argument for manipulation
+     *
      * @return
      */
     public Commandline.Argument createJVMarg() {
@@ -549,8 +546,7 @@ public abstract class SmartFrogTask extends TaskBase {
      */
     protected void verifyHostUndefined() {
         if (host != null && host.length() > 0) {
-            throw new BuildException(
-                    "host cannot be set on this task; it is set to " + host);
+            throw new BuildException("host cannot be set on this task; it is set to " + host);
         }
     }
 
