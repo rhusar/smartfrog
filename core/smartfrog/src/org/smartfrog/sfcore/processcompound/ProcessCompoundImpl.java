@@ -25,6 +25,8 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.Properties;
 import java.util.Vector;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.smartfrog.SFSystem;
 import org.smartfrog.sfcore.common.Context;
@@ -110,6 +112,16 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
     /** The countdown to check the gcTimeout. */ 
     protected int countdown = 0;
 
+
+    /**
+     * A set that contains the names of the sub-processes that have
+     * been requested, but not yet ready
+     */
+    protected Set processLocks = new HashSet();;
+
+
+
+
     public ProcessCompoundImpl() throws RemoteException {
     }
 
@@ -166,7 +178,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
 
         if (sfParent != null) {
             return (ProcessCompound) sfParent;
-    }
+	}
    
         if (sfProcessName == null) {
             return null;
@@ -287,25 +299,31 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
         }
     }
 
+
     /**
-     * Override superclass to send out a process compound addition event. The
-     * thread that created this compound will be waiting for this event to
-     * complete it's resolution in the createProcess call.
+     * Starts the process compound. In addition to the normal Compound sfStart,
+     * it notifes the root process compound (if it is a sub-process) that
+     * it is now ready for action by calling sfNotifySubprocessReady.
      *
-     * @param key key for attribute
-     * @param value value for attribute
-     *
-     * @return Object
+     * @throws SmartFrogException failed to start compound
+     * @throws RemoteException In case of Remote/nework error
      */
-    public synchronized Object sfAddAttribute(Object key, Object value) {
-        Object ret = super.sfAddAttribute(key, value);
+    public synchronized void sfStart() throws SmartFrogException, RemoteException {
+	super.sfStart();
 
-        // Notify any waiting threads that an attribute was added
-        if ((ret != null) && (ret instanceof ProcessCompound)) {
-            notifyAll();
-        }
-
-        return ret;
+	// the last act is to inform the root process compound that the
+	// subprocess is now ready for action - only done if not the root
+	try {
+	    if (!sfIsRoot()) {
+		ProcessCompound parent = sfLocateParent();
+		if (parent != null) {
+		    parent.sfNotifySubprocessReady(sfProcessName);
+		}
+	    }
+	} catch (RemoteException rex) {
+	    throw new SmartFrogRuntimeException(MSG_FAILED_TO_CONTACT_PARENT,
+						rex, this);
+	} 
     }
 
     /**
@@ -317,7 +335,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
      * @param comp component that terminated
      */
     public void sfTerminatedWith(TerminationRecord rec, Prim comp) {
-            sfRemoveAttribute(sfAttributeKeyFor(comp));
+	sfRemoveAttribute(sfAttributeKeyFor(comp));
     }
 
     /**
@@ -536,35 +554,63 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
 
     /**
      * Tries to find an attribute in the local context. If the attribute is not
-     * found the thread will wait for a notification from sfAddAttribute or
-     * until given timeout expires.
+     * found the thread will wait for a notification from sfNotifySubprocessReady 
+     * or until given timeout expires. Used to wait for a new process
+     * compound to appear.
      *
      * @param name name of attribute to wait for
      * @param timeout max time to wait in millis
      *
-     * @return The found object
+     * @return The object found
      *
-     * @exception Exception attribute not found after timeout
+     * @throws Exception attribute not found after timeout
+     * @throws RemoteException if there is any network or remote error
      */
-    public synchronized Object sfResolveHereOrWait(Object name, long timeout)
+    public Object sfResolveHereOrWait(Object name, long timeout)
         throws Exception {
         long endTime = (new Date()).getTime() + timeout;
 
-        while (true) {
-            try {
-                // try to return the attribute value
-                return sfResolveHere(name);
-            } catch (SmartFrogResolutionException ex) {
-                // not found, wait for leftover timeout
-                long now = (new Date()).getTime();
+	synchronized (processLocks) {
+	    while (true) {
+		try {
+		    // try to return the attribute value
+		    // if name in locks => process not ready, pretend not found...
+		    if (processLocks.contains(name)) {
+			throw SmartFrogResolutionException.notFound(new Reference(name),
+								    sfCompleteNameSafe());
+		    }
+		    else
+			return sfResolveHere(name);
+		} catch (SmartFrogResolutionException ex) {
+		    // not found, wait for leftover timeout
+		    long now = (new Date()).getTime();
+		    
+		    if (now >= endTime) {
+			throw ex;
+		    }
+		    processLocks.add(name);
+		    processLocks.wait(endTime - now);
+		}
+	    }
+	}
+    }
 
-                if (now >= endTime) {
-                    throw ex;
-                }
+    /**
+     * Allows a sub-process to notify the root process compound that it is now
+     * ready to receive deployment requests.
+     *
+     * @param name the name of the subprocess
+     * @throws RemoteException if there is any network or remote error
+     * 
+     */
+    public void sfNotifySubprocessReady(String name)
+        throws RemoteException {
 
-                wait(endTime - now);
-            }
-        }
+        // Notify any waiting threads that an attribute was added
+	synchronized (processLocks) {
+	    processLocks.remove(name);
+	    processLocks.notifyAll();
+	}
     }
 
     /**
