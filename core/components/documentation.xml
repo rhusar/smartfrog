@@ -120,7 +120,7 @@ For more information: www.smartfrog.org
     <forrest-component component="utils" />
     <forrest-component component="scripting" />
     <forrest-component component="slp" />
-	<!--forrest-component component="sfcorelogger" /-->
+	<forrest-component component="sfcoreloggers" />
 
    
 	<copy todir="${comp.home}/src/documentation" overwrite="true"
