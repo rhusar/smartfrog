@@ -94,6 +94,12 @@ public class PrimImpl extends Object implements Prim, MessageKeys {
     /** Flag indicating that this component has been terminated. */
     protected boolean sfIsTerminated = false;
 
+    /** Flag indicating that this component has been deployed. */
+    protected boolean sfIsDeployed = false;
+
+    /** Flag indicating that this component has been started. */
+    protected boolean sfIsStarted = false;
+
     /** Parent. */
     protected Prim sfParent = null;
 
@@ -1829,7 +1835,7 @@ public class PrimImpl extends Object implements Prim, MessageKeys {
                     MSG_DEPLOY_COMP_TERMINATED, componentId.toString()),
                 this);
         }
-
+	sfIsDeployed = true;
         sfDeployHooks.applyHooks(this, null);
     }
 
@@ -1847,7 +1853,7 @@ public class PrimImpl extends Object implements Prim, MessageKeys {
                     MSG_START_COMP_TERMINATED, this.sfCompleteNameSafe().toString()),
                 this);
         }
-
+	sfIsStarted = true;
         sfStartHooks.applyHooks(this, null);
     }
 
