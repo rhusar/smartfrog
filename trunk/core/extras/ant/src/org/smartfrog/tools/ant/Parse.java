@@ -74,6 +74,17 @@ public class Parse extends Task {
 
 
     /**
+     * name a single file for parsing.
+     * Exactly equivalent to a nested fileset with a file attribute
+     * @param file
+     */
+    public void setFile(File file) {
+        FileSet fs=new FileSet();
+        fs.setFile(file);
+        addSource(fs);
+    }
+
+    /**
      * add a fileset to the list of files to parse
      *
      * @param fs
@@ -86,7 +97,7 @@ public class Parse extends Task {
      * the classpath to run the parser
      * @param classpath
      */
-    public void setClasspath(Path classpath) {
+    public void addClasspath(Path classpath) {
         this.classpath = classpath;
     }
 
@@ -165,6 +176,7 @@ public class Parse extends Task {
 
                 }
             }
+            tempFile.delete();
         }
 
         //now lets create the Java statement
@@ -174,10 +186,14 @@ public class Parse extends Task {
         java.setClassname("org.smartfrog.sfParse");
         if(classpath!=null) {
             java.setClasspath(classpath);
-        }
-        if(classpathRef!=null) {
-            java.setClasspathRef(classpathRef);
-        }
+        } else {
+            if(classpathRef!=null) {
+                java.setClasspathRef(classpathRef);
+            }
+            else {
+                Path path = new Path(getProject(), System.getProperty("java.class.path"));
+                java.setClasspath(path);
+            }
         //and add various options to it
         java.createArg().setValue("-r");
         if(quiet) {

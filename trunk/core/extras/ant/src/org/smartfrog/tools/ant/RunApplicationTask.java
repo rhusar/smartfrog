@@ -26,5 +26,14 @@ import org.apache.tools.ant.Task;
  * Run an application by deploying it locally; only return from ant after it has finished.
  */
 public class RunApplicationTask extends SmartFrogTask {
-    
+
+
+    /**
+     * get the title string used to name a task
+     *
+     * @return the name of the task
+     */
+    protected String getTaskTitle() {
+        return "sf-deploy";
+    }
 }

@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<project name="test-common">
+
+  <target name="use-smartfrog-tasks" 
+    description="declare the classpath and imports for the smartfrog tasks">
+    
+    <echo level="verbose">
+    java.class.path=${java.class.path}
+    </echo>
+    <typedef 
+      resource="org/smartfrog/tools/ant/tasks.properties"
+      />
+  </target>
+    
+  
+</project>  

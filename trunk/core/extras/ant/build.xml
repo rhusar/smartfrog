@@ -7,6 +7,9 @@
   This build file is Ant1.6+ only. Do not complain when it breaks
   on Ant1.5! 
   
+  To build and run the tests, you need ant-testutil.jar, which you get
+  by running "ant test-jar" in Ant
+  
 </description>
 
 <property name="root.dir" location="../.."  />
@@ -37,12 +40,85 @@
     </jar>
   </target>
   
-  <target name="test" depends="dist,use-smartfrog-tasks">
-    <!-- todo -->
+  <target name="test1" depends="dist,use-smartfrog-tasks">
+    <sf-parse />
+    <parallel>
+      <sf-startdaemon 
+        taskTimeout="30"
+        classpathref="smartfrog.tasks.classpath"
+        />
+      <sequential>
+        <sleep seconds="5"/>
+        <sf-stopdaemon hostname="localhost"
+          failonerror="true"
+          classpathref="smartfrog.tasks.classpath"/>
+      </sequential>
+    </parallel>
+    
+  </target>
+  
+  <target name="stopdaemon" depends="dist,use-smartfrog-tasks">
+    <sf-stopdaemon 
+      classpathref="smartfrog.tasks.classpath"/>
   </target>
   
   <target name="default" depends="dist,test">
     <!-- todo -->
   </target>  
+  
+  <target name="find-testutil" depends="init">
+    <property name="testutil.jar" 
+      location="${ant.home}/build/lib/ant-testutil.jar"/>
+    <available property="testutil.found"
+      file="${testutil.jar}" />
+    <fail unless="testutil.found" >Could not find ${testutil.jar}</fail>
+  </target>
+
+  <target name="compile-tests" 
+      depends="init,find-testutil,dist,use-smartfrog-tasks">
+      <!-- set up a new path with the tasks and testutil -->
+    <property name="test.src.dir" location="test/files"/>
+    <path id="tests.compile.classpath">
+      <path refid="smartfrog.classpath"/>
+      <pathelement location="${smartfrog.tasks.jar}"/>
+      <pathelement location="${testutil.jar}"/>
+    </path>
+    
+    <sf-javac-with-ant 
+      srcdir="${test.src.dir}"
+      destdir="${test.classes.dir}"
+      classpathref="tests.compile.classpath"
+      >
+    </sf-javac-with-ant>
+    <copy-useful-files src="${src.dir}" dest="${build.classes.dir}" />
+  </target>
+  
+  <!-- run the tests -->
+  <target name="test" depends="compile-tests"
+    description="run unit tests">
+    <sf-junit 
+           errorProperty="test.failed"
+           failureProperty="test.failed" 
+           >
+        <sysproperty key="test.files.dir"
+            value="${test.src.dir}/files" />
+      <classpath>
+        <path refid="tests.compile.classpath"/>
+        <pathelement location="${test.classes.dir}"/>
+      </classpath>
+      <batchtest todir="${test.data.dir}" >
+        <fileset dir="${test.classes.dir}">
+          <include name="**/*Test.class" />
+       </fileset>
+      </batchtest>
+    </sf-junit>
+    
+    <!-- generate the reports-->
+    <sf-test-report data="${test.data.dir}"
+      reports="${test.reports.dir}"
+      failed="test.failed"/>
+
+  </target>  
+  
   
 </project>   

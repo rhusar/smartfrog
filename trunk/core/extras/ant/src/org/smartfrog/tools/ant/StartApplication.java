@@ -34,10 +34,9 @@ public class StartApplication extends SmartFrogTask {
      * @throws BuildException
      */
     public void execute() throws BuildException {
-        Java task=getBaseJavaTask();
-        addHostname(task);
-        addApplicationName("-n", task);
-        
-        addExitFlag(task);
+        addApplicationName("-n");
+        enableFailOnError();
+        addExitFlag();
+        execSmartfrog("Could not deploy");
     }
 }

@@ -42,13 +42,13 @@ import java.net.MalformedURLException;
  * all the relevant smartfrog JAR files.
  *
  * Smartfrog can be configured via system properties, an ini file, or the explicit
- * properties of this task. All the attributes of this task that configure smartfrog
+ * properties of this task. All the attributes of this task that configure SmartFrog
  * (port, liveness, spawning, stack trace) are undefined; whatever defaults are built into
  * SmartFrog apply, not any hard coded in the task. This also permits one to override smartfrog
  * by setting system properties inline, or in a property set.
  *
  */
-public class SmartFrogTask extends Task {
+public abstract class SmartFrogTask extends Task {
 
     public SmartFrogTask() {
 
@@ -62,78 +62,90 @@ public class SmartFrogTask extends Task {
     /**
      * name of host
      */
-    private String hostname;
+    protected String hostname;
 
     /**
      * name of an app
      */
-    private String applicationName;
+    protected String applicationName;
 
     /**
      * source files
      */
-    private List sourceFiles = new LinkedList();
+    protected List sourceFiles = new LinkedList();
 
     /**
      * ini file
      */
-    private File iniFile;
+    protected File iniFile;
 
     /**
      * our JVM
      */
-    private Java smartfrog;
+    protected Java smartfrog;
 
     /**
     SmartFrog daemon connection port.
     org.smartfrog.ProcessCompound.sfRootLocatorPort=3800;
     */
-    private Integer port; // = 3800;
+    protected Integer port; // = 3800;
 
     /**
     Liveness check period (in seconds); default=15.
     org.smartfrog.ProcessCompound.sfLivenessDelay=15;
     */
-    private Integer livenessCheckPeriod; // = 15;
+    protected Integer livenessCheckPeriod; // = 15;
 
 
     /**
      *  Liveness check retries
      * org.smartfrog.ProcessCompound.sfLivenessFactor=5;
     */
-    private Integer  livenessCheckRetries; // = 5;
+    protected Integer  livenessCheckRetries; // = 5;
     /**
      * Allow spawning of subprocess
      *# org.smartfrog.ProcessCompound.sfProcessAllow=true;
     */
-    private Boolean allowSpawning; // = true;
+    protected Boolean allowSpawning; // = true;
 
     /**
      * Subprocess creation/failure timeout - default=60 seconds
      * (slower machines might need longer periods to start a new subprocess)
      *  org.smartfrog.ProcessCompound.sfProcessTimeout=60;
      */
-    private Integer  spawnTimeout; // = 60;
+    protected Integer  spawnTimeout; // = 60;
 
 
     /**
     * stack tracing
     * map to org.smartfrog.logger.logStrackTrace
     */
-    private Boolean logStackTraces; //= false;
+    protected Boolean logStackTraces; //= false;
 
     /**
      * name of a file
      * org.smartfrog.iniSFFile
      */
-    private File initialSmartfrogFile;
+    protected File initialSmartfrogFile;
 
+
+    /**
+     * flag to set clear failonerror handling
+     */
+    protected boolean failOnError;
+
+    /**
+     * timeout of the ant task itself; the delay after which
+     * the process gets killed. Not compatible with spawning.
+     */
+
+    int taskTimeout;
 
     /**
      * codebase string
      *
      */
-    private List codebase=new LinkedList();
+    protected List codebase=new LinkedList();
 
     /**
      * add a file to the list
@@ -252,7 +264,7 @@ public class SmartFrogTask extends Task {
      * JVM classpath
      * @param classpath
      */
-    public void setClasspath(Path classpath) {
+    public void addClasspath(Path classpath) {
         smartfrog.setClasspath(classpath);
     }
 
@@ -272,43 +284,71 @@ public class SmartFrogTask extends Task {
         this.logStackTraces = new Boolean(logStackTraces);
     }
 
-    /**
-     * execution logic
-     * @throws BuildException
-     */
-    public void execute() throws BuildException {
-
-    }
 
     /**
      * get the base java task
-     * @return
+     * @return a java task set up with forking, the entry point set to SFSystem
+     *
      */
     protected Java getBaseJavaTask() {
         Java java = (Java) getProject().createTask("java");
-        java.setFailonerror(true);
         java.setFork(true);
         java.setClassname("org.smartfrog.SFSystem");
+        java.setTaskName(getTaskTitle());
+        java.setDir(getProject().getBaseDir());
+        Path path=new Path(getProject(),System.getProperty("java.class.path"));
+        java.setClasspath(path);
+
         return java;
     }
 
     /**
-     * adds the hostname to the task
-     * @param task
+     * get the title string used to name a task
+     * @return the name of the task
      */
-    protected void addHostname(Java task) {
+    protected abstract String getTaskTitle();
+
+    /**
+     * adds the hostname to the task
+     */
+    protected void addHostname() {
         if (hostname != null) {
-            task.createArg().setValue("-h");
-            task.createArg().setValue(hostname);
+            smartfrog.createArg().setValue("-h");
+            smartfrog.createArg().setValue(hostname);
         }
     }
 
     /**
      * set a flag to tell the runtime to exit after actioning something
-     * @param task
      */
-    protected void addExitFlag(Java task) {
-        task.createArg().setValue("-e");
+    protected void addExitFlag() {
+        smartfrog.createArg().setValue("-e");
+    }
+
+    /**
+     * sets the fail on error flag. Once this is done
+     * you cannot spawn the process any more.
+     */
+    protected void enableFailOnError() {
+        setFailOnError(true);
+    }
+
+    /**
+     * set the fail on error flag.
+     * @param failOnError
+     */
+    public void setFailOnError(boolean failOnError) {
+        this.failOnError = failOnError;
+
+    }
+
+    /**
+     * set the timeout of a task, in seconds. After this time it will be
+     * killed. 
+     * @param taskTimeout
+     */
+    public void setTaskTimeout(int taskTimeout) {
+        this.taskTimeout = taskTimeout;
     }
 
     /**
@@ -344,10 +384,10 @@ public class SmartFrogTask extends Task {
     }
 
 
-    protected boolean addApplicationName(String command, Java task) {
+    protected boolean addApplicationName(String command) {
         if (applicationName != null) {
-            task.createArg().setValue(command);
-            task.createArg().setValue(applicationName);
+            smartfrog.createArg().setValue(command);
+            smartfrog.createArg().setValue(applicationName);
             return true;
         }
         return false;
@@ -397,6 +437,44 @@ public class SmartFrogTask extends Task {
         }
     }
 
+
+    /**
+     *
+     * run smartfrog and throw an exception if something went awry.
+     * failure texts are for when smartfrog ran and failed; errorTexts when
+     * smartfrog wouldnt run.
+     * @param failureText text when return value==1
+     * @param errorText text when return value!=0 && !=1
+     * @throws BuildException if the return value from java!=0
+     */
+    protected void execSmartfrog(String failureText, String errorText) {
+        //last minute fixup of error properties.
+        //this is because pre Ant1.6, even setting this to false stops spawn working
+        //delayed setting only when the flag is true reduces the need to flip the bit
+        if(failOnError) {
+            smartfrog.setFailonerror(failOnError);
+        }
+        int err= smartfrog.executeJava();
+        if(!failOnError) {
+            return;
+        }
+        switch(err) {
+            case 0:
+                return;
+            case 1:
+                throw new BuildException(failureText);
+            default:
+                throw new BuildException(errorText+" - error code "+err);
+        }
+    }
+
+    /**
+     * simpler entry point with a set message on errors
+     * @param failureText text when smartfrog returns '1'
+     */
+    protected void execSmartfrog(String failureText) {
+        execSmartfrog(failureText,"Problems running smartfrog JVM");
+    }
 
     /**
      * the name and url of an application. Name is optional; descriptor is not.
