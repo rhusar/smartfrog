@@ -22,6 +22,7 @@ For more information: www.smartfrog.org
 package org.smartfrog.sfcore.common;
 
 import java.util.Enumeration;
+import java.io.Serializable;
 
 import org.smartfrog.sfcore.prim.Prim;
 
@@ -30,7 +31,7 @@ import org.smartfrog.sfcore.prim.Prim;
  * system should extend this exception.
  *
  */
-public class SmartFrogException extends Exception {
+public class SmartFrogException extends Exception implements Serializable {
     /** Attribute name for Context. */
     public static final String CONTEXT = "Context";
 

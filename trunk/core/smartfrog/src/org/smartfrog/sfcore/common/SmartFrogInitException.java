@@ -23,12 +23,14 @@ package org.smartfrog.sfcore.common;
 
 import org.smartfrog.sfcore.prim.Prim;
 
+import java.io.Serializable;
+
 /**
  * A SmartFrogInitException is thrown if smartfrog initialization encounters
  * errors.
  *
  */
-public class SmartFrogInitException extends SmartFrogException {
+public class SmartFrogInitException extends SmartFrogException implements Serializable {
     /**
      * Constructs a SmartFrogInitException with specified message.
      *
@@ -71,7 +73,7 @@ public class SmartFrogInitException extends SmartFrogException {
     /**
      * Constructs a SmartFrogInitException with specified message. Also
      * initializes the exception context with component details.
-     * 
+     *
      * @param message message
      * @param sfObject The Component that has encountered the exception
      */
@@ -94,9 +96,9 @@ public class SmartFrogInitException extends SmartFrogException {
 
     /**
      * To forward SmartFrog exceptions instead of chain them.
-     * 
+     *
      * @param thr throwable object to be forwarded
-     * 
+     *
      * @return Throwable that is a SmartFrogException
      */
     public static SmartFrogException forward (Throwable thr){

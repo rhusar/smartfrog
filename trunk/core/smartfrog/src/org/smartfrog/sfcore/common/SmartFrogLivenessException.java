@@ -21,23 +21,24 @@ For more information: www.smartfrog.org
 package org.smartfrog.sfcore.common;
 
 import java.rmi.RemoteException;
+import java.io.Serializable;
 
 import org.smartfrog.sfcore.prim.Prim;
 
 /**
  * A SmartFrogLivenessException is thrown when a liveness test
  * fails
- * @see org.smartfrog.sfcore.prim.Liveness#sfPing(Object) 
+ * @see org.smartfrog.sfcore.prim.Liveness#sfPing(Object)
  *
  */
-public class SmartFrogLivenessException extends SmartFrogRuntimeException {
+public class SmartFrogLivenessException extends SmartFrogRuntimeException implements Serializable {
 
     /** Attribute name for reference in exceptioncontext. */
     public static final String REFERENCE = "reference";
-    
+
     /** Attribute name for source in exceptioncontext. */
     public static final String SOURCE = "source";
-    
+
     /** Attribute name for data in exceptioncontext. */
     public static final String DATA = "data";
 
