@@ -86,7 +86,11 @@ public abstract class NetElemImpl extends CompoundImpl implements Compound,
                             try {
                                 out.output(value);
                             } catch (Exception e) {
-                                Logger.log("Uncaught Exception " + e);
+
+                                //Logger.log("Uncaught Exception " + e);
+                                if (sflog().isErrorEnabled()){
+                                  sflog().error("Uncaught Exception ", e);
+                                }
 
                                 //e.printStackTrace();
                             }
