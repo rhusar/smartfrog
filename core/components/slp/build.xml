@@ -71,7 +71,7 @@ Reference URL:http://ant.apache.org
     <property name="Name.System" value="slplib"/>
     <property name="Name.Author" value="Copyright (C) 2004 Glenn Hisdal"/>
     <property name="version" value="smartfrog components"/>
-    <property name="Version" value="1.00.000.beta"/>
+    <property name="Version" value="@version"/>
     <property name="year" value="2004"/>
 
     <echo message=""/>

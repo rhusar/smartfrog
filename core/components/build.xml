@@ -209,7 +209,7 @@ For more information: www.smartfrog.org
     <property name="Name.System" value="SmartFrog"/>
     <property name="Name.Company" value="(C) Copyright 1998-2004 Hewlett-Packard Development Company, LP"/>
     <property name="version" value="COMPONENTS"/>
-    <property name="Version" value="3.04.004.beta"/>
+    <property name="Version" value="1.00.000_beta"/>
     <property name="year" value="2004"/>
     <property name="javac.java.version" value="1.4" />
     <echo level="verbose"/>
@@ -484,6 +484,14 @@ For more information: www.smartfrog.org
     		property="component.version"/>
     </replace>
 
+	<replace 
+    		file="releaseBuild.xml"
+   		propertyFile="version.properties">
+  		<replacefilter 
+    		token="@version" 
+    		property="component.version"/>
+    </replace>
+
     <macrodef name="updateversion" >
       <attribute name="project" description="component to update"/>
      <attribute name="compname" description="component to update"/> 
@@ -496,7 +504,26 @@ For more information: www.smartfrog.org
     		token="@version" 
     		property="@{compname}.version"/>
 	</replace>
-		<replace 
+	
+	<replace 
+    		file="@{project}/build.xml"
+   		propertyFile="version.properties">
+  		<replacefilter 
+    		token="@version" 
+    		property="@{compname}.version"/>
+	</replace>
+
+	<replace 
+    		file="@{project}/releaseBuild.xml"
+   		propertyFile="version.properties">
+  		<replacefilter 
+    		token="@version" 
+    		property="@{compname}.version"/>
+	</replace>
+	
+	
+	
+	<replace 
     		file="${skin.dir}/SFComponents.xml"
    		propertyFile="version.properties">
   		<replacefilter 
@@ -510,7 +537,9 @@ For more information: www.smartfrog.org
     		property="@{compname}.maxversion"/-->
 	</replace>
       </sequential>
+
     </macrodef>
+
 
     <updateversion project="${emailer.project}" compname="emailer"/>
     <updateversion project="${jetty.project}" compname="jetty" />
