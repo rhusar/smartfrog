@@ -45,6 +45,7 @@ For more information: www.smartfrog.org
  
 
   
+ <property name="Name.System" value="SFCoreLogger"/>
   
   <!-- ========================================================== -->
   <!-- ========================================================== -->
@@ -63,8 +64,60 @@ For more information: www.smartfrog.org
       <path location="${target.jar}" />
     </path>  
      -->
+	 <tstamp/>
+    <property name="Name.Company" value="(C) Copyright 1998-2004 Hewlett-Packard Development Company, LP"/>
+    <property name="version" value="smartfrog components"/>
+    <property name="Version" value="1.00.000"/>
+    <property name="year" value="2004"/>
+	<property name="releases.dir" value="releases"/>
+
+
+    <echo message=""/>
+    <echo message="==================================================================="/>
+    <echo message="= ${Name.System} ${version}"/>
+    <echo message="= ${Name.Company} "/>
+    <echo message="==================================================================="/>
+    <echo message=""/>
+    <echo message="(${ant.version})"/>
   </target>
   
+  <!-- =================================================================== -->
+  <!--   JDocs                                                             -->
+  <!-- =================================================================== -->
+  <target name="jdocs" depends="init" description="Generates the API documentation">
+    <!--  Java Docs for all                                                -->
+    <echo message=""/>
+    <echo message="------------------------------------------------------------------------"/>
+    <echo message="  Creating Java Docs for ${Name.System} ${version}"/>
+    <echo message="------------------------------------------------------------------------"/>
+    <mkdir dir="${dist.jdocs.dir}"/>
+    <javadoc packagenames="org.smartfrog.*"
+           sourcepath="${src.dir}"
+           destdir="${dist.jdocs.dir}"
+           author="true"
+           version="true"
+           use="true"
+           windowtitle="${Name.System}"
+           Header="${Name.System} ${Version}"
+           Footer="${Name.System} ${version} ${Version}"
+           doctitle="${Name.System}"
+           bottom="${Name.Company}"
+           source="${javac.runtime.target}"
+           >
+      <group title="SmartFrog Packages" packages="org.smartfrog.*"/>
+      <classpath>
+          <!--fileset dir="${smartfrog.dist.lib.dir}">
+              <include name="**/*.jar"/>
+          </fileset-->
+		   <fileset dir="${dist.lib.dir}">
+              <include name="**/*.jar"/>
+          </fileset>
+      </classpath>
+    </javadoc>
+
+  </target>
+
+
   
   <!-- ========================================================== -->
   <!-- this is an override point -->
@@ -95,8 +148,7 @@ For more information: www.smartfrog.org
   <!-- ========================================================== -->
   <!-- create the jar -->
   <!-- ========================================================== -->
-  <target name="dist" depends="common.dist" 
-    description="create the jar files">
+  <target name="dist" depends="common.dist,jdocs" description="create the jar files">
     <copy todir = "${dist.lib.dir}">
         <fileset dir ="${lib.dir}" />
     </copy>   
