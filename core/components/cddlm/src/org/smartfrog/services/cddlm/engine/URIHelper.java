@@ -19,6 +19,8 @@
  */
 package org.smartfrog.services.cddlm.engine;
 
+import org.apache.axis.types.URI;
+
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -72,5 +74,18 @@ public class URIHelper {
         }
     }
 
+    /**
+     * create an axis uri from a string
+     *
+     * @param s
+     * @return
+     */
+    public static org.apache.axis.types.URI toAxisUri(String s) {
+        try {
+            return new org.apache.axis.types.URI(s);
+        } catch (URI.MalformedURIException e) {
+            throw raiseConversionFault("converting " + s, e);
+        }
+    }
 
 }

@@ -19,7 +19,6 @@
  */
 package org.smartfrog.services.cddlm.cdl;
 
-import nu.xom.Attribute;
 import nu.xom.Document;
 import nu.xom.Element;
 import nu.xom.ParsingException;
@@ -78,14 +77,15 @@ public class CdlDocument {
     }
 
     public void throwAnyException() throws ParsingException {
-        if ( exception != null ) {
+        if (exception != null) {
             throw exception;
         }
     }
 
 
-    public void assertTrue(String message, boolean test) throws CdlParsingException {
-        if ( test == false ) {
+    public void assertTrue(String message, boolean test)
+            throws CdlParsingException {
+        if (!test) {
             throw new CdlParsingException(message);
         }
     }
@@ -94,7 +94,8 @@ public class CdlDocument {
         Element root = document.getRootElement();
         String uri = root.getNamespaceURI();
         assertTrue(ERROR_WRONG_NAMESPACE, Constants.CDL_NAMESPACE.equals(uri));
-        assertTrue(ERROR_WRONG_ROOT_ELEMENT, Constants.CDL_ELT_CDL.equals(root.getLocalName()));
+        assertTrue(ERROR_WRONG_ROOT_ELEMENT,
+                Constants.CDL_ELT_CDL.equals(root.getLocalName()));
         /*
         Attribute pathLangAttr = root.getAttribute("pathlanguage", Constants.CDL_NAMESPACE);
         if ( pathLangAttr != null ) {

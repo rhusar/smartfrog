@@ -23,13 +23,9 @@ package org.smartfrog.services.cddlm.test.system.console;
 
 import org.apache.axis.AxisFault;
 import org.apache.axis.types.URI;
-import org.cddlm.client.console.Lookup;
 import org.cddlm.client.console.ConsoleOperation;
-import org.cddlm.client.generated.api.types.ApplicationStatusType;
+import org.cddlm.client.console.Lookup;
 import org.smartfrog.services.cddlm.generated.api.DeployApiConstants;
-import org.smartfrog.services.cddlm.generated.api.DeployApiConstants;
-
-import java.rmi.RemoteException;
 
 /**
  * Date: 02-Sep-2004 Time: 20:40:57

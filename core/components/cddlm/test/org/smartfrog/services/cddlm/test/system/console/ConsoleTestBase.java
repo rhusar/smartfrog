@@ -26,10 +26,9 @@ import org.apache.axis.AxisFault;
 import org.apache.axis.types.URI;
 import org.cddlm.client.common.Constants;
 import org.cddlm.client.common.ServerBinding;
-import org.cddlm.client.generated.api.types.StaticServerStatusType;
-import org.cddlm.client.generated.api.types.ApplicationStatusType;
 import org.cddlm.client.console.ConsoleOperation;
 import org.smartfrog.services.cddlm.generated.api.DeployApiConstants;
+import org.smartfrog.services.cddlm.generated.api.types.ApplicationStatusType;
 
 import javax.xml.namespace.QName;
 import java.io.IOException;
@@ -59,6 +58,7 @@ public abstract class ConsoleTestBase extends TestCase {
 
     /**
      * get the operation of this test base
+     *
      * @return
      */
     protected abstract ConsoleOperation getOperation();
@@ -149,6 +149,7 @@ public abstract class ConsoleTestBase extends TestCase {
 
     /**
      * get the current server binding
+     *
      * @return
      */
     public ServerBinding getBinding() {
@@ -157,6 +158,7 @@ public abstract class ConsoleTestBase extends TestCase {
 
     /**
      * assert that the value is not null or empty
+     *
      * @param message
      * @param value
      */
@@ -167,6 +169,7 @@ public abstract class ConsoleTestBase extends TestCase {
 
     /**
      * assert the text is not null and contains the message
+     *
      * @param source
      * @param search
      */
@@ -190,11 +193,10 @@ public abstract class ConsoleTestBase extends TestCase {
      * @param text      optional text to look for in the reason
      */
     public static void assertFaultMatches(AxisFault fault,
-                                          final QName faultCode,
-                                          final String text) {
+            final QName faultCode,
+            final String text) {
         String faultAsString = fault.dumpToString();
-        assertEquals(
-                "expected [" +
+        assertEquals("expected [" +
                 faultCode +
                 "] \nbut got\n[" +
                 fault.getFaultCode() +
@@ -204,8 +206,7 @@ public abstract class ConsoleTestBase extends TestCase {
         if (text != null) {
             String message = fault.getFaultReason();
             assertNotNull("fault reason is null in " + faultAsString, message);
-            assertTrue(
-                    "expected [" +
+            assertTrue("expected [" +
                     text +
                     "] in " +
                     message +
@@ -217,14 +218,16 @@ public abstract class ConsoleTestBase extends TestCase {
 
     /**
      * assert that an application doesnt exist
-     * @param uri uri of app
+     *
+     * @param uri       uri of app
      * @param errorText optional error text
      * @throws RemoteException
      */
-    public void assertNoSuchApplication(URI uri, String errorText) throws RemoteException {
+    public void assertNoSuchApplication(URI uri, String errorText)
+            throws RemoteException {
         try {
-            ApplicationStatusType status = getOperation().lookupApplicationStatus(
-                    uri);
+            ApplicationStatusType status = getOperation()
+                    .lookupApplicationStatus(uri);
         } catch (AxisFault fault) {
             assertFaultMatches(fault,
                     DeployApiConstants.FAULT_NO_SUCH_APPLICATION,

@@ -20,7 +20,6 @@
 package org.smartfrog.services.cddlm.api;
 
 import org.smartfrog.services.cddlm.generated.api.DeployApiConstants;
-import org.smartfrog.services.cddlm.generated.api.DeployApiConstants;
 
 /**
  * created Aug 4, 2004 10:34:47 AM
@@ -48,12 +47,24 @@ public class Constants {
     public static final int LANGUAGE_ANT = 2;
 
 
-    public static final String WS_NOTIFICATION = "ws-notification";
-    public static final String CDDLM_CALLBACKS = "cddlm-prototype";
-    public static final String WS_EVENTING = "ws-eventing";
+    public static final String WS_NOTIFICATION = DeployApiConstants.CALLBACK_WS_NOTIFICATION;
+    public static final String CDDLM_CALLBACKS = DeployApiConstants.CALLBACK_CDDLM_PROTOTYPE;
+    public static final String WS_EVENTING = DeployApiConstants.CALLBACK_WS_EVENTING;
     public static final String[] CALLBACKS = {
         CDDLM_CALLBACKS
     };
+
+
+    /**
+     * list of all the options we support.
+     */
+    public static final String[] SUPPORTED_OPTIONS = {
+        DeployApiConstants.OPTION_BLOCKING_DEPLOY,
+        DeployApiConstants.OPTION_NAME,
+        DeployApiConstants.OPTION_PROPERTIES,
+        DeployApiConstants.OPTION_VALIDATE_ONLY
+    };
+
     public static final String SMARTFROG_HOMEPAGE = "http://smartfrog.org/";
     public static final String PRODUCT_NAME = "SmartFrog implementation";
     public static final String CVS_INFO = "$Id$";
@@ -62,20 +73,6 @@ public class Constants {
     public static final String ERROR_NO_APPLICATION = "application is undefined";
 
     public static final String CDDLM_FAULT_NAMESPACE = DeployApiConstants.CDDLM_FAULT_NAMESPACE;
-/*
-    public static final QName FAULT_BAD_ARGUMENT = FaultCodes.FAULT_BAD_ARGUMENT;
-    public static final QName FAULT_NESTED_EXCEPTION = FaultCodes.FAULT_NESTED_EXCEPTION
-    public static final QName FAULT_APPLICATION_NOT_FOUND = new QName(
-            CDDLM_FAULT_NAMESPACE, FaultCodes.NO_SUCH_APPLICATION_FAULTCODE);
-    public static final QName FAULT_WRONG_APP_STATE = new QName(
-            CDDLM_FAULT_NAMESPACE,
-            FaultCodes.WRONG_APPLICATION_STATE_FAULTCODE);
-    public static final QName FAULT_UNSUPPORTED_LANGUAGE = new QName(
-            CDDLM_FAULT_NAMESPACE, FaultCodes.UNSUPPORTED_LANGUAGE_FAULTCODE);
-    public static final QName FAULT_UNSUPPORTED_CALLBACK = new QName(
-            CDDLM_FAULT_NAMESPACE, FaultCodes.UNSUPPORTED_CALLBACK_FAULTCODE);
-    public static final QName FAULT_NOTUNDERSTOOD = new QName(
-            CDDLM_FAULT_NAMESPACE, FaultCodes.NOT_UNDERSTOOD_FAULTCODE);
-*/
+
 
 }

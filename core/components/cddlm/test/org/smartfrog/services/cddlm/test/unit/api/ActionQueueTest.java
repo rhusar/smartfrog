@@ -88,12 +88,4 @@ public class ActionQueueTest extends TestCase {
         assertTrue(worker.isTerminated());
     }
 
-    private void sleep(int millis) {
-        try {
-            Thread.sleep(millis);
-        } catch (InterruptedException e) {
-
-        }
-    }
-
 }

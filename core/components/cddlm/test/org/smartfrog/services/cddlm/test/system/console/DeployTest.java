@@ -22,13 +22,13 @@ package org.smartfrog.services.cddlm.test.system.console;
 import org.apache.axis.message.MessageElement;
 import org.apache.axis.types.URI;
 import org.cddlm.client.console.Options;
-import org.cddlm.client.generated.api.types.CallbackEnum;
-import org.cddlm.client.generated.api.types.CallbackInformationType;
-import org.cddlm.client.generated.api.types.DeploymentDescriptorType;
-import org.cddlm.client.generated.api.types.OptionMapType;
-import org.cddlm.client.generated.api.types.OptionType;
 import org.smartfrog.services.cddlm.cdl.ResourceLoader;
 import org.smartfrog.services.cddlm.generated.api.DeployApiConstants;
+import org.smartfrog.services.cddlm.generated.api.types.CallbackEnum;
+import org.smartfrog.services.cddlm.generated.api.types.CallbackInformationType;
+import org.smartfrog.services.cddlm.generated.api.types.DeploymentDescriptorType;
+import org.smartfrog.services.cddlm.generated.api.types.OptionMapType;
+import org.smartfrog.services.cddlm.generated.api.types.OptionType;
 
 import java.io.IOException;
 import java.io.InputStream;

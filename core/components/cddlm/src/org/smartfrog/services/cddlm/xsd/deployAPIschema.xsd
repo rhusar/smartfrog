@@ -433,14 +433,14 @@
     </xsd:sequence>
   </xsd:complexType>
 
-  <xsd:complexType name="callbackListType">
+  <xsd:complexType name="stringListType">
     <xsd:annotation>
       <xsd:documentation>
         This is the list of supported callback mechanisms
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-      <xsd:element name="callback" minOccurs="1" maxOccurs="unbounded"
+      <xsd:element name="item" minOccurs="1" maxOccurs="unbounded"
         type="xsd:string">
       </xsd:element>
     </xsd:sequence>
@@ -515,9 +515,37 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-      <xsd:element name="server" type="types:serverInformationType"/>
-      <xsd:element name="languages" type="types:languageListType"/>
-      <xsd:element name="callbacks" type="types:callbackListType"/>
+      <xsd:element name="server" type="types:serverInformationType">
+        <xsd:annotation>
+          <xsd:documentation>
+            Server details
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+
+      <xsd:element name="languages" type="types:languageListType">
+        <xsd:annotation>
+          <xsd:documentation>
+            List of languages
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+
+      <xsd:element name="callbacks" type="types:stringListType">
+        <xsd:annotation>
+          <xsd:documentation>
+            List of callbacks
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+
+      <xsd:element name="options" type="types:stringListType">
+        <xsd:annotation>
+          <xsd:documentation>
+            List of options that are understood
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
     </xsd:sequence>
   </xsd:complexType>
 

@@ -20,7 +20,6 @@
 package org.smartfrog.services.cddlm.engine;
 
 import org.apache.axis.types.URI;
-import org.smartfrog.services.cddlm.api.Processor;
 
 import java.util.Collection;
 import java.util.Hashtable;
@@ -37,10 +36,14 @@ import java.util.Set;
 public class JobRepository /* implements Map */ {
 
     private Hashtable jobs = new Hashtable();
-    private final String prefix;
+    private final String uriPrefix;
+    private final String appPrefix;
 
     public JobRepository() {
-        prefix = "/" + System.currentTimeMillis() + "/job/";
+        uriPrefix = "http://localhost/cddlm/" +
+                System.currentTimeMillis() +
+                "/job";
+        appPrefix = "job";
     }
 
     public void clear() {
@@ -140,10 +143,10 @@ public class JobRepository /* implements Map */ {
     public URI[] listJobs() {
         URI[] uriList = new URI[size()];
         Iterator it = iterator();
-        int counter = 0;
+        int count = 0;
         while (it.hasNext()) {
             JobState jobState = (JobState) it.next();
-            uriList[counter++] = jobState.getUri();
+            uriList[count++] = jobState.getUri();
         }
         return uriList;
     }
@@ -154,12 +157,10 @@ public class JobRepository /* implements Map */ {
      */
     private int counter = 0;
 
-    private synchronized String getUniqueName() {
-        counter++;
-        String name = prefix + counter;
-        return name;
-    }
 
+    private synchronized int getNewCounterValue() {
+        return ++counter;
+    }
 
     /**
      * if the job has no name, we give it one. If it has a name or no, a new URI
@@ -168,11 +169,12 @@ public class JobRepository /* implements Map */ {
      * @param job
      */
     public void assignNameAndUri(JobState job) {
-        final String uniqueName = getUniqueName();
+        int value = getNewCounterValue();
+        String uri = uriPrefix + counter;
         if (job.getName() == null) {
-            job.setName(uniqueName);
+            job.setName(appPrefix + counter);
         }
-        job.setUri(Processor.makeURIFromApplication(uniqueName));
+        job.setUri(URIHelper.toAxisUri(uri));
     }
 
 }

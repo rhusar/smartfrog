@@ -19,7 +19,7 @@
  */
 package org.cddlm.client.common;
 
-import org.cddlm.client.generated.api.endpoint.CddlmSoapBindingStub;
+import org.smartfrog.services.cddlm.generated.api.endpoint.CddlmSoapBindingStub;
 
 import java.io.IOException;
 import java.io.Serializable;

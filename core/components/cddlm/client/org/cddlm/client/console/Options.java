@@ -22,11 +22,11 @@ package org.cddlm.client.console;
 import org.apache.axis.message.MessageElement;
 import org.apache.axis.types.NCName;
 import org.apache.axis.types.URI;
-import org.cddlm.client.generated.api.types.OptionMapType;
-import org.cddlm.client.generated.api.types.OptionType;
-import org.cddlm.client.generated.api.types.PropertyMapType;
-import org.cddlm.client.generated.api.types.PropertyTupleType;
-import org.cddlm.client.generated.api.types.UnboundedXMLAnyNamespace;
+import org.smartfrog.services.cddlm.generated.api.types.OptionMapType;
+import org.smartfrog.services.cddlm.generated.api.types.OptionType;
+import org.smartfrog.services.cddlm.generated.api.types.PropertyMapType;
+import org.smartfrog.services.cddlm.generated.api.types.PropertyTupleType;
+import org.smartfrog.services.cddlm.generated.api.types.UnboundedXMLAnyNamespace;
 
 import java.math.BigInteger;
 import java.util.Iterator;
@@ -66,7 +66,7 @@ public class Options {
     }
 
     public void addOption(URI name, MessageElement[] xml,
-                          boolean mustUnderstand) {
+            boolean mustUnderstand) {
         UnboundedXMLAnyNamespace value = new UnboundedXMLAnyNamespace(xml);
         createNamedOption(name, mustUnderstand).setXml(value);
     }

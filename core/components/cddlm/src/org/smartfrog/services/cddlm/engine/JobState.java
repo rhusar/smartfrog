@@ -20,13 +20,16 @@
 package org.smartfrog.services.cddlm.engine;
 
 import org.apache.axis.AxisFault;
+import org.apache.axis.message.MessageElement;
 import org.apache.axis.types.URI;
 import org.smartfrog.services.cddlm.api.CallbackRaiser;
 import org.smartfrog.services.cddlm.api.OptionProcessor;
 import org.smartfrog.services.cddlm.api.Processor;
+import org.smartfrog.services.cddlm.generated.api.types.DeploymentDescriptorType;
 import org.smartfrog.services.cddlm.generated.api.types._deployRequest;
 import org.smartfrog.sfcore.prim.Prim;
 
+import javax.xml.namespace.QName;
 import java.lang.ref.WeakReference;
 
 /**
@@ -43,7 +46,8 @@ public class JobState {
      *
      * @param request
      */
-    public JobState(_deployRequest request, OptionProcessor options) {
+    public JobState(_deployRequest request, OptionProcessor options)
+            throws AxisFault {
         bind(request, options);
     }
 
@@ -79,6 +83,26 @@ public class JobState {
 
     private _deployRequest request;
 
+    /**
+     * any fault
+     */
+    private Throwable fault;
+
+
+    /**
+     * a deployment descriptor
+     */
+
+    private MessageElement descriptor;
+
+
+    /**
+     * the language
+     */
+    private int language = -1;
+
+    private String languageName = null;
+
     public CallbackRaiser getCallbacks() {
         return callbacks;
     }
@@ -99,18 +123,66 @@ public class JobState {
         return request;
     }
 
+    public Throwable getFault() {
+        return fault;
+    }
+
+    public void setFault(Throwable fault) {
+        this.fault = fault;
+    }
+
+    /**
+     * get the message descriptor. may be null
+     *
+     * @return
+     */
+    public MessageElement getDescriptor() {
+        return descriptor;
+    }
+
+    /**
+     * get the language
+     *
+     * @return
+     */
+    public int getLanguage() {
+        return language;
+    }
+
+    public String getLanguageName() {
+        return languageName;
+    }
+
     /**
      * set the request. The name is extracted here; it remains null if currently
      * undefined
      *
      * @param requestIn
      */
-    public void bind(_deployRequest requestIn, OptionProcessor options) {
+    public void bind(_deployRequest requestIn, OptionProcessor options)
+            throws AxisFault {
         this.request = requestIn;
 
         if (options != null && options.getName() != null) {
             name = options.getName();
         }
+        DeploymentDescriptorType descriptorType = request.getDescriptor();
+        if (descriptorType != null && descriptorType.getData() != null) {
+
+            MessageElement[] messageElements = descriptorType.getData()
+                    .get_any();
+            if (messageElements.length != 1) {
+                throw Processor.raiseBadArgumentFault(
+                        Processor.WRONG_MESSAGE_ELEMENT_COUNT);
+            }
+
+            descriptor = messageElements[0];
+            descriptor.getNamespaceURI();
+            QName qname = descriptor.getQName();
+            languageName = qname.toString();
+            language = Processor.determineLanguage(qname);
+        }
+
     }
 
     public URI getUri() {

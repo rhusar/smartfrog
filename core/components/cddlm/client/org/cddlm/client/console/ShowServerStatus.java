@@ -20,11 +20,11 @@
 package org.cddlm.client.console;
 
 import org.cddlm.client.common.ServerBinding;
-import org.cddlm.client.generated.api.types.DynamicServerStatusType;
-import org.cddlm.client.generated.api.types.ServerInformationType;
-import org.cddlm.client.generated.api.types.ServerStatusType;
-import org.cddlm.client.generated.api.types.StaticServerStatusType;
-import org.cddlm.client.generated.api.types._languageListType_language;
+import org.smartfrog.services.cddlm.generated.api.types.DynamicServerStatusType;
+import org.smartfrog.services.cddlm.generated.api.types.ServerInformationType;
+import org.smartfrog.services.cddlm.generated.api.types.ServerStatusType;
+import org.smartfrog.services.cddlm.generated.api.types.StaticServerStatusType;
+import org.smartfrog.services.cddlm.generated.api.types._languageListType_language;
 
 import java.io.PrintWriter;
 import java.rmi.RemoteException;
@@ -55,7 +55,7 @@ public class ShowServerStatus extends ConsoleOperation {
                 serverInfo.getLocation());
         out.println("UTC offset " + serverInfo.getTimezoneUTCOffset());
         out.println("Build " + serverInfo.getBuild());
-        String callbacks[] = statInfo.getCallbacks().getCallback();
+        String callbacks[] = statInfo.getCallbacks().getItem();
         out.println("Callbacks: " + callbacks.length + " :-");
         for (int i = 0; i < callbacks.length; i++) {
             out.println("  " + callbacks[i]);
@@ -72,6 +72,12 @@ public class ShowServerStatus extends ConsoleOperation {
                     "/" +
                     language.getVersion()
                     + " ::= " + language.getNamespace());
+        }
+        out.println();
+        String options[] = statInfo.getOptions().getItem();
+        out.println("Options: " + options.length + " :-");
+        for (int i = 0; i < options.length; i++) {
+            out.println("  " + options[i]);
         }
         out.println();
 

@@ -26,13 +26,12 @@ import org.apache.axis.types.URI;
 import org.cddlm.client.console.ConsoleOperation;
 import org.cddlm.client.console.Deploy;
 import org.cddlm.client.console.Options;
-import org.cddlm.client.generated.api.types.ApplicationStatusType;
-import org.cddlm.client.generated.api.types.CallbackInformationType;
-import org.cddlm.client.generated.api.types.DeploymentDescriptorType;
-import org.cddlm.client.generated.api.types.LifecycleStateEnum;
-import org.cddlm.client.generated.api.types._deploymentDescriptorType_data;
 import org.smartfrog.services.cddlm.generated.api.DeployApiConstants;
-import org.smartfrog.services.cddlm.generated.api.DeployApiConstants;
+import org.smartfrog.services.cddlm.generated.api.types.ApplicationStatusType;
+import org.smartfrog.services.cddlm.generated.api.types.CallbackInformationType;
+import org.smartfrog.services.cddlm.generated.api.types.DeploymentDescriptorType;
+import org.smartfrog.services.cddlm.generated.api.types.LifecycleStateEnum;
+import org.smartfrog.services.cddlm.generated.api.types._deploymentDescriptorType_data;
 
 import javax.xml.namespace.QName;
 import java.rmi.RemoteException;
