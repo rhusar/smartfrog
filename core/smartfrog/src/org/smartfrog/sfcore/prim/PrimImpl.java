@@ -234,6 +234,7 @@ public class PrimImpl extends Object implements Prim, MessageKeys {
         try {
             return java.net.InetAddress.getLocalHost();
         } catch (Exception ex) {
+            Logger.logQuietly(ex);
         }
 
         return null;
