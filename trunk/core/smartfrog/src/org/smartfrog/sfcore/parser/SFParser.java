@@ -91,12 +91,13 @@ public class SFParser implements Parser, MessageKeys {
     /**
      * Constructor for an instance of the parser for the given language.
      *
-     * @param language the name of the language to use
+     * @param String languageOrUrl the name of the language to use or the url
+     *        with suffixed by language extension.
      *
      * @throws SmartFrogException error crearing instance of parser
      */
-    public SFParser(String language) throws SmartFrogException {
-        theLanguage = language;
+    public SFParser(String languageOrUrl) throws SmartFrogException {
+        theLanguage = this.getLanguageFromUrl(language);
         parser = getParser();
     }
 
@@ -104,7 +105,7 @@ public class SFParser implements Parser, MessageKeys {
     private StreamParser getParser() throws SmartFrogException {
         /**
          * Referebce to parser class.
-         */ 
+         */
         Class parserClass;
 
         try {
@@ -144,6 +145,29 @@ public class SFParser implements Parser, MessageKeys {
     public Phases sfParse(InputStream is) throws SmartFrogParseException {
         return parser.sfParse(is);
     }
+
+
+    /**
+     * Parses component(s) from an resource url. Returns a root component which
+     * contains the parsed components. Includes should be handled by some
+     * default include handler.
+     *
+     * @param String url to resource to parse and compile from
+     *
+     * @return Phases root component containing parsed component(s)
+     *
+     * @exception SmartFrogParseException error parsing stream
+     */
+
+     public Phases sfParseResource(String url) throws SmartFrogParseException {
+         InputStream is = SFClassLoader.getResourceAsStream(url);
+         if (is == null) {
+                  throw new SmartFrogParseException(MessageUtil.formatMessage(
+                           MSG_INPUTSTREAM_NULL));
+         }
+         return sfParse(is);
+     }
+
 
     /**
      * Parses component(s) from a string. Returns the root component. This is a
@@ -187,4 +211,29 @@ public class SFParser implements Parser, MessageKeys {
     public Reference sfParseReference(String txt) throws SmartFrogParseException {
         return parser.sfParseReference(new ByteArrayInputStream(txt.getBytes()));
     }
+
+
+    /**
+      * Gets language from the URL
+      *
+      * @param url URL passed to application
+      *
+      * @return Language string
+      *
+      * @throws SmartFrogException In case any error while getting the
+      *         language string
+      */
+     public static String getLanguageFromUrl(String url)
+         throws SmartFrogParseException {
+         if (url == null) {
+             throw new SmartFrogParseException (MessageUtil.formatMessage(
+                     MSG_NULL_URL));
+         }
+
+         int i = url.lastIndexOf('.');
+
+         return url.substring(i + 1).trim();
+
+     }
+
 }
