@@ -239,10 +239,11 @@
     <macrodef name="copy-useful-files">
      <attribute name="src"/>
      <attribute name="dest"/>
+      <attribute name="failonerror" default="false"/>
      <attribute name="pattern" default="**/*.ini,**/*.xml,**/*.dtd,**/*.xsd,**/*.sf,**/*.wsdl,**/*.properties,**/*.wsdd,**/*.cdl" />
      <sequential>
        <echo level="verbose">copying @{pattern} from @{src} to @{dest}</echo>
-       <copy todir="@{dest}">
+       <copy todir="@{dest}" failonerror="@{failonerror}">
          <fileset dir="@{src}"
            includes="@{pattern}"/>
         </copy>
