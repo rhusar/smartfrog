@@ -41,6 +41,7 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.logging.Log;
 
 /**
  * SmartFrog component to executes a command on a remote machine via ssh. 
@@ -59,7 +60,6 @@ public class SSHExecImpl extends PrimImpl implements SSHExec{
     private String host;
     private String userName;
     private String password;
-    private String keyfile;
     private int port = SSH_PORT;
     private boolean failOnError = true;
     private UserInfoImpl userInfo;
@@ -70,6 +70,7 @@ public class SSHExecImpl extends PrimImpl implements SSHExec{
     private boolean  shouldTerminate = true;
     private Thread waitThread = null;
     private Session session = null;
+    private Log log;
     /**
      * Constructs SSHExecImpl object.
      */
@@ -90,9 +91,12 @@ public class SSHExecImpl extends PrimImpl implements SSHExec{
     public synchronized void sfDeploy() throws SmartFrogException, 
                                                             RemoteException {
         super.sfDeploy();
+        log = sfGetApplicationLog();
+        assert log != null;
         readSFAttributes();
         userInfo = new UserInfoImpl(trustAllCerts);
         userInfo.setName(userName);
+        log.info("User Name: "+ userName);
         userInfo.setPassword(password);
     }
     /**
@@ -108,6 +112,7 @@ public class SSHExecImpl extends PrimImpl implements SSHExec{
         super.sfStart();
         try {
             // open ssh session
+            logDebugMsg("Getting SSH Session");
             session = openSession();
             session.setTimeout((int) timeout);
 
@@ -116,6 +121,7 @@ public class SSHExecImpl extends PrimImpl implements SSHExec{
                 final ChannelExec channel = (ChannelExec) session.
                                             openChannel("exec");
                 String cmd = (String) commandsList.get(i);
+                log.info("Executing command:"+ cmd); 
                 channel.setCommand(cmd);
                 channel.connect();
 
@@ -129,7 +135,7 @@ public class SSHExecImpl extends PrimImpl implements SSHExec{
                                     try {
                                         sleep(500);
                                     } catch (Exception e) {
-                                        // ignored
+                                        ignore(e);
                                     }
                                 }
                             }
@@ -144,8 +150,7 @@ public class SSHExecImpl extends PrimImpl implements SSHExec{
                     if (failOnError) {
                         throw new SmartFrogException(TIMEOUT_MESSAGE);
                     } else {
-                        // TODO: use logger
-                        System.out.println(TIMEOUT_MESSAGE);
+                        log.error(TIMEOUT_MESSAGE);
                     }
                 } else {
                     int exitStat = channel.getExitStatus();
@@ -161,6 +166,7 @@ public class SSHExecImpl extends PrimImpl implements SSHExec{
             }
             // check if it should terminate by itself
             if(shouldTerminate) {
+                log.info("Normal termination :" + sfCompleteNameSafe());
                 TerminationRecord termR = new TerminationRecord("normal",
                 "SSH Session finished: ",sfCompleteName());
                 TerminatorThread terminator = new TerminatorThread(this,termR);
@@ -173,7 +179,7 @@ public class SSHExecImpl extends PrimImpl implements SSHExec{
                 if (getFailOnError()) {
                     throw new SmartFrogLifecycleException(TIMEOUT_MESSAGE, e);
                 } else {
-                    System.out.println(TIMEOUT_MESSAGE);
+                    log.error(TIMEOUT_MESSAGE);
                 }
             } else {
                 if (getFailOnError()) {
@@ -181,7 +187,9 @@ public class SSHExecImpl extends PrimImpl implements SSHExec{
                 }
             }
         }catch (Exception e) {
-            e.printStackTrace();
+            if(log.isTraceEnabled()) {
+                log.trace(e);
+            }
             throw new SmartFrogLifecycleException(e);
         }
     }
@@ -233,12 +241,30 @@ public class SSHExecImpl extends PrimImpl implements SSHExec{
         Session session = jsch.getSession(userInfo.getName(), host, port);
         session.setUserInfo(userInfo);
         session.setPassword(password);
-        System.out.println("Connecting to " + host + ":" + port);
+        log.info("Connecting to " + host + " at Port:" + port);
         session.connect();
         return session;
     }
     private boolean getFailOnError() {
         return failOnError;
+    }
+    /**
+     * Logs debug message
+     * @param msg debug message
+     */
+    private void logDebugMsg(String msg) {
+        if (log.isDebugEnabled()) {
+            log.debug(msg);
+        }
+    }
+    /**
+     * Logs ignored exception
+     * @param msg debug message
+     */
+    private void ignore(Exception e) {
+        if (log.isDebugEnabled()) {
+            log.debug("Ignoring Exception:" + e);
+        }
     }
 }
 
