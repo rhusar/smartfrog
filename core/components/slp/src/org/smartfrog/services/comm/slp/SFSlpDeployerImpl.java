@@ -55,28 +55,19 @@ public class SFSlpDeployerImpl extends PrimProcessDeployerImpl {
     protected static final Reference refConfig = new Reference("slpConfig");
     protected static final Reference isDone = new Reference("discoveryDone");
     
+    protected String serviceType = null;
+    protected String searchFilter = null;
+    protected Vector scopes = null;
+    
     public SFSlpDeployerImpl(ComponentDescription descr) {
         super(descr);
     }
     
+    /**
+        Does a search for a ProcessCompound using SLP.
+    */
     protected ProcessCompound getProcessCompound() throws Exception {
-        // get concrete type, search filter and scopes...
-        String serviceType=null, searchFilter=null;
-        Vector scopes=null;
 
-        serviceType = (String)target.sfResolve(refServiceType); // required
-       
-        try {
-            searchFilter = (String)target.sfResolve(refSearchFilter);
-        }catch(SmartFrogResolutionException ex) {
-            searchFilter = "";
-        }
-        try {
-            scopes = (Vector)target.sfResolve(refScopes);
-        }catch(SmartFrogResolutionException ex) {
-            // don't care...
-        }
-        
         // perform SLP Discovery...
         boolean discoveryCompleted = true;
         try {
@@ -88,12 +79,12 @@ public class SFSlpDeployerImpl extends PrimProcessDeployerImpl {
             ServiceLocationEnumeration urls = null;
             ServiceType type = null;
             Context ctxt = target.getContext();
+            Properties p = getSlpConfiguration(ctxt);
             try {
                 if(scopes == null || scopes.isEmpty()) {
                     scopes = ServiceLocationManager.findScopes();
                 }
                 type = new ServiceType(serviceType);
-                Properties p = getSlpConfiguration(ctxt);
                 ServiceLocationManager.setProperties(p);
                 Locator loc = ServiceLocationManager.getLocator(new Locale(p.getProperty("net.slp.locale")));
                 urls = loc.findServices(type, scopes, searchFilter);
@@ -120,7 +111,10 @@ public class SFSlpDeployerImpl extends PrimProcessDeployerImpl {
         return super.getProcessCompound();
     }
     
-    protected Properties getSlpConfiguration(Context context) {
+    /**
+        Reads the SLP configuration from the description.
+    */
+    protected Properties getSlpConfiguration(Context context) throws SmartFrogResolutionException {
         Properties properties = new Properties( SLPDefaults.getDefaultProperties() );
         // try to find configuration
         ComponentDescription descr = null;
@@ -128,6 +122,19 @@ public class SFSlpDeployerImpl extends PrimProcessDeployerImpl {
             descr = (ComponentDescription)target.sfResolve(refConfig);
         }catch(SmartFrogResolutionException ex) {
             return properties; // use defaults...
+        }
+        
+        // get service type, filter and scopes
+        serviceType = (String)descr.sfResolve(refServiceType); // required
+        try {
+            searchFilter = (String)descr.sfResolve(refSearchFilter);
+        }catch(SmartFrogResolutionException ex) {
+            searchFilter = "";
+        }
+        try {
+            scopes = (Vector)descr.sfResolve(refScopes);
+        }catch(SmartFrogResolutionException ex) {
+            // don't care...
         }
         
         // read configuration...
@@ -160,6 +167,6 @@ public class SFSlpDeployerImpl extends PrimProcessDeployerImpl {
     
     private Object sfResolve(ComponentDescription cd, String ref) throws SmartFrogResolutionException {
         return cd.sfResolve(new Reference(ref));
-    }
+    }    
 }
 

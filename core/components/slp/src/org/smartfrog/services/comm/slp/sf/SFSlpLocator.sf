@@ -63,6 +63,12 @@ SFSlpLocator extends Prim {
    
     // The result of the service discovery
     //result 
+    
+    // control what is being returned by the locator. The default is to return the
+    // first element that is discovered.
+    returnEnumeration false; // set to true to return the unmodified ServiceLocationEnumeration
+                             // returned by the service discovery.
+                            
 }
 
 

@@ -42,7 +42,7 @@ import java.io.*;
 /**
     Implements an SLP Service Agent.
 */
-public class ServiceAgent extends SLPAgent implements Advertiser, SlpUdpCallback {
+public class ServiceAgent extends SLPAgent implements Advertiser {
     public static final String SA_TYPE = "service:service-agent";
             
     /**
