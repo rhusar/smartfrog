@@ -66,9 +66,11 @@ public class CdlParser {
         XMLReader xerces = XMLReaderFactory.createXMLReader("org.apache.xerces.parsers.SAXParser");
         xerces.setFeature("http://apache.org/xml/features/validation/schema",
                     validate);
+        /*
         CatalogResolver resolver=new CatalogResolver();
         resolver.namespaceAware=true;
         xerces.setEntityResolver(resolver);
+        */
         builder = new Builder(xerces,validate);
     }
 
