@@ -3,12 +3,12 @@ if ! test $SFPRIVATE; then export SFPRIVATE=$SFHOME/private; fi
 if ! test $SFHOSTNAME; then export SFHOSTNAME=host1; fi
 if [ -z $1 ];then
 echo "Insufficient argument(s) to use sfRun"
-echo "Usage: sfRun (-c URL)* [-e]"
+echo "Usage: sfRun (-c URL | -n NAME URL)* [-e]"
 exit
 fi
-if [ $1 == "-c" ] && [ -z $@ ];then
+if ([ $1 == "-c" ] && [ -z $2 ] || ([ $1 == "-n" ] && ([ -z $2 ] || [ -z $3 ])));
 echo "Insufficient argument(s) to use sfRun"
-echo "Usage: sfRun (-c URL)* [-e]"
+echo "Usage: sfRun (-c URL | -n NAME URL)* [-e]"
 exit
 fi
 export CLASSPATH=$SFHOME/signedLib/smartfrog.jar:$SFHOME/signedLib/sfServices.jar:$SFHOME/signedLib/sfTestCases.jar:$CLASSPATH

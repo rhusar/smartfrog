@@ -1,12 +1,12 @@
 if ! test $SFHOME; then export SFHOME=$PWD; fi
 if [ -z $1 ];then
 echo "Insufficient arguments to use sfRun"
-echo "Usage: sfRun (-c URL)* [-e]"
+echo "Usage: sfRun (-c URL | -n NAME URL)* [-e]"
 exit
 fi
-if [ $1 == "-c" ] && [ -z $2 ]; then
+if ([ $1 == "-c" ] && [ -z $2 ] || ([ $1 == "-n" ] && ([ -z $2 ] || [ -z $3 ])));
 echo "Insufficient arguments to use sfRun"
-echo "Usage: sfRun (-c URL)* [-e]"
+echo "Usage: sfRun (-c URL | -n NAME URL)* [-e]"
 exit
 fi
 export CLASSPATH=$SFHOME/lib/smartfrog.jar:$SFHOME/lib/sfServices.jar:$SFHOME/lib/sfTestCases.jar:$CLASSPATH
