@@ -28,8 +28,8 @@ public class Version {
     private final static String name=        "SmartFrog";
     private final static String majorRelease="3";
     private final static String minorRelease="02";
-    private final static String build=       "001";
-    private final static String status=      "alpha"; //alpha, beta, final
+    private final static String build=       "002";
+    private final static String status=      "beta"; //alpha, beta, stable
 
     /** The version String for the SmartFrog system. */
     public final static String versionString =
