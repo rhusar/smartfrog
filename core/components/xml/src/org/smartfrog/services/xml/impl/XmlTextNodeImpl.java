@@ -38,7 +38,7 @@ public class XmlTextNodeImpl extends SimpleXmlNode implements XmlTextNode {
      *
      * @return a Node of type {@link nu.xom.Text}
      */
-    protected Node createNode() throws RemoteException, SmartFrogException {
+    public Node createNode() throws RemoteException, SmartFrogException {
         String text = sfResolve(ATTR_TEXT, "", true);
         return new Text(text);
     }

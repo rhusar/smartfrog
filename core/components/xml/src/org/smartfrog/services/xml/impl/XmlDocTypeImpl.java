@@ -39,7 +39,7 @@ public class XmlDocTypeImpl extends SimpleXmlNode implements XmlDocType {
      *
      * @return a new node of type {@link DocType}
      */
-    protected Node createNode() throws RemoteException, SmartFrogException {
+    public Node createNode() throws RemoteException, SmartFrogException {
         String publicID = sfResolve(ATTR_PUBLICID, (String) null, false);
         String systemID = sfResolve(ATTR_SYSTEMID, (String) null, false);
         String root = sfResolve(ATTR_ROOT_ELEMENT_NAME, "", true);

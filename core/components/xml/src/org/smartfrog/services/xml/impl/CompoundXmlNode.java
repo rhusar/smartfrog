@@ -21,28 +21,29 @@ package org.smartfrog.services.xml.impl;
 
 import nu.xom.Node;
 import nu.xom.XMLException;
+import nu.xom.ParentNode;
 import org.smartfrog.services.xml.interfaces.XmlNode;
+import org.smartfrog.services.xml.interfaces.LocalNode;
+import org.smartfrog.services.xml.interfaces.XmlElement;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.compound.CompoundImpl;
+import org.smartfrog.sfcore.prim.Prim;
 
 import java.rmi.RemoteException;
+import java.util.Enumeration;
 
 /**
  * Most of this class is an ugly cut and paste of {@link SimpleXmlNode}, now
  * with compound support added in. Blech.
  */
-public abstract class CompoundXmlNode extends CompoundImpl implements XmlNode {
+public abstract class CompoundXmlNode extends CompoundImpl implements XmlNode, LocalNode {
 
     /**
-     * this is our underlying node.
+     * most of the work is delegated to the helper
      */
-    private Node node;
-
-    /**
-     * XML data.
-     */
-    private String xml;
+    XmlNodeHelper helper = new XmlNodeHelper(this);
 
     public CompoundXmlNode() throws RemoteException {
     }
@@ -53,7 +54,7 @@ public abstract class CompoundXmlNode extends CompoundImpl implements XmlNode {
      * @param node
      */
     public void setNode(Node node) {
-        this.node = node;
+        helper.setNode(node);
     }
 
     /**
@@ -62,7 +63,7 @@ public abstract class CompoundXmlNode extends CompoundImpl implements XmlNode {
      * @param xml
      */
     public void setXml(String xml) {
-        this.xml = xml;
+        helper.setXml(xml);
     }
 
     /**
@@ -71,7 +72,11 @@ public abstract class CompoundXmlNode extends CompoundImpl implements XmlNode {
      * @return
      */
     public Node getNode() {
-        return node;
+        return helper.getNode();
+    }
+
+    public  ParentNode getParentNode() {
+        return (ParentNode) helper.getNode();
     }
 
     /**
@@ -80,7 +85,7 @@ public abstract class CompoundXmlNode extends CompoundImpl implements XmlNode {
      * @return the XML; may be null
      */
     public String getXml() {
-        return xml;
+        return helper.getXml();
     }
 
     /**
@@ -90,7 +95,7 @@ public abstract class CompoundXmlNode extends CompoundImpl implements XmlNode {
      *
      * @throws nu.xom.XMLException if needed
      */
-    protected abstract Node createNode() throws RemoteException,
+    public abstract Node createNode() throws RemoteException,
             SmartFrogException;
 
     /**
@@ -99,26 +104,12 @@ public abstract class CompoundXmlNode extends CompoundImpl implements XmlNode {
      * don't know what has changed underneath.
      *
      * @return XML of the tree
-     *
      * @throws RemoteException
      * @throws SmartFrogException for smartfrog problems, and for caught
      *                            XMLExceptions
      */
     public String toXML() throws RemoteException, SmartFrogException {
-        try {
-            if (node == null) {
-                //demand create the node
-                node = createNode();
-            }
-            xml = node.toXML();
-        } catch (XMLException e) {
-            throw new SmartFrogException(SimpleXmlNode.ERROR_XML_FAULT,
-                    e,
-                    this);
-        }
-        this.sfReplaceAttribute(ATTR_XML, xml);
-        validate();
-        return xml;
+        return helper.toXML();
     }
 
     /**
@@ -130,12 +121,58 @@ public abstract class CompoundXmlNode extends CompoundImpl implements XmlNode {
      */
     public void validate() throws SmartFrogException,
             RemoteException {
-        boolean valid = sfResolve(ATTR_VALID, true, true);
-        if (!valid) {
-            throw new SmartFrogLivenessException("XML fails validity test :"
-                    + xml,
-                    this);
-        }
+        helper.validate();
     }
 
+    /**
+     * After calling the superclass (and so deploying all our children),
+     * we generate the XML
+     *
+     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     *                                  error while deploying
+     * @throws java.rmi.RemoteException In case of network/rmi error
+     */
+    public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
+        super.sfDeploy();
+
+        //now we add our children
+        addChildren();
+
+        //xmlify ourselves
+        toXML();
+    }
+
+    /**
+     * subclasses must implement their child processing logic here.
+     * @throws SmartFrogException
+     * @throws RemoteException
+     */
+    protected abstract void addChildren() throws SmartFrogException, RemoteException ;
+
+
+
+    /**
+     * add a child to this node.
+     * @param node
+     */
+    public void appendChild(LocalNode node) {
+        Node xomNode=node.getNode();
+        getParentNode().appendChild(xomNode);
+    }
+
+    /**
+     * cast a prim to a {@link LocalNode} and add.
+     * @param nodeAsPrim
+     * @throws SmartFrogDeploymentException if of the wrong type
+     */
+    public void appendChild(Prim nodeAsPrim) throws SmartFrogDeploymentException {
+        if (!(nodeAsPrim instanceof LocalNode)) {
+            throw new SmartFrogDeploymentException("not an XML tyoe",
+                    nodeAsPrim);
+        }
+        //cast and append
+        LocalNode node = (LocalNode) nodeAsPrim;
+        appendChild(node);
+    }
 }
+
