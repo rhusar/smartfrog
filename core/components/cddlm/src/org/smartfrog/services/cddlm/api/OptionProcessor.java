@@ -114,7 +114,7 @@ public class OptionProcessor extends Processor {
                 if (log.isDebugEnabled()) {
                     log.debug("Ignored header " + optionName);
                 }
-                if (option.isMustUnderstand()) {
+                if (option.getMustUnderstand().booleanValue()) {
                     throwFailedToUnderstand(option);
                 }
             }
@@ -182,7 +182,7 @@ public class OptionProcessor extends Processor {
         parseMessageFragment(element, message);
 
         //TODO
-        if (option.isMustUnderstand()) {
+        if (option.getMustUnderstand().booleanValue()) {
             throwFailedToUnderstand(option);
         }
     }

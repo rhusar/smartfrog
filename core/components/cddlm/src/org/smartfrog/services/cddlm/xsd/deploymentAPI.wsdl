@@ -78,67 +78,67 @@
   <!-- ============================================================= -->
 
   <wsdl:message name="createRequest">
-    <wsdl:part element="types:createRequest" name="create"/>
+    <wsdl:part element="types:createRequest" name="createRequest"/>
   </wsdl:message>
 
   <wsdl:message name="createResponse">
-    <wsdl:part element="types:createResponse" name="response"/>
+    <wsdl:part element="types:createResponse" name="createResponse"/>
   </wsdl:message>
 
   <wsdl:message name="runRequest">
-    <wsdl:part element="types:runRequest" name="undeploy"/>
+    <wsdl:part element="types:runRequest" name="runRequest"/>
   </wsdl:message>
 
   <wsdl:message name="runResponse">
-    <wsdl:part element="types:runResponse" name="response"/>
+    <wsdl:part element="types:runResponse" name="runResponse"/>
   </wsdl:message>
 
   <wsdl:message name="terminateRequest">
-    <wsdl:part element="types:terminateRequest" name="undeploy"/>
+    <wsdl:part element="types:terminateRequest" name="terminateRequest"/>
   </wsdl:message>
 
   <wsdl:message name="terminateResponse">
-    <wsdl:part element="types:terminateResponse" name="response"/>
+    <wsdl:part element="types:terminateResponse" name="terminateResponse"/>
   </wsdl:message>
 
   <wsdl:message name="serverStatusRequest">
-    <wsdl:part element="types:serverStatusRequest" name="serverStatus"/>
+    <wsdl:part element="types:serverStatusRequest" name="serverStatusRequest"/>
   </wsdl:message>
 
   <wsdl:message name="serverStatusResponse">
-    <wsdl:part element="types:serverStatusResponse" name="response"/>
+    <wsdl:part element="types:serverStatusResponse" name="serverStatusResponse"/>
   </wsdl:message>
 
   <wsdl:message name="applicationStatusRequest">
-    <wsdl:part element="types:applicationStatusRequest" name="applicationStatus"/>
+    <wsdl:part element="types:applicationStatusRequest" name="applicationStatusRequest"/>
   </wsdl:message>
 
   <wsdl:message name="applicationStatusResponse">
-    <wsdl:part element="types:applicationStatusResponse" name="response"/>
+    <wsdl:part element="types:applicationStatusResponse" name="applicationStatusResponse"/>
   </wsdl:message>
 
   <wsdl:message name="lookupApplicationRequest">
-    <wsdl:part element="types:lookupApplicationRequest" name="lookupApplication"/>
+    <wsdl:part element="types:lookupApplicationRequest" name="lookupApplicationRequest"/>
   </wsdl:message>
 
   <wsdl:message name="lookupApplicationResponse">
-    <wsdl:part element="types:lookupApplicationResponse" name="response"/>
+    <wsdl:part element="types:lookupApplicationResponse" name="lookupApplicationResponse"/>
   </wsdl:message>
 
   <wsdl:message name="listApplicationsRequest">
-    <wsdl:part element="types:listApplicationsRequest" name="listApplications"/>
+    <wsdl:part element="types:listApplicationsRequest" name="listApplicationsRequest"/>
   </wsdl:message>
 
   <wsdl:message name="listApplicationsResponse">
-    <wsdl:part element="types:listApplicationsResponse" name="response"/>
+    <wsdl:part element="types:listApplicationsResponse" name="listApplicationsResponse"/>
   </wsdl:message>
 
   <wsdl:message name="setNotificationRequest">
-    <wsdl:part element="types:setNotificationRequest" name="setNotification"/>
+    <wsdl:part element="types:setNotificationRequest" name="setNotificationRequest"/>
   </wsdl:message>
 
   <wsdl:message name="setNotificationResponse">
-    <wsdl:part element="types:setNotificationResponse" name="response"/>
+    <wsdl:part element="types:setNotificationResponse" name="setNotificationResponse"/>
   </wsdl:message>
 
   <!-- ============================================================= -->

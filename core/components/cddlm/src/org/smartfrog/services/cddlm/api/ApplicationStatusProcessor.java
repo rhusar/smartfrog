@@ -22,9 +22,9 @@ package org.smartfrog.services.cddlm.api;
 import org.apache.axis.types.URI;
 import org.smartfrog.services.axis.SmartFrogHostedEndpoint;
 import org.smartfrog.services.cddlm.engine.JobState;
+import org.smartfrog.services.cddlm.generated.api.types.ApplicationStatusRequest;
 import org.smartfrog.services.cddlm.generated.api.types.ApplicationStatusType;
 import org.smartfrog.services.cddlm.generated.api.types.LifecycleStateEnum;
-import org.smartfrog.services.cddlm.generated.api.types._applicationStatusRequest;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.prim.Prim;
 
@@ -47,7 +47,7 @@ public class ApplicationStatusProcessor extends Processor {
      * @throws RemoteException
      */
     public ApplicationStatusType applicationStatus(
-            _applicationStatusRequest applicationStatus)
+            ApplicationStatusRequest applicationStatus)
             throws RemoteException {
         URI reference = applicationStatus.getApplication();
         JobState job = lookupJob(reference);

@@ -21,13 +21,13 @@ package org.smartfrog.services.cddlm.test.system.console;
 
 import org.apache.axis.AxisFault;
 import org.apache.axis.types.URI;
+import org.smartfrog.services.cddlm.api.CallbackInfo;
 import org.smartfrog.services.cddlm.api.CallbackProcessor;
 import org.smartfrog.services.cddlm.api.Processor;
-import org.smartfrog.services.cddlm.api.CallbackInfo;
 import org.smartfrog.services.cddlm.generated.api.DeployApiConstants;
 import org.smartfrog.services.cddlm.generated.api.types.DeploymentDescriptorType;
 import org.smartfrog.services.cddlm.generated.api.types.NotificationInformationType;
-import org.smartfrog.services.cddlm.generated.api.types._setNotificationRequest;
+import org.smartfrog.services.cddlm.generated.api.types.SetNotificationRequest;
 
 /**
  * created Sep 14, 2004 2:27:34 PM
@@ -95,7 +95,8 @@ public class CallbackTest extends DeployingTestBase {
         try {
             NotificationInformationType callbackInfo = new NotificationInformationType();
             callbackInfo.setType(null);
-            _setNotificationRequest request = new _setNotificationRequest(application,
+            SetNotificationRequest request = new SetNotificationRequest(
+                    application,
                     callbackInfo);
             operation.setNotification(request);
 
@@ -107,7 +108,7 @@ public class CallbackTest extends DeployingTestBase {
     }
 
     public void testNoCallbackIsAllowed() throws Exception {
-        _setNotificationRequest request = new _setNotificationRequest(
+        SetNotificationRequest request = new SetNotificationRequest(
                 application,
                 null);
         operation.setNotification(request);
@@ -118,7 +119,7 @@ public class CallbackTest extends DeployingTestBase {
             NotificationInformationType callbackInfo = new NotificationInformationType();
             callbackInfo.setType(
                     DeployApiConstants.URI_CALLBACK_WS_NOTIFICATION);
-            _setNotificationRequest request = new _setNotificationRequest(
+            SetNotificationRequest request = new SetNotificationRequest(
                     application,
                     callbackInfo);
             operation.setNotification(request);

@@ -24,17 +24,17 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.smartfrog.services.axis.SmartFrogHostedEndpoint;
 import org.smartfrog.services.cddlm.generated.api.types.ApplicationReferenceListType;
+import org.smartfrog.services.cddlm.generated.api.types.ApplicationStatusRequest;
 import org.smartfrog.services.cddlm.generated.api.types.ApplicationStatusType;
+import org.smartfrog.services.cddlm.generated.api.types.CreateRequest;
+import org.smartfrog.services.cddlm.generated.api.types.CreateResponse;
 import org.smartfrog.services.cddlm.generated.api.types.EmptyElementType;
+import org.smartfrog.services.cddlm.generated.api.types.LookupApplicationRequest;
+import org.smartfrog.services.cddlm.generated.api.types.RunRequest;
+import org.smartfrog.services.cddlm.generated.api.types.ServerStatusRequest;
 import org.smartfrog.services.cddlm.generated.api.types.ServerStatusType;
-import org.smartfrog.services.cddlm.generated.api.types._applicationStatusRequest;
-import org.smartfrog.services.cddlm.generated.api.types._createRequest;
-import org.smartfrog.services.cddlm.generated.api.types._createResponse;
-import org.smartfrog.services.cddlm.generated.api.types._lookupApplicationRequest;
-import org.smartfrog.services.cddlm.generated.api.types._runRequest;
-import org.smartfrog.services.cddlm.generated.api.types._serverStatusRequest;
-import org.smartfrog.services.cddlm.generated.api.types._setNotificationRequest;
-import org.smartfrog.services.cddlm.generated.api.types._terminateRequest;
+import org.smartfrog.services.cddlm.generated.api.types.SetNotificationRequest;
+import org.smartfrog.services.cddlm.generated.api.types.TerminateRequest;
 
 import javax.xml.rpc.ServiceException;
 import javax.xml.rpc.server.ServiceLifecycle;
@@ -63,7 +63,7 @@ public class DeploymentEndpoint extends SmartFrogHostedEndpoint
             DeploymentEndpoint.class.getName() + ".OPERATIONS");
 
 
-    public _createResponse create(_createRequest request)
+    public CreateResponse create(CreateRequest request)
             throws RemoteException {
         try {
             operations.info("entering create");
@@ -74,7 +74,7 @@ public class DeploymentEndpoint extends SmartFrogHostedEndpoint
         }
     }
 
-    public boolean run(_runRequest request) throws RemoteException {
+    public boolean run(RunRequest request) throws RemoteException {
         try {
             operations.info("entering run");
             StartProcessor processor = new StartProcessor(this);
@@ -84,7 +84,7 @@ public class DeploymentEndpoint extends SmartFrogHostedEndpoint
         }
     }
 
-    public boolean terminate(_terminateRequest request) throws RemoteException {
+    public boolean terminate(TerminateRequest request) throws RemoteException {
         try {
             operations.info("entering undeploy");
             TerminateProcessor processor = new TerminateProcessor(this);
@@ -95,7 +95,7 @@ public class DeploymentEndpoint extends SmartFrogHostedEndpoint
     }
 
 
-    public ServerStatusType serverStatus(_serverStatusRequest serverStatus)
+    public ServerStatusType serverStatus(ServerStatusRequest serverStatus)
             throws RemoteException {
         try {
             operations.info("entering serverStatus");
@@ -108,7 +108,7 @@ public class DeploymentEndpoint extends SmartFrogHostedEndpoint
     }
 
     public ApplicationStatusType applicationStatus(
-            _applicationStatusRequest applicationStatus)
+            ApplicationStatusRequest applicationStatus)
             throws RemoteException {
         try {
             operations.info("entering applicationStatus");
@@ -120,7 +120,7 @@ public class DeploymentEndpoint extends SmartFrogHostedEndpoint
         }
     }
 
-    public URI lookupApplication(_lookupApplicationRequest lookupApplication)
+    public URI lookupApplication(LookupApplicationRequest lookupApplication)
             throws RemoteException {
         try {
             operations.info("entering lookupApplication");
@@ -151,7 +151,7 @@ public class DeploymentEndpoint extends SmartFrogHostedEndpoint
      * @return
      * @throws RemoteException
      */
-    public boolean setNotification(_setNotificationRequest setCallback)
+    public boolean setNotification(SetNotificationRequest setCallback)
             throws RemoteException {
         CallbackProcessor processor = new CallbackProcessor(this);
         return processor.process(setCallback);

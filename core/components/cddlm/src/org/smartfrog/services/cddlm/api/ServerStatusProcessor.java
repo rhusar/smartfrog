@@ -24,9 +24,9 @@ import org.apache.commons.logging.LogFactory;
 import org.smartfrog.services.axis.SmartFrogHostedEndpoint;
 import org.smartfrog.services.cddlm.engine.ServerInstance;
 import org.smartfrog.services.cddlm.generated.api.types.DynamicServerStatusType;
+import org.smartfrog.services.cddlm.generated.api.types.ServerStatusRequest;
 import org.smartfrog.services.cddlm.generated.api.types.ServerStatusType;
 import org.smartfrog.services.cddlm.generated.api.types.StaticServerStatusType;
-import org.smartfrog.services.cddlm.generated.api.types._serverStatusRequest;
 
 import java.rmi.RemoteException;
 
@@ -53,7 +53,7 @@ public class ServerStatusProcessor extends Processor {
      * @return
      * @throws RemoteException
      */
-    public ServerStatusType serverStatus(_serverStatusRequest serverStatus)
+    public ServerStatusType serverStatus(ServerStatusRequest serverStatus)
             throws RemoteException {
         StaticServerStatusType staticStatus = ServerInstance.currentInstance().
                 getStaticServerStatus();

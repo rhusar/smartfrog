@@ -23,7 +23,6 @@ import org.apache.axis.message.MessageElement;
 import org.cddlm.client.common.ServerBinding;
 import org.smartfrog.services.cddlm.generated.api.types.ApplicationStatusType;
 import org.smartfrog.services.cddlm.generated.api.types.NotificationInformationType;
-import org.smartfrog.services.cddlm.generated.api.types.UnboundedXMLOtherNamespace;
 import org.smartfrog.services.cddlm.generated.api.types.UnboundedXMLAnyNamespace;
 
 import java.io.PrintWriter;

@@ -20,8 +20,6 @@
 package org.cddlm.client.console;
 
 import nu.xom.ParsingException;
-import nu.xom.Document;
-import nu.xom.Element;
 import org.apache.axis.AxisFault;
 import org.apache.axis.message.MessageElement;
 import org.apache.axis.message.Text;
@@ -29,34 +27,32 @@ import org.apache.axis.types.NCName;
 import org.apache.axis.types.URI;
 import org.cddlm.client.common.Constants;
 import org.cddlm.client.common.ServerBinding;
+import org.smartfrog.services.cddlm.api.CallbackInfo;
 import org.smartfrog.services.cddlm.cdl.CdlDocument;
 import org.smartfrog.services.cddlm.cdl.CdlParser;
 import org.smartfrog.services.cddlm.cdl.ResourceLoader;
 import org.smartfrog.services.cddlm.cdl.XomAxisHelper;
-import org.smartfrog.services.cddlm.engine.URIHelper;
 import org.smartfrog.services.cddlm.generated.api.DeployApiConstants;
 import org.smartfrog.services.cddlm.generated.api.endpoint.CddlmSoapBindingStub;
 import org.smartfrog.services.cddlm.generated.api.types.ApplicationReferenceListType;
+import org.smartfrog.services.cddlm.generated.api.types.ApplicationStatusRequest;
 import org.smartfrog.services.cddlm.generated.api.types.ApplicationStatusType;
+import org.smartfrog.services.cddlm.generated.api.types.CreateRequest;
+import org.smartfrog.services.cddlm.generated.api.types.CreateResponse;
 import org.smartfrog.services.cddlm.generated.api.types.DeploymentDescriptorType;
+import org.smartfrog.services.cddlm.generated.api.types.DeploymentDescriptorTypeBody;
 import org.smartfrog.services.cddlm.generated.api.types.EmptyElementType;
 import org.smartfrog.services.cddlm.generated.api.types.JsdlType;
+import org.smartfrog.services.cddlm.generated.api.types.LanguageListTypeLanguage;
+import org.smartfrog.services.cddlm.generated.api.types.LookupApplicationRequest;
 import org.smartfrog.services.cddlm.generated.api.types.NotificationInformationType;
 import org.smartfrog.services.cddlm.generated.api.types.OptionMapType;
 import org.smartfrog.services.cddlm.generated.api.types.OptionType;
+import org.smartfrog.services.cddlm.generated.api.types.ServerStatusRequest;
 import org.smartfrog.services.cddlm.generated.api.types.ServerStatusType;
+import org.smartfrog.services.cddlm.generated.api.types.SetNotificationRequest;
 import org.smartfrog.services.cddlm.generated.api.types.StaticServerStatusType;
-import org.smartfrog.services.cddlm.generated.api.types._applicationStatusRequest;
-import org.smartfrog.services.cddlm.generated.api.types._createRequest;
-import org.smartfrog.services.cddlm.generated.api.types._createResponse;
-import org.smartfrog.services.cddlm.generated.api.types._deploymentDescriptorType_body;
-import org.smartfrog.services.cddlm.generated.api.types._languageListType_language;
-import org.smartfrog.services.cddlm.generated.api.types._lookupApplicationRequest;
-import org.smartfrog.services.cddlm.generated.api.types._serverStatusRequest;
-import org.smartfrog.services.cddlm.generated.api.types._setNotificationRequest;
-import org.smartfrog.services.cddlm.generated.api.types._terminateRequest;
-import org.smartfrog.services.cddlm.generated.api.types.UnboundedXMLOtherNamespace;
-import org.smartfrog.services.cddlm.api.CallbackInfo;
+import org.smartfrog.services.cddlm.generated.api.types.TerminateRequest;
 import org.w3c.dom.DOMImplementation;
 import org.xml.sax.SAXException;
 
@@ -189,7 +185,7 @@ public abstract class ConsoleOperation {
      */
     public ApplicationStatusType lookupApplicationStatus(URI app)
             throws RemoteException {
-        _applicationStatusRequest request = new _applicationStatusRequest();
+        ApplicationStatusRequest request = new ApplicationStatusRequest();
         request.setApplication(app);
         ApplicationStatusType status = getStub().applicationStatus(request);
         return status;
@@ -226,7 +222,7 @@ public abstract class ConsoleOperation {
      * @throws java.rmi.RemoteException
      */
     public ServerStatusType getStatus() throws RemoteException {
-        _serverStatusRequest request = new _serverStatusRequest();
+        ServerStatusRequest request = new ServerStatusRequest();
         ServerStatusType status = getStub().serverStatus(request);
         return status;
     }
@@ -259,11 +255,11 @@ public abstract class ConsoleOperation {
         if (options != null) {
             map = options.toOptionMap();
         }
-        _createRequest request = new _createRequest(jsdl,
+        CreateRequest request = new CreateRequest(jsdl,
                 descriptor,
                 callbackInfo,
                 map);
-        _createResponse response = getStub().create(request);
+        CreateResponse response = getStub().create(request);
         return response.getApplicationReference();
 
     }
@@ -334,7 +330,7 @@ public abstract class ConsoleOperation {
             URI language,
             String version) {
         DeploymentDescriptorType descriptor = new DeploymentDescriptorType();
-        _deploymentDescriptorType_body data = new _deploymentDescriptorType_body();
+        DeploymentDescriptorTypeBody data = new DeploymentDescriptorTypeBody();
         data.set_any(any);
         descriptor.setBody(data);
         descriptor.setLanguage(language);
@@ -482,8 +478,7 @@ public abstract class ConsoleOperation {
      * @return URI of the app
      */
     public URI lookupApplication(NCName ncname) throws RemoteException {
-        _lookupApplicationRequest request = new _lookupApplicationRequest(
-                ncname);
+        LookupApplicationRequest request = new LookupApplicationRequest(ncname);
         return getStub().lookupApplication(request);
     }
 
@@ -507,7 +502,7 @@ public abstract class ConsoleOperation {
      */
     public boolean terminate(URI application, String reason)
             throws RemoteException {
-        _terminateRequest undeploy = new _terminateRequest(application,
+        TerminateRequest undeploy = new TerminateRequest(application,
                 reason);
         return getStub().terminate(undeploy);
     }
@@ -519,7 +514,7 @@ public abstract class ConsoleOperation {
      * @return true
      * @throws RemoteException
      */
-    public boolean setNotification(_setNotificationRequest request)
+    public boolean setNotification(SetNotificationRequest request)
             throws RemoteException {
         return getStub().setNotification(request);
     }
@@ -535,12 +530,12 @@ public abstract class ConsoleOperation {
     public boolean setCddlmNotification(URI application, String url,
             String identifier)
             throws RemoteException {
-        CallbackInfo info=new CallbackInfo();
+        CallbackInfo info = new CallbackInfo();
         info.setAddress(url);
         info.setIdentifier(identifier);
         NotificationInformationType notification;
-        notification= info.createCallback();
-        _setNotificationRequest request = new _setNotificationRequest(
+        notification = info.createCallback();
+        SetNotificationRequest request = new SetNotificationRequest(
                 application,
                 notification);
         return setNotification(request);
@@ -554,7 +549,7 @@ public abstract class ConsoleOperation {
      */
     public boolean setUnsubscribeCallback(URI application)
             throws RemoteException {
-        _setNotificationRequest request = new _setNotificationRequest(
+        SetNotificationRequest request = new SetNotificationRequest(
                 application,
                 null);
         try {
@@ -592,10 +587,10 @@ public abstract class ConsoleOperation {
     public boolean supportsLanguage(ServerStatusType status,
             String languageURI) {
         StaticServerStatusType staticStatus = status.get_static();
-        _languageListType_language[] languages = staticStatus.getLanguages()
+        LanguageListTypeLanguage[] languages = staticStatus.getLanguages()
                 .getLanguage();
         for (int i = 0; i < languages.length; i++) {
-            _languageListType_language l = languages[i];
+            LanguageListTypeLanguage l = languages[i];
             org.apache.axis.types.URI nsURI = l.getUri();
             if (languageURI.equals(nsURI.toString())) {
                 //positive match

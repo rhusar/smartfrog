@@ -20,7 +20,7 @@
 package org.cddlm.client.callbacks;
 
 import org.smartfrog.services.cddlm.generated.api.callbacks.DeploymentNotificationEndpoint;
-import org.smartfrog.services.cddlm.generated.api.types._lifecycleEventRequest;
+import org.smartfrog.services.cddlm.generated.api.types.LifecycleEventRequest;
 
 import java.rmi.RemoteException;
 
@@ -32,7 +32,7 @@ import java.rmi.RemoteException;
 public class CallbackEndpoint implements DeploymentNotificationEndpoint {
 
 
-    public boolean notification(_lifecycleEventRequest notification)
+    public boolean notification(LifecycleEventRequest notification)
             throws RemoteException {
         return CallbackServer.processCallback(notification);
     }

@@ -26,8 +26,8 @@ import org.apache.axis.types.URI;
 import org.smartfrog.services.cddlm.engine.JobRepository;
 import org.smartfrog.services.cddlm.engine.JobState;
 import org.smartfrog.services.cddlm.generated.api.types.ApplicationReferenceListType;
+import org.smartfrog.services.cddlm.generated.api.types.CreateRequest;
 import org.smartfrog.services.cddlm.generated.api.types.LifecycleStateEnum;
-import org.smartfrog.services.cddlm.generated.api.types._createRequest;
 
 import java.rmi.RemoteException;
 import java.util.Iterator;
@@ -39,7 +39,7 @@ public class JobTest extends TestCase {
 
     private JobRepository jobs;
 
-    private _createRequest request;
+    private CreateRequest request;
     private URI jobURI;
     private JobState job1;
     private JobState job2;
@@ -54,7 +54,7 @@ public class JobTest extends TestCase {
      * is called before a test is executed.
      */
     protected void setUp() throws Exception {
-        request = new _createRequest();
+        request = new CreateRequest();
 
         job1 = new JobState(request, null);
         jobs = new JobRepository();

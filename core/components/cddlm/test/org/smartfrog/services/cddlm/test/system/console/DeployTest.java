@@ -169,11 +169,11 @@ public class DeployTest extends DeployingTestBase {
         Options options = new Options();
         OptionType option = options.createNamedOption(
                 new URI("http://localhost/1"), true);
-        assertTrue(option.isMustUnderstand());
+        assertTrue(option.getMustUnderstand().booleanValue());
         option =
                 options.createNamedOption(new URI("http://localhost/2"),
                         false);
-        assertFalse(option.isMustUnderstand());
+        assertFalse(option.getMustUnderstand().booleanValue());
         OptionMapType map = options.toOptionMap();
         assertEquals("map size is two", 2, map.getOption().length);
         final URI name = new URI("http://localhost/3");

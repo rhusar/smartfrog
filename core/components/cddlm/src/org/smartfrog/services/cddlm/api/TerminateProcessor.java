@@ -26,7 +26,7 @@ import org.smartfrog.services.axis.SmartFrogHostedEndpoint;
 import org.smartfrog.services.cddlm.engine.JobRepository;
 import org.smartfrog.services.cddlm.engine.JobState;
 import org.smartfrog.services.cddlm.engine.ServerInstance;
-import org.smartfrog.services.cddlm.generated.api.types._terminateRequest;
+import org.smartfrog.services.cddlm.generated.api.types.TerminateRequest;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 
@@ -47,7 +47,7 @@ public class TerminateProcessor extends Processor {
         super(owner);
     }
 
-    public boolean terminate(_terminateRequest undeploy)
+    public boolean terminate(TerminateRequest undeploy)
             throws RemoteException {
         final URI appURI = undeploy.getApplication();
         if (appURI == null) {
