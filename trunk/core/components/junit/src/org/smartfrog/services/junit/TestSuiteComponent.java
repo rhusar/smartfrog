@@ -19,30 +19,26 @@
  */
 package org.smartfrog.services.junit;
 
+import junit.framework.AssertionFailedError;
+import junit.framework.Test;
+import junit.framework.TestResult;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogInitException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.prim.PrimImpl;
-import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.security.SFClassLoader;
+import org.smartfrog.sfcore.utils.ComponentHelper;
 
-import java.rmi.RemoteException;
-import java.util.List;
-import java.util.LinkedList;
-import java.util.Vector;
-import java.util.Iterator;
-import java.util.HashMap;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.regex.Pattern;
-import java.util.logging.Logger;
-import java.util.logging.Level;
-import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
-
-import junit.framework.Test;
-import junit.framework.TestResult;
-import junit.framework.AssertionFailedError;
+import java.lang.reflect.Method;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.regex.Pattern;
 
 
 
@@ -54,7 +50,7 @@ import junit.framework.AssertionFailedError;
 
 public class TestSuiteComponent extends PrimImpl implements JUnitTestSuite, junit.framework.TestListener {
 
-    private Logger log;
+    private Log log;
 
     private ComponentHelper helper;
 
@@ -175,7 +171,7 @@ public class TestSuiteComponent extends PrimImpl implements JUnitTestSuite, juni
     private void maybeAddTest(String classname) {
         if(!isExcluded(classname)
             && testClasses.get(classname)==null) {
-            log.fine("adding test "+classname);
+            log.debug("adding test "+classname);
             testClasses.put(classname,classname);
         }
     }
@@ -241,7 +237,7 @@ public class TestSuiteComponent extends PrimImpl implements JUnitTestSuite, juni
         }
 
         if(!getIf() || getUnless()) {
-            log.fine("Skipping test as conditions preclude it");
+            log.debug("Skipping test as conditions preclude it");
             return true;
         }
 
@@ -259,7 +255,7 @@ public class TestSuiteComponent extends PrimImpl implements JUnitTestSuite, juni
                 throw SmartFrogException.forward(e);
             }
             if(Thread.currentThread().isInterrupted()) {
-                log.fine("Interrupted test thread");
+                log.debug("Interrupted test thread");
                 return false;
             }
             failed = failures > 0 || errors > 0;
@@ -280,7 +276,7 @@ public class TestSuiteComponent extends PrimImpl implements JUnitTestSuite, juni
      */
     void testSingleClass(String classname) throws ClassNotFoundException, IllegalAccessException,
             InvocationTargetException {
-        log.fine("testing "+classname);
+        log.debug("testing "+classname);
         Test tests;
         Class clazz=loadTestClass(classname);
         tests=extractTest(clazz);
@@ -348,7 +344,7 @@ public class TestSuiteComponent extends PrimImpl implements JUnitTestSuite, juni
      * @param e
      */
     private void IgnoreRemoteFault(RemoteException e) {
-        log.log(Level.WARNING,"",e);
+        log.warn("ignoring",e);
     }
 
     /**

@@ -22,15 +22,15 @@ package org.smartfrog.services.junit;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogInitException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
+import org.smartfrog.sfcore.common.Logger;
 import org.smartfrog.sfcore.compound.CompoundImpl;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.logging.Log;
 
 import java.rmi.RemoteException;
 import java.util.Enumeration;
-import java.util.logging.Logger;
-import java.util.logging.Level;
 
 /**
  * This is the test runner.
@@ -41,7 +41,7 @@ import java.util.logging.Level;
 public class TestRunnerComponent extends CompoundImpl implements TestRunner, Runnable
  {
 
-    private Logger log;
+    private Log log;
     private ComponentHelper helper;
     /**
      * a cached exception that is thrown on a liveness failure
