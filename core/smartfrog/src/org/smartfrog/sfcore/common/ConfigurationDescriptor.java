@@ -52,6 +52,9 @@ public class ConfigurationDescriptor implements MessageKeys{
                       "DETaTERM"};
     }
 
+
+    private String originalSFACT = null;
+
     private String lineSeparator="\n    ";
     /**
      Action type; one of the Action enumerations. Initially set to
@@ -155,38 +158,38 @@ public class ConfigurationDescriptor implements MessageKeys{
     public String toString(String separator){
         StringBuffer str = new StringBuffer();
         if (getName()!=null) {
-            str.append(" n:"); str.append(getName().toString());
+            str.append(" name:"); str.append(getName().toString());
         }
         str.append(separator);
-        str.append(" t:"); str.append(Action.type[actionType].toString());
+        str.append(" type:"); str.append(Action.type[actionType].toString());
 
         if (getUrl()!=null) {
             str.append(separator);
-            str.append(" u:"); str.append(getUrl().toString());
+            str.append(" url:"); str.append(getUrl().toString());
         }
         if ((getDeployReference()!=null)&&(getDeployReference().size()>0)) {
             str.append(separator);
-            str.append(" d:"); str.append(getDeployReference().toString());
+            str.append(" depRef:"); str.append(getDeployReference().toString());
         }
         if (getHost()!=null) {
             str.append(separator);
-            str.append(" h:"); str.append(getHost().toString());
+            str.append(" host:"); str.append(getHost().toString());
         }
         if (getSubProcess()!=null) {
             str.append(separator);
-            str.append(" s:"); str.append(getSubProcess().toString());
+            str.append(" subProc:"); str.append(getSubProcess().toString());
         }
 
         str.append(separator);
-        str.append(" rt:"); str.append(Result.type[resultType].toString());
+        str.append(" resultType:"); str.append(Result.type[resultType].toString());
 
         if (resultMessage!=null) {
             str.append(separator);
-            str.append(" rm:");  str.append(resultMessage.toString());
+            str.append(" resultMessage:");  str.append(resultMessage.toString());
             }
         if (resultException!=null) {
             str.append(separator);
-            str.append(" rex:"); str.append(resultException.getMessage());}
+            str.append(" resultExceptionMessage:"); str.append(resultException.getMessage());}
         return str.toString();
     }
 
@@ -205,6 +208,7 @@ public class ConfigurationDescriptor implements MessageKeys{
      */
     public String statusString(String separator){
           StringBuffer message = new StringBuffer();
+          StringBuffer messageError=null;
           String result = "";
           if ((resultObject!=null)&&(resultObject instanceof Prim)){
             try {
@@ -238,6 +242,30 @@ public class ConfigurationDescriptor implements MessageKeys{
               message.append(" subProcess:"); message.append(getSubProcess().toString());
           }
 
+          if (Logger.logStackTrace) {
+            if ( (this.resultObject != null) && (this.resultObject instanceof Prim)) {
+              try {
+                Object time = ( (Prim)this.resultObject).sfResolveHere("sfParseTime");
+                message.append(separator);
+                message.append(" parse time: " + time);
+              }
+              catch (Exception ex1) {
+                Logger.logQuietly(ex1);
+              }
+            }
+
+            if ( (this.resultObject != null) && (this.resultObject instanceof Prim)) {
+              try {
+                Object time = ( (Prim)this.resultObject).sfResolveHere("sfDeployTime");
+                message.append(separator);
+                message.append(" deploy time: " + time);
+              }
+              catch (Exception ex1) {
+                Logger.logQuietly(ex1);
+              }
+            }
+          }
+
           if (this.resultType==Result.SUCCESSFUL){
               switch (this.getActionType()) {
                 case (ConfigurationDescriptor.Action.DEPLOY):
@@ -264,24 +292,36 @@ public class ConfigurationDescriptor implements MessageKeys{
                 default:
                     // Unknown action.
             }
-            return result;
           } else {
-              StringBuffer messageError = new StringBuffer();
+              messageError = new StringBuffer();
               messageError.append(""); messageError.append(Result.type[resultType].toString());
               messageError.append(" when trying "); messageError.append(Action.type[actionType].toString());
               messageError.append(" of ");
               messageError.append(message);
-              if ((resultMessage!=null)||(resultException!=null)) {
-                  messageError.append("\n   Error:");
-                  if ((resultMessage!=null)&&(resultMessage.toString().trim()!="")) {
-                     messageError.append(lineSeparator+resultMessage.toString());
-                  }
-                  if (resultException!=null) {
-                      messageError.append(lineSeparator+parseException(resultException,lineSeparator));
-                  }
-              }
               result= messageError.toString();
           }
+          if ((Logger.logStackTrace)||
+              (((resultMessage!=null)||
+                (resultException!=null))&&(this.resultType!=Result.SUCCESSFUL))) {
+                  messageError = new StringBuffer();
+                  messageError.append("\n   Error:");
+                  if ((resultMessage!=null)&&(resultMessage.toString().trim()!="")) {
+                     messageError.append(lineSeparator);
+                     messageError.append(resultMessage.toString());
+                  }
+                  if (resultException!=null) {
+                      messageError.append(lineSeparator);
+                      messageError.append(parseException(resultException,lineSeparator));
+                  }
+                  if (originalSFACT!=null) {
+                    messageError.append(lineSeparator);
+                    messageError.append("Command line SFACT: '" + originalSFACT+"'");
+                  }
+                  messageError.append(lineSeparator);
+                  messageError.append("To String: '" + this.toString(separator)+"'");
+                  result = result + messageError.toString();
+           }
+
           return result;
     }
 
@@ -364,6 +404,7 @@ public class ConfigurationDescriptor implements MessageKeys{
      */
     public ConfigurationDescriptor (String deploymentURL) throws SmartFrogInitException {
         try {
+            this.originalSFACT = deploymentURL;
             if (deploymentURL==null) {
                 throw new SmartFrogInitException("Deployment URL: null");
             }
@@ -375,8 +416,10 @@ public class ConfigurationDescriptor implements MessageKeys{
 
             // GET NAME
             //Check if url starts with " and extract name:
-            //"HOST guijarro-j-3.hpl.hp.com":rootProcess:sfDefault:display":TER:::localhost:subprocess;
+            // Valid examples:
+            //"HOST guijarro.hpl.hp.com":rootProcess:sfDefault:display":TER:::localhost:subprocess;
             //display:TER:::localhost:subprocess;
+            //:TER:::localhost:subprocess; ->Unnamed component
             try {
                 if (deploymentURL.startsWith("\"")) {
                     setName(deploymentURL.substring(1,
