@@ -212,6 +212,7 @@ To Be Written
         <include name="src/**"/>
         <include name="private/**"/>
         <include name="testCA/**"/>
+        <include name="javacc/*"/>
         <include name="build.xml"/>
         <include name="releaseBuild.xml"/>
         <include name="rmitargets"/>
@@ -290,6 +291,7 @@ To Be Written
         <include name="src/**"/>
         <include name="private/**"/>
         <include name="testCA/**"/>
+        <include name="javacc/*"/>
         <include name="build.xml"/>
         <include name="releaseBuild.xml"/>
         <include name="rmitargets"/>

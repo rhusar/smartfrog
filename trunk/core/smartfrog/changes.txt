@@ -1,5 +1,6 @@
 release 3.04.005_beta -> CVS
 ---------------------
+2004-Aug-25 New: modified buildRelease.xml to include javacc.
 2004-Aug-24 New: srcDir renamed to SFUSERCLASSPATH in shell scripts.
 2004-Aug-24 Fix: sfBootTime attribute in rootProcess compound, now added during sfDeploy() lifecycle step
 2004-Aug-24 Fix: ; in setSFProperties. Script breaks when using srcDir variable.
