@@ -47,8 +47,9 @@ public class SmartFrogJVMProperties {
     public static final String ANT_DEBUG_PROPERTY = ANT_MAGIC_PROPERTY_PREFIX + "debug";
 
     /**
-     * name of the process
-     * @value org.smartfrog.sfcore.processcompound.sfProcessName;
+     * name of the process.
+     * 
+     * {@value}
      */
     public static final String PROCESS_NAME =       SmartFrogCoreProperty.propBaseSFProcess + SmartFrogCoreKeys.SF_PROCESS_NAME;
             
@@ -62,6 +63,13 @@ public class SmartFrogJVMProperties {
      */
     public static final String ROOT_PROCESS =      SmartFrogCoreKeys.SF_ROOT_PROCESS;
     public static final String PROCESS_COMPOUND=   SmartFrogCoreProperty.propBaseSFProcess;
+
+    /**
+     * log stack traces.
+     *
+     * Value {@value}
+     */
+
     public static final String LOG_STACK_TRACE =   SmartFrogCoreProperty.propLogStackTrace;
     
     /**
