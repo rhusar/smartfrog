@@ -30,6 +30,8 @@ import javax.swing.JPopupMenu;
 import javax.swing.JTree;
 import javax.swing.tree.TreePath;
 
+import org.smartfrog.sfcore.prim.TerminationRecord;
+
 import org.smartfrog.sfcore.prim.Prim;
 
 /**
@@ -52,8 +54,10 @@ public class PopUpTree extends JComponent implements ActionListener {
 
     //   JMenuItem menuItemModifyAttribute = new JMenuItem();
     //   JMenuItem menuItemRemoveAttribute = new JMenuItem();
-    /** Item for Tree popup menu - terminate. */
-    JMenuItem menuItemTerminate = new JMenuItem();
+    /** Item for Tree popup menu - normal terminate. */
+    JMenuItem menuItemTerminateNormal = new JMenuItem();
+    /** Item for Tree popup menu - abnormal terminate . */
+    JMenuItem menuItemTerminateAbnormal = new JMenuItem();
     /** Item for Tree popup menu - Dterminate. */
     JMenuItem menuItemDTerminate = new JMenuItem();
     /** Item for Tree popup menu - detach. */
@@ -76,14 +80,16 @@ public class PopUpTree extends JComponent implements ActionListener {
         //      menuItemRemoveAttribute.setText("Remove Attribute");
         //      menuItemModifyAttribute.setText("Modify Attribute");
         menuItemDetach.setText("Detach Component");
-        menuItemTerminate.setText("Terminate Component");
+        menuItemTerminateNormal.setText("Terminate Component - NORMAL");
+        menuItemTerminateAbnormal.setText("Terminate Component - ABNORMAL");
         menuItemDTerminate.setText("Detach and Terminate Comp");
 
         // Tree: options
         //      popupTree.add(menuItemAddAttribute);
         //      popupTree.add(menuItemRemoveAttribute);
         //      popupTree.add(menuItemModifyAttribute);
-        popupTree.add(menuItemTerminate);
+        popupTree.add(menuItemTerminateNormal);
+        popupTree.add(menuItemTerminateAbnormal);
         popupTree.add(menuItemDTerminate);
         popupTree.add(menuItemDetach);
 
@@ -92,7 +98,8 @@ public class PopUpTree extends JComponent implements ActionListener {
 
         //      menuItemRemoveAttribute.addActionListener(this);
         //      menuItemModifyAttribute.addActionListener(this);
-        menuItemTerminate.addActionListener(this);
+        menuItemTerminateNormal.addActionListener(this);
+        menuItemTerminateAbnormal.addActionListener(this);
         menuItemDTerminate.addActionListener(this);
         menuItemDetach.addActionListener(this);
     }
@@ -140,19 +147,21 @@ public class PopUpTree extends JComponent implements ActionListener {
     //tpath.getLastPathComponent())).getEntry()).toString());
         path = treePath2Path(tpath);
 
-        //System.out.println("Tree PopUp(source): "+e.getSource()+", Path: 
+        //System.out.println("Tree PopUp(source): "+e.getSource()+", Path:
     //"+path);
         // Launch it
-        if (source == menuItemAddAttribute) {
-            addAttrib();
-        } else if (source == menuItemTerminate) {
-            terminate((((DeployEntry) (tpath.getLastPathComponent())).
-                    getEntry()));
-
+       if (source == menuItemAddAttribute) {
+           addAttrib();
+       } else if (source == menuItemTerminateNormal) {
+           terminate((((DeployEntry) (tpath.getLastPathComponent())).getEntry())
+                   , TerminationRecord.NORMAL , "Console Management Action");
+       } else if (source == menuItemTerminateAbnormal) {
+           terminate((((DeployEntry) (tpath.getLastPathComponent())).getEntry())
+                , TerminationRecord.ABNORMAL, "Console Management Action");
             // Entry pointed in the tree
         } else if (source == menuItemDTerminate) {
-            dTerminate((((DeployEntry) (tpath.getLastPathComponent())).
-                    getEntry()));
+            dTerminate((((DeployEntry) (tpath.getLastPathComponent())).getEntry())
+                       , TerminationRecord.NORMAL , "Console Management Action");
 
             // Entry pointed in the tree
         } else if (source == menuItemDetach) {
@@ -215,10 +224,11 @@ public class PopUpTree extends JComponent implements ActionListener {
      *
      *@param  obj  SF Component
      */
-    void terminate(Object obj) {
+    void terminate(Object obj, String type, String reason) {
         //System.out.println("Terminating: "+obj.toString());
         if (obj instanceof Prim) {
-            org.smartfrog.services.management.DeployMgnt.terminate((Prim) obj);
+            org.smartfrog.services.management.DeployMgnt.terminate((Prim) obj
+                                                                , type, reason);
         }
     }
 
@@ -227,10 +237,11 @@ public class PopUpTree extends JComponent implements ActionListener {
      *
      *@param  obj  SF Component
      */
-    void dTerminate(Object obj) {
+    void dTerminate(Object obj, String type, String reason) {
         //System.out.println("Detatching and Terminating: "+obj.toString());
         if (obj instanceof Prim) {
-            org.smartfrog.services.management.DeployMgnt.dTerminate((Prim) obj);
+            org.smartfrog.services.management.DeployMgnt.dTerminate((Prim) obj
+                                                                , type, reason);
             parent.refresh();
         }
     }
