@@ -94,8 +94,9 @@ public class SFParse implements MessageKeys {
         report.add("File: "+fileUrl+"\n");
         long parseTime=System.currentTimeMillis();
         try {
-            if (opts.description)
+            if (opts.description) {
                 BasePredicate.keepPredicates = true;
+            }
 
             String language = getLanguageFromUrl(fileUrl);
             //report.add("language: "+language);
@@ -103,23 +104,32 @@ public class SFParse implements MessageKeys {
             Vector phases;
 
             Phases top;
+            InputStream is=null;
             try {
-              InputStream is = SFClassLoader.getResourceAsStream(fileUrl);
-              if (is == null) {
+                is = SFClassLoader.getResourceAsStream(fileUrl);
+                if (is == null) {
                     String msg = MessageUtil.
-                           formatMessage(MSG_URL_TO_PARSE_NOT_FOUND, fileUrl);
+                            formatMessage(MSG_URL_TO_PARSE_NOT_FOUND, fileUrl);
                     throw new SmartFrogParseException(msg);
-              }
-              top = (new SFParser(language)).sfParse(is);
-              if (opts.verbose && !opts.quiet) {
-                printPhase("raw", top.toString());
-              }
-                 report.add("   "+"raw phase: OK");
-             } catch (Exception ex) {
-                 //report.add("   "+"raw phase: "+ex.getMessage());
-                 report.add("   "+ "raw" +" phase: FAILED!");
-                 throw ex;
-             }
+                }
+                top = (new SFParser(language)).sfParse(is);
+                if (opts.verbose && !opts.quiet) {
+                    printPhase("raw", top.toString());
+                }
+                report.add("   "+"raw phase: OK");
+            } catch (Exception ex) {
+                //report.add("   "+"raw phase: "+ex.getMessage());
+                report.add("   "+ "raw" +" phase: FAILED!");
+                throw ex;
+            } finally {
+                if(is!=null) {
+                    try {
+                        is.close();
+                    } catch (IOException swallowed) {
+
+                    }
+                }
+            }
 
             phases = top.sfGetPhases();
             String phase;
@@ -149,9 +159,12 @@ public class SFParse implements MessageKeys {
             Logger.log("ERROR '"+fileUrl+"': \n"+ e+"\n");
             Vector itemError = new Vector();
             itemError.add(fileUrl);
-            if (e instanceof SmartFrogException)
+            if (e instanceof SmartFrogException) {
                 itemError.add(((SmartFrogException)e).toString("<BR><BR>"));
-            else itemError.add(e.toString());
+            }
+            else {
+                itemError.add(e.toString());
+            }
             errorReport.add(itemError);
         }
         return report;
