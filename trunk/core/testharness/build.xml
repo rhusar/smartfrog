@@ -161,7 +161,7 @@ For more information: www.smartfrog.org
        it runs in the ant UI.
        -->
   <!-- ========================================================== -->
-  <target name="system-tests" depends="compile-tests,compile-RMI,probe-local-daemon"
+  <target name="system-tests" depends="compile-tests,compile-RMI,jar, probe-local-daemon"
     description="run system tests"
     if="system.tests.enabled">
     <parallel>
