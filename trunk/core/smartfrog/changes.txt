@@ -1,4 +1,18 @@
-release 3.04.009_beta -> CVS
+release 3.04.0012_beta
+---------------------
+CVS tag
+
+release 3.04.0011_beta -> CVS
+---------------------
+2004-Nov-11 Mod: Log4J addaptor improved to use URL/String with DOM and Property configurators
+2004-Nov-10 Mod: sfMangement console improved
+
+release 3.04.0010_beta
+----------------------
+CVS tag
+2004-Nov-9  Add: ReferenceResolveHelper for Java.net.URL
+
+release 3.04.009_beta
 ---------------------
 2004-Nov-02 Mod: setDefaultProperties shell scripts check if properties exist and do not overwrite them
 2004-Nov-02 Fix: sfGui.bat now works when SF installed in path using spaces
