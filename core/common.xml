@@ -614,6 +614,9 @@
   <!-- ========================================================== -->
   <target name="probe-local-daemon" depends="init-common">
     <sf-daemonfound property="local.daemon.running" />
+    <echo level="verbose">
+    local.daemon.running=${local.daemon.running}
+    </echo>
   </target>
 
   <!-- ========================================================== -->
