@@ -1,5 +1,6 @@
 release 3.04.001_beta
 ---------------------
+2004-Aug-17 Add: Improved sfRelsove illegalClassType exceptions
 2004-Aug-17 Add: New sfGui version 0.7r01
 2004-Aug-17 Add: Improved SchemaDescription phase.
 2004-Aug-16 Add: New DATA keyword added to parser. Now "extends DATA" defines
