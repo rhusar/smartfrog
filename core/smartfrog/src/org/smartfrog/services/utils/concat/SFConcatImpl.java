@@ -32,6 +32,7 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.logging.Log;
 
 
 /**
@@ -47,6 +48,8 @@ public class SFConcatImpl extends PrimImpl implements Prim, SFConcat {
     public StringBuffer concat = new StringBuffer();
     /** Componentdescription. */
     private ComponentDescription stringCompDesc = null;
+
+    private Log log;
 
     /**
      * Constructor for the SFServiceResourceManagerImpl object.
@@ -68,7 +71,7 @@ public class SFConcatImpl extends PrimImpl implements Prim, SFConcat {
     RemoteException {
         // TODO: Exception handling mechanism need to be revisited
         super.sfDeploy();
-
+        log = sfGetApplicationLog();
         try {
             readSFAttributes();
 
@@ -78,6 +81,7 @@ public class SFConcatImpl extends PrimImpl implements Prim, SFConcat {
                 } catch (Exception ex) {
                     error("SFConcat.sfDeploy", ex.toString());
 
+                    //TODO
                     if (debug) {
                         this.sfAddAttribute(ATR_CONCAT, "error");
                     }
@@ -89,6 +93,7 @@ public class SFConcatImpl extends PrimImpl implements Prim, SFConcat {
                 } catch (Exception ex) {
                     error("SFConcat.sfDeploy", ex.toString());
 
+                    //TODO
                     if (debug) {
                         this.sfAddAttribute(ATR_REFERENCE, "error");
                     }
@@ -107,7 +112,6 @@ public class SFConcatImpl extends PrimImpl implements Prim, SFConcat {
                 }
             }
 
-            //log("sfDeploy","SFConcatImpl sfDeploy finished");
         } catch (Throwable t) {
             // TODO: Need to be revisited
             throw new SmartFrogDeploymentException(t, this);
@@ -122,10 +126,7 @@ public class SFConcatImpl extends PrimImpl implements Prim, SFConcat {
      */
     public synchronized void sfStart() throws SmartFrogException,
     RemoteException {
-        //log("sfStart","SFConcatImpl sfStart entered");
         super.sfStart();
-
-        //log("sfStart","SFConcatImpl sfStart finished");
     }
 
     /**
@@ -179,12 +180,10 @@ public class SFConcatImpl extends PrimImpl implements Prim, SFConcat {
         Object value = null;
         StringBuffer auxString = new StringBuffer();
 
-        //System.out.println("reading Cmd Attributes...");
         for (Enumeration e = compDesc.getContext().elements();
                 e.hasMoreElements();) {
             value = e.nextElement();
 
-            //if (value instanceof String) {
             try {
                 if (value != null) {
                     if (value instanceof Reference) {
@@ -215,39 +214,26 @@ public class SFConcatImpl extends PrimImpl implements Prim, SFConcat {
     }
 
     /**
-     * Logs error mesasge at the standard err stream.
+     * Logs error message at info level
      * @param method Name of the method
      * @param message Error Message
      */
     private void error(String method, String message) {
-        if (debug) {
-            System.err.println(method + " [" + (new Date()).toString() + "]> " +
-                message);
-        }
+        String text = method + ": " + message;
+        log.info(text);
     }
 
     /**
-     * Logs mesasge at the standard out stream.
+     * Logs message at debug level
      * @param method Name of the method
      * @param message Log message
      */
     private void log(String method, String message) {
-        if (debug) {
-            System.out.println(method + " [" + (new Date()).toString() + "]> " +
-                message);
-        }
+
+        String text = method+": "+message;
+        log.debug(text);
     }
 
-    /**
-     * Logs exception with stack trace at the standard err stream.
-     * @param method Name of the method
-     * @param exception The exception object
-     */
-    private void exception(String method, Throwable exception) {
-        if (debug) {
-            exception.printStackTrace();
-        }
-    }
 
     /**
      * Appends the object.
@@ -259,7 +245,7 @@ public class SFConcatImpl extends PrimImpl implements Prim, SFConcat {
         try {
           this.sfAddAttribute(ATR_CONCAT, concat.toString());
         } catch (Exception ex){
-          //Ignore
+            log.trace("ignoring",ex);
         }
     }
 
@@ -269,7 +255,6 @@ public class SFConcatImpl extends PrimImpl implements Prim, SFConcat {
      */
     public String toString() {
         concat.append(createConcatFromContext(stringCompDesc));
-
         return concat.toString();
     }
 }

@@ -53,7 +53,7 @@ public class LivenessPageComponent extends PrimImpl implements LivenessPage {
     int checkFrequency = 1;
 
     /**
-     * when is the next
+     * when is the next check
      */
     int nextCheck = 0;
 

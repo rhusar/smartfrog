@@ -92,6 +92,9 @@ public class LivenessPageChecker implements LivenessPage {
      */
     protected boolean fetchErrorText = true;
 
+    /**
+     * string of queries at the end of the url
+     */
     protected String queries=null;
 
     /**
