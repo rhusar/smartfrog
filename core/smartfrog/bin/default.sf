@@ -47,7 +47,7 @@ DefaultDisplay extends  Display {
 DisplayTrace extends TraceDisplay{
   nameDisplay "Trace info (Exit:ALT+F4)";
   formatMsg   true;
-  stepTrace false; // Should ask for confirmation before stepping through?
+  stepTrace true; // Should ask for confirmation before stepping through?
 }
 
 DefaultLog extends LogToFile{
@@ -65,7 +65,8 @@ DefaultCompound extends Compound {
 DefaultTraceCompound extends DefaultCompound {
     displayTrace extends DisplayTrace;
     trace extends Trace{ // Component lifecycle trace notification
-       outputMsg LAZY ATTRIB displayTrace;
+       //outputMsg LAZY ATTRIB displayTrace;
+       outputMsg LAZY HOST localhost:rootProcess:sfDefault:display;
     } 
     // log extends DefaultLog; // Logs standard output and error to a file
 }
