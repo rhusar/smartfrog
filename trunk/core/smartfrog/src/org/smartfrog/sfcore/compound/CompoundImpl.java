@@ -191,15 +191,14 @@ public class CompoundImpl extends PrimImpl implements Compound {
         }
     }
 
-
     /**
      * A high-level component deployment method - creates a child of this
      * Compound, running it through its entire lifecycle. This is the preferred way
      * of creating new child components of a Compound. The method is safe against
      * multiple calls of lifecycle.
      *
-     * @param cmp compiled component to deploy and start
      * @param name name of attribute which the deployed component should adopt
+     * @param cmp compiled component to deploy and start
      * @param parms parameters for description
      *
      * @return deployed component if successfull
@@ -210,20 +209,42 @@ public class CompoundImpl extends PrimImpl implements Compound {
      */
     public Prim sfCreateNewChild(Object name, ComponentDescription cmp, Context parms)
         throws RemoteException, SmartFrogDeploymentException {
+        return sfCreateNewChild( name, this, cmp, parms);
+    }
+
+    /**
+     * A high-level component deployment method - creates a child of this
+     * Compound, running it through its entire lifecycle. This is the preferred way
+     * of creating new child components of a Compound. The method is safe against
+     * multiple calls of lifecycle.
+     *
+     * @param name name of attribute which the deployed component should adopt
+     * @param parent of deployer component
+     * @param cmp compiled component to deploy and start
+     * @param parms parameters for description
+     *
+     * @return deployed component if successfull
+     *
+     * @exception SmartFrogDeploymentException failed to deploy compiled
+     * component
+     * @exception RemoteException In case of Remote/nework error
+     */
+    public Prim sfCreateNewChild(Object name, Prim parent, ComponentDescription cmp, Context parms)
+        throws RemoteException, SmartFrogDeploymentException {
     Prim comp = null;
     try {
-        synchronized (this) {
+        synchronized (parent) {
         if (!sfIsTerminated) {
             if (sflog().isTraceEnabled()) {
                 try {
                     sflog().trace("Creating new Child for: "+
-                                  sfCompleteNameSafe()+", with description: "+
+                                  parent.sfCompleteName()+", with description: "+
                                   cmp.toString()+", and parameters: "+parms);
                 } catch (Exception ex1) {
                     sflog().trace(ex1.toString());
                 }
             }
-            comp = sfDeployComponentDescription(name, this, cmp, parms);
+            comp = sfDeployComponentDescription(name, parent, cmp, parms);
             // it is now a child, so need to guard against double calling of lifecycle...
             if (sfIsDeployed) {
                 try {
@@ -255,7 +276,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
     }
     if (sflog().isTraceEnabled()) {
         try {
-            sflog().trace("New child created: "+comp.sfCompleteName()+ ".");
+            sflog().trace("New child created: "+comp.sfCompleteName()+ " ");
         } catch (Exception ex1) {
             sflog().trace(ex1.toString());
         }
@@ -647,7 +668,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
 		return;
 	    }
 	}
-		
+
 
 	// the following, checking children, should only happen if source is own livenes sender or
         // it is the parent checking and I don't have my own check
