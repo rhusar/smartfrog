@@ -235,7 +235,7 @@ public class GameArenaWrapper extends EventPrimImpl implements Prim, Linker {
                     Linker discoveredPlayer = (Linker) e.nextElement();
 
                     // if the object discovered is not myself and if it does not
-            // have an opponent, it’s the one!
+            // have an opponent, it's the one!
                     if ((!discoveredPlayer.equals(this)) &&
                             discoveredPlayer.setOpponent(this)) {
                         this.opponent = discoveredPlayer;
