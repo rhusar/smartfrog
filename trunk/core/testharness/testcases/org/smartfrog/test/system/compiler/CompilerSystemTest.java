@@ -138,6 +138,6 @@ public class CompilerSystemTest extends SmartfrogTestBase {
                 "SmartFrogDeploymentException",
                 "FAILED when trying DEPLOY of 'tcn28'",
                 "SmartFrogResolutionException",
-                "Unresolved Reference: HERE sfClass ");
+                "Unresolved Reference: HERE sfClass");
     }
 }
