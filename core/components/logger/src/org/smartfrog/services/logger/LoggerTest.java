@@ -21,20 +21,19 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.logger;
 
 
-import java.rmi.RemoteException;
-
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+
+import java.rmi.RemoteException;
 
 /**
  * Logger Test component
  */ 
 public class LoggerTest extends PrimImpl implements Prim {
 
-    SFLogger logger = null;
+    private SFLogger logger = null;
 
     /**
      * Constructs object
@@ -50,24 +49,34 @@ public class LoggerTest extends PrimImpl implements Prim {
      * @throws SmartFrogException in case of error in deploying
      * @throws RemoteException in case of network/emi error
      */ 
-    public synchronized void sfDeploy() throws SmartFrogException, 
-    RemoteException {
+    public synchronized void sfDeploy()
+            throws SmartFrogException, RemoteException {
         super.sfDeploy();
         //read logger attribute
-        //logger = (SFLogger) sfResolve("mylogger", false);
         logger = getDefaultLogger();
-        // name 
-        String name = (String) sfResolve("sfProcessComponentName", false);
-        String host = (String) sfResolve("sfProcessHost","localhost", false);
-        String id = name + ":" + host;
-                    
-        
-        if (logger != null) {
-            logger.logInfo(id +":==>Info msg1");
-            logger.logWarning(id +":==>Warning msg1");
-            logger.logInfo(id +":==>Info msg1");
-            logger.logError(id +":==>Log Error1");
+        if (logger == null) {
+            return;
         }
+        // name
+        String name = (String) sfResolve("sfProcessComponentName", false);
+        String host = sfResolve("sfProcessHost","localhost", false);
+        String id = name + ":" + host;
+
+        //now test the proxy stuff
+        LoggerProxy proxy = new LoggerProxy(logger);
+        //being a test and all, we check the flags match
+        assert proxy.isDebug() == logger.isDebug();
+
+        proxy.logInfo(id +":==>Info msg1");
+        proxy.logWarning(id +":==>Warning msg1");
+        proxy.logInfo(id +":==>Info msg1");
+        proxy.logError(id +":==>Log Error1");
+        proxy.logDebug(id + ":==>Log Debug");
+
+        proxy.flush();
+
+
+
     }
     
     public synchronized void sfTerminateWith(TerminationRecord tr) {

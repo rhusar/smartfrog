@@ -21,9 +21,9 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.logger;
 
 
+import java.sql.Timestamp;
 import java.util.logging.Formatter;
 import java.util.logging.LogRecord;
-import java.sql.Timestamp;
 
 /**
  * SmartFrog LogFormatter class used to format the log message. 
@@ -36,7 +36,7 @@ public class SFLogFormatter extends Formatter {
     /**
      * Constructs SFLogFormatter object.
      */
-    public void SFLogFormatter() {
+    public SFLogFormatter() {
     }
     /**
      * Formats the log message.
