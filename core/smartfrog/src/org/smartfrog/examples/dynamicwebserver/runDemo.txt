@@ -1,0 +1,99 @@
+
+
+This file describes how to run the dynamic web server demonstrator. It
+is not a detailed description of how the demonstrator is constructed -
+such as document will be produced, but is not yet available.
+
+Most of the key files to run the demonstrator are in the sf directory,
+and in particular the file system.sf contains the top-level definition
+of the "sfConfig" description, plus the attributes that can be changed
+to vary the way in which the demonstrator deploys and runs.
+
+There is a certain amount of preparation to do before starting.
+
+1) Locate a number of nodes on which the demonstration will run -
+   ideally this will be five: four for the server components and the
+   one from which the simulated load will be generated and the
+   application descriptioins launched. Each of these should have a
+   display so that the various graphs can be seen.
+
+   A fewer number of nodes can be used, but the displays will then get
+   confused. Additional ones can also be used, but with no real
+   addtional purpose. 
+
+   The nodes used for the web servers must be x86, running Linux. The
+   version of Apache that will be installed is an old one - we leave
+   it as an exercise to modify this for a more recent version.
+
+2) Each of these nodes should have the smartfrog release installed,
+   and the daemon started.
+
+3) The file org/smartfrog/examples/sf/system.sf should be edited to
+   define a mapping between the physical nodes and the node attributes
+   used in the descriptions.
+
+4) As Apache is installed, a number of tar files will be
+   downloaded. These tar files have been made available on the
+   internet at the www.smartfrog.org website. The configuration
+   descriptions have been defined to use these tar files, however it
+   would generally be better to download these in advance and place
+   them on a loca server so that the communication is more reliable
+   and the performance increaed. For example the Apache download is
+   approximately 30MB, this will be slow to download across the
+   internet.
+
+5) Edit the  org/smartfrog/examples/sf/system.sf file to define where
+   the web server holding these three tar files are located.
+
+
+Now to run the demo. There are three possibilities:
+
+  a) to launch the whole demo - the web service and the load generators
+
+  b) to launch just the service, and not the load generators
+
+  c) to launch only the load generators
+
+The system.sf file contains an sfConfig definition that contains the
+two parts: the service and the load generators. Consequently either
+the entire sfConfig is used, or the two constituent components of
+sfConfig are use separately. The command lines for the three
+alternatives would be as follows:
+
+     smartfrog -a wsAll:DEPLOY:system.sf::localhost: -e
+
+     smartfrog -a ws:DEPLOY:system.sf:service:localhost: -e
+
+     smartfrog -a lg:DEPLOY:system.sf:loadGenerators:localhost: -e
+
+The first could also be done using the simplified sfStart script
+
+     sfStart localhost wsAll system.sf
+
+
+Tuning the demo:
+
+The demo has a number of controls that allow users to tune the
+demonstrator so that the responsiveness of the measurements to loads,
+and the effect of the loads, can be adjusted.
+
+The measurements are active tests that "hit" the web server with a
+request for a cgi script to be executed. The time for the script to
+respond is measured and the result used to draw the response-time
+graph on the system manager.
+
+Equally, the load generator uses a possibly different cgi-script to
+load the server. The default settings appear to give reasonable
+results across a wide-range of server node types. However, if a
+particularly slow or fast web-server node is used, it may be
+impossible to either load the server sufficiently, or conversely even
+the measurement load may be too high. Under these circumstances, using
+a different cgi-script may be necessary. A variety are provided as
+part of the tarball, and choosing a different one (they all do an
+active spin for some 100s of times - a different number for each
+script). In general, using a long measurement script with shorter load
+scripts works better than the other way around.
+
+
+
+
