@@ -35,6 +35,11 @@ TBD extends {
     phase.predicate "org.smartfrog.sfcore.languages.sf.predicates.TBD";
 }
 
+
+Assertions extends {
+   phase.predicate "org.smartfrog.sfcore.languages.sf.predicates.Assertions";
+}
+
 Schema extends {
    phase.predicate "org.smartfrog.sfcore.languages.sf.predicates.Schema";
    phase.description "org.smartfrog.sfcore.languages.sf.predicates.SchemaDescription";
