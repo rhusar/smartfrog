@@ -69,6 +69,20 @@ public class HereReferencePart extends ReferencePart {
     }
 
     /**
+     * Return a string which is a representation of the reference part in a reference in the 
+     * index position given.
+     *
+     * @param index the position in the reference
+     * @return the representation
+     */
+    public String toString(int index) {
+	if (index == 0)
+	    return HERE + ' ' + value.toString();
+	else
+	    return value.toString();
+    }
+
+    /**
      * Returns hashcode of this part. This is the hashCode of the stored value
      *
      * @return hash code for part

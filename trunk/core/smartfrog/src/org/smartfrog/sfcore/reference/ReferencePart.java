@@ -166,6 +166,20 @@ public abstract class ReferencePart implements Copying, Cloneable, Serializable 
         return null;
     }
 
+
+    /**
+     * Return a string which is a representation of the reference part in a reference in the 
+     * index position given. It defaults to calling the "toString()" method, but may be overridden
+     * in a sub-class. An index of 0 indicate the fist part of a reference.
+     *
+     * @param index the position in the reference
+     * @return the representation
+     */
+    public String toString(int index) {
+	return toString();
+    }
+
+
     /**
      * Compares this reference part with another one.
      *
