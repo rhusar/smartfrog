@@ -388,13 +388,60 @@ public class SFSystem implements MessageKeys {
         }
     }
 
+
     /**
-     * Get this object to terminate, after detaching itself from its parent.
+     * Terminates the named components given as -T options on the command
+     * line.
      *
-     * @param opts
-     * @param target
+    *  @param options option set up configured with SmartFrog Options
+     * @param target the target process compound to request the terminations
+     *
      */
-    public static void detachAndTerminate(OptionSet opts,
+    public static void terminateNamedComponents(OptionSet opts,
+                    ProcessCompound target) {
+            Prim obj = null;
+            try {
+                    obj = (Prim)target;
+            } catch (Exception e) {
+                errorTermination  = true;
+                Logger.log(MessageUtil.formatMessage(MSG_ERR_TERM, target));
+                // log stack trace
+                Logger.log(e);
+            }
+            StringTokenizer st = null;
+            String token = null;
+            TerminationRecord tr = new TerminationRecord(TerminationRecord.NORMAL,
+                         "force to terminate", null);
+            for (Enumeration terms = opts.terminating.elements();
+                terms.hasMoreElements();) {
+                     String term = (String) terms.nextElement();
+                     st = new StringTokenizer(term, ":");
+                     try {
+                             while (st.hasMoreTokens()) {
+                                     token = st.nextToken();
+                                     obj = ((Prim)obj.sfResolveHere(token));
+                             }
+                             obj.sfTerminate(tr);
+                     } catch (Exception e) {
+                             errorTermination  = true;
+                             Logger.log(MessageUtil.formatMessage(
+                                                       MSG_ERR_TERM,token));
+                             // log stack trace
+                             Logger.log(e);
+                     }
+            }
+    }
+
+
+
+    /**
+     * Detaches and terminates the named components given as -d options on the
+     * command line.
+     *
+    * @param options option set up configured with SmartFrog Options
+     * @param target the target process compound to request the terminations
+     */
+    public static void detachAndTerminateNamedComponents(OptionSet opts,
         ProcessCompound target) {
             Prim obj = null;
             try {
@@ -409,7 +456,7 @@ public class SFSystem implements MessageKeys {
             StringTokenizer st = null;
             String token = null;
 
-            TerminationRecord tr = new TerminationRecord("normal",
+            TerminationRecord tr = new TerminationRecord(TerminationRecord.NORMAL,
                     "External Management Action", null);
             for (Enumeration detachs = opts.detaching.elements();
                 detachs.hasMoreElements();) {
@@ -433,7 +480,7 @@ public class SFSystem implements MessageKeys {
 
     /**
      * Entry point to get system properties. Works around a bug in some JVM's
-     * (ie. Solaris to return the default correctly.
+     * (ie. Solaris) to return the default correctly.
      *
      * @param key property key to look up
      * @param def default to return if key not present
@@ -751,9 +798,12 @@ public class SFSystem implements MessageKeys {
         // get the target process compound
         ProcessCompound targetPC = selectTargetProcess(options);
 
+        detachAndTerminateNamedComponents(options, targetPC);
+
         terminateNamedApplications(options, targetPC);
 
         deployFromURLsGiven(options, targetPC);
+
         return process;
     }
 }
