@@ -104,6 +104,11 @@ public class ToUrlTest extends TaskTestBase {
         assertPropertyEndsWith("testFilesetSeparator", ".xml");
     }
 
+    public void testPath() {
+        executeTarget("testPath");
+        assertPropertyContains("testPath", "to-url.xml");
+    }
+
     /**
      * assert that a property ends with
      * @param property

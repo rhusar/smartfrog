@@ -61,4 +61,14 @@ ant -lib ..\..\build\dist\lib\smartfrog-tasks.jar -lib ..\..\..\..\smartfrog\dis
     <sf-tourl property="testValidation" file="absent" validate="true"/>
   </target>
 
+  <target name="testPath">
+    <path id="test.path">
+      <pathelement location="." />
+      <fileset dir="." includes="*.xml"/>
+    </path>
+    <sf-tourl property="testPath">
+      <path refid="test.path" />
+    </sf-tourl>
+  </target>
+
 </project>
