@@ -11,7 +11,7 @@ if (%2) == () goto usage
 if (%3) == () goto usage
 if exist "%SFHOME%\jre\bin\java.exe" set path=%SFHOME%\jre\bin
 
-call %SFHOME%\bin\setClassPath
+rem call %SFHOME%\bin\setClassPath
 call "%SFHOME%\bin\setSFProperties"
 
 java %SFCMDPARAMETERS% org.smartfrog.SFSystem -a %2:DEPLOY:%3::%1: -e

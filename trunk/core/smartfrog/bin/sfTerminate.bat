@@ -11,7 +11,7 @@ if (%1) == (-?) goto help
 if (%2) == () goto usage
 if exist "%SFHOME%\jre\bin\java.exe" set path=%SFHOME%\jre\bin
 
-call %SFHOME%\bin\setClassPath
+rem call %SFHOME%\bin\setClassPath
 call "%SFHOME%\bin\setSFProperties"
 
 echo "Terminating %1"
