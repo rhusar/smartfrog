@@ -141,7 +141,7 @@ public class LocalTestDaemon {
             throw new Exception("Already running a daemon here");
         }
         this.options=optionset;
-        process=SFSystem.runSmartFrog(options);
+        process=SFSystem.runSmartFrog(options.cfgDescriptors);
     }
 
     /**
