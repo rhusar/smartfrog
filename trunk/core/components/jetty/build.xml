@@ -106,8 +106,10 @@ For more information: www.smartfrog.org
     <jar jarfile="${target.jar}" 
         basedir="${build.classes.dir}" 
         includes="**/services/**"
-        manifest ="${manifestName}"/>
-  
+	manifest ="${manifestName}"/>
+  <!--Uncomment to copy files to smartfrog dist directory.-->
+  <!--copy-useful-files src="${dist.lib.dir}" 
+        pattern="*.jar" dest="${smartfrog.dist.lib.dir}"/-->    
   </target>
 
   <!-- ========================================================== -->
