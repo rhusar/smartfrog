@@ -128,7 +128,7 @@ For more information: www.smartfrog.org
   <!-- ========================================================== -->
   <!-- run the unit tests tests -->
   <!-- ========================================================== -->
-  <target name="unit-tests" depends="compile-tests"
+  <target name="unit-tests" depends="compile-tests"  unless="testcase" 
     description="run unit tests">
     <sf-junit
            errorProperty="test.failed"
@@ -140,9 +140,7 @@ For more information: www.smartfrog.org
         <path refid="compile.classpath"/>
         <pathelement location="${test.classes.dir}"/>
       </classpath>
-      <!-- #Test case isolation technique -->
-      <test name="${testcase}" if="testcase"/>
-      <batchtest todir="${test.data.dir}" unless="testcase" if="unit.tests.enabled">
+      <batchtest todir="${test.data.dir}" if="unit.tests.enabled">
         <!-- bulk test case -->
         <fileset dir="${test.classes.dir}">
           <include name="org/smartfrog/test/unit/**/*Test.class" />
