@@ -28,15 +28,18 @@ For more information: www.smartfrog.org
     See docs/distributed-logger.sxw for more details.
 </description>
 
+ 
    <!-- override point -->
   <property file="build.properties" />
+  <property name="root.dir" location="../../"  />
 
-      
-  
-  <property name="root.dir" location=".."  />
+
   <!-- Import common stuff -->
-  <available file="../../common.xml" property="root.dir" value="../.."/> 
+  <!--available file="../../common.xml" property="root.dir" value="../.."/--> 
   <import file="${root.dir}/common.xml"/>
+
+  <property name="is.component" value="true"  />
+
   
   
   <!-- ========================================================== -->

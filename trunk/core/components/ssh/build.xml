@@ -29,19 +29,20 @@ For more information: www.smartfrog.org
 
    <!-- override point -->
   <property file="build.properties" />
+  <property name="root.dir" location="../../"  />
+
+
+  <!-- Import common stuff -->
+  <!--available file="../../common.xml" property="root.dir" value="../.."/--> 
+  <import file="${root.dir}/common.xml"/>
+
+  <property name="is.component" value="true"  />
 
 <!--    <property name="ssh.lib.dir" location="lib" description=
                         "place to put third party libraries"/> -->
        
   
-  <property name="root.dir" location=".."  />
-  <!-- Import common stuff -->
-  <available file="../../common.xml" property="root.dir" value="../.."/> 
-  <import file="${root.dir}/common.xml"/>
-  
- 
-
-  
+    
   <!-- ========================================================== -->
   <!-- ========================================================== -->
   <target name="init" depends="init-standard-output-dirs">
@@ -86,8 +87,7 @@ For more information: www.smartfrog.org
   <!-- ========================================================== -->
   <!-- create the jar -->
   <!-- ========================================================== -->
-  <target name="dist" depends="common.dist" 
-    description="create the jar files">
+  <target name="dist" depends="common.dist"  description="create the jar files">
     <copy toDir = "${dist.lib.dir}">
         <fileset dir ="${lib.dir}">
             <include name = "**/*.jar"/>
@@ -98,13 +98,13 @@ For more information: www.smartfrog.org
   <!-- ========================================================== -->
   <!-- override: copy in the SSH files too -->
   <!-- ========================================================== -->
-  <target name="install" depends="dist">
+  <!--target name="install" depends="dist">
       <copy toDir = "${smartfrog.dist.lib.dir}">
         <fileset dir ="${dist.lib.dir}"> 
             <include name = "**/*.jar"/>
         </fileset>    
     </copy>
-  </target>
+  </target-->
 
 
 </project>

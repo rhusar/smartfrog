@@ -29,15 +29,20 @@ For more information: www.smartfrog.org
 
    <!-- override point -->
   <property file="build.properties" />
+  <property name="root.dir" location="../../"  />
+
+
+  <!-- Import common stuff -->
+  <!--available file="../../common.xml" property="root.dir" value="../.."/--> 
+  <import file="${root.dir}/common.xml"/>
+
+  <property name="is.component" value="true"  />
 
 <!--    <property name="net.lib.dir" location="lib" description=
                         "place to put third party libraries"/>
         -->
   
-  <property name="root.dir" location=".."  />
-  <!-- Import common stuff -->
-  <available file="../../common.xml" property="root.dir" value="../.."/> 
-  <import file="${root.dir}/common.xml"/>
+  
   
   
   <!-- ========================================================== -->
@@ -80,8 +85,7 @@ For more information: www.smartfrog.org
   <!-- ========================================================== -->
   <!-- create the jar -->
   <!-- ========================================================== -->
-  <target name="dist" depends="common.dist" 
-    description="create the jar files">
+  <target name="dist" depends="common.dist"  description="create the jar files">
     <copy todir = "${dist.lib.dir}">
         <fileset dir ="${lib.dir}" />
     </copy>          
