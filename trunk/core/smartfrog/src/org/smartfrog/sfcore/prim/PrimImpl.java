@@ -1628,7 +1628,7 @@ public class PrimImpl extends Object implements Prim, MessageKeys {
      *
      * @return parent component
      */
-    public Prim sfParent() {
+    public Prim sfParent() throws RemoteException {
         return sfParent;
     }
 
