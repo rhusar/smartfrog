@@ -38,8 +38,8 @@ public class LocalJVMTestBase extends SmartfrogTestBase {
      * set the daemon options;
      * @param daemonOptions options to set
      */
-    public void setDaemonOptions(OptionSet daemonOptions) {
-        this.daemonOptions = daemonOptions;
+    public static void setDaemonOptions(OptionSet daemonOptions) {
+        LocalJVMTestBase.daemonOptions = daemonOptions;
     }
 
     /**
