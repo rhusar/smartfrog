@@ -318,6 +318,7 @@ Reference URL:http://ant.apache.org
            author="true"
            version="true"
            use="true"
+           breakiterator="true"
            windowtitle="${Name.System}"
            Header="${Name.System} ${Version}"
            Footer="${Name.System} ${version} ${Version}"
