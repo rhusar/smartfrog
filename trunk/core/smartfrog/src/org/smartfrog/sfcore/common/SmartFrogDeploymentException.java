@@ -145,8 +145,8 @@ public class SmartFrogDeploymentException extends SmartFrogRuntimeException impl
         Context deployedContext, String message, Throwable cause,
                 Object data) {
       super(message,cause);
-      if ((source!=null)) put(SOURCE,source.toString());
-      if ((ref!=null))put(REFERENCE,ref.toString());
+      if ((source!=null)) put(SOURCE,source);
+      if ((ref!=null))put(REFERENCE,ref);
       if (name!=null)put(OBJECT_NAME,name);
       if (deployedCompDesc!=null) put(DEPLOY_CONTEXT,serializableContext(deployedContext));
       if (data!=null) put(DATA,data.toString());
