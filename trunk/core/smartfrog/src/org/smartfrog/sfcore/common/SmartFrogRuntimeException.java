@@ -117,7 +117,7 @@ public class SmartFrogRuntimeException extends SmartFrogException implements Ser
         super.init(sfObject);
         try {
            add(REFERENCE,sfObject.sfCompleteName());
-        } catch (RemoteException rex){
+        } catch (Throwable rex){
             //ignore
         }
     }

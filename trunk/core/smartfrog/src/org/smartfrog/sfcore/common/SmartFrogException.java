@@ -265,8 +265,8 @@ public class SmartFrogException extends Exception implements Serializable {
         if (sfObject == null) return;
         if (cxt == null) cxt = new ContextImpl();
         try {
-            add(PRIM_CONTEXT, sfObject.sfContext().clone());
-        } catch (java.rmi.RemoteException  rex){
+            add(PRIM_CONTEXT, sfObject.sfContext().copy());
+        } catch (Throwable  rex){
             //Ignore.
         }
         try {
