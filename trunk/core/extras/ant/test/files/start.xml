@@ -1,0 +1,116 @@
+<?xml version="1.0"?>
+<project name="parse">
+
+<description>
+ Tests for starting the daemon. We of course have to stop the daemon afterwards
+ 
+ command line invocation
+
+
+ant -lib ../../build/dist/lib/smartfrog-tasks.jar -lib ../../../../smartfrog/dist/lib/smartfrog.jar -lib ../../../../smartfrog/dist/lib/sfExamples.jar -f start.xml testResource
+</description>
+
+  <typedef 
+    resource="org/smartfrog/tools/ant/tasks.properties"
+    />
+      
+   <property name="resource.sf" 
+    value="org/smartfrog/examples/functions/function.sf" />
+
+   <property name="timeout"   value="1000" />
+   <property name="long.timeout"   value="10000" />
+   <property name="medium.timeout"   value="5000" />
+    
+    <!-- the setup target verifies that smartfrog is not running -->
+    <target name="setup" >
+      <condition property="daemon.running">
+        <socket port="3800" server="localhost" />
+      </condition>
+      <fail if="daemon.running">Smartfrog Daemon already running</fail>
+    </target>
+    
+    <!-- at the end of every execution, we force a cleanup -->
+    <target name="teardown">
+      <sf-stopdaemon failonerror="false" />
+    </target>
+    
+    <target name="testDefaults" depends="setup">
+      <sf-startdaemon iniFile="default.ini" initialSmartfrogFile="default.sf" 
+       timeout="${timeout}" />
+      <sf-stopdaemon />
+    </target>
+
+    
+    <target name="testSpawn" depends="setup">
+      <sf-startdaemon iniFile="default.ini" initialSmartfrogFile="default.sf" spawn="true" />
+      <sf-stopdaemon failonerror="true"/>
+    </target>    
+
+    <target name="testIncompatibleSettings" depends="setup">
+      <sf-startdaemon spawn="true"  timeout="500" />
+    </target>    
+    
+    <target name="testNoFailure">
+      <sf-startdaemon failonerror="false"/>
+    </target>
+    
+    <target name="testEmptyApplication">
+      <sf-startdaemon  timeout="${timeout}" >
+        <application />
+      </sf-startdaemon>
+    </target>    
+
+    <target name="testAnonApplication">
+      <sf-startdaemon  timeout="${timeout}" >
+        <application descriptor="${resource.sf}" />
+      </sf-startdaemon>
+    </target>    
+
+    <target name="testDatalessApplication">
+      <sf-startdaemon  timeout="${timeout}" >
+        <application name="app" />
+      </sf-startdaemon>
+    </target> 
+
+    
+    <target name="testBadFile">
+      <sf-startdaemon  timeout="${timeout}"  >
+        <application name="app" file="missing-file.sf"/>
+      </sf-startdaemon>
+    </target>  
+
+    
+    <target name="testBadHost" depends="setup" >
+      <sf-startdaemon host="no-such-hostname"/>
+    </target>
+
+
+    <!-- run smartfrog in one thread, shut it down in another -->
+    <target name="testRunFile">
+     <parallel>
+        <sf-startdaemon  timeout="${long.timeout}" >
+          <application name="app" file="valid.sf"/>
+        </sf-startdaemon>
+        <sequential>
+          <sleep milliseconds="${medium.timeout}"/>
+           <sf-stopdaemon />
+        </sequential>
+      </parallel>
+    </target>
+    
+    
+    <target name="testResource">
+     <parallel>
+        <sf-startdaemon  timeout="${long.timeout}" >
+          <application name="app" descriptor="${resource.sf}"/>
+        </sf-startdaemon>
+        <sequential>
+          <sleep milliseconds="${medium.timeout}"/>
+           <sf-stopdaemon />
+        </sequential>
+      </parallel>      
+    </target> 
+    
+
+    
+</project>      

@@ -26,12 +26,24 @@ import org.apache.tools.ant.Project;
  * Start a daemon. There is some fun here, as this can be spawning or non-spawning.
  * if it spawns, it outlives ant (which doesnt block), but output gets lost.
  * This task only works on Ant1.6 or later, as that was when spawning was added to the
- * system
+ * system.
+ * <p>
+ * This task starts a daemon which is only terminated by external request, and which
+ * blocks the calling thread until it terminates
+ * This means the build file calling this routine must either
+ * <ol>
+ * <li>execute it in a separate thread (using parallel/sequential containers),
+ * and call &lt;sf-stopdaemon&gt; in a separate thread to end it
+ * <li>set the standalone property to true to run it in a new process.
+ * <li>set the timeout to enforce a death time on the process.
+ * </ol>
+ * Timeout killing of a process is somewhat brutal; we do not (yet) cleanly shut
+ * down the localhost, though that is a distinctly possibile option in future.
  * @author steve loughran
  * created 16-Feb-2004 16:37:26
  */
 
-public class StartDaemon extends SmartFrogTask {
+public class StartDaemon extends DeployingTaskBase {
 
     public StartDaemon() {
         setFailOnError(true);
@@ -52,38 +64,49 @@ public class StartDaemon extends SmartFrogTask {
     protected boolean spawn;
 
     /**
-     * enable spawning. This also sets the failonerror flag to false.
+     * run the process standalone, losing all output.
+     * This also sets the failonerror flag to false.
      * @param spawn
      */
-    public void setStandalone(boolean spawn) {
+    public void setSpawn(boolean spawn) {
         this.spawn=spawn;
         setFailOnError(false);
     }
 
     /**
-     * Called by the project to let the task do its work. This method may be
-     * called more than once, if the task is invoked more than once.
-     * For example,
-     * if target1 and target2 both depend on target3, then running
-     * "ant target1 target2" will run all tasks in target3 twice.
+     * set the timeout for execution. This is incompatible with spawning.
+     * @param timeout
+     */
+    public void setTimeout(long timeout) {
+        smartfrog.setTimeout(new Long(timeout));
+    }
+
+    /**
+     *  Start the daemon in this thread or a new process.
      *
      * @throws org.apache.tools.ant.BuildException
      *          if something goes wrong with the build
      */
     public void execute() throws BuildException {
         setStandardSmartfrogProperties();
+        //this is needed to start the registry. Without it you cannot shut
+        //smartfrog down.
         addSmartfrogProperty("org.smartfrog.sfcore.processcompound.sfProcessName",
                 ROOT_PROCESS);
         addIniFile();
         addHostname();
+        deployApplications();
         if(spawn) {
             smartfrog.setSpawn(spawn);
+        } else {
+            log("embedded smartfrog daemon started; " +
+                    "this thread will block until it exits", Project.MSG_VERBOSE);
         }
 
-        execSmartfrog("failed to start smartfrog daemon");
+        execSmartfrog("failed to start the smartfrog daemon");
         if (spawn) {
             //when spawning output gets lost, so we print something here
-            log("Smartfrog daemon spawned",Project.MSG_VERBOSE);
+            log("Standalone SmartFrog daemon started");
         }
     }
 
