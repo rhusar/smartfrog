@@ -49,6 +49,8 @@ import org.smartfrog.sfcore.security.SecureRemoteObject;
 
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.utils.ComponentHelper;
+
 import java.rmi.*;
 
 
@@ -1610,19 +1612,16 @@ public class PrimImpl extends Object implements Prim, MessageKeys {
     /**
      * Returns the complete name for this component from the root of the
      * application and does not throw any exception. If an exception is
-     * thrown it will return null.
+     * thrown it will return a new empty reference.
      *
-     * @return reference of attribute names to this component or null
+     * @return reference of attribute names to this component or an empty reference
      *
      */
     public Reference sfCompleteNameSafe() {
-        try {
-            return this.sfCompleteName();
-        } catch (Throwable thr){
-            // TODO: log a message to indicate that sfCompleteName failed!
-            return new Reference();
-        }
+       return ComponentHelper.completeNameSafeStatic(this);
     }
+    
+
 
     /**
      * Returns the parent of this component.

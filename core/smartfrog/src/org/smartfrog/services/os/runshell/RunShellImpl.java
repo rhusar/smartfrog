@@ -33,6 +33,7 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.utils.ComponentHelper;
+import org.smartfrog.sfcore.logging.Log;
 
 import java.io.DataOutputStream;
 import java.io.File;
@@ -153,7 +154,7 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
     boolean printStack = false;
 
     /** log */
-    Logger log;
+    Log log;
 
     /** helper */
     ComponentHelper helper;
@@ -669,7 +670,7 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
 
     private void PrintExceptionStack(Exception e) {
         if (printStack != false) {
-            log.log(Level.SEVERE,"exception",e);
+            log.error("exception",e);
         }
     }
 
