@@ -49,8 +49,6 @@ For more information: www.smartfrog.org
   <property file="build.properties" />
 
   <property name="root.dir" location="../.."  />
-  <property name="manifestName" 
-     value="${smartfrog.home}/private/sealManifest.mf"/>
 
   
     <!-- Import common stuff -->
@@ -63,6 +61,8 @@ For more information: www.smartfrog.org
           
     <!-- <property name="target.jar" location="${dist.lib.dir}/jetty.jar" /> -->
     <property name="deploy.sf" value="org/smartfrog/services/jetty/example.sf"/>
+    <property name="manifestName" 
+       value="${smartfrog.home}/private/sealManifest.mf"/>
         
   </target>
     
@@ -75,7 +75,7 @@ For more information: www.smartfrog.org
        for better diagnostic messages on failure (see assert-prerequisites) 
        -->
   <!-- ========================================================== -->
-  <target name="verify-prerequisites" depends="init">
+  <target name="verify-prerequisites" depends="common.verify-prerequisites">
         <available property="verified.ok"
             classname="org.mortbay.http.HttpServer"
             classpathref="compile.classpath"

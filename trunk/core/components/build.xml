@@ -138,8 +138,12 @@ component.path :=
   <target name="install" depends="init"
     description="install all projects">
     <delegate target="maybe-install"/>
-  </target>  
-
+  </target> 
+  
+  <target name="diagnostics" depends="init"
+    description="diagnostics">
+    <delegate target="diagnostics"/>
+  </target> 
   <target name="diag2" depends="init"
     description="diagnostics">
     <delegate target="diag2"/>
