@@ -170,8 +170,7 @@ For more information: www.smartfrog.org
 
     <!--  Maven site:generate-->
     <target name="mavenReport" depends="cvsupdate" description="run 'maven site:generate'">
-        <exec executable="maven">
-            <arg line="-d ${cruise.base.dir}" />
+        <exec executable="maven" dir="${cruise.base.dir}">
             <arg line="site:generate" />
         </exec>
     </target>
