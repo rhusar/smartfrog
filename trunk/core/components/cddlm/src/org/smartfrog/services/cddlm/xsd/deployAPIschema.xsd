@@ -422,6 +422,23 @@
         </xsd:annotation>
       </xsd:element>
 
+      <xsd:element name="location" type="xsd:string">
+        <xsd:annotation>
+          <xsd:documentation>
+          Location string describing server location
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+
+      <xsd:element name="timezoneUTCOffset" type="xsd:integer">
+        <xsd:annotation>
+          <xsd:documentation>
+            Offset from UTC of the local clock.
+            Provides a location hint and good diagnostics
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+
       <xsd:element name="diagnostics" type="types:unboundedXMLAnyNamespace" minOccurs="0">
         <xsd:annotation>
           <xsd:documentation>
