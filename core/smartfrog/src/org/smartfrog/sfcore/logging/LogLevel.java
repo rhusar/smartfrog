@@ -30,22 +30,22 @@ package org.smartfrog.sfcore.logging;
  */
 public interface LogLevel {
 
-    /** "IGNORE" level logging. */
+    /** "IGNORE" level logging < 1 */
     public static final int LOG_LEVEL_IGNORE  = 0;
-    /** "Trace" level logging. */
+    /** "Trace" level logging = 1 */
     public static final int LOG_LEVEL_TRACE  = 1;
-    /** "Debug" level logging. */
+    /** "Debug" level logging = 2*/
     public static final int LOG_LEVEL_DEBUG  = 2;
-    /** "Info" level logging. */
+    /** "Info" level logging = 3*/
     public static final int LOG_LEVEL_INFO   = 3;
-    /** "Warn" level logging. */
+    /** "Warn" level logging = 4 */
     public static final int LOG_LEVEL_WARN   = 4;
-    /** "Error" level logging. */
+    /** "Error" level logging = 5 */
     public static final int LOG_LEVEL_ERROR  = 5;
-    /** "Fatal" level logging. */
+    /** "Fatal" level logging = 6 */
     public static final int LOG_LEVEL_FATAL  = 6;
 
-    /** Enable all logging levels */
+    /** Enable all logging levels  > 6 */
     public static final int LOG_LEVEL_ALL    = (LOG_LEVEL_IGNORE);
 
     /** Enable no logging levels */
