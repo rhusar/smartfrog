@@ -45,13 +45,13 @@ public class TerminatorThread extends Thread {
     private Prim target = null;
 
     /**
-     * The object having the details of event that caused the component 
+     * The object having the details of event that caused the component
      * termination.
      */
     private TerminationRecord record = null;
-    
+
     /**
-     * Boolean flag to indicate that the component should detach before 
+     * Boolean flag to indicate that the component should detach before
      * terminating itself.
      */
     private boolean shouldDetach    = false; //It will not detach by default
@@ -62,7 +62,7 @@ public class TerminatorThread extends Thread {
     private boolean shouldTerminate  = true; //It will terminate by default
 
     /**
-     * Boolean flag to indicate that the component should notify its parent 
+     * Boolean flag to indicate that the component should notify its parent
      * before terminating itself.
      */
     private boolean notifyParent    = true; //It will use:: true=sfTeminate(), false=sfTerminateQuietlyWith()
@@ -75,6 +75,7 @@ public class TerminatorThread extends Thread {
      * @param record record why the termination
      */
     public TerminatorThread(Prim target, TerminationRecord record) {
+        this.setName("TerminatorThread");
         this.target = target;
         this.record = record;
     }
@@ -88,15 +89,16 @@ public class TerminatorThread extends Thread {
      * @param compId component identifier
      */
     public TerminatorThread(Prim target, Throwable t, Reference compId) {
+        this.setName("TerminatorThread");
         this.target = target;
         this.record = TerminationRecord.abnormal(t.toString(), compId);
     }
-    
+
     /**
      * Utility method to create/terminate the TerminatorThread object quietly.
-     * 
+     *
      * @return TerminatorThread object
-     */  
+     */
     public TerminatorThread quietly(){
         this.notifyParent =false;
         return this;
@@ -104,9 +106,9 @@ public class TerminatorThread extends Thread {
 
     /**
      * Utility method to detach TerminatorThread object from parent.
-     * 
+     *
      * @return TerminatorThread object
-     */  
+     */
     public TerminatorThread detach(){
         this.shouldDetach =true;
         return this;
@@ -114,9 +116,9 @@ public class TerminatorThread extends Thread {
 
     /**
      * Utility method that does not terminates the TerminatorThread object.
-     * 
+     *
      * @return TerminatorThread object
-     */  
+     */
     public TerminatorThread dontTerminate(){
         this.shouldTerminate =false;
         return this;
