@@ -162,7 +162,7 @@ public class JettyHelper extends ComponentHelper {
         Prim ancestor = findAncestorImplementing("org.smartfrog.services.jetty.contexts.ServletContextIntf", -1);
         if(ancestor!=null) {
             context = (ServletHttpContext) ancestor.
-                    sfResolveId(ServletContextIntf.CONTEXT);
+                    sfResolve(ServletContextIntf.CONTEXT);
         }
         if (mandatory && context == null) {
             throw new SmartFrogException("Could not locate "
