@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<cdl:cdl xmlns:cdl="urn:cddlm/xml/0.1"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="urn:cddlm/xml/0.1 cddml.xsd">
+  <!--<import/>-->
+  <cdl:types>
+ </cdl:types>
+  <cdl:configuration>
+
+  <!-- 
+  this file is illegal as it has duplicate names
+  -->
+    <webapps name="webapp-base">
+      <app>security</app>
+      <app>logging</app>
+    </webapps>
+
+    <webapps name="webapp-base">
+      <app>testing</app>
+    </webapps>    
+
+    <webapps name="webapp3" extends="webapp-base" >
+      <app>testing</app>
+    </webapps>    
+
+ </cdl:configuration>
+  <cdl:system>
+  </cdl:system>
+</cdl:cdl>

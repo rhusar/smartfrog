@@ -87,7 +87,7 @@
        for better diagnostic messages on failure (see assert-prerequisites) 
        -->
   <!-- ========================================================== -->
-  <target name="verify-prerequisites" depends="common.verify-prerequisites">
+  <target name="verify-prerequisites" depends="declare-classpaths">
         <!-- check for axis. Because we pull in system classes too (the default),
              if axis is on the classpath it gets used, even if axis.lib.dir is unset
              -->
@@ -291,7 +291,10 @@
        srcfile="${deploymentAPI.wsdl}" />
    </target>
 
-
+    <!-- =================================================================== -->
+    <!-- generate server WSDL from our WSDL document-->
+    <!-- =================================================================== -->
+    
   <target name="server-wsdl" depends="check-soapapi"
       unless="soapapi.uptodate"
       description="create server classes from WSDL">
