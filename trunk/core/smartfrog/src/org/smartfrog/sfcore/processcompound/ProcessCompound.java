@@ -85,9 +85,23 @@ public interface ProcessCompound extends Compound {
     public Object sfRegister(Object name, Prim comp)
         throws SmartFrogException, RemoteException;
 
+
+    /**
+     * DeRegisters a deployed component
+     *
+     * @param comp component to register
+     * @return true if comp is degeregistered successfully else false
+     *
+     * @throws SmartFrogException if name already in use
+     * @throws RemoteException if there is any network or remote error
+     */
+    public boolean sfDeRegister(Prim comp)
+        throws SmartFrogException, RemoteException;
+
+
     /**
      * Tries to find an attribute in the local context. If the attribute is not
-     * found the thread will wait for a notification from sfNotifySubprocessReady 
+     * found the thread will wait for a notification from sfNotifySubprocessReady
      * or until given timeout expires. Used to wait for a new process
      * compound to appear.
      *
@@ -109,7 +123,7 @@ public interface ProcessCompound extends Compound {
      *
      * @param name the name of the subprocess
      * @throws RemoteException if there is any network or remote error
-     * 
+     *
      */
     public void sfNotifySubprocessReady(String name)
         throws RemoteException;
