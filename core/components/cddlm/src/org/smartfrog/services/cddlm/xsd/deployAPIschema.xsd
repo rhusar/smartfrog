@@ -106,6 +106,10 @@
   </xsd:simpleType>
 
 
+  <!-- ============================================================= -->
+  <!-- lifecycle states-->
+  <!-- ============================================================= -->
+  
   <xsd:simpleType name="lifecycleStateEnum">
     <xsd:annotation>
       <xsd:documentation>
@@ -265,8 +269,24 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:choice>
-      <xsd:element name="source" type="xsd:anyURI"/>
-      <xsd:element name="data">
+      <xsd:element name="reference" type="xsd:anyURI">
+        <xsd:annotation>
+          <xsd:documentation>
+            A remote reference to the deployment descriptor.
+            This may refer to a descriptor stored inside an application archive,
+            or it may refer to a remote URL that must be retrieved. The security
+            implications of the latter are quite serious, and unless the retrieval
+            path is the local file system, implementations are strongly encouraged
+            not to support it unless the descriptor is signed in some manner.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="body">
+        <xsd:annotation>
+          <xsd:documentation>
+            The deployment descriptor, inline
+          </xsd:documentation>
+        </xsd:annotation>
         <xsd:complexType>
           <xsd:sequence>
             <xsd:any processContents="lax" namespace="##other" minOccurs="1" maxOccurs="1"/>
@@ -274,6 +294,24 @@
         </xsd:complexType>
       </xsd:element>
     </xsd:choice>
+    <xsd:attribute name="language" type="xsd:anyURI" use="required">
+     <xsd:annotation>
+       <xsd:documentation>
+        The URI identifying the language of the descriptor.
+       </xsd:documentation>
+     </xsd:annotation>
+    </xsd:attribute>
+    <xsd:attribute name="version" type="xsd:string" use="optional" >
+      <xsd:annotation>
+        <xsd:documentation>
+          An optional language version string. Optional because some
+          languages may wish to use different URIs for each version,
+          or include any relevant version metadata inside the language
+          document itself.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
   </xsd:complexType>
 
 
@@ -426,7 +464,7 @@
           <xsd:sequence>
             <xsd:element name="name" type="xsd:string"/>
             <xsd:element name="version" type="xsd:string"/>
-            <xsd:element name="namespace" type="xsd:anyURI"/>
+            <xsd:element name="uri" type="xsd:anyURI"/>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -436,7 +474,7 @@
   <xsd:complexType name="stringListType">
     <xsd:annotation>
       <xsd:documentation>
-        This is the list of supported callback mechanisms
+        This is a type representing a list of strings
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
@@ -694,22 +732,13 @@
         </xsd:documentation>
       </xsd:annotation>
       <xsd:sequence>
-        <xsd:element name="jsdl" type="types:jsdlType">
+        <xsd:element name="jsdl" type="types:jsdlType" minOccurs="0">
           <xsd:annotation>
             <xsd:documentation>
             </xsd:documentation>
           </xsd:annotation>
         </xsd:element>
-        <!--
-                <xsd:element name="name" type="types:applicationNameType">
-                  <xsd:annotation>
-                    <xsd:documentation>
-                  The name of the application
-                    </xsd:documentation>
-                  </xsd:annotation>
-                </xsd:element>
-                -->
-        <xsd:element name="descriptor" type="types:deploymentDescriptorType">
+        <xsd:element name="descriptor" type="types:deploymentDescriptorType" minOccurs="1">
           <xsd:annotation>
             <xsd:documentation>
           Mandatory deployment descriptor
@@ -787,6 +816,9 @@
           Request to redefine the callback mechanism/address for an application.
           The new value will remain valid until changed or the application
           is undeployed.
+
+          Setting the callback must also reset the sequence number, so that
+          the first message received at the endpoint should be numbered 1.
 
           Naming an application without providing a callback means that the user is
           unsubscribing; it is not an error if the application does not exist on an unsubscription
@@ -921,17 +953,29 @@
         <xsd:element name="timestamp" type="xsd:integer">
           <xsd:annotation>
             <xsd:documentation>
-            UTC timestamp of message sending.
+              UTC timestamp of message sending.
               time_t, seconds since 1/1/1970.
               Anyone who wants xsd:dateTime instead hasn't done enough
               interop testing.
             </xsd:documentation>
           </xsd:annotation>
         </xsd:element> 
+        <xsd:element name="sequenceID" type="xsd:integer">
+          <xsd:annotation>
+            <xsd:documentation>
+              A monotonically increasing sequence number.
+              It is possible that the underlying transport of the
+              messaging infrastructure may deliver messages out of order;
+              that is a feature of the infrastructure and beyond the scope of this
+              schema. Callers are requires to set a sequence ID for all messages
+              related to a particular job that are dispatched.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:element>
         <xsd:element name="applicationReference" type="types:applicationReferenceType">
           <xsd:annotation>
             <xsd:documentation>
-            Application this is referring to
+            Application this message in relation to.
             </xsd:documentation>
           </xsd:annotation>
         </xsd:element>

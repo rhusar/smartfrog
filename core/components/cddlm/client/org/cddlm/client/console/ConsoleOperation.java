@@ -49,7 +49,7 @@ import org.smartfrog.services.cddlm.generated.api.types.StaticServerStatusType;
 import org.smartfrog.services.cddlm.generated.api.types._applicationStatusRequest;
 import org.smartfrog.services.cddlm.generated.api.types._deployRequest;
 import org.smartfrog.services.cddlm.generated.api.types._deployResponse;
-import org.smartfrog.services.cddlm.generated.api.types._deploymentDescriptorType_data;
+import org.smartfrog.services.cddlm.generated.api.types._deploymentDescriptorType_body;
 import org.smartfrog.services.cddlm.generated.api.types._languageListType_language;
 import org.smartfrog.services.cddlm.generated.api.types._lookupApplicationRequest;
 import org.smartfrog.services.cddlm.generated.api.types._serverStatusRequest;
@@ -294,23 +294,27 @@ public abstract class ConsoleOperation {
     public DeploymentDescriptorType createSmartFrogDescriptor(String source)
             throws IOException {
         MessageElement element = createSmartfrogMessageElement(source);
-        DeploymentDescriptorType descriptor = createDescriptorWithXML(element);
+        DeploymentDescriptorType descriptor = createDescriptorWithXML(element,
+                new URI(DeployApiConstants.SMARTFROG_NAMESPACE),
+                null);
         return descriptor;
     }
 
 
     /**
      * wrap the element parameter in a MessageElement[] array and then hand off
-     * to {@link #createDescriptorWithXML(MessageElement[])}
+     * to {@link #createDescriptorWithXML(MessageElement[], URI, String)}
      *
      * @param element
      * @return a deployment descriptor for use in a request
      */
     public DeploymentDescriptorType createDescriptorWithXML(
-            MessageElement element) {
+            MessageElement element,
+            URI language,
+            String version) {
         MessageElement any[] = new MessageElement[1];
         any[0] = element;
-        DeploymentDescriptorType descriptor = createDescriptorWithXML(any);
+        DeploymentDescriptorType descriptor = createDescriptorWithXML(any,language, version);
         return descriptor;
     }
 
@@ -322,18 +326,22 @@ public abstract class ConsoleOperation {
      * @return a deployment descriptor for use in a request
      */
     public DeploymentDescriptorType createDescriptorWithXML(
-            MessageElement[] any) {
+            MessageElement[] any,
+            URI language,
+            String version) {
         DeploymentDescriptorType descriptor = new DeploymentDescriptorType();
-        _deploymentDescriptorType_data data = new _deploymentDescriptorType_data();
+        _deploymentDescriptorType_body data = new _deploymentDescriptorType_body();
         data.set_any(any);
-        descriptor.setData(data);
+        descriptor.setBody(data);
+        descriptor.setLanguage(language);
+        descriptor.setVersion(version);
         return descriptor;
     }
 
 
     /**
      * jump through hoops to turn a Xom document into a descriptor
-     *
+     * Caller is left to set the language and version attributes
      * @param xom
      * @return
      * @throws ParserConfigurationException
@@ -343,7 +351,7 @@ public abstract class ConsoleOperation {
             throws ParserConfigurationException {
         DOMImplementation impl = XomAxisHelper.loadDomImplementation();
         MessageElement messageElement = XomAxisHelper.convert(xom, impl);
-        return createDescriptorWithXML(messageElement);
+        return createDescriptorWithXML(messageElement,null,null);
     }
 
     /**
@@ -421,14 +429,14 @@ public abstract class ConsoleOperation {
      */
     public static String readIntoString(InputStream in) throws IOException {
         InputStreamReader reader = new InputStreamReader(in);
-        StringWriter out = new StringWriter();
+        StringWriter dest = new StringWriter();
         char[] block = new char[1024];
         int read;
         while (((read = reader.read(block)) >= 0)) {
-            out.write(block, 0, read);
+            dest.write(block, 0, read);
         }
-        out.flush();
-        return out.toString();
+        dest.flush();
+        return dest.toString();
     }
 
     /**
@@ -583,7 +591,7 @@ public abstract class ConsoleOperation {
                 .getLanguage();
         for (int i = 0; i < languages.length; i++) {
             _languageListType_language l = languages[i];
-            org.apache.axis.types.URI nsURI = l.getNamespace();
+            org.apache.axis.types.URI nsURI = l.getUri();
             if (languageURI.equals(nsURI.toString())) {
                 //positive match
                 return true;

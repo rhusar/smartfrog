@@ -29,6 +29,7 @@ import org.smartfrog.services.cddlm.generated.api.types.CallbackInformationType;
 import org.smartfrog.services.cddlm.generated.api.types.DeploymentDescriptorType;
 import org.smartfrog.services.cddlm.generated.api.types.OptionMapType;
 import org.smartfrog.services.cddlm.generated.api.types.OptionType;
+import org.smartfrog.services.cddlm.api.Processor;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -77,11 +78,14 @@ public class DeployTest extends DeployingTestBase {
                 null);
     }
 
-    public void testUnsupportedLanguage() throws RemoteException {
+    public void testUnsupportedLanguage() throws RemoteException,
+            URI.MalformedURIException {
         MessageElement me = operation.createSmartfrogMessageElement(
                 DeploySmartFrogTest.SIMPLE_DESCRIPTOR);
-        me.setNamespaceURI("http://invalid.example.org");
-        DeploymentDescriptorType dd = operation.createDescriptorWithXML(me);
+        String nsURI = "http://invalid.example.org";
+        me.setNamespaceURI(nsURI);
+        DeploymentDescriptorType dd = operation.createDescriptorWithXML(me,
+                new URI(me.getNamespaceURI()),null);
         deployExpectingFault(null,
                 dd,
                 null,
@@ -90,17 +94,31 @@ public class DeployTest extends DeployingTestBase {
                 null);
     }
 
+    public void testNoLanguage() throws RemoteException,
+            URI.MalformedURIException {
+        MessageElement me = operation.createSmartfrogMessageElement(DeploySmartFrogTest.SIMPLE_DESCRIPTOR);
+        DeploymentDescriptorType dd = operation.createDescriptorWithXML(me,
+                null, null);
+        deployExpectingFault(null,
+                dd,
+                null,
+                null,
+                DeployApiConstants.FAULT_BAD_ARGUMENT,
+                Processor.ERROR_NO_LANGUAGE_DECLARED);
+    }
     /**
      * change the version to sfrog and see what happens
      *
      * @throws RemoteException
      */
-    public void testUnsupportedSmartFrogVersion() throws RemoteException {
+    public void testUnsupportedSmartFrogVersion() throws Exception {
         MessageElement me = operation.createSmartfrogMessageElement(
                 DeploySmartFrogTest.SIMPLE_DESCRIPTOR);
         me.removeAttribute("version");
         me.setAttribute(me.getNamespaceURI(), "version", "1.7");
-        DeploymentDescriptorType dd = operation.createDescriptorWithXML(me);
+        DeploymentDescriptorType dd = operation.createDescriptorWithXML(me,
+                new URI(DeployApiConstants.SMARTFROG_NAMESPACE),
+                "1.7");
         deployExpectingFault(null,
                 dd,
                 null,
@@ -114,11 +132,13 @@ public class DeployTest extends DeployingTestBase {
      *
      * @throws RemoteException
      */
-    public void testUndefinedSmartFrogVersion() throws RemoteException {
+    public void testUndefinedSmartFrogVersion() throws Exception {
         MessageElement me = operation.createSmartfrogMessageElement(
                 DeploySmartFrogTest.SIMPLE_DESCRIPTOR);
         me.removeAttribute("version");
-        DeploymentDescriptorType dd = operation.createDescriptorWithXML(me);
+        DeploymentDescriptorType dd = operation.createDescriptorWithXML(me,
+                new URI(DeployApiConstants.SMARTFROG_NAMESPACE),
+                null);
         deployExpectingFault(null,
                 dd,
                 null,
@@ -204,7 +224,7 @@ public class DeployTest extends DeployingTestBase {
 
     public void NotestDeployInvalidURL() throws Exception {
         DeploymentDescriptorType descriptor = new DeploymentDescriptorType();
-        descriptor.setSource(new URI("http://localhost/invalid.sf"));
+        descriptor.setReference(new URI("http://localhost/invalid.sf"));
         URI uri = deploy(null, descriptor, null, null);
         undeploy(uri);
     }

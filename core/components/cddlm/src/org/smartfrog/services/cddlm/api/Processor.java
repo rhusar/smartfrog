@@ -56,9 +56,10 @@ import java.util.Enumeration;
 
 public class Processor {
     private static final Log log = LogFactory.getLog(EndpointHelper.class);
-    public static final String WRONG_MESSAGE_ELEMENT_COUNT = "wrong number of message elements";
+    public static final String ERROR_WRONG_MESSAGE_ELEMENT_COUNT = "wrong number of message elements";
     public static final String ERROR_NO_APPLICATION = "No application URI";
     public static final String ERROR_APP_URI_NOT_FOUND = "Not found: ";
+    public static final String ERROR_NO_LANGUAGE_DECLARED = "No language was declared";
 
     public Processor(SmartFrogHostedEndpoint owner) {
         this.owner = owner;
@@ -354,13 +355,12 @@ public class Processor {
     }
 
     /**
-     * go from qname to language enum
+     * go from URI to language enum
      *
-     * @param qname
+     * @param uri of language
      * @return
      */
-    public static int determineLanguage(QName qname) {
-        String uri = qname.getNamespaceURI();
+    public static int determineLanguage(String uri) {
         int l = Constants.LANGUAGE_UNKNOWN;
         for (int i = 0; i < Constants.LANGUAGE_NAMESPACES.length; i++) {
             if (Constants.LANGUAGE_NAMESPACES[i].equals(uri)) {

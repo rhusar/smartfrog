@@ -31,7 +31,7 @@ import org.smartfrog.services.cddlm.generated.api.types.ApplicationStatusType;
 import org.smartfrog.services.cddlm.generated.api.types.CallbackInformationType;
 import org.smartfrog.services.cddlm.generated.api.types.DeploymentDescriptorType;
 import org.smartfrog.services.cddlm.generated.api.types.LifecycleStateEnum;
-import org.smartfrog.services.cddlm.generated.api.types._deploymentDescriptorType_data;
+import org.smartfrog.services.cddlm.generated.api.types._deploymentDescriptorType_body;
 
 import javax.xml.namespace.QName;
 import java.io.IOException;
@@ -74,9 +74,9 @@ public abstract class DeployingTestBase extends ConsoleTestBase {
     protected void assertInDescriptor(DeploymentDescriptorType dt,
             String search)
             throws Exception {
-        _deploymentDescriptorType_data data = dt.getData();
-        assertNotNull("data null", data);
-        final org.apache.axis.message.MessageElement[] any = data.get_any();
+        _deploymentDescriptorType_body body = dt.getBody();
+        assertNotNull("data null", body);
+        final org.apache.axis.message.MessageElement[] any = body.get_any();
         assertNotNull("data/any null", any);
         assertTrue("any empty", any.length == 1);
         String output = any[0].getAsString();
