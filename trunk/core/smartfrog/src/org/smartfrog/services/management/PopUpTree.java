@@ -38,8 +38,11 @@ import java.awt.Frame;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 
 import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.compound.Compound;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+
+import java.util.Enumeration;
 
 
 
@@ -175,25 +178,65 @@ public class PopUpTree extends JComponent implements ActionListener {
        } else if (source == menuItemTerminateAbnormal) {
            terminate((((DeployEntry) (tpath.getLastPathComponent())).getEntry())
                 , TerminationRecord.ABNORMAL, "Console Management Action");
-            // Entry pointed in the tree
+            // Entry selected in the tree
         } else if (source == menuItemDTerminate) {
             dTerminate((((DeployEntry) (tpath.getLastPathComponent())).getEntry())
                        , TerminationRecord.NORMAL , "Console Management Action");
 
-            // Entry pointed in the tree
+            // Entry selected in the tree
         } else if (source == menuItemDetach) {
             detach((((DeployEntry) (tpath.getLastPathComponent())).getEntry()));
 
-            // Entry pointed in the tree
+            // Entry selected in the tree
         } else if (source == menuItemDumpContext) {
+            StringBuffer message=new StringBuffer();
+            String primName="error";
             try {
                 //@Todo show this info in a more elegant way!
                 Prim objPrim = ((Prim)(((DeployEntry)(tpath.getLastPathComponent())).getEntry()));
-                String message = objPrim.sfContext().toString().replace(',','\n');
-                modalDialog("Context info for "+ objPrim.sfCompleteName(), message, "", source);
+                try {
+                    message.append( "Parent: "+objPrim.sfParent().sfCompleteName());
+                } catch (Exception ex) {
+                   message.append( "No parent: "+ ex.getMessage());
+                }
+                message.append("\n\n*Context:\n");
+                message.append(objPrim.sfContext().toString().replace(',','\n'));
+                primName =objPrim.sfCompleteName().toString();
+                if (objPrim instanceof Compound){
+                     Enumeration enu = null;
+                     StringBuffer childrenInfo = new StringBuffer();
+                     try {
+                         childrenInfo.append("\n\n* Children: \n");
+                         for (enu = ((Compound)objPrim).sfChildren();
+                              enu.hasMoreElements(); ) {
+                             try {
+                                 Prim prim = (Prim)enu.nextElement();
+                                 childrenInfo.append("  - ");
+                                 childrenInfo.append(prim.sfCompleteName());
+                                 childrenInfo.append(" [");
+                                 childrenInfo.append(prim.getClass().toString());
+                                 childrenInfo.append(", ");
+                                 childrenInfo.append(prim.sfDeployedHost());
+                                 childrenInfo.append("] \n");
+                             } catch (RemoteException ex) {
+                                 childrenInfo.append("  - Error: ");
+                                 childrenInfo.append(ex.getMessage());
+                                 childrenInfo.append(" \n");
+                             }
+                         }
+                         message.append(childrenInfo.toString());
+                     } catch (RemoteException ex) {
+                         message.append( childrenInfo.toString());
+                         message.append("\n Error: ");
+                         message.append(ex.toString());
+                     }
+                }
+
 
             } catch (RemoteException ex) {
+                message.append("\n Error: "+ex.toString());
             }
+            modalDialog("Context info for "+ primName ,  message.toString(), "", source);
         }
 
     }
@@ -309,7 +352,7 @@ public class PopUpTree extends JComponent implements ActionListener {
         JTextArea screen = new JTextArea(message);
         Frame parent = new Frame();
         JDialog pane = new JDialog(parent,title,true);
-        pane.setSize(300,400);
+        pane.setSize(600,400);
         pane.setResizable(true);
         pane.getContentPane().add(scrollPane);
         scrollPane.getViewport().add(screen, null);
