@@ -59,7 +59,7 @@ public class SchemaSystemTest extends SmartFrogTestBase {
                 "SmartFrogDeploymentException",
                 null,
                 "SmartFrogCompileResolutionException",
-                " non-optional attribute is missing: 'y");
+                " non-optional attribute 'y (string attribute to test types and presence)' is missing");
     }
     public void testCaseTCN46() throws Exception {
         deployExpectingException(FILES+"tcn46.sf",
