@@ -167,6 +167,8 @@ TOKEN : /* reserved words */
  | <RBRACE: "}">
  | <LBRACKET: "[">
  | <RBRACKET: "]">
+ | <VECTORSTART: "[|">
+ | <VECTOREND: "|]" >
  | <REFPARTSEP: ":">
  | <NULL: "NULL">
  | <UNIQUE: "--">
@@ -658,10 +660,7 @@ Object Basic() :
 }
 {
   (
-   (<NULL> {res = SFNull.get();})
-   |  (res=String())
-   | (res=Number())
-   | (res=Boolean())
+     (res=Primitive())
    | (<LBRACKET> { res = new Vector(); }
           [tmp=SimpleValue() { ((Vector)res).addElement(tmp); }
           (<COMMA> tmp=SimpleValue() { ((Vector)res).addElement(tmp); })*]
@@ -680,6 +679,26 @@ Object Basic() :
       })
     ) { return res; }
 }
+
+Object Primitive() :
+{
+  Object res, tmp;
+  Token id;
+}
+{
+  (
+   (<NULL> {res = SFNull.get();})
+   | (res=String())
+   | (res=Number())
+   | (res=Boolean())
+   | (<VECTORSTART> { res = new Vector(); }
+          [tmp=Primitive() { ((Vector)res).addElement(tmp); }
+          (<COMMA> tmp=Primitive() { ((Vector)res).addElement(tmp); })*]
+      <VECTOREND>)
+  ) { return res; }
+}
+
+
 
 Number Number() :
 {
