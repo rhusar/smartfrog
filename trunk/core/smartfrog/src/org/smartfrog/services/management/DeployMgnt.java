@@ -93,7 +93,8 @@ public class DeployMgnt {
                     reason, null);
             obj.sfTerminate(tr);
         } catch (Exception ex) {
-            ex.printStackTrace();
+            //@TODO: log exception message.
+            //ex.printStackTrace();
         }
     }
 
