@@ -1,77 +1,76 @@
 #!/bin/sh
 
-#------------------------------------------------------
+# ------------------------------------------------------
 # SF ENV PROPERTIES  - Please edit with your preferences
 # ------------------------------------------------------
 
-# -- User libs directory --
-#export SFUSERHOME=$SFHOME/mylibs
+# Uncomment to enable Dynamic ClassLoading
+#export SFDYNAMICCLASSLOADING_ON=ENABLED
 
-# -- default.ini and default.sf without security --
-export SFDEFAULTINI="-Dorg.smartfrog.iniFile=$SFHOME/bin/default.ini"
-export SFDEFAULTSF="-Dorg.smartfrog.sfcore.processcompound.sfDefault.sfDefault=$SFHOME/bin/default.sf"
+# Uncomment to enable Security
+#export SFSECURITY_ON=ENABLED
 
-# -- Dynamic classloading: CODEBASE --
-# export SERVER=localhost:8080
-# export CODEBASE="http://$SERVER/sfExamples.jar" 
-# export SFCODEBASE="-Dorg.smartfrog.codebase=$CODEBASE" 
+# -------------------End user properties-------------------------
 
-# -- Security properties --
-#export SFSECURITY="-Djava.security.policy==$SFHOME/private/sf.policy -Djava.security.manager -Dorg.smartfrog.sfcore.security.keyStoreName=$SFHOME/private/mykeys.st -Dorg.smartfrog.sfcore.security.propFile=$SFHOME/private/SFSecurity.properties"
-#export SFDEFAULTINI="-Dorg.smartfrog.iniFile=org/smartfrog/default.ini"
-#export SFDEFAULTSF="-Dorg.smartfrog.sfcore.processcompound.sfDefault.sfDefault=org/smartfrog/default.sf"
+. $SFHOME/bin/setSFDefaultProperties
 
-# -------------------End user properties---------------
+if test "$SFDYNAMICCLASSLOADING_ON"; then
+    . $SFHOME/bin/setSFDynamicClassLoadingProperties
+fi
+
+if test "$SFSECURITY_ON"; then
+    . $SFHOME/bin/setSFSecurityDefaultProperties
+fi
 
 
 if test "$SFSECURITY"; then
- 	export SFCMDPARAMETERS="$SFCMDPARAMETERS $SFSECURITY"
+    export SFCMDPARAMETERS="$SFCMDPARAMETERS $SFSECURITY"
 fi
 if test "$SFDEFAULTINI"; then
-	export SFCMDPARAMETERS="$SFCMDPARAMETERS $SFDEFAULTINI"
+    export SFCMDPARAMETERS="$SFCMDPARAMETERS $SFDEFAULTINI"
 fi
 if test "$SFCODEBASE"; then
-	export SFCMDPARAMETERS="$SFCMDPARAMETERS $SFCODEBASE"
+    export SFCMDPARAMETERS="$SFCMDPARAMETERS $SFCODEBASE"
 fi
 
-export SFLIBPATH=$SFHOME/lib 
+export SFLIBPATH=$SFHOME/lib
 if test "$SFSECURITY"; then
-	export SFLIBPATH=$SFHOME/signedLib
+    export SFLIBPATH=$SFHOME/signedLib
 fi
 
 for i in $SFLIBPATH/*.jar; do CLASSPATH=$i:$CLASSPATH; done
 export CLASSPATH
 
 if test "$SFUSERHOME"; then
-	export SFLIBPATH=$SFUSERHOME
-	for i in $SFLIBPATH/*.jar; do CLASSPATH=$i:$CLASSPATH; done
-	export CLASSPATH
+    export SFLIBPATH=$SFUSERHOME
+    for i in $SFLIBPATH/*.jar; do CLASSPATH=$i:$CLASSPATH; done
+    export CLASSPATH
 fi
 
 if test "$SFUSERHOME1"; then
-	export SFLIBPATH=$SFUSERHOME1
-	for i in $SFLIBPATH/*.jar; do CLASSPATH=$i:$CLASSPATH; done
-	export CLASSPATH
+    export SFLIBPATH=$SFUSERHOME1
+    for i in $SFLIBPATH/*.jar; do CLASSPATH=$i:$CLASSPATH; done
+    export CLASSPATH
 fi
 
 if test "$SFUSERHOME2"; then
-	export SFLIBPATH=$SFUSERHOME2
-	for i in $SFLIBPATH/*.jar; do CLASSPATH=$i:$CLASSPATH; done
-	export CLASSPATH
+    export SFLIBPATH=$SFUSERHOME2
+    for i in $SFLIBPATH/*.jar; do CLASSPATH=$i:$CLASSPATH; done
+    export CLASSPATH
 fi
 
 if test "$SFUSERHOME3"; then
-	export SFLIBPATH=$SFUSERHOME3
-	for i in $SFLIBPATH/*.jar; do CLASSPATH=$i:$CLASSPATH; done
-	export CLASSPATH
+    export SFLIBPATH=$SFUSERHOME3
+    for i in $SFLIBPATH/*.jar; do CLASSPATH=$i:$CLASSPATH; done
+    export CLASSPATH
 fi
 
 if test "$SFUSERHOME4"; then
-	export SFLIBPATH=$SFUSERHOME4
-	for i in $SFLIBPATH/*.jar; do CLASSPATH=$i:$CLASSPATH; done
-	export CLASSPATH
+    export SFLIBPATH=$SFUSERHOME4
+    for i in $SFLIBPATH/*.jar; do CLASSPATH=$i:$CLASSPATH; done
+    export CLASSPATH
 fi
 
-if test "$srcDir"; then 
+if test "$srcDir"; then
     export CLASSPATH=$srcDir;$CLASSPATH
 fi
