@@ -89,6 +89,14 @@ public interface SmartFrogCoreKeys {
      * Attribute that holds the class name for subprocesses
      */
     public final static String SF_PROCESS_CLASS ="sfProcessClass";
+    /**
+     * Attribute that holds the class name for subprocesses
+     */
+    public final static String SF_PROCESS_CLASSPATH ="sfProcessClassPath";
+    /**
+     * Attribute that holds the class name for subprocesses
+     */
+    public final static String SF_PROCESS_REPLACE_CLASSPATH ="sfProcessReplaceClassPath";
 
     /**
      * Attribute that holds the class name for deployer

@@ -28,6 +28,9 @@ ProcessCompound extends Compound {
   sfSyncTerminate true;
   sfProcessClass "org.smartfrog.SFSystem";
   sfProcessJava "java";
+  //sfProcessClassPath "smartfrog.jar";
+  //sfProcessReplaceClassPath false;
+  //sfProcessAttributes {} //Component description for special attributes to pass to next subProcess.
   sfProcessAllow true;
   sfProcessTimeout 60;
   sfRootLocatorClass "org.smartfrog.sfcore.processcompound.DefaultRootLocatorImpl";
