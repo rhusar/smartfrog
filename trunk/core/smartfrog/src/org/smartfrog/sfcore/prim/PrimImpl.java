@@ -47,6 +47,9 @@ import org.smartfrog.sfcore.reference.RemoteReferenceResolver;
 import org.smartfrog.sfcore.security.SFGeneralSecurityException;
 import org.smartfrog.sfcore.security.SecureRemoteObject;
 
+import org.smartfrog.sfcore.logging.LogFactory;
+import org.smartfrog.sfcore.logging.LogSF;
+
 
 /**
  * Defines the base class for all deployed components. A deployed component
@@ -1726,7 +1729,7 @@ public class PrimImpl extends Object implements Prim, MessageKeys {
             sfDeployWithHooks.applyHooks(this, null);
 
         } catch (Exception sfex){
-	    new TerminatorThread(this, sfex, null).quietly().run();
+        new TerminatorThread(this, sfex, null).quietly().run();
             throw (SmartFrogDeploymentException)SmartFrogDeploymentException.forward (sfex);
         }
     }
@@ -2136,4 +2139,39 @@ public class PrimImpl extends Object implements Prim, MessageKeys {
         // start the thead
         terminator.start();
     }
+
+    // Gets logger for Core.
+    /**
+     *  To get the core logger
+     * @return Logger implementing LogSF and Log
+     * @throws SmartFrogException
+     * @throws RemoteException
+     */
+    public LogSF sfGetProcessLog() throws SmartFrogException, RemoteException {
+       return sfGetLog(SmartFrogCoreKeys.SF_CORE_LOG);
+    }
+
+    /**
+     * To get the a logger
+     * @param name logger name
+     * @return Logger implementing LogSF and Log
+     * @throws SmartFrogException
+     * @throws RemoteException
+     */
+    public LogSF sfGetLog(String name) throws SmartFrogException, RemoteException {
+       return LogFactory.getLog(name);
+    }
+
+    /**
+     *  To get application logger using ROOT name.
+     *    @todo should we use prim name and get a hierarchy of logs?
+     *
+     * @return Logger implementing LogSF and Log
+     * @throws SmartFrogException
+     * @throws RemoteException
+     */
+    public LogSF sfGetApplicationLog() throws SmartFrogException, RemoteException{
+         return sfGetLog(((Prim)sfResolveWithParser(SmartFrogCoreKeys.SF_ROOT)).sfCompleteName().toString());
+    }
+
 }

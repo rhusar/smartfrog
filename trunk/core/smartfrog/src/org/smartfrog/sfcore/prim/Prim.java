@@ -32,6 +32,9 @@ import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.RemoteReferenceResolver;
 import org.smartfrog.sfcore.reference.RemoteReferenceResolverHelper;
 
+import org.smartfrog.sfcore.logging.LogSF;
+
+
 /**
  * Defines the basic interface for all deployed components. A deployed
  * component knows how to react to termination, liveness, etc.
@@ -257,5 +260,16 @@ public interface Prim extends Liveness, RemoteReferenceResolver, RemoteReference
      * @throws RemoteException In case of Remote/nework error
      */
     public String sfDeployedProcessName() throws RemoteException;
+
+    // Gets VM core logger for Core.
+    public LogSF sfGetProcessLog() throws SmartFrogException, RemoteException;
+
+    // Gets application logger.
+    public LogSF sfGetApplicationLog() throws SmartFrogException, RemoteException;
+
+    // Gets logger .
+    public LogSF sfGetLog(String name) throws SmartFrogException, RemoteException;
+
+
 
 }
