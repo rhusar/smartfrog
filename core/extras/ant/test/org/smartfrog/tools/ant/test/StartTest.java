@@ -68,6 +68,47 @@ public class StartTest extends TaskTestBase {
         assertInLog(SmartFrogTask.MESSAGE_SPAWNED_DAEMON);
         assertInLog("SmartFrog daemon terminated");
     }
+    /**
+     * test for a improper default.ini properties values
+     */
+
+
+	public void testIncompatiblePort() 
+	{
+		 expectExceptionWithLogContaining("testIncompatiblePort", "Wrong object for sfRootLocatorPort");
+	}
+	
+	public void testIncompatibleLivenessDelay() 
+	{
+		expectExceptionWithLogContaining("testIncompatibleLivenessDelay", "SmartFrog [rootProcess] dead");
+	}
+	public void testIncompatibleLivenessFactor() 
+	{
+		expectExceptionWithLogContaining("testIncompatibleLivenessFactor", "SmartFrog [rootProcess] dead");
+	}
+	public void testIncompatibleLogStackTraces() 
+	{
+		expectExceptionWithLogContaining("testIncompatibleLogStackTraces", "SmartFrog [rootProcess] dead");
+	}
+	public void testIncompatibleProcessAllow() 
+	{
+		expectExceptionWithLogContaining("testIncompatibleProcessAllow", "SmartFrog [rootProcess] dead");
+	}
+	public void testIncompatibleProcessTimeout() 
+	{
+		expectExceptionWithLogContaining("testIncompatibleProcessTimeOut", "SmartFrog [rootProcess] dead");
+	}
+	public void testIncompatibleLoggerClass() 
+	{
+		expectExceptionWithLogContaining("testIncompatibleLoggerClass", "SmartFrog [rootProcess] dead");
+	}
+	public void testIncompatibleLogLevel() 
+	{
+		expectExceptionWithLogContaining("testIncompatibleLogLevel", "SmartFrog [rootProcess] dead");
+	}
+	
+	
+
 
     /**
      * test for a bad hostname raising an error
