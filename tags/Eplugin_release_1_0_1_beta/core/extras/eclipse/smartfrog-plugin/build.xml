@@ -1,0 +1,35 @@
+<project name="smartfrog-plugin" default="dist" basedir=".">
+   <property name="depends" value="lib"/>
+   <property name="src" value="src/org"/>
+   <property name="bld" value="build"/>
+   <property name="out" value="out"/>
+   <property name="jarbasename" value="smartfrog-plugin"/>
+
+   <target name="clean">
+      <delete dir="${out}"/>
+      <delete dir="${bld}"/>
+   </target>
+
+   <target name="init" depends="clean">
+      <mkdir dir="${out}"/>
+      <mkdir dir="${bld}"/>
+   </target>
+
+   <target name="compile" depends="init">
+      <javac srcdir="${src}" destdir="${bld}">
+         <classpath id="base.path">
+            <fileset dir="${depends}">
+               <include name="*.jar"/>
+            </fileset>
+            <fileset dir="${depends}/ext">
+               <include name="*.jar"/>
+            </fileset>
+         </classpath>
+      </javac>
+   </target>
+
+   <target name="dist" depends="compile">
+      <jar jarfile="${out}/${jarbasename}.jar" basedir="${bld}"/>
+   </target>
+
+</project>
