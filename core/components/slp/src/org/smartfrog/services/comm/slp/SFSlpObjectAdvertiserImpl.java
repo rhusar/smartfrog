@@ -23,25 +23,34 @@
  
  For more information: http://home.c2i.net/ghisdal/slp.html 
  */
- 
-#include "org/smartfrog/components.sf"
-#include "org/smartfrog/functions.sf"
-#include "org/smartfrog/services/comm/slp/sf/SFSlpAdvertiser.sf"
 
-SFSlpPrimAdvertiser extends SFSlpAdvertiser {
-    // implementation
-    sfClass "org.smartfrog.services.comm.slp.SFSlpPrimAdvertiserImpl";
+package org.smartfrog.services.comm.slp;
+
+import org.smartfrog.sfcore.prim.*;
+import org.smartfrog.sfcore.reference.*;
+import org.smartfrog.sfcore.common.*;
+
+import java.rmi.RemoteException;
+
+/**
+Advertises any serializable java object.
+ The object is made part of the URL, and a copy can be created from the URL
+ when a service reply is received.
+ */
+public class SFSlpObjectAdvertiserImpl extends SFSlpAdvertiserImpl implements Prim, SFSlpObjectAdvertiser {
+    protected Object toAdvertise = null;
     
-    concreteType ""; // the concrete service type.
-    // complete service type will be service:sf-prim:concreteType
-  
-    serviceType ("service:sf-prim:" ++ concreteType);
-    referenceServiceType ("service:sf-reference:" ++ concreteType);
-    
-    advertiseComponent true;
-    advertiseReference false;
+    public SFSlpObjectAdvertiserImpl() throws RemoteException {
         
-    //toAdvertise LAZY...; // The component to advertise.
-                    // The ServiceURL will be automatically created to match this.
+    }
+    
+    public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
+        // try {
+        super.sfDeploy();  
+        // get the object to advertise
+        toAdvertise = sfResolve("toAdvertise");
+        
+        // create URL path (string representation of object)
+        serviceLocation = "/" + ServiceURL.objectToString(toAdvertise);
+    }  
 }
-

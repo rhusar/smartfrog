@@ -26,22 +26,26 @@
  
 #include "org/smartfrog/components.sf"
 #include "org/smartfrog/functions.sf"
-#include "org/smartfrog/services/comm/slp/sf/SFSlpAdvertiser.sf"
+#include "org/smartfrog/services/comm/slp/sf/SFSlpLocator.sf"
 
-SFSlpPrimAdvertiser extends SFSlpAdvertiser {
+SFSlpObjectLocator extends SFSlpLocator {
     // implementation
-    sfClass "org.smartfrog.services.comm.slp.SFSlpPrimAdvertiserImpl";
+    sfClass "org.smartfrog.services.comm.slp.SFSlpObjectLocatorImpl";
     
-    concreteType ""; // the concrete service type.
-    // complete service type will be service:sf-prim:concreteType
+    // service type.
+    concreteType ""; // the concrete service type to look for.
+    
+    // Create the full service type, which will be of the form
+    // service:<concreteType>
+    // <concreteType> is here either
+    // <abstract_type>:<concrete_type>
+    // or just <abstract_type>
   
-    serviceType ("service:sf-prim:" ++ concreteType);
-    referenceServiceType ("service:sf-reference:" ++ concreteType);
-    
-    advertiseComponent true;
-    advertiseReference false;
-        
-    //toAdvertise LAZY...; // The component to advertise.
-                    // The ServiceURL will be automatically created to match this.
+    serviceType ("service:" ++ concreteType);
 }
+
+SFSlpReferenceLocator extends SFSlpObjectLocator {
+    serviceType ("service:sf-reference:" ++ concreteType);
+}
+
 
