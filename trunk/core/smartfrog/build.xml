@@ -287,11 +287,13 @@ relevant JAR files into the javacc subdirectory
         -->
     <rmic includesfile="${rmitargets}"
       compiler="${rmic.compiler}"
+      stubversion="1.2"
       base="${build.classes.dir}">
       <classpath refid="smartfrog.class.path"/>
     </rmic>
     <rmic includesfile="${rmitargets}Examples"
       compiler="${rmic.compiler}"
+      stubversion="1.2"
         base="${build.classes.dir}">
       <classpath refid="smartfrog.class.path"/>
     </rmic>
