@@ -21,8 +21,8 @@ package org.cddlm.client.console;
 
 import org.cddlm.client.common.ServerBinding;
 
-import java.io.PrintWriter;
 import java.io.File;
+import java.io.PrintWriter;
 import java.rmi.RemoteException;
 
 /**
@@ -42,7 +42,6 @@ public class Deploy extends ConsoleOperation {
     public void execute() throws RemoteException {
 
     }
-
 
 
     /**
@@ -65,10 +64,11 @@ public class Deploy extends ConsoleOperation {
             operation = new ListApplications(server, pw);
             success = operation.doExecute();
         } catch (Throwable e) {
-            e.printStackTrace(System.err);
+            processThrowableInMain(e, pw);
             success = false;
         }
         pw.flush();
         return success;
     }
+
 }

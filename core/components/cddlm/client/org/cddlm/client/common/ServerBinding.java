@@ -42,6 +42,7 @@ public class ServerBinding implements Serializable {
     private String username;
     private String password;
     public static final String URL_COMMAND = "-url:";
+    public static final String URL_COMMAND2 = "-u:";
 
 
     public ServerBinding() {
@@ -130,7 +131,9 @@ public class ServerBinding implements Serializable {
     public static ServerBinding fromCommandLineElement(
             String commandLineElement)
             throws MalformedURLException {
-        if (commandLineElement.indexOf(URL_COMMAND) == 0) {
+        boolean isOption = commandLineElement.indexOf(URL_COMMAND) == 0;
+        isOption |= commandLineElement.indexOf(URL_COMMAND2) == 0;
+        if (isOption) {
             String urlBody = commandLineElement.substring(URL_COMMAND.length());
             if ("".equals(urlBody)) {
                 throw new MalformedURLException(
@@ -157,6 +160,8 @@ public class ServerBinding implements Serializable {
         for (int i = 0; i < commandLine.length; i++) {
             binding = fromCommandLineElement(commandLine[i]);
             if (binding != null) {
+                //mark that element as null
+                commandLine[i] = null;
                 break;
             }
         }
@@ -164,8 +169,12 @@ public class ServerBinding implements Serializable {
     }
 
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof ServerBinding)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof ServerBinding)) {
+            return false;
+        }
 
         final ServerBinding serverBinding = (ServerBinding) o;
 
@@ -174,7 +183,9 @@ public class ServerBinding implements Serializable {
                 serverBinding.password != null) {
             return false;
         }
-        if (!url.equals(serverBinding.url)) return false;
+        if (!url.equals(serverBinding.url)) {
+            return false;
+        }
         if (username != null ?
                 !username.equals(serverBinding.username) :
                 serverBinding.username != null) {
