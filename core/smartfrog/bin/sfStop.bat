@@ -10,6 +10,6 @@ echo ---------------------------------------------------
 echo sfStop is now obsolete and replaced by sfTerminate.
 echo Please use sfTerminate from next time.
 echo ---------------------------------------------------
-call "%SFHOME%\bin\sfTerminate %1 %2"
+call "%SFHOME%\bin\sfTerminate" %1 %2
 
 endlocal
