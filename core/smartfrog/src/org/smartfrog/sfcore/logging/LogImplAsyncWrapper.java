@@ -298,7 +298,7 @@ public class LogImplAsyncWrapper implements LogSF {
      * @param t log this cause
      */
     public void debug(Object message, Throwable t) {
-        queue(LogImpl.DEBUG_O,new Object[]{message,t});
+        queue(LogImpl.DEBUG_O_T,new Object[]{message,t});
     }
 
 
@@ -340,7 +340,7 @@ public class LogImplAsyncWrapper implements LogSF {
      * @param t log this cause
      */
     public void info(Object message, Throwable t) {
-        queue(LogImpl.INFO_O,new Object[]{message,t});
+        queue(LogImpl.INFO_O_T,new Object[]{message,t});
     }
 
 
@@ -382,7 +382,7 @@ public class LogImplAsyncWrapper implements LogSF {
      * @param t log this cause
      */
     public void warn(Object message, Throwable t) {
-        queue(LogImpl.WARN_O,new Object[]{message,t});
+        queue(LogImpl.WARN_O_T,new Object[]{message,t});
     }
 
 
@@ -424,7 +424,7 @@ public class LogImplAsyncWrapper implements LogSF {
      * @param t log this cause
      */
     public void error(Object message, Throwable t) {
-        queue(LogImpl.ERROR_O,new Object[]{message,t});
+        queue(LogImpl.ERROR_O_T,new Object[]{message,t});
     }
 
 
@@ -466,7 +466,7 @@ public class LogImplAsyncWrapper implements LogSF {
      * @param t log this cause
      */
     public void fatal(Object message, Throwable t) {
-        queue(LogImpl.FATAL_O,new Object[]{message,t});
+        queue(LogImpl.FATAL_O_T,new Object[]{message,t});
     }
 
 
