@@ -4,9 +4,9 @@
 \subsection{The Object/XML Impedance Mismatch}
 \label{objections:o-x}
 
-JAX-RPC attempts to turn an XML document into Java classes, using service
-specific mapping information. This is distinct from the kind of
-mapping performed by DOM implementations, in that the classes are
+JAX-RPC attempts to turn an XML document into Java classes, using
+service specific mapping information. This is distinct from the kind
+of mapping performed by DOM implementations, in that the classes are
 ``serialised'' from the XML tree, not merely created to represent it
 (it is a semantic rather than syntactic mapping). This
 serialisation/deserialisation is an essential part of JAX-RPC,
@@ -37,7 +37,6 @@ children and the conversion is complete. If only it were so
 straightforward. There is a fundamental difference between the type
 systems of XML (especially that of XML Schema) and that of Java, which
 makes any mapping both complex and brittle.
-
 
 \subsubsection{Binding XML Elements to Java Classes}
 \label{objections:o-x:xml-classes}
@@ -114,7 +113,7 @@ value in the enumeration.
 
 This appears a straightforward example of how O/X mapping should
 work. But what if the value of the one of the enumeration types is a
-reserved word?  Our API (from section \ref{intro:experiences} contains
+reserved word?  Our API (from section \ref{intro:experience} contains
 a lifecycle state machine like this:
 
 \begin{verbatim}
@@ -147,10 +146,10 @@ far end. One might hope that a {\tt java.util.Hashtable} could be
 translated into some structure that could be turned into a
 platform-specific equivalent at the far end. But surely a {\tt
 java.util.Calendar} object could be sent over the wire, as it
-apparently maps so well to the {\tt xsd:dateTime} type in XML Schema.
+apparently maps so well to the {\tt xsd:dateTime} type in XML Schema?
 
 We can certainly send such times. They are readable on the wire, and
-are mapped into whatever a remote endpoint has to represent
+are mapped into whatever a remote endpoint uses to represent
 time. Unfortunately, due to differences in expectations between Java
 and .NET date/time classes, we can not guarantee that the same time
 will be received at the far end. If both client and server are in the
@@ -171,40 +170,38 @@ letter) of SOAP's aim to be self-describing, however.}.
 \subsubsection{Serialising a Graph of Objects}
 \label{objections:o-x:graphs}
 
-XML is a hierarchical data structure, and can only describe trees or lists 
-or lists of data. Java classes almost invariably refer to other objects, often 
-creating cyclic graphs of objects. If such a cyclic graph is to be mapped into XML,
-the mapping infrastructure must recognise the cycle, otherwise the mapping would
-hang in an endless loop. Once the cycle is recognised, it must be addressed. The
-options appear to be
+XML is a hierarchical data structure, and can only describe trees or
+lists or lists of data. Java classes almost invariably refer to other
+objects, often creating cyclic graphs of objects. If such a cyclic
+graph is to be mapped into XML, the mapping infrastructure must
+recognise the cycle, otherwise the it would enter a non-terminating
+loop. Once the cycle is recognised, it must be addressed. The options
+appear to be:
 \begin{enumerate}
-\item signal an error
-\item insert cross references into the XML message, for processing by the mapper
-at the destination.
-\item break the graph by duplicating content in the XML
-\item insert explicit relationship information into the message 
+\item Signal an error.
+\item Insert cross references into the XML message, for processing by
+the mapper at the destination. 
+\item Break the graph by duplicating content in the XML.
+\item Insert explicit relationship information into the message.
 \end{enumerate}
 
-The only one of these solutions which seamlessly marshals cyclic graphs of
-objects is option two: cross references in the XML. The SOAP solution for this
-is SOAP Section 5 encoding, as documented in \cite{spec:SOAP1.1}. This linking
-mechanism is only supported in rpc/encoded messages; the
-document/literal message format does not support it. 
+The only one of these solutions which seamlessly marshals cyclic
+graphs of objects is the second: inserting cross references into the
+XML. The SOAP solution for this is SOAP Section 5 encoding, as
+documented in \cite{spec:SOAP1.1}. This linking mechanism is only
+supported in RPC/encoded messages; the document/literal message format
+does not allow it.
 
-JAX-RPC was originally written for rpc/encoded, but the alternate
-representation, document/literal, is broadly perceived as a better
-representation for other reasons, specifically its superior flexibility. There
-is no way to marshal a cyclic graph into a ``doc/lit'' message without custom
-code. 
-
-This problem is covered in detail in ``Effective Enterprise Java'' 
-\cite{neward:EEJ}, where it is termed \emph{the object-hierarchical impedance
-mismatch}. It is not a specific flaw with JAX-RPC per-se, as any technology that
-attempts to map between XML to a cyclic object graph suffers from the same
-problem.  
-
-
-
+JAX-RPC was originally written for RPC/encoded messages, but the
+alternate representation, document/literal, is broadly perceived as a
+better for other reasons (specifically its superior flexibility.)
+There is no way to marshal a cyclic graph into a document/literal
+message without custom code. This problem is covered in detail in
+``Effective Enterprise Java'' \cite{neward:EEJ}, where it is termed
+\emph{the object-hierarchical impedance mismatch}. It is not a
+specific flaw with JAX-RPC per-se, as any technology that attempts to
+map between XML to a cyclic object graph suffers from the same
+problem.
 
 \subsubsection{XML Metadata and Namespaces}
 \label{objections:o-x:namespaces}
@@ -240,12 +237,12 @@ the WSDL is not a complete description of the service interface).
 
 When a message is received, the serialised form is generated and
 passed to the handlers for processing. No validation of the incoming
-XML against the message schema is performed. In particular, any
+XML against the message schema is performed, and in particular any
 restrictions on the number of times an item is required are not
-checked.
-
-This forces the implementation code to follow one of two paths:
+checked. This forces the implementation code to follow one of two
+paths:
 \begin{enumerate}
+
 \item It could ignore the problem. If the client code and functional
 tests do not generate invalid messages (as is likely if they are also
 all written in JAX-RPC) then the problem will not be noticed, only
@@ -257,11 +254,12 @@ structure that matches their expectation based on the schema. This
 requires an understanding of the schema, knowledge of the
 serialisation mapping and potential trouble spots, the willingness to
 write the tests to validate this extra logic, and most of all, time.
+
 \end{enumerate}
 
 We suspect that most services err on the side of ignorance, and do not
 validate their incoming messages adequately. This brings into question
-their ability to interoperate with general clients.
+their ability to interoperate widely.
 
 \subsubsection{Inadequate Mixing of XML and Serialised Data}
 \label{objections:o-x:mixing}
@@ -316,12 +314,13 @@ another capability of SOAP's which JAX-RPC fails to deliver upon.
 \subsection{SOAP is not just RPC}
 \label{objections:soap-not-just-rmi}
 
-SOAP's parentage includes XML-RPC \cite{winer:xmlrpc} and indirectly COM/DCOM
-and CORBA \cite{dbox:com, vinoski:CORBA}. It was clearly designed at its outset
-to be a form of remote procedure call in XML, over HTTP. Over time, the
-world-view that lead to that choice has changed. Though it is often presented as
-a form of RPC, it is coming to be seen that it is more powerful when viewed as a
-system where arbitrary XML documents are exchanged between parties, potentially
+SOAP's parentage includes XML-RPC \cite{winer:xmlrpc} and (indirectly)
+COM/DCOM and CORBA \cite{dbox:com, vinoski:CORBA}. It was clearly
+designed at its outset to be a form of remote procedure call in XML,
+over HTTP. Over time, the world-view that lead to that choice has
+changed. Though it is often presented as a form of RPC, it is coming
+to be seen that it is more powerful when viewed as a system where
+arbitrary XML documents are exchanged between parties, potentially
 asynchronously, and potentially via intermediaries.
 
 In this world, the programming paradigms that seemed appropriate for
@@ -332,31 +331,30 @@ communication can be modelled in a few lines of code, rather than a state
 machine, and the synchronous nature of the communication makes it easier to
 to build a model of the state of the remote system.  
 
-When we begin to work over long-haul connections, however, or with large
-content (e.g.\ fifteen megabyte attachments), the limitations of RPC
-become clear.
-
-The greatest of these is that RPC is synchronous. Although
-asynchronous behaviours can, with some difficulty, be introduced, this
-is not the natural way for RPC to behave. As content becomes larger
-and the network latency increases, the problems posed by synchronous
-calls become much more acute. 
+When we begin to work over long-haul connections, however, or with
+large content (e.g.\ fifteen megabyte attachments), the limitations of
+RPC become clear. The greatest of these is that RPC is
+synchronous. Although asynchronous behaviours can, with some
+difficulty, be introduced, this is not the natural way for RPC to
+behave. As content becomes larger and the network latency increases,
+the problems posed by synchronous calls become much more acute.
 
 Currently, our only option is to split network communication into a
 separate thread from the rest of the program. While this works, it
 provides the programmer no way to give the user effective feedback or
 control over the communications. There is no way to receive progress
 notifications or cancel an active call, even though the underlying
-transport code invariably permits such features. This has caused problems when
-one of the authors wrote a GUI front end to a service that could accept 15-30MB
-CAD files: while multithreading could keep the UI responsive, there was no way
-to present an upload progress indicator or offer a cancel button. These are both
-features one expects in a Web Browser, and which one would expect in a Web
-Service client.
+transport code invariably permits such features. This has caused
+problems when one of the authors wrote a GUI front end to a service
+that could accept 15-30MB CAD files: while multithreading could keep
+the UI responsive, there was no way to present an upload progress
+indicator or offer a cancel button. These are both features one
+expects in a web browser, and which one would expect in a web service
+client.
 
-Again, following our principle that SOAP technologies should
-attempt to work to the same goals as SOAP itself, we note that SOAP
-was designed to work over long haul connections (and be simple). By
+Again, following our principle that SOAP technologies should uphold
+the same desiderata as SOAP itself, we note that one reason SOAP was
+adopted was to make working over long haul connections simpler. By
 making it both difficult and complicated to work over a long
 connection, JAX-RPC fails to meet these criteria for a SOAP
 technology.

@@ -53,19 +53,20 @@ extracting them from {\tt SoapMessageElement} implementations.
 % faster and more reliable than the open source version.
 
 \subsection{The Future}
-\label{objections:implications:future}
+\label{implications:future}
 
-JAX-RPC has become a cornerstone of Enterprise Java \cite{spec:J2EE-14},
-alongside RMI and RMI-over-CORBA. That is not by itself a bad thing, but we
-believe that it creates the misconception that developers can trivially migrate
-from RMI to Web Services. If they attempt to do, they will fall into the traps
-that JAX-RPC creates for them.
+JAX-RPC has become a cornerstone of Enterprise Java
+\cite{spec:J2EE-14}, alongside RMI and RMI-over-CORBA. That is not by
+itself a bad thing, but we believe that it creates the misconception
+that developers can trivially migrate from RMI to web services. If
+they attempt to do, they will fall into the traps that JAX-RPC creates
+for them.
 
 The forthcoming 2.0 release of the JAX-RPC specification promises to
 correct some of these flaws, but does it correct enough? An alternate
-O/X mapping is used: JAX-B\footnote{Java Architecture for XML
-Binding}, which is independent of the SOAP Stack, but still represents
-a compile-time declaration of what XML is to be expected. The 2.0
+O/X mapping, JAX-B\footnote{Java Architecture for XML Binding}, is
+used which is independent of the SOAP stack, but still represents a
+compile-time declaration of what XML is to be expected. The 2.0
 release also retains the core metaphor of service invocation as method
 invocation, with the payload of most invocations being Java objects
 that are somehow mapped to XML content. The automated generation of
