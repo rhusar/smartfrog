@@ -22,18 +22,29 @@ package org.smartfrog.test;
 import junit.framework.TestCase;
 
 import java.io.File;
+import java.io.InputStream;
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.util.Vector;
 import java.net.UnknownHostException;
+import java.net.MalformedURLException;
 
 import org.smartfrog.SFSystem;
+import org.smartfrog.SFParse;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.ConfigurationDescriptor;
+import org.smartfrog.sfcore.common.MessageUtil;
+import org.smartfrog.sfcore.common.SmartFrogParseException;
+import org.smartfrog.sfcore.common.MessageKeys;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.sfcore.processcompound.SFProcess;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.security.SFGeneralSecurityException;
+import org.smartfrog.sfcore.security.SFClassLoader;
+import org.smartfrog.sfcore.parser.Phases;
+import org.smartfrog.sfcore.parser.SFParser;
 
 /**
  * A base class for smartfrog tests
@@ -269,4 +280,57 @@ public abstract class SmartfrogTestBase extends TestCase {
             log.log(Level.SEVERE,"nested fault in "+throwable,cause);
         }
     }
+
+    /**
+     * parse a file.
+     * @param filename the name of a file, relative to the classes.dir passed in
+     * to the test JVM.
+     * @throws SmartFrogException
+     */
+    protected Phases parseLocalFile(String filename) throws SmartFrogException {
+        File file=getRelativeFile(filename);
+        return parse(file);
+    }
+
+    /**
+     * parse a smartfrog file; throw an exception if something went wrong
+     * @param file
+     * @throws SmartFrogException
+     */
+    protected Phases parse(File file) throws SmartFrogException {
+        String fileUrl;
+        try {
+            fileUrl = file.toURL().toString();
+        } catch (MalformedURLException e) {
+            String msg = MessageUtil.
+                    formatMessage(MessageKeys.MSG_URL_TO_PARSE_NOT_FOUND,
+                            file.toString());
+            throw new SmartFrogParseException(msg);
+        }
+
+
+        Phases phases=null;
+        InputStream is=null;
+        try {
+            is = SFClassLoader.getResourceAsStream(fileUrl);
+            if (is == null) {
+                String msg = MessageUtil.
+                        formatMessage(MessageKeys.MSG_URL_TO_PARSE_NOT_FOUND, fileUrl);
+                throw new SmartFrogParseException(msg);
+            }
+            phases = (new SFParser("sf")).sfParse(is);
+        } finally {
+            if (is != null) {
+                try {
+                    is.close();
+                } catch (IOException swallowed) {
+
+                }
+            }
+        }
+        return phases;
+
+    }
+
+
 }

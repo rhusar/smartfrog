@@ -91,6 +91,7 @@ For more information: www.smartfrog.org
       <pathelement location="${test.classes.dir}"/>
     </path>
 
+    <property name="test.smartfrog.classesdir" location="${test.classes.dir}"/>
   </target>
 
 
