@@ -49,6 +49,7 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.Properties;
 import java.util.Vector;
+import org.smartfrog.sfcore.common.*;
 
 
 /**
@@ -442,11 +443,6 @@ public class SFSystem implements MessageKeys {
         // Deploy process Compound
         process = SFProcess.deployProcessCompound();
 
-        // Add boot time
-        try {
-            process.sfAddAttribute(SmartFrogCoreKeys.SF_BOOT_DATE, new Date(System.currentTimeMillis()));
-        } catch (RemoteException swallowed) {
-        }
         return process;
     }
 
