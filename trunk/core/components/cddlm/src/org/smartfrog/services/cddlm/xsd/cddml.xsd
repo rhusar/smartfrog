@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- -->
+<xs:schema targetNamespace="urn:cddlm/xml/0.1" xmlns="urn:cddlm/xml/0.1" xmlns:wsa="http://schemas.xmlsoap.org/ws/2003/03/addressing"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  elementFormDefault="qualified" attributeFormDefault="unqualified">
+  <xs:import namespace="http://schemas.xmlsoap.org/ws/2003/03/addressing" schemaLocation="http://schemas.xmlsoap.org/ws/2003/03/addressing"/>
+  <xs:element name="assert" type="xs:QName"/>
+  <xs:element name="assertions">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="assert"/>
+      </xs:sequence>
+      <xs:attribute name="language" type="xs:QName" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="assign">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="to"/>
+        <xs:element ref="from"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="attribute">
+    <xs:annotation>
+      <xs:documentation>
+      An attribute must have a child element "name"
+      and may have a child element "value."
+      </xs:documentation>
+    </xs:annotation>
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="name" minOccurs="0" maxOccurs="1">
+
+        </xs:element>
+        <xs:element ref="type" minOccurs="0"/>
+        <xs:element ref="lifetime" minOccurs="0"/>
+        <xs:element ref="use" minOccurs="0"/>
+        <xs:element ref="value" minOccurs="0"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="attributeName" type="xs:QName"/>
+  <xs:element name="attributeSet">
+    <xs:complexType mixed="true">
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="attribute"/>
+      </xs:choice>
+      <xs:attribute name="name" type="xs:QName"/>
+      <xs:attribute name="extends" type="xs:QName" use="optional"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="cdl">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="import"/>
+        <xs:element ref="types"/>
+        <xs:element ref="configuration"/>
+        <xs:element ref="system"/>
+        <xs:element ref="services"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="component">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="configuration"/>
+        <xs:element ref="deployAfter"/>
+        <xs:element ref="startAfter"/>
+      </xs:sequence>
+      <xs:attribute name="name" type="xs:QName" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="configuration">
+    <xs:complexType mixed="true">
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element ref="import"/>
+        <xs:element ref="attributeSet"/>
+        <xs:element ref="dependencies"/>
+        <xs:element ref="assertions"/>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="dependencies">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="assign" maxOccurs="unbounded"/>
+      </xs:sequence>
+      <xs:attribute name="language" type="xs:QName" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="deployAfter" type="xs:QName"/>
+  <xs:element name="expression">
+    <xs:complexType/>
+  </xs:element>
+  <xs:element name="from">
+    <xs:complexType>
+      <xs:choice>
+        <xs:element ref="reference"/>
+        <xs:element ref="expression"/>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="import">
+    <xs:complexType/>
+  </xs:element>
+  <!--	<xs:simpleType name="lifetimeType" base=""></xs:simpleType> -->
+  <xs:element name="lifetime" type="xs:string" default="deployment">
+    <xs:annotation>
+      <xs:documentation>
+ A lifetime element specifies when a value of an attribute should be fixed.
+-deployment: the value is constant after deployed until un-deployed.
+-runtime: the value is constant after started until stopped
+-dynamic: the value may change anytime
+The default lifetime is "deployment"
+      </xs:documentation>
+    </xs:annotation>
+  </xs:element>
+  <xs:element name="name" type="xs:string"/>
+  <xs:element name="reference">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="attributeSet"/>
+        <xs:element ref="attributeName"/>
+      </xs:sequence>
+      <xs:attribute name="name" type="xs:QName" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="service">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="wsa:EndpointReference"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="services">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="service"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="startAfter" type="xs:QName"/>
+  <xs:element name="system">
+    <xs:complexType>
+      <xs:choice maxOccurs="unbounded">
+        <xs:element ref="component"/>
+        <xs:element ref="system"/>
+      </xs:choice>
+      <xs:attribute name="name" type="xs:QName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="to">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="reference"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="type">
+    <xs:simpleType>
+      <xs:restriction base="xs:QName">
+        <xs:enumeration value="xs:QName"/>
+        <xs:enumeration value="xs:integer"/>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+  <xs:element name="types">
+    <xs:complexType/>
+  </xs:element>
+  <xs:element name="use" type="xs:string"/>
+  <xs:element name="value">
+    <xs:simpleType>
+      <xs:restriction base="xs:string">
+        <xs:enumeration value="100"/>
+        <xs:enumeration value="xsd:any"/>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
+</xs:schema>
