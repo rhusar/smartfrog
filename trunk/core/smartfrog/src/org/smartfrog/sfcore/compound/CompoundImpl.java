@@ -628,15 +628,29 @@ public class CompoundImpl extends PrimImpl implements Compound {
      */
     public void sfPing(Object source) throws SmartFrogLivenessException,
                                                             RemoteException {
+	// check the timing of the parent pings
         super.sfPing(source);
 
+	// return if children not to be checked
         if ((source == null) || (sfLivenessDelay == 0)) {
             return;
         }
 
-        if ((sfLivenessSender != null) && source.equals(sfParent)) {
-            return;
-        }
+        if (sfLivenessSender == null) {
+	    // don't have my own liveness sender, so check if it is my parent
+	    if (!source.equals(sfParent)) {
+		return;
+	    }
+	} else {
+	    // have own checker - its my responsibility from here on, so return if not me
+	    if (!source.equals(sfLivenessSender)) {
+		return;
+	    }
+	}
+		
+
+	// the following, checking children, should only happen if source is own livenes sender or
+        // it is the parent checking and I don't have my own check
 
         for (Enumeration e = sfChildren(); e.hasMoreElements();) {
             Object child = e.nextElement();

@@ -613,10 +613,14 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
         }
     }
 
-    public synchronized void sfPing(Object source)
+    public void sfPing(Object source)
             throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
 
+	if (source == null) return;
+	if (!source.equals(sfLivenessSender)) return;
+
+	// only check for subprocess GC if checking self
         if (gcTimeout == -1) {
             try {
                 gcTimeout = ((Integer) sfResolveHere(SmartFrogCoreKeys.SF_SUBPROCESS_GC_TIMEOUT)).intValue();
