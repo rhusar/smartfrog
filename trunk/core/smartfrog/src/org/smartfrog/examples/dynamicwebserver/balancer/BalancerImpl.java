@@ -150,8 +150,8 @@ public class BalancerImpl extends PrimImpl implements Prim, Balancer, DataSource
         //
         // If any remote hosts were defined in hosts, add them to the list
         if (hosts != null) {
-            for (Enumeration enum = hosts.elements(); enum.hasMoreElements();) {
-                String hostname = (String) enum.nextElement();
+            for (Enumeration hostlist = hosts.elements(); hostlist.hasMoreElements();) {
+                String hostname = (String) hostlist.nextElement();
                 addServer(hostname, hostsPort);
             }
         }
