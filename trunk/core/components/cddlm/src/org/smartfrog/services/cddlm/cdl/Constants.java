@@ -26,13 +26,15 @@ package org.smartfrog.services.cddlm.cdl;
  * Time: 22:26:34
  */
 public class Constants {
+
+    private Constants() {
+    }
+
     public static final String WS_ADDRESSING_NAMESPACE = "http://schemas.xmlsoap.org/ws/2003/03/addressing";
     public static final String CDDLM_XSD_FILENAME = "cddlm.xsd";
     public static final String DEPLOY_API_SCHEMA_FILENAME = "deployAPIschema.xsd";
 
 
-    private Constants() {
-    }
 
     public static final String CDL_NAMESPACE = "http://gridforge.org/cddlm/xml/2004/07/30/";
 
@@ -52,4 +54,7 @@ public class Constants {
 
     public static final String OPTION_PROPERTIES = "http://gridforum.org/cddlm/serviceAPI/options/propertyMap/2004/07/30";
 
+    public static final String SMARTFROG_ELEMENT_NAME = "smartfrog";
+
+    public static final String SMARTFROG_ELEMENT_VERSION_ATTR = "version";
 }

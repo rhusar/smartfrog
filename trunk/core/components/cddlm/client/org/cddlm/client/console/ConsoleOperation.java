@@ -21,7 +21,10 @@ package org.cddlm.client.console;
 
 import org.apache.axis.types.NCName;
 import org.apache.axis.types.URI;
+import org.apache.axis.message.MessageElement;
+import org.apache.axis.message.Text;
 import org.cddlm.client.common.ServerBinding;
+import org.cddlm.client.common.Constants;
 import org.cddlm.client.generated.api.endpoint.CddlmSoapBindingStub;
 import org.cddlm.client.generated.api.types.ApplicationReferenceListType;
 import org.cddlm.client.generated.api.types.ApplicationStatusType;
@@ -36,10 +39,13 @@ import org.cddlm.client.generated.api.types._deployRequest;
 import org.cddlm.client.generated.api.types._deployResponse;
 import org.cddlm.client.generated.api.types._deploymentDescriptorType_data;
 import org.cddlm.client.generated.api.types._serverStatusRequest;
+import org.cddlm.client.generated.api.types._lookupApplicationRequest;
 
+import javax.xml.soap.SOAPException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.rmi.RemoteException;
 
 /**
@@ -63,6 +69,7 @@ public abstract class ConsoleOperation {
      * stub. this is only valid w
      */
     private CddlmSoapBindingStub stub;
+    public static final String SMARTFROG_VERSION = "1.0";
 
     /**
      * demand create our stub. retain it afterwards for reuse.
@@ -117,7 +124,6 @@ public abstract class ConsoleOperation {
     }
 
     /**
-     * TODO: parse command line looking for values
      *
      * @param args command line arguments; look for -url url
      * @return
@@ -151,16 +157,40 @@ public abstract class ConsoleOperation {
     /**
      * get the status of an application
      *
-     * @param app
+     * @param app application identifier
      * @return
      * @throws java.rmi.RemoteException
      */
-    ApplicationStatusType queryApplicationStatus(URI app)
+    ApplicationStatusType lookupApplicationStatus(URI app)
             throws RemoteException {
         _applicationStatusRequest request = new _applicationStatusRequest();
         request.setApplication(app);
         ApplicationStatusType status = getStub().applicationStatus(request);
         return status;
+    }
+
+    /**
+     * get the status of an application
+     *
+     * @param app application identifier
+     * @return
+     * @throws java.rmi.RemoteException
+     */
+    ApplicationStatusType lookupApplicationStatus(String app)
+            throws RemoteException {
+        return lookupApplicationStatus(lookupApplication(app));
+    }
+
+    /**
+     * get the status of an application
+     *
+     * @param app application identifier
+     * @return
+     * @throws java.rmi.RemoteException
+     */
+    ApplicationStatusType lookupApplicationStatus(NCName app)
+            throws RemoteException {
+        return lookupApplicationStatus(lookupApplication(app));
     }
 
     /**
@@ -201,18 +231,86 @@ public abstract class ConsoleOperation {
 
     }
 
-    public DeploymentDescriptorType createSmartFrogDescriptorFromStream(
-            InputStream in) {
+    /**
+     * wrap a string with a smartfrog deploy descriptor
+     * @param source
+     * @return
+     * @throws IOException
+     */
+    public DeploymentDescriptorType createSmartFrogDescriptor(
+            String source) throws IOException {
         DeploymentDescriptorType descriptor = new DeploymentDescriptorType();
         _deploymentDescriptorType_data data = new _deploymentDescriptorType_data();
-        //TODO: create a real descriptor
+        MessageElement element=new MessageElement(Constants.SMARTFROG_NAMESPACE,Constants.SMARTFROG_ELEMENT_NAME);
+        element.addAttribute(Constants.SMARTFROG_NAMESPACE, Constants.SMARTFROG_ELEMENT_VERSION_ATTR, SMARTFROG_VERSION);
+        Text text= new org.apache.axis.message.Text(source);
+        element.appendChild(text);
+        MessageElement any[]=new MessageElement[1];
+        any[0]=element;
+        data.set_any(any);
+        descriptor.setData(data);
         return descriptor;
     }
 
 
+    /**
+     * wrap a string with a smartfrog deploy descriptor
+     *
+     * @param in input stream
+     * @return a deployment descriptor for smartfrog
+     * @throws IOException
+     */
+    public DeploymentDescriptorType createSmartFrogDescriptor(InputStream in) throws IOException {
+        String source=readIntoString(in);
+        return createSmartFrogDescriptor(source);
+    }
+
+    /**
+     * helper to read into a string
+     * @param in
+     * @return
+     * @throws IOException
+     */
+    public static String readIntoString(InputStream in) throws IOException {
+        InputStreamReader reader = new InputStreamReader(in);
+        StringBuffer buffer = new StringBuffer();
+        char[] block = new char[1024];
+        int read;
+        while ( ((read = reader.read(block)) >= 0) ) {
+            buffer.append(block);
+        }
+        return buffer.toString();
+    }
+
+    /**
+     * turn a string into an NC name
+     * @param name
+     * @return
+     */
     public NCName makeName(String name) {
         return new NCName(name);
     }
+
+    /**
+     * look up an application against the server
+     * @param ncname name of app
+     * @return URI of the app
+     */
+    public URI lookupApplication(NCName ncname) throws RemoteException {
+        _lookupApplicationRequest request=new _lookupApplicationRequest(ncname);
+        return getStub().lookupApplication(request);
+    }
+
+    /**
+     * look up an application against the server
+     *
+     * @param name name of app
+     * @return URI of the app
+     */
+    public URI lookupApplication(String name) throws RemoteException {
+        return lookupApplication(makeName(name));
+    }
+
 
     /**
      * exit, use success flag to choose the return time. This method does not

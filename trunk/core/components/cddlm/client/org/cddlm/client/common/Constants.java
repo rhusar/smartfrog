@@ -24,6 +24,7 @@ package org.cddlm.client.common;
  */
 
 public class Constants {
+
     private Constants() {
     }
 
@@ -35,6 +36,7 @@ public class Constants {
 
 
     public static final String DEFAULT_PROTOCOL = "http";
+
 
     //======================================================
     //the set below are ripped from the org.smartfrog.services.cddlm.cdl.Constants class
@@ -63,6 +65,10 @@ public class Constants {
     public static final String OPTION_VALIDATE_ONLY = "http://gridforum.org/cddlm/serviceAPI/options/validateOnly/2004/07/30";
 
     public static final String OPTION_PROPERTIES = "http://gridforum.org/cddlm/serviceAPI/options/propertyMap/2004/07/30";
+
+    public static final String SMARTFROG_ELEMENT_NAME = "smartfrog";
+
+    public static final String SMARTFROG_ELEMENT_VERSION_ATTR = "version";
 
     //======================================================
 

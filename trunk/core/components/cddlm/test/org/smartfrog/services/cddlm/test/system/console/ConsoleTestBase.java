@@ -143,6 +143,7 @@ public abstract class ConsoleTestBase extends TestCase {
     }
 
     protected static void assertInText(String source, String search) {
+        assertNotNull("empty source",source);
         assertTrue("not found [" + search + "] in " + source,
                 source.indexOf(search) >= 0);
     }
