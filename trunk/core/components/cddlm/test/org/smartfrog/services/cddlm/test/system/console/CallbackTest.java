@@ -23,10 +23,9 @@ import org.apache.axis.AxisFault;
 import org.apache.axis.types.URI;
 import org.smartfrog.services.cddlm.api.CallbackProcessor;
 import org.smartfrog.services.cddlm.api.Processor;
+import org.smartfrog.services.cddlm.api.CallbackInfo;
 import org.smartfrog.services.cddlm.generated.api.DeployApiConstants;
 import org.smartfrog.services.cddlm.generated.api.types.DeploymentDescriptorType;
-import org.smartfrog.services.cddlm.generated.api.types.NotificationAddressType;
-import org.smartfrog.services.cddlm.generated.api.types.NotificationEnum;
 import org.smartfrog.services.cddlm.generated.api.types.NotificationInformationType;
 import org.smartfrog.services.cddlm.generated.api.types._setNotificationRequest;
 
@@ -88,7 +87,7 @@ public class CallbackTest extends DeployingTestBase {
         } catch (AxisFault e) {
             assertFaultMatches(e,
                     DeployApiConstants.FAULT_BAD_ARGUMENT,
-                    CallbackProcessor.ERROR_NO_ADDRESS);
+                    CallbackInfo.ERROR_NO_ADDRESS);
         }
     }
 
@@ -96,17 +95,14 @@ public class CallbackTest extends DeployingTestBase {
         try {
             NotificationInformationType callbackInfo = new NotificationInformationType();
             callbackInfo.setType(null);
-            callbackInfo.setAddress(
-                    new NotificationAddressType(application, null));
-            _setNotificationRequest request = new _setNotificationRequest(
-                    application,
+            _setNotificationRequest request = new _setNotificationRequest(application,
                     callbackInfo);
             operation.setNotification(request);
 
         } catch (AxisFault e) {
             assertFaultMatches(e,
                     DeployApiConstants.FAULT_BAD_ARGUMENT,
-                    CallbackProcessor.ERROR_NO_CALLBACK_TYPE);
+                    CallbackInfo.ERROR_NO_CALLBACK_TYPE);
         }
     }
 
@@ -120,12 +116,8 @@ public class CallbackTest extends DeployingTestBase {
     public void testUnsupportedType() throws Exception {
         try {
             NotificationInformationType callbackInfo = new NotificationInformationType();
-            callbackInfo.setType(null);
-            callbackInfo.setType(NotificationEnum.fromString(
-                    DeployApiConstants.CALLBACK_WS_NOTIFICATION));
-
-            callbackInfo.setAddress(
-                    new NotificationAddressType(application, null));
+            callbackInfo.setType(
+                    DeployApiConstants.URI_CALLBACK_WS_NOTIFICATION);
             _setNotificationRequest request = new _setNotificationRequest(
                     application,
                     callbackInfo);

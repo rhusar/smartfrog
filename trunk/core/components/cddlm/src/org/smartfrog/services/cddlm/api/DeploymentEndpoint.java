@@ -31,9 +31,9 @@ import org.smartfrog.services.cddlm.generated.api.types._applicationStatusReques
 import org.smartfrog.services.cddlm.generated.api.types._createRequest;
 import org.smartfrog.services.cddlm.generated.api.types._createResponse;
 import org.smartfrog.services.cddlm.generated.api.types._lookupApplicationRequest;
+import org.smartfrog.services.cddlm.generated.api.types._runRequest;
 import org.smartfrog.services.cddlm.generated.api.types._serverStatusRequest;
 import org.smartfrog.services.cddlm.generated.api.types._setNotificationRequest;
-import org.smartfrog.services.cddlm.generated.api.types._startRequest;
 import org.smartfrog.services.cddlm.generated.api.types._terminateRequest;
 
 import javax.xml.rpc.ServiceException;
@@ -74,13 +74,13 @@ public class DeploymentEndpoint extends SmartFrogHostedEndpoint
         }
     }
 
-    public boolean start(_startRequest request) throws RemoteException {
+    public boolean run(_runRequest request) throws RemoteException {
         try {
-            operations.info("entering start");
+            operations.info("entering run");
             StartProcessor processor = new StartProcessor(this);
-            return processor.start(request);
+            return processor.run(request);
         } finally {
-            operations.info("exiting start");
+            operations.info("exiting run");
         }
     }
 

@@ -26,7 +26,6 @@ import org.smartfrog.services.cddlm.api.Processor;
 import org.smartfrog.services.cddlm.cdl.ResourceLoader;
 import org.smartfrog.services.cddlm.generated.api.DeployApiConstants;
 import org.smartfrog.services.cddlm.generated.api.types.DeploymentDescriptorType;
-import org.smartfrog.services.cddlm.generated.api.types.NotificationEnum;
 import org.smartfrog.services.cddlm.generated.api.types.NotificationInformationType;
 import org.smartfrog.services.cddlm.generated.api.types.OptionMapType;
 import org.smartfrog.services.cddlm.generated.api.types.OptionType;
@@ -155,9 +154,7 @@ public class DeployTest extends DeployingTestBase {
      */
     public void testUnsupportedCallback() throws IOException {
         NotificationInformationType callback = new NotificationInformationType();
-        callback.setType(
-                NotificationEnum.fromValue(
-                        DeployApiConstants.CALLBACK_WS_EVENTING));
+        callback.setType(DeployApiConstants.URI_CALLBACK_WS_EVENTING);
         DeploymentDescriptorType dd = operation.createSmartFrogDescriptor(
                 DeploySmartFrogTest.SIMPLE_DESCRIPTOR);
         deployExpectingFault(null,

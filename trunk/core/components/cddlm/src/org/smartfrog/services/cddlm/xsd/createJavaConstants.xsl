@@ -8,6 +8,7 @@
 
 package org.smartfrog.services.cddlm.generated.api;
 import javax.xml.namespace.QName;
+import org.apache.axis.types.URI;
 /**
  This file defines SOAP error codes for axis.
  This is machine generated! Do Not Edit!
@@ -102,6 +103,23 @@ public class DeployApiConstants {
     public static final String
     <xsl:value-of select="@name"/> =
     &quot;<xsl:value-of select="@value"/>&quot;;
+
+    /**
+    <xsl:value-of select="err:description"/>
+    */
+    public static final URI URI_<xsl:value-of select="@name"/>;
+    //static initializer
+    static {
+        try {
+            URI_<xsl:value-of select="@name"/> =
+              new URI(&quot;<xsl:value-of select="@value"/>&quot;);
+        } catch (URI.MalformedURIException e) {
+            throw new RuntimeException("Cannot instantiate URI_<xsl:value-of select="@name"/>");
+        }
+    }
+
+
+
   </xsl:template>
   <xsl:template match="err:string">
 
