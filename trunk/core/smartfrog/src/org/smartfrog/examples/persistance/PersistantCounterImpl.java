@@ -81,8 +81,8 @@ public class PersistantCounterImpl extends CounterImpl implements Prim, Counter,
 	try {
 	    String name = sfCompleteNameSafe().toString();
 	    
-	    sfResolve("sfCheckpointDirectory", checkpointDir, false);
-	    sfResolve("sfCheckpointFileRoot", checkpointFileRoot, false);
+	    checkpointDir = sfResolve("sfCheckpointDirectory", checkpointDir, false);
+	    checkpointFileRoot = sfResolve("sfCheckpointFileRoot", checkpointFileRoot, false);
 	    
 	    checkpointFile = new File(checkpointDir, checkpointFileRoot + "." + name + ".chkpt");
 	    

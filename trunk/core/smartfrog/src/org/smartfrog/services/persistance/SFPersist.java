@@ -50,7 +50,7 @@ import org.smartfrog.sfcore.processcompound.ProcessCompound;
  * Implements the trace component in SmartFrog System. It traces the lifecycle
  * methods of the components.
  */
-public class SFPersist extends PrimImpl {
+public class SFPersist extends PrimImpl implements Prim {
 
     /** the firectory for persistng the contexts */
     private String directory = "/tmp";

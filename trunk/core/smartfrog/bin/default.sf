@@ -80,7 +80,7 @@ DefaultPersistantCompound extends DefaultCompound {
 
 sfConfig extends DefaultCompound;
 
-// Alternative default compound with tracing or/and log to file enabled.
+// Alternative default compound with persitance pattern enabled
 // Uncoment next line to use it.
 //sfConfig extends DefaultPersistantCompound;
 
