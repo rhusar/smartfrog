@@ -1,0 +1,26 @@
+<!-- Use this file to deploy some handlers/chains and services      -->
+<!-- Two ways to do this:                                           -->
+<!--   java org.apache.axis.client.AdminClient deploy.wsdd          -->
+<!--      after the axis server is running                          -->
+<!-- or                                                             -->
+<!--   java org.apache.axis.utils.Admin client|server deploy.wsdd   -->
+<!--      from the same directory that the Axis engine runs         -->
+
+<deployment
+    xmlns="http://xml.apache.org/axis/wsdd/"
+    xmlns:java="http://xml.apache.org/axis/wsdd/providers/java">
+
+  <!-- Services from zorro WSDL service -->
+
+  <service name="cddlm" style="wrapped" >
+      <parameter name="wsdlTargetNamespace" value="http://smartfrog.org/cddlm"/>
+      <parameter name="className" value="org.smartfrog.services.cddlm.DeploymentEndpoint"/>
+      <parameter name="allowedMethods" value="*"/>
+<!--
+      <parameter name="wsdlPortType" value="zorroPortType"/>
+      <parameter name="wsdlServiceElement" value="deployment"/>
+      <parameter name="wsdlServicePort" value="zorroPort"/>
+-->
+
+  </service>
+</deployment>
