@@ -106,7 +106,7 @@ public class SmartFrogLifecycleException extends SmartFrogRuntimeException imple
             Prim sfObject) {
         try {
             return (SmartFrogLifecycleException)SmartFrogLifecycleException.forward("sfDeploy: "+message, cause, sfObject);
-        } catch (Exception ex) {
+        } catch (Throwable ex) {
             return (SmartFrogLifecycleException)SmartFrogLifecycleException.forward("sfDeploy: "+message, cause);
         }
     }
@@ -124,7 +124,7 @@ public class SmartFrogLifecycleException extends SmartFrogRuntimeException imple
             Prim sfObject) {
         try {
             return (SmartFrogLifecycleException)SmartFrogLifecycleException.forward("sfStart: "+message, cause, sfObject);
-        } catch (Exception ex) {
+        } catch (Throwable ex) {
             return (SmartFrogLifecycleException)SmartFrogLifecycleException.forward("sfStart: "+message, cause);
         }
     }

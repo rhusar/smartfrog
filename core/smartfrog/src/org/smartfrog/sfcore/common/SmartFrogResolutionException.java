@@ -297,9 +297,9 @@ public class SmartFrogResolutionException extends SmartFrogRuntimeException
         Reference source,Object resolvedValue, String referenceValueType, String defaultValueType) {
         SmartFrogResolutionException srex = new SmartFrogResolutionException (ref, source,
                 MessageUtil.formatMessage(MSG_ILLEGAL_CLASS_TYPE));
-                srex.put(REFERENCE_OBJECT_RESOLVED,resolvedValue.toString());
-                srex.put(REFERENCE_OBJECT_CLASS_TYPE,referenceValueType);
-                srex.put(DEFAULT_OBJECT_CLASS_TYPE,defaultValueType);
+        srex.put(REFERENCE_OBJECT_RESOLVED,resolvedValue.toString());
+        srex.put(REFERENCE_OBJECT_CLASS_TYPE,referenceValueType);
+        srex.put(DEFAULT_OBJECT_CLASS_TYPE,defaultValueType);
         return srex;
     }
 
@@ -420,8 +420,8 @@ public class SmartFrogResolutionException extends SmartFrogRuntimeException
                     (nm+PRIM_CONTEXT+  ": " + "included") : "" ));
         strb.append((((this.containsKey(DATA))) ?
                     (nm+DATA+  ": " + get(DATA)) : ""));
-        } catch (Exception ex) {
-            ex.printStackTrace();
+      } catch (Throwable thr) {
+            thr.printStackTrace();
             //ignore
       }
       return strb.toString();
