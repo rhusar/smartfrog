@@ -70,8 +70,7 @@ public class DeployEntry implements Entry {
 
             //System.out.println("Entry created with "+this.toString());
         } catch (Exception ex) {
-            System.out.println(ex.toString());
-
+            System.out.println("sfManagementConsole (DeployEntry1): "+ex.toString());
             //ex.printStackTrace();
         }
     }
@@ -85,7 +84,7 @@ public class DeployEntry implements Entry {
 
             //System.out.println("Model created");
         } catch (Exception ex) {
-            System.out.println(ex.toString());
+            System.out.println("sfManagementConsole (DeployEntry2): "+ex.toString());
 
             //ex.printStackTrace();
         }
@@ -102,7 +101,7 @@ public class DeployEntry implements Entry {
 
             //System.out.println("Model created");
         } catch (Exception ex) {
-            System.out.println(ex.toString());
+            System.out.println("sfManagementConsole (DeployEntry3): "+ex.toString());
 
             //ex.printStackTrace();
         }
@@ -206,8 +205,12 @@ public class DeployEntry implements Entry {
         } else if (entry instanceof Prim) {
             try {
                 name = ((Prim) entry).sfCompleteName().toString();
+            } catch (java.rmi.NoSuchObjectException nex){
+                //Ignore. component has terminated and RMI object has been
+                //unexported
+                //@TODO: Log
             } catch (Exception ex) {
-                System.out.println(""+ex.getMessage());
+                System.out.println("sfManagementConsole (DeployEntry4): "+ex.getMessage());
                 //@TODO Log
             }
         }
@@ -336,6 +339,10 @@ public class DeployEntry implements Entry {
             }
 
             return data;
+        } catch (java.rmi.NoSuchObjectException nso){
+            //Ignore: tipically component terminated and unexported from rmi
+            //@TODO: log
+            return empty;
         } catch (Exception ex) {
             System.out.println("Error DeployEntry.getAttributes()" +
                 ex.toString());

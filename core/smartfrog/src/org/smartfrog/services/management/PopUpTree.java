@@ -206,7 +206,7 @@ public class PopUpTree extends JComponent implements ActionListener {
                      Enumeration enu = null;
                      StringBuffer childrenInfo = new StringBuffer();
                      try {
-                         childrenInfo.append("\n\n* Children: \n");
+                         childrenInfo.append("\n\n* sfChildren: \n");
                          for (enu = ((Compound)objPrim).sfChildren();
                               enu.hasMoreElements(); ) {
                              try {
