@@ -9,6 +9,7 @@ import java.util.Date;
 
 /**
  *
+ *  Logs log info into a file.
  *
  */
 
@@ -19,7 +20,7 @@ public class LogToFile extends LogToErr {
     StringBuffer fullLogFileName = new StringBuffer();
 
     /** String name for path. */
-    String path="";
+    String path=".";//+File.separator+"log";
 
     String logFileExtension = "log";
 
@@ -27,7 +28,7 @@ public class LogToFile extends LogToErr {
     boolean datedName = true;
 
     /** Redirect system.out and system.err */
-    boolean redirectSystemOutputs = true;
+    boolean redirectSystemOutputs = false;
 
 
 
@@ -39,7 +40,7 @@ public class LogToFile extends LogToErr {
      * @param intialLogLevel level to log at
      */
     public LogToFile(String name, int initialLogLevel) {
-        //super();
+        super();
         assert name != null;
         assert initialLogLevel >= 0;
         logName = name;
@@ -78,17 +79,17 @@ public class LogToFile extends LogToErr {
             path += File.separator;
         }
         fullLogFileName.append(path);
+
         fullLogFileName.append(logName.replace(':','_'));
 
         if (datedName){
             /** Used to format times in filename */
             DateFormat dateFileNameFormatter = null;
-            dateFileNameFormatter = new SimpleDateFormat("-yyyy_MM_dd-HH_mm_ss_SSSzzz");
+            dateFileNameFormatter = new SimpleDateFormat("_yyyyMMdd-HHmmss_SSSzzz");
             // add the extension
             fullLogFileName.append(dateFileNameFormatter.format(new Date()));
         }
         // add the extension
-
         return new File(fullLogFileName.toString()+"."+fileExtension);
     }
 
