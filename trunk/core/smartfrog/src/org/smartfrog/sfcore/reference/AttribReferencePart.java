@@ -58,7 +58,7 @@ public class AttribReferencePart extends HereReferencePart {
      * @return stringified reference part
      */
     public String toString() {
-        return ATTRIB + ' ' + super.toString();
+        return ATTRIB + ' ' + value.toString();
     }
 
     /**

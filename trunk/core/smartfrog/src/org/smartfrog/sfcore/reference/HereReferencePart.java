@@ -29,6 +29,9 @@ import org.smartfrog.sfcore.common.SmartFrogResolutionException;
  *
  */
 public class HereReferencePart extends ReferencePart {
+    /** Base string representation of this part (HERE). */
+    public static final String HERE = "HERE";
+
     /** Value for here part. */
     public Object value = null;
 
@@ -62,7 +65,7 @@ public class HereReferencePart extends ReferencePart {
             return "";
         }
 
-        return value.toString();
+        return HERE + " " + value.toString();
     }
 
     /**
@@ -113,7 +116,7 @@ public class HereReferencePart extends ReferencePart {
             result = rr.sfResolve((Reference) result, 0);
         }
 
-        // If the end we're theyre!
+        // If the end we are there!
         if (index == (r.size() - 1)) {
             return result;
         }
@@ -149,7 +152,7 @@ public class HereReferencePart extends ReferencePart {
                 result = rr.sfResolve((Reference) result, 0);
             }
 
-            // If the end we're theyre!
+            // If the end we are there!
             if (index == (r.size() - 1)) {
                 return result;
             }
