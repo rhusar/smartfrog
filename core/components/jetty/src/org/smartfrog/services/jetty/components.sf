@@ -88,19 +88,12 @@ JettyServletContext extends Compound {
  * and a a path to its home directory
  */
 JettyWebApplicationSchema extends Schema {
-    //where to deploy under the server
-    contextPath extends String;
 
     //webapp is a name of an app or a directory
     webApp extends OptionalString;
-    //warFile can also refer to a file reference
-    warFile extends Optional;
-
-    //application server
-    //server extends String;
 }
 
-JettyWebApplication extends Prim {
+JettyWebApplication extends JavaWebApplication {
   jettyWebApplicationSchema extends JettyWebApplicationSchema;
   sfClass "org.smartfrog.services.jetty.contexts.WebApplication";
 }

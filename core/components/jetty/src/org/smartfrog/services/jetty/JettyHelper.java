@@ -29,6 +29,7 @@ import org.smartfrog.sfcore.common.Logger;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.processcompound.SFProcess;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
+import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.services.jetty.contexts.ServletContextIntf;
 import org.mortbay.http.HttpServer;
 import org.mortbay.http.HttpHandler;
@@ -43,12 +44,8 @@ import java.rmi.RemoteException;
  * Date: 21-Jun-2004
  * Time: 22:02:20
  */
-public class JettyHelper {
+public class JettyHelper extends ComponentHelper {
 
-    /**
-     * who owns this class
-     */
-    private Prim owner;
 
     /**
      * the server
@@ -63,7 +60,7 @@ public class JettyHelper {
     private Prim serverComponent=null;
 
     public JettyHelper(Prim owner) {
-        this.owner = owner;
+        super(owner);
     }
 
     /**
@@ -88,9 +85,26 @@ public class JettyHelper {
         return server;
     }
 
+    /**
+     * look for the jetty component by
+     * -looking for a server component that implements it 
+     * -probing for a parent
+     * @throws SmartFrogResolutionException
+     * @throws RemoteException
+     */
     private void findJettyComponent() throws SmartFrogResolutionException, RemoteException {
+
         if(serverComponent == null) {
-            serverComponent=owner.sfResolve(JettyIntf.SERVER, serverComponent, true);
+            //look for an attribute first
+            serverComponent = getOwner().sfResolve(JettyIntf.SERVER, serverComponent, false);
+            if(serverComponent==null) {
+                serverComponent=findAncestorImplementing("org.smartfrog.services.jetty.JettyIntf",
+                    -1);
+                if ( serverComponent == null ) {
+                    throw new SmartFrogResolutionException("No Web Server found");
+                }
+            }
+
         }
     }
 
@@ -102,7 +116,7 @@ public class JettyHelper {
      */
     public void cacheJettyServer(HttpServer server)
             throws SmartFrogException, RemoteException {
-        owner.sfReplaceAttribute(JettyIntf.JETTY_SERVER, server);
+        getOwner().sfReplaceAttribute(JettyIntf.JETTY_SERVER, server);
 
     }
 
@@ -127,7 +141,7 @@ public class JettyHelper {
      * @throws RemoteException
      */
     public void cacheJettyHome(String jettyhome) throws SmartFrogRuntimeException, RemoteException {
-        owner.sfReplaceAttribute(JettyIntf.JETTY_HOME, jettyhome);
+        getOwner().sfReplaceAttribute(JettyIntf.JETTY_HOME, jettyhome);
     }
 
     /**
@@ -157,51 +171,7 @@ public class JettyHelper {
         return context;
     }
 
-    /**
-     * find an ancestor of a given type
-     * @param node
-     * @param interfaceName
-     * @param depth: 0 means dont look, -1 means indefinite.
-     * @return
-     * @throws RemoteException
-     */
-    private Prim findAncestorImplementing(Prim node, String interfaceName, int depth) throws RemoteException {
-        if (depth == 0 || node == null) {
-            return null;
-        }
-        Prim parent = node.sfParent();
-        Class[] interfaces = parent.getClass().getInterfaces();
-        for (int i = 0; i < interfaces.length; i++) {
-            if (interfaces[i].equals(interfaceName)) {
-                return (SFJetty) parent;
-            }
-        }
-        return findAncestorImplementing(parent, interfaceName, depth - 1);
-    }
 
-    private Prim findAncestorImplementing(String interfaceName, int depth) throws RemoteException {
-        return findAncestorImplementing(owner, interfaceName, depth);
-    }
-
-
-    /**
-     * recursive search for interface inheritance
-     * @param clazz
-     * @param interfaceName
-     * @return
-     */
-    private boolean implementsInterface(Class clazz,String interfaceName ) {
-        if(clazz==null) {
-            return false;
-        }
-        Class[] interfaces = clazz.getInterfaces();
-        for (int i = 0; i < interfaces.length; i++) {
-            if (interfaces[i].equals(interfaceName)) {
-                return true;
-            }
-        }
-        return implementsInterface(clazz.getSuperclass(),interfaceName);
-    }
     /**
      * add a handler to the server
      * @param handler
