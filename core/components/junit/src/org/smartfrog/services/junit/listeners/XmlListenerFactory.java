@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2004 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -17,15 +17,38 @@
  For more information: www.smartfrog.org
 
  */
+
+
 package org.smartfrog.services.junit.listeners;
 
-import org.smartfrog.services.junit.TestListener;
+import org.smartfrog.services.junit.TestListenerFactory;
 
 /**
- * created 14-May-2004 15:41:25
+ * Date: 12-Jun-2004 Time: 00:16:06
  */
 
-public interface ConsoleListener extends TestListener {
+public interface XmlListenerFactory extends TestListenerFactory {
+
+    /**
+     * name of a directory for output
+     */
+    String OUTPUT_DIRECTORY = "outputDirectory";
+
+    /**
+     * flag to include hostname logic in file/dir choice
+     */
+    String USE_HOSTNAME = "useHostname";
+
+    //String OUTPUT_FILE="outputFile";
+
+    String PREAMBLE = "preamble";
+
+    /**
+     * get the filename of this
+     *
+     * @return
+     */
+    String getFilename();
 
 
 }

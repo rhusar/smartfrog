@@ -21,7 +21,7 @@ package org.smartfrog.services.junit.test;
 
 import org.smartfrog.services.junit.Statistics;
 import org.smartfrog.services.junit.TestRunner;
-import org.smartfrog.services.junit.listeners.XmlListener;
+import org.smartfrog.services.junit.listeners.XmlListenerFactory;
 import org.smartfrog.sfcore.prim.Prim;
 
 /**
@@ -45,10 +45,11 @@ public class DeployedXMLListenerTest extends TestRunnerTestBase {
             deploy = deployExpectingSuccess(url, appName);
             TestRunner runner = (TestRunner) deploy;
             assertTrue(runner != null);
-            XmlListener listener = null;
-            listener =
-                    (XmlListener) deploy.sfResolve(TestRunner.ATTR_LISTENER,
-                            listener,
+            XmlListenerFactory listenerFactory = null;
+            listenerFactory =
+                    (XmlListenerFactory) deploy.sfResolve(
+                            TestRunner.ATTR_LISTENER,
+                            listenerFactory,
                             true);
             boolean finished = spinTillFinished(runner, seconds);
             assertTrue("Test run timed out", finished);

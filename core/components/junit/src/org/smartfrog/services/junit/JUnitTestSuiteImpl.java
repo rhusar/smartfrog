@@ -229,14 +229,14 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
                     dest.add(i2.next());
                 }
             } else if (!(element instanceof String)) {
-                throw new SmartFrogInitException(
-                        "An element in "
+                throw new SmartFrogInitException("An element in "
                         +
                         name +
                         " is not string or a list: " +
                         element.toString());
+            } else {
+                dest.add(element);
             }
-            dest.add(element);
         }
         return dest;
     }
