@@ -1,0 +1,37 @@
+/**
+ * Include the core smartfrog components.
+ */
+
+#include "org/smartfrog/components.sf"
+
+/**
+ * Include the Counter component.
+ */
+
+#include "org/smartfrog/examples/counter/components.sf"
+
+/**
+ * Counter example 5 hierarchy of counters counting up to 2
+ * This component is a basic primitive component.
+ */
+
+
+c extends Counter{
+        limit 2;
+}
+
+sfConfig extends Compound {
+         counter1 extends c {
+                  counter1A extends c;
+                  counter1B extends c;
+         }
+         counter2 extends c {
+         }
+         counter3 extends c {
+                  counter3A extends c;
+                  counter3B extends c;
+                  counter3C extends c;
+         }
+};
+
+
