@@ -140,6 +140,13 @@ public class SLPAttrRplyMessage extends SLPMessageHeader {
         attributes = SLPUtil.parseAttributes(attributeStr);
     }
     
-    // TODO !
-    // FINISH IMPLEMENTATION...
+    /** Returns the error code */
+    public int getErrorCode() {
+        return errorCode;
+    }
+    
+    /** Returns the discovered attributes */
+    public Vector getAttributes() {
+        return attributes;
+    }
 }

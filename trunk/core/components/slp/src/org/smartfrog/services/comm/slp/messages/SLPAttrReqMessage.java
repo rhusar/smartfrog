@@ -85,17 +85,21 @@ public class SLPAttrReqMessage extends SLPMessageHeader {
         SPI = "";
     }
     
-    public SLPAttrReqMessage(String u, String tags, Vector s, Locale lang) {
+    public SLPAttrReqMessage(String u, Vector tags, Vector s, Locale lang) {
         super(SLPMSG_ATTRREQ, lang);
         PRList = "";
         url = u;
-        tagList = tags;
+        this.tags = tags;
         scopes = s;
         SPI = "";
         
         // create scope string...
         scopeStr = scopes.toString();
         scopeStr = scopeStr.substring(1, scopeStr.length()-1);
+        
+        // create taglist string
+        tagList = tags.toString();
+        tagList = tagList.substring(1, tagList.length()-1);
         
         // calculate length...
         length += 5; // length fields

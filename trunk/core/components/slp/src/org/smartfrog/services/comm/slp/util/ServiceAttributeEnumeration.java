@@ -27,20 +27,20 @@
 package org.smartfrog.services.comm.slp.util;
 
 import org.smartfrog.services.comm.slp.ServiceLocationEnumeration;
-import org.smartfrog.services.comm.slp.ServiceType;
+import org.smartfrog.services.comm.slp.ServiceLocationAttribute;
 
 import java.util.*;
 
-public class ServiceTypeEnumeration implements ServiceLocationEnumeration {
+public class ServiceAttributeEnumeration implements ServiceLocationEnumeration {
     private Vector elements;
     private int currentElement;
     
-    public ServiceTypeEnumeration() {
+    public ServiceAttributeEnumeration() {
         elements = new Vector();
         currentElement = 0;
     }
     
-    public ServiceTypeEnumeration(Vector v) {
+    public ServiceAttributeEnumeration(Vector v) {
         elements = v;
         currentElement = 0;
     }
@@ -68,12 +68,28 @@ public class ServiceTypeEnumeration implements ServiceLocationEnumeration {
      @param v A vector with the elements to add
      */
     public void addElements(Vector v) {
-        for(Iterator iter=v.iterator(); iter.hasNext(); ) {
-            Object o = iter.next();
-            if(!elements.contains(o)) {
-                elements.add(o);
+        for(Iterator it=v.iterator(); it.hasNext(); ) {
+            ServiceLocationAttribute a = (ServiceLocationAttribute)it.next();
+            ServiceLocationAttribute b = findAttribute(a.getId());
+            if(b != null) {
+                // merge value vectors.
+                Vector newValues = SLPUtil.mergeVectors(a.getValues(), b.getValues());
+                b.setValues(newValues);
+            }
+            else {
+                elements.add(a);
             }
         }
+    }
+ 
+    private ServiceLocationAttribute findAttribute(String id) {
+        for(Iterator it=elements.iterator(); it.hasNext(); ) {
+            ServiceLocationAttribute a = (ServiceLocationAttribute)it.next();
+            if(a.getId().equalsIgnoreCase(id)) {
+                return a;
+            }
+        }
+        return null;
     }
 }
 

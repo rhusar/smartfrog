@@ -178,8 +178,8 @@ public class UserAgent extends SLPAgent implements Locator, SlpUdpCallback {
                                                      Vector scopes,
                                                      Vector attrIds)
     throws ServiceLocationException {
-        throw new ServiceLocationException(ServiceLocationException.NOT_IMPLEMENTED,
-                                           "UA: Method findAttributes is not implemented");
+        
+        return findAttributes(type.toString(), scopes, attrIds);
     }
     
      /**
@@ -191,8 +191,8 @@ public class UserAgent extends SLPAgent implements Locator, SlpUdpCallback {
                                                      Vector scopes,
                                                      Vector attrIds)
     throws ServiceLocationException {
-        throw new ServiceLocationException(ServiceLocationException.NOT_IMPLEMENTED,
-                                           "UA: Method findAttributes is not implemented");
+        
+        return findAttributes(url.toString(), scopes, attrIds);
     }   
     
     /**********************************************/
@@ -259,6 +259,35 @@ public class UserAgent extends SLPAgent implements Locator, SlpUdpCallback {
         
         if(CONFIG_LOG_MSG) {
             writeLog("Received Service Type Reply: \n" + msg.toString());
+        }
+        
+        return complete;
+    }
+    
+    /**
+        Reveiced attribute reply.
+    */
+    private boolean recvAttrReply(SLPAttrRplyMessage msg, SLPInputStream sis,
+                                  ServiceLocationEnumeration results) throws ServiceLocationException {
+                                      
+        // read message
+        msg.fromInputStream(sis);
+        
+        boolean complete = true;
+        if(results == null) {
+            throw new ServiceLocationException(ServiceLocationException.INTERNAL_SYSTEM_ERROR);
+        }
+        
+        if(msg.getErrorCode() == 0) {
+            ((ServiceAttributeEnumeration)results).addElements(msg.getAttributes());
+            
+            if( (msg.getFlags() & SLPMessageHeader.FLAG_OVERFLOW) != 0x0 ) {
+                complete = false;
+            }
+        }
+        
+        if(CONFIG_LOG_MSG) {
+            writeLog("Received Attribute Reply: \n" + msg.toString());
         }
         
         return complete;
@@ -351,6 +380,8 @@ public class UserAgent extends SLPAgent implements Locator, SlpUdpCallback {
                 //break;
             case SLPMessageHeader.SLPMSG_SRVTYPE:
                 return recvSrvTypeReply(new SLPSrvTypeRplyMessage(), sis, results);
+            case SLPMessageHeader.SLPMSG_ATTRRPLY:
+                return recvAttrReply(new SLPAttrRplyMessage(), sis, results);
             case SLPMessageHeader.SLPMSG_DAADV:
                 recvDAAdvert(sis);
                 break;
@@ -478,6 +509,29 @@ public class UserAgent extends SLPAgent implements Locator, SlpUdpCallback {
             throw new ServiceLocationException(ServiceLocationException.SCOPE_NOT_SUPPORTED,
                                                "UA: Requested scope is NOT supported");
         }
+    }
+    
+    public synchronized ServiceLocationEnumeration findAttributes(
+                                                                  String url,
+                                                                  Vector scopes,
+                                                                  Vector attrIds)
+    throws ServiceLocationException {
+        ServiceLocationEnumeration results = new ServiceAttributeEnumeration();
+        
+        // check that the UA supports the scopes given.
+        Vector scopesToUse = getSupportedScopes(scopes);
+        if(scopesToUse.isEmpty()) {
+            throw new ServiceLocationException(ServiceLocationException.SCOPE_NOT_SUPPORTED,
+                                               "UA: Requested scope is NOT supported");
+        }
+        
+        // create request...
+        SLPAttrReqMessage req = new SLPAttrReqMessage(url, attrIds, scopesToUse, locale);
+        
+        sendRequest(req, scopesToUse, results);
+        
+        // return the discovered service types
+        return results;
     }
     
     protected void writeLog(String message) {
