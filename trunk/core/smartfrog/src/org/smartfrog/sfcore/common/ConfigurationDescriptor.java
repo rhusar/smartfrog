@@ -201,7 +201,6 @@ public class ConfigurationDescriptor implements MessageKeys{
             message.append("'");
             message.append(getResultObjectName().toString());
             message.append("'");
-
           } else if (getName()!=null) {
               message.append("'");
               message.append(getName().toString());
