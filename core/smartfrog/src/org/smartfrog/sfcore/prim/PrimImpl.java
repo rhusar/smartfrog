@@ -171,6 +171,12 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
         Object result = null;
         try {
            result = sfContext.sfResolveAttribute(name);
+           try {
+               if (sfGetProcessLog().isTraceEnabled()) {
+                   sfGetProcessLog().trace(sfCompleteNameSafe()+ " sfResolved HERE '"+name.toString()+"' to '"+ result.toString()+"'");
+               }
+           } catch (Exception ex) {ex.printStackTrace();} //ignore
+
         } catch (SmartFrogContextException ex) {
             throw SmartFrogResolutionException.notFound(new Reference(name), sfCompleteName);
         }
@@ -226,7 +232,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
         Object obj = sfResolve(r, 0);
         try {
             if (sfGetProcessLog().isTraceEnabled()) {
-                sfGetProcessLog().trace("sfResolved: "+r.toString()+" to "+ obj.toString());
+                sfGetProcessLog().trace(sfCompleteNameSafe()+ " sfResolved '"+r.toString()+"' to '"+ obj.toString()+"'");
             }
         } catch (Exception ex) {ex.printStackTrace();} //ignore
         return obj;
