@@ -74,11 +74,11 @@ public class DisplayThresholderImpl extends GraphImpl implements Graph,
      *
      * @return DOCUMENT ME!
      */
-    public GraphPanel creategraphpanel(Dimension size) {
+    public GraphPanel createGraphPanel(Dimension size) {
         // pass the thresholder to this panel
         AdjustableThresholdPanel atp = new AdjustableThresholdPanel(size,
                 thresholdControl);
-
+	atp.bars = bars;
         return initPanel(atp);
     }
 }
