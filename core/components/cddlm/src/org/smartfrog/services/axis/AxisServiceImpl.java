@@ -21,24 +21,24 @@
 
 package org.smartfrog.services.axis;
 
-import org.smartfrog.sfcore.prim.PrimImpl;
+import org.apache.axis.client.AdminClient;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.logging.Log;
+import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.utils.ComponentHelper;
-import org.apache.axis.client.AdminClient;
-import org.apache.axis.AxisFault;
 
 import javax.xml.rpc.ServiceException;
-import java.rmi.RemoteException;
-import java.net.URL;
-import java.net.MalformedURLException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.rmi.RemoteException;
 
 /**
  * This is the axis service, which registers for anything.
  * The service supports different modes of deployment: deploy local, and deploy remote
  * But that detail is hidden because the work is handed back up to the parent.
- *
+ * <p/>
  * Date: 14-Jun-2004
  * Time: 14:27:26
  */
@@ -71,7 +71,8 @@ public class AxisServiceImpl extends PrimImpl implements AxisService {
     private String servicePath;
     private String adminService;
     private String wsdlPath;
-    private String descriptorResource;
+    private String deployResource;
+    private String undeployResource;
     private int port;
     private String adminPath;
     private URL adminURL;
@@ -80,7 +81,6 @@ public class AxisServiceImpl extends PrimImpl implements AxisService {
     private AdminClient adminClient;
 
     private Log log;
-
 
 
     /**
@@ -93,24 +93,24 @@ public class AxisServiceImpl extends PrimImpl implements AxisService {
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        log=sfGetApplicationLog();
+        log = sfGetApplicationLog();
         protocol = sfResolve(AxisService.PROTOCOL, protocol, true);
         hostname = sfResolve(AxisService.HOSTNAME, hostname, true);
-        port=sfResolve(AxisService.PORT,port,true);
-        webapp=sfResolve(AxisService.WEBAPP,webapp,true);
-        serviceName = sfResolve(AxisService.SERVICE_NAME,serviceName,true);
-        servicePath = sfResolve(AxisService.SERVICE_PATH,servicePath,true);
-        adminService= sfResolve(AxisService.ADMIN_SERVICE, adminService, true);
-        transport = sfResolve(AxisService.TRANSPORT,transport,false);
-        username = sfResolve(AxisService.USERNAME,username,false);
+        port = sfResolve(AxisService.PORT, port, true);
+        webapp = sfResolve(AxisService.WEBAPP, webapp, true);
+        serviceName = sfResolve(AxisService.SERVICE_NAME, serviceName, true);
+        servicePath = sfResolve(AxisService.SERVICE_PATH, servicePath, true);
+        adminService = sfResolve(AxisService.ADMIN_SERVICE, adminService, true);
+        transport = sfResolve(AxisService.TRANSPORT, transport, false);
+        username = sfResolve(AxisService.USERNAME, username, false);
         //password only matters if username is set
-        password = sfResolve(AxisService.PASSWORD,password,username!=null);
-        String path="/"+webapp+"/"+servicePath+"/"+adminService;
+        password = sfResolve(AxisService.PASSWORD, password, username != null);
+        String path = "/" + webapp + "/" + servicePath + "/" + adminService;
 
         try {
-            adminURL=new URL(protocol,hostname,port,path);
-            log.info("Admin url is "+adminURL);
-            adminClient=new AdminClient("");
+            adminURL = new URL(protocol, hostname, port, path);
+            log.info("Admin url is " + adminURL);
+            adminClient = new AdminClient(false);
             if (username != null) {
                 adminClient.setLogin(username, password);
             }
@@ -122,25 +122,47 @@ public class AxisServiceImpl extends PrimImpl implements AxisService {
             throw SmartFrogException.forward(e);
         }
         //at this point we have the admin client. Now we can do things with it.
-        descriptorResource=sfResolve(AxisService.DESCRIPTOR_RESOURCE,descriptorResource,false);
-        if(descriptorResource!=null) {
-            deployDescriptorResource();
+        deployResource = sfResolve(AxisService.DEPLOY_RESOURCE, deployResource, false);
+        undeployResource = sfResolve(AxisService.UNDEPLOY_RESOURCE, undeployResource, deployResource != null);
+        if (deployResource != null) {
+            deployResource(deployResource);
         }
     }
 
+
     /**
-     * deploy the contents of the descriptor resource, which must not be null
-     * @throws SmartFrogException
+     * undeploy a component. Errors are logged but not thrown
+     *
+     * @param status termination status
+     */
+    public synchronized void sfTerminateWith(TerminationRecord status) {
+        super.sfTerminateWith(status);
+        if (undeployResource != null) {
+            try {
+                deployResource(undeployResource);
+            } catch (SmartFrogException e) {
+                log.error("while undeploying " + serviceName, e);
+            } catch (RemoteException e) {
+                log.error("while undeploying " + serviceName, e);
+            }
+        }
+
+    }
+
+
+    /**
+     * deploy a named resource
+     *
+     * @param resourcename
+     * @throws SmartFrogException which may wrap an axis fault too
      * @throws RemoteException
      */
-    private void deployDescriptorResource() throws SmartFrogException, RemoteException {
-        assert descriptorResource!=null;
+    public void deployResource(String resourcename) throws SmartFrogException, RemoteException {
         try {
-            String results;
-            results=deployResource(descriptorResource);
-            postProcessResults(results);
-        } catch (AxisFault fault) {
-            throw SmartFrogException.forward(fault);
+            ComponentHelper helper = new ComponentHelper(this);
+            InputStream instream = helper.loadResource(resourcename);
+            assert instream != null;
+            String results = adminClient.process(instream);
         } catch (RemoteException re) {
             throw re;
         } catch (Exception e) {
@@ -148,24 +170,15 @@ public class AxisServiceImpl extends PrimImpl implements AxisService {
         }
     }
 
-
     /**
-     * deploy a named resource
-     * @param resourcename
-     * @return
-     * @throws Exception
-     * @throws RemoteException
+     * do any result postprocessing
+     *
+     * @param results 
+     * @throws SmartFrogException
      */
-    public String  deployResource(String resourcename) throws Exception, RemoteException, AxisFault {
-        ComponentHelper helper = new ComponentHelper(this);
-        InputStream instream=helper.loadResource(resourcename);
-        assert instream!=null;
-        return adminClient.process(instream);
-    }
-
     public void postProcessResults(String results) throws SmartFrogException {
-        if(log.isDebugEnabled()) {
-            log.debug("Received "+results);
+        if (log.isDebugEnabled()) {
+            log.debug("Received " + results);
         }
     }
 }
