@@ -38,6 +38,11 @@ ant -lib ../../build/dist/lib/smartfrog-tasks.jar -lib ../../../../smartfrog/dis
     <sf-parse 
       file="nonexistent-file.sf"/>
   </target>  
+
+  <target name="testSubdir">
+    <sf-parse 
+      file="subdir/subfile.sf"/>
+  </target>    
   
   <target name="testTwoFiles">
     <sf-parse>

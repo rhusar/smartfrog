@@ -53,6 +53,11 @@ public class ParseTest extends TaskTestBase {
         expectLogContaining("testValid2", "port 8080;");
     }
 
+
+    public void testSubdir() {
+        expectLogContaining("testSubdir", "port 8080;");
+    }
+
     public void testInvalid() {
         expectExceptionWithLogContaining("testInvalid",
                 "SmartFrogCompileResolutionException",
@@ -71,12 +76,12 @@ public class ParseTest extends TaskTestBase {
     }
 
     public void testQuiet() {
-        expectLogContaining("testQuiet", "STATUS REPORT: File: valid.sf");
+        expectLogContaining("testQuiet", "SFParse: SUCCESSFUL");
         assertNotInLog("port 8080;");
     }
 
     public void testVerboseQuiet() {
-        expectLogContaining("testVerboseQuiet", "STATUS REPORT: File: valid.sf");
+        expectLogContaining("testVerboseQuiet", "SFParse: SUCCESSFUL");
         assertNotInLog("port 8080;");
     }
 
