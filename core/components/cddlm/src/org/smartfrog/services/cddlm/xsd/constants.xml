@@ -60,23 +60,27 @@
       <description>Placeholder for ant namespace</description>
     </uri>
 
-    <uri name="OPTION_VALIDATE_ONLY" value="http://gridforum.org/cddlm/serviceAPI/options/validateOnly/2004/10/11/">
+    <uri name="OPTION_VALIDATE_ONLY" value="http://gridforum.org/cddlm/serviceAPI/options/2004/10/11/validateOnly">
       <description>URI of option to indicate that a descriptor should be validated, but not deployed
         "validation" is a per-language option</description>
     </uri>
 
-    <uri name="OPTION_PROPERTIES" value="http://gridforum.org/cddlm/serviceAPI/options/propertyMap/2004/10/11/">
+    <uri name="OPTION_PROPERTIES" value="http://gridforum.org/cddlm/serviceAPI/options/2004/10/11/properties">
       <description>URI of option to include a property mapping</description>
     </uri>
 
-    <uri name="OPTION_NAME" value="http://gridforum.org/cddlm/serviceAPI/options/name/2004/07/30">
+    <uri name="OPTION_ENVIRONMENT" value="http://gridforum.org/cddlm/serviceAPI/options/2004/10/11/environment">
+      <description>URI of option to include a property mapping</description>
+    </uri>
+		
+    <uri name="OPTION_NAME" value="http://gridforum.org/cddlm/serviceAPI/options/2004/10/11/name">
       <description>URI of option to declare a name for this service.
         When a literal name is provided, deployment will fail if there is already
         one of this name in the system.
       </description>
     </uri>
 
-    <uri name="OPTION_BLOCKING_DEPLOY" value="http://gridforum.org/cddlm/serviceAPI/options/blocking/2004/10/11/">
+    <uri name="OPTION_BLOCKING_DEPLOY" value="http://gridforum.org/cddlm/serviceAPI/options/2004/10/11/blocking">
       <description>
         Flag to indicate whether deployment should be blocking or non-blocking (default)
       </description>
