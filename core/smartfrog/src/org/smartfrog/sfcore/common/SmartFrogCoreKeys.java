@@ -179,5 +179,10 @@ public interface SmartFrogCoreKeys {
      */
     public final static String SF_START_FAILURE = "sfStartFailure";
 
+    /**
+     * Name to name a start phase failure
+     */
+    public final static String SF_CORE_LOG = "SFCORE_LOG";
+
 
 }
