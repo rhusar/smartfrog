@@ -99,6 +99,9 @@ public class SmartFrogException extends Exception implements Serializable {
      */
     public static SmartFrogException forward (String message, Throwable thr){
         if (thr instanceof SmartFrogException) {
+            if (message!=null){
+                ((SmartFrogException)thr).add("msg: ",message);
+            }
             return (SmartFrogException)thr;
         } else {
             return new SmartFrogException(message, thr);
