@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
-<project name="parse">
+<project name="run">
 
 <description>
- Tests for the parse. 
+ Tests for the run. 
  
  command line invocation
  ant -lib ..\..\build\dist\lib\smartfrog-tasks.jar -lib ..\..\..\..\smartfrog\dist\lib\smartfrog.jar -f  run.xml testNoParams
