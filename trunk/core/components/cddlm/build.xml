@@ -149,20 +149,19 @@ For more information: www.smartfrog.org
 
 
   <!-- ========================================================== -->
-  <!-- run the service inline -->
+  <!-- deploy; requires a host -->
   <!-- ========================================================== -->
-  <target name="run" depends="parse,dist" 
+  <target name="deploy" depends="parse,dist" 
     description="parse the cddlm descriptor">
-      <sf-run classpathref="run.classpath"
+     <property name="deploy.host" value="localhost"/>
+      <sf-deploy classpathref="run.classpath"
         logStackTraces="true"
-        iniFile="${default.ini}" initialSmartfrogFile="${default.sf}" >
-        <assertions enableSystemAssertions="true">
-          <enable/>
-        </assertions>
+        host="${deploy.host}"
+        >
         <application name="cddlm" descriptor="/${deploy.sf}"/>
-      </sf-run>
+      </sf-deploy>
   </target>  
-  
+
   
   <!-- ========================================================== -->
   <!-- default target -->
