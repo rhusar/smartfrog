@@ -437,7 +437,13 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
      */
     public synchronized void sfTerminateWith(TerminationRecord rec) {
         super.sfTerminateWith(rec);
-
+        if (sfIsRoot){
+            try {
+                SFProcess.getRootLocator().unbindRootProcessCompound();
+            } catch (Exception ex) {
+                Logger.logQuietly(ex);
+            }
+        }
         //System.out.println("terminating with " + rec.toString());
         if (systemExit) {
             try {

@@ -37,7 +37,7 @@ import org.smartfrog.sfcore.common.SmartFrogException;
  */
 public interface RootLocator {
     /**
-     * Set given process compound asthe root process compound for this host.
+     * Set given process compound as the root process compound for this host.
      *
      * @param c process compound to set as root
      *
@@ -48,6 +48,20 @@ public interface RootLocator {
      */
     public void setRootProcessCompound(ProcessCompound c)
         throws SmartFrogException, RemoteException;
+
+
+    /**
+     * Unbinds root process compound from local registry.
+     *
+     * @param c process compound to set as root
+     *
+     * @throws RemoteException if there is any network/rmi error
+     * @throws SmartFrogException if failed to unbind
+     *
+     */
+    public void unbindRootProcessCompound()
+        throws SmartFrogException, RemoteException;
+
 
     /**
      * Gets the root process compound for a given host.
