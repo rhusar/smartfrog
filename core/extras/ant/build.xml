@@ -30,7 +30,8 @@
       <not>
       <istrue value="${system.tests}"/>
       </not>
-    </condition>    
+    </condition>   
+    <echo>system.tests.enabled=${system.tests.enabled}</echo>
   </target>
 
   <target name="compile" depends="init">
