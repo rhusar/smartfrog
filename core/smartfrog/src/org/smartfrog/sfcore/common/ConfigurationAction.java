@@ -95,9 +95,10 @@ public abstract class ConfigurationAction {
         if ((ex.getCause() instanceof java.net.SocketException) ||
                 (ex.getCause() instanceof java.io.EOFException)) {
             //Logger.log(MessageUtil.formatMessage(MessageKeys.MSG_SF_TERMINATED));
-            if (SFSystem.sflog().isTraceEnabled()) {
-              SFSystem.sflog().trace(MessageUtil.formatMessage(MessageKeys.MSG_SF_TERMINATED));
-            }
+            //if (SFSystem.sflog().isTraceEnabled()) {
+            //  SFSystem.sflog().trace(MessageUtil.formatMessage(MessageKeys.MSG_SF_TERMINATED));
+            //}
+            SFSystem.sflog().out(MessageUtil.formatMessage(MessageKeys.MSG_SF_TERMINATED));
             return true;
         } else {
             //Logger.log(ex);
