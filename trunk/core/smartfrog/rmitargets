@@ -1,3 +1,4 @@
+org/smartfrog/sfcore/prim/PrimImpl.class
 org/smartfrog/sfcore/compound/CompoundImpl.class
 org/smartfrog/sfcore/processcompound/ProcessCompoundImpl.class
 org/smartfrog/sfcore/workflow/eventbus/EventPrimImpl.class
