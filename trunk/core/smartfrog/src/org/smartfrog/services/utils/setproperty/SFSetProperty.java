@@ -29,6 +29,6 @@ public interface SFSetProperty {
     final String ATR_NAME = "name";
     /** Attribute name - value. Compulsory Object */
     final String ATR_VALUE = "value";
-    /** Attribute name - value. Compulsory Object */
+    /** Attribute name - replace. Optional boolean */
     final String ATR_REPLACE = "replace_old_value";
 }
