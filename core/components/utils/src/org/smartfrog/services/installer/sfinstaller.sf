@@ -49,7 +49,7 @@ SFInstaller extends Compound  {
         host "localhost";
 
         // Emailer parameters
-        emailTo "abc@india.hp.com";
+        emailTo "awasthi@india.hp.com";
         emailFrom "smartfrom@india.hp.com";
         emailHost "stash.india.hp.com";
         emailSubject "SmartFrog Installer Message";
@@ -92,53 +92,55 @@ SFInstaller extends Compound  {
  * Since sfDaemon runs as simple java application it terminates if 
  * installer component is terminated.
  */
-sfConfig extends Compound {
-       Installer1 extends SFInstaller {
-            host"ebnt171.india.hp.com"; 
-            user "ashish";
-            passwordFile "e:\\cvs\\forge\\may14\\core\\smartfrog\\node1.txt";
+sfConfig extends Parallel {
+       actions extends LAZY {
+           Installer1 extends SFInstaller {
+                host"ebnt171.india.hp.com"; 
+                user "ashish";
+                passwordFile "e:\\cvs\\forge\\may14\\core\\smartfrog\\node1.txt";
 
-            ftpLocalFiles ["E:\\cvs\\releases\\SmartFrog.3.02.002.beta.20040429_ALL.tar.gz"];
-            ftpRemoteFiles ["cvs/SmartFrog.3.02.002.beta.20040429_ALL.tar.gz"];
+                ftpLocalFiles ["E:\\cvs\\releases\\SmartFrog.3.02.002.beta.20040429_ALL.tar.gz"];
+                ftpRemoteFiles ["cvs/SmartFrog.3.02.002.beta.20040429_ALL.tar.gz"];
 
-            telnetLogfile "SFNode1.log";
-            telnetCommands ["cd cvs",
-                             "mkdir may17",
-                             "cp SmartFrog.3.02.002.beta.20040429_ALL.tar.gz ./may17",
-                             "cd may17",
-                             "gunzip SmartFrog.3.02.002.beta.20040429_ALL.tar.gz",
-                             "tar -xf SmartFrog.3.02.002.beta.20040429_ALL.tar",
-                             "cd SmartFrog.3.02.002.beta",
-                             "export SFHOME=/home/ashish/cvs/may17/SmartFrog.3.02.002.beta/dist",
-                             "export PATH=$SFHOME/bin:$PATH",
-                             "sfDaemon >smartfrog.out 2>&1 &"
-                           ];
-            
-            emailAttachments ["SFNode1.log"];
-            emailMessage ("SmartFrog installation status  on node:" 
-                                    ++ ATTRIB host ++ 
-                          " :Successful.\n Please see attached telnet log file for details.");
-       };
-       Installer2 extends SFInstaller {
-            host "ebnt196.india.hp.com"; 
-            user "guest";
-            passwordFile "e:\\cvs\\forge\\may14\\core\\smartfrog\\node2.txt";
-            ftpLocalFiles ["E:\\cvs\\releases\\SmartFrog.3.02.002.beta.20040429_ALL.tar.gz"];
-            ftpRemoteFiles ["ashish/SmartFrog.3.02.002.beta.20040429_ALL.tar.gz"];
+                telnetLogfile "SFNode1.log";
+                telnetCommands ["cd cvs",
+                                 "mkdir may17",
+                                 "cp SmartFrog.3.02.002.beta.20040429_ALL.tar.gz ./may17",
+                                 "cd may17",
+                                 "gunzip SmartFrog.3.02.002.beta.20040429_ALL.tar.gz",
+                                 "tar -xf SmartFrog.3.02.002.beta.20040429_ALL.tar",
+                                 "cd SmartFrog.3.02.002.beta",
+                                 "export SFHOME=/home/ashish/cvs/may17/SmartFrog.3.02.002.beta/dist",
+                                 "export PATH=$SFHOME/bin:$PATH",
+                                 "sfDaemon >smartfrog.out 2>&1 &"
+                               ];
+                
+                emailAttachments ["SFNode1.log"];
+                emailMessage ("SmartFrog installation status  on node:" 
+                                        ++ ATTRIB host ++ 
+                              " :Successful.\n Please see attached telnet log file for details.");
+           };
+           Installer2 extends SFInstaller {
+                host "ebnt196.india.hp.com"; 
+                user "guest";
+                passwordFile "e:\\cvs\\forge\\may14\\core\\smartfrog\\node2.txt";
+                ftpLocalFiles ["E:\\cvs\\releases\\SmartFrog.3.02.002.beta.20040429_ALL.tar.gz"];
+                ftpRemoteFiles ["ashish/SmartFrog.3.02.002.beta.20040429_ALL.tar.gz"];
 
-            telnetLogfile "SFNode2.log";
-            telnetCommands ["cd ashish",
-                             "mkdir may17",
-                             "cp SmartFrog.3.02.002.beta.20040429_ALL.tar.gz ./may17",
-                             "cd may17",
-                             "gunzip SmartFrog.3.02.002.beta.20040429_ALL.tar.gz",
-                             "tar -xf SmartFrog.3.02.002.beta.20040429_ALL.tar",
-                             "cd SmartFrog.3.02.002.beta",
-                             "export SFHOME=/home/guest/ashish/may17/SmartFrog.3.02.002.beta/dist",
-                             "export PATH=$SFHOME/bin:$PATH",
-                             "sfDaemon >smartfrog.out 2>&1 &"
-                           ];
-            emailAttachments ["SFNode2.log"];
-            emailMessage ("Installation status of node:" ++ ATTRIB host);
-       };
+                telnetLogfile "SFNode2.log";
+                telnetCommands ["cd ashish",
+                                 "mkdir may17",
+                                 "cp SmartFrog.3.02.002.beta.20040429_ALL.tar.gz ./may17",
+                                 "cd may17",
+                                 "gunzip SmartFrog.3.02.002.beta.20040429_ALL.tar.gz",
+                                 "tar -xf SmartFrog.3.02.002.beta.20040429_ALL.tar",
+                                 "cd SmartFrog.3.02.002.beta",
+                                 "export SFHOME=/home/guest/ashish/may17/SmartFrog.3.02.002.beta/dist",
+                                 "export PATH=$SFHOME/bin:$PATH",
+                                 "sfDaemon >smartfrog.out 2>&1 &"
+                               ];
+                emailAttachments ["SFNode2.log"];
+                emailMessage ("Installation status of node:" ++ ATTRIB host);
+           };
+    }
 }
