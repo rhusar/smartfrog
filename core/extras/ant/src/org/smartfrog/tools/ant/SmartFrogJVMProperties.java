@@ -39,18 +39,18 @@ public class SmartFrogJVMProperties {
     /**
      * the name of a root process
      */
-    public static final String ROOT_PROCESS = "rootProcess";
-    public static final String LOG_STACK_TRACE = "org.smartfrog.logger.logStackTrace";
-    public static final String ROOT_LOCATOR_PORT = "org.smartfrog.ProcessCompound.sfRootLocatorPort";
-    public static final String LIVENESS_DELAY = "org.smartfrog.ProcessCompound.sfLivenessDelay";
-    public static final String LIVENESS_FACTOR = "org.smartfrog.ProcessCompound.sfLivenessFactor";
-    public static final String PROCESS_ALLOW = "org.smartfrog.ProcessCompound.sfProcessAllow";
-    public static final String PROCESS_TIMEOUT = "org.smartfrog.ProcessCompound.sfProcessTimeout";
-    public static final String SF_DEFAULT = "org.smartfrog.sfcore.processcompound.sfDefault.sfDefault";
-    public static final String INIFILE = "org.smartfrog.iniFile";
+    public static final String ROOT_PROCESS =      "rootProcess";
+    public static final String LOG_STACK_TRACE =   "org.smartfrog.logger.logStackTrace";
+    public static final String ROOT_LOCATOR_PORT = "org.smartfrog.sfcore.processcompound.sfRootLocatorPort";
+    public static final String LIVENESS_DELAY =    "org.smartfrog.sfcore.processcompound.sfLivenessDelay";
+    public static final String LIVENESS_FACTOR =   "org.smartfrog.sfcore.processcompound.sfLivenessFactor";
+    public static final String PROCESS_ALLOW =     "org.smartfrog.sfcore.processcompound.fProcessAllow";
+    public static final String PROCESS_TIMEOUT =   "org.smartfrog.sfcore.processcompound.sfProcessTimeout";
+    public static final String SF_DEFAULT =        "org.smartfrog.sfcore.processcompound.sfDefault.sfDefault";
+    public static final String INIFILE =           "org.smartfrog.iniFile";
     public static final String SMARTFROG_ENTRY_POINT = "org.smartfrog.SFSystem";
     public static final String KEYSTORE_PASSWORD = "org.smartfrog.sfcore.security.keyStorePassword";
-    public static final String KEYSTORE_NAME = "org.smartfrog.sfcore.security.keyStoreName";
+    public static final String KEYSTORE_NAME =     "org.smartfrog.sfcore.security.keyStoreName";
     public static final String KEYSTORE_PROPFILE = "org.smartfrog.sfcore.security.propFile";
     public static final String PARSER_ENTRY_POINT = "org.smartfrog.SFParse";
     public static final String PARSER_OPTION_QUIET = "-q";
