@@ -568,14 +568,19 @@ For more information: www.smartfrog.org
   <!-- =================================================================== -->
     
 
-  <target name="fetch-libraries" depends="init,init-common" >
+  <target name="fetch-libraries" depends="init,init-common,setproxy" >
     <property file="libraries.properties" />
-    <libraries destDir="${maven.lib.dir}">
+    <libraries destdir="${maven.lib.dir}>
       <mavenrepository url="${maven.url}"/>
-      <library project="xerces"  
+      <library project="xerces"
+        archive="xercesImpl" 
         version="${xerces.version}" />
-      <library project="xom"  
-        version="${xom.version}" />
+      <library project="xerces"
+        archive="xmlParserAPIs" 
+        version="${xerces.version}" />
+<!--       <library project="xom"  
+        version="${xom.version}" /> 
+        -->
       <library project="jaxen"  
         version="${jaxen.version}" />
       <library project="commons-net"  
@@ -590,8 +595,8 @@ For more information: www.smartfrog.org
         version="${rhino.version}" />
       <library project="velocity"  
         version="${velocity.version}" />
-      <library project="ant" archive="ant-testutil"  
-        version="${ant-testutil.version}" />
+<!--       <library project="ant" archive="ant-testutil"  
+        version="${ant-testutil.version}" /> -->
 <!-- 
       <library project=""  
         version="${.version}" archive=""/>

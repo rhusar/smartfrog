@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="junit" default="default">
+<project name="xml" default="default">
 
   <!--
   /** (C) Copyright 1998-2005 Hewlett-Packard Development Company, LP
@@ -46,15 +46,41 @@
     <property name="default.sf" location="test/files/default.sf"/>
 
   </target>
-  
+
+    
+  <!-- ========================================================== -->
+  <!-- set everything up to download stuff to the maven repo -->
+  <!-- ========================================================== -->
+  <target name="libraries" depends="setproxy">
+    <property file="libraries.properties" />
+    <property file="${smartfrog.components.dir}/libraries.properties" />
+    <libraries destdir="${maven.lib.dir}" 
+      pathID="libraries.path">
+      <mavenrepository url="${maven.url}"/>
+      <library project="xerces"
+        archive="xercesImpl" 
+        version="${xerces.version}" />
+      <library project="xerces"
+        archive="xmlParserAPIs" 
+        version="${xerces.version}" />
+      <library project="xom"  
+        version="${xom.version}" /> 
+      <library project="jaxen"  
+        version="${jaxen.version}" />
+      <library project="junit"  
+        version="${junit.version}" />
+    </libraries>
+  </target>
+    
   
   <!-- ========================================================== -->
   <!-- declare our compile time classpath -->
   <!-- ========================================================== -->
-  <target name="declare-compile.classpath" depends="declare-base.compile.classpath">
+  <target name="declare-compile.classpath"
+    depends="declare-base.compile.classpath,libraries">
     <path id="compile.classpath">
       <path refid="base.compile.classpath"/>
-      <pathelement location="${junit.jar}"/>
+      <path refid="libraries.path"/>
     </path>
   </target>
   
