@@ -22,6 +22,14 @@ package org.smartfrog.extras.wrapper;
 import org.tanukisoftware.wrapper.WrapperListener;
 import org.tanukisoftware.wrapper.WrapperManager;
 
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Properties;
+
 /**
  * Hosting of SmartFrog under Java Service Wrapper.
  *
@@ -61,6 +69,7 @@ public class ServiceWrapper implements WrapperListener {
     public Integer start(String[] args) {
         //create a new system
         try {
+            diagnostics(System.out);
             system = InstantiateSmartFrog(args);
             system.setSystemExitOnRootProcessTermination(true);
             system.start();
@@ -73,7 +82,52 @@ public class ServiceWrapper implements WrapperListener {
         return null;
     }
 
+    /**
+     * exit code on failure
+     *
+     * @value -1
+     */
     public static final int WRAPPER_FAILURE_EXIT_CODE = -1;
+
+
+    /**
+     * print diagnostics to the output channel.
+     *
+     * @param out
+     */
+    private void diagnostics(PrintStream out) {
+        //sorted system properties list
+        out.println("System Properties\n\n");
+        Properties props = System.getProperties();
+        List sorted = new ArrayList(props.size());
+        Enumeration en = props.keys();
+        while (en.hasMoreElements()) {
+            String key = (String) en.nextElement();
+            sorted.add(key);
+        }
+        Collections.sort(sorted);
+        Iterator it = sorted.iterator();
+        while (it.hasNext()) {
+            String key = (String) it.next();
+            String value = System.getProperty(key);
+            out.println(key + " = " + value);
+        }
+        out.println("\n\n");
+        //env variables are only valid on Java1.5+
+        printEnvVar("SFHOME", out);
+        printEnvVar("CLASSPATH", out);
+        printEnvVar("PATH", out);
+        printEnvVar("Path", out);
+        printEnvVar("JAVA_HOME", out);
+
+    }
+
+    private void printEnvVar(String name, PrintStream out) {
+        String value = System.getenv(name);
+        if (value != null) {
+            out.println(name + " = " + value);
+        }
+    }
 
     /**
      * this method contains the logic that loads a version of SmartFrog, based

@@ -41,6 +41,7 @@
   <target name="init" depends="init-standard-output-dirs,use-smartfrog-tasks">
     <property name="secondary.jar"
       location="${dist.lib.dir}/${project.name}-launched.jar"/>
+    <echo>Building ${target.jar} and ${secondary.jar}</echo>
   </target>
 
   <target name="fetch-libraries"
@@ -98,12 +99,12 @@
       includes="**/*"
       excludes="**/launcher/*"
       />
-    <echo level="verbose">created package ${target.jar}</echo>
+    <echo>created package ${target.jar}</echo>
     <jar destfile="${secondary.jar}"
       basedir="${build.classes.dir}"
       includes="**/launcher/*"
       />
-    <echo level="verbose">created package ${secondary.jar}</echo>
+    <echo>created package ${secondary.jar}</echo>
   </target>
 
 </project>
