@@ -21,6 +21,7 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/services/assertions/components.sf"
 
 sfConfig extends Compound {
+    sfSyncTerminate true;
 
     temp1 extends TempFile {
         deleteOnExit true;
