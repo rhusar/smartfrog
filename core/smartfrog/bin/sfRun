@@ -9,8 +9,8 @@ if [ $1 == "-?" ];then
 echo "Usage: sfRun URL [-e]"
 exit
 fi 
-for i in $SFHOME/lib/*.jar; do CLASSPATH=$i:$CLASSPATH; done
-export CLASSPATH
+#for i in $SFHOME/lib/*.jar; do CLASSPATH=$i:$CLASSPATH; done
+#export CLASSPATH
 
 . $SFHOME/bin/setSFProperties
 
