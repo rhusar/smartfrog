@@ -6,19 +6,19 @@
 
   <xsl:template match="/err:faults">
 
-package org.smartfrog.services.cddlm.generated.faults;    
+package org.smartfrog.services.cddlm.generated.api;
 import javax.xml.namespace.QName;
 /**
  This file defines SOAP error codes for axis.
  This is machine generated! Do Not Edit!
 */
 
-public class FaultCodes {
+public class DeployApiConstants {
     
     /**
       empty private constructor -this class can not be instantiated
     */
-    private FaultCodes() { }
+    private DeployApiConstants() { }
 
     <xsl:apply-templates select="err:constants"/>
 

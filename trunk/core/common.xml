@@ -221,10 +221,10 @@
       <attribute name="failed"/>
       <sequential>
         <junitreport todir="@{data}">
-        <fileset dir="@{data}">
-          <include name="TEST-*.xml"/>
-        </fileset>
-        <report format="frames" todir="@{reports}"/>
+          <fileset dir="@{data}">
+            <include name="TEST-*.xml"/>
+          </fileset>
+          <report format="frames" todir="@{reports}"/>
         </junitreport>
         <fail if="@{failed}">Unit tests failed see @{reports}</fail>
       </sequential>
@@ -546,6 +546,14 @@
     unless="local.daemon.running" >
     <sf-stopdaemon failonerror="false" />
   </target>  
+
+  <!-- ========================================================== -->
+  <!-- public startup operation -->
+  <!-- ========================================================== -->
+  <target name="startup"
+    depends="start-daemon-if-needed"
+    description="start a local daemon">
+  </target> 
   
   <!-- ========================================================== -->
   <!-- always shutdown a local daemon. keep going if one is not running -->

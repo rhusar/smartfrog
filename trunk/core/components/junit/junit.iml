@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<module version="4" relativePaths="false">
+<module version="4" relativePaths="false" type="JAVA_MODULE">
   <component name="ModuleRootManager" />
   <component name="NewModuleRootManager">
     <output url="file://$MODULE_DIR$/build/classes" />
@@ -16,8 +16,9 @@
     <orderEntry type="library" name="Junit" level="application" />
     <orderEntry type="library" name="Log4J" level="application" />
     <orderEntry type="library" name="commons-discovery" level="application" />
-    <orderEntry type="library" name="Commons-logging" level="application" />
+    <orderEntry type="library" name="commons-logging" level="application" />
     <orderEntry type="module" module-name="testharness" />
+    <orderEntryProperties />
   </component>
 </module>
 

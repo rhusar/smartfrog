@@ -21,7 +21,8 @@ package org.smartfrog.services.cddlm.cdl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.smartfrog.services.cddlm.generated.faults.FaultCodes;
+import org.smartfrog.services.cddlm.generated.api.DeployApiConstants;
+import org.smartfrog.services.cddlm.generated.api.DeployApiConstants;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -48,20 +49,20 @@ public class CdlCatalog implements URIResolver, EntityResolver {
      */
     private ResourceLoader loader;
 
-    private static Log log = LogFactory.getLog(CdlCatalog.class);
+    private static final Log log = LogFactory.getLog(CdlCatalog.class);
 
     private static final String XSD = "org/smartfrog/services/cddlm/xsd/";
 
     private static final String CDDLM_MAPPINGS[] = {
-        FaultCodes.XML_CDL_NAMESPACE, Constants.CDDLM_XSD_FILENAME,
-        FaultCodes.CDL_API_NAMESPACE, Constants.DEPLOY_API_SCHEMA_FILENAME,
-        FaultCodes.WS_ADDRESSING_NAMESPACE, "ws-addressing.xsd",
+        DeployApiConstants.XML_CDL_NAMESPACE, Constants.CDDLM_XSD_FILENAME,
+        DeployApiConstants.CDL_API_NAMESPACE, Constants.DEPLOY_API_SCHEMA_FILENAME,
+        DeployApiConstants.WS_ADDRESSING_NAMESPACE, "ws-addressing.xsd",
     };
 
     /**
      * where all the files really live
      */
-    private final static String packageBase = XSD;
+    private static final String packageBase = XSD;
 
     /**
      * property to set on the parser to fix a schema

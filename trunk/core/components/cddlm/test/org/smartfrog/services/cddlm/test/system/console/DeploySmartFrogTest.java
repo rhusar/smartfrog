@@ -23,7 +23,7 @@ package org.smartfrog.services.cddlm.test.system.console;
 
 import org.apache.axis.types.URI;
 import org.cddlm.client.generated.api.types.DeploymentDescriptorType;
-import org.smartfrog.services.cddlm.generated.faults.FaultCodes;
+import org.smartfrog.services.cddlm.generated.api.DeployApiConstants;
 
 /**
  * Date: 06-Sep-2004 Time: 21:57:39
@@ -37,7 +37,7 @@ public class DeploySmartFrogTest extends DeployingTestBase {
                 DeploySmartFrogTest.SIMPLE_DESCRIPTOR);
         uri = deploy(name, dt, null, null);
         //now test a lookup
-        String stateName = FaultCodes.STATE_RUNNING;
+        String stateName = DeployApiConstants.STATE_RUNNING;
         assertInState(uri, stateName);
         final boolean result = undeploy(uri);
         assertTrue("undeploy returned false",

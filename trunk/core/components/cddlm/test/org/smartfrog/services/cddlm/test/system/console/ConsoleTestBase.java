@@ -29,7 +29,7 @@ import org.cddlm.client.common.ServerBinding;
 import org.cddlm.client.generated.api.types.StaticServerStatusType;
 import org.cddlm.client.generated.api.types.ApplicationStatusType;
 import org.cddlm.client.console.ConsoleOperation;
-import org.smartfrog.services.cddlm.generated.faults.FaultCodes;
+import org.smartfrog.services.cddlm.generated.api.DeployApiConstants;
 
 import javax.xml.namespace.QName;
 import java.io.IOException;
@@ -227,7 +227,7 @@ public abstract class ConsoleTestBase extends TestCase {
                     uri);
         } catch (AxisFault fault) {
             assertFaultMatches(fault,
-                    FaultCodes.FAULT_NO_SUCH_APPLICATION,
+                    DeployApiConstants.FAULT_NO_SUCH_APPLICATION,
                     errorText);
         }
     }

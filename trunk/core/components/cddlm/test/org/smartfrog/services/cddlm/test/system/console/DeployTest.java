@@ -28,7 +28,7 @@ import org.cddlm.client.generated.api.types.DeploymentDescriptorType;
 import org.cddlm.client.generated.api.types.OptionMapType;
 import org.cddlm.client.generated.api.types.OptionType;
 import org.smartfrog.services.cddlm.cdl.ResourceLoader;
-import org.smartfrog.services.cddlm.generated.faults.FaultCodes;
+import org.smartfrog.services.cddlm.generated.api.DeployApiConstants;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -62,7 +62,7 @@ public class DeployTest extends DeployingTestBase {
                 null,
                 null,
                 null,
-                FaultCodes.FAULT_BAD_ARGUMENT,
+                DeployApiConstants.FAULT_BAD_ARGUMENT,
                 null);
     }
 
@@ -73,7 +73,7 @@ public class DeployTest extends DeployingTestBase {
                 dd,
                 null,
                 null,
-                FaultCodes.FAULT_DEPLOYMENT_FAILURE,
+                DeployApiConstants.FAULT_DEPLOYMENT_FAILURE,
                 null);
     }
 
@@ -86,7 +86,7 @@ public class DeployTest extends DeployingTestBase {
                 dd,
                 null,
                 null,
-                FaultCodes.FAULT_UNSUPPORTED_LANGUAGE,
+                DeployApiConstants.FAULT_UNSUPPORTED_LANGUAGE,
                 null);
     }
 
@@ -104,7 +104,7 @@ public class DeployTest extends DeployingTestBase {
         deployExpectingFault(null,
                 dd,
                 null,
-                null, FaultCodes.FAULT_UNSUPPORTED_LANGUAGE,
+                null, DeployApiConstants.FAULT_UNSUPPORTED_LANGUAGE,
                 null);
 
     }
@@ -123,7 +123,7 @@ public class DeployTest extends DeployingTestBase {
                 dd,
                 null,
                 null,
-                FaultCodes.FAULT_UNSUPPORTED_LANGUAGE,
+                DeployApiConstants.FAULT_UNSUPPORTED_LANGUAGE,
                 null);
     }
 
@@ -141,7 +141,7 @@ public class DeployTest extends DeployingTestBase {
                 dd,
                 null,
                 callback,
-                FaultCodes.FAULT_UNSUPPORTED_CALLBACK,
+                DeployApiConstants.FAULT_UNSUPPORTED_CALLBACK,
                 null);
     }
 
@@ -183,7 +183,7 @@ public class DeployTest extends DeployingTestBase {
                 dd,
                 options,
                 null,
-                FaultCodes.FAULT_NOT_UNDERSTOOD,
+                DeployApiConstants.FAULT_NOT_UNDERSTOOD,
                 null);
     }
 

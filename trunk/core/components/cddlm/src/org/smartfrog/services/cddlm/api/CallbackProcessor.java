@@ -23,7 +23,7 @@ import org.apache.axis.AxisFault;
 import org.smartfrog.services.axis.SmartFrogHostedEndpoint;
 import org.smartfrog.services.cddlm.generated.api.types.CallbackEnum;
 import org.smartfrog.services.cddlm.generated.api.types.CallbackInformationType;
-import org.smartfrog.services.cddlm.generated.faults.FaultCodes;
+import org.smartfrog.services.cddlm.generated.api.DeployApiConstants;
 
 /**
  * extract callback information from a job, attach it to a job created Sep 2,
@@ -44,7 +44,7 @@ public class CallbackProcessor extends Processor {
         }
         if (type != null) {
             throw raiseUnsupportedCallbackFault(
-                    FaultCodes.UNSUPPORTED_CALLBACK_WIRE_MESSAGE);
+                    DeployApiConstants.UNSUPPORTED_CALLBACK_WIRE_MESSAGE);
         }
 
     }

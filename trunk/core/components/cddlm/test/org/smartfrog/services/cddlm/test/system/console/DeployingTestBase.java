@@ -31,7 +31,8 @@ import org.cddlm.client.generated.api.types.CallbackInformationType;
 import org.cddlm.client.generated.api.types.DeploymentDescriptorType;
 import org.cddlm.client.generated.api.types.LifecycleStateEnum;
 import org.cddlm.client.generated.api.types._deploymentDescriptorType_data;
-import org.smartfrog.services.cddlm.generated.faults.FaultCodes;
+import org.smartfrog.services.cddlm.generated.api.DeployApiConstants;
+import org.smartfrog.services.cddlm.generated.api.DeployApiConstants;
 
 import javax.xml.namespace.QName;
 import java.rmi.RemoteException;
@@ -142,6 +143,6 @@ public abstract class DeployingTestBase extends ConsoleTestBase {
     }
 
     public void assertDeployed(URI uri) throws RemoteException {
-        assertInState(uri, FaultCodes.STATE_RUNNING);
+        assertInState(uri, DeployApiConstants.STATE_RUNNING);
     }
 }
