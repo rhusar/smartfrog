@@ -177,9 +177,7 @@ public class OptionSet {
         String line;
         LineNumberReader file=null;
         try {
-            file =
-            new LineNumberReader (
-               new BufferedReader(new InputStreamReader(
+            file = new LineNumberReader (new BufferedReader(new InputStreamReader(
                (org.smartfrog.SFSystem.getInputStreamForResource(fileURL)))));
             //Loop through each line and add non-blank
             //lines to the Vector
@@ -206,7 +204,5 @@ public class OptionSet {
                 file.close();
             } catch (Exception ex){Logger.logQuietly(ex);}
         }
-
     }
-
 }
