@@ -47,66 +47,38 @@ public class OptionSet {
 
     /** Usage string for SFSystem. */
     public String usage = "\n" +
-        " Usage: java -D... org.smartfrog.SFSystem [-h HOST_NAME [-p PROCESS_NAME]] [-a URL_DESCRIPTOR] [-f FILE_URL] (-t NAME)* (-d NAME)* (-T NAME)* (-c URL | -n NAME URL)* [-e]\n" +
+        " Usage: java -D... org.smartfrog.SFSystem [-a URL_DESCRIPTOR] [-f FILE_URL] [-e]\n" +
         "    or: java -D... org.smartfrog.SFSystem -?";
 
     /** Help string for SFSystem. */
     public String help = "\n" + Version.copyright + " - v." +
         Version.versionString + "\n" + " Parameters: " + "\n" +
-        "    -h HOST_NAME:    host on which the root sfDaemon is running" +
-        "\n" +
-        "    -p PROCESS_NAME: name by which the application should be known\n" +
-        "                    in the sfDaemon where it is deployed" + "\n" +
-        "                    (-p must be accompanied by -h)" +
-        "\n" +
-        "    -t NAME:        terminates the application named by 'NAME'" +
-        "\n" +
-        "    -d NAME:        detaches the component named by 'NAME' from the SmartFrog system and then terminates it" +
-        "\n" +
-        "    -T NAME:        terminates the component named by 'NAME'" +
-        "\n" +
-        "    -c URL:         to deploy up the SF text at 'URL' using a random name" +
-        "\n" +
-        "    -n NAME URL:    to deploy up the SF text at 'URL' using 'NAME' for the name" +
-        "\n" +
         "    -a URL_DESCRIPTOR: descriptor of the application template to deploy.\n" +
-       "       ex. counterEx:DEPLOY:org/.../example.sf:sfConfig:localhost:process" +
+        "       ex. Deploy a description - " +  "\n" +
+        "           -a counterEx:DEPLOY:org/.../example.sf:sfConfig:localhost:process" + "\n" +
+        "       ex. Terminate local sfDaemon - " + "\n" +
+        "           -a rootProcess:TERMINATE:::localhost:" + "\n" +"\n" +
+        "       Format for URL_DESCRIPTOR: " +"name:ACTION:url:sfConfig:HOST:PROCESS\n" +
+        "             - name: name where to apply ACTION\n" +
+        "             - ACTION: possible actions: DEPLOY, TERMINATE, DETACH, DETaTERM\n" +
+        "             - url: description used by ACTION\n" +
+        "             - target: for now only 'sfConfig' or 'empty' are considered.\n" +
+        "             - HOST: host name or IP where to apply ACTION. When empty it assumes localhost.\n" +
+        "             - PROCESS: process namewhere to apply ACTION. When empty it assumes rootProcess\n" +
         "\n" +
         "    -f FILE_URL: file url with the ConfigurationDescriptors to deploy" +
         "\n" +
-
         "    -e:             exit after deployment is finished" + "\n" +
-        " To stop sfDaemon use: -h HOST_NAME -t rootProcess";
+        " ";
 
     /** Error string for SFSystem. */
     public String errorString = null;
-
-    /** Flag indicating whether daemon is remote or not. */
-    public boolean isRemoteDaemon = false;
-
-    /** Flag indicating whether subprocess is remote or not. */
-    public boolean isRemoteSubprocess = false;
 
     /** Hostname where the description is to be deployed. */
     public String host = null;
 
     /** Processname where the description is to be deployed. */
     public String subprocess = null;
-
-    /** Vector for named applications given as -t options on the commandline. */
-    public Vector terminations = new Vector();
-
-    /** Vector for named components given as -d options on the commandline. */
-    public Vector detaching = new Vector();
-
-    /** Vector for named components given as -T options on the commandline. */
-    public Vector terminating = new Vector();
-
-    /** Vector for applications to be deployed. */
-    public Vector configs = new Vector();
-
-    /** Vector for name of the applications to be deployed. */
-    public Vector names = new Vector();
 
 
     /** Vector for configurationDescriptors to be deployed. */
@@ -134,78 +106,6 @@ public class OptionSet {
                         errorString = "SFSystem help" + help;
                         break;
 
-                    case 'h':
-
-                        if (isRemoteDaemon) {
-                            errorString = "at most one -h allowed";
-                        }
-
-                        isRemoteDaemon = true;
-                        if (args[i+1].charAt(0)==optionFlagIndicator)
-                        {
-                            errorString = "SFSystem help" + help;
-                        }
-                        else {
-                            host = args[++i];
-                        }
-
-                        break;
-
-                    case 'p':
-
-                        if (isRemoteSubprocess) {
-                            errorString = "at most one -p allowed";
-                        }
-
-                        isRemoteSubprocess = true;
-                        subprocess = args[++i];
-
-                        break;
-
-                    case 't':
-                        name = args[++i];
-                        cfgDescriptors.add(
-                            new ConfigurationDescriptor(name,
-                                                        null,
-                                ConfigurationDescriptor.Action.TERMINATE,
-                                                        host,
-                                                        subprocess));
-                        terminations.add(name);
-                        break;
-                    case 'd':
-                        name = args[++i];
-                        cfgDescriptors.add(
-                            new ConfigurationDescriptor(name,
-                                                        null,
-                                ConfigurationDescriptor.Action.DETACH,
-                                                        host,
-                                                        subprocess));
-                        detaching.add(name);
-                        break;
-
-                    case 'T':
-                        name = args[++i];
-                        terminating.add(args[++i]);
-                        cfgDescriptors.add(
-                             new ConfigurationDescriptor(name,
-                                                         null,
-                         ConfigurationDescriptor.Action.TERMINATE,
-                                                         host,
-                                                         subprocess));
-                        break;
-
-                    case 'c':
-                        url = args[++i];
-                        configs.add(url);
-                        names.add(null);
-                        cfgDescriptors.add(
-                            new ConfigurationDescriptor(null,
-                                                        url,
-                                ConfigurationDescriptor.Action.DEPLOY,
-                                                         host,
-                                                         subprocess));
-                    break;
-
                     case 'a':
                         try {
                             this.cfgDescriptors.add(new ConfigurationDescriptor(args[++i]));
@@ -217,26 +117,6 @@ public class OptionSet {
                             this.readCfgDescriptorsFile(args[++i]);
                         } catch (SmartFrogInitException ex){Logger.log(ex);}
                          break;
-
-                    case 'n':
-                        if (args[i+1].charAt(0)==optionFlagIndicator) {
-                            errorString = "SFSystem help" + help;
-                        }
-                        else {
-                             name = args[++i];
-                            if (args[i+1].charAt(0)==optionFlagIndicator)
-                                errorString = "SFSystem help" + help;
-                                        url = args[++i];
-                                        configs.add(url);
-                                        names.add(name);
-                                        cfgDescriptors.add(
-                                            new ConfigurationDescriptor(name,
-                                                                        url,
-                                                ConfigurationDescriptor.Action.DEPLOY,
-                                                                        host,
-                                                                        subprocess));
-                        }
-                        break;
 
                     case 'e':
                         exit = true;
@@ -260,9 +140,6 @@ public class OptionSet {
             }
         }
 
-        if (isRemoteSubprocess & !isRemoteDaemon) {
-            errorString = "-p option must be accompanied by -h";
-        }
 
         if (errorString != null) {
             errorString += usage;
@@ -299,29 +176,4 @@ public class OptionSet {
 
     }
 
-    /*
-       public void print () {
-            if (errorString != null) {
-                System.out.println(errorString);
-                return;
-           }
-           if (isRemoteDaemon) System.out.println("remote deamon on host " + host);
-           if (isRemoteSubprocess)  System.out.println("remote subprocess " + subprocess);
-           if (exit) System.out.println("exit on completion");
-           System.out.println("terminations");
-           for (Enumeration et = terminations.elements(); et.hasMoreElements();) {
-               System.out.println("   " + (String) et.nextElement());
-           }
-           System.out.println("configurations");
-           for (Enumeration ec = configs.elements(); ec.hasMoreElements();) {
-               String config = (String) ec.nextElement();
-               System.out.println("   " + (String) config +" named " + names.get(config));
-           }
-       }
-       public static void main(String[] args) {
-           System.out.println("running");
-           OptionSet o = new OptionSet(args);
-           o.print();
-       }
-     */
 }
