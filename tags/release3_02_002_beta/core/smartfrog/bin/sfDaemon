@@ -1,0 +1,10 @@
+#! /bin/sh
+if ! test $SFHOME; 
+then 
+    export SFHOME=$PWD;
+    echo SFHOME undefined, using $SFHOME as base directory;
+fi
+
+for i in $SFHOME/lib/*.jar; do CLASSPATH=$i:$CLASSPATH; done
+export CLASSPATH
+java -Dorg.smartfrog.iniFile=$SFHOME/bin/default.ini -Dorg.smartfrog.sfcore.processcompound.sfDefault.sfDefault=$SFHOME/bin/default.sf -Dorg.smartfrog.sfcore.processcompound.sfProcessName=rootProcess org.smartfrog.SFSystem $*

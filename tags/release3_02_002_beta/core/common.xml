@@ -1,0 +1,328 @@
+<?xml version="1.0"?>
+<project name="common" basedir=".">
+  
+<description>
+  This is not a standalone build file; nor is it an XML fragment for 
+  inclusion into other build files. It is a self contained build file
+  for importing and overriding in subsidiary build files. 
+  
+  This build file is Ant1.6+ only. import did not exist before then.
+  
+  When ant 1.6 imports stuff into a project, the value of ".", the project
+  directory is that of the importing project, not the imported. But it sets
+  a property ant.file.PROJECTNAME to that of the directory of the imported 
+  project, where PROJECTNAME is not the filename, but the name of the project
+  in the XML declaratio.
+  
+  
+</description>
+
+  <!-- ========================================================== -->
+  <!-- common init loads in various settings, 
+       declaring paths and properties, and preset/macro tasks
+       but not the smartfrog custom tasks -->
+  <!-- ========================================================== -->
+
+  
+  <target name="init-common">
+   <!-- load in the local override -->
+    <property file="build.properties"/>
+    
+    <!-- this is where we work out the base directory    -->
+    <!-- only here when running this task raw, to test targets inside -->
+    <property name="ant.file.common" location="${ant.file}" />
+    <!-- this will be set by the runtime during importation --> 
+    <dirname property="antfile.dir" file="${ant.file.common}"/>
+    <property name="core.dir" location="${antfile.dir}"/>
+    
+    <!-- the common.properties file lets you provide a single declaration of
+    overrides (like the compiler settings) that apply across
+    all projects that use this common file-->
+    <property file="${core.dir}/common.properties"/>
+    <property file="${core.dir}/build.properties"/>
+    
+    <!-- now read in environment settings -->
+    <property environment="env" />
+    
+    <property name="smartfrog.home" location="${core.dir}/smartfrog"/>
+    <property name="smartfrog.dist.dir" location="${smartfrog.home}/dist"/>
+    <property name="smartfrog.dist.lib.dir" location="${smartfrog.dist.dir}/lib"/>
+    <!-- Compile options for Smartfrog Release -->
+    <property name="javac.debug.mode" value="true"/> 
+    <property name="javac.deprecation.mode" value="true"/> 
+    <property name="javac.debug.level" value="lines,vars,source" />
+    <property name="javac.java.version" value="1.4" />
+    <path id="smartfrog.classpath">
+      <fileset dir="${smartfrog.dist.lib.dir}">
+        <include name="**/*.jar"/>
+      </fileset>       
+    </path>
+    
+    <property name="extras.dir"
+      location="${core.dir}/extras"/>
+      
+      <!-- information about the ant tasks -->
+    <property name="smartfrog.tasks.prefix" value="smartfrog-tasks"/>      
+    <property name="smartfrog.tasks.name" value="${smartfrog.tasks.prefix}.jar"/>      
+    <property name="smartfrog.tasks.dist.dir"
+      location="${extras.dir}/ant/build/dist/"/>
+    <property name="smartfrog.tasks.lib.dir"
+      location="${smartfrog.tasks.dist.dir}/lib/"/>
+    <property name="smartfrog.tasks.jar"
+      location="${smartfrog.tasks.lib.dir}/${smartfrog.tasks.name}"/>
+
+      <!-- common directories -->
+    <property name="src.dir" location="src"/>
+    <property name="doc.dir" location="doc"/>
+    <property name="build.dir" location="build"/>
+    <property name="build.classes.dir" location="${build.dir}/classes"/>
+    <property name="test.dir" location="${build.dir}/test"/>
+    <property name="test.classes.dir" location="${test.dir}/classes"/>
+    <property name="test.data.dir" location="${test.dir}/data"/>
+    <property name="test.datafiles.dir" location="test/files"/>
+    <property name="test.reports.dir" location="${test.dir}/reports"/>
+    <property name="test.src.dir" location="test" />
+    <property name="dist.dir" location="${build.dir}/dist"/>
+    <property name="dist.lib.dir" location="${build.dir}/dist/lib"/>
+    <property name="dist.doc.dir" location="${build.dir}/dist/doc"/>
+    
+    
+    <!-- define a new javac task with new default options -->  
+    <presetdef name="sf-javac">
+       <javac debug="${javac.debug.mode}" 
+            nowarn="true"  
+            deprecation="${javac.deprecation.mode}"
+            source="${javac.java.version}"
+            target="${javac.java.version}"
+            includeAntRuntime="false"
+            includes="**/*.java"
+            >
+       </javac>
+    </presetdef>
+    
+    
+    
+    <!-- an extension of the previous javac, this with ant classpath included -->
+    <presetdef name="sf-javac-with-ant">
+       <sf-javac  
+          includeAntRuntime="true" />
+    </presetdef>    
+    
+    
+    <!-- a new version of the java task that always forks, does not include
+    the ant runtime by default, and fails on any error -->
+    <presetdef name="sf-java">
+      <java 
+        includeantruntime="false"
+        fork="true"
+        failonerror="true"
+        >
+       </java>
+    </presetdef>
+    
+    <!-- junit wrapper;
+      enables forking, turns assertions on in the code, 
+      and enables XML output.
+      Timeout is set to 10 minutes, so we dont ever hang.
+      User is still required to 
+        -specify failure properties 
+        -provide test or batch test patterns
+        -set up the classpath. Dont forget to 
+        include a reference to smartfrog.classpath to get the core stuff
+      --> 
+    <presetdef name="sf-junit">
+      <junit printsummary="no"
+           fork="true"
+           includeantruntime="true"
+           showoutput="true"
+           >
+       <!-- turned off; ant bug # 27218  
+       <assertions enableSystemAssertions="true"/> -->
+       <jvmarg value="-ea"/>
+       <jvmarg value="-esa"/>
+        <!-- #Tests take system property parameters -->
+        <!-- #Formatters for capture and display -->
+        <formatter type="xml"/>
+        <formatter type="brief" usefile="false"/>
+      </junit>
+    </presetdef>
+    
+    <!-- testing for a server being present; set a property to set -->
+    
+    <presetdef name="sf-daemonfound">
+      <condition >
+        <socket port="3800" server="localhost" />
+      </condition>
+    </presetdef>
+    
+    <!-- wait for 10 seconds for a daemon. Set maxwait to a different
+    value for more or less time, timeoutproperty to the name of a property
+    to set on failure -->
+    <presetdef name="sf-waitfordaemon">
+        <waitfor maxwait="10" maxwaitunit="second">
+            <socket server="localhost" port="3800"/>
+        </waitfor>
+    </presetdef>
+    
+    <!-- reporting wrapper -->
+    <macrodef name="sf-test-report">
+      <attribute name="data"/>
+      <attribute name="reports"/>
+      <attribute name="failed"/>
+      <sequential>
+        <junitreport todir="@{data}">
+        <fileset dir="@{data}">
+          <include name="TEST-*.xml"/>
+        </fileset>
+        <report format="frames" todir="@{reports}"/>
+        </junitreport>
+        <fail if="@{failed}">Unit tests failed see @{reports}</fail>
+      </sequential>
+    </macrodef>
+    
+    <!-- 
+    Copy useful files from the source to dest directories. Use this for adding
+    extra stuff to the bin directory. By default it pulls in 
+    **/*.xml,**/*.dtd,**/*.xsd,**/*.sf,**/*.properties; 
+    override the pattern property to set more
+     -->
+    <macrodef name="copy-useful-files">
+     <attribute name="src"/>
+     <attribute name="dest"/>
+     <attribute name="pattern" default="**/*.xml,**/*.dtd,**/*.xsd,**/*.sf,**/*.properties,**/*.wsdd" />
+     <sequential>
+       <echo level="verbose">copying @{pattern} from @{src} to @{dest}</echo>
+       <copy todir="@{dest}">
+         <fileset dir="@{src}"
+           includes="@{pattern}"/>
+        </copy>
+      </sequential>
+    </macrodef>
+    
+    <!-- rmic configuration -->
+    <presetdef name="sf-rmic">
+      <rmic 
+        verify="true"
+        stubversion="1.2" />
+    </presetdef>
+  </target>
+
+  <!-- ========================================================== -->
+  <!-- 
+    This target is used to set up the standard output for builds and tests and things
+   --> 
+  <!-- ========================================================== -->
+  <target name="init-standard-output-dirs" depends="init-common">
+    <mkdir dir="${build.dir}" />    
+    <mkdir dir="${build.classes.dir}" />    
+    
+    
+    <mkdir dir="${test.dir}" />
+    <mkdir dir="${test.classes.dir}" />
+    <mkdir dir="${test.data.dir}" />
+    <mkdir dir="${test.datafiles.dir}" />
+    <mkdir dir="${test.reports.dir}" />
+    
+    <mkdir dir="${dist.dir}"/>
+    <mkdir dir="${dist.lib.dir}"/>
+    <mkdir dir="${dist.doc.dir}"/>
+  </target>
+  
+  <!-- ========================================================== -->
+  <!-- cleanup target -->
+  <!-- ========================================================== -->
+  <target name="clean" description="clean up build and dist"
+      depends="init-standard-output-dirs">
+    <delete dir="${build.dir}" />    
+    <delete dir="${dist.dir}"  />    
+  </target>  
+   
+  <!-- ========================================================== -->
+  <!-- probe for the smartfrog binaries existing in the dist dir. -->
+  <!-- ========================================================== -->
+    
+  <target name="verify-smartfrog"  depends="init-common"
+    description="verify smartfrog is present, fail if not">
+    <available 
+      classname="org.smartfrog.SFSystem" 
+      classpathref="smartfrog.classpath" 
+      property="sfSystem.present"/>
+    <property name="sfjars.fullpath" refid="smartfrog.classpath"/>
+    <fail unless="sfSystem.present">
+      Smartfrog entry point not found in 
+      ${sfjars.fullpath}
+    </fail>
+    <echo level="verbose">Smartfrog found in ${smartfrog.dist.lib.dir}</echo>
+  </target>
+
+  <!-- ========================================================== -->
+  <!-- probe for tasks and use them if they are found; fail if not -->
+  <!-- ========================================================== -->
+  <target name="use-smartfrog-tasks" depends="init-common"
+    description="declare the classpath and imports for the smartfrog tasks">
+    <path id="smartfrog.tasks.classpath">
+      <path refid="smartfrog.classpath"/>
+      <pathelement location="${smartfrog.tasks.jar}"/>
+    </path>
+    <available 
+      classname="org.smartfrog.tools.ant.Parse" 
+      classpathref="smartfrog.tasks.classpath" 
+      property="sfTasks.present"/>
+    <property name="sftasks.fullpath" refid="smartfrog.tasks.classpath"/>
+    <fail unless="sfTasks.present">
+      Smartfrog tasks not found in 
+      ${sftasks.fullpath}
+    </fail>
+    <typedef 
+      resource="org/smartfrog/tools/ant/tasks.properties"
+      classpathref="smartfrog.tasks.classpath"
+      />
+  </target>
+    
+  
+  <!-- ========================================================== -->
+  <!--  look for a local daemon. Sets the property  local.daemon.running if
+    one is listening on port 3800-->
+  <!-- ========================================================== -->
+  <target name="probe-local-daemon" depends="init-common">
+    <sf-daemonfound property="local.daemon.running" />
+  </target>
+
+  <!-- ========================================================== -->
+  <!-- conditionally start the daemon if one was not found already-->
+  <!-- ========================================================== -->
+  <target name="start-daemon-if-needed" 
+    depends="use-smartfrog-tasks,probe-local-daemon"
+    unless="local.daemon.running">
+      <sf-startdaemon  />
+  </target>
+  
+  <!-- ========================================================== -->
+  <!-- conditionally start the daemon if one was not found already-->
+  <!-- and do not complain if it could not start (or execution timed out) -->
+  <!-- ========================================================== -->
+  <target name="start-daemon-if-needed-no-failonerror" 
+    depends="use-smartfrog-tasks,probe-local-daemon"
+    unless="local.daemon.running">
+      <sf-startdaemon  failonerror="false"/>
+  </target>
+  
+  
+  <!-- ========================================================== -->
+  <!-- this is the counterpoint to start-daemon-if-needed 
+    if the probe did not find a daemon, then we shut down any daemon
+    that we created.-->
+  <!-- ========================================================== -->
+  <target name="stop-daemon-if-started"
+    depends="use-smartfrog-tasks"
+    unless="local.daemon.running" >
+    <sf-stopdaemon failonerror="false" />
+  </target>  
+  
+  <target name="shutdown"
+    depends="use-smartfrog-tasks"
+    description="shut down a local smartfrog daemon">
+    <sf-stopdaemon failonerror="false" />
+  </target> 
+  
+</project>   

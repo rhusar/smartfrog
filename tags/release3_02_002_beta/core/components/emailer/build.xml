@@ -1,0 +1,113 @@
+<?xml version="1.0"?>
+<project name="emailer" default="default">
+
+<!--
+/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+-->
+
+<description>
+    Build file for emailer SmartFrog component.
+</description>
+
+   <!-- override point -->
+  <property file="build.properties" />
+
+  <!-- this component keeps its test files in a different place from the 
+       rest, for historical reasons (i.e. it is nothing but test) -->  
+   <property name="test.src.dir" location="testcases" />
+   <property name="emailer.lib.dir" location="lib" description=
+                        "place to put third party libraries"/>
+       
+  
+  <property name="root.dir" location="../.."  />
+    <!-- Import common stuff -->
+  <import file="${root.dir}/common.xml"/>
+  
+  
+  <!-- ========================================================== -->
+  <!-- ========================================================== -->
+  <target name="init" depends="init-standard-output-dirs,use-smartfrog-tasks">
+          
+    <property name="target.jar" 
+            location="${dist.lib.dir}/emailer.jar" />
+    
+    
+    <!-- the compile time path includes axis-->
+    <path id="compile.classpath">
+      <path refid="smartfrog.classpath"/>
+      <fileset dir="${emailer.lib.dir}">
+        <include name="**/*.jar"/>
+      </fileset>
+    </path>
+    
+    <path id="run.classpath">
+      <path refid="compile.classpath"/>
+      <path location="${target.jar}" />
+    </path>  
+    
+  </target>
+    
+  <!-- ========================================================== -->
+  <!-- compile -->
+  <!-- ========================================================== -->
+  <target name="compile" 
+      depends="verify-smartfrog,init">
+    <depend srcdir="${src.dir}"
+      destdir="${build.classes.dir}"
+      cache="${build.dir}/depends"
+      closure="yes"/>
+    <sf-javac
+      classpathref="compile.classpath"
+      srcdir="${src.dir}"
+      destdir="${build.classes.dir}"
+      />
+    <copy-useful-files src="${src.dir}" dest="${build.classes.dir}" />   
+  </target>
+  
+  <!-- ========================================================== -->
+  <!-- use rmi to generate stubs and skeleton-->
+  <!-- ========================================================== -->
+  <target name="compile-RMI" depends="compile">
+    <rmic includesfile="rmitargets" base="${build.classes.dir}">
+      <classpath refid="compile.classpath"/>
+    </rmic>
+  </target>  
+  
+  <!-- ========================================================== -->
+  <!-- create the jar -->
+  <!-- ========================================================== -->
+  <target name="dist" depends="compile" 
+    description="create the jar files">
+    <jar destfile="${target.jar}" basedir="${build.classes.dir}" includes="**/*"/>
+    <!--copydir src = "${emailer.lib.dir}" dest= "${dist.lib.dir}"  
+        includes ="**/*.jar" / -->
+    <copy todir = "${dist.lib.dir}">
+        <fileset dir ="${emailer.lib.dir}" />
+    </copy>          
+    <!--copy file ="${target.jar}"  todir="${smartfrog.dist.lib.dir}"/ -->
+  </target>
+
+  <!-- ========================================================== -->
+  <!-- default target -->
+  <!-- ========================================================== -->
+  <target name="default" depends="compile, compile-RMI, dist" description="default target" />
+
+</project>

@@ -1,0 +1,24 @@
+#! /bin/sh
+if ! test $SFHOME; then export SFHOME=$PWD; fi
+if ! test $SFPRIVATE; then export SFPRIVATE=$SFHOME/private; fi
+if ! test $SFHOSTNAME; then export SFHOSTNAME=host1; fi
+if [ -z $1 ] ; then
+   echo "Insufficient arguments to use sfTerminate"
+   echo "Usage: sfTerminate HostName ComponentName"
+exit
+fi 
+if [ $# -eq 1 ] && [ $1 == "-?" ];then
+   echo "Usage: sfTerminate HostName ComponentName"
+   exit
+elif [ $# -ne 2 ];then
+   echo "Insufficient arguments to use sfTerminate"
+   echo "Usage: sfTerminate HostName ComponentName"
+   exit
+fi 
+
+for i in $SFHOME/signedLib/*.jar; do CLASSPATH=$i:$CLASSPATH; done
+export CLASSPATH
+java   -Djava.security.manager -Djava.security.policy==$SFHOME/private/sf.policy \
+      -Dorg.smartfrog.sfcore.security.keyStoreName=$SFPRIVATE/$SFHOSTNAME/mykeys.st \
+      -Dorg.smartfrog.sfcore.security.propFile=$SFPRIVATE/$SFHOSTNAME/SFSecurity.properties \
+      org.smartfrog.SFSystem -a $2:TERMINATE:::$1: -e

@@ -1,0 +1,10 @@
+#! /bin/sh
+if ! test $SFHOME;
+then export SFHOME=$PWD; 
+fi
+
+export CLASSPATH=$SFHOME/lib/smartfrog.jar:$SFHOME/lib/sfServices.jar:$SFHOME/lib/sfTestCases.jar:$CLASSPATH
+export SERVER=localhost:8080
+# Please edit codebase if you have any other jar file in webserver
+export CODEBASE="http://$SERVER/sfExamples.jar"
+java "-Dorg.smartfrog.codebase=$CODEBASE" org.smartfrog.services.management.SFDeployDisplay $1 $2 $3 $4 $5 $6 $7 $8

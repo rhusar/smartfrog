@@ -1,0 +1,20 @@
+#! /bin/sh
+if ! test $SFHOME; then export SFHOME=$PWD; fi
+if ! test $SFPRIVATE; then export SFPRIVATE=$SFHOME/private; fi
+if ! test $SFHOSTNAME; then export SFHOSTNAME=host1; fi
+if [ -z $1 ] ; then
+echo "Insufficent arguments to use sfRun"
+echo "Usage: sfRun URL [-e]"
+exit
+fi 
+if [ $1 == "-?" ];then
+echo "Usage: sfRun URL [-e]"
+exit
+fi 
+for i in $SFHOME/signedLib/*.jar; do CLASSPATH=$i:$CLASSPATH; done
+export CLASSPATH
+echo $CLASSPATH
+java -Djava.security.manager -Djava.security.policy==$SFPRIVATE/sf.policy \
+      -Dorg.smartfrog.sfcore.security.keyStoreName=$SFPRIVATE/$SFHOSTNAME/mykeys.st \
+      -Dorg.smartfrog.sfcore.security.propFile=$SFPRIVATE/$SFHOSTNAME/SFSecurity.properties \
+      org.smartfrog.SFSystem  -a :DEPLOY:$1::: $2
