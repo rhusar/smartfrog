@@ -36,8 +36,8 @@ import org.smartfrog.sfcore.reference.ReferenceResolver;
  * Components.
  * @see Copying
  */
-public interface ComponentDescription extends Copying, ReferenceResolver,
-    ComponentDeployer {
+public interface ComponentDescription extends Copying, ReferenceResolver
+    {
     /**
      * Get complete name for this description. This is a reference all the way
      * down from the root of the containment tree.

@@ -24,8 +24,6 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Enumeration;
 import java.util.Vector;
 
@@ -58,17 +56,6 @@ import java.io.InputStream;
 public class ComponentDescriptionImpl implements Serializable, Cloneable,
     ComponentDescription, MessageKeys {
 
-    /**
-     * Name of default deployer.
-     */
-    private final String DEFAULT_DEPLOYER =
-            "org.smartfrog.sfcore.processcompound.PrimProcessDeployerImpl";
-
-    /**
-     * Name of default implementation of ComponentDescription.
-     */
-    private final String COMPONENT_DESCRIPTION =
-        "org.smartfrog.sfcore.componentdescription.ComponentDescription";
 
     /** Context of attributes (key value pairs). */
     public Context context;
@@ -288,92 +275,6 @@ public class ComponentDescriptionImpl implements Serializable, Cloneable,
         }
 
         return null;
-    }
-
-    //
-    // ComponentDeployer
-    //
-
-    /**
-     * Deploy description. Constructs the real deployer using getDeployer
-     * method and forwards to it. If name is set, name is resolved on target,
-     * the new target deploy resolved and deployment forwarded to the new
-     * target
-     *
-     * @param name name of contained description to deploy (can be null)
-     * @param parent parent for deployed component
-     * @param params parameters for description
-     *
-     * @return Reference to component
-     *
-     * @throws SmartFrogDeploymentException In case failed to forward deployment
-     * or deploy
-     */
-    public Prim deploy(Reference name, Prim parent, Context params)
-        throws SmartFrogDeploymentException {
-        try {
-            // resolve name to description and forward to deployer there
-            if (name != null) {
-                Object tmp = sfResolve(name);
-
-                if (!(tmp instanceof ComponentDescription)) {
-                    SmartFrogResolutionException.notComponent(name, getCompleteName());
-                }
-
-                return ((ComponentDescription) tmp).deploy(null, parent, params);
-            }
-            return getDeployer().deploy(name, parent, params);
-        } catch (SmartFrogException sfex){
-            throw (SmartFrogDeploymentException) SmartFrogDeploymentException.forward(sfex);
-        }
-    }
-
-    /**
-     * Gets the real deployer for this description target. Looks up
-     * sfDeployerClass. If not found. PrimProcessDeployerImpl is used. The
-     * constructor used is the one taking a compnent description as an
-     * argument
-     *
-     * @return deployer for target
-     *
-     * @throws SmartFrogException failed to construct target deployer
-     * @see org.smartfrog.sfcore.processcompound.PrimProcessDeployerImpl
-     */
-    protected ComponentDeployer getDeployer() throws SmartFrogException {
-        String className = (String) sfResolveId(SmartFrogCoreKeys.SF_DEPLOYER_CLASS);
-
-        if (className == null) {
-            className = DEFAULT_DEPLOYER;
-        }
-
-        try {
-            Class deplClass = SFClassLoader.forName(className);
-            Class[] deplConstArgsTypes = { SFClassLoader.
-                    forName(COMPONENT_DESCRIPTION) };
-            Constructor deplConst = deplClass.
-                                getConstructor(deplConstArgsTypes);
-            Object[] deplConstArgs = { this };
-
-            return (ComponentDeployer) deplConst.newInstance(deplConstArgs);
-        } catch (NoSuchMethodException nsmetexcp) {
-            throw new SmartFrogDeploymentException(MessageUtil.formatMessage(
-                    MSG_METHOD_NOT_FOUND, className, "getConstructor()"),
-                nsmetexcp, null, context);
-        } catch (ClassNotFoundException cnfexcp) {
-            throw new SmartFrogDeploymentException(MessageUtil.formatMessage(
-                    MSG_CLASS_NOT_FOUND, className), cnfexcp, null, context);
-        } catch (InstantiationException instexcp) {
-            throw new SmartFrogDeploymentException(MessageUtil.formatMessage(
-                    MSG_INSTANTIATION_ERROR, className), instexcp, null, context);
-        } catch (IllegalAccessException illaexcp) {
-            throw new SmartFrogDeploymentException(MessageUtil.formatMessage(
-                    MSG_ILLEGAL_ACCESS, className, "newInstance()"), illaexcp,
-                null, context);
-        } catch (InvocationTargetException intarexcp) {
-            throw new SmartFrogDeploymentException(MessageUtil.formatMessage(
-                    MSG_INVOCATION_TARGET, className), intarexcp,
-                null, context);
-        }
     }
 
     /**
