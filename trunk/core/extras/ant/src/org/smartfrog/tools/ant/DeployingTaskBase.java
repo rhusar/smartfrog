@@ -139,7 +139,7 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
             //add the codebase for extra stuff
             String codelist = Codebase.getCodebaseString(codebase);
             log("Codebase set to " + codelist, Project.MSG_VERBOSE);
-            addJVMProperty(SmartFrogJVMProperties.CODEBASE_PROPERTY, codelist);
+            addJVMProperty(SmartFrogJVMProperties.CODEBASE, codelist);
         }
     }
 
