@@ -165,12 +165,11 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener {
         } else {
             treeModel = new DeployTreeModelSF();
         }
-
         systemViewTree = new JTree(treeModel);
-
+        //specialized cell renderer
+        systemViewTree.setCellRenderer(new DeployEntryCellRenderer());
         //Listen for when the selection changes.
         systemViewTree.addTreeSelectionListener(this);
-
         //systemViewJTree.setPreferredSize(new Dimension(200, 100));
     }
 
