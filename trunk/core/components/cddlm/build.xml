@@ -413,8 +413,8 @@
     <touch file="${soapapi.touch.file}"/>
   </target>
 
-  <target name="touch-wsdl" depends="init-soap"> 
-      <delete file="${soapapi.touch.file}"/>
+  <target name="touch-wsdl" depends="init-soap">
+    <delete file="${soapapi.touch.file}"/>
   </target>
 
 
@@ -460,14 +460,6 @@
       />
     <copy-useful-files src="${src.dir}" dest="${build.classes.dir}"/>
     <copy-useful-files src="${soap.server.dir}" dest="${build.classes.dir}"/>
-  </target>
-
-
-  <!-- ========================================================== -->
-  <!-- buid the client -->
-  <!-- ========================================================== -->
-  <target name="compile-client"
-    depends="compile">
     <depend srcdir="${client.src.dir}"
       destdir="${build.client.classes.dir}"
       cache="${build.client.dir}/depends"
@@ -478,6 +470,15 @@
       destdir="${build.client.classes.dir}"
       />
     <copy-useful-files src="${client.src.dir}" dest="${build.client.classes.dir}"/>
+  </target>
+
+
+  <!-- ========================================================== -->
+  <!-- buid the client -->
+  <!-- ========================================================== -->
+  <target name="compile-client"
+    depends="compile">
+    <!-- this is now a referral to compile -->
   </target>
 
 
@@ -603,10 +604,10 @@
 
   <target name="demo-init" depends="declare-classpaths">
     <property name="console.package" value="org.cddlm.client.console"/>
-    <property name="host" value="localhost" />
-    <property name="port" value="5050" />
+    <property name="host" value="localhost"/>
+    <property name="port" value="5050"/>
     <property name="url" value="http://${host}:${port}/axis/services/cddlm"/>
-    <property name="url.command" value="-url:${uri}" />
+    <property name="url.command" value="-url:${uri}"/>
     <presetdef name="operation">
       <java
         fork="true"
@@ -630,7 +631,7 @@
     <operation
       classname="${console.package}.ShowServerStatus">
       <arg value="${url.command}"/>
-      </operation>
+    </operation>
   </target>
 
   <target name="demo-applicationStatus" depends="demo-init"

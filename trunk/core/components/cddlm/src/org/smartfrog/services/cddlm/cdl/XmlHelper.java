@@ -19,7 +19,11 @@
  */
 package org.smartfrog.services.cddlm.cdl;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXNotRecognizedException;
+import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
@@ -28,6 +32,12 @@ import org.xml.sax.helpers.XMLReaderFactory;
  */
 
 public class XmlHelper {
+
+    /**
+     * log
+     */
+    private static final Log log = LogFactory.getLog(XmlHelper.class);
+
     public static final String PARSER_NAME = "org.apache.xerces.parsers.SAXParser";
 
     /**
@@ -43,26 +53,45 @@ public class XmlHelper {
         XMLReader xerces = null;
         try {
             xerces = XMLReaderFactory.createXMLReader(PARSER_NAME);
-            xerces.setFeature(
+            setFeature(xerces,
                     "http://apache.org/xml/features/validation/schema",
                     validate);
-            xerces.setFeature(
+            setFeature(xerces,
                     "http://apache.org/xml/features/validation/schema-full-checking",
                     validate);
-            xerces.setFeature(
+            setFeature(xerces,
                     "http://apache.org/xml/features/standard-uri-conformant",
                     true);
-            xerces.setFeature(
+            setFeature(xerces,
                     "http://apache.org/xml/features/disallow-doctype-decl",
-                    false);
-            xerces.setFeature(
+                    true);
+            setFeature(xerces,
                     "http://xml.org/sax/features/external-general-entities",
                     false);
         } catch (SAXException e) {
-
             throw e;
-
         }
         return xerces;
     }
+
+    /**
+     * set a feature on a parser, log any failure but continue This helps us get
+     * past variants in xerces version on the old classpath
+     *
+     * @param xerces
+     * @param name
+     * @param validate
+     */
+    private static void setFeature(XMLReader xerces, String name,
+            boolean validate) {
+        try {
+            xerces.setFeature(name,
+                    validate);
+        } catch (SAXNotRecognizedException e) {
+            log.error("SAXNotRecognizedException seting " + name);
+        } catch (SAXNotSupportedException e) {
+            log.error("SAXNotSupportedException seting " + name);
+        }
+    }
+
 }
