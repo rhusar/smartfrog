@@ -190,7 +190,6 @@ public class DeployProcessor extends Processor {
      */
     private boolean deploySmartFrog(MessageElement descriptorElement)
             throws AxisFault {
-        descriptorElement.getValue();
         String applicationName = job.getName();
         String version = descriptorElement.getAttributeNS(
                 descriptorElement.getNamespaceURI(), "version");
