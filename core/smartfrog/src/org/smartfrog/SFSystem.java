@@ -419,8 +419,8 @@ public class SFSystem implements MessageKeys {
     /**
      * Select target process compound using host and subprocess names
      *
-     * @param String host host name.
-     * @param String subProcess subProcess name.
+     * @param  host host name. If null, assumes localhost.
+     * @param  subProcess subProcess name (optional; can be null)
      *
      * @return ProcessCompound the target process compound
      *
@@ -612,8 +612,12 @@ public class SFSystem implements MessageKeys {
                 cfgDesc.setResult(ConfigurationDescriptor.Result.FAILED,null,thr);
                 //@Todo Improve error message!
                 //Logger.log( thr +"\n - ConfigurationDescriptor:" +cfgDesc.toString()+"\n");
-            } else Logger.logQuietly(thr);
-            if (throwException) throw SmartFrogException.forward(thr);
+            } else {
+                Logger.logQuietly(thr);
+            }
+            if (throwException) {
+                throw SmartFrogException.forward(thr);
+            }
         }
         return cfgDesc;
     }
@@ -698,7 +702,7 @@ public class SFSystem implements MessageKeys {
      * Run SmartFrog as configured. This call does not exit smartfrog, even if the OptionSet requests it.
      * This entry point exists so that alternate entry points (e.g. Ant Tasks) can start the system.
      * Important: things like the output streams can be redirected if the
-     * @param  Vector of Configuration  opts with list of ConfigurationDescriptors
+     * @param  cfgDescriptors Vector of Configuration  opts with list of ConfigurationDescriptors
      *         @see ConfigurationDescriptor
      * @return the root process
      * @throws SmartFrogException for a specific SmartFrog problem
