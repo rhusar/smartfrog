@@ -159,7 +159,7 @@ public class JettyHelper extends ComponentHelper {
 
         ServletHttpContext context=null;
 
-        Prim ancestor = findAncestorImplementing("ServletContextIntf", -1);
+        Prim ancestor = findAncestorImplementing("org.smartfrog.services.jetty.contexts.ServletContextIntf", -1);
         if(ancestor!=null) {
             context = (ServletHttpContext) ancestor.
                     sfResolveId(ServletContextIntf.CONTEXT);

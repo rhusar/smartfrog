@@ -25,6 +25,7 @@ import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.services.jetty.JettyHelper;
 import org.mortbay.http.HttpHandler;
+import org.mortbay.jetty.servlet.ServletHttpContext;
 
 import java.rmi.RemoteException;
 
@@ -46,7 +47,9 @@ public class HandlerImpl extends PrimImpl {
      * @throws java.rmi.RemoteException
      */
     protected void addHandler(HttpHandler handler) throws SmartFrogException, RemoteException {
-        jettyHelper.addHandler(handler);
+	     ServletHttpContext cxt;
+             cxt=jettyHelper.getServletContext(true);
+             cxt.addHandler(handler);
     }
 
 }
