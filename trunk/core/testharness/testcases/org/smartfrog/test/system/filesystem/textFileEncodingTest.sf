@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2005 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -35,7 +35,7 @@ sfConfig extends Compound {
     textFile extends TextFile {
         file LAZY temp1;
         text "UTF16";
-        encoding "utf16";
+        encoding "UTF-16";
     }
 
     //the filename

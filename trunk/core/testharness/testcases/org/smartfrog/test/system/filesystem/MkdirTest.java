@@ -38,17 +38,22 @@ public class MkdirTest  extends SmartFrogTestBase {
 
     public void testWorking() throws Throwable {
         Prim application = deployExpectingSuccess(FILES + "mkdirTestWorking.sf", "mkdirFileTestWorking");
-        String filename = application.sfResolve("newdir", (String) null, true);
-        terminateApplication(application);
-        File file = new File(filename);
+        File file = null;
         try {
+            String filename = application.sfResolve("newdir",
+                    (String) null,
+                    true);
+            file = new File(filename);
             //now verify we clean up
             assertTrue(file.exists());
             assertTrue(file.isDirectory());
         } finally {
             //cleanup
-            file.delete();
-            assertFalse(file.exists());
+            terminateApplication(application);
+            if(file!=null) {
+                file.delete();
+                assertFalse(file.exists());
+            }
         }
     }
 }

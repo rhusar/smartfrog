@@ -52,16 +52,14 @@ public class TextFileImpl extends SelfDeletingFileImpl implements TextFile {
         String text = sfResolve(ATTR_TEXT, (String) null, false);
         String encoding = null;
         if (text != null) {
-            encoding = sfResolve(ATTR_TEXT_ENCODING, DEFAULT_TEXT_ENCODING, false);
+            encoding = sfResolve(ATTR_TEXT_ENCODING, (String)null, true);
             Writer wout=null;
             try {
                 OutputStream fout;
                 fout = new FileOutputStream(getFile());
                 wout = new OutputStreamWriter(fout, encoding);
-//                wout.append(text); // Java 1.5 ???
                 wout.write(text);
                 wout.flush();
-
                 wout.close();
             } catch (IOException ioe) {
                 if (wout != null) {
