@@ -64,6 +64,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.rmi.RemoteException;
 
 /**
@@ -405,17 +406,8 @@ public abstract class ConsoleOperation {
      */
     public DeploymentDescriptorType createSmartFrogDescriptor(File file)
             throws IOException {
-        InputStream in = new BufferedInputStream(new FileInputStream(file));
-        try {
-            String source = readIntoString(in);
-            return createSmartFrogDescriptor(source);
-        } finally {
-            try {
-                in.close();
-            } catch (IOException e) {
-
-            }
-        }
+        String source = readIntoString(file);
+        return createSmartFrogDescriptor(source);
     }
 
     /**
@@ -427,13 +419,35 @@ public abstract class ConsoleOperation {
      */
     public static String readIntoString(InputStream in) throws IOException {
         InputStreamReader reader = new InputStreamReader(in);
-        StringBuffer buffer = new StringBuffer();
+        StringWriter out = new StringWriter();
         char[] block = new char[1024];
         int read;
         while (((read = reader.read(block)) >= 0)) {
-            buffer.append(block);
+            out.write(block, 0, read);
         }
-        return buffer.toString();
+        out.flush();
+        return out.toString();
+    }
+
+    /**
+     * helper to read into a string
+     *
+     * @param file file to read
+     * @return
+     * @throws IOException
+     */
+    public static String readIntoString(File file) throws IOException {
+        InputStream in = new BufferedInputStream(new FileInputStream(file));
+        try {
+            String source = readIntoString(in);
+            return source;
+        } finally {
+            try {
+                in.close();
+            } catch (IOException e) {
+
+            }
+        }
     }
 
     /**
