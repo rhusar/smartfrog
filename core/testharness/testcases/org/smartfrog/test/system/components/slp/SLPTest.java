@@ -57,11 +57,12 @@ public void testCaseTCP38() throws Throwable
  public void testCaseTCN80() throws Throwable {
 //		Prim applicationtcn68 = deployExpectingSuccess("org/smartfrog/services/comm/slp/sf/SFSlpDA.sf", "DirectoryAgentTCN80");
 	     deployExpectingException(FILES+"tcn80.sf",
-                                 "tcn168",
-                                 "ServiceLocationException",
+                                 "tcn80",
+                                 "SmartFrogLifecycleException",
                                  "sfDeploy",
-                                 "ServiceLocationException",
-                                 " SLP: No service type given");
+                                 "SmartFrogResolutionException",
+                                 "Unresolved Reference: HERE serviceType");
+		 //Unresolved Reference: HERE serviceType 
     }
 
 
@@ -69,11 +70,11 @@ public void testCaseTCP38() throws Throwable
 public void testCaseTCN81() throws Throwable {
 //		Prim applicationtcn69 = deployExpectingSuccess("org/smartfrog/services/comm/slp/sf/SFSlpDA.sf", "DirectoryAgentTCN81");
         deployExpectingException(FILES+"tcn81.sf",
-                                 "tcn169",
-                                 "ServiceLocationException",
+                                 "tcn81",
+                                 "SmartFrogLifecycleException",
                                  "sfDeploy",
-                                 "ServiceLocationException",
-                                 "No toAdvertise");
+                                 "SmartFrogException",
+                                 "Could not find 'toAdvertise' attribute");
 	
     }
 
@@ -86,7 +87,7 @@ public void testCaseTCN82() throws Throwable {
                                  "SmartFrogLifecycleException",
                                  "sfDeploy",
                                  "SmartFrogException",
-                                 " SLP: No service type given");
+                                 "SLP: No service type given");
 		terminateApplication(applicationtcn70);
     }
 	
@@ -151,9 +152,6 @@ public void testCaseTCN83() throws Throwable
                                  "sfDeploy",
                                  "SmartFrogResolutionException",
                                  "SLP: No service found");
-		
-		
-		
 
 			
 }
