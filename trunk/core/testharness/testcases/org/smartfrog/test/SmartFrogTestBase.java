@@ -256,6 +256,7 @@ public abstract class SmartFrogTestBase extends TestCase {
      */
     public void assertContains(String source, String substring, String cfgDescMsg) {
         assertNotNull("No string to look for ["+substring+"]",source);
+        assertNotNull("No substring ", substring);
         assertTrue("Did not find ["+substring+"] in ["+source+"]"+"\n, Result:"+cfgDescMsg,
                 source.indexOf(substring)>=0);
     }
