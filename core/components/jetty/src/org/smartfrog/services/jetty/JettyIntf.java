@@ -32,4 +32,6 @@ public interface JettyIntf extends Remote {
     String JETTY_HOME = "jettyhome";
 
     String JETTY_SERVER = "Jetty Server";
+    
+    String SERVER = "server";
 }
