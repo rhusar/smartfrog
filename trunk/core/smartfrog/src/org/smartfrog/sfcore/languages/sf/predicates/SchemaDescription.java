@@ -30,6 +30,8 @@ import org.smartfrog.sfcore.languages.sf.PhaseAction;
 import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferencePart;
+import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.logging.LogFactory;
 
 /**
  * Defines the basic schema description implementation.
@@ -45,6 +47,7 @@ public class SchemaDescription extends BasePredicate implements PhaseAction {
     private Reference bindingRef = new Reference(ReferencePart.here("binding"));
     private Reference classRef = new Reference(ReferencePart.here("class"));
     private Reference descriptionRef = new Reference(ReferencePart.here("description"));
+    LogSF log=LogFactory.getLog("SFCoreLog");
 
     /**
      * Describes the attributes of a schema.
@@ -121,16 +124,27 @@ public class SchemaDescription extends BasePredicate implements PhaseAction {
                 }
             }
 
-            System.out.print("    ");
+          /*            System.out.print("    ");
             System.out.print(description);
             System.out.print(" (");
             System.out.print(name);
-            System.out.print("):    ");
+            System.out.print("):    ");*/
+            String infoStr="     "+ "\n" + description + "\n" +  " (" + name + "):    " ;
+            if (log.isInfoEnabled())
+            	log.info(infoStr);
+            
+           
+            
             if (testValue == null)
-                System.out.print("--not set--");
-            else
-                System.out.print(testValue);
-            System.out.print("\n");
+             //  System.out.print("--not set--");
+            if (log.isInfoEnabled())
+            	log.info("--not set--"+"\n");
+            
+            else{
+            //System.out.print(testValue);
+            if (log.isInfoEnabled())
+            	log.info(testValue + "\n");
+            }
         }
     }
 
@@ -156,8 +170,10 @@ public class SchemaDescription extends BasePredicate implements PhaseAction {
         if (description == null) description = "";
 
 
-        System.out.print("component " + parentref);
-        System.out.println(":  " + description + "\n");
+        //   System.out.print("component " + parentref);
+     //   System.out.println(":  " + description + "\n");
+        if (log.isInfoEnabled())
+        	log.info("component " + parentref+ "\n" +":  " + description + "\n");
 
         for (Enumeration keys = context.keys(); keys.hasMoreElements();) {
             Object key = keys.nextElement();
@@ -175,7 +191,11 @@ public class SchemaDescription extends BasePredicate implements PhaseAction {
                     throw (SmartFrogCompileResolutionException)e;
             }
         }
-        System.out.println("\n\n\n");
+     // System.out.println("\n\n\n");
+        
+        if (log.isInfoEnabled())
+        	log.info("\n\n\n");
+
 
     }
 
