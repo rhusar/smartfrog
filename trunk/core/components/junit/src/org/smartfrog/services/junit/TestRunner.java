@@ -30,7 +30,8 @@ import java.rmi.RemoteException;
  */
 
 
-public interface TestRunner extends Remote {
+public interface TestRunner extends Remote , TestResultAttributes
+ {
     /**
      * name of the fork attribute
      */
@@ -50,15 +51,6 @@ public interface TestRunner extends Remote {
      */
     String ATTR_FAILONERROR = "failOnError";
 
-    /**
-     * read only -after start
-     */
-    String ATTR_ERRORS  = "errors";
-
-    /**
-     * read only -after start
-     */
-    String ATTR_FAILURES = "failures";
 
     String ATTR_THREAD_PRIORITY="threadPriority";
 

@@ -23,6 +23,8 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogInitException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.common.Logger;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.compound.CompoundImpl;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.prim.Prim;
@@ -57,6 +59,11 @@ public class TestRunnerComponent extends CompoundImpl implements TestRunner, Run
     private int threadPriority=Thread.NORM_PRIORITY;
 
     private Thread worker=null;
+
+    private int errors = 0;
+    private int failures = 0;
+    private int testsStarted = 0;
+    private int testsRun = 0;
 
     public TestRunnerComponent() throws RemoteException {
         helper = new ComponentHelper(this);
@@ -185,13 +192,39 @@ public class TestRunnerComponent extends CompoundImpl implements TestRunner, Run
                 TestSuite suiteComponent=(TestSuite) o;
                 suiteComponent.bind(getConfiguration());
                 successful &=suiteComponent.runTests();
+                updateResultAttributes((Prim)suiteComponent);
                 //break out if the thread is interrupted
                 if(Thread.currentThread().isInterrupted()) {
                     return false;
                 }
             }
         }
+        sfReplaceAttribute(ATTR_FINISHED, Boolean.TRUE);
         return successful;
+    }
+
+    /**
+     * extract test info from a suite
+     * @param testSuite
+     * @throws SmartFrogResolutionException
+     * @throws RemoteException
+     */
+    private void retrieveResultAttributes(Prim testSuite) throws SmartFrogResolutionException, RemoteException {
+        errors+=testSuite.sfResolve(ATTR_ERRORS,0,false);
+        failures += testSuite.sfResolve(ATTR_FAILURES, 0, false);
+        testsRun += testSuite.sfResolve(ATTR_TESTS, 0, false);
+    }
+
+    /**
+     * fetch the test results from the Test suite, then update our own values
+     * @param testSuite
+     */
+    private void updateResultAttributes(Prim testSuite) throws SmartFrogRuntimeException, RemoteException {
+        retrieveResultAttributes(testSuite);
+        sfReplaceAttribute(ATTR_ERRORS, new Integer(errors));
+        sfReplaceAttribute(ATTR_FAILURES, new Integer(failures));
+        sfReplaceAttribute(ATTR_TESTS, new Integer(testsRun));
+        sfReplaceAttribute(ATTR_SUCCESSFUL, Boolean.valueOf(errors == 0 && failures == 0));
     }
 
     public TestListener getListener() {
