@@ -1,0 +1,6 @@
+#illegal format for options
+#Usage: java -D... org.smartfrog.SFSystem [-h HOST_NAME [-p PROCESS_NAME]] 
+#(-t NAME)* (-c URL | -n NAME URL)* [-e] or: java -D... 
+#org.smartfrog.SFSystem -?
+
+$SFHOME/bin/sfStart http://org/smartfrog/examples/Counter/Example.sf

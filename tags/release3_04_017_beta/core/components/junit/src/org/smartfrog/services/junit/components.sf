@@ -1,0 +1,154 @@
+/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+/*
+ this file declares the junit components
+ */
+
+
+
+ /**
+  * Include the core smartfrog components.
+  */
+#include "/org/smartfrog/components.sf"
+#include "/org/smartfrog/predicates.sf"
+#include "/org/smartfrog/services/os/java/components.sf"
+
+
+/**
+ * the schema for tests
+ if: boolean
+ conditionally execute the test only when if=true
+ unless: boolean
+ conditionally execute the test only when unless=false
+ package
+ name of a package that contains multiple test cases/classes.
+ subpackages: boolean
+ optionally search down subpackages
+ excludes: String list
+ list of test cases classes not to execute.
+
+ */
+
+TestSuiteSchema extends Schema {
+    name extends String;
+    if extends OptionalBoolean;
+    unless extends OptionalBoolean;
+}
+
+JUnitTestSuiteSchema extends Schema {
+    //the package that all classes are in
+    //e.g "org.example.test"
+    package extends String;
+    //the classes in the package.
+    //e.g. ["test1","subpackage.test2"]
+    classes extends Vector;
+}
+
+/**
+ * test suites run the tests; different frameworks can have different suites
+ */
+TestSuite extends Prim {
+    testSuiteSchema extends TestSuiteSchema;
+    if true;
+    unless false;
+}
+
+
+/**
+ * This is the JUnit test suite; it runs the junit tests in all classes that are in the
+ * package tree with the matching pattern, and/or the named class
+ */
+JUnitTestSuite extends TestSuite {
+    junitTestSuiteSchema extends JUnitTestSuiteSchema;
+    //name "JUnit";
+    sfClass "org.smartfrog.services.junit.JUnitTestSuiteImpl";
+}
+
+/**
+ * this is a declaration of a test listener
+ */
+
+TestListener extends Prim {
+
+   testListenerSchema extends Schema {
+       name extends String;
+   }
+}
+
+/**
+ * console listener just outputs to the console
+ */
+ConsoleListener extends TestListener {
+    sfClass "org.smartfrog.services.junit.listeners.ConsoleListenerComponent";
+    name "ConsoleListener";
+}
+
+/**
+ * XML listener is the most complex beast
+ */
+XmlListenerSchema extends Schema {
+/** output directories are compusory and can be a path or a File ref*/
+    outputDirectory extends Compulsory ;
+    //outputFile extends Compulsory ;
+    //XML preamble: comments, XSLT references, etc.
+    preamble extends OptionalString;
+    useHostname extends Boolean;
+}
+
+XmlListener extends TestListener {
+    xmlListenerSchema extends XmlListenerSchema;
+    sfClass "org.smartfrog.services.junit.listeners.XmlListenerComponent";
+    useHostname true;
+    name "XmlListener";
+}
+
+/**
+ * this is the one we use for testing. It buffers stuff and can be queried about it
+ */
+BufferingListener extends TestListener {
+    sfClass "org.smartfrog.services.junit.listeners.BufferingListenerComponent";
+    name "BufferingListener";
+}
+
+/**
+ * and the test runner
+ */
+
+TestRunnerSchema extends Schema {
+    listener extends CD;
+    keepGoing extends OptionalBoolean;
+    failOnError extends OptionalBoolean;
+    threadPriority extends OptionalInteger;
+    runTests extends Boolean;
+}
+
+/**
+ * the base test runner has a console listener automatically
+ */
+TestRunner extends Compound {
+    sfClass "org.smartfrog.services.junit.TestRunnerComponent";
+    testRunnerSchema extends TestRunnerSchema;
+    listener extends ConsoleListener ;
+    failOnError true;
+    runTests true; 
+}
+
+
