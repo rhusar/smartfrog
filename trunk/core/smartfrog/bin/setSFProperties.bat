@@ -1,29 +1,21 @@
 @echo off
-rem ------------------------------------------------------
-rem SF ENV PROPERTIES  - Please edit with your preferences
-rem ------------------------------------------------------
 
-rem -- User libs directory --
-rem set SFUSERHOME=%SFHOME%\mylibs
+rem  ------------------------------------------------------
+rem  SF ENV PROPERTIES  - Please edit with your preferences
+rem  ------------------------------------------------------
 
-rem -- default.ini and default.sf without security --
-set SFDEFAULTINI=-Dorg.smartfrog.iniFile=%SFHOME%\bin\default.ini
-set SFDEFAULTSF=-Dorg.smartfrog.sfcore.processcompound.sfDefault.sfDefault=%SFHOME%\bin\default.sf
+rem Uncomment to enable Dynamic ClassLoading
+rem  set SFDYNAMICCLASSLOADING_ON=ENABLED
 
-rem -- Dynamic classloading: CODEBASE --
-rem http://eb97201.india.hp.com:8080/sfExamples.jar
-set SERVER=eb97201.india.hp.com:8080
-set SERVER=15.196.4.45
-set CODEBASE="http://%SERVER%/sfExamples.jar" 
-set SFCODEBASE=-Dorg.smartfrog.codebase=%CODEBASE%
-
-rem -- Security properties --
-rem set SFSECURITY=-Djava.security.policy==%SFHOME%\private\sf.policy -Djava.security.manager -Dorg.smartfrog.sfcore.security.keyStoreName=%SFHOME%\private\mykeys.st -Dorg.smartfrog.sfcore.security.propFile=%SFHOME%\private\SFSecurity.properties 
-rem set SFSECURITY=-Dorg.smartfrog.sfcore.security.debug=true 
-rem set SFDEFAULTINI=-Dorg.smartfrog.iniFile=org/smartfrog/default.ini
-rem set SFDEFAULTSF=-Dorg.smartfrog.sfcore.processcompound.sfDefault.sfDefault=org/smartfrog/default.sf
+rem Uncomment to enable Security
+rem  set SFSECURITY_ON=ENABLED
 
 rem -------------------End user properties-------------------------
+
+
+call "%SFHOME%\bin\setSFDefaultProperties"
+if defined SFDYNAMICCLASSLOADING_ON call "%SFHOME%\bin\setSFDynamicClassLoadingProperties"
+if defined SFSECURITY_ON call "%SFHOME%\bin\setSFSecurityProperties"
 
 
 if defined SFSECURITY   set SFCMDPARAMETERS=%SFCMDPARAMETERS% %SFSECURITY%
