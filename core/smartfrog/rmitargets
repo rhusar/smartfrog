@@ -6,6 +6,7 @@ org/smartfrog/sfcore/workflow/eventbus/EventCompoundImpl.class
 org/smartfrog/sfcore/workflow/components/DoNothing.class
 org/smartfrog/sfcore/workflow/components/EventSend.class
 org/smartfrog/sfcore/workflow/components/OnEvent.class
+org/smartfrog/sfcore/workflow/components/EventQueue.class
 org/smartfrog/sfcore/workflow/components/Terminator.class
 org/smartfrog/sfcore/workflow/components/EventCounter.class
 org/smartfrog/sfcore/workflow/combinators/DetachingCompoundImpl.class
