@@ -46,6 +46,7 @@ import java.util.List;
  *
  */
 public abstract class SmartFrogTask extends TaskBase {
+    protected static final String ROOT_PROCESS = "rootProcess";
 
     public SmartFrogTask() {
 
@@ -61,10 +62,6 @@ public abstract class SmartFrogTask extends TaskBase {
      */
     protected String host;
 
-    /**
-     * name of an app
-     */
-    protected String applicationName;
 
     /**
      * source files
@@ -236,18 +233,7 @@ public abstract class SmartFrogTask extends TaskBase {
         return host;
     }
 
-    protected String getApplicationName() {
-        return applicationName;
-    }
 
-
-    /**
-     *  set the app name; optional on some actions
-     * @param applicationName
-     */
-    public void setApplicationName(String applicationName) {
-        this.applicationName = applicationName;
-    }
 
     /**
      * An ini file can contain data that overrides the basic settings.
@@ -289,13 +275,16 @@ public abstract class SmartFrogTask extends TaskBase {
      */
     protected abstract String getTaskTitle();
 
+    protected void addArg(String value) {
+        smartfrog.createArg().setValue(value);
+    }
     /**
      * adds the hostname to the task
      */
     protected void addHostname() {
         if (host != null) {
-            smartfrog.createArg().setValue("-h");
-            smartfrog.createArg().setValue(host);
+            addArg( "-h");
+            addArg(host);
         }
     }
 
@@ -303,7 +292,7 @@ public abstract class SmartFrogTask extends TaskBase {
      * set a flag to tell the runtime to exit after actioning something
      */
     protected void addExitFlag() {
-        smartfrog.createArg().setValue("-e");
+        addArg("-e");
     }
 
     /**
@@ -365,13 +354,15 @@ public abstract class SmartFrogTask extends TaskBase {
     }
 
 
-    protected boolean addApplicationName(String command) {
-        if (applicationName != null) {
-            smartfrog.createArg().setValue(command);
-            smartfrog.createArg().setValue(applicationName);
-            return true;
-        }
-        return false;
+    /**
+     *  add a command
+     *
+     * @param command
+     * @param name
+     */
+    protected  void addApplicationCommand(String command, String name) {
+        addArg(command);
+        addArg(name);
     }
 
 
@@ -460,43 +451,12 @@ public abstract class SmartFrogTask extends TaskBase {
     }
 
     /**
-     * the name and url of an application. Name is optional; descriptor is not.
-     * Interpretation of descriptor is by smartfrog; it includes resources as well
-     * as codebase urls
+     * check no host;
+     * @throws org.apache.tools.ant.BuildException if a host is defined
      */
-    public static class Application {
-        private String name;
-        private String descriptor;
-
-        /**
-         * optional name of the app
-         * @param name
-         */
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        /**
-         * not so optional location of the app
-         * @param descriptor
-         */
-        public void setDescriptor(String descriptor) {
-            this.descriptor = descriptor;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public String getDescriptor() {
-            return descriptor;
-        }
-
-        public void validate() {
-            if(descriptor==null) {
-                String appname=name==null?"application":name;
-                throw new BuildException("no descriptor provided for "+appname);
-            }
+    protected void checkNoHost() {
+        if(host!=null) {
+            throw new BuildException("host cannot be set on this task");
         }
     }
 

@@ -25,14 +25,18 @@ import org.apache.tools.ant.BuildException;
  * Start an SF application; that deployes it remotely
  * @ant.task category="SmartFrog"
  */
-public class StartApplication extends SmartFrogTask {
+public class StartApplication extends DeployingTaskBase {
+
+
+    public StartApplication() {
+        setFailOnError(true);
+    }
 
     /**
      * starting the smartfrog is a a mapper to -h %1 -n %2 %3 -e
      * @throws BuildException
      */
     public void execute() throws BuildException {
-        addApplicationName("-n");
         enableFailOnError();
         addExitFlag();
         execSmartfrog("Could not deploy");

@@ -73,10 +73,9 @@ public class StartDaemon extends SmartFrogTask {
     public void execute() throws BuildException {
         setStandardSmartfrogProperties();
         addSmartfrogProperty("org.smartfrog.sfcore.processcompound.sfProcessName",
-                "rootProcess");
+                ROOT_PROCESS);
         addIniFile();
         addHostname();
-        addApplicationName("-t");
         if(spawn) {
             smartfrog.setSpawn(spawn);
         }

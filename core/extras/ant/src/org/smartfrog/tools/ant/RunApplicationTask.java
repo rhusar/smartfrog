@@ -20,13 +20,21 @@
 
 package org.smartfrog.tools.ant;
 
+import org.apache.tools.ant.BuildException;
 
 
 /**
  * Run an application by deploying it locally; only return from ant after it has finished.
  */
-public class RunApplicationTask extends SmartFrogTask {
+public class RunApplicationTask extends DeployingTaskBase {
 
+    public RunApplicationTask() {
+    }
+
+    public void init() throws BuildException {
+        super.init();
+        setFailOnError(true);
+    }
 
     /**
      * get the title string used to name a task
@@ -34,6 +42,22 @@ public class RunApplicationTask extends SmartFrogTask {
      * @return the name of the task
      */
     protected String getTaskTitle() {
-        return "sf-deploy";
+        return "sf-run";
     }
+
+    /**
+     * run a task
+     * @throws org.apache.tools.ant.BuildException
+     *          if something goes wrong with the build
+     */
+    public void execute() throws BuildException {
+        checkNoHost();
+        enableFailOnError();
+        checkApplicationsDeclared();
+        deployApplications();
+        addExitFlag();
+        execSmartfrog("Could not run");
+    }
+
+
 }

@@ -59,7 +59,7 @@ public class StopDaemonTest  extends TaskTestBase {
     }
 
     public void testNoFailure() {
-        expectLogContaining("testFailure", CONNECT_FAILURE);
+        expectLogContaining("testNoFailure", CONNECT_FAILURE);
     }
 
 
