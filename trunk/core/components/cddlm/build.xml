@@ -391,7 +391,7 @@
 
             <!-- first thread runs the daemon -->
             <sequential>
-                <antcall target="start-daemon"/>
+                <antcall target="start-daemon-if-needed"/>
             </sequential>
 
             <!-- this is the next thread -->
@@ -426,10 +426,9 @@
            >
         <sysproperty key="test.classes.dir"
             value="${test.classes.dir}" />
-      <classpath>
-        <path refid="test.classpath"/>
-        <pathelement location="${test.classes.dir}"/>
-      </classpath>
+     <classpath>
+       <path refid="tests.run.classpath" />
+     </classpath>
       <batchtest todir="${test.data.dir}" if="unit.tests.enabled">
         <!-- bulk test case -->
         <fileset dir="${test.classes.dir}">
