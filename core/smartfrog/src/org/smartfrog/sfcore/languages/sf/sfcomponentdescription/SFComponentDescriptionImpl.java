@@ -196,9 +196,9 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
      */
     public Object sfResolve(Reference r, int index)
         throws SmartFrogResolutionException {
-	if (!r.getEager() && (index == 0)) {
-	    return r;
-	}
+    if (!r.getEager() && (index == 0)) {
+        return r;
+    }
         return r.resolve(this, index);
     }
 
@@ -440,16 +440,16 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
     *
     * @throws  SmartFrogCompileResoutionException failed to deploy resolve
     */
-   public void deployResolve() throws SmartFrogCompileResolutionException {
+   public void linkResolve() throws SmartFrogCompileResolutionException {
       ResolutionState resState = new ResolutionState();
 
       do {
          resState.clear();
-         doDeployResolve(resState);
+         doLinkResolve(resState);
       } while (resState.moreToResolve());
 
       if (resState.unresolved().size() > 0) {
-         throw SmartFrogCompileResolutionException.deployResolution(
+         throw SmartFrogCompileResolutionException.linkResolution(
                  MessageUtil.formatMessage(MSG_UNRESOLVED_REFERENCE),
                  getCompleteName(), resState.unresolved(),null);
       }
@@ -463,7 +463,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
     *
     * @throws  SmartFrogCompileResolutionException failed to deploy resolve
     */
-   public void doDeployResolve(ResolutionState resState) throws SmartFrogCompileResolutionException {
+   public void doLinkResolve(ResolutionState resState) throws SmartFrogCompileResolutionException {
       Object key = null;
       Object value = null;
       Object result = null;
@@ -476,7 +476,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
          // If value is reference resolve and place result in its place
          if (value instanceof ComponentResolver) {
             // value is deploy resolvable
-            ((ComponentResolver) value).doDeployResolve(resState);
+            ((ComponentResolver) value).doLinkResolve(resState);
          } else if ((value instanceof Reference) &&
                (((Reference) value).getEager())) {
             try {
@@ -584,14 +584,14 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
        res = new ComponentDescriptionImpl(null, context, eager);
 
        for (Enumeration e = context.keys(); e.hasMoreElements(); ) {
-	   Object key = e.nextElement();
-	   Object value = res.getContext().get(key);
-	   
-	   if (value instanceof SFComponentDescription) {
-	       value = ((SFComponentDescription) value).sfAsComponentDescription();
-	       ((ComponentDescription) value).setParent(res);
-	       context.put(key, value);
-	   }
+       Object key = e.nextElement();
+       Object value = res.getContext().get(key);
+
+       if (value instanceof SFComponentDescription) {
+           value = ((SFComponentDescription) value).sfAsComponentDescription();
+           ((ComponentDescription) value).setParent(res);
+           context.put(key, value);
+       }
        }
        return res;
    }
@@ -659,7 +659,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
              actOn = (SFComponentDescription) sfResolve(sfConfigRef);
            }
            else if (name.equals("link")) {
-             actOn.deployResolve();
+             actOn.linkResolve();
            }
            else if (name.equals("print")) {
              org.smartfrog.sfcore.common.Logger.log(actOn.toString());
