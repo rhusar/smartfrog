@@ -9,12 +9,12 @@ if ! test "$SFHOME"; then export SFHOME=$PWD; fi
 
 #java $SFCMDPARAMETERS org.smartfrog.SFSystem $*
 if test "$SFCODEBASE" && ! test "$SFSECURITY"; then
-        java "$SFDEFAULTINI" "$SFCODEBASE" org.smartfrog.SFSystem $*
+        java "$SFDEFAULTINI" "$SFCODEBASE" org.smartfrog.SFSystem "$@"
 elif test "$SFSECURITY" && ! test "$SFCODEBASE"; then
-        java "$SFDEFAULTINI" "$SFSECURITY" org.smartfrog.SFSystem $*
+        java "$SFDEFAULTINI" "$SFSECURITY" org.smartfrog.SFSystem "$@"
 elif test "$SFCODEBASE" && test "$SFSECURITY"; then
-        java "$SFDEFAULTINI" "$SFCODEBASE" "$SFSECURITY" org.smartfrog.SFSystem $*
+        java "$SFDEFAULTINI" "$SFCODEBASE" "$SFSECURITY" org.smartfrog.SFSystem "$@"
 else
-        java "$SFDEFAULTINI" org.smartfrog.SFSystem $*
+        java "$SFDEFAULTINI" org.smartfrog.SFSystem "$@"
 fi
      
