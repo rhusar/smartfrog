@@ -37,7 +37,7 @@ public class SequenceTest extends SmartFrogTestBase {
     public void testComponentFailureInSequence() throws Throwable {
         deployExpectingException(FILES+"testSequence.sf",
                 "sequencefail",
-                "SmartFrogLifeCycleException",
+                "SmartFrogLifecycleException",
                 "Class not found");
     }
 }
