@@ -37,7 +37,6 @@ TestBase extends JUnitTestSuite {
  * local junit tests
  */
 LocalJUnitTestRunner extends TestRunner {
-//    sfCodeBase PROPERTY org.smartfrog.codebase
 }
 
 /**

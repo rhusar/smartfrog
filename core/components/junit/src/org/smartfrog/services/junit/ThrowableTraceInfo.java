@@ -187,6 +187,12 @@ public class ThrowableTraceInfo implements Serializable, Cloneable {
         if(classname==null) {
             return "uninitialized";
         }
-        return classname+"::"+message;
+        String location;
+        if(stack!=null &&  stack.length>0 && stack[0]!=null) {
+            location="@"+stack[0].toString();
+        } else {
+            location="";
+        }
+        return classname+"::"+message+ " "+location;
     }
 }

@@ -55,9 +55,16 @@ public class TestRunnerComponent extends CompoundImpl implements TestRunner, Run
      */
     private boolean finished=false;
 
+    /**
+     * should we fail messily if a test failed
+     */
     private boolean failOnError=true;
 
     private int threadPriority=Thread.NORM_PRIORITY;
+
+    /**
+     * run tests on startup
+     */
 
     /**
      * thread to run the tests
@@ -67,12 +74,14 @@ public class TestRunnerComponent extends CompoundImpl implements TestRunner, Run
     /**
      * keeper of statistics
      */
-    private Statistics stats;
+    private Statistics statistics=new Statistics();
 
     /**
      * who listens to the tests? This is potentially remote
      */
     private RunnerConfiguration configuration = new RunnerConfiguration();
+
+    public static final String ERROR_TESTS_IN_PROGRESS = "Component is already running tests";
 
     /**
      * constructor
@@ -83,7 +92,13 @@ public class TestRunnerComponent extends CompoundImpl implements TestRunner, Run
         helper = new ComponentHelper(this);
     }
 
+    private synchronized Thread getWorker() {
+        return worker;
+    }
 
+    private synchronized void setWorker(Thread worker) {
+        this.worker = worker;
+    }
 
     /**
      * validate our settings, bail out if they are invalid
@@ -136,11 +151,12 @@ public class TestRunnerComponent extends CompoundImpl implements TestRunner, Run
         threadPriority=sfResolve(ATTR_THREAD_PRIORITY,threadPriority,false);
         validate();
         //execute the tests in all the suites attached to this class
-
-        worker = new Thread(this);
-        worker.setName("tester");
-        worker.setPriority(threadPriority);
-        worker.start();
+        boolean runTests= sfResolve(ATTR_RUN_TESTS_ON_STARTUP, true, true);
+        if(runTests) {
+            startTests();
+        } else {
+            log.info("Tests will only start when directly invoked");
+        }
     }
 
     /**
@@ -176,10 +192,56 @@ public class TestRunnerComponent extends CompoundImpl implements TestRunner, Run
      */
     public synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
-        if(worker.isAlive()) {
-            worker.interrupt();
+        Thread thread = getWorker();
+        if(thread!=null && thread.isAlive()) {
+            thread.interrupt();
         }
     }
+
+    /**
+     * run the test
+     *
+     * @throws java.rmi.RemoteException
+     */
+    public synchronized boolean startTests() throws RemoteException, SmartFrogException {
+        if(getWorker()!=null) {
+            throw new SmartFrogException(ERROR_TESTS_IN_PROGRESS);
+        }
+        Thread thread = new Thread(this);
+        thread.setName("tester");
+        thread.setPriority(threadPriority);
+        log.info("Starting new tester at priority "+threadPriority);
+        setWorker(thread);
+        thread.start();
+        return true;
+    }
+
+    /**
+     * this is the thread entry point; runs the tests in a new thread.
+     *
+     * @see Thread#run()
+     */
+    public void run() {
+        setFinished(false);
+        log.info("Beginning tests");
+        try {
+            if (!executeTests()) {
+                throw new SmartFrogException("Tests Failed");
+            }
+        } catch (RemoteException e) {
+            catchException(e);
+        } catch (SmartFrogException e) {
+            catchException(cachedException);
+        } finally {
+            log.info("Completed tests");
+            //declare ourselves finished
+            setFinished(true);
+            //unset the worker field
+            setWorker(null);
+        }
+    }
+
+
 
     /**
      * run all the tests; this is the routine run in the worker thread.
@@ -190,7 +252,7 @@ public class TestRunnerComponent extends CompoundImpl implements TestRunner, Run
      * @throws SmartFrogException
      * @throws RemoteException
      */
-    public boolean runTests() throws SmartFrogException, RemoteException {
+    public boolean executeTests() throws SmartFrogException, RemoteException {
 
         try {
             boolean successful=true;
@@ -210,6 +272,7 @@ public class TestRunnerComponent extends CompoundImpl implements TestRunner, Run
             }
             return successful;
         } finally {
+            //this is here as it can throw an exception
             sfReplaceAttribute(ATTR_FINISHED, Boolean.TRUE);
         }
     }
@@ -220,8 +283,8 @@ public class TestRunnerComponent extends CompoundImpl implements TestRunner, Run
      * @param testSuite
      */
     private void updateResultAttributes(Prim testSuite) throws SmartFrogRuntimeException, RemoteException {
-        stats.retrieveAndAdd(testSuite);
-        stats.updateResultAttributes(this,false);
+        statistics.retrieveAndAdd(testSuite);
+        statistics.updateResultAttributes(this,false);
     }
 
 
@@ -247,41 +310,34 @@ public class TestRunnerComponent extends CompoundImpl implements TestRunner, Run
     }
 
 
-    /**
-     * this is a thread entry point; runs the tests in a new thread.
-     *
-     * @see Thread#run()
-     */
-    public void run() {
-        setFinished(false);
-        try {
-            if(!runTests()) {
-                throw new SmartFrogException("Tests Failed");
-            }
-        } catch (RemoteException e) {
-            setCachedException(e);
-        } catch (SmartFrogException e) {
-            setCachedException(cachedException);
-        }
-
-        setFinished(true);
-    }
-
-
-
     public synchronized Throwable getCachedException() {
         return cachedException;
     }
 
-    public synchronized void setCachedException(Throwable cachedException) {
+    public synchronized void catchException(Throwable cachedException) {
+        if(cachedException !=null) {
+            ThrowableTraceInfo tti=new ThrowableTraceInfo(cachedException);
+            log.info("Caught exception in tests "+tti,cachedException);
+        }
         this.cachedException = cachedException;
     }
 
-    public synchronized boolean isFinished() {
+    public synchronized boolean isFinished() throws RemoteException {
         return finished;
     }
 
     public synchronized void setFinished(boolean finished) {
         this.finished = finished;
+    }
+
+    /**
+     * Get test execution statistics
+     *
+     * @return stats
+     *
+     * @throws java.rmi.RemoteException
+     */
+    public Statistics getStatistics() throws RemoteException {
+        return statistics;
     }
 }

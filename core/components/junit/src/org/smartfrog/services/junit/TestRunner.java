@@ -49,7 +49,15 @@ public interface TestRunner extends Remote , TestResultAttributes
     String ATTR_FAILONERROR = "failOnError";
 
 
+    /**
+     * thread priority; 1 to 9
+     */
     String ATTR_THREAD_PRIORITY="threadPriority";
+
+    /**
+     * boolean: run tests on startup
+     */
+    String ATTR_RUN_TESTS_ON_STARTUP="runTests";
 
 
     TestListenerFactory getListenerFactory() throws RemoteException;
@@ -61,6 +69,14 @@ public interface TestRunner extends Remote , TestResultAttributes
      *
      * @throws RemoteException
      */
-    boolean runTests() throws RemoteException, SmartFrogException;
+    boolean startTests() throws RemoteException, SmartFrogException;
 
+    /**
+     * Get test execution statistics
+     * @return stats
+     * @throws RemoteException
+     */
+    Statistics getStatistics() throws RemoteException;
+
+    boolean isFinished() throws RemoteException;
 }
