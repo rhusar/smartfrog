@@ -37,22 +37,22 @@ import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 
 /**
- * Default implementation of distributed logger. This logger is deployed as 
+ * Default implementation of distributed logger. This logger is deployed as
  * a smartfrog component and uses RMI for distributed logging. It uses logging
  * APIs provided by JDK.
  * @Author Ashish Awasthi
- */ 
+ */
 public class SFLoggerImpl extends PrimImpl implements Prim, SFLogger {
     //default values of the attributes
-    private String logFile = "smartfrog.log"; 
-    private String logsDir = "logs"; 
+    private String logFile = "smartfrog.log";
+    private String logsDir = "logs";
     private Handler fileHandler = null;
     private Logger logger = null;
     private boolean logToConsole = true;
     private boolean logToFile = true;
     private String loggerName = "default";
     private String logFormatter = "SimpleFormatter";
-    
+
 
     /**
      * Constructs SmartFrog logger object.
@@ -67,31 +67,31 @@ public class SFLoggerImpl extends PrimImpl implements Prim, SFLogger {
      *
      * @throws SmartFrogException in case of error in deploying
      * @throws RemoteException in case of network/emi error
-     */ 
-    public synchronized void sfDeploy() throws SmartFrogException, 
+     */
+    public synchronized void sfDeploy() throws SmartFrogException,
                                                             RemoteException {
         super.sfDeploy();
         logger = Logger.getLogger(loggerName);
-        
+
         //read logging handlers attributes
         logToConsole = sfResolve(CONSOLE_LOGGING, logToConsole, false);
         logToFile = sfResolve(FILE_LOGGING, logToFile, false);
-        
+
         //add console handler
-        if(logToConsole) { 
+        if(logToConsole) {
             logger.addHandler(new ConsoleHandler());
         }
         // add file handler
-        if (logToFile) { 
+        if (logToFile) {
             try {
                 logsDir = sfResolve(LOG_DIR, logsDir, false);
                 logFile = sfResolve (LOG_FILE, logFile, false);
-                logFormatter = sfResolve (LOG_FORMATTER, 
+                logFormatter = sfResolve (LOG_FORMATTER,
                                                 logFormatter, false);
                 File dir = new File(logsDir);
                 dir.mkdir();
                 fileHandler = new FileHandler(logsDir+File.separator+logFile);
-                Class classFormatter = Class.forName(logFormatter);
+                Class classFormatter = org.smartfrog.sfcore.security.SFClassLoader.forName(logFormatter);
                 Formatter formatter = (Formatter) classFormatter.newInstance();
                 fileHandler.setFormatter(formatter);
                 logger.addHandler(fileHandler);
@@ -100,11 +100,11 @@ public class SFLoggerImpl extends PrimImpl implements Prim, SFLogger {
             }
         }
     }
-    
+
     /**
      * Closes all the handlers and terminates the logger component.
      *
-     */ 
+     */
     public synchronized void sfTerminateWith(TerminationRecord tr) {
         // close all the handlers
         try {
@@ -118,10 +118,10 @@ public class SFLoggerImpl extends PrimImpl implements Prim, SFLogger {
         super.sfTerminateWith(tr);
     }
     /** SmartFrog Components Life Cycle Methods End */
-    
-    
+
+
     /** Logging Methods End */
-    
+
     /**
      * Logs Info message.
      * @param msg the log message
