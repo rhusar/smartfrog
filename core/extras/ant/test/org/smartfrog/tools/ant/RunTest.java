@@ -93,4 +93,24 @@ public class RunTest extends TaskTestBase {
         assertLogContaining("1");
     }
 
+    /**
+     * test that turning stack tracing on generates a log when we deploy something invalid
+     */
+    public void testStackTrace() {
+        expectBuildExceptionContaining("testStackTrace", "deploy failure",
+                "Could not run");
+        assertLogContaining("Warning: stack trace logging enabled");
+        assertLogContaining("at org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException.typeResolution");
+    }
+
+
+    /**
+     * sub directory file references must also work
+     */
+    public void testSubdir() {
+        expectBuildExceptionContaining("testSubdir", "deploy failure",
+                "Could not run");
+        assertLogContaining("Reference not found, Unresolved Reference: sfClass");
+    }
+
 }

@@ -331,7 +331,7 @@ public abstract class SmartFrogTask extends TaskBase {
     }
 
     protected void setStandardSmartfrogProperties() {
-        addSmartfrogPropertyIfDefined("org.smartfrog.logger.logStrackTrace",
+        addSmartfrogPropertyIfDefined("org.smartfrog.logger.logStackTrace",
             logStackTraces);
         addSmartfrogPropertyIfDefined("org.smartfrog.ProcessCompound.sfRootLocatorPort",
             port);

@@ -69,8 +69,14 @@
   <target name="find-testutil" depends="init">
     <property name="testutil.jar" 
       location="${ant.home}/build/lib/ant-testutil.jar"/>
+    <path id="testutil.classpath">
+      <pathelement location="${testutil.jar}"/>
+    </path>
+    
     <available property="testutil.found"
-      file="${testutil.jar}" />
+      classname="org.apache.tools.ant.BuildFileTest" 
+      classpathref="testutil.classpath"
+      ignoresystemclasses="false"/>
   </target>
 
   <target name="require-testutil" depends="find-testutil">
@@ -99,7 +105,7 @@
     <path id="tests.compile.classpath">
       <path refid="smartfrog.classpath"/>
       <pathelement location="${smartfrog.tasks.jar}"/>
-      <pathelement location="${testutil.jar}"/>
+      <path refid="testutil.classpath"/>
     </path>
     
     <sf-javac-with-ant 
