@@ -27,6 +27,11 @@ import java.util.Hashtable;
 import java.util.StringTokenizer;
 import java.util.Vector;
 import java.rmi.RemoteException;
+import java.io.IOException;
+import java.net.UnknownHostException;
+import java.rmi.ConnectException;
+
+
 
 import org.smartfrog.sfcore.common.MessageKeys;
 import org.smartfrog.sfcore.common.MessageUtil;
@@ -235,17 +240,52 @@ public class ConfigurationDescriptor implements MessageKeys{
               messageError.append(" when trying "); messageError.append(Action.type[actionType].toString());
               messageError.append(" of ");
               messageError.append(message);
-              if (resultMessage!=null) {
+              if ((resultMessage!=null)||(resultException!=null)) {
                   messageError.append(separator);
-                  messageError.append("\n   Error:"); messageError.append(resultMessage.toString());
-              }
-              if (resultException!=null) {
-                  messageError.append(separator);
-                  messageError.append("\n   Exception:"); messageError.append(resultException.getMessage());
+                  messageError.append("\n   Error:");
+                  if (resultMessage!=null) {
+                     resultMessage.toString();
+                  }
+                  if (resultException!=null) {
+                      messageError.append("\n   "+parseException(resultException));
+                  }
               }
               result= messageError.toString();
           }
           return result;
+    }
+
+    /**
+     * Generates a user friendly message for certain exceptions.
+     * @param thr Exception
+     * @return message
+     */
+    private String parseException (Throwable thr){
+        StringBuffer messageError = new StringBuffer();
+        if (thr instanceof SmartFrogException){
+            //messageError.append(((SmartFrogException)thr).toString("\n   "));
+        } else if (thr instanceof UnknownHostException){
+          //Logger.log(MessageUtil.formatMessage(MSG_UNKNOWN_HOST, opts.host), uhex);
+          messageError.append( MessageUtil.formatMessage(MSG_UNKNOWN_HOST, host));
+        } else if (thr instanceof ConnectException){
+          //Logger.log(MessageUtil.formatMessage(MSG_CONNECT_ERR, opts.host), cex);
+          messageError.append(MessageUtil.formatMessage(MSG_CONNECT_ERR, host));
+        } else if (thr instanceof RemoteException) {
+            //Logger.log(MessageUtil.formatMessage(MSG_REMOTE_CONNECT_ERR,opts.host), rmiEx);
+            messageError.append(MessageUtil.formatMessage(MSG_REMOTE_CONNECT_ERR,host));
+        } else if (thr instanceof Exception) {
+            //Logger.log(MessageUtil.formatMessage(MSG_UNHANDLED_EXCEPTION), ex);
+            messageError.append(MessageUtil.formatMessage(MSG_UNHANDLED_EXCEPTION));
+        }
+
+        if (thr instanceof SmartFrogException) {
+            messageError.append("  ");
+            messageError.append(((SmartFrogException)thr).toString("\n     "));
+        } else {
+            messageError.append("\n     ");
+            messageError.append(thr.toString());
+        }
+        return messageError.toString();
     }
 
 
@@ -453,7 +493,8 @@ public class ConfigurationDescriptor implements MessageKeys{
      * @param reference
      */
     private void setDeployReference(String reference){
-        if (reference.equals(" ")){
+
+        if (reference.trim().equals("")){
             return;
         }
         this.getOptions().put(SF1Options.SFCONFIGREF, new Reference (reference));

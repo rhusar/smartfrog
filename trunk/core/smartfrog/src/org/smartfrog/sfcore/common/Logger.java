@@ -54,6 +54,8 @@ public class Logger implements MessageKeys {
      * @param ex a Throwable object to be logged
      */
     public static void log(Throwable ex) {
+        if (ex==null) return;
+        System.err.println(ex.toString());
         if (logStackTrace) {
           System.err.println(" ");
           System.err.println(" ");
@@ -66,7 +68,6 @@ public class Logger implements MessageKeys {
           System.err.println(" ");
           System.err.println(" ");
         }
-        System.err.println(ex.toString());
     }
 
     /**
@@ -75,6 +76,8 @@ public class Logger implements MessageKeys {
      * @param sfex SmartFrogException to be logged
      */
     public static void log (SmartFrogException sfex){
+        if (sfex==null) return;
+        System.err.println((sfex).toString("\n   "));
         if (logStackTrace) {
             System.err.println(" ");
             System.err.println(" ");
@@ -88,7 +91,6 @@ public class Logger implements MessageKeys {
             System.err.println(" ");
             System.err.println(" ");
         }
-        System.err.println((sfex).toString("\n   "));
     }
 
 
