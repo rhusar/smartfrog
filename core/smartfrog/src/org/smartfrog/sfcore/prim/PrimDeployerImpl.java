@@ -86,7 +86,8 @@ public class PrimDeployerImpl implements ComponentDeployer, MessageKeys {
 
         try {
             // create instance
-            Prim dComponent = (Prim) getPrimClass().newInstance();
+            final Class primClass = getPrimClass();
+            Prim dComponent = (Prim) primClass.newInstance();
 
             // deploy component after wiping out the parentage of any
             // descriptions in the context. Prim is not a valid parent, so

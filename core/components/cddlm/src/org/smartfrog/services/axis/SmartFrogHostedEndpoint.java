@@ -40,9 +40,11 @@ public class SmartFrogHostedEndpoint {
      * dynamically create stuff pre-configured.
      * @param owner
      */
+
     static public void setOwner(AxisImpl owner) {
-        DeploymentEndpoint.setOwner(owner);
+        SmartFrogHostedEndpoint.owner=owner;
     }
+
 
     /**
      * get the owner
