@@ -30,11 +30,11 @@ For more information: www.smartfrog.org
  */
 
 Application extends Sequence {
-    commandLine "echo default command";
+    message "echo default command";
     filename "/tmp/default";
     fileURL "http://defaultHost/defaultfile";
     time 10000;                                  // default time in millisecs
-    sfSyncTerminate "true";
+    sfSyncTerminate true;
 
     actions extends LAZY {
     a extends Copyfile {
@@ -42,10 +42,10 @@ Application extends Sequence {
         fromURL ATTRIB fileURL;
     }
     b extends During {
-        sfSyncTerminate "true";                //make sure child stops before telling parent
+    sfSyncTerminate true;
         time PARENT:ATTRIB time;               //avoid a loop..!
         action extends LAZY RunDaemon {
-            commandLine PARENT:ATTRIB commandLine; //avoid a loop..!
+            message PARENT:ATTRIB message; //avoid a loop..!
         }
     }
     c extends Removefile {
@@ -62,11 +62,11 @@ Application extends Sequence {
 WebServer extends Application {
     file "webServerCode";
     fileURL "http://codeserver/webServerCode";
-    commandLine "httpd";
+    message "httpd";
 }
 
 AppServer extends Application {
     file "appServerCode";
     fileURL "http://codeserver/appServerCode";
-    commandLine "blustone";
+    message "blustone";
 }
