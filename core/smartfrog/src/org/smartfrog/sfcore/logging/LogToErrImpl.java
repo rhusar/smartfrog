@@ -219,11 +219,7 @@ public class LogToErrImpl implements LogToErr, Log, LogMessage, LogLevel, Serial
         buf.append(']');
 
         if ((showThreadName)&&(message!=null)) {
-            buf.append("["+Thread.currentThread().getName()+"]");
-        }
-
-        if ((showMethodCall)&&(message!=null)) {
-            buf.append(" * "+detective.findCaller(callDepth)+" * ");
+            buf.append("["+Thread.currentThread().getName()+"] ");
         }
 
         // Append the name of the log instance if so configured
@@ -242,6 +238,9 @@ public class LogToErrImpl implements LogToErr, Log, LogMessage, LogLevel, Serial
         // Append the message
         buf.append(String.valueOf(message));
 
+        if ((showMethodCall)&&(message!=null)) {
+            buf.append(" ** "+detective.findCaller(callDepth)+" ** ");
+        }
 
 //        if ((showPackageName)&&(message!=null)) {
 //         // Append the package name
