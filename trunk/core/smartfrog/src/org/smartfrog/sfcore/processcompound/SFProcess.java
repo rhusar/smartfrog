@@ -225,6 +225,55 @@ public class SFProcess implements MessageKeys {
     }
 
      private static boolean processCompoundTerminated = false;
+
+    /**
+     * signal handler for control-C events
+     */
+    private static class InterruptHandler implements SignalHandler {
+
+        private SignalHandler oldHandler;
+
+        public void handle(Signal sig) {
+            if (!processCompoundTerminated) {
+                processCompoundTerminated = true;
+                if (processCompound != null) {
+                    try {
+                        Logger.log("Terminating sfDaemon gracefully!!");
+                        processCompound.sfTerminate(new TerminationRecord(TerminationRecord.NORMAL,
+                                "sfDaemon forced to terminate ",
+                                ((Prim) processCompound).sfCompleteName()));
+                    } catch (RemoteException re) {
+                        Logger.log(re);
+                        //log and ignore
+                    } catch (Throwable thr) {
+                        Logger.log(thr);
+                    }
+                }
+            } else {
+                Logger.log("sfDaemon killed!");
+                System.exit(0);
+            }
+        }
+
+        /**
+         * bind to a signal. On HP-UX+cruise control this fails with an error,
+         * one we dont see on the command line.
+         * This handler catches the exception and logs it, so that smartfrog
+         * keeps running even if graceful shutdown is broken.
+         * @param name name of interrupt to bind to.
+         */
+        public void bind(String name) {
+            try {
+                oldHandler=Signal.handle(new Signal(name), this);
+            } catch (IllegalArgumentException e) {
+                //this happens when binding fails. In this situation, warn, but keep going
+                Logger.log("Failed to set control-C handler -is JVM running with -Xrs set?");
+                Logger.log(e);
+            }
+        }
+    }
+
+
     /**
      * Deploys the local process compound, if not already there
      *
@@ -239,34 +288,7 @@ public class SFProcess implements MessageKeys {
             return processCompound;
         }
 
-        Signal.handle(new Signal("INT"), new SignalHandler () {
-
-            public void handle(Signal sig) {
-                if (!processCompoundTerminated) {
-                    processCompoundTerminated = true;
-                    if (processCompound != null) {
-                        try {
-                            Logger.log(
-                                "Terminating sfDaemon gracefully!!");
-                            processCompound.sfTerminate(new TerminationRecord(
-                                TerminationRecord.NORMAL,
-                                "sfDaemon forced to terminate ",
-                                ( (Prim) processCompound).sfCompleteName()));
-                        }
-                        catch (RemoteException re) {
-                            Logger.log(re);
-                            //log and ignore
-                        }
-                        catch (Throwable thr) {
-                            Logger.log(thr);
-                        }
-                    }
-               }else {
-                   Logger.log("sfDaemon killed!");
-                   System.exit(0);
-               }
-            }
-        });
+        new InterruptHandler().bind("INT");
 
         ComponentDescription descr = (ComponentDescription) getProcessCompoundDescription()
                                                                 .copy();
