@@ -163,6 +163,10 @@ public class TelnetImpl extends PrimImpl implements Telnet,
                 }catch (InterruptedException e) {
                     //ignore
                 }
+                
+                // wait for prompt to return.
+                boolean getPrompt = waitForString(inpStream, shellPrompt, timeout);         // CJB
+                
                 // check if command was successfully executed
                 if(checkCmdExecStatus) {
                 String errMsg = (String) cmdsFailureMsgs.get(i);
@@ -173,6 +177,7 @@ public class TelnetImpl extends PrimImpl implements Telnet,
                         throw new SmartFrogTelnetException(cmd, errMsg);
                     }
                 }
+                
             }
             // check if it should terminate by itself
             if(shouldTerminate) {
