@@ -18,7 +18,7 @@ import java.lang.reflect.Method;
  * logging.
  *
  */
-public class LogImpl implements LogSF, Serializable {
+public class LogImpl implements LogSF, LogRegistration, Serializable {
 
     /** Default Log object */
     protected Log localLog = null;

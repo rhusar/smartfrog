@@ -57,7 +57,7 @@ public  class LogFactory {
            try {
                if (registeredWithCoreLog)
                   //@TODO what happens when it changes it log level - needs to be fixed!
-                  (getLog(SmartFrogCoreKeys.SF_CORE_LOG)).register(prim.sfCompleteName().toString(), log);
+                  ((LogRegistration)(getLog(SmartFrogCoreKeys.SF_CORE_LOG))).register(prim.sfCompleteName().toString(), log);
             } catch (Throwable thr){
               throw (SmartFrogLogException)SmartFrogLogException.forward(thr);
             }
@@ -80,7 +80,7 @@ public  class LogFactory {
             try {
                 if (registeredWithCoreLog)
                    //@TODO what happens when it changes it log level - needs to be fixed!
-                   getLog(SmartFrogCoreKeys.SF_CORE_LOG).register(name, log);
+                   ((LogRegistration)getLog(SmartFrogCoreKeys.SF_CORE_LOG)).register(name, log);
             } catch (Throwable thr){
               throw (SmartFrogLogException)SmartFrogLogException.forward(thr);
             }
