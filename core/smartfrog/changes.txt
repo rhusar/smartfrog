@@ -1,3 +1,8 @@
+release 3.04.005_beta CVS
+---------------------
+2004-Aug-24 Fix: ; in setSFProperties. Script breaks when using srcDir variable.
+2004-Aug-23 Fix: race condition during component termination: sfPing and sfIsTerminated
+
 release 3.04.004_beta
 ---------------------
 2004-Aug-20 Release date
