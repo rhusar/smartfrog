@@ -18,10 +18,21 @@ For more information: www.smartfrog.org
 
 */
 
+#include "/org/smartfrog/predicates.sf"
+
 // note that since Terminator extends EventPrim, event registrations can be given
+
 
 Terminator extends EventPrim {
     sfClass "org.smartfrog.sfcore.workflow.components.Terminator";
+
+    terminatorSchema extends Schema {
+        type extends String;
+        description extends String;
+        detachFirst extends Boolean;
+        kill extends CD;
+    }
+
     /*
     kill RefToComponent;
 */

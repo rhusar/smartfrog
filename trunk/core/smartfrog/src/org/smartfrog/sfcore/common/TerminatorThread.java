@@ -123,7 +123,7 @@ public class TerminatorThread extends Thread {
     }
 
     /**
-     * Run method used to trigger the treminatation of the component.
+     * Run method used to trigger the terminatation of the component.
      */
     public void run() {
         try {
