@@ -90,7 +90,8 @@ public class RunTest extends TaskTestBase {
     
     public void testResource() {
         executeTarget("testResource");
-        assertLogContaining("Successfully deployed components: [app]");
+        assertDeployed("app");
+        assertLogContaining("app");
         assertLogContaining("COUNTER: hello - here is a constructed message");
         assertLogContaining("value is 99");
         assertLogContaining("goodbye");
