@@ -20,10 +20,17 @@
 package org.smartfrog.services.cddlm;
 
 import org.apache.axis.AxisFault;
+import org.apache.axis.components.logger.LogFactory;
+import org.apache.commons.logging.Log;
 import org.smartfrog.SFSystem;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.Logger;
+import org.smartfrog.sfcore.common.MessageUtil;
+import org.smartfrog.sfcore.common.MessageKeys;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.reference.Reference;
 
 import java.rmi.RemoteException;
 
@@ -33,7 +40,13 @@ import java.rmi.RemoteException;
  *         created 04-Mar-2004 13:44:57
  */
 
-public class DeploymentEndpoint {
+public class DeploymentEndpoint extends SmartfrogHostedEndpoint {
+
+
+    /**
+     * our log
+     */
+    private Log log = LogFactory.getLog(this.getClass().getName());
 
 
     protected final static String[] languages= {
@@ -78,14 +91,21 @@ public class DeploymentEndpoint {
      * @param url
      * @throws AxisFault
      */
-    public void deployURL(String language, String hostname, String application, String url) throws RemoteException
+    public String deployURL(String language, String hostname, String application, String url) throws RemoteException
             {
         verifySupported(language);
-        boolean remote= hostname.length() != 0 && !"localhost".equalsIgnoreCase(hostname) ;
+        if(hostname.length() == 0) {
+            hostname="localhost";
+        }
+        boolean remote= !"localhost".equalsIgnoreCase(hostname) ;
         try {
+            log.info("Deploying "+url+" to "+hostname);
             SFSystem.deployAComponent(hostname,url,application,remote);
+            return "urn://"+ application;
         } catch (SmartFrogException exception) {
-            AxisFault.makeFault(exception);
+            throw AxisFault.makeFault(exception);
+        } catch (Exception e) {
+            throw AxisFault.makeFault(e);
         }
     }
 
@@ -102,9 +122,43 @@ public class DeploymentEndpoint {
         Prim obj = ((Prim) obj.sfResolveHere(token));
         obj.sfTerminate(tr);
         */
-        throw new AxisFault("Not implemented yet");
+        try {
+            Reference ownerName = null;
+            try {
+                ownerName = (((Prim) owner).sfCompleteName());
+            } catch (Exception ex) {
+                //ignore  //TODO: Check
+            }
+            try {
+                Prim appToUndeploy = (Prim) owner.sfResolveHere(application);
+                appToUndeploy.
+                        sfTerminate(new TerminationRecord("normal",
+                                "External Management Action", ownerName));
+            } catch (ClassCastException cce) {
+                try {
+                    if (application.equals("rootProcess")) {
+                        ((Prim) owner.sfResolve((Reference) owner.
+                                sfResolveHere(application))).
+                                sfTerminate(new TerminationRecord("normal",
+                                        "External Management Action", ownerName));
+                    }
+                } catch (Exception ex) {
+                    //TODO: Check exception handling
+                    if ((ex.getCause() instanceof java.net.SocketException) ||
+                            (ex.getCause() instanceof java.io.EOFException)) {
+                        Logger.log(MessageUtil.formatMessage(MessageKeys.MSG_SF_TERMINATED));
+                    } else {
+                        Logger.log(ex);
+                    }
+                }
+            }
+        } catch (RemoteException e) {
+            throw AxisFault.makeFault(e);
+        } catch (SmartFrogResolutionException e) {
+            throw AxisFault.makeFault(e);
+
+        }
+
     }
 
 }
-
-

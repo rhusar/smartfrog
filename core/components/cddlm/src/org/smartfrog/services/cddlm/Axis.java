@@ -39,7 +39,7 @@ public interface Axis extends Remote {
      * name of wsdd file
      */
 
-    public final static String WSDD_RESOURCE="wsddResource";
+    public final static String WSDD_RESOURCE="wsddDescriptor";
 
     /**
      * maximum number of threads
@@ -50,4 +50,6 @@ public interface Axis extends Remote {
      * maximum number of sessions
      */
     public final static String SESSIONS="sessions";
+
+    public final static String LIVENESS_PAGE="livenessPage";
 }

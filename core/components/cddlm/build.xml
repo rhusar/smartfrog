@@ -37,6 +37,10 @@ For more information: www.smartfrog.org
      After deploying, get the WSDL From
      http://localhost:5050/axis/services/cddlm?wsdl
      
+     Then deploy demos like
+     org/smartfrog/examples/subprocesses/subprocess.sf
+     org/smartfrog/examples/counter/example.sf
+     
 </description>
 
    <!-- override point -->
@@ -130,7 +134,7 @@ For more information: www.smartfrog.org
   <!-- ========================================================== -->
   <target name="parse" depends="init" 
     description="parse the cddlm descriptor">
-    <sf-parse file="${src.dir}/${deploy.sf}"/>
+    <sf-parse verbose="true" file="${src.dir}/${deploy.sf}"/>
   </target>
 
   <!-- ========================================================== -->
