@@ -26,6 +26,7 @@ import org.apache.tools.ant.taskdefs.Java;
 import org.apache.tools.ant.types.Assertions;
 import org.apache.tools.ant.types.Environment;
 import org.apache.tools.ant.types.PropertySet;
+import org.apache.tools.ant.types.Reference;
 
 import java.io.File;
 import java.util.LinkedList;
@@ -137,6 +138,10 @@ public abstract class SmartFrogTask extends TaskBase {
      */
     public static final long DEFAULT_TIMEOUT_VALUE = 60*10*1000L;
 
+    /**
+     * our security holder
+     */
+    private SecurityHolder securityHolder=new SecurityHolder();
 
     /**
      * add a file to the list
@@ -264,6 +269,22 @@ public abstract class SmartFrogTask extends TaskBase {
     }
 
     /**
+     * set a reference to the security types
+     * @param securityRef
+     */
+    public void setSecurityRef(Reference securityRef) {
+       securityHolder.setSecurityRef(securityRef);
+    }
+
+    /**
+     * set a security definition
+     * @param security
+     */
+    public void addSecurity(Security security) {
+        securityHolder.addSecurity(security);
+    }
+
+    /**
      * get the base java task with common config options
      *
      * @return a java task set up with forking, the entry point set to SFSystem, timeout maybe enabled
@@ -314,6 +335,7 @@ public abstract class SmartFrogTask extends TaskBase {
         this.failOnError = failOnError;
 
     }
+
 
     /**
      * assertions to enable in this program
