@@ -47,13 +47,13 @@ For more information: www.smartfrog.org
 
    <!-- override point -->
   <property file="build.properties" />
+  <property name="root.dir" location="../../"  />
 
-  <property name="root.dir" location=".."  />
   <!-- Import common stuff -->
-  <available file="../../common.xml" property="root.dir" value="../.."/> 
+  <!--available file="../../common.xml" property="root.dir" value="../.."/--> 
   <import file="${root.dir}/common.xml"/>
   
-  
+   <property name="is.component" value="true"  />
   <!-- ========================================================== -->
   <!-- ========================================================== -->
   <target name="init" depends="init-standard-output-dirs,use-smartfrog-tasks">
@@ -100,22 +100,11 @@ For more information: www.smartfrog.org
   <!-- this is an override, as we add a manifest -->
   <!-- create the jar -->
   <!-- ========================================================== -->
-  <target name="dist" depends="compile,rmi" 
-    description="create the jar files">
-    <jar jarfile="${target.jar}" 
-        basedir="${build.classes.dir}" 
-        includes="**/services/**"/>
-    <!--jar jarfile="${target.jar}" 
-        basedir="${build.classes.dir}" 
-        includes="**/services/**"
-	manifest ="${manifestName}"/-->
-    <copy todir = "${dist.lib.dir}">
+ 	<target name="dist" depends="common.dist" description="create the jar files">
+	 <copy todir = "${dist.lib.dir}">
         <fileset dir ="${lib.dir}" />
     </copy>   
-  <!--Uncomment to copy files to smartfrog dist directory.-->
-  <!--copy-useful-files src="${dist.lib.dir}" 
-        pattern="*.jar" dest="${smartfrog.dist.lib.dir}"/-->    
-  </target>
+	</target>
 
   <!-- ========================================================== -->
   <!-- this is an override -->

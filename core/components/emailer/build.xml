@@ -55,5 +55,8 @@ For more information: www.smartfrog.org
   <!-- create the jar -->
   <!-- ========================================================== -->
 	<target name="dist" depends="common.dist" description="create the jar files">
+	 <copy todir = "${dist.lib.dir}">
+        <fileset dir ="${lib.dir}" />
+    </copy>   
 	</target>
 </project>
