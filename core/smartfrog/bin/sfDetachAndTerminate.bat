@@ -10,7 +10,7 @@ if (%1) == () goto usage
 if (%2) == () goto usage
 if exist "%SFHOME%\jre\bin\java.exe" set path=%SFHOME%\jre\bin
 call %SFHOME%\bin\setClassPath
-java -Dorg.smartfrog.iniFile=%SFHOME%\bin\default.ini org.smartfrog.SFSystem -h %1 -d %2 -e
+java -Dorg.smartfrog.iniFile=%SFHOME%\bin\default.ini org.smartfrog.SFSystem -a %2:DETaTERM:::%1: -e
 GOTO end
 :usage
 echo Insufficient arguments to use sfDetachAndTerminate

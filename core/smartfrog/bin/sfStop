@@ -7,4 +7,5 @@ exit
 fi 
 for i in $SFHOME/lib/*.jar; do CLASSPATH=$i:$CLASSPATH; done
 export CLASSPATH
-java -Dorg.smartfrog.iniFile=$SFHOME/bin/default.ini  org.smartfrog.SFSystem -h $1 -t $2 -e
+export cmdSFSystem=java -Dorg.smartfrog.iniFile=$SFHOME/bin/default.ini org.smartfrog.SFSystem
+$cmdSFSystem -a $2:TERMINATE:::$1: -e

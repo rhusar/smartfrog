@@ -10,7 +10,8 @@ if (%1)==() GOTO usage
 if exist "%SFHOME%\jre\bin\java.exe" set path=%SFHOME%\jre\bin
 call %SFHOME%\bin\setClassPath
 echo "Stopping sfDaemon in %1"
-java org.smartfrog.SFSystem -h1 %1 -t rootProcess -e
+java -Dorg.smartfrog.iniFile=%SFHOME%\bin\default.ini org.smartfrog.SFSystem -a rootProcess:TERMINATE:::%1: -e
+
 GOTO end
 :usage
 echo Insufficient arguments to use sfStopDaemon
