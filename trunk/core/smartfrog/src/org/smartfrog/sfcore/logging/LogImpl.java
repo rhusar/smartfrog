@@ -112,7 +112,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
     public LogImpl (String name){
         //@TODO: load the default class from a SF definition
         // Similar for default deployer.
-        localLog=new LogToErr(name,currentLogLevel);
+        localLog=new LogToErr(name,LOG_LEVEL_ALL);
         logName = name;
     }
 
@@ -131,6 +131,9 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      */
     public void setLevel(int currentLogLevel) {
         this.currentLogLevel = currentLogLevel;
+        if (localLog instanceof LogLevel){
+           ((LogLevel)localLog).setLevel(currentLogLevel);
+        }
     }
 
     /**
@@ -689,7 +692,6 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
     }
 
    public void register(String name,Log log, int logLevel)  throws RemoteException, SmartFrogLogException{
-
        register(name,log);
        if (currentLogLevel>=logLevel){
          currentLogLevel=logLevel;

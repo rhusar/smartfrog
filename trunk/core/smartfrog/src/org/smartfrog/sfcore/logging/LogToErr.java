@@ -51,7 +51,7 @@ import java.util.Date;
  * to be included in output messages. Default is false.</li>
  * </ul>
  */
-public class LogToErr implements Log, LogMessage, Serializable {
+public class LogToErr implements Log, LogMessage, LogLevel, Serializable {
 
     /** Include the instance name in the log message? */
     protected static boolean showLogName = true;
