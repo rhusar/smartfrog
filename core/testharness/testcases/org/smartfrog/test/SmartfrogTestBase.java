@@ -160,28 +160,6 @@ public abstract class SmartfrogTestBase extends TestCase {
          } catch (Exception fault) {
             fail(fault.toString());
          }
-//            String message;
-//            if (deployedApp instanceof ConfigurationDescriptor) {
-//               message = ((ConfigurationDescriptor)deployedApp).statusString();
-//            } else {
-//               message = fault.toString();
-//            }
-//            assertContains(message, searchString, cfgDesc.statusString());
-//            if (containedExceptionName!=null) {
-//                Throwable cause = fault.getCause();
-//                assertNotNull("expected throwable of type "
-//                        +containedExceptionName,
-//                        cause);
-//                //verify the name
-//                assertThrowableNamed(cause, containedExceptionName, cfgDesc.statusString());
-//                //verify the contained text
-//                if (containedExceptionText!=null) {
-//                    String m2 = cause.getMessage();
-//                    assertContains(m2, containedExceptionText,cfgDesc.statusString() );
-//                }
-//
-//            }
-//        }
     }
 
     /**
