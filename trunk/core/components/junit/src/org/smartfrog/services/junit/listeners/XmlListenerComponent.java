@@ -179,13 +179,13 @@ public class XmlListenerComponent extends PrimImpl
      */
     private String lookupOutputDir() throws SmartFrogResolutionException,
             RemoteException {
-        String outputDir = FileImpl.lookupAbsolutePath(this,
+        String out = FileImpl.lookupAbsolutePath(this,
                 OUTPUT_DIRECTORY,
                 null,
                 null,
                 true,
                 null);
-        return outputDir;
+        return out;
     }
 
 

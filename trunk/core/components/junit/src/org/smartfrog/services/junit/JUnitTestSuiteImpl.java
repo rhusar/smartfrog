@@ -22,6 +22,7 @@ package org.smartfrog.services.junit;
 import junit.framework.AssertionFailedError;
 import junit.framework.Test;
 import junit.framework.TestResult;
+import junit.framework.TestCase;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogInitException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
@@ -76,6 +77,15 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
      */
     private HashMap testClasses;
 
+    /**
+     * track the active tests; used to build up full statistics
+     * on what a test does.
+     */
+    private HashMap startedTests;
+
+    /**
+     * listener for tests; set at binding time
+     */
     private TestListener listener;
 
     public JUnitTestSuiteImpl() throws RemoteException {
@@ -271,6 +281,9 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
                 suitename,
                 System.currentTimeMillis());
 
+        //reset the logs
+        startedTests = new HashMap();
+
         //now run all the tests
         try {
             boolean failed = false;
@@ -304,6 +317,7 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
             //mark the listener as null first, so that any failure to end the
             //suite doesnt affect our deref
             listener = null;
+            startedTests = null;
             //end the suite.
             l.endSuite();
         }
@@ -388,7 +402,7 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
      */
     public void addError(Test test, Throwable throwable) {
         stats.incErrors();
-        TestInfo info = new TestInfo(test, throwable);
+        TestInfo info = onEnd(test, throwable);
         try {
             getListener().addError(info);
         } catch (RemoteException e) {
@@ -412,7 +426,7 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
      */
     public void addFailure(Test test, AssertionFailedError error) {
         stats.incFailures();
-        TestInfo info = new TestInfo(test, error);
+        TestInfo info = onEnd(test, error);
         try {
             getListener().addFailure(info);
         } catch (RemoteException e) {
@@ -427,7 +441,7 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
      */
     public void endTest(Test test) {
         stats.incTestsRun();
-        TestInfo info = new TestInfo(test);
+        TestInfo info = onEnd(test, null);
         try {
             getListener().endTest(info);
         } catch (RemoteException e) {
@@ -439,10 +453,12 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
 
     /**
      * A test started.
+     * Note that if a test throws an exception in {@link TestCase#setUp()}
+     * then this callback is <i>not</i> invoked by Junit. We need to be
+     * aware of this fact.
      */
     public void startTest(Test test) {
-        stats.incTestsStarted();
-        TestInfo info = new TestInfo(test);
+        TestInfo info = onStart(test);
         try {
             getListener().startTest(info);
         } catch (RemoteException e) {
@@ -452,5 +468,62 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
         }
     }
 
+    /**
+     * note that a test has started by adding the current time
+     * to the {@link #startedTests} hashtable if it is not already there,
+     * and incrementing the started count in the statistics.
+     * If it is there, do nothing.
+     * @param test
+     */
+    public TestInfo onStart(Test test) {
+        TestInfo info = new TestInfo(test);
+        String testname=info.getText();
+        long start = registerStartTime(testname);
+        info.setStartTime(start);
+        return info;
+    }
+
+    /**
+     * file the start time;  if there already is one, then take that one instead.
+     * Will increment the started count in the statistics if needed.
+     * @param testname
+     * @return timestamp of test start.
+     */
+    private synchronized long registerStartTime(String testname) {
+        if(!startedTests.containsKey(testname)) {
+            long start = System.currentTimeMillis();
+            startedTests.put(testname,new Long(start));
+            stats.incTestsStarted();
+            return start;
+        } else {
+            return lookupStartTime(testname);
+        }
+    }
+
+    /**
+     * look up the start time
+     * @param testname test name
+     * @return start time
+     * @throws RuntimeException if there is no key of that name
+     */
+    private long lookupStartTime(String testname) {
+        return ((Long)startedTests.get(testname)).longValue();
+    }
+
+    /**
+     * call this when a test ends to set up the start and end times right.
+     * @param test test info
+     * @param fault optional fault detail
+     * @return
+     */
+    public synchronized TestInfo onEnd(Test test, Throwable fault) {
+        long endTime = System.currentTimeMillis();
+        TestInfo testInfo=new TestInfo(test,fault);
+        //force a start entry in there
+        long startTime= registerStartTime(testInfo.getText());
+        testInfo.setStartTime(startTime);
+        testInfo.setEndTime(endTime);
+        return testInfo;
+    }
 
 }
