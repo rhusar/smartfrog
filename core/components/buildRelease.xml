@@ -48,7 +48,8 @@ To use: ant -f buildRelease release
     <property name="year" value="2004"/>
 
     <property name="root.dir" location=".."  />
-    
+    <property name="dist" value="dist"/>   
+
     <echo message=""/>
     <echo message="==================================================================="/>
     <echo message="= ${Name.Components} - ${Name.Company} "/>
@@ -113,23 +114,42 @@ To use: ant -f buildRelease release
   <!-- release                                                             -->
   <!-- =================================================================== -->
   <target name="release" depends="init, initrelease" description="Creates zip with release packages"> 
-   <zip destfile="../releases/${Name.System}.${version}.${DSTAMP}.zip">
+	  
+   <zip destfile="../releases/${Name.System}.${version}.${DSTAMP}_DIST.zip">
        <zipfileset dir="." prefix="${Name.System}.${version}">
-	<include name="arithmetic-testharness/**"/>
+	<include name="${dist}/**"/>
+	<include name="${dist}/docs/**"/>
+	<include name="${dist}/jdocs/**"/>
+	<include name="${dist}/lib/**"/>
+	<include name="${dist}/src/**"/>
+	<include name="${dist}/build.xml"/>
+	<include name="${dist}/buildRelease.xml"/>
+	<include name="${dist}/src.zip"/>
+       </zipfileset>
+   </zip>
+	  
+   <zip destfile="../releases/${Name.System}.${version}.${DSTAMP}_ALL.zip">
+       <zipfileset dir="." prefix="${Name.System}.${version}">
 	<include name="cddlm/**"/>
 	<include name="emailer/**"/>
 	<include name="jdocs/**"/>
 	<include name="jetty/**"/>
-	<include name="junit/**"/>
 	<include name="logger/**"/>
 	<include name="net/**"/>
-	<include name="releasetest/**"/>
 	<include name="scripting/**"/>
 	<include name="slp/**"/>
 	<include name="ssh/**"/>
 	<include name="utils/**"/>
         <include name="build.xml"/>
         <include name="buildRelease.xml"/>
+	<include name="${dist}/**"/>
+	<include name="${dist}/docs/**"/>
+	<include name="${dist}/jdocs/**"/>
+	<include name="${dist}/lib/**"/>
+	<include name="${dist}/src/**"/>
+	<include name="${dist}/build.xml"/>
+	<include name="${dist}/buildRelease.xml"/>
+	<include name="${dist}/src.zip"/>
         <exclude name="**/CVS" />
         <exclude name="**/*.dfPackage" />
         <exclude name="**/Cvs" />
@@ -137,8 +157,24 @@ To use: ant -f buildRelease release
         <exclude name="**/*.*~" />
        </zipfileset>
    </zip>
-    
-   <tar tarfile="../releases/${Name.System}.${version}.${DSTAMP}.tar">
+
+  <tar tarfile="../releases/${Name.System}.${version}.${DSTAMP}_DIST.tar">
+      <tarfileset dir="." prefix="${Name.System}.${version}">
+	<include name="${dist}/**"/>
+	<include name="${dist}/docs/**"/>
+	<include name="${dist}/jdocs/**"/>
+	<include name="${dist}/lib/**"/>
+	<include name="${dist}/src/**"/>
+	<include name="${dist}/build.xml"/>
+	<include name="${dist}/buildRelease.xml"/>
+	<include name="${dist}/src.zip"/>
+      </tarfileset>
+  </tar>
+  
+  <gzip src="../releases/${Name.System}.${version}.${DSTAMP}_DIST.tar" zipfile="../releases/${Name.System}.${version}.${DSTAMP}_DIST.tar.gz"/>
+  <delete file="../releases/${Name.System}.${version}.${DSTAMP}_DIST.tar"/>
+
+   <tar tarfile="../releases/${Name.System}.${version}.${DSTAMP}_ALL.tar">
       <tarfileset dir="." prefix="${Name.System}.${version}">
 	<include name="arithmetic-testharness/**"/>
 	<include name="cddlm/**"/>
@@ -155,6 +191,14 @@ To use: ant -f buildRelease release
 	<include name="utils/**"/>
         <include name="build.xml"/>
         <include name="buildRelease.xml"/>
+	<include name="${dist}/**"/>
+	<include name="${dist}/docs/**"/>
+	<include name="${dist}/jdocs/**"/>
+	<include name="${dist}/lib/**"/>
+	<include name="${dist}/src/**"/>
+	<include name="${dist}/build.xml"/>
+	<include name="${dist}/buildRelease.xml"/>
+	<include name="${dist}/src.zip"/>
         <exclude name="**/CVS" />
         <exclude name="**/*.dfPackage" />
         <exclude name="**/Cvs" />
@@ -163,11 +207,9 @@ To use: ant -f buildRelease release
       </tarfileset>
   </tar>
   
-  <gzip src="../releases/${Name.System}.${version}.${DSTAMP}.tar" zipfile="../releases/${Name.System}.${version}.${DSTAMP}.tar.gz"/>
-  <delete file="../releases/${Name.System}.${version}.${DSTAMP}.tar"/>
+  <gzip src="../releases/${Name.System}.${version}.${DSTAMP}_ALL.tar" zipfile="../releases/${Name.System}.${version}.${DSTAMP}_ALL.tar.gz"/>
+  <delete file="../releases/${Name.System}.${version}.${DSTAMP}_ALL.tar"/>
 
-  <delete file="common.xml"/>
-  <delete dir="extras"/>
   </target>
 </project>
 
