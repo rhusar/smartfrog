@@ -31,6 +31,7 @@ import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.common.ConfigurationDescriptor;
 
 import java.rmi.RemoteException;
 
@@ -100,7 +101,10 @@ public class DeploymentEndpoint extends SmartfrogHostedEndpoint {
         boolean remote= !"localhost".equalsIgnoreCase(hostname) ;
         try {
             log.info("Deploying "+url+" to "+hostname);
-            SFSystem.deployAComponent(hostname,url,application,remote);
+            SFSystem.runConfigurationDescriptor(
+              new ConfigurationDescriptor(application, url,
+                ConfigurationDescriptor.Action.DEPLOY,
+                hostname,null));
             return "urn://"+ application;
         } catch (SmartFrogException exception) {
             throw AxisFault.makeFault(exception);
