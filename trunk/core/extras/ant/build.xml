@@ -71,11 +71,29 @@
       location="${ant.home}/build/lib/ant-testutil.jar"/>
     <available property="testutil.found"
       file="${testutil.jar}" />
+  </target>
+
+  <target name="require-testutil" depends="find-testutil">
     <fail unless="testutil.found" >Could not find ${testutil.jar}</fail>
   </target>
 
+  
+  <target name="want-testutil" unless="testutil.found" depends="find-testutil">
+    <echo level="error">
+    Ant testutil classes not found in ${testutil.jar}
+    The dependent stages of this build will be skipped.
+    To build this file, run "ant test-jar" in 
+    ant's source directory,
+    Alternatively, retrieve it from Gump: 
+    http://gump.covalent.net/jars/latest/ant/
+    Note that the version of ant-testutil.jar should
+    match the version of ant used. 
+    </echo>
+  </target>
+  
   <target name="compile-tests" 
-      depends="init,find-testutil,dist,use-smartfrog-tasks">
+      depends="init,want-testutil,dist,use-smartfrog-tasks"
+      if="testutil.found">
       <!-- set up a new path with the tasks and testutil -->
     <property name="test.src.dir" location="test/files"/>
     <path id="tests.compile.classpath">
@@ -94,8 +112,9 @@
   </target>
   
   <!-- run the tests -->
-  <target name="test" depends="compile-tests"
-    description="run unit tests">
+  <target name="test" depends="compile-tests,want-testutil"
+    description="run unit tests"
+    if="testutil.found">
     <sf-junit 
            errorProperty="test.failed"
            failureProperty="test.failed" 
