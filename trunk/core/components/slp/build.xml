@@ -295,7 +295,7 @@ Reference URL:http://ant.apache.org
   <target name="copydocs" depends="initdist">
     <copy todir="${dist.docs.dir}">
       <fileset dir="${docs}">
-        <include name="**/*.pdf, **/*.htm*" />
+	<include name="**/*.pdf" />
       </fileset>
     </copy>
   </target>
