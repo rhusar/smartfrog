@@ -9,7 +9,7 @@ if defined SFHOME goto continue1
 set CLASSPATH=
 set cd=
 for /f "tokens=*" %%i in (
- 'dir /s /b "%SFHOME%\lib\*.jar"'
+ 'dir /s /b "%SFLIBPATH%\*.jar"'
 ) do call :add2path %%i
 rem set CLASSPATH
 popd&goto :MORE
@@ -25,7 +25,9 @@ goto :EOF
 :MORE
 
 if not defined SFUSERHOME goto continue2
-  CALL "%SFHOME%\bin\setUserClassPath.bat"
+  set SFLIBPATH=%SFUSERHOME%
+  set SFUSERHOME=
+  CALL "%SFHOME%\bin\setClassPath.bat"
 :continue2
 
 if defined srcDir set CLASSPATH=%srcDir%;%classpath%
