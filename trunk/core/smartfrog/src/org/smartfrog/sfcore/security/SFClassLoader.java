@@ -23,6 +23,7 @@ package org.smartfrog.sfcore.security;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
+import java.io.IOException;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
@@ -232,7 +233,7 @@ public class SFClassLoader {
      *            security requirements.
      */
     protected static InputStream getURLAsStream(URL resourceURL)
-        throws Exception {
+            throws ClassNotFoundException, IOException {
         URLConnection con = resourceURL.openConnection();
         InputStream in = getLocalInputStream(con);
 
@@ -240,7 +241,7 @@ public class SFClassLoader {
             return in;
         } else {
             // We want the caller to keep trying... 
-            throw new Exception("SFClassLoader::getURLAsStream cannot find " +
+            throw new ClassNotFoundException("SFClassLoader::getURLAsStream cannot find " +
                 resourceURL);
         }
     }
@@ -257,10 +258,9 @@ public class SFClassLoader {
      *         signed jar we return a ByteArrayInputStream to a local copy for
      *         security reasons.
      *
-     * @throws Exception in case of any error
+     * @throws IOException in case of any error
      */
-    protected static InputStream getLocalInputStream(URLConnection con)
-        throws Exception {
+    protected static InputStream getLocalInputStream(URLConnection con) throws IOException {
         InputStream in = con.getInputStream();
         Certificate[] certs = null;
 
@@ -356,7 +356,7 @@ public class SFClassLoader {
      * @throws Exception if unable to locate the resource
      */
     static InputStream getResourceHelper(String resourceInJar, String codebase)
-        throws Exception {
+            throws ClassNotFoundException, IOException {
         ClassLoader cl = getClassLoader(codebase);
 
         return getURLAsStream(cl.getResource(resourceInJar));
@@ -398,7 +398,7 @@ public class SFClassLoader {
      * @throws Exception if any error
      */
     static Object opHelper(String name, String codebase, boolean isForName)
-        throws Exception {
+            throws ClassNotFoundException, IOException {
         if (isForName) {
             return (Object) forNameHelper(name, codebase);
         } else {
@@ -421,51 +421,61 @@ public class SFClassLoader {
     static Object classLoaderHelper(String name, String codebase,
         boolean useDefaultCodebase, boolean isForName) {
         String msg = (isForName ? "forName" : "getResourceAsStream");
-
+        Object result;
         // "default" equivalent to "not set".
-        if ((codebase != null) && (codebase.equals("default"))) {
+        if ("default".equals(codebase)) {
             codebase = null;
         }
 
         //First, try the thread context class loader
-        try {
-            return opHelper(name, null, isForName);
-        } catch (Throwable e) {
-            // Not valid, continuing ...
-            if (debug != null) {
-                debug.println(msg + "#1 cannot find object in thread CL " +
-                    " getting exception " + e.getMessage());
-            }
-        }
-
+        result = opHelperWithReporting(name, null, isForName, msg);
         // Second try the default codebase (if enabled)
-        if ((useDefaultCodebase) && (getTargetClassBase() != null)) {
-            try {
-                return opHelper(name, getTargetClassBase(), isForName);
-            } catch (Throwable e) {
-                // Not valid, continuing ...
-                if (debug != null) {
-                    debug.println(msg + "#2 cannot find object in " +
-                        getTargetClassBase() + " getting exception " +
-                        e.getMessage());
-                }
-            }
+        if (result==null && (useDefaultCodebase) && (getTargetClassBase() != null)) {
+            result = opHelperWithReporting(name, getTargetClassBase(), isForName, msg);
         }
 
         //Last, try the class loader for the suggested codebase
-        if (codebase != null) {
-            try {
-                return opHelper(name, codebase, isForName);
-            } catch (Throwable e) {
-                // Not valid, continuing ...
-                if (debug != null) {
-                    debug.println(msg + "#3 cannot find object in " + codebase +
-                        " getting exception " + e.getMessage());
-                }
-            }
+        if (result==null && codebase != null) {
+            result = opHelperWithReporting(name, codebase, isForName, msg);
+            return result;
         }
 
-        return null;
+        return result;
+    }
+
+    /**
+     * a wrapper around {@link #opHelper} that adds reporting
+     * @param name
+     * @param codebase
+     * @param isForName
+     * @param msg
+     * @throws LinkageError upstream
+     * @return
+     */
+    private static Object opHelperWithReporting(String name, String codebase,
+                                                boolean isForName, String msg) {
+        Object result=null;
+        try {
+            result = opHelper(name, codebase, isForName);
+        } catch (SecurityException e) {
+            if (debug != null) {
+                debug.println("SecurityException loading "+name+" in " + codebase +
+                        " getting exception " + e.getMessage());
+            }
+
+        } catch (LinkageError e) {
+            //we found the class, but could not handle it
+            throw e;
+        } catch (Exception e) {
+            //ClassNotFound or IOException
+            // Not valid, continuing ...
+            if (debug != null) {
+                debug.println(msg + " cannot find object in " + codebase +
+                    " getting exception " + e.getMessage());
+            }
+
+        }
+        return result;
     }
 
     /**
