@@ -54,6 +54,7 @@ import org.smartfrog.sfcore.utils.ComponentHelper;
 
 import org.smartfrog.sfcore.reference.RemoteReferenceResolverHelperImpl;
 import java.rmi.NoSuchObjectException;
+import java.net.*;
 
 /**
  * Defines the base class for all deployed components. A deployed component
@@ -272,6 +273,14 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
      */
     public InetAddress sfDeployedHost() throws RemoteException {
         try {
+            String hostName = System.getProperty("java.rmi.server.hostname");
+            try {
+                if (hostName!=null) {
+                    return java.net.InetAddress.getByName(hostName);
+                }
+            } catch (UnknownHostException ex) {
+               Logger.logQuietly(MessageUtil.formatMessage(MSG_FAILED_INET_ADDRESS_LOOKUP),ex);
+            }
             return java.net.InetAddress.getLocalHost();
         } catch (Exception ex) {
             Logger.logQuietly(MessageUtil.formatMessage(MSG_FAILED_INET_ADDRESS_LOOKUP),ex);
