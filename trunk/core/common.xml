@@ -108,8 +108,8 @@
     
     <!-- build the name of our JAR file from the name of the project.
       override any of this stuff for alternate naming -->
-    <property name="project.name" value="${ant.project.name}" />
-    <property name="jarfile.suffix" value="-components"/>
+    <property name="project.name" value="sf-${ant.project.name}" />
+    <property name="jarfile.suffix" value=""/>
     <property name="jarfile.name" value="${project.name}${jarfile.suffix}.jar"/>
     <property name="target.jar" 
         location="${dist.lib.dir}/${jarfile.name}" />  
