@@ -39,11 +39,13 @@ import org.smartfrog.sfcore.common.MessageUtil;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.Logger;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.parser.Phases;
 import org.smartfrog.sfcore.parser.SFParser;
+import org.smartfrog.sfcore.deployer.SFDeployer;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
@@ -51,7 +53,6 @@ import org.smartfrog.sfcore.security.SFClassLoader;
 
 import sun.misc.Signal;
 import sun.misc.SignalHandler;
-import org.smartfrog.sfcore.common.*;
 
 
 /**
@@ -175,7 +176,7 @@ public class SFProcess implements MessageKeys {
 
         try {
             //comp.deployResolve();
-            dComp = comp.deploy(null, null, null);
+            dComp = SFDeployer.deploy(comp, null, null, null);
             dComp.sfDeploy();
         } catch (SmartFrogException ex) {
             // Deployment failure, try terminating
