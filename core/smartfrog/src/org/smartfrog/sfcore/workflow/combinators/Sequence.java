@@ -32,6 +32,7 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
+import org.smartfrog.sfcore.common.Logger;
 
 
 /**
@@ -131,10 +132,11 @@ public class Sequence extends EventCompoundImpl implements Compound {
                         sfTerminate(TerminationRecord.normal(name));
                     }
                 } else {
-                    //System.out.println("error in previous sequenced component, aborting " + name.toString() + " parent:" + sfParent().toString());
+                    Logger.log(name+ "- error in previous sequenced component, aborting. "  + " parent:" + sfParent().sfCompleteName(),status);
                     super.sfTerminatedWith(status, comp);
                 }
             } catch (Exception e) {
+                Logger.log(name+" - error in starting next component ", e);
                 sfTerminate(TerminationRecord.abnormal(
                         "error in starting next component: exception " + e, name));
             }

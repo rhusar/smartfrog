@@ -26,6 +26,7 @@ import java.util.Enumeration;
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.common.Logger;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.prim.Prim;
@@ -120,6 +121,7 @@ public class Parallel extends EventCompoundImpl implements Compound {
                 }
             }
         } catch (Exception ex) {
+            Logger.log(this.sfCompleteNameSafe()+" - Failed to start sub-components ",ex);
             sfTerminate(TerminationRecord.abnormal(
                     "Failed to start sub-components " + ex, name));
         }
@@ -148,6 +150,7 @@ public class Parallel extends EventCompoundImpl implements Compound {
                     sfTerminate(TerminationRecord.normal(name));
                 }
             } catch (Exception e) {
+                Logger.log(this.sfCompleteNameSafe()+" - error handling child termination ",e );
                 sfTerminate(TerminationRecord.abnormal(
                         "error handling child termination " + e, name));
             }
