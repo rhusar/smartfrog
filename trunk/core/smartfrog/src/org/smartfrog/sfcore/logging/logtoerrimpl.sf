@@ -33,7 +33,7 @@ LogToErrImpl extends {
     showThreadName true;
 
     // /** Include method call in the log message */
-    showMethodCall true;
+    showMethodCall false;
 
     // /** Include stack trace in log message */
     showStackTrace false;
