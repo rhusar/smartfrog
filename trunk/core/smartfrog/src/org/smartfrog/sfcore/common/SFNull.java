@@ -42,9 +42,9 @@ public final class SFNull implements Serializable {
 
     /** Print String for display
      *
-     * @return the string "SFNull"
+     * @return the string "", which is the form required for the unparse
      */
     public String toString() {
-	return "SFNull";
+	return "";
     }
 }
