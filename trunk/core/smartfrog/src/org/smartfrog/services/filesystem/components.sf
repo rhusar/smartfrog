@@ -125,3 +125,19 @@ TempFile extends Prim {
 TempFileWithCleanup extends TempFile {
     deleteOnExit true;
 }
+
+MkdirSchema extends Schema {
+    //file is a file or a string.
+    dir extends Compulsory;
+}
+
+/**
+ * mkdir creates a directory where one did not exist before.
+ * and does nothing if it did.
+ * deployment fails if the directory name exists and is not a directory.
+ * Note: no checks for writeability are made
+ */
+Mkdir extends Prim {
+    mkdirSchema extends MkdirSchema;
+    sfClass "org.smartfrog.services.filesystem.MkdirImpl";
+}
