@@ -75,6 +75,8 @@ public class ErrorMessageBundle extends ListResourceBundle
         "Unable to connect to sfDaemon on: {0}.\nReason:sfDaemon may not be running on {0}"},
         { MSG_REMOTE_CONNECT_ERR,
         "Unable to connect to sfDaemon on: {0}.\nReason:sfDaemon may not be authenticated properly"},
+        { MSG_PARENT_LOCATION_FAILED,
+         "Failed to locate parent"},
         // Resolution Exception messages start
         { MSG_UNRESOLVED_REFERENCE , "Unresolved Reference"},
         { MSG_NOT_FOUND_REFERENCE , "Reference not found"},
