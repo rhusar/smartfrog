@@ -40,6 +40,8 @@ import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
 import java.io.IOException;
+import java.net.URL;
+import java.net.MalformedURLException;
 
 /**
  * created Aug 4, 2004 3:58:37 PM
@@ -59,26 +61,46 @@ public class DeployProcessor extends Processor {
         DeploymentDescriptorType dd = deploy.getDescriptor();
         URI source=dd.getSource();
         String applicationName = deploy.getName().toString();
-        URI applicationReference=makeURIFromApplication(applicationName);
-        _deployResponse response=new _deployResponse(applicationReference);
         if(source!=null) {
-            deployThroughSFSystem(null, applicationName, source.toString(), null);
-            return response;
+            try {
+                URL url = makeURL(source);
+                deployThroughSFSystem(null,
+                        applicationName,
+                        source.toString(),
+                        null);
+            } catch (MalformedURLException e) {
+                throw AxisFault.makeFault(e);
+            }
+        } else {
+            //here we deploy inline
+            deploySmartFrog(deploy);
+
         }
+        URI applicationReference = makeURIFromApplication(applicationName);
+        _deployResponse response = new _deployResponse(applicationReference);
+        return response;
+
+    }
+
+    private URL makeURL(URI source) throws MalformedURLException {
+        return new URL(source.toString());
     }
 
 
-    public _deployResponse deploySmartFrog(_deployRequest deploy)
+    public void deploySmartFrog(_deployRequest deploy)
             throws AxisFault {
-        String applicationName = deploy.getName().toString();
-        DeploymentDescriptorType dd = deploy.getDescriptor();
-        _deploymentDescriptorType_data data=dd.getData();
-        data.get_any()
-        String descriptor=data.get_any()
-        File tempFile=saveStringToFile(descriptor,".sf");
-        String url = tempFile.toURI().toURL().toExternalForm();
-        deployThroughSFSystem(null,deploy.getName().toString(), url,null);
-
+        try {
+            String applicationName = deploy.getName().toString();
+            DeploymentDescriptorType dd = deploy.getDescriptor();
+            _deploymentDescriptorType_data data=dd.getData();
+            String descriptor=data.get_any().toString();
+            log.info("processing descriptor "+descriptor);
+            File tempFile=saveStringToFile(descriptor,".sf");
+            String url = tempFile.toURI().toURL().toExternalForm();
+            deployThroughSFSystem(null,deploy.getName().toString(), url,null);
+        } catch (IOException e) {
+            throw AxisFault.makeFault(e);
+        }
     }
 
     private File saveStringToFile(String descriptor,String extension) throws IOException {
@@ -127,16 +149,16 @@ public class DeployProcessor extends Processor {
                                          String url,
                                          String subprocess) throws AxisFault {
         try {
-            ConfigurationDescriptor deploy = new ConfigurationDescriptor(application, url);
-            deploy.setHost(hostname);
-            deploy.setActionType(ConfigurationDescriptor.Action.DEPLOY);
+            ConfigurationDescriptor config = new ConfigurationDescriptor(application, url);
+            config.setHost(hostname);
+            config.setActionType(ConfigurationDescriptor.Action.DEPLOY);
             if (subprocess != null) {
-                deploy.setSubProcess(subprocess);
+                config.setSubProcess(subprocess);
             }
             log.info("Deploying " + url + " to " + hostname);
             //deploy, throwing an exception if we cannot
-            deploy.execute(SFProcess.getProcessCompound());
-            SFSystem.runConfigurationDescriptor(deploy, true);
+            config.execute(SFProcess.getProcessCompound());
+            SFSystem.runConfigurationDescriptor(config, true);
 
             //SFSystem.deployAComponent(hostname,url,application,remote);
             return "urn://" + hostname + "/" + application;
