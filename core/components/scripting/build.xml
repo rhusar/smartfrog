@@ -50,7 +50,7 @@ Reference URL:http://ant.apache.org
   <property name="is.component" value="true"  />
 
 
-
+  <property name="doc.dir" location="docs"/>
   <!-- Important property to select the package that is compiled and the jar file name-->
   <property name="Name.System" value="scripting"/>
   <!-- =================================================================== -->
@@ -238,7 +238,7 @@ Reference URL:http://ant.apache.org
   <!-- =================================================================== -->
   <!--   JDocs                                                             -->
   <!-- =================================================================== -->
-  <target name="jdocs" depends="initdist" description="Generates the API documentation">
+  <target name="jdocs" depends="init" description="Generates the API documentation">
     <!--  Java Docs for all                                                -->
     <echo message=""/>
     <echo message="------------------------------------------------------------------------"/>
@@ -260,7 +260,10 @@ Reference URL:http://ant.apache.org
            >
       <group title="SmartFrog Packages" packages="org.smartfrog.*"/>
       <classpath>
-          <fileset dir="${core.smartfrog.lib}">
+          <fileset dir="${smartfrog.dist.lib.dir}">
+              <include name="**/*.jar"/>
+          </fileset>
+		   <fileset dir="${dist.lib.dir}">
               <include name="**/*.jar"/>
           </fileset>
       </classpath>
@@ -315,10 +318,19 @@ Reference URL:http://ant.apache.org
     description="Prepares distribution package">
   </target-->
 
-	<target name="dist" depends="common.dist" description="create the jar files">
+	<target name="dist" depends="common.dist , jdocs" description="create the jar files">
 	 <copy todir = "${dist.lib.dir}">
         <fileset dir ="${lib.dir}" />
     </copy> 
+	<copy todir = "${dist.src.dir}">
+        <fileset dir ="${src.dir}">
+		  <include name="**/examples/**"/>
+		</fileset>
+    </copy>   
+	
+	<copy todir = "${dist.doc.dir}">
+        <fileset dir ="${doc.dir}" />
+    </copy>  
 	 <antcall target="copybins"/>
 	</target>
 
