@@ -1,13 +1,24 @@
-release 3.04.005_beta -> CVS
+release 3.04.005_beta 
 ---------------------
+2004-Oct-08 Release date
+2004-Oct-07 Add: sfResolve methods will return null whener they find SFNull and an object is returned
+2004-Oct-07 Add: prefix and HostName attributes in logging
+2004-Oct-07 New: Container component - like parallel but ignore abnormal termination
+2004-Oct-07 Fix: Parentage problems in vector function
+2004-Oct-04 Fix: In logging path attribute was read after the file was created
+2004-Oct-03 Add: Some patches to make it possible for subclasses of SFSystem to change core behaviour, 
+                 and to make hooking onto control-C optional in SFProcess
+2004-Oct-01 New: JavaPackage component
 2004-Oct-01 New: property to change classpath in a subProcess: 'org.smartfrog.sfcore.processcompound.java.class.path.NAME'
 2004-Sep-30 New: SFSetProperty component
 2004-Sep-30 Fix: PrimImpl.sfAttributes() was returning values
+2004-Sep-29 Fix: Improved shell scripts to take care of spaces in codebase for different jar files 
+                 and spaces in smartfrog dist path
 2004-Sep-20 New: filesystem/replacevar component
-2004-Aug-25 New: modified buildRelease.xml to include javacc.
-2004-Aug-24 New: srcDir renamed to SFUSERCLASSPATH in shell scripts.
+2004-Aug-25 New: modified buildRelease.xml to include javacc
+2004-Aug-24 New: srcDir renamed to SFUSERCLASSPATH in shell scripts
 2004-Aug-24 Fix: sfBootTime attribute in rootProcess compound, now added during sfDeploy() lifecycle step
-2004-Aug-24 Fix: ; in setSFProperties. Script breaks when using srcDir variable.
+2004-Aug-24 Fix: ; in setSFProperties. Script breaks when using srcDir variable
 2004-Aug-23 Fix: race condition during component termination: sfPing and sfIsTerminated
 
 release 3.04.004_beta
