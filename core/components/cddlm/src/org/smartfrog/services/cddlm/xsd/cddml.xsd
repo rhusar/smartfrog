@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!-- -->
-<xs:schema targetNamespace="urn:cddlm/xml/0.1"
+<xsd:schema targetNamespace="urn:cddlm/xml/0.1"
   xmlns:cdl="urn:cddlm/xml/0.1"
   xmlns="urn:cddlm/xml/0.1" xmlns:wsa="http://schemas.xmlsoap.org/ws/2003/03/addressing"
-  xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   elementFormDefault="qualified" attributeFormDefault="unqualified">
 
   <!-- ============================================================= -->
@@ -22,9 +22,9 @@
   <!-- propertyModeType sets requirements on a configurable component: ?-->
   <!-- ============================================================= -->
 
-  <xs:simpleType name="propertyModeType">
-    <xs:annotation>
-      <xs:documentation>
+  <xsd:simpleType name="propertyModeType">
+    <xsd:annotation>
+      <xsd:documentation>
         -required: The user of the configurable component
           MUST assign values of this property.
         -optional: The user of the configurable component
@@ -34,64 +34,67 @@
           in deployment time. Users of configurable components
           MUST NOT assign values of this property but
           MAY refer to this property with (lazy) references.
-      </xs:documentation>
-    </xs:annotation>
-    <xs:restriction base="xs:string">
-      <xs:enumeration value="required"/>
-      <xs:enumeration value="optional"/>
-      <xs:enumeration value="automatic"/>
-    </xs:restriction>
-  </xs:simpleType>
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="required"/>
+      <xsd:enumeration value="optional"/>
+      <xsd:enumeration value="automatic"/>
+    </xsd:restriction>
+  </xsd:simpleType>
 
 
   <!-- ============================================================= -->
   <!-- naming rules for components ?-->
   <!-- ============================================================= -->
-  <xs:simpleType name="namingType">
-    <xs:restriction base="xs:string">
-      <xs:pattern value="[\p{L}\-\.][\p{L}\-\.\P{Nd}]*"/>
-    </xs:restriction>
-  </xs:simpleType>
+  <xsd:simpleType name="namingType">
+    <xsd:restriction base="xsd:NCName"/>
+<!--
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value="[\p{L}\-\.][\p{L}\-\.\P{Nd}]*"/>
+    </xsd:restriction>
+-->
+  </xsd:simpleType>
 
 
   <!-- ============================================================= -->
   <!-- extendsType ?-->
   <!-- ============================================================= -->
-  <xs:simpleType name="extendsType">
-    <xs:annotation>
-      <xs:documentation>
+  <xsd:simpleType name="extendsType">
+    <xsd:annotation>
+      <xsd:documentation>
         type for extensions.
-      </xs:documentation>
-    </xs:annotation>
-    <xs:restriction base="xs:QName">
-    </xs:restriction>
-  </xs:simpleType>
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:QName">
+    </xsd:restriction>
+  </xsd:simpleType>
 
   <!-- ============================================================= -->
   <!-- refrootTrype ?-->
   <!-- ============================================================= -->
-  <xs:simpleType name="refrootTrype">
-    <xs:annotation>
-      <xs:documentation>
+  <xsd:simpleType name="refrootTrype">
+    <xsd:annotation>
+      <xsd:documentation>
         Root references for references
-      </xs:documentation>
-    </xs:annotation>
-    <xs:restriction base="xs:QName">
-    </xs:restriction>
-  </xs:simpleType>
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:QName">
+    </xsd:restriction>
+  </xsd:simpleType>
 
   <!-- ============================================================= -->
   <!-- refType ?-->
   <!-- ============================================================= -->
-  <xs:simpleType name="refType">
-    <xs:annotation>
-      <xs:documentation>
+  <xsd:simpleType name="refType">
+    <xsd:annotation>
+      <xsd:documentation>
         type for references. XPath1.0 by default
-      </xs:documentation>
-    </xs:annotation>
-    <xs:restriction base="xs:string">
-    </xs:restriction>
-  </xs:simpleType>
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+    </xsd:restriction>
+  </xsd:simpleType>
 
   <!-- ============================================================= -->
   <!-- END SIMPLETYPES -->
@@ -106,66 +109,65 @@
   <!-- ============================================================= -->
   <!-- The @cdl:extends attribute defines inheritance-->
   <!-- ============================================================= -->
-  <xs:attribute name="extends" type="cdl:extendsType">
-    <xs:annotation>
-      <xs:documentation>
+  <xsd:attribute name="extends" type="cdl:extendsType">
+    <xsd:annotation>
+      <xsd:documentation>
       The @cdl:extends attribute is used in a property list to inherit an
       existing property list.
-      </xs:documentation>
-    </xs:annotation>
-  </xs:attribute>
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:attribute>
 
   <!-- ============================================================= -->
   <!-- The @cdl:mode attribute-->
   <!-- ============================================================= -->
 
-  <xs:attribute name="mode" type="cdl:propertyModeType">
-    <xs:annotation>
-      <xs:documentation>
+  <xsd:attribute name="mode" type="cdl:propertyModeType">
+    <xsd:annotation>
+      <xsd:documentation>
       mode of assigment
-      </xs:documentation>
-    </xs:annotation>
-  </xs:attribute>
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:attribute>
 
 
   <!-- ============================================================= -->
   <!-- The @cdl:name attribute-->
   <!-- ============================================================= -->
 
-  <xs:attribute name="name" type="cdl:namingType">
-    <xs:annotation>
-      <xs:documentation>
+  <xsd:attribute name="name" type="cdl:namingType">
+    <xsd:annotation>
+      <xsd:documentation>
       A unique name for the attribute
-      </xs:documentation>
-    </xs:annotation>
-  </xs:attribute>
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:attribute>
 
   <!-- ============================================================= -->
   <!-- The @cdl:ref attribute-->
   <!-- ============================================================= -->
 
-  <xs:attribute name="ref" type="cdl:refType">
-    <xs:annotation>
-      <xs:documentation>
+  <xsd:attribute name="ref" type="cdl:refType">
+    <xsd:annotation>
+      <xsd:documentation>
       A reference in the language specified by @cdl:pathlanguage
-      </xs:documentation>
-    </xs:annotation>
-  </xs:attribute>
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:attribute>
 
   <!-- ============================================================= -->
   <!-- The @cdl:refroot attribute-->
   <!-- ============================================================= -->
 
-  <xs:attribute name="refroot" type="cdl:refrootTrype">
-    <xs:annotation>
-      <xs:documentation>
+  <xsd:attribute name="refroot" type="cdl:refrootTrype">
+    <xsd:annotation>
+      <xsd:documentation>
         This specifies the reference root for reference resolution.
         The default value is the QName of the property list that includes
         this node in its descendant.
-      </xs:documentation>
-    </xs:annotation>
-  </xs:attribute>
-
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:attribute>
 
   <!-- ============================================================= -->
   <!-- END ATTRIBUTES-->
@@ -175,13 +177,11 @@
   <!-- BEGIN COMPLEX TYPES -->
   <!-- ============================================================= -->
 
-  <xs:complexType name="propertyListType">
-    <xs:sequence>
-      <xs:any minOccurs="0"/>
-    </xs:sequence>
-    <xs:attribute name="name" type="cdl:namingType" use="optional"/>
-    <xs:attribute name="extends" type="cdl:extendsType" use="optional"/>
-  </xs:complexType>
+  <xsd:complexType name="propertyListType">
+    <xsd:sequence>
+      <xsd:any minOccurs="0"/>
+    </xsd:sequence>
+  </xsd:complexType>
 
   <!-- ============================================================= -->
   <!-- END COMPLEX TYPES -->
@@ -196,182 +196,202 @@
   <!-- This is the base declaration; cdl -->
   <!-- ============================================================= -->
 
-  <xs:element name="cdl">
-    <xs:annotation>
-      <xs:documentation>
+  <xsd:element name="cdl">
+    <xsd:annotation>
+      <xsd:documentation>
         This is the root element.
-      </xs:documentation>
-    </xs:annotation>
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element ref="import" minOccurs="0" />
-        <xs:element ref="include" minOccurs="0"/>
-        <xs:element ref="types" minOccurs="0" />
-        <xs:element ref="configuration" minOccurs="0" maxOccurs="1" />
-        <xs:element ref="system" minOccurs="0"  maxOccurs="1"/>
-      </xs:sequence>
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="comment" minOccurs="0"/>
+        <xsd:element ref="import" minOccurs="0" />
+        <xsd:element ref="include" minOccurs="0"/>
+        <xsd:element ref="types" minOccurs="0" />
+        <xsd:element ref="configuration" minOccurs="0" maxOccurs="1" />
+        <xsd:element ref="system" minOccurs="0"  maxOccurs="1"/>
+      </xsd:sequence>
 
       <!-- path language declaration-->
-      <xs:attribute name="pathlanguage"
-        type="xs:anyURI"
+      <xsd:attribute name="pathlanguage"
+        type="xsd:anyURI"
         use="optional"
         default="http://www.w3.org/TR/1999/REC-xpath-19991116"
         >
-      <xs:annotation>
-        <xs:documentation>
+      <xsd:annotation>
+        <xsd:documentation>
       The path language for reference resolution is XPath1.0 by default
-        </xs:documentation>
-      </xs:annotation>
-      </xs:attribute>
-    </xs:complexType>
-  </xs:element>
+        </xsd:documentation>
+      </xsd:annotation>
+      </xsd:attribute>
+    </xsd:complexType>
+  </xsd:element>
 
 
   <!-- ============================================================= -->
   <!-- import external CDL -->
   <!-- ============================================================= -->
 
-  <xs:element name="import">
-    <xs:complexType>
-      <xs:annotation>
-        <xs:documentation>
+  <xsd:element name="import">
+    <xsd:complexType>
+      <xsd:annotation>
+        <xsd:documentation>
           The namespace and location of another CDL file to import
-        </xs:documentation>
-      </xs:annotation>
-      <xs:attribute name="namespace" type="xs:anyURI" use="required"/>
-      <xs:attribute name="location" type="xs:anyURI" use="required"/>
-    </xs:complexType>
-  </xs:element>
+        </xsd:documentation>
+      </xsd:annotation>
+      <xsd:attribute name="namespace" type="xsd:anyURI" use="optional"/>
+      <xsd:attribute name="location" type="xsd:anyURI" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
 
   <!-- ============================================================= -->
   <!-- include -->
   <!-- ============================================================= -->
 
-  <xs:element name="include">
-    <xs:complexType>
-      <xs:annotation>
-        <xs:documentation>
+  <xsd:element name="include">
+    <xsd:complexType>
+      <xsd:annotation>
+        <xsd:documentation>
           The location of another CDL file to import.
-        </xs:documentation>
-      </xs:annotation>
-      <xs:attribute name="location" type="xs:anyURI" use="required"/>
-    </xs:complexType>
-  </xs:element>
+        </xsd:documentation>
+      </xsd:annotation>
+      <xsd:attribute name="location" type="xsd:anyURI" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
 
 
   <!-- ============================================================= -->
   <!-- types is anything-->
   <!-- ============================================================= -->
 
-  <xs:element name="types">
-    <xs:complexType>
-      <xs:annotation>
-        <xs:documentation>
+  <xsd:element name="types">
+    <xsd:complexType>
+      <xsd:annotation>
+        <xsd:documentation>
           XML Schema type definitions
-        </xs:documentation>
-      </xs:annotation>
-    </xs:complexType>
-  </xs:element>
+        </xsd:documentation>
+      </xsd:annotation>
+      <xsd:sequence>
+        <xsd:any minOccurs="0"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
 
 
   <!-- ============================================================= -->
   <!-- configuration is some components-->
   <!-- ============================================================= -->
 
-  <xs:element name="configuration">
-    <xs:complexType mixed="false">
-      <xs:annotation>
-        <xs:documentation>
+  <xsd:element name="configuration" type="cdl:propertyListType">
+      <xsd:annotation>
+        <xsd:documentation>
       The configuration declares components
-        </xs:documentation>
-      </xs:annotation>
-      <xs:choice minOccurs="0" maxOccurs="unbounded">
-        <xs:element  name="component" type="cdl:propertyListType"/>
-      </xs:choice>
-    </xs:complexType>
-  </xs:element>
+        </xsd:documentation>
+      </xsd:annotation>
+  </xsd:element>
 
   <!-- ============================================================= -->
   <!-- a system is a propertylist instance-->
   <!-- ============================================================= -->
 
-  <xs:element name="system" type="cdl:propertyListType">
-    <xs:annotation>
-      <xs:documentation>
+  <xsd:element name="system" type="cdl:propertyListType">
+    <xsd:annotation>
+      <xsd:documentation>
       The system is a component that describes what is to be deployed
-      </xs:documentation>
-    </xs:annotation>
-  </xs:element>
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:element>
 
 
   <!-- ============================================================= -->
   <!-- Proposed Assertions -->
   <!-- ============================================================= -->
 
-  <xs:complexType name="letType" >
-    <xs:annotation>
-      <xs:documentation>
+  <xsd:complexType name="letType" >
+    <xsd:annotation>
+      <xsd:documentation>
       This is an assignment operation whose semantics are as yet undefined
-      </xs:documentation>
-    </xs:annotation>
-    <xs:attribute name="let" type="xs:NCName" use="required"/>
-    <xs:attribute name="refroot" type="cdl:refType" use="required"/>
-    <xs:attribute name="ref" type="cdl:refrootTrype" use="required"/>
-  </xs:complexType>
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="let" type="xsd:NCName" use="required"/>
+    <xsd:attribute name="refroot" type="cdl:refType" use="required"/>
+    <xsd:attribute name="ref" type="cdl:refrootTrype" use="required"/>
+  </xsd:complexType>
 
-  <xs:element name="assert" >
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element name="let" minOccurs="0" maxOccurs="unbounded"  type="letType">
-        </xs:element>
-        <xs:element name="cond" minOccurs="1" maxOccurs="1" type="xs:string">
-        </xs:element>
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
+  <xsd:element name="assert" >
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="let" minOccurs="0" maxOccurs="unbounded"  type="letType">
+        </xsd:element>
+        <xsd:element name="cond" minOccurs="1" maxOccurs="1" type="xsd:string">
+        </xsd:element>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
 
   <!-- ============================================================= -->
   <!-- Proposed Expression -->
   <!-- ============================================================= -->
 
-  <xs:element name="expression">
-    <xs:complexType>
-      <xs:annotation>
-        <xs:documentation>
+  <xsd:element name="expression">
+    <xsd:complexType>
+      <xsd:annotation>
+        <xsd:documentation>
         This evaluates an XPath expression
-        </xs:documentation>
-      </xs:annotation>
-      <xs:sequence>
-        <xs:element name="let" minOccurs="0" maxOccurs="unbounded" type="letType">
-        </xs:element>
-        <xs:element name="return" minOccurs="1" maxOccurs="1" type="xs:string">
-        </xs:element>
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
+        </xsd:documentation>
+      </xsd:annotation>
+      <xsd:sequence>
+        <xsd:element name="let" minOccurs="0" maxOccurs="unbounded" type="letType">
+        </xsd:element>
+        <xsd:element name="return" minOccurs="1" maxOccurs="1" type="xsd:string">
+        </xsd:element>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
 
 
   <!-- ============================================================= -->
   <!-- Proposed placement -->
   <!-- ============================================================= -->
 
-  <xs:complexType name="placementType">
-    <xs:attribute name="to" type="cdl:refType" use="required"/>
-  </xs:complexType>
+  <xsd:complexType name="placementType">
+    <xsd:attribute name="to" type="cdl:refType" use="required"/>
+  </xsd:complexType>
 
-  <xs:element name="placement" type="cdl:placementType">
-  </xs:element>
+  <xsd:element name="placement" type="cdl:placementType">
+  </xsd:element>
 
 
   <!-- ============================================================= -->
   <!-- Proposed : a @cdl:lazyattribute-->
   <!-- ============================================================= -->
 
-  <xs:attribute name="lazy" type="cdl:boolean" default="true" fixed="true" >
-    <xs:annotation>
-      <xs:documentation>
+  <xsd:attribute name="lazy" type="xsd:boolean" default="true" >
+    <xsd:annotation>
+      <xsd:documentation>
       mode of assigment
-      </xs:documentation>
-    </xs:annotation>
-  </xs:attribute>
-</xs:schema>
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:attribute>
+
+
+  <!-- ============================================================= -->
+  <!-- Proposed : a comment element -->
+  <!-- can implicitly be used inside declarations that take xsd:any -->
+  <!-- ============================================================= -->
+
+  <xsd:simpleType name="commentType" >
+    <xsd:annotation>
+      <xsd:documentation>
+        This is an arbitrary comment field
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string" />
+  </xsd:simpleType>
+
+  <xsd:element name="comment" type="cdl:commentType">
+  </xsd:element>
+  <!-- ============================================================= -->
+  <!-- end schema-->
+  <!-- ============================================================= -->
+</xsd:schema>

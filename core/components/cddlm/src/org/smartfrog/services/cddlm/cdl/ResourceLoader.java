@@ -46,6 +46,10 @@ public class ResourceLoader {
         this.loader = loader;
     }
 
+    public ResourceLoader(Class clazz) {
+        loader = clazz.getClassLoader();
+    }
+
     /**
      * load with a given codebase; goes through the smartfrog loader.
      *
@@ -54,6 +58,7 @@ public class ResourceLoader {
     public ResourceLoader(String sfCodebase) {
         this.codebase = sfCodebase;
     }
+
 
     /**
      * get the sfcodebase from a component. This is used to trigger sfcodebase

@@ -4,16 +4,30 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="urn:cddlm/xml/0.1 cddml.xsd">
   <!--<import/>-->
-  <cdl:types/>
+  <cdl:types>
+  </cdl:types>
   <cdl:configuration>
-    <cdl:component name="server">
+
+    <webapps name="webapp-base">
+      <app>security</app>
+      <app>logging</app>
+    </webapps>
+
+    <webapps2 extends="webapp-base">
+      <app>testing</app>
+    </webapps2>
+
+
+
+
+    <server name="server">
       <port>8080</port>
       <security>true</security>
-    </cdl:component>
-    <cdl:component name="tomcat" extends="server">
+    </server>
+    <server name="tomcat" extends="server">
       <basedir>
       </basedir>
-    </cdl:component>
+    </server>
 
  </cdl:configuration>
   <cdl:system>
