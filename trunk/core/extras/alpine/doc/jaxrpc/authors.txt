@@ -10,5 +10,8 @@ spare time, he is a committer on the Apache Ant and Apache Axis projects, and th
 co-author of the book "Java Development with Ant". 
 
 Edmund Smith, University of Edinburgh. 
+esmith4@inf.ed.ac.uk
 
-TODOTODOTODO
+Edmund Smith is a researcher at the University of Edinburgh where he
+works on dynamic reconfiguration techniques for grid fabrics, and
+system configuration in general.
