@@ -33,7 +33,6 @@ import org.apache.tools.ant.BuildException;
 public class StopDaemon extends SmartFrogTask {
 
     public StopDaemon() {
-        setApplicationName("rootProcess");
         setHost("localhost");
         setFailOnError(true);
     }
@@ -47,9 +46,10 @@ public class StopDaemon extends SmartFrogTask {
     public void execute() throws BuildException {
         setStandardSmartfrogProperties();
         addHostname();
-        addApplicationName("-t");
+        addApplicationCommand("-t", ROOT_PROCESS);
         addExitFlag();
-        execSmartfrog("failed to terminate " + getApplicationName());
+
+        execSmartfrog("failed to terminate " + ROOT_PROCESS);
     }
 
     /**

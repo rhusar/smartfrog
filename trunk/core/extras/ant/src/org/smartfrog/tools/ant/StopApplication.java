@@ -26,11 +26,28 @@ import org.apache.tools.ant.BuildException;
  */
 public class StopApplication extends SmartFrogTask {
 
+    /**
+     * name of an app
+     */
+    protected String applicationName;
+
     public StopApplication() {
         setHost("localhost");
         setFailOnError(true);
     }
+    protected String getApplicationName() {
+        return applicationName;
+    }
 
+
+    /**
+     * set the app name; optional on some actions
+     *
+     * @param applicationName
+     */
+    public void setApplicationName(String applicationName) {
+        this.applicationName = applicationName;
+    }
     /**
      * execution logic
      *
@@ -38,9 +55,12 @@ public class StopApplication extends SmartFrogTask {
      *
      */
     public void execute() throws BuildException {
+        if(applicationName==null) {
+            throw new BuildException("No application to undeploy");
+        }
         setStandardSmartfrogProperties();
         addHostname();
-        addApplicationName("-t");
+        addApplicationCommand("-t",applicationName);
         addExitFlag();
         execSmartfrog("failed to terminate "+getApplicationName());
     }

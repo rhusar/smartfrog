@@ -16,6 +16,7 @@
     <typedef name="sf-stopdaemon" classname="org.smartfrog.tools.ant.StopDaemon"/>
     <typedef name="sf-startdaemon" classname="org.smartfrog.tools.ant.StartDaemon"/>
     <typedef name="sf-deploy" classname="org.smartfrog.tools.ant.StartApplication"/>
+    <typedef name="sf-run" classname="org.smartfrog.tools.ant.RunApplicationTask"/>
 <!--
     <typedef name="" classname="org.smartfrog.tools.ant."/>
     <typedef name="" classname="org.smartfrog.tools.ant."/>
