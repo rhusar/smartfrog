@@ -24,10 +24,17 @@ import junit.framework.TestCase;
 import nu.xom.Document;
 import nu.xom.ParsingException;
 import nu.xom.ValidityException;
+import nu.xom.Element;
 import org.smartfrog.services.cddlm.cdl.CdlDocument;
 import org.smartfrog.services.cddlm.cdl.CdlParser;
 import org.smartfrog.services.cddlm.cdl.ResourceLoader;
+import org.smartfrog.services.cddlm.cdl.CdlParsingException;
+import org.smartfrog.services.cddlm.cdl.XomAxisHelper;
+import org.w3c.dom.DOMImplementation;
+import org.apache.axis.message.MessageElement;
 
+import javax.xml.namespace.QName;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 
 /**
@@ -45,9 +52,14 @@ public class CdlLoaderTest extends TestCase {
     private final static String VALID_RESOURCES = RESOURCES + "valid/";
 
     public static final String WRONG_NAMESPACE_TEXT="Cannot find the declaration of element 'cdl:cdl'";
+    public static final String CDL_DOC_MINIMAL = VALID_RESOURCES+"minimal.cdl";
     private final static String VALID_CDL[]= {
-        "minimal.cdl"
+        CDL_DOC_MINIMAL
     };
+    public static final String CDL_DOC_WRONG_ELT_ORDER = INVALID_RESOURCES+"wrong_elt_order.cdl";
+    public static final String CDL_DOC_WRONG_ROOT_ELT_TYPE = INVALID_RESOURCES + "wrong_root_elt_type.cdl";
+    public static final String CDL_DOC_DUPLICATE_NAMES = INVALID_RESOURCES + "duplicate-names.cdl";
+    public static final String CDL_DOC_WRONG_NAMESPACE = INVALID_RESOURCES + "wrong_doc_namespace.cdl";
 
 
     public CdlLoaderTest(String test) {
@@ -77,7 +89,8 @@ public class CdlLoaderTest extends TestCase {
             if(text==null) {
                 text="";
             }
-            CdlDocument doc=load(INVALID_RESOURCES + filename);
+            CdlDocument doc=load(filename);
+            doc.validate();
             fail("expected a validity failure with "+text);
         } catch (ParsingException e) {
             if(e.getMessage().indexOf(text)<0) {
@@ -91,11 +104,14 @@ public class CdlLoaderTest extends TestCase {
         log(filename);
     }
 
-    public void log(String message) {
-
+    private void log(String message) {
+        System.out.println(message);
     }
+
+
     protected void assertValid(String filename) throws IOException, ParsingException {
-        load(VALID_RESOURCES+filename);
+        CdlDocument doc = load(filename);
+        doc.validate();
     }
 
     protected CdlDocument load(String filename) throws IOException,
@@ -107,7 +123,7 @@ public class CdlLoaderTest extends TestCase {
     }
 
     public void testWrongDocNamespace() throws Exception {
-        assertInvalid("wrong_doc_namespace.cdl", WRONG_NAMESPACE_TEXT);
+        assertInvalid(CDL_DOC_WRONG_NAMESPACE, WRONG_NAMESPACE_TEXT);
     }
 
 /*
@@ -116,15 +132,16 @@ public class CdlLoaderTest extends TestCase {
     }
 */
     public void testWrongEltOrder() throws Exception {
-        assertInvalid("wrong_elt_order.cdl", null);
+        assertInvalid(CDL_DOC_WRONG_ELT_ORDER, null);
     }
 
     public void testWrongRootEltType() throws Exception {
-        assertInvalid("wrong_root_elt_type.cdl", CdlDocument.ERROR_WRONG_ROOT_ELEMENT);
+        assertInvalid(CDL_DOC_WRONG_ROOT_ELT_TYPE, CdlDocument.ERROR_WRONG_ROOT_ELEMENT);
     }
 
     public void testDuplicateNames() throws Exception {
-        CdlDocument doc = load(INVALID_RESOURCES + "duplicate-names.cdl");
+        CdlDocument doc = load(CDL_DOC_DUPLICATE_NAMES);
+        doc.validate();
     }
 
     public void testMissingFile() throws Exception  {
@@ -133,5 +150,26 @@ public class CdlLoaderTest extends TestCase {
         } catch (IOException e) {
             //expected
         }
+    }
+
+    public void testAxisConversionValid() throws Exception {
+        CdlDocument doc=load(CDL_DOC_MINIMAL);
+        doc.validate();
+        assertConversionWorks(doc);
+
+    }
+
+    private void assertConversionWorks(CdlDocument doc)
+            throws ParserConfigurationException {
+        DOMImplementation impl = XomAxisHelper.loadDomImplementation();
+        Document dom = doc.getDocument();
+        MessageElement messageElement = XomAxisHelper.convert(dom, impl);
+        assertNotNull(messageElement);
+        Element rootElement = dom.getRootElement();
+        assertEquals("namespaces match",rootElement.getNamespaceURI(),
+                messageElement.getNamespaceURI());
+        String n2 = messageElement.getName();
+        String n1 = rootElement.getLocalName();
+        assertEquals("element names",n1,n2);
     }
 }

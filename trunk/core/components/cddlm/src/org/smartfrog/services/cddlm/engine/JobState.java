@@ -27,6 +27,7 @@ import org.smartfrog.services.cddlm.api.OptionProcessor;
 import org.smartfrog.services.cddlm.api.Processor;
 import org.smartfrog.services.cddlm.generated.api.types.DeploymentDescriptorType;
 import org.smartfrog.services.cddlm.generated.api.types._deployRequest;
+import org.smartfrog.services.cddlm.cdl.CdlDocument;
 import org.smartfrog.sfcore.prim.Prim;
 
 import javax.xml.namespace.QName;
@@ -95,6 +96,10 @@ public class JobState {
 
     private MessageElement descriptor;
 
+    /**
+     * CDL document; will be null for a CDL file
+     */
+    private CdlDocument cdlDocument;
 
     /**
      * the language
@@ -207,6 +212,14 @@ public class JobState {
 
     public void setHostname(String hostname) {
         this.hostname = hostname;
+    }
+
+    public CdlDocument getCdlDocument() {
+        return cdlDocument;
+    }
+
+    public void setCdlDocument(CdlDocument cdlDocument) {
+        this.cdlDocument = cdlDocument;
     }
 
     public void bindToPrim(Prim prim) {

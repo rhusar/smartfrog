@@ -26,11 +26,13 @@ import org.apache.axis.types.URI;
 import org.smartfrog.services.cddlm.api.Constants;
 import org.smartfrog.services.cddlm.api.Processor;
 import org.smartfrog.services.cddlm.cdl.CdlParser;
+import org.smartfrog.services.cddlm.cdl.ResourceLoader;
 import org.smartfrog.services.cddlm.generated.api.types.LanguageListType;
 import org.smartfrog.services.cddlm.generated.api.types.ServerInformationType;
 import org.smartfrog.services.cddlm.generated.api.types.StaticServerStatusType;
 import org.smartfrog.services.cddlm.generated.api.types.StringListType;
 import org.smartfrog.services.cddlm.generated.api.types._languageListType_language;
+import org.xml.sax.SAXException;
 
 import java.math.BigInteger;
 
@@ -67,6 +69,13 @@ public class ServerInstance {
         for (int i = 0; i < workers.length; i++) {
             workers[i] = new ActionWorker(queue, TIMEOUT);
             workers[i].start();
+        }
+        //TODO: use the smartfrog resource loader & sfCodebase;
+        ResourceLoader loader = new ResourceLoader(this.getClass());
+        try {
+            cdlParser=new CdlParser(loader, true);
+        } catch (SAXException e) {
+            throw new RuntimeException(e);
         }
     }
 

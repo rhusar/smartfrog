@@ -22,6 +22,8 @@ import junit.framework.TestCase;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
+import org.smartfrog.services.cddlm.cdl.XomAxisHelper;
+import org.w3c.dom.DOMImplementation;
 
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.parsers.SAXParser;
@@ -67,6 +69,11 @@ public class XmlParserTest extends TestCase {
         SAXParser parser = factory.newSAXParser();
         assertNotNull("Sax parser ", parser);
         System.out.println("Sax 1 Parser="+parser.getClass().getName());
+    }
+
+    public void testDomExists() throws ParserConfigurationException {
+        DOMImplementation domImplementation = XomAxisHelper.loadDomImplementation();
+        assertNotNull("Dom implementation null",domImplementation);
     }
 
 }
