@@ -38,17 +38,6 @@ Reference URL:http://ant.apache.org
 </description>
 
   <!-- =================================================================== -->
-  <!-- Initialization path for SF Libs                                     -->
-  <!-- =================================================================== -->
-  <path id="smartfrog.run.class.path">
-       <pathelement location="${core.smartfrog.lib}/smartfrog.jar"/>
-       <pathelement location="${core.smartfrog.lib}/sfServices.jar"/>
-       <pathelement location="${core.smartfrog.lib}/sfExamples.jar"/>
-       <pathelement location="${lib}/SFGuiTools.jar"/>
-       <pathelement location="${dist.lib.dir}/sfGuiBrowser.jar"/>
-  </path>
-
-  <!-- =================================================================== -->
   <!-- Initialization target                                               -->
   <!-- =================================================================== -->
   <target name="init">
@@ -134,6 +123,17 @@ Reference URL:http://ant.apache.org
 
 
 
+  <!-- =================================================================== -->
+  <!-- Initialization path for SF Libs                                     -->
+  <!-- =================================================================== -->
+  <path id="smartfrog.run.class.path">
+       <pathelement location="${lib}/SFGuiTools.jar"/>
+       <pathelement location="${core.smartfrog.lib}/smartfrog.jar"/>
+       <pathelement location="${core.smartfrog.lib}/sfServices.jar"/>
+       <pathelement location="${core.smartfrog.lib}/sfExamples.jar"/>
+       <pathelement location="${dist.lib.dir}/sfGuiBrowser.jar"/>
+  </path>
+  
     <!-- Security related files
     =================================================================
     <property name="manifestName" value="${private}/sealManifest.mf"/>
@@ -189,6 +189,9 @@ Reference URL:http://ant.apache.org
       target="${javac.runtime.target}"
       >
       <classpath>
+          <fileset dir="${lib}">
+              <include name="**/*.jar"/>
+          </fileset>        
           <fileset dir="${core.smartfrog.lib}">
               <include name="**/*.jar"/>
           </fileset>
@@ -201,6 +204,10 @@ Reference URL:http://ant.apache.org
     <rmic includesfile="${rmitargets}Anubis"
         base="${build.classes.dir}">
       <classpath>
+                <fileset dir="${lib}">
+              <include name="**/*.jar"/>
+          </fileset>        
+
           <fileset dir="${core.smartfrog.lib}">
               <include name="**/*.jar"/>
           </fileset>
@@ -326,6 +333,9 @@ Reference URL:http://ant.apache.org
            >
       <group title="SmartFrog Packages" packages="org.smartfrog.*"/>
       <classpath>
+          <fileset dir="${lib}">
+              <include name="**/*.jar"/>
+          </fileset>      
           <fileset dir="${core.smartfrog.lib}">
               <include name="**/*.jar"/>
           </fileset>
