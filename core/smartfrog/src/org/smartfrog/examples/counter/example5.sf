@@ -18,16 +18,20 @@
 
 c extends Counter{
         limit 2;
+         sfSyncTerminate true;
 }
 
 sfConfig extends Compound {
-         counter1 extends c {
+         sfSyncTerminate true;
+         counter1 extends Compound {
+                  sfSyncTerminate true;
                   counter1A extends c;
                   counter1B extends c;
          }
          counter2 extends c {
          }
-         counter3 extends c {
+         counter3 extends Compound {
+                  sfSyncTerminate true;
                   counter3A extends c;
                   counter3B extends c;
                   counter3C extends c;
