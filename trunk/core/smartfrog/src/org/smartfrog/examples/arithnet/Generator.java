@@ -80,8 +80,8 @@ public class Generator extends NetElemImpl implements Remote {
             generator = new TheGenerator();
             generator.start();
         } catch (SmartFrogException sfex) {
-            Reference name = sfCompleteNameSafe();
-            terminateComponent(this, sfex, name);
+            Reference refName = sfCompleteNameSafe();
+            terminateComponent(this, sfex, refName);
             throw sfex;
         }
     }

@@ -253,7 +253,7 @@ public class Display extends JFrame implements ActionListener, KeyListener {
          // Display Streams
          OutputStream dout = System.out;
          InputStream din = System.in;
-         PrintStream out = System.out;
+         PrintStream outstream = System.out;
 
          if (org.smartfrog.services.display.WindowUtilities.
              areGraphicsAvailable()) {
@@ -276,13 +276,13 @@ public class Display extends JFrame implements ActionListener, KeyListener {
             display.setVisible(true);
             dout = display.getOutputStream();
             din = display.getInputStream();
-            out = display.getPrintStream();
+            outstream = display.getPrintStream();
 
             // Redirecting standard output:
-            System.setOut(out);
+            System.setOut(outstream);
 
             // System standard OUT -> screen PrintStream
-            System.setErr(out);
+            System.setErr(outstream);
 
             // System standard ERR -> screen PrintStream
             System.setIn(din);
@@ -293,7 +293,7 @@ public class Display extends JFrame implements ActionListener, KeyListener {
          //Testing output
          System.out.println(
                "Testing Redirection to Display: using System.out");
-         out.println("Printing directly using PrintStream");
+         outstream.println("Printing directly using PrintStream");
          System.err.println("Printing directly using System.err");
 
          // Testing standard imput from user:
@@ -656,10 +656,10 @@ public class Display extends JFrame implements ActionListener, KeyListener {
 
          // Create an output writer that will write to that file.
          // FileWriter handles international characters encoding conversions.
-         FileWriter out = new FileWriter(file);
+         FileWriter outstream = new FileWriter(file);
          String text = screen.getText();
-         out.write(text);
-         out.close();
+         outstream.write(text);
+         outstream.close();
          this.dirty = false;
 
          return true;
@@ -724,10 +724,10 @@ public class Display extends JFrame implements ActionListener, KeyListener {
 
             // Create an output writer that will write to that file.
             // FileWriter handles international characters encoding conversions.
-            FileWriter out = new FileWriter(file, true);
+            FileWriter outstream = new FileWriter(file, true);
             String text = screen.getText();
-            out.write(text);
-            out.close();
+            outstream.write(text);
+            outstream.close();
             this.dirty = false;
          }
 
@@ -756,8 +756,8 @@ public class Display extends JFrame implements ActionListener, KeyListener {
          if (file.exists()) {
             // Create an output writer that will write to that file.
             // FileWriter handles international characters encoding conversions.
-            FileWriter out = new FileWriter(file, false);
-            out.close();
+            FileWriter outstream = new FileWriter(file, false);
+            outstream.close();
          }
       } catch (java.lang.Throwable ex) {
          System.err.println("Display.cleanScreen():" + ex.getMessage());

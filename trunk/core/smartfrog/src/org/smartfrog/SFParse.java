@@ -101,7 +101,7 @@ public class SFParse implements MessageKeys {
             String language = getLanguageFromUrl(fileUrl);
             //report.add("language: "+language);
 
-            Vector phases;
+            Vector phaseList;
 
             Phases top;
             InputStream is=null;
@@ -131,9 +131,9 @@ public class SFParse implements MessageKeys {
                 }
             }
 
-            phases = top.sfGetPhases();
+            phaseList = top.sfGetPhases();
             String phase;
-            for (Enumeration e = phases.elements(); e.hasMoreElements(); ) {
+            for (Enumeration e = phaseList.elements(); e.hasMoreElements(); ) {
                 phase = (String) e.nextElement();
                 try {
                   top = top.sfResolvePhase(phase);

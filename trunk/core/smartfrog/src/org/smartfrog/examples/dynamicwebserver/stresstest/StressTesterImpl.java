@@ -251,7 +251,7 @@ public class StressTesterImpl extends PrimImpl implements Prim, Runnable,
         long beforeTime = 0;
         long afterTime = 0;
 
-        Socket client;
+        Socket clientSocket;
 
         int hitPosition = 0;
         int total = 0;
@@ -331,12 +331,12 @@ public class StressTesterImpl extends PrimImpl implements Prim, Runnable,
                     logger.log(name, "trying server " + newHost);
 
                     beforeTime = System.currentTimeMillis();
-                    client = connect(newHost, this.port);
+                    clientSocket = connect(newHost, this.port);
 
-                    if (client != null) {
+                    if (clientSocket != null) {
                         logger.log(name, "connected to server " + newHost);
                         succeeded = true;
-                        afterTime = handleConnection(newHost, client);
+                        afterTime = handleConnection(newHost, clientSocket);
 
                         if (afterTime >= beforeTime) {
                             int newTime = ((int) (afterTime - beforeTime));

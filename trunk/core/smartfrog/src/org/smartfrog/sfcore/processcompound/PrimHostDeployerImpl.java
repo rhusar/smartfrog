@@ -70,7 +70,6 @@ public class PrimHostDeployerImpl extends PrimDeployerImpl {
      */
     protected ProcessCompound getProcessCompound() throws Exception {
         InetAddress hostAddress = null;
-        int port = 0;
         String hostname=null;
         try {
             hostname = (String) target.sfResolve(
@@ -83,7 +82,7 @@ public class PrimHostDeployerImpl extends PrimDeployerImpl {
                 if (target.getContext().containsKey(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME)) {
                     name =target.getContext().get(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME);
                 }
-                throw new SmartFrogDeploymentException (this.refProcessHost,null,name,target,null,"Unknown host: "+hostname, unhex, hostname);
+                throw new SmartFrogDeploymentException (refProcessHost,null,name,target,null,"Unknown host: "+hostname, unhex, hostname);
         }
 
         return SFProcess.getRootLocator().

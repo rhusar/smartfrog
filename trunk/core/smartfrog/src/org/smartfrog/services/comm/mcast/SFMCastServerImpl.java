@@ -210,7 +210,7 @@ public class SFMCastServerImpl extends PrimImpl implements Prim, SFMCastServer,
                     port);
                 sock.send(packet);
                 log("run", "Sent advert, going to sleep ...");
-                action.sleep(5 * 1000);
+                Thread.sleep(5 * 1000);
                 //Refresh content for message
                 message = sfResolve(ATR_MESSAGE, false);
             }

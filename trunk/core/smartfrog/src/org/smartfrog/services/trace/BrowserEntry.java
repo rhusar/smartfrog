@@ -659,7 +659,7 @@ public final class BrowserEntry implements Entry {
             return (data);
         }
 
-        return this.dumpHashMap2Array(this.attributes);
+        return dumpHashMap2Array(this.attributes);
     }
 
     /**

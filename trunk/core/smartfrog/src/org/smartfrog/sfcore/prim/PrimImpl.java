@@ -188,9 +188,10 @@ public class PrimImpl extends Object implements Prim, MessageKeys {
         try {
             obj = r.resolve(this, index);
         } catch (SmartFrogResolutionException rex) {
-            if ((!(rex.containsKey(rex.SOURCE))) || (rex.get(rex.SOURCE)== null)) {
-                rex.put(rex.SOURCE, this.sfCompleteNameSafe());
-                rex.put(rex.DEPTH, new Integer(index));
+            if ((!(rex.containsKey(SmartFrogRuntimeException.SOURCE)))
+                    || (rex.get(SmartFrogRuntimeException.SOURCE)== null)) {
+                rex.put(SmartFrogRuntimeException.SOURCE, this.sfCompleteNameSafe());
+                rex.put(SmartFrogResolutionException.DEPTH, new Integer(index));
             }
             rex.appendPath(this.sfCompleteName().toString() + " ");
             throw rex;
@@ -1095,7 +1096,7 @@ public class PrimImpl extends Object implements Prim, MessageKeys {
                 } catch (Exception ex) {
                     SmartFrogResolutionException resEx = SmartFrogResolutionException.generic(reference,
                             this.sfCompleteNameSafe(), ex.toString());
-                    resEx.put(resEx.DATA, ex);
+                    resEx.put(SmartFrogException.DATA, ex);
                     throw resEx;
                 }
             } else {

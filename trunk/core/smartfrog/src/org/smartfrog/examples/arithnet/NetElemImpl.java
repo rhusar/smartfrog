@@ -110,10 +110,10 @@ public abstract class NetElemImpl extends CompoundImpl implements Compound,
                     }
 
                     for (Enumeration o = outputs.keys(); o.hasMoreElements();) {
-                        Object name = o.nextElement();
+                        Object keyName = o.nextElement();
 
-                        if (outputs.get(name) instanceof Output) {
-                            Output out = (Output) outputs.get(name);
+                        if (outputs.get(keyName) instanceof Output) {
+                            Output out = (Output) outputs.get(keyName);
 
                             try {
                                 out.output(value);
@@ -177,8 +177,8 @@ public abstract class NetElemImpl extends CompoundImpl implements Compound,
             sfex.put(SmartFrogCoreKeys.SF_DEPLOY_FAILURE, this.sfContext);
 
             // trigger termination of component
-            Reference name = sfCompleteNameSafe();
-            terminateComponent(this, sfex, name);
+            Reference refName = sfCompleteNameSafe();
+            terminateComponent(this, sfex, refName);
             throw sfex;
         }
     }
@@ -196,8 +196,8 @@ public abstract class NetElemImpl extends CompoundImpl implements Compound,
             sfex.put(SmartFrogCoreKeys.SF_START_FAILURE, this.sfContext);
 
             // trigger termination of component
-            Reference name = sfCompleteNameSafe();
-            terminateComponent(this, sfex, name);
+            Reference refName = sfCompleteNameSafe();
+            terminateComponent(this, sfex, refName);
             throw sfex;
         }
     }

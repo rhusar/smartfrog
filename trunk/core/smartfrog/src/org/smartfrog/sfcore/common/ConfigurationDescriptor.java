@@ -198,8 +198,8 @@ public class ConfigurationDescriptor implements MessageKeys{
      * @return status message
      */
     public String statusString (){
-       String separator= ", ";
-       return statusString(separator);
+       String s= ", ";
+       return statusString(s);
     }
     /**
      * Gets status message

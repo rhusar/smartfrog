@@ -117,7 +117,7 @@ public class DeployEntry implements Entry {
         //Test
         System.out.println("Starting...a new adventure.");
 
-        DeployEntry entry = new DeployEntry(SmartFrogCoreKeys.SF_ROOT);
+        DeployEntry newEntry = new DeployEntry(SmartFrogCoreKeys.SF_ROOT);
         System.out.println("...Finished");
     }
 

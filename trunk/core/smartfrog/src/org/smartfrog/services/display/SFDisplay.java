@@ -45,38 +45,38 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
 public class SFDisplay extends PrimImpl implements Prim, PrintMsgInt,
       PrintErrMsgInt {
    /** String name for attribute autoClean. */
-   private final String AUTO_CLEAN = "autoClean";
+   private static final String AUTO_CLEAN = "autoClean";
    /** String name for attribute cleanEveryNumSec. */
-   private final String CLEAN_EVERY_NUM_SEC = "cleanEveryNumSec";
+   private static final String CLEAN_EVERY_NUM_SEC = "cleanEveryNumSec";
    /** String name for attribute autoSave. */
-   private final String AUTO_SAVE = "autoSave";
+   private static final String AUTO_SAVE = "autoSave";
    /** String name for attribute directoryAutoSave. */
-   private final String DIRECTORY_AUTO_SAVE = "directoryAutoSave";
+   private static final String DIRECTORY_AUTO_SAVE = "directoryAutoSave";
    /** String name for attribute showIP. */
-   private final String SHOW_IP = "showIP";
+   private static final String SHOW_IP = "showIP";
    /** String name for attribute showSfProcess. */
-   private final String SHOW_SFPROCESSNAME = "showSfProcess";
+   private static final String SHOW_SFPROCESSNAME = "showSfProcess";
    /** String name for attribute terminateSFProcessOnExit. */
-   private final String TERMINATE_SFPROCESS_ON_EXIT
+   private static final String TERMINATE_SFPROCESS_ON_EXIT
                                             = "terminateSFProcessOnExit";
    /** String name for attribute nameDisplay. */
-   private final String NAME_DISPLAY = "nameDisplay";
+   private static final String NAME_DISPLAY = "nameDisplay";
    /** String name for attribute redirectStd. */
-   private final String REDIRECT_STD = "redirectStd";
+   private static final String REDIRECT_STD = "redirectStd";
    /** String name for attribute positiondisplay. */
-   private final String POSITION_DISPLAY = "positionDisplay";
+   private static final String POSITION_DISPLAY = "positionDisplay";
    /** String name for attribute testDisplay. */
-   private final String TEXT_DISPLAY = "textDisplay";
+   private static final String TEXT_DISPLAY = "textDisplay";
    /** String name for attribute heightDisplay. */
-   private final String HEIGHT_DISPLAY = "heightDisplay";
+   private static final String HEIGHT_DISPLAY = "heightDisplay";
    /** String name for attribute widthDisplay. */
-   private final String WIDTH_DISPLAY = "widthDisplay";
+   private static final String WIDTH_DISPLAY = "widthDisplay";
    /** String name for attribute formatMsg. */
-   private final String FORMAT_MSG = "formatMsg";
+   private static final String FORMAT_MSG = "formatMsg";
    /** String name for attribute externalPrinter. */
-   private final String EXTERNAL_PRINTER = "externalPrinter";
+   private static final String EXTERNAL_PRINTER = "externalPrinter";
    /** String name for attribute screenEditable. */
-   private final String SCREEN_EDITABLE = "screenEditable";
+   private static final String SCREEN_EDITABLE = "screenEditable";
 
    /**
     * Definition of components attribute - display.

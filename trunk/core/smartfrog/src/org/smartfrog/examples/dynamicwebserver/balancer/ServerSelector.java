@@ -117,8 +117,8 @@ class ServerSelector {
     synchronized void close() {
         Vector tempServers = (Vector) servers.clone();
 
-        for (Enumeration servers = tempServers.elements(); servers.hasMoreElements();) {
-            Server server = (Server) servers.nextElement();
+        for (Enumeration serverEnum = tempServers.elements(); serverEnum.hasMoreElements();) {
+            Server server = (Server) serverEnum.nextElement();
             removeServer(server.getHostname());
         }
     }

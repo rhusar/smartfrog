@@ -128,7 +128,7 @@ public class TableUtilities {
                if (retries > 3) {
                   done = true;
                } else {
-                  Thread.currentThread().sleep(100);
+                  Thread.sleep(100);
                }
             } catch (Exception ee) {
                System.err.println("Error retriying setColumnWidths:\n" +
