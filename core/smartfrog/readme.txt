@@ -32,5 +32,5 @@ Where to start:
 
 - Examples:         <SF>/dist/src/org/smartfrog/examples/examples.html
 
-- Build process:    <SF>/docs/build.html
+- Build process:    <SF>/docs/build.html (only in _ALL distribution)
 
