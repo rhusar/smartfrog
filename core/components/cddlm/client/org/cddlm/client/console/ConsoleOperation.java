@@ -41,6 +41,8 @@ import org.cddlm.client.generated.api.types._deploymentDescriptorType_data;
 import org.cddlm.client.generated.api.types._lookupApplicationRequest;
 import org.cddlm.client.generated.api.types._serverStatusRequest;
 import org.cddlm.client.generated.api.types._undeployRequest;
+import org.cddlm.client.generated.api.types.StaticServerStatusType;
+import org.cddlm.client.generated.api.types._languageListType_language;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -355,6 +357,37 @@ public abstract class ConsoleOperation {
         return getStub().undeploy(undeploy);
     }
 
+    /**
+     * test for a language being supported
+     *
+     * @param languageURI
+     * @return true if the URI is in the list of known languages
+     */
+    public boolean supportsLanguage(String languageURI) throws RemoteException {
+        ServerStatusType status=getStatus();
+        return supportsLanguage(status, languageURI);
+    }
+
+    /**
+     * test for a language being supported
+     *
+     * @param status server status
+     * @param languageURI
+     * @return true if the URI is in the list of known languages
+     */
+    public boolean supportsLanguage(ServerStatusType status, String languageURI) {
+        StaticServerStatusType staticStatus = status.get_static();
+        _languageListType_language[] languages = staticStatus.getLanguages().getLanguage();
+        for ( int i = 0; i < languages.length; i++ ) {
+            _languageListType_language l = languages[i];
+            if(languageURI.equals(l.getNamespace())) {
+                //positive match
+                return true ;
+            }
+        }
+        //if we get here, no match
+        return false;
+    }
 
     /**
      * exit, use success flag to choose the return time. This method does not
@@ -365,4 +398,7 @@ public abstract class ConsoleOperation {
     protected static void exit(boolean success) {
         Runtime.getRuntime().exit(success ? 0 : -1);
     }
+
+
+
 }

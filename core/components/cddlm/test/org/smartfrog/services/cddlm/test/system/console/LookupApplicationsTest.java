@@ -24,8 +24,11 @@ package org.smartfrog.services.cddlm.test.system.console;
 import org.apache.axis.AxisFault;
 import org.apache.axis.types.URI;
 import org.cddlm.client.console.Lookup;
+import org.cddlm.client.console.ConsoleOperation;
 import org.cddlm.client.generated.api.types.ApplicationStatusType;
 import org.smartfrog.services.cddlm.generated.faults.FaultCodes;
+
+import java.rmi.RemoteException;
 
 /**
  * Date: 02-Sep-2004 Time: 20:40:57
@@ -34,6 +37,15 @@ public class LookupApplicationsTest extends ConsoleTestBase {
 
     Lookup operation;
     public static final String INVALID_URI_NAME = "http://invalid.org/lookup";
+
+    /**
+     * get the operation of this test base
+     *
+     * @return the current operation
+     */
+    protected ConsoleOperation getOperation() {
+        return operation;
+    }
 
     /**
      * Sets up the fixture, by creating an operation
@@ -55,13 +67,8 @@ public class LookupApplicationsTest extends ConsoleTestBase {
 
     public void testStatusOfMissingApp() throws Exception {
         URI uri = new URI(INVALID_URI_NAME);
-        try {
-            ApplicationStatusType status = operation.lookupApplicationStatus(
-                    uri);
-        } catch (AxisFault fault) {
-            assertFaultMatches(fault,
-                    FaultCodes.FAULT_NO_SUCH_APPLICATION,
-                    INVALID_URI_NAME);
-        }
+        String errorText = INVALID_URI_NAME;
+        assertNoSuchApplication(uri, errorText);
     }
+
 }

@@ -93,6 +93,33 @@
     <string name="CALLBACK_CDDLM_PROTOTYPE" value="cddlm-prototype">
       <description>name of prototype-quality CDDLM notification type</description>
     </string>
+
+
+    <!-- state constants. These are non-normative; the normative definitions
+     are in the deploy API XSD File. This copy is because SOAP stacks
+     give enumerations bad names
+     -->
+    <string name="STATE_INSTANTIATED" value="instantiated">
+      <description>instantiated state</description>
+    </string>
+
+    <string name="STATE_INITIALIZED" value="initialized">
+      <description>initialized state</description>
+    </string>
+
+    <string name="STATE_RUNNING" value="running">
+      <description>running state</description>
+    </string>
+
+    <string name="STATE_FAILED" value="failed">
+      <description>failed state</description>
+    </string>
+
+    <string name="STATE_TERMINATED" value="terminated">
+      <description>terminated state</description>
+    </string>
+
+
     <!--
         <string name="" value="">
           <description></description>

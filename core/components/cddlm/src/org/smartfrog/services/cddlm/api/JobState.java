@@ -35,13 +35,29 @@ public class JobState {
     public JobState() {
     }
 
+    /**
+     * fill in from a job request
+     * @param request
+     */
     public JobState(_deployRequest request) {
         setRequest(request);
     }
 
+    /**
+     * app uri
+     */
     private URI uri;
 
+    /**
+     * name of app
+     */
     private String name;
+
+    /**
+     * hostname, may be null
+     */
+
+    private String hostname;
 
     /**
      * what are we bonded to
@@ -106,6 +122,14 @@ public class JobState {
         this.name = name;
     }
 
+    public String getHostname() {
+        return hostname;
+    }
+
+    public void setHostname(String hostname) {
+        this.hostname = hostname;
+    }
+
     /**
      * get the prim; raise a fault if it is terminated
      *
@@ -151,6 +175,10 @@ public class JobState {
         return true;
     }
 
+    /**
+     * hash code is from the URI
+     * @return
+     */
     public int hashCode() {
         return (uri != null ? uri.hashCode() : 0);
     }

@@ -25,10 +25,12 @@ import org.apache.axis.Constants;
 import org.apache.axis.types.URI;
 import org.cddlm.client.common.ServerBinding;
 import org.cddlm.client.console.ShowServerStatus;
+import org.cddlm.client.console.ConsoleOperation;
 import org.cddlm.client.generated.api.types.DynamicServerStatusType;
 import org.cddlm.client.generated.api.types.ServerInformationType;
 import org.cddlm.client.generated.api.types.ServerStatusType;
 import org.cddlm.client.generated.api.types.StaticServerStatusType;
+import org.smartfrog.services.cddlm.generated.faults.FaultCodes;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
@@ -39,6 +41,15 @@ import java.rmi.RemoteException;
 public class ServerStatusTest extends ConsoleTestBase {
 
     private ShowServerStatus operation;
+
+    /**
+     * get the operation of this test base
+     *
+     * @return the current operation
+     */
+    protected ConsoleOperation getOperation() {
+        return operation;
+    }
 
     /**
      * Sets up the fixture, for example, open a network connection. This method
@@ -64,6 +75,25 @@ public class ServerStatusTest extends ConsoleTestBase {
         StaticServerStatusType staticStatus = getStaticStatus();
         assertTrue("Callbacks>0",
                 staticStatus.getCallbacks().getCallback().length > 0);
+    }
+
+    public void testSmartFrogLanguage() throws RemoteException {
+        assertSupportedLanguage(FaultCodes.SMARTFROG_NAMESPACE);
+    }
+
+    public void testXMLCDLLanguage() throws RemoteException {
+        assertSupportedLanguage(FaultCodes.XML_CDL_NAMESPACE);
+    }
+
+    public void testUnsupportedLanguage() throws RemoteException {
+        String languageURI = FaultCodes.XPATH_NAMESPACE;
+        boolean found = operation.supportsLanguage(languageURI);
+        assertTrue("supported :" + languageURI, found);
+    }
+
+    public void assertSupportedLanguage(String languageURI) throws RemoteException {
+        boolean found=operation.supportsLanguage(languageURI);
+        assertTrue("not supported :"+languageURI,found);
     }
 
 

@@ -21,6 +21,7 @@ package org.smartfrog.services.cddlm.test.system.console;
 
 import org.apache.axis.types.URI;
 import org.cddlm.client.console.ListApplications;
+import org.cddlm.client.console.ConsoleOperation;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
@@ -33,12 +34,22 @@ public class ListApplicationsTest extends ConsoleTestBase {
     private ListApplications operation;
 
     /**
+     * get the operation of this test base
+     *
+     * @return the current operation
+     */
+    protected ConsoleOperation getOperation() {
+        return operation;
+    }
+
+    /**
      * Sets up the fixture, by creating an operation
      */
     protected void setUp() throws Exception {
         super.setUp();
         operation = new ListApplications(getBinding(), getOut());
     }
+
 
     public void testExecute() throws RemoteException {
         operation.execute();
