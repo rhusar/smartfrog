@@ -334,6 +334,7 @@
         stubversion="1.2" />
     </presetdef>
     
+    <!-- security -->
     
   </target>
 
@@ -937,9 +938,17 @@
   <target name="buildtest"
     depends="smartfrog-dist,test"
     description="compile the smartfrog distribution, 
-      compile and run all the tests"
-    />    
-    
+      compile and run all the tests, generate reports on failure"
+    />
+
+  <target name="buildtest-noreports"
+    depends="smartfrog-dist,run-tests"
+    description="compile the smartfrog distribution,
+    compile and run all the tests, without any report stage"
+    >
+    <fail if="test.failed">Test failure</fail>
+  </target>
+
   <!-- ========================================================== -->
   <!-- this is an override point -->
   <!-- print meaningful diagnostics -->
@@ -988,7 +997,27 @@
     </echo>
       <setproxy proxyhost="${proxy.host}" proxyport="${proxy.port}"
         proxyuser="${proxy.user}" proxypassword="${proxy.pass}" />
-  </target>  
+  </target>
+  
+  <!-- ========================================================== -->
+  <!-- Security corner -->
+  <!-- ========================================================== -->
+
+  <target name="init-security" depends="init" >
+    <!-- TODO -->
+  </target>
+  
+  <target name="sign-dependent-jars"
+    description="sign all jars that we depend upon">
+    <!-- TODO -->
+  </target>
+  
+  <target name="sign-target-jar"
+    description="sign our target jar">
+    <!-- TODO -->
+  </target>
+  
+  
 </project>   
 
 
