@@ -227,11 +227,11 @@ public class ConfigurationDescriptorDeployTest extends SmartFrogTestBase impleme
            deployExpectingSuccess2(sfact,description);
         }
 
-//        public void testurlTest09b ()throws Throwable{
-//           String sfact = urlTest07b;
-//           String description = "testurlTest07b("+sfact+")";
-//           deployExpectingSuccess2(sfact,description);
-//        }
+        public void testurlTest09b ()throws Throwable{
+           String sfact = urlTest07b;
+           String description = "testurlTest07b("+sfact+")";
+           deployExpectingSuccess2(sfact,description);
+        }
 
         public void testurlTest10 ()throws Throwable{
            String sfact = urlTest10;
