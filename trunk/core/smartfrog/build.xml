@@ -358,7 +358,9 @@ relevant JAR files into the javacc subdirectory
   <target name="copydocs" depends="initdist">
     <copy todir="${dist.docs.dir}">
       <fileset dir="${docs}">
-        <include name="**/*.pdf, **/*.htm*" />
+        <include name="**/*.pdf" />
+        <include name="**/*.html" />
+        <include name="**/*.htm" />
       </fileset>
     </copy>
   </target>
