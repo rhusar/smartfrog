@@ -30,12 +30,5 @@
 org/smartfrog/services/comm/slp/SFSlpAdvertiserImpl.class
 org/smartfrog/services/comm/slp/SFSlpDAImpl.class
 org/smartfrog/services/comm/slp/SFSlpLocatorImpl.class
-org/smartfrog/services/comm/slp/SFSlpPrimAdvertiserImpl.class
-org/smartfrog/services/comm/slp/SFSlpPrimLocatorImpl.class
-org/smartfrog/services/comm/slp/SFSlpProcessCompoundAdvertiserImpl.class
-org/smartfrog/serivces/comm/slp/SFSlpEventAdvertiserImpl.class
-org/smartfrog/services/comm/slp/SFSlpEventLocatorImpl.class
-org/smartfrog/services/comm/slp/SFSlpObjectAdvertiserImpl.class
-org/smartfrog/services/comm/slp/SFSlpObjectLocatorImpl.class
 
 

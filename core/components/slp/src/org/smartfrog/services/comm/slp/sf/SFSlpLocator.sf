@@ -54,8 +54,6 @@ SFSlpLocator extends Prim {
                                // the first service discovery attempt.
     locator_discovery_interval 0; // retry discovery at regular intervals.
                                   // 0 = do not retry.
-    locator_return_all false; // return all discovered services as a Vector.
-                              // Used by the Prim, Object and Reference locators.
 
     // service type to look for
     serviceType ""; //e.g. service:http
@@ -64,7 +62,7 @@ SFSlpLocator extends Prim {
                      // from ServiceLocationManager.findScopes() are used.
    
     // The result of the service discovery
-    //result LAZY...; // The result of the service discovery
+    //result 
 }
 
 

@@ -27,12 +27,5 @@
 #include "org/smartfrog/services/comm/slp/sf/SFSlpConfiguration.sf"
 #include "org/smartfrog/services/comm/slp/sf/SFSlpAdvertiser.sf"
 #include "org/smartfrog/services/comm/slp/sf/SFSlpLocator.sf"
-#include "org/smartfrog/services/comm/slp/sf/SFSlpPrimAdvertiser.sf"
-#include "org/smartfrog/services/comm/slp/sf/SFSlpPrimLocator.sf"
-#include "org/smartfrog/services/comm/slp/sf/SFSlpProcessCompoundAdvertiser.sf"
 #include "org/smartfrog/services/comm/slp/sf/SFSlpDA.sf"
-#include "org/smartfrog/services/comm/slp/sf/SFSlpEventAdvertiser.sf"
-#include "org/smartfrog/services/comm/slp/sf/SFSlpEventLocator.sf"
-#include "org/smartfrog/services/comm/slp/sf/SFSlpObjectAdvertiser.sf"
-#include "org/smartfrog/services/comm/slp/sf/SFSlpObjectLocator.sf"
 

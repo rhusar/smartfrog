@@ -49,8 +49,7 @@ import org.smartfrog.services.comm.slp.util.SLPDefaults;
     advertised ProcessCompound in which to deploy the component.
 */
 public class SFSlpDeployerImpl extends PrimProcessDeployerImpl {
-    protected static final String SERVICE_TYPE = "service:sf-processcompound";
-    protected static final Reference refConcreteType = new Reference("concreteType");
+    protected static final Reference refServiceType = new Reference("serviceType");
     protected static final Reference refSearchFilter = new Reference("searchFilter");
     protected static final Reference refScopes = new Reference("searchScopes");
     protected static final Reference refConfig = new Reference("slpConfig");
@@ -62,13 +61,11 @@ public class SFSlpDeployerImpl extends PrimProcessDeployerImpl {
     
     protected ProcessCompound getProcessCompound() throws Exception {
         // get concrete type, search filter and scopes...
-        String concreteType=null, searchFilter=null;
+        String serviceType=null, searchFilter=null;
         Vector scopes=null;
-        try {
-            concreteType = (String)target.sfResolve(refConcreteType);
-        }catch(SmartFrogResolutionException ex) {
-            concreteType = "";
-        }
+
+        serviceType = (String)target.sfResolve(refServiceType); // required
+       
         try {
             searchFilter = (String)target.sfResolve(refSearchFilter);
         }catch(SmartFrogResolutionException ex) {
@@ -79,10 +76,6 @@ public class SFSlpDeployerImpl extends PrimProcessDeployerImpl {
         }catch(SmartFrogResolutionException ex) {
             // don't care...
         }
-        
-        // create service type
-        String serviceType = SERVICE_TYPE;
-        if(!concreteType.equals("")) serviceType += ":"+concreteType;
         
         // perform SLP Discovery...
         boolean discoveryCompleted = true;
@@ -100,8 +93,9 @@ public class SFSlpDeployerImpl extends PrimProcessDeployerImpl {
                     scopes = ServiceLocationManager.findScopes();
                 }
                 type = new ServiceType(serviceType);
-                ServiceLocationManager.setProperties( getSlpConfiguration(ctxt) );
-                Locator loc = ServiceLocationManager.getLocator(new Locale("en"));
+                Properties p = getSlpConfiguration(ctxt);
+                ServiceLocationManager.setProperties(p);
+                Locator loc = ServiceLocationManager.getLocator(new Locale(p.getProperty("net.slp.locale")));
                 urls = loc.findServices(type, scopes, searchFilter);
             
                 // take the first URL
@@ -111,9 +105,8 @@ public class SFSlpDeployerImpl extends PrimProcessDeployerImpl {
                     // set smartfrog attributes to use...
                     ctxt.put("sfProcessHost", url.getHost());
                     String pname = url.getURLPath();
-                    if(pname.startsWith("/")) pname = pname.substring(1);
                     if(!pname.equals("")) {
-                        ctxt.put("sfProcessName", pname);
+                        ctxt.put("sfProcessName", pname.substring(1));
                     }
                 }
             }catch(Exception ex) {

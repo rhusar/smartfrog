@@ -1,62 +1,91 @@
-/*
- Service Location Protocol - SmartFrog components.
- Copyright (C) 2004 Glenn Hisdal <ghisdal(a)c2i.net>
- 
- This library is free software; you can redistribute it and/or
- modify it under the terms of the GNU Lesser General Public
- License as published by the Free Software Foundation; either
- version 2.1 of the License, or (at your option) any later version.
- 
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- Lesser General Public License for more details.
- 
- You should have received a copy of the GNU Lesser General Public
- License along with this library; if not, write to the Free Software
- Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- 
- This library was originally developed by Glenn Hisdal at the 
- European Organisation for Nuclear Research (CERN) in Spring 2004. 
- The work was part of a master thesis project for the Norwegian 
- University of Science and Technology (NTNU).
- 
- For more information: http://home.c2i.net/ghisdal/slp.html 
- */
-
 package org.smartfrog.services.comm.slp;
 
-import org.smartfrog.sfcore.prim.*;
-import org.smartfrog.sfcore.reference.*;
-import org.smartfrog.sfcore.common.*;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.reference.ReferencePart;
+import org.smartfrog.sfcore.reference.HereReferencePart;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.Context;
 
-import java.util.*;
 import java.net.InetAddress;
-import java.rmi.*;
+import java.util.Vector;
+import java.util.Properties;
+import java.util.Locale;
+import java.rmi.server.RemoteStub;
+import java.rmi.RemoteException;
 
-/**
-    Implements an SLP advertiser component for SmartFrog.
-    The component can be used to advertise any service.
-    The service type, attributes and URL are set in the SF description.
-*/
 public class SFSlpAdvertiserImpl extends PrimImpl implements Prim, SFSlpAdvertiser {
+    /** The Advertiser object */
     protected Advertiser advertiser;
-    protected Properties properties;
-    protected Vector serviceURLs;
+    /** The ServiceURL for the advertised service */
+    protected ServiceURL serviceURL;
+    /** The Service Type for the advertised service */
+    protected String serviceType;
+    /** The attributes for the advertised service */
     protected Vector serviceAttributes;
+    /** The lifetime for the advertised service */
+    protected int serviceLifetime;
+    /** The advertised object. (String/Prim/Integer/Boolean...) */
+    protected Object toAdvertise;
+    
+    // references.
+    public static final Reference toAdvertiseRef = new Reference("toAdvertise");
+    public static final Reference serviceTypeRef = new Reference("serviceType");
+    public static final Reference serviceAttributeRef = new Reference("serviceAttributes");
+    public static final Reference serviceLifetimeRef = new Reference("serviceLifetime");
     
     public SFSlpAdvertiserImpl() throws RemoteException {
         super();
     }
     
-    /**
-        Creates the SLP advertiser object.
-    */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
-        super.sfDeploy();  
-        properties = new Properties();
-
-        // get slp configuration
+        super.sfDeploy();
+        // get configureation for SLP
+        Properties p = getSlpConfiguration();
+        
+        // get properties for the service to advertise.
+        toAdvertise = sfResolve(toAdvertiseRef);
+        serviceType = (String)sfResolve(serviceTypeRef);
+        serviceAttributes = (Vector)sfResolve(serviceAttributeRef);
+        serviceLifetime = ((Integer)sfResolve(serviceLifetimeRef)).intValue();
+        
+        // build URL.
+        createServiceURL();
+        
+        // create advertiser...
+        try {
+            ServiceLocationManager.setProperties(p);
+            advertiser = ServiceLocationManager.getAdvertiser(new Locale(p.getProperty("net.slp.locale")));
+        }catch(ServiceLocationException ex) {
+            throw (SmartFrogException)SmartFrogException.forward(ex);
+        }
+    }
+    
+    public synchronized void sfStart() throws SmartFrogException, RemoteException {
+        super.sfStart();
+    
+        // advertise service...
+        try {
+            advertiser.register(serviceURL, serviceAttributes);
+        }catch(ServiceLocationException ex) {
+            throw (SmartFrogException)SmartFrogException.forward(ex);
+        }
+        System.out.println("Advertising: " + serviceURL.toString());
+    }
+    
+    public synchronized void sfTerminateWith(TerminationRecord r) {
+        //deregister service
+        try {
+            advertiser.deregister(serviceURL);
+        }catch(ServiceLocationException ex) { }
+        
+        super.sfTerminateWith(r);
+    }
+    
+    protected Properties getSlpConfiguration() throws SmartFrogException, RemoteException {
+        Properties properties = new Properties();        
         String s = (String)sfResolve("slp_config_interface", "", false);
         if(!s.equals("")) properties.setProperty("net.slp.interface", s);
         properties.setProperty("net.slp.multicastMaximumWait", sfResolve("slp_config_mc_max").toString());
@@ -75,120 +104,69 @@ public class SFSlpAdvertiserImpl extends PrimImpl implements Prim, SFSlpAdvertis
         properties.setProperty("net.slp.logMsg", sfResolve("slp_config_log_msg").toString());
         properties.setProperty("net.slp.logfile", sfResolve("slp_config_logfile").toString());
         
-        // get service adv params.
-        Vector serviceTypes = (Vector)sfResolve(ATTRIB_SRVTYPE);
-        Vector toAdvertise = (Vector)sfResolve(ATTRIB_TO_ADVERTISE);
-        Vector lifetimes = (Vector)sfResolve(ATTRIB_LIFETIME);
-        createAttributes( (Vector)sfResolve(ATTRIB_ATTRIBUTES) );
-        
-        // check that all vectors are the same size.
-        int size = toAdvertise.size();
-        if(serviceTypes.size() != size ||
-           lifetimes.size() != size ||
-           serviceAttributes.size() != size) {
-            // error in .sf file
-            throw new SmartFrogException("SLP: You need to specify a type/lifetime/attribute for EACH service to advertise");
-        }
-        
-        // create the URLs
-        serviceURLs = new Vector();
-        buildURLs(toAdvertise, serviceTypes, lifetimes);
-        
-        // get advertiser
-        ServiceLocationManager.setProperties(properties);
-        try {
-            advertiser = ServiceLocationManager.getAdvertiser(new Locale(properties.getProperty("net.slp.locale")));
-        }catch(Exception ex) {
-            throw (SmartFrogException) SmartFrogException.forward(ex);
-        }
-    }    
+        return properties;
+    }
     
-    /**
-        Registers the service with the advertiser, starting the advertisement
-    */
-    public synchronized void sfStart() throws SmartFrogException, RemoteException {
-        super.sfStart();
-        try {
-            // advertise URLs
-            Iterator aIter = serviceAttributes.iterator();
-            Iterator uIter = serviceURLs.iterator();
-            while(uIter.hasNext()) {
-                advertiser.register((ServiceURL)uIter.next(), (Vector)aIter.next());
+    protected void createServiceURL() throws SmartFrogException, RemoteException {
+        if(toAdvertise instanceof Prim) {
+            createRemoteStubURL();
+        }
+        else if(toAdvertise instanceof Number ||
+                toAdvertise instanceof Boolean) {
+            serviceURL = new ServiceURL(serviceType+":///"+toAdvertise.toString(), serviceLifetime);
+        }
+        else if(toAdvertise instanceof InetAddress) {
+            serviceURL = new ServiceURL(serviceType+"://"+((InetAddress)toAdvertise).getCanonicalHostName());
+        }
+        else if(toAdvertise instanceof String) {
+            createStringURL();
+        }
+        else {
+            // Some object. Put base64 encoded string representation of
+            // object in the URLPath.
+            serviceURL = new ServiceURL(serviceType, toAdvertise, serviceLifetime);
+        }
+    }
+    
+    protected void createRemoteStubURL() throws SmartFrogException {
+        RemoteStub s;
+        if(toAdvertise instanceof RemoteStub) s = (RemoteStub)toAdvertise;
+        else s = (RemoteStub)((PrimImpl)toAdvertise).sfExportRef();
+        
+        serviceURL = new ServiceURL(serviceType, s, serviceLifetime);
+    }
+    
+    protected void createStringURL() throws SmartFrogException, RemoteException {
+        Context c = sfContext();
+        Object value = c.get("toAdvertise");
+        if(value instanceof Reference) {
+            // check if we are advertising the process compound.
+            Reference r = (Reference)value;
+            if(r.toString().endsWith("sfProcess")) {
+                // advertising process compound. Need to get hostname.
+                r.setElementAt(new HereReferencePart("sfHost"), r.size()-1);
+                InetAddress host = (InetAddress)sfResolve(r);
+                serviceURL = new ServiceURL(serviceType+"://"+host.getCanonicalHostName()+"/"+toAdvertise.toString(),
+                                            serviceLifetime);
+                return;
             }
-        }catch(Exception ex) {
-            throw (SmartFrogException) SmartFrogException.forward(ex);
         }
-    }
-    
-    /**
-        Deregisters the service.
-        After this, the service is no longer advertised.
-    */
-    public synchronized void sfTerminateWith(TerminationRecord tr) {
-        // deregister the service(s).
+
+        // Check if string could be a URL.
+        String adv = toAdvertise.toString();
+        String host = adv;
+        if(adv.indexOf("/") != -1) host = adv.substring(0, adv.indexOf("/"));
+        boolean url = false;
         try {
-            Iterator uIter = serviceURLs.iterator();
-            while(uIter.hasNext()) {
-                advertiser.deregister( (ServiceURL)uIter.next() );
-            }
-        }catch(Exception ex) {
-            ex.printStackTrace();
-        }
+            InetAddress a = InetAddress.getByName(host);
+            serviceURL = new ServiceURL(serviceType+"://"+a, serviceLifetime);
+            url = true;
+        }catch(Exception ex) { }
         
-	super.sfTerminateWith(tr);
-    }
-
-    protected void createAttributes(Vector attributes) throws SmartFrogException {
-        serviceAttributes = new Vector();
-        Iterator iter = attributes.iterator();
-        Vector attrs;
-        Vector values;
-        Vector srvAttribs;
-        String id;
-        try {
-            while(iter.hasNext()) {
-                srvAttribs = new Vector();
-                attrs = (Vector)iter.next();
-                for(Iterator aIter = attrs.iterator(); aIter.hasNext(); ) {
-                    values = (Vector)aIter.next();
-                    id = (String)values.remove(0);
-                    ServiceLocationAttribute a = new ServiceLocationAttribute(id, values);
-                    srvAttribs.add(a);
-                }
-                serviceAttributes.add(srvAttribs);
-            }
-        }catch(Exception ex) {
-            throw (SmartFrogException)SmartFrogException.forward(ex);
+        if(!url) {
+            // not a url. Just add String to URLPath.
+            serviceURL = new ServiceURL(serviceType+":///"+toAdvertise.toString(), serviceLifetime);
         }
-    }
-
-
-    protected void buildURLs(Vector toAdvertise, Vector serviceTypes, Vector lifetimes) throws SmartFrogException, RemoteException {
-        Iterator srvIter = toAdvertise.iterator();
-        Iterator typeIter = serviceTypes.iterator();
-        Iterator lifeIter = lifetimes.iterator();
-        
-        while(srvIter.hasNext()) {
-            String location = (String)srvIter.next();
-            String sType = (String)typeIter.next();
-            if(sType.equals("")) {
-                throw new SmartFrogException("SLP: Empty service type given");
-            }            
-            int lifetime = ((Integer)lifeIter.next()).intValue();
-            
-            ServiceURL url = new ServiceURL(sType+"://"+location, lifetime);
-            serviceURLs.add(url);
-        }
-    }
-    
-    public void register(ServiceURL url, Vector attributes) throws ServiceLocationException {
-        advertiser.register(url, attributes);
-        serviceURLs.add(url);
-    }
-    
-    public void deregister(ServiceURL url) throws ServiceLocationException {
-        advertiser.deregister(url);
-        serviceURLs.remove(url);
     }
 }
 
