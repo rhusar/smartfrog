@@ -59,9 +59,10 @@ public class SFJetty extends CompoundImpl implements JettyIntf {
    */
   public void sfDeploy() throws SmartFrogException, RemoteException {
     try {
+
         server = new HttpServer();
         serverName = sfResolve(serverNameRef, serverName, true);
-        jettyHelper.cacheJettyServer(serverName, server);
+        jettyHelper.cacheJettyServer(server);
         jettyhome = sfResolve(jettyhomeRef, jettyhome, true);
         jettyHelper.cacheJettyHome(jettyhome);
         enableLogging=sfResolve(ENABLE_LOGGING,enableLogging,true);
@@ -139,4 +140,8 @@ public class SFJetty extends CompoundImpl implements JettyIntf {
             throw new SmartFrogLivenessException("Server is not started");
         }
     }
+
+
+
+
 }

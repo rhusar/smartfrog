@@ -68,17 +68,7 @@ public class SFJettyAdmin extends PrimImpl implements JettyAdminIntf {
      * @throws RemoteException    In case of network/rmi error
      */
     public void sfDeploy() throws SmartFrogException, RemoteException {
-        try {
-            super.sfDeploy();
-            server = new HttpServer();
-            listenerPort = sfResolve(listenerPortRef, listenerPort, true);
-            httpserverHost = sfResolve(httpserverHostRef, "null",
-                    true);
-            contextPath = sfResolve(contextPathRef, "/", false);
-            configureHttpServer();
-        } catch (Exception ex) {
-            throw SmartFrogDeploymentException.forward(ex);
-        }
+        super.sfDeploy();
     }
 
     /**
@@ -90,6 +80,16 @@ public class SFJettyAdmin extends PrimImpl implements JettyAdminIntf {
     public synchronized void sfStart() throws SmartFrogException,
             RemoteException {
         super.sfStart();
+        try {
+            server = new HttpServer();
+            listenerPort = sfResolve(listenerPortRef, listenerPort, true);
+            httpserverHost = sfResolve(httpserverHostRef, "null",
+                    true);
+            contextPath = sfResolve(contextPathRef, "/", false);
+            configureHttpServer();
+        } catch (Exception ex) {
+            throw SmartFrogDeploymentException.forward(ex);
+        }
         try {
             server.start();
         } catch (MultiException mexp) {

@@ -19,6 +19,8 @@
  */
 package org.smartfrog.services.jetty.contexts;
 
+import org.smartfrog.services.www.JavaWebApplication;
+
 import java.rmi.Remote;
 
 /**
@@ -26,11 +28,8 @@ import java.rmi.Remote;
  */
 
 
-public interface JettyWebApplicationContext extends Remote {
+public interface JettyWebApplicationContext extends JavaWebApplication {
 
-    String CONTEXT_PATH = "contextPath";
     String WEBAPP = "webApp";
-    String WARFILE = "warFile";
     String REQUEST_ID = "requestId";
-    String SERVER = "server";
 }

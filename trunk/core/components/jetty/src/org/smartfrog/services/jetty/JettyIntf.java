@@ -19,6 +19,8 @@
  */
 package org.smartfrog.services.jetty;
 
+import org.smartfrog.services.www.JavaWebApplicationServer;
+
 import java.rmi.Remote;
 
 /**
@@ -36,4 +38,5 @@ public interface JettyIntf extends Remote {
     String SERVER = "server";
 
     String ENABLE_LOGGING="enableLogging";
+
 }
