@@ -30,7 +30,7 @@ For more information: www.smartfrog.org
  */
 #include "/org/smartfrog/services/trace/components.sf"
 
-/** 
+/**
  * Includes the Management Component.
  */
 #include "/org/smartfrog/services/management/components.sf"
@@ -44,12 +44,12 @@ MyCounter extends Counter {
 DisplayOff extends Compound;
 
 /**
- * System component has sub-components that are deployed in separate processes. 
+ * System component has sub-components that are deployed in separate processes.
  * Each sub-component:
  * Generates a counter from the seed value to the specified limit.
- * Has a trace component which traces and displays a message indicating the 
+ * Has a trace component which traces and displays a message indicating the
  * phases it goes through into the main trace info window.
- * Has a display component that shows the output of the counter component in a 
+ * Has a display component that shows the output of the counter component in a
  * separate display window.
  */
 System extends Compound {
@@ -78,7 +78,7 @@ System extends Compound {
 
      demoA extends MyCounter {
         Message "demoA";
-        limit 30;
+        limit 4;
      }
 
      foo extends Compound {
@@ -116,7 +116,7 @@ System extends Compound {
             }
             demoE extends MyCounter {
                 Message "demoE";
-                limit 9;
+                limit 5;
             }
         }
      }
@@ -126,7 +126,7 @@ System extends Compound {
         sfProcessName "test2";
         demoC extends MyCounter {
            Message "demoC";
-           limit 9;
+           limit 2;
         }
      }
 
@@ -153,7 +153,7 @@ System extends Compound {
         sfProcessComponentName "f";
         demoF extends MyCounter {
            Message "demoF";
-           limit 12;
+           limit 7;
         }
      }
 }
@@ -165,7 +165,7 @@ DeployMgnt extends DeployDisplay{
 
 sfConfig extends Compound {
      /**
-      * Extension of Display component to show the tree of components in a 
+      * Extension of Display component to show the tree of components in a
       * separate graphical window.
       */
 /*     displayTrace extends TraceDisplay{
@@ -174,8 +174,8 @@ sfConfig extends Compound {
         positionDisplay "SE";
      }
 */
-     /** 
-      * The trace component which traces and displays a message indicating the 
+     /**
+      * The trace component which traces and displays a message indicating the
       * phases every component goes through.
       */
      traceLocal extends Trace {
@@ -185,15 +185,15 @@ sfConfig extends Compound {
         //startHook     false;
         //terminateHook false;
      }
-     /** 
-      * The management component that displays the deployement information of 
+     /**
+      * The management component that displays the deployement information of
       * all the components.
       */
 /*     deployMgnt extends DeployMgnt{
         positionDisplay "NE";
      }
 */
-     /** 
+     /**
       * The system component that spawns various subprocesses.
       */
      system extends System;
