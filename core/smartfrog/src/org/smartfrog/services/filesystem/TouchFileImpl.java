@@ -33,9 +33,9 @@ import java.rmi.RemoteException;
  * created 19-Apr-2004 13:57:24
  */
 
-public class TouchFile extends PrimImpl implements Prim, TouchFileIntf {
+public class TouchFileImpl extends PrimImpl implements Prim, TouchFileIntf {
 
-    public TouchFile() throws RemoteException {
+    public TouchFileImpl() throws RemoteException {
     }
 
 

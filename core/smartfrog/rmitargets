@@ -36,8 +36,11 @@ org/smartfrog/services/comm/mcast/SFMCastClientImpl.class
 org/smartfrog/services/comm/mcast/SFMCastServerImpl.class
 org/smartfrog/services/filesystem/FileImpl.class
 org/smartfrog/services/filesystem/TempFileImpl.class
-org/smartfrog/services/filesystem/TouchFile.class
+org/smartfrog/services/filesystem/TouchFileImpl.class
+org/smartfrog/services/filesystem/TextFileImpl.class
 org/smartfrog/services/filesystem/MkdirImpl.class
+org/smartfrog/services/filesystem/MkdirImpl.class
+org/smartfrog/services/filesystem/SelfDeletingFileImpl.class
 org/smartfrog/services/www/LivenessPageComponent.class
 org/smartfrog/services/filesystem/replacevar/SFReplaceFileVar.class
 org/smartfrog/services/utils/setproperty/SFSetPropertyImpl.class

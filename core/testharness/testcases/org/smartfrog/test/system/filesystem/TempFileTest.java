@@ -21,8 +21,10 @@ package org.smartfrog.test.system.filesystem;
 
 import org.smartfrog.test.SmartFrogTestBase;
 import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 
 import java.io.File;
+import java.rmi.RemoteException;
 
 /**
  * created 18-May-2004 13:28:43
@@ -43,6 +45,10 @@ public class TempFileTest extends SmartFrogTestBase {
                         "SmartFrogCompileResolutionException", "non-optional attribute 'prefix' is missing");
     }
 
+    /**
+     * test that we are working
+     * @throws Throwable
+     */
     public void testWorking() throws Throwable {
         Prim application=deployExpectingSuccess(FILES + "tempFileTestWorking.sf", "tempFileTestWorking");
         String filename = application.sfResolve("filename", (String) null, true);

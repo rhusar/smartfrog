@@ -40,13 +40,9 @@ import java.lang.reflect.InvocationTargetException;
  * where the passphrase to unlock the keystore is extracted.
  *
  */
-public class SmartFrogSign extends TaskBase {
+public class SmartFrogSign extends SignJar {
 
 
-    /**
-     * the task used for signing
-     */
-    private SignJar signer;
 
     /**
      * our security holder
@@ -66,10 +62,7 @@ public class SmartFrogSign extends TaskBase {
      *          if something goes wrong with the build
      */
     public void init() throws BuildException {
-
-        //create a signer task
-        signer= new SignJar();
-        bindToChild(signer);
+        super.init();
     }
 
     /**
@@ -90,93 +83,6 @@ public class SmartFrogSign extends TaskBase {
         securityHolder.addSecurity(security);
     }
 
-    /**
-     * name a JAR file to sign
-     *
-     * @param file
-     */
-    public void setJar(File file) {
-        signer.setJar(file);
-    }
-
-    /**
-     * name the jar to sign
-     * @param file
-     */
-    public void setSignedJar(File file) {
-        signer.setSignedjar(file);
-    }
-
-    /**
-     * a fileset of jar files to sign
-     * @param fileset
-     */
-    public void addFileSet(FileSet fileset) {
-        signer.addFileset(fileset);
-    }
-
-    /**
-     * enable verbose output
-     * @param verbose
-     */
-    public void setVerbose(boolean verbose) {
-        signer.setVerbose(verbose);
-    }
-
-    /**
-     * flag to control whether the presence of a signature file means a JAR is signed
-     * and so does not need resigning
-     * @param lazy
-     */
-    public void setLazy(boolean lazy) {
-        signer.setLazy(true);
-    }
-
-    /**
-     *  Set the maximum memory to be used by the jarsigner process
-     *
-     * @param maxMemory a string indicating the maximum memory according to the
-     *        JVM conventions (e.g. 128m is 128 Megabytes)
-     */ 
-    public void setMaxMemory(String maxMemory) {
-        signer.setMaxmemory(maxMemory);
-    }
-
-    /**
-     * The current implementation use reflection to look for destDir method,
-     * as it is a recent addition to Ant's signjar task. Once we can rely on
-     * Ant1.7 at build and run time, we can go to direct invocation
-     * @param destDir
-     */
-    public void setDestDir(File destDir) {
-        /**
-         the following code does nothing but
-         signer.setDestDir(destDir);
-        */
-        Class classes[]=new Class[1];
-        classes[0]=File.class;
-        Method setdestdir;
-        try {
-            setdestdir = signer.getClass().getMethod("setDestDir",classes);
-        } catch (NoSuchMethodException e) {
-            throw new BuildException(E_NO_SETDESTDIR);
-        }
-        Object params[]=new Object[1];
-        params[0]=destDir;
-        try {
-            setdestdir.invoke(signer,params);
-        } catch (IllegalAccessException e) {
-            throw new BuildException("Calling setDestDir",e);
-        } catch (InvocationTargetException e) {
-            Throwable t=e.getTargetException();
-            //treat buildExceptions specially
-            if(t instanceof BuildException) {
-                throw (BuildException) t;
-            } else {
-                throw new BuildException("Calling setDestDir",t);
-            }
-        }
-    }
 
 
     /**
@@ -199,11 +105,11 @@ public class SmartFrogSign extends TaskBase {
             return;
         }
         try {
-            sec.applySecuritySettings(signer);
+            sec.applySecuritySettings((SignJar)this);
         } catch (IOException e) {
             throw new BuildException(ERROR_COULD_NOT_APPLY_SETTINGS
                     +sec.toString(),e);
         }
-        signer.execute();
+        super.execute();
     }
 }
