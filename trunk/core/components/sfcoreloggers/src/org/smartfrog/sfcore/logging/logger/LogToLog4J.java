@@ -24,5 +24,7 @@ package org.smartfrog.sfcore.logging.logger;
  */
 public interface LogToLog4J {
     /** String name for optional attribute "propertyConfigurator". */
-    final static String ATR_PROPERTY_CONFIGURATOR = "propertyConfiguratorFile";
+    final static String ATR_CONFIGURATOR_FILE = "configuratorFile";
+    final static String ATR_CONFIGURE_AND_WATCH = "configureAndWatch";
+    final static String ATR_CONFIGURE_AND_WATCH_DELAY = "configureAndWatchDelay";
 }
