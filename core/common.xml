@@ -119,7 +119,7 @@
     <property name="dist.lib.dir.relative" value="/build/dist/lib" />
     
       <!-- information about the ant tasks -->
-    <property name="smartfrog.tasks.prefix" value="smartfrog-tasks"/>      
+    <property name="smartfrog.tasks.prefix" value="sf-tasks"/>      
     <property name="smartfrog.tasks.name" value="${smartfrog.tasks.prefix}.jar"/>      
 <!--     <property name="smartfrog.tasks.lib.dir"
       location="${extras.dir}/ant/${dist.lib.dir.relative}"/> -->

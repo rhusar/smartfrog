@@ -214,7 +214,8 @@ For more information: www.smartfrog.org
   <!-- full clean Cruise Control build                                     -->
   <!-- =================================================================== -->
     <target name="cc-full"
-        depends="cvsupdate,clean,cc-incremental,cc-test, mavenReport" />
+        depends="cvsupdate,clean,cc-incremental,cc-test, mavenReport" 
+        description="cruise control full build, with checkout"/>
 
   <!-- =================================================================== -->
   <!-- Start cruise control from inside ant  -->
@@ -252,7 +253,8 @@ For more information: www.smartfrog.org
 <!-- =================================================================== -->
 <!--  Maven site:generate-->
 <!-- =================================================================== -->
-  <target name="mavenReport" depends="cvsupdate" description="run 'maven site:generate'">
+  <target name="mavenReport" depends="cvsupdate" 
+    description="run 'maven site:generate'" if="maven.present">
         <exec executable="maven" dir="${cruise.base.dir}">
             <arg line="site:generate" />
         </exec>
