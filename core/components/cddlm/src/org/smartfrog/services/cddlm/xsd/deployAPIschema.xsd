@@ -316,7 +316,7 @@
           </xsd:annotation>
           <xsd:complexType>
             <xsd:sequence>
-              <xsd:any namespace="##other" processContents="lax"/>
+              <xsd:any namespace="##any" processContents="lax"/>
             </xsd:sequence>
           </xsd:complexType>
         </xsd:element>
@@ -412,12 +412,8 @@
   <xsd:complexType name="propertyMapType">
     <xsd:annotation>
       <xsd:documentation>
-        A set of name/value pair of properties. Only one instance of each name
-        is allowed. This is essentially a serialisation of a map/hash table.
-        Duplicate name values MUST BE rejected.
-
-
-      </xsd:documentation>
+        A set of name/value pair of properties.
+       There is no requirement for (name,value) tuples to be unique. Users of the propertyMapType may impose this restriction      </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
       <xsd:element name="property" type="types:propertyTupleType" minOccurs="0" maxOccurs="unbounded"/>
@@ -564,7 +560,7 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-      <xsd:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:any namespace="##any" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
   </xsd:complexType>
   <!-- ============================================================= -->
@@ -610,7 +606,7 @@
       <xsd:element name="notification" type="types:notificationInformationType" minOccurs="0"/>
       <xsd:element name="state" type="types:lifecycleStateEnum"/>
       <xsd:element name="stateInfo" type="xsd:string"/>
-      <xsd:element name="extendedState" type="types:unboundedXMLOtherNamespace" minOccurs="0"/>
+      <xsd:element name="extendedState" type="types:unboundedXMLAnyNamespace" minOccurs="0"/>
     </xsd:sequence>
   </xsd:complexType>
   <!-- ============================================================= -->
@@ -646,7 +642,7 @@
       </xsd:appinfo>
       <xsd:documentation>
         this is the contents of a property map option
-      </xsd:documentation>
+ </xsd:documentation>
     </xsd:annotation>
   </xsd:element>
   <!--
@@ -823,7 +819,7 @@
         <xsd:element name="notification" type="types:notificationInformationType" minOccurs="0">
           <xsd:annotation>
             <xsd:documentation>
-            callback data
+            notification data
             </xsd:documentation>
           </xsd:annotation>
         </xsd:element>
