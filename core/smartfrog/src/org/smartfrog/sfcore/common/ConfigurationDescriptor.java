@@ -296,6 +296,10 @@ public class ConfigurationDescriptor implements MessageKeys{
     private static final String separator = ":";
 
     /**
+     * Internal buffer to parse urls.
+     */
+    private String tempURL = null;
+    /**
      * Creates a Configuration Descriptor using a deployment URL
      * @param deploymentURL Format: 'name:ACTION:url:sfConfig:HOST:PROCESS'
      *      - name: name where to apply ACTION
@@ -318,11 +322,13 @@ public class ConfigurationDescriptor implements MessageKeys{
             if (deploymentURL==null) {
                 throw new SmartFrogInitException("Deployment URL: null");
             }
-            String tempURL = null;
+            tempURL = null;
             String item = null;
             deploymentURL = deploymentURL.trim();
             if (deploymentURL.length() < 1) throw
                     new SmartFrogInitException("Deployment URL: wrong format");
+
+            // GET NAME
             //Check if url starts with " and extract name:
             //"HOST guijarro-j-3.hpl.hp.com:rootProcess:sfDefault:display":TER:::localhost:subprocess;
             //display:TER:::localhost:subprocess;
@@ -346,73 +352,69 @@ public class ConfigurationDescriptor implements MessageKeys{
                                                  deploymentURL, ex);
             }
 
-            String[] deploymenturl = tempURL.split(":",-1);
-
-            if (deploymenturl.length<1) throw
-                    new SmartFrogInitException("Deployment URL: wrong format");
+            //GET ACTION
             try {
-                if (deploymenturl[3]!=null) {
-                    //Logger.log("Type: "+(String)deploymenturl[0]);
-                    this.setActionType(deploymenturl[0]);
-                }
+                this.setActionType(tempURL.substring(0,tempURL.indexOf(":")));
+                tempURL = (tempURL.substring(tempURL.indexOf(":")+1,tempURL.length()));
             } catch (Exception ex) {
                 throw new SmartFrogInitException(
                     "Error parsing ACTION_TYPE in: "+
                     deploymentURL, ex);
             }
+
+            //GET SUBPROCESS_NAME
             try {
-              if (deploymenturl[3]!=null) {
-                  //Logger.log("Url: "+(String)deploymenturl[1]);
-                  this.setUrl(deploymenturl[1]);
-                  if (this.getUrl().equals(" ")) {
-                      this.setUrl(null);
-                  }
-              }
+               this.setSubProcess(getAndCutLastFieldTempURL (":"));
             } catch (Exception ex) {
-                throw new SmartFrogInitException("Error parsing URL in: "+
+                throw new SmartFrogInitException(
+                    "Error parsing SUBPROCESS_NAME in: "+
+                    deploymentURL, ex);
+            }
+
+            //GET HOST_NAME
+            try {
+                this.setHost(getAndCutLastFieldTempURL (":"));
+            } catch (Exception ex) {
+                throw new SmartFrogInitException("Error parsing HOST in: "+
                                                  deploymentURL, ex);
             }
+
+            //GET DEPLOY_REFERENCE
             try {
-                //Logger.log("DeployRef: "+(String)deploymenturl[2]);
-                this.setDeployReference(deploymenturl[2]);
+                this.setDeployReference(getAndCutLastFieldTempURL (":"));
             } catch (Exception ex) {
                 throw new SmartFrogInitException(
                     "Error parsing DEPLOY_REFERENCE in: "+
                     deploymentURL, ex);
             }
+            //GET URL
             try {
-                //Logger.log("host: "+(String)deploymenturl[3]);
-                if (deploymenturl[3]!=null) {
-                    this.setHost((deploymenturl[3]));
-                    if (this.getHost().equals("")) {
-                        this.setHost(null);
-                    }
-                }
-            } catch (Exception ex) {
-                throw new SmartFrogInitException("Error parsing HOST in: "+
-                                                 deploymentURL, ex);
-            }
-            try {
-              if (!deploymentURL.endsWith(":")) {
-                    //Logger.log("subproc: "+(String)deploymenturl[4]);
-                if (deploymenturl[4]!=null) {
-                    this.setSubProcess(deploymenturl[4]);
-                    if (this.getSubProcess().equals("")) {
-                        this.setSubProcess(null);
-                    }
-                }
-              }
+                this.setUrl(tempURL);
             } catch (Exception ex) {
                 throw new SmartFrogInitException(
-                    "Error parsing SUBPROCESS in: "+
+                    "Error parsing DEPLOY_REFERENCE in: "+
                     deploymentURL, ex);
             }
+
         } catch (Throwable thr){
            this.resultException = thr;
            throw (SmartFrogInitException)SmartFrogInitException.forward(thr);
         }
     }
 
+    /**
+     * Returns and cuts the last field from TempURL. Token marks the beginning
+     * of the field.
+     * @param token
+     * @return last field from TempURL marked by token
+     * @throws java.lang.Exception
+     */
+    private String getAndCutLastFieldTempURL( String token) throws Exception{
+        String field = null;
+        field =  tempURL.substring(tempURL.lastIndexOf(token)+1,tempURL.length());
+        tempURL= (tempURL.substring(0, tempURL.lastIndexOf(token)));
+        return field;
+    }
     /**
      *
      * @param name application/component name
@@ -665,6 +667,8 @@ public class ConfigurationDescriptor implements MessageKeys{
      * @param host
      */
     public void setHost(String host) {
+        if (host==null) return;
+        if (host.trim().equals("")) return;
         this.host = host;
     }
 
@@ -681,6 +685,8 @@ public class ConfigurationDescriptor implements MessageKeys{
      * @param subProcess
      */
     public void setSubProcess(String subProcess) {
+        if (subProcess==null) return;
+        if (subProcess.trim().equals("")) return;
         this.subProcess = subProcess;
     }
 
