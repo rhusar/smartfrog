@@ -21,8 +21,8 @@ For more information: www.smartfrog.org
 package org.smartfrog.sfcore.common;
 
 /**
- * Implements a simple timer. Usefull classes subclass from this and override
- * timerTick() method to provide functional behaviour on every tick.
+ * Implements a simple timer. Useful classes subclass from this and override
+ * the {@link #timerTick()} method to provide functional behaviour on every tick.
  *
  */
 public class Timer implements Runnable {
@@ -150,6 +150,7 @@ public class Timer implements Runnable {
         try {
             timerTick();
         } catch (Exception ex) {
+            //TODO: log?
             // ignore
         }
     }
