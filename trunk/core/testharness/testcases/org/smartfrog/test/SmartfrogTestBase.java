@@ -68,21 +68,84 @@ public abstract class SmartfrogTestBase extends TestCase {
     }
 
     /**
-     * Deploy a component, expecting a smartfrog exception
+     * Deploy a component, expecting a smartfrog exception.
      * @param testURL   URL to test
      * @param appName   name of test app
      * @param searchString string which must be found in the exception message
      * @throws RemoteException in the event of remote trouble.
      */
-    protected void deployExpectingExceptionContaining(String testURL, String appName, String searchString) throws RemoteException {
+    protected void deployExpectingException(String testURL,
+                                            String appName,
+                                            String exceptionName,
+                                            String searchString) throws RemoteException {
+        deployExpectingException(testURL,
+                appName,
+                exceptionName,
+                searchString,
+                null,
+                null);
+    }
+    /**
+     * Deploy a component, expecting a smartfrog exception. You can
+     * also specify the classname of a contained fault -which, if specified, must
+     * be contained, and some text to be searched for in this exception.
+     * @param testURL   URL to test
+     * @param appName   name of test app
+     * @param searchString string which must be found in the exception message
+     * @param containedExceptionName optional classname of a contained exception; does
+     * not have to be the full name; a fraction will suffice.
+     * @param containedExceptionText optional text in the contained fault. Ignored
+     * if the containedExceptionClass parametere is null.
+     * @throws RemoteException in the event of remote trouble.
+     */
+    protected void deployExpectingException(String testURL,
+                        String appName,
+                        String exceptionName,
+                        String searchString,
+                        String containedExceptionName,
+                        String containedExceptionText) throws RemoteException {
         try {
             SFSystem.deployAComponent(hostname,
                     testURL, appName,
                     false);
-        } catch (SmartFrogException e) {
-            assertTrue(e.getMessage(),
-                    e.getMessage().indexOf(searchString) >= 0);
+        } catch (SmartFrogException fault) {
+            String message = fault.getMessage();
+            assertContains(message,searchString);
+            if(containedExceptionName!=null) {
+                Throwable cause=fault.getCause();
+                assertNotNull("expected throwable of type "
+                        +containedExceptionName,
+                        cause);
+                //verify the name
+                assertThrowableNamed(cause,containedExceptionName);
+                //verify the contained text
+                if(containedExceptionText!=null) {
+                    String m2 = cause.getMessage();
+                    assertContains(m2,containedExceptionText);
+                }
+            }
+
         }
+    }
+
+    /**
+     * assert that a throwable's classname is of a given type/substring
+     * @param thrown
+     * @param name
+     */
+    public void assertThrowableNamed(Throwable thrown,String name) {
+        assertContains(thrown.getClass().getName(),name);
+    }
+
+    /**
+     * assert that a string contains a substring
+     * @param source
+     * @param substring
+     */
+    public void assertContains(String source, String substring) {
+        assertNotNull("No string to look for ["+substring+"]",source);
+        assertTrue("Did not find ["+substring+"] in ["+source+"]",
+                source.indexOf(substring)>=0);
     }
 
     public File getClassesDir() {

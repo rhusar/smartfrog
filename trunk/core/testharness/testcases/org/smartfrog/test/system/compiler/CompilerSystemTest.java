@@ -29,15 +29,61 @@ import org.smartfrog.test.SmartfrogTestBase;
  * JUnit test class for compiler/parser functional tests.
  */
 public class CompilerSystemTest extends SmartfrogTestBase {
+
+    private static final String FILES="org/smartfrog/test/system/compiler/";
+
     public CompilerSystemTest(String s) {
         super(s);
     }
 
 
     public void testCaseTCN5() throws Exception {
-        deployExpectingExceptionContaining("org/smartfrog/test/system/compiler/tcn5.sf",
-                "junittest1",
+        deployExpectingException(FILES+"tcn5.sf",
+                "tcn5",
+                "org.smartfrog.sfcore.common.SmartFrogDeploymentException",
+                "failed to deploy",
+                "org.smartfrog.sfcore.common.SmartFrogResolutionException",
+                "Reference not found");
+    }
+
+    public void testCaseTCN6() throws Exception {
+        deployExpectingException(FILES + "tcn6.sf",
+                "tcn6",
+                "SmartFrogCompileResolutionException",
                 "failed to deploy");
     }
 
+    public void testCaseTCN7() throws Exception {
+        deployExpectingException(FILES + "tcn7.sf",
+                "tcn7",
+                "SmartFrogLifecycleException",
+                "failed to deploy 'p' component",
+                "ClassNotFoundException",
+                "org.smartfrog.test.system.compiler.PrinterImpl");
+    }
+
+    public void testCaseTCN8() throws Exception {
+        deployExpectingException(FILES + "tcn8.sf",
+                "tcn8",
+                "SmartFrogCompileResolutionException",
+                "failed to deploy");
+    }
+
+
+
+    public void testCaseTCN9() throws Exception {
+        deployExpectingException(FILES + "tcn9.sf",
+                "tcn9",
+                "SmartFrogLifecycleException",
+                "failed to deploy",
+                "java.lang.ClassNotFoundException",
+                "Cannot find org.smartfrog.test.system.compiler.PrinterImpl");
+    }
+
+    public void testCaseTCN10() throws Exception {
+        deployExpectingException(FILES + "tcn10.sf",
+                "tcn10",
+                "SmartFrogParseException",
+                "Encountered \"HOST\" ");
+    }
 }
