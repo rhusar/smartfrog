@@ -60,10 +60,7 @@ public class TestRunnerComponent extends CompoundImpl implements TestRunner, Run
 
     private Thread worker=null;
 
-    private int errors = 0;
-    private int failures = 0;
-    private int testsStarted = 0;
-    private int testsRun = 0;
+    private Statistics stats;
 
     public TestRunnerComponent() throws RemoteException {
         helper = new ComponentHelper(this);
@@ -82,7 +79,7 @@ public class TestRunnerComponent extends CompoundImpl implements TestRunner, Run
      * @throws SmartFrogInitException
      */
     private void validate() throws SmartFrogInitException {
-        if (configuration.getFork() == true) {
+        if (configuration.getFork()) {
             throw new SmartFrogInitException("forking is not yet implemented");
         }
         if(threadPriority<Thread.MIN_PRIORITY || threadPriority>Thread.MAX_PRIORITY) {
@@ -203,28 +200,14 @@ public class TestRunnerComponent extends CompoundImpl implements TestRunner, Run
         return successful;
     }
 
-    /**
-     * extract test info from a suite
-     * @param testSuite
-     * @throws SmartFrogResolutionException
-     * @throws RemoteException
-     */
-    private void retrieveResultAttributes(Prim testSuite) throws SmartFrogResolutionException, RemoteException {
-        errors+=testSuite.sfResolve(ATTR_ERRORS,0,false);
-        failures += testSuite.sfResolve(ATTR_FAILURES, 0, false);
-        testsRun += testSuite.sfResolve(ATTR_TESTS, 0, false);
-    }
 
     /**
      * fetch the test results from the Test suite, then update our own values
      * @param testSuite
      */
     private void updateResultAttributes(Prim testSuite) throws SmartFrogRuntimeException, RemoteException {
-        retrieveResultAttributes(testSuite);
-        sfReplaceAttribute(ATTR_ERRORS, new Integer(errors));
-        sfReplaceAttribute(ATTR_FAILURES, new Integer(failures));
-        sfReplaceAttribute(ATTR_TESTS, new Integer(testsRun));
-        sfReplaceAttribute(ATTR_SUCCESSFUL, Boolean.valueOf(errors == 0 && failures == 0));
+        stats.retrieveAndAdd(testSuite);
+        stats.updateResultAttributes(this,false);
     }
 
     public TestListener getListener() {
