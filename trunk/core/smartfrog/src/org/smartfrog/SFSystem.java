@@ -500,7 +500,7 @@ public class SFSystem implements MessageKeys {
             if (!SFSecurity.isSecurityOn()){
                 String securityRequired = System.getProperty(SFSecurityProperties.propSecurityRequired,"false");
                 Boolean secured=Boolean.valueOf(securityRequired);
-                if(secured) {
+                if(secured.booleanValue()) {
                     //we need security, but it is not enabled
                     throw new SFGeneralSecurityException(ERROR_NO_SECURITY_BUT_REQUIRED);
                 }
