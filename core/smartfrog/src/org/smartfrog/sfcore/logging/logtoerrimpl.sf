@@ -20,5 +20,24 @@ For more information: www.smartfrog.org
 
 
 LogToErrImpl extends {
-  
+    // /** Include the instance name in the log message? */
+    showLogName true;
+
+    // /** Include the short name ( last component ) of the logger in the log message */
+    showShortName false;
+
+    // /** Include the current time in the log message */
+    showDateTime true;
+
+    /// /** Include thread name in the log message */
+    showThreadName true;
+
+    // /** Include method call in the log message */
+    showMethodCall true;
+
+    // /** Include stack trace in log message */
+    showStackTrace false;
+
+    // /** Used to format times */
+    dateFormat "yyyy/MM/dd HH:mm:ss:SSS zzz";
 }
