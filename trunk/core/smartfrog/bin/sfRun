@@ -1,13 +1,13 @@
 if ! test $SFHOME; then export SFHOME=$PWD; fi
 if [ -z $1 ] ; then
 echo "Insufficent arguments to use sfRun"
-echo "Usage: sfRun (-c URL)* [-e]"
+echo "Usage: sfRun (-c URL | -n NAME URL)* [-e]"
 exit
 fi
-if [ $1 == "-c" ] && [ -z $2 ];
+if ([ $1 == "-c" ] && [ -z $2 ] || ([ $1 == "-n" ] && ([ -z $2 ] || [ -z $3 ])));
 then 
 echo "Insufficent arguments to use sfRun"
-echo "Usage: sfRun (-c URL)* [-e]"
+echo "Usage: sfRun (-c URL | -n NAME URL)* [-e]"
 exit
 fi 
 for i in $SFHOME/lib/*.jar; do CLASSPATH=$i:$CLASSPATH; done

@@ -3,12 +3,12 @@ if ! test $SFPRIVATE; then export SFPRIVATE=$SFHOME/private; fi
 if ! test $SFHOSTNAME; then export SFHOSTNAME=host1; fi
 if [ -z $1 ];then
 echo "Insufficient argument(s) to use sfRun"
-echo "Usage: sfRun (-c URL)* [-e]"
+echo "Usage: sfRun (-c URL | -n NAME URL)* [-e]"
 exit
 fi
-if [ $1 == "-c" ] && [ -z $2 ];then
+if ([ $1 == "-c" ] && [ -z $2 ] || ([ $1 == "-n" ] && ([ -z $2 ] || [ -z $3 ])));
 echo "Insufficient argument(s) to use sfRun"
-echo "Usage: sfRun (-c URL)* [-e]"
+echo "Usage: sfRun (-c URL | -n NAME URL)* [-e]"
 exit
 fi
 for i in $SFHOME/signedLib/*.jar; do CLASSPATH=$i:$CLASSPATH; done
@@ -17,4 +17,8 @@ echo $CLASSPATH
 java -Djava.security.manager -Djava.security.policy==$SFPRIVATE/sf.policy \
       -Dorg.smartfrog.sfcore.security.keyStoreName=$SFPRIVATE/$SFHOSTNAME/mykeys.st \
       -Dorg.smartfrog.sfcore.security.propFile=$SFPRIVATE/$SFHOSTNAME/SFSecurity.properties \
+      -Dorg.smartfrog.sfcore.security.debug=true \
+      -Djava.security.debug=scl \
+      -Djava.rmi.server.logCalls=true \
+      -Dsun.rmi.loader.logLevel=VERBOSE \
       org.smartfrog.SFSystem $* 
