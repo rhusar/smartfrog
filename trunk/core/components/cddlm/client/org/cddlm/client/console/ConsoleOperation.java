@@ -19,12 +19,12 @@
  */
 package org.cddlm.client.console;
 
-import org.apache.axis.types.NCName;
-import org.apache.axis.types.URI;
 import org.apache.axis.message.MessageElement;
 import org.apache.axis.message.Text;
-import org.cddlm.client.common.ServerBinding;
+import org.apache.axis.types.NCName;
+import org.apache.axis.types.URI;
 import org.cddlm.client.common.Constants;
+import org.cddlm.client.common.ServerBinding;
 import org.cddlm.client.generated.api.endpoint.CddlmSoapBindingStub;
 import org.cddlm.client.generated.api.types.ApplicationReferenceListType;
 import org.cddlm.client.generated.api.types.ApplicationStatusType;
@@ -38,14 +38,13 @@ import org.cddlm.client.generated.api.types._applicationStatusRequest;
 import org.cddlm.client.generated.api.types._deployRequest;
 import org.cddlm.client.generated.api.types._deployResponse;
 import org.cddlm.client.generated.api.types._deploymentDescriptorType_data;
-import org.cddlm.client.generated.api.types._serverStatusRequest;
 import org.cddlm.client.generated.api.types._lookupApplicationRequest;
+import org.cddlm.client.generated.api.types._serverStatusRequest;
 
-import javax.xml.soap.SOAPException;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.rmi.RemoteException;
 
 /**
@@ -124,7 +123,6 @@ public abstract class ConsoleOperation {
     }
 
     /**
-     *
      * @param args command line arguments; look for -url url
      * @return
      */
@@ -212,20 +210,26 @@ public abstract class ConsoleOperation {
      * @param name
      * @param descriptor
      * @param options
+     * @param callbackInfo
      * @return
      * @throws RemoteException
      */
     public URI deploy(String name,
                       DeploymentDescriptorType descriptor,
-                      OptionMapType options) throws RemoteException {
+                      Options options,
+                      CallbackInformationType callbackInfo)
+            throws RemoteException {
         JsdlType jsdl = new JsdlType();
         NCName ncname = makeName(name);
-        CallbackInformationType callbackInfo = null;
+        OptionMapType map = null;
+        if (options != null) {
+            map = options.toOptionMap();
+        }
         _deployRequest request = new _deployRequest(jsdl,
                 ncname,
                 descriptor,
                 callbackInfo,
-                options);
+                map);
         _deployResponse response = getStub().deploy(request);
         return response.getApplicationReference();
 
@@ -233,23 +237,45 @@ public abstract class ConsoleOperation {
 
     /**
      * wrap a string with a smartfrog deploy descriptor
+     *
      * @param source
      * @return
      * @throws IOException
      */
-    public DeploymentDescriptorType createSmartFrogDescriptor(
-            String source) throws IOException {
+    public DeploymentDescriptorType createSmartFrogDescriptor(String source)
+            throws IOException {
+        MessageElement element = createSmartfrogMessageElement(source);
+        DeploymentDescriptorType descriptor = createDescriptorWithXML(element);
+        return descriptor;
+    }
+
+    public DeploymentDescriptorType createDescriptorWithXML(
+            MessageElement element) {
+        MessageElement any[] = new MessageElement[1];
+        any[0] = element;
+        DeploymentDescriptorType descriptor = createDescriptorWithXML(any);
+        return descriptor;
+    }
+
+    public DeploymentDescriptorType createDescriptorWithXML(
+            MessageElement[] any) {
         DeploymentDescriptorType descriptor = new DeploymentDescriptorType();
         _deploymentDescriptorType_data data = new _deploymentDescriptorType_data();
-        MessageElement element=new MessageElement(Constants.SMARTFROG_NAMESPACE,Constants.SMARTFROG_ELEMENT_NAME);
-        element.addAttribute(Constants.SMARTFROG_NAMESPACE, Constants.SMARTFROG_ELEMENT_VERSION_ATTR, SMARTFROG_VERSION);
-        Text text= new org.apache.axis.message.Text(source);
-        element.appendChild(text);
-        MessageElement any[]=new MessageElement[1];
-        any[0]=element;
         data.set_any(any);
         descriptor.setData(data);
         return descriptor;
+    }
+
+    public MessageElement createSmartfrogMessageElement(String source) {
+        MessageElement element = new MessageElement(
+                Constants.SMARTFROG_NAMESPACE,
+                Constants.SMARTFROG_ELEMENT_NAME);
+        element.addAttribute(Constants.SMARTFROG_NAMESPACE,
+                Constants.SMARTFROG_ELEMENT_VERSION_ATTR,
+                SMARTFROG_VERSION);
+        Text text = new Text(source);
+        element.appendChild(text);
+        return element;
     }
 
 
@@ -260,13 +286,15 @@ public abstract class ConsoleOperation {
      * @return a deployment descriptor for smartfrog
      * @throws IOException
      */
-    public DeploymentDescriptorType createSmartFrogDescriptor(InputStream in) throws IOException {
-        String source=readIntoString(in);
+    public DeploymentDescriptorType createSmartFrogDescriptor(InputStream in)
+            throws IOException {
+        String source = readIntoString(in);
         return createSmartFrogDescriptor(source);
     }
 
     /**
      * helper to read into a string
+     *
      * @param in
      * @return
      * @throws IOException
@@ -276,7 +304,7 @@ public abstract class ConsoleOperation {
         StringBuffer buffer = new StringBuffer();
         char[] block = new char[1024];
         int read;
-        while ( ((read = reader.read(block)) >= 0) ) {
+        while (((read = reader.read(block)) >= 0)) {
             buffer.append(block);
         }
         return buffer.toString();
@@ -284,6 +312,7 @@ public abstract class ConsoleOperation {
 
     /**
      * turn a string into an NC name
+     *
      * @param name
      * @return
      */
@@ -293,11 +322,13 @@ public abstract class ConsoleOperation {
 
     /**
      * look up an application against the server
+     *
      * @param ncname name of app
      * @return URI of the app
      */
     public URI lookupApplication(NCName ncname) throws RemoteException {
-        _lookupApplicationRequest request=new _lookupApplicationRequest(ncname);
+        _lookupApplicationRequest request = new _lookupApplicationRequest(
+                ncname);
         return getStub().lookupApplication(request);
     }
 

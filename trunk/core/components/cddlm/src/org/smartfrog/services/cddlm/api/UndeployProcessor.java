@@ -32,8 +32,7 @@ import org.smartfrog.sfcore.processcompound.SFProcess;
 import java.rmi.RemoteException;
 
 /**
- * process undeploy operation
- * created Aug 4, 2004 4:04:20 PM
+ * process undeploy operation created Aug 4, 2004 4:04:20 PM
  */
 
 public class UndeployProcessor extends Processor {
@@ -47,9 +46,10 @@ public class UndeployProcessor extends Processor {
     }
 
     public boolean undeploy(_undeployRequest undeploy) throws RemoteException {
-        String application = extractApplicationFromURI(undeploy.getApplication());
-        if ( isEmpty(application) ) {
-            throw new AxisFault(Constants.ERROR_NO_APPLICATION);
+        final org.apache.axis.types.URI appURI = undeploy.getApplication();
+        String application = extractApplicationFromURI(appURI);
+        if (isEmpty(application)) {
+            throw raiseNoSuchApplicationFault(appURI.toString());
         }
         try {
             ConfigurationDescriptor config = new ConfigurationDescriptor();
