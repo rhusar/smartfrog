@@ -1,5 +1,5 @@
 #! /bin/sh
-if ! test $SFHOME; then export SFHOME=$PWD; fi
+if ! test "$SFHOME"; then export SFHOME=$PWD; fi
 if [ -z $1 ] ; then
    echo "Insufficient arguments to use sfStart"
    echo "Usage: sfStart HostName ApplicationName URL"
@@ -16,7 +16,17 @@ fi
 #for i in $SFHOME/lib/*.jar; do CLASSPATH=$i:$CLASSPATH; done
 #export CLASSPATH
 
-. $SFHOME/bin/setSFProperties
+. "$SFHOME/bin/setSFProperties"
 
-java $SFCMDPARAMETERS org.smartfrog.SFSystem -a $2:DEPLOY:$3::$1: -e
+#java "$SFCMDPARAMETERS" org.smartfrog.SFSystem -a $2:DEPLOY:$3::$1: -e
 
+
+if test "$SFCODEBASE" && ! test "$SFSECURITY"; then
+        java "$SFDEFAULTINI" "$SFCODEBASE" org.smartfrog.SFSystem -a $2:DEPLOY:$3::$1: -e
+elif test "$SFSECURITY" && ! test "$SFCODEBASE"; then
+        java "$SFDEFAULTINI" "$SFSECURITY" org.smartfrog.SFSystem -a $2:DEPLOY:$3::$1: -e
+elif test "$SFCODEBASE" && test "$SFSECURITY"; then
+        java "$SFDEFAULTINI" "$SFCODEBASE" "$SFSECURITY" org.smartfrog.SFSystem -a $2:DEPLOY:$3::$1: -e
+else
+        java "$SFDEFAULTINI" org.smartfrog.SFSystem -a $2:DEPLOY:$3::$1: -e
+fi

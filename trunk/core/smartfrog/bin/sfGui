@@ -1,5 +1,5 @@
 #! /bin/sh
-if ! test $SFHOME; 
+if ! test "$SFHOME"; 
 then 
     export SFHOME=$PWD;
     echo SFHOME undefined, using $SFHOME as base directory;
@@ -7,11 +7,11 @@ fi
 
 # for i in $SFHOME/lib/*.jar; do CLASSPATH=$i:$CLASSPATH; done
 # export CLASSPATH
-. $SFHOME/bin/setSFProperties
+. "$SFHOME/bin/setSFProperties"
 
 PATH=:./bin:$PATH
 JAVA_HEAP_SIZE=32
 
 echo $CLASSPATH
 
-java -cp ./src:$CLASSPATH org.smartfrog.tools.gui.browser.SFGui "$@"
+java -cp ./src:$CLASSPATH org.smartfrog.tools.gui.browser.SFGui $*
