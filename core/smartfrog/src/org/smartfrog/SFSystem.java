@@ -234,63 +234,46 @@ public class SFSystem implements MessageKeys {
      * @param target the target process compound to request deployment
      */
     public static void deployFromURLsGiven(OptionSet opts,
-        ProcessCompound target) {
+                                           ProcessCompound target) {
         ComponentDescription comp = null;
         Context nameContext = null;
         Enumeration names = opts.names.elements();
         String url = "";
         String name = "";
-        //To calculate how long it takes to deploy a description
-        long deployTime=0;
-
+        //number of anonymous deploys
+        int counter = 0;
+        //so far so good
+        errorDeploy = false;
         for (Enumeration e = opts.configs.elements(); e.hasMoreElements();) {
-            if (org.smartfrog.sfcore.common.Logger.logStackTrace) {
-              deployTime = System.currentTimeMillis();
-            }
             url = (String) e.nextElement();
             name = (String) names.nextElement();
 
             if (name != null) {
                 nameContext = new ContextImpl();
                 nameContext.put("sfProcessComponentName", name);
+            } else {
+                name = "unnamed#" + counter++;
             }
 
             try {
-                InputStream is = SFClassLoader.getResourceAsStream(url);
-
-                if (is == null) {
-                    errorDeploy = true;
-                    // Log the message and contnue with next deployment
-                    Logger.log(MessageUtil.
-                            formatMessage(MSG_URL_NOT_FOUND, url, name));
-                    if(e.hasMoreElements()) {
-                        Logger.log(MessageUtil.
-                                    formatMessage(MSG_CONT_OTHER_DEPLOY));
-                    }
-                    continue;
-                }
-                deployFrom(is, target, nameContext, getLanguageFromUrl(url));
-               if (org.smartfrog.sfcore.common.Logger.logStackTrace) {
-                  deployTime=System.currentTimeMillis()-deployTime;
-                  org.smartfrog.sfcore.common.Logger.log("  - "+name +" ("+url +")"+ " deployed in "+ deployTime + " millisecs.");
-               }
+                deployFromURL(url, name, target, nameContext);
             } catch (SmartFrogException sfex) {
                 errorDeploy = true;
                 sfex.put("URL:", url);
                 sfex.put("Component Name:", name);
                 Logger.log(MessageUtil.formatMessage(MSG_ERR_DEPLOY_FROM_URL,
                         url, name), sfex);
-                if(e.hasMoreElements()) {
-                        Logger.log(MessageUtil.
-                                    formatMessage(MSG_CONT_OTHER_DEPLOY));
+                if (e.hasMoreElements()) {
+                    Logger.log(MessageUtil.
+                            formatMessage(MSG_CONT_OTHER_DEPLOY));
                 }
             } catch (Exception ex) {
                 errorDeploy = true;
                 Logger.log(MessageUtil.formatMessage(MSG_ERR_DEPLOY_FROM_URL,
                         url, name), ex);
-                if(e.hasMoreElements()) {
-                        Logger.log(MessageUtil.
-                                    formatMessage(MSG_CONT_OTHER_DEPLOY));
+                if (e.hasMoreElements()) {
+                    Logger.log(MessageUtil.
+                            formatMessage(MSG_CONT_OTHER_DEPLOY));
                 }
             }
         }
@@ -298,6 +281,8 @@ public class SFSystem implements MessageKeys {
 
     /**
      * Deploy a single application URL.
+     * @todo there is almost no difference between this method and #deployFromURLsGiven; the latter could
+     * have its core replaced by this with some work.
      * @param appName name of the application
      * @param target the target process compound to request deployment
      * @throws SmartFrogException something went wrong with the deploy -this may contain a nested exception
@@ -306,28 +291,35 @@ public class SFSystem implements MessageKeys {
     private static void deployFromURL(String url, String appName,
          ProcessCompound target) throws SmartFrogException, RemoteException {
 
-        //To calculate how long it takes to deploy a description
-        long deployTime = 0;
-        if (org.smartfrog.sfcore.common.Logger.logStackTrace) {
-            deployTime = System.currentTimeMillis();
-        }
-
         ComponentDescription comp = null;
         Context nameContext = null;
         nameContext = new ContextImpl();
         nameContext.put("sfProcessComponentName", appName);
+
+        deployFromURL(url, appName, target, nameContext);
+
+    }
+
+    private static void deployFromURL(String url, String appName, ProcessCompound target, Context nameContext) throws SmartFrogException, RemoteException {
+        //To calculate how long it takes to deploy a description
+        long deployTime = 0;
+        if (Logger.logStackTrace) {
+            deployTime = System.currentTimeMillis();
+        }
+
+        InputStream is=null;
         try {
             //assumes that the URL refers to stuff on the classpath
-            InputStream is = SFClassLoader.getResourceAsStream(url);
+            is = SFClassLoader.getResourceAsStream(url);
 
             if (is == null) {
                 throw new SmartFrogDeploymentException(MessageUtil.
                         formatMessage(MSG_URL_NOT_FOUND, url, appName));
             }
             deployFrom(is, target, nameContext, getLanguageFromUrl(url));
-            if (org.smartfrog.sfcore.common.Logger.logStackTrace) {
+            if (Logger.logStackTrace) {
                 deployTime = System.currentTimeMillis() - deployTime;
-                org.smartfrog.sfcore.common.Logger.log("  - " + appName + " (" + url + ")"
+                Logger.log("  - " + appName + " (" + url + ")"
                         + " deployed in " + deployTime + " millisecs.");
             }
         } catch (SmartFrogException sfex) {
@@ -340,6 +332,14 @@ public class SFSystem implements MessageKeys {
         } catch (Exception ex) {
             //anything that was not dealt with gets wrapped
             throw new SmartFrogException(ex);
+        } finally {
+            if(is!=null) {
+                try {
+                    is.close();
+                } catch (IOException ignored) {
+                    //TODO
+                }
+            }
         }
     }
 
