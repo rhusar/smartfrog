@@ -110,10 +110,15 @@ public class DeployTest extends TaskTestBase {
         assertNoConnectionToLocalhost();
     }
 
+    /**
+     * this search string has a habit of changing.
+     * It needs to work on an IPv6 box as well as an IPv4 system, so you should
+     * not hard code 
+     */
     private void assertNoConnectionToLocalhost() {
         //assertInLog("Unable to connect to sfDaemon on: localhost");
         //assertInLog("Reason:sfDaemon may not be running on localhost");
-        assertInLog("java.rmi.ConnectException: Connection refused to host: 127.0.0.1");
+        assertInLog("java.rmi.ConnectException: Connection refused to host");
     }
 
     public void testResource() {

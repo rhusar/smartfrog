@@ -26,7 +26,7 @@ package org.smartfrog.tools.ant.test;
  */
 
 public class StopDaemonTest  extends TaskTestBase {
-    private static final String CONNECT_FAILURE = "Connection refused to host: 127.0.0.1";
+    private static final String CONNECT_FAILURE = "Connection refused to host";
 
     private static final String BADHOST = "Unable to locate IP address of the host: no-such-hostname";
 
