@@ -66,8 +66,8 @@ public class ActionTerminate extends ConfigurationAction{
                           ConfigurationDescriptor configuration) throws SmartFrogException,
             RemoteException {
         if (targetP==null) targetP=
-           SFProcess.sfSelectTargetProcess(configuration.host,configuration.subProcess);
-        Prim targetC = sfTerminate(configuration.name,targetP);
+           SFProcess.sfSelectTargetProcess(configuration.getHost(),configuration.getSubProcess());
+        Prim targetC = sfTerminate(configuration.getName(),targetP);
         configuration.setSuccessfulResult();
         return targetC;
     }

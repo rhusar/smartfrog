@@ -70,7 +70,7 @@ public abstract class ConfigurationAction {
     public Object execute(ConfigurationDescriptor configuration) throws SmartFrogException,
             RemoteException {
         ProcessCompound targetProcess;
-        targetProcess = selectTargetProcess(configuration.host, configuration.subProcess);
+        targetProcess = selectTargetProcess(configuration.getHost(), configuration.getSubProcess());
   //      assert targetProcess!=null;
         return execute(targetProcess,configuration);
     }

@@ -67,8 +67,8 @@ public class ActionDetachAndTerminate extends ConfigurationAction{
                            ConfigurationDescriptor configuration) throws SmartFrogException,
              RemoteException {
          if (targetP==null) targetP=
-            SFProcess.sfSelectTargetProcess(configuration.host,configuration.subProcess);
-         Prim targetC = DetachAndTerminate(configuration.name,targetP);
+            SFProcess.sfSelectTargetProcess(configuration.getHost(),configuration.getSubProcess());
+         Prim targetC = DetachAndTerminate(configuration.getName(),targetP);
          configuration.setSuccessfulResult();
          return targetC;
      }

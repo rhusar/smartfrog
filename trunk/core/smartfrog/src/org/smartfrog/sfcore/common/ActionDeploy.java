@@ -124,7 +124,7 @@ public class ActionDeploy extends ConfigurationAction {
      */
     public Object execute(ProcessCompound targetP, ConfigurationDescriptor configuration)
        throws SmartFrogException, RemoteException {
-        Prim prim = Deploy(configuration.url, configuration.name, targetP, null);
+        Prim prim = Deploy(configuration.getUrl(), configuration.getName(), targetP, null);
         configuration.setSuccessfulResult();
         return prim;
     }
