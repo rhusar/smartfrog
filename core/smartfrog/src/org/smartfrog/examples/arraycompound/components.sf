@@ -38,6 +38,7 @@ ArrayCompound extends Compound {
         sfClass "org.smartfrog.examples.arraycompound.ArrayCompoundImpl";
         parent LAZY THIS;
         //parent LAZY NULL; //To create an application instead of a child
+        //parent LAZY HOST localhost:sfDefault;
         hosts [];
         template extends LAZY Compound {}
 }

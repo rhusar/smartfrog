@@ -105,6 +105,7 @@ public interface Compound extends Prim, ChildMinder {
      * running it through its entire startup lifecycle. This is the preferred way
      * of creating new applications.
      *
+     * @param name name the deployed application should adopt
      * @param cmp compiled component to deploy and start
      * @param parms parameters for description
      *
@@ -114,6 +115,6 @@ public interface Compound extends Prim, ChildMinder {
      * component
      * @exception RemoteException In case of Remote/nework error
      */
-    public Prim sfCreateNewApp(ComponentDescription cmp, Context parms)
+    public Prim sfCreateNewApp(String name, ComponentDescription cmp, Context parms)
         throws RemoteException, SmartFrogDeploymentException;
 }

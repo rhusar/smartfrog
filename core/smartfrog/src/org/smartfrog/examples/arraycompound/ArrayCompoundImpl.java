@@ -123,15 +123,14 @@ public class ArrayCompoundImpl extends CompoundImpl implements Compound, ArrayCo
             ComponentDescription newcd = (ComponentDescription)((ComponentDescriptionImpl)template).copy();
             if (parent == null){
               if (sflog().isDebugEnabled()) {
-                  sfHostContext.sfAddAttribute(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME,"app-"+hostname.toString());
                   sflog().debug("Creating new app: "+ hostname +":'"+parent.sfCompleteName()+"'");
               }
-              p = this.sfCreateNewApp(newcd , sfHostContext);
+              p = this.sfCreateNewApp( "app-"+hostname.toString(),newcd , sfHostContext);
             } else {
               if (sflog().isDebugEnabled()) {
                   sflog().debug("Creating new child: "+ hostname +":'"+parent.sfCompleteName()+"'");
               }
-              p = this.sfCreateNewChild("ch-"+hostname, parent,newcd, sfHostContext);
+              p = this.sfCreateNewChild("ch-"+hostname.toString(), parent,newcd, sfHostContext);
             }
         } catch (Exception e) {
             if (sflog().isErrorEnabled()) {
