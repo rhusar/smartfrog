@@ -71,8 +71,14 @@ For more information: www.smartfrog.org
   <!-- any cruise control initialisations                                          -->
   <!-- =================================================================== -->
     <target name="cc-init" depends="cc-set-build-priority">
-    <property name="cc.artifacts.dir" location="${toplevel.dir}/artifacts" />
-     <mkdir dir="${cc.artifacts.dir}"/>
+      <property name="cc.artifacts.dir" location="${toplevel.dir}/artifacts" />
+      <mkdir dir="${cc.artifacts.dir}"/>
+      <property name="cruise.base.dir" location="${toplevel.dir}" />
+      <property name="cruise.main.dir" location="${cruise.base.dir}/main"/>
+      <property name="cruise.lib.dir" location="${cruise.main.dir}/lib"/>
+      <property name="cruise.dist.dir" location="${cruise.main.dir}/dist"/>
+      <property name="cruise.config.file" location="cruisecontrol.xml"/>
+      <property name="cruise.control.port" value="7999"/>
     </target>
     
   <!-- =================================================================== -->
@@ -120,12 +126,15 @@ For more information: www.smartfrog.org
   <!-- Override any of the properties to change location of cruise control -->
   <!-- =================================================================== -->
   <target name="cruise" depends="cc-init" description="run cruise control">
-    <property name="cruise.base.dir" location="toplevel.dir" />
-    <property name="cruise.main.dir" location="${cruise.base.dir}/main"/>
-    <property name="cruise.lib.dir" location="${cruise.main.dir}/lib"/>
-    <property name="cruise.dist.dir" location="${cruise.main.dir}/dist"/>
-    <property name="cruise.config.file" location="cruisecontrol.xml"/>
-    <property name="cruise.control.port" value="7999"/>
+    <condition property="cc.found">
+      <and>
+        <available file="${cruise.lib.dir}" type="dir"/>
+        <available file="${cruise.dist.dir}/cruisecontrol.jar" />
+      </and>
+    </condition>
+    <fail unless="cc.found" >
+      Cruise Control was not found in ${cruise.main.dir}
+    </fail>
     <java fork="true" classname="CruiseControl" failonerror="true">
       <classpath>
         <fileset dir="${cruise.lib.dir}">
