@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="parse">
+<project name="parse" default="teardown">
 
 <description>
  Tests for the parse. 
@@ -36,7 +36,7 @@ ant -lib ../../build/dist/lib/smartfrog-tasks.jar -lib ../../../../smartfrog/dis
       <sf-undeploy host="no-such-hostname" application="test"/>
     </target>
 
-    
+
     <target name="testStopDaemon">
      <parallel>
         <sf-startdaemon  timeout="${long.timeout}" failonerror="true">
@@ -47,7 +47,7 @@ ant -lib ../../build/dist/lib/smartfrog-tasks.jar -lib ../../../../smartfrog/dis
           <sf-undeploy application="rootProcess" timeout="${medium.timeout}"/>
         </sequential>
       </parallel>
-    </target>    
+    </target>
 
     
 </project>      

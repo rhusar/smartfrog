@@ -22,6 +22,8 @@ package org.smartfrog.tools.ant.test.system;
 
 import junit.framework.TestCase;
 import org.smartfrog.tools.ant.test.TaskTestBase;
+import org.smartfrog.tools.ant.SmartFrogTask;
+import org.smartfrog.tools.ant.StopApplication;
 
 /**
  * Junit test case for StopApplication
@@ -29,7 +31,7 @@ import org.smartfrog.tools.ant.test.TaskTestBase;
  * @author root
  */
 public class UndeployTest extends TaskTestBase {
-    protected static final String NO_APP = "Missing application name";
+    protected static final String NO_APP = SmartFrogTask.ERROR_MISSING_APPLICATION_NAME;
 
     public UndeployTest(String test) {
         super(test);
@@ -88,9 +90,8 @@ public class UndeployTest extends TaskTestBase {
 */
     public void testBadHost() {
         expectBuildExceptionContaining("testBadHost", "unknown host",
-                "failed to terminate");
+                StopApplication.ERROR_FAILED_TO_TERMINATE);
         assertInLog("Unable to locate IP address of the host: no-such-hostname");
-        //assertInLog("java.net.UnknownHostException: no-such-hostname");
 
     }
 
