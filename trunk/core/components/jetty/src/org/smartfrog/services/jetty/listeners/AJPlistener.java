@@ -22,10 +22,13 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 public class AJPlistener extends PrimImpl implements Listener {
   Reference listenerPortRef = new Reference(LISTENER_PORT);
   Reference serverHostRef = new Reference(SERVER_HOST);
+  Reference serverNameRef = new Reference(SERVER);
 
   int listenerPort = 8009;
 
   String serverHost = null;
+
+  String serverName = null;
 
   AJP13Listener listener = null;
 
@@ -47,6 +50,7 @@ public class AJPlistener extends PrimImpl implements Listener {
 	  super.sfDeploy();      
 	  listenerPort = sfResolve(listenerPortRef,listenerPort,true);
 	  serverHost = sfResolve(serverHostRef, serverHost, true);
+	  serverName = sfResolve(serverNameRef, serverName, true);
   }
 
   /**
@@ -84,7 +88,7 @@ public class AJPlistener extends PrimImpl implements Listener {
 	          listener.setPort(listenerPort);
 	          listener.setHost(serverHost);
 		  process = SFProcess.getProcessCompound();
-		  server = (HttpServer)process.sfResolveId("Jetty Server"); 
+		  server = (HttpServer)process.sfResolveId(serverName); 
 	          server.addListener(listener);
 		  try{
 			  listener.start();

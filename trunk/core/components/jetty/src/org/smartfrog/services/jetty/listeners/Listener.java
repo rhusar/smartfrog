@@ -12,6 +12,7 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 public interface Listener extends Remote {
     String LISTENER_PORT = "listenerPort";
     String SERVER_HOST = "serverHost";
+    String SERVER = "server";
 
     /**
 	 * Add the listener to the http server

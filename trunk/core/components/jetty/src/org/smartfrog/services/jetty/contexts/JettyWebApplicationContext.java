@@ -31,4 +31,5 @@ public interface JettyWebApplicationContext extends Remote {
     String CONTEXT_PATH = "contextPath";
     String WEBAPP = "webApp";
     String REQUEST_ID = "requestId";
+    String SERVER = "server";
 }

@@ -5,19 +5,25 @@
  * This is an example of dynamic adding of listeners and contexts to 
  * running jetty server
  */ 
-context extends Prim {
- sfClass "org.smartfrog.services.jetty.contexts.Servlet";
+
+server "Jetty Server";
+
+context extends JettyServletContext {
  contextPath "/test2";
  resourceBase ("C:\\ritu");
 }
 
-listener extends Prim {
- sfClass "org.smartfrog.services.jetty.listeners.Socketlistener";
+listener extends JettyListener {
  listenerPort 8085;
  serverHost "localhost";
 }
 
+
 sfConfig extends Compound {
-      newlistener extends listener ;
-      newcontext extends context ;
+      newlistener extends listener {
+        server ROOT:server;
+      }
+      newcontext extends context {
+        server ROOT:server;
+     }
 }
