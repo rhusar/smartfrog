@@ -121,7 +121,7 @@ public  class LogFactory {
      * @exception SmartFrogLogException if a suitable <code>Log</code>
      *  instance cannot be returned
      */
-    public static LogSF getProcessLog() {
+    public static LogSF sfGetProcessLog() {
        LogSF sflog =  getLog ((String)SmartFrogCoreKeys.SF_CORE_LOG);
        if ((sflog!=null)&&sflog.isTraceEnabled()) sflog.trace("getProcessLog()");
        /* LogImpl uses ComponentDescription and it needs to enable its log only when that is available */

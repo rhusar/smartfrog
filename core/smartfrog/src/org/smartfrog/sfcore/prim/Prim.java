@@ -255,6 +255,15 @@ public interface Prim extends Liveness, RemoteReferenceResolver, RemoteReference
     public LogSF sfGetProcessLog() throws RemoteException;
 
     /**
+     *  To log into sfCore logger. This method should be used to log Core messages
+     * @return Logger implementing LogSF and Log
+     * @throws SmartFrogException
+     * @throws RemoteException
+     */
+    public LogSF sflog() throws RemoteException;
+
+
+    /**
      *  To get application logger using ROOT name.
      *  The name used is cached in attritube @see SmartFrogCoreKeys.SF_APP_LOG_NAME
      *  If this attribute has been pre-set then it is used to get the applition logger,

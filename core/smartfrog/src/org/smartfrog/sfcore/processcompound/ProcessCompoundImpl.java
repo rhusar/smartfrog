@@ -344,7 +344,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
             throw new SmartFrogRuntimeException(MSG_FAILED_TO_CONTACT_PARENT,
                                                 rex, this);
         }
-        if ((sflog!=null)&&(sflog.isTraceEnabled())) sflog.trace("Started ProcessCompound '"+sfProcessName+"'");
+        if (sflog().isTraceEnabled()) sflog().trace("Started ProcessCompound '"+sfProcessName+"'");
     }
 
     /**
@@ -843,7 +843,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
             try {
                 pc = (ProcessCompound) sfResolve(new Reference(new HereReferencePart(name)));
             } catch (SmartFrogResolutionException e) {
-                if (sflog.isTraceEnabled()) sflog.trace(" Creating a new ProcessCompound: "+ name.toString());
+                if (sflog().isTraceEnabled()) sflog().trace(" Creating a new ProcessCompound: "+ name.toString());
                 pc = addNewProcessCompound(name);
             }
         } else { // am a child process - find in the parent
@@ -955,7 +955,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
 
         String[] runCmdArray = new String[runCmd.size()];
         runCmd.copyInto(runCmdArray);
-        if ((sflog!=null)&& sflog.isTraceEnabled()) sflog.trace("startProcess.runCmd: "+runCmd.toString());
+        if (sflog().isTraceEnabled()) sflog().trace("startProcess.runCmd: "+runCmd.toString());
         return Runtime.getRuntime().exec(runCmdArray);
     }
 

@@ -148,7 +148,7 @@ public class SFSystem implements MessageKeys {
             sysProps.put(key, props.get(key));
         }
         System.setProperties(sysProps);
-        if (log==null) log=LogFactory.getProcessLog();
+        if (log==null) log=LogFactory.sfGetProcessLog();
         if (log.isTraceEnabled()){
             log.trace("New system properties: " +sysProps.toString());
         }
@@ -311,12 +311,15 @@ public class SFSystem implements MessageKeys {
         try {
             initSystem();
         } catch (Exception ex) {
-            if (log==null) log=LogFactory.getProcessLog();
+            if (log==null) log=LogFactory.sfGetProcessLog();
             try {
                 if (log.isErrorEnabled()) {
                     log.error(ex);
                 }
-            } catch (Exception ex1) {ex1.printStackTrace();}
+            } catch (Exception ex1) {
+                ex1.printStackTrace();
+                ex.printStackTrace();
+            }
             exitWithError();
         }
 
@@ -462,7 +465,7 @@ public class SFSystem implements MessageKeys {
             SFSecurity.initSecurity();
             // Read init properties
             readPropertiesFromIniFile();
-            if (log==null) log=LogFactory.getProcessLog();
+            if (log==null) log=LogFactory.sfGetProcessLog();
             // Notify status of Security
             if (!SFSecurity.isSecurityOn()){
                 if (log.isWarnEnabled())
@@ -494,6 +497,5 @@ public class SFSystem implements MessageKeys {
         }
         return is;
     }
-
 
 }

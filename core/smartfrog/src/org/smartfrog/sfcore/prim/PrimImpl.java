@@ -76,9 +76,9 @@ import java.rmi.NoSuchObjectException;
  */
 public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim, MessageKeys {
 
-    /** Static ProcessLog: this log is used to log into SF_CORE_LOG
+    /** Static ProcessLog. This log is used to log into the core log: SF_CORE_LOG
      */
-    protected static LogSF  sflog = LogFactory.getProcessLog();;
+    private static LogSF  sflog = LogFactory.sfGetProcessLog();
 
     /** Static attribute that hold the lifecycle hooks for sfDeploy. */
     public static PrimHookSet sfDeployHooks = new PrimHookSet();
@@ -1005,9 +1005,19 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
      */
     public LogSF sfGetProcessLog() {
        if (sflog==null) {
-           sflog =  LogFactory.getProcessLog();
+           sflog =  LogFactory.sfGetProcessLog();
        }
        return sflog;
+    }
+
+    /**
+     *  To log into sfCore logger. This method should be used to log Core messages
+     * @return Logger implementing LogSF and Log
+     * @throws SmartFrogException
+     * @throws RemoteException
+     */
+    public LogSF sflog() {
+       return sfGetProcessLog();
     }
 
     /**
