@@ -1,6 +1,33 @@
+release 3.04.0014_beta
+----------------------
+2004-Dec-22 Release date
+2004-Dec-20 Mod: Improved method to register and deregister with ProcessCompound 
+2004-Dec-20 Add: New message: "MSG_PARENT_LOCATION_FAILED" to ErrorMessage Bundle
+2004-Dec-20 Mod: Methods simplified in DefaultRootLocator
+2004-Dec-17 Mod: Create new Child and create new Application changed
+2004-Dec-15 Add: sfParentageChanged option to flush sfCompleteName cache
+2004-Dec-15 Mod: sfCompleteName flushed after registration is completed
+2004-Dec-15 Add: Some internal exception protection and serializable error context
+2004-Dec-15 Mod: sfPrimParent is resolved upwards from CD to Prim
+2004-Dec-15 Fix: Bug when browsing chidren. A ref to a Prim could be interpreted as a child
+2004-Dec-09 Add: New example for arraycompound
+2004-Dec-09 Add: New method: createNewChild for a remote parent
+2004-Dec-07 Add: New firebreak class to limit spread of termination through tree
+2004-Nov-29 Add: Ability to include exception with the termination record
+2004-Nov-26 Add: Access methods for: sfIsTerminated, sfIsTerminating, sfIsStarted, sfIsDeployed
+2004-Nov-25 Fix: Problem in Linux when launching sf daemon
+2004-Nov-24 Add: Threads naming and improved log
+2004-Nov-22 Add: Icons to displays
+2004-Nov-19 Add: A ping command. Usage: sfPing hostname [component] or <sfping host= application= ... /> 
+2004-Nov-19 Add: Trace display for step by step deploy
+2004-Nov-19 Add: Shell scripts and batch files work out SFHOME from full path to sf application
+2004-Nov-18 Add: New attributes for subProcess deninition: -sfProcessClassPath -sfProcessReplaceClassPath -sfProcessAttributes (for -dorg...processcompound.attribute=value)
+2004-Nov-15 Add: All exceptions implement Serializable
+2004-Nov-11 Add: New attribute: sfProcessConfig to configure SubProcesses
+
 release 3.04.0012_beta
 ---------------------
-CVS tag
+2004-Nov-11 CVS tag
 
 release 3.04.0011_beta -> CVS
 ---------------------
