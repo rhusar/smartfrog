@@ -524,11 +524,12 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
      */
     public void sfDeployWith(Prim parent, Context cxt)
         throws SmartFrogDeploymentException, RemoteException {
+
         try {
             sfParent = parent;
             sfContext = cxt;
 
-
+	    sfDeployWithHooks.applyHooks(this, null);
 
 	    // set the prim parent link of any contained component description to this Prim
 	    // so that references work
@@ -578,8 +579,6 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
 
 	    sfReplaceAttribute(SmartFrogCoreKeys.SF_HOST, sfDeployedHost());
 	    sfReplaceAttribute(SmartFrogCoreKeys.SF_PROCESS, sfDeployedProcessName());
-
-	    sfDeployWithHooks.applyHooks(this, null);
 
         } catch (Exception sfex){
             Logger.log(sfex);
@@ -713,14 +712,14 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     public synchronized void sfDeploy()
         throws SmartFrogException, RemoteException {
 
-         Reference componentId = sfCompleteName();
+	Reference componentId = sfCompleteName();
         if (sfIsTerminated) {
             throw new SmartFrogDeploymentException(MessageUtil.formatMessage(
                     MSG_DEPLOY_COMP_TERMINATED, componentId.toString()),
                 this);
         }
-        sfIsDeployed = true;
         sfDeployHooks.applyHooks(this, null);
+        sfIsDeployed = true;
     }
 
     /**
@@ -732,13 +731,14 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
      */
     public synchronized void sfStart()
         throws SmartFrogException, RemoteException {
+
         if (sfIsTerminated) {
             throw new SmartFrogLifecycleException(MessageUtil.formatMessage(
                     MSG_START_COMP_TERMINATED, this.sfCompleteNameSafe().toString()),
                 this);
         }
-        sfIsStarted = true;
         sfStartHooks.applyHooks(this, null);
+        sfIsStarted = true;
     }
 
     /**
