@@ -28,7 +28,7 @@
  */
 -->
 
-<project name="slplib" default="dist" basedir=".">
+<project name="slp" default="dist" basedir=".">
 
 <description>
 Introduction
@@ -57,7 +57,7 @@ Reference URL:http://ant.apache.org
   <!--available file="../../common.xml" property="root.dir" value="../.."/--> 
   <import file="${root.dir}/common.xml"/>
 
-  <property name="is.component" value="true"  />
+  <property name="is.component" value="true"/>
 
 
    <property name="doc.dir" location="docs"/>
@@ -68,7 +68,7 @@ Reference URL:http://ant.apache.org
   <!-- =================================================================== -->
     <target name="init" depends="init-standard-output-dirs">
     <tstamp/>
-    <property name="Name.System" value="slplib"/>
+    <property name="Name.System" value="slp"/>
     <property name="Name.Author" value="Copyright (C) 2004 Glenn Hisdal"/>
     <property name="version" value="smartfrog components"/>
     <property name="Version" value="1.00.000.beta"/>
@@ -145,7 +145,7 @@ Reference URL:http://ant.apache.org
   <!-- =================================================================== -->
   <!--                                                                     -->
   <!-- =================================================================== -->
-  <target name="initbuild"  depends="init">
+  <target name="initbuild" depends="init">
     <mkdir dir="${build}"/>
     <mkdir dir="${build.classes.dir}"/>
   </target>
@@ -157,7 +157,7 @@ Reference URL:http://ant.apache.org
     <mkdir dir="${dist.dir}"/>
     <mkdir dir="${dist.lib.dir}"/>
     <mkdir dir="${dist.bin.dir}"/>
-    <mkdir dir="${dist.docs.dir}"/>
+    <!--mkdir dir="${dist.docs.dir}"/-->
     <mkdir dir="${dist.src.dir}"/>
   </target>
 
@@ -247,7 +247,7 @@ Reference URL:http://ant.apache.org
   <target name="copydocs" depends="initdist">
     <copy todir="${dist.docs.dir}">
       <fileset dir="${docs}">
-	<include name="**/*.pdf" />
+	<include name="**/*.*" />
       </fileset>
     </copy>
   </target>
@@ -257,7 +257,7 @@ Reference URL:http://ant.apache.org
   <!-- =================================================================== -->
   <!--   JDocs                                                             -->
   <!-- =================================================================== -->
-  <target name="jdocs" depends="initdist" description="Generates the API documentation">
+  <target name="jdocs" depends="init" description="Generates the API documentation">
     <!--  Java Docs for all                                                -->
     <echo message=""/>
     <echo message="------------------------------------------------------------------------"/>
@@ -368,7 +368,8 @@ Reference URL:http://ant.apache.org
  <target name="clean" depends="init,common.clean" description="clean up build ,dist and releases" >
     <property name="releases.dir" value="releases"/>
     <delete dir="${releases.dir}"  /> 
-    <delete dir="test"  />  
+	<delete dir="test"  />  
+	
  </target>  
 
   <!-- =================================================================== -->
