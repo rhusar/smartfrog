@@ -342,7 +342,7 @@ form of remote procedure call in XML, over HTTP. Over time, the
 world-view that lead to that choice has changed. Though it is often
 presented as a form of RPC, we would argue that it is coming to be
 seen as more powerful when viewed as a system where arbitrary XML
-documents are exchanged between parties, potentially asynchronously,
+documents are exchanged between parties, perhaps asynchronously,
 and potentially via intermediaries.
 
 In this world, the programming paradigms that seemed appropriate for
@@ -395,10 +395,10 @@ different pieces of a single larger application. Even then, it is
 most effective when both ends are using the same versions of all
 classes.
 
-With the kind of versions synchronisation of common code described
-above, objects can be trivially serialised and transmitted across a
-network connection. Exceptions become just another type of object, and
-so too can be sent over the wire. There is no need for an IDL, as Java
+In a system with shared code at both ends,
+objects can be trivially serialised and transmitted across a
+network connection. Exceptions are just another type of object, and
+so too can be sent over the wire. There is less need for an IDL, as Java
 interface declarations can perform much of the same role. And as the
 recipient is a remote object, state is automatic. One can even keep
 code synchronised by using a special class loader, one that fetches

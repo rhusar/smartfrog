@@ -90,7 +90,8 @@ Java objects created automatically from the XML data using a
 semi-standardised mapping process. Java classes can be automatically
 turned into SOAP endpoints, with each public method in the class
 exported as an operation with a request message and a response
-message. The message structure is described in a WSDL file, which can
+message. The message structure is described in a WSDL descriptor and an
+associated XML Schema, both of which can
 be hand-written, or automatically extracted from the Java classes
 through introspection.
 
@@ -103,7 +104,7 @@ instance of the implementation class, a behaviour that superficially
 resembles Java RMI \cite{paper:RMI}. We will return to this in section
 \ref{objections:soap-not-rmi}.
 
-One good architectural feature of JAX-RPC is the \emph{handler chain},
+One effective architectural feature of JAX-RPC is the \emph{handler chain},
 which consists of an ordered sequence of classes which are configured
 to manage requests and responses. Using the handler chain, it is
 possible to add support for new SOAP headers to existing services, or

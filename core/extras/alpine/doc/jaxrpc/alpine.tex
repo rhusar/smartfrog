@@ -18,9 +18,9 @@ difficult to use, but experience shows us that simpler systems are
 typically more straightforward to work with, as they react in more
 predictable ways.
 
-If a WSDL description of an Alpine-hosted service is required, the
+If a WSDL/XSD description of an Alpine-hosted service is required, the
 user will be required to write it: as we concluded in section
-\ref{objections:wsdl-gen} generating WSDL from Java introduces
+\ref{objections:wsdl-gen} generating these from Java introduces
 unwanted implementation dependencies and hampers interoperability.
 
 With so much stripped out, Alpine will be a SOAP stack reduced to its
@@ -94,8 +94,8 @@ There is a trivial solution to this problem, one that is common to
 other XML stacks. It is: validate incoming messages against the XML
 schema of the service.  We aim to implement a handler which will do
 this, which, if included on a handler chain, will reject invalid
-messages. It will also be able to validate outbound messages , which
-should be useful during development.
+messages. It will also be able to validate outbound messages, which
+should be useful during development. 
 
 \subsection{A Community SOAP Stack}
 \label{alpine:community}
@@ -131,7 +131,7 @@ before their shipping deadlines are missed.
 This may seem somewhat ruthless: to deny the right to write web
 services to developers who are and wish to remain ignorant of XML.
 However, we have to ask: \emph{if they do not want to know XML, why are
-they writing web services?}. If the developers want to use a less portable,
+they writing web services?} If the developers want to use a less portable,
 more brittle, remote method invocation system, they would be better off
 using a stable technology such as Java RMI or CORBA.
 
