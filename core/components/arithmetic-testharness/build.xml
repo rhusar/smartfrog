@@ -27,36 +27,76 @@ For more information: www.smartfrog.org
      Build file for arithmetic testharness.
 </description>
 
-   <!-- override point -->
+
+
+ <!-- override point -->
   <property file="build.properties" />
+  <property name="root.dir" location="../../"  />
 
 
-<!--    <property name="arithmetic.testharness.lib.dir" location="lib" />
- -->       
-  
-  <property name="root.dir" location="../.."  />
-    <!-- Import common stuff -->
+  <!-- Import common stuff -->
+  <!--available file="../../common.xml" property="root.dir" value="../.."/--> 
   <import file="${root.dir}/common.xml"/>
+
+  <property name="is.component" value="true"  />
+
   
-  
+   <property name="Name.System" value="arithmetic-testHarness"/>
   <!-- ========================================================== -->
+  <!-- pre-dist  -->
   <!-- ========================================================== -->
   <target name="init" depends="init-standard-output-dirs,use-smartfrog-tasks">
-          
-    <!-- the compile time path includes axis-->
-<!--     <path id="compile.classpath">
-      <path refid="smartfrog.classpath"/>
-      <fileset dir="${arithmetic.testharness.lib.dir}">
-        <include name="**/*.jar"/>
-      </fileset>
-    </path>
+  <tstamp/>
+    <property name="Name.Company" value="(C) Copyright 1998-2004 Hewlett-Packard Development Company, LP"/>
+    <property name="version" value="smartfrog components"/>
+    <property name="Version" value="@version"/>
+    <property name="year" value="2005"/>
+	
+    <echo message=""/>
+    <echo message="==================================================================="/>
+    <echo message="= ${Name.System} ${version}"/>
+    <echo message="= ${Name.Company} "/>
+    <echo message="==================================================================="/>
+    <echo message=""/>
+    <echo message="(${ant.version})"/>
+	</target>
+ 
+  
     
-    <path id="run.classpath">
-      <path refid="compile.classpath"/>
-      <path location="${target.jar}" />
-    </path>  
-     -->
-  </target> 
+ <!-- =================================================================== -->
+  <!--   JDocs                                                             -->
+  <!-- =================================================================== -->
+  <target name="jdocs" depends="init" description="Generates the API documentation">
+    <!--  Java Docs for all                                                -->
+    <echo message=""/>
+    <echo message="------------------------------------------------------------------------"/>
+    <echo message="  Creating Java Docs for ${Name.System} ${version} [${dist.jdocs.dir}]"/>
+    <echo message="------------------------------------------------------------------------"/>
+    <mkdir dir="${dist.jdocs.dir}"/>
+    <javadoc packagenames="org.smartfrog.*"
+           sourcepath="${src.dir}"
+           destdir="${dist.jdocs.dir}"
+           author="true"
+           version="true"
+           use="true"
+           windowtitle="${Name.System}"
+           Header="${Name.System} ${Version}"
+           Footer="${Name.System} ${version} ${Version}"
+           doctitle="${Name.System}"
+           bottom="${Name.Company}"
+           source="1.4"
+           >
+      <group title="SmartFrog Packages" packages="org.smartfrog.*"/>
+      <classpath>
+	  <fileset dir="${dist.lib.dir}">
+              <include name="**/*.jar"/>
+          </fileset>
+      </classpath>
+    </javadoc>
+
+  </target>
+
+
   
   <!-- ========================================================== -->
   <!-- this is an override point -->
@@ -82,16 +122,49 @@ For more information: www.smartfrog.org
       <property name="verify.fail.message"
         value="No velocity or beanshell found"/>    
   </target>
-  
+ 
+
+
+
   <!-- ========================================================== -->
+  <!-- clean -->
+  <!-- ========================================================== -->
+
+ <target name="clean" depends="common.clean" description="clean up build ,dist and releases" >
+    <delete dir="releases"  />  
+    <delete dir="test"  />  
+ </target>  
+
+
+
+ <!-- ========================================================== -->
   <!-- create the jar -->
   <!-- ========================================================== -->
-  <target name="dist" depends="common.dist" 
-    description="create the jar files">
-    <!--copy file ="${target.jar}"  todir="${smartfrog.dist.lib.dir}"/ -->
-    <copy-useful-files src="${lib.dir}" 
-        dest="${dist.lib.dir}" pattern ="**/*.jar"/>   
-  </target>
+	<target name="dist" depends="common.dist,verify-prerequisites,jdocs" description="create the jar files">
+	 <copy todir = "${dist.lib.dir}">
+        <fileset dir ="${lib.dir}" />
+    </copy>  
+
+	<copy todir = "${dist.bin.dir}">
+        <fileset dir ="${bin.dir}" />
+    </copy>  
+		 <copy todir = "${dist.doc.dir}">
+        <fileset dir ="${doc.dir}" />
+    </copy>   
+		 <copy todir = "${dist.src.dir}">
+        <fileset dir ="${src.dir}">
+		  <include name="**/examples/**"/>
+		</fileset>
+	</copy>
+     <copy tofile="${dist.dir}/build.xml" file="releaseBuild.xml"/>	
+	 <copy tofile="${dist.dir}/build.example.properties" file="build.example.properties"/>
+	</target>
+
+
+ 
+
+
+
 
 
 </project>
