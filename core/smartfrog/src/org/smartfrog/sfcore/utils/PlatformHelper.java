@@ -22,7 +22,7 @@ package org.smartfrog.sfcore.utils;
 import java.io.File;
 
 /**
- * Provides cross-platform stuff
+ * Repository of file and path values for the local and different platforms.
  * Future versions may do more; this design is there to permit subclasses to do the work.
  * created 27-May-2004 11:41:31
  */
@@ -34,6 +34,13 @@ public class PlatformHelper {
     private String pathSeparator;
     private char pathSeparatorChar;
 
+    /**
+     * construct a platform helper bound to a set of settings
+     * @param fileSeparator
+     * @param fileSeparatorChar
+     * @param pathSeparator
+     * @param pathSeparatorChar
+     */
     protected PlatformHelper(String fileSeparator, char fileSeparatorChar, String pathSeparator, char pathSeparatorChar) {
         this.fileSeparator = fileSeparator;
         this.fileSeparatorChar = fileSeparatorChar;
@@ -48,7 +55,14 @@ public class PlatformHelper {
             File.pathSeparator, File.pathSeparatorChar);
 
 
+    /**
+     * Windows
+     */
     private static PlatformHelper dosPlatform=new PlatformHelper("\\",'\\',";",';');
+
+    /**
+     * Unix
+     */
     private static PlatformHelper unixPlatform = new PlatformHelper("/", '/', ":", ':');
 
     /**
@@ -100,19 +114,80 @@ public class PlatformHelper {
         return new String(buffer);
     }
 
+    /**
+     * get the file separator
+     * @return current file separator
+     */
     public String getFileSeparator() {
         return fileSeparator;
     }
 
+    /**
+     * get the file separator character
+     * @return the file separator
+     */
     public char getFileSeparatorChar() {
         return fileSeparatorChar;
     }
 
+    /**
+     * get the path separator character
+     * @return the path separator
+     */
     public String getPathSeparator() {
         return pathSeparator;
     }
 
+    /**
+     * get the path separator character
+     * @return the path separator
+     */
     public char getPathSeparatorChar() {
         return pathSeparatorChar;
+    }
+
+
+    /**
+     * equality test
+     * @param that the object to test against
+     * @return true iff there is  match
+     */
+    public boolean equals(Object that) {
+        if ( this == that ) {
+            return true;
+        }
+        if ( !(that instanceof PlatformHelper) ) {
+            return false;
+        }
+
+        final PlatformHelper platformHelper = (PlatformHelper) that;
+
+        if ( fileSeparatorChar != platformHelper.fileSeparatorChar ) {
+            return false;
+        }
+        if ( pathSeparatorChar != platformHelper.pathSeparatorChar ) {
+            return false;
+        }
+        if ( !fileSeparator.equals(platformHelper.fileSeparator) ) {
+            return false;
+        }
+        if ( !pathSeparator.equals(platformHelper.pathSeparator) ) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * hash code is based on the file and path separators
+     * @return a hash code
+     */
+    public int hashCode() {
+        int result;
+        result = fileSeparator.hashCode();
+        result = 29 * result + (int) fileSeparatorChar;
+        result = 29 * result + pathSeparator.hashCode();
+        result = 29 * result + (int) pathSeparatorChar;
+        return result;
     }
 }
