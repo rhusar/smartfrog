@@ -69,8 +69,6 @@ public class Random extends BaseFunction implements PhaseAction {
         if (context.containsKey("max")) {
             max = ((Integer) context.get("max")).intValue();
         }
-
-        System.out.println(" " + min + " " + max);
         number = gen.nextFloat();
 
         if (isInt) {
