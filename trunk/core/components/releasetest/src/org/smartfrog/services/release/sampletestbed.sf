@@ -1,0 +1,91 @@
+/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+#include "org/smartfrog/components.sf"
+#include "org/smartfrog/functions.sf"
+#include "org/smartfrog/services/release/components.sf"
+#include "org/smartfrog/sfcore/workflow/combinators/sequence.sf"
+#include "org/smartfrog/sfcore/workflow/combinators/parallel.sf"
+/**
+ * This is a sample description of release test bed. It includes a Windows XP 
+ * and Red Hat Linux machine. Release Test bed can be extended by adding 
+ * children to parellel component "testBed".
+ */
+sfConfig extends Sequence {
+    actions extends LAZY {
+        testBed extends Parallel {
+            hostReleaseRepository "ebnt171"; // A Linux Machine
+            repositoryLoginId "ashish";
+            repositoryLocation "/home/ashish/releases";
+            actions extends LAZY {
+                node1 extends TestANode {
+                    hostType "Linux";
+                    sfProcessHost "ebnt171";
+                    repository PARENT:ATTRIB hostReleaseRepository;
+                    repositoryLocation PARENT:ATTRIB repositoryLocation;
+                    repUser PARENT:ATTRIB repositoryLoginId;
+                    // TODO: SCP authentication using public/private keys
+                    repPasswordLocation "/home/ashish/passwd";
+                    
+                    /*-----------------machine specific attributes --------------*/
+                    junitReleaseFile "testharness.3.02.002.beta.20040714.tar.gz";
+                    sfReleaseFile "SmartFrog.3.02.002.beta.20040708_ALL.tar.gz";
+                    releaseTestScript "install.sh";
+                    sfReleaseName "SmartFrog.3.02.002.beta";
+                    junitReleaseName "testharness.3.02.002.beta";
+                    localJunitReleaseFile "/tmp/junit.tar.gz";
+                    localSfReleaseFile "/tmp/smartfrog.tar.gz";
+                    localReleaseTestScript "/tmp/sfinstall.sh";
+                    sfInstallDir "/home/ashish/sftest";
+                    path "/usr/java/j2sdk1.4.1_05/bin:/opt/apache-ant-1.6.1/bin:/usr/local/bin:/bin:/usr/bin";
+                    anthome "/opt/apache-ant-1.6.1";
+                    //sfhome "/home/ashish/sftest/smartfrog";
+                }
+                node2 extends TestANode {
+                    hostType "Windows";
+                    sfProcessHost "ebnt17";
+                    repository PARENT:ATTRIB hostReleaseRepository;
+                    repositoryLocation PARENT:ATTRIB repositoryLocation;
+                    repUser PARENT:ATTRIB repositoryLoginId;
+                    // TODO: SCP authentication using public keys
+                    repPasswordLocation "e:\\cvs\\forge\\passwd.txt";
+
+                    /*-----------------machine specific attributes --------------*/
+                    junitReleaseFile "testharness.3.02.002.beta.20040708.zip";
+                    sfReleaseFile "SmartFrog.3.02.002.beta.20040708_ALL.zip";
+                    releaseTestScript "install.bat";
+                    sfReleaseName "SmartFrog.3.02.002.beta";
+                    junitReleaseName "testharness.3.02.002.beta";
+                    localJunitReleaseFile "C:\\junit.zip";
+                    localSfReleaseFile "C:\\smartfrog.zip";
+                    localReleaseTestScript "C:\\install.bat";
+                    sfInstallDir "e:\\temp\\sftest";
+                    path "E:\\apps\\apache-ant-1.6.1\\bin;C:\\j2sdk1.4.2_04\\bin;e:\\temp\\sftest\\smartfrog\\dist\\bin;C:\\cygwin\\bin";
+                    anthome "E:\\apps\\apache-ant-1.6.1";
+                    //sfhome "E:\\temp\\sftest\\smartfrog\\dist";
+                    systemroot "C:\\WINNT";
+                }
+            }
+        }
+        //collectResultsInst extends collectResults {
+        // TODO
+        //}
+    }
+}

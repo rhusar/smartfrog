@@ -1,0 +1,137 @@
+/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+#include "org/smartfrog/components.sf"
+#include "org/smartfrog/functions.sf"
+#include "org/smartfrog/services/os/runshell/components.sf"
+#include "org/smartfrog/services/ssh/scp.sf"
+#include "org/smartfrog/sfcore/workflow/combinators/sequence.sf"
+/**
+ *  Component definition for release test.
+ */
+
+TestANode extends Sequence {
+/*--------------------Begin Parameters -------------------------------------*/
+    hostType "Windows/Linux";
+    hostName "localhost";
+    repository "Host name where release files are available";
+    repUser "user id required to login in to repository";
+
+    // Not required if rep. allows anonymous ftp - Recommended
+    repPasswordLocation "Some file containing passwd";
+    repositoryLocation "Repository location";
+    junitReleaseFile "path to Junit release file in release repository";
+    sfReleaseFile "path to Junit release file in release repository";
+    releaseTestScript "path to Release test scripts";
+    sfReleaseName "Name of SF release";
+    junitReleaseName "Name of SF release";
+    localJunitReleaseFile "path to Junit release file in release repository";
+    localSfReleaseFile "path to Junit release file in release repository";
+    localReleaseTestScript "path to Release test scripts";
+    path "path required for ant and jdk ";
+    anthome "ant home in local machine";
+    sfInstallDir "SmartFrog installtion dir";
+    pathSeperator IF (hostType == "Windows") THEN "\\" ELSE "/" FI;
+    //sfhome "smartfrog home";
+    //javahome "java home";
+    systemroot "System root directory";
+/*--------------------End Parameters -------------------------------------*/
+    
+    actions extends LAZY {
+        // Use SCP component to copy SF/JUnit release files
+        scp1 extends ScpSession {
+            host PARENT:ATTRIB repository;
+            userId PARENT:ATTRIB repUser;
+            passwordFile PARENT:ATTRIB repPasswordLocation;
+            remoteFiles [ (PARENT:ATTRIB repositoryLocation ++ "/" ++ PARENT:ATTRIB  sfReleaseFile), 
+                          (PARENT:ATTRIB repositoryLocation ++ "/" ++ PARENT:ATTRIB  junitReleaseFile), 
+                          (PARENT:ATTRIB repositoryLocation ++ "/" ++ PARENT:ATTRIB  releaseTestScript)
+                        ];
+            localFiles [PARENT:ATTRIB  localSfReleaseFile,
+                        PARENT:ATTRIB  localJunitReleaseFile,
+                        PARENT:ATTRIB  localReleaseTestScript
+                       ];
+            transferType "get";
+        }
+        chmod extends RunShellScripts {
+            platform PARENT:ATTRIB  hostType;
+            shellCmd "chmod";
+            shellCmdAtt_Arg1 "755";
+            shellCmdAtt_filename PARENT:ATTRIB localReleaseTestScript;
+            processId IF (platform == "Windows") THEN "(WinShell)" ELSE "(bash)" FI;
+            exitCmd "exit 0"; 
+            useExitCmd true; 
+            shouldTerminate true; 
+            processName "SmartFrog";
+            logLevel 5;
+            printStack true;
+        }
+        inst1 extends installAndRunTest {
+            installDir PARENT:ATTRIB  sfInstallDir;        
+            platform PARENT:ATTRIB  hostType;
+             
+            smartfrogReleaseFile PARENT:ATTRIB  localSfReleaseFile;
+            junitReleaseFile PARENT:ATTRIB  localJunitReleaseFile;
+            releaseTestFile  PARENT:ATTRIB  localReleaseTestScript;
+            releaseName PARENT:ATTRIB sfReleaseName;
+            junitReleaseName PARENT:ATTRIB junitReleaseName;
+            path PARENT:ATTRIB path;
+            anthome PARENT:ATTRIB anthome;
+            //sfhome PARENT:ATTRIB sfhome;
+            //javahome PARENT:ATTRIB javahome;
+            systemroot PARENT:ATTRIB systemroot;
+        }
+    }
+} 
+installAndRunTest extends Compound {
+/*-----------Begin Parameters ------------------------*/
+    installDir;        
+    platform;
+    junitReleaseFile;
+    releaseTestFile ;
+    smartfrogReleaseFile;
+    releaseName;
+    junitReleaseName;
+    path;
+    anthome;
+    //sfhome;
+    //javahome;
+/*-----------End Parameters --------------------------*/
+    runInstallation extends RunShellScripts {
+        //shellCmd releaseTestFile;
+        shellCmd ATTRIB releaseTestFile;
+        processId IF (platform == "Windows") THEN "(WinShell)" ELSE "(bash)" FI;
+        exitCmd "exit 0"; 
+        useExitCmd true; 
+        shouldTerminate true; 
+        processName "SmartFrog";
+        logLevel 5;
+        printStack true;
+        envProperties [("INSTALL_DIR" ++ "=" ++ ATTRIB installDir),
+                       ("JUNIT_RELEASE_FILE" ++ "=" ++ ATTRIB junitReleaseFile),
+                       ("SF_RELEASE_FILE" ++ "=" ++ ATTRIB smartfrogReleaseFile),
+                       ("SF_RELEASE" ++ "=" ++ ATTRIB releaseName),
+                       ("JUNIT_RELEASE" ++ "=" ++ ATTRIB junitReleaseName),
+                       ("ANT_HOME" ++ "=" ++ ATTRIB anthome),
+                       ("PATH" ++ "=" ++ ATTRIB path),
+                       ("SystemRoot"++ "=" ++ ATTRIB systemroot)
+                      ]; 
+    }
+}
