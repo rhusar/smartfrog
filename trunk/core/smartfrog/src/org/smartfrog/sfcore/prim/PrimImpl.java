@@ -563,9 +563,9 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
             }
 
             //Registers component with local ProcessCompound
-            if (sfContext.containsKey(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME)) {
-                SFProcess.getProcessCompound().sfRegister(sfResolveHere(
-                    SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME,false), this);
+            if (sfIsRemote(sfParent) || 
+		(sfContext.containsKey(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME))) {
+		SFProcess.getProcessCompound().sfRegister(sfResolveHere(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME,false), this);
             }
 
             // Look up delay, if not there never mind looking up factor
