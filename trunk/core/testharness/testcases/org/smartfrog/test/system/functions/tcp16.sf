@@ -26,6 +26,7 @@ For more information: www.smartfrog.org
 #include "org/smartfrog/functions.sf"
 
 myNext extends next {
+    base 1;
 }
 
 sfConfig extends Compound {
