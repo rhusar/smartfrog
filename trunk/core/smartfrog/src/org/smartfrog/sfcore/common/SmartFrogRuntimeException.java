@@ -115,7 +115,7 @@ public class SmartFrogRuntimeException extends SmartFrogException {
         if (sfObject == null) return;
         super.init(sfObject);
         try {
-           add(this.REFERENCE,sfObject.sfCompleteName());
+           add(REFERENCE,sfObject.sfCompleteName());
         } catch (RemoteException rex){
             //ignore
         }
