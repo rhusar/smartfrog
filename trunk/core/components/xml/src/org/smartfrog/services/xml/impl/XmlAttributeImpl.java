@@ -21,7 +21,9 @@ package org.smartfrog.services.xml.impl;
 
 import nu.xom.Attribute;
 import nu.xom.Node;
+import nu.xom.XMLException;
 import org.smartfrog.services.xml.interfaces.XmlAttribute;
+import org.smartfrog.services.xml.interfaces.XmlQNameNode;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
 import java.rmi.RemoteException;
@@ -38,7 +40,9 @@ public abstract class XmlAttributeImpl extends SimpleXmlNode
 
     /**
      * create a node of the appropriate type. This is called during deployment;
-     *
+     * The node name is from {@link XmlQNameNode#ATTR_LOCALNAME}; optional
+     * namespace from {@link XmlQNameNode#ATTR_NAMESPACE},
+     * Mandatory Value from {@link XmlAttribute#ATTR_VALUE}
      * @return a new node of type {@link Attribute}
      * @throws nu.xom.XMLException if needed
      */
@@ -46,6 +50,10 @@ public abstract class XmlAttributeImpl extends SimpleXmlNode
         String localname = sfResolve(ATTR_LOCALNAME, (String) null, true);
         String namespace = sfResolve(ATTR_NAMESPACE, (String) null, false);
         String value = sfResolve(ATTR_VALUE, "", true);
-        return new Attribute(localname, namespace, value);
+        try {
+            return new Attribute(localname, namespace, value);
+        } catch (XMLException e) {
+            throw XmlNodeHelper.handleXmlException(e);
+        }
     }
 }

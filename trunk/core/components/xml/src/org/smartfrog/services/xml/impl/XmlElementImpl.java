@@ -21,6 +21,7 @@ package org.smartfrog.services.xml.impl;
 
 import nu.xom.Element;
 import nu.xom.Node;
+import nu.xom.XMLException;
 import org.smartfrog.services.xml.interfaces.LocalNode;
 import org.smartfrog.services.xml.interfaces.XmlElement;
 import org.smartfrog.sfcore.common.SmartFrogException;
@@ -45,8 +46,12 @@ public class XmlElementImpl extends CompoundXmlNode implements XmlElement {
     public Node createNode() throws RemoteException, SmartFrogException {
         String localname = sfResolve(ATTR_LOCALNAME, (String) null, true);
         String namespace = sfResolve(ATTR_NAMESPACE, (String) null, false);
-        Element element = new Element(localname, namespace);
-        return element;
+        try {
+            Element element = new Element(localname, namespace);
+            return element;
+        } catch (XMLException e) {
+            throw XmlNodeHelper.handleXmlException(e);
+        }
     }
 
     /**

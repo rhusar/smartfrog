@@ -48,19 +48,23 @@ public class DocumentCreationTest extends TestBase {
     }
 
     /**
-     * load a document, save it to a temp file.
+     * load a document, save it to a temp file; reload it
      * @throws Throwable
      */
     public void testDocumentLoad() throws Throwable {
         XmlNode node=deployXmlNode(FILE_BASE+"testDocument.sf","testDocument");
+        File tempfile=null;
         try {
             XmlDocument doc=(XmlDocument) node;
             String xml=doc.toXML();
-            File tempfile=File.createTempFile("doc",".xml");
+            tempfile = File.createTempFile("doc",".xml");
             doc.save(tempfile.getAbsolutePath());
             Document xdom=loadXMLFile(tempfile);
         } finally {
             terminateNode(node);
+            if(tempfile!=null) {
+                tempfile.delete();
+            }
         }
     }
 
@@ -75,24 +79,6 @@ public class DocumentCreationTest extends TestBase {
             terminateNode(node);
         }
     }
-
-    /**
-     * load an XML File
-     * @param file
-     * @return
-     * @throws SAXException
-     * @throws ParsingException
-     * @throws IOException
-     */
-    public Document loadXMLFile(File file) throws SAXException,
-            ParsingException, IOException {
-        XMLReader xmlParser = ParserHelper.createXmlParser(true,true,false);
-        Builder builder = new Builder(xmlParser, true);
-        Document document = builder.build(file);
-        return document;
-    }
-
-
 
 
 }

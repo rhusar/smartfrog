@@ -22,6 +22,7 @@ package org.smartfrog.services.xml.impl;
 import nu.xom.Document;
 import nu.xom.Node;
 import nu.xom.Serializer;
+import nu.xom.XMLException;
 import org.smartfrog.services.filesystem.FileImpl;
 import org.smartfrog.services.xml.interfaces.LocalNode;
 import org.smartfrog.services.xml.interfaces.XmlDocument;
@@ -59,18 +60,21 @@ public class XmlDocumentImpl extends CompoundXmlNode implements XmlDocument {
      */
     public Node createNode() throws RemoteException, SmartFrogException {
         Prim root = resolveRoot();
+        XmlElementImpl element;
         try {
-            XmlElementImpl element = (XmlElementImpl) root;
-            Document document;
-
-            document = new Document(element.getElement());
-            return document;
-
+            element = (XmlElementImpl) root;
         } catch (ClassCastException e) {
             throw new SmartFrogRuntimeException(ATTR_ROOT
                     + ERROR_WRONG_TYPE, e, this);
-
         }
+            Document document;
+            try {
+                document = new Document(element.getElement());
+                return document;
+            } catch (XMLException e) {
+                throw XmlNodeHelper.handleXmlException(e);
+            }
+
     }
 
     private Prim resolveRoot() throws SmartFrogResolutionException,
