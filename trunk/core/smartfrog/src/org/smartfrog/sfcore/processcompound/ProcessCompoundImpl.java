@@ -521,7 +521,6 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
                 }
             }
             sfCompleteName=r;
-            System.out.println("completeNameCreated2: "+sfCompleteName.toString());
         }
         return sfCompleteName;
     }
