@@ -21,7 +21,7 @@
 package org.smartfrog.test.system.deploy;
 
 
-import org.smartfrog.test.SmartfrogTestBase;
+import org.smartfrog.test.SmartFrogTestBase;
 
 import org.smartfrog.sfcore.common.ConfigurationDescriptor;
 import org.smartfrog.sfcore.common.SmartFrogInitException;
@@ -38,7 +38,7 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.test.unit.sfcore.common.ConfigurationDescriptorTestURLs;
 
 
-public class ConfigurationDescriptorDeployTest extends SmartfrogTestBase implements ConfigurationDescriptorTestURLs {
+public class ConfigurationDescriptorDeployTest extends SmartFrogTestBase implements ConfigurationDescriptorTestURLs {
 
 
 

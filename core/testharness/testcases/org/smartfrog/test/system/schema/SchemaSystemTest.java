@@ -21,14 +21,14 @@
 
 package org.smartfrog.test.system.schema;
 
-import org.smartfrog.test.SmartfrogTestBase;
+import org.smartfrog.test.SmartFrogTestBase;
 import org.smartfrog.sfcore.prim.Prim;
 
 
 /**
  * JUnit test class for test cases related to scehmas.
  */
-public class SchemaSystemTest extends SmartfrogTestBase {
+public class SchemaSystemTest extends SmartFrogTestBase {
 
     private static final String FILES="org/smartfrog/test/system/schema/";
 

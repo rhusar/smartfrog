@@ -24,7 +24,7 @@ package org.smartfrog.test.system.reference;
 import java.util.Vector;
 import java.util.Calendar;
 
-import org.smartfrog.test.SmartfrogTestBase;
+import org.smartfrog.test.SmartFrogTestBase;
 import org.smartfrog.sfcore.prim.Prim;
 
 
@@ -32,7 +32,7 @@ import org.smartfrog.sfcore.prim.Prim;
  * JUnit class for negative test cases using attribute resolution 
  * functionality provided by SmartFrog framework.
  */
-public class ReferenceSystemTest extends SmartfrogTestBase {
+public class ReferenceSystemTest extends SmartFrogTestBase {
 
     private static final String FILES="org/smartfrog/test/system/reference/";
 

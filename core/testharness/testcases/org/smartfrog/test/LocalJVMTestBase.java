@@ -27,7 +27,7 @@ import org.smartfrog.sfcore.common.OptionSet;
  * Once the daemon is started, it stays started, as the engine does not like to unload.
  * @author steve loughran
  */
-public class LocalJVMTestBase extends SmartfrogTestBase {
+public class LocalJVMTestBase extends SmartFrogTestBase {
 
     public LocalJVMTestBase(String name) {
         super(name);
