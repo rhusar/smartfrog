@@ -92,7 +92,7 @@ public class Reference implements Copying, Cloneable, Serializable {
         if (!parse) {
            ref.addElement(ReferencePart.here(refString));
         } else {
-            ref = this.fromString(refString).ref;
+            ref = fromString(refString).ref;
         }
     }
     /**
