@@ -557,6 +557,7 @@ For more information: www.smartfrog.org
   <!-- =================================================================== -->
   <target name="release"  depends=" verify-smartfrog,  clean, updateversion, dist, initdist, copybuild, copybins, copylibs, copydocs, copycomponents, srczip,generatedoc, buildrelease " description="Creates clean new release">
 	  <copy tofile="${dist.dir}/build.xml" file="releaseBuild.xml"/>
+	   <copy tofile="${dist.dir}/build.example.properties" file="build.example.properties"/>
   </target>
 
   <target name="default" depends="dist"/>
