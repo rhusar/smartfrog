@@ -42,9 +42,9 @@ To Be Written
   <target name="init">
     <tstamp/>
     <property name="Name.Framework" value="SmartFrog Framework"/>
-    <property name="Name.System" value="SmartFrog"/>    
+    <property name="Name.System" value="SmartFrog"/>
     <property name="Name.Company" value="(C) Copyright 1998-2004 Hewlett-Packard Development Company, LP"/>
-    <property name="version" value="3.01.003.alpha"/>
+    <property name="version" value="3.02.000.alpha"/>
     <property name="year" value="2004"/>
 
     <echo message=""/>
@@ -266,7 +266,7 @@ To Be Written
         <include name="COPYRIGHT.txt"/>
         <include name="LICENSE.txt"/>
         <include name="changes.txt"/>
-        <include name="readme.txt"/>        
+        <include name="readme.txt"/>
         <exclude name="**/CVS" />
         <exclude name="**/*.dfPackage" />
         <exclude name="**/Cvs" />
