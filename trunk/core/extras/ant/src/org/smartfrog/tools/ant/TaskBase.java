@@ -46,6 +46,7 @@ public abstract class TaskBase extends Task {
      * flag set to include the ant runtime if class or classpath defined
      */
     protected boolean includeAntRuntime=false;
+    
 
     /**
      * If a new classpath is passed in, should the existing one
