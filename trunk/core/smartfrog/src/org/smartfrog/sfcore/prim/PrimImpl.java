@@ -467,7 +467,6 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
      *
      * @throws RemoteException In case of network/rmi error
      */
-     //sfCompleteName is cached. @TODO: clean cache when re-parenting
     public Reference sfCompleteName() throws RemoteException {
         if (sfCompleteName==null) {
             Reference r;
