@@ -86,12 +86,18 @@ public class CompoundImpl extends PrimImpl implements Compound {
     }
 
     /**
-     * Deploys a compiled component. The deployed component is added to the
-     * parent attribute table. This method does not forward deployment to the
-     * parent if parent is not this, so if parent is remote it could be
-     * expensive and exception sensitive. A check is made if the an attrbute
-     * with given made exists in parent and is replaceable. An attribute is
-     * only replaceable if its value is a component description.
+     * An internal SmartFrog method. 
+     * It deploys a compiled component and makes it an attribute of the
+     * parent compound. Also start heartbeating the deployed component
+     * if the component registers. Note that the remaining lifecycle methods must
+     * still be invoked on the created component - namely sfDeploy() and sfStart().
+     * This is primarily an internal method - the prefered method for end users is
+     * @sfCreateNewChild.
+     *
+     * Note that the remaining lifecycle methods must
+     * still be invoked on the created component - namely sfDeploy() and sfStart().
+     * This is primarily an internal method - the prefered method for end users is
+     * @sfCreateNewChild.
      *
      * @param name name to name deployed component under in context
      * @param parent of deployer component
@@ -157,6 +163,42 @@ public class CompoundImpl extends PrimImpl implements Compound {
             throw (SmartFrogDeploymentException)SmartFrogDeploymentException.forward(thr);
         }
     }
+
+
+    /**
+     * A high-level component deployment method - creates a child of this
+     * Compound, running it through its entire lifecycle. This is the preferred way
+     * of creating new child components of a Compound. The method is safe against 
+     * multiple calls of lifecycle.
+     *
+     * @param cmp compiled component to deploy and start
+     * @param name name of attribute which the deployed component should adopt
+     * @param parms parameters for description
+     *
+     * @return deployed component if successfull
+     *
+     * @exception SmartFrogDeploymentException failed to deploy compiled 
+     * component
+     * @exception RemoteException In case of Remote/nework error
+     */
+    public Prim sfCreateNewChild(Object name, ComponentDescription cmp, Context parms)
+        throws RemoteException, SmartFrogDeploymentException {
+	Prim comp = null;
+	try {
+	    synchronized (this) {
+		if (!sfIsTerminated) {
+		    comp = sfDeployComponentDescription(name, this, cmp, parms);
+		    // it is now a child, so need to guard against double calling of lifecycle...
+		    if (sfIsDeployed) comp.sfDeploy(); // otherwise let the deploy of this component do it...
+		    if (sfIsStarted) comp.sfStart(); // otherwise let the start of this component do it...
+		}
+	    }
+	} catch (Exception e) {
+	    throw (SmartFrogDeploymentException) SmartFrogDeploymentException.forward(e);
+	}
+	return comp;
+    }
+
 
     //
     // ChildMinder
