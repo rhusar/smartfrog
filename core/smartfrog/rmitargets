@@ -33,6 +33,7 @@ org/smartfrog/services/comm/mcast/SFMCastClientImpl.class
 org/smartfrog/services/comm/mcast/SFMCastServerImpl.class
 org/smartfrog/services/filesystem/TempFileImpl.class
 org/smartfrog/services/filesystem/TouchFile.class
+org/smartfrog/services/filesystem/MkdirImpl.class
 org/smartfrog/services/www/LivenessPageComponent.class
 
 
