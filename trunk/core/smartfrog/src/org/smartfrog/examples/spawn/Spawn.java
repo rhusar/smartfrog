@@ -49,7 +49,7 @@ public class Spawn extends CompoundImpl implements Prim{
     new Reference("sfDestination");
 
   /** The component description to be deployed. */
-  ComponentDescription offspringDescription;
+  ComponentDescription offspringDescription=null;
   /** The generic name prefix used to name the siblings. */
   String offspringName = "copy";
   /** The number of copies to be deployed.  */
@@ -89,7 +89,7 @@ public class Spawn extends CompoundImpl implements Prim{
         try {
                destination = (Compound) sfResolve (refDestination);
         } catch (SmartFrogResolutionException rex ){
-           destination = this;
+           destination = null;
         }
       }catch (SmartFrogException sfex) {
             // add the context in case of failure
@@ -101,12 +101,17 @@ public class Spawn extends CompoundImpl implements Prim{
       }
       for (int i = 0 ; i < familySize ; i ++) {
           String copyName = offspringName + (new Integer(i)).toString();
-          Prim p = sfDeployComponentDescription(
-              copyName,
-              destination,
-              (ComponentDescription)offspringDescription.copy(),
-              null);
-          p.sfDeploy();
+          Prim p=null;
+          if (destination==null) {
+               p = this.sfCreateNewChild(copyName,(ComponentDescription)offspringDescription.copy(),null);
+          } else {
+               p = sfDeployComponentDescription(
+               copyName,
+               destination,
+               (ComponentDescription)offspringDescription.copy(),
+               null);
+           p.sfDeploy();
+         }
       }
   }
 }
