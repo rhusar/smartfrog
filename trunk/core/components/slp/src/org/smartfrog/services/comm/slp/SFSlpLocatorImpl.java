@@ -31,6 +31,7 @@ import org.smartfrog.sfcore.reference.*;
 import org.smartfrog.sfcore.common.*;
 
 import java.util.*;
+import java.net.InetAddress;
 
 import java.rmi.*;
 
@@ -41,14 +42,12 @@ import java.rmi.*;
 */
 public class SFSlpLocatorImpl extends PrimImpl implements Prim, SFSlpLocator {
     protected Locator locator;
-    protected Properties properties;
     protected ServiceType serviceType;
     protected Vector scope_list;
     protected String searchFilter;
     protected ServiceLocationEnumeration discoveryResults = null;
     protected int discoveryInterval = 0;
     protected int discoveryDelay = 0;
-    protected boolean returnAll = false;
     private Thread locatorThread = null;
     private Object wtSync = new Object();
     private volatile boolean amWaiting = true;
@@ -62,7 +61,7 @@ public class SFSlpLocatorImpl extends PrimImpl implements Prim, SFSlpLocator {
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();  
 
-        properties = new Properties();
+        Properties properties = new Properties();
         // get slp configuration
         String s = (String)sfResolve("slp_config_interface");
         if(!s.equals("")) properties.setProperty("net.slp.interface", s);
@@ -85,11 +84,12 @@ public class SFSlpLocatorImpl extends PrimImpl implements Prim, SFSlpLocator {
         // get locator configuration
         discoveryDelay = ((Integer)sfResolve("locator_discovery_delay")).intValue();
         discoveryInterval = ((Integer)sfResolve("locator_discovery_interval")).intValue();
-        returnAll = ((Boolean)sfResolve("locator_return_all")).booleanValue();
         
         // get parameters for service discovery.
         String srvTypeStr = sfResolve("serviceType").toString();
-        if(srvTypeStr.endsWith(":")) srvTypeStr = srvTypeStr.substring(0, srvTypeStr.length()-1);
+        if(srvTypeStr.equals("")) {
+            throw new SmartFrogException("SLP: No service type given");
+        }
         serviceType = new ServiceType(srvTypeStr);
         searchFilter = sfResolve("searchFilter").toString();
         scope_list = (Vector)sfResolve("searchScopes");
@@ -130,7 +130,7 @@ public class SFSlpLocatorImpl extends PrimImpl implements Prim, SFSlpLocator {
                     waitForDiscovery();
                 }
                 //System.out.println("Discovery completed...");
-                return discoveryResults;
+                return getDiscoveredObject(discoveryResults);
             }
             else {
                 return super.sfResolve(r, index);
@@ -141,6 +141,9 @@ public class SFSlpLocatorImpl extends PrimImpl implements Prim, SFSlpLocator {
         }
     }
     
+    /**
+        Runs the thread used to locate services.
+    */
     protected void locateServices() {
         if(discoveryDelay != 0) {
             try {
@@ -149,7 +152,9 @@ public class SFSlpLocatorImpl extends PrimImpl implements Prim, SFSlpLocator {
         }
         while(runThread) {
             try {
-                discoveryResults = locator.findServices(serviceType, scope_list, searchFilter);
+                if(serviceType != null) {
+                    discoveryResults = locator.findServices(serviceType, scope_list, searchFilter);
+                }
                 stopWaiting();
             }catch(ServiceLocationException ex) {
                 // error during discovery.
@@ -169,6 +174,10 @@ public class SFSlpLocatorImpl extends PrimImpl implements Prim, SFSlpLocator {
         }
     }
     
+    /**
+        Waits until the service discovery is completed.
+        Used from sfResolve.
+    */
     protected void waitForDiscovery() {
         synchronized(wtSync) {
             while(amWaiting) {
@@ -180,11 +189,50 @@ public class SFSlpLocatorImpl extends PrimImpl implements Prim, SFSlpLocator {
         }
     }
     
+    /**
+        Called when the service discovery is complete.
+    */
     protected void stopWaiting() {
         synchronized(wtSync) {
             amWaiting = false;
             wtSync.notifyAll();
         }
+    }
+    
+    /**
+        Returns the object discovered.
+    */
+    protected Object getDiscoveredObject(ServiceLocationEnumeration sle) throws SmartFrogException {
+        while(sle.hasMoreElements()) {
+            ServiceURL url = (ServiceURL)sle.nextElement();
+            // if the URL has a host part, we have a String or InetAddress.
+            String host = url.getHost();
+            if(!host.equals("")) {
+                String path = url.getURLPath();
+                if(!path.equals("")) {
+                    return host+path; // String with hostname and path.
+                }
+                // No path: create InetAddress.
+                try {
+                    InetAddress addr = InetAddress.getByName(host);
+                    return addr;
+                }catch(Exception ex) {
+                    return host; // returning host as String
+                }
+            }
+            // no host => some object. Could be String/Integer/RemoteStub, ...
+            // try to get object from URLPath.
+            Object pathObject = url.getURLPathObject();
+            if(pathObject == null) {
+                // String/number/boolean. Currently returning String...
+                return url.getURLPath().substring(1);
+            }
+            else {
+                return pathObject; // returning object.
+            }
+        }
+        
+        throw new SmartFrogException("SLP: No service found");
     }
 }
 

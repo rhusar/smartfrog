@@ -27,7 +27,10 @@
 package org.smartfrog.services.comm.slp;
 
 import java.rmi.Remote;
+import java.rmi.RemoteException;
+import java.util.Vector;
 
 public interface SFSlpLocator extends Remote {
 
+    
 }
