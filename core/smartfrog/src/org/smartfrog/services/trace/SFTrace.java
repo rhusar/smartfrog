@@ -90,7 +90,7 @@ public class SFTrace extends PrimImpl implements SFTraceIntf {
             RemoteException {
         super.sfDeploy();
 
-        log = sfGetProcessLog();
+        log = sfCoreLog();
 
         try {
             try {

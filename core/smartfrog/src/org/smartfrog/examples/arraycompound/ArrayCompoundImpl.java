@@ -114,19 +114,19 @@ public class ArrayCompoundImpl extends CompoundImpl implements Compound, ArrayCo
             //Create a new copy of the description!
             ComponentDescription newcd = (ComponentDescription)((ComponentDescriptionImpl)template).copy();
             if (parent == null){
-              if (sflog().isDebugEnabled()) {
-                  sflog().debug("Creating new app: "+ hostname +":'"+parent.sfCompleteName()+"'");
+              if (sfLog().isDebugEnabled()) {
+                  sfLog().debug("Creating new app: "+ hostname +":'"+parent.sfCompleteName()+"'");
               }
               p = this.sfCreateNewApp( "app-"+hostname.toString(),newcd , sfHostContext);
             } else {
-              if (sflog().isDebugEnabled()) {
-                  sflog().debug("Creating new child: "+ hostname +":'"+parent.sfCompleteName()+"'");
+              if (sfLog().isDebugEnabled()) {
+                  sfLog().debug("Creating new child: "+ hostname +":'"+parent.sfCompleteName()+"'");
               }
               p = this.sfCreateNewChild("ch-"+hostname.toString(), parent,newcd, sfHostContext);
             }
         } catch (Exception e) {
-            if (sflog().isErrorEnabled()) {
-                sflog().error("deployTemplate: "+hostname, e);
+            if (sfLog().isErrorEnabled()) {
+                sfLog().error("deployTemplate: "+hostname, e);
             }
             return false;
         }
@@ -159,8 +159,8 @@ public class ArrayCompoundImpl extends CompoundImpl implements Compound, ArrayCo
                parent =  sfResolve(ATR_PARENT, parent, false);
              }
         } catch (SmartFrogResolutionException e) {
-            if (sflog().isErrorEnabled()) {
-                sflog().error("Failed to read mandatory attribute: "+
+            if (sfLog().isErrorEnabled()) {
+                sfLog().error("Failed to read mandatory attribute: "+
                      e.toString(), e);
             }
             throw e;

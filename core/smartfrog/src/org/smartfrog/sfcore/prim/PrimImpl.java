@@ -76,7 +76,8 @@ import java.net.*;
  */
 public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim, MessageKeys {
 
-    /** ProcessLog. This log is used to log into the core log: SF_CORE_LOG
+    /** Component Log. This log is used to from any component.
+     *  Initialized to log into the core log: SF_CORE_LOG
      *  It can be replaced using sfSetLog()
      */
     private LogSF  sflog = LogFactory.sfGetProcessLog();
@@ -169,8 +170,8 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
         try {
            result = sfContext.sfResolveAttribute(name);
            try {
-               if (sfGetProcessLog().isTraceEnabled()) {
-                   sfGetProcessLog().trace(sfCompleteNameSafe()+ " sfResolved HERE '"+name.toString()+"' to '"+ result.toString()+"'");
+               if (sfCoreLog().isTraceEnabled()) {
+                   sfCoreLog().trace(sfCompleteNameSafe()+ " sfResolved HERE '"+name.toString()+"' to '"+ result.toString()+"'");
                }
            } catch (Exception ex) {ex.printStackTrace();} //ignore
 
@@ -228,8 +229,8 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
         throws SmartFrogResolutionException, RemoteException {
         Object obj = sfResolve(r, 0);
         try {
-            if (sfGetProcessLog().isTraceEnabled()) {
-                sfGetProcessLog().trace(sfCompleteNameSafe()+ " sfResolved '"+r.toString()+"' to '"+ obj.toString()+"'");
+            if (sfCoreLog().isTraceEnabled()) {
+                sfCoreLog().trace(sfCompleteNameSafe()+ " sfResolved '"+r.toString()+"' to '"+ obj.toString()+"'");
             }
         } catch (Exception ex) {ex.printStackTrace();} //ignore
         return obj;
@@ -720,7 +721,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
      */
     public synchronized void sfDeploy()
         throws SmartFrogException, RemoteException {
-
+        this.sfSetLog(sfGetApplicationLog());
 	Reference componentId = sfCompleteName();
         if (sfIsTerminated) {
             throw new SmartFrogDeploymentException(MessageUtil.formatMessage(
@@ -978,13 +979,13 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
      * @throws RemoteException for consistency with the {@link Liveness} interface
      */
     public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
-	if (Logger.logLiveness &&(sflog().isTraceEnabled())) {
-	    sflog().trace("ping received from " + source + ": in " + sfCompleteNameSafe() + ", counter " + sfLivenessCount);
+	if (Logger.logLiveness &&(sfLog().isTraceEnabled())) {
+	    sfLog().trace("ping received from " + source + ": in " + sfCompleteNameSafe() + ", counter " + sfLivenessCount);
 	}
 
 	if (sfIsTerminated) {
-	    if (Logger.logLiveness &&(sflog().isTraceEnabled())) {
-		sflog().trace("ping returning that I am terminated : in " + sfCompleteNameSafe());
+	    if (Logger.logLiveness &&(sfLog().isTraceEnabled())) {
+		sfLog().trace("ping returning that I am terminated : in " + sfCompleteNameSafe());
 	    }
 	    throw new SmartFrogLivenessException(COMPONENT_TERMINATED_MESSAGE);
 	}
@@ -1002,8 +1003,8 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
 	boolean fail = false;
 	synchronized (this) {
 	    if (source.equals(sfParent)) {
-		if (Logger.logLiveness &&(sflog().isTraceEnabled())) {
-		    sflog().trace("parent ping received - resetting counter: in " + sfCompleteNameSafe());
+		if (Logger.logLiveness &&(sfLog().isTraceEnabled())) {
+		    sfLog().trace("parent ping received - resetting counter: in " + sfCompleteNameSafe());
 		}
 		sfLivenessCount = sfLivenessFactor;
 	    } else if ((sfLivenessSender != null) &&
@@ -1014,8 +1015,8 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
 	}
 
 	if (fail) {
-	    if (sflog().isDebugEnabled()) {
-		sflog().debug("failing as parent liveness checking had counted down: in " + sfCompleteNameSafe());
+	    if (sfLog().isDebugEnabled()) {
+		sfLog().debug("failing as parent liveness checking had counted down: in " + sfCompleteNameSafe());
 	    }
 	    sfLivenessFailure(this, sfParent, null);
 	}
@@ -1138,19 +1139,35 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
      *  To get the sfCore logger
      * @return Logger implementing LogSF and Log
      */
-    public LogSF sfGetProcessLog() {
-       if (sflog==null) {
-           sflog =  LogFactory.sfGetProcessLog();
-       }
-       return sflog;
+    public LogSF sfCoreLog() {
+       return LogFactory.sfGetProcessLog();
     }
 
     /**
      *  To log into sfCore logger. This method should be used to log Core messages
+     *
+     * Types of possible logs in SF:
+     *  - Core log
+     *  - Application log
+     *  - Component log - Using sfSetLog()
+     *  - Specific log - Using sfLog attribute in component
+     *
+     *  When initialized, sflog uses CoreLog, once the component enters in the
+     *  sfDeploy lifecycle phase, it is changed to use the specific log if sfLog
+     *  attribute is defined or if it is not defined it defaults to the core log.
+     *
      * @return Logger implementing LogSF and Log
      */
-    public LogSF sflog() {
-       return sfGetProcessLog();
+    public LogSF sfLog() {
+       if (sflog!=null)
+         return sflog;
+       else {
+        try {
+          return sfGetApplicationLog();
+        } catch (Exception ex) {
+          return sfCoreLog();
+        }
+       }
     }
 
 
@@ -1160,27 +1177,27 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
      *  @return oldlog
      */
     public synchronized LogSF sfSetLog(LogSF newlog) {
-       LogSF oldlog = sflog();
+       LogSF oldlog = sflog;
        this.sflog = newlog;
        return oldlog;
     }
 
 
     /**
-     * To get a logger
+     * To get a logger with a particular name.
      * @param name logger name
      * @return Logger implementing LogSF and Log
      * @throws SmartFrogException
      * @throws RemoteException
      */
-    public LogSF sfGetLog(String name) throws SmartFrogException, RemoteException {
+    public LogSF sfGetLog (String name) throws SmartFrogException, RemoteException {
        return LogFactory.getLog(name);
     }
 
     /**
      *  To get application logger using ROOT name.
      *  The name used is cached in attritube @see SmartFrogCoreKeys.SF_APP_LOG_NAME
-     *  If this attribute has been pre-set then it is used to get the applition logger,
+     *  If this attribute has been pre-set then it is used to get the application logger,
      *  otherwise ROOT cannonical name is used.
      *
      * @return Logger implementing LogSF and Log

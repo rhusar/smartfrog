@@ -130,15 +130,15 @@ public class Sequence extends EventCompoundImpl implements Compound {
                     }
                 } else {
                     //Logger.log(name+ "- error in previous sequenced component, aborting. "  + " parent:" + sfParent().sfCompleteName(),status);
-                    if (sflog().isErrorEnabled()){
-                      sflog().error(name+ "- error in previous sequenced component, aborting. "  + " parent:" + sfParent().sfCompleteName(),null,status);
+                    if (sfLog().isErrorEnabled()){
+                      sfLog().error(name+ "- error in previous sequenced component, aborting. "  + " parent:" + sfParent().sfCompleteName(),null,status);
                     }
                     super.sfTerminatedWith(status, comp);
                 }
             } catch (Exception e) {
 //                Logger.log(name+" - error in starting next component ", e);
-              if (sflog().isErrorEnabled()) {
-                sflog().error(name + " - error in starting next component ", e);
+              if (sfLog().isErrorEnabled()) {
+                sfLog().error(name + " - error in starting next component ", e);
               }
               TerminationRecord tr = TerminationRecord.abnormal( "error in starting next component: exception " + e, name);
               sfTerminate(tr);

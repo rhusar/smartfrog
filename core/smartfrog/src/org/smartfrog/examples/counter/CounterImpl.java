@@ -107,7 +107,7 @@ public class CounterImpl extends PrimImpl implements Prim, Counter, Runnable {
     public synchronized void sfDeploy() throws SmartFrogException,
     RemoteException {
             super.sfDeploy();
-            logCore = sfGetProcessLog();
+            logCore = sfCoreLog();
             logApp = this.sfGetApplicationLog();
             /**
              *  Returns the complete name for Counter component from the root
@@ -315,7 +315,7 @@ public class CounterImpl extends PrimImpl implements Prim, Counter, Runnable {
                 System.out.println(messageSt.toString());
                 logApp.out(messageSt);
                 logCore.info(messageSt);
-                logApp.info(messageSt);
+                sfLog().info("--->"+messageSt);
 
 //                if (logApp.isTraceEnabled()){
 //                  logApp.trace(messageSt);

@@ -86,13 +86,13 @@ public class OnEvent extends EventCompoundImpl implements Compound {
         } catch (SmartFrogResolutionException e) {
 	    // no handler - log and ignore
 	    //Logger.log(this.sfCompleteNameSafe()+" ignoring unknown event " + event);
-            if (sflog().isIgnoreEnabled()){
-              sflog().ignore(this.sfCompleteNameSafe()+" - ignoring unknown event " + event,e);
+            if (sfLog().isIgnoreEnabled()){
+              sfLog().ignore(this.sfCompleteNameSafe()+" - ignoring unknown event " + event,e);
             }
 	} catch (Exception e) {
             // error in  handler - terminate...
-            if (sflog().isErrorEnabled()){
-              sflog().error(this.sfCompleteNameSafe()+" - error in event handler for event " + event ,e);
+            if (sfLog().isErrorEnabled()){
+              sfLog().error(this.sfCompleteNameSafe()+" - error in event handler for event " + event ,e);
             }
             sfTerminate(TerminationRecord.abnormal( "error in event handler for event " + event, null));
         }
@@ -133,8 +133,8 @@ public class OnEvent extends EventCompoundImpl implements Compound {
                 }
             } catch (Exception e) {
 //                Logger.log(this.sfCompleteNameSafe()+" - error handling child event handler termination ",e );
-                if (sflog().isErrorEnabled()){
-                  sflog().error(this.sfCompleteNameSafe()+" - error handling child event handler termination ",e);
+                if (sfLog().isErrorEnabled()){
+                  sfLog().error(this.sfCompleteNameSafe()+" - error handling child event handler termination ",e);
                 }
                 sfTerminate(TerminationRecord.abnormal(
                         "error handling child event handler termination " + e, sfCompleteNameSafe()));

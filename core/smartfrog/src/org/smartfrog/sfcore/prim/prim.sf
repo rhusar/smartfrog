@@ -30,5 +30,6 @@ Prim extends NULL {
 //  sfExport true;
 //  sfLivenessFactor 2;
 //  sfLivenessDelay 0;
+//  sfLog "name"; //optional attribute to define a log name for a component.
 }
 
