@@ -11,22 +11,7 @@ ant -lib ../../build/dist/lib/smartfrog-tasks.jar -lib ../../../../smartfrog/dis
 ant -lib ..\..\build\dist\lib\smartfrog-tasks.jar -lib ..\..\..\..\smartfrog\dist\lib\smartfrog.jar -lib ..\..\..\..\smartfrog\dist\lib\sfExamples.jar -f start.xml testResource
 </description>
 
-  <typedef 
-    resource="org/smartfrog/tools/ant/tasks.properties"
-    />
-      
-   <property name="resource.sf" 
-    value="org/smartfrog/examples/functions/function.sf" />
-
-   <property name="timeout"   value="10000" />
-   <property name="long.timeout"   value="20000" />
-   <property name="medium.timeout"   value="15000" />
-
-   <presetdef name="sf-block">
-       <waitfor maxwait="10" maxwaitunit="second">
-        <socket server="localhost" port="3800"/>
-      </waitfor>
-   </presetdef>
+  <import file="test-common.xml" />
    
    
     <!-- the setup target verifies that smartfrog is not running -->
