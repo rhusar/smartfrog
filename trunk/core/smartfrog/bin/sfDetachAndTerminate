@@ -1,0 +1,10 @@
+if ! test $SFHOME; then export SFHOME=$PWD; fi
+if [ $# -ne 2 ];
+then
+echo "Insufficient arguments to use sfDetachAndTerminate"
+echo "Usage: sfDetachAndTerminate HostName ComponentName"
+exit
+fi 
+for i in $SFHOME/lib/*.jar; do CLASSPATH=$i:$CLASSPATH; done
+export CLASSPATH
+java -Dorg.smartfrog.iniFile=$SFHOME/bin/default.ini  org.smartfrog.SFSystem -h $1 -d $2 -e
