@@ -212,7 +212,6 @@ public class SFProcess implements MessageKeys {
     protected static Prim startComponent(Prim comp) throws Exception {
         try {
             comp.sfStart();
-           //deployDefaultProcessDescriptions(comp);
             return comp;
         } catch (Exception ex) {
             Reference newRef = null;
@@ -335,7 +334,7 @@ public class SFProcess implements MessageKeys {
 
         processCompound = (ProcessCompound) startComponent(deployComponent(descr));
 
-        deployDefaultProcessDescriptions(processCompound);
+        deployDefaultProcessDescriptions((ProcessCompound)processCompound);
 
         return processCompound;
     }
