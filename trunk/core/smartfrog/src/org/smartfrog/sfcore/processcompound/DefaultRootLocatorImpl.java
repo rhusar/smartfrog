@@ -191,7 +191,7 @@ public class DefaultRootLocatorImpl implements RootLocator, MessageKeys {
 
         ProcessCompound localCompound = SFProcess.getProcessCompound();
 
-        if(localCompound == null) {
+        if((localCompound == null) &&(portNum <=-1)) {
             throw new SmartFrogRuntimeException("No local process compound");
         }
 
@@ -199,11 +199,12 @@ public class DefaultRootLocatorImpl implements RootLocator, MessageKeys {
             hostAddress = InetAddress.getLocalHost();
         }
 
-        if (portNum < 0){
+        if (portNum <= -1){
             portNum = getRegistryPort(localCompound);
         }
 
-        if (hostAddress.equals(InetAddress.getLocalHost()) &&
+        if ((localCompound != null)&&
+            hostAddress.equals(InetAddress.getLocalHost()) &&
               localCompound.sfIsRoot()) {
             return localCompound;
         }
@@ -213,7 +214,7 @@ public class DefaultRootLocatorImpl implements RootLocator, MessageKeys {
         ProcessCompound pc = (ProcessCompound) reg.lookup(defaultName);
 
         // Get rid of the stub if local
-        if (pc.equals(localCompound)) {
+        if ((localCompound != null)&&(pc.equals(localCompound))) {
             return localCompound;
         }
 
