@@ -413,7 +413,9 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     }
 
     /**
-     * Returns an ordered iterator over the attribute names in the context.
+     * Returns an ordered iterator over the attribute names in this component.
+     * The remove operation of this Iterator won't affect
+     * the contents of this component
      *
      * @return iterator
      *
@@ -424,7 +426,9 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     }
 
     /**
-     * Returns an ordered iterator over the values in the context.
+     * Returns an ordered iterator over the attibute values in this component.
+     * The remove operation of this Iterator won't affect
+     * the contents of this component
      *
      * @return iterator
      */
