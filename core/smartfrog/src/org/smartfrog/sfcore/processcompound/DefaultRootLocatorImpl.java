@@ -29,6 +29,7 @@ import org.smartfrog.sfcore.common.MessageKeys;
 import org.smartfrog.sfcore.common.MessageUtil;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.security.SFSecurity;
 
 
@@ -70,7 +71,11 @@ public class DefaultRootLocatorImpl implements RootLocator, MessageKeys {
         // TODO: check for class cast exception
         if (registryPort == -1) {
             //TODO: This is a troublespot. move to sfResolveID or otherwise fix.
-            Number port = ((Number) c.sfResolve(SmartFrogCoreKeys.SF_ROOT_LOCATOR_PORT));
+            // (was sfResolve())
+            Number port = ((Number) c.sfResolveId(SmartFrogCoreKeys.SF_ROOT_LOCATOR_PORT));
+            if(port==null) {
+                throw new SmartFrogResolutionException("Unable to locate registry port from ",c);
+            }
             registryPort = port.intValue();
         }
 
@@ -122,24 +127,26 @@ public class DefaultRootLocatorImpl implements RootLocator, MessageKeys {
      */
     public ProcessCompound getRootProcessCompound(InetAddress hostAddress)
         throws Exception {
-        ProcessCompound localCompound = SFProcess.getProcessCompound();
+        final ProcessCompound localCompound = SFProcess.getProcessCompound();
 
+        if(localCompound == null) {
+            throw new SmartFrogRuntimeException("No local process compound");
+        }
         if (hostAddress == null) {
             hostAddress = InetAddress.getLocalHost();
         }
 
-        if ((localCompound != null) &&
-                hostAddress.equals(InetAddress.getLocalHost()) &&
+        if (hostAddress.equals(InetAddress.getLocalHost()) &&
                 localCompound.sfIsRoot()) {
             return localCompound;
         }
 
         Registry reg = SFSecurity.getRegistry(hostAddress.getHostAddress(),
-                getRegistryPort(SFProcess.getProcessCompound()));
+                getRegistryPort(localCompound));
         ProcessCompound pc = (ProcessCompound) reg.lookup(defaultName);
 
         // Get rid of the stub if local
-        if ((localCompound != null) && pc.equals(localCompound)) {
+        if (pc.equals(localCompound)) {
             return localCompound;
         }
 

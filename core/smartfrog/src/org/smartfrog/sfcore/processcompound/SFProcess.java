@@ -338,10 +338,10 @@ public class SFProcess implements MessageKeys {
      *
      * @return local process compound
      *
-     * @throws Exception if failed to deploy process compound
+     * @throws SmartFrogException if failed to deploy process compound
      */
-    public static ProcessCompound deployProcessCompound()
-        throws Exception {
+    public static synchronized ProcessCompound deployProcessCompound()
+        throws SmartFrogException,RemoteException {
 
         if (processCompound != null) {
             return processCompound;
@@ -353,7 +353,11 @@ public class SFProcess implements MessageKeys {
         ComponentDescription descr =
               (ComponentDescription) getProcessCompoundDescription().copy();
 
-        processCompound = (ProcessCompound) startComponent(deployComponent(descr));
+        try {
+            processCompound = (ProcessCompound) startComponent(deployComponent(descr));
+        } catch (Exception e) {
+            throw SmartFrogDeploymentException.forward(e);
+        }
 
         // This call and method will disapear once we refactor ProcessCompound
         // addDefaultProcessDescriptions will replace all this code.
