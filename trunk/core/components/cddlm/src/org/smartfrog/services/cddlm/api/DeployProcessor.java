@@ -80,6 +80,9 @@ public class DeployProcessor extends Processor {
         callbackProcessor.process(job, deploy.getCallback());
 
         DeploymentDescriptorType dd = deploy.getDescriptor();
+        if (dd == null) {
+            throw raiseBadArgumentFault("missing deployment descriptor");
+        }
         URI source = dd.getSource();
         //this is our URI
         URI applicationReference = job.getUri();
