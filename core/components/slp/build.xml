@@ -220,9 +220,9 @@ Reference URL:http://ant.apache.org
   <!-- =================================================================== -->
   <!--                                                                     -->
   <!-- =================================================================== -->
-  <target name="copybins" depends="initdist">
+  <target name="copybins">
     <copy todir="${dist.bin.dir}">
-      <fileset dir="${bin}">
+      <fileset dir="${bin.dir}">
         <include name="**/*" />
         <exclude name="**/*.bak" />
         <exclude name="**/tools" />
@@ -334,6 +334,10 @@ Reference URL:http://ant.apache.org
 	 <copy todir = "${dist.lib.dir}">
         <fileset dir ="${lib.dir}" />
     </copy> 
+
+	 <antcall target="copybins"/>
+	
+   
 	
 	</target>
 
