@@ -73,20 +73,21 @@ public class DefaultRootLocatorImpl implements RootLocator, MessageKeys {
      */
     protected static int getRegistryPort(ProcessCompound c)
         throws SmartFrogException, RemoteException {
-
+        Object portObj=null;
         try {
             if (registryPort==-1) {
-                Number port = ((Number)c.sfResolveHere(SmartFrogCoreKeys.
-                    SF_ROOT_LOCATOR_PORT,false));
-                if (port==null) {
+                portObj = (c.sfResolveHere(SmartFrogCoreKeys.SF_ROOT_LOCATOR_PORT,false));
+                if (portObj==null) {
                     throw new SmartFrogResolutionException(
                         "Unable to locate registry port from ", c);
                 }
+                Number port = (Number)portObj;
                 registryPort = port.intValue();
             }
         } catch (ClassCastException ccex){
             throw new SmartFrogResolutionException(
-                "Wrong object for "+SmartFrogCoreKeys.SF_ROOT_LOCATOR_PORT, ccex, c);
+                "Wrong object for "+SmartFrogCoreKeys.SF_ROOT_LOCATOR_PORT
+                +": "+portObj+", "+portObj.getClass().getName()+"", ccex, c);
         }
 
         return registryPort;
