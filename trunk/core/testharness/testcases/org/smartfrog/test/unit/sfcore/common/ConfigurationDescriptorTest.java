@@ -94,7 +94,7 @@ public class ConfigurationDescriptorTest extends TestCase implements Configurati
          * Ignored if the containedExceptionClass parametere is null.
          * @throws RemoteException in the event of remote trouble.
          */
-        protected void deployExpectingException(String sfact,
+        protected void deployExpectingException2(String sfact,
                                                 String testDescription,
                                                 String exceptionName,
                                                 String searchString,
@@ -163,7 +163,7 @@ public class ConfigurationDescriptorTest extends TestCase implements Configurati
          * @return Reference to deployed application
          * @throws RemoteException in the event of remote trouble.
          */
-        protected void deployExpectingSuccess(String sfact, String testDescription)
+        protected void deployExpectingSuccess2(String sfact, String testDescription)
                                                         throws Exception,Throwable {
             testDescription = "- Test description: "+testDescription+" -  \n";
             System.out.println("\n"+testDescription+"\n");
@@ -180,68 +180,68 @@ public class ConfigurationDescriptorTest extends TestCase implements Configurati
         public void testurlTest01 ()throws Throwable{
            String sfact = urlTest01;
            String description = "testurlTest01("+sfact+")";
-           this.deployExpectingSuccess(sfact,description);
+           deployExpectingSuccess2(sfact,description);
         }
         public void testurlTest02 ()throws Throwable{
            String sfact = urlTest02;
            String description = "testurlTest02("+sfact+")";
-           this.deployExpectingSuccess(sfact,description);
+           deployExpectingSuccess2(sfact,description);
         }
         public void testurlTest03 ()throws Throwable{
            String sfact = urlTest03;
            String description = "testurlTest03("+sfact+")";
-           this.deployExpectingSuccess(sfact,description);
+           deployExpectingSuccess2(sfact,description);
         }
         public void testurlTest04 ()throws Throwable{
            String sfact = urlTest04;
            String description = "testurlTest04("+sfact+")";
-           this.deployExpectingSuccess(sfact,description);
+           deployExpectingSuccess2(sfact,description);
         }
         public void testurlTest05 ()throws Throwable{
            String sfact = urlTest05;
            String description = "testurlTest05("+sfact+")";
-           this.deployExpectingSuccess(sfact,description);
+           deployExpectingSuccess2(sfact,description);
         }
         public void testurlTest06 ()throws Throwable{
            String sfact = urlTest06;
            String description = "testurlTest06("+sfact+")";
-           this.deployExpectingSuccess(sfact,description);
+           deployExpectingSuccess2(sfact,description);
         }
         public void testurlTest07 ()throws Throwable{
            String sfact = urlTest07;
            String description = "testurlTest07("+sfact+")";
-           this.deployExpectingSuccess(sfact,description);
+           deployExpectingSuccess2(sfact,description);
         }
         public void testurlTest07b ()throws Throwable{
            String sfact = urlTest07b;
            String description = "testurlTest07b("+sfact+")";
-           this.deployExpectingSuccess(sfact,description);
+           deployExpectingSuccess2(sfact,description);
         }
 
         public void testurlTest08 ()throws Throwable{
            String sfact = urlTest08;
            String description = "testurlTest08("+sfact+")";
-           this.deployExpectingSuccess(sfact,description);
+           deployExpectingSuccess2(sfact,description);
         }
         public void testurlTest09 ()throws Throwable{
            String sfact = urlTest09;
            String description = "testurlTest09("+sfact+")";
-           this.deployExpectingSuccess(sfact,description);
+           deployExpectingSuccess2(sfact,description);
         }
         public void testurlTest10 ()throws Throwable{
            String sfact = urlTest10;
            String description = "testurlTest10("+sfact+")";
-           this.deployExpectingSuccess(sfact,description);
+           deployExpectingSuccess2(sfact,description);
         }
         public void testurlTest11 ()throws Throwable{
            String sfact = urlTest11;
            String description = "testurlTest11("+sfact+")";
-           this.deployExpectingSuccess(sfact,description);
+           deployExpectingSuccess2(sfact,description);
         }
         public void testurlTest12b ()throws Throwable{
            String sfact = urlTest12b;
            String description = "testurlTest15b("+sfact+")";
-           this.deployExpectingSuccess(sfact,description);
+           deployExpectingSuccess2(sfact,description);
         }
 
 //        public void testurlTest13 ()throws Throwable{
@@ -267,7 +267,7 @@ public class ConfigurationDescriptorTest extends TestCase implements Configurati
         public void testurlTest100 ()throws Throwable{
            String sfact = urlTest100;
            String description = "testurlTest12("+sfact+")";
-           this.deployExpectingSuccess(sfact,description);
+           deployExpectingSuccess2(sfact,description);
         }
 
 //        public void testurlTest16 ()throws Throwable{

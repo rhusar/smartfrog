@@ -24,6 +24,7 @@ import org.smartfrog.sfcore.reference.Reference;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.rmi.RemoteException;
+import java.io.File;
 
 
 /**
@@ -53,6 +54,7 @@ public class AssertComponent extends PrimImpl implements Assert {
         String evaluatesTrue = sfResolve(EVALUATES_TRUE, (String) null, false);
         String evaluatesFalse = sfResolve(EVALUATES_FALSE, (String) null,
                 false);
+        String attribute=sfResolve(Assert.HAS_ATTRIBUTE, (String) null, false);
         assertTrue(isTrue, IS_TRUE);
         assertTrue(!isFalse, IS_FALSE);
 
@@ -63,6 +65,30 @@ public class AssertComponent extends PrimImpl implements Assert {
 
         if ((prim != null) && (evaluatesFalse != null)) {
             assertTrue(!evaluate(prim, evaluatesFalse), EVALUATES_FALSE);
+        }
+
+        if ((prim != null) && (evaluatesFalse != null)) {
+            assertTrue(!evaluate(prim, evaluatesFalse), EVALUATES_FALSE);
+        }
+
+        if(prim !=null && attribute!=null) {
+            //look for a named attribute existing
+            assertTrue(prim.sfResolve(attribute,false)!=null,
+                    "Resolving attribute "+attribute+" of "+prim);
+        }
+
+        //file existence check
+        String filename=sfResolve(FILE_EXISTS, (String) null, false);
+        if(filename!=null) {
+            File file=new File(filename);
+            assertTrue(file.exists() && file.isFile(), FILE_EXISTS+ " "+filename);
+        }
+
+        //directory existence
+        filename = sfResolve(DIR_EXISTS, (String) null, false);
+        if (filename != null) {
+            File dir = new File(filename);
+            assertTrue(dir.exists() && dir.isDirectory(), DIR_EXISTS + " " + filename);
         }
     }
 
@@ -106,7 +132,7 @@ public class AssertComponent extends PrimImpl implements Assert {
     /**
      * get the failure message.
      * This is done by attempting to resolve the message, falling back to a declared one
-     * if there is no declared message, or the resolution process failed. 
+     * if there is no declared message, or the resolution process failed.
      * @param test
      * @return
      */

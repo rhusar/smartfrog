@@ -50,10 +50,19 @@ AssertSchema extends Schema {
     evaluatesTrue extends OptionalString;
     //name of a boolean test() method that returns false when called on the reference
     evaluatesFalse extends OptionalString;
+    //name of an attribute on the reference
+    attribute extends OptionalString;
+
+    //name of a file to probe for
+    fileExists extends OptionalString;
+    //name of a directory to probe for
+    dirExists extends OptionalString;
+
     //flag to enable startup checking (default: true)
     checkOnStartup extends OptionalBoolean;
     //flag to enable liveness checking (default: true)
     checkOnLiveness extends OptionalBoolean;
+
 }
 
 /**

@@ -611,7 +611,6 @@ public class DeployEntry implements Entry {
     /**
      *  Gets the registered Name in ProcessCompound for Entry object
      *
-     *@param  DN  DeployEntry
      *@return   rdn attribute
      */
     private String getRDNProcessCompound() {
