@@ -20,7 +20,6 @@
 package org.smartfrog.services.cddlm.api;
 
 
-
 /**
  * created Aug 4, 2004 10:22:41 AM
  */

@@ -58,9 +58,9 @@ public class DeployProcessor extends Processor {
 
     public _deployResponse deploy(_deployRequest deploy) throws AxisFault {
         DeploymentDescriptorType dd = deploy.getDescriptor();
-        URI source=dd.getSource();
+        URI source = dd.getSource();
         String applicationName = deploy.getName().toString();
-        if(source!=null) {
+        if ( source != null ) {
             try {
                 URL url = makeURL(source);
                 deployThroughSFSystem(null,
@@ -91,18 +91,18 @@ public class DeployProcessor extends Processor {
         try {
             String applicationName = deploy.getName().toString();
             DeploymentDescriptorType dd = deploy.getDescriptor();
-            _deploymentDescriptorType_data data=dd.getData();
-            String descriptor=data.get_any().toString();
-            log.info("processing descriptor "+descriptor);
-            File tempFile=saveStringToFile(descriptor,".sf");
+            _deploymentDescriptorType_data data = dd.getData();
+            String descriptor = data.get_any().toString();
+            log.info("processing descriptor " + descriptor);
+            File tempFile = saveStringToFile(descriptor, ".sf");
             String url = tempFile.toURI().toURL().toExternalForm();
-            deployThroughSFSystem(null,deploy.getName().toString(), url,null);
+            deployThroughSFSystem(null, deploy.getName().toString(), url, null);
         } catch (IOException e) {
             throw AxisFault.makeFault(e);
         }
     }
 
-    private File saveStringToFile(String descriptor,String extension) throws IOException {
+    private File saveStringToFile(String descriptor, String extension) throws IOException {
         File tempFile = File.createTempFile("deploy", extension);
         OutputStream out = null;
         try {
@@ -124,10 +124,11 @@ public class DeployProcessor extends Processor {
 
     /**
      * close without complaining
+     *
      * @param out output; can be null
      */
     private void close(OutputStream out) {
-        if (out != null) {
+        if ( out != null ) {
             try {
                 out.close();
             } catch (IOException e) {
@@ -151,7 +152,7 @@ public class DeployProcessor extends Processor {
             ConfigurationDescriptor config = new ConfigurationDescriptor(application, url);
             config.setHost(hostname);
             config.setActionType(ConfigurationDescriptor.Action.DEPLOY);
-            if (subprocess != null) {
+            if ( subprocess != null ) {
                 config.setSubProcess(subprocess);
             }
             log.info("Deploying " + url + " to " + hostname);

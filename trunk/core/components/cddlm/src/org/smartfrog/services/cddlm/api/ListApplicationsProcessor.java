@@ -21,15 +21,12 @@
 
 package org.smartfrog.services.cddlm.api;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.axis.types.URI;
 import org.smartfrog.services.axis.SmartFrogHostedEndpoint;
 import org.smartfrog.services.cddlm.generated.api.types.ApplicationReferenceListType;
 import org.smartfrog.services.cddlm.generated.api.types.EmptyElementType;
 
 import java.rmi.RemoteException;
-import java.util.Iterator;
 
 /**
  * Date: 10-Aug-2004
@@ -43,6 +40,7 @@ public class ListApplicationsProcessor extends Processor {
 
     /**
      * list all apps in the repository
+     *
      * @param listApplications
      * @return
      * @throws RemoteException
@@ -50,7 +48,7 @@ public class ListApplicationsProcessor extends Processor {
     public ApplicationReferenceListType listApplications(EmptyElementType listApplications) throws RemoteException {
 
         JobRepository jobs = ServerInstance.currentInstance().getJobs();
-        URI[] uriList =jobs.listJobs();
+        URI[] uriList = jobs.listJobs();
         ApplicationReferenceListType results = new ApplicationReferenceListType(uriList);
         return results;
     }

@@ -29,10 +29,10 @@ public class Constants {
         "XML-CDL", "0.3", org.smartfrog.services.cddlm.cdl.Constants.CDL_NAMESPACE,
         "Apache Ant", "1.7", org.smartfrog.services.cddlm.cdl.Constants.ANT_NAMESPACE
     };
-    public static final String  WS_NOTIFICATION="ws-notification";
-    public static final String  CDDLM_CALLBACKS= "cddlm-prototype";
-    public static final String  WS_EVENTING= "ws-eventing";
-    public static final String[] CALLBACKS= {
+    public static final String WS_NOTIFICATION = "ws-notification";
+    public static final String CDDLM_CALLBACKS = "cddlm-prototype";
+    public static final String WS_EVENTING = "ws-eventing";
+    public static final String[] CALLBACKS = {
         CDDLM_CALLBACKS
     };
     public static final String SMARTFROG_HOMEPAGE = "http://smartfrog.org/";

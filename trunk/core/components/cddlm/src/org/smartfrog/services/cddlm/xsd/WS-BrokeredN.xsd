@@ -13,43 +13,43 @@
        
 -->
 
-<xsd:schema 
-  xmlns="http://www.w3.org/2001/XMLSchema" 
-  xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+<xsd:schema
+  xmlns="http://www.w3.org/2001/XMLSchema"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
   xmlns:wsa="http://schemas.xmlsoap.org/ws/2003/03/addressing"
   xmlns:wsbn=
-    "http://www.ibm.com/xmlns/stdwip/web-services/WS-BrokeredNotification"
+  "http://www.ibm.com/xmlns/stdwip/web-services/WS-BrokeredNotification"
   xmlns:wsnt=
-    "http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseNotification"
+  "http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseNotification"
   targetNamespace=
-    "http://www.ibm.com/xmlns/stdwip/web-services/WS-BrokeredNotification"   
-  elementFormDefault="qualified"  attributeFormDefault="unqualified">
+  "http://www.ibm.com/xmlns/stdwip/web-services/WS-BrokeredNotification"
+  elementFormDefault="qualified" attributeFormDefault="unqualified">
 
-<!-- ======================== Imports  ============================ -->
-  
+  <!-- ======================== Imports  ============================ -->
+
   <xsd:import namespace=
     "http://schemas.xmlsoap.org/ws/2003/03/addressing"
-              schemaLocation=
-    "http://schemas.xmlsoap.org/ws/2003/03/addressing" 
-  />
+    schemaLocation=
+    "http://schemas.xmlsoap.org/ws/2003/03/addressing"
+    />
 
   <xsd:import namespace=
   "http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseNotification"
-              schemaLocation= 
-  "http://www-106.ibm.com/developerworks/library/specification/ws-notification/WS-BaseN.xsd" 
-  />
+    schemaLocation=
+    "http://www-106.ibm.com/developerworks/library/specification/ws-notification/WS-BaseN.xsd"
+    />
 
-<!-- ======== Resource Properties for NotificationBroker ========== -->
-         <xsd:element name="RequiresRegistration" type="xsd:boolean"/>         
+  <!-- ======== Resource Properties for NotificationBroker ========== -->
+  <xsd:element name="RequiresRegistration" type="xsd:boolean"/>
 
-<!-- ====== Resource Properties for PublisherRegistration ========= -->
-         <xsd:element name="PublisherReference" 
-                      type="wsa:EndpointReferenceType" />
-         <xsd:element name="Topic"
-                      type="wsnt:TopicExpressionType" />
-         <xsd:element name="Demand" 
-                      type="xsd:boolean" />
-         <xsd:element name="CreationTime" 
-                      type="xsd:dateTime" />
-                            
+  <!-- ====== Resource Properties for PublisherRegistration ========= -->
+  <xsd:element name="PublisherReference"
+    type="wsa:EndpointReferenceType"/>
+  <xsd:element name="Topic"
+    type="wsnt:TopicExpressionType"/>
+  <xsd:element name="Demand"
+    type="xsd:boolean"/>
+  <xsd:element name="CreationTime"
+    type="xsd:dateTime"/>
+
 </xsd:schema>

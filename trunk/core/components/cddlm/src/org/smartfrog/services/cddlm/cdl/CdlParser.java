@@ -20,7 +20,6 @@
 package org.smartfrog.services.cddlm.cdl;
 
 
-
 import nu.xom.Builder;
 import nu.xom.ParsingException;
 import org.xml.sax.SAXException;
@@ -44,7 +43,7 @@ public class CdlParser {
 
     /**
      * builder class
-      */
+     */
     private Builder builder;
 
     /**
@@ -59,16 +58,17 @@ public class CdlParser {
         //we mandate Xerces, as the others cannot handle schema so well
         XMLReader xerces = createXercesParser(validate);
 
-        if(validate) {
-            CdlCatalog resolver=new CdlCatalog(loader);
+        if ( validate ) {
+            CdlCatalog resolver = new CdlCatalog(loader);
             xerces.setEntityResolver(resolver);
         }
-        builder = new Builder(xerces,validate);
+        builder = new Builder(xerces, validate);
     }
 
     /**
      * create our XML parser.
      * We are relying on xerces here, and will fail if it is not found.
+     *
      * @param validate
      * @return
      * @throws SAXException
@@ -76,10 +76,10 @@ public class CdlParser {
     private XMLReader createXercesParser(boolean validate) throws SAXException {
         XMLReader xerces = XMLReaderFactory.createXMLReader("org.apache.xerces.parsers.SAXParser");
         xerces.setFeature("http://apache.org/xml/features/validation/schema",
-                    validate);
+                validate);
         xerces.setFeature("http://apache.org/xml/features/validation/schema-full-checking",
                 validate);
-        xerces.setFeature("http://apache.org/xml/features/standard-uri-conformant",true);
+        xerces.setFeature("http://apache.org/xml/features/standard-uri-conformant", true);
         xerces.setFeature("http://apache.org/xml/features/disallow-doctype-decl", false);
         xerces.setFeature("http://xml.org/sax/features/external-general-entities", false);
         return xerces;
@@ -94,25 +94,26 @@ public class CdlParser {
      * @throws IOException
      * @throws ParsingException
      */
-    public CdlDocument parseFile(String filename) throws IOException,  ParsingException {
+    public CdlDocument parseFile(String filename) throws IOException, ParsingException {
         File f = new File(filename);
         return new CdlDocument(builder.build(f));
     }
 
     /**
      * parse a stream that we are provided
+     *
      * @param instream
      * @return
      * @throws IOException
      * @throws ParsingException
      */
-    public CdlDocument parseStream(InputStream instream) throws IOException, ParsingException
-             {
+    public CdlDocument parseStream(InputStream instream) throws IOException, ParsingException {
         return new CdlDocument(builder.build(instream));
     }
 
     /**
      * load and parse a resoure through our current resource loader
+     *
      * @param resource
      * @return
      * @throws IOException

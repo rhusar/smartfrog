@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <xsd:schema targetNamespace="http://gridforge.org/cddlm/xml/2004/07/30/"
   xmlns:cdl="http://gridforge.org/cddlm/xml/2004/07/30/"
-  xmlns="http://gridforge.org/cddlm/xml/2004/07/30/" 
-  xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+  xmlns="http://gridforge.org/cddlm/xml/2004/07/30/"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   elementFormDefault="qualified" attributeFormDefault="unqualified">
   
@@ -79,7 +79,7 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:restriction base="xsd:string">
-      <xsd:pattern value= "/|(/)?((\i\c*:)?(\i\c*)|\.|\.\.)(/((\i\c*:)?(\i\c*)|\.|\.\ .))*" />
+      <xsd:pattern value="/|(/)?((\i\c*:)?(\i\c*)|\.|\.\.)(/((\i\c*:)?(\i\c*)|\.|\.\ .))*"/>
     </xsd:restriction>
   </xsd:simpleType>
   
@@ -87,7 +87,7 @@
   <!-- ============================================================= -->
   <!-- propertyUseType sets requirements on a configurable component-->
   <!-- ============================================================= -->
-  
+
   <xsd:simpleType name="propertyUseType">
     <xsd:annotation>
       <xsd:documentation>
@@ -142,7 +142,7 @@
   <!-- ============================================================= -->
   <!-- The @cdl:refroot attribute-->
   <!-- ============================================================= -->
-  
+
   <xsd:attribute name="lazy" type="xsd:boolean">
     <xsd:annotation>
       <xsd:documentation>
@@ -157,7 +157,7 @@
   <!-- ============================================================= -->
   <!-- The @cdl:mode attribute-->
   <!-- ============================================================= -->
-  
+
   <xsd:attribute name="mode" type="cdl:propertyUseType">
     <xsd:annotation>
       <xsd:documentation>
@@ -170,7 +170,7 @@
   <!-- ============================================================= -->
   <!-- The @cdl:name attribute-->
   <!-- ============================================================= -->
-  
+
   <xsd:attribute name="name" type="cdl:namingType">
     <xsd:annotation>
       <xsd:documentation>
@@ -182,7 +182,7 @@
   <!-- ============================================================= -->
   <!-- The @cdl:ref attribute-->
   <!-- ============================================================= -->
-  
+
   <xsd:attribute name="ref" type="cdl:pathType">
     <xsd:annotation>
       <xsd:documentation>
@@ -194,7 +194,7 @@
   <!-- ============================================================= -->
   <!-- The @cdl:refroot attribute-->
   <!-- ============================================================= -->
-  
+
   <xsd:attribute name="refroot" type="cdl:refrootType">
     <xsd:annotation>
       <xsd:documentation>
@@ -209,7 +209,7 @@
   <!-- The @cdl:type attribute-->
   <!-- TODO: type properly -->
   <!-- ============================================================= -->
-  
+
   <xsd:attribute name="type" type="xsd:QName">
     <xsd:annotation>
       <xsd:documentation>
@@ -226,7 +226,7 @@
   <!-- ============================================================= -->
   <!-- BEGIN COMPLEX TYPES -->
   <!-- ============================================================= -->
-  
+
   <xsd:complexType name="anyAttr" abstract="true">
     <xsd:annotation>
       <xsd:documentation>
@@ -258,7 +258,7 @@
   <!-- ============================================================= -->
   <!-- define the variable element of an expression -->
   <!-- ============================================================= -->
-  
+
   <xsd:complexType name="expressionVariableElementType">
     <xsd:annotation>
       <xsd:documentation>
@@ -289,7 +289,7 @@
   <!-- TODO: for complex expressions we may want to make the value-of
   element an attribute instead -->
   <!-- ============================================================= -->
-  
+
   <xsd:complexType name="expressionType">
     <xsd:annotation>
       <xsd:documentation>
@@ -321,12 +321,12 @@
   <!-- the property list type is lax wrt parsing; anything goes in this
   section, even when the rest is strict -->
   <!-- ============================================================= -->
-  
+
   <xsd:complexType name="propertyListType">
-    <xsd:choice minOccurs="0" maxOccurs="unbounded"  >
-      <xsd:element ref="documentation" minOccurs="0" maxOccurs="1" />
+    <xsd:choice minOccurs="0" maxOccurs="unbounded">
+      <xsd:element ref="documentation" minOccurs="0" maxOccurs="1"/>
       <xsd:any namespace="##other" processContents="lax"
-        minOccurs="0" maxOccurs="unbounded" />
+        minOccurs="0" maxOccurs="unbounded"/>
     </xsd:choice>
     <xsd:anyAttribute namespace="##other" processContents="lax"/>
   </xsd:complexType>
@@ -334,7 +334,7 @@
   <!-- ============================================================= -->
   <!-- define a reference element -->
   <!-- ============================================================= -->
-  
+
   <xsd:complexType name="referenceElementType">
     <xsd:annotation>
       <xsd:documentation>
@@ -366,7 +366,7 @@
   <!-- ============================================================= -->
   <!-- import external CDL -->
   <!-- ============================================================= -->
-  
+
   <xsd:complexType name="importType">
     <xsd:annotation>
       <xsd:documentation>
@@ -388,7 +388,7 @@
   <!-- types is XSD Declarations-->
   <!-- TODO: find out how to declare xsd:schema in a schema document -->
   <!-- ============================================================= -->
-  
+
   <xsd:complexType name="typesType">
     <xsd:annotation>
       <xsd:documentation>
@@ -400,7 +400,7 @@
     <xsd:complexContent>
       <xsd:extension base="cdl:anyAttr">
         <xsd:sequence>
-          <xsd:any minOccurs="0" maxOccurs="unbounded" namespace="##other" />
+          <xsd:any minOccurs="0" maxOccurs="unbounded" namespace="##other"/>
         </xsd:sequence>
       </xsd:extension>
     </xsd:complexContent>
@@ -409,18 +409,18 @@
   <!-- ============================================================= -->
   <!-- this is the document itself -->
   <!-- ============================================================= -->
-  
+
   <xsd:complexType name="documentType">
     <xsd:complexContent>
       <xsd:extension base="cdl:anyAttr">
         <xsd:sequence>
-          
+
           <xsd:element name="import" type="cdl:importType"
             minOccurs="0" maxOccurs="unbounded"
             />
           <xsd:element name="types" type="cdl:typesType"
             minOccurs="0" maxOccurs="1"/>
-          
+
           <xsd:element name="configuration" type="cdl:propertyListType"
             minOccurs="0" maxOccurs="1">
             <xsd:annotation>
@@ -429,7 +429,7 @@
               </xsd:documentation>
             </xsd:annotation>
           </xsd:element>
-          
+
           <xsd:element name="system" type="cdl:propertyListType"
             minOccurs="0" maxOccurs="1">
             <xsd:annotation>
@@ -440,9 +440,9 @@
           </xsd:element>
           
           <!-- extensibility element -->
-          <xsd:any namespace="##other" processContents="lax"  minOccurs="0" maxOccurs="unbounded"/>
+          <xsd:any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded"/>
         </xsd:sequence>
-        <xsd:attribute name="targetNamespace" type="xsd:anyURI" use="optional" >
+        <xsd:attribute name="targetNamespace" type="xsd:anyURI" use="optional">
           <xsd:annotation>
             <xsd:documentation>
               This is the target namespace declaration for the document. 
@@ -467,7 +467,7 @@
   <!-- ============================================================= -->
   <!-- This is the base declaration; cdl -->
   <!-- ============================================================= -->
-  
+
   <xsd:element name="cdl" type="documentType">
     <xsd:annotation>
       <xsd:documentation>
@@ -480,7 +480,7 @@
   <!-- ============================================================= -->
   <!-- documentation elements can be used in many places-->
   <!-- ============================================================= -->
-  
+
   <xsd:element name="documentation" type="documentationType">
     <xsd:annotation>
       <xsd:documentation>
@@ -492,7 +492,7 @@
   <!-- ============================================================= -->
   <!-- An expression -->
   <!-- ============================================================= -->
-  
+
   <xsd:element name="expression" type="expressionType">
     <xsd:annotation>
       <xsd:documentation>

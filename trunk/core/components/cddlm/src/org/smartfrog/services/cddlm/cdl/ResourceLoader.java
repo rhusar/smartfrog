@@ -32,7 +32,7 @@ import java.rmi.RemoteException;
  * This is something that can hand off resource loading to whatever does
  * loading.
  * created Jul 1,
- *
+ * <p/>
  * 2004 4:44:38 PM
  */
 
@@ -102,7 +102,7 @@ public class ResourceLoader {
 
     private void assertResourceLoaded(InputStream in, String resourcename)
             throws IOException {
-        if (in == null) {
+        if ( in == null ) {
             throw new IOException("Not found: " + resourcename);
         }
     }
@@ -116,7 +116,7 @@ public class ResourceLoader {
      */
     public InputStream loadResource(String resourceName) throws IOException {
         InputStream in;
-        if (codebase != null) {
+        if ( codebase != null ) {
             in = loadResourceThroughSmartFrog(resourceName);
         } else {
             in = loadResourceThroughClassloader(resourceName);

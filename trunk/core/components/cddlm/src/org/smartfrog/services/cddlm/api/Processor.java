@@ -20,8 +20,8 @@
 package org.smartfrog.services.cddlm.api;
 
 import org.apache.axis.AxisFault;
-import org.apache.axis.types.URI;
 import org.apache.axis.types.NCName;
+import org.apache.axis.types.URI;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.smartfrog.services.axis.SmartFrogHostedEndpoint;
@@ -31,7 +31,7 @@ import org.smartfrog.services.axis.SmartFrogHostedEndpoint;
  */
 
 public class Processor {
-    private static Log log=LogFactory.getLog(EndpointHelper.class);
+    private static Log log = LogFactory.getLog(EndpointHelper.class);
 
     public Processor(SmartFrogHostedEndpoint owner) {
         this.owner = owner;
@@ -49,6 +49,7 @@ public class Processor {
 
     /**
      * make a URI.
+     *
      * @param url
      * @return
      * @throws RuntimeException if the URL was malformed
@@ -56,7 +57,7 @@ public class Processor {
     public static URI makeURI(String url) {
         URI uri;
         try {
-            uri=new URI(url);
+            uri = new URI(url);
         } catch (URI.MalformedURIException e) {
             return makeRuntimeException(url, e);
         }
@@ -65,12 +66,13 @@ public class Processor {
 
     private static URI makeRuntimeException(String url,
                                             URI.MalformedURIException e) {
-        log.error("url",e);
-        throw new RuntimeException(url,e);
+        log.error("url", e);
+        throw new RuntimeException(url, e);
     }
 
     /**
      * indicate that something is not implemented by throwing a fault
+     *
      * @throws org.apache.axis.AxisFault with an error message
      */
     public static void throwNotImplemented() throws AxisFault {
@@ -79,13 +81,14 @@ public class Processor {
 
     /**
      * turn an application into a valid URI
+     *
      * @param application
      * @return a URI that can be used as a reference
-     @throws RuntimeException if the URL was malformed
+     * @throws RuntimeException if the URL was malformed
      */
-    public static URI makeURIFromApplication(String application)  {
+    public static URI makeURIFromApplication(String application) {
         try {
-            return new URI(Constants.SMARTFROG_SCHEMA,application);
+            return new URI(Constants.SMARTFROG_SCHEMA, application);
         } catch (URI.MalformedURIException e) {
             return makeRuntimeException(application, e);
         }
@@ -104,15 +107,16 @@ public class Processor {
 
     /**
      * turn an application in
+     *
      * @param uri
      * @return
      * @throws org.apache.axis.AxisFault if the URI was invalid.
      */
     public static String extractApplicationFromURI(URI uri) throws AxisFault {
-        if(!Constants.SMARTFROG_SCHEMA.equals(uri.getScheme())) {
-            throw new AxisFault(Constants.ERROR_INVALID_SCHEMA+uri);
+        if ( !Constants.SMARTFROG_SCHEMA.equals(uri.getScheme()) ) {
+            throw new AxisFault(Constants.ERROR_INVALID_SCHEMA + uri);
         }
-        String application=uri.getSchemeSpecificPart();
+        String application = uri.getSchemeSpecificPart();
         return application;
     }
 

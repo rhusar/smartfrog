@@ -79,6 +79,7 @@ public class JobState {
 
     /**
      * set the request. Also, get name and uri from the message
+     *
      * @param request
      */
     public void setRequest(_deployRequest request) {
@@ -105,6 +106,7 @@ public class JobState {
 
     /**
      * equality is URI only
+     *
      * @param o
      * @return
      */

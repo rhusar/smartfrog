@@ -19,18 +19,13 @@
  */
 package org.smartfrog.services.cddlm.api;
 
-import org.apache.axis.types.URI;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.smartfrog.services.axis.SmartFrogHostedEndpoint;
-import org.smartfrog.services.cddlm.generated.api.types.CallbackListType;
 import org.smartfrog.services.cddlm.generated.api.types.DynamicServerStatusType;
 import org.smartfrog.services.cddlm.generated.api.types.EmptyElementType;
-import org.smartfrog.services.cddlm.generated.api.types.LanguageListType;
-import org.smartfrog.services.cddlm.generated.api.types.ServerInformationType;
 import org.smartfrog.services.cddlm.generated.api.types.ServerStatusType;
 import org.smartfrog.services.cddlm.generated.api.types.StaticServerStatusType;
-import org.smartfrog.services.cddlm.generated.api.types._languageListType_language;
 
 import java.rmi.RemoteException;
 
@@ -51,6 +46,7 @@ public class ServerStatusProcessor extends Processor {
 
     /**
      * generate the server status information
+     *
      * @param serverStatus
      * @return
      * @throws RemoteException
