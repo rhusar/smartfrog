@@ -24,14 +24,13 @@ package org.smartfrog.services.cddlm.test.system.console;
 import org.apache.axis.Constants;
 import org.apache.axis.types.URI;
 import org.cddlm.client.common.ServerBinding;
-import org.cddlm.client.console.ShowServerStatus;
 import org.cddlm.client.console.ConsoleOperation;
-import org.cddlm.client.generated.api.types.DynamicServerStatusType;
-import org.cddlm.client.generated.api.types.ServerInformationType;
-import org.cddlm.client.generated.api.types.ServerStatusType;
-import org.cddlm.client.generated.api.types.StaticServerStatusType;
+import org.cddlm.client.console.ShowServerStatus;
 import org.smartfrog.services.cddlm.generated.api.DeployApiConstants;
-import org.smartfrog.services.cddlm.generated.api.DeployApiConstants;
+import org.smartfrog.services.cddlm.generated.api.types.DynamicServerStatusType;
+import org.smartfrog.services.cddlm.generated.api.types.ServerInformationType;
+import org.smartfrog.services.cddlm.generated.api.types.ServerStatusType;
+import org.smartfrog.services.cddlm.generated.api.types.StaticServerStatusType;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
@@ -75,7 +74,13 @@ public class ServerStatusTest extends ConsoleTestBase {
     public void testCallbacks() throws RemoteException {
         StaticServerStatusType staticStatus = getStaticStatus();
         assertTrue("Callbacks>0",
-                staticStatus.getCallbacks().getCallback().length > 0);
+                staticStatus.getCallbacks().getItem().length > 0);
+    }
+
+    public void testOptions() throws RemoteException {
+        StaticServerStatusType staticStatus = getStaticStatus();
+        assertTrue("Options>0",
+                staticStatus.getOptions().getItem().length > 0);
     }
 
     public void testSmartFrogLanguage() throws RemoteException {
@@ -92,9 +97,10 @@ public class ServerStatusTest extends ConsoleTestBase {
         assertFalse("supported :" + languageURI, found);
     }
 
-    public void assertSupportedLanguage(String languageURI) throws RemoteException {
-        boolean found=operation.supportsLanguage(languageURI);
-        assertTrue("not supported :"+languageURI,found);
+    public void assertSupportedLanguage(String languageURI)
+            throws RemoteException {
+        boolean found = operation.supportsLanguage(languageURI);
+        assertTrue("not supported :" + languageURI, found);
     }
 
 

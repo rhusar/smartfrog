@@ -32,17 +32,14 @@ import org.smartfrog.services.cddlm.generated.api.types.DeploymentDescriptorType
 import org.smartfrog.services.cddlm.generated.api.types._deployRequest;
 import org.smartfrog.services.cddlm.generated.api.types._deployResponse;
 import org.smartfrog.sfcore.common.ConfigurationDescriptor;
-import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
 
-import javax.xml.namespace.QName;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.rmi.RemoteException;
 
 /**
  * This class is *NOT* re-entrant. Create one for each deployment. created Aug
@@ -54,7 +51,6 @@ public class DeployProcessor extends Processor {
      * log
      */
     private static final Log log = LogFactory.getLog(DeployProcessor.class);
-    private static final String WRONG_MESSAGE_ELEMENT_COUNT = "wrong number of message elements";
 
     private _deployRequest request;
     private OptionProcessor options;
@@ -127,74 +123,57 @@ public class DeployProcessor extends Processor {
      * @throws AxisFault
      */
     public boolean determineLanguageAndDeploy(JobState job) throws AxisFault {
-        DeploymentDescriptorType descriptor = request.getDescriptor();
-        MessageElement[] messageElements = descriptor.getData().get_any();
-        if (messageElements.length != 1) {
-            throw raiseBadArgumentFault(WRONG_MESSAGE_ELEMENT_COUNT);
-        }
-
-        MessageElement descriptorData = messageElements[0];
-        descriptorData.getNamespaceURI();
-        QName qname = descriptorData.getQName();
-        String languageAsString = qname.toString();
-        int lan = determineLanguage(qname);
+        int language = job.getLanguage();
         boolean deployed = false;
-        switch (lan) {
+        switch (language) {
             case Constants.LANGUAGE_SMARTFROG:
-                deployed = deploySmartFrog(descriptorData);
+                deployed = deploySmartFrog();
                 break;
             case Constants.LANGUAGE_XML_CDL:
-                deployed = deployCDL(descriptorData);
+                deployed = deployCDL();
                 break;
             case Constants.LANGUAGE_ANT:
-                deployed = deployAnt(descriptorData);
+                deployed = deployAnt();
                 break;
             case Constants.LANGUAGE_UNKNOWN:
             default:
-                throw raiseUnsupportedLanguageFault(languageAsString);
+                throw raiseUnsupportedLanguageFault(job.getLanguageName());
         }
         return deployed;
     }
 
 
     /**
-     * go from qname to language enum
-     *
-     * @param qname
-     * @return
-     */
-    public static int determineLanguage(QName qname) {
-        String uri = qname.getNamespaceURI();
-        int l = Constants.LANGUAGE_UNKNOWN;
-        for (int i = 0; i < Constants.LANGUAGE_NAMESPACES.length; i++) {
-            if (Constants.LANGUAGE_NAMESPACES[i].equals(uri)) {
-                l = i;
-                break;
-            }
-        }
-        return l;
-    }
-
-    /**
      * CDL deploymenet
      *
-     * @param elt
      * @throws AxisFault
      * @todo implement
      */
-    private boolean deployCDL(MessageElement elt) throws AxisFault {
-        throw raiseUnsupportedLanguageFault("CDL is unsupported");
+    private boolean deployCDL() throws AxisFault {
+        MessageElement descriptorElement = job.getDescriptor();
+        try {
+            ServerInstance.currentInstance()
+                    .getCdlParser()
+                    .parseMessageElement(descriptorElement);
+        } catch (Exception e) {
+            throw translateException(e);
+        }
+        if (options.isValidateOnly()) {
+            //finishing here.
+            return false;
+        }
+        //deploy but do nothing with it.
+        return true;
     }
 
     /**
      * ant deployment
      *
-     * @param elt
      * @throws AxisFault
      * @throws AxisFault for any problem
      * @todo implement
      */
-    private boolean deployAnt(MessageElement elt)
+    private boolean deployAnt()
             throws AxisFault {
 
         throw raiseUnsupportedLanguageFault("Ant is unsupported");
@@ -206,8 +185,9 @@ public class DeployProcessor extends Processor {
      *
      * @throws AxisFault
      */
-    private boolean deploySmartFrog(MessageElement descriptorElement)
+    private boolean deploySmartFrog()
             throws AxisFault {
+        MessageElement descriptorElement = job.getDescriptor();
         String applicationName = job.getName();
         String version = descriptorElement.getAttributeNS(
                 descriptorElement.getNamespaceURI(), "version");
@@ -233,7 +213,7 @@ public class DeployProcessor extends Processor {
                     deployThroughSFSystem(null, applicationName, url, null);
             job.bindToPrim(runningJobInstance);
         } catch (IOException e) {
-            throw AxisFault.makeFault(e);
+            throw translateException(e);
         } finally {
             if (tempFile != null) {
                 tempFile.delete();
@@ -316,10 +296,8 @@ public class DeployProcessor extends Processor {
                 throw new AxisFault(message + " " + result.toString());
             }
 
-        } catch (SmartFrogException exception) {
-            throw translateSmartFrogException(exception);
-        } catch (RemoteException exception) {
-            throw AxisFault.makeFault(exception);
+        } catch (Exception exception) {
+            throw translateException(exception);
         }
     }
 

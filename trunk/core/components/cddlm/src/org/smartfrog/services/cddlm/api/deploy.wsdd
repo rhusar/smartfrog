@@ -96,8 +96,8 @@
       />
     <typeMapping
       xmlns:ns="http://gridforum.org/cddlm/serviceAPI/types/2004/07/30"
-      qname="ns:callbackListType"
-      type="java:org.smartfrog.services.cddlm.generated.api.types.CallbackListType"
+      qname="ns:stringListType"
+      type="java:org.smartfrog.services.cddlm.generated.api.types.StringListType"
       serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
       deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
       encodingStyle=""

@@ -21,7 +21,7 @@ package org.cddlm.client.console;
 
 import org.apache.axis.types.URI;
 import org.cddlm.client.common.ServerBinding;
-import org.cddlm.client.generated.api.types.ApplicationStatusType;
+import org.smartfrog.services.cddlm.generated.api.types.ApplicationStatusType;
 
 import java.io.PrintWriter;
 import java.rmi.RemoteException;

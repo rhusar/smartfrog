@@ -25,10 +25,11 @@ import org.apache.axis.AxisFault;
 import org.apache.axis.types.URI;
 import org.smartfrog.services.cddlm.api.Constants;
 import org.smartfrog.services.cddlm.api.Processor;
-import org.smartfrog.services.cddlm.generated.api.types.CallbackListType;
+import org.smartfrog.services.cddlm.cdl.CdlParser;
 import org.smartfrog.services.cddlm.generated.api.types.LanguageListType;
 import org.smartfrog.services.cddlm.generated.api.types.ServerInformationType;
 import org.smartfrog.services.cddlm.generated.api.types.StaticServerStatusType;
+import org.smartfrog.services.cddlm.generated.api.types.StringListType;
 import org.smartfrog.services.cddlm.generated.api.types._languageListType_language;
 
 import java.math.BigInteger;
@@ -50,6 +51,8 @@ public class ServerInstance {
     private ActionQueue queue = new ActionQueue();
 
     private ActionWorker workers[];
+
+    private CdlParser cdlParser;
 
     public static final int WORKERS = 1;
     public static final long TIMEOUT = 0;
@@ -117,12 +120,15 @@ public class ServerInstance {
         LanguageListType languages = new LanguageListType(list);
 
         //callbacks are easy
-        CallbackListType callbacks = new CallbackListType(Constants.CALLBACKS);
+        StringListType callbacks = new StringListType(Constants.CALLBACKS);
+        StringListType options = new StringListType(
+                Constants.SUPPORTED_OPTIONS);
 
         StaticServerStatusType status;
         status = new StaticServerStatusType(serverInfo,
                 languages,
-                callbacks);
+                callbacks,
+                options);
         return status;
     }
 
@@ -140,6 +146,15 @@ public class ServerInstance {
             instance = new ServerInstance();
         }
         return instance;
+    }
+
+    /**
+     * get our CDL parser
+     *
+     * @return
+     */
+    public CdlParser getCdlParser() {
+        return cdlParser;
     }
 
 }

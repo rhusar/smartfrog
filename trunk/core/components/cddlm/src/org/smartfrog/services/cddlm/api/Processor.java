@@ -21,6 +21,7 @@ package org.smartfrog.services.cddlm.api;
 
 import nu.xom.Builder;
 import nu.xom.Document;
+import nu.xom.ParsingException;
 import org.apache.axis.AxisFault;
 import org.apache.axis.message.MessageElement;
 import org.apache.axis.types.URI;
@@ -55,6 +56,7 @@ import java.util.Enumeration;
 
 public class Processor {
     private static final Log log = LogFactory.getLog(EndpointHelper.class);
+    public static final String WRONG_MESSAGE_ELEMENT_COUNT = "wrong number of message elements";
 
     public Processor(SmartFrogHostedEndpoint owner) {
         this.owner = owner;
@@ -238,8 +240,50 @@ public class Processor {
 
         } catch (Exception e) {
             throw raiseNestedFault(e, message);
-
         }
+    }
+
+    /**
+     * turn any fault into an axis fault. Smartfrog exceptions and CDL parse
+     * exceptions are picked up specially
+     *
+     * @param e
+     * @return
+     */
+    public AxisFault translateException(Exception e) {
+        if (e instanceof SmartFrogException) {
+            return translateSmartFrogException((SmartFrogException) e);
+        }
+        if (e instanceof ParsingException) {
+            return translateCdlFault((ParsingException) e);
+        }
+        return AxisFault.makeFault(e);
+    }
+
+    /**
+     * extract line and column info, if provided
+     *
+     * @param exception
+     * @return
+     */
+    public AxisFault translateCdlFault(ParsingException exception) {
+        AxisFault fault = AxisFault.makeFault(exception);
+        QName faultCode;
+        faultCode = DeployApiConstants.FAULT_DESCRIPTOR_PARSE_ERROR;
+        fault.setFaultCode(faultCode);
+        if (exception.getLineNumber() > -1) {
+            fault.addFaultDetail(new QName(
+                    DeployApiConstants.XML_CDL_NAMESPACE,
+                    "line"),
+                    Integer.toString(exception.getLineNumber()));
+        }
+        if (exception.getColumnNumber() > -1) {
+            fault.addFaultDetail(new QName(
+                    DeployApiConstants.XML_CDL_NAMESPACE,
+                    "column"),
+                    Integer.toString(exception.getColumnNumber()));
+        }
+        return fault;
     }
 
     /**
@@ -291,13 +335,31 @@ public class Processor {
             String stringVal = value.toString();
             //TODO: escape local parts that are not valid.
             final String localPart = key.toString();
-            fault.addFaultDetail(
-                    new QName(DeployApiConstants.SMARTFROG_NAMESPACE,
-                            localPart)
+            fault.addFaultDetail(new QName(
+                    DeployApiConstants.SMARTFROG_NAMESPACE,
+                    localPart)
                     , value.toString());
         }
 
         fault.setFaultCode(faultCode);
         return fault;
+    }
+
+    /**
+     * go from qname to language enum
+     *
+     * @param qname
+     * @return
+     */
+    public static int determineLanguage(QName qname) {
+        String uri = qname.getNamespaceURI();
+        int l = Constants.LANGUAGE_UNKNOWN;
+        for (int i = 0; i < Constants.LANGUAGE_NAMESPACES.length; i++) {
+            if (Constants.LANGUAGE_NAMESPACES[i].equals(uri)) {
+                l = i;
+                break;
+            }
+        }
+        return l;
     }
 }

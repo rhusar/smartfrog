@@ -19,7 +19,7 @@
  */
 package org.cddlm.client.callbacks;
 
-import org.cddlm.client.generated.api.callbacks.DeploymentCallbackEndpoint;
+import org.smartfrog.services.cddlm.generated.api.callbacks.DeploymentCallbackEndpoint;
 
 import java.rmi.RemoteException;
 
@@ -30,7 +30,7 @@ import java.rmi.RemoteException;
 public class CallbackEndpoint implements DeploymentCallbackEndpoint {
 
     public boolean callback(
-            org.cddlm.client.generated.api.types._lifecycleEventCallbackRequest callback)
+            org.smartfrog.services.cddlm.generated.api.types._lifecycleEventCallbackRequest callback)
             throws RemoteException {
         return true;
     }

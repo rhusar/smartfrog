@@ -420,7 +420,7 @@
   <!-- ========================================================== -->
   <!-- create all the wsdl. useful when there is a change -->
   <!-- ========================================================== -->
-  <target name="wsdl" depends="server-wsdl,client-wsdl"
+  <target name="wsdl" depends="server-wsdl"
     description="create client and server WSDL"/>
 
   <!-- ========================================================== -->
@@ -466,7 +466,7 @@
   <!-- buid the client -->
   <!-- ========================================================== -->
   <target name="compile-client"
-    depends="compile,client-wsdl">
+    depends="compile">
     <depend srcdir="${client.src.dir}"
       destdir="${build.client.classes.dir}"
       cache="${build.client.dir}/depends"
@@ -578,7 +578,7 @@
   <!-- xsl the constants -->
   <!-- ========================================================== -->
   <target name="xml-javaconstants" depends="xml-validate"
-    description="create java constants from XML" >
+    description="create java constants from XML">
     <!-- currently the package is hard coded into the XSL file, BTW -->
     <property name="constants.package" value="org.smartfrog.services.cddlm.generated.api"/>
     <property name="constants.package.path" value="org/smartfrog/services/cddlm/generated/api"/>
