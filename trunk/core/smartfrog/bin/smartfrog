@@ -7,5 +7,5 @@ if ! test $SFHOME; then export SFHOME=$PWD; fi
 
 . $SFHOME/bin/setSFProperties
 
-java $SFCMDPARAMETERS org.smartfrog.SFSystem $*
+java $SFCMDPARAMETERS org.smartfrog.SFSystem "$@"
      

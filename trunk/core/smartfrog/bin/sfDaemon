@@ -14,4 +14,4 @@ then
    export SFCMDPARAMETERS="$SFCMDPARAMETERS $SFDEFAULTSF"
 fi
 
-java -Dorg.smartfrog.sfcore.processcompound.sfProcessName=rootProcess $SFCMDPARAMETERS org.smartfrog.SFSystem $*
+java -Dorg.smartfrog.sfcore.processcompound.sfProcessName=rootProcess $SFCMDPARAMETERS org.smartfrog.SFSystem "$@"
