@@ -10,8 +10,10 @@ if (%1)==() GOTO usage
 if (%1)==(-?) GOTO help
 if exist "%SFHOME%\jre\bin\java.exe" set path=%SFHOME%\jre\bin
 call %SFHOME%\bin\setClassPath
+call "%SFHOME%\bin\setSFProperties"
+
 echo "Stopping sfDaemon in %1"
-java -Dorg.smartfrog.iniFile=%SFHOME%\bin\default.ini org.smartfrog.SFSystem -a rootProcess:TERMINATE:::%1: -e
+java %SFCMDPARAMETERS% org.smartfrog.SFSystem -a rootProcess:TERMINATE:::%1: -e
 
 GOTO end
 :usage

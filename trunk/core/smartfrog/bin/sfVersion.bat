@@ -7,7 +7,9 @@ if defined SFHOME goto continue1
 :continue1
 if exist "%SFHOME%\jre\bin\java.exe" set path=%SFHOME%\jre\bin
 call %SFHOME%\bin\setClassPath
+call "%SFHOME%\bin\setSFProperties"
+
 echo SmartFrog Version:
-java org.smartfrog.Version
+java %SFCMDPARAMETERS% org.smartfrog.Version
 
 endlocal

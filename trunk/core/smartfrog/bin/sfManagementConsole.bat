@@ -8,5 +8,7 @@ if defined SFHOME goto continue1
 :continue1
 if exist "%SFHOME%\jre\bin\java.exe" set path=%SFHOME%\jre\bin
 call %SFHOME%\bin\setClassPath
+call "%SFHOME%\bin\setSFProperties"
+
 java org.smartfrog.services.management.SFDeployDisplay %1 %2 %3 %4 %5 %6 %7 %8
 endlocal

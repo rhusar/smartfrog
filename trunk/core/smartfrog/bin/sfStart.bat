@@ -10,8 +10,12 @@ if (%1) == (-?) goto help
 if (%2) == () goto usage
 if (%3) == () goto usage
 if exist "%SFHOME%\jre\bin\java.exe" set path=%SFHOME%\jre\bin
+
 call %SFHOME%\bin\setClassPath
-java -Dorg.smartfrog.iniFile=%SFHOME%\bin\default.ini org.smartfrog.SFSystem -a %2:DEPLOY:%3::%1: -e
+call "%SFHOME%\bin\setSFProperties"
+
+java %SFCMDPARAMETERS% org.smartfrog.SFSystem -a %2:DEPLOY:%3::%1: -e
+
 GOTO end
 :usage
 echo Insufficient arguments to use sfStart 
