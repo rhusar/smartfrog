@@ -25,15 +25,11 @@
 
 
     <!-- the interval is seconds -->
-
     <schedule interval="600">
-        <ant target="cc-full" antscript="ant" useLogger="true" />
-    </schedule>
-
-    <schedule interval="2400">
         <maven mavenscript="/home/cruise/maven/bin/maven"
             goal="site:generate"
             projectfile="/home/cruise/cruisecontrol/project.xml"/>
+        <ant target="cc-full" antscript="ant" useLogger="true" />
     </schedule>
 
     <log dir="../artifacts">
