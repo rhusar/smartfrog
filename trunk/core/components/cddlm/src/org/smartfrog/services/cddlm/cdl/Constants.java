@@ -21,6 +21,8 @@
 
 package org.smartfrog.services.cddlm.cdl;
 
+import org.smartfrog.services.cddlm.generated.api.DeployApiConstants;
+
 /**
  * Date: 15-Jul-2004 Time: 22:26:34
  */
@@ -33,20 +35,21 @@ public class Constants {
     public static final String DEPLOY_API_SCHEMA_FILENAME = "deployAPIschema.xsd";
 
 
-    public static final String CDL_NAMESPACE = "http://gridforge.org/cddlm/xml/2004/07/30/";
+    public static final String CDL_NAMESPACE = DeployApiConstants.XML_CDL_NAMESPACE;
 
-    public static final String CDL_API_NAMESPACE = "http://gridforum.org/cddlm/serviceAPI/api/2004/07/30";
+    public static final String CDL_API_NAMESPACE =  DeployApiConstants.CDL_API_NAMESPACE;
+
 
     public static final String CDL_ELT_CDL = "cdl";
 
     public static final String XPATH_URI = "http://www.w3.org/TR/1999/REC-xpath-19991116";
 
-    public static final String SMARTFROG_NAMESPACE = "http://gridforge.org/cddlm/smartfrog/2004/07/30";
+    public static final String SMARTFROG_NAMESPACE = DeployApiConstants.SMARTFROG_NAMESPACE;
 
 
-    public static final String OPTION_VALIDATE_ONLY = "http://gridforum.org/cddlm/serviceAPI/options/validateOnly/2004/07/30";
+    public static final String OPTION_VALIDATE_ONLY = DeployApiConstants.OPTION_VALIDATE_ONLY;
 
-    public static final String OPTION_PROPERTIES = "http://gridforum.org/cddlm/serviceAPI/options/propertyMap/2004/07/30";
+    public static final String OPTION_PROPERTIES = DeployApiConstants.OPTION_PROPERTIES;
 
     public static final String SMARTFROG_ELEMENT_NAME = "smartfrog";
 

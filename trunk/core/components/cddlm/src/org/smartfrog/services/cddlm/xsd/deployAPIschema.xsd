@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema targetNamespace="http://gridforum.org/cddlm/serviceAPI/types/2004/10/11/" xmlns:types="http://gridforum.org/cddlm/serviceAPI/types/2004/10/11/" xmlns="http://gridforum.org/cddlm/serviceAPI/types/2004/10/11/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wsa="http://schemas.xmlsoap.org/ws/2003/03/addressing" elementFormDefault="qualified">
+<xsd:schema targetNamespace="http://gridforum.org/cddlm/serviceAPI/types/2004/10/11/" xmlns:types="http://gridforum.org/cddlm/serviceAPI/types/2004/10/11/" xmlns="http://gridforum.org/cddlm/serviceAPI/types/2004/10/11/" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+
+  elementFormDefault="qualified">
   <!--
-  xmlns:jsdl="http://www.gridforum.org/JSDL"
+xmlns:wsa="http://schemas.xmlsoap.org/ws/2003/03/addressing"
+xmlns:jsdl="http://www.gridforum.org/JSDL"
   xmlns:wsbf="http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseFaults"
     -->
   <!-- ============================================================= -->
@@ -308,7 +311,7 @@
       <xsd:element name="string" type="xsd:string"/>
       <xsd:element name="integer" type="xsd:integer"/>
       <xsd:element name="boolean" type="xsd:boolean"/>
-      <xsd:element name="xml" type="types:unboundedXMLAnyNamespace"/>
+      <xsd:element name="data" type="types:unboundedXMLAnyNamespace"/>
     </xsd:choice>
     <xsd:attribute name="name" type="xsd:anyURI" use="required"/>
     <xsd:attribute name="mustUnderstand" type="xsd:boolean" use="optional" default="false"/>
