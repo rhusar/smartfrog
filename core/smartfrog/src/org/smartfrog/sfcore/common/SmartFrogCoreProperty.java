@@ -37,31 +37,43 @@ public class SmartFrogCoreProperty {
     /**
      * Base for all smartfrog properties. All properties looked up by classes
      * in SmartFrog use this as a base, add the package name and then the
-     * property id to look up
-     * @see SFSystem
+     * property id to look up.
+     *
+     * Value {@value}
+     * @see org.smartfrog.SFSystem
      */
     public static final String propBase = "org.smartfrog.";
 
     /** Property name for class name for standard output stream.
-     * @see SFSystem
-     * */
+     *
+     * Value {@value}
+     * @see org.smartfrog.SFSystem
+     */
     public static final String propOutStreamClass = propBase +
         "outStreamClass";
 
-    /** Property name for class name for standard error stream.
-     *  @see SFSystem
-     *  */
+    /**
+     *  Property name for class name for standard error stream.
+     *
+     * Value {@value}
+     *  @see org.smartfrog.SFSystem
+     */
     public static final String propErrStreamClass = propBase +
         "errStreamClass";
 
-    /** Property name for ini file to read at start-up.
-     *  @see SFSystem
-     * */
+    /**
+     *  Property name for ini file to read at start-up.
+     *
+     * Value {@value}
+     *  @see org.smartfrog.SFSystem
+     */
     public static final String iniFile = propBase + "iniFile";
 
 
     /** Property name for logging stackTrace during exceptions.
-     *  @see SFSystem
+     *
+     *  Value {@value}
+     *  @see org.smartfrog.SFSystem
      *  */
     public static final String propLogStackTrace = propBase +
         "logger.logStackTrace";
@@ -70,22 +82,28 @@ public class SmartFrogCoreProperty {
     // Reference
 
     /**
-     * Base for Reference property names
-     * @see SFProcess
+     * Base for Reference property names.
+     *
+     *  Value {@value}
+     * @see org.smartfrog.sfcore.processcompound.SFProcess
      */
-    public static String propBaseReference = propBase+"Reference.";
+    public static final String propBaseReference = propBase+"Reference.";
 
     /**
      * Initial capacity for references. Looks up Reference.initCap (offset by
-     * propBase). Defaults to 5 if not there
-     * @see Reference
+     * propBase). Defaults to 5 if not there.
+     *
+     *  Value {@value}
+     * @see org.smartfrog.sfcore.reference.Reference
      */
     public static final String initCapReference = propBaseReference +"initCap";
 
     /**
      * Capacity increment for references. Looks up Reference.inc (offset by
-     * propBase). Defaults to 2 if not there
-     * @see Reference
+     * propBase). Defaults to 2 if not there.
+     *
+     *  Value {@value}
+     * @see org.smartfrog.sfcore.reference.Reference
      */
     public static final String incReference =  propBaseReference+"inc";
 
@@ -93,35 +111,42 @@ public class SmartFrogCoreProperty {
     //SFProcess
 
     /**
-     * Base for process compound property names
-     * @see SFProcess
+     * Base for process compound property names.
+     *
+     *  Value {@value}
+     * @see org.smartfrog.sfcore.processcompound.SFProcess
      */
-    public static String propBaseSFProcess = propBase +"sfcore.processcompound.";
+    public static final String propBaseSFProcess = propBase +"sfcore.processcompound.";
 
     /**
      * Base for process compound default property names to load default
-     * descriptions
-     * @see SFProcess
+     * descriptions.
+     *
+     *  Value {@value}
+     * @see org.smartfrog.sfcore.processcompound.SFProcess
      */
-    public static String defaultDescPropBase = propBaseSFProcess + "sfDefault.";
+    public static final String defaultDescPropBase = propBaseSFProcess + "sfDefault.";
 
 
     //Compound
 
     /**
      * Property base for children vector properties. Uses SFSystem.propBase as
-     * basis
+     * basis.
      *
-     * @see CompoundImpl
+     *  Value {@value}
+     *
+     * @see org.smartfrog.sfcore.compound.CompoundImpl
      */
     public static final String propBaseCompound = propBase+
         "sfcore.compound.";
 
     /**
      * Initial capacity for child vector (offset by
-     * SmartFrogCoreProperty.propBaseCompound). Defaults to 5 if not there
+     * SmartFrogCoreProperty.propBaseCompound). Defaults to 5 if not there.
      *
-     * @see CompoundImpl
+     *  Value {@value}
+     * @see org.smartfrog.sfcore.compound.CompoundImpl
      */
     public static final String compoundChildCap = propBaseCompound + "childCap";
 
@@ -129,7 +154,8 @@ public class SmartFrogCoreProperty {
      * Capacity increment for child vector (offset
      * by SmartFrogCoreProperty.propBaseCompound).
      *
-     * @see CompoundImpl
+     *  Value {@value}
+     * @see org.smartfrog.sfcore.compound.CompoundImpl
      */
     public static final String  compoundChildInc = propBaseCompound + "childInc";
 
@@ -138,6 +164,7 @@ public class SmartFrogCoreProperty {
    /**
     * Property base for OrderedHashtable properties.
     *
+    *  Value {@value}
     * @see OrderedHashtable
     */
    public static final String propBaseOrderedHashTable = propBase +
@@ -146,6 +173,7 @@ public class SmartFrogCoreProperty {
   /**
    * Initial capacity for OrderedHashtable.
    *
+   *  Value {@value}
    * @see OrderedHashtable
    */
   public static final String initCapOrderedHashTable =
@@ -154,6 +182,7 @@ public class SmartFrogCoreProperty {
   /**
    * Load percentage for OrderedHashtable growth.
    *
+   *  Value {@value}
    * @see OrderedHashtable
    */
   public static final String loadFacOrderedHashTable =
@@ -162,6 +191,7 @@ public class SmartFrogCoreProperty {
   /**
    * Increment size for keys in OrderedHashtable.
    *
+   *  Value {@value}
    * @see OrderedHashtable
    */
   public static final String keysIncOrderedHashTable =
@@ -173,7 +203,9 @@ public class SmartFrogCoreProperty {
     /**
      * Base property name for all parser related properties. SFSystem.propBase
      * followed by Parser.
-     * @see parser.SFParser
+     *
+     * Value {@value}
+     * @see org.smartfrog.sfcore.parser.SFParser
      */
     public static final String propBaseSFParser = propBase+"sfcore.parser.";
 
@@ -182,7 +214,9 @@ public class SmartFrogCoreProperty {
      * Language name system property key. This property is used to
      * set the parser to construct if no language is specified.
      *
-     * @see parser.SFParser
+     * Value {@value}
+     *
+     * @see org.smartfrog.sfcore.parser.SFParser
      */
     public static final String parserLanguage = propBaseSFParser+ "sfcore.language";
 
@@ -191,16 +225,16 @@ public class SmartFrogCoreProperty {
      * propBaseSFParser + LanguagesPackagePrefix. This sets the parser to construct
      * when getParser is called. Default is set by defaultParser property.
      *
-     * @see parser.SFParser
-     * @see defaultParser
+     * Value {@value}
+     * @see org.smartfrog.sfcore.parser.SFParser
      */
     public static final String languagesPackagePrefix= propBaseSFParser +"LanguagesPackagePrefix";
 
     /** This property defines the package prefix for languages defined in the
      * core.
      *
-     * @see parser.SFParser
-     * @see defaultParser
+     * Value {@value}
+     * @see  org.smartfrog.sfcore.parser.SFParser
      */
     public static final String parserCorePackages = propBase+ "sfcore.languages";
 
@@ -209,15 +243,17 @@ public class SmartFrogCoreProperty {
     /**
      *  Base property name for all SF parser related properties.
      *
-     * @see languages.sf.SFParser
+     * Value {@value}
+     * @see org.smartfrog.sfcore.languages.sf.SFParser
      */
     public final static String propBaseSFParserSF = SmartFrogCoreProperty.parserCorePackages+".sf.";
 
     /**
      *  Property used to set the SF parser to construct when getParser
-    *  is called
-    *
-     * @see languages.sf.SFParser
+     *  is called.
+     *
+     * Value {@value}
+     * @see org.smartfrog.sfcore.languages.sf.SFParser
      */
     public final static String sfParserSFFactoryClass =
                    propBase+propBaseSFParserSF + "factoryClass";
@@ -227,7 +263,8 @@ public class SmartFrogCoreProperty {
     *  Property used to set the include handler to construct when
     *  getIncludeHandler is called in SF parser.
     *
-    * @see languages.sf.SFParser
+    * Value {@value}
+    * @see org.smartfrog.sfcore.languages.sf.SFParser
     */
    public final static String sfParserSFIncludeHandlerClass =
                               propBase+propBaseSFParserSF + "includeHandlerClass";
