@@ -171,7 +171,7 @@ public class AxisImpl extends PrimImpl implements Axis, Prim {
      * @throws org.smartfrog.sfcore.common.SmartFrogLivenessException
      *          component is terminated
      */
-    public void sfPing(Object source) throws SmartFrogLivenessException {
+    public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
     }
 
