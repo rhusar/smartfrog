@@ -22,15 +22,17 @@ Note: <SF> = 'smartfrog' directory
 
 Where to start:
 
-- Web site:	    www.smartfrog.org
+- Web site:	 www.smartfrog.org
 
-- User manual:      <SF>/dist/docs/sfUserManual.pdf
+- User manual:                 <SF>/dist/docs/sfUserManual.pdf
 
-- Reference manual: <SF>/dist/docs/sfReferenceManual.pdf
+- Reference manual:            <SF>/dist/docs/sfReferenceManual.pdf
+   
+- Java docs:                   <SF>/dist/docs/jdocs/index.html
 
-- Java docs:        <SF>/dist/docs/jdocs/index.html
+- Examples:                    <SF>/dist/src/org/smartfrog/examples/examples.html
 
-- Examples:         <SF>/dist/src/org/smartfrog/examples/examples.html
+- Dynamic Web Server Example:  <SF>/dist/docs/sfDynamicWebServerExample.pdf
 
-- Build process:    <SF>/docs/build.html (only in _ALL distribution)
+- Build process:               <SF>/docs/build.html (only in _ALL distribution)
 
