@@ -109,12 +109,9 @@ public class SFSecurity {
                     securityOn = true;
                 } else {
                     // Activate a security manager that allows everything.
-                    //System.out.println("Warning: SmartFrog security is NOT active");
                     System.setSecurityManager(new DummySecurityManager());
                     securityOn = false;
                     //Notification moved to SFSyten after the ini file is read.
-                       //LogSF log=LogFactory.getLog("SFSecurityLog");
-                       //if (log.isWarnEnabled()) log.warn("SmartFrog security is NOT active");
                 }
             }
         } catch (IOException e) {

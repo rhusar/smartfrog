@@ -33,7 +33,9 @@ import org.smartfrog.sfcore.common.SmartFrogCoreProperty;
  *
  */
 public class SFSecurityProperties {
-    /** Base property name for all the SF security related properties. */
+    /** Base property name for all the SF security related properties.
+     * @value  org.smartfrog.sfcore.security.
+     * */
     public static final String propBaseSecurity = SmartFrogCoreProperty.propBase +
         "sfcore.security.";
 
@@ -78,6 +80,14 @@ public class SFSecurityProperties {
 
     /** The name of the main SF security property file. */
     private static String propertiesFileName = "SFSecurity.properties";
+
+
+    /**
+     * flag to indicate that security is required. If security did not initialize
+     * and this flag is set, SmartFrog will not execute
+     * @value org.smartfrog.sfcore.security.required
+     */
+    public static final String propSecurityRequired = propBaseSecurity + "required";
 
     /**
      * Class Constructor. Nobody should call this.
