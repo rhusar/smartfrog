@@ -76,6 +76,10 @@ import java.rmi.NoSuchObjectException;
  */
 public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim, MessageKeys {
 
+    /** Static ProcessLog: this log is used to log into SF_CORE_LOG
+     */
+    protected static LogSF  log = null;
+
     /** Static attribute that hold the lifecycle hooks for sfDeploy. */
     public static PrimHookSet sfDeployHooks = new PrimHookSet();
 
@@ -149,15 +153,59 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     // ReferenceResolver
     //
 
+//    /**
+//     * Resolves a single attribute id in this component.
+//     *
+//     * @param id key to resolve
+//     *
+//     * @return value for key or null if none
+//     */
+//    public Object sfResolveId(Object id) {
+//        return sfContext.get(id);
+//    }
+
     /**
-     * Resolves a single attribute id in this component.
+     * Find an attribute in this component context.
      *
-     * @param id key to resolve
+     * @param name attribute key to resolve
      *
-     * @return value for key or null if none
+     * @return Object Reference
+     *
+     * @throws SmartFrogResolutionException failed to find attribute
      */
-    public Object sfResolveId(Object id) {
-        return sfContext.get(id);
+    public Object sfResolveHere(Object name)
+        throws SmartFrogResolutionException {
+        Object result = null;
+        try {
+           result = sfContext.sfResolveAttribute(name);
+        } catch (SmartFrogContextException ex) {
+            throw SmartFrogResolutionException.notFound(new Reference(name), sfCompleteName);
+        }
+        return result;
+    }
+    /**
+     * Find an attribute in this context.
+     *
+     * @param name attribute key to resolve
+     * @param mandatory boolean that indicates if this attribute must be
+     *        present in the description. If it is mandatory and not found it
+     *        throws a SmartFrogResolutionException
+     *
+     * @return Object value for attribute
+     *
+     * @throws SmartFrogResolutionException failed to find attribute
+     * @throws RemoteException In case of network/rmi error
+     */
+    public Object sfResolveHere(Object name, boolean mandatory)
+        throws SmartFrogResolutionException {
+        try {
+            return sfResolveHere(name);
+        } catch (SmartFrogResolutionException e) {
+            if (mandatory) {
+                throw e;
+            }
+        }
+        return null;
     }
 
     /**
@@ -182,7 +230,13 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
      */
     public Object sfResolve(Reference r)
         throws SmartFrogResolutionException, RemoteException {
-        return sfResolve(r, 0);
+        Object obj = sfResolve(r, 0);
+        try {
+            if (sfGetProcessLog().isTraceEnabled()) {
+                sfGetProcessLog().trace("sfResolved: "+r.toString()+" to "+ obj.toString());
+            }
+        } catch (Exception ex) {ex.printStackTrace();} //ignore
+        return obj;
     }
 
 
@@ -346,1217 +400,6 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
         return sfContext;
     }
 
-//
-//    /**
-//     * Resolves a referencePart given a string. Utility method to auto-convert
-//     * from string to reference.
-//     *
-//     * NOTE: To resolve a reference from a String using a reference cannonical
-//     * representation it is neccesary to do:
-//     * "return sfResolve(Reference.fromString(reference));"so that the parser
-//     * is invoked.
-//     *
-//     * @param referencePart stringified reference
-//     *
-//     * @return java Object for attribute value
-//     *
-//     * @throws SmartFrogResolutionException illegal reference or reference
-//     * not resolvable
-//     * @throws RemoteException In case of network/rmi error
-//     */
-//    public Object sfResolve(String referencePart) throws SmartFrogResolutionException, RemoteException {
-//        return sfResolve(new Reference(referencePart));
-//    }
-//
-//
-//    /**
-//     * Resolves a reference given a string. Utility method to auto-convert from
-//     * string to reference. It can use cannonical representations that are
-//     * resolved by the parser (parse = true).
-//     *
-//     * @param reference string field reference
-//     *
-//     * @return java Object for attribute value
-//     *
-//     * @throws SmartFrogResolutionException illegal reference or reference
-//     * not resolvable
-//     * @throws RemoteException In case of network/rmi error
-//     */
-//    public Object sfResolveWithParser(String reference) throws SmartFrogResolutionException, RemoteException {
-//        return sfResolve(Reference.fromString(reference));
-//    }
-//
-//
-//    /**
-//     * Resolves given reference and gets a java Object.
-//     * Utility method to resolve an attribute with a java Object value.
-//     *
-//     * @param reference reference
-//     * @param mandatory boolean that indicates if this attribute must be
-//     *        present in the description. If it is mandatory and not found it
-//     *        triggers a SmartFrogResolutionException
-//     *
-//     * @return java Object for attribute value or null if not
-//     *         found
-//     *
-//     * @throws SmartFrogResolutionException illegal reference or reference
-//     * not resolvable
-//     * @throws RemoteException In case of network/rmi error
-//     */
-//    public Object sfResolve(Reference reference, boolean mandatory)
-//            throws SmartFrogResolutionException, RemoteException{
-//        try {
-//            Object referenceObj = sfResolve(reference, 0);
-//            return (referenceObj);
-//        } catch (SmartFrogResolutionException e) {
-//            if (mandatory) {
-//                throw e;
-//            }
-//        }
-//        return null;
-//    }
-//
-//    /**
-//     * Resolves a referencePart given a string and gets a java Object.
-//     *
-//     * @param referencePart string field reference
-//
-//     * @param mandatory boolean that indicates if this attribute must be
-//     *        present in the description. If it is mandatory and not found it
-//     *        triggers a SmartFrogResolutionException
-//     *
-//     * @return Reference for attribute value or null if not found
-//     *
-//     * @throws SmartFrogResolutionException illegal reference or reference
-//     * not resolvable
-//     * @throws RemoteException In case of network/rmi error
-//     */
-//    public Object sfResolve(String referencePart, boolean mandatory)
-//        throws SmartFrogResolutionException, RemoteException {
-//        return sfResolve(new Reference(referencePart), mandatory);
-//    }
-//
-//    /**
-//     * Resolves given reference and gets a boolean. Utility method to resolve
-//     * an attribute with a boolean value.
-//     *
-//     * @param reference reference
-//     * @param defaultValue boolean default value that is returned when
-//     *        reference is not found and it is not mandatory
-//     * @param mandatory boolean that indicates if this attribute must be
-//     *        present in the description. If it is mandatory and not found it
-//     *        triggers a ResolutionException
-//     *
-//     * @return boolean for attribute value or defaultValue if not found
-//     *
-//     * @throws SmartFrogResolutionException illegal reference or reference
-//     * not resolvable
-//     * @throws RemoteException In case of network/rmi error
-//     */
-//    public boolean sfResolve(Reference reference, boolean defaultValue,
-//        boolean mandatory) throws SmartFrogResolutionException, RemoteException {
-//        boolean illegalClassType = false;
-//
-//        try {
-//            Object referenceObj = sfResolve(reference, 0);
-//
-//            if (referenceObj instanceof Boolean) {
-//                return (((Boolean) referenceObj).booleanValue());
-//            } else {
-//                illegalClassType = true;
-//                throw SmartFrogResolutionException.illegalClassType(reference,
-//                    this.sfCompleteNameSafe());
-//            }
-//        } catch (SmartFrogResolutionException e) {
-//            if ((mandatory) || (illegalClassType)) {
-//                throw e;
-//            }
-//        }
-//
-//        return defaultValue;
-//    }
-//
-//    /**
-//     * Resolves given reference and gets an int. Utility method to resolve an
-//     * attribute with an int value.
-//     *
-//     * @param reference reference
-//     * @param defaultValue int default value that is returned when reference is
-//     *        not found and it is not mandatory
-//     * @param mandatory boolean that indicates if this attribute must be
-//     *        present in the description. If it is mandatory and not found it
-//     *        triggers a SmartFrogResolutionException
-//     *
-//     * @return int for attribute value or defaultValue if not found
-//     *
-//     * @throws SmartFrogResolutionException illegal reference or reference
-//     * not resolvable
-//     * @throws RemoteException In case of network/rmi error
-//     */
-//    public int sfResolve(Reference reference, int defaultValue, boolean mandatory)
-//        throws SmartFrogResolutionException, RemoteException {
-//        boolean illegalClassType = false;
-//
-//        try {
-//            Object referenceObj = sfResolve(reference, 0);
-//
-//            if (referenceObj instanceof Integer) {
-//                return (((Integer) referenceObj).intValue());
-//            } else {
-//                illegalClassType = true;
-//                throw SmartFrogResolutionException.illegalClassType(reference,
-//                    this.sfCompleteNameSafe());
-//            }
-//        } catch (SmartFrogResolutionException e) {
-//            if ((mandatory) || (illegalClassType)) {
-//                throw e;
-//            }
-//        }
-//
-//        return defaultValue;
-//    }
-//
-//    /**
-//     * Resolves given reference and gets an int. Utility method to resolve an
-//     * attribute with an int value.
-//     *
-//     * @param reference reference
-//     * @param defaultValue int default value that is returned when reference is
-//     *        not found and it is not mandatory
-//     * @param mandatory boolean that indicates if this attribute must be
-//     *        present in the description. If it is mandatory and not found it
-//     *        triggers a SmartFrogResolutionException
-//     * @param minValue allowed (included)
-//     * @param maxValue allowed (included)
-//     *
-//     * @return int for attribute value or defaultValue if not found
-//     *
-//     * @throws SmartFrogResolutionException illegal reference or reference
-//     * not resolvable or resolved value &lt; minValue or &gt; maxValue
-//     * @throws RemoteException In case of network/rmi error
-//     */
-//    public int sfResolve(Reference reference, int defaultValue,Integer minValue, Integer maxValue, boolean mandatory)
-//        throws SmartFrogResolutionException, RemoteException {
-//        int value = sfResolve(reference, defaultValue, mandatory);
-//        if ((minValue!=null)&&(value<minValue.intValue()))
-//            throw new SmartFrogResolutionException(reference, this.sfCompleteNameSafe(), "Error: sfResolved int '"+value+"' < '"+minValue+"'(minValue)");
-//        else if ((maxValue!=null)&&(value>maxValue.intValue()))
-//            throw new SmartFrogResolutionException(reference, this.sfCompleteNameSafe(), "Error: sfResolved int '"+value+"' > '"+maxValue+"'(maxValue)");
-//        else return value;
-//    }
-//
-//    /**
-//     * Resolves given reference and gets an long. Utility method to resolve an
-//     * attribute with an long value. Int values are "upcasted" to long.
-//     *
-//     * @param reference reference
-//     * @param defaultValue long default value that is returned when reference
-//     *        is not found and it is not mandatory
-//     * @param mandatory boolean that indicates if this attribute must be
-//     *        present in the description. If it is mandatory and not found it
-//     *        triggers a SmartFrogResolutionException
-//     *
-//     * @return long for attribute value or defaultValue if not found
-//     *
-//     * @throws SmartFrogResolutionException illegal reference or reference
-//     * not resolvable
-//     * @throws RemoteException In case of network/rmi error
-//     */
-//    public long sfResolve(Reference reference, long defaultValue, boolean mandatory)
-//        throws SmartFrogResolutionException, RemoteException {
-//        boolean illegalClassType = false;
-//
-//        try {
-//            Object referenceObj = sfResolve(reference, 0);
-//
-//            if ((referenceObj instanceof Long) ||
-//                    (referenceObj instanceof Integer)) {
-//                return (((Number) referenceObj).longValue());
-//            } else {
-//                illegalClassType = true;
-//                throw SmartFrogResolutionException.illegalClassType(reference,
-//                    this.sfCompleteNameSafe());
-//            }
-//        } catch (SmartFrogResolutionException e) {
-//            if ((mandatory) || (illegalClassType)) {
-//                throw e;
-//            }
-//        }
-//        return defaultValue;
-//    }
-//
-//    /**
-//     * Resolves given reference and gets an long. Utility method to resolve an
-//     * attribute with an long value. Int values are "upcasted" to long.
-//     *
-//     * @param reference reference
-//     * @param defaultValue long default value that is returned when reference
-//     *        is not found and it is not mandatory
-//     * @param mandatory boolean that indicates if this attribute must be
-//     *        present in the description. If it is mandatory and not found it
-//     *        triggers a SmartFrogResolutionException
-//     * @param minValue allowed (included)
-//     * @param maxValue allowed (included)
-//     *
-//     * @return long for attribute value or defaultValue if not found
-//     *
-//     * @throws SmartFrogResolutionException illegal reference or reference
-//     * not resolvable or resolved value &lt; minValue or &gt; maxValue
-//     * @throws RemoteException In case of network/rmi error
-//     */
-//    public long sfResolve(Reference reference, long defaultValue, Long minValue, Long maxValue, boolean mandatory)
-//        throws SmartFrogResolutionException, RemoteException {
-//        long value = sfResolve(reference, defaultValue, mandatory);
-//        if ((minValue!=null)&&(value<minValue.longValue()))
-//            throw new SmartFrogResolutionException(reference, this.sfCompleteNameSafe(), "Error: sfResolved long '"+value+"' < '"+minValue+"'(minValue)");
-//        else if ((maxValue!=null)&&(value>maxValue.longValue()))
-//            throw new SmartFrogResolutionException(reference, this.sfCompleteNameSafe(), "Error: sfResolved long '"+value+"' > '"+maxValue+"'(maxValue)");
-//        else return value;
-//    }
-//    /**
-//     * Resolves given reference and gets an float. Utility method to resolve an
-//     * attribute with an float value. Integer values are "upcasted" to float.
-//     *
-//     * @param reference reference
-//     * @param defaultValue float default value that is returned when reference
-//     *        is not found and it is not mandatory
-//     * @param mandatory boolean that indicates if this attribute must be
-//     *        present in the description. If it is mandatory and not found it
-//     *        triggers a SmartFrogResolutionException
-//     *
-//     * @return float for attribute value or defaultValue if not found
-//     *
-//     * @throws SmartFrogResolutionException illegal reference or reference
-//     * not resolvable
-//     * @throws RemoteException In case of network/rmi error
-//     */
-//    public float sfResolve(Reference reference, float defaultValue, boolean mandatory)
-//        throws SmartFrogResolutionException, RemoteException {
-//        boolean illegalClassType = false;
-//
-//        try {
-//            Object referenceObj = sfResolve(reference, 0);
-//
-//            if ((referenceObj instanceof Float) ||
-//                    (referenceObj instanceof Integer)) {
-//                return (((Number) referenceObj).floatValue());
-//            } else {
-//                illegalClassType = true;
-//                throw SmartFrogResolutionException.illegalClassType(reference,
-//                    this.sfCompleteNameSafe());
-//            }
-//        } catch (SmartFrogResolutionException e) {
-//            if ((mandatory) || (illegalClassType)) {
-//                throw e;
-//            }
-//        }
-//        return defaultValue;
-//    }
-//
-//    /**
-//     * Resolves given reference and gets an float. Utility method to resolve an
-//     * attribute with an float value. Int values are "upcasted" to float.
-//     *
-//     * @param reference reference
-//     * @param defaultValue float default value that is returned when reference
-//     *        is not found and it is not mandatory
-//     * @param mandatory boolean that indicates if this attribute must be
-//     *        present in the description. If it is mandatory and not found it
-//     *        triggers a SmartFrogResolutionException
-//     * @param minValue allowed (included)
-//     * @param maxValue allowed (included)
-//     *
-//     * @return float for attribute value or defaultValue if not found
-//     *
-//     * @throws SmartFrogResolutionException illegal reference or reference
-//     * not resolvable or resolved value &lt; minValue or &gt; maxValue
-//     * @throws RemoteException In case of network/rmi error
-//     */
-//    public float sfResolve(Reference reference, float defaultValue, Float minValue, Float maxValue, boolean mandatory)
-//        throws SmartFrogResolutionException, RemoteException {
-//        float value = sfResolve(reference, defaultValue, mandatory);
-//        if ((minValue!=null)&&(value<minValue.floatValue()))
-//            throw new SmartFrogResolutionException(reference, this.sfCompleteNameSafe(), "Error: sfResolved float '"+value+"' < '"+minValue+"'(minValue)");
-//        else if ((maxValue!=null)&&(value>maxValue.floatValue()))
-//            throw new SmartFrogResolutionException(reference, this.sfCompleteNameSafe(), "Error: sfResolved float '"+value+"' > '"+maxValue+"'(maxValue)");
-//        else return value;
-//    }
-//
-//    /**
-//     * Resolves given reference and gets an double. Utility method to resolve an
-//     * attribute with an double value. Integer values are "upcasted" to double.
-//     *
-//     * @param reference reference
-//     * @param defaultValue double default value that is returned when reference
-//     *        is not found and it is not mandatory
-//     * @param mandatory boolean that indicates if this attribute must be
-//     *        present in the description. If it is mandatory and not found it
-//     *        triggers a SmartFrogResolutionException
-//     *
-//     * @return double for attribute value or defaultValue if not found
-//     *
-//     * @throws SmartFrogResolutionException illegal reference or reference
-//     * not resolvable
-//     * @throws RemoteException In case of network/rmi error
-//     */
-//    public double sfResolve(Reference reference, double defaultValue, boolean mandatory)
-//        throws SmartFrogResolutionException, RemoteException {
-//        boolean illegalClassType = false;
-//
-//        try {
-//            Object referenceObj = sfResolve(reference, 0);
-//
-//            if ((referenceObj instanceof Float) ||
-//                    (referenceObj instanceof Integer)
-//                    || (referenceObj instanceof Long)
-//                    || (referenceObj instanceof Double)) {
-//                return (((Number) referenceObj).doubleValue());
-//            } else {
-//                illegalClassType = true;
-//                throw SmartFrogResolutionException.illegalClassType(reference,
-//                    this.sfCompleteNameSafe());
-//            }
-//        } catch (SmartFrogResolutionException e) {
-//            if ((mandatory) || (illegalClassType)) {
-//                throw e;
-//            }
-//        }
-//        return defaultValue;
-//    }
-//
-//    /**
-//     * Resolves given reference and gets an double. Utility method to resolve an
-//     * attribute with an double value. Int values are "upcasted" to double.
-//     *
-//     * @param reference reference
-//     * @param defaultValue double default value that is returned when reference
-//     *        is not found and it is not mandatory
-//     * @param mandatory boolean that indicates if this attribute must be
-//     *        present in the description. If it is mandatory and not found it
-//     *        triggers a SmartFrogResolutionException
-//     * @param minValue allowed (included)
-//     * @param maxValue allowed (included)
-//     *
-//     * @return double for attribute value or defaultValue if not found
-//     *
-//     * @throws SmartFrogResolutionException illegal reference or reference
-//     * not resolvable or resolved value &lt; minValue or &gt; maxValue
-//     * @throws RemoteException In case of network/rmi error
-//     */
-//    public double sfResolve(Reference reference, double defaultValue, Double minValue, Double maxValue, boolean mandatory)
-//        throws SmartFrogResolutionException, RemoteException {
-//        double value = sfResolve(reference, defaultValue, mandatory);
-//        if ((minValue!=null)&&(value<minValue.doubleValue()))
-//            throw new SmartFrogResolutionException(reference, this.sfCompleteNameSafe(), "Error: sfResolved double '"+value+"' < '"+minValue+"'(minValue)");
-//        else if ((maxValue!=null)&&(value>maxValue.doubleValue()))
-//            throw new SmartFrogResolutionException(reference, this.sfCompleteNameSafe(), "Error: sfResolved double '"+value+"' > '"+maxValue+"'(maxValue)");
-//        else return value;
-//    }
-//
-//    /**
-//     * Resolves given reference. Utility method to resolve an attribute with a
-//     * String value.
-//     *
-//     * @param reference reference
-//     * @param defaultValue String default value that is returned when reference
-//     *        is not found and it is not mandatory
-//     * @param mandatory boolean that indicates if this attribute must be
-//     *        present in the description. If it is mandatory and not found it
-//     *        triggers a SmartFrogResolutionException
-//     *
-//     * @return String for attribute value or defaultValue if not found
-//     *
-//     * @throws SmartFrogResolutionException illegal reference or reference
-//     * not resolvable
-//     * @throws RemoteException In case of network/rmi error
-//     */
-//    public String sfResolve(Reference reference, String defaultValue,
-//        boolean mandatory) throws SmartFrogResolutionException, RemoteException {
-//        boolean illegalClassType = false;
-//
-//        try {
-//            Object referenceObj = sfResolve(reference, 0);
-//
-//            if (referenceObj instanceof String) {
-//                return (((String) referenceObj).toString());
-//            } else {
-//                illegalClassType = true;
-//                throw SmartFrogResolutionException.illegalClassType(reference,
-//                    this.sfCompleteNameSafe());
-//            }
-//        } catch (SmartFrogResolutionException e) {
-//            if ((mandatory) || (illegalClassType)) {
-//                throw e;
-//            }
-//        }
-//
-//        return defaultValue;
-//    }
-//
-//    /**
-//     * Resolves given reference and gets a Vector. Utility method to resolve an
-//     * attribute with a Vector value.
-//     *
-//     * @param reference reference
-//     * @param defaultValue Vector default value that is returned when reference
-//     *        is not found and it is not mandatory
-//     * @param mandatory boolean that indicates if this attribute must be
-//     *        present in the description. If it is mandatory and not found it
-//     *        triggers a SmartFrogResolutionException
-//     *
-//     * @return Vector for attribute value or defaultValue if not found
-//     *
-//     * @throws SmartFrogResolutionException illegal reference or reference
-//     * not resolvable
-//     * @throws RemoteException In case of network/rmi error
-//     */
-//    public Vector sfResolve(Reference reference, Vector defaultValue,
-//        boolean mandatory) throws SmartFrogResolutionException, RemoteException {
-//        boolean illegalClassType = false;
-//
-//        try {
-//            Object referenceObj = sfResolve(reference, 0);
-//
-//            if (referenceObj instanceof Vector) {
-//                return (((Vector) referenceObj));
-//            } else {
-//                illegalClassType = true;
-//                throw SmartFrogResolutionException.illegalClassType(reference,
-//                    this.sfCompleteNameSafe());
-//            }
-//        } catch (SmartFrogResolutionException e) {
-//            if ((mandatory) || (illegalClassType)) {
-//                throw e;
-//            }
-//        }
-//
-//        return defaultValue;
-//    }
-//
-//    /**
-//     * Resolves given reference and gets a String[]. Utility method to resolve
-//     * an attribute with a Vector value and returns a String[].
-//     *
-//     * @param reference reference
-//     * @param defaultValue String[] default value that is returned when
-//     *        reference is not found and it is not mandatory
-//     * @param mandatory boolean that indicates if this attribute must be
-//     *        present in the description. If it is mandatory and not found it
-//     *        triggers a SmartFrogResolutionException
-//     *
-//     * @return String[] for attribute value or defaultValue if not found
-//     *
-//     * @throws SmartFrogResolutionException illegal reference or reference
-//     * not resolvable
-//     * @throws RemoteException In case of network/rmi error
-//     */
-//    public String[] sfResolve(Reference reference, String[] defaultValue,
-//        boolean mandatory) throws SmartFrogResolutionException, RemoteException {
-//        boolean illegalClassType = false;
-//
-//        try {
-//            Object referenceObj = sfResolve(reference, 0);
-//
-//            if (referenceObj instanceof Vector) {
-//                String[] array = null;
-//
-//                if (!(((Vector) referenceObj).isEmpty())) {
-//                    ((Vector) referenceObj).trimToSize();
-//                    array = new String[((Vector) referenceObj).size()];
-//                    ((Vector) referenceObj).copyInto(array);
-//
-//                    return (array);
-//                }
-//            } else {
-//                illegalClassType = true;
-//                throw SmartFrogResolutionException.illegalClassType(reference,
-//                    this.sfCompleteNameSafe());
-//            }
-//        } catch (SmartFrogResolutionException e) {
-//            if ((mandatory) || (illegalClassType)) {
-//                throw e;
-//            }
-//        }
-//
-//        return defaultValue;
-//    }
-//
-//    /**
-//     * Resolves given reference and gets a SmartFrog ComponentDescription.
-//     * Utility method to resolve an attribute with a SmartFrog
-//     * ComponentDescription value.
-//     *
-//     * @param reference reference
-//     * @param defaultValue SmartFrog ComponentDescription default value that is
-//     *        returned when reference is not found and it is not mandatory
-//     * @param mandatory boolean that indicates if this attribute must be
-//     *        present in the description. If it is mandatory and not found it
-//     *        triggers a SmartFrogResolutionException
-//     *
-//     * @return SmartFrog ComponentDescription for attribute value or
-//     *         defaultValue if not found
-//     *
-//     * @throws SmartFrogResolutionException illegal reference or reference
-//     * not resolvable
-//     * @throws RemoteException In case of network/rmi error
-//     */
-//    public ComponentDescription sfResolve(Reference reference,
-//        ComponentDescription defaultValue, boolean mandatory)
-//        throws SmartFrogResolutionException, RemoteException {
-//        boolean illegalClassType = false;
-//
-//        try {
-//            Object referenceObj = sfResolve(reference, 0);
-//
-//            if (referenceObj instanceof ComponentDescription) {
-//                return ((ComponentDescription) referenceObj);
-//            } else {
-//                illegalClassType = true;
-//                throw SmartFrogResolutionException.illegalClassType(reference,
-//                    this.sfCompleteNameSafe());
-//            }
-//        } catch (SmartFrogResolutionException e) {
-//            if ((mandatory) || (illegalClassType)) {
-//                throw e;
-//            }
-//        }
-//
-//        return defaultValue;
-//    }
-//
-//    /**
-//     * Resolves given reference and gets a SmartFrog Reference.
-//     * Utility method to resolve an attribute with a SmartFrog
-//     * Reference value.
-//     *
-//     * @param reference reference
-//     * @param defaultValue SmartFrog Reference default value that is returned
-//     *        when reference is not found and it is not mandatory
-//     * @param mandatory boolean that indicates if this attribute must be
-//     *        present in the description. If it is mandatory and not found it
-//     *        triggers a SmartFrogResolutionException
-//     *
-//     * @return SmartFrog Reference for attribute value or defaultValue if not
-//     *         found
-//     *
-//     * @throws SmartFrogResolutionException illegal reference or reference
-//     * not resolvable
-//     * @throws RemoteException In case of network/rmi error
-//     */
-//    public Reference sfResolve(Reference reference, Reference defaultValue,
-//        boolean mandatory) throws SmartFrogResolutionException, RemoteException {
-//        boolean illegalClassType = false;
-//
-//        try {
-//            Object referenceObj = sfResolve(reference, 0);
-//
-//            if (referenceObj instanceof Reference) {
-//                return ((Reference) referenceObj);
-//            } else {
-//                illegalClassType = true;
-//                throw SmartFrogResolutionException.illegalClassType(reference,
-//                    this.sfCompleteNameSafe());
-//            }
-//        } catch (SmartFrogResolutionException e) {
-//            if ((mandatory) || (illegalClassType)) {
-//                throw e;
-//            }
-//        }
-//
-//        return defaultValue;
-//    }
-//
-//    /**
-//     * Resolves given reference and gets a SmartFrog Prim.
-//     * Utility method to resolve an attribute with a SmartFrog
-//     * Prim value.
-//     *
-//     * @param reference reference
-//     * @param defaultValue SmartFrog Prim default value that is returned
-//     *        when reference is not found and it is not mandatory
-//     * @param mandatory boolean that indicates if this attribute must be
-//     *        present in the description. If it is mandatory and not found it
-//     *        triggers a SmartFrogResolutionException
-//     *
-//     * @return SmartFrog Prim for attribute value or defaultValue if not
-//     *         found
-//     *
-//     * @throws SmartFrogResolutionException illegal reference or reference
-//     * not resolvable
-//     * @throws RemoteException In case of network/rmi error
-//     */
-//    public Prim sfResolve(Reference reference, Prim defaultValue,
-//        boolean mandatory) throws SmartFrogResolutionException, RemoteException {
-//        boolean illegalClassType = false;
-//
-//        try {
-//            Object referenceObj = sfResolve(reference, 0);
-//
-//            if (referenceObj instanceof Prim) {
-//                return ((Prim) referenceObj);
-//            } else {
-//                illegalClassType = true;
-//                throw SmartFrogResolutionException.illegalClassType(reference,
-//                    this.sfCompleteNameSafe());
-//            }
-//        } catch (SmartFrogResolutionException e) {
-//            if ((mandatory) || (illegalClassType)) {
-//                throw e;
-//            }
-//        }
-//
-//        return defaultValue;
-//    }
-//
-//    /**
-//     * Resolves given reference and gets a SmartFrog Compound.
-//     * Utility method to resolve an attribute with a SmartFrog
-//     * Compound value.
-//     *
-//     * @param reference reference
-//     * @param defaultValue SmartFrog Compound default value that is returned
-//     *        when reference is not found and it is not mandatory
-//     * @param mandatory boolean that indicates if this attribute must be
-//     *        present in the description. If it is mandatory and not found it
-//     *        triggers a SmartFrogResolutionException
-//     *
-//     * @return SmartFrog Compound for attribute value or defaultValue if not
-//     *         found
-//     *
-//     * @throws SmartFrogResolutionException illegal reference or reference
-//     * not resolvable
-//     * @throws RemoteException In case of network/rmi error
-//     */
-//    public Compound sfResolve(Reference reference, Compound defaultValue,
-//        boolean mandatory) throws SmartFrogResolutionException, RemoteException {
-//        boolean illegalClassType = false;
-//
-//        try {
-//            Object referenceObj = sfResolve(reference, 0);
-//
-//            if (referenceObj instanceof Compound) {
-//                return ((Compound) referenceObj);
-//            } else {
-//                illegalClassType = true;
-//                throw SmartFrogResolutionException.illegalClassType(reference,
-//                    this.sfCompleteNameSafe());
-//            }
-//        } catch (SmartFrogResolutionException e) {
-//            if ((mandatory) || (illegalClassType)) {
-//                throw e;
-//            }
-//        }
-//
-//        return defaultValue;
-//    }
-//
-//    /**
-//     * Resolves given reference and gets a java.net.InetAddress.
-//     * Utility method to resolve an attribute with a SmartFrog
-//     * java.net.InetAddress value.
-//     *
-//     * @param reference reference
-//     * @param defaultValue java.net.InetAddress default value that is returned
-//     *        when reference is not found and it is not mandatory
-//     * @param mandatory boolean that indicates if this attribute must be
-//     *        present in the description. If it is mandatory and not found it
-//     *        triggers a SmartFrogResolutionException
-//     *
-//     * @return java.net.InetAddress for attribute value or defaultValue if not
-//     *         found
-//     *
-//     * @throws SmartFrogResolutionException illegal reference or reference
-//     * not resolvable
-//     * @throws RemoteException In case of network/rmi error
-//     */
-//    public java.net.InetAddress sfResolve(Reference reference,
-//        java.net.InetAddress defaultValue, boolean mandatory)
-//        throws SmartFrogResolutionException, RemoteException {
-//        boolean illegalClassType = false;
-//
-//        try {
-//            Object referenceObj = sfResolve(reference, 0);
-//
-//            if (referenceObj instanceof java.net.InetAddress) {
-//                return ((java.net.InetAddress) referenceObj);
-//            } else if (referenceObj instanceof String) {
-//                try {
-//                    return (java.net.InetAddress.getByName((String) referenceObj));
-//                } catch (Exception ex) {
-//                    SmartFrogResolutionException resEx = SmartFrogResolutionException.generic(reference,
-//                            this.sfCompleteNameSafe(), ex.toString());
-//                    resEx.put(SmartFrogException.DATA, ex);
-//                    throw resEx;
-//                }
-//            } else {
-//                illegalClassType = true;
-//                throw SmartFrogResolutionException.illegalClassType(reference,
-//                    this.sfCompleteNameSafe());
-//            }
-//        } catch (SmartFrogResolutionException e) {
-//            if ((mandatory) || (illegalClassType)) {
-//                throw e;
-//            }
-//        }
-//
-//        return defaultValue;
-//    }
-//
-//    /**
-//     * Resolves given reference and gets a java Object.
-//     * Utility method to resolve an attribute with a java Object value.
-//     *
-//     * @param reference reference
-//     * @param defaultValue java Object default value that is returned
-//     *        when reference is not found and it is not mandatory
-//     * @param mandatory boolean that indicates if this attribute must be
-//     *        present in the description. If it is mandatory and not found it
-//     *        triggers a SmartFrogResolutionException
-//     *
-//     * @return java Object for attribute value or defaultValue if not
-//     *         found
-//     *
-//     * @throws SmartFrogResolutionException illegal reference or reference
-//     * not resolvable
-//     * @throws RemoteException In case of network/rmi error
-//     */
-//    public Object sfResolve(Reference reference, Object defaultValue,
-//        boolean mandatory) throws SmartFrogResolutionException, RemoteException{
-//        boolean illegalClassType = false;
-//        try {
-//            Object referenceObj = sfResolve(reference, 0);
-//            if ((defaultValue==null) || ( defaultValue.getClass().isAssignableFrom(referenceObj.getClass()))) {
-//                return (referenceObj);
-//            } else {
-//                illegalClassType = true;
-//                throw SmartFrogResolutionException.illegalClassType(reference,
-//                    this.sfCompleteNameSafe(),referenceObj.getClass().toString(),defaultValue.getClass().toString());
-//            }
-//        } catch (SmartFrogResolutionException e) {
-//            if ((mandatory) || (illegalClassType)) {
-//                throw e;
-//            }
-//        }
-//        return defaultValue;
-//    };
-//
-//    /**
-//     * Resolves a referencePart given a string and gets a boolean. Utility
-//     * method to resolve an attribute with a boolean value.
-//     *
-//     * @param referencePart string field reference
-//     * @param defaultValue boolean default value that is returned when
-//     *        reference is not found and it is not mandatory
-//     * @param mandatory boolean that indicates if this attribute must be
-//     *        present in the description. If it is mandatory and not found it
-//     *        triggers a SmartFrogResolutionException
-//     *
-//     * @return boolean for attribute value or defaultValue if not found
-//     *
-//     * @throws SmartFrogResolutionException illegal reference or reference
-//     * not resolvable
-//     * @throws RemoteException In case of network/rmi error
-//     */
-//    public boolean sfResolve(String referencePart, boolean defaultValue,
-//        boolean mandatory) throws SmartFrogResolutionException, RemoteException {
-//        return sfResolve(new Reference(referencePart), defaultValue, mandatory);
-//    }
-//
-//    /**
-//     * Resolves a referencePart given a string and gets a int. Utility method to
-//     * resolve an attribute with an int value.
-//     *
-//     * @param referencePart string field reference
-//     * @param defaultValue int default value that is returned when reference is
-//     *        not found and it is not mandatory
-//     * @param mandatory boolean that indicates if this attribute must be
-//     *        present in the description. If it is mandatory and not found it
-//     *        triggers a SmartFrogResolutionException
-//     *
-//     * @return int for attribute value or defaultValue if not found
-//     *
-//     * @throws SmartFrogResolutionException illegal reference or reference
-//     * not resolvable
-//     * @throws RemoteException In case of network/rmi error
-//     */
-//    public int sfResolve(String referencePart, int defaultValue, boolean mandatory)
-//        throws SmartFrogResolutionException, RemoteException {
-//        return sfResolve(new Reference(referencePart), defaultValue, mandatory);
-//    }
-//
-//    /**
-//     * Resolves a referencePart given a string and gets a int. Utility method to
-//     * resolve an attribute with an int value.
-//     *
-//     * @param referencePart string field reference
-//     * @param defaultValue int default value that is returned when reference is
-//     *        not found and it is not mandatory
-//     * @param mandatory boolean that indicates if this attribute must be
-//     *        present in the description. If it is mandatory and not found it
-//     *        triggers a SmartFrogResolutionException
-//     * @param minValue allowed (included)
-//     * @param maxValue allowed (included)
-//     *
-//     * @return int for attribute value or defaultValue if not found
-//     *
-//     * @throws SmartFrogResolutionException illegal reference or reference
-//     * not resolvable or resolved value &lt; minValue or &gt; maxValue
-//     * @throws RemoteException In case of network/rmi error
-//     */
-//    public int sfResolve(String referencePart, int defaultValue,Integer minValue,Integer maxValue, boolean mandatory)
-//        throws SmartFrogResolutionException, RemoteException {
-//        return sfResolve(new Reference(referencePart), defaultValue, minValue, maxValue, mandatory);
-//    }
-//
-//    /**
-//     * Resolves a referencePart given a string and gets a long. Utility method
-//     * to resolve an attribute with an long value. Int values are upcastted to
-//     * long.
-//     *
-//     * @param referencePart string field reference
-//     * @param defaultValue long default value that is returned when reference
-//     *        is not found and it is not mandatory
-//     * @param mandatory boolean that indicates if this attribute must be
-//     *        present in the description. If it is mandatory and not found it
-//     *        triggers a SmartFrogResolutionException
-//     *
-//     * @return long for attribute value or defaultValue if not found
-//     *
-//     * @throws SmartFrogResolutionException illegal reference or reference
-//     * not resolvable
-//     * @throws RemoteException In case of network/rmi error
-//     */
-//    public long sfResolve(String referencePart, long defaultValue, boolean mandatory)
-//        throws SmartFrogResolutionException, RemoteException {
-//        return sfResolve(new Reference(referencePart), defaultValue, mandatory);
-//    }
-//
-//    /**
-//     * Resolves a referencePart given a string and gets a long. Utility method
-//     * to resolve an attribute with an long value. Int values are upcastted to
-//     * long.
-//     *
-//     * @param referencePart string field reference
-//     * @param defaultValue long default value that is returned when reference
-//     *        is not found and it is not mandatory
-//     * @param mandatory boolean that indicates if this attribute must be
-//     *        present in the description. If it is mandatory and not found it
-//     *        triggers a SmartFrogResolutionException
-//     * @param minValue allowed (included)
-//     * @param maxValue allowed (included)
-//     *
-//     * @return long for attribute value or defaultValue if not found
-//     *
-//     * @throws SmartFrogResolutionException illegal reference or reference
-//     * not resolvable or resolved value &lt; minValue or &gt; maxValue
-//     * @throws RemoteException In case of network/rmi error
-//     */
-//    public long sfResolve(String referencePart, long defaultValue, Long minValue, Long maxValue, boolean mandatory)
-//        throws SmartFrogResolutionException, RemoteException {
-//        return sfResolve(new Reference(referencePart), defaultValue, minValue, maxValue, mandatory);
-//    }
-//    /**
-//     * Resolves a referencePart given a string and gets a float. Utility method
-//     * to resolve an attribute with an float value.
-//     *
-//     * @param referencePart string field reference
-//     * @param defaultValue float default value that is returned when reference is
-//     *        not found and it is not mandatory
-//     * @param mandatory boolean that indicates if this attribute must be
-//     *        present in the description. If it is mandatory and not found it
-//     *        triggers a SmartFrogResolutionException
-//     *
-//     * @return float for attribute value or defaultValue if not found
-//     *
-//     * @throws SmartFrogResolutionException illegal reference or reference
-//     * not resolvable
-//     * @throws RemoteException In case of network/rmi error
-//     */
-//    public float sfResolve(String referencePart, float defaultValue, boolean mandatory)
-//        throws SmartFrogResolutionException, RemoteException {
-//        return sfResolve(new Reference(referencePart), defaultValue, mandatory);
-//    }
-//
-//    /**
-//     * Resolves a referencePart given a string and gets a float. Utility method
-//     * to resolve an attribute with an float value.
-//     *
-//     * @param referencePart string field reference
-//     * @param defaultValue float default value that is returned when reference is
-//     *        not found and it is not mandatory
-//     * @param mandatory boolean that indicates if this attribute must be
-//     *        present in the description. If it is mandatory and not found it
-//     *        triggers a SmartFrogResolutionException
-//     * @param minValue allowed (included)
-//     * @param maxValue allowed (included)
-//     *
-//     * @return float for attribute value or defaultValue if not found
-//     *
-//     * @throws SmartFrogResolutionException illegal reference or reference
-//     * not resolvable or resolved value &lt; minValue or &gt; maxValue
-//     * @throws RemoteException In case of network/rmi error
-//     */
-//    public float sfResolve(String referencePart, float defaultValue,Float minValue,Float maxValue, boolean mandatory)
-//        throws SmartFrogResolutionException, RemoteException {
-//        return sfResolve(new Reference(referencePart), defaultValue, minValue, maxValue, mandatory);
-//    }
-//
-//    /**
-//     * Resolves a referencePart given a string and gets a double. Utility method
-//     * to resolve an attribute with an double value. Int values are upcasted to
-//     * double.
-//     *
-//     * @param referencePart string field reference
-//     * @param defaultValue double default value that is returned when reference
-//     *        is not found and it is not mandatory
-//     * @param mandatory boolean that indicates if this attribute must be
-//     *        present in the description. If it is mandatory and not found it
-//     *        triggers a SmartFrogResolutionException
-//     *
-//     * @return double for attribute value or defaultValue if not found
-//     *
-//     * @throws SmartFrogResolutionException illegal reference or reference
-//     * not resolvable
-//     * @throws RemoteException In case of network/rmi error
-//     */
-//    public double sfResolve(String referencePart, double defaultValue, boolean mandatory)
-//        throws SmartFrogResolutionException, RemoteException {
-//        return sfResolve(new Reference(referencePart), defaultValue, mandatory);
-//    }
-//
-//    /**
-//     * Resolves a referencePart given a string and gets a double. Utility method
-//     * to resolve an attribute with an double value. Integer, Long and Float
-//     * values are upcasted to double.
-//     *
-//     * @param referencePart string field reference
-//     * @param defaultValue double default value that is returned when reference
-//     *        is not found and it is not mandatory
-//     * @param mandatory boolean that indicates if this attribute must be
-//     *        present in the description. If it is mandatory and not found it
-//     *        triggers a SmartFrogResolutionException
-//     * @param minValue allowed (included)
-//     * @param maxValue allowed (included)
-//     *
-//     * @return double for attribute value or defaultValue if not found
-//     *
-//     * @throws SmartFrogResolutionException illegal reference or reference
-//     * not resolvable or resolved value &lt; minValue or &gt; maxValue
-//     * @throws RemoteException In case of network/rmi error
-//     */
-//    public double sfResolve(String referencePart, double defaultValue, Double minValue, Double maxValue, boolean mandatory)
-//        throws SmartFrogResolutionException, RemoteException {
-//        return sfResolve(new Reference(referencePart), defaultValue, minValue, maxValue, mandatory);
-//    }
-//
-//    /**
-//     * Resolves a referencePart given a string and gets a String. Utility method
-//     * to resolve an attribute with a String value.
-//     *
-//     * @param referencePart string field reference
-//     * @param defaultValue String default value that is returned when reference
-//     *        is not found and it is not mandatory
-//     * @param mandatory boolean that indicates if this attribute must be
-//     *        present in the description. If it is mandatory and not found it
-//     *        triggers a SmartFrogResolutionException
-//     *
-//     * @return String for attribute value or defaultValue if not found
-//     *
-//     * @throws SmartFrogResolutionException illegal reference or reference
-//     * not resolvable
-//     * @throws RemoteException In case of network/rmi error
-//     */
-//    public String sfResolve(String referencePart, String defaultValue,
-//        boolean mandatory) throws SmartFrogResolutionException, RemoteException {
-//        return sfResolve(new Reference(referencePart), defaultValue, mandatory);
-//    }
-//
-//    /**
-//     * Resolves a referencePart given a string and gets a Vector. Utility method     * to resolve an attribute with a Vector value.
-//     *
-//     * @param referencePart string field reference
-//     * @param defaultValue Vector default value that is returned when reference
-//     *        is not found and it is not mandatory
-//     * @param mandatory boolean that indicates if this attribute must be
-//     *        present in the description. If it is mandatory and not found it
-//     *        triggers a SmartFrogResolutionException
-//     *
-//     * @return Vector for attribute value or defaultValue if not found
-//     *
-//     * @throws SmartFrogResolutionException illegal reference or reference
-//     * not resolvable
-//     * @throws RemoteException In case of network/rmi error
-//     */
-//    public Vector sfResolve(String referencePart, Vector defaultValue,
-//        boolean mandatory) throws SmartFrogResolutionException, RemoteException {
-//        return sfResolve(new Reference(referencePart), defaultValue, mandatory);
-//    }
-//
-//    /**
-//     * Resolves a referencePart given a string and gets a String[]. Utility
-//     * method to resolve an attribute with a Vector value and returns a String[]
-//     *
-//     *
-//     * @param referencePart string field reference
-//     * @param defaultValue String[] default value that is returned when
-//     *        reference is not found and it is not mandatory
-//     * @param mandatory boolean that indicates if this attribute must be
-//     *        present in the description. If it is mandatory and not found it
-//     *        triggers a SmartFrogResolutionException
-//     *
-//     * @return String[] for attribute value or defaultValue if not found
-//     *
-//     * @throws SmartFrogResolutionException illegal reference or reference
-//     * not resolvable
-//     * @throws RemoteException In case of network/rmi error
-//     */
-//    public String[] sfResolve(String referencePart, String[] defaultValue,
-//        boolean mandatory) throws SmartFrogResolutionException, RemoteException {
-//        return sfResolve(new Reference(referencePart), defaultValue, mandatory);
-//    }
-//
-//    /**
-//     * Resolves a referencePart given a string and gets a SmartFrog
-//     * ComponentDescription. Utility method to resolve an attribute with a
-//     * SmartFrog ComponentDescription value.
-//     *
-//     * @param referencePart string field reference
-//     * @param defaultValue SmartFrog ComponentDescription default value that is
-//     *        returned when reference is not found and it is not mandatory
-//     * @param mandatory boolean that indicates if this attribute must be
-//     *        present in the description. If it is mandatory and not found it
-//     *        triggers a SmartFrogResolutionException
-//     *
-//     * @return ComponentDescription for attribute value or defaultValue if not
-//     *         found
-//     *
-//     * @throws SmartFrogResolutionException illegal reference or reference
-//     * not resolvable
-//     * @throws RemoteException In case of network/rmi error
-//     */
-//    public ComponentDescription sfResolve(String referencePart,
-//        ComponentDescription defaultValue, boolean mandatory)
-//        throws SmartFrogResolutionException, RemoteException {
-//        return sfResolve(new Reference(referencePart), defaultValue, mandatory);
-//    }
-//
-//    /**
-//     * Resolves a referencePart given a string and gets a SmartFrog Reference.
-//     * Utility method to resolve an attribute with a SmartFrog
-//     * ComponentDescription value.
-//     *
-//     * @param referencePart string field reference
-//     * @param defaultValue SmartFrog Reference default value that is returned
-//     *        when reference is not found and it is not mandatory
-//     * @param mandatory boolean that indicates if this attribute must be
-//     *        present in the description. If it is mandatory and not found it
-//     *        triggers a SmartFrogResolutionException
-//     *
-//     * @return Reference for attribute value or defaultValue if not found
-//     *
-//     * @throws SmartFrogResolutionException illegal reference or reference
-//     * not resolvable
-//     * @throws RemoteException In case of network/rmi error
-//     */
-//    public Reference sfResolve(String referencePart, Reference defaultValue,
-//        boolean mandatory) throws SmartFrogResolutionException, RemoteException {
-//        return sfResolve(new Reference(referencePart), defaultValue, mandatory);
-//    }
-//
-//    /**
-//     * Resolves a referencePart given a string and gets a SmartFrog Prim.
-//     * Utility method to resolve an attribute with a SmartFrog
-//     * ComponentDescription value.
-//     *
-//     * @param referencePart string field reference
-//     * @param defaultValue SmartFrog Prim default value that is returned
-//     *        when reference is not found and it is not mandatory
-//     * @param mandatory boolean that indicates if this attribute must be
-//     *        present in the description. If it is mandatory and not found it
-//     *        triggers a SmartFrogResolutionException
-//     *
-//     * @return Prim for attribute value or defaultValue if not found
-//     *
-//     * @throws SmartFrogResolutionException illegal reference or reference
-//     * not resolvable
-//     * @throws RemoteException In case of network/rmi error
-//     */
-//    public Prim sfResolve(String referencePart, Prim defaultValue,
-//        boolean mandatory) throws SmartFrogResolutionException, RemoteException {
-//        return sfResolve(new Reference(referencePart), defaultValue, mandatory);
-//    }
-//
-//
-//    /**
-//     * Resolves a referencePart given a string and gets a SmartFrog Compound.
-//     * Utility method to resolve an attribute with a SmartFrog
-//     * ComponentDescription value.
-//     *
-//     * @param referencePart string field reference
-//     * @param defaultValue SmartFrog Compound default value that is returned
-//     *        when reference is not found and it is not mandatory
-//     * @param mandatory boolean that indicates if this attribute must be
-//     *        present in the description. If it is mandatory and not found it
-//     *        triggers a SmartFrogResolutionException
-//     *
-//     * @return Compound for attribute value or defaultValue if not found
-//     *
-//     * @throws SmartFrogResolutionException illegal reference or reference
-//     * not resolvable
-//     * @throws RemoteException In case of network/rmi error
-//     */
-//    public Compound sfResolve(String referencePart, Compound defaultValue,
-//        boolean mandatory) throws SmartFrogResolutionException, RemoteException {
-//        return sfResolve(new Reference(referencePart), defaultValue, mandatory);
-//    }
-//
-//    /**
-//     * Resolves a referencePart given a string and gets a SmartFrog Reference.
-//     * Utility method to resolve an attribute with a java.net.InetAddress
-//     * value.
-//     *
-//     * @param referencePart string field reference
-//     * @param defaultValue java.net.InetAddress default value that is returned
-//     *        when reference is not found and it is not mandatory
-//     * @param mandatory boolean that indicates if this attribute must be
-//     *        present in the description. If it is mandatory and not found it
-//     *        triggers a SmartFrogResolutionException
-//     *
-//     * @return Reference for attribute value or defaultValue if not found
-//     *
-//     * @throws SmartFrogResolutionException illegal reference or reference
-//     * not resolvable
-//     * @throws RemoteException In case of network/rmi error
-//     */
-//    public java.net.InetAddress sfResolve(String referencePart,
-//        java.net.InetAddress defaultValue, boolean mandatory)
-//        throws SmartFrogResolutionException, RemoteException {
-//        return sfResolve(new Reference(referencePart), defaultValue, mandatory);
-//    }
-//
-//
-//
-//    /**
-//     * Resolves a referencePart given a string and gets a java Object.
-//     *
-//     * @param referencePart string field reference
-//     * @param defaultValue java Object default value that is returned
-//     *        when reference is not found and it is not mandatory
-//     * @param mandatory boolean that indicates if this attribute must be
-//     *        present in the description. If it is mandatory and not found it
-//     *        triggers a SmartFrogResolutionException
-//     *
-//     * @return Reference for attribute value or defaultValue if not found
-//     *
-//     * @throws SmartFrogResolutionException illegal reference or reference
-//     * not resolvable
-//     * @throws RemoteException In case of network/rmi error
-//     */
-//    public Object sfResolve(String referencePart,
-//        Object defaultValue, boolean mandatory)
-//        throws SmartFrogResolutionException, RemoteException {
-//        return sfResolve(new Reference(referencePart), defaultValue, mandatory);
-//    }
 
     /**
      * Returns the complete name for this component from the root of the
@@ -1610,26 +453,6 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
         return sfParent;
     }
 
-    /**
-     * Find an attribute in this component context.
-     *
-     * @param name attribute key to resolve
-     *
-     * @return Object Reference
-     *
-     * @throws SmartFrogResolutionException failed to find attribute
-     */
-    public synchronized Object sfResolveHere(Object name)
-        throws SmartFrogResolutionException {
-        Object result = null;
-
-        if ((result = sfResolveId(name)) == null) {
-             throw SmartFrogResolutionException.notFound(new Reference(
-                        name), sfCompleteNameSafe());
-        }
-
-        return result;
-    }
 
     /**
      * Private method to set up newly created component. Primitives should only
@@ -1669,10 +492,8 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
         }
 
         */
-
-
             boolean es; // allow exportRef to be defined by string (backward compatability) or boolean
-            Object eso = sfResolveId(SmartFrogCoreKeys.SF_EXPORT);
+            Object eso = sfResolveHere(SmartFrogCoreKeys.SF_EXPORT, false);
 
             if (eso == null) {
                 es = true;
@@ -1692,8 +513,8 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
 
             //Registers component with local ProcessCompound
             if (sfContext.containsKey(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME)) {
-                SFProcess.getProcessCompound().sfRegister(sfResolveId(
-                    SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME), this);
+                SFProcess.getProcessCompound().sfRegister(sfResolveHere(
+                    SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME,false), this);
             }
 
             try {
@@ -1978,8 +799,8 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
             // root components and then it will detach!). Keep this order!)
             if (!(SFProcess.getProcessCompound().sfContainsChild(this))) {
                 //Registers with local process compound!
-               SFProcess.getProcessCompound().sfRegister(this.sfResolveId(
-                   SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME), this);
+               SFProcess.getProcessCompound().sfRegister(this.sfResolveHere(
+                   SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME,false), this);
             }
             sfParent = null;
             sfStartLivenessSender();
@@ -2182,8 +1003,11 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
      * @throws SmartFrogException
      * @throws RemoteException
      */
-    public LogSF sfGetProcessLog() throws SmartFrogException, RemoteException {
-       return LogFactory.getProcessLog();
+    public LogSF sfGetProcessLog() {
+       if (log==null) {
+           log =  LogFactory.getProcessLog();
+       }
+       return log;
     }
 
     /**
@@ -2209,7 +1033,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
      */
     public LogSF sfGetApplicationLog() throws SmartFrogException, RemoteException{
         //@todo should we use prim name and get a hierarchy of logs?
-         //this.sfResolveHere(SmartFrogCoreKeys.SF_APP_LOG_NAME);
+         //this.sfResolveHere(SmartFrogCoreKeys.SF_APP_LOG_NAME,false);
         try {
             return sfGetLog(sfResolve(SmartFrogCoreKeys.SF_APP_LOG_NAME, "", true));
         } catch (SmartFrogResolutionException ex) {

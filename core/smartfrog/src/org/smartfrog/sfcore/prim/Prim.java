@@ -131,21 +131,6 @@ public interface Prim extends Liveness, RemoteReferenceResolver, RemoteReference
     public Prim sfParent() throws RemoteException;
 
     /**
-     * Finds an attribute in this component. This is a system call. User
-     * components should use sfResolve.
-     *
-     * @param name name of the required attribute
-     *
-     * @return the attribute under given name
-     *
-     * @throws SmartFrogResolutionException name was not resolvable
-     * @throws RemoteException In case of Remote/nework error
-     *
-     */
-    public Object sfResolveHere(Object name)
-        throws SmartFrogResolutionException, RemoteException;
-
-    /**
      * Private method to set up a freshly deployed component. New primitives
      * should only override sfDeploy.
      *
@@ -267,7 +252,7 @@ public interface Prim extends Liveness, RemoteReferenceResolver, RemoteReference
      * @throws SmartFrogException
      * @throws RemoteException
      */
-    public LogSF sfGetProcessLog() throws SmartFrogException, RemoteException;
+    public LogSF sfGetProcessLog() throws RemoteException;
 
     /**
      *  To get application logger using ROOT name.

@@ -30,11 +30,14 @@ import java.util.Properties;
 
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.Context;
+import org.smartfrog.sfcore.common.SmartFrogContextException;
 import org.smartfrog.sfcore.common.MessageKeys;
 import org.smartfrog.sfcore.common.MessageUtil;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.logging.LogFactory;
+import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferencePart;
@@ -68,6 +71,10 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
 
     /** Whether this description is eager or lazy. */
     public boolean eager;
+
+    /** Log is initialized before the sfResolve is added */
+    private static  LogSF log = null;
+
 
     /**
      * Constucts ComponentDescriptionImpl with parent component and context.
@@ -265,14 +272,48 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
     //
 
     /**
-     * Resolves a single id in this component description.
+     * Find an attribute in this component context.
      *
-     * @param id key to resolve
+     * @param name attribute key to resolve
      *
-     * @return context value for id or null if none
+     * @return Object Reference
+     *
+     * @throws SmartFrogResolutionException failed to find attribute
      */
-    public Object sfResolveId(Object id) {
-        return sfContext().get(id);
+    public Object sfResolveHere(Object name)
+        throws SmartFrogResolutionException {
+        Object result = null;
+        try {
+            result=context.sfResolveAttribute(name);
+        } catch (SmartFrogContextException ex) {
+            throw SmartFrogResolutionException.notFound(new Reference(name)
+                , sfCompleteNameSafe());
+        }
+        return result;
+    }
+
+    /**
+     * Find an attribute in this context.
+     *
+     * @param name attribute key to resolve
+     * @param mandatory boolean that indicates if this attribute must be
+     *        present in the description. If it is mandatory and not found it
+     *        throws a SmartFrogResolutionException
+     *
+     * @return Object value for attribute
+     *
+     * @throws SmartFrogResolutionException failed to find attribute
+     */
+    public Object sfResolveHere(Object name, boolean mandatory)
+        throws SmartFrogResolutionException {
+        try {
+            return sfResolveHere(name);
+        } catch (SmartFrogResolutionException e) {
+            if (mandatory) {
+                throw e;
+            }
+        }
+        return null;
     }
 
     /**
@@ -293,9 +334,14 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      *
      * @throws SmartFrogResolutionException occurred while resolving
      */
-    public Object sfResolve(Reference r)
-        throws SmartFrogResolutionException {
-        return sfResolve(r, 0);
+    public Object sfResolve(Reference r) throws SmartFrogResolutionException {
+        Object obj = sfResolve(r, 0);
+        try {
+            if ((log!= null) && log.isTraceEnabled()) {
+                log.trace("sfResolved: "+r.toString()+" to "+obj.toString());
+            }
+        } catch (Exception ex) {ex.printStackTrace();}//ignore}
+        return obj;
     }
 
     /**
@@ -705,8 +751,8 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
         Properties props = System.getProperties();
         for (Enumeration e = props.keys(); e.hasMoreElements(); ) {
             String key = e.nextElement().toString();
-//            System.out.println("- Read:    "+key+
-//                              "\n, Filter: "+startWith);
+            //  System.out.println("- Read:    "+key+
+            //                    "\n, Filter: "+startWith);
             if (key.startsWith(startWith)) {
                 Object value = props.get(key);
                 try {
@@ -734,6 +780,15 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
             }
         }
         return compDesc;
+    }
+
+    /** Special method to be used only by LogFactory to initialize log in
+     *  ComponentDescription.
+     *  This is because LogImpl uses ComponentDescription to initialize itself.
+     *
+     */
+    static public void initLog(LogSF newlog){
+        if (log==null) log = newlog;
     }
 
 }

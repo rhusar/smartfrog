@@ -65,7 +65,6 @@ public class ContextImpl extends OrderedHashtable implements Context,
         if (!contains(value)) {
             return null;
         }
-
         for (Enumeration e = keys(); e.hasMoreElements();) {
             Object theKey = e.nextElement();
 
@@ -73,8 +72,26 @@ public class ContextImpl extends OrderedHashtable implements Context,
                 return theKey;
             }
         }
-
         return null;
+    }
+
+
+    /**
+     * Find an attribute in this context.
+     *
+     * @param name attribute key to resolve
+     *
+     * @return Object Reference
+     *
+     * @throws SmartFrogContextException failed to find attribute
+     */
+    public Object sfResolveAttribute(Object name) throws SmartFrogContextException {
+        Object result = this.get(name);
+        if (result == null) {
+            throw new SmartFrogContextException(
+                       MessageUtil.formatMessage(MessageKeys.MSG_NOT_FOUND_ATTRIBUTE, name));
+        }
+        return result;
     }
 
 

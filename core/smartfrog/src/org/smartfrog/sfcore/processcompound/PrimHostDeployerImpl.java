@@ -72,21 +72,19 @@ public class PrimHostDeployerImpl extends PrimDeployerImpl {
         InetAddress hostAddress = null;
         String hostname=null;
         try {
-            hostname = (String) target.sfResolve(
-                        refProcessHost);
+            hostname = (String) target.sfResolve(refProcessHost);
             hostAddress = InetAddress.getByName(hostname);
         } catch (SmartFrogResolutionException resex) {
             return SFProcess.getProcessCompound();
         } catch (java.net.UnknownHostException unhex){
                 Object name = null;
                 if (target.sfContext().containsKey(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME)) {
-                    name =target.sfResolveId(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME);
+                    name =target.sfResolveHere(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME,false);
                 }
                 throw new SmartFrogDeploymentException (refProcessHost,null,name,target,null,"Unknown host: "+hostname, unhex, hostname);
         }
 
-        return SFProcess.getRootLocator().
-            getRootProcessCompound(hostAddress) ;
+        return SFProcess.getRootLocator().getRootProcessCompound(hostAddress) ;
     }
 
     /**
@@ -123,7 +121,9 @@ public class PrimHostDeployerImpl extends PrimDeployerImpl {
                 return pc.sfDeployComponentDescription(null, parent, target, null);
             }
         }catch (Exception ex){
-            throw (SmartFrogDeploymentException)SmartFrogDeploymentException.forward(ex);
+            org.smartfrog.sfcore.logging.LogSF log = org.smartfrog.sfcore.logging.LogFactory.getProcessLog();
+            if (log.isErrorEnabled()) log.error(ex);
+            throw (SmartFrogDeploymentException)SmartFrogDeploymentException.forward("PrimHostDeployerImpl.deploy",ex);
         }
     }
 }

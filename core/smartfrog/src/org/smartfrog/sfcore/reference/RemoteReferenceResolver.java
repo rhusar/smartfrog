@@ -73,13 +73,34 @@ public interface RemoteReferenceResolver extends Remote {
      */
     public RemoteReferenceResolver sfResolveParent() throws RemoteException;
 
+
     /**
-     * Resolves a single id part of a reference.
+     * Find an attribute in this context.
      *
-     * @param id attribute name to resolve in target context
+     * @param name attribute key to resolve
      *
-     * @return resolved id or null if not found
+     * @return resolved attribute
+     *
+     * @throws SmartFrogResolutionException failed to find attribute
      * @throws RemoteException if there is any network/rmi error
      */
-    public Object sfResolveId(Object id) throws RemoteException;
+    public Object sfResolveHere(Object name) throws RemoteException, SmartFrogResolutionException;
+
+    /**
+     * Find an attribute in this context.
+     *
+     * @param name attribute key to resolve
+     * @param mandatory boolean that indicates if this attribute must be
+     *        present in the description. If it is mandatory and not found it
+     *        throws a SmartFrogResolutionException
+     *
+     * @return Object value for attribute
+     *
+     * @throws SmartFrogResolutionException failed to find attribute
+     * @throws RemoteException In case of network/rmi error
+     */
+    public Object sfResolveHere(Object name, boolean mandatory)
+        throws SmartFrogResolutionException, RemoteException;
+
+
 }
