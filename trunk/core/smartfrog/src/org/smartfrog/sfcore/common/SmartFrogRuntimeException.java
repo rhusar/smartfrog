@@ -33,7 +33,7 @@ public class SmartFrogRuntimeException extends SmartFrogException {
 
     /** Attribute name for reference in exceptioncontext. */
     public static final String REFERENCE = "reference";
-    
+
     /** Attribute name in exceptioncontext: The source of the exception. */
     public static final String SOURCE = "source";
 
@@ -123,9 +123,9 @@ public class SmartFrogRuntimeException extends SmartFrogException {
 
     /**
      * To forward SmartFrog exceptions instead of chain them.
-     * 
+     *
      * @param thr throwable object to be forwarded
-     * 
+     *
      * @return SmartFrogException that is a SmartFrogRuntimeException
      */
     public static SmartFrogException forward (Throwable thr){
@@ -135,6 +135,7 @@ public class SmartFrogRuntimeException extends SmartFrogException {
             return new SmartFrogRuntimeException (thr);
         }
     }
+
 
     /**
      * Returns a string representation of the runtime exception.
