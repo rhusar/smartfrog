@@ -306,6 +306,9 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
         }
     }
 
+    protected void registerWithProcessCompound() throws RemoteException, SmartFrogException {
+        //This is a ProcessCompound. Don't need to register
+    }
 
     /**
      * Starts the process compound. In addition to the normal Compound sfStart,
