@@ -38,9 +38,6 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 
-
-
-
 /**
  * sfMultiCastServer provides an implementation of a simple Multicast Server that
  * sends multicast messages to 'mcastAddress:mcastPort' every 5 secs.

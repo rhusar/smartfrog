@@ -32,6 +32,7 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.filesystem.replacevar;
 
 import java.io.*;
+
 import java.util.Vector;
 import java.util.HashMap;
 import java.util.Map;

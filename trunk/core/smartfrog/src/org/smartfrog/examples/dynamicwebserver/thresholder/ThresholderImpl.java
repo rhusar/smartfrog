@@ -39,7 +39,6 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferencePart;
-import org.smartfrog.sfcore.common.*;
 
 /**
  * <p>

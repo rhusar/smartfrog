@@ -29,13 +29,10 @@ import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
-import org.smartfrog.sfcore.processcompound.SFProcess;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import java.rmi.RemoteException;
 
-//import org.smartfrog.sfcore.parser.*;
 
 /**
  * DeployEntry class implements the interface Entry.
