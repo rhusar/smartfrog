@@ -76,10 +76,11 @@ public class HereReferencePart extends ReferencePart {
      * @return the representation
      */
     public String toString(int index) {
-    if (index == 0)
-        return HERE + ' ' + value.toString();
-    else
-        return value.toString();
+	if (value == null) return "";
+	if (index == 0)
+	    return HERE + ' ' + value.toString();
+	else
+	    return value.toString();
     }
 
     /**
