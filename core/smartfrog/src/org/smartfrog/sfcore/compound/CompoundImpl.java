@@ -104,16 +104,15 @@ public class CompoundImpl extends PrimImpl implements Compound {
      * @throws SmartFrogDeploymentException failed to deploy compiled component
      */
     public Prim sfDeployComponentDescription(Object name, Prim parent,
-            ComponentDescription cmp, Context parms)
-            throws SmartFrogDeploymentException {
+            ComponentDescription cmp, Context parms) throws SmartFrogDeploymentException {
         // check for attribute already named like given name
         try {
-            Object res = ((parent == null) || (name == null)) ? null
-            : sfResolveId(name);
+            Object res = ((parent == null) || (name == null)) ? null: sfResolveId(name);
 
             if ((res != null) && !(res instanceof ComponentDescription)) {
-                throw new SmartFrogDeploymentException(null, parent.sfCompleteName() ,name, cmp, parms,MessageUtil.
-                        formatMessage(MSG_NON_REP_ATTRIB, name), null,null);
+                throw new SmartFrogDeploymentException(null, parent.sfCompleteName() ,
+                            name, cmp, parms,MessageUtil.
+                                formatMessage(MSG_NON_REP_ATTRIB, name), null,null);
             }
             // try to deploy
             Prim result = cmp.deploy(null, parent, parms);
@@ -122,23 +121,30 @@ public class CompoundImpl extends PrimImpl implements Compound {
                 parent.sfReplaceAttribute(name, result);
             }
             return result;
-        }  catch (SmartFrogDeploymentException dex) {
+        } catch (SmartFrogDeploymentException dex) {
             // It will build source recursively
             Reference newRef =new Reference();
             if (name==null) {
-                if (parms.containsKey("sfProcessComponentName"))
-                    name =parms.get("sfProcessComponentName");
-                try { newRef = parent.sfCompleteName();} catch (Exception ex){}  // LOG ex
+                if (cmp.getContext().containsKey("sfProcessComponentName"))
+                    name =cmp.getContext().get("sfProcessComponentName");
+                try { 
+                    newRef = parent.sfCompleteName();
+                } catch (Exception ex){
+                    // LOG ex
+                }  
             }
-            if ((dex.get(dex.OBJECT_NAME))!=null)
+            if ((dex.get(dex.OBJECT_NAME))!=null) {
                 newRef.addElement (ReferencePart.here(name));
-            else dex.add(dex.OBJECT_NAME, name);
-
-            if (dex.get(dex.SOURCE)!=null)
+            } else {
+                dex.add(dex.OBJECT_NAME, name);
+            }
+            if (dex.get(dex.SOURCE)!=null) {
                 newRef.addElements((Reference)dex.get(dex.SOURCE));
+            }
 
-            if (newRef.size()!=0) dex.put(dex.SOURCE, newRef);
-
+            if (newRef.size()!=0) {
+                dex.put(dex.SOURCE, newRef);
+            }
             throw dex;
         } catch (Throwable thr) {
             throw (SmartFrogDeploymentException)SmartFrogDeploymentException.forward(thr);
