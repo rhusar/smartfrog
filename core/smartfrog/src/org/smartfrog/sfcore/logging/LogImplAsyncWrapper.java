@@ -224,7 +224,7 @@ public class LogImplAsyncWrapper implements LogSF {
      * @param message log this message
      */
     public void ignore(Object message, SmartFrogException t, TerminationRecord tr) {
-        ignore(message, t);
+        ignore(message, (Throwable)t);
     }
 
 
@@ -235,7 +235,7 @@ public class LogImplAsyncWrapper implements LogSF {
      * @param t log this cause
      */
     public void ignore(Object message, SmartFrogException t) {
-        ignore(message, t);
+        ignore(message, (Throwable)t);
     }
 
 
