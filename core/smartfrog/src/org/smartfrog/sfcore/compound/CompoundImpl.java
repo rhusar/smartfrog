@@ -183,33 +183,33 @@ public class CompoundImpl extends PrimImpl implements Compound {
      */
     public Prim sfCreateNewChild(Object name, ComponentDescription cmp, Context parms)
         throws RemoteException, SmartFrogDeploymentException {
-	Prim comp = null;
-	try {
-	    synchronized (this) {
-		if (!sfIsTerminated) {
-		    comp = sfDeployComponentDescription(name, this, cmp, parms);
-		    // it is now a child, so need to guard against double calling of lifecycle...
-		    if (sfIsDeployed) comp.sfDeploy(); // otherwise let the deploy of this component do it...
-		    if (sfIsStarted) comp.sfStart(); // otherwise let the start of this component do it...
-		}
-	    }
-	} catch (Exception e) {
-	    if (comp != null) {
-		try {
-		    sfDetachAndTerminate(TerminationRecord.abnormal("error during deployment" + e.getMessage(), sfCompleteName()));
-		} catch (Exception ex) {
-		    //@TODO log
-		}
-	    }
-	    throw (SmartFrogDeploymentException) SmartFrogDeploymentException.forward(e);
-	}
-	return comp;
+    Prim comp = null;
+    try {
+        synchronized (this) {
+        if (!sfIsTerminated) {
+            comp = sfDeployComponentDescription(name, this, cmp, parms);
+            // it is now a child, so need to guard against double calling of lifecycle...
+            if (sfIsDeployed) comp.sfDeploy(); // otherwise let the deploy of this component do it...
+            if (sfIsStarted) comp.sfStart(); // otherwise let the start of this component do it...
+        }
+        }
+    } catch (Exception e) {
+        if (comp != null) {
+        try {
+            sfDetachAndTerminate(TerminationRecord.abnormal("error during deployment" + e.getMessage(), sfCompleteName()));
+        } catch (Exception ex) {
+            //@TODO log
+        }
+        }
+        throw (SmartFrogDeploymentException) SmartFrogDeploymentException.forward(e);
+    }
+    return comp;
     }
 
     /**
      * A high-level component deployment method - creates a child of this
      * Compound, running it through its entire lifecycle. This is the preferred way
-     * of creating new child components of a Compound. The method is safe against 
+     * of creating new child components of a Compound. The method is safe against
      * multiple calls of lifecycle.
      *
      * @param cmp compiled component to deploy and start
@@ -218,28 +218,28 @@ public class CompoundImpl extends PrimImpl implements Compound {
      *
      * @return deployed component if successfull
      *
-     * @exception SmartFrogDeploymentException failed to deploy compiled 
+     * @exception SmartFrogDeploymentException failed to deploy compiled
      * component
      * @exception RemoteException In case of Remote/nework error
      */
     public Prim sfCreateNewApp(ComponentDescription cmp, Context parms)
         throws RemoteException, SmartFrogDeploymentException {
-	Prim comp = null;
-	try {
-	    comp = sfDeployComponentDescription(null, null, cmp, parms);
-	    comp.sfDeploy();
-	    comp.sfStart();
-	} catch (Exception e) {
-	    if (comp != null) {
-		try {
-		    comp.sfTerminate(TerminationRecord.abnormal("error during deployment" + e.getMessage(), sfCompleteName()));
-		} catch (Exception ex) {
-		    //@TODO log
-		}
-	    }
-	    throw (SmartFrogDeploymentException) SmartFrogDeploymentException.forward(e);
-	}
-	return comp;
+    Prim comp = null;
+    try {
+        comp = sfDeployComponentDescription(null, null, cmp, parms);
+        comp.sfDeploy();
+        comp.sfStart();
+    } catch (Exception e) {
+        if (comp != null) {
+        try {
+            comp.sfTerminate(TerminationRecord.abnormal("error during deployment" + e.getMessage(), sfCompleteName()));
+        } catch (Exception ex) {
+            //@TODO log
+        }
+        }
+        throw (SmartFrogDeploymentException) SmartFrogDeploymentException.forward(e);
+    }
+    return comp;
     }
 
 
@@ -255,8 +255,9 @@ public class CompoundImpl extends PrimImpl implements Compound {
      */
     //public synchronized void sfAddChild(Liveness target) {
     // if synchronized -> locks processCompound when it registers back!
-    public void sfAddChild(Liveness target) {
+    public void sfAddChild(Liveness target) throws RemoteException {
         sfChildren.addElement(target);
+        ((Prim)target).sfParentageChanged();
     }
 
     /**
@@ -565,6 +566,17 @@ public class CompoundImpl extends PrimImpl implements Compound {
     }
 
     /**
+     * Parentage changed in component hierachy. A notification is sent to all
+     * children.
+     */
+    public synchronized void sfParentageChanged() throws RemoteException {
+        for (Enumeration e = sfChildren(); e.hasMoreElements();) {
+             Prim p = (Prim)(e.nextElement());
+             p.sfParentageChanged();
+        }
+    }
+
+    /**
      * Implements an asynchronous sfTerminateQuietlyWith call
      */
     private class TerminateCall implements Runnable {
@@ -636,4 +648,5 @@ public class CompoundImpl extends PrimImpl implements Compound {
             }
         }
     }
+
 }

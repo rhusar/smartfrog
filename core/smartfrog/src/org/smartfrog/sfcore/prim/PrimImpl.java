@@ -49,6 +49,7 @@ import org.smartfrog.sfcore.security.SecureRemoteObject;
 
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.logging.LogSF;
+import java.rmi.*;
 
 
 /**
@@ -1896,6 +1897,11 @@ public class PrimImpl extends Object implements Prim, MessageKeys {
      * @param status termination status
      */
     public synchronized void sfTerminateWith(TerminationRecord status) {
+        try {
+            org.smartfrog.sfcore.security.SecureRemoteObject.unexportObject(this, true);
+        } catch (NoSuchObjectException ex) {
+            // @TODO: Log. Ignore.
+        }
         org.smartfrog.sfcore.common.Logger.log (this.sfCompleteNameSafe().toString(),status);
         try {
             sfTerminateWithHooks.applyHooks(this, status);
@@ -1964,10 +1970,10 @@ public class PrimImpl extends Object implements Prim, MessageKeys {
         if (sfParent == null) {
             return;
         }
-
         ((ChildMinder) sfParent).sfRemoveChild(this);
         sfParent = null;
         sfStartLivenessSender();
+        sfParentageChanged();
     }
 
     /**
@@ -2153,9 +2159,9 @@ public class PrimImpl extends Object implements Prim, MessageKeys {
         terminator.start();
     }
 
-    // Gets logger for Core.
+
     /**
-     *  To get the core logger
+     *  To get the sfCore logger
      * @return Logger implementing LogSF and Log
      * @throws SmartFrogException
      * @throws RemoteException
@@ -2165,7 +2171,7 @@ public class PrimImpl extends Object implements Prim, MessageKeys {
     }
 
     /**
-     * To get the a logger
+     * To get a logger
      * @param name logger name
      * @return Logger implementing LogSF and Log
      * @throws SmartFrogException
@@ -2200,4 +2206,11 @@ public class PrimImpl extends Object implements Prim, MessageKeys {
 
     }
 
+    /**
+     * Parentage changed in component hierachy.
+     * Actions: sfCompleteName cache is cleaned
+     */
+    public synchronized void sfParentageChanged() throws RemoteException{
+       sfCompleteName=null;
+    }
 }
