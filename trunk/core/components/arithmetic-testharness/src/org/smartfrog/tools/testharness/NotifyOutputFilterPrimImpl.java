@@ -111,11 +111,12 @@ public class NotifyOutputFilterPrimImpl extends PrimImpl implements NotifyOutput
       readArrayStrings(RESULT_CUSTOM_TAGS,
                        TestHelper.DEFAULT_RESULT_CUSTOM_TAGS);
     /* A reference to an scheduler that will be notified of our findings. */
-    Scheduler scheduler;
+    Scheduler scheduler = null;
     try {
       //log("NotifyOutFilterPrimImpl.scheduler searching.");
-      scheduler = (Scheduler) sfResolve(SCHEDULER);
-      //log("NotifyOutFilterPrimImpl.scheduler found!");
+      //scheduler = (Scheduler) sfResolve(SCHEDULER);
+	  scheduler = (Scheduler) sfResolve(SCHEDULER, scheduler, true);
+	  //log("NotifyOutFilterPrimImpl.scheduler found!");
     } catch (Exception e) {
       logErr(" NotifyOutFilterPrimImpl.scheduler NOT found!");
       // Do not try to notify
@@ -125,15 +126,22 @@ public class NotifyOutputFilterPrimImpl extends PrimImpl implements NotifyOutput
     /* The name of the file to where we copy the input to this filter. */
     String fileOutputName=null;
     try {
-      fileOutputName = (String) sfResolve(FILE_NAME);
+      fileOutputName = (String) sfResolve(FILE_NAME,fileOutputName , false);
+	
+
     } catch (Exception e) {
       // Use System.out
       fileOutputName = null;
     }
+
+
+
     /* A  unique id for the scheduler. THIS IS A MUST.*/
-    String processId;
-    processId = (String)  sfResolve(PROCESS_ID);
-    log("searchNormalPatterns:"+arrayToString(searchNormalPatterns));
+    String processId = null;
+    //processId = (String)  sfResolve(PROCESS_ID);
+	 processId = sfResolve(PROCESS_ID,processId, true);
+    System.out.println("Process Id: =====" + processId);
+	log("searchNormalPatterns:"+arrayToString(searchNormalPatterns));
     log("resultNormalTags:"+arrayToString(resultNormalTags));
     try {
         notifyFilter = new
@@ -238,7 +246,8 @@ public class NotifyOutputFilterPrimImpl extends PrimImpl implements NotifyOutput
       message = "[NOTIFY_OUTPUT_FILTER_PRIM."+PROCESS_ID+"] "+message;
       if (formatMsg) message= formatMsg(message);
       if (verbose) System.out.println(message);
-    }
+	  
+	  }
 
     private void logErr (String message){
       message = "[NOTIFY_OUTPUT_FILTER_PRIM."+PROCESS_ID+"] "+message;
@@ -256,8 +265,8 @@ public class NotifyOutputFilterPrimImpl extends PrimImpl implements NotifyOutput
       msg = "[" + (new java.text.SimpleDateFormat("HH:mm:ss.SSS dd/MM/yy").format(new java.util.Date(System.currentTimeMillis()))) + "] " + msg;
       return msg;
    }
-   public String toString (){
-      return ("NotifyFilterPrimImpl "+this.PROCESS_ID+", "+this.notifyFilter.toString());
-   }
+   /*public String toString (){
+      return ("NotifyOutputFilterPrimImpl "+this.PROCESS_ID+", "+this.notifyFilter.toString());
+   }*/
 }
 

@@ -44,6 +44,7 @@ public interface NotifyOutputFilter extends OutputStreamIntf {
   public void shutdown();
 
   /** Gets external component implementing PrintMsgInt*/
+
   //public PrintMsgInt getExternalPrintMsg();
 
  /** Sets external component implementing PrintMsgInt*/

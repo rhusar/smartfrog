@@ -4,8 +4,9 @@
  * know how many times we want to check for equality before the 'DONE' message is printed.
  */
 Comparator extends NetElem {
-	sfClass "org.smartfrog.regtest.arithmetic.comparator";
+	sfClass "org.smartfrog.regtest.arithmetic.Comparator";
 	count 1; // the number of equalities to count before stopping the test.
 	inputs:target extends Input;
 	inputs:candidate extends Input;
+	outputs:value extends Output; //india team changes
 }	

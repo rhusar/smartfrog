@@ -19,7 +19,8 @@ allTests extends Sequence {
     test1 extends Timeout {
       time ATTRIB maxTimePerTest;
       action extends  LAZY ATTRIB plain:TemplateSerrano {
-        appName "org/smartfrog/regtest/arithmetic/templategen/example1TH_1.sf";
+      appName "org/smartfrog/regtest/arithmetic/templategen/example1TH_1.sf";
+	   
       }
     } 
     
@@ -49,7 +50,7 @@ allTests extends Sequence {
 }
 Compound extends Prim {
   sfClass "org.smartfrog.sfcore.compound.CompoundImpl";
-  sfSyncTerminate "true";
+  sfSyncTerminate true;
 }
 sfConfig extends Compound {
   maxTimePerTest 300000000;

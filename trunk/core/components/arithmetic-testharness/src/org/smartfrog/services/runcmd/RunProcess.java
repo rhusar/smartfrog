@@ -302,6 +302,7 @@ public class RunProcess extends Thread {
             StreamGobbler outputGobbler;
             // any output?
             //this.log("RunProcess > " + "Creating gobblers for new process, "); // + (((SFRunCommand)this.sfObj).outputStreamObj).toString() +", " + this.toString(), 5);
+			this.log("RunProcess > " + "Creating gobblers for new process, " + (((SFRunCommand)this.sfObj).outputStreamObj).toString() +", " + this.toString(), 5);
             if ((this.sfObj instanceof SFRunCommand) && (((SFRunCommand)this.sfObj).outputStreamObj != null)) {
                outputGobbler = new StreamGobbler(subProcess.getInputStream(), "[" + this.nameProcess + "] " + "OUT", ((SFRunCommand)this.sfObj).outputStreamObj.getOutputStream(), ((SFRunCommand)this.sfObj).printMsgImp);
                this.log(" RunProcess "+"[" + this.nameProcess + "]> " + "gobbler (OUTPUT) redirected.", 5);
@@ -320,8 +321,17 @@ public class RunProcess extends Thread {
                this.log(" RunProcess "+"[" + this.nameProcess + "]> " + "gobbler (ERROR) created (not redirected).", 5);
             }
             // kick them off
-            errorGobbler.start();
-            outputGobbler.start();
+			if (outputGobbler != null)
+				System.out.println("OUTPUTGOBBLER NOT NULL");
+			else
+				System.out.println("OUTPUTGOBBLER IS NULL");
+            
+			errorGobbler.setPassType(false); //india- team changes
+            outputGobbler.setPassType(false);//india- team changes
+            
+
+			errorGobbler.start(); //india- team changes
+            outputGobbler.start();//india- team changes
             this.log("Process (re)started,"+"[" + this.nameProcess + "]> ", 3);
             status = "running";
             int exitVal = subProcess.waitFor();

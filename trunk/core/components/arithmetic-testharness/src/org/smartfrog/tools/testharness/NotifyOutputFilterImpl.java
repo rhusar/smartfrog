@@ -88,17 +88,27 @@ public class NotifyOutputFilterImpl implements NotifyOutputFilter, Runnable , Pr
     this.scheduler = scheduler;
     this.myId = myId;
     this.fileOutputName = fileOutputName;
-    if (fileOutputName==null)
+	System.out.println("fileOutputName in NotifyOutputFilterImpl =============> " +fileOutputName);
+   
+   
+ /*  if (fileOutputName==null)
        dumpOut = System.out;
     else {
       try {
         FileOutputStream temp  = new FileOutputStream(fileOutputName,true);
         dumpOut = new PrintStream(temp);
+		
+		dumpOut.println("dumpout is created =============>");
+
       } catch (IOException e) {
         System.out.println(e.getMessage());
         dumpOut = System.out;
       }
     }
+
+	System.out.println("dumpOut in NotifyOutputFilterImpl =============> " +dumpOut.toString());
+
+*/
     this.searchNormalPatterns = searchNormalPatterns;
     this.searchForcePatterns = searchForcePatterns;
     this.searchCustomPatterns = searchCustomPatterns;
@@ -238,17 +248,44 @@ public class NotifyOutputFilterImpl implements NotifyOutputFilter, Runnable , Pr
 
     String line;
 
+	System.out.println("In RUN");
+
     try {
+			 if (this.fileOutputName==null)
+        dumpOut = System.out;
+		else 
+		
+		{
+			try {
+			FileOutputStream temp  = new FileOutputStream(this.fileOutputName,true);
+			dumpOut = new PrintStream(temp, true);
+			}
+			catch (IOException e) 
+			{
+				System.out.println(e.getMessage());
+				dumpOut = System.out;
+	        }
+       }
+
 //      if (debug) System.out.println("NotifyOutputFilter: Starting!!");//DEBUG
+       //System.out.println("NotifyOutputFilter===========>: Starting!!");
       while ((line = bIn.readLine()) != null) {
         //if (debug) System.out.println("NotifyOutputFilter: Line!!"+line);//DEBUG
 //        if (debug) {log("OutputStream:"+line);}
 //        else {log(line);}
-        String resultTag = exploreTag(line);
+//		System.out.println("NotifyOutputFilter: Line!!"+line);
+		log(line);
+	
+	
+	
+		//dumpOut.flush();
+		
+		//dumpOut.println(line);
+		String resultTag = exploreTag(line);
       }
       //if (debug) System.out.println("NotifyOutputFilter: Finishing!!");//DEBUG
 
-    } catch (IOException e) {
+    } catch (Exception e) {
       dumpOut.println(e.getMessage());
     } finally {
       if (dumpOut != System.out)
@@ -334,8 +371,10 @@ private String exploreTag(String line) throws RemoteException {
    */
 
   private void log (String message){
+	
+	//System.out.println("In LOG =====================>");
      message = "[NOTIFY_OUTPUT_FILTER."+myId+"] "+message;
-     if (formatMsg) message= formatMsg(message);
+	 if (formatMsg) message= formatMsg(message);
      if (verbose) dumpOut.println(message);
    }
    /** Prints the current line to our redirected output.

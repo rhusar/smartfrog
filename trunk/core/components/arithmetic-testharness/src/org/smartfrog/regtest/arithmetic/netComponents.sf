@@ -63,7 +63,7 @@ Plus extends BinaryOp {
  */
 Evaluator extends Op {
 	sfClass "org.smartfrog.regtest.arithmetic.Evaluator";
-	script extends ScriptPrim;
+	script extends ScriptPrim {}
 	// put your inputs here, for example :
 	// inputs:A extends Input;
 	// inputs:B extends Input;

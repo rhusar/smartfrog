@@ -3,11 +3,11 @@
 sfConfig extends sfConfig1 {
 
   // host0 is the "root" known by the scheduler to stop sfConfig...
-  host0 "demo-linux-6.hpl.hp.com";
+  host0 "ebnt171.india.hp.com";
   // all the virtual nodes used by the examples ...
-  host1 "demo-linux-6.hpl.hp.com";
-  host2 "demo-linux-6.hpl.hp.com";
-  host3 "demo-linux-6.hpl.hp.com";
+	host1 "bhargava.india.hp.com";
+  host2 "eb96147.india.hp.com";
+ /* host3 "demo-linux-6.hpl.hp.com";
   host4 "demo-linux-6.hpl.hp.com";  
   host5 "demo-linux-6.hpl.hp.com";
   host6 "demo-linux-6.hpl.hp.com";
@@ -67,7 +67,7 @@ sfConfig extends sfConfig1 {
   host60 "win-demo-5.hpl.hp.com";
   host61 "win-demo-5.hpl.hp.com";
   host62 "win-demo-5.hpl.hp.com";  
-  host63 "win-demo-5.hpl.hp.com";
+  host63 "win-demo-5.hpl.hp.com"; */
         
   /* Testharness daemons use the normal port(3800). This example should ALWAYS 
      use this port instead... */
