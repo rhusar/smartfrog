@@ -88,7 +88,7 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
     }
 
     /**
-     * deploy the applications listed by creating a -n app descriptor list
+     * deploy the applications listed by creating a -a app descriptor list
      * on the command line
      */
     public void deployApplications() {
@@ -96,9 +96,16 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
         while (it.hasNext()) {
             Application application = (Application) it.next();
             application.validate();
-            addArg("-n");
-            addArg(application.getName());
-            addArg(application.getDescriptor());
+              addArg("-a");
+              addArg(application.getName()+":" //NAME
+                    +"DEPLOY"+":"              //Action: DEPLOY,TERMINATE,DETACH,DETaTERM
+                    +application.getDescriptor()+":"                    //URL
+                    +""+":"                    // sfConfig or empty
+                    +host+":"              // host
+                    +"");                // subprocess
+//            addArg("-n");
+//            addArg(application.getName());
+//            addArg(application.getDescriptor());
         }
     }
 

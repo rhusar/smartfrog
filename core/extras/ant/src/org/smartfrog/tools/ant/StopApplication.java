@@ -56,8 +56,15 @@ public class StopApplication extends SmartFrogTask {
      */
     public void execute() throws BuildException {
         setStandardSmartfrogProperties();
-        addHostname();
-        addApplicationCommand("-t",application);
+        //addHostname();
+        String terminateCommand =       application+":"    //NAME
+              +"TERMINATE"+":"   //Action: DEPLOY,TERMINATE,DETACH,DETaTERM
+              +""+":"            //URL
+              +""+":"            // sfConfig or empty
+              +host+":"          // host
+              +"";              // subprocess
+        addApplicationCommand("-a", terminateCommand);
+        //addApplicationCommand("-t",application);
         addExitFlag();
         execSmartfrog("failed to terminate "+getApplication());
     }

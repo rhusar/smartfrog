@@ -94,7 +94,7 @@ public class StartDaemon extends DeployingTaskBase {
         addSmartfrogProperty("org.smartfrog.sfcore.processcompound.sfProcessName",
                 ROOT_PROCESS);
         addIniFile();
-        addHostname();
+        //addHostname();
         deployApplications();
         if(spawn) {
             smartfrog.setSpawn(spawn);

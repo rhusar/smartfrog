@@ -40,7 +40,7 @@ public class StartApplication extends DeployingTaskBase {
     public void execute() throws BuildException {
         enableFailOnError();
         checkApplicationsDeclared();
-        addHostname();
+        //addHostname();
         deployApplications();
         addExitFlag();
         execSmartfrog("Could not deploy");
