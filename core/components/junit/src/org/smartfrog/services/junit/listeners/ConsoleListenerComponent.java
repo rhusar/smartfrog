@@ -27,15 +27,16 @@ import java.io.PrintStream;
 import java.rmi.RemoteException;
 
 /**
- * The basic listener for trouble; the console listener.
- * created 14-May-2004 15:42:31
+ * The basic listener for trouble; the console listener. created 14-May-2004
+ * 15:42:31
  */
 
-public class ConsoleListenerComponent extends PrimImpl implements ConsoleListener {
+public class ConsoleListenerComponent extends PrimImpl
+        implements ConsoleListener {
 
     /**
-     * cache the prinstream so that when system.out is used to capture output
-     * we still go to the original console (i.e. no recursion)
+     * cache the prinstream so that when system.out is used to capture output we
+     * still go to the original console (i.e. no recursion)
      */
 
     PrintStream outstream = System.out;
@@ -79,7 +80,6 @@ public class ConsoleListenerComponent extends PrimImpl implements ConsoleListene
         log(buffer.toString());
         flush();
         logTrace(test.getFault());
-
     }
 
     private void logTrace(ThrowableTraceInfo fault) {

@@ -21,25 +21,24 @@
 
 package org.smartfrog.services.junit.listeners;
 
-import org.smartfrog.services.junit.TestListener;
 import org.smartfrog.services.junit.TestInfo;
-import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.prim.PrimImpl;
 
 import java.rmi.RemoteException;
-import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * This class buffers received messages
- * Date: 27-Jun-2004
- * Time: 21:26:28
+ * This class buffers received messages Date: 27-Jun-2004 Time: 21:26:28
  */
-public class BufferingListenerComponent  extends PrimImpl implements BufferingListener {
+public class BufferingListenerComponent extends PrimImpl
+        implements BufferingListener {
 
     public BufferingListenerComponent() throws RemoteException {
     }
 
-    ArrayList errors,failures,starts,ends;
+    List errors, failures, starts, ends;
 
     /**
      * Called after instantiation for deployment purposed. Heart monitor is
@@ -51,12 +50,13 @@ public class BufferingListenerComponent  extends PrimImpl implements BufferingLi
      *                                  error while deploying
      * @throws java.rmi.RemoteException In case of network/rmi error
      */
-    public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
+    public synchronized void sfDeploy() throws SmartFrogException,
+            RemoteException {
         super.sfDeploy();
-        errors=new ArrayList();
-        failures = new ArrayList();
-        starts = new ArrayList();
-        ends = new ArrayList();
+        errors = new LinkedList();
+        failures = new LinkedList();
+        starts = new LinkedList();
+        ends = new LinkedList();
     }
 
     /**
@@ -69,13 +69,14 @@ public class BufferingListenerComponent  extends PrimImpl implements BufferingLi
 
     /**
      * make a clone of any test info
+     *
      * @param test
      * @return
      */
     private TestInfo cloneTestInfo(TestInfo test) {
-        TestInfo cloned =null;
+        TestInfo cloned = null;
         try {
-            cloned= (TestInfo) test.clone();
+            cloned = (TestInfo) test.clone();
         } catch (CloneNotSupportedException e) {
             //we should never get here
             assert false;
@@ -125,7 +126,8 @@ public class BufferingListenerComponent  extends PrimImpl implements BufferingLi
      * @throws java.rmi.RemoteException
      * @throws IndexOutOfBoundsException if the entry is out of range
      */
-    public synchronized TestInfo getErrorInfo(int entry) throws RemoteException, IndexOutOfBoundsException {
+    public synchronized TestInfo getErrorInfo(int entry)
+            throws RemoteException, IndexOutOfBoundsException {
         return ((TestInfo) errors.get(entry)).duplicate();
     }
 
@@ -147,8 +149,9 @@ public class BufferingListenerComponent  extends PrimImpl implements BufferingLi
      * @throws java.rmi.RemoteException
      * @throws IndexOutOfBoundsException if the entry is out of range
      */
-    public synchronized TestInfo getStartInfo(int entry) throws RemoteException, IndexOutOfBoundsException {
-        return ((TestInfo)starts.get(entry)).duplicate();
+    public synchronized TestInfo getStartInfo(int entry)
+            throws RemoteException, IndexOutOfBoundsException {
+        return ((TestInfo) starts.get(entry)).duplicate();
     }
 
     /**
@@ -169,7 +172,8 @@ public class BufferingListenerComponent  extends PrimImpl implements BufferingLi
      * @throws java.rmi.RemoteException
      * @throws IndexOutOfBoundsException if the entry is out of range
      */
-    public TestInfo getEndInfo(int entry) throws RemoteException, IndexOutOfBoundsException {
+    public TestInfo getEndInfo(int entry) throws RemoteException,
+            IndexOutOfBoundsException {
         return ((TestInfo) ends.get(entry)).duplicate();
     }
 
@@ -191,7 +195,8 @@ public class BufferingListenerComponent  extends PrimImpl implements BufferingLi
      * @throws java.rmi.RemoteException
      * @throws IndexOutOfBoundsException if the entry is out of range
      */
-    public TestInfo getFailureInfo(int entry) throws RemoteException, IndexOutOfBoundsException {
+    public TestInfo getFailureInfo(int entry) throws RemoteException,
+            IndexOutOfBoundsException {
         return ((TestInfo) failures.get(entry)).duplicate();
     }
 
@@ -202,7 +207,7 @@ public class BufferingListenerComponent  extends PrimImpl implements BufferingLi
      * @throws java.rmi.RemoteException
      */
     public boolean testsWereSuccessful() throws RemoteException {
-        return getFailureCount()==0 && getErrorCount()==0;
+        return getFailureCount() == 0 && getErrorCount() == 0;
     }
 
 
