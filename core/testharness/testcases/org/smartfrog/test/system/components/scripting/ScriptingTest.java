@@ -27,13 +27,13 @@ import org.smartfrog.sfcore.prim.Prim;
 
 
 /**
- * JUnit test class for test cases related to "scripting" component
+ * JUnit test class for test cases related to "Scripting" component
  */
 public class ScriptingTest
    
 	extends SmartFrogTestBase {
 
-    private static final String FILES = "org/smartfrog/test/system/components/slp/";
+    private static final String FILES = "org/smartfrog/test/system/components/scripting/";
 
     public ScriptingTest(String s) {
         super(s);
@@ -42,15 +42,37 @@ public class ScriptingTest
 
 public void testCaseTCP50() throws Throwable 
 {
-		Prim applicationtcp50 = deployExpectingSuccess("org/smartfrog/test/system/components/scripting/TCP50.sf", "ScriptingTCP50");
+		Prim applicationtcp50 = deployExpectingSuccess(FILES+"TCP50.sf", "ScriptingTCP50");
 		assertNotNull(applicationtcp50);
 		Prim p = (Prim)applicationtcp50.sfResolveHere("PoorVictim");
 		String actualPSfClass = (String)p.sfResolveHere("sfClass");
 		assertEquals("org.smartfrog.examples.counter.CounterImpl", actualPSfClass);
 }
+public void testCaseTCP52() throws Throwable 
+{
+		Prim applicationtcp52 = deployExpectingSuccess(FILES+"TCP52.sf", "TCP52");
+		assertNotNull(applicationtcp52);
+		// take from root process not from applicationtcp52
+		Prim p = (Prim)applicationtcp52.sfResolveHere("exam");
+		String actualPSfClass = (String)p.sfResolveHere("sfClass");
+		assertEquals("org.smartfrog.examples.counter.CounterImpl", actualPSfClass);
+}
+
+public void testCaseTCP53() throws Throwable 
+{
+		Prim applicationtcp53 = deployExpectingSuccess(FILES+"TCP53.sf", "TCP53");
+		assertNotNull(applicationtcp53);
+		Integer actual_numericSum = (Integer)applicationtcp53.sfResolveHere("numericSum");
+		String actual_stringSum = (String)applicationtcp53.sfResolveHere("stringSum");
+	    assertEquals(11, actual_numericSum.intValue());
+		assertEquals("Hello", actual_stringSum);
+}
+
+
+
 public void testCaseTCN80()  throws Exception
 	{
-		deployExpectingException("org/smartfrog/test/system/components/scripting/TCN80.sf",
+		deployExpectingException(FILES+"TCN80.sf",
                                  "ScriptingTCN80",
                                  "SmartFrogException",
                                  null,
@@ -60,14 +82,22 @@ public void testCaseTCN80()  throws Exception
 }
 public void testCaseTCN81()  throws Exception
 	{
-		deployExpectingException("org/smartfrog/test/system/components/scripting/TCN81.sf",
+		deployExpectingException(FILES+"TCN81.sf",
                                  "ScriptingTCN81",
                                  "SmartFrogDeploymentException",
                                  null,
                                  "SmartFrogCompileResolutionException",
                                  "Unresolved Reference");
 	
-}
+	}
+
+
+//TCP51 Manual Manual test case to start the BSH server 
+
+
+
+
+
 
 
 

@@ -4,35 +4,11 @@
 
 sfConfig extends Compound 
 {
-	MyCounter extends Counter
-		{
-			limit 20;
-		} 
 	simpleScript extends ScriptPrim 
 	{
 		sfProcessName "rootProcess";
 		attributesAsVariables true;
 		hostname "localhost";
 		port 4567;
-	
-		sfDeployCode
-                ##
-                import org.smartfrog.sfcore.prim.*;
-                import org.smartfrog.sfcore.reference.*;
-				Prim p = prim.sfParent().sfDeployComponentDescription(
-                        "PoorVictim1",
-                        prim.sfParent(),
-                        victim,
-                        null);
-                p.sfDeploy();
-                #;
-	
-		
-		sfStartCode
-		##
-		for (int i = 0 ; i < 10 ; i++) {
-		System.out.println(" I can count " + i);
-		}
-		#;
 	}
 }
