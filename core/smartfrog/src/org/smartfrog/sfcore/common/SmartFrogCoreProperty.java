@@ -232,7 +232,7 @@ public class SmartFrogCoreProperty {
                    propBase+propBaseSFParserSF + "factoryClass";
 
 
-    /**
+   /**
     *  Property used to set the include handler to construct when
     *  getIncludeHandler is called in SF parser.
     *
@@ -240,6 +240,13 @@ public class SmartFrogCoreProperty {
     */
    public final static String sfParserSFIncludeHandlerClass =
                               propBase+propBaseSFParserSF + "includeHandlerClass";
+   /**
+    *  Property used to define RMI port for SmartFrog Daemon
+    *
+    * @see languages.sf.SFParser
+    */
+   public final static String sfDaemonPort =
+                              propBase+"ProcessCompound.sfRootLocatorPort";
 
 
 
