@@ -21,10 +21,6 @@
             <br><font face="arial,helvetica,sanserif"></font>
           </td>
           <td>
-            <!-- PROJECT LOGO -->
-            <a href="http://ant.apache.org/">
-              <img src="../../images/ant_logo_large.gif" align="right" alt="Apache Ant" border="0"/>
-            </a>
           </td>
       </tr></table>
     </td>
@@ -94,20 +90,8 @@
         <td bgcolor="#eeeeee" valign="top" align="left">
           <font color="#000000" size="-1" face="arial,helvetica,sanserif">Reference</font>
         </td>
-        <td bgcolor="#eeeeee" valign="top" align="left" rowspan="5">
+        <td bgcolor="#eeeeee" valign="top" align="left" rowspan="8">
           <font color="#000000" size="-1" face="arial,helvetica,sanserif">Optional</font>
-        </td>
-    </tr>
-    <!-- Attribute -->
-    <tr>
-        <td bgcolor="#eeeeee" valign="top" align="left">
-          <font color="#000000" size="-1" face="arial,helvetica,sanserif">file</font>
-        </td>
-        <td bgcolor="#eeeeee" valign="top" align="left">
-          <font color="#000000" size="-1" face="arial,helvetica,sanserif">name a JAR file to sign</font>
-        </td>
-        <td bgcolor="#eeeeee" valign="top" align="left">
-          <font color="#000000" size="-1" face="arial,helvetica,sanserif">File</font>
         </td>
     </tr>
     <!-- Attribute -->
@@ -125,6 +109,42 @@
     <!-- Attribute -->
     <tr>
         <td bgcolor="#eeeeee" valign="top" align="left">
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif">jar</font>
+        </td>
+        <td bgcolor="#eeeeee" valign="top" align="left">
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif">name a JAR file to sign</font>
+        </td>
+        <td bgcolor="#eeeeee" valign="top" align="left">
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif">File</font>
+        </td>
+    </tr>
+    <!-- Attribute -->
+    <tr>
+        <td bgcolor="#eeeeee" valign="top" align="left">
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif">lazy</font>
+        </td>
+        <td bgcolor="#eeeeee" valign="top" align="left">
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif">flag to control whether the presence of a signature file means a JAR is signed and so does not need resigning</font>
+        </td>
+        <td bgcolor="#eeeeee" valign="top" align="left">
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif">boolean</font>
+        </td>
+    </tr>
+    <!-- Attribute -->
+    <tr>
+        <td bgcolor="#eeeeee" valign="top" align="left">
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif">maxmemory</font>
+        </td>
+        <td bgcolor="#eeeeee" valign="top" align="left">
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif">Set the maximum memory to be used by the jarsigner process</font>
+        </td>
+        <td bgcolor="#eeeeee" valign="top" align="left">
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif">String</font>
+        </td>
+    </tr>
+    <!-- Attribute -->
+    <tr>
+        <td bgcolor="#eeeeee" valign="top" align="left">
           <font color="#000000" size="-1" face="arial,helvetica,sanserif">securityref</font>
         </td>
         <td bgcolor="#eeeeee" valign="top" align="left">
@@ -132,6 +152,18 @@
         </td>
         <td bgcolor="#eeeeee" valign="top" align="left">
           <font color="#000000" size="-1" face="arial,helvetica,sanserif">Reference</font>
+        </td>
+    </tr>
+    <!-- Attribute -->
+    <tr>
+        <td bgcolor="#eeeeee" valign="top" align="left">
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif">signedjar</font>
+        </td>
+        <td bgcolor="#eeeeee" valign="top" align="left">
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif">name the jar to sign</font>
+        </td>
+        <td bgcolor="#eeeeee" valign="top" align="left">
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif">File</font>
         </td>
     </tr>
     <!-- Attribute -->

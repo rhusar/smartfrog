@@ -38,8 +38,14 @@ import java.util.List;
 
 /**
  * This task parses smartfrog files and validates them. Errors are thrown when
- * appropriate
+ * appropriate.
+ * Valid files must have an sfConfig node to deploy, and all other files included
+ * must be on the classpath -either that used in the task declaration, or inline
+ * in this use of the task.
  *
+ * A single file can be parsed with the file attribute; setting multiple source
+ * filesets causes the program to test them all in turn. That is, every file must be
+ * individually valid.
  * @ant.task category="SmartFrog" name="sf-parse"
  * <p/>
  * created 20-Feb-2004 16:17:41

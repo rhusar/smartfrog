@@ -21,10 +21,6 @@
             <br><font face="arial,helvetica,sanserif">This task takes a file and turns it into a URL, which it then assigns to a property.</font>
           </td>
           <td>
-            <!-- PROJECT LOGO -->
-            <a href="http://ant.apache.org/">
-              <img src="../../images/ant_logo_large.gif" align="right" alt="Apache Ant" border="0"/>
-            </a>
           </td>
       </tr></table>
     </td>
@@ -94,7 +90,7 @@
         <td bgcolor="#eeeeee" valign="top" align="left">
           <font color="#000000" size="-1" face="arial,helvetica,sanserif">File</font>
         </td>
-        <td bgcolor="#eeeeee" valign="top" align="left" rowspan="3">
+        <td bgcolor="#eeeeee" valign="top" align="left" rowspan="4">
           <font color="#000000" size="-1" face="arial,helvetica,sanserif">Optional</font>
         </td>
     </tr>
@@ -120,6 +116,18 @@
         </td>
         <td bgcolor="#eeeeee" valign="top" align="left">
           <font color="#000000" size="-1" face="arial,helvetica,sanserif">String</font>
+        </td>
+    </tr>
+    <!-- Attribute -->
+    <tr>
+        <td bgcolor="#eeeeee" valign="top" align="left">
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif">validate</font>
+        </td>
+        <td bgcolor="#eeeeee" valign="top" align="left">
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif">set this flag to trigger validation that every named file exists. Optional: default=true</font>
+        </td>
+        <td bgcolor="#eeeeee" valign="top" align="left">
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif">boolean</font>
         </td>
     </tr>
 
@@ -149,7 +157,22 @@
           <strong>fileset</strong> (org.apache.tools.ant.types.FileSet)</font>
       </td></tr>
       <tr><td><blockquote>
-        a fileset of jar files to sign
+        a fileset of jar files to include in the URL, each separated by the separator
+ <!-- Ignore -->
+ <!-- Ignore -->
+
+      </blockquote></td></tr>
+    </table>
+    <!-- End Element -->
+    <!-- Start Element -->
+    <table border="0" cellspacing="0" cellpadding="2" width="100%">
+      <tr><td>&nbsp;</td></tr>
+      <tr><td bgcolor="#828DA6">
+        <font color="#ffffff" face="arial,helvetica.sanserif" size="-1">
+          <strong>path</strong> (org.apache.tools.ant.types.Path)</font>
+      </td></tr>
+      <tr><td><blockquote>
+        add a path to the URL. All elements in the path will be converted to individual URL entries
  <!-- Ignore -->
  <!-- Ignore -->
 

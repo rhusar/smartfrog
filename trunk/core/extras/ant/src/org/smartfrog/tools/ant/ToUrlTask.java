@@ -100,7 +100,8 @@ public class ToUrlTask extends Task {
     }
 
     /**
-     * a fileset of jar files to sign
+     * a fileset of jar files to include in the URL, each
+     * separated by the separator
      *
      * @param fileset
      */
@@ -125,6 +126,11 @@ public class ToUrlTask extends Task {
         this.validate = validate;
     }
 
+    /**
+     * add a path to the URL. All elements in the path
+     * will be converted to individual URL entries 
+     * @param path
+     */
     public void addPath(Path path) {
         paths.add(path);
     }

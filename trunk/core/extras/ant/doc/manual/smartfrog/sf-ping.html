@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta http-equiv="Content-Language" content="en-us">
-  <title>Sf-deploy
+  <title>Sf-ping
  Task</title>
 </head>
 
@@ -16,9 +16,9 @@
     <td>
       <table border="0" width="100%"><tr>
           <td valign="bottom">
-            <font size="+3" face="arial,helvetica,sanserif"><strong>Sf-deploy
+            <font size="+3" face="arial,helvetica,sanserif"><strong>Sf-ping
  Task</strong></font>
-            <br><font face="arial,helvetica,sanserif">Start an SF application, an application which will run asynchronously until stopped by another mechanism.</font>
+            <br><font face="arial,helvetica,sanserif">Probe the health of a deployed application.</font>
           </td>
           <td>
           </td>
@@ -42,7 +42,7 @@
       </td></tr>
 
       <tr><td><blockquote>
-        Start an SF application, an application which will run asynchronously until stopped by another mechanism. A smartfrog daemon must already be running on the target machine/port
+        Probe the health of a deployed application. This task will trigger a liveness check against the application, which causes the application to assess its own health and return successfully or raise an exception. The build file will stop on failure (default), or the task can be set to ignore the failure, and instead set a property on success, leaving it blank on failure.
       </blockquote></td></tr>
 
     </table>
@@ -90,8 +90,20 @@
         <td bgcolor="#eeeeee" valign="top" align="left">
           <font color="#000000" size="-1" face="arial,helvetica,sanserif">boolean</font>
         </td>
-        <td bgcolor="#eeeeee" valign="top" align="left" rowspan="15">
+        <td bgcolor="#eeeeee" valign="top" align="left" rowspan="17">
           <font color="#000000" size="-1" face="arial,helvetica,sanserif">Optional</font>
+        </td>
+    </tr>
+    <!-- Attribute -->
+    <tr>
+        <td bgcolor="#eeeeee" valign="top" align="left">
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif">application</font>
+        </td>
+        <td bgcolor="#eeeeee" valign="top" align="left">
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif">set the name of the application to ping. Required</font>
+        </td>
+        <td bgcolor="#eeeeee" valign="top" align="left">
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif">String</font>
         </td>
     </tr>
     <!-- Attribute -->
@@ -253,6 +265,18 @@
     <!-- Attribute -->
     <tr>
         <td bgcolor="#eeeeee" valign="top" align="left">
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif">successproperty</font>
+        </td>
+        <td bgcolor="#eeeeee" valign="top" align="left">
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif">the name of a property to set on a successful ping. Only useful if failonerror is set to false</font>
+        </td>
+        <td bgcolor="#eeeeee" valign="top" align="left">
+          <font color="#000000" size="-1" face="arial,helvetica,sanserif">String</font>
+        </td>
+    </tr>
+    <!-- Attribute -->
+    <tr>
+        <td bgcolor="#eeeeee" valign="top" align="left">
           <font color="#000000" size="-1" face="arial,helvetica,sanserif">timeout</font>
         </td>
         <td bgcolor="#eeeeee" valign="top" align="left">
@@ -316,21 +340,6 @@
       <tr><td>&nbsp;</td></tr>
       <tr><td bgcolor="#828DA6">
         <font color="#ffffff" face="arial,helvetica.sanserif" size="-1">
-          <strong>codebase</strong> (org.smartfrog.tools.ant.Codebase)</font>
-      </td></tr>
-      <tr><td><blockquote>
-        Add a new codebase element to the current set. The URLs of the codebase will be visible to the deploying app.
- <!-- Ignore -->
- <!-- Ignore -->
-
-      </blockquote></td></tr>
-    </table>
-    <!-- End Element -->
-    <!-- Start Element -->
-    <table border="0" cellspacing="0" cellpadding="2" width="100%">
-      <tr><td>&nbsp;</td></tr>
-      <tr><td bgcolor="#828DA6">
-        <font color="#ffffff" face="arial,helvetica.sanserif" size="-1">
           <strong>propertyfile</strong> (org.smartfrog.tools.ant.PropertyFile)</font>
       </td></tr>
       <tr><td><blockquote>
@@ -365,21 +374,6 @@
       </td></tr>
       <tr><td><blockquote>
         Adds a set of properties as system properties.
- <!-- Ignore -->
- <!-- Ignore -->
-
-      </blockquote></td></tr>
-    </table>
-    <!-- End Element -->
-    <!-- Start Element -->
-    <table border="0" cellspacing="0" cellpadding="2" width="100%">
-      <tr><td>&nbsp;</td></tr>
-      <tr><td bgcolor="#828DA6">
-        <font color="#ffffff" face="arial,helvetica.sanserif" size="-1">
-          <strong>application</strong> (org.smartfrog.tools.ant.DeployingTaskBase.Application)</font>
-      </td></tr>
-      <tr><td><blockquote>
-        add a new application to the list.
  <!-- Ignore -->
  <!-- Ignore -->
 
