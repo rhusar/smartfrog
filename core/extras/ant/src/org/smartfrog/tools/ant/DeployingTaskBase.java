@@ -33,7 +33,7 @@ import java.util.Iterator;
  *         created 27-Feb-2004 15:27:47
  */
 
-abstract public class DeployingTaskBase extends SmartFrogTask {
+public abstract class DeployingTaskBase extends SmartFrogTask {
 
 
     /**
