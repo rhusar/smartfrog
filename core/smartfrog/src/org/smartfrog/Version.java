@@ -24,6 +24,7 @@ import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.logging.LogFactory;
+import org.smartfrog.sfcore.common.SFNull;
 
 /**
  * Version class provides version and copyright strings for SmartFrog System.
@@ -42,6 +43,12 @@ public class Version {
     final static String ATR_STATUS = "status";
     /** SmartFrog attribute name. Value = {@value} */
     final static String COPYRIGHT = "copyright";
+    /** SmartFrog attribute name. Value = {@value}
+     * Used to determine the minimun core version compatible with this instance*/
+    final static String ATR_MIN_CORE_VERSION = "majorRelease";
+    /** SmartFrog attribute name. Value = {@value}
+     * Used to determine the maximum core version compatible with this instance*/
+    final static String ATR_MAX_CORE_VERSION = "majorRelease";
 
 
     // Dont' change this. MODIFY version.sf in same package!!!!!!!!!!!!!!!!!!!
@@ -50,6 +57,11 @@ public class Version {
     private static String minorRelease="4";
     private static String build=       "17"; // odd numbers are development versions
     private static String status=      ""; //alpha, beta, stable
+
+    private static String minCoreVersion = null;
+
+    private static String maxCoreVersion = null;
+
     // Dont' change this. MODIFY version.sf in same package!!!!!!!!!!!!!!!!!!!
     /** The copyright String for the SmartFrog system. */
     private static String copyright = "(C) Copyright 1998-2005 HP Development Company, LP";
@@ -73,7 +85,10 @@ public class Version {
             build = classComponentDescription.sfResolve(ATR_BUILD, build , false);
             status = classComponentDescription.sfResolve(ATR_STATUS, status , false);
             copyright = classComponentDescription.sfResolve(COPYRIGHT, copyright , false);
+            minCoreVersion = classComponentDescription.sfResolve(ATR_MIN_CORE_VERSION, minCoreVersion , false);
+            maxCoreVersion = classComponentDescription.sfResolve(ATR_MAX_CORE_VERSION, maxCoreVersion , false);
             initialized=true;
+
         } catch (Exception ex) {
             if (sfGetProcessLog().isWarnEnabled())
                 sfGetProcessLog().warn(
@@ -82,6 +97,10 @@ public class Version {
         }
     }
 
+    /**
+     *
+     * @return String Complete Version String
+     */
     public static String versionString(){
         //init();
         if (!initialized) new Version();
@@ -92,11 +111,118 @@ public class Version {
         return name+" "+majorRelease+"."+minorRelease+"."+build+"_"+status;
     }
 
+    /**
+     * Major release number.
+     */
+    public static String majorRelease(){
+        if (!initialized) new Version();
+        return majorRelease;
+    }
+
+    /**
+     *Minor release number.
+     */
+    public static String minorRelease(){
+        if (!initialized) new Version();
+        return minorRelease;
+    }
+    /**
+     * Build number.
+     */
+    public static String build(){
+        if (!initialized) new Version();
+        return build;
+    }
+
+    /**
+     * Status [alpha, beta, (Empty when statable)].
+     */
+    public static String status(){
+        if (!initialized) new Version();
+        return status;
+    }
+
     public static String copyright(){
         //init();
         if (!initialized) new Version();
         return copyright;
     }
+
+    /**
+     * Min Core compatible version
+     * If null, it is considred compatible with all
+     */
+    public static String minCoreVersion(){
+        if (!initialized) new Version();
+        return minCoreVersion;
+    }
+
+    /**
+     * Max Core compatible version
+     * If null, it is considered compatible with all version numbers bigger
+     * than ours
+     */
+    public static String maxCoreVersion(){
+        if (!initialized) new Version();
+        return maxCoreVersion;
+    }
+
+
+    /**
+     * Checks is version provides is compatible with this version.
+     * @param version String Version has to be of the form: MajorRelease.MinorRelease.Build_status.
+     * @return boolean
+     */
+    public static boolean compatible(String version){
+        if (!initialized) new Version();
+        String majorRelease = version.substring(0,version.indexOf('.'));
+        String cutVersion = version.substring(majorRelease.indexOf('.'));
+        String minorRelease = cutVersion.substring(0,cutVersion.indexOf('.'));
+        cutVersion = version.substring(majorRelease.indexOf('.'));
+        String build = cutVersion.substring(0,cutVersion.indexOf('_'));
+
+        boolean compatible = true;
+        compatible = checkMaxVersion(majorRelease, minorRelease, build);
+        compatible = checkMinVersion(majorRelease, minorRelease, build);
+        return compatible;
+    }
+
+
+    //@todo review this matching method.
+    private static boolean checkMaxVersion (String majorReleaseN, String minorReleaseN, String buildN){
+        if (majorRelease==null) return true;
+        if (!(Integer.parseInt(majorRelease) < (Integer.parseInt(majorReleaseN)))){return false;}
+        if (!(Integer.parseInt(majorRelease) == (Integer.parseInt(majorReleaseN)))){
+            if (!(Integer.parseInt(minorRelease) < (Integer.parseInt(minorReleaseN)))){return false;}
+            if (!(Integer.parseInt(minorRelease) == (Integer.parseInt(minorReleaseN)))){
+                if (!(Integer.parseInt(build) < (Integer.parseInt(buildN)))){return false;}
+                if (!(Integer.parseInt(build) == (Integer.parseInt(buildN)))){
+                    return true; // All numbers are equal :-)
+                }
+            }
+        }
+
+        return true;
+    }
+
+
+    //@todo review this matching method.
+    private static boolean checkMinVersion (String majorReleaseN, String minorReleaseN, String buildN){
+        if (majorRelease==null) return true;
+        if (!(Integer.parseInt(majorRelease) > (Integer.parseInt(majorReleaseN)))){return false;}
+        if (!(Integer.parseInt(majorRelease) == (Integer.parseInt(majorReleaseN)))){
+            if (!(Integer.parseInt(minorRelease) > (Integer.parseInt(minorReleaseN)))){return false;}
+            if (!(Integer.parseInt(minorRelease) == (Integer.parseInt(minorReleaseN)))){
+                if (!(Integer.parseInt(build) > (Integer.parseInt(buildN)))){return false;}
+                if (!(Integer.parseInt(build) == (Integer.parseInt(buildN)))){
+                    return true; // All numbers are equal :-)
+                }
+            }
+        }
+        return true;
+    }
+
+
     /**
      *  To get the sfCore logger
      * @return Logger implementing LogSF and Log
