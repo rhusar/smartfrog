@@ -108,11 +108,11 @@ public class SSHTest
                                  "JSchException",
                                  "Auth fail");
     }
-/*scp : success*/
+/*scp : success manual test case
 	public void testCaseTCP_scp() throws Throwable {
 
 		Prim app = deployExpectingSuccess(FILES+"tcp_scp.sf", "tcp_scp");
-    }
+    }*/
 
 	// SSHExec
 /*sshexec : improper host*/
@@ -153,21 +153,6 @@ public class SSHTest
                                  "java.io.FileNotFoundException: c:\\cvs\\forge\\password1.txt");
     }
 	
-	/*tcp_sshexec : success*/
-	public void testCaseTCP_sshexec() throws Throwable {
 
-		Prim app = deployExpectingSuccess(FILES+"tcp_sshexec.sf", "tcp_sshexec");
-		//manual check needed ... 
-    }
-/* Sample
-
-    public void testCaseTCN76() throws Exception {
-        deployExpectingException(FILES+"tcn76.sf",
-                                 "tcn76",
-                                 "SmartFrogDeploymentException",
-                                 null,
-                                 "SmartFrogCompileResolutionException",
-                                 "error in schema: non-optional attribute 'remoteFiles' is missing");
-    }*/
 }
 
