@@ -102,14 +102,11 @@ For more information: www.smartfrog.org
            Footer="${Name.System} ${version} ${Version}"
            doctitle="${Name.System}"
            bottom="${Name.Company}"
-           source="${javac.runtime.target}"
+           source="1.4"
            >
       <group title="SmartFrog Packages" packages="org.smartfrog.*"/>
       <classpath>
-          <!--fileset dir="${smartfrog.dist.lib.dir}">
-              <include name="**/*.jar"/>
-          </fileset-->
-		   <fileset dir="${dist.lib.dir}">
+	  <fileset dir="${dist.lib.dir}">
               <include name="**/*.jar"/>
           </fileset>
       </classpath>
@@ -155,12 +152,12 @@ For more information: www.smartfrog.org
     </copy>   
 		 <!--copy todir = "${dist.doc.dir}">
         <fileset dir ="${doc.dir}" />
-    </copy>   
-		 <copy todir = "${dist.src.dir}">
-        <fileset dir ="${src.dir}">
-		  <include name="**/examples/**"/>
+    </copy-->   
+	<copy todir = "${dist.src.dir}">
+               <fileset dir ="${src.dir}">
+		  <!--include name="**/examples/**"/-->
 		</fileset>
-	</copy-->
+	</copy>
 	 <copy tofile="${dist.dir}/build.xml" file="releaseBuild.xml"/>	
   </target>
 

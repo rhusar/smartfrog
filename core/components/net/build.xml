@@ -63,14 +63,11 @@ For more information: www.smartfrog.org
            Footer="${Name.System} ${version} ${Version}"
            doctitle="${Name.System}"
            bottom="${Name.Company}"
-           source="${javac.runtime.target}"
+           source="1.4"
            >
       <group title="SmartFrog Packages" packages="org.smartfrog.*"/>
       <classpath>
-          <fileset dir="${smartfrog.dist.lib.dir}">
-              <include name="**/*.jar"/>
-          </fileset>
-		   <fileset dir="${dist.lib.dir}">
+	  <fileset dir="${dist.lib.dir}">
               <include name="**/*.jar"/>
           </fileset>
       </classpath>
