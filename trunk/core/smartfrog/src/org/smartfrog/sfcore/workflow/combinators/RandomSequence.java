@@ -158,9 +158,8 @@ public class RandomSequence extends EventCompoundImpl implements Compound {
     public void sfTerminatedWith(TerminationRecord status, Prim comp) {
         if (sfContainsChild(comp)) {
             try {
-                sfRemoveChild(comp);
-
                 if (status.errorType.equals("normal".intern())) {
+		    sfRemoveChild(comp);
                     if (actionKeys.size() != 0) {
                         startNextRandom();
                     } else {
