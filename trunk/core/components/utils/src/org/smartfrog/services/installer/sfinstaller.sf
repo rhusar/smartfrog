@@ -49,9 +49,9 @@ SFInstaller extends Compound  {
         host "localhost";
 
         // Emailer parameters
-        emailTo "awasthi@india.hp.com";
-        emailFrom "smartfrom@india.hp.com";
-        emailHost "stash.india.hp.com";
+        emailTo "abc@india.hp.com";
+        emailFrom "abc@india.hp.com";
+        emailHost "SMTPServer.india.hp.com";
         emailSubject "SmartFrog Installer Message";
         emailMessage "";
         runAsWorkFlowComponent true;
@@ -112,7 +112,7 @@ sfConfig extends Parallel {
                                  "cd SmartFrog.3.02.002.beta",
                                  "export SFHOME=/home/ashish/cvs/may17/SmartFrog.3.02.002.beta/dist",
                                  "export PATH=$SFHOME/bin:$PATH",
-                                 "sfDaemon >smartfrog.out 2>&1 &"
+                                 "nohup sfDaemon &"
                                ];
                 
                 emailAttachments ["SFNode1.log"];
@@ -137,7 +137,7 @@ sfConfig extends Parallel {
                                  "cd SmartFrog.3.02.002.beta",
                                  "export SFHOME=/home/guest/ashish/may17/SmartFrog.3.02.002.beta/dist",
                                  "export PATH=$SFHOME/bin:$PATH",
-                                 "sfDaemon >smartfrog.out 2>&1 &"
+                                 "nohup sfDaemon &"
                                ];
                 emailAttachments ["SFNode2.log"];
                 emailMessage ("Installation status of node:" ++ ATTRIB host);
