@@ -23,25 +23,14 @@
  
  For more information: http://home.c2i.net/ghisdal/slp.html 
  */
- 
-#include "org/smartfrog/components.sf"
-#include "org/smartfrog/functions.sf"
-#include "org/smartfrog/services/comm/slp/sf/SFSlpAdvertiser.sf"
 
-SFSlpPrimAdvertiser extends SFSlpAdvertiser {
-    // implementation
-    sfClass "org.smartfrog.services.comm.slp.SFSlpPrimAdvertiserImpl";
+package org.smartfrog.services.comm.slp;
+
+import java.rmi.Remote;
+
+/**
+Interface for the ObjectAdvertiser component.
+*/
+public interface SFSlpObjectAdvertiser extends Remote {
     
-    concreteType ""; // the concrete service type.
-    // complete service type will be service:sf-prim:concreteType
-  
-    serviceType ("service:sf-prim:" ++ concreteType);
-    referenceServiceType ("service:sf-reference:" ++ concreteType);
-    
-    advertiseComponent true;
-    advertiseReference false;
-        
-    //toAdvertise LAZY...; // The component to advertise.
-                    // The ServiceURL will be automatically created to match this.
 }
-

@@ -30,21 +30,19 @@ import org.smartfrog.sfcore.prim.*;
 import org.smartfrog.sfcore.reference.*;
 import org.smartfrog.sfcore.common.*;
 
-import java.util.*;
-import java.io.*;
-
-import java.rmi.*;
-import java.rmi.server.*;
-import java.net.*;
-
-import sun.misc.*;
+import java.rmi.RemoteException;
 
 /**
     Implements a SF advertiser for Prim components.
     The component to advertise is given in the description file.
 */
 public class SFSlpPrimAdvertiserImpl extends SFSlpAdvertiserImpl implements Prim, SFSlpPrimAdvertiser {
-    protected Object toAdvertise = null;
+    protected Prim toAdvertise = null;
+    protected Reference toAdvertiseRef = null;
+    protected ServiceURL referenceURL = null;
+    protected String referenceServiceType;
+    protected boolean advertiseComponent;
+    protected boolean advertiseReference;
     
     public SFSlpPrimAdvertiserImpl() throws RemoteException {
         super();
@@ -53,51 +51,54 @@ public class SFSlpPrimAdvertiserImpl extends SFSlpAdvertiserImpl implements Prim
     // lifecycle methods...
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         try {
-        super.sfDeploy();  
-        // get the component to advertise
-        toAdvertise = sfResolve("toAdvertise");
-        // find the location (as a rmi reference)
-        serviceLocation = getRmiReferenceForObject(toAdvertise);
+            super.sfDeploy();  
+            // get the component to advertise
+            toAdvertise = (Prim)sfResolve("toAdvertise");
+            referenceServiceType = (String)sfResolve("referenceServiceType");
+            advertiseComponent = ((Boolean)sfResolve("advertiseComponent")).booleanValue();
+            advertiseReference = ((Boolean)sfResolve("advertiseReference")).booleanValue();
+            
+            if(referenceServiceType.endsWith(":")) 
+                referenceServiceType = referenceServiceType.substring(0, referenceServiceType.length()-1);
+            
+            toAdvertiseRef = toAdvertise.sfCompleteName();
+            
+            // build service URL
+            if(advertiseComponent) serviceLocation = "/" + toAdvertiseRef.toString();
+            else if(advertiseReference) {
+                serviceType = referenceServiceType;
+                serviceLocation = "/" + ServiceURL.objectToString(toAdvertiseRef);
+            }
         }catch(Exception e) {
             e.printStackTrace();
             throw (SmartFrogException)SmartFrogException.forward(e);
         }
     }  
     
-    protected String getRmiReferenceForObject(Object p) throws SmartFrogException {
-        Object obj = (Prim)p;
-        try {
-            String encodedRef  = "";
-            if (obj instanceof PrimImpl) { //local object --> we need to get the reference
-                encodedRef = encodedReference(((PrimImpl)obj).sfExportRef());
-            } else if (obj instanceof RemoteStub) { // remote object --> just encode the stub
-                encodedRef = encodedReference(((RemoteStub)obj));
+    public synchronized void sfStart() throws SmartFrogException, RemoteException {
+        super.sfStart();
+        if(advertiseComponent && advertiseReference) {
+            // need to advertise the reference since only one is 
+            // handled by the super class.
+            try {
+                // create url from type + location
+                referenceURL = new ServiceURL(referenceServiceType, toAdvertiseRef, serviceLifetime);
+                advertiser.register(referenceURL, serviceAttributes);
+            }catch(Exception ex) {
+                throw (SmartFrogException) SmartFrogException.forward(ex);
             }
-            
-            String lha = InetAddress.getLocalHost().getHostName();
-            String loc = lha + "/" + encodedRef;
-            return loc;
-        }catch(Exception ex) {
-            ex.printStackTrace();
         }
-        return null;
     }
     
-    /**
-        * Encode a remote reference.
-     * @param ref the reference to encode.
-     * @return the 64-encoded string representing the reference.
-     */
-    protected String encodedReference(Object ref) throws Exception{
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
-        ObjectOutputStream oos = new ObjectOutputStream(os);
-        oos.writeObject(ref);
-        oos.close();
-        BASE64Encoder encoder = new BASE64Encoder();
-        String objRef64enc =encoder.encode(os.toByteArray());
-        os.flush();
-        os.close();
-        return objRef64enc;
+    public synchronized void sfTerminateWith(TerminationRecord r) {
+        if(advertiseComponent && advertiseReference) {
+            // stop advertising reference.
+            try {
+                advertiser.deregister(referenceURL);
+            }catch(ServiceLocationException ex) { }
+        }
+        
+        super.sfTerminateWith(r);
     }
-}
+}   
 

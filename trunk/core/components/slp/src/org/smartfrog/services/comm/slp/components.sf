@@ -33,4 +33,6 @@
 #include "org/smartfrog/services/comm/slp/sf/SFSlpDA.sf"
 #include "org/smartfrog/services/comm/slp/sf/SFSlpEventAdvertiser.sf"
 #include "org/smartfrog/services/comm/slp/sf/SFSlpEventLocator.sf"
+#include "org/smartfrog/services/comm/slp/sf/SFSlpObjectAdvertiser.sf"
+#include "org/smartfrog/services/comm/slp/sf/SFSlpObjectLocator.sf"
 

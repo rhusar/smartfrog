@@ -27,6 +27,10 @@ Service Location Protocol - SmartFrog components.
 package org.smartfrog.services.comm.slp;
 
 import java.net.*;
+import java.io.*;
+import sun.misc.BASE64Decoder;
+import sun.misc.BASE64Encoder;
+
 /**
  * A class representing a service url.
  * It contains the service type, service access point (hostname) and URL path
@@ -48,7 +52,7 @@ public class ServiceURL implements java.io.Serializable {
     public static final String DEFAULT_TRANSPORT = ""; // IP
     
     // variables.
-    URI uri;
+    URI uri = null;
     String serviceURL;
     ServiceType serviceType;
     int lifetime;
@@ -57,6 +61,14 @@ public class ServiceURL implements java.io.Serializable {
     
     public ServiceURL(String url) throws IllegalArgumentException {
         this(url, LIFETIME_DEFAULT);
+    }
+    
+    public ServiceURL(String type, Object obj) throws IllegalArgumentException {
+        this(type, obj, LIFETIME_DEFAULT);
+    }
+    
+    public ServiceURL(String type, Object obj, int lifetime) throws IllegalArgumentException {
+        this(type+":///"+objectToString(obj), lifetime);
     }
     
     public ServiceURL(String url, int lifetime) throws IllegalArgumentException {
@@ -78,27 +90,28 @@ public class ServiceURL implements java.io.Serializable {
             urlPath = "";
         }
         else {
-            urlPath = url.substring(pathIndex+1);
+            urlPath = url.substring(pathIndex);
         }
-        System.out.println("URLPath: " + urlPath);
         
         // parse host and port.
         String host = url.substring(index);
         if(pathIndex != -1) {
             host = host.substring(0, pathIndex-index);
         }
-        System.out.println("Host: " + host);
-        try {
-            uri = new URI("srv"+host);
-        }catch(URISyntaxException ex) {
-            throw new IllegalArgumentException("Illegal URL");
-        }
-        if(getHost() == null) {
-            throw new IllegalArgumentException("No host given");
-        }
         
+        if(!host.equals("://")) {
+            try {
+                uri = new URI("srv" + host);
+            }catch(URISyntaxException ex) {
+                throw new IllegalArgumentException("Illegal URL");
+            }
+        }
+                       
         serviceURL = url;
         this.lifetime = lifetime;
+        
+        //System.out.println("URL: " + serviceURL);
+        //System.out.println("Length: " + serviceURL.length());
     }
     
     public ServiceType getServiceType() {
@@ -114,11 +127,16 @@ public class ServiceURL implements java.io.Serializable {
     }
     
     public String getHost() {
+        if(uri == null) {
+            return "";
+        }
+        
         return uri.getHost();
     }
     
     public int getPort() {
         if(transport.equals(DEFAULT_TRANSPORT)) {
+            if(uri == null) return NO_PORT;
             int p = uri.getPort();
             if(p == -1) return NO_PORT;
             
@@ -129,6 +147,15 @@ public class ServiceURL implements java.io.Serializable {
     
     public String getURLPath() {
         return urlPath;
+    }
+    
+    public Object getURLPathObject() {
+        Object obj = null;
+        try {
+            obj = objectFromString(urlPath.substring(1));
+        }catch(Exception ex) { }
+        
+        return obj;
     }
     
     public int getLifetime() {
@@ -155,6 +182,34 @@ public class ServiceURL implements java.io.Serializable {
     
     public int hashCode() {
         return serviceURL.hashCode();
+    }
+    
+    public static String objectToString(Object obj) throws IllegalArgumentException {
+        String objRef64enc;
+        try {
+            ByteArrayOutputStream os = new ByteArrayOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(os);
+            oos.writeObject(obj);
+            oos.close();
+            BASE64Encoder encoder = new BASE64Encoder();
+            objRef64enc = encoder.encode(os.toByteArray());
+            os.flush();
+            os.close();
+        }catch(Exception ex) {
+            throw new IllegalArgumentException("Not possible to convert object to String");
+        }
+        return objRef64enc;
+    }
+    
+    public static Object objectFromString(String objString) throws Exception {
+        BASE64Decoder decoder = new BASE64Decoder();
+        byte[] byteArray = decoder.decodeBuffer(objString);
+        ByteArrayInputStream isr = new ByteArrayInputStream(byteArray);
+        ObjectInputStream ois = new ObjectInputStream(isr);
+        Object obj = ois.readObject();
+        ois.close();
+        
+        return obj;
     }
 }
 
