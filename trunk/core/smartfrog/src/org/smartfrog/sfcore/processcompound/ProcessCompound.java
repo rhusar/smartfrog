@@ -87,8 +87,8 @@ public interface ProcessCompound extends Compound {
 
     /**
      * Tries to find an attribute in the local context. If the attribute is not
-     * found the thread will wait for a notification from sfAddAttribute or
-     * until given timeout expires. Generally used to wait for a new process
+     * found the thread will wait for a notification from sfNotifySubprocessReady 
+     * or until given timeout expires. Used to wait for a new process
      * compound to appear.
      *
      * @param name name of attribute to wait for
@@ -101,6 +101,19 @@ public interface ProcessCompound extends Compound {
      */
     public Object sfResolveHereOrWait(Object name, long timeout)
         throws Exception, RemoteException;
+
+
+    /**
+     * Allows a sub-process to notify the root process compound that it is now
+     * ready to receive deployment requests.
+     *
+     * @param name the name of the subprocess
+     * @throws RemoteException if there is any network or remote error
+     * 
+     */
+    public void sfNotifySubprocessReady(String name)
+        throws RemoteException;
+
 
     /**
      * Sets whether or not the ProcessCompound should terminate the JVM on
