@@ -2,25 +2,32 @@
 \label{objections:wsdl-gen}
 
 The role of an Interface Definition Language (IDL) has always been
-twofold.
+twofold:
 
-The primary output of the process is a definition of \emph{the
-interface} of the remote system. This is ``interface''in the sense of
-\emph{the implementation independent signature of the service}, and does
-not imply that the implementation language needs an explicit notion of
-interfaces. The interface is inherently implementation independent,
-and can be frozen or carefully managed with respects to versioning.
+\begin{enumerate}
+\item Firstly, an IDL allows the creation of a definition of \emph{the
+interface} of the remote system, independent of any particular
+implementation, programming language or environment. This is
+``interface'' in the sense of \emph{the implementation independent
+signature of the service}, and does not imply that an implementation
+language needs an explicit notion of interfaces. The interface is
+inherently implementation independent, and can be frozen or carefully
+managed with respects to versioning.
 
-The act of writing the IDL inherently forces the author to define
-portable datatypes and operations in its restricted language of the
-IDL.  This effectively guarantees portability. The implementation
-languages invariably contain constructs which are not portable, but as
-these are excluded from the Interface language, a portability issue is
-the exception, rather than the rule.
+\item Secondly, the act of writing an IDL description inherently
+forces the author to define the system in terms of the portable
+datatypes and operations available in the restricted language of the
+IDL.  This can effectively guarantee portability, and is a significant
+improvement over similar definitions in the implementation languages,
+which invariably contain constructs which are not portable. As such
+constructs are excluded from the interface language, a portability
+issue is the exception, rather than the rule.
+\end{enumerate}
 
-Yet the generally accepted practise for working with JAX-RPC discards
-all these notions. Instead of generating implementation classes from
-the WSDL, the WSDL is often generated from the implementation classes,
+IDLs have many advantages for creating interoperable systems, yet the
+generally accepted practice for working with JAX-RPC discards all
+these notions. Instead of generating implementation classes from the
+WSDL, the WSDL is often generated from the implementation classes,
 using Java's Reflection API. We shall term this process
 \emph{WSDL-last development}.
 
@@ -32,7 +39,7 @@ This has the following consequences.
     There is no way to ensure that the published interface of a service
     remains constant over time. Every redeployment of the service, every
     upgrade of the SOAP stack or even the underlying Java runtime may
-    change the WSDL.
+    change the WSDL, and hence the interface.
 
 \item
 
@@ -61,23 +68,23 @@ side of the toolchain to be broadly tested as well as it should.
 
 The alternative to WSDL-last development is clearly, \emph{WSDL-first
 development}. Although this is the better approach from the perspective
-of portability and interface stability, Web Service developers are not
+of portability and interface stability, web service developers are not
 pushed in this direction.
 
 One of the underlying causes of this has to be the sheer complexity of
 XML Schema and WSDL. The XSD type system bears minimal resemblence to
 that of current object oriented languages, and WSDL itself is
-over-verbose and under-readable. As evidence of this, 
-consider the broad variety of products that aim to make authoring XSD
-and WSDL documents easier, and recall that such products were never
-necessary in the IDL-era of distributed systems programming.
+over-verbose and under-readable. As evidence of this, consider the
+broad variety of products that aim to make authoring XSD and WSDL
+documents easier, and recall that such products were never necessary
+in the IDL-era of distributed systems programming.
 
 It is worth noting that REST systems \cite{fielding:rest} tend not to
-use WSDL, even though it is theoretically possible. Instead they resort
-to their XML type language of choice and quality human-readable
-documentation. This would appear to be sub-optimal, yet REST is growing
-in popularity, despite -or perhaps because of- the lack of WSDL
-integration. 
+use WSDL, even though it is theoretically possible. Instead they
+resort to their XML type language of choice and quality human-readable
+documentation. This would appear to be sub-optimal, yet REST is
+growing in popularity, despite (or perhaps because of) the lack of
+WSDL integration.
 
 Returning to the desiderata for SOAP, a WSDL-last process sacrifies
 interoperability for ease of service development. Perhaps WSDL is not
