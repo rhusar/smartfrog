@@ -18,35 +18,22 @@ For more information: www.smartfrog.org
 
 */
 
-/*
- this file declares the junit components
- */
+#include "/files/components.sf"
 
+    /**
+     * run all tests in the suite.
+     * output to an XML listener
+     */
 
+sfConfig extends LocalJUnitTestRunner {
+    //buffer the results
 
- /**
-  * Include the core smartfrog components.
-  */
-#include "/org/smartfrog/components.sf"
-#include "/org/smartfrog/predicates.sf"
-#include "/org/smartfrog/services/junit/components.sf"
-
-sfConfig extends TestRunner {
-
-    listener extends ConsoleListener;
-
-    unused extends XmlListener {
-        outputDirectory ".";
-
+    listener extends XmlListener {
+        outputDirectory LAZY PROPERTY java.io.tmpdir;
     }
 
-
-    JUnitTestSuite extends TestSuite {
-        name "suite1";
-        classes ["test"];
-        excludes ["test"];
-        if true;
+    tests extends ThrowingTest {
+        name "tests";
     }
-
 
 }

@@ -2,15 +2,20 @@ package org.smartfrog.services.junit.listeners;
 
 import org.smartfrog.services.filesystem.FileImpl;
 import org.smartfrog.services.junit.TestListener;
+import org.smartfrog.services.junit.TestSuite;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.utils.ComponentHelper;
 
 import java.io.File;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.Date;
+import java.util.HashMap;
 
 /**
  * Implement the {@link XmlListenerFactory} interface and so provide a component
@@ -20,6 +25,16 @@ import java.util.Date;
 public class XmlListenerComponent extends PrimImpl
         implements XmlListenerFactory {
 
+    private Log log;
+    private ComponentHelper helper = new ComponentHelper(this);
+    private String outputDir;
+    private String preamble;
+    private boolean useHostname;
+
+    /**
+     * mapping of suite to file
+     */
+    private HashMap testFiles = new HashMap();
 
     /**
      * construct a base interface
@@ -40,7 +55,11 @@ public class XmlListenerComponent extends PrimImpl
     public synchronized void sfStart() throws SmartFrogException,
             RemoteException {
         super.sfStart();
-
+        outputDir = lookupOutputDir();
+        preamble = sfResolve(PREAMBLE, (String) null, false);
+        useHostname = sfResolve(USE_HOSTNAME, true, true);
+        log.info("output dir is " + outputDir + "; hostname=" + useHostname);
+        log.info("preamble is " + preamble != null ? preamble : "(undefined)");
     }
 
     /**
@@ -56,6 +75,7 @@ public class XmlListenerComponent extends PrimImpl
     public synchronized void sfDeploy() throws SmartFrogException,
             RemoteException {
         super.sfDeploy();
+        log = helper.getLogger();
 
     }
 
@@ -63,38 +83,42 @@ public class XmlListenerComponent extends PrimImpl
     /**
      * bind to a caller
      *
+     * @param suite
      * @param hostname  name of host
      * @param suitename name of test suite
      * @param timestamp start timestamp (UTC)
      * @return a session ID to be used in test responses
      */
-    public TestListener listen(String hostname,
+    public TestListener listen(TestSuite suite, String hostname,
             String suitename,
             long timestamp) throws RemoteException,
             SmartFrogException {
-        //only support a single file
-        String outputDir = FileImpl.lookupAbsolutePath(this,
-                OUTPUT_DIRECTORY,
-                null,
-                null,
-                true,
-                null);
-        String preamble = sfResolve(PREAMBLE, (String) null, false);
-        boolean useHostname = sfResolve(USE_HOSTNAME, true, true);
         if (suitename == null && "".equals(suitename)) {
             throw new SmartFrogException(
                     "Test suite must be named for XML exporting");
         }
 
+        File destDir = new File(outputDir);
+        if (useHostname) {
+            destDir = new File(destDir, hostname);
+        }
+
+        String outputFile = suitename + ".xml";
+        File destFile = new File(destDir, outputFile);
+        log.info("XmlFile=" + destFile);
+        String destpath = destFile.getAbsolutePath();
+        addMapping(suitename, destpath);
+        if (suite != null) {
+            //set the absolute path of the file
+            log.info(
+                    "Setting " +
+                    XmlListener.ATTR_XMLFILE +
+                    "attribute on test suite");
+            suite.sfReplaceAttribute(XmlListener.ATTR_XMLFILE,
+                    destpath);
+        }
+
         try {
-            File destDir = new File(outputDir);
-            if (useHostname) {
-                destDir = new File(destDir, hostname);
-            }
-
-            String outputFile = suitename + ".xml";
-
-            File destFile = new File(destDir, outputFile);
             Date start = new Date(timestamp);
 
             OneHostXMLListener xmlLog;
@@ -107,6 +131,61 @@ public class XmlListenerComponent extends PrimImpl
         } catch (IOException e) {
             throw SmartFrogException.forward("Failed to open ", e);
         }
+    }
+
+    /**
+     * add a mapping of suite to file
+     *
+     * @param suitename
+     * @param xmlFilename
+     */
+    private synchronized void addMapping(String suitename, String xmlFilename) {
+        if (getMapping(suitename) != null) {
+            log.warn("A suite called " +
+                    suitename
+                    + " exists; its output will be overwritten");
+        }
+        testFiles.put(suitename, xmlFilename);
+    }
+
+    /**
+     * thread-safe accessor to the suite-file mapping
+     *
+     * @param suitename suite to lookup
+     * @return absolute path of the output file, or null for no mapping.
+     */
+    private synchronized String getMapping(String suitename) {
+        return (String) testFiles.get(suitename);
+    }
+
+    /**
+     * map from a test suite name to a filename
+     *
+     * @param suitename test suite
+     * @return name of output file, or null for no match
+     * @throws RemoteException
+     */
+    public String lookupFilename(String suitename) throws RemoteException {
+        return getMapping(suitename);
+    }
+
+
+    /**
+     * work out the output dir
+     *
+     * @return the dir that output is in
+     * @throws SmartFrogResolutionException if it is not specified
+     * @throws RemoteException
+     */
+    private String lookupOutputDir() throws SmartFrogResolutionException,
+            RemoteException {
+        String outputDir = FileImpl.lookupAbsolutePath(this,
+                OUTPUT_DIRECTORY,
+                null,
+                null,
+                true,
+                null);
+        return outputDir;
     }
 
 

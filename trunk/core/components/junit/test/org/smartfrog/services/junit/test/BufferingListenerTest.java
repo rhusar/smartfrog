@@ -20,18 +20,15 @@
 package org.smartfrog.services.junit.test;
 
 import junit.framework.TestCase;
-import org.smartfrog.services.junit.TestListenerFactory;
-import org.smartfrog.services.junit.TestListener;
 import org.smartfrog.services.junit.TestInfo;
+import org.smartfrog.services.junit.TestListener;
 import org.smartfrog.services.junit.listeners.BufferingListener;
 import org.smartfrog.services.junit.listeners.BufferingListenerComponent;
-import org.smartfrog.sfcore.common.SmartFrogException;
 
 import java.rmi.RemoteException;
 
 /**
- * Test that a buffering listerner
- * created Nov 22, 2004 1:49:37 PM
+ * Test that a buffering listerner created Nov 22, 2004 1:49:37 PM
  */
 
 public class BufferingListenerTest extends TestCase {
@@ -46,8 +43,11 @@ public class BufferingListenerTest extends TestCase {
 
     public void testSuccess() throws Exception {
         BufferingListener buffer = createFactory();
-        TestListener listener=buffer.listen("localhost","testo",System.currentTimeMillis());
-        TestInfo ti=new TestInfo(this);
+        TestListener listener = buffer.listen(null,
+                "localhost",
+                "testo",
+                System.currentTimeMillis());
+        TestInfo ti = new TestInfo(this);
         ti.markStartTime();
         listener.startTest(ti);
         ti.markEndTime();
@@ -55,24 +55,24 @@ public class BufferingListenerTest extends TestCase {
         listener.endSuite();
         assertEquals(1, buffer.getSessionStartCount());
         assertEquals(1, buffer.getSessionEndCount());
-        assertEquals(1,buffer.getStartCount());
-        assertEquals(1,buffer.getEndCount());
-        TestInfo ti2=buffer.getEndInfo(0);
-        assertEquals(ti.getClassname(),ti2.getClassname());
-        assertFalse(ti2.getStartTime()==0);
+        assertEquals(1, buffer.getStartCount());
+        assertEquals(1, buffer.getEndCount());
+        TestInfo ti2 = buffer.getEndInfo(0);
+        assertEquals(ti.getClassname(), ti2.getClassname());
+        assertFalse(ti2.getStartTime() == 0);
         assertFalse(ti2.getEndTime() == 0);
         assertTrue(buffer.testsWereSuccessful());
     }
 
     public void testFailure() throws Exception {
         BufferingListener buffer = createFactory();
-        TestListener listener = buffer.listen("localhost",
+        TestListener listener = buffer.listen(null, "localhost",
                 "testo",
                 System.currentTimeMillis());
         TestInfo ti = new TestInfo(this);
         ti.markStartTime();
         listener.startTest(ti);
-        Throwable t=new RuntimeException("oops",new Throwable("nested"));
+        Throwable t = new RuntimeException("oops", new Throwable("nested"));
         ti.addFaultInfo(t);
         listener.addError(ti);
         ti.markEndTime();

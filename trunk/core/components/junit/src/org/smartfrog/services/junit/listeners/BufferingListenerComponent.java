@@ -22,8 +22,8 @@
 package org.smartfrog.services.junit.listeners;
 
 import org.smartfrog.services.junit.TestInfo;
-import org.smartfrog.services.junit.TestListenerFactory;
 import org.smartfrog.services.junit.TestListener;
+import org.smartfrog.services.junit.TestSuite;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.PrimImpl;
 
@@ -46,7 +46,7 @@ public class BufferingListenerComponent extends PrimImpl
 
     List errors, failures, starts, ends;
 
-    int sessionStartCount,sessionEndCount;
+    int sessionStartCount, sessionEndCount;
 
     /**
      * Called after instantiation for deployment purposed. Heart monitor is
@@ -63,7 +63,6 @@ public class BufferingListenerComponent extends PrimImpl
         super.sfDeploy();
 
     }
-
 
 
     /**
@@ -172,7 +171,6 @@ public class BufferingListenerComponent extends PrimImpl
      * get the number of times that callers started listening
      *
      * @return and interface that should have events reported to it
-     *
      * @throws java.rmi.RemoteException
      */
     public int getSessionStartCount() throws RemoteException {
@@ -187,7 +185,6 @@ public class BufferingListenerComponent extends PrimImpl
      * get the number of times that callers ended listening
      *
      * @return
-     *
      * @throws java.rmi.RemoteException
      */
     public int getSessionEndCount() throws RemoteException {
@@ -198,23 +195,23 @@ public class BufferingListenerComponent extends PrimImpl
     /**
      * bind to a caller
      *
+     * @param suite
      * @param hostname  name of host
      * @param suitename name of test suite
      * @param timestamp start timestamp (UTC)
-     *
      * @return a listener to talk to
      */
-    public TestListener listen(String hostname,
-                               String suitename,
-                               long timestamp) throws RemoteException,
+    public TestListener listen(TestSuite suite, String hostname,
+            String suitename,
+            long timestamp) throws RemoteException,
             SmartFrogException {
         sessionStartCount++;
         return new BufferingTestListener();
     }
 
     /**
-     * this is a non-static nested class that provides the test listener
-     * for this component; 
+     * this is a non-static nested class that provides the test listener for
+     * this component;
      */
     protected class BufferingTestListener implements TestListener {
         /**
@@ -240,7 +237,6 @@ public class BufferingListenerComponent extends PrimImpl
          * make a clone of any test info
          *
          * @param test
-         *
          * @return
          */
         private TestInfo cloneTestInfo(TestInfo test) {

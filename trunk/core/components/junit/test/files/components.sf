@@ -59,10 +59,12 @@ XmlTestRunner extends LocalJUnitTestRunner {
  * This is the all test suite, used in -all targets.
  */
 
-testAll extends LocalJUnitTestRunner {
+TestAll extends LocalJUnitTestRunner {
 
     //mostTests extends MostTests;
-    throwingTest extends ThrowingTest;
+    tests extends ThrowingTest {
+        name "tests";
+    }
 }
 
 /**

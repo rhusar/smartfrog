@@ -21,6 +21,7 @@ package org.smartfrog.services.junit.listeners;
 
 import org.smartfrog.services.junit.TestInfo;
 import org.smartfrog.services.junit.TestListener;
+import org.smartfrog.services.junit.TestSuite;
 import org.smartfrog.services.junit.ThrowableTraceInfo;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.PrimImpl;
@@ -117,12 +118,13 @@ public class ConsoleListenerComponent extends PrimImpl
     /**
      * bind to a caller
      *
+     * @param suite
      * @param hostname  name of host
      * @param suitename name of test suite
      * @param timestamp start timestamp (UTC)
      * @return a listener to talk to
      */
-    public TestListener listen(String hostname,
+    public TestListener listen(TestSuite suite, String hostname,
             String suitename,
             long timestamp) throws RemoteException,
             SmartFrogException {

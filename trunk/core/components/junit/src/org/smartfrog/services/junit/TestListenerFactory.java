@@ -25,25 +25,30 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 /**
- * This is a factory for remote listeners.
- * Whenever a caller connects to a remote listener, it should ask the factory
- * for a listener instance. This will return a new remote interface
- * {@link TestListener}, which is used for listening.
+ * This is a factory for remote listeners. Whenever a caller connects to a
+ * remote listener, it should ask the factory for a listener instance. This will
+ * return a new remote interface {@link TestListener}, which is used for
+ * listening.
  */
 
 public interface TestListenerFactory extends Remote {
 
+    final String ATTR_NAME = "name";
 
     /**
      * bind to a caller
      *
+     * @param suite     the test suite that is about to run. May be null,
+     *                  especially during testing.
      * @param hostname  name of host
      * @param suitename name of test suite
      * @param timestamp start timestamp (UTC)
-     *
      * @return a listener to talk to
      */
-    TestListener listen(String hostname, String suitename, long timestamp)
+    TestListener listen(TestSuite suite,
+            String hostname,
+            String suitename,
+            long timestamp)
             throws RemoteException, SmartFrogException;
 
 }
