@@ -29,6 +29,7 @@ import org.smartfrog.sfcore.common.Copying;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferenceResolver;
 
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 
 /**
  * Defines the context interface used by Components. Context implementations
@@ -36,8 +37,61 @@ import org.smartfrog.sfcore.reference.ReferenceResolver;
  * Components.
  * @see Copying
  */
-public interface ComponentDescription extends Copying, ReferenceResolver
-    {
+public interface ComponentDescription extends Copying, ReferenceResolver {
+
+    /**
+     * Add an attribute to the component description context. Values should be
+     * marshallable types if they are to be referenced remotely at run-time.
+     * If an attribute with this name already exists it is <em>not</em>
+     * replaced.
+     *
+     * @param name name of attribute
+     * @param value object to be added in context
+     *
+     * @return value if successfull, null otherwise
+     *
+     * @throws SmartFrogRuntimeException when name or value are null
+     */
+    public Object sfAddAttribute(Object name, Object value)throws SmartFrogRuntimeException;
+
+    /**
+     * Remove named attribute from component description context. Non present attribute
+     * names are ignored.
+     *
+     * @param name name of attribute to be removed
+     *
+     * @return the removed value if successfull, null otherwise
+     *
+     * @throws SmartFrogRuntimeException when name is null
+     */
+    public Object sfRemoveAttribute(Object name) throws SmartFrogRuntimeException;
+
+
+    /**
+     * Returns the attribute key for a given value.
+     *
+     * @param value value to look up the key for
+     *
+     * @return key for given value or null if not found
+     *
+     */
+    public Object sfAttributeKeyFor(Object value);
+
+
+    /**
+     * Replace named attribute in component description context. If attribute is not
+     * present it is added to the context.
+     *
+     * @param name of attribute to replace
+     * @param value attribute value to replace or add
+     *
+     * @return the old value if present, null otherwise
+     *
+     * @throws SmartFrogRuntimeException when name or value are null
+     */
+    public Object sfReplaceAttribute(Object name, Object value)
+        throws SmartFrogRuntimeException;
+
     /**
      * Get complete name for this description. This is a reference all the way
      * down from the root of the containment tree.

@@ -140,4 +140,61 @@ public interface Context extends Copying {
      * @return clone of context
      */
     public Object clone();
+
+
+   // Special methods thet thwo exception when something does not work
+   /**
+     * Add an attribute to context. Values should be
+     * marshallable types if they are to be referenced remotely at run-time.
+     * If an attribute with this name already exists it is <em>not</em>
+     * replaced.
+     *
+     * @param name name of attribute
+     * @param value object to be added in context
+     *
+     * @return value if successfull, null otherwise
+     *
+     * @throws SmartFrogContextException when name or value are null
+     */
+    public Object sfAddAttribute(Object name, Object value)throws SmartFrogContextException;
+
+    /**
+     * Remove named attribute from component context. Non present attribute
+     * names are ignored.
+     *
+     * @param name name of attribute to be removed
+     *
+     * @return the removed value if successfull, null otherwise
+     *
+     * @throws SmartFrogContextException when name is null
+     */
+    public Object sfRemoveAttribute(Object name) throws SmartFrogContextException;
+
+
+    /**
+     * Returns the attribute key for a given value.
+     *
+     * @param value value to look up the key for
+     *
+     * @return key for given value or null if not found
+     *
+     */
+    public Object sfAttributeKeyFor(Object value);
+
+
+    /**
+     * Replace named attribute in context. If attribute is not
+     * present it is added to the context.
+     *
+     * @param name of attribute to replace
+     * @param value attribute value to replace or add
+     *
+     * @return the old value if present, null otherwise
+     *
+     * @throws SmartFrogContextException when name or value are null
+     */
+    public Object sfReplaceAttribute(Object name, Object value)
+        throws SmartFrogContextException;
+
+
 }

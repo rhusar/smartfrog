@@ -52,6 +52,7 @@ import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 
 import java.rmi.*;
+import org.smartfrog.sfcore.common.*;
 
 
 /**
@@ -245,7 +246,7 @@ public class PrimImpl extends Object implements Prim, MessageKeys {
      *
      * @return the name of the process
      *
-     * @throws RemoteException In case of network/rmi error
+     * @throws RemoteException In case of Remote/network error
      */
     public String sfDeployedProcessName() throws RemoteException {
         String value = (String) System.getProperty(
@@ -267,31 +268,16 @@ public class PrimImpl extends Object implements Prim, MessageKeys {
      * @return added attribute if non-existent or null otherwise
      *
      * @throws SmartFrogRuntimeException when name or value are null
+     * @throws RemoteException In case of Remote/nework error
      */
     public synchronized Object sfAddAttribute(Object name, Object value)
         throws SmartFrogRuntimeException, RemoteException {
-        if ((name == null) || (value == null)) {
-          if (name == null) {
-              throw new SmartFrogRuntimeException(
-              MessageUtil.formatMessage(MSG_NULL_DEF_METHOD, "'name'",
-                                        "sfAddAttribute"), this);
-          }
-          if (value == null) {
-              throw new SmartFrogRuntimeException(
-              MessageUtil.formatMessage(MSG_NULL_DEF_METHOD, "'value'",
-                                        "sfAddAttribute"), this);
-          }
-
-            return null;
+        try {
+            return sfContext.sfAddAttribute(name, value);
+        } catch (SmartFrogContextException ex) {
+            ex.init(this);
+            throw ex;
         }
-
-        if (sfContext.containsKey(name)) {
-                return null;
-        }
-
-        sfContext.put(name, value);
-
-        return value;
     }
 
     /**
@@ -302,15 +288,16 @@ public class PrimImpl extends Object implements Prim, MessageKeys {
      * @return removed attribute value if successfull or null if not
      *
      * @throws SmartFrogRuntimeException when name is null
+     * @throws RemoteException In case of Remote/nework error
      */
     public synchronized Object sfRemoveAttribute(Object name)
         throws SmartFrogRuntimeException, RemoteException {
-        if (name == null) {
-              throw new SmartFrogRuntimeException(
-              MessageUtil.formatMessage(MSG_NULL_DEF_METHOD, "'name'",
-                                      "sfRemoveAttribute"), this);
+        try {
+            return sfContext.sfRemoveAttribute(name);
+        } catch (SmartFrogContextException ex) {
+            ex.init(this);
+            throw ex;
         }
-        return sfContext.remove(name);
     }
 
     /**
@@ -323,25 +310,16 @@ public class PrimImpl extends Object implements Prim, MessageKeys {
      * @return the old value if present, null otherwise
      *
      * @throws SmartFrogRuntimeException when name or value are null
+     * @throws RemoteException In case of Remote/nework error
      */
     public synchronized Object sfReplaceAttribute(Object name, Object value)
         throws SmartFrogRuntimeException, RemoteException {
-        if ((name == null) || (value == null)) {
-            if (name == null) {
-                throw new SmartFrogRuntimeException(
-                MessageUtil.formatMessage(MSG_NULL_DEF_METHOD, "'name'",
-                                          "sfReplaceAttribute"), this);
-            }
-            if (value == null) {
-                throw new SmartFrogRuntimeException(
-                MessageUtil.formatMessage(MSG_NULL_DEF_METHOD, "'value'",
-                                          "sfReplaceAttribute"), this);
-            }
-
-            return null;
+        try {
+            return sfContext.sfReplaceAttribute(name, value);
+        } catch (SmartFrogContextException ex) {
+            ex.init(this);
+            throw ex;
         }
-
-        return sfContext.put(name, value);
     }
 
 
@@ -355,7 +333,7 @@ public class PrimImpl extends Object implements Prim, MessageKeys {
 
     // perhaps this should be synchronized... but causes problems with sfCompleteName if it is
     public Object sfAttributeKeyFor(Object value) {
-        return sfContext.keyFor(value);
+        return sfContext.sfAttributeKeyFor(value);
     }
 
 

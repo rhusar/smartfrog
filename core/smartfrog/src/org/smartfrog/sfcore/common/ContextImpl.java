@@ -23,6 +23,8 @@ package org.smartfrog.sfcore.common;
 import java.io.Serializable;
 import java.util.Enumeration;
 
+import org.smartfrog.sfcore.common.SmartFrogContextException;
+
 
 /**
  * Implements the context interface. This implementation relies on the
@@ -74,4 +76,107 @@ public class ContextImpl extends OrderedHashtable implements Context,
 
         return null;
     }
+
+
+    /**
+      * Adds an attribute to this context under given name.
+      *
+      * @param name name of attribute
+      * @param value value of attribute
+      *
+      * @return added attribute if non-existent or null otherwise
+      *
+      * @throws SmartFrogRuntimeException when name or value are null
+      */
+     public synchronized Object sfAddAttribute(Object name, Object value)
+         throws SmartFrogContextException{
+         if ((name == null) || (value == null)) {
+           if (name == null) {
+               throw new SmartFrogContextException(
+               MessageUtil.formatMessage(MessageKeys.MSG_NULL_DEF_METHOD, "'name'",
+                                         "sfAddAttribute") );
+           }
+           if (value == null) {
+               throw new SmartFrogContextException(
+               MessageUtil.formatMessage(MessageKeys.MSG_NULL_DEF_METHOD, "'value'",
+                                         "sfAddAttribute"));
+           }
+
+             return null;
+         }
+
+         if (this.containsKey(name)) {
+                 return null;
+         }
+
+         this.put(name, value);
+
+         return value;
+     }
+
+     /**
+      * Removes an attribute from this context.
+      *
+      * @param name of attribute to be removed
+      *
+      * @return removed attribute value if successfull or null if not
+      *
+      * @throws SmartFrogContextException when name is null
+      */
+     public synchronized Object sfRemoveAttribute(Object name)
+         throws SmartFrogContextException{
+         if (name == null) {
+               throw new SmartFrogContextException(
+               MessageUtil.formatMessage(MSG_NULL_DEF_METHOD, "'name'",
+                                       "sfRemoveAttribute"));
+         }
+         return this.remove(name);
+     }
+
+     /**
+      * Replace named attribute in context. If attribute is not
+      * present it is added to the context.
+      *
+      * @param name of attribute to replace
+      * @param value value to add or replace
+      *
+      * @return the old value if present, null otherwise
+      *
+      * @throws SmartFrogContextException when name or value are null
+      */
+     public synchronized Object sfReplaceAttribute(Object name, Object value)
+         throws SmartFrogContextException {
+         if ((name == null) || (value == null)) {
+             if (name == null) {
+                 throw new SmartFrogContextException(
+                 MessageUtil.formatMessage(MSG_NULL_DEF_METHOD, "'name'",
+                                           "sfReplaceAttribute"));
+             }
+             if (value == null) {
+                 throw new SmartFrogContextException(
+                 MessageUtil.formatMessage(MSG_NULL_DEF_METHOD, "'value'",
+                                           "sfReplaceAttribute"));
+             }
+
+             return null;
+         }
+
+         return this.put(name, value);
+     }
+
+
+     /**
+      * Returns the attribute key given a value.
+      *
+      * @param value value to look up key for
+      *
+      * @return key for attribute value or null if none
+      */
+
+     // perhaps this should be synchronized... but causes problems with sfCompleteName if it is
+     public Object sfAttributeKeyFor(Object value) {
+         return this.keyFor(value);
+     }
+
+
 }
