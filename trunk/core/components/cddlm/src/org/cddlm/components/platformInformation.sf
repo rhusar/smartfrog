@@ -18,38 +18,29 @@ For more information: www.smartfrog.org
 
 */
 
-/**
- * schema stuff
- */
-#include "/org/smartfrog/predicates.sf"
+ /**
+  * Include the core smartfrog components.
+  */
+ #include "/org/smartfrog/components.sf"
+ #include "/org/smartfrog/predicates.sf"
 
 /**
- * Include the core smartfrog components.
+ * platform information: run time information about a platform
+ * issue: how to declare information that will only be available after deployment?
  */
-#include "org/smartfrog/components.sf"
+ /*
+PlatformInformationSchema extends Schema {
 
-/**
- * Include the CDDLM components.
- */
+    processor;
+    OS;
+    Family; //WinNT, Win9x, Unix, Mac, ...
+    DirectorySeparator "/";
+    OnBattery; //false
+    OnNetwork; //true
+}
 
-#include "org/smartfrog/services/cddlm/components.sf"
+*/
 
-/**
- * the actual deployment 
- * sets the threads and sessions
- */
-sfConfig extends Compound {
-    //our CDDLM description
-    cddlm extends CDDLM {
-        port 5050;
-        threads 4;
-        sessions 8;
-        }
-
-    //fetch the WSDL every so often, just to see that we are happy
-    wsdlFetch extends LivenessPage {
-        port PARENT:cddlm:port;
-        page "axis/services/cddlm/?wsdl";
-        checkFrequency 10;
-    }
+PlatformInformation extends Prim {
+     sfClass "org.cddlm.components.PlatformInformationComponent";
 }

@@ -23,29 +23,19 @@ import org.apache.axis.AxisFault;
 import org.apache.axis.components.logger.LogFactory;
 import org.apache.commons.logging.Log;
 import org.smartfrog.SFSystem;
+import org.smartfrog.sfcore.common.ConfigurationDescriptor;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.Logger;
-import org.smartfrog.sfcore.common.MessageUtil;
-import org.smartfrog.sfcore.common.MessageKeys;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.common.ConfigurationDescriptor;
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.common.ConfigurationDescriptor;
-import org.smartfrog.sfcore.processcompound.SFProcess;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
+import org.smartfrog.sfcore.processcompound.SFProcess;
 
 import java.rmi.RemoteException;
-import java.util.List;
-import java.util.ArrayList;
 
 /**
  * This is our SOAP service
- *         created 04-Mar-2004 13:44:57
+ * created 04-Mar-2004 13:44:57
  */
 
-public class DeploymentEndpoint extends SmartFrogHostedEndpoint {
+public class DeploymentEndpoint extends SmartfrogHostedEndpoint {
 
 
     /**
@@ -54,12 +44,14 @@ public class DeploymentEndpoint extends SmartFrogHostedEndpoint {
     private Log log = LogFactory.getLog(this.getClass().getName());
 
 
-    protected final static String[] languages= {
+    protected final static String[] languages = {
         "SmartFrog",
         "CDDLM-XML"
     };
+
     /**
      * list our languages
+     *
      * @return
      */
     public String[] listLanguages() {
@@ -69,32 +61,36 @@ public class DeploymentEndpoint extends SmartFrogHostedEndpoint {
 
     /**
      * verify we support this language
+     *
      * @param language
      * @throws AxisFault
      */
     protected void verifySupported(String language) throws AxisFault {
-        for(int i=0;i<languages.length; i++) {
-            if(languages[i].equalsIgnoreCase(language)) {
+        for (int i = 0; i < languages.length; i++) {
+            if (languages[i].equalsIgnoreCase(language)) {
                 return;
             }
         }
-        throw new AxisFault("Unsupported language :"+language);
+        throw new AxisFault("Unsupported language :" + language);
     }
 
     /**
      * deploy a file; save it to a temporary location and then deploy it
+     *
      * @param language
      * @param application
      * @param data
      * @throws AxisFault
      */
-    public void deploy(String language, String hostname, String application, String data) throws AxisFault {
+    public void deploy(String language, String hostname, String application,
+                       String data) throws AxisFault {
         verifySupported(language);
         throw new AxisFault("Not yet implemented");
     }
 
     /**
      * deploy a named resource
+     *
      * @param language
      * @param hostname
      * @param application
@@ -102,19 +98,20 @@ public class DeploymentEndpoint extends SmartFrogHostedEndpoint {
      * @return
      * @throws RemoteException
      */
-    public String deployURL(String language, String hostname, String application, String url,String[] codebase)
-        throws RemoteException
-        {
+    public String deployURL(String language, String hostname,
+                            String application, String url, String[] codebase)
+            throws RemoteException {
         verifySupported(language);
-        if(hostname.length() == 0) {
-            hostname="localhost";
+        if (hostname.length() == 0) {
+            hostname = "localhost";
         }
 
-        return deployThroughActions(hostname, application, url,null);
+        return deployThroughActions(hostname, application, url, null);
     }
 
     /**
      * first pass impl of deployment; use sfsystem
+     *
      * @param hostname
      * @param application
      * @param url
@@ -122,19 +119,19 @@ public class DeploymentEndpoint extends SmartFrogHostedEndpoint {
      * @throws AxisFault
      */
     private String deployThroughSFSystem(String hostname, String application,
-                                         String url
-                                         ) throws AxisFault {
+                                         String url) throws AxisFault {
         try {
-            ConfigurationDescriptor config=new ConfigurationDescriptor(application,url);
+            ConfigurationDescriptor config = new ConfigurationDescriptor(
+                    application, url);
             config.setHost(hostname);
             config.setActionType(ConfigurationDescriptor.Action.DEPLOY);
             log.info("Deploying " + url + " to " + hostname);
             //deploy, throwing an exception if we cannot
             config.execute(SFProcess.getProcessCompound());
-            SFSystem.runConfigurationDescriptor(config,true);
+            SFSystem.runConfigurationDescriptor(config, true);
 
             //SFSystem.deployAComponent(hostname,url,application,remote);
-            return "urn://"+hostname+"/"+ application;
+            return "urn://" + hostname + "/" + application;
         } catch (SmartFrogException exception) {
             throw AxisFault.makeFault(exception);
         } catch (Exception exception) {
@@ -153,14 +150,15 @@ public class DeploymentEndpoint extends SmartFrogHostedEndpoint {
      * @throws AxisFault
      */
     private String deployThroughActions(String hostname, String application,
-                                         String url,
+                                        String url,
                                         String[] codebase) throws AxisFault {
         try {
-            ConfigurationDescriptor config = new ConfigurationDescriptor(application, url);
+            ConfigurationDescriptor config = new ConfigurationDescriptor(
+                    application, url);
             config.setHost(hostname);
             config.setActionType(ConfigurationDescriptor.Action.DEPLOY);
-            log.info("Deploying " + url + " to " + hostname+ "as "+application);
-            if(codebase!=null) {
+            log.info("Deploying " + url + " to " + hostname + "as " + application);
+            if (codebase != null) {
                 log.warn("codebase is not yet supported");
             }
             //deploy, throwing an exception if we cannot
@@ -174,8 +172,10 @@ public class DeploymentEndpoint extends SmartFrogHostedEndpoint {
             throw AxisFault.makeFault(exception);
         }
     }
+
     /**
      * get the root process compound of this process
+     *
      * @return
      */
     protected ProcessCompound getRootProcessCompount() {
@@ -184,6 +184,7 @@ public class DeploymentEndpoint extends SmartFrogHostedEndpoint {
 
     /**
      * undeploy an application
+     *
      * @param hostname
      * @param application
      */
@@ -193,7 +194,7 @@ public class DeploymentEndpoint extends SmartFrogHostedEndpoint {
             ConfigurationDescriptor config = new ConfigurationDescriptor();
             config.setHost(hostname);
             config.setActionType(ConfigurationDescriptor.Action.DETaTERM);
-            log.info("Undeploying " + application+ " on " + hostname);
+            log.info("Undeploying " + application + " on " + hostname);
             //deploy, throwing an exception if we cannot
             config.execute(SFProcess.getProcessCompound());
             Object targetC = config.execute(null);
