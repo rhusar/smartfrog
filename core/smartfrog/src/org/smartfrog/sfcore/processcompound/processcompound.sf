@@ -29,7 +29,7 @@ ProcessCompound extends Compound {
   sfProcessClass "org.smartfrog.SFSystem";
   sfProcessJava "java";
   sfProcessAllow true;
-  sfProcessTimeout 200; //Original 60! Checking error.
+  sfProcessTimeout 60;
   sfRootLocatorClass "org.smartfrog.sfcore.processcompound.DefaultRootLocatorImpl";
   sfRootLocatorPort 3800;
   // reference to root of current heirachy of processes - not necessarily a root process compound
