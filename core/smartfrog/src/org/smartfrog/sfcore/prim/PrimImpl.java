@@ -1023,10 +1023,10 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
 
         if (myName != null) {
             sfTerminate(TerminationRecord.abnormal("Liveness Send Failure in " +
-                    myName, targetName));
+                    myName, targetName, failure));
         } else {
             sfTerminate(TerminationRecord.abnormal("Liveness Send Failure",
-                    targetName));
+                    targetName, failure));
         }
     }
 

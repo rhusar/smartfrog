@@ -50,6 +50,9 @@ public class TerminationRecord implements Serializable {
     /** id of failing component. */
     public Reference id;
 
+    /** exception causing a failure. */
+    public Throwable cause;
+
     /**
      * Constructs a new termination record.
      *
@@ -62,7 +65,25 @@ public class TerminationRecord implements Serializable {
         errorType = errType.intern();
         description = descr;
         this.id = id;
+	this.cause = null;
     }
+
+    /**
+     * Constructs a new termination record.
+     *
+     * @param errType error type, system recognized types are "normal",
+     *        "abnormal" and "externalReferenceDead".
+     * @param descr description of termination
+     * @param id id of failing component
+     * @param  cause the exception that caused the abnormal termination
+     */
+    public TerminationRecord(String errType, String descr, Reference id, Throwable cause) {
+        errorType = errType.intern();
+        description = descr;
+        this.id = id;
+	this.cause = cause;
+    }
+
 
     /**
      * Utility method. Returns a normal termination record.
@@ -88,6 +109,19 @@ public class TerminationRecord implements Serializable {
     }
 
     /**
+     * Utility method. Returns an abnormal termination record.
+     *
+     * @param descr description of abnormal failure
+     * @param id id of component
+     * @param cause the exception that caused the abnormal termination
+     *
+     * @return a SFTerminationRecord
+     */
+    public static TerminationRecord abnormal(String descr, Reference id, Throwable cause) {
+        return new TerminationRecord(ABNORMAL, descr, id, cause);
+    }
+
+    /**
      * Utility method. Returns an external failure termination record.
      *
      * @param id id of component
@@ -109,6 +143,7 @@ public class TerminationRecord implements Serializable {
         return "Termination Record: " +
         (((id == null) || (id.size() == 0)) ? "" : ("" + id.toString())) +
         ((errorType == null) ? "" : (",  type: " + errorType.toString())) +
-        ((description == null) ? "" : (",  description: " + description));
+        ((description == null) ? "" : (",  description: " + description)) + 
+        ((cause == null) ? "" : (",  cause: " + cause)) ;
     }
 }
