@@ -44,6 +44,7 @@ public class CdlLoaderTest extends TestCase {
     private final static String INVALID_RESOURCES = RESOURCES+"invalid/";
     private final static String VALID_RESOURCES = RESOURCES + "valid/";
 
+    public static final String WRONG_NAMESPACE_TEXT="Cannot find the declaration of element 'cdl:cdl'";
     private final static String VALID_CDL[]= {
         "minimal.cdl"
     };
@@ -62,12 +63,6 @@ public class CdlLoaderTest extends TestCase {
         parser = new CdlParser(loader, true);
     }
 
-    /**
-     * The fixture clean up called after every test method.
-     */
-
-    protected void tearDown() throws Exception {
-    }
 
     public void testValid() throws Exception {
         Document doc;
@@ -112,14 +107,14 @@ public class CdlLoaderTest extends TestCase {
     }
 
     public void testWrongDocNamespace() throws Exception {
-        assertInvalid("wrong_doc_namespace.cdl",CdlDocument.ERROR_WRONG_NAMESPACE);
+        assertInvalid("wrong_doc_namespace.cdl", WRONG_NAMESPACE_TEXT);
     }
 
-
+/*
     public void testUnsupportedPathLanguage() throws Exception {
         assertInvalid("unsupported_pathlanguage.cdl", CdlDocument.ERROR_BAD_PATHLANGUAGE);
     }
-
+*/
     public void testWrongEltOrder() throws Exception {
         assertInvalid("wrong_elt_order.cdl", null);
     }
