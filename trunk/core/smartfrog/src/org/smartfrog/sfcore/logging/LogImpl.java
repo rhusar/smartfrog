@@ -131,18 +131,16 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
     public LogImpl (String name){
         //@TODO: improve error protection
         //@TODO: read configuration parameters from component description also localLog has to be configured
-        //Check Class and read configuration...
 
-        // Similar for default deployer.
-        //localLog=new LogToErr(name,this.LOG_LEVEL_INFO);
         try {
+            //Check Class and read configuration...including system.properties
             classComponentDescription = getClassComponentDescription(this, true);
             localLog = getLocalLog(name
                                    , ((Integer)classComponentDescription.sfResolve(new Reference("logLevel")))
                                    , (String)classComponentDescription.sfResolve(new Reference("localLoggerClass"))
                                    , getSfCodeBase(classComponentDescription));
         } catch (Exception ex ){
-            localLog=new LogToFile(name,new Integer(LOG_LEVEL_INFO));
+            localLog=new LogToFile(name,new Integer(currentLogLevel));
             localLog.warn("Error init localLog for LogImpl",ex);
         }
         logName = name;
