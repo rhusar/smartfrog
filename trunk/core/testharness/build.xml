@@ -239,7 +239,7 @@ For more information: www.smartfrog.org
             <path refid="tests.run.classpath"/>
           </classpath>
           <!-- #Test case isolation technique -->
-          <test name="${testcase}" if="testcase"/>
+          <test todir="${test.data.dir}" name="${testcase}" if="testcase"/>
           <batchtest todir="${test.data.dir}" unless="testcase" >
             <!-- bulk test case -->
             <fileset dir="${test.classes.dir}">

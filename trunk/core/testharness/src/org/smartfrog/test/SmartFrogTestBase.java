@@ -709,6 +709,24 @@ public abstract class SmartFrogTestBase extends TestCase {
         assertEquals(mustEqual, value);
     }
 
+    /**
+     * Assert the value of a boolean attribute
+     * @param app
+     * @param attribute
+     * @param expected
+     * @throws SmartFrogResolutionException
+     * @throws RemoteException
+     */
+    public void assertAttributeEquals(Prim app, String attribute,
+            boolean expected) throws SmartFrogResolutionException,
+            RemoteException {
+        Object value = resolveAttribute(app, attribute);
+        assertEquals(Boolean.class,value.getClass());
+        assertEquals(expected,((Boolean)value).booleanValue());
+    }
+
+
+
     public static void assertEquals(String o1, String o2) {
 /*
       System.out.println("       - AssertEquals: \n"+
