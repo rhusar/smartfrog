@@ -40,6 +40,7 @@ public class StreamGobbler extends Thread {
      * @param typeS Type of the stream
      */
     public StreamGobbler(InputStream is, String typeS) {
+        this.setName("StreamGobbler");
         this.is = is;
 
         if (typeS.equals("err")) {
