@@ -295,7 +295,7 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener {
             this.jTextArea1.setText("* Attribute: " + value.toString());
             value = this.table.getValueAt(this.table.getSelectedRow(), 1);
             this.jTextArea1.append("\n* Value: \n" + value.toString());
-            //Only gets class when the value is not a reference converted to string.
+//            //Only gets class when the value is not a reference converted to string.
             if (!this.jTextArea1.getText().endsWith(".Reference")) {
                 this.jTextArea1.append("\n\n" + "+ Value class:" +
                     value.getClass().toString());
