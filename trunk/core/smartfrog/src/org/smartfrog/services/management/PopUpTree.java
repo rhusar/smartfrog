@@ -78,6 +78,8 @@ public class PopUpTree extends JComponent implements ActionListener {
     /** Item for Tree popup menu - detach. */
     JMenuItem menuItemDumpContext = new JMenuItem();
 
+    /** Item for Tree popup menu - sfParentageChanged. */
+    JMenuItem menuItemParentageChanged = new JMenuItem();
     /**
      *  Constructs PopUpTree object
      */
@@ -99,6 +101,7 @@ public class PopUpTree extends JComponent implements ActionListener {
         menuItemTerminateAbnormal.setText("Terminate Component - ABNORMAL");
         menuItemDTerminate.setText("Detach and Terminate Comp");
         menuItemDumpContext.setText("Dump Component Context");
+        menuItemParentageChanged.setText("sfParentageChanged()");
 
         // Tree: options
         //      popupTree.add(menuItemAddAttribute);
@@ -111,6 +114,8 @@ public class PopUpTree extends JComponent implements ActionListener {
 
         popupTree.add(menuItemDumpContext);
 
+        popupTree.add(menuItemParentageChanged);
+
         // Add action listeners for tree popup
         menuItemAddAttribute.addActionListener(this);
 
@@ -122,6 +127,8 @@ public class PopUpTree extends JComponent implements ActionListener {
         menuItemDetach.addActionListener(this);
 
         menuItemDumpContext.addActionListener(this);
+
+        menuItemParentageChanged.addActionListener(this);
     }
 
     /**
@@ -186,7 +193,14 @@ public class PopUpTree extends JComponent implements ActionListener {
             // Entry selected in the tree
         } else if (source == menuItemDetach) {
             detach((((DeployEntry) (tpath.getLastPathComponent())).getEntry()));
-
+            // Entry selected in the tree
+        } else if (source == menuItemParentageChanged) {
+            Prim objPrim = ((Prim)(((DeployEntry)(tpath.getLastPathComponent())).getEntry()));
+            try {
+              objPrim.sfParentageChanged();
+            } catch (RemoteException ex1) {
+              //ex1.printStackTrace();
+            }
             // Entry selected in the tree
         } else if (source == menuItemDumpContext) {
             StringBuffer message=new StringBuffer();
