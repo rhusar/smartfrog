@@ -73,14 +73,10 @@ Removefile extends DoNothing {
 
 
 /**
- * There are two choices for the daemon: either we can have a component that
- * starts it then terminates and then another that stops it or we can launch a
- * component that exists whilst the daemon should be running, starting in
- * sfStart and terminating in sfTerminateWith.
- * The component is given the command line as a string
+ * The RunDaemon component issues a message stating that the daemon is running,
+ * delays a couple of seconds, and terminates.
  */
-
-RunDaemon extends Prim {
-    commandLine "echo running daemon";
-
+RunDaemon extends DoNothing {
+    time 200;
+    message "echo running daemon";
 }
