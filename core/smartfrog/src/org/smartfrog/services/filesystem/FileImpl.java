@@ -32,6 +32,7 @@ import org.smartfrog.sfcore.logging.Log;
 
 import java.rmi.RemoteException;
 import java.io.File;
+import java.net.URI;
 
 /**
  * Implement a class that can dynamically map to a file
@@ -49,12 +50,22 @@ public class FileImpl extends PrimImpl implements FileIntf {
      * a log
      */
     private Log log;
-    
+
     public FileImpl() throws RemoteException {
     }
 
     public String getAbsolutePath() throws RemoteException {
         return file.getAbsolutePath();
+    }
+
+    /**
+     * get the URI of this file
+     *
+     * @return
+     * @throws RemoteException
+     */
+    public URI getURI() throws RemoteException {
+        return file.toURI();
     }
 
     /**
@@ -110,8 +121,11 @@ public class FileImpl extends PrimImpl implements FileIntf {
             timestamp = file.lastModified();
             length = file.length();
         } else {
-            if(debugEnabled) log.debug("file does not exist");
-            isDirectory=isFile=false;
+            if(debugEnabled) {
+                log.debug("file does not exist");
+            }
+            isDirectory=false;
+            isFile = false;
             timestamp=-1;
             length=0;
         }
@@ -126,7 +140,8 @@ public class FileImpl extends PrimImpl implements FileIntf {
 
         String path= getAbsolutePath();
         sfReplaceAttribute(varAbsolutePath,path);
-        String uri=file.toURI().toString();
+        String uri;
+        uri = file.toURI().toString();
         sfReplaceAttribute(varURI, uri);
         String name=file.getName();
         sfReplaceAttribute(varShortname,name);
@@ -145,7 +160,7 @@ public class FileImpl extends PrimImpl implements FileIntf {
         if ( log.isDebugEnabled() ) {
             log.debug(attr + " = " + flag);
         }
-        sfReplaceAttribute(attr,new Boolean(flag));
+        sfReplaceAttribute(attr,Boolean.valueOf(flag));
     }
 
     /**
@@ -317,4 +332,6 @@ public class FileImpl extends PrimImpl implements FileIntf {
             throws SmartFrogResolutionException, RemoteException {
         return lookupAbsolutePath(component,new Reference(attribute),defval,baseDir, mandatory,platform);
     }
+
+
 }

@@ -19,21 +19,19 @@
  */
 package org.smartfrog.services.os.java;
 
+import org.smartfrog.services.os.runshell.RunShellImpl;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogInitException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.utils.PlatformHelper;
-import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.logging.Log;
-import org.smartfrog.services.os.runshell.RunShellImpl;
+import org.smartfrog.sfcore.utils.PlatformHelper;
 
-import java.rmi.RemoteException;
-import java.util.List;
-import java.util.LinkedList;
-import java.util.Vector;
-import java.util.Iterator;
-import java.util.Collection;
 import java.io.File;
+import java.rmi.RemoteException;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * created 21-May-2004 17:23:22
@@ -241,7 +239,7 @@ public class RunJavaImpl extends RunShellImpl implements RunJava {
             }
             return null;
         }
-        Vector classpathFlat=recursivelyFlatten(pathV);
+        Vector classpathFlat=RunJavaUtils.recursivelyFlatten(pathV);
         Iterator entries=classpathFlat.iterator();
         StringBuffer result= new StringBuffer();
         while (entries.hasNext()) {
@@ -279,7 +277,7 @@ public class RunJavaImpl extends RunShellImpl implements RunJava {
      * @return
      */
     private String makePath(Vector pathVector) {
-        Vector classpathFlat=recursivelyFlatten(pathVector);
+        Vector classpathFlat=RunJavaUtils.recursivelyFlatten(pathVector);
         Iterator entries=classpathFlat.iterator();
         StringBuffer result= new StringBuffer();
         while (entries.hasNext()) {
@@ -292,26 +290,4 @@ public class RunJavaImpl extends RunShellImpl implements RunJava {
         return result.toString();
     }
 
-    /**
-     * recursive flattening of the incoming collection.
-     * self-referential objects will loop forever.
-     * @param in something to iterate over
-     * @return a vector containing everything in the collection, apart from
-     * collection objects, which are themselves flattened.
-     */
-    private Vector recursivelyFlatten(Collection in) {
-        Vector flat=new Vector(in.size());
-        Iterator flattener=in.iterator();
-        while (flattener.hasNext()) {
-            Object o = (Object) flattener.next();
-            if(o instanceof Collection) {
-                Collection c=(Collection)o;
-                Vector v=recursivelyFlatten(c);
-                flat.addAll(v);
-            } else {
-                flat.add(o);
-            }
-        }
-        return flat;
-    }
 }
