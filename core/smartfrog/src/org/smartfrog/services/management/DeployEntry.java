@@ -369,10 +369,11 @@ public class DeployEntry implements Entry {
             int index = 0;
 
             for (Enumeration e = c.keys(); e.hasMoreElements();) {
-                name = e.nextElement().toString();
-                obj = c.get(name);
+                try {
+                  name = e.nextElement().toString();
+                  obj = c.get(name);
 
-                if (!(isAttribute(obj))) {
+                  if (! (isAttribute(obj))) {
                     //&& !name.toString().endsWith("URL"))
                     data[index][0] = name;
 
@@ -381,11 +382,14 @@ public class DeployEntry implements Entry {
 
                     //Deploy entries: What about References?, ComponentDescriptions?
                     index++;
+                  }
+                } catch (Exception ex1) {
+                  ex1.printStackTrace();
                 }
             }
-
             return data;
         } catch (Exception ex) {
+            ex.printStackTrace();
             return null;
         }
     }
@@ -558,17 +562,18 @@ public class DeployEntry implements Entry {
             String name = "";
             Object obj = null;
             Context c = ((Prim) entry).sfContext();
-
             for (Enumeration e = c.keys(); e.hasMoreElements();) {
-                name = e.nextElement().toString();
-                obj = c.get(name);
-
-                if (!(isAttribute(obj))) {
+                try {
+                  name = e.nextElement().toString();
+                  obj = c.get(name);
+                  if (! (isAttribute(obj))) {
                     //&& !name.toString().endsWith("URL"))
                     counter++;
+                  }
+                } catch (Exception ex1) {
+                  ex1.printStackTrace();
                 }
             }
-
             return counter;
         } catch (Exception ex) {
             return 0;
