@@ -50,12 +50,21 @@ import java.util.List;
  * {@link SmartFrogTask#setFailOnError(boolean)} calls respectively.
  */
 public abstract class SmartFrogTask extends TaskBase {
+
+    /**
+     * the name of a root process
+     */
     protected static final String ROOT_PROCESS = "rootProcess";
 
     public SmartFrogTask() {
 
     }
 
+    /**
+     * initialisation routine; set up some settings like the java task
+     * that we configure as we go
+     * @throws BuildException
+     */
     public void init() throws BuildException {
         smartfrog = getBaseJavaTask();
         setFailOnError(true);
@@ -436,7 +445,7 @@ public abstract class SmartFrogTask extends TaskBase {
      * @param name
      * @param value
      */
-    protected void addSmartfrogProperty(String name, String value) {
+    public void addSmartfrogProperty(String name, String value) {
         Environment.Variable property = new Environment.Variable();
         property.setKey(name);
         property.setValue(value);
@@ -450,7 +459,7 @@ public abstract class SmartFrogTask extends TaskBase {
      * @param name
      * @param object: if defined the toString() value is used
      */
-    protected void addSmartfrogPropertyIfDefined(String name, Object object) {
+    public void addSmartfrogPropertyIfDefined(String name, Object object) {
         if (object != null) {
             addSmartfrogProperty(name, object.toString());
         }

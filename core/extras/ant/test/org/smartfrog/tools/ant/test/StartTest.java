@@ -63,7 +63,7 @@ public class StartTest extends TaskTestBase {
     public void testIncompatibleSettings() {
         expectBuildExceptionContaining("testIncompatibleSettings",
                 "spawn and timeout",
-                "have used an attribute which is not compatible with spawn");
+                "not compatible with spawn");
     }
 
     /**
@@ -78,6 +78,7 @@ public class StartTest extends TaskTestBase {
         expectBuildExceptionContaining("testDefaults", "timeout",
                 "Timeout:");
         assertRootProcessInLog();
+        assertInLog("COUNTER: step 1");
     }
 
     /**
