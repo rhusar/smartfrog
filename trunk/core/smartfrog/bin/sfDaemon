@@ -18,9 +18,9 @@ fi
 if test "$SFCODEBASE" && ! test "$SFSECURITY"; then
 	java "$SFDEFAULTINI" "$SFDEFAULTSF" "$SFCODEBASE" -Dorg.smartfrog.sfcore.processcompound.sfProcessName=rootProcess org.smartfrog.SFSystem "$@"
 elif test "$SFSECURITY" && ! test "$SFCODEBASE"; then
-	java "$SFDEFAULTINI" "$SFDEFAULTSF" "$SFSECURITY" -Dorg.smartfrog.sfcore.processcompound.sfProcessName=rootProcess org.smartfrog.SFSystem "$@"
+	java "$SFDEFAULTINI" "$SFDEFAULTSF" $SFSECURITY -Dorg.smartfrog.sfcore.processcompound.sfProcessName=rootProcess org.smartfrog.SFSystem "$@"
 elif test "$SFCODEBASE" && test "$SFSECURITY"; then
-	java "$SFDEFAULTINI" "$SFDEFAULTSF" "$SFCODEBASE" "$SFSECURITY" -Dorg.smartfrog.sfcore.processcompound.sfProcessName=rootProcess org.smartfrog.SFSystem "$@"
+	java "$SFDEFAULTINI" "$SFDEFAULTSF" "$SFCODEBASE" $SFSECURITY -Dorg.smartfrog.sfcore.processcompound.sfProcessName=rootProcess org.smartfrog.SFSystem "$@"
 else
 	java "$SFDEFAULTINI" "$SFDEFAULTSF" -Dorg.smartfrog.sfcore.processcompound.sfProcessName=rootProcess org.smartfrog.SFSystem "$@"
 fi

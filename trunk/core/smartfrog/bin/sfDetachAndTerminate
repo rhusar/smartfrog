@@ -24,9 +24,9 @@ fi
 if test "$SFCODEBASE" && ! test "$SFSECURITY"; then
         java "$SFDEFAULTINI" "$SFCODEBASE" org.smartfrog.SFSystem -a $2:DETaTERM:::$1: -e
 elif test "$SFSECURITY" && ! test "$SFCODEBASE"; then
-        java "$SFDEFAULTINI" "$SFSECURITY" org.smartfrog.SFSystem -a $2:DETaTERM:::$1: -e
+        java "$SFDEFAULTINI" $SFSECURITY org.smartfrog.SFSystem -a $2:DETaTERM:::$1: -e
 elif test "$SFCODEBASE" && test "$SFSECURITY"; then
-        java "$SFDEFAULTINI" "$SFCODEBASE" "$SFSECURITY" org.smartfrog.SFSystem -a $2:DETaTERM:::$1: -e
+        java "$SFDEFAULTINI" "$SFCODEBASE" $SFSECURITY org.smartfrog.SFSystem -a $2:DETaTERM:::$1: -e
 else
         java "$SFDEFAULTINI" org.smartfrog.SFSystem -a $2:DETaTERM:::$1: -e
 fi
