@@ -40,4 +40,5 @@ public interface Telnet extends Prim {
     public static String SHELL_PROMPT = "shellPrompt";
     public static String LOG_FILE = "logFile";
     public static String CMDS_FAILURE_MSGS = "cmdsFailureMsgs";
+    public static String TERMINATE = "shouldTerminate";
 }
