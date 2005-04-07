@@ -96,7 +96,7 @@ public class SFScriptExecutionImpl  extends PrimImpl implements Prim, SFScriptEx
      scriptExec.execute("exit",lock);
      scriptExec.releaseShell(lock);
      //@Todo: if defined we could run an initial set of commands here
-     // execute(commands,timeout);
+     // execute(commands,timeout);P
  }
 
  /**
