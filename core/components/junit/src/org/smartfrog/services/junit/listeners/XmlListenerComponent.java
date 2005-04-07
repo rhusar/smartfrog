@@ -1,6 +1,7 @@
 package org.smartfrog.services.junit.listeners;
 
 import org.smartfrog.services.filesystem.FileImpl;
+import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.junit.TestListener;
 import org.smartfrog.services.junit.TestSuite;
 import org.smartfrog.sfcore.common.SmartFrogException;
@@ -179,7 +180,7 @@ public class XmlListenerComponent extends PrimImpl
      */
     private String lookupOutputDir() throws SmartFrogResolutionException,
             RemoteException {
-        String out = FileImpl.lookupAbsolutePath(this,
+        String out = FileSystem.lookupAbsolutePath(this,
                 OUTPUT_DIRECTORY,
                 null,
                 null,
