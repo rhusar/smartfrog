@@ -20,8 +20,10 @@
 package org.smartfrog.test.system.java;
 
 import org.smartfrog.test.SmartFrogTestBase;
-import org.smartfrog.services.os.java.LibrariesImpl;
+import org.smartfrog.services.os.java.LibraryImpl;
 import org.smartfrog.services.os.java.LibraryArtifactImpl;
+import org.smartfrog.services.os.java.LibraryArtifact;
+import org.smartfrog.sfcore.prim.Prim;
 
 /**
  * created 04-Apr-2005 15:35:58
@@ -45,29 +47,58 @@ public class LibraryTest extends SmartFrogTestBase {
     public void testLibrariesCacheDirInvalid() throws Throwable {
         deployExpectingException(FILES+"testLibrariesCacheDirInvalid.sf",
                 "testLibrariesCacheDirInvalid",
-                "SmartFrogLifecycleException",
+                EXCEPTION_LIFECYCLE,
                 null,
-                "SmartFrogException",
-                LibrariesImpl.ERROR_NOT_A_DIRECTORY);
+                EXCEPTION_RESOLUTION,
+                LibraryImpl.ERROR_NOT_A_DIRECTORY);
     }
 
 
     public void testOrphanLibrary() throws Throwable {
         deployExpectingException(FILES + "testOrphanLibrary.sf",
                 "testOrphanLibrary",
-                "SmartFrogLifecycleException",
+                EXCEPTION_LIFECYCLE,
                 null,
-                "SmartFrogResolutionException",
-                LibraryArtifactImpl.ERROR_NO_REPOSITORY);
+                EXCEPTION_RESOLUTION,
+                LibraryArtifact.ATTR_LIBRARY);
     }
 
     public void testRepositoryBadType() throws Throwable {
         deployExpectingException(FILES + "testRepositoryBadType.sf",
                 "testRepositoryBadType",
-                "SmartFrogLifecycleException",
+                EXCEPTION_DEPLOYMENT,
                 null,
-                "SmartFrogResolutionException",
-                "repository"
+                EXCEPTION_COMPILE_RESOLUTION,
+                null
                 );
+    }
+
+    public void testMavenLibrary() throws Throwable {
+        Prim application = null;
+        try {
+            application = deployExpectingSuccess(FILES +
+                    "testMavenLibrary.sf", "testMavenLibrary");
+        } finally {
+            terminateApplication(application);
+        }
+    }
+
+    public void testSimpleLibrary() throws Throwable {
+        Prim application = null;
+        try {
+            application = deployExpectingSuccess(FILES +
+                    "testSimpleLibrary.sf", "testSimpleLibrary");
+        } finally {
+            terminateApplication(application);
+        }
+    }
+
+    public void NotestEmptyRepository() throws Throwable {
+        deployExpectingException(FILES + "testEmptyRepository.sf",
+                "testEmptyRepository",
+                EXCEPTION_LIFECYCLE,
+                null,
+                EXCEPTION_SMARTFROG,
+                LibraryArtifactImpl.ERROR_NO_REPOSITORIES);
     }
 }

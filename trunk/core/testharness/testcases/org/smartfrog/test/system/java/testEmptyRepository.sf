@@ -23,32 +23,40 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/services/assertions/components.sf"
 #include "/org/smartfrog/services/os/java/components.sf"
 
-sfConfig extends Compound {
+EmptyRepository extends Compound {
 
     sfSyncTerminate true;
 
-    /**
-     * we know that temp files get created at deploy time
-     */
-    tempFile extends TempFile {
-        deleteOnExit true;
-        prefix "temp1";
-        suffix ".txt";
-    }
+
 
     /**
-     * and touch makes sure it exists
+     * Maven repository at ibiblio.org. Really we should permit mirrors; or include
+     * the mirror list for easy selection.
      */
-    touch extends TouchFile {
-        filename LAZY tempFile:absolutePath;
+
+    cacheDirectory extends File {
+        //JVM property user.home
+        dir LAZY PROPERTY user.home;
+        //subdir
+        filename ".maven/repository";
     }
 
-    /**
-     * so by the time you get here, there is a file of the given name
-     * which can therefore not be a directory
-     */
     lib extends Library {
-        cacheDir LAZY tempFile:absolutePath;
+
         repositories [| |];
+
+        cacheDir LAZY cacheDirectory:absolutePath;
+
+
     }
+
+    commons-logging extends JarArtifact {
+        library PARENT:lib;
+        project "commons-logging";
+        version "1.0.4";
+    }
+
 }
+
+
+sfConfig EmptyRepository;
