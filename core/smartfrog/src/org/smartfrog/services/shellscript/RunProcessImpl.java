@@ -71,14 +71,17 @@ public class RunProcessImpl  extends Thread implements RunProcess {
 
     public synchronized void waitForReady(long time){
       while (!ready()){
+        if (sfLog.isDebugEnabled()){
+          sfLog.debug("WaitForReady");
+        }
         try {
           wait(time);
         } catch (InterruptedException ex) {
         }
         if (time!=0) break;
-        if (sfLog.isDebugEnabled()){
-          sfLog.debug("WaitForReady");
-        }
+      }
+      if (sfLog.isDebugEnabled()){
+          sfLog.debug("WaitForReady- Ready");
       }
     }
 
@@ -174,10 +177,6 @@ public class RunProcessImpl  extends Thread implements RunProcess {
                   new FilterImpl( ID, process.getErrorStream(), "stderr", null, null)
                 );
 
-            if (sfLog.isTraceEnabled()){
-                  sfLog.trace("waiting for application to exit");
-            }
-
             // process may be null by the time we get here after the synchronized
             // block above if a terminate has been requested while the app was
             // starting or the exec failed, e.g. the FP application is not installed
@@ -186,6 +185,9 @@ public class RunProcessImpl  extends Thread implements RunProcess {
             if (process!=null) {
                 setState(STATE_PROCESSING);
                 this.notifyAll();
+                if (sfLog.isTraceEnabled()){
+                      sfLog.trace("waiting for application to exit");
+                }
                 exitValue = process.waitFor();
             } else {
                 this.notifyAll();
