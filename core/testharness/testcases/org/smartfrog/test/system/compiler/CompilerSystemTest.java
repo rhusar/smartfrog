@@ -40,18 +40,18 @@ public class CompilerSystemTest extends SmartFrogTestBase {
     public void testCaseTCN5() throws Exception {
         deployExpectingException(FILES+"tcn5.sf",
                 "tcn5",
-                "SmartFrogDeploymentException",
+                EXCEPTION_DEPLOYMENT,
                 "failed to deploy 'tcn5' component.",
-                "java.lang.ClassCastException",
+                EXCEPTION_CLASSCAST,
                 null);
     }
 
     public void testCaseTCN47() throws Exception {
         deployExpectingException(FILES+"tcn47.sf",
                 "tcn47",
-                "SmartFrogDeploymentException",
+                EXCEPTION_DEPLOYMENT,
                 "Wrong class when resolving 'HERE sfClass'",
-                "java.lang.ClassCastException",
+                EXCEPTION_CLASSCAST,
                 null);
     }
 
@@ -66,9 +66,9 @@ public class CompilerSystemTest extends SmartFrogTestBase {
     public void testCaseTCN7() throws Exception {
         deployExpectingException(FILES + "tcn7.sf",
                 "tcn7",
-                "SmartFrogDeploymentException",
+                EXCEPTION_DEPLOYMENT,
                 "failed to deploy 'p' component",
-                "ClassNotFoundException",
+                EXCEPTION_CLASSNOTFOUND,
                 "org.smartfrog.test.system.compiler.PrinterImpl");
     }
 
@@ -83,69 +83,69 @@ public class CompilerSystemTest extends SmartFrogTestBase {
     public void testCaseTCN9() throws Exception {
         deployExpectingException(FILES + "tcn9.sf",
                 "tcn9",
-                "SmartFrogDeploymentException",
+                EXCEPTION_DEPLOYMENT,
                 null,
-                "java.lang.ClassNotFoundException",
+                EXCEPTION_CLASSNOTFOUND,
                 "Cannot find org.smartfrog.test.system.compiler.PrinterImpl");
     }
 
     public void testCaseTCN10() throws Exception {
         deployExpectingException(FILES + "tcn10.sf",
                 "tcn10",
-                "SmartFrogDeploymentException",
+                EXCEPTION_DEPLOYMENT,
                 null,
-                "SmartFrogParseException",
+                EXCEPTION_PARSE,
                 "Encountered \"HOST\" ");
     }
 
     public void testCaseTCN23() throws Exception {
         deployExpectingException(FILES + "tcn23.sf",
                 "tcn23",
-                "SmartFrogDeploymentException",
+                EXCEPTION_DEPLOYMENT,
                 null,
-                "SmartFrogCompileResolutionException",
+                EXCEPTION_COMPILE_RESOLUTION,
                 "Unresolved Reference");
     }
 
     public void testCaseTCN24() throws Exception {
         deployExpectingException(FILES + "tcn24.sf",
                 "tcn24",
-                "SmartFrogDeploymentException",
+                EXCEPTION_DEPLOYMENT,
                 "failed to deploy 'data' component",
-                "java.lang.ClassNotFoundException",
+                EXCEPTION_CLASSNOTFOUND,
                 "Cannot find kk.class");
     }
     public void testCaseTCN25() throws Exception {
         deployExpectingException(FILES + "tcn25.sf",
                 "tcn25",
-                "SmartFrogDeploymentException",
+                EXCEPTION_DEPLOYMENT,
                 "failed to deploy 'data' component",
-                "SmartFrogResolutionException",
+                EXCEPTION_RESOLUTION,
                 "Reference not found");
     }
 
     public void testCaseTCN26() throws Exception {
         deployExpectingException(FILES + "tcn26.sf",
                 "tcn26",
-                "SmartFrogDeploymentException",
+                EXCEPTION_DEPLOYMENT,
                 null,
-                "SmartFrogParseException",
+                EXCEPTION_PARSE,
                 "Include file: org/smartfrog//sfcore/components.sf not found");
     }
     public void testCaseTCN27() throws Exception {
         deployExpectingException(FILES + "tcn27.sf",
                 "tcn27",
-                "SmartFrogDeploymentException",
+                EXCEPTION_DEPLOYMENT,
                 null,
-                "SmartFrogCompileResolutionException",
+                EXCEPTION_COMPILE_RESOLUTION,
                 "Unresolved Reference");
     }
     public void testCaseTCN28() throws Exception {
         deployExpectingException(FILES + "tcn28.sf",
                 "tcn28",
-                "SmartFrogDeploymentException",
+                EXCEPTION_DEPLOYMENT,
                 null,
-                "SmartFrogResolutionException",
+                EXCEPTION_RESOLUTION,
                 "Unresolved Reference: HERE sfClass");
     }
 }

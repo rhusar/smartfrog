@@ -39,36 +39,36 @@ public class EmailerTest
     public void testCaseTCN64() throws Exception {
         deployExpectingException(FILES+"tcn64.sf",
                                  "tcn64",
-                                 "SmartFrogLifecycleException",
+                                 EXCEPTION_LIFECYCLE,
                                  "sfStart",
-                                 "SmartFrogException",
+                                 EXCEPTION_SMARTFROG,
                                  "Unknown SMTP host: no-such-hostname");
     }
 
     public void testCaseTCN65() throws Exception {
         deployExpectingException(FILES+"tcn65.sf",
                                  "tcn65",
-                                 "SmartFrogDeploymentException",
+                                 EXCEPTION_DEPLOYMENT,
                                  null,
-                                 "SmartFrogCompileResolutionException",
+                                 EXCEPTION_COMPILE_RESOLUTION,
                                  "error in schema: non-optional attribute 'to' is missing");
     }
 
     public void testCaseTCN66() throws Exception {
         deployExpectingException(FILES+"tcn66.sf",
                                  "tcn66",
-                                 "SmartFrogDeploymentException",
+                                 EXCEPTION_DEPLOYMENT,
                                  null,
-                                 "SmartFrogCompileResolutionException",
+                                 EXCEPTION_COMPILE_RESOLUTION,
                                  "error in schema: non-optional attribute 'from' is missing");
     }
 
     public void testCaseTCN67() throws Exception {
         deployExpectingException(FILES+"tcn67.sf",
                                  "tcn67",
-                                 "SmartFrogDeploymentException",
+                                 EXCEPTION_DEPLOYMENT,
                                  null,
-                                 "SmartFrogCompileResolutionException",
+                                 EXCEPTION_COMPILE_RESOLUTION,
                                  "error in schema: non-optional attribute 'smtpHost' is missing");
     }
 }

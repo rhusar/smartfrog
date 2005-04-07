@@ -59,6 +59,32 @@ public abstract class SmartFrogTestBase extends TestCase {
     protected String hostname;
     private static final String LIFECYCLE_EXCEPTION = "SmartFrogLifecycleException";
     private static final String ASSERTION_EXCEPTION = "SmartFrogAssertionException";
+    /**
+     * Text to look for in classname when seeking a resolution exception.
+     * Value: {@value}
+     */
+    public static final String EXCEPTION_RESOLUTION = "SmartFrogResolutionException";
+    /**
+     * Text to look for in classname when seeking a lifecycle exception.
+     * Value: {@value}
+     */
+    public static final String EXCEPTION_LIFECYCLE = "SmartFrogLifecycleException";
+    /**
+     * Text to look for in classname when seeking a SmartFrogException.
+     * Value: {@value}
+     */
+    public static final String EXCEPTION_SMARTFROG = "SmartFrogException";
+    /**
+     * Text to look for in classname when seeking a liveness exception.
+     * Value: {@value}
+     */
+
+    public static final String EXCEPTION_LIVENESS = "SmartFrogLivenessException";
+    public static final String EXCEPTION_DEPLOYMENT = "SmartFrogDeploymentException";
+    public static final String EXCEPTION_CLASSCAST = "java.lang.ClassCastException";
+    public static final String EXCEPTION_CLASSNOTFOUND = "java.lang.ClassNotFoundException";
+    public static final String EXCEPTION_PARSE = "SmartFrogParseException";
+    public static final String EXCEPTION_COMPILE_RESOLUTION = "SmartFrogCompileResolutionException";
 
     /**
      * Construct the base class, extract hostname and test classes directory from the JVM

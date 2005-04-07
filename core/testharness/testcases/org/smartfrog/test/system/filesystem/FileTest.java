@@ -104,9 +104,9 @@ public class FileTest extends SmartFrogTestBase {
     public void testUndeployedFile() throws Throwable {
         deployExpectingException(FILES +
                 "testUndeployedFile.sf", "testUndeployedFile",
-                "SmartFrogLifecycleException",
+                EXCEPTION_LIFECYCLE,
                 null,
-                "SmartFrogResolutionException",
+                EXCEPTION_RESOLUTION,
                 FileSystem.ERROR_UNDEPLOYED_CD);
     }
 }

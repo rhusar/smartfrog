@@ -51,9 +51,9 @@ public class JavaPackageTest extends SmartFrogTestBase {
         deployExpectingException(FILES +
                 "testMissingResource.sf",
                 "testMissingResource",
-                "SmartFrogLifecycleException",
+                EXCEPTION_LIFECYCLE,
                 null,
-                "SmartFrogLivenessException",
+                EXCEPTION_LIVENESS,
                 null);
     }
 
