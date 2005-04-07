@@ -38,9 +38,9 @@ import java.rmi.RemoteException;
  */
 public class SFSetPropertyImpl extends CompoundImpl implements Compound, SFSetProperty {
 
-    String name = null;
-    Object value = null;
-    boolean replace = true;
+    private String name = null;
+    private Object value = null;
+    private boolean replace = true;
     private Log log;
 
     /**
