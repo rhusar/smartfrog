@@ -201,34 +201,7 @@ relevant JAR files into the javacc subdirectory
   <!-- =================================================================== -->
 
   <target name="fixCRLF" depends="copybins" description="adapts CRLF for different OS">
-     <!-- OS dependant -->
-     <!--
-     <fixcrlf srcdir="${dist.dir}/${bin}"
-       includes="**/**"
-       excludes="**/*.bat,**/default*"
-     />
-     -->
-     <!-- OS dependant -->
-     <!--
-     <fixcrlf srcdir="${dist.dir}/${bin}"
-       tab="remove"
-       tablength="4"
-       includes="**/default*"
-     />
-     -->
-     <!-- Windows/Dos format -->
-     <!--
-     <fixcrlf srcdir="${dist.dir}/${bin}"
-       eol="crlf"
-       includes="**/*.bat"
-     />
-     -->
-     <!-- OS dependant -->
-     <!--
-     <fixcrlf srcdir="${dist.dir}"
-       includes="**/*.txt"
-     />
-     -->
+
   </target>
 
   <!-- =================================================================== -->

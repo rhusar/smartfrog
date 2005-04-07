@@ -224,7 +224,7 @@ For more information: www.smartfrog.org
           sf daemon around
         -->
         <sf-waitfordaemon maxwait="10" timeoutproperty="daemon.missing" />
-        <fail if="daemon.missing">No daemon</fail>
+        <fail if="daemon.missing">No daemon, or daemon not responding at port ${smartfrog.daemon.port}</fail>
         <!-- run the tests -->
         <sf-junit
                errorProperty="test.failed"
