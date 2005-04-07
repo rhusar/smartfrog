@@ -70,27 +70,30 @@ public class SFSetPropertyImpl extends CompoundImpl implements Compound, SFSetPr
         try {
           log = this.sfGetApplicationLog();//.sfGetLog(sfResolve(SmartFrogCoreKeys.SF_APP_LOG_NAME, "", true));
           // Mandatory attributes.
-          try {
-            name = (String)cxt.sfResolveAttribute(ATR_NAME);
-            value = cxt.sfResolveAttribute(ATR_VALUE);
-          } catch (SmartFrogException e) {
-            if (log.isErrorEnabled())
-              log.error(
-                  "Failed to read mandatory attribute: " + e.toString(), e);
-            throw e;
-          }
-          try {
-            replace = ((Boolean)cxt.sfResolveAttribute(ATR_REPLACE)).booleanValue();
-          } catch (SmartFrogContextException e) {
-            if (log.isDebugEnabled())
-              log.debug(
-                  "Failed to read optional attribute: " + e.toString());
-          }
+            try {
+                name = (String) cxt.sfResolveAttribute(ATR_NAME);
+                value = cxt.sfResolveAttribute(ATR_VALUE);
+            } catch (SmartFrogException e) {
+                if (log.isErrorEnabled()) {
+                    log.error("Failed to read mandatory attribute: " + e.toString(),e);
+                }
+                throw e;
+            }
+            try {
+                replace =((Boolean) cxt.sfResolveAttribute(ATR_REPLACE)).booleanValue();
+            } catch (SmartFrogContextException e) {
+                if (log.isDebugEnabled()) {
+                    log.debug("Failed to read optional attribute: " + e.toString());
+                }
+            }
 
 
           String oldValue = System.getProperty(name, "non defined");
-          if (replace)  System.setProperty(name,value.toString());
-          else   System.setProperty(name,oldValue+value.toString());
+            if (replace) {
+                System.setProperty(name, value.toString());
+            } else {
+                System.setProperty(name, oldValue + value.toString());
+            }
           if (log.isDebugEnabled()) {
             log.debug("Setting property: " + name +
                       ", NEW VALUE: " + value.toString() +
@@ -99,9 +102,10 @@ public class SFSetPropertyImpl extends CompoundImpl implements Compound, SFSetPr
           }
 
         } catch (Throwable t) {
-          if (log.isErrorEnabled())
-            log.error(t);
-          throw new SmartFrogDeploymentException(t, this);
+            if (log.isErrorEnabled()) {
+                log.error(t);
+            }
+            throw new SmartFrogDeploymentException(t, this);
         }
         //super.sfDeploy();
         super.sfDeployWith(parent, cxt);
