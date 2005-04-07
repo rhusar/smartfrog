@@ -37,21 +37,13 @@ public class ScriptExecutionImpl  extends PrimImpl implements Prim, ScriptExecut
   private long ID = -1;
   private String name = null;
 
-
   private  RunProcess runProcess = null;
 
   public ScriptExecutionImpl(long ID, String name, Cmd cmd) throws RemoteException {
     // RunProcessImpl
     runProcess = new RunProcessImpl (ID, name, cmd);
     ((RunProcessImpl) runProcess).start();
-//    ((RunProcessImpl) runProcess).waitForReady(1000);;
-    if (!runProcess.ready()) {
-      try {
-        Thread.sleep(1000);
-      } catch (InterruptedException ex) {
-      }
-      //throw new SmartFrogException("Process '"+ID+" "+name+" "+cmd+"' not ready",this);
-    }
+    ((RunProcessImpl) runProcess).waitForReady(1000);;
   }
 
   /**

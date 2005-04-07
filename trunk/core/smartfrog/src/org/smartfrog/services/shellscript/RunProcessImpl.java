@@ -69,16 +69,18 @@ public class RunProcessImpl  extends Thread implements RunProcess {
       state = newState;
     }
 
-    public synchronized void waitForReady(long time){
-      while (!ready()){
-        if (sfLog.isDebugEnabled()){
+    public void waitForReady(long time){
+
+      //@TODO change to use notify()
+
+      while (!ready()) {
+        if (sfLog.isDebugEnabled()) {
           sfLog.debug("WaitForReady");
         }
         try {
-          wait(time);
+          Thread.sleep(time);
         } catch (InterruptedException ex) {
         }
-        if (time!=0) break;
       }
       if (sfLog.isDebugEnabled()){
           sfLog.debug("WaitForReady- Ready");
@@ -146,7 +148,6 @@ public class RunProcessImpl  extends Thread implements RunProcess {
         setName(this.name);
         sfLog = LogFactory.getLog(this.name);
         killRequested = false;
-
     }
 
     public void run() {
@@ -160,7 +161,7 @@ public class RunProcessImpl  extends Thread implements RunProcess {
         int exitValue = -9999;
 
         try {
-            synchronized (this) {
+            synchronized (cmd) {
                 if (sfLog.isDebugEnabled()){
                     sfLog.debug(cmd.toString());
                 }
@@ -184,13 +185,13 @@ public class RunProcessImpl  extends Thread implements RunProcess {
             // nothing else to do anyway but tidy up.
             if (process!=null) {
                 setState(STATE_PROCESSING);
-                this.notifyAll();
+                cmd.notify();
                 if (sfLog.isTraceEnabled()){
                       sfLog.trace("waiting for application to exit");
                 }
                 exitValue = process.waitFor();
             } else {
-                this.notifyAll();
+                cmd.notify();
                 if (sfLog.isWarnEnabled()){
                       sfLog.warn("process null");
                 }
