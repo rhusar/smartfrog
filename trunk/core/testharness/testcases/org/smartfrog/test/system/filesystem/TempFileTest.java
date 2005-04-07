@@ -44,8 +44,8 @@ public class TempFileTest extends SmartFrogTestBase {
     public void testEmpty() throws Throwable {
         deployExpectingException(FILES + "tempFileTestEmpty.sf",
                 "tempFileTestEmpty",
-                        "SmartFrogLifecycleException", null,
-                        "SmartFrogException",
+                        EXCEPTION_LIFECYCLE, null,
+                        EXCEPTION_SMARTFROG,
                     TempFileImpl.ERROR_PREFIX_EMPTY);
     }
 
