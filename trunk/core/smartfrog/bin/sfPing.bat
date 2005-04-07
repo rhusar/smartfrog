@@ -20,7 +20,7 @@ set COMPONENT=%2
 
 :execute
 echo "Pinging %1:"
-java %SFCMDPARAMETERS% org.smartfrog.SFSystem -a %COMPONENT:PING:::%1: -e
+java %SFCMDPARAMETERS% org.smartfrog.SFSystem -a "%COMPONENT%":PING:::%1: -e
 
 GOTO end
 :usage
