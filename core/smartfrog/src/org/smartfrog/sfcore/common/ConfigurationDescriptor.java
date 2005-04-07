@@ -311,6 +311,13 @@ public class ConfigurationDescriptor implements MessageKeys{
                    result= MessageUtil.formatMessage(MSG_TERMINATE_SUCCESS, message.toString());
                    }
                     break;
+                case ConfigurationDescriptor.Action.PING: {
+                    result = MessageUtil.formatMessage(MSG_PING_SUCCESS,
+                                                       getName().toString(),
+                                                       getHost().toString(),
+                                                       this.getResultMessage().toString());
+                    }
+                 break;
 
                 default:
                     // Unknown action.

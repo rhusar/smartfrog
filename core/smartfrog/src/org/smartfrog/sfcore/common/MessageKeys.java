@@ -188,6 +188,12 @@ public interface MessageKeys {
      * Message key: successful termination of components.
      */
     public static String MSG_TERMINATE_SUCCESS = "MSG_TERMINATE_SUCCESS";
+
+    /**
+     * Message key: successful ping of components.
+     */
+    public static String MSG_PING_SUCCESS = "MSG_PING_SUCCESS";
+
     /**
     * Message key: successful detachment of components.
     */
