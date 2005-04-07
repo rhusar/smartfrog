@@ -12,15 +12,16 @@ if exist "%SFHOME%\jre\bin\java.exe" set path=%SFHOME%\jre\bin
 rem call %SFHOME%\bin\setClassPath
 call "%SFHOME%\bin\setSFProperties"
 
-if (%2) == () goto hasComponent
-set COMPONENT="rootProcess"
+if (%2) == () goto next
+set COMPONENT=%2
 goto execute
 :next
-set COMPONENT=%2
+set COMPONENT="rootProcess"
+
 
 :execute
-echo "Pinging %1:"
-java %SFCMDPARAMETERS% org.smartfrog.SFSystem -a "%COMPONENT%":PING:::%1: -e
+echo "Pinging %1 in %COMPONENT%"
+java %SFCMDPARAMETERS% org.smartfrog.SFSystem -a %COMPONENT%:PING:::%1: -e
 
 GOTO end
 :usage
