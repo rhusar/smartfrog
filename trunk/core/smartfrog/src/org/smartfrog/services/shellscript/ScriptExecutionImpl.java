@@ -44,7 +44,7 @@ public class ScriptExecutionImpl  extends PrimImpl implements Prim, ScriptExecut
     // RunProcessImpl
     runProcess = new RunProcessImpl (ID, name, cmd);
     ((RunProcessImpl) runProcess).start();
-    //((RunProcessImpl) runProcess).waitForReady(5000);
+//    ((RunProcessImpl) runProcess).waitForReady(1000);;
     if (!runProcess.ready()) {
       try {
         Thread.sleep(1000);
@@ -66,7 +66,7 @@ public class ScriptExecutionImpl  extends PrimImpl implements Prim, ScriptExecut
    */
   public ScriptResults execute(String command, ScriptLock lock) throws
       SmartFrogException {
-    if (this.lock!=lock) return null;
+    if (this.lock!=lock) throw new SmartFrogException( runProcess.toString() + " failed to execute '"+command.toString()+"': Wrong lock. ");
     // Run cmd in RunProcess setting filters for new listener
     runProcess.execCommand(command);
     return null;
@@ -123,7 +123,7 @@ public class ScriptExecutionImpl  extends PrimImpl implements Prim, ScriptExecut
    */
   public ScriptResults execute(List commands, ScriptLock lock) throws
       SmartFrogException {
-    if (this.lock!=lock) return null;
+    if (this.lock!=lock) throw new SmartFrogException( runProcess.toString() + " failed to execute '"+commands.toString()+"': Wrong lock. ");
     return null;
   }
 
