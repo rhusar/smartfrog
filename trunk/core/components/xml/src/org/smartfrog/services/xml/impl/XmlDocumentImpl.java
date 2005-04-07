@@ -24,6 +24,7 @@ import nu.xom.Node;
 import nu.xom.Serializer;
 import nu.xom.XMLException;
 import org.smartfrog.services.filesystem.FileImpl;
+import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.xml.interfaces.LocalNode;
 import org.smartfrog.services.xml.interfaces.XmlDocument;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
@@ -129,7 +130,7 @@ public class XmlDocumentImpl extends CompoundXmlNode implements XmlDocument {
         super.sfDeploy();
 
         String encoding = sfResolve(ATTR_ENCODING, (String) null, true);
-        String sourceFilename = FileImpl.lookupAbsolutePath(this,
+        String sourceFilename = FileSystem.lookupAbsolutePath(this,
                 ATTR_SOURCEFILE,
                 (String) null,
                 null,
@@ -139,7 +140,7 @@ public class XmlDocumentImpl extends CompoundXmlNode implements XmlDocument {
             throw new SmartFrogDeploymentException(ERROR_UNSUPPORTED_FEATURE,
                     this);
         }
-        String destFilename = FileImpl.lookupAbsolutePath(this,
+        String destFilename = FileSystem.lookupAbsolutePath(this,
                 ATTR_DESTFILE,
                 (String) null,
                 null,
