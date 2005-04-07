@@ -28,28 +28,94 @@ import java.rmi.RemoteException;
 
 public interface FileIntf extends UriIntf, FileUsingComponent, Remote {
 
-    String varFilename=ATTR_FILE;
-    String varDir="dir";
-    String varExists="exists";
-    String varAbsolutePath=ATTR_ABSOLUTE_PATH;
-    String varIsDirectory="isDirectory";
-    String varIsFile = "isFile";
-    String varIsHidden = "isHidden";
-    String varTimestamp = "timestamp";
-    String varLength = "length";
-    String varIsEmpty = "isEmpty";
-    String varShortname="shortname";
-    String varMustExist = "mustExist";
-    String varMustRead = "mustRead";
-    String varMustWrite = "mustWrite";
-    String varMustBeFile = "mustBeFile";
-    String varMustBeDir = "mustBeDir";
-    String varTestOnStartup = "testOnStartup";
-    String varTestOnLiveness = "testOnLiveness";
+    /**
+     * {@value}
+     */
+    String ATTR_DIR = "dir";
+
+    /**
+     * {@value}
+     */
+    String ATTR_EXISTS = "exists";
+
+    /**
+     * {@value}
+     */
+    String ATTR_IS_DIRECTORY = "isDirectory";
+
+    /**
+     * {@value}
+     */
+    String ATTR_IS_FILE = "isFile";
+
+    /**
+     * {@value}
+     */
+    String ATTR_IS_HIDDEN = "isHidden";
+
+    /**
+     * {@value}
+     */
+    String ATTR_TIMESTAMP = "timestamp";
+
+    /**
+     * {@value}
+     */
+    String ATTR_LENGTH = "length";
+
+    /**
+     * {@value}
+     */
+    String ATTR_IS_EMPTY = "isEmpty";
+
+    /**
+     * {@value}
+     */
+    String ATTR_SHORTNAME = "shortname";
+
+    /**
+     * {@value}
+     */
+    String ATTR_MUST_EXIST = "mustExist";
+
+    /**
+     * {@value}
+     */
+    String ATTR_MUST_READ = "mustRead";
+
+    /**
+     * {@value}
+     */
+    String ATTR_MUST_WRITE = "mustWrite";
+
+    /**
+     * {@value}
+     */
+    String ATTR_MUST_BE_FILE = "mustBeFile";
+
+    /**
+     * {@value}
+     */
+    String ATTR_MUST_BE_DIR = "mustBeDir";
+
+    /**
+     * {@value}
+     */
+    String ATTR_TEST_ON_STARTUP = "testOnStartup";
+
+    /**
+     * {@value}
+     */
+    String ATTR_TEST_ON_LIVENESS = "testOnLiveness";
+
+    /**
+     * {@value}
+     */
     String ATTR_DELETE_ON_EXIT = "deleteOnExit";
 
     /**
      * get the absolute path of this file
+     *
      * @return
      * @throws RemoteException
      */

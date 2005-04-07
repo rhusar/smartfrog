@@ -21,6 +21,7 @@ package org.smartfrog.test.system.filesystem;
 
 import org.smartfrog.test.SmartFrogTestBase;
 import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.services.filesystem.FileUsingComponent;
 
 import java.io.File;
 
@@ -30,7 +31,7 @@ import java.io.File;
 
 public class MkdirTest  extends SmartFrogTestBase {
 
-    private static final String FILES = "org/smartfrog/test/system/filesystem/";
+    private static final String FILES = TouchFileTest.FILES;
 
     public MkdirTest(String name) {
         super(name);
@@ -47,6 +48,7 @@ public class MkdirTest  extends SmartFrogTestBase {
             //now verify we clean up
             assertTrue("Directory not found: "+filename,file.exists());
             assertTrue("Not a directory: " + filename,file.isDirectory());
+            
         } finally {
             //cleanup
             terminateApplication(application);

@@ -1,4 +1,4 @@
-/** (C) Copyright 2005 Hewlett-Packard Development Company, LP
+/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -18,28 +18,14 @@ For more information: www.smartfrog.org
 
 */
 #include "/org/smartfrog/services/filesystem/components.sf"
+#include "/org/smartfrog/services/assertions/components.sf"
 
 sfConfig extends Compound {
 
-    sfSyncTerminate true;
-
-    temp1 extends TempFile {
-        prefix "encoded";
-        suffix ".txt";
+    file extends File {
+        filename extends TempFile {
+            deleteOnExit true;
+        }
     }
 
-    cleanup extends SelfDeletingFile {
-        filename LAZY temp1;
-    }
-
-    textFile extends TextFile {
-        filename LAZY temp1;
-        text "UTF16";
-        encoding "UTF-16";
-    }
-
-    //the filename
-    absolutePath LAZY textFile:absolutePath;
-    //the uri
-    uri LAZY textFile:uri;
 }

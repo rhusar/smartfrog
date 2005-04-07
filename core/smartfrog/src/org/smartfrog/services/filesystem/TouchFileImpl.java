@@ -33,11 +33,18 @@ import java.rmi.RemoteException;
  * created 19-Apr-2004 13:57:24
  */
 
-public class TouchFileImpl extends PrimImpl implements Prim, TouchFileIntf {
+public class TouchFileImpl extends FileUsingComponentImpl implements TouchFileIntf {
+    private long age=-1;
 
     public TouchFileImpl() throws RemoteException {
     }
 
+    public synchronized void sfDeploy() throws SmartFrogException,
+            RemoteException {
+        super.sfDeploy();
+        bind(true, "");
+        age = sfResolve(ATTR_AGE, age, false);
+    }
 
     /**
      * this is called at runtime
@@ -59,9 +66,7 @@ public class TouchFileImpl extends PrimImpl implements Prim, TouchFileIntf {
      */
     public void touch() throws RemoteException, SmartFrogException {
         //get the file
-        String file = sfResolve(ATTR_FILENAME, (String) null, true);
-        long age = -1;
-        age = sfResolve(ATTR_AGE, age, false);
+        String file = getFile().getAbsolutePath();
         try {
             touch(file, age);
         } catch (IOException e) {
@@ -78,6 +83,7 @@ public class TouchFileImpl extends PrimImpl implements Prim, TouchFileIntf {
      */
     public void touch(String filename, long age) throws IOException, RemoteException {
         File file = new File(filename);
+        file.mkdirs();
         file.createNewFile();
         if (age >= 0) {
             file.setLastModified(age);

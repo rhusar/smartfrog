@@ -29,7 +29,7 @@ sfConfig extends Compound {
     sfSyncTerminate true;
 
     mkdir extends Mkdir {
-        parent LAZY PROPERTY java.io.tmpdir;
+        parentDir LAZY PROPERTY java.io.tmpdir;
         dir "/new-directory-for-mkdir";
     }
 

@@ -42,14 +42,14 @@ public class MkdirImpl extends FileUsingComponentImpl implements Mkdir {
      *                                  failure while starting
      * @throws java.rmi.RemoteException In case of network/rmi error
      */
-    public synchronized void sfStart() throws SmartFrogException, RemoteException {
-        super.sfStart();
+    public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
+        super.sfDeploy();
 
         String dir;
 
         File parentDir=null;
         String parent;
-        parent= FileImpl.lookupAbsolutePath(this,
+        parent= FileSystem.lookupAbsolutePath(this,
                 ATTR_PARENT,
                 (String) null,
                 (File) null,
@@ -59,13 +59,25 @@ public class MkdirImpl extends FileUsingComponentImpl implements Mkdir {
             parentDir=new File(parent);
         }
 
-        dir=FileImpl.lookupAbsolutePath(this,ATTR_DIR,(String)null,parentDir,true,null);
+        dir=FileSystem.lookupAbsolutePath(this,Mkdir.ATTR_DIR,(String)null,parentDir,true,null);
         File directory=new File(dir);
-        directory.mkdirs();
-        if(!directory.exists() || !directory.isDirectory()) {
-            throw new SmartFrogDeploymentException("Failed to create directory "+dir);
-        }
         bind(directory);
+    }
+
+    /**
+     * we only create the directory at startup time, even though we bond at deploy time
+     * @throws SmartFrogException
+     * @throws RemoteException
+     */
+    public synchronized void sfStart() throws SmartFrogException,
+            RemoteException {
+        super.sfStart();
+        File directory=getFile();
+        directory.mkdirs();
+        if (!directory.exists() || !directory.isDirectory()) {
+            throw new SmartFrogDeploymentException("Failed to create directory " +
+                    directory.getAbsolutePath());
+        }
 
     }
 }

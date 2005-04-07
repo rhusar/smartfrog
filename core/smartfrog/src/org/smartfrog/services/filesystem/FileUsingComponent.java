@@ -34,7 +34,7 @@ public interface FileUsingComponent extends Remote {
      * The attribute that is used for extracting file strings/file components
      * {@value }
      */
-    String ATTR_FILE = "file";
+    String ATTR_FILENAME = "filename";
 
     /**
      * Absolute path {@value}
@@ -44,5 +44,5 @@ public interface FileUsingComponent extends Remote {
     /**
      * URI attribute {@value}
      */
-    String ATTR_URI = UriIntf.varURI;
+    String ATTR_URI = UriIntf.ATTR_URI;
 }

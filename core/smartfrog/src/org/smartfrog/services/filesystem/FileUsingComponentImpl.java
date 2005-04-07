@@ -79,7 +79,7 @@ public class FileUsingComponentImpl extends PrimImpl implements FileUsingCompone
      * @throws SmartFrogRuntimeException
      */
     protected void bind(boolean mandatory,String defval) throws RemoteException, SmartFrogRuntimeException {
-        String absolutePath=FileImpl.lookupAbsolutePath(this,ATTR_FILE, defval,null, mandatory,null);
+        String absolutePath=FileSystem.lookupAbsolutePath(this,ATTR_FILENAME, defval,null, mandatory,null);
         if(absolutePath!=null) {
             setAbsolutePath(absolutePath);
         }
@@ -102,8 +102,10 @@ public class FileUsingComponentImpl extends PrimImpl implements FileUsingCompone
     }
 
     /**
-     * Bind to a new file.
-     * sets the
+     * Bind to a new file. sets the {@link #ATTR_ABSOLUTE_PATH} and {@link #ATTR_URI}
+     * attributes. It also saves the file to the {@link #file} attribute.
+     *
+     * @param newfile file to bind to to
      * @param newfile
      * @throws SmartFrogRuntimeException
      * @throws RemoteException
@@ -111,11 +113,29 @@ public class FileUsingComponentImpl extends PrimImpl implements FileUsingCompone
     public void bind(File newfile) throws SmartFrogRuntimeException,
             RemoteException {
         file=newfile;
-        sfReplaceAttribute(ATTR_ABSOLUTE_PATH, file.getAbsolutePath());
-        String uri;
-        uri = file.toURI().toString();
-        sfReplaceAttribute(FileUsingComponent.ATTR_URI, uri);
+        bind(this,newfile);
     }
+
+
+    /**
+     * Bind to a new file. sets the {@link #ATTR_ABSOLUTE_PATH} and {@link #ATTR_URI}
+     * attributes. This is a static function for use by any component that
+     * wants to set the relevant deploy-time attributes.
+     *
+     * @param component component to configure.
+     * @param newfile file to bind to to
+     * @throws SmartFrogRuntimeException
+     * @throws RemoteException
+     */
+    public static void bind(Prim component, File newfile) throws SmartFrogRuntimeException,
+            RemoteException {
+        component.sfReplaceAttribute(ATTR_ABSOLUTE_PATH, newfile.getAbsolutePath());
+        String uri;
+        uri = newfile.toURI().toString();
+        component.sfReplaceAttribute(FileUsingComponent.ATTR_URI, uri);
+    }
+
+
 
     /**
      * Returns the name of the file we are bound to.

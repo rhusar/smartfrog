@@ -30,10 +30,10 @@ sfConfig extends Compound {
     }
 
     assert extends Assert {
-        fileExists LAZY temp1:filename;
+        fileExists LAZY temp1:absolutePath;
     }
 
     touch extends TouchFile {
-        filename LAZY temp1:filename;
+        filename LAZY temp1:absolutePath;
     }
 }

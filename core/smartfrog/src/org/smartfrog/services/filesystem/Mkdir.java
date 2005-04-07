@@ -27,6 +27,10 @@ import java.rmi.Remote;
 
 
 public interface Mkdir extends Remote {
+    /**
+     * new directory to create
+     */
     String ATTR_DIR = "dir";
-    String ATTR_PARENT = "parent";
+    /** parent directory {@value} */
+    String ATTR_PARENT = "parentDir";
 }

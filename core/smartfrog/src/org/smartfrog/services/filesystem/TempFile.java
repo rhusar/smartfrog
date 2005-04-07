@@ -33,7 +33,7 @@ public interface TempFile extends FileUsingComponent {
     public static final String ATTR_SUFFIX = "suffix";
     public static final String ATTR_DIRECTORY = "dir";
     //this is the filename that is created
-    public static final String ATTR_FILENAME = "filename";
+    //public static final String ATTR_FILENAME = "filename";
 
     /**
      * get the filename of this file
