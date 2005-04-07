@@ -106,5 +106,6 @@ Install extends Try {
     }
 }
 
-//sfConfig extends Install;
+//Used in SFParser Ant Test.
+sfConfig extends Install;
 
