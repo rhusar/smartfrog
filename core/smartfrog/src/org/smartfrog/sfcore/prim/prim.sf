@@ -27,7 +27,8 @@ Prim extends NULL {
 
   sfCodeBase PARENT:ATTRIB sfCodeBase;
 //  sfDeployerClass "org.smartfrog.sfcore.processcompound.PrimProcessDeployerImpl";
-//  sfExport true;
+//  sfExport true;  // Export remote interface?
+//  sfExportPort 0; //Use anonymous port for export.
 //  sfLivenessFactor 2;
 //  sfLivenessDelay 0;
 //  sfLog "name"; //optional attribute to define a log name for a component.

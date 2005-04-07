@@ -528,72 +528,75 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
      *         deploying the component
      * @throws RemoteException In case of network/rmi error
      */
-    public void sfDeployWith(Prim parent, Context cxt)
-        throws SmartFrogDeploymentException, RemoteException {
+    public void sfDeployWith(Prim parent, Context cxt) throws
+        SmartFrogDeploymentException, RemoteException {
 
-        try {
-            sfParent = parent;
-            sfContext = cxt;
+      try {
+        sfParent = parent;
+        sfContext = cxt;
 
-	    sfDeployWithHooks.applyHooks(this, null);
+        sfDeployWithHooks.applyHooks(this, null);
 
-	    // set the prim parent link of any contained component description to this Prim
-	    // so that references work
+        // set the prim parent link of any contained component description to this Prim
+        // so that references work
         for (Enumeration e = sfContext.keys(); e.hasMoreElements(); ) {
-            Object value = sfContext.get(e.nextElement());
+          Object value = sfContext.get(e.nextElement());
 
-            if (value instanceof ComponentDescription) {
-                ((ComponentDescription)value).setPrimParent(this);
-            }
+          if (value instanceof ComponentDescription) {
+            ( (ComponentDescription) value).setPrimParent(this);
+          }
         }
 
-	    boolean es; // allow exportRef to be defined by string (backward compatability) or boolean
-	    Object eso = sfResolveHere(SmartFrogCoreKeys.SF_EXPORT, false);
+        boolean es; // allow exportRef to be defined by string (backward compatability) or boolean
+        Object eso = sfResolveHere(SmartFrogCoreKeys.SF_EXPORT, false);
 
-	    if (eso == null) {
-            es = true;
-	    } else if (eso instanceof String) {
-            es = Boolean.valueOf((String) eso).booleanValue();
-	    } else {
-            es = ((Boolean) eso).booleanValue();
-	    }
-
-	    if (es) {
-            sfExportRef();
-	    }
-
-	    if (sfParent != null) {
-            ((ChildMinder) sfParent).sfAddChild(this);
-	    }
-
-	    registerWithProcessCompound();
-
-	    // Look up delay, if not there never mind looking up factor
-	    sfLivenessDelay= sfResolve(refLivenessDelay,sfLivenessDelay,false);
-	    sfLivenessFactor = sfResolve(refLivenessFactor,sfLivenessFactor,false);
-
-	    // copy in local description for efficiency when subcomponents looking up
-	    sfReplaceAttribute(SmartFrogCoreKeys.SF_LIVENESS_DELAY, new Long (sfLivenessDelay) );
-	    // copy in local description for efficiency when subcomponents looking up
-	    sfReplaceAttribute(SmartFrogCoreKeys.SF_LIVENESS_FACTOR, new Integer (sfLivenessFactor));
-
-	    sfLivenessCount = sfLivenessFactor;
-
-	    // start the liveness thread
-	    sfStartLivenessSender();
-
-
-	    sfReplaceAttribute(SmartFrogCoreKeys.SF_HOST, sfDeployedHost());
-	    sfReplaceAttribute(SmartFrogCoreKeys.SF_PROCESS, sfDeployedProcessName());
-
-        } catch (Exception sfex){
-            if (sflog.isErrorEnabled()){
-              sflog.error(sfex);
-            }
-            //Logger.log(sfex);
-            new TerminatorThread(this, sfex, null).quietly().run();
-            throw (SmartFrogDeploymentException)SmartFrogDeploymentException.forward (sfex);
+        if (eso == null) {
+          es = true;
+        } else if (eso instanceof String) {
+          es = Boolean.valueOf( (String) eso).booleanValue();
+        } else {
+          es = ( (Boolean) eso).booleanValue();
         }
+
+        if (es) {
+          //int port = sfResolveHere(SmartFrogCoreKeys.SF_PORT, false);
+          sfExportRef(sfResolve(SmartFrogCoreKeys.SF_EXPORT_PORT,0, false));
+        }
+
+        if (sfParent != null) {
+          ( (ChildMinder) sfParent).sfAddChild(this);
+        }
+
+        registerWithProcessCompound();
+
+        // Look up delay, if not there never mind looking up factor
+        sfLivenessDelay = sfResolve(refLivenessDelay, sfLivenessDelay, false);
+        sfLivenessFactor = sfResolve(refLivenessFactor, sfLivenessFactor, false);
+
+        // copy in local description for efficiency when subcomponents looking up
+        sfReplaceAttribute(SmartFrogCoreKeys.SF_LIVENESS_DELAY,
+                           new Long(sfLivenessDelay));
+        // copy in local description for efficiency when subcomponents looking up
+        sfReplaceAttribute(SmartFrogCoreKeys.SF_LIVENESS_FACTOR,
+                           new Integer(sfLivenessFactor));
+
+        sfLivenessCount = sfLivenessFactor;
+
+        // start the liveness thread
+        sfStartLivenessSender();
+
+        sfReplaceAttribute(SmartFrogCoreKeys.SF_HOST, sfDeployedHost());
+        sfReplaceAttribute(SmartFrogCoreKeys.SF_PROCESS, sfDeployedProcessName());
+
+      } catch (Exception sfex) {
+        if (sflog.isErrorEnabled()) {
+          sflog.error(sfex);
+        }
+        //Logger.log(sfex);
+        new TerminatorThread(this, sfex, null).quietly().run();
+        throw (SmartFrogDeploymentException) SmartFrogDeploymentException.forward(
+            sfex);
+      }
     }
 
     /**
@@ -637,7 +640,8 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
 
     /**
      * Export this primitive to accept remote method calls. Default
-     * implementation is to use UnicastRemoteObject. Check is done if
+     * implementation is to use UnicastRemoteObject. If port=0 it will
+     * use and anonymous port.Check is done if
      * sfExportRef is already set, in which case this is returned. <b>Note</b>
      * that for remote methods to work equals, hashCode and toString must be
      * implemented. This is done for PrimImpl in which case those requests are
@@ -647,10 +651,10 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
      *
      * @throws SmartFrogException failed to export primitive
      */
-    public Object sfExportRef() throws SmartFrogException {
+    public Object sfExportRef(int port) throws SmartFrogException {
         if (sfExportRef == null) {
             try {
-                sfExportRef = SecureRemoteObject.exportObject(this);
+                sfExportRef = SecureRemoteObject.exportObject(this, port);
             } catch (RemoteException rex) {
                 throw new SmartFrogLifecycleException(MessageUtil.formatMessage(
                     MSG_OBJECT_REGISTRATION_FAILED),rex);

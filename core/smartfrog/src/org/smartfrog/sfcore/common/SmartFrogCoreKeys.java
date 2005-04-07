@@ -195,6 +195,15 @@ public interface SmartFrogCoreKeys {
     public final static String SF_EXPORT="sfExport";
 
     /**
+     * Attribute that defines the port that a component will use to accept
+     * remote method calls.
+     *
+     * Value {@value}
+     */
+    public final static String SF_EXPORT_PORT="sfExportPort";
+
+
+    /**
      * Attribute that defines the root locator class.
      *
      * Value {@value}
