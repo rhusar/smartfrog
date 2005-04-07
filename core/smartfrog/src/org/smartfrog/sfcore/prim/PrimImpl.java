@@ -539,31 +539,31 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
 
 	    // set the prim parent link of any contained component description to this Prim
 	    // so that references work
-	    for (Enumeration e = sfContext.keys(); e.hasMoreElements();) {
-		Object value = sfContext.get(e.nextElement());
+        for (Enumeration e = sfContext.keys(); e.hasMoreElements(); ) {
+            Object value = sfContext.get(e.nextElement());
 
-		if (value instanceof ComponentDescription) {
-		    ((ComponentDescription) value).setPrimParent(this);
-		}
-	    }
+            if (value instanceof ComponentDescription) {
+                ((ComponentDescription)value).setPrimParent(this);
+            }
+        }
 
 	    boolean es; // allow exportRef to be defined by string (backward compatability) or boolean
 	    Object eso = sfResolveHere(SmartFrogCoreKeys.SF_EXPORT, false);
 
 	    if (eso == null) {
-		es = true;
+            es = true;
 	    } else if (eso instanceof String) {
-		es = Boolean.valueOf((String) eso).booleanValue();
+            es = Boolean.valueOf((String) eso).booleanValue();
 	    } else {
-		es = ((Boolean) eso).booleanValue();
+            es = ((Boolean) eso).booleanValue();
 	    }
 
 	    if (es) {
-		sfExportRef();
+            sfExportRef();
 	    }
 
 	    if (sfParent != null) {
-		((ChildMinder) sfParent).sfAddChild(this);
+            ((ChildMinder) sfParent).sfAddChild(this);
 	    }
 
 	    registerWithProcessCompound();
