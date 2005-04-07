@@ -23,10 +23,15 @@ import org.smartfrog.services.filesystem.FileUsingComponentImpl;
 import org.smartfrog.services.filesystem.FileUsingComponent;
 import org.smartfrog.services.filesystem.FileImpl;
 import org.smartfrog.services.filesystem.FileIntf;
+import org.smartfrog.services.filesystem.FileSystem;
+import org.smartfrog.services.os.download.DownloadImpl;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.utils.PlatformHelper;
+import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.logging.Log;
 
@@ -35,6 +40,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Vector;
+import java.util.Iterator;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.DigestInputStream;
@@ -46,8 +52,7 @@ import java.security.DigestInputStream;
  */
 
 public class LibraryArtifactImpl extends FileUsingComponentImpl implements LibraryArtifact {
-    public static final String ERROR_NO_REPOSITORY = "No repository defined";
-    private Libraries owner;
+    private Library owner;
     private File cacheDir;
     private Vector repositories;
     private boolean syncDownload;
@@ -61,9 +66,16 @@ public class LibraryArtifactImpl extends FileUsingComponentImpl implements Libra
     private String artifactName;
     private boolean exists;
     private String remoteUrlPath;
+    private int blocksize;
+    private boolean downloadIfAbsent;
+    private boolean downloadAlways;
+    private boolean failIfNotPresent;
 
     private Log log;
 
+    /**
+     * what artifacts are separated by {@value}
+     */
     public static final String ARTIFACT_SEPARATOR = "-";
     public static final String ERROR_CHECKSUM_FAILURE = "Checksum mismatch on file ";
 
@@ -72,6 +84,20 @@ public class LibraryArtifactImpl extends FileUsingComponentImpl implements Libra
      */
     public static int BLOCKSIZE = 8192;
 
+    /**
+     * Error text when there is no repository entry anywhere
+     */
+    public static final String ERROR_NO_OWNER = "No owner repository defined";
+    /**
+     * Error text when repostiories == [] and a download was needed.
+     */
+    public static final String ERROR_NO_REPOSITORIES = "No repositories to download from";
+
+    /**
+     * Error when a file was not found in any repository
+     */
+    public static final String ERROR_ARTIFACT_NOT_FOUND = "Artifact not found at ";
+
     public LibraryArtifactImpl() throws RemoteException {
     }
 
@@ -79,7 +105,7 @@ public class LibraryArtifactImpl extends FileUsingComponentImpl implements Libra
      * Retrieve our file from our parent libraries.
      *
      * <ol>
-     * <li> locate parent Libraries implementation
+     * <li> locate parent Library implementation
      * <li> get information about repository cache
      * <li> work out names of remote URL, local filename
      * <li> bind our localfilename
@@ -95,16 +121,26 @@ public class LibraryArtifactImpl extends FileUsingComponentImpl implements Libra
         super.sfDeploy();
         log=sfGetApplicationLog();
         owner = findOwner();
-        cacheDir = FileImpl.resolveAbsolutePath(owner);
-        repositories = ((Prim) owner).sfResolve(Libraries.ATTR_REPOSITORIES,
+        cacheDir = FileSystem.resolveAbsolutePath(owner);
+        repositories = ((Prim) owner).sfResolve(Library.ATTR_REPOSITORIES,
                 (Vector) null, true);
         syncDownload = sfResolve(ATTR_SYNCHRONOUS, syncDownload, true);
         project = sfResolve(ATTR_PROJECT, project, true);
-        version = sfResolve(ATTR_VERSION, version, true);
+        version = sfResolve(ATTR_VERSION, version, false);
         artifact = sfResolve(ATTR_ARTIFACT, artifact, true);
-        extension = sfResolve(ATTR_VERSION, extension, true);
+        extension = sfResolve(ATTR_EXTENSION, extension, true);
         sha1 = sfResolve(ATTR_SHA1, sha1, false);
         md5 = sfResolve(ATTR_MD5, md5, false);
+        blocksize = sfResolve(ATTR_BLOCKSIZE,BLOCKSIZE,false);
+        boolean terminate = sfResolve(ATTR_TERMINATE,false,false);
+        downloadIfAbsent = sfResolve(ATTR_DOWNLOAD_IF_ABSENT, downloadIfAbsent, true);
+        downloadAlways = sfResolve(ATTR_DOWNLOAD_ALWAYS,
+                        downloadAlways,
+                        true);
+        failIfNotPresent = sfResolve(ATTR_FAIL_IF_NOT_PRESENT,
+                        failIfNotPresent,
+                        true);
+
 
         //all info is fetched. So work out our filename and URL.
         //we do this through methods for override points
@@ -113,32 +149,126 @@ public class LibraryArtifactImpl extends FileUsingComponentImpl implements Libra
         File localFile=makeLocalFile(remoteUrlPath);
         //get the superclass to do our binding
         bind(localFile);
-        //set our exists flag
-        exists = localFile.exists();
-        //and the matching resource
-        sfReplaceAttribute(FileIntf.varExists,new Boolean(exists));
+        checkExistence();
 
         //if we dont exist, we fetch
-        if(!exists) {
-            //TODO
+        boolean mustDownload;
+        mustDownload = (!exists && downloadIfAbsent) || downloadAlways;
+        if(mustDownload) {
+            download();
         }
 
-        //whether we exist or not, we check the checksums if needed.
-        if(md5!=null) {
-            checkMd5Checksum();
+        checkExistence();
+        if(exists) {
+            //we check the checksums if needed.
+            if(md5!=null) {
+                checkMd5Checksum();
+            }
+
+            if(sha1!=null) {
+                checkSha1Checksum();
+            }
+        } else {
+            if(failIfNotPresent) {
+                StringBuffer message=new StringBuffer();
+                message.append(ERROR_ARTIFACT_NOT_FOUND);
+                message.append(getFile().toString());
+                if(mustDownload) {
+                    message.append(" -or downloadable from ");
+                    message.append(makeRepositoryUrlList());
+                }
+                throw new SmartFrogException(message.toString(),this);
+            }
         }
 
-        if(sha1!=null) {
-            checkSha1Checksum();
+        //do we need to terminate ourselves?
+        if(terminate) {
+            new ComponentHelper(this).targetForTermination();
         }
     }
 
+    private void checkExistence() throws SmartFrogRuntimeException,
+            RemoteException {
+        //set our exists flag
+        exists = getFile().exists();
+        //and the matching resource
+        sfReplaceAttribute(FileIntf.ATTR_EXISTS,Boolean.valueOf(exists));
+    }
 
+
+    public void download() throws SmartFrogException {
+        if(repositories.size()==0) {
+            throw new SmartFrogException(ERROR_NO_REPOSITORIES);
+        }
+        Iterator it=repositories.iterator();
+        while (it.hasNext()) {
+            String repository = (String) it.next();
+            if(downloadFromOneRepository(repository)) {
+                //success
+                return;
+            }
+        }
+    }
+
+    /**
+     * make string list of the repositories
+     * @return a (possibly empty) list of URLs
+     */
+    public String makeRepositoryUrlList() {
+        StringBuffer repos = new StringBuffer();
+        repos.append('[');
+        Iterator it = repositories.iterator();
+        while (it.hasNext()) {
+            String repository = (String) it.next();
+            repos.append(repository);
+            repos.append("/");
+            repos.append(remoteUrlPath);
+            repos.append(' ');
+        }
+        //we only get here on failure. Alert that the file could not be found
+        // in any repository
+        repos.append(']');
+        return repos.toString();
+    }
+
+    /**
+     * try to fetch the file from a single repository.
+     * All IOExceptions caught during fetching are logged at debug
+     * level, and turned into a failure of this method.
+     * @param repositoryBaseURL
+     * @return true if the fetch was successful, false if not
+     */
+    public boolean downloadFromOneRepository(String repositoryBaseURL) {
+        String url;
+        url=repositoryBaseURL;
+        if(!url.endsWith("/")) {
+            url+="/";
+        }
+        url+=remoteUrlPath;
+        log.info("Trying to download from "+url);
+
+        try {
+            DownloadImpl.download(url, getFile(), blocksize);
+            return true;
+        } catch (IOException e) {
+            log.debug("Failed fetch from "+url,e);
+            return false;
+        }
+    }
+
+    /**
+     * check that md5 checksum
+     * @throws SmartFrogException
+     */
     public void checkMd5Checksum() throws SmartFrogException {
         checkChecksum(getFile(), "MD5",md5, BLOCKSIZE);
 
     }
 
+    /**
+     * check our sha1 checksum
+     * @throws SmartFrogException
+     */
     public void checkSha1Checksum() throws SmartFrogException {
         checkChecksum(getFile(), "SHA", sha1, BLOCKSIZE);
     }
@@ -245,12 +375,24 @@ public class LibraryArtifactImpl extends FileUsingComponentImpl implements Libra
      */
     public String makeRemoteUrlPath() {
         String patched=patchProject(project);
-        String urlPath="/"+patched+"/"+artifactName;
+        String urlPath="/"+patched+"/jars/"+artifactName;
         return urlPath;
     }
 
+    /**
+     * get the full name of the artifact. If a version tag is included, it
+     * is artifact-version+extension. If not, it is artifact+extension.
+     * @return
+     */
     public String makeArtifactName() {
-        return artifact+ARTIFACT_SEPARATOR+version+extension;
+        StringBuffer buffer=new StringBuffer();
+        buffer.append(artifact);
+        if(version!=null) {
+            buffer.append(ARTIFACT_SEPARATOR);
+            buffer.append(version);
+        }
+        buffer.append(extension);
+        return buffer.toString();
     }
 
     /**
@@ -295,7 +437,7 @@ public class LibraryArtifactImpl extends FileUsingComponentImpl implements Libra
 
 
     /**
-     * Find our owning Libraries
+     * Find our owning Library
      * <ol>
      * <li> direct attribute
      * <li> Parent
@@ -304,15 +446,17 @@ public class LibraryArtifactImpl extends FileUsingComponentImpl implements Libra
      * @throws SmartFrogResolutionException on resolution trouble
      * @throws RemoteException
      */
-    protected Libraries findOwner() throws SmartFrogResolutionException,
+    protected Library findOwner() throws SmartFrogResolutionException,
             RemoteException {
+        return (Library)sfResolve(ATTR_LIBRARY, owner, true);
+        /*
         owner = null;
-        Object resolved = sfResolve(ATTR_REPOSITORY, owner, false);
+        Object resolved = sfResolve(ATTR_LIBRARY, owner, false);
         if (resolved != null) {
-            if (resolved instanceof Libraries) {
-                owner = (Libraries) resolved;
+            if (resolved instanceof Library) {
+                owner = (Library) resolved;
             } else {
-                throw SmartFrogResolutionException.illegalClassType(new Reference(ATTR_REPOSITORY),
+                throw SmartFrogResolutionException.illegalClassType(new Reference(ATTR_LIBRARY),
                         this.sfCompleteNameSafe());
             }
         }
@@ -320,9 +464,10 @@ public class LibraryArtifactImpl extends FileUsingComponentImpl implements Libra
             owner=findLibrariesParent(this);
         }
         if(owner==null) {
-            throw new SmartFrogResolutionException(ERROR_NO_REPOSITORY,this);
+            throw new SmartFrogResolutionException(ERROR_NO_OWNER,this);
         }
         return owner;
+        */
     }
 
     /**
@@ -331,16 +476,15 @@ public class LibraryArtifactImpl extends FileUsingComponentImpl implements Libra
      * @return the parent that implements the interface, or null
      * @throws RemoteException
      */
-    protected Libraries findLibrariesParent(Prim instance)
+    private Library findLibrariesParent(Prim instance)
             throws RemoteException {
         if(instance==null) {
             return null;
         }
-        if(instance instanceof Libraries) {
-            return (Libraries) instance;
+        if(instance instanceof Library) {
+            return (Library) instance;
         }
         return findLibrariesParent(instance.sfParent());
     }
-
 
 }
