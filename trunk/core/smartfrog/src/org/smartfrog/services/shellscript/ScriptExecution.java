@@ -45,21 +45,6 @@ import java.util.List;
  */
 public interface ScriptExecution {
 
-   /** String name for optional attribute "cmd". Value {@value}. */
-   final static String ATR_CMD = "cmd";
-   /** String name for optional attribute "envp". Value {@value}. */
-   final static String ATR_ENVP = "envp";
-   /** String name for optional attribute "dir". Value {@value}. */
-   final static String ATR_DIR = "dir";
-
-   /** String name for optional attribute "message". Value {@value}. */
-   final static String ATR_LINE_SEPARATOR = "lineSeparator";
-
-   /** String name for optional attribute "ID". Value {@value}. */
-   final static String ATR_ID = "ID";
-   /** String name for optional attribute "name". Value {@value}. */
-   final static String ATR_NAME = "name";
-
     /**
      * obtain a lock on the shell, will block until it is available
      *
@@ -145,4 +130,5 @@ public interface ScriptExecution {
      * time
      */
     public ScriptResults execute(String command, long timeout) throws SmartFrogException;
+
 }

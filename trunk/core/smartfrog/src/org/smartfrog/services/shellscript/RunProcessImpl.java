@@ -75,7 +75,7 @@ public class RunProcessImpl  extends Thread implements RunProcess {
           wait(time);
         } catch (InterruptedException ex) {
         }
-        if (time==0) break;
+        if (time!=0) break;
         if (sfLog.isDebugEnabled()){
           sfLog.debug("WaitForReady");
         }

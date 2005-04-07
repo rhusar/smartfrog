@@ -38,7 +38,7 @@ ScriptExecutionSchema extends Schema {
  */
 ScriptExecution extends Prim {
    scriptExecutionSchema extends ScriptExecutionSchema;
-   sfClass "org.smartfrog.services.shellscript.ScriptExecutionImpl";
+   sfClass "org.smartfrog.services.shellscript.SFScriptExecutionImpl";
 
 }
 
