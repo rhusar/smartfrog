@@ -395,7 +395,7 @@ public class SFSystem implements MessageKeys {
              }
              sflog().out(" - "+(cfgDesc).statusString()+"\n");
              //Logger.logQuietly(cfgDesc.resultException);
-             if (sflog().isIgnoreEnabled()){
+             if (sflog().isIgnoreEnabled() && cfgDesc.resultException!=null){
                sflog().ignore(cfgDesc.resultException);
             }
          }
