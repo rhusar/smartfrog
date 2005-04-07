@@ -26,7 +26,7 @@ For more information: www.smartfrog.org
 sfConfig extends Compound {
 
     commons-logging extends JarArtifact {
-        repository "wrong type";
+        library "wrong type";
         project "commons-logging";
         version "1.0.4";
     }

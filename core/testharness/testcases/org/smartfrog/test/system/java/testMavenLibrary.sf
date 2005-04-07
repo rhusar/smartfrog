@@ -23,32 +23,7 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/services/assertions/components.sf"
 #include "/org/smartfrog/services/os/java/components.sf"
 
-sfConfig extends Compound {
+sfConfig extends MavenLibrary {
 
-    sfSyncTerminate true;
-
-    /**
-     * we know that temp files get created at deploy time
-     */
-    tempFile extends TempFile {
-        deleteOnExit true;
-        prefix "temp1";
-        suffix ".txt";
-    }
-
-    /**
-     * and touch makes sure it exists
-     */
-    touch extends TouchFile {
-        filename LAZY tempFile:absolutePath;
-    }
-
-    /**
-     * so by the time you get here, there is a file of the given name
-     * which can therefore not be a directory
-     */
-    lib extends Library {
-        cacheDir LAZY tempFile:absolutePath;
-        repositories [| |];
-    }
+    
 }
