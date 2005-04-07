@@ -311,13 +311,23 @@ public class ConfigurationDescriptor implements MessageKeys{
                    result= MessageUtil.formatMessage(MSG_TERMINATE_SUCCESS, message.toString());
                    }
                     break;
+
                 default:
                     // Unknown action.
+                    messageError = new StringBuffer();
+                    messageError.append(""); messageError.append(Result.type[resultType].toString());
+                    messageError.append(" when trying ");
+                    messageError.append(Action.type[actionType].toString());
+                    messageError.append(" of ");
+                    messageError.append(message);
+                    result= messageError.toString();
+                    break;
             }
           } else {
               messageError = new StringBuffer();
               messageError.append(""); messageError.append(Result.type[resultType].toString());
-              messageError.append(" when trying "); messageError.append(Action.type[actionType].toString());
+              messageError.append(" when trying ");
+              messageError.append(Action.type[actionType].toString());
               messageError.append(" of ");
               messageError.append(message);
               result= messageError.toString();
@@ -326,25 +336,27 @@ public class ConfigurationDescriptor implements MessageKeys{
               (((resultMessage!=null)||
                 (resultException!=null))&&(this.resultType!=Result.SUCCESSFUL))) {
                   messageError = new StringBuffer();
-                  messageError.append(separator+"   Result:");
+                  messageError.append(lineSeparator);
+                  messageError.append("Result:");
+                  lineSeparator=lineSeparator+"  ";
                   if ((resultMessage!=null)&&(resultMessage.toString().trim()!="")) {
                      messageError.append(lineSeparator);
-                     messageError.append("Message: '"+ resultMessage.toString()+"'");
+                     messageError.append("* Message: '"+ resultMessage.toString()+"'");
                   }
                   if (resultException!=null) {
                       messageError.append(lineSeparator);
-                      messageError.append("Exception: '"+parseException(resultException,lineSeparator)+"'");
+                      messageError.append("* Exception: '"+parseException(resultException,lineSeparator+"   ")+"'");
                       if (Logger.logStackTrace) {
                          messageError.append(lineSeparator);
-                         messageError.append("StackTrace: '"+parseExceptionStackTrace(resultException,lineSeparator+"   ")+"'");
+                         messageError.append("* StackTrace: '"+parseExceptionStackTrace(resultException,lineSeparator+"   ")+"'");
                        }
                   }
                   if (originalSFACT!=null) {
                     messageError.append(lineSeparator);
-                    messageError.append("Command line SFACT: '" + originalSFACT+"'");
+                    messageError.append("* Command line SFACT: '" + originalSFACT+"'");
                   }
                   messageError.append(lineSeparator);
-                  messageError.append("To String: '" + this.toString(separator)+"'");
+                  messageError.append("* To String: '" + this.toString(separator)+"'");
                   result = result + messageError.toString();
            }
 
