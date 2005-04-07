@@ -35,6 +35,7 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.deployer.SFDeployer;
 import org.smartfrog.sfcore.prim.Dump;
@@ -520,32 +521,52 @@ public class CompoundImpl extends PrimImpl implements Compound {
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         try {
-            sfSyncTerminate = sfResolve(SmartFrogCoreKeys.SF_SYNC_TERMINATE,false,false);
-
+            //set our order. We do this before calling our super, in case we have to handle an exception at this point.
+            sfSyncTerminate = sfResolve(SmartFrogCoreKeys.SF_SYNC_TERMINATE, false, false);
+            //deploy Prim
             super.sfDeploy();
-
-            for (Enumeration e = sfChildren(); e.hasMoreElements();) {
-                Object elem = e.nextElement();
-                if (elem instanceof Prim) {
-                    try{
-                        ((Prim) elem).sfDeploy();
-                    } catch (Throwable thr){
-                        String name = "";
-                        try {name =((Prim)elem).sfCompleteName().toString();} catch (Exception ex) {};
-                        SmartFrogLifecycleException sflex = SmartFrogLifecycleException.sfDeploy(name ,thr,this);
-                        String classFailed = ((Prim) elem).sfResolve(SmartFrogCoreKeys.SF_CLASS,"",false);
-                        sflex.add(SmartFrogLifecycleException.DATA,
-                                "Failed object class: "+ classFailed);
-                        throw sflex;
-                    }
-                }
-            }
+            //deploy our children.
+            sfDeployCompoundChildren();
         } catch (Throwable thr) {
             Reference name = sfCompleteNameSafe();
             sfGetCoreLog().error("caught on deployment ("+name.toString()+")", thr);
             throw SmartFrogLifecycleException.forward(thr);
         }
     }
+
+    /**
+     * This is an override point.
+     * It is called during {@link #sfDeploy()} <i>after</i>
+     * Prim has deployed, and it instantiates all children.
+     * It is not synchronized, but is called from a synchronized parent method.
+     * If overridden, a subclass must call <tt>super.sfDeployCompoundChildren()</tt>
+     * if they want to instantiate any children.
+     * @throws SmartFrogResolutionException if stuff cannot get resolved
+     * @throws RemoteException if the network is playing up
+     * @throws SmartFrogLifecycleException if any exception (or throwable) is
+     * raised by a child component.
+     */
+    protected void sfDeployCompoundChildren()
+            throws SmartFrogResolutionException, RemoteException,
+            SmartFrogLifecycleException {
+        for (Enumeration e = sfChildren(); e.hasMoreElements();) {
+            Object elem = e.nextElement();
+            if (elem instanceof Prim) {
+                try{
+                    ((Prim) elem).sfDeploy();
+                } catch (Throwable thr){
+                    String name = "";
+                    try {name =((Prim)elem).sfCompleteName().toString();} catch (RemoteException ex) {};
+                    SmartFrogLifecycleException sflex = SmartFrogLifecycleException.sfDeploy(name ,thr,this);
+                    String classFailed = ((Prim) elem).sfResolve(SmartFrogCoreKeys.SF_CLASS,"",false);
+                    sflex.add(SmartFrogLifecycleException.DATA,
+                            "Failed object class: "+ classFailed);
+                    throw sflex;
+                }
+            }
+        }
+    }
+
     /**
      * Starts the compound. This sends a synchronous sfStart to all managed
      * components in the compound context. Any failure will cause the compound
