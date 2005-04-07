@@ -91,7 +91,7 @@ public class ErrorMessageBundle extends ListResourceBundle
         // Resolution Exception messages end
         { MSG_DEPLOY_SUCCESS , "Successfully deployed: {0}"},
         { MSG_TERMINATE_SUCCESS , "Successfully terminated: {0}"},
-        { MSG_PING_SUCCESS , "\"{0}\" successfully contacted in \"{1}\". {2}"},
+        { MSG_PING_SUCCESS , "\"{0}\" was successfully contacted in \"{1}\". {2}"},
         { MSG_DETACH_SUCCESS , "Successfully detached component: {0}"},
         { MSG_DETACH_TERMINATE_SUCCESS , "Successfully detatched and terminated: {0}"},
         { MSG_UNHANDLED_EXCEPTION , "Unhandled exception: "},
