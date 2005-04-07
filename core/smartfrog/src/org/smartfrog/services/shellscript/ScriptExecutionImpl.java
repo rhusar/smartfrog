@@ -43,7 +43,7 @@ public class ScriptExecutionImpl  extends PrimImpl implements Prim, ScriptExecut
     // RunProcessImpl
     runProcess = new RunProcessImpl (ID, name, cmd);
     ((RunProcessImpl) runProcess).start();
-    ((RunProcessImpl) runProcess).waitForReady(1000);;
+    ((RunProcessImpl) runProcess).waitForReady(200);;
   }
 
   /**
