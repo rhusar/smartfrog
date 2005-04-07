@@ -1,4 +1,4 @@
-/** (C) Copyright 2005 Hewlett-Packard Development Company, LP
+/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -18,28 +18,35 @@ For more information: www.smartfrog.org
 
 */
 #include "/org/smartfrog/services/filesystem/components.sf"
+#include "/org/smartfrog/services/assertions/components.sf"
+#include "/org/smartfrog/functions.sf"
 
 sfConfig extends Compound {
-
     sfSyncTerminate true;
 
-    temp1 extends TempFile {
-        prefix "encoded";
-        suffix ".txt";
+    newdir LAZY mkdir:absolutePath;
+
+    absolutePath LAZY randomFile:absolutePath;
+
+    mkdir extends Mkdir {
+        parentDir LAZY PROPERTY java.io.tmpdir;
+        dir "sub/dir";
     }
 
-    cleanup extends SelfDeletingFile {
-        filename LAZY temp1;
+    randomNumber extends random {
+        integer true;
+        min 0;
+        max 99999;
     }
 
-    textFile extends TextFile {
-        filename LAZY temp1;
-        text "UTF16";
-        encoding "UTF-16";
+    randomFile extends File {
+        dir LAZY mkdir:absolutePath;
+        filename ("tmp"++randomNumber);
     }
 
-    //the filename
-    absolutePath LAZY textFile:absolutePath;
-    //the uri
-    uri LAZY textFile:uri;
+    touch extends TouchFile {
+        filename LAZY randomFile:absolutePath;
+    }
+
+
 }

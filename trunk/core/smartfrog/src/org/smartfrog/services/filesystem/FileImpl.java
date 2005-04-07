@@ -57,7 +57,8 @@ public class FileImpl extends FileUsingComponentImpl implements FileIntf {
     }
 
     /**
-     * all our binding stuff. reads attributes, builds the filename, checks it, updates attributes
+     * all our binding stuff. reads attributes, builds the filename, checks it,
+     * updates attributes
      *
      * @throws RemoteException
      * @throws SmartFrogRuntimeException
@@ -67,8 +68,8 @@ public class FileImpl extends FileUsingComponentImpl implements FileIntf {
         boolean debugEnabled = log.isDebugEnabled();
 
         File parentDir = null;
-        String dir = lookupAbsolutePath(this,
-                varDir,
+        String dir = FileSystem.lookupAbsolutePath(this,
+                ATTR_DIR,
                 (String) null,
                 (File) null,
                 false,
@@ -79,86 +80,93 @@ public class FileImpl extends FileUsingComponentImpl implements FileIntf {
             }
             parentDir = new File(dir);
         }
-        String filename = lookupAbsolutePath(this,
-                        varFilename,
-                        (String) null,
-                        parentDir,
-                        true,
-                        null);
+        String filename = FileSystem.lookupAbsolutePath(this,
+                ATTR_FILENAME,
+                (String) null,
+                parentDir,
+                true,
+                null);
 
-        File file=new File(parentDir,filename);
-        if ( debugEnabled ) {
+        File file = new File(parentDir, filename);
+        if (debugEnabled) {
             log.debug("absolute file=" + file.toString());
         }
         bind(file);
 
         //now test our state
 
-        mustExist =getBool(varMustExist,false,false);
-        mustRead = getBool(varMustWrite, false, false);
-        mustWrite = getBool(varMustRead, false, false);
-        mustBeDir = getBool(varMustBeDir, false, false);
-        mustBeFile = getBool(varMustBeFile, false, false);
-        testOnStartup = getBool(varTestOnStartup, false, false);
-        testOnLiveness = getBool(varTestOnLiveness, false, false);
+        mustExist = getBool(ATTR_MUST_EXIST, false, false);
+        mustRead = getBool(ATTR_MUST_WRITE, false, false);
+        mustWrite = getBool(ATTR_MUST_READ, false, false);
+        mustBeDir = getBool(ATTR_MUST_BE_DIR, false, false);
+        mustBeFile = getBool(ATTR_MUST_BE_FILE, false, false);
+        testOnStartup = getBool(ATTR_TEST_ON_STARTUP, false, false);
+        testOnLiveness = getBool(ATTR_TEST_ON_LIVENESS, false, false);
 
         exists = file.exists();
         boolean isDirectory;
         boolean isFile;
         boolean isEmpty;
+        boolean isHidden;
         long timestamp;
         long length;
-        if(exists) {
+        if (exists) {
             isDirectory = file.isDirectory();
-            if(isDirectory && debugEnabled ) {
+            if (isDirectory && debugEnabled) {
                 log.debug("file is a directory");
             }
             isFile = file.isFile();
-            if(isFile && debugEnabled ) {
+            if (isFile && debugEnabled) {
                 log.debug("file is a normal file");
             }
             timestamp = file.lastModified();
             length = file.length();
+            isHidden = file.isHidden();
         } else {
-            if(debugEnabled) {
+            if (debugEnabled) {
                 log.debug("file does not exist");
             }
-            isDirectory=false;
+            isDirectory = false;
             isFile = false;
-            timestamp=-1;
-            length=0;
+            timestamp = -1;
+            length = 0;
+            isHidden = false;
         }
         isEmpty = length == 0;
 
-        setAttribute(varExists, exists);
-        setAttribute(varIsDirectory,isDirectory);
-        setAttribute(varIsFile,isFile);
-        setAttribute(varIsEmpty,isEmpty);
-        setAttribute(varTimestamp, timestamp);
-        setAttribute(varLength, length);
+        setAttribute(ATTR_EXISTS, exists);
+        setAttribute(ATTR_IS_DIRECTORY, isDirectory);
+        setAttribute(ATTR_IS_FILE, isFile);
+        setAttribute(ATTR_IS_EMPTY, isEmpty);
+        setAttribute(ATTR_IS_HIDDEN, isHidden);
+        setAttribute(ATTR_TIMESTAMP, timestamp);
+        setAttribute(ATTR_LENGTH, length);
 
-        String name=getFile().getName();
-        sfReplaceAttribute(varShortname,name);
+        String name = getFile().getName();
+        setAttribute(ATTR_SHORTNAME, name);
 
     }
 
-    private void setAttribute(String attr, String  value) throws SmartFrogRuntimeException, RemoteException {
-        if ( log.isDebugEnabled() ) {
+    private void setAttribute(String attr, String value)
+            throws SmartFrogRuntimeException, RemoteException {
+        if (log.isDebugEnabled()) {
             log.debug(attr + " = " + value);
         }
         sfReplaceAttribute(attr, value);
     }
 
 
-    private void setAttribute(String attr, boolean flag) throws SmartFrogRuntimeException, RemoteException {
-        if ( log.isDebugEnabled() ) {
+    private void setAttribute(String attr, boolean flag)
+            throws SmartFrogRuntimeException, RemoteException {
+        if (log.isDebugEnabled()) {
             log.debug(attr + " = " + flag);
         }
-        sfReplaceAttribute(attr,Boolean.valueOf(flag));
+        sfReplaceAttribute(attr, Boolean.valueOf(flag));
     }
 
     /**
      * get a boolean value of an attribute
+     *
      * @param attr
      * @param value
      * @param mandatory
@@ -166,14 +174,17 @@ public class FileImpl extends FileUsingComponentImpl implements FileIntf {
      * @throws SmartFrogResolutionException
      * @throws RemoteException
      */
-    private boolean getBool(String attr,boolean value,boolean mandatory) throws SmartFrogResolutionException,
+    private boolean getBool(String attr, boolean value, boolean mandatory)
+            throws SmartFrogResolutionException,
             RemoteException {
-        Boolean b=(Boolean) sfResolve(attr,Boolean.valueOf(value),mandatory);
+        Boolean b = (Boolean) sfResolve(attr, Boolean.valueOf(value), mandatory);
         return b.booleanValue();
     }
-    private void setAttribute(String attr, long value) throws SmartFrogRuntimeException, RemoteException {
-        if(log.isDebugEnabled() ) {
-            log.debug(attr+" = "+ value);
+
+    private void setAttribute(String attr, long value)
+            throws SmartFrogRuntimeException, RemoteException {
+        if (log.isDebugEnabled()) {
+            log.debug(attr + " = " + value);
         }
         sfReplaceAttribute(attr, new Long(value));
     }
@@ -188,9 +199,10 @@ public class FileImpl extends FileUsingComponentImpl implements FileIntf {
      *                                  error while deploying
      * @throws java.rmi.RemoteException In case of network/rmi error
      */
-    public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
+    public synchronized void sfDeploy() throws SmartFrogException,
+            RemoteException {
         super.sfDeploy();
-        log= sfGetApplicationLog();
+        log = sfGetApplicationLog();
         bind();
     }
 
@@ -214,11 +226,14 @@ public class FileImpl extends FileUsingComponentImpl implements FileIntf {
      * @param source source of call
      * @throws org.smartfrog.sfcore.common.SmartFrogLivenessException
      *                                  component is terminated
-     * @throws java.rmi.RemoteException for consistency with the {@link org.smartfrog.sfcore.prim.Liveness} interface
+     * @throws java.rmi.RemoteException for consistency with the {@link
+     *                                  org.smartfrog.sfcore.prim.Liveness}
+     *                                  interface
      */
-    public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
+    public void sfPing(Object source) throws SmartFrogLivenessException,
+            RemoteException {
         super.sfPing(source);
-        if(testOnLiveness) {
+        if (testOnLiveness) {
             testFileState();
         }
 
@@ -226,152 +241,30 @@ public class FileImpl extends FileUsingComponentImpl implements FileIntf {
 
     /**
      * do our file state test
+     *
      * @throws SmartFrogLivenessException if a test failed
      */
     protected void testFileState() throws SmartFrogLivenessException {
-        if ( log.isDebugEnabled() ) {
-            log.debug("liveness check will look for "+getFile().toString());
+        if (log.isDebugEnabled()) {
+            log.debug("liveness check will look for " + getFile().toString());
         }
 
-        if(mustExist && !getFile().exists()) {
-            throw new SmartFrogLivenessException("File "+getFile().getAbsolutePath()+" does not exist");
+        if (mustExist && !getFile().exists()) {
+            throw new SmartFrogLivenessException("File " +
+                    getFile().getAbsolutePath() +
+                    " does not exist");
         }
-        if(mustRead && !getFile().canRead()) {
-            throw new SmartFrogLivenessException("File " + getFile().getAbsolutePath() + " is not readable");
+        if (mustRead && !getFile().canRead()) {
+            throw new SmartFrogLivenessException("File " +
+                    getFile().getAbsolutePath() +
+                    " is not readable");
         }
         if (mustWrite && !getFile().canWrite()) {
-            throw new SmartFrogLivenessException("File " + getFile().getAbsolutePath() + " is not writeable");
+            throw new SmartFrogLivenessException("File " +
+                    getFile().getAbsolutePath() +
+                    " is not writeable");
         }
     }
 
-
-    /**
-     * This static call is a helper for any component that wants
-     * to get either an absolute path or a FileIntf binding to an attribute.
-     * The attribute is looked up on a component. If it is bound to anything
-     * that implements FileIntf, then that component is asked for an absolute path.
-     * if it is bound to a string, then the string is turned into an absolute path,
-     * relative to any directory named, after the string is converted into platform
-     * appropriate forward/back slashes.
-     * @param component component to look up the path from
-     * @param attribute the name of the attribute to look up
-     * @param defval a default value. This should already be in the local format for the target platform,
-     * and absolute. Can be null. No used when mandatory is true
-     * @param baseDir optional base directory for a relative file when constructing from a string
-     * @param mandatory flag that triggers the throwing of a SmartFrogResolutionException when things
-     * go wrong
-     * @param platform a platform to use for converting filetypes. Set to null to use
-     * the default helper for this platform.
-     * @return
-     * @throws SmartFrogResolutionException
-     * @throws RemoteException
-     */
-    public static String lookupAbsolutePath(Prim component,
-                                         Reference attribute,
-                                         String defval,
-                                         File baseDir,
-                                         boolean mandatory,
-                                         PlatformHelper platform)
-            throws SmartFrogResolutionException, RemoteException {
-        Object referenceObj= component.sfResolve(attribute,mandatory);
-        if(referenceObj==null) {
-            //mandatory must be false, because we did not get a value.
-            return defval;
-        }
-        if(referenceObj instanceof FileIntf) {
-            //file interface: get the info direct from the component
-            FileIntf fileComponent=(FileIntf) referenceObj;
-            String path=fileComponent.getAbsolutePath();
-            return path;
-        } else if(referenceObj instanceof String) {
-            //string: convert that into an absolute path
-            //without any directory info. so its relative to "here"
-            //wherever "here" is for the process
-            String filename=(String)referenceObj;
-            if(platform==null) {
-                platform = PlatformHelper.getLocalPlatform();
-            }
-            filename = platform.convertFilename(filename);
-            File newfile;
-            //create a file from the string
-            if(baseDir!=null) {
-                newfile=new File(baseDir,filename);
-            } else {
-                newfile = new File(filename);
-            }
-            String path=newfile.getAbsolutePath();
-            return path;
-        } else {
-            //at this point the type is not supported. So
-            //we have to advise the caller that they have an illegal type.
-            Reference owner;
-            owner= ComponentHelper.completeNameSafe(component);
-            throw SmartFrogResolutionException.illegalClassType(attribute,owner);
-        }
-    }
-
-    /**
-     * This static call is a helper for any component that wants
-     * to get either an absolute path or a FileIntf binding to an attribute.
-     * The attribute is looked up on a component. If it is bound to anything
-     * that implements FileIntf, then that component is asked for an absolute path.
-     * if it is bound to a string, then the string is turned into an absolute path,
-     * relative to any directory named, after the string is converted into platform
-     * appropriate forward/back slashes.
-     *
-     * @param component component to look up the path from
-     * @param attribute the name of the attribute to look up
-     * @param defval    a default value. This should already be in the local format for the target platform,
-     *                  and absolute. Can be null. Not used when mandatory is true
-     * @param baseDir   optional base directory for a relative file when constructing from a string
-     * @param mandatory flag that triggers the throwing of a SmartFrogResolutionException when things
-     *                  go wrong
-     * @param platform  a platform to use for converting filetypes. Set to null to use
-     *                  the default helper for this platform.
-     * @return
-     * @throws SmartFrogResolutionException
-     * @throws RemoteException
-     */
-    public static String lookupAbsolutePath(Prim component,
-                                            String attribute,
-                                            String defval,
-                                            File baseDir,
-                                            boolean mandatory,
-                                            PlatformHelper platform)
-            throws SmartFrogResolutionException, RemoteException {
-        return lookupAbsolutePath(component,new Reference(attribute),defval,baseDir, mandatory,platform);
-    }
-
-
-    /**
-     * Look up the absolutePath attribute of any component,
-     * then turn it into a file.
-     * @param component component to resolve against
-     * @return file representing the path.
-     * @throws SmartFrogResolutionException If the attribute is not defined.
-     * @throws RemoteException
-     */
-    public static File resolveAbsolutePath(Prim component)
-            throws SmartFrogResolutionException,
-            RemoteException {
-        String absolutePath = component.sfResolve(FileUsingComponent.ATTR_ABSOLUTE_PATH, "", true);
-        File file = new File(absolutePath);
-        return file;
-    }
-
-    /**
-     * Look up the absolutePath attribute of any FileUsingComponent, then turn it into a
-     * file.
-     * Note that the RPC method is not used; only sf attributes. Thus the coupling
-     * is much looser.
-     * @param component component to resolve against
-     * @return file representing the path.
-     * @throws SmartFrogResolutionException If the attribute is not defined.
-     * @throws RemoteException
-     */
-    public static File resolveAbsolutePath(FileUsingComponent component)
-            throws SmartFrogResolutionException, RemoteException {
-        return resolveAbsolutePath((Prim)component);
-    }
 
 }

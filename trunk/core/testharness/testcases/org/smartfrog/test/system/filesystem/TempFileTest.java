@@ -22,6 +22,9 @@ package org.smartfrog.test.system.filesystem;
 import org.smartfrog.test.SmartFrogTestBase;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
+import org.smartfrog.services.filesystem.FileUsingComponent;
+import org.smartfrog.services.filesystem.TempFileImpl;
+import org.smartfrog.services.filesystem.TempFile;
 
 import java.io.File;
 import java.rmi.RemoteException;
@@ -41,8 +44,9 @@ public class TempFileTest extends SmartFrogTestBase {
     public void testEmpty() throws Throwable {
         deployExpectingException(FILES + "tempFileTestEmpty.sf",
                 "tempFileTestEmpty",
-                        "SmartFrogDeploymentException", null,
-                        "SmartFrogCompileResolutionException", "non-optional attribute 'prefix' is missing");
+                        "SmartFrogLifecycleException", null,
+                        "SmartFrogException",
+                    TempFileImpl.ERROR_PREFIX_EMPTY);
     }
 
     /**
@@ -51,17 +55,20 @@ public class TempFileTest extends SmartFrogTestBase {
      */
     public void testWorking() throws Throwable {
         Prim application=deployExpectingSuccess(FILES + "tempFileTestWorking.sf", "tempFileTestWorking");
-        String filename = application.sfResolve("filename", (String) null, true);
-        String suffix = application.sfResolve("suffix", (String) null, true);
-        String prefix = application.sfResolve("prefix", (String) null, true);
-        File file = new File(filename);
-        assertTrue("found " + suffix + " in " + filename, filename.endsWith(suffix));
-        assertTrue("found "+prefix+" in "+filename,file.getName().indexOf(prefix)==0);
-        //now verify we clean up
-        assertTrue(file.exists());
-        terminateApplication(application);
+        File file;
+        try {
+            String filename = application.sfResolve(TempFile.ATTR_FILENAME, (String) null, true);
+            String suffix = application.sfResolve(TempFile.ATTR_SUFFIX, (String) null, true);
+            String prefix = application.sfResolve(TempFile.ATTR_PREFIX, (String) null, true);
+            file = new File(filename);
+            assertTrue("found " + suffix + " in " + filename, filename.endsWith(suffix));
+            assertTrue("found "+prefix+" in "+filename,file.getName().indexOf(prefix)==0);
+            //now verify we clean up
+            assertTrue(file.exists());
+        } finally {
+            terminateApplication(application);
+        }
         assertFalse(file.exists());
-
     }
 
 }

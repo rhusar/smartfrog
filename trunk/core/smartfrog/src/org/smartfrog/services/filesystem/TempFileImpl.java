@@ -23,6 +23,7 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.prim.Prim;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,6 +41,7 @@ public class TempFileImpl extends FileUsingComponentImpl implements TempFile {
      * our log
      */
     private Log log;
+    public static final String ERROR_PREFIX_EMPTY = ATTR_PREFIX+ " can not be an empty string";
 
     /**
      * create a temporary file instance; do no real work (yet)
@@ -58,15 +60,24 @@ public class TempFileImpl extends FileUsingComponentImpl implements TempFile {
         super.sfDeploy();
         log=LogFactory.getOwnerLog(this,this);
         String prefix = sfResolve(ATTR_PREFIX, "", true);
+        if(prefix.length()==0) {
+            throw new SmartFrogException(ERROR_PREFIX_EMPTY,this);
+        }
         String suffix = sfResolve(ATTR_SUFFIX, (String) null, false);
-        String dir = sfResolve(ATTR_DIRECTORY, (String) null, false);
+        String dir;
+        dir=FileSystem.lookupAbsolutePath(this,ATTR_DIRECTORY,null,null,false,null);
+
+
         log.debug("creating temp file in dir ["+dir+"] prefix="+prefix+" suffix="+suffix);
+
         File tempFile;
         try {
             if (dir == null) {
                 tempFile = File.createTempFile(prefix, suffix);
             } else {
-                tempFile = File.createTempFile(prefix, suffix, new File(dir));
+                File directory = new File(dir);
+                directory.mkdirs();
+                tempFile = File.createTempFile(prefix, suffix, directory);
             }
         } catch (IOException e) {
             throw SmartFrogException.forward(e);
@@ -74,7 +85,7 @@ public class TempFileImpl extends FileUsingComponentImpl implements TempFile {
         }
         //bind to the temp file
         bind(tempFile);
-        sfReplaceAttribute(ATTR_FILENAME, tempFile.toString());
+        sfReplaceAttribute(FileUsingComponent.ATTR_FILENAME, tempFile.toString());
     }
 
     /**

@@ -23,6 +23,7 @@ For more information: www.smartfrog.org
 sfConfig extends Compound {
 
     temp1 extends TempFile {
+        prefix "";
         deleteOnExit true;
     }
 

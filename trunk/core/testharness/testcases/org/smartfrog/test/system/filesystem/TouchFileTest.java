@@ -24,6 +24,8 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.services.filesystem.TouchFileImpl;
+import org.smartfrog.services.filesystem.FileUsingComponent;
+import org.smartfrog.services.filesystem.TouchFileIntf;
 
 import java.io.File;
 import java.rmi.RemoteException;
@@ -34,7 +36,7 @@ import java.rmi.RemoteException;
 
 public class TouchFileTest  extends SmartFrogTestBase {
 
-    private static final String FILES = "org/smartfrog/test/system/filesystem/";
+    public static final String FILES = "org/smartfrog/test/system/filesystem/";
 
     public TouchFileTest(String name) {
         super(name);
@@ -53,14 +55,41 @@ public class TouchFileTest  extends SmartFrogTestBase {
      * @throws Throwable
      */
     public void testTouchSetTime() throws Throwable {
-        Prim application = deployExpectingSuccess(FILES + "testTouchSetTime.sf", "testTouchSetTime");
-        String filename= application.sfResolve(TouchFileImpl.ATTR_FILENAME,(String)null,true);
-        long age = application.sfResolve(TouchFileImpl.ATTR_AGE,(long)0,true);
-        File file=new File(filename);
+        Prim application = deployExpectingSuccess(FILES +
+                "testTouchSetTime.sf", "testTouchSetTime");
+        String filename = application.sfResolve(TouchFileIntf.ATTR_FILENAME,
+                (String) null,
+                true);
+        long age = application.sfResolve(TouchFileImpl.ATTR_AGE, (long) 0, true);
+        File file = new File(filename);
         assertTrue(file.exists());
-        assertEquals(age,file.lastModified());
+        assertEquals(age, file.lastModified());
         terminateApplication(application);
         assertFalse(file.exists());
+    }
+
+
+    /**
+     * test that we are working
+     *
+     * @throws Throwable
+     */
+    public void testTouchSubdirs() throws Throwable {
+        Prim application = deployExpectingSuccess(FILES +
+                "testTouchSubdirs.sf", "testTouchSubdirs");
+
+        File file;
+        try {
+            String filename = application.sfResolve(FileUsingComponent.ATTR_ABSOLUTE_PATH,
+                    (String) null,
+                    true);
+            file = new File(filename);
+            assertTrue("not found " + file, file.exists());
+            assertTrue("not a file " + file, file.isFile());
+            file.delete();
+        } finally {
+            terminateApplication(application);
+        }
     }
 
 }

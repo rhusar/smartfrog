@@ -34,7 +34,7 @@ sfConfig extends Compound {
     }
 
     textFile extends TextFile {
-        file LAZY temp1;
+        filename LAZY temp1;
         text "Here is some text that we want to use in our document";
     }
 

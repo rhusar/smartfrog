@@ -30,10 +30,6 @@ import java.rmi.RemoteException;
 
 
 public interface TouchFileIntf extends FileUsingComponent {
-    /**
-     * the file to be touched
-     */
-    final static String ATTR_FILENAME = "filename";
 
     /**
      * its age in milliseconds since 1970-01-01

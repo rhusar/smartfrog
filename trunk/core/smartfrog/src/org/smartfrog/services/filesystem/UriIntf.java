@@ -34,7 +34,7 @@ public interface UriIntf extends Remote {
     /**
      * URI attribute {@value}
      */
-    String varURI = "uri";
+    String ATTR_URI = "uri";
 
     /**
      * get the URI of this file
