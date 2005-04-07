@@ -321,9 +321,9 @@ public class LogToErrImpl implements LogToErr, Log, LogMessage, LogLevel, Serial
             buf.append(">\n        ");
         }
 
-        // Append stack trace if not null
+        // Append stack trace if not null and show trace enabled.
         if(t != null) {
-            if (showStackTrace || this.isLevelEnabled(LOG_LEVEL_WARN)) {
+            if (showStackTrace) {
                 java.io.StringWriter sw = new java.io.StringWriter(STACK_BUFFER_SIZE);
                 java.io.PrintWriter pw = new java.io.PrintWriter(sw);
                 t.printStackTrace(pw);

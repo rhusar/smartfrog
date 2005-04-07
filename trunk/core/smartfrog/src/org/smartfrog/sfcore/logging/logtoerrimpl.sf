@@ -36,7 +36,9 @@ LogToErrImpl extends {
     showMethodCall false;
 
     // /** Include stack trace in log message */
-    showStackTrace false;
+        // It takes overwrite org.smartfrog.logger.logStackTrace value by default
+        // but it overwrites it if this is defined.
+    // showStackTrace false;
 
     // /** Used to format times */
     dateFormat "yyyy/MM/dd HH:mm:ss:SSS zzz";
