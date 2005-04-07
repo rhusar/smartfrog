@@ -37,6 +37,7 @@ import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.services.filesystem.FileImpl;
+import org.smartfrog.services.filesystem.FileSystem;
 
 /**
  * Defines the Downloader class. It downloads the data from a given url.
@@ -67,7 +68,7 @@ public class DownloadImpl extends PrimImpl implements Download {
         try {
             url = (String) sfResolve("url");
             localFile =
-                    FileImpl.lookupAbsolutePath(this,
+                    FileSystem.lookupAbsolutePath(this,
                             ATTR_LOCALFILE,
                             null,
                             null,
@@ -101,7 +102,7 @@ public class DownloadImpl extends PrimImpl implements Download {
      * @param blocksize
      * @throws IOException
      */
-    private static void download(String url, File localFile, int blocksize)
+    public static void download(String url, File localFile, int blocksize)
             throws IOException {
         /** FileOutputStream object. */
         FileOutputStream fs = null;
@@ -110,7 +111,9 @@ public class DownloadImpl extends PrimImpl implements Download {
 
         byte[] b = new byte[blocksize];
         int bytesRead;
-
+        boolean finished=false;
+        //create our output directories.
+        localFile.mkdirs();
         try {
             // open the URL,
             is = SFClassLoader.getResourceAsStream(url);
@@ -126,20 +129,16 @@ public class DownloadImpl extends PrimImpl implements Download {
                     fs.write(b, 0, bytesRead);
                 }
             } while (bytesRead > 0);
+            //mark as finished
+            finished=true;
+            fs.close();
         } finally {
-            if(fs!=null) {
-                try {
-                    fs.close();
-                } catch (IOException e) {
-
-                }
-            }
-            if(is!=null) {
-                try {
-                    is.close();
-                } catch (IOException e) {
-
-                }
+            FileSystem.close(fs);
+            FileSystem.close(is);
+            //delete any half-downloaded local file if
+            //something went wrong during download.
+            if(!finished && localFile.exists()) {
+                localFile.delete();
             }
         }
     }
