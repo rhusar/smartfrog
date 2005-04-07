@@ -20,6 +20,7 @@
 package org.smartfrog.services.os.java;
 
 import org.smartfrog.services.filesystem.FileUsingComponent;
+import org.smartfrog.services.os.download.Download;
 
 /**
  * Attributes of a library
@@ -31,7 +32,7 @@ public interface LibraryArtifact extends FileUsingComponent {
     /**
      * {@value}
      */
-    String ATTR_REPOSITORY = "repository";
+    String ATTR_LIBRARY = "library";
     /**
      * {@value}
      */
@@ -58,7 +59,31 @@ public interface LibraryArtifact extends FileUsingComponent {
     /**
      * {@value}
      */
-    String ATTR_SYNCHRONOUS = "synchronousDownload ";
+    String ATTR_SYNCHRONOUS = "synchronousDownload";
 
-    
+    /**
+     * Block size {@value}
+     */
+    String ATTR_BLOCKSIZE = Download.ATTR_BLOCKSIZE;
+
+    /**
+     * terminate after download {@value}
+     */
+
+    String ATTR_TERMINATE = "terminate";
+
+
+    /**
+     * {@value}
+     */
+    String ATTR_DOWNLOAD_IF_ABSENT = "downloadIfAbsent";
+    /**
+     * {@value}
+     */
+    String ATTR_DOWNLOAD_ALWAYS = "downloadAlways";
+    /**
+     * {@value}
+     */
+    String ATTR_FAIL_IF_NOT_PRESENT = "failIfNotPresent";
+
 }

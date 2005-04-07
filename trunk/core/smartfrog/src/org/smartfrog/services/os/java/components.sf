@@ -93,34 +93,41 @@ Repository extends Prim {
 /**
  * at deploy time, we fetch libraries from the repository, if needed
  */
-Libraries extends Compound {
-    sfClass "org.smartfrog.services.os.java.LibrariesImpl";
+Library extends Compound {
+    sfClass "org.smartfrog.services.os.java.LibraryImpl";
     librariesSchema extends Schema {
         repositories extends Vector;
         //cache dir; is created if needed
-        cacheDir extends Optional;
-        //runtime elements
-        //libraries extends Vector
-        //librariesCodebase extends String
+        cacheDir extends Compulsory;
     }
 }
 
 /**
- * Maven repository at ibiblio.org. Really we should permit mirrors; or include
- * the mirror list for easy selection.
+ * Declare the maven library
+ * To use this, you have to force its instantiation under sfConfig.
  */
-MavenLibraries extends Libraries {
 
-    //maven repository
-    repositories [| "http://ibiblio.org/maven" |];
+MavenLibrary extends Library {
 
-    //cache into the well known maven location
-    cacheDir extends File {
+
+    /**
+     * Well known cache directory
+     */
+    MavenLocalCacheDirectory extends File {
         //JVM property user.home
         dir LAZY PROPERTY user.home;
         //subdir
         filename ".maven/repository";
     }
+
+    /**
+     * Maven repository at ibiblio.org. Really we should permit mirrors; or include
+     * the mirror list for easy selection.
+     */
+    repositories [| "http://ibiblio.org/maven" |];
+
+    //cache into the well known maven location
+    cacheDir LAZY MavenLocalCacheDirectory:absolutePath;
 
 }
 
@@ -140,7 +147,7 @@ MavenLibraries extends Libraries {
 LibraryArtifact extends FileUsingComponent {
     sfClass "org.smartfrog.services.os.java.LibraryArtifactImpl";
     librarySchema extends Schema {
-        repository extends Optional;
+        library extends OptionalCD;
         project extends String;
         artifact extends String;
         extension extends String;
@@ -152,11 +159,35 @@ LibraryArtifact extends FileUsingComponent {
         //MD5 is not as secure as sha1, but is retained because the md5 values
         //of maven artifacts are so common.
         md5 extends OptionalString;
+        //block size for downloads
+        blocksize extends OptionalInteger;
+        //flag for o
+        downloadIfAbsent extends Boolean;
+        downloadAlways extends Boolean;
+        failIfNotPresent extends Boolean;
+        terminate extends Boolean;
     }
     artifact ATTRIB project;
-    synchronousDownload false;
+
+    synchronousDownload true;
     //implict request for sha1 generation. Call it a hint :)
     sha1 "";
+    //block size
+    blocksize 8192;
+
+    //dont download if it is present
+    downloadAlways false;
+
+    //do download if it is absent
+    downloadIfAbsent true;
+
+    //require the file to exist or be downloaded
+    failIfNotPresent true;
+
+    //stay present after download
+    terminate false;
+
+
 }
 
 /**
@@ -170,5 +201,5 @@ JarArtifact extends LibraryArtifact {
  * A Maven JAR is autobound to the big maven repository on the network
  */
 MavenJar extends JarArtifact  {
-    owner MavenLibraries;
+    library MavenLibrary;
 }
