@@ -163,7 +163,7 @@ public abstract class SmartFrogTestBase extends TestCase {
                 }
                 //then fail
                 fail("We expected an exception here:"+exceptionName
-                     +" but got this result "+deployedApp.toString());
+                     +" but got this deployment "+deployedApp.toString());
             }
          } catch (Exception fault) {
             fail(fault.toString());
