@@ -29,6 +29,7 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.utils.PlatformHelper;
 import org.smartfrog.sfcore.utils.ComponentHelper;
@@ -53,7 +54,6 @@ import java.security.DigestInputStream;
 
 public class LibraryArtifactImpl extends FileUsingComponentImpl implements LibraryArtifact {
     private Library owner;
-    private File cacheDir;
     private Vector repositories;
     private boolean syncDownload;
     private String sha1;
@@ -73,16 +73,12 @@ public class LibraryArtifactImpl extends FileUsingComponentImpl implements Libra
 
     private Log log;
 
-    /**
-     * what artifacts are separated by {@value}
-     */
-    public static final String ARTIFACT_SEPARATOR = "-";
     public static final String ERROR_CHECKSUM_FAILURE = "Checksum mismatch on file ";
 
     /**
      * block size for downloads and digests {@value}
      */
-    public static int BLOCKSIZE = 8192;
+    public static final int BLOCKSIZE = 8192;
 
     /**
      * Error text when there is no repository entry anywhere
@@ -121,7 +117,6 @@ public class LibraryArtifactImpl extends FileUsingComponentImpl implements Libra
         super.sfDeploy();
         log=sfGetApplicationLog();
         owner = findOwner();
-        cacheDir = FileSystem.resolveAbsolutePath(owner);
         repositories = ((Prim) owner).sfResolve(Library.ATTR_REPOSITORIES,
                 (Vector) null, true);
         syncDownload = sfResolve(ATTR_SYNCHRONOUS, syncDownload, true);
@@ -146,7 +141,7 @@ public class LibraryArtifactImpl extends FileUsingComponentImpl implements Libra
         //we do this through methods for override points
         artifactName=makeArtifactName();
         remoteUrlPath = makeRemoteUrlPath();
-        File localFile=makeLocalFile(remoteUrlPath);
+        File localFile=makeLocalFile();
         //get the superclass to do our binding
         bind(localFile);
         checkExistence();
@@ -187,6 +182,11 @@ public class LibraryArtifactImpl extends FileUsingComponentImpl implements Libra
         }
     }
 
+	/**
+	 * Probe for our library existing already
+	 * @throws SmartFrogRuntimeException
+	 * @throws RemoteException
+	 */
     private void checkExistence() throws SmartFrogRuntimeException,
             RemoteException {
         //set our exists flag
@@ -262,7 +262,6 @@ public class LibraryArtifactImpl extends FileUsingComponentImpl implements Libra
      */
     public void checkMd5Checksum() throws SmartFrogException {
         checkChecksum(getFile(), "MD5",md5, BLOCKSIZE);
-
     }
 
     /**
@@ -322,7 +321,7 @@ public class LibraryArtifactImpl extends FileUsingComponentImpl implements Libra
         byte[] fileDigest = messageDigest.digest();
 
         //next: compare with the expected string
-        String actual=digestToString(fileDigest);
+        String actual=LibraryHelper.digestToString(fileDigest);
         //clean up leading, tailing chars in the request
         String expected=hexValue.trim();
 
@@ -347,35 +346,14 @@ public class LibraryArtifactImpl extends FileUsingComponentImpl implements Libra
     }
 
     /**
-     * get a string value of a digest as a hex list, two characters per byte.
-     * There would seem to be a more efficient implementation of this involving
-     * a 256 byte memory buffer.
-     * @param digest
-     * @return
-     */
-    public static String digestToString(byte[] digest) {
-        int length = digest.length;
-        StringBuffer buffer = new StringBuffer(length*2);
-        for (int i = 0; i < length; i++) {
-            String ff = Integer.toHexString(digest[i] & 0xff);
-            if (ff.length() < 2) {
-                buffer.append('0');
-            }
-            buffer.append(ff);
-        }
-        return buffer.toString();
-    }
-
-
-    /**
      * combine project and artifact to produce a path.
      * This must not include host info or other repository binding
      * information, as this is done for every repository later.
      * @return path such as /project/artifact-version.jar
      */
     public String makeRemoteUrlPath() {
-        String patched=patchProject(project);
-        String urlPath="/"+patched+"/jars/"+artifactName;
+        String patched=LibraryHelper.patchProject(project);
+        String urlPath="/"+patched+LibraryHelper.MAVEN_JAR_SUBDIR+artifactName;
         return urlPath;
     }
 
@@ -385,54 +363,18 @@ public class LibraryArtifactImpl extends FileUsingComponentImpl implements Libra
      * @return
      */
     public String makeArtifactName() {
-        StringBuffer buffer=new StringBuffer();
-        buffer.append(artifact);
-        if(version!=null) {
-            buffer.append(ARTIFACT_SEPARATOR);
-            buffer.append(version);
-        }
-        buffer.append(extension);
-        return buffer.toString();
+        return LibraryHelper.createArtifactName(artifact,version,extension);
     }
-
+    
     /**
      * create the file that represents the full path
      * to the local file.
-     * @param remoteUrlPath the remote path (as a hint)
      * @return a file that goes to the local location in the cache
      */
-    public File makeLocalFile(String remoteUrlPath) {
-        PlatformHelper helper=PlatformHelper.getLocalPlatform();
-        String localpath=helper.convertFilename(remoteUrlPath);
-        File file=new File(cacheDir,localpath);
+    private File makeLocalFile() throws RemoteException {
+        String absolutepath=owner.determineArtifactPath(project,artifact,version,extension);
+        File file=new File(absolutepath);
         return file;
-    }
-
-
-    /**
-     * Convert a dotted project name into a forward slashed project name.
-     * This is done in preparation for Maven2 repositories, which will have more
-     * depth to their classes.
-     * NB: only public for testing. This is not a public API.
-     * @param projectName
-     * @return a string whch may or may not match the old string.
-     */
-    public static String patchProject(String projectName) {
-        //break out early if no match; create no new object
-        if(projectName.indexOf('.')<0) {
-            return projectName;
-        }
-        //create a new buffer, patch it
-        int len = projectName.length();
-        StringBuffer patched=new StringBuffer(len);
-        for(int i=0;i<len;i++) {
-            char c=projectName.charAt(i);
-            if(c=='.') {
-                c='/';
-            }
-            patched.append(c);
-        }
-        return patched.toString();
     }
 
 
@@ -448,7 +390,9 @@ public class LibraryArtifactImpl extends FileUsingComponentImpl implements Libra
      */
     protected Library findOwner() throws SmartFrogResolutionException,
             RemoteException {
-        return (Library)sfResolve(ATTR_LIBRARY, owner, true);
+        final Object libAttr = sfResolve(ATTR_LIBRARY, owner, true);
+        assert  (!(libAttr instanceof ComponentDescription)):"Uninstantiated component: "+libAttr;
+        return (Library)libAttr;
         /*
         owner = null;
         Object resolved = sfResolve(ATTR_LIBRARY, owner, false);

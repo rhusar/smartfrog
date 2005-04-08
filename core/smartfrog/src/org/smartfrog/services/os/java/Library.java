@@ -22,6 +22,7 @@ package org.smartfrog.services.os.java;
 import org.smartfrog.services.filesystem.FileUsingComponent;
 
 import java.rmi.Remote;
+import java.rmi.RemoteException;
 
 /**
  * A set of libraries to use. Can feed directly into a java invocation
@@ -56,5 +57,22 @@ public interface Library extends FileUsingComponent {
      * {@value}
      */
     String ATTR_LIBRARIES_CODEBASE = "librariesCodebase";
+    
+    /**
+     * {@value}
+     */
+    String ATTR_FLATTEN = "flatten";
+	
+    /**
+     * Determine the absolute path of an artifact in the local library cache. 
+     * @param project project name
+     * @param artifact artifact name
+     * @param version version string (may be null)
+     * @param extension extension string (may be null for non JAR artifacts)
+     * @return the path to the artifact. It may or may not exist. 
+     * @throws RemoteException
+     */
+	public String determineArtifactPath(String project,String artifact,String version,String extension)
+        throws RemoteException;
 
 }
