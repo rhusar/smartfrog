@@ -9,7 +9,7 @@ import org.mortbay.jetty.servlet.AbstractSessionManager;
 import org.mortbay.jetty.servlet.ServletHandler;
 import org.smartfrog.services.jetty.JettyIntf;
 import org.smartfrog.services.jetty.JettyHelper;
-import org.smartfrog.services.filesystem.FileImpl;
+import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.Logger;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
@@ -63,7 +63,7 @@ public class WebApplication extends PrimImpl implements JettyWebApplicationConte
    * @exception  RemoteException In case of network/rmi error
    */
    public void sfStart() throws SmartFrogException, RemoteException {
-	   super.sfStart();
+       super.sfStart();
        server = jettyHelper.bindToServer();
        jettyhome = jettyHelper.findJettyHome();
        contextPath = sfResolve(contextPathRef, contextPath, true);
@@ -71,12 +71,12 @@ public class WebApplication extends PrimImpl implements JettyWebApplicationConte
        //if the file exists, it does not need to be anywhere
        webApp = sfResolve(webAppRef, webApp, false);
        if (webApp != null) {
-	       if (!new File(webApp).exists())
-		       webApp = jettyhome.concat(webApp);
+           if (!new File(webApp).exists())
+               webApp = jettyhome.concat(webApp);
        }
        //no webapp? look for the warfile
        if (webApp == null) {
-           webApp = FileImpl.lookupAbsolutePath(this, WARFILE, null, null, true, null);
+           webApp = FileSystem.lookupAbsolutePath(this, WARFILE, null, null, true, null);
        }
        //sanity check
        File webappFile = new File(webApp);
@@ -86,12 +86,12 @@ public class WebApplication extends PrimImpl implements JettyWebApplicationConte
        //request ID
        requestId = sfResolve(requestIdRef, requestId, false);
        addcontext(contextPath,webApp,requestId);
-	   server.addContext(context);
-	   try {
-		   context.start();
-	   } catch(Exception ex){
-		   throw SmartFrogException.forward(ex);
-	   }
+       server.addContext(context);
+       try {
+           context.start();
+       } catch(Exception ex){
+           throw SmartFrogException.forward(ex);
+       }
    }   
   
    /**
