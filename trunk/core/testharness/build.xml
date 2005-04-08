@@ -82,7 +82,7 @@ For more information: www.smartfrog.org
 
   <!-- set up our compile classpath to include junit -->
   
-  <target name="declare-compile.classpath" depends="declare-base.compile.classpath" >  
+  <target name="declare-compile.classpath" depends="declare-base.compile.classpath" >
     <path id="compile.classpath">
       <path refid="base.compile.classpath"/>
       <pathelement location="${junit.jar}"/>

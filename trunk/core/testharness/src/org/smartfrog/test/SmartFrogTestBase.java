@@ -424,7 +424,7 @@ public abstract class SmartFrogTestBase extends TestCase {
                         ConfigurationDescriptor.Action.DEPLOY,
                         hostname,
                         null);
-        System.out.println("\n"+"* Test success in description: \n    "+cfgDesc.toString("\n    ")
+        System.out.println("\n"+"* Testing for successful deployment of: \n    "+cfgDesc.toString("\n    ")
                                );
 
         Object deployedApp = SFSystem.runConfigurationDescriptor(cfgDesc,true);

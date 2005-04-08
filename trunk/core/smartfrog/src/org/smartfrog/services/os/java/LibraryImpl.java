@@ -26,6 +26,8 @@ import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.compound.CompoundImpl;
+import org.smartfrog.sfcore.logging.Log;
+import org.smartfrog.sfcore.utils.PlatformHelper;
 
 import java.io.File;
 import java.rmi.RemoteException;
@@ -35,7 +37,7 @@ import java.rmi.RemoteException;
  * created 04-Apr-2005 14:14:30
  */
 
-public class LibraryImpl extends CompoundImpl implements Library {
+public class LibraryImpl extends FileUsingComponentImpl implements Library {
 
     /**
      * we are not a directory
@@ -46,6 +48,13 @@ public class LibraryImpl extends CompoundImpl implements Library {
      * cache directory
      */
     private File cacheDir;
+    
+    /**
+     * flag to tell us whether to collect JARs to subdirs or not
+     */
+    private boolean flatten=false;
+    
+    private Log log;
 
     public LibraryImpl() throws RemoteException {
     }
@@ -57,39 +66,15 @@ public class LibraryImpl extends CompoundImpl implements Library {
      */
     public synchronized void sfDeploy() throws SmartFrogException,
             RemoteException {
-        //deploy children
         super.sfDeploy();
+        log=sfGetApplicationLog();
+        flatten=sfResolve(ATTR_FLATTEN,flatten,true);
         //bind our directory
         bindDirectory();
     }
 
     /**
-     * befire we deploy our children, but after prim is configured, we
-     * want to set up our directories
-     * @throws SmartFrogResolutionException
-     * @throws RemoteException
-     * @throws SmartFrogLifecycleException
-     */
-    protected void sfDeployCompoundChildren()
-            throws SmartFrogResolutionException, RemoteException,
-            SmartFrogLifecycleException {
-/*
-        try {
-            bindDirectory();
-        } catch (SmartFrogRuntimeException e) {
-            throw (SmartFrogLifecycleException)SmartFrogLifecycleException.forward(e);
-        }
-*/
-        super.sfDeployCompoundChildren();
-    }
-
-    /**
      * bind our cache directory information
-     * @throws RemoteException
-     * @throws SmartFrogException
-     */
-    /**
-     *
      * @throws RemoteException
      * @throws SmartFrogRuntimeException
      */
@@ -102,8 +87,29 @@ public class LibraryImpl extends CompoundImpl implements Library {
             throw new SmartFrogResolutionException(ERROR_NOT_A_DIRECTORY+cacheDir,this);
         }
         //set up cache information
-        FileUsingComponentImpl.bind(this,cacheDir);
+        bind(cacheDir);
     }
+
+
+    /**
+     * @see org.smartfrog.services.os.java.Library#determineArtifactPath(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+     */
+    public String determineArtifactPath(String project, String artifact, String version, String extension) throws RemoteException {
+        assert project!=null;
+        assert artifact!=null;
+        String path="/";
+        if(!flatten) {
+            path+=LibraryHelper.patchProject(project)+"/";
+        } 
+        String name=LibraryHelper.createArtifactName(artifact,version,extension);
+        path+=name;
+        PlatformHelper helper=PlatformHelper.getLocalPlatform();
+        String localpath=helper.convertFilename(path);
+        File file=new File(cacheDir,localpath);
+        return file.getAbsolutePath();
+    }
+    
+    
 
 
 }

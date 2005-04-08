@@ -93,13 +93,17 @@ Repository extends Prim {
 /**
  * at deploy time, we fetch libraries from the repository, if needed
  */
-Library extends Compound {
+Library extends FileUsingComponent {
     sfClass "org.smartfrog.services.os.java.LibraryImpl";
     librariesSchema extends Schema {
         repositories extends Vector;
         //cache dir; is created if needed
         cacheDir extends Compulsory;
+        //set to true for a flat library
+        flatten extends Boolean;
     }
+    flatten false;
+//    filename cacheDir;
 }
 
 /**
@@ -128,6 +132,9 @@ MavenLibrary extends Library {
 
     //cache into the well known maven location
     cacheDir LAZY MavenLocalCacheDirectory:absolutePath;
+    
+    //no flattening here.
+    flatten false;
 
 }
 
@@ -154,7 +161,7 @@ LibraryArtifact extends FileUsingComponent {
         version extends OptionalString;
         //true or false
         synchronousDownload extends Boolean;
-
+		//sha1 hex string
         sha1 extends OptionalString;
         //MD5 is not as secure as sha1, but is retained because the md5 values
         //of maven artifacts are so common.

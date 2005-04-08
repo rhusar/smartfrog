@@ -20,6 +20,7 @@
 package org.smartfrog.test.system.java;
 
 import org.smartfrog.test.SmartFrogTestBase;
+import org.smartfrog.services.os.java.LibraryHelper;
 import org.smartfrog.services.os.java.LibraryImpl;
 import org.smartfrog.services.os.java.LibraryArtifactImpl;
 import org.smartfrog.services.os.java.LibraryArtifact;
@@ -37,11 +38,11 @@ public class LibraryTest extends SmartFrogTestBase {
     }
 
     public void testSimplePatchIsNoop() {
-        assertSame("", LibraryArtifactImpl.patchProject(""));
+        assertSame("", LibraryHelper.patchProject(""));
         assertSame("project-without-dots",
-                LibraryArtifactImpl.patchProject("project-without-dots"));
+                LibraryHelper.patchProject("project-without-dots"));
         assertEquals("org/smartfrog/something",
-                LibraryArtifactImpl.patchProject("org.smartfrog.something"));
+                LibraryHelper.patchProject("org.smartfrog.something"));
     }
 
     public void testLibrariesCacheDirInvalid() throws Throwable {
