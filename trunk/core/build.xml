@@ -185,8 +185,8 @@ For more information: www.smartfrog.org
   <!-- =================================================================== -->
     <target name="cc-set-build-priority" depends="init" if="nice.task.present" >
       <property name="cc.nice.value" value="3" />
-			<!-- SLO: this is disabled because in ant1.6.2. the nice class is there, but
-			not the task definition -->
+      <!-- SLO: this is disabled because in ant1.6.2. the nice class is there, but
+      not the task definition -->
       <!-- <nice newPriority="${cc.nice.value}" /> -->
     </target>
 
