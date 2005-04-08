@@ -960,9 +960,13 @@
 
  <target name="diag2" depends="init,verify-prerequisites">
     <echo>
+      ant.version ${ant.version}
       build file ${ant.project.name}
       base dir ${basedir}
+      core dir ${core.dir}
+      junit.jar ${junit.jar}
       verified.ok=${verified.ok}
+      
     </echo>
   </target> 
   
