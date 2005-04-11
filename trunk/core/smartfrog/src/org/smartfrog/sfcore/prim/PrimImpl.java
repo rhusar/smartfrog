@@ -558,7 +558,13 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
             }
 
             if (es) {
-                sfExportRef();
+                //Default value=0 = Anonymous port.
+                int port = 0;
+                Object portObj = sfResolveHere(SmartFrogCoreKeys.SF_EXPORT_PORT,false);
+                if ((portObj!=null) && (portObj instanceof Integer)){
+                    port = ((Integer)portObj).intValue();
+                }
+                sfExportRef(port);
             }
 
             if (sfParent!=null) {
@@ -635,7 +641,8 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     }
 
     /**
-     * Export this primitive to accept remote method calls. Default
+     * Export this primitive to accept remote method calls using port. If port
+     * value is 0 it will be using an anonymous port. Default
      * implementation is to use UnicastRemoteObject. Check is done if
      * sfExportRef is already set, in which case this is returned. <b>Note</b>
      * that for remote methods to work equals, hashCode and toString must be
@@ -646,10 +653,10 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
      *
      * @throws SmartFrogException failed to export primitive
      */
-    public Object sfExportRef() throws SmartFrogException {
+    public Object sfExportRef(int port) throws SmartFrogException {
         if (sfExportRef == null) {
             try {
-                sfExportRef = SecureRemoteObject.exportObject(this);
+                sfExportRef = SecureRemoteObject.exportObject(this,port);
             } catch (RemoteException rex) {
                 throw new SmartFrogLifecycleException(MessageUtil.formatMessage(
                     MSG_OBJECT_REGISTRATION_FAILED),rex);
