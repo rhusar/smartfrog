@@ -24,6 +24,7 @@ import org.smartfrog.services.filesystem.FileUsingComponent;
 import org.smartfrog.services.filesystem.FileImpl;
 import org.smartfrog.services.filesystem.FileIntf;
 import org.smartfrog.services.filesystem.FileSystem;
+import org.smartfrog.services.filesystem.FileUsingCompoundImpl;
 import org.smartfrog.services.os.download.DownloadImpl;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
@@ -52,7 +53,7 @@ import java.security.DigestInputStream;
  * created 04-Apr-2005 13:38:47
  */
 
-public class LibraryArtifactImpl extends FileUsingComponentImpl implements LibraryArtifact {
+public class LibraryArtifactImpl extends FileUsingCompoundImpl implements LibraryArtifact {
     private Library owner;
     private Vector repositories;
     private boolean syncDownload;
@@ -61,9 +62,10 @@ public class LibraryArtifactImpl extends FileUsingComponentImpl implements Libra
     private String extension;
     private String artifact;
     private String project;
+    private String classifier;
     private String version;
     private boolean existsInCache;
-    private String artifactName;
+    //private String artifactName;
     private boolean exists;
     private String remoteUrlPath;
     private int blocksize;
@@ -135,11 +137,12 @@ public class LibraryArtifactImpl extends FileUsingComponentImpl implements Libra
         failIfNotPresent = sfResolve(ATTR_FAIL_IF_NOT_PRESENT,
                         failIfNotPresent,
                         true);
+        classifier = sfResolve(ATTR_CLASSIFIER,classifier,false);
 
 
         //all info is fetched. So work out our filename and URL.
         //we do this through methods for override points
-        artifactName=makeArtifactName();
+        
         remoteUrlPath = makeRemoteUrlPath();
         File localFile=makeLocalFile();
         //get the superclass to do our binding
@@ -195,7 +198,13 @@ public class LibraryArtifactImpl extends FileUsingComponentImpl implements Libra
         sfReplaceAttribute(FileIntf.ATTR_EXISTS,Boolean.valueOf(exists));
     }
 
+    
 
+    /**
+     * Download the file, even if it is present. Tries every
+     * repository in turn.
+     * @throws SmartFrogException if there are no repositories.
+     */
     public void download() throws SmartFrogException {
         if(repositories.size()==0) {
             throw new SmartFrogException(ERROR_NO_REPOSITORIES);
@@ -346,33 +355,32 @@ public class LibraryArtifactImpl extends FileUsingComponentImpl implements Libra
     }
 
     /**
-     * combine project and artifact to produce a path.
-     * This must not include host info or other repository binding
-     * information, as this is done for every repository later.
-     * @return path such as /project/artifact-version.jar
+     * Determine our relative path. 
+     * This forwards up to the owner, which must, of course, not be null
+     * @return path 
+     * @throws RemoteException if things go wrong
      */
-    public String makeRemoteUrlPath() {
-        String patched=LibraryHelper.patchProject(project);
-        String urlPath="/"+patched+LibraryHelper.MAVEN_JAR_SUBDIR+artifactName;
-        return urlPath;
+    public String makeRemoteUrlPath() throws RemoteException,SmartFrogException {
+        return owner.determineArtifactRelativeURLPath(createSerializedArtifact());
     }
 
+    
     /**
      * get the full name of the artifact. If a version tag is included, it
      * is artifact-version+extension. If not, it is artifact+extension.
      * @return
      */
-    public String makeArtifactName() {
-        return LibraryHelper.createArtifactName(artifact,version,extension);
+/*    public String makeArtifactName() {
+        return Maven1Policy.createMaven1ArtifactName(artifact,version,extension);
     }
-    
+*/    
     /**
      * create the file that represents the full path
      * to the local file.
      * @return a file that goes to the local location in the cache
      */
-    private File makeLocalFile() throws RemoteException {
-        String absolutepath=owner.determineArtifactPath(project,artifact,version,extension);
+    private File makeLocalFile() throws RemoteException, SmartFrogException {
+        String absolutepath=owner.determineArtifactPath(createSerializedArtifact());
         File file=new File(absolutepath);
         return file;
     }
@@ -431,4 +439,160 @@ public class LibraryArtifactImpl extends FileUsingComponentImpl implements Libra
         return findLibrariesParent(instance.sfParent());
     }
 
+    /**
+     * @return Returns the artifact.
+     */
+    public String getArtifact() {
+        return artifact;
+    }
+
+    /**
+     * @param artifact The artifact to set.
+     */
+    public void setArtifact(String artifact) {
+        this.artifact = artifact;
+    }
+
+    /**
+     * @return Returns the classifier.
+     */
+    public String getClassifier() {
+        return classifier;
+    }
+
+    /**
+     * @param classifier The classifier to set.
+     */
+    public void setClassifier(String classifier) {
+        this.classifier = classifier;
+    }
+
+    /**
+     * @return Returns the downloadAlways.
+     */
+    public boolean isDownloadAlways() {
+        return downloadAlways;
+    }
+
+    /**
+     * @param downloadAlways The downloadAlways to set.
+     */
+    public void setDownloadAlways(boolean downloadAlways) {
+        this.downloadAlways = downloadAlways;
+    }
+
+    /**
+     * @return Returns the downloadIfAbsent.
+     */
+    public boolean isDownloadIfAbsent() {
+        return downloadIfAbsent;
+    }
+
+    /**
+     * @param downloadIfAbsent The downloadIfAbsent to set.
+     */
+    public void setDownloadIfAbsent(boolean downloadIfAbsent) {
+        this.downloadIfAbsent = downloadIfAbsent;
+    }
+
+    /**
+     * @return Returns the extension.
+     */
+    public String getExtension() {
+        return extension;
+    }
+
+    /**
+     * @param extension The extension to set.
+     */
+    public void setExtension(String extension) {
+        this.extension = extension;
+    }
+
+    /**
+     * @return Returns the failIfNotPresent flag.
+     */
+    public boolean isFailIfNotPresent() {
+        return failIfNotPresent;
+    }
+
+    /**
+     * @param failIfNotPresent The failIfNotPresent to set.
+     */
+    public void setFailIfNotPresent(boolean failIfNotPresent) {
+        this.failIfNotPresent = failIfNotPresent;
+    }
+
+    /**
+     * @return Returns the md5.
+     */
+    public String getMd5() {
+        return md5;
+    }
+
+    /**
+     * @param md5 The md5 to set.
+     */
+    public void setMd5(String md5) {
+        this.md5 = md5;
+    }
+
+    /**
+     * @return Returns the project.
+     */
+    public String getProject() {
+        return project;
+    }
+
+    /**
+     * @param project The project to set.
+     */
+    public void setProject(String project) {
+        this.project = project;
+    }
+
+    /**
+     * @return Returns the sha1.
+     */
+    public String getSha1() {
+        return sha1;
+    }
+
+    /**
+     * @param sha1 The sha1 to set.
+     */
+    public void setSha1(String sha1) {
+        this.sha1 = sha1;
+    }
+
+    /**
+     * @return Returns the version.
+     */
+    public String getVersion() {
+        return version;
+    }
+
+    /**
+     * @param version The version to set.
+     */
+    public void setVersion(String version) {
+        this.version = version;
+    }
+
+    /**
+     * Create a serialized artifact to work with 
+     * @return a serialized representation of the artifact's state.
+     */
+    public SerializedArtifact createSerializedArtifact() {
+        SerializedArtifact pojo=new SerializedArtifact();
+        pojo.artifact=artifact;
+        pojo.version=version;
+        pojo.extension=extension;
+        pojo.classifier=classifier;
+        pojo.md5=md5;
+        pojo.sha1=sha1;
+        return pojo;
+    }
+    
+    
 }

@@ -9,37 +9,28 @@ package org.smartfrog.services.os.java;
  */
 public final class LibraryHelper {
 
-    /**
-     * directory separator for Maven file systems.
-     * {@value}
-     */
-    public static final String MAVEN_JAR_SUBDIR = "/jars/";
-    /**
-     * what artifacts are separated by {@value}
-     */
-    public static final String ARTIFACT_SEPARATOR = "-";
+
 
     private LibraryHelper() {
         
     }
 
     /**
-     * create an artifact filename
-     * @param artifact artifact name: required
-     * @param version optional version tag
-     * @param extension optional extension 
-     * @return concatenated artifact name
+     * get a string value of a digest as a hex list, two characters per byte.
+     * There would seem to be a more efficient implementation of this involving
+     * a 256 byte memory buffer.
+     * @param digest
+     * @return hex equivalent
      */
-    public static String createArtifactName(String artifact,String version,String extension) {
-        assert artifact!=null;
-        StringBuffer buffer=new StringBuffer();
-        buffer.append(artifact);
-        if(version!=null) {
-            buffer.append(ARTIFACT_SEPARATOR);
-            buffer.append(version);
-        }
-        if(extension!=null) {
-            buffer.append(extension);
+    public static String digestToString(byte[] digest) {
+        int length = digest.length;
+        StringBuffer buffer = new StringBuffer(length*2);
+        for (int i = 0; i < length; i++) {
+            String ff = Integer.toHexString(digest[i] & 0xff);
+            if (ff.length() < 2) {
+                buffer.append('0');
+            }
+            buffer.append(ff);
         }
         return buffer.toString();
     }
@@ -68,26 +59,6 @@ public final class LibraryHelper {
             patched.append(c);
         }
         return patched.toString();
-    }
-
-    /**
-     * get a string value of a digest as a hex list, two characters per byte.
-     * There would seem to be a more efficient implementation of this involving
-     * a 256 byte memory buffer.
-     * @param digest
-     * @return hex equivalent
-     */
-    public static String digestToString(byte[] digest) {
-        int length = digest.length;
-        StringBuffer buffer = new StringBuffer(length*2);
-        for (int i = 0; i < length; i++) {
-            String ff = Integer.toHexString(digest[i] & 0xff);
-            if (ff.length() < 2) {
-                buffer.append('0');
-            }
-            buffer.append(ff);
-        }
-        return buffer.toString();
     }
     
     

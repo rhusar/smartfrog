@@ -20,6 +20,8 @@
 package org.smartfrog.services.os.java;
 
 import org.smartfrog.services.filesystem.FileUsingComponent;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -49,30 +51,37 @@ public interface Library extends FileUsingComponent {
      * {@value}
      */
     String ATTR_CACHE_DIR = "cacheDir";
-    /**
-     * {@value}
-     */
-    String ATTR_LIBRARIES = "libraries";
-    /**
-     * {@value}
-     */
-    String ATTR_LIBRARIES_CODEBASE = "librariesCodebase";
+
     
     /**
      * {@value}
      */
-    String ATTR_FLATTEN = "flatten";
+    //String ATTR_FLATTEN = "flatten";
 	
     /**
+     * Name of class implementing local cache policy
+     */
+    String ATTR_LOCAL_CACHE_POLICY ="localCachePolicy";
+    
+    /**
+     * Name of class implementing remote cache policy
+     */
+    String ATTR_REMOTE_CACHE_POLICY ="remoteCachePolicy";
+    
+    /**
      * Determine the absolute path of an artifact in the local library cache. 
-     * @param project project name
-     * @param artifact artifact name
-     * @param version version string (may be null)
-     * @param extension extension string (may be null for non JAR artifacts)
      * @return the path to the artifact. It may or may not exist. 
      * @throws RemoteException
      */
-	public String determineArtifactPath(String project,String artifact,String version,String extension)
-        throws RemoteException;
-
+	public String determineArtifactPath(SerializedArtifact artifact)
+        throws RemoteException,SmartFrogException;
+    
+    /**
+     * Determine the relative path of an artifact in the current policy
+     * This is not an absolute URL, as there may be a list of full URLs to work with. 
+     * @return the path to the artifact. It may or may not exist. 
+     * @throws RemoteException
+     */
+    public String determineArtifactRelativeURLPath(SerializedArtifact artifact)
+        throws RemoteException,SmartFrogException;
 }
