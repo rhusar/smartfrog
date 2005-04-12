@@ -649,6 +649,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
      * implemented. This is done for PrimImpl in which case those requests are
      * forwarded to the sfExportRef.
      *
+     * @param port where to export. If 0, it will use any port available.
      * @return exported primitive
      *
      * @throws SmartFrogException failed to export primitive
@@ -667,6 +668,22 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
         }
 
         return sfExportRef;
+    }
+
+    /**
+     * Export this primitive to accept remote method calls using an anonymous
+     * port. Implementation is to use UnicastRemoteObject. Check is done if
+     * sfExportRef is already set, in which case this is returned. <b>Note</b>
+     * that for remote methods to work equals, hashCode and toString must be
+     * implemented. This is done for PrimImpl in which case those requests are
+     * forwarded to the sfExportRef.
+     *
+     * @return exported primitive
+     *
+     * @throws SmartFrogException failed to export primitive
+     */
+    public Object sfExportRef() throws SmartFrogException {
+        return sfExportRef(0);
     }
 
     /**
