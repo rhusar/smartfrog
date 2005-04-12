@@ -105,7 +105,7 @@ ConsoleListener extends TestListener {
  * XML listener is the most complex beast
  */
 XmlListenerSchema extends Schema {
-/** output directories are compusory and can be a path or a File ref*/
+/** output directories are compulsory and can be a path or a File ref*/
     outputDirectory extends Compulsory ;
     //outputFile extends Compulsory ;
     //XML preamble: comments, XSLT references, etc.
