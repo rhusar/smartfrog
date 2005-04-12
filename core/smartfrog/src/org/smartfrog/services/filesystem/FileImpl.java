@@ -87,7 +87,7 @@ public class FileImpl extends FileUsingComponentImpl implements FileIntf {
                 true,
                 null);
 
-        File file = new File(parentDir, filename);
+        File file = new File(filename);
         if (debugEnabled) {
             log.debug("absolute file=" + file.toString());
         }
