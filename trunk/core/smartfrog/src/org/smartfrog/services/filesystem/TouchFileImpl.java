@@ -83,7 +83,10 @@ public class TouchFileImpl extends FileUsingComponentImpl implements TouchFileIn
      */
     public void touch(String filename, long age) throws IOException, RemoteException {
         File file = new File(filename);
-        file.mkdirs();
+        File parentFile = file.getParentFile();
+        if(parentFile!=null) {
+            parentFile.mkdirs();
+        }
         file.createNewFile();
         if (age >= 0) {
             file.setLastModified(age);
