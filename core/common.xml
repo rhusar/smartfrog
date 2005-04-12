@@ -69,6 +69,7 @@
     <property name="javac.debug.level" value="lines,vars,source" />
     <property name="javac.java.version" value="1.4" />
     
+    <property name="smartfrog.daemon.port" value="3800" />
 
     <!-- assume the sun compiler -->
     <property name="rmic.compiler" value="sun" />
@@ -278,7 +279,7 @@
     
     <presetdef name="sf-daemonfound">
       <condition >
-        <socket port="3800" server="localhost" />
+        <socket port="${smartfrog.daemon.port}" server="localhost" />
       </condition>
     </presetdef>
     
@@ -287,7 +288,7 @@
     to set on failure -->
     <presetdef name="sf-waitfordaemon">
         <waitfor maxwait="10" maxwaitunit="second">
-            <socket server="localhost" port="3800"/>
+            <socket server="localhost" port="${smartfrog.daemon.port}"/>
         </waitfor>
     </presetdef>
     
