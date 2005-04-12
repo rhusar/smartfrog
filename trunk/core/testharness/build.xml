@@ -78,6 +78,12 @@ For more information: www.smartfrog.org
     <property file="${runtime.properties}" prefix="runtime" />
     <echo level="verbose">jetty home=${runtime.jetty.home}</echo>
     
+    <property name="services" value="org/smartfrog/services/" />
+    <property name="unittests" value="org/smartfrog/test/unit/" />
+    <property name="systemtests" value="org/smartfrog/test/system/" />
+    <property name="componenttests" value="${systemtests}components/" />
+    
+    
   </target>
 
   <!-- set up our compile classpath to include junit -->
@@ -168,10 +174,17 @@ For more information: www.smartfrog.org
       property=""/>  -->
       </target>
 
+      
+  <target name="init-tests" depends="compile-tests">
+    <patternset id="teststhatfail">
+      <exclude unless="run.failing.tests" name="${systemtests}/java/LibraryTest.*"/>
+    </patternset>
+  </target>
+  
   <!-- ========================================================== -->
   <!-- run the unit tests -->
   <!-- ========================================================== -->
-  <target name="unit-tests" depends="compile-tests"  unless="testcase"
+  <target name="unit-tests" depends="init-tests"  unless="testcase"
     description="run unit tests">
     <sf-junit
            errorProperty="test.failed"
@@ -188,7 +201,7 @@ For more information: www.smartfrog.org
       <batchtest todir="${test.data.dir}" if="unit.tests.enabled">
         <!-- bulk test case -->
         <fileset dir="${test.classes.dir}">
-          <include name="org/smartfrog/test/unit/**/*Test.class" />
+          <include name="${unittests}**/*Test.class" />
        </fileset>
       </batchtest>
     </sf-junit>
@@ -205,7 +218,7 @@ For more information: www.smartfrog.org
        -->
   <!-- ========================================================== -->
   <target name="system-tests" 
-    depends="compile-tests,rmi-tests,test-package,probe-for-components, probe-local-daemon"
+    depends="init-tests,rmi-tests,test-package,probe-for-components, probe-local-daemon"
     description="run system tests"
     if="system.tests.enabled">
     <parallel>
@@ -245,24 +258,28 @@ For more information: www.smartfrog.org
             <fileset dir="${test.classes.dir}">
               <!-- pull in everything -->
               <include name="org/smartfrog/test/system/**/*Test.class" />
+              
+              <!-- failing tests excluded unless run.failing.tests is set -->
+              <patternset refid="teststhatfail"/>
+              
               <!-- except for jetty, when jetty.home is undefined -->
-              <exclude name="org/smartfrog/test/system/jetty/**/*Test.class"
+              <exclude name="${systemtests}/jetty/**/*Test.class"
                 unless="runtime.jetty.home"/>
                 
                 <!-- other conditional components -->
-              <exclude name="**/test/system/components/ssh/**/*Test.class"
+              <exclude name="${componenttests}ssh/**/*Test.class"
                 unless="ssh.present"/>
-              <exclude name="**/test/system/components/scripting/**/*Test.class"
+              <exclude name="${componenttests}scripting/**/*Test.class"
                 unless="scripting.present"/>
-              <exclude name="**/test/system/components/net/**/*Test.class"
+              <exclude name="${componenttests}net/**/*Test.class"
                 unless="net.present"/>
-              <exclude name="**/test/system/components/logger/**/*Test.class"
+              <exclude name="${componenttests}logger/**/*Test.class"
                 unless="logger.present"/>
-              <exclude name="**/test/system/components/emailer/**/*Test.class"
+              <exclude name="${componenttests}emailer/**/*Test.class"
                 unless="emailer.present"/>
-              <exclude name="**/test/system/components/slp/**/*Test.class"
+              <exclude name="${componenttests}slp/**/*Test.class"
                 unless="slp.present"/>
-              <exclude name="**/test/system/components/utils/**/*Test.class"
+              <exclude name="${componenttests}utils/**/*Test.class"
                 unless="utils.present"/>
                 
             </fileset>
