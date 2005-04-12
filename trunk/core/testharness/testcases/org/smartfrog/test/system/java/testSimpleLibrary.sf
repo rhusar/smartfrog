@@ -19,9 +19,7 @@ For more information: www.smartfrog.org
 */
 
 
-#include "/org/smartfrog/services/filesystem/components.sf"
-#include "/org/smartfrog/services/assertions/components.sf"
-#include "/org/smartfrog/services/os/java/components.sf"
+#include "/org/smartfrog/test/system/java/libraryTestBase.sf"
 
 sfConfig extends Compound {
 
@@ -40,6 +38,9 @@ sfConfig extends Compound {
 
         //cache into the well known maven location
         cacheDir LAZY cacheDirectory:absolutePath;
+		policy extends Maven2Policy;
+		localCachePolicy policy;
+		remoteCachePolicy policy;
 
     }
 

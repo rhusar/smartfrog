@@ -18,16 +18,14 @@ For more information: www.smartfrog.org
 
 */
 
-
-#include "/org/smartfrog/services/filesystem/components.sf"
-#include "/org/smartfrog/services/assertions/components.sf"
-#include "/org/smartfrog/services/os/java/components.sf"
+#include "/org/smartfrog/test/system/java/libraryTestBase.sf"
 
 EmptyRepository extends Compound {
 
     sfSyncTerminate true;
 
 
+	
 
     /**
      * Maven repository at ibiblio.org. Really we should permit mirrors; or include
@@ -44,7 +42,9 @@ EmptyRepository extends Compound {
     lib extends Library {
 
         repositories [| |];
-
+		policy extends Maven2Policy;
+		localCachePolicy policy;
+		remoteCachePolicy policy;
         cacheDir LAZY cacheDirectory:absolutePath;
 
 
