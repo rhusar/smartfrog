@@ -29,7 +29,7 @@ import org.smartfrog.sfcore.prim.PrimImpl;
 import java.rmi.RemoteException;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 
-public class ScriptExecutionImpl  extends PrimImpl implements Prim, ScriptExecution {
+public class ScriptExecutionImpl  extends PrimImpl implements Prim, ScriptExecution, FilterListener {
 
   // cmd Data
   private Cmd cmd = new Cmd();
@@ -42,6 +42,15 @@ public class ScriptExecutionImpl  extends PrimImpl implements Prim, ScriptExecut
   public ScriptExecutionImpl(long ID, String name, Cmd cmd) throws RemoteException {
     // RunProcessImpl
     runProcess = new RunProcessImpl (ID, name, cmd);
+
+    if (cmd.getFilterOutListener()==null){
+        String filters[]={"dir","Directory"};
+        cmd.setFilterOutListener(this,filters);
+    }
+    if (cmd.getFilterErrListener()==null){
+        cmd.setFilterErrListener(this,null);
+    }
+
     ((RunProcessImpl) runProcess).start();
     ((RunProcessImpl) runProcess).waitForReady(200);;
   }
@@ -187,4 +196,15 @@ public class ScriptExecutionImpl  extends PrimImpl implements Prim, ScriptExecut
   public void kill(){
     if (this.runProcess!=null) runProcess.kill();
   }
+
+  //Filter listener interface implementation
+
+  public void line (String line, String filterName){
+      System.out.println("LINE "+ line+", "+filterName);
+  }
+
+  public void found( String line, int filterIndex, String filterName){
+     System.out.println("FOUND LINE "+ line+", "+filterIndex+", "+filterName);
+  }
+
 }

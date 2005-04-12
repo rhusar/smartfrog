@@ -23,6 +23,6 @@ package org.smartfrog.services.shellscript;
 
 public interface FilterListener
 {
-    public void line (String line);
-    public void found( String line, int i);
+    public void line (String line, String filterName );
+    public void found(String line, int filterIndex, String filterName);
 }
