@@ -21,6 +21,7 @@ package org.smartfrog.services.os.java;
 
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.filesystem.FileUsingComponentImpl;
+import org.smartfrog.services.filesystem.FileUsingCompoundImpl;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
@@ -37,7 +38,7 @@ import java.rmi.RemoteException;
  * created 04-Apr-2005 14:14:30
  */
 
-public class LibraryImpl extends FileUsingComponentImpl implements Library {
+public class LibraryImpl extends FileUsingCompoundImpl implements Library {
 
     /**
      * we are not a directory
@@ -49,11 +50,20 @@ public class LibraryImpl extends FileUsingComponentImpl implements Library {
      */
     private File cacheDir;
     
-    /**
-     * flag to tell us whether to collect JARs to subdirs or not
-     */
-    private boolean flatten=false;
     
+    /**
+     * Local cache policy
+     */
+    private LocalCachePolicy localPolicy;
+    
+    /**
+     * Remote Cache Policy
+     */
+    private RemoteCachePolicy remotePolicy;
+    
+    /**
+     * Our little log
+     */
     private Log log;
 
     public LibraryImpl() throws RemoteException {
@@ -66,11 +76,15 @@ public class LibraryImpl extends FileUsingComponentImpl implements Library {
      */
     public synchronized void sfDeploy() throws SmartFrogException,
             RemoteException {
+        //this implicitly deploys all our children too
         super.sfDeploy();
+        //set up logging.
         log=sfGetApplicationLog();
-        flatten=sfResolve(ATTR_FLATTEN,flatten,true);
         //bind our directory
         bindDirectory();
+        //bind our policies
+        localPolicy = (LocalCachePolicy)sfResolve(ATTR_LOCAL_CACHE_POLICY,localPolicy,true);
+        remotePolicy = (RemoteCachePolicy)sfResolve(ATTR_REMOTE_CACHE_POLICY,remotePolicy,true);
     }
 
     /**
@@ -92,24 +106,39 @@ public class LibraryImpl extends FileUsingComponentImpl implements Library {
 
 
     /**
-     * @see org.smartfrog.services.os.java.Library#determineArtifactPath(java.lang.String, java.lang.String, java.lang.String, java.lang.String)
+     * @see org.smartfrog.services.os.java.Library#determineArtifactPath(SerializedArtifact artifact)
      */
-    public String determineArtifactPath(String project, String artifact, String version, String extension) throws RemoteException {
-        assert project!=null;
-        assert artifact!=null;
-        String path="/";
-        if(!flatten) {
-            path+=LibraryHelper.patchProject(project)+"/";
-        } 
-        String name=LibraryHelper.createArtifactName(artifact,version,extension);
-        path+=name;
-        PlatformHelper helper=PlatformHelper.getLocalPlatform();
-        String localpath=helper.convertFilename(path);
-        File file=new File(cacheDir,localpath);
-        return file.getAbsolutePath();
+    public String determineArtifactPath(SerializedArtifact artifact) throws RemoteException, SmartFrogException {
+        return determineArtifactFile(artifact).getAbsolutePath();
     }
     
+
     
+    /**
+     * @see org.smartfrog.services.os.java.Library#determineArtifactRelativeURLPath(org.smartfrog.services.os.java.SerializedArtifact)
+     */
+    public String determineArtifactRelativeURLPath(SerializedArtifact artifact) 
+        throws RemoteException, SmartFrogException {
+        SerializedArtifact.assertValid(artifact, false);
+        String path=remotePolicy.createRemotePath(artifact);
+        return null;
+    }
+
+    /**
+     * Get the filename of the artifact. 
+     */
+    public File determineArtifactFile(SerializedArtifact artifact) throws RemoteException, SmartFrogException {
+        SerializedArtifact.assertValid(artifact, false);
+        //get the path from our policy class
+        String path=localPolicy.createLocalPath(artifact);
+        PlatformHelper helper=PlatformHelper.getLocalPlatform();
+        //convert this to platform specifics
+        String localpath=helper.convertFilename(path);
+        //create a file 
+        File file=new File(cacheDir,localpath);
+        return file;
+    }
+        
 
 
 }

@@ -21,6 +21,9 @@ package org.smartfrog.services.os.java;
 
 import org.smartfrog.services.filesystem.FileUsingComponent;
 import org.smartfrog.services.os.download.Download;
+import org.smartfrog.sfcore.common.SmartFrogException;
+
+import java.rmi.RemoteException;
 
 /**
  * Attributes of a library
@@ -85,5 +88,17 @@ public interface LibraryArtifact extends FileUsingComponent {
      * {@value}
      */
     String ATTR_FAIL_IF_NOT_PRESENT = "failIfNotPresent";
+    
+    /**
+     * optional post-name classifier
+     */
+    String ATTR_CLASSIFIER = "classifier";
 
+    /**
+     * Create a serialized artifact to work with 
+     * @return a serialized representation of the artifact's state.
+     */
+    public SerializedArtifact createSerializedArtifact() throws RemoteException;
+
+    
 }
