@@ -174,8 +174,8 @@ public class RunProcessImpl  extends Thread implements RunProcess {
                 processDos = new DataOutputStream(process.getOutputStream());
 
                 replaceFilters(
-                  new FilterImpl( ID, process.getInputStream(), "stdout", null, null),
-                  new FilterImpl( ID, process.getErrorStream(), "stderr", null, null)
+                  new FilterImpl( ID, process.getInputStream(), "out", cmd.getFiltersOut(), cmd.getFilterOutListener()),
+                  new FilterImpl( ID, process.getErrorStream(), "err", cmd.getFiltersErr(), cmd.getFilterErrListener())
                 );
 
             // process may be null by the time we get here after the synchronized
@@ -271,6 +271,14 @@ public class RunProcessImpl  extends Thread implements RunProcess {
       if (sfLog.isTraceEnabled()){
         sfLog.trace("filters attached");
       }
+    }
+
+    public FilterImpl getOutFilter(){
+        return stdoutFilter;
+    }
+
+    public FilterImpl getErrFilter(){
+        return stderrFilter;
     }
 
     private void stopFilters() {

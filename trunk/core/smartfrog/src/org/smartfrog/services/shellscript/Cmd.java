@@ -33,6 +33,12 @@ import java.io.File;
      String envp[] = null;
      File dir = null;
 
+     // Stream Filters configuration
+     FilterListener foutL = null;
+     String filtersOut[]=null;
+     FilterListener ferrL = null;
+     String filtersErr[]=null;
+
      /** String name for line return. */
      String lineSeparator = System.getProperty("line.separator");
 
@@ -78,6 +84,19 @@ import java.io.File;
         return this;
      }
 
+     public Cmd setFilterOutListener(FilterListener foutL, String filtersOut[]) {
+         this.foutL = foutL;
+         this.filtersOut = filtersOut;
+         return this;
+     }
+
+     public Cmd setFilterErrListener(FilterListener ferrL, String filtersErr[]) {
+         this.ferrL = ferrL;
+         this.filtersErr = filtersErr;
+         return this;
+     }
+
+
      public String[] getCmdArray() {
          return cmdarray;
      }
@@ -94,6 +113,22 @@ import java.io.File;
          return this.lineSeparator;
      }
 
+     public String[] getFiltersOut() {
+              return filtersOut;
+     }
+
+     public String[] getFiltersErr() {
+              return filtersErr;
+     }
+
+     public FilterListener getFilterErrListener() {
+              return this.ferrL;
+     }
+
+     public FilterListener getFilterOutListener() {
+              return this.foutL;
+     }
+
      public String toString(){
          StringBuffer str = new StringBuffer();
          str.append("Cmd: ");
@@ -107,6 +142,17 @@ import java.io.File;
              str.append(", dir: ");
              str.append(this.getFile().toString());
          }
+         if (filtersOut !=null){
+             str.append(", filtersOutputStrem: ");
+             v = new Vector(java.util.Arrays.asList(getFiltersOut()));
+             str.append(v.toString());
+         }
+         if (filtersErr !=null){
+             str.append(", filtersErrorStrem: ");
+             v = new Vector(java.util.Arrays.asList(getFiltersErr()));
+             str.append(v.toString());
+         }
+
          return str.toString();
      }
 

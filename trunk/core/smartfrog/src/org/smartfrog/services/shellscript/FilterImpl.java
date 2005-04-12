@@ -136,18 +136,14 @@ public class FilterImpl extends Thread {
 
   private LogSF sfLog = LogFactory.sfGetProcessLog(); //Temp log until getting its own.
 
-  private String filters[] = {
-     "echo started", //First command
-     "echo terminated"
- };
-
+  private String filters[] = null;
 
   public FilterImpl( long ID, InputStream in, String name, String filters[], FilterListener listener) {
     super("Filter(" + name + ")_" + ID);
-    sfLog = LogFactory.getLog("Filter(" + name + ")_" + ID);
+    sfLog = LogFactory.getLog(getName());
     this.name = name;
     this.listener = listener;
-
+    this.filters=filters;
     this.ID = ID;
 
     this.in = in;
@@ -155,6 +151,23 @@ public class FilterImpl extends Thread {
 
     bufferFiller = new BufferFiller();
     bufferFiller.start();
+  }
+
+  public InputStream getInputStream(){
+      return in;
+  }
+
+  public synchronized InputStream setInputStream(InputStream is){
+      InputStream oldIn = this.in;
+      if (bufferFiller!=null){
+          stopBufferFiller();
+          this.in = is;
+          bufferFiller = new BufferFiller();
+          bufferFiller.start();
+      } else {
+          this.in = is;
+      }
+      return in;
   }
 
   public void stopRequest() {
@@ -204,39 +217,47 @@ public class FilterImpl extends Thread {
       }
     }
 
-    try {
-      //log.info("run"+ID + " -- stopping buffer filler");
-      bufferFiller.stopRequest();
-      bufferFiller.join();
-      if (sfLog.isDebugEnabled()){
-            sfLog.debug("buffer filler stopped");
-      }
-    } catch (Exception e) {
-      if (sfLog.isErrorEnabled()){
-        sfLog.error("problems stoped buffer filler", e);
-      }
-    }
+    stopBufferFiller();
 
   }
 
-  // Compares line with filters[] set
-  public void filter(String line, String filters[]) {
-      if (listener !=null) {
-          listener.line(line);
+  private void stopBufferFiller() {
+      try {
+          //log.info("run"+ID + " -- stopping buffer filler");
+          bufferFiller.stopRequest();
+          bufferFiller.join();
+          if (sfLog.isDebugEnabled()) {
+              sfLog.debug("buffer filler stopped");
+          }
+      } catch (Exception e) {
+          if (sfLog.isErrorEnabled()) {
+              sfLog.error("problems stoped buffer filler", e);
+          }
       }
+  }
+
+  // Compares line with filters[] set
+  protected void filter(String line, String filters[]) {
+      if (listener !=null) {
+          listener.line(line, getName());
+      }
+
+      if (filters==null) return;
+
       for (int i = 0; i<filters.length; ++i) {
+          System.out.println("Comparing: "+ line +", "+filters[i]);
           if (line.indexOf(filters[i])==-1) {
               //No match
               continue;
           }
           // it tells you the write filter!
-          positiveFilter(line, i);
+          positiveFilter(line, i, getName());
       }
   }
 
-  public void positiveFilter(String line, int i) {
+  protected void positiveFilter(String line, int filterIndex, String filterName) {
       if (listener !=null){
-          listener.found(line, i);
+          listener.found(line, filterIndex, getName());
       }
   }
 }
