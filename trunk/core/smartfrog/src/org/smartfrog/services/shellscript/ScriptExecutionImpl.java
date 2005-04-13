@@ -30,6 +30,8 @@ import java.rmi.RemoteException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import java.lang.reflect.InvocationTargetException;
+import java.text.SimpleDateFormat;
+import java.text.DateFormat;
 
 
 public class ScriptExecutionImpl  extends PrimImpl implements Prim, ScriptExecution, FilterListener {
@@ -86,13 +88,19 @@ public class ScriptExecutionImpl  extends PrimImpl implements Prim, ScriptExecut
           //@Todo add log
           ex.printStackTrace();
         }
-        System.out.println("READY!!!!!!!!!");
         resultReady = true;
         notifyAll();
       }
 
       synchronized void setException(Throwable e) {
        exception = new InvocationTargetException(e);
+       try {
+         result.sfAddAttribute("code", new Integer(-1));
+         result.sfAddAttribute("exception", exception);
+       } catch (SmartFrogRuntimeException ex) {
+         //@Todo add log
+         ex.printStackTrace();
+       }
        resultReady = true;
        notifyAll();
       }
@@ -105,7 +113,7 @@ public class ScriptExecutionImpl  extends PrimImpl implements Prim, ScriptExecut
 
 // end of inner class ---------
 
-  private String echoCommand ="echo";
+
 
   // cmd Data
   private Cmd cmd = new Cmd();
@@ -117,6 +125,12 @@ public class ScriptExecutionImpl  extends PrimImpl implements Prim, ScriptExecut
 
   private ScriptResults results = null;
 
+  private static String TYPE_DONE ="done";
+  private static String TYPE_NEXT_CMD ="next_cmd";
+
+  /** Used to format times */
+  protected static DateFormat dateFormatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss:SSS zzz");
+
   public ScriptExecutionImpl(long ID, String name, Cmd cmd) throws RemoteException {
     // RunProcessImpl
     runProcess = new RunProcessImpl (ID, name, cmd);
@@ -124,7 +138,7 @@ public class ScriptExecutionImpl  extends PrimImpl implements Prim, ScriptExecut
     this.name = name;
 
     if (cmd.getFilterOutListener()==null){
-        String filters[]={"dir","done "+name+"_"+ID};
+        String filters[]={TYPE_DONE+" "+name+"_"+ID,TYPE_NEXT_CMD+" "+name+"_"+ID};
         cmd.setFilterOutListener(this,filters);
     }
     if (cmd.getFilterErrListener()==null){
@@ -133,6 +147,35 @@ public class ScriptExecutionImpl  extends PrimImpl implements Prim, ScriptExecut
     results = new ScriptResultsImpl();
     ((RunProcessImpl) runProcess).start();
     runProcess.waitForReady(200);;
+  }
+
+
+  /**
+   *
+   * @param text String Echoed string.
+   * @return String
+   */
+  private String runEcho(String type, String text) {
+    String echo = "MARK - "+type+" "+name+"_"+ID+ " ["+text+", "+dateFormatter.format(new Date())+"]";
+    runProcess.execCommand(cmd.getEchoCommand()+" "+echo);
+    return echo;
+  }
+
+  /**
+   *
+   * @param text String Text to add to the marking message.
+   * @param block boolean shold we block waiting for ScriptResult to be ready
+   * @param timeout long
+   * @return ScriptResults
+   * @throws SmartFrogException
+   */
+  private ScriptResults closeResults(String text, boolean block, long timeout) throws SmartFrogException {
+    //Clean resultSet - Terminate previous resultSet
+    ScriptResults res= this.results;
+    //Get new resultSet
+    runEcho(TYPE_DONE,text);
+    if (block) res.waitForResults(timeout);
+    return res;
   }
 
   /**
@@ -148,15 +191,13 @@ public class ScriptExecutionImpl  extends PrimImpl implements Prim, ScriptExecut
   public ScriptResults execute(String command, ScriptLock lock) throws
       SmartFrogException {
     if (this.lock!=lock) throw new SmartFrogException( runProcess.toString() + " failed to execute '"+command.toString()+"': Wrong lock. ");
-    ScriptResults res= this.results;
-    // Run cmd in RunProcess setting filters for new listener
-    //Get new resultSet
-    runProcess.execCommand(echoCommand+" "+"done "+name+"_"+ID+ " ["+command+"]");
-    res.waitForResults(0);
-    res = this.results;
+
+    //Close results blocking
+    closeResults(command, true, 0);
+    ScriptResults res =  this.results;
     runProcess.execCommand(command);
     //Finish resulSet
-    runProcess.execCommand(echoCommand+" "+"done "+name+"_"+ID+ " ["+command+"]");
+    closeResults(command, false, 0);
     return res;
   }
 
@@ -171,8 +212,7 @@ public class ScriptExecutionImpl  extends PrimImpl implements Prim, ScriptExecut
    * @todo Implement this org.smartfrog.services.shellscript.ScriptExecution
    *   method
    */
-  public ScriptResults execute(List commands, long timeout) throws
-      SmartFrogException {
+  public ScriptResults execute(List commands, long timeout) throws SmartFrogException {
     ScriptLock lock = this.lockShell(timeout);
     ScriptResults result = execute (commands,lock);
     this.releaseShell(lock);
@@ -190,8 +230,7 @@ public class ScriptExecutionImpl  extends PrimImpl implements Prim, ScriptExecut
    * @todo Implement this org.smartfrog.services.shellscript.ScriptExecution
    *   method
    */
-  public ScriptResults execute(String command, long timeout) throws
-      SmartFrogException {
+  public ScriptResults execute(String command, long timeout) throws SmartFrogException {
     ScriptLock lock = this.lockShell(timeout);
     ScriptResults result = execute (command,lock);
     this.releaseShell(lock);
@@ -213,7 +252,26 @@ public class ScriptExecutionImpl  extends PrimImpl implements Prim, ScriptExecut
       SmartFrogException {
     if (this.lock!=lock) throw new SmartFrogException( runProcess.toString() + " failed to execute '"+commands.toString()+"': Wrong lock. ");
     // Loop through using extra echo to mark end of command and a lock to continue.
-    return null;
+
+    //Close results blocking
+    closeResults(commands.toString(), true, 0);
+    ScriptResults res =  this.results;
+
+    if (commands==null) {
+      runEcho("exec_list_commands","NO Commands to run - NULL command list");
+      closeResults(commands.toString(), false, 0);
+      return res;
+    }
+
+    for (int i = 0; i < commands.size(); ++i) {
+      //sfLog.trace("Comparing: "+ line +", "+filters[i]);
+      runProcess.execCommand(commands.get(i).toString());
+      runEcho(TYPE_NEXT_CMD,commands.get(i).toString());
+    }
+
+    //Finish resulSet
+    closeResults(commands.toString(), false, 0);
+    return res;
   }
 
   /**
@@ -302,19 +360,29 @@ public class ScriptExecutionImpl  extends PrimImpl implements Prim, ScriptExecut
        this.sfLog().trace("FOUND LINE "+line+", "+filterIndex+", "+filterName);
     }
     if (filterIndex == 0) {
-      //go for next command
-      System.out.println("\n -- GO NEXT Command -- "+line);
-    } else if (filterIndex==1){
       //Finished
-      //What do we do if err continues producing output?, should we wait for ever?
+      if (line.indexOf(cmd.getEchoCommand()+" "+"MARK - "+TYPE_DONE+" "+name+"_"+ID)!=-1) return; // This is the echo command itself, ignore
+
+      //What do we do if err continues producing output?, should we wait forever?
       ((ScriptResultsImpl)results).stdOut.add("-finished-");
       ((ScriptResultsImpl)results).stdErr.add("-finished-");
+       System.out.println("\n -- Finished -- "+line);
        createNewScriptResults();
+    } else if (filterIndex==1){
+      //Next command will follow
+       if (line.indexOf(cmd.getEchoCommand()+" "+"MARK - "+TYPE_NEXT_CMD+" "+name+"_"+ID)!=-1) return; // This is the echo command itself, ignore
+      ((ScriptResultsImpl)results).stdOut.add("--- NEXT Command ---");
+      ((ScriptResultsImpl)results).stdErr.add("--- NEXT Command ---");
+       System.out.println("\n -- GO NEXT Command -- "+line);
     } else {
-      System.out.println("FOUND ???? LINE " + line + ", " + filterIndex + ", " + filterName);
+      System.out.println("\nFOUND ???? LINE " + line + ", " + filterIndex + ", " + filterName);
     }
   }
 
+  /**
+   * Finishes present ScriptResult and creates a new one.
+   * @return ScriptResults finished ScriptResult.
+   */
   private ScriptResults createNewScriptResults() {
     ScriptResults finishedResults = this.results;
     this.results = new ScriptResultsImpl();
