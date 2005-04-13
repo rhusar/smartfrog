@@ -94,7 +94,7 @@ public class LibraryTest extends SmartFrogTestBase {
         }
     }
 
-    public void NotestEmptyRepository() throws Throwable {
+    public void testEmptyRepository() throws Throwable {
         deployExpectingException(FILES + "testEmptyRepository.sf",
                 "testEmptyRepository",
                 EXCEPTION_LIFECYCLE,

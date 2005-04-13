@@ -25,13 +25,6 @@ EmptyRepository extends Compound {
     sfSyncTerminate true;
 
 
-	
-
-    /**
-     * Maven repository at ibiblio.org. Really we should permit mirrors; or include
-     * the mirror list for easy selection.
-     */
-
     cacheDirectory extends File {
         //JVM property user.home
         dir LAZY PROPERTY user.home;
@@ -42,7 +35,7 @@ EmptyRepository extends Compound {
     lib extends Library {
 
         repositories [| |];
-		policy extends Maven2Policy;
+		policy extends Maven1Policy;
 		localCachePolicy policy;
 		remoteCachePolicy policy;
         cacheDir LAZY cacheDirectory:absolutePath;
@@ -51,7 +44,7 @@ EmptyRepository extends Compound {
     }
 
     commons-logging extends JarArtifact {
-        library PARENT:lib;
+        library LAZY PARENT:lib;
         project "commons-logging";
         version "1.0.4";
     }
