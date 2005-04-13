@@ -29,18 +29,20 @@ import java.io.File;
 
      // Data needed for runTime Exec.
 
-     String cmdarray[] = null;
-     String envp[] = null;
-     File dir = null;
+     private String cmdarray[] = null;
+     private String envp[] = null;
+     private File dir = null;
 
      // Stream Filters configuration
-     FilterListener foutL = null;
-     String filtersOut[]=null;
-     FilterListener ferrL = null;
-     String filtersErr[]=null;
+     private FilterListener foutL = null;
+     private String filtersOut[]=null;
+     private FilterListener ferrL = null;
+     private String filtersErr[]=null;
 
      /** String name for line return. */
-     String lineSeparator = System.getProperty("line.separator");
+     private String lineSeparator = System.getProperty("line.separator");
+
+     private String echoCommand ="echo";
 
      public Cmd() {
 
@@ -96,6 +98,14 @@ import java.io.File;
          return this;
      }
 
+     public Cmd setEchoCommand(String echoCommand){
+        if (echoCommand==null) {
+          this.echoCommand ="";
+        } else {
+          this.echoCommand = echoCommand.trim();
+        }
+        return this;
+     }
 
      public String[] getCmdArray() {
          return cmdarray;
@@ -129,6 +139,10 @@ import java.io.File;
               return this.foutL;
      }
 
+     public String getEchoCommand() {
+         return this.echoCommand;
+     }
+
      public String toString(){
          StringBuffer str = new StringBuffer();
          str.append("Cmd: ");
@@ -143,14 +157,19 @@ import java.io.File;
              str.append(this.getFile().toString());
          }
          if (filtersOut !=null){
-             str.append(", filtersOutputStrem: ");
+             str.append(", filtersOutputStream: ");
              v = new Vector(java.util.Arrays.asList(getFiltersOut()));
              str.append(v.toString());
          }
          if (filtersErr !=null){
-             str.append(", filtersErrorStrem: ");
+             str.append(", filtersErrorStream: ");
              v = new Vector(java.util.Arrays.asList(getFiltersErr()));
              str.append(v.toString());
+         }
+
+         if (echoCommand !=null){
+             str.append(", echoCommand: ");
+             str.append(this.echoCommand);
          }
 
          return str.toString();

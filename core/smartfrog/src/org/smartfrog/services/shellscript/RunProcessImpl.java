@@ -226,7 +226,7 @@ public class RunProcessImpl  extends Thread implements RunProcess {
                 if (endState==STATE_PROCESSING&&exitValue==0) {
                     //Done!
                     if (sfLog.isDebugEnabled()){
-                        sfLog.debug("Succesful complete!");
+                        sfLog.debug("Succesfully completed!");
                     }
                 } else {
                   // Something went wrong,
