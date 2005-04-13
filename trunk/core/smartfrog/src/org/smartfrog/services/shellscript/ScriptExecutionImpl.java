@@ -91,7 +91,7 @@ public class ScriptExecutionImpl  extends PrimImpl implements Prim, ScriptExecut
       }
 
       public String toString(){
-        return results.toString();
+        return result.toString();
       }
   }
 
