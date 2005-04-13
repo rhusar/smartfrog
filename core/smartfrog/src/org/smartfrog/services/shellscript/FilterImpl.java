@@ -245,7 +245,7 @@ public class FilterImpl extends Thread {
       if (filters==null) return;
 
       for (int i = 0; i<filters.length; ++i) {
-          System.out.println("Comparing: "+ line +", "+filters[i]);
+          //sfLog.trace("Comparing: "+ line +", "+filters[i]);
           if (line.indexOf(filters[i])==-1) {
               //No match
               continue;
