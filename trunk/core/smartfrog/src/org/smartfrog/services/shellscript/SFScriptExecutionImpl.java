@@ -120,13 +120,9 @@ private void test2() throws SmartFrogException {
   ScriptLock lock = scriptExec.lockShell(1000);
   List commands = new ArrayList();
   commands.add("cd ");
-  commands.add("cd \\");
-  commands.add("cd ");
   commands.add("dir");
-  commands.add("cd D:\\cvs\\SmartFrogSF\\cvs_sf\\core\\");
-  commands.add("dir /s");
   commands.add("echo Julio");
-  //commands.add("exit");
+  commands.add("exit");
 
   ScriptResults result = scriptExec.execute(commands,lock);
   result.waitForResults(0);

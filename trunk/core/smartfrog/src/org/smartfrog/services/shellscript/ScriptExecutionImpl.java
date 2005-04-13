@@ -366,14 +366,14 @@ public class ScriptExecutionImpl  extends PrimImpl implements Prim, ScriptExecut
       //What do we do if err continues producing output?, should we wait forever?
       ((ScriptResultsImpl)results).stdOut.add("-finished-");
       ((ScriptResultsImpl)results).stdErr.add("-finished-");
-       System.out.println("\n -- Finished -- "+line);
+       //System.out.println("\n -- Finished -- "+line);
        createNewScriptResults();
     } else if (filterIndex==1){
       //Next command will follow
        if (line.indexOf(cmd.getEchoCommand()+" "+"MARK - "+TYPE_NEXT_CMD+" "+name+"_"+ID)!=-1) return; // This is the echo command itself, ignore
       ((ScriptResultsImpl)results).stdOut.add("--- NEXT Command ---");
       ((ScriptResultsImpl)results).stdErr.add("--- NEXT Command ---");
-       System.out.println("\n -- GO NEXT Command -- "+line);
+       //System.out.println("\n -- GO NEXT Command -- "+line);
     } else {
       System.out.println("\nFOUND ???? LINE " + line + ", " + filterIndex + ", " + filterName);
     }
