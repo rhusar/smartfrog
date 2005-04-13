@@ -109,7 +109,6 @@
     <property name="doc.dir" location="doc"/>
     <property name="lib.dir" location="lib" />
     <property name="test.src.dir" location="test" />
-    <property name="lib.dir" location="lib" />
     
     
     <!--generated stuff --> 
@@ -192,9 +191,15 @@
 
     
       <!-- location of junit jar; override it if it is somewhere else-->
-    <property name="junit.jar" 
-      location="${ant.home}/lib/junit.jar" />
+    <condition property="junit.jar" value="${ant.home}/lib/junit.jar">
+      <available file="${ant.home}/lib/junit.jar" />
+    </condition>
     
+    <condition property="junit.jar" value="${ant.home}/lib/junit-3.8.1.jar">
+      <available file="${ant.home}/lib/junit-3.8.1.jar" />
+    </condition>
+    
+   
     <!-- name of a file for runtime properties 
       This is optional and allows users to define extra 
       properties for the smartfrog daemons and other runtimes-->
@@ -380,6 +385,12 @@
   </target>
   
   
+  <target name="assert-junit" depends="init" >
+    <available file="${junit.jar}" property="junit.found"/>
+    <fail unless="junit.found">
+    Not found: ${junit.jar}
+    </fail>
+  </target>
   
   <!-- ========================================================== -->
   <!-- this set of classpath targets is done to allow override of -->
