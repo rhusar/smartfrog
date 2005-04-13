@@ -45,10 +45,12 @@ public class ScriptExecutionImpl  extends PrimImpl implements Prim, ScriptExecut
 
       protected InvocationTargetException exception = null;
 
-      List stdOut = Collections.synchronizedList(new ArrayList());
-      List stdErr = Collections.synchronizedList(new ArrayList());
+      List stdOut = null;
+      List stdErr = null;
 
       public ScriptResultsImpl() {
+        stdOut = Collections.synchronizedList(new ArrayList());
+        stdErr = Collections.synchronizedList(new ArrayList());
       }
 
       public boolean resultsReady() {
@@ -288,6 +290,8 @@ public class ScriptExecutionImpl  extends PrimImpl implements Prim, ScriptExecut
     } else if (filterIndex==1){
       //Finished
       //What do we do if err continues producing output?, should we wait for ever?
+      ((ScriptResultsImpl)results).stdOut.add("-finished-");
+      ((ScriptResultsImpl)results).stdErr.add("-finished-");
       createNewScriptResults();
     } else {
       System.out.println("FOUND ???? LINE " + line + ", " + filterIndex + ", " + filterName);
@@ -296,7 +300,7 @@ public class ScriptExecutionImpl  extends PrimImpl implements Prim, ScriptExecut
 
   private ScriptResults createNewScriptResults() {
     ScriptResults finishedResults = this.results;
-    results = new ScriptResultsImpl();
+    this.results = new ScriptResultsImpl();
     ((ScriptResultsImpl)finishedResults).ready(new Integer(0));
     return results;
   }

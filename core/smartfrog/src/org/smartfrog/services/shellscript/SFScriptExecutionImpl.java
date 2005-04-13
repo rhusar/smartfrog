@@ -86,14 +86,21 @@ public class SFScriptExecutionImpl  extends PrimImpl implements Prim, SFScriptEx
  public synchronized void sfStart() throws SmartFrogException,RemoteException {
      super.sfStart();
      ScriptLock lock = scriptExec.lockShell(1000);
-     scriptExec.execute("cd \\",lock);
+     ScriptResults resultCD = scriptExec.execute("cd \\",lock);
      try {
        scriptExec.execute("dir /s", new ScriptLockImpl(this));
      } catch (SmartFrogException ex) {
        sfLog().error("", ex);
      }
-     scriptExec.execute("dir",lock);
-     scriptExec.execute("exit",lock);
+     ScriptResults resultDir = scriptExec.execute("dir",lock);
+     ScriptResults resultExit = scriptExec.execute("exit",lock);
+     resultCD.waitForResults(0);
+     System.out.println("Result (CD): "+resultCD.toString());
+     resultDir.waitForResults(0);
+     System.out.println("Result (Dir): "+resultDir.toString());
+     resultExit.waitForResults(0);
+     System.out.println("Result (Exit): "+resultExit.toString());
+
      scriptExec.releaseShell(lock);
      //@Todo: if defined we could run an initial set of commands here
      // execute(commands,timeout);P
