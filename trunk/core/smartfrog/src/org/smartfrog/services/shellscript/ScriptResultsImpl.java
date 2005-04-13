@@ -25,7 +25,11 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.common.ContextImpl;
-import org.smartfrog.sfcore.common.*;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Collections;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -38,6 +42,9 @@ public class ScriptResultsImpl implements ScriptResults {
     protected ComponentDescription result = new ComponentDescriptionImpl(null,  new ContextImpl(), false);
 
     protected InvocationTargetException exception = null;
+
+    List stdOut = Collections.synchronizedList(new ArrayList());
+    List stdErr = Collections.synchronizedList(new ArrayList());
 
     public ScriptResultsImpl() {
     }
@@ -63,20 +70,9 @@ public class ScriptResultsImpl implements ScriptResults {
   }
 
 
-//  ArrayList stdOut = new ArrayList();
-//  ArrayList stdErr = new ArrayList();
-//
-//  public void line (String line,String type){
-//    //Add to stdOut or stdErr
-//    if (type.equals("stdout")){
-//      stdErr.add(line);
-//    } else {
-//      stdOut.add(line);
-//    }
-//  }
 
 
-  public synchronized void set(Integer code, ComponentDescription stdOut, ComponentDescription stdErr) {
+  public synchronized void ready(Integer code) {
       try {
         result.sfAddAttribute("stdOut", stdOut);
         result.sfAddAttribute("stdErr", stdErr);
@@ -94,5 +90,4 @@ public class ScriptResultsImpl implements ScriptResults {
      resultReady = true;
      notifyAll();
     }
-
 }

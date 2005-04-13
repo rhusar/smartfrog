@@ -28,8 +28,76 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import java.rmi.RemoteException;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import java.lang.reflect.InvocationTargetException;
+
 
 public class ScriptExecutionImpl  extends PrimImpl implements Prim, ScriptExecution, FilterListener {
+
+// Inner class that implements futures ---
+
+  public class ScriptResultsImpl implements ScriptResults {
+
+      protected boolean resultReady = false;
+
+      protected ComponentDescription result = new ComponentDescriptionImpl(null,  new ContextImpl(), false);
+
+      protected InvocationTargetException exception = null;
+
+      List stdOut = Collections.synchronizedList(new ArrayList());
+      List stdErr = Collections.synchronizedList(new ArrayList());
+
+      public ScriptResultsImpl() {
+      }
+
+      public boolean resultsReady() {
+          return resultReady;
+      }
+
+     public synchronized ComponentDescription waitForResults(long timeout) throws SmartFrogException {
+        try {
+          while (!resultReady) {
+            wait(timeout);
+          }
+          if (exception != null)
+            // Will throw , InterruptedException, InvocationTargetException
+            throw exception;
+          else
+            return result;
+        } catch (Exception ex) {
+            // Will throw , InterruptedException, InvocationTargetException
+            throw SmartFrogException.forward(exception);
+        }
+    }
+
+    public synchronized void ready(Integer code) {
+        try {
+          result.sfAddAttribute("stdOut", stdOut);
+          result.sfAddAttribute("stdErr", stdErr);
+          result.sfAddAttribute("code", code);
+        } catch (SmartFrogRuntimeException ex) {
+          //@Todo add log
+          ex.printStackTrace();
+        }
+        resultReady = true;
+        notifyAll();
+      }
+
+      synchronized void setException(Throwable e) {
+       exception = new InvocationTargetException(e);
+       resultReady = true;
+       notifyAll();
+      }
+
+      public String toString(){
+        return results.toString();
+      }
+  }
+
+
+// end of inner class ---------
+
 
   // cmd Data
   private Cmd cmd = new Cmd();
@@ -39,18 +107,20 @@ public class ScriptExecutionImpl  extends PrimImpl implements Prim, ScriptExecut
 
   private  RunProcess runProcess = null;
 
+  private ScriptResults results = null;
+
   public ScriptExecutionImpl(long ID, String name, Cmd cmd) throws RemoteException {
     // RunProcessImpl
     runProcess = new RunProcessImpl (ID, name, cmd);
 
     if (cmd.getFilterOutListener()==null){
-        String filters[]={"dir","Directory"};
+        String filters[]={"dir","done"};
         cmd.setFilterOutListener(this,filters);
     }
     if (cmd.getFilterErrListener()==null){
         cmd.setFilterErrListener(this,null);
     }
-
+    results = new ScriptResultsImpl();
     ((RunProcessImpl) runProcess).start();
     runProcess.waitForReady(200);;
   }
@@ -68,9 +138,11 @@ public class ScriptExecutionImpl  extends PrimImpl implements Prim, ScriptExecut
   public ScriptResults execute(String command, ScriptLock lock) throws
       SmartFrogException {
     if (this.lock!=lock) throw new SmartFrogException( runProcess.toString() + " failed to execute '"+command.toString()+"': Wrong lock. ");
+    createNewScriptResults();
     // Run cmd in RunProcess setting filters for new listener
     runProcess.execCommand(command);
-    return null;
+    runProcess.execCommand("echo done");
+    return results;
   }
 
   /**
@@ -125,6 +197,7 @@ public class ScriptExecutionImpl  extends PrimImpl implements Prim, ScriptExecut
   public ScriptResults execute(List commands, ScriptLock lock) throws
       SmartFrogException {
     if (this.lock!=lock) throw new SmartFrogException( runProcess.toString() + " failed to execute '"+commands.toString()+"': Wrong lock. ");
+    // Loop through using extra echo to mark end of command and a lock to continue.
     return null;
   }
 
@@ -201,10 +274,31 @@ public class ScriptExecutionImpl  extends PrimImpl implements Prim, ScriptExecut
 
   public void line (String line, String filterName){
       System.out.println("LINE "+ line+", "+filterName);
+      if (filterName.indexOf("out")==-1){
+        ((ScriptResultsImpl)results).stdOut.add(line);
+      } else {
+        ((ScriptResultsImpl)results).stdErr.add(line);
+      }
   }
 
-  public void found( String line, int filterIndex, String filterName){
-     System.out.println("FOUND LINE "+ line+", "+filterIndex+", "+filterName);
+  public synchronized void found( String line, int filterIndex, String filterName){
+    System.out.println("FOUND LINE " + line + ", " + filterIndex + ", " + filterName);
+    if (filterIndex ==0) {
+      //go for next command
+    } else if (filterIndex==1){
+      //Finished
+      //What do we do if err continues producing output?, should we wait for ever?
+      createNewScriptResults();
+    } else {
+      System.out.println("FOUND ???? LINE " + line + ", " + filterIndex + ", " + filterName);
+    }
+  }
+
+  private ScriptResults createNewScriptResults() {
+    ScriptResults finishedResults = this.results;
+    results = new ScriptResultsImpl();
+    ((ScriptResultsImpl)finishedResults).ready(new Integer(0));
+    return results;
   }
 
 }

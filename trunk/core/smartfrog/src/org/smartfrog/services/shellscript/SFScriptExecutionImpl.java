@@ -87,11 +87,11 @@ public class SFScriptExecutionImpl  extends PrimImpl implements Prim, SFScriptEx
      super.sfStart();
      ScriptLock lock = scriptExec.lockShell(1000);
      scriptExec.execute("cd \\",lock);
-    try {
-      scriptExec.execute("dir /s", new ScriptLockImpl(this));
-    } catch (SmartFrogException ex) {
-      sfLog().error("",ex);
-    }
+     try {
+       scriptExec.execute("dir /s", new ScriptLockImpl(this));
+     } catch (SmartFrogException ex) {
+       sfLog().error("", ex);
+     }
      scriptExec.execute("dir",lock);
      scriptExec.execute("exit",lock);
      scriptExec.releaseShell(lock);
