@@ -30,4 +30,5 @@ public interface RunProcess {
     public void run();
     public void execCommand(String command);
     public void kill();
+    public void waitForReady(long time);
 }

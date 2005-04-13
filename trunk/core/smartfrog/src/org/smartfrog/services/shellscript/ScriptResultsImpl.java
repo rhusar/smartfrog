@@ -62,6 +62,20 @@ public class ScriptResultsImpl implements ScriptResults {
       }
   }
 
+
+//  ArrayList stdOut = new ArrayList();
+//  ArrayList stdErr = new ArrayList();
+//
+//  public void line (String line,String type){
+//    //Add to stdOut or stdErr
+//    if (type.equals("stdout")){
+//      stdErr.add(line);
+//    } else {
+//      stdOut.add(line);
+//    }
+//  }
+
+
   public synchronized void set(Integer code, ComponentDescription stdOut, ComponentDescription stdErr) {
       try {
         result.sfAddAttribute("stdOut", stdOut);
