@@ -142,7 +142,11 @@ public class LibraryArtifactImpl extends FileUsingCompoundImpl implements Librar
 
         //all info is fetched. So work out our filename and URL.
         //we do this through methods for override points
-        
+
+        //artifact is project if nothing else is set.
+        if(artifact==null) {
+            artifact=project;
+        }
         remoteUrlPath = makeRemoteUrlPath();
         File localFile=makeLocalFile();
         //get the superclass to do our binding
@@ -317,13 +321,7 @@ public class LibraryArtifactImpl extends FileUsingCompoundImpl implements Librar
             instream.close();
             instream = null;
         } catch (IOException ioe) {
-            try {
-                if(instream!=null) {
-                    instream.close();
-                }
-            } catch (IOException ignored) {
-
-            }
+            FileSystem.close(instream);
             throw new SmartFrogException(ioe,this);
         }
         //now we have a digest array to extract.
@@ -585,6 +583,7 @@ public class LibraryArtifactImpl extends FileUsingCompoundImpl implements Librar
      */
     public SerializedArtifact createSerializedArtifact() {
         SerializedArtifact pojo=new SerializedArtifact();
+        pojo.project=project;
         pojo.artifact=artifact;
         pojo.version=version;
         pojo.extension=extension;

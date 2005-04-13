@@ -241,6 +241,6 @@ JarArtifact extends LibraryArtifact {
  * A Maven JAR is autobound to the big maven repository on the network
  */
 MavenJar extends JarArtifact  {
-    library Maven2Library;
+    library LAZY Maven2Library;
 }
  
