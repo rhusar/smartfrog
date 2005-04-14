@@ -15,18 +15,34 @@
 package org.smartfrog.test.unit.java;
 
 import org.smartfrog.services.os.java.SerializedArtifact;
+import org.smartfrog.sfcore.common.SmartFrogException;
 
 import junit.framework.TestCase;
 
+/**
+ * test case for policy tests; contains common paths and methods
+ */
 public abstract class AbstractPolicyTestBase extends TestCase {
 
     protected SerializedArtifact logging;
+    public static final String COMMONS_LOGGING = "commons-logging";
+    public static final String VERSION = "1.04";
 
+    public static final String COMMONS_LOGGING_JAR= COMMONS_LOGGING+"-"+VERSION+".jar";
+
+    public static final String MAVEN1_PATH = COMMONS_LOGGING + "/jars/"+COMMONS_LOGGING_JAR;
+
+    public static final String MAVEN2_PATH = COMMONS_LOGGING+"/"
+        + COMMONS_LOGGING+"/"+VERSION+"/"+ COMMONS_LOGGING_JAR;
+
+    /**
+     * create a commons logging
+     */
     public void createArtifact() {
         logging= new SerializedArtifact();
-        logging.artifact = "commons-logging";
+        logging.artifact = COMMONS_LOGGING;
         logging.project = logging.artifact ;
-        logging.version = "1.02";
+        logging.version = VERSION;
         logging.extension = "jar";
     }
 
@@ -40,7 +56,14 @@ public abstract class AbstractPolicyTestBase extends TestCase {
         assertTrue("Did not find "+text+" in "+m,
                 m.indexOf(text)>=0);
     }
-        
 
-    
+    /**
+     * Create a path for the logging artifact
+     * @return
+     * @throws SmartFrogException
+     */
+    protected abstract String createLoggingPath() throws Exception;
+
+
+
 }

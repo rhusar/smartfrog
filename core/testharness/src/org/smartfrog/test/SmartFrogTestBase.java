@@ -57,8 +57,12 @@ public abstract class SmartFrogTestBase extends TestCase {
      */
     protected File classesDir;
     protected String hostname;
-    private static final String LIFECYCLE_EXCEPTION = "SmartFrogLifecycleException";
-    private static final String ASSERTION_EXCEPTION = "SmartFrogAssertionException";
+
+    /**
+     * Smartforg assertion.
+     * Value: {@value}
+     */
+    private static final String EXCEPTION_SMARTFROG_ASSERTION = "SmartFrogAssertionException";
     /**
      * Text to look for in classname when seeking a resolution exception.
      * Value: {@value}
@@ -80,10 +84,38 @@ public abstract class SmartFrogTestBase extends TestCase {
      */
 
     public static final String EXCEPTION_LIVENESS = "SmartFrogLivenessException";
+
+    /**
+     * Text to look for in classname when seeking a SmartFrogDeploymentException.
+     * Value: {@value}
+     */
+
     public static final String EXCEPTION_DEPLOYMENT = "SmartFrogDeploymentException";
+
+    /**
+     * Text to look for in classname when seeking a ClassCastException.
+     * Value: {@value}
+     */
     public static final String EXCEPTION_CLASSCAST = "java.lang.ClassCastException";
+
+    /**
+     * Text to look for in classname when seeking a ClassCastException.
+     * Value: {@value}
+     */
     public static final String EXCEPTION_CLASSNOTFOUND = "java.lang.ClassNotFoundException";
+
+
+    /**
+     * Text to look for in classname when seeking a SmartFrogParseException.
+     * Value: {@value}
+     */
     public static final String EXCEPTION_PARSE = "SmartFrogParseException";
+
+    /**
+     * Text to look for in classname when seeking a
+     * SmartFrogCompileResolutionException.
+     * Value: {@value}
+     */
     public static final String EXCEPTION_COMPILE_RESOLUTION = "SmartFrogCompileResolutionException";
 
     /**
@@ -556,8 +588,8 @@ public abstract class SmartFrogTestBase extends TestCase {
             deployedApp = SFSystem.runConfigurationDescriptor(cfgDesc,false);
             if ((deployedApp instanceof ConfigurationDescriptor) &&
                     (((ConfigurationDescriptor) deployedApp).resultException != null)) {
-                searchForExpectedExceptions(deployedApp, cfgDesc, LIFECYCLE_EXCEPTION,
-                        null, ASSERTION_EXCEPTION,null);
+                searchForExpectedExceptions(deployedApp, cfgDesc, EXCEPTION_LIFECYCLE,
+                        null, EXCEPTION_SMARTFROG_ASSERTION,null);
                 resultException = ((ConfigurationDescriptor) deployedApp).resultException;
                 return resultException;
             } else {
@@ -570,8 +602,10 @@ public abstract class SmartFrogTestBase extends TestCase {
                     application.sfPing(null);
                     application.sfPing(null);
                 } catch (SmartFrogLivenessException liveness) {
-                    assertFaultCauseAndTextContains(liveness,LIFECYCLE_EXCEPTION,null,"expected lifecycle failure");
-                    assertFaultCauseAndTextContains(liveness.getCause(), ASSERTION_EXCEPTION, null,
+                    assertFaultCauseAndTextContains(liveness, EXCEPTION_LIFECYCLE,
+                            null,"expected lifecycle failure");
+                    assertFaultCauseAndTextContains(liveness.getCause(),
+                            EXCEPTION_SMARTFROG_ASSERTION, null,
                             "expected nested assertion failure");
                 }
             }

@@ -33,18 +33,18 @@ public class Maven1Policy extends AbstractPolicy implements RemoteCachePolicy, L
      */
     public Maven1Policy() throws RemoteException {
     }
-    
-    
+
+
     /**
-     * directory separator for Maven file systems.
-     * {@value}
+     * directory separator for Maven file systems. {@value}
      */
     public static final String MAVEN1_JAR_SUBDIR = "/jars/";
-    
+
     /**
      * @see RemoteCachePolicy#createRemotePath(SerializedArtifact)
      */
-    public String createRemotePath(SerializedArtifact artifact) throws SmartFrogRuntimeException {
+    public String createRemotePath(SerializedArtifact artifact)
+            throws SmartFrogRuntimeException {
         return createMavenURL(artifact);
     }
 
@@ -52,7 +52,8 @@ public class Maven1Policy extends AbstractPolicy implements RemoteCachePolicy, L
     /**
      * @see LocalCachePolicy#createLocalPath(SerializedArtifact)
      */
-    public String createLocalPath(SerializedArtifact artifact) throws SmartFrogRuntimeException {
+    public String createLocalPath(SerializedArtifact artifact)
+            throws SmartFrogRuntimeException {
         // the policy here is the same as with remote names
         return createRemotePath(artifact);
     }
@@ -60,13 +61,16 @@ public class Maven1Policy extends AbstractPolicy implements RemoteCachePolicy, L
 
     /**
      * method to create a maven URL
+     *
      * @param library
+     *
      * @return url  /project/jars/+artifact name
      */
-    public String createMavenURL(SerializedArtifact library) throws SmartFrogRuntimeException {
+    public String createMavenURL(SerializedArtifact library)
+            throws SmartFrogRuntimeException {
         SerializedArtifact.assertValid(library, false);
         String artifactName = createMavenArtifactName(library);
-        String urlPath="/"+library.project+MAVEN1_JAR_SUBDIR+artifactName;
+        String urlPath = library.project + MAVEN1_JAR_SUBDIR + artifactName;
         return urlPath;
     }
 
@@ -76,7 +80,5 @@ public class Maven1Policy extends AbstractPolicy implements RemoteCachePolicy, L
     public String getDescription() throws RemoteException {
         return "Maven1 policy";
     }
-
-    
 
 }

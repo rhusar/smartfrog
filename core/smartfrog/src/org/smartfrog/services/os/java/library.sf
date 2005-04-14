@@ -26,12 +26,29 @@ For more information: www.smartfrog.org
  * This is a development only release of the library logic.
  * DO NOT USE IN ANY PRODUCTION ENVIRONMENT. THIS CODE IS UNSTABLE
  * AND PROBABLY DOES NOT WORK. AS EXTERNAL REPOSITORIES CHANGE (eg Maven2),
- * SO WILL THIS CODE.
+ * SO WILL THIS CODE. WE MAY EVEN RENAME THE COMPONENTS
  *
- * That caveat aside, any and all help getting this code working is welcome :)
+ * Caveats aside, any and all help getting this code working is welcome :)
+ *
+ * Note that there is currently no proxy support. Run a daemon with the
+ * -DhttpProxyHost and -DhttpProxyPort options, or use the SetProperty component
+ * to set up the proxy at deploy-time
  */
  
 
+/**
+ * Policy classes are stateless objects that implement the Policy/Strategy
+ * pattern vis-a-vis naming of local and remote URLs.
+ * There are separate interfaces for local and remote naming policies.
+ *
+ * The Maven1 and Maven2 policies implement both, and can act
+ * as paired entities for a consistent layout at both ends.
+ *
+ * The FlattenLocalFiles policy is a local policy only. It is not
+ * a sensible strategy for servers as it does not scale to large numbers of
+ * artifacts. Indeed, the maven2 policy scales better than maven1
+ * if dotted names are using, as maven1 has too flat a root directory.
+ */
 
 /**
  * Maven1 provides both a remote and a local naming policy
@@ -61,6 +78,10 @@ FlattenLocalFilesPolicy extends Prim {
 
 /**
  * at deploy time, we fetch libraries from the repository, if needed
+ *
+ * Note that Library is implemented as an extension of Compound; it will
+ * deploy all immediate child components, before it resolves it own
+ * components.
  */
 Library extends FileUsingComponent {
     sfClass "org.smartfrog.services.os.java.LibraryImpl";
@@ -160,10 +181,10 @@ Maven2Library extends Library {
 	
 
     /**
-     * Maven repository at ibiblio.org. Really we should permit mirrors; or include
+     * Maven2 repository at ibiblio.org. Really we should permit mirrors; or include
      * the mirror list for easy selection.
      */
-    repositories [| "http://ibiblio.org/maven" |];
+    repositories [| "http://ibiblio.org/maven2" |];
 
     //cache into the well known maven location
     cacheDir LAZY localCacheDirectory:absolutePath;

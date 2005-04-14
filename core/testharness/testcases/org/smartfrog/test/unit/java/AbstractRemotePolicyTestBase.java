@@ -17,6 +17,7 @@ package org.smartfrog.test.unit.java;
 import org.smartfrog.services.os.java.RemoteCachePolicy;
 import org.smartfrog.services.os.java.SerializedArtifact;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.common.SmartFrogException;
 
 public abstract class AbstractRemotePolicyTestBase extends AbstractPolicyTestBase {
 
@@ -30,6 +31,17 @@ public abstract class AbstractRemotePolicyTestBase extends AbstractPolicyTestBas
     
     abstract RemoteCachePolicy createPolicy() throws Exception;
 
+    /**
+     * Create a path for the logging artifact
+     *
+     * @return
+     *
+     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     *
+     */
+    protected String createLoggingPath() throws Exception {
+        return policy.createRemotePath(logging);
+    }
 
     public void testNullArtifact() throws Exception {
         try {
@@ -54,7 +66,7 @@ public abstract class AbstractRemotePolicyTestBase extends AbstractPolicyTestBas
     public void testNullProject() throws Exception {
         logging.project=null;
         try {
-            policy.createRemotePath(logging);
+            createLoggingPath();
             fail("Should have failed ");
         } catch (SmartFrogRuntimeException e) {
             assertErrorMessageContains(e,SerializedArtifact.ERROR_INVALID_LIBRARY);
@@ -67,14 +79,14 @@ public abstract class AbstractRemotePolicyTestBase extends AbstractPolicyTestBas
         assertTrue("expected path "+path+" to end with "+logging.extension,
                 path.endsWith(logging.extension));
         assertTrue("expected path "+path+" to start with /"+logging.project,
-                path.startsWith("/"+logging.project));
+                path.startsWith(logging.project));
         assertTrue(path.indexOf("-"+logging.version)>0);
     }
 
 
     public void testNullExtension() throws Exception {
         logging.extension=null;
-        String path=policy.createRemotePath(logging);
+        String path= createLoggingPath();
         assertTrue("expected path "+path+" to end with "+logging.version,
                 path.endsWith(logging.version));
     }

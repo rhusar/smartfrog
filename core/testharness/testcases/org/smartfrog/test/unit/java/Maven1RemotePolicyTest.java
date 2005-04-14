@@ -30,4 +30,10 @@ public class Maven1RemotePolicyTest extends AbstractRemotePolicyTestBase {
     RemoteCachePolicy createPolicy() throws Exception {
         return  new Maven1Policy();
     }
+
+    public void testExpectedPath() throws Exception {
+        String path = policy.createRemotePath(logging);
+        String expected = MAVEN1_PATH;
+        assertEquals(expected, path);
+    }
 }

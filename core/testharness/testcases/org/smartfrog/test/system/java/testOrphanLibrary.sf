@@ -22,9 +22,7 @@ For more information: www.smartfrog.org
 
 sfConfig extends Compound {
 
-    commons-logging extends JarArtifact {
-        project "commons-logging";
-        version "1.0.4";
+    commons-logging extends commons-logging-1.0.4  {
     }
 
 }
