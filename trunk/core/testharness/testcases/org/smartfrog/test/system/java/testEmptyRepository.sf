@@ -33,20 +33,18 @@ EmptyRepository extends Compound {
     }
 
     lib extends Library {
-
         repositories [| |];
 		policy extends Maven1Policy;
 		localCachePolicy policy;
 		remoteCachePolicy policy;
         cacheDir LAZY cacheDirectory:absolutePath;
-
-
     }
 
-    commons-logging extends JarArtifact {
+    commons-logging extends commons-logging-1.0.4  {
+        //need a nonexistent version just to be sure that
+        //we dont pick up one in the repository 
+        version "3.06-nonexistent";
         library LAZY PARENT:lib;
-        project "commons-logging";
-        version "1.0.4";
     }
 
 }

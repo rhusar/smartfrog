@@ -24,14 +24,19 @@ import org.smartfrog.services.os.java.LibraryHelper;
 import org.smartfrog.services.os.java.LibraryImpl;
 import org.smartfrog.services.os.java.LibraryArtifactImpl;
 import org.smartfrog.services.os.java.LibraryArtifact;
+import org.smartfrog.services.filesystem.FileUsingComponent;
 import org.smartfrog.sfcore.prim.Prim;
 
+import java.io.File;
+
 /**
+ * Test library work
  * created 04-Apr-2005 15:35:58
  */
 
 public class LibraryTest extends SmartFrogTestBase {
     public static final String FILES = JavaPackageTest.FILES;
+
 
     public LibraryTest(String name) {
         super(name);
@@ -46,7 +51,7 @@ public class LibraryTest extends SmartFrogTestBase {
     }
 
     public void testLibrariesCacheDirInvalid() throws Throwable {
-        deployExpectingException(FILES+"testLibrariesCacheDirInvalid.sf",
+        deployExpectingException(FILES + "testLibrariesCacheDirInvalid.sf",
                 "testLibrariesCacheDirInvalid",
                 EXCEPTION_LIFECYCLE,
                 null,
@@ -70,8 +75,7 @@ public class LibraryTest extends SmartFrogTestBase {
                 EXCEPTION_DEPLOYMENT,
                 null,
                 EXCEPTION_COMPILE_RESOLUTION,
-                null
-                );
+                null);
     }
 
     public void testMavenLibrary() throws Throwable {
@@ -101,5 +105,57 @@ public class LibraryTest extends SmartFrogTestBase {
                 null,
                 EXCEPTION_SMARTFROG,
                 LibraryArtifactImpl.ERROR_NO_REPOSITORIES);
+    }
+
+
+    public void testMaven2Download() throws Throwable {
+        deploySuccessfulDownload("testMaven2Download");
+    }
+
+    /**
+     * deploy a download, expect a file to go into absolutePath, a file which
+     * must exist.
+     *
+     * @param appName
+     *
+     * @throws Throwable
+     */
+    private void deploySuccessfulDownload(String appName) throws Throwable {
+        Prim application = null;
+        try {
+            application = deployExpectingSuccess(FILES +
+                    appName + ".sf", appName);
+            String filename = application.sfResolve(FileUsingComponent.ATTR_ABSOLUTE_PATH,
+                    (String) null,
+                    true);
+            File file = new File(filename);
+            assertTrue("not found " + filename, file.exists());
+            file.delete();
+        } finally {
+            terminateApplication(application);
+        }
+    }
+
+    /**
+     * test that maven1 downloads work
+     *
+     * @throws Throwable
+     */
+    public void testMaven1Download() throws Throwable {
+        deploySuccessfulDownload("testMaven1Download");
+    }
+
+    /**
+     * test that maven1 downloads work
+     *
+     * @throws Throwable
+     */
+    public void testMaven2DownloadBadSha1() throws Throwable {
+        deployExpectingException(FILES + "testMaven2DownloadBadSha1.sf",
+                "testMaven2DownloadBadSha1",
+                EXCEPTION_LIFECYCLE,
+                null,
+                EXCEPTION_SMARTFROG,
+                LibraryArtifactImpl.ERROR_CHECKSUM_FAILURE);
     }
 }

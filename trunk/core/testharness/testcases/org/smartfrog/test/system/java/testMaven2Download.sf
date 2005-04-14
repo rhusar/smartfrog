@@ -18,10 +18,22 @@ For more information: www.smartfrog.org
 
 */
 
-
 #include "/org/smartfrog/test/system/java/libraryTestBase.sf"
 
-sfConfig extends Maven2Library {
+Download extends Compound {
 
-    
+    sfSyncTerminate true;
+
+    library extends Maven2Library {
+    }
+
+    commons-logging extends commons-logging-1.0.4  {
+        library LAZY PARENT:library;
+    }
+
+    /** post deployment path */
+    absolutePath LAZY commons-logging:absolutePath;
 }
+
+
+sfConfig Download;

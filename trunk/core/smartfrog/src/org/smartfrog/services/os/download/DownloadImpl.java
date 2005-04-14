@@ -113,7 +113,7 @@ public class DownloadImpl extends PrimImpl implements Download {
         int bytesRead;
         boolean finished=false;
         //create our output directories.
-        localFile.mkdirs();
+        localFile.getParentFile().mkdirs();
         try {
             // open the URL,
             is = SFClassLoader.getResourceAsStream(url);

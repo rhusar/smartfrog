@@ -49,18 +49,18 @@ public class LibraryImpl extends FileUsingCompoundImpl implements Library {
      * cache directory
      */
     private File cacheDir;
-    
-    
+
+
     /**
      * Local cache policy
      */
     private LocalCachePolicy localPolicy;
-    
+
     /**
      * Remote Cache Policy
      */
     private RemoteCachePolicy remotePolicy;
-    
+
     /**
      * Our little log
      */
@@ -71,6 +71,7 @@ public class LibraryImpl extends FileUsingCompoundImpl implements Library {
 
     /**
      * deployment: validate and create
+     *
      * @throws SmartFrogException
      * @throws RemoteException
      */
@@ -79,26 +80,36 @@ public class LibraryImpl extends FileUsingCompoundImpl implements Library {
         //this implicitly deploys all our children too
         super.sfDeploy();
         //set up logging.
-        log=sfGetApplicationLog();
+        log = sfGetApplicationLog();
         //bind our directory
         bindDirectory();
         //bind our policies
-        localPolicy = (LocalCachePolicy)sfResolve(ATTR_LOCAL_CACHE_POLICY,localPolicy,true);
-        remotePolicy = (RemoteCachePolicy)sfResolve(ATTR_REMOTE_CACHE_POLICY,remotePolicy,true);
+        localPolicy = (LocalCachePolicy) sfResolve(ATTR_LOCAL_CACHE_POLICY,
+                localPolicy,
+                true);
+        remotePolicy = (RemoteCachePolicy) sfResolve(ATTR_REMOTE_CACHE_POLICY,
+                remotePolicy,
+                true);
     }
 
     /**
      * bind our cache directory information
+     *
      * @throws RemoteException
      * @throws SmartFrogRuntimeException
      */
     private void bindDirectory() throws RemoteException,
             SmartFrogRuntimeException {
-        String cacheDirname=FileSystem.lookupAbsolutePath(this,ATTR_CACHE_DIR,null,null,true,null);
+        String cacheDirname = FileSystem.lookupAbsolutePath(this,
+                ATTR_CACHE_DIR,
+                null,
+                null,
+                true,
+                null);
         cacheDir = new File(cacheDirname);
         cacheDir.mkdirs();
-        if(!cacheDir.isDirectory()) {
-            throw new SmartFrogResolutionException(ERROR_NOT_A_DIRECTORY+cacheDir,this);
+        if (!cacheDir.isDirectory()) {
+            throw new SmartFrogResolutionException(ERROR_NOT_A_DIRECTORY + cacheDir, this);
         }
         //set up cache information
         bind(cacheDir);
@@ -106,39 +117,40 @@ public class LibraryImpl extends FileUsingCompoundImpl implements Library {
 
 
     /**
-     * @see org.smartfrog.services.os.java.Library#determineArtifactPath(SerializedArtifact artifact)
+     * @see org.smartfrog.services.os.java.Library#determineArtifactPath(SerializedArtifact
+            *      artifact)
      */
-    public String determineArtifactPath(SerializedArtifact artifact) throws RemoteException, SmartFrogException {
+    public String determineArtifactPath(SerializedArtifact artifact)
+            throws RemoteException, SmartFrogException {
         return determineArtifactFile(artifact).getAbsolutePath();
     }
-    
 
-    
+
     /**
      * @see org.smartfrog.services.os.java.Library#determineArtifactRelativeURLPath(org.smartfrog.services.os.java.SerializedArtifact)
      */
-    public String determineArtifactRelativeURLPath(SerializedArtifact artifact) 
-        throws RemoteException, SmartFrogException {
+    public String determineArtifactRelativeURLPath(SerializedArtifact artifact)
+            throws RemoteException, SmartFrogException {
         SerializedArtifact.assertValid(artifact, false);
-        String path=remotePolicy.createRemotePath(artifact);
-        return null;
+        String path = remotePolicy.createRemotePath(artifact);
+        return path;
     }
 
     /**
-     * Get the filename of the artifact. 
+     * Get the filename of the artifact.
      */
-    public File determineArtifactFile(SerializedArtifact artifact) throws RemoteException, SmartFrogException {
+    public File determineArtifactFile(SerializedArtifact artifact)
+            throws RemoteException, SmartFrogException {
         SerializedArtifact.assertValid(artifact, false);
         //get the path from our policy class
-        String path=localPolicy.createLocalPath(artifact);
-        PlatformHelper helper=PlatformHelper.getLocalPlatform();
+        String path = localPolicy.createLocalPath(artifact);
+        PlatformHelper helper = PlatformHelper.getLocalPlatform();
         //convert this to platform specifics
-        String localpath=helper.convertFilename(path);
+        String localpath = helper.convertFilename(path);
         //create a file 
-        File file=new File(cacheDir,localpath);
+        File file = new File(cacheDir, localpath);
         return file;
     }
-        
 
 
 }

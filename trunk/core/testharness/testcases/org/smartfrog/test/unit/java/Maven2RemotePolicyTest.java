@@ -27,4 +27,17 @@ public class Maven2RemotePolicyTest extends AbstractRemotePolicyTestBase {
         return new Maven2Policy();
     }
 
+    public void testExpectedPath() throws Exception {
+        String path = createLoggingPath();
+        String expected =  MAVEN2_PATH;
+        assertEquals(expected, path);
+    }
+
+    public void testDottedName() throws Exception {
+        logging.project="org.apache.jakarta-commons";
+        String path = createLoggingPath();
+        String expected="org/apache/jakarta-commons";
+        assertTrue("expected path "+path+"to start with"+ expected,
+                path.startsWith(expected));
+    }
 }

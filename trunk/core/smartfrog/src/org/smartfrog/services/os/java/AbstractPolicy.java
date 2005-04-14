@@ -37,11 +37,7 @@ public abstract class AbstractPolicy extends PrimImpl {
      * @return the filename of an artifact using maven separation rules
      */
     protected String createMavenArtifactName(SerializedArtifact library) throws SmartFrogRuntimeException {
-        assert library!=null;
-        assert library.isValid(): "invalid artifact";
-        if(!library.isValid() ) {
-            throw new SmartFrogRuntimeException("Invalid library: "+library);
-        }        
+        SerializedArtifact.assertValid(library,false);
         StringBuffer buffer=new StringBuffer();
         buffer.append(library.artifact);
         if(nonEmpty(library.version)) {
