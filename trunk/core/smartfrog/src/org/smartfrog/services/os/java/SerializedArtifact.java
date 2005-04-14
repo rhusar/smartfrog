@@ -25,18 +25,18 @@ import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
  */
 
 public class SerializedArtifact implements Serializable {
-    
+
     public static final String ERROR_NO_LIBRARY_VERSION = "No library version: ";
 
-    public  static final String ERROR_INVALID_LIBRARY = "Invalid library: ";
+    public static final String ERROR_INVALID_LIBRARY = "Invalid library: ";
 
-    public  static final String ERROR_NULL_ARTIFACT = "No library";
+    public static final String ERROR_NULL_ARTIFACT = "No library";
 
     /**
      * Project name
      */
     public String project;
-    
+
     /**
      * Artifact. Required
      */
@@ -46,22 +46,22 @@ public class SerializedArtifact implements Serializable {
      * optional extension
      */
     public String extension;
-    
+
     /**
      * optional classifier
      */
     public String classifier;
-    
+
     /**
      * Version. Required by some policies
      */
     public String version;
-    
+
     /**
      * SHA1 checksum
      */
     public String sha1;
-    
+
     /**
      * MD5 checksum
      */
@@ -69,45 +69,52 @@ public class SerializedArtifact implements Serializable {
 
     /**
      * Test for being valid. Looks at project and artifact only
+     *
      * @return true if we are valid
      */
     public boolean isValid() {
-        return project!=null && project.length()>0 
-            && artifact!=null && artifact.length()>0;
+        return project != null && project.length() > 0
+                && artifact != null && artifact.length() > 0;
     }
 
-    /** 
+    /**
      * Stringify, for debugging
+     *
      * @see java.lang.Object#toString()
      */
     public String toString() {
-        
-        return "Serialized Library "+
-            "project:"+project
-            +" artifact:"+artifact
-            +" version:"+version
-            +" classifer:"+classifier
-            +" extension:"+extension;
+
+        return "Serialized Library " +
+                "project:" + project
+                + " artifact:" + artifact
+                + " version:" + version
+                + " classifer:" + classifier
+                + " extension:" + extension;
     }
-    
+
     /**
      * validity logic
-     * @param library library to check
+     *
+     * @param library       library to check
      * @param versionNeeded is the version attribute needed
-     * @throws SmartFrogRuntimeException if the library is null or invalid, or, if versionNeeded set, if
-     * there is no version
+     *
+     * @throws SmartFrogRuntimeException if the library is null or invalid, or,
+     *                                   if versionNeeded set, if there is no
+     *                                   version
      */
-    public static void assertValid(SerializedArtifact library, boolean versionNeeded) throws SmartFrogRuntimeException {
-        if(library==null) {
+    public static void assertValid(SerializedArtifact library,
+                                   boolean versionNeeded)
+            throws SmartFrogRuntimeException {
+        if (library == null) {
             throw new SmartFrogRuntimeException(ERROR_NULL_ARTIFACT);
         }
-        if(!library.isValid()) {
-            throw new SmartFrogRuntimeException(ERROR_INVALID_LIBRARY+library);
+        if (!library.isValid()) {
+            throw new SmartFrogRuntimeException(ERROR_INVALID_LIBRARY + library);
         }
-        if(versionNeeded && library.version==null) {
-            throw new SmartFrogRuntimeException(ERROR_NO_LIBRARY_VERSION+library);
+        if (versionNeeded && library.version == null) {
+            throw new SmartFrogRuntimeException(ERROR_NO_LIBRARY_VERSION + library);
         }
     }
-    
-    
+
+
 }
