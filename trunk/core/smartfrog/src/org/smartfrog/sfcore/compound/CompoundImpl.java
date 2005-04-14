@@ -77,6 +77,11 @@ public class CompoundImpl extends PrimImpl implements Compound {
     /** Maintains children on which life of compound depends (and vice versa). */
     protected Vector sfChildren = new Vector(childCap, childInc);
 
+
+    /** Maintains a temporal list of the children that have to be driven
+     * through their sfDeploy and sfStart lifecycle methods.*/
+    private Vector lifecycleChildren = new Vector();
+
     /**
      * Whether termination should be synchronous. Determined by the
      * sfSyncTerminate attribute "true" or "false"
@@ -220,6 +225,29 @@ public class CompoundImpl extends PrimImpl implements Compound {
         return sfCreateNewChild( name, this, cmp, parms);
     }
 
+
+
+
+    /**
+     * A high-level component deployment method - creates an app
+     * , running it through its entire lifecycle. This is the preferred way
+     * of creating new app.
+     *
+     * @param name name for the new application
+     * @param cmp compiled component to deploy and start
+     * @param parms parameters for description
+     *
+     * @return deployed component if successful
+     *
+     * @exception SmartFrogDeploymentException failed to deploy compiled
+     * component
+     * @exception RemoteException In case of Remote/nework error
+     */
+    public Prim sfCreateNewApp(String name, ComponentDescription cmp, Context parms)
+        throws RemoteException, SmartFrogDeploymentException {
+        return this.sfCreateNewChild(name, null, cmp, parms);
+    }
+
     /**
      * A high-level component deployment method - creates a child of 'parent'
      * Compound, running it through its entire lifecycle. This is the preferred way
@@ -250,30 +278,20 @@ public class CompoundImpl extends PrimImpl implements Compound {
 
       if (parms == null) parms = new ContextImpl();
       try {
-
-//          // the parentage is made null and it is registered as an attribute, not a
-//          // child, so it is a root component and starts is own liveness
-//
-//          // @TODO review this. Compound should not know anything about ProcessCompound!
-//          if ((parent!=null)&&(parent instanceof org.smartfrog.sfcore.processcompound.ProcessCompound)){
-//              // This component will be a root component <> App
-//              parent=null;
-//          }
-//
-
         // This is needed so that the root component is properly named
         // when registering with the ProcessCompound
         if ((parent==null)&&(name!=null)) parms.put(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME, name);
 
-        if (sfLog().isTraceEnabled()) {
-            try {
-              if (parent!=null) {
-                sfLog().trace("Creating new child '"+name+"' for: " + parent.sfCompleteName() + ", with description: " +  cmp.toString() + ", and parameters: " + parms);
-              } else {
-                sfLog().trace("Creating new application: " + name + ", with description: " +  cmp.toString() + ", and parameters: " + parms);
-              }
-            } catch (Exception ex1) {
-                sfLog().trace(ex1.toString());
+            if (sfLog().isTraceEnabled()) {
+                try {
+                  if (parent!=null) {
+                    sfLog().trace("Creating new child '"+name+"' for: " + parent.sfCompleteName() + ", with description: " +  cmp.toString() + ", and parameters: " + parms);
+                  } else {
+                    sfLog().trace("Creating new application: " + name + ", with description: " +  cmp.toString() + ", and parameters: " + parms);
+                  }
+                } catch (Exception ex1) {
+                    sfLog().trace(ex1.toString());
+                }
             }
             comp = ((Compound)phasedComp).sfDeployComponentDescription(name, parent, cmp, parms);
             // it is now a child, so need to guard against double calling of lifecycle...
@@ -293,8 +311,6 @@ public class CompoundImpl extends PrimImpl implements Compound {
                   }
                   throw SmartFrogLifecycleException.sfStart("Failed to create a new child.",thr,this);
                 }
-        } // end of is terminated
-      //} // end of synchronized
     } catch (Exception e) {
         if ( comp != null ) {
           Reference compName = null;
@@ -329,26 +345,6 @@ public class CompoundImpl extends PrimImpl implements Compound {
     }
     return comp;
   }
-    /**
-     * A high-level component deployment method - creates an app
-     * , running it through its entire lifecycle. This is the preferred way
-     * of creating new app.
-     *
-     * @param name name for the new application
-     * @param cmp compiled component to deploy and start
-     * @param parms parameters for description
-     *
-     * @return deployed component if successful
-     *
-     * @exception SmartFrogDeploymentException failed to deploy compiled
-     * component
-     * @exception RemoteException In case of Remote/nework error
-     */
-    public Prim sfCreateNewApp(String name, ComponentDescription cmp, Context parms)
-        throws RemoteException, SmartFrogDeploymentException {
-        return this.sfCreateNewChild(name, null, cmp, parms);
-    }
-
 
     //
     // ChildMinder
@@ -457,12 +453,9 @@ public class CompoundImpl extends PrimImpl implements Compound {
             }
         } catch (Exception sfex) {
             new TerminatorThread(this, sfex, null).quietly().run();
-            throw (SmartFrogDeploymentException)SmartFrogDeploymentException.
-                forward(sfex);
+            throw (SmartFrogDeploymentException)SmartFrogDeploymentException.forward(sfex);
         }
     }
-
-    private Vector lifecycleChildren = new Vector();
 
     /**
      * Deploy the compound. Deployment is defined as iterating over the context
