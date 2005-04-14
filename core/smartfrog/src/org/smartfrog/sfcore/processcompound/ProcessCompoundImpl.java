@@ -273,8 +273,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
                     try {
                         sfParent = sfLocateParent();
                     } catch (Throwable t) {
-                        throw new SmartFrogDeploymentException(MSG_PARENT_LOCATION_FAILED,
-                                t, this, null);
+                        throw new SmartFrogDeploymentException(MSG_PARENT_LOCATION_FAILED, t, this, null);
 
                     }
                 }
@@ -336,8 +335,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
 
         // Add boot time only in rootProcess
         if (sfIsRoot)
-        sfAddAttribute(SmartFrogCoreKeys.SF_BOOT_DATE,
-                                       new Date(System.currentTimeMillis()));
+        sfAddAttribute(SmartFrogCoreKeys.SF_BOOT_DATE, new Date(System.currentTimeMillis()));
 
         // the last act is to inform the root process compound that the
         // subprocess is now ready for action - only done if not the root
