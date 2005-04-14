@@ -144,7 +144,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
 
     /** Reference that caches cannonical name. */
     protected Reference sfCompleteName = null;
-    public static final String COMPONENT_TERMINATED_MESSAGE = "Component Terminated";
+
 
     /**
      * Used in conjunction with sfDeployWith to set parent and context after
@@ -1012,7 +1012,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
 	    if (Logger.logLiveness &&(sfLog().isTraceEnabled())) {
 		sfLog().trace("ping returning that I am terminated : in " + sfCompleteNameSafe());
 	    }
-	    throw new SmartFrogLivenessException(COMPONENT_TERMINATED_MESSAGE);
+	    throw new SmartFrogLivenessException(MessageUtil.formatMessage(COMPONENT_TERMINATED));
 	}
 
 	if (source == null) {
@@ -1075,8 +1075,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
             if (myName == null) {
                 try {
                     myName = SFProcess.getProcessCompound().sfCompleteName();
-                    myName.addElement(ReferencePart.here(
-                            SFProcess.getProcessCompound().sfAttributeKeyFor(this)));
+                    myName.addElement(ReferencePart.here(SFProcess.getProcessCompound().sfAttributeKeyFor(this)));
                 } catch (Exception ex2) {
                     //ignore
                 }
@@ -1089,11 +1088,13 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
         }
 
         if (myName != null) {
-            sfTerminate(TerminationRecord.abnormal("Liveness Send Failure in " +
-                    myName + " when calling " +targetName + failureMsg , targetName, failure));
+            sfTerminate(TerminationRecord.abnormal(
+                 MessageUtil.formatMessage(LIVENESS_SEND_FAILURE_IN
+                 ,myName,targetName + failureMsg), targetName, failure));
         } else {
-            sfTerminate(TerminationRecord.abnormal("Liveness Send Failure"+ " when calling " +targetName + failureMsg,
-                    targetName, failure));
+            sfTerminate(TerminationRecord.abnormal(
+                 MessageUtil.formatMessage(LIVENESS_SEND_FAILURE
+                 ,targetName + failureMsg), targetName, failure));
         }
     }
 

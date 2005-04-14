@@ -291,4 +291,20 @@ public interface MessageKeys {
      * Message key: Failed to get InetAddress of the localhost
      */
     public static String MSG_FAILED_INET_ADDRESS_LOOKUP = "MSG_FAILED_INET_ADDRESS_LOOKUP";
+
+    /**
+     * Message key: Component terminated. Used by SmartFrogLivenessException
+     */
+    public static String COMPONENT_TERMINATED = "COMPONENT_TERMINATED";
+
+    /**
+     * Message key: Liveness send failure message when called is known.
+     */
+    public static String LIVENESS_SEND_FAILURE_IN = "LIVENESS_SEND_FAILURE_IN";
+
+    /**
+     * Message key: Liveness send failure message when called is unknown.
+     */
+    public static String LIVENESS_SEND_FAILURE = "LIVENESS_SEND_FAILURE";
+
 }
