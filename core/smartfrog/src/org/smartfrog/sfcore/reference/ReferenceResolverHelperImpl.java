@@ -125,7 +125,7 @@ import java.io.File;
     public Object sfResolve(Reference reference, boolean mandatory)
             throws SmartFrogResolutionException{
         try {
-            Object referenceObj = sfResolve(reference, 0);
+            Object referenceObj = sfResolve(reference);
             return (referenceObj);
         } catch (SmartFrogResolutionException e) {
             if (mandatory) {
@@ -176,7 +176,7 @@ import java.io.File;
         boolean mandatory) throws SmartFrogResolutionException {
         boolean illegalClassType = false;
         try {
-            Object referenceObj = sfResolve(reference, 0);
+            Object referenceObj = sfResolve(reference);
 
             if (referenceObj instanceof Boolean) {
                 return (((Boolean) referenceObj).booleanValue());
@@ -218,7 +218,7 @@ import java.io.File;
         boolean illegalClassType = false;
 
         try {
-            Object referenceObj = sfResolve(reference, 0);
+            Object referenceObj = sfResolve(reference);
 
             if (referenceObj instanceof Integer) {
                 return (((Integer) referenceObj).intValue());
@@ -289,7 +289,7 @@ import java.io.File;
         boolean illegalClassType = false;
 
         try {
-            Object referenceObj = sfResolve(reference, 0);
+            Object referenceObj = sfResolve(reference);
 
             if ((referenceObj instanceof Long) ||
                     (referenceObj instanceof Integer)) {
@@ -359,7 +359,7 @@ import java.io.File;
         boolean illegalClassType = false;
 
         try {
-            Object referenceObj = sfResolve(reference, 0);
+            Object referenceObj = sfResolve(reference);
 
             if ((referenceObj instanceof Float) ||
                     (referenceObj instanceof Integer)) {
@@ -430,7 +430,7 @@ import java.io.File;
         boolean illegalClassType = false;
 
         try {
-            Object referenceObj = sfResolve(reference, 0);
+            Object referenceObj = sfResolve(reference);
 
             if ((referenceObj instanceof Float) ||
                     (referenceObj instanceof Integer)
@@ -503,7 +503,7 @@ import java.io.File;
         boolean illegalClassType = false;
 
         try {
-            Object referenceObj = sfResolve(reference, 0);
+            Object referenceObj = sfResolve(reference);
             if (referenceObj instanceof SFNull) {return null;}
 
             if (referenceObj instanceof String) {
@@ -546,7 +546,7 @@ import java.io.File;
         boolean illegalClassType = false;
 
         try {
-            Object referenceObj = sfResolve(reference, 0);
+            Object referenceObj = sfResolve(reference);
             if (referenceObj instanceof SFNull) {return null;}
 
             if (referenceObj instanceof Vector) {
@@ -589,7 +589,7 @@ import java.io.File;
         boolean illegalClassType = false;
 
         try {
-            Object referenceObj = sfResolve(reference, 0);
+            Object referenceObj = sfResolve(reference);
             if (referenceObj instanceof SFNull) {return null;}
 
             if (referenceObj instanceof Vector) {
@@ -639,7 +639,7 @@ import java.io.File;
         boolean illegalClassType = false;
 
         try {
-            Object referenceObj = sfResolve(reference, 0);
+            Object referenceObj = sfResolve(reference);
             if (referenceObj instanceof SFNull) {return null;}
 
             if (referenceObj instanceof String) {
@@ -685,7 +685,7 @@ import java.io.File;
         boolean illegalClassType = false;
 
         try {
-            Object referenceObj = sfResolve(reference, 0);
+            Object referenceObj = sfResolve(reference);
             if (referenceObj instanceof SFNull) {return null;}
 
             if (referenceObj instanceof ComponentDescription) {
@@ -730,7 +730,7 @@ import java.io.File;
         boolean illegalClassType = false;
 
         try {
-            Object referenceObj = sfResolve(reference, 0);
+            Object referenceObj = sfResolve(reference);
             if (referenceObj instanceof SFNull) {return null;}
 
             if (referenceObj instanceof Reference) {
@@ -775,7 +775,7 @@ import java.io.File;
         boolean illegalClassType = false;
 
         try {
-            Object referenceObj = sfResolve(reference, 0);
+            Object referenceObj = sfResolve(reference);
             if (referenceObj instanceof SFNull) {return null;}
 
             if (referenceObj instanceof Prim) {
@@ -820,7 +820,7 @@ import java.io.File;
         boolean illegalClassType = false;
 
         try {
-            Object referenceObj = sfResolve(reference, 0);
+            Object referenceObj = sfResolve(reference);
             if (referenceObj instanceof SFNull) {return null;}
 
             if (referenceObj instanceof Compound) {
@@ -866,7 +866,7 @@ import java.io.File;
         boolean illegalClassType = false;
 
         try {
-            Object referenceObj = sfResolve(reference, 0);
+            Object referenceObj = sfResolve(reference);
             if (referenceObj instanceof SFNull) {return null;}
 
             if (referenceObj instanceof java.net.InetAddress) {
@@ -920,7 +920,7 @@ import java.io.File;
         boolean illegalClassType = false;
 
         try {
-            Object referenceObj = sfResolve(reference, 0);
+            Object referenceObj = sfResolve(reference);
             if (referenceObj instanceof SFNull) {return null;}
 
             if (referenceObj instanceof java.net.URL) {
@@ -971,7 +971,7 @@ import java.io.File;
         boolean mandatory) throws SmartFrogResolutionException{
         boolean illegalClassType = false;
         try {
-            Object referenceObj = sfResolve(reference, 0);
+            Object referenceObj = sfResolve(reference);
             if (referenceObj instanceof SFNull) {return null;}
             if ((defaultValue==null) || ( defaultValue.getClass().isAssignableFrom(referenceObj.getClass()))) {
                 return (referenceObj);

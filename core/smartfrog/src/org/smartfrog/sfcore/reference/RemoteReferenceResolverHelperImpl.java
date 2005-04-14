@@ -125,7 +125,7 @@ import java.rmi.RemoteException;
     public Object sfResolve(Reference reference, boolean mandatory)
             throws SmartFrogResolutionException, RemoteException{
         try {
-            Object referenceObj = sfResolve(reference, 0);
+            Object referenceObj = sfResolve(reference);
             return (referenceObj);
         } catch (SmartFrogResolutionException e) {
             if (mandatory) {
@@ -177,7 +177,7 @@ import java.rmi.RemoteException;
         boolean illegalClassType = false;
 
         try {
-            Object referenceObj = sfResolve(reference, 0);
+            Object referenceObj = sfResolve(reference);
 
             if (referenceObj instanceof Boolean) {
                 return (((Boolean) referenceObj).booleanValue());
@@ -219,7 +219,7 @@ import java.rmi.RemoteException;
         boolean illegalClassType = false;
 
         try {
-            Object referenceObj = sfResolve(reference, 0);
+            Object referenceObj = sfResolve(reference);
 
             if (referenceObj instanceof Integer) {
                 return (((Integer) referenceObj).intValue());
@@ -290,7 +290,7 @@ import java.rmi.RemoteException;
         boolean illegalClassType = false;
 
         try {
-            Object referenceObj = sfResolve(reference, 0);
+            Object referenceObj = sfResolve(reference);
 
             if ((referenceObj instanceof Long) ||
                     (referenceObj instanceof Integer)) {
@@ -360,7 +360,7 @@ import java.rmi.RemoteException;
         boolean illegalClassType = false;
 
         try {
-            Object referenceObj = sfResolve(reference, 0);
+            Object referenceObj = sfResolve(reference);
 
             if ((referenceObj instanceof Float) ||
                     (referenceObj instanceof Integer)) {
@@ -431,7 +431,7 @@ import java.rmi.RemoteException;
         boolean illegalClassType = false;
 
         try {
-            Object referenceObj = sfResolve(reference, 0);
+            Object referenceObj = sfResolve(reference);
 
             if ((referenceObj instanceof Float) ||
                     (referenceObj instanceof Integer)
@@ -504,7 +504,7 @@ import java.rmi.RemoteException;
         boolean illegalClassType = false;
 
         try {
-            Object referenceObj = sfResolve(reference, 0);
+            Object referenceObj = sfResolve(reference);
             if (referenceObj instanceof SFNull) {return null;}
 
             if (referenceObj instanceof String) {
@@ -547,7 +547,7 @@ import java.rmi.RemoteException;
         boolean illegalClassType = false;
 
         try {
-            Object referenceObj = sfResolve(reference, 0);
+            Object referenceObj = sfResolve(reference);
             if (referenceObj instanceof SFNull) {return null;}
 
             if (referenceObj instanceof Vector) {
@@ -590,7 +590,7 @@ import java.rmi.RemoteException;
         boolean illegalClassType = false;
 
         try {
-            Object referenceObj = sfResolve(reference, 0);
+            Object referenceObj = sfResolve(reference);
             if (referenceObj instanceof SFNull) {return null;}
 
             if (referenceObj instanceof Vector) {
@@ -641,7 +641,7 @@ import java.rmi.RemoteException;
         boolean illegalClassType = false;
 
         try {
-            Object referenceObj = sfResolve(reference, 0);
+            Object referenceObj = sfResolve(reference);
             if (referenceObj instanceof SFNull) {return null;}
 
             if (referenceObj instanceof String) {
@@ -687,7 +687,7 @@ import java.rmi.RemoteException;
         boolean illegalClassType = false;
 
         try {
-            Object referenceObj = sfResolve(reference, 0);
+            Object referenceObj = sfResolve(reference);
             if (referenceObj instanceof SFNull) {return null;}
 
             if (referenceObj instanceof ComponentDescription) {
@@ -732,7 +732,7 @@ import java.rmi.RemoteException;
         boolean illegalClassType = false;
 
         try {
-            Object referenceObj = sfResolve(reference, 0);
+            Object referenceObj = sfResolve(reference);
             if (referenceObj instanceof SFNull) {return null;}
 
             if (referenceObj instanceof Reference) {
@@ -777,7 +777,7 @@ import java.rmi.RemoteException;
         boolean illegalClassType = false;
 
         try {
-            Object referenceObj = sfResolve(reference, 0);
+            Object referenceObj = sfResolve(reference);
             if (referenceObj instanceof SFNull) {return null;}
 
             if (referenceObj instanceof Prim) {
@@ -822,7 +822,7 @@ import java.rmi.RemoteException;
         boolean illegalClassType = false;
 
         try {
-            Object referenceObj = sfResolve(reference, 0);
+            Object referenceObj = sfResolve(reference);
             if (referenceObj instanceof SFNull) {return null;}
 
             if (referenceObj instanceof Compound) {
@@ -868,7 +868,7 @@ import java.rmi.RemoteException;
         boolean illegalClassType = false;
 
         try {
-            Object referenceObj = sfResolve(reference, 0);
+            Object referenceObj = sfResolve(reference);
             if (referenceObj instanceof SFNull) {return null;}
 
             if (referenceObj instanceof java.net.InetAddress) {
@@ -923,7 +923,7 @@ import java.rmi.RemoteException;
         boolean illegalClassType = false;
 
         try {
-            Object referenceObj = sfResolve(reference, 0);
+            Object referenceObj = sfResolve(reference);
             if (referenceObj instanceof SFNull) {return null;}
 
             if (referenceObj instanceof java.net.URL) {
@@ -974,7 +974,7 @@ import java.rmi.RemoteException;
         boolean mandatory) throws SmartFrogResolutionException, RemoteException{
         boolean illegalClassType = false;
         try {
-            Object referenceObj = sfResolve(reference, 0);
+            Object referenceObj = sfResolve(reference);
             if (referenceObj instanceof SFNull) {return null;}
             if ((defaultValue==null) || ( defaultValue.getClass().isAssignableFrom(referenceObj.getClass()))) {
                 return (referenceObj);
