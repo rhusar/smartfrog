@@ -347,8 +347,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
                 }
             }
         } catch (RemoteException rex) {
-            throw new SmartFrogRuntimeException(MSG_FAILED_TO_CONTACT_PARENT,
-                                                rex, this);
+            throw new SmartFrogRuntimeException(MSG_FAILED_TO_CONTACT_PARENT, rex, this);
         }
         if (sfLog().isTraceEnabled()) sfLog().trace("Started ProcessCompound '"+sfProcessName+"'");
     }
@@ -376,10 +375,6 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
                     // is started.
                     url = (String)props.get(key);
                     name = key.substring(SmartFrogCoreProperty.defaultDescPropBase.length());
-
-// No needed any more with sfCreateNewApp
-//                    nameContext = new ContextImpl();
-//                    nameContext.put(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME, name);
 
                     ComponentDescription cd = ComponentDescriptionImpl.sfComponentDescription(url.trim());
                     p = sfCreateNewApp(name, cd, nameContext);
