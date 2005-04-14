@@ -541,7 +541,8 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
             // so that references work
             for (Enumeration e = sfContext.keys(); e.hasMoreElements(); ) {
                 Object value = sfContext.get(e.nextElement());
-                if (value instanceof ComponentDescription) {
+                // Only set prim parent for LAZY descriptions. Otherwise not needed because it will be deployed.
+                if ((value instanceof ComponentDescription) && (!((ComponentDescription)value).getEager())) {
                     ((ComponentDescription)value).setPrimParent(this);
                 }
             }
