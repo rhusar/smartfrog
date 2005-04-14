@@ -105,7 +105,7 @@ public class DefaultRootLocatorImpl implements RootLocator, MessageKeys {
      *
      * @see #getRootProcessCompound
      */
-    public void setRootProcessCompound(ProcessCompound c)
+    public synchronized void setRootProcessCompound(ProcessCompound c)
         throws SmartFrogException, RemoteException {
 
         registryPort = getRegistryPort(c);
@@ -134,7 +134,7 @@ public class DefaultRootLocatorImpl implements RootLocator, MessageKeys {
      * @throws SmartFrogRuntimeException if failed to unbind
      *
      */
-    public void unbindRootProcessCompound()
+    public synchronized void unbindRootProcessCompound()
         throws SmartFrogException, RemoteException{
        if (registry!=null) {
         try {
