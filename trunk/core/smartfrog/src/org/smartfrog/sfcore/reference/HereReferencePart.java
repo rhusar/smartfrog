@@ -43,41 +43,17 @@ public class HereReferencePart extends ReferencePart {
     private boolean wasMarshalled = false;
 
     public Object getValue() {
-        if (value instanceof MarshalledObject && !wasMarshalled) {
-            try {
-                return ((MarshalledObject)value).get();
-            } catch (ClassNotFoundException ex) {
-                if (sfGetProcessLog().isErrorEnabled()) {
-                   sfGetProcessLog().error("HereReferencePart.getValue()",ex);
-                 }
-                return null;
-            } catch (IOException ex) {
-                if (sfGetProcessLog().isErrorEnabled()) {
-                   sfGetProcessLog().error("HereReferencePart.getValue()",ex);
-                 }
-                return null;
-            }
-        } else {
             return value;
-        }
     }
 
+    /**
+     * Sets new value and returs old value.
+     * @param value Object
+     * @return Object
+     */
     public Object setValue (Object value){
         Object oldValue = getValue();
-        if (value instanceof MarshalledObject){
-            wasMarshalled = true;
-            this.value=value;
-        } else {
-            try {
-                this.value = new MarshalledObject(value);
-            } catch (IOException ex) {
-                if (sfGetProcessLog().isErrorEnabled()) {
-                    sfGetProcessLog().error("HereReferencePart.getValue()",
-                                            ex);
-                }
-                this.value= value;
-            }
-        }
+        this.value=value;
         return oldValue;
     }
 
