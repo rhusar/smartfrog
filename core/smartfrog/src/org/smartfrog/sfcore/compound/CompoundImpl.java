@@ -265,89 +265,94 @@ public class CompoundImpl extends PrimImpl implements Compound {
      * component
      * @exception RemoteException In case of Remote/nework error
      */
-    public Prim sfCreateNewChild(Object name, Prim parent, ComponentDescription cmp, Context parms)
-        throws RemoteException, SmartFrogDeploymentException {
-      Prim comp = null;
+    public Prim sfCreateNewChild(Object name, Prim parent,
+                                 ComponentDescription cmp, Context parms) throws
+        RemoteException, SmartFrogDeploymentException {
+        Prim comp = null;
 
-      //component used to guard the double lifecycle called. Usually the parent but if no parent
-      // the the local ProcessCompound is used.
-      Prim phasedComp = parent;
-      if (phasedComp == null) {
-        phasedComp = org.smartfrog.sfcore.processcompound.SFProcess.getProcessCompound();
-      }
+        //component used to guard the double lifecycle called. Usually the parent but if no parent
+        // the the local ProcessCompound is used.
+        Prim phasedComp = parent;
+        if (phasedComp==null) {
+            phasedComp = org.smartfrog.sfcore.processcompound.SFProcess.getProcessCompound();
+        }
 
-      if (parms == null) parms = new ContextImpl();
-      try {
-        // This is needed so that the root component is properly named
-        // when registering with the ProcessCompound
-        if ((parent==null)&&(name!=null)) parms.put(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME, name);
+        if (parms==null)parms = new ContextImpl();
+        try {
+            // This is needed so that the root component is properly named
+            // when registering with the ProcessCompound
+            if ((parent==null)&&(name!=null))parms.put(SmartFrogCoreKeys.SF_PROCESS_COMPONENT_NAME, name);
 
             if (sfLog().isTraceEnabled()) {
                 try {
-                  if (parent!=null) {
-                    sfLog().trace("Creating new child '"+name+"' for: " + parent.sfCompleteName() + ", with description: " +  cmp.toString() + ", and parameters: " + parms);
-                  } else {
-                    sfLog().trace("Creating new application: " + name + ", with description: " +  cmp.toString() + ", and parameters: " + parms);
-                  }
+                    if (parent!=null) {
+                        sfLog().trace("Creating new child '"+name+"' for: "+
+                                      parent.sfCompleteName()+
+                                      ", with description: "+cmp.toString()+
+                                      ", and parameters: "+parms);
+                    } else {
+                        sfLog().trace("Creating new application: "+name+
+                                      ", with description: "+cmp.toString()+
+                                      ", and parameters: "+parms);
+                    }
                 } catch (Exception ex1) {
                     sfLog().trace(ex1.toString());
                 }
             }
             comp = ((Compound)phasedComp).sfDeployComponentDescription(name, parent, cmp, parms);
             // it is now a child, so need to guard against double calling of lifecycle...
-                try {
-                    comp.sfDeploy();
-                } catch (Throwable thr) {
-                  if (thr instanceof SmartFrogLifecycleException){
-                      throw (SmartFrogLifecycleException) SmartFrogLifecycleException.forward(thr);
-                  }
-                  throw SmartFrogLifecycleException.sfDeploy("Failed to create a new child.",thr,this);
+            try {
+                comp.sfDeploy();
+            } catch (Throwable thr) {
+                if (thr instanceof SmartFrogLifecycleException) {
+                    throw (SmartFrogLifecycleException) SmartFrogLifecycleException.forward(thr);
                 }
-                try {
-                    comp.sfStart(); // otherwise let the start of this component do it...
-                } catch (Throwable thr) {
-                  if (thr instanceof SmartFrogLifecycleException){
-                      throw (SmartFrogLifecycleException) SmartFrogLifecycleException.forward(thr);
-                  }
-                  throw SmartFrogLifecycleException.sfStart("Failed to create a new child.",thr,this);
+                throw SmartFrogLifecycleException.sfDeploy("Failed to create a new child.", thr, this);
+            }
+            try {
+                comp.sfStart(); // otherwise let the start of this component do it...
+            } catch (Throwable thr) {
+                if (thr instanceof SmartFrogLifecycleException) {
+                    throw (SmartFrogLifecycleException) SmartFrogLifecycleException.forward(thr);
                 }
-    } catch (Exception e) {
-        if ( comp != null ) {
-          Reference compName = null;
-          try {
-              compName = comp.sfCompleteName();
-          } catch (Throwable thr) {
-          }
-          try {
-              if (parent != null) {
-                comp.sfDetachAndTerminate(TerminationRecord.abnormal("Deployment Failure: " + e.getMessage(), compName,e));
-              } else {
-                comp.sfTerminate(TerminationRecord.abnormal( "Deployment Failure: " + e.getMessage(), compName,e));
-              }
-          } catch (Exception ex) {
-              //log
-              ignoreThrowable("Could not terminate", ex);
-          }
+                throw SmartFrogLifecycleException.sfStart("Failed to create a new child.", thr, this);
+            }
+        } catch (Exception e) {
+            if (comp!=null) {
+                Reference compName = null;
+                try { compName = comp.sfCompleteName(); } catch (Throwable thr) { }
+                try {
+                    if (parent!=null) {
+                        comp.sfDetachAndTerminate(TerminationRecord.abnormal(
+                            "Deployment Failure: "+e.getMessage(), compName, e));
+                    } else {
+                        comp.sfTerminate(TerminationRecord.abnormal(
+                            "Deployment Failure: "+e.getMessage(), compName, e));
+                    }
+                } catch (Exception ex) {
+                    //log
+                    ignoreThrowable("Could not terminate", ex);
+                }
+            }
+            throw (SmartFrogDeploymentException)SmartFrogDeploymentException.forward(e);
         }
-        throw (SmartFrogDeploymentException) SmartFrogDeploymentException.forward(e);
-    }
 
-    if (sfLog().isTraceEnabled()) {
-      try {
-        if (parent!=null){
-          sfLog().trace("New child created: " + comp.sfCompleteName() + " ");
-        } else {
-          sfLog().trace("New application created: " + comp.sfCompleteName() + " ");
+        if (sfLog().isTraceEnabled()) {
+            try {
+                if (parent!=null) {
+                    sfLog().trace("New child created: "+comp.sfCompleteName()+ " ");
+                } else {
+                    sfLog().trace("New application created: "+ comp.sfCompleteName()+" ");
+                }
+            } catch (Exception ex1) {
+                sfLog().trace(ex1.toString());
+            }
         }
-      } catch (Exception ex1) {
-        sfLog().trace(ex1.toString());
-      }
+        return comp;
     }
-    return comp;
-  }
 
     //
-    // ChildMinder
+    // ChildMinder interface
     //
 
     /**
