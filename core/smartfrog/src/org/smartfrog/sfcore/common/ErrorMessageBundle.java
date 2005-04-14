@@ -105,7 +105,10 @@ public class ErrorMessageBundle extends ListResourceBundle
         { COPY_SERIALIZE_FAILED , "Attempt to copy data failed, exception during serialize/deserialize {0}"},
         { COPY_FAILED , "Attempt to copy data failed, data not serializable {0}"},
         { MSG_OBJECT_REGISTRATION_FAILED, "Failed to register/export the object"},
-        { MSG_FAILED_INET_ADDRESS_LOOKUP, "Failed to get Inet address of the localhost"}
+        { MSG_FAILED_INET_ADDRESS_LOOKUP, "Failed to get Inet address of the localhost"},
+        { LIVENESS_SEND_FAILURE_IN , "Liveness Send Failure in {0} when calling {1}"},
+        { LIVENESS_SEND_FAILURE , "Liveness Send Failure when calling {1}"},
+        { COMPONENT_TERMINATED, "Component Terminated"}
     };
 
     /**
