@@ -658,7 +658,9 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
         try {
             descr = (new SFParser(language)).sfParseResource(url);
         } catch (Exception thr) {
-            throw new SmartFrogResolutionException("Error resolving '"+url+"'. "+ MessageUtil.formatMessage(MSG_ERR_PARSE), thr);
+            throw new SmartFrogResolutionException("Error resolving '"+url+"'. "
+                + MessageUtil.formatMessage(MSG_ERR_PARSE)
+                +"["+thr.toString()+"]", thr);
         }
         try {
             if (phases==null) {
@@ -667,7 +669,9 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
                descr = descr.sfResolvePhases(phases);
             }
         } catch (Exception thr) {
-            throw new SmartFrogResolutionException ("Error resolving '"+url+"'. "+MessageUtil.formatMessage(MSG_ERR_RESOLVE_PHASE), thr);
+            throw new SmartFrogResolutionException ("Error resolving '"+url+"'. "
+                +MessageUtil.formatMessage(MSG_ERR_RESOLVE_PHASE)
+                +"["+thr.toString()+"]", thr);
         }
         Object obj=null;
         if (ref !=null) {
