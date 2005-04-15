@@ -387,9 +387,7 @@ public class SFProcess implements MessageKeys {
             new InterruptHandler().bind("INT");
         }
 
-
-        ComponentDescription descr =
-              (ComponentDescription) getProcessCompoundDescription().copy();
+        ComponentDescription descr = (ComponentDescription) getProcessCompoundDescription().copy();
 
         try {
             // A process compound sets processcompound in SFProcess at the end of its
@@ -490,12 +488,7 @@ public class SFProcess implements MessageKeys {
     public static ComponentDescription getCoreProcessCompoundDescription()
         throws SmartFrogException, RemoteException {
         String urlProcessCompound ="org/smartfrog/sfcore/processcompound/processcompound.sf";
-        Vector phases = new Vector();
-        phases.add("type");
-        phases.add("link");
-        phases.add("function");
-        phases.add("predicate");
-        return ComponentDescriptionImpl.sfComponentDescription(urlProcessCompound, phases, refProcessCompound);
+        return ComponentDescriptionImpl.sfComponentDescription(urlProcessCompound);
     }
 
 
