@@ -115,39 +115,39 @@ To use: ant -f buildRelease release
   <target name="release" depends="init, initrelease, copy-file" description="Creates zip with release packages"> 
    <zip destfile="../releases/${Name.System}.${version}.${DSTAMP}.zip">
        <zipfileset dir="." prefix="${Name.System}.${version}">
-	<include name="common.xml"/>
-    <include name="docs/ExceptionTestCases.xls"/>
-	<include name="docs/JunitHarness.html"/>
-	<include name="docs/RSTestHarness.doc"/>
-	<include name="docs/SystemTestCases.xls"/>
-	<include name="docs/XP_and_junit.ppt"/>
-	<include name="test/**"/>
-	<include name="testcases/**"/>
-	<include name="testcases/build.xml"/>
-	<include name="extras/**"/>
-        <include name="build.xml"/>
-        <include name="buildRelease.xml"/>
-	<include name="rmitargets"/>
-        <exclude name="**/CVS" />
-        <exclude name="**/*.dfPackage" />
-        <exclude name="**/Cvs" />
-        <exclude name="**/.#*" />
-        <exclude name="**/*.*~" />
+          <include name="common.xml"/>
+          <include name="docs/ExceptionTestCases.xls"/>
+          <include name="docs/JunitHarness.html"/>
+          <include name="docs/RSTestHarness.doc"/>
+          <include name="docs/SystemTestCases.xls"/>
+          <include name="docs/XP_and_junit.ppt"/>
+          <include name="test/**"/>
+          <include name="testcases/**"/>
+          <include name="testcases/build.xml"/>
+          <include name="extras/**"/>
+          <include name="build.xml"/>
+          <include name="buildRelease.xml"/>
+          <include name="rmitargets"/>
+          <exclude name="**/CVS" />
+          <exclude name="**/*.dfPackage" />
+          <exclude name="**/Cvs" />
+          <exclude name="**/.#*" />
+          <exclude name="**/*.*~" />
        </zipfileset>
    </zip>
     
    <tar tarfile="../releases/${Name.System}.${version}.${DSTAMP}.tar">
       <tarfileset dir="." prefix="${Name.System}.${version}">
         <include name="docs/ExceptionTestCases.xls"/>
-	<include name="docs/JunitHarness.html"/>
-	<include name="docs/RSTestHarness.doc"/>
-	<include name="docs/SystemTestCases.xls"/>
-	<include name="docs/XP_and_junit.ppt"/>
-	<include name="test/**"/>
-	<include name="testcases/**"/>
-    <include name="testcases/build.xml"/>
-    <include name="extras/**"/>
-	<include name="common.xml"/>
+        <include name="docs/JunitHarness.html"/>
+        <include name="docs/RSTestHarness.doc"/>
+        <include name="docs/SystemTestCases.xls"/>
+        <include name="docs/XP_and_junit.ppt"/>
+        <include name="test/**"/>
+        <include name="testcases/**"/>
+        <include name="testcases/build.xml"/>
+        <include name="extras/**"/>
+        <include name="common.xml"/>
         <include name="build.xml"/>
         <include name="buildRelease.xml"/>
         <include name="rmitargets"/>
@@ -155,7 +155,7 @@ To use: ant -f buildRelease release
         <exclude name="**/*.dfPackage" />
         <exclude name="**/Cvs" />
         <exclude name="**/.#*" />
-	<exclude name="**/*.*~" />
+        <exclude name="**/*.*~" />
       </tarfileset>
   </tar>
   
