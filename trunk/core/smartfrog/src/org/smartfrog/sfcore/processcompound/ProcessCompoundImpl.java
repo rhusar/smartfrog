@@ -383,8 +383,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
 
         } catch (SmartFrogException sfex){
            if (sfex instanceof SmartFrogDeploymentException) throw sfex;
-           else throw new SmartFrogDeploymentException
-             ("deploying default description for '" + key+"'", sfex,comp,nameContext);
+           else throw new SmartFrogDeploymentException ("deploying default description for '" + key+"'", sfex,comp,nameContext);
         }
     }
 

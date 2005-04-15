@@ -657,18 +657,17 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
         Phases descr = null;
         try {
             descr = (new SFParser(language)).sfParseResource(url);
-        } catch (Throwable thr) {
-            throw SmartFrogException.forward(MessageUtil.formatMessage(MSG_ERR_PARSE), thr);
+        } catch (Exception thr) {
+            throw new SmartFrogResolutionException("Error resolving '"+url+"'. "+ MessageUtil.formatMessage(MSG_ERR_PARSE), thr);
         }
         try {
             if (phases==null) {
                descr = descr.sfResolvePhases();
-
             } else {
                descr = descr.sfResolvePhases(phases);
             }
-        } catch (Throwable thr) {
-            throw SmartFrogException.forward(MessageUtil.formatMessage(MSG_ERR_RESOLVE_PHASE), thr);
+        } catch (Exception thr) {
+            throw new SmartFrogResolutionException ("Error resolving '"+url+"'. "+MessageUtil.formatMessage(MSG_ERR_RESOLVE_PHASE), thr);
         }
         Object obj=null;
         if (ref !=null) {
