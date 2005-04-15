@@ -108,7 +108,7 @@ public class Version {
         if (!status.trim().equals("")){
             newStatus="_"+status;
         } else newStatus="";
-        return name+" "+majorRelease+"."+minorRelease+"."+build+"_"+status;
+        return name+" "+majorRelease+"."+minorRelease+"."+build+newStatus;
     }
 
     /**
