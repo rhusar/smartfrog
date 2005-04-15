@@ -21,7 +21,7 @@ For more information: www.smartfrog.org
 #include "org/smartfrog/components.sf"
 
 ProcessCompound extends Compound {
-  sfClass 1; //"org.smartfrog.sfcore.processcompound.ProcessCompoundImpl";
+  sfClass "org.smartfrog.sfcore.processcompound.ProcessCompoundImpl";
   sfDeployerClass "org.smartfrog.sfcore.prim.PrimDeployerImpl";
   sfLivenessDelay 15;
   sfLivenessFactor 2;
