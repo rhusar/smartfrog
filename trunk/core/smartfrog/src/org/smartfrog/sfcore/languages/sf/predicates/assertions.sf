@@ -30,6 +30,7 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 
 */
 
-#include "/org/smartfrog/sfcore/languages/sf/predicates/tbd.sf"
-#include "/org/smartfrog/sfcore/languages/sf/predicates/assertions.sf"
-#include "/org/smartfrog/sfcore/languages/sf/predicates/schema.sf"
+
+Assertions extends {
+   phase.predicate "org.smartfrog.sfcore.languages.sf.predicates.Assertions";
+}
