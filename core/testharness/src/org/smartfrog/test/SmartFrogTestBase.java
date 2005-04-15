@@ -265,7 +265,7 @@ public abstract class SmartFrogTestBase extends TestCase {
      * @param faultText substring that must be in the text of the fault
      * @param details status string for reporting purposes
      */
-    private void assertFaultCauseAndTextContains(Throwable cause, String faultName,
+    protected void assertFaultCauseAndTextContains(Throwable cause, String faultName,
                                                  String faultText, String details) {
         //if we wanted the name of a fault
         if (faultName != null) {
