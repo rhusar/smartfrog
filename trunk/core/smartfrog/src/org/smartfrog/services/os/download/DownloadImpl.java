@@ -20,27 +20,20 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.os.download;
 
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.IOException;
-import java.io.File;
-import java.rmi.RemoteException;
-import java.net.URL;
-
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.prim.PrimImpl;
-import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.security.SFClassLoader;
-import org.smartfrog.sfcore.logging.LogSF;
-import org.smartfrog.sfcore.logging.LogFactory;
-import org.smartfrog.sfcore.logging.Log;
-import org.smartfrog.sfcore.utils.ComponentHelper;
-import org.smartfrog.services.filesystem.FileImpl;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.filesystem.FileUsingComponentImpl;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
+import org.smartfrog.sfcore.logging.Log;
+import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.utils.ComponentHelper;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.rmi.RemoteException;
 
 /**
  * Defines the Downloader class. It downloads the data from a given url.
@@ -128,9 +121,9 @@ public class DownloadImpl extends FileUsingComponentImpl implements Download {
      */
     public static void download(String url, File localFile, int blocksize)
             throws IOException {
-        /** FileOutputStream object. */
+        // FileOutputStream object.
         FileOutputStream fs = null;
-        /** InputStream. */
+        // InputStream. 
         InputStream is = null;
 
         byte[] b = new byte[blocksize];
