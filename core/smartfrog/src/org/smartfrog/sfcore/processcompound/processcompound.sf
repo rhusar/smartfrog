@@ -21,20 +21,36 @@ For more information: www.smartfrog.org
 #include "org/smartfrog/components.sf"
 
 ProcessCompound extends Compound {
-  sfClass "org.smartfrog.sfcore.processcompound.ProcessCompoundImpl";
+  sfClass 1; //"org.smartfrog.sfcore.processcompound.ProcessCompoundImpl";
   sfDeployerClass "org.smartfrog.sfcore.prim.PrimDeployerImpl";
   sfLivenessDelay 15;
   sfLivenessFactor 2;
   sfSyncTerminate true;
+
   sfProcessClass "org.smartfrog.SFSystem";
+  schemaPrim:sfProcessClass extends OptionalString {description "entry class to SmartFrog";}
+
   sfProcessJava "java";
+  schemaPrim:sfProcessJava extends OptionalString {description "name for java runtime";}
+
   //sfProcessClassPath "smartfrog.jar";
   //sfProcessReplaceClassPath false;
   //sfProcessAttributes {} //Component description for special attributes to pass to next subProcess.
+
   sfProcessAllow true;
+  schemaPrim:sfProcessAllow extends OptionalBoolean {description "decides if subprocesses are allowed in root process";}
+
   sfProcessTimeout 60;
+  schemaPrim:sfProcessTimeout extends OptionalInteger {description "timeout for subprocess deployment";}
+
   sfRootLocatorClass "org.smartfrog.sfcore.processcompound.DefaultRootLocatorImpl";
+  schemaPrim:sfRootLocatorClass extends OptionalString {description "class that implements root locator";}
+
   sfRootLocatorPort 3800;
+  schemaPrim:sfRootLocatorPort extends Integer {description "root locator port for SmartFrog";}
+
   // reference to root of current heirachy of processes - not necessarily a root process compound
   rootProcess LAZY ROOT;
 }
+
+sfConfig extends ProcessCompound;
