@@ -251,8 +251,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
     /**
      * A high-level component deployment method - creates a child of 'parent'
      * Compound, running it through its entire lifecycle. This is the preferred way
-     * of creating new child components of a Compound. The method is safe against
-     * multiple calls of lifecycle.
+     * of creating new child components of a Compound.
      *
      * @param name name of attribute which the deployed component should adopt
      * @param parent of deployer component
@@ -566,8 +565,6 @@ public class CompoundImpl extends PrimImpl implements Compound {
                 }
             }
         }
-        // Removes reference to the vector used to deploy children so it can be GC
-        lifecycleChildren = null;
     }
 
     /**
