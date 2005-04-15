@@ -20,15 +20,53 @@ For more information: www.smartfrog.org
 
 #include "org/smartfrog/components.sf"
 #include "org/smartfrog/functions.sf"
+#include "org/smartfrog/predicates.sf"
 #include "org/smartfrog/sfcore/workflow/components.sf"
+#include "org/smartfrog/services/filesystem/components.sf"
 #include "org/smartfrog/services/os/runshell/components.sf"
 
-Downloader extends Prim {
+
+DownloadComponent extends Prim {
+
+    downloadSchema extends DeletableFileSchema  {
+
+        /**
+         * URL is a string
+         */
+        url extends String;
+
+        /**
+         * local file is a string or a file reference
+         */
+        toLocalFile extends Compulsory;
+
+        /**
+         * block size to use
+         */
+        blocksize extends Integer;
+
+        /**
+         * terminate after downloading
+         */
+        shouldTerminate extends Boolean;
+
+
+    }
     sfClass "org.smartfrog.services.os.download.DownloadImpl";
+    blocksize 1024;
+    shouldTerminate false;
+    deleteOnExit false;
+}
+
+/**
+ * this was the original download component; DownloadComponent has been
+ * added as a predecessor with different defaults and a schema
+ */
+Downloader extends DownloadComponent {
     sfExport false;
     url "system.tar";            // set this to the URL to download
-    blocksize 1024;
     toLocalFile "/tmp/download"; // set this to the name of the file to create
+    shouldTerminate "true";
 }
 
 

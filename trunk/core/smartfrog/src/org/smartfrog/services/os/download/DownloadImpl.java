@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.io.IOException;
 import java.io.File;
 import java.rmi.RemoteException;
+import java.net.URL;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
@@ -35,14 +36,19 @@ import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.security.SFClassLoader;
 import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.logging.LogFactory;
+import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 import org.smartfrog.services.filesystem.FileImpl;
 import org.smartfrog.services.filesystem.FileSystem;
+import org.smartfrog.services.filesystem.FileUsingComponentImpl;
 
 /**
  * Defines the Downloader class. It downloads the data from a given url.
  */ 
-public class DownloadImpl extends PrimImpl implements Download {
+public class DownloadImpl extends FileUsingComponentImpl implements Download {
+    public static final String ERROR_IN_DOWNLOAD = "error in downloading of url ";
+
+    Log log;
 
     /**
      * Constructor.
@@ -61,12 +67,13 @@ public class DownloadImpl extends PrimImpl implements Download {
     public synchronized void sfStart() throws SmartFrogException,
             RemoteException {
         super.sfStart();
-        LogSF log = LogFactory.getLog(this);
+        log = sfGetApplicationLog();
         String url = "NOT YET SET";
         String localFile = "NOT YET SET";
+        boolean terminate = false;
 
         try {
-            url = (String) sfResolve("url");
+            url = (String) sfResolve(ATTR_URL);
             localFile =
                     FileSystem.lookupAbsolutePath(this,
                             ATTR_LOCALFILE,
@@ -76,24 +83,41 @@ public class DownloadImpl extends PrimImpl implements Download {
                             null);
 
             int blocksize = ((Integer) sfResolve(ATTR_BLOCKSIZE)).intValue();
+            terminate = sfResolve(ATTR_TERMINATE, terminate, true);
+            File file = new File(localFile);
+            bind(file);
 
-            download(url, new File(localFile), blocksize);
+            download(url, file, blocksize);
 
-            //spawn the thread to terminate normally
-            ComponentHelper helper = new ComponentHelper(this);
-            helper.targetForTermination();
+            if (terminate) {
+                //spawn the thread to terminate normally
+                ComponentHelper helper = new ComponentHelper(this);
+                helper.targetForTermination();
+            }
+
         } catch (IOException e) {
-            String errStr = "error in downloading of url " +
+            String errStr = ERROR_IN_DOWNLOAD +
                     url +
                     " to " +
                     localFile;
             if (log.isErrorEnabled()) {
                 log.error(errStr);
             }
-            //TODO : Need to be revisited
-            throw new SmartFrogLifecycleException(e, this);
+            throw SmartFrogLifecycleException.forward(errStr,e, this);
         }
     }
+
+
+    /**
+     * delete the file if needed
+     *
+     * @param status termination status
+     */
+    public synchronized void sfTerminateWith(TerminationRecord status) {
+        super.sfTerminateWith(status);
+        deleteFileIfNeeded();
+    }
+
 
     /**
      * Simple Download
@@ -116,7 +140,8 @@ public class DownloadImpl extends PrimImpl implements Download {
         localFile.getParentFile().mkdirs();
         try {
             // open the URL,
-            is = SFClassLoader.getResourceAsStream(url);
+            URL endpoint=new URL(url);
+            is = endpoint.openStream();
 
             // open the file,
             fs = new FileOutputStream(localFile);

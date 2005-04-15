@@ -22,11 +22,14 @@ package org.smartfrog.services.os.download;
 import java.rmi.Remote;
 
 /**
- * created 05-Apr-2005 11:04:23
+ * Download interface
  */
 
 
 public interface Download extends Remote{
     String ATTR_LOCALFILE = "toLocalFile";
     String ATTR_BLOCKSIZE = "blocksize";
+    String ATTR_URL = "url";
+    String ATTR_TERMINATE = "shouldTerminate";
+
 }
