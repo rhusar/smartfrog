@@ -606,11 +606,10 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      *
      * @return process compound description default phases Resolved
      *
-     * @throws RemoteException In case of network/rmi error
      * @throws SmartFrogRuntimeException In case of SmartFrog system error
      */
     public static ComponentDescription sfComponentDescription(String url)
-        throws SmartFrogException, RemoteException {
+        throws SmartFrogException {
         return sfComponentDescription(url,null,null);
     }
 
@@ -659,9 +658,9 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
         try {
             descr = (new SFParser(language)).sfParseResource(url);
         } catch (Exception thr) {
-            throw new SmartFrogException("Error creating parser for '"+url+"'. "
+            throw new SmartFrogResolutionException("Error creating parser for '"+url+"'. "
                 + MessageUtil.formatMessage(MSG_ERR_PARSE)
-                +"["+thr.toString()+"]", thr);
+                +" [ "+ thr.toString()+" ]", thr);
         }
         try {
             if (phases==null) {
@@ -670,9 +669,9 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
                descr = descr.sfResolvePhases(phases);
             }
         } catch (Exception thr) {
-            throw new SmartFrogException ("Error during parsing of '"+url+"'. "
+            throw new SmartFrogResolutionException ("Error during parsing of '"+url+"'. "
                 +MessageUtil.formatMessage(MSG_ERR_RESOLVE_PHASE)
-                +"["+thr.toString()+"]", thr);
+                +" [ "+ thr.toString()+" ]", thr);
         }
         Object obj=null;
         if (ref !=null) {
@@ -706,7 +705,6 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
       * @return process the selected ComponentDescription after compound
       *         description 'phases' are resolved
       *
-      * @throws RemoteException In case of network/rmi error
       * @throws SmartFrogRuntimeException In case of SmartFrog system error
       */
      public static ComponentDescription sfComponentDescriptionFromStr(String description,
@@ -716,7 +714,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
          try {
              descr = (new SFParser(language)).sfParse(description);
          } catch (Throwable thr) {
-             throw SmartFrogException.forward(MessageUtil.formatMessage(MSG_ERR_PARSE), thr);
+             throw SmartFrogResolutionException.forward(MessageUtil.formatMessage(MSG_ERR_PARSE), thr);
          }
          try {
              if (phases==null) {
@@ -726,7 +724,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
                 descr = descr.sfResolvePhases(phases);
              }
          } catch (Throwable thr) {
-             throw SmartFrogException.forward(MessageUtil.formatMessage(MSG_ERR_RESOLVE_PHASE), thr);
+             throw SmartFrogResolutionException.forward(MessageUtil.formatMessage(MSG_ERR_RESOLVE_PHASE), thr);
          }
          Object obj=null;
          if (ref !=null) {
