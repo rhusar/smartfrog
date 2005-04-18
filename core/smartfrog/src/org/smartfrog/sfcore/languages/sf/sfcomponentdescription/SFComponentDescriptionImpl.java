@@ -171,9 +171,9 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
      */
     public Object sfResolve(Reference r, int index)
         throws SmartFrogResolutionException {
-    if (!r.getEager() && (index == 0)) {
-        return r;
-    }
+        if (!r.getEager() && (index == 0)) {
+            return r;
+        }
         return r.resolve(this, index);
     }
 
@@ -188,7 +188,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
     *  the description tree, and doing place resolution. Places attributes which
     *  have a reference as a key in the right place.
     *
-    * @throws  SmartFrogCompileResoutionException failed to place resolve
+    * @throws  SmartFrogCompileResolutionException failed to place resolve
     */
    public void placeResolve() throws SmartFrogCompileResolutionException {
       ResolutionState resState = new ResolutionState();
@@ -442,7 +442,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
     *  If the value is an eager reference, it is resolved. The resulting value
     *  replaces the reference as the attribute value
     *
-    * @throws  SmartFrogCompileResoutionException failed to deploy resolve
+    * @throws  SmartFrogCompileResolutionException failed to deploy resolve
     */
    public void linkResolve() throws SmartFrogCompileResolutionException {
       ResolutionState resState = new ResolutionState();
@@ -599,7 +599,6 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
     *@return                      the resultant Phases object, ready for the
     *      next phase action or convertion into the core ComponentDescription
     *@throws  SmartFrogException  In case of SmartFrog system error
-    *@throws  RemoteException     In case of network/rmi error
     */
    public Phases sfResolvePhases() throws SmartFrogException {
       return sfResolvePhases(sfGetPhases());
@@ -613,7 +612,6 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
     *@return                      the resultant Phases object, ready for the
     *      next phase action or convertion into the core ComponentDescription
     *@throws  SmartFrogException  In case of SmartFrog system error
-    *@throws  RemoteException     In case of network/rmi error
     */
    public Phases sfResolvePhase(String phase)
           throws SmartFrogException {
@@ -633,11 +631,9 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
     *@return                      the resultant Phases object, ready for the
     *      next phase action or convertion into the core ComponentDescription
     *@throws  SmartFrogException  In case of SmartFrog system error
-    *@throws  RemoteException     In case of network/rmi error
     */
    public Phases sfResolvePhases(Vector phases)
           throws SmartFrogException {
-      boolean sfConfig = false;
       SFComponentDescription actOn = this;
 
       for (Enumeration e = phases.elements(); e.hasMoreElements(); ) {
