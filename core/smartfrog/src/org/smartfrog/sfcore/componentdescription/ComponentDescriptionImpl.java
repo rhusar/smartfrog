@@ -36,6 +36,7 @@ import org.smartfrog.sfcore.common.MessageKeys;
 import org.smartfrog.sfcore.common.MessageUtil;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogParseException;
 import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
@@ -658,7 +659,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
         try {
             descr = (new SFParser(language)).sfParseResource(url);
         } catch (Exception thr) {
-            throw new SmartFrogResolutionException("Error resolving '"+url+"'. "
+            throw new SmartFrogException("Error creating parser for '"+url+"'. "
                 + MessageUtil.formatMessage(MSG_ERR_PARSE)
                 +"["+thr.toString()+"]", thr);
         }
@@ -669,7 +670,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
                descr = descr.sfResolvePhases(phases);
             }
         } catch (Exception thr) {
-            throw new SmartFrogResolutionException ("Error resolving '"+url+"'. "
+            throw new SmartFrogException ("Error during parsing of '"+url+"'. "
                 +MessageUtil.formatMessage(MSG_ERR_RESOLVE_PHASE)
                 +"["+thr.toString()+"]", thr);
         }
