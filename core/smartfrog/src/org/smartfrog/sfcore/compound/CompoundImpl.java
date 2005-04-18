@@ -269,13 +269,6 @@ public class CompoundImpl extends PrimImpl implements Compound {
         RemoteException, SmartFrogDeploymentException {
         Prim comp = null;
 
-        //component used to guard the double lifecycle called. Usually the parent but if no parent
-        // the the local ProcessCompound is used.
-        Prim phasedComp = parent;
-        if (phasedComp==null) {
-            phasedComp = org.smartfrog.sfcore.processcompound.SFProcess.getProcessCompound();
-        }
-
         if (parms==null)parms = new ContextImpl();
         try {
             // This is needed so that the root component is properly named
@@ -298,7 +291,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
                     sfLog().trace(ex1.toString());
                 }
             }
-            comp = ((Compound)phasedComp).sfDeployComponentDescription(name, parent, cmp, parms);
+            comp = sfDeployComponentDescription(name, parent, cmp, parms);
             // it is now a child, so need to guard against double calling of lifecycle...
             try {
                 comp.sfDeploy();
