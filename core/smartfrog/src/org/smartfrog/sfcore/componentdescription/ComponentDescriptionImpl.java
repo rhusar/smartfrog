@@ -660,7 +660,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
         } catch (Exception thr) {
             throw new SmartFrogResolutionException("Error creating parser for '"+url+"'. "
                 + MessageUtil.formatMessage(MSG_ERR_PARSE)
-                +" [ "+ thr.toString()+" ]", thr);
+                +" ["+ thr.toString()+"]", thr);
         }
         try {
             if (phases==null) {
@@ -671,7 +671,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
         } catch (Exception thr) {
             throw new SmartFrogResolutionException ("Error during parsing of '"+url+"'. "
                 +MessageUtil.formatMessage(MSG_ERR_RESOLVE_PHASE)
-                +" [ "+ thr.toString()+" ]", thr);
+                +" ["+ thr.toString()+"]", thr);
         }
         Object obj=null;
         if (ref !=null) {
