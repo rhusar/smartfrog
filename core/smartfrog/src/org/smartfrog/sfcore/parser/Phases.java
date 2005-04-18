@@ -44,7 +44,6 @@ public interface Phases extends ComponentDescription {
      * defined phases
      *
      * @throws SmartFrogException error evaluating phases
-     * @throws RemoteException In case of Remote/nework error
      * */
     Phases sfResolvePhases() throws SmartFrogException;
 
@@ -56,7 +55,6 @@ public interface Phases extends ComponentDescription {
      * @return An instance of Phases that is the result of applying the phase.
      *
      * @throws SmartFrogException error evaluating phases
-     * @throws RemoteException In case of Remote/nework error
      */
     Phases sfResolvePhase(String phase)
         throws SmartFrogException;
