@@ -310,7 +310,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
     *  the description tree, and doing type resolution. Type resolution finds
     *  the supertype and subtypes it into this component.
     *
-    * @throws  SmartFrogCompileResoutionException failed to type resolve
+    * @throws  SmartFrogCompileResolutionException failed to type resolve
     */
    public void typeResolve() throws SmartFrogCompileResolutionException {
       ResolutionState resState = new ResolutionState();
