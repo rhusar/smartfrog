@@ -284,8 +284,9 @@ public abstract class SmartFrogTestBase extends TestCase {
             assertNotNull("expected throwable containing text "
                     + faultText,
                     cause);
-
-            assertContains(cause.toString(),
+//Modified by Julio. I need to validate this with Steve.
+//            assertContains(cause.toString(),
+                    assertContains(details,
                     faultText,
                     details,
                     extractDiagnosticsInfo(cause));
