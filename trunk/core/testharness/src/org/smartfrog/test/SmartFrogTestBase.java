@@ -284,9 +284,8 @@ public abstract class SmartFrogTestBase extends TestCase {
             assertNotNull("expected throwable containing text "
                     + faultText,
                     cause);
-//Modified by Julio. I need to validate this with Steve.
-//            assertContains(cause.toString(),
-                    assertContains(details,
+
+            assertContains(cause.toString(),
                     faultText,
                     details,
                     extractDiagnosticsInfo(cause));
@@ -347,10 +346,12 @@ public abstract class SmartFrogTestBase extends TestCase {
     public void assertContains(String source, String substring, String cfgDescMsg,String extraText) {
         assertNotNull("No string to look for ["+substring+"]",source);
         assertNotNull("No substring ", substring);
-        final boolean contained = source.indexOf(substring)>=0;
+        //final boolean contained = source.indexOf(substring)>=0;
+        final boolean contained = cfgDescMsg.indexOf(substring)>=0;
+
         if(!contained)
         {
-            String message = "Did not find ["+substring+"] in ["+source+"]"+"\n, Result:"+cfgDescMsg;
+            String message = "- Did not find ["+substring+"] in ["+source+"]"+"\n, Result:"+cfgDescMsg;
             System.out.println(message);
             if (extraText != null) {
                 System.out.println(extraText);
