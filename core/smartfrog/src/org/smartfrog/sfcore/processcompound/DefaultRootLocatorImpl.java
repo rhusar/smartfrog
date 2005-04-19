@@ -24,6 +24,7 @@ import java.net.InetAddress;
 import java.rmi.RemoteException;
 import java.rmi.registry.Registry;
 import java.rmi.NotBoundException;
+import java.rmi.AccessException;
 
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.MessageKeys;
@@ -32,6 +33,8 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.security.SFSecurity;
+import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 
 
 
@@ -46,6 +49,78 @@ import org.smartfrog.sfcore.security.SFSecurity;
  *
  */
 public class DefaultRootLocatorImpl implements RootLocator, MessageKeys {
+
+ /**
+  * A new thread is needed to bind/unbind the register. Otherwise, since
+  * the stack typically involves an RMI call, the register
+  *  will not let us do the unbind/bind (no remote modifications allowed)
+  *
+  */
+ private static class AsyncResetProcessCompound extends Thread {
+
+     private ProcessCompound pc;
+
+     private SmartFrogException ex = null;
+
+     private boolean bind = false;
+
+     /**
+      * A new thread is needed to bind/unbind the register. Otherwise, since
+      * the stack typically involves an RMI call, the register
+      *  will not let us do the unbind/bind (no remote modifications allowed)
+      *  If unbinding then PC can be null.
+      *  How to use it (ex: binding = true):
+      *      AsyncResetProcessCompound depThr = new AsyncResetProcessCompound(pc, true);
+      *      depThr.start();
+      *      // It holds the lock on SFProcess.class until the thread terminates
+      *     depThr.join();
+      *     // it re-throws exceptions in the thread here...
+      *     return depThr.getProcessCompound(); or depThr.getProcessCompound();
+      *
+      * @param pc ProcessCompound
+      * @param bind boolean
+      */
+     public AsyncResetProcessCompound(ProcessCompound pc, boolean bind) {
+         this.pc = pc;
+         this.bind = bind;
+     }
+
+     public void run() {
+         try {
+             if (bind){
+                //Bind
+                registry.bind(defaultName, pc);
+             }else {
+                //Unbind
+                registry.unbind(defaultName);
+             }
+         } catch (Exception e) {
+             // to be thrown in getProcessCompound
+             String msg = "unbinding";
+             if (bind) {msg = "binding";}
+             ex = SmartFrogRuntimeException.forward("Exception while "+msg
+                                             + "root ProcessCompound", e);
+         }
+     }
+
+     /**
+      * Gets the new Process compound or rethrows any exception that
+      * happened during the reset.
+      *
+      * @return The new process compound.
+      * @exception SmartFrogException if an error occurs during reset.
+      */
+     public ProcessCompound getProcessCompound()
+         throws SmartFrogException {
+         if (ex != null){
+             throw ex;
+         }
+         return pc;
+     }
+    }
+
+
+
     /** Name under which the root process compound will name itself. */
     protected static String defaultName = "RootProcessCompound";
 
@@ -114,7 +189,19 @@ public class DefaultRootLocatorImpl implements RootLocator, MessageKeys {
             if (registry==null) {
                 registry = SFSecurity.createRegistry(registryPort);
             }
-            registry.bind(defaultName, c);
+            //registry.bind(defaultName, c);
+            /**
+             * Uses a new thread to bind/unbind the register. Otherwise, since
+             * the stack typically involves an RMI call, the register
+             *  will not let us do the unbind/bind (no remote modifications allowed)
+             *
+             */
+             AsyncResetProcessCompound depThr = new AsyncResetProcessCompound(c, true);
+             depThr.start();
+             // It holds the lock on SFProcess.class until the thread terminates
+             depThr.join();
+             // it re-throws exceptions in the thread here...
+             depThr.getProcessCompound();
         } catch (Throwable t) {
             if (t instanceof java.rmi.server.ExportException){
                 throw new SmartFrogRuntimeException ( MessageUtil.formatMessage(MSG_ERR_SF_RUNNING) , t);
@@ -138,8 +225,21 @@ public class DefaultRootLocatorImpl implements RootLocator, MessageKeys {
         throws SmartFrogException, RemoteException{
        if (registry!=null) {
         try {
-            registry.unbind(defaultName);
-        } catch (NotBoundException ex) {
+            //registry.unbind(defaultName);
+            /**
+             * Uses a new thread to bind/unbind the register. Otherwise, since
+             * the stack typically involves an RMI call, the register
+             *  will not let us do the unbind/bind (no remote modifications allowed)
+             *
+             */
+             //Unbind (bindi=false)
+             AsyncResetProcessCompound depThr = new AsyncResetProcessCompound(null, false);
+             depThr.start();
+             // It holds the lock on SFProcess.class until the thread terminates
+             depThr.join();
+             // it re-throws exceptions in the thread here...
+             depThr.getProcessCompound();
+        } catch (Exception ex) {
           throw SmartFrogRuntimeException.forward(ex);
         }
        }
