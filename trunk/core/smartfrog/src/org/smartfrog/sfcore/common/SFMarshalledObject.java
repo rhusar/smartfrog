@@ -23,9 +23,10 @@ package org.smartfrog.sfcore.common;
 import java.rmi.MarshalledObject;
 
 import java.io.IOException;
+import java.io.Serializable;
 
 
-public class SFMarshalledObject {
+public class SFMarshalledObject implements Serializable{
 
     private Object value = null;
 
@@ -51,9 +52,7 @@ public class SFMarshalledObject {
     }
 
     public Object  set(Object value){
-        if (value instanceof SFMarshalledObject) {
-            System.out.println(((SFMarshalledObject)value).get().toString());
-        }
+
         Object oldValue = get();
         synchronized (value) {
             if (value instanceof MarshalledObject) {
