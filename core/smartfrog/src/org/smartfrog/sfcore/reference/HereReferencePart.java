@@ -20,11 +20,8 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.reference;
 
-
+import org.smartfrog.sfcore.common.SFMarshalledObject;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-
-import java.rmi.MarshalledObject;
-import java.io.*;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.logging.LogSF;
 
@@ -39,8 +36,6 @@ public class HereReferencePart extends ReferencePart {
 
     /** Value for here part. */
     private Object value = null;
-
-    private boolean wasMarshalled = false;
 
     public Object getValue() {
             return value;
@@ -192,7 +187,12 @@ public class HereReferencePart extends ReferencePart {
 
             // If the end we are there!
             if (index == (r.size() - 1)) {
-                return result;
+                //Marshall!
+                if (!(result instanceof SFMarshalledObject)) {
+                    return new SFMarshalledObject(result);
+                } else {
+                    return result;
+                }
             }
 
             // Else forward on to result

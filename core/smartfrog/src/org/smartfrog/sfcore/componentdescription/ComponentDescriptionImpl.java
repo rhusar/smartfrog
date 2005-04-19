@@ -47,6 +47,8 @@ import org.smartfrog.sfcore.parser.SFParser;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.reference.ReferenceResolverHelperImpl;
 
+import org.smartfrog.sfcore.common.SFMarshalledObject;
+
 
 /**
  * Defines the context class used by Components. Context implementations
@@ -430,6 +432,10 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      */
     public Object sfResolve(Reference r) throws SmartFrogResolutionException {
         Object obj = sfResolve(r, 0);
+        if (obj instanceof SFMarshalledObject){
+            //  Unmarshall!Obj.
+            obj = ((SFMarshalledObject)obj).get();
+        }
         try {
             if ((sflog()!= null) && sflog().isTraceEnabled()) {
                 sflog().trace("sfResolved: "+r.toString()+" to "+obj.toString());
