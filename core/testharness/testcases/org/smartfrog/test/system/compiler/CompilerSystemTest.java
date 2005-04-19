@@ -94,7 +94,7 @@ public class CompilerSystemTest extends SmartFrogTestBase {
                 "tcn10",
                 EXCEPTION_DEPLOYMENT,
                 null,
-                EXCEPTION_PARSE,
+                EXCEPTION_RESOLUTION,
                 "Encountered \"HOST\" ");
     }
 
@@ -103,8 +103,8 @@ public class CompilerSystemTest extends SmartFrogTestBase {
                 "tcn23",
                 EXCEPTION_DEPLOYMENT,
                 null,
-                EXCEPTION_COMPILE_RESOLUTION,
-                "Unresolved Reference");
+                EXCEPTION_RESOLUTION,
+                "Unresolved Reference, data: [CounterCompound in: HERE sfConfig:c2], resolutionPhase: type]");
     }
 
     public void testCaseTCN24() throws Exception {
@@ -129,7 +129,7 @@ public class CompilerSystemTest extends SmartFrogTestBase {
                 "tcn26",
                 EXCEPTION_DEPLOYMENT,
                 null,
-                EXCEPTION_PARSE,
+                EXCEPTION_RESOLUTION,
                 "Include file: org/smartfrog//sfcore/components.sf not found");
     }
     public void testCaseTCN27() throws Exception {
@@ -137,8 +137,8 @@ public class CompilerSystemTest extends SmartFrogTestBase {
                 "tcn27",
                 EXCEPTION_DEPLOYMENT,
                 null,
-                EXCEPTION_COMPILE_RESOLUTION,
-                "Unresolved Reference");
+                EXCEPTION_RESOLUTION,
+                "Unresolved Reference, data: [dataLazy in: HERE sfConfig:c3], source: HERE sfConfig, resolutionPhase: link] ");
     }
     public void testCaseTCN28() throws Exception {
         deployExpectingException(FILES + "tcn28.sf",
