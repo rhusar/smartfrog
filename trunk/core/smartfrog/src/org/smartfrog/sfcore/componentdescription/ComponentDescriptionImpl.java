@@ -36,7 +36,6 @@ import org.smartfrog.sfcore.common.MessageKeys;
 import org.smartfrog.sfcore.common.MessageUtil;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.common.SmartFrogParseException;
 import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
@@ -46,9 +45,7 @@ import org.smartfrog.sfcore.reference.ReferencePart;
 import org.smartfrog.sfcore.parser.Phases;
 import org.smartfrog.sfcore.parser.SFParser;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
-import org.smartfrog.sfcore.common.SmartFrogContextException;
 import org.smartfrog.sfcore.reference.ReferenceResolverHelperImpl;
-import java.rmi.RemoteException;
 
 
 /**
@@ -273,16 +270,16 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
     /**
      * Sets parent for this component.
      *
-     * @param p new parent component
+     * @param newparent new parent component
      *
      * @return old parent for description
      *
-     * @see #getParent
+     * @see #sfParent()
      */
-    public ComponentDescription setParent(ComponentDescription p) {
+    public ComponentDescription setParent(ComponentDescription newparent) {
         ComponentDescription op = parent;
-	primParent = null; // cannot have both!
-        parent = p;
+	    primParent = null; // cannot have both!
+        parent = newparent;
 
         return op;
     }
@@ -299,10 +296,10 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      *
      * @return component parent description
      *
-     * @see #setPrimParent
+     * @see #setPrimParent(Prim)
      */
     public Prim sfPrimParent() {
-	return primParent;
+        return primParent;
     }
 
     /**
@@ -314,16 +311,16 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      *
      * Sets parent for this component.
      *
-     * @param parent new parent component
+     * @param newparent new parent component
      *
      * @return old parent for description
      *
-     * @see #sfPrimParent
+     * @see #sfPrimParent()
      */
-    public Prim setPrimParent(Prim p) {
+    public Prim setPrimParent(Prim newparent) {
         Prim op = primParent;
-	parent = null; // cannot have both!
-        primParent = p;
+        parent = null; // cannot have both!
+        primParent = newparent;
 
         return op;
     }
@@ -410,13 +407,15 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * @return parent or null if no parent
      */
     public Object sfResolveParent() {
-	if (sfParent() == null)
-	    if (sfPrimParent() == null)
-		return null;
-	    else
-		return sfPrimParent();
-	else
-	    return sfParent();
+        if (sfParent() == null) {
+            if (sfPrimParent() == null) {
+                return null;
+            } else {
+                return sfPrimParent();
+            }
+        } else {
+            return sfParent();
+        }
     }
 
 
@@ -527,7 +526,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * @throws IOException failure while writing
      */
     public void writeOn(Writer ps) throws IOException {
-	writeOn(ps, 0);
+        writeOn(ps, 0);
     }
 
     /**
@@ -541,15 +540,16 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * @throws IOException failure while writing
      */
     public void writeOn(Writer ps, int indent) throws IOException {
-	ps.write("extends " + (getEager() ? "" : "LAZY "));
+        ps.write("extends " + (getEager() ? "" : "LAZY "));
 
-	if (context.size() > 0) {
-	    ps.write(" {\n");
-	    context.writeOn(ps, indent+1);
-	    tabPad(ps, indent); ps.write('}');
-	} else {
-	    ps.write(';');
-	}
+        if (context.size() > 0) {
+            ps.write(" {\n");
+            context.writeOn(ps, indent + 1);
+            tabPad(ps, indent);
+            ps.write('}');
+        } else {
+            ps.write(';');
+        }
     }
 
 
@@ -562,8 +562,9 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * @throws IOException failure while writing
      */
     protected void tabPad(Writer ps, int amount) throws IOException {
-        for (int i = 0; i < amount; i++)
+        for (int i = 0; i < amount; i++) {
             ps.write("  ");
+        }
     }
 
     /**
@@ -602,7 +603,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * Utility method that gets Component Description for URL after applying
      * default parser phases
      *
-     * @param String url to convert to ComponentDescription
+     * @param url URL to convert to ComponentDescription
      *
      * @return process compound description default phases Resolved
      *
@@ -617,11 +618,11 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * Utility method that gets Component Description for URL after applying
      * some parser phases
      *
-     * @param String url to convert to ComponentDescription. The url is used to
+     * @param url to convert to ComponentDescription. The url is used to
      *              select the parser selecting any ending after the last '.'
-     * @param Vector parser phases to apply. If the vector is null, then all
+     * @param phases parser phases to apply. If the vector is null, then all
      *    the default phases are applied
-     * @param Rererence ref reference to resolve in Description.
+     * @param ref reference to resolve in Description.
      *
      * @return process compound description 'phases' Resolved
      *
@@ -638,17 +639,16 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * Utility method that gets Component Description for URL after applying
      * some parser phases
      *
-     * @param String url to convert to ComponentDescription
-     * @param String language to select appropriate parser
-     * @param Vector parser phases to apply. If the vector is null, then all
+     * @param url URL to convert to ComponentDescription
+     * @param language language to select appropriate parser
+     * @param phases phases to apply. If the vector is null, then all
      *    the default phases are applied
-     * @param Rererence ref reference to resolve in ComponentDescription.
+     * @param ref reference to resolve in ComponentDescription.
      *        If ref is null the whole result ComponentDescription is returned.
      *
      * @return process the selected ComponentDescription after compound
      *         description 'phases' are resolved
      *
-     * @throws RemoteException In case of network/rmi error
      * @throws SmartFrogRuntimeException In case of SmartFrog system error
      */
     public static ComponentDescription sfComponentDescription(String url,
@@ -695,17 +695,17 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
       * Utility method that gets Component Description for a String after applying
       * some parser phases
       *
-      * @param String description to parse into ComponentDescription
-      * @param String language to select appropriate parser ('sf')
-      * @param Vector parser phases to apply. If the vector is null, then all
+      * @param description to parse into ComponentDescription
+      * @param language to select appropriate parser ('sf')
+      * @param phases phases to apply. If the vector is null, then all
       *    the default phases are applied
-      * @param Rererence ref reference to resolve in ComponentDescription.
+      * @param ref reference to resolve in ComponentDescription.
       *        If ref is null the whole result ComponentDescription is returned.
       *
       * @return process the selected ComponentDescription after compound
       *         description 'phases' are resolved
       *
-      * @throws SmartFrogRuntimeException In case of SmartFrog system error
+      * @throws SmartFrogException In case of SmartFrog system error
       */
      public static ComponentDescription sfComponentDescriptionFromStr(String description,
                    String language, Vector phases, Reference ref)
@@ -798,7 +798,6 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      *  Takes default when vector is null. Default: type, link, function, predicate.
      * @return Component Description
      * @throws SmartFrogException
-     * @throws RemoteException
      */
     public static ComponentDescription getClassComponentDescription (Object obj,
           boolean addSystemProperties, Vector newPhases) throws SmartFrogException {
@@ -838,14 +837,14 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      *
      */
     static public void initLog(LogSF newlog){
-        if (sflog==null) sflog = newlog;
+        if (sflog == null) {
+            sflog = newlog;
+        }
     }
 
     /**
      *  To log into sfCore logger. This method should be used to log Core messages
      * @return Logger implementing LogSF and Log
-     * @throws SmartFrogException
-     * @throws RemoteException
      */
     public LogSF sflog() {
        return sflog;
