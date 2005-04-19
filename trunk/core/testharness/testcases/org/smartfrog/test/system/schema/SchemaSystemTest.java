@@ -40,33 +40,33 @@ public class SchemaSystemTest extends SmartFrogTestBase {
     public void testCaseTCN43() throws Exception {
         deployExpectingException(FILES+"tcn43.sf",
                 "tcn43",
-                "SmartFrogDeploymentException",
+                EXCEPTION_DEPLOYMENT,
                 null,
-                "SmartFrogCompileResolutionException",
-                "wrong class found for attribute 'z");
+                EXCEPTION_RESOLUTION,
+                "error in schema(foo): wrong class found for attribute 'z (integer attribute to test types and presence)', expected: java.lang.Integer, found: java.lang.String, source: HERE sfConfig:bar:myFoo:schema, resolutionPhase: predicate]");
     }
     public void testCaseTCN44() throws Exception {
         deployExpectingException(FILES+"tcn44.sf",
                 "tcn44",
-                "SmartFrogDeploymentException",
+                EXCEPTION_DEPLOYMENT,
                 null,
-                "SmartFrogCompileResolutionException",
-                "non-reference value found for lazy attribute 'a");
+                EXCEPTION_RESOLUTION,
+                "error in schema(foo): non-reference value found for lazy attribute 'a', source: HERE sfConfig:bar:myFoo:schema, resolutionPhase: predicate]");
     }
     public void testCaseTCN45() throws Exception {
         deployExpectingException(FILES+"tcn45.sf",
                 "tcn45",
-                "SmartFrogDeploymentException",
+                EXCEPTION_DEPLOYMENT,
                 null,
-                "SmartFrogCompileResolutionException",
+                EXCEPTION_RESOLUTION,
                 " non-optional attribute 'y (string attribute to test types and presence)' is missing");
     }
     public void testCaseTCN46() throws Exception {
         deployExpectingException(FILES+"tcn46.sf",
                 "tcn46",
-                "SmartFrogDeploymentException",
+                EXCEPTION_DEPLOYMENT,
                 null,
-                "SmartFrogCompileResolutionException",
-                " wrong class found for attribute 'x");
+                EXCEPTION_RESOLUTION,
+                "error in schema(foo): wrong class found for attribute 'x (optional integer attribute)', expected: java.lang.Integer, found: java.lang.String, source: HERE sfConfig:bar:myFoo:schema, resolutionPhase: predicate]");
     }
 }
