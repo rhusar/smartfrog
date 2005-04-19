@@ -253,7 +253,7 @@ public interface Context extends PrettyPrinting, Copying, Serializable {
      *
      * @return Object Reference
      *
-     * @throws SmartFrogResolutionException failed to find attribute
+     * @throws SmartFrogContextException failed to find attribute
      */
     public Object sfResolveAttribute (Object name) throws SmartFrogContextException;
 
