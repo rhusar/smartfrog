@@ -56,7 +56,14 @@ public final class XmlNodeHelper implements XmlNode {
         ownerAsPrim = (Prim) owner;
     }
 
+    /**
+     * owning node
+     */
     private LocalNode owner;
+
+    /**
+     * our owner as a prim
+     */
     private Prim ownerAsPrim;
 
     /**

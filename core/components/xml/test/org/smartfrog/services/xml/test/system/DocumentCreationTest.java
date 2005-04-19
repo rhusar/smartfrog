@@ -61,7 +61,6 @@ public class DocumentCreationTest extends TestBase {
             doc.save(tempfile.getAbsolutePath());
             Document xdom=loadXMLFile(tempfile);
         } finally {
-            terminateNode(node);
             if(tempfile!=null) {
                 tempfile.delete();
             }
@@ -71,13 +70,9 @@ public class DocumentCreationTest extends TestBase {
     public void testTextNode() throws Throwable {
         XmlNode node = deployXmlNode(FILE_BASE + "textNode.sf",
                 "textNode");
-        try {
-            XmlTextNode element = (XmlTextNode) node;
-            String xml = element.toXML();
-            assertContains(xml,"nested text element");
-        } finally {
-            terminateNode(node);
-        }
+        XmlTextNode element = (XmlTextNode) node;
+        String xml = element.toXML();
+        assertContains(xml,"nested text element");
     }
 
 

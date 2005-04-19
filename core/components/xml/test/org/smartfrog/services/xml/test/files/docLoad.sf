@@ -30,10 +30,8 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 
 */
 
-#include "org/smartfrog/services/xml/components.sf"
-#include "org/smartfrog/services/os/filesystem/components.sf"
+#include "org/smartfrog/services/xml/test/files/xmlTestBase.sf"
 
-sfCodeBase PROPERTY org.smartfrog.codebase;
 
 /**
  * test a document
@@ -80,11 +78,13 @@ xmltext
 sfConfig  extends Compound {
     sfSyncTerminate true;
 
-    textFile ROOT:ATTRIB textFile;
+    file extends ROOT:textFile;
 
-    rootDoc extends XmlDocument {
-        sourceFile textFile;
+    xml extends XmlDocument {
+        filename LAZY file;
     }
+
+
 };
 
 

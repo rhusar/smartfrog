@@ -41,7 +41,16 @@ import java.rmi.RemoteException;
  */
 public interface XmlNode extends Remote {
 
+    /**
+     * XML content.
+     * {@value}
+     */
     static final String ATTR_XML = "xml";
+
+    /**
+     * Valid flag.
+     * {@value}
+     */
     static final String ATTR_VALID = "valid";
 
     /**

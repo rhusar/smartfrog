@@ -41,7 +41,8 @@ public class XmlElementImpl extends CompoundXmlNode implements XmlElement {
      * create a node of the appropriate type. This is called during deployment;
      *
      * @return a new node
-     * @throws nu.xom.XMLException if needed
+     * @throws RemoteException
+     * @throws SmartFrogException
      */
     public Node createNode() throws RemoteException, SmartFrogException {
         String localname = sfResolve(ATTR_LOCALNAME, (String) null, true);
@@ -64,6 +65,7 @@ public class XmlElementImpl extends CompoundXmlNode implements XmlElement {
     }
 
     /**
+     * Add our children
      * @throws SmartFrogException
      * @throws RemoteException
      */

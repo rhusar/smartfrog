@@ -46,8 +46,5 @@ public class XmlTextNodeImpl extends SimpleXmlNode implements XmlTextNode {
         } catch (XMLException e) {
             throw XmlNodeHelper.handleXmlException(e);
         }
-
     }
-
-
 }

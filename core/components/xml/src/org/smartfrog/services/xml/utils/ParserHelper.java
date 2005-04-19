@@ -43,35 +43,43 @@ public class ParserHelper {
      */
     private static final Log log = LogFactory.getLog(ParserHelper.class);
 
+    /**
+     * ask for secure XML prarsing
+     * {@value}
+     */
     private static final String FEATURE_SECURE_PROCESSING = "http://javax.xml.XMLConstants/feature/secure-processing";
     /**
      * parser of choice is Apache Xerces; fallback is Sun xerces.
+     * {@value}
      */
 
-    public static final String XERCES_PARSER_NAME = "org.apache.xerces.parsers.SAXParser";
+    public static final String PARSER_XERCES = "org.apache.xerces.parsers.SAXParser";
 
     /**
      * what ships with Java1.5
+     * {@value}
      */
-    public static final String SUN_PARSER_NAME = "com.sun.org.apache.xerces.internal.parsers.SAXParser";
+    public static final String PARSER_JAVA_15 = "com.sun.org.apache.xerces.internal.parsers.SAXParser";
 
     /**
      * create our XML parser. We are relying on xerces here, and will fail if it
      * is not found.
      *
-     * @param validate
-     * @return
-     * @throws org.xml.sax.SAXException
+     * @param validate flag to turn validation on
+     * @param disableDoctypes flag to disable doctypes
+     * @param secureLoading flag for secure loading (disables entity expansion)
+     * @return an appropriately configured XML reader
+     * @throws SAXException
      */
     public static XMLReader createXmlParser(boolean validate,
-            boolean doctypes,
-            boolean secure)
+            boolean disableDoctypes,
+            boolean secureLoading)
             throws SAXException {
         
         XMLReader xerces = createBaseXercesInstance();
         setFeature(xerces,
                 FEATURE_SECURE_PROCESSING,
-                secure);
+                secureLoading);
         setFeature(xerces,
                 "http://apache.org/xml/features/validation/schema",
                 validate);
@@ -83,10 +91,10 @@ public class ParserHelper {
                 true);
         setFeature(xerces,
                 "http://apache.org/xml/features/disallow-doctype-decl",
-                doctypes);
+                disableDoctypes);
         setFeature(xerces,
                 "http://xml.org/sax/features/external-general-entities",
-                !secure);
+                !secureLoading);
         return xerces;
     }
 
@@ -99,10 +107,10 @@ public class ParserHelper {
     public static XMLReader createBaseXercesInstance() throws SAXException {
         XMLReader xerces = null;
         try {
-            xerces = XMLReaderFactory.createXMLReader(XERCES_PARSER_NAME);
+            xerces = XMLReaderFactory.createXMLReader(PARSER_XERCES);
         } catch (SAXException e) {
             log.debug("Failed to find Xerces", e);
-            xerces = XMLReaderFactory.createXMLReader(SUN_PARSER_NAME);
+            xerces = XMLReaderFactory.createXMLReader(PARSER_JAVA_15);
         }
         return xerces;
     }
