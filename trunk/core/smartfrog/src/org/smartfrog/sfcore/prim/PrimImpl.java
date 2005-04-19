@@ -52,8 +52,8 @@ import org.smartfrog.sfcore.utils.ComponentHelper;
 
 import org.smartfrog.sfcore.reference.RemoteReferenceResolverHelperImpl;
 import java.rmi.NoSuchObjectException;
-import java.net.*;
-
+import java.net.UnknownHostException;
+import org.smartfrog.sfcore.common.SFMarshalledObject;
 
 /**
  * Defines the base class for all deployed components. A deployed component
@@ -183,6 +183,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
         }
         return result;
     }
+
     /**
      * Find an attribute in this context.
      *
@@ -230,6 +231,10 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     public Object sfResolve(Reference r)
         throws SmartFrogResolutionException, RemoteException {
         Object obj = sfResolve(r, 0);
+        if (obj instanceof SFMarshalledObject){
+            //  Unmarshall!Obj.
+            obj = ((SFMarshalledObject)obj).get();
+        }
         try {
             if (sfGetCoreLog().isTraceEnabled()) {
                 sfGetCoreLog().trace(sfCompleteNameSafe()+ " sfResolved '"+r.toString()+"' to '"+ obj.toString()+"'");
