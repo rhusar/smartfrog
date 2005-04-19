@@ -90,7 +90,7 @@ public class SFParser implements Parser, MessageKeys {
     /**
      * Constructor for an instance of the parser for the given language.
      *
-     * @param String languageOrUrl the name of the language to use or the url
+     * @param languageOrUrl the name of the language to use or the url
      *        with suffixed by language extension.
      *
      * @throws SmartFrogException error crearing instance of parser
