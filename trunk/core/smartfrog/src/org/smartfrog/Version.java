@@ -112,6 +112,20 @@ public class Version {
     }
 
     /**
+     *
+     * @return String Complete Version String
+     */
+    public static String versionStringforrelease(){
+        //init();
+        if (!initialized) new Version();
+        String newStatus=null;
+        if (!status.trim().equals("")){
+            newStatus="_"+status;
+        } else newStatus="";
+        return majorRelease+"."+minorRelease+"."+build+newStatus;
+    }
+
+    /**
      * Major release number.
      */
     public static String majorRelease(){
@@ -238,6 +252,9 @@ public class Version {
      * @param args command line arguments.
      */
     public static void main(String[] args) {
-        System.out.print(versionString());
+	if ((args.length > 0) && (args[0].equals("-b")))
+	    System.out.print(versionStringforrelease());
+	else    
+	    System.out.print(versionString());
     }
 }

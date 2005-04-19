@@ -57,7 +57,7 @@ relevant JAR files into the javacc subdirectory
     <property name="Name.System" value="SmartFrog "/>
     <property name="Name.Company" value="(C) Copyright 1998-2005 Hewlett-Packard Development Company, LP"/>
     <property name="version" value="CORE"/>
-    <property name="Version" value="3.04.019.beta"/>
+    <!--property name="Version" value="3.04.019.beta"/-->
     <property name="year" value="2005"/>
 
     <echo level="verbose">
@@ -142,6 +142,7 @@ relevant JAR files into the javacc subdirectory
     <property name="dist.testCA.dir" location="${dist.dir}/${testCA}"/>
     <property name="dist.jdocs.dir" location="${dist.dir}/${jdocs}"/>
     <property name="dist.SFjdocs.dir" location="${dist.dir}/${SFjdocs}"/>
+    <property name="java.class.path" location="${dist.dir}/${SFjdocs}"/>
 
     <!--property name="redist" value="redist"/ -->
 
@@ -168,10 +169,27 @@ relevant JAR files into the javacc subdirectory
 &security;
 <!-- End of security-related ant file -->
 
+
+  <!-- ================================================================== -->
+  <!-- running Version.java to generate version information               -->
+  <!-- ================================================================== -->
+  <target name="generateversion" depends="init">
+     <java classname="org.smartfrog.Version"
+	 failonerror="true" fork="true"
+	 outputproperty="Version">
+	 <arg value="-b"/>
+	 <classpath>
+	     <fileset dir="${dist.lib.dir}">
+        	 <include name="**/*.jar"/>
+      	     </fileset>
+	 </classpath>
+     </java>
+  </target> 
+  
   <!-- =================================================================== -->
   <!--  Release                                                            -->
   <!-- =================================================================== -->
-  <target name="release"  depends="clean, dist, jdocs" description="Creates clean new release">
+  <target name="release"  depends="clean, dist,jdocs" description="Creates clean new release">
   </target>
 
   <!-- =================================================================== -->
@@ -433,7 +451,7 @@ relevant JAR files into the javacc subdirectory
   <!-- =================================================================== -->
   <!--   JDocs                                                             -->
   <!-- =================================================================== -->
-  <target name="jdocs" depends="initdist" description="Generates the API documentation">
+  <target name="jdocs" depends="initdist, generateversion" description="Generates the API documentation">
     <!--  Java Docs for all                                                -->
     <echo message=""/>
     <echo message="------------------------------------------------------------------------"/>
