@@ -43,19 +43,19 @@ public class FunctionsSystemTest extends SmartFrogTestBase {
     public void testCaseTCN29() throws Exception {
         deployExpectingException(FILES+"tcn29.sf",
                 "tcn29",
-                "SmartFrogDeploymentException",
+                EXCEPTION_DEPLOYMENT,
                 null,
-                "SmartFrogCompileResolutionException",
-                "Unresolved Reference");
+                EXCEPTION_RESOLUTION,
+                "Unresolved Reference, data: [True in: HERE sfConfig:throw1, True in: HERE sfConfig:throw2], source: HERE sfConfig, resolutionPhase: link]");
     }
 
     public void testCaseTCN32() throws Exception {
         deployExpectingException(FILES + "tcn32.sf",
                 "tcn32",
-                "SmartFrogDeploymentException",
+                EXCEPTION_DEPLOYMENT,
                 null,
-                "SmartFrogCompileResolutionException",
-                "Unresolved Reference");
+                EXCEPTION_RESOLUTION,
+                "Unresolved Reference, data: [concat in: HERE sfConfig:message], resolutionPhase: type] ");
     }
 
     public void testCaseTCN33() throws Throwable {

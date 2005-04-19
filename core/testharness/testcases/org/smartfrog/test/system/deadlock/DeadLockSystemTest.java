@@ -49,10 +49,10 @@ public class DeadLockSystemTest extends SmartFrogTestBase {
     public void testCaseTCN19() throws Exception {
         deployExpectingException(FILES+"tcn19.sf",
                 "tcn19",
-                "SmartFrogDeploymentException",
+                EXCEPTION_DEPLOYMENT,
                 "Possible cause: cyclic reference",
-                "SmartFrogCompileResolutionException",
-                "java.lang.StackOverflowError"
+                EXCEPTION_RESOLUTION,
+                "Possible cause: cyclic reference., cause: java.lang.StackOverflowError"
                  );
     }
 }
