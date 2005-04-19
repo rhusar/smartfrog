@@ -92,8 +92,8 @@ public class ReferenceSystemTest extends SmartFrogTestBase {
                 "tcn59",
                 "SmartFrogDeploymentException",
                 "unnamed component",
-                "SmartFrogCompileResolutionException",
-                "error in schema: wrong class found for attribute 'limit'");
+                "SmartFrogResolutionException",
+                "error in schema: wrong class found for attribute 'limit', expected: java.lang.Integer, found: java.lang.String");
     }
 
     public void testCaseTCN60() throws Exception {
