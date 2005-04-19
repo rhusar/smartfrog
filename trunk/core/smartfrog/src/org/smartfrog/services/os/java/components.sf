@@ -65,7 +65,7 @@ JavaSchema extends Schema {
     sysProperties extends OptionalVector;
     endorsedDirs extends OptionalVector;
     classpath extends OptionalVector;
-    assertions extends OptionalBoolean;
+    assertions extends OptionalVector;
     jvmargs extends OptionalVector;
     jvm extends String;
     arguments extends OptionalVector;
@@ -74,7 +74,7 @@ JavaSchema extends Schema {
 Java extends ExecuteProgram {
     javaSchema extends JavaSchema;
     sfClass "org.smartfrog.services.os.java.RunJavaImpl";
-    assertions false;
+    processName "JVM";
     jvm "java";
     //bind the shell command to the jvm command
     shellCmd ATTRIB jvm;

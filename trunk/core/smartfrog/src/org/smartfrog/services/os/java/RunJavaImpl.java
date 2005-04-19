@@ -26,6 +26,7 @@ import org.smartfrog.sfcore.common.SmartFrogInitException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.utils.PlatformHelper;
+import org.smartfrog.sfcore.reference.Reference;
 
 import java.io.File;
 import java.rmi.RemoteException;
@@ -56,7 +57,7 @@ public class RunJavaImpl extends RunShellImpl implements RunJava {
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
-        log = sfGetApplicationLog();
+        setupLog();
     }
 
     /**
@@ -65,7 +66,8 @@ public class RunJavaImpl extends RunShellImpl implements RunJava {
      * the superclass afterwards
      */
     protected void readSFAttributes() throws SmartFrogException, RemoteException {
-        final boolean debugEnabled = log.isDebugEnabled();
+        setupLog();
+        final boolean debugEnabled = true; //log.isDebugEnabled();
         Vector args=new Vector();
         //get classname and classpath and verify that one is defined
         String classname=null;
@@ -73,12 +75,12 @@ public class RunJavaImpl extends RunShellImpl implements RunJava {
         classname=sfResolve(ATTR_CLASSNAME,classname,false);
         jar= platform.convertFilename(sfResolve(ATTR_JARFILE, jar, false));
 
-        Vector environment = (Vector) sfResolve(ATTR_ENVIRONMENT, (Vector) null, false);
+        Vector environment = sfResolve(ATTR_ENVIRONMENT, (Vector) null, false);
         Vector flatEnv = flatten(environment, null, "=", null);
 
-        Vector jvmArgs=(Vector) sfResolve(ATTR_JVM_ARGS,(Vector)null,false);
+        Vector jvmArgs=sfResolve(ATTR_JVM_ARGS,(Vector)null,false);
 
-        Vector sysProperties=(Vector)sfResolve(ATTR_SYSPROPERTIES, (Vector) null, false);
+        Vector sysProperties=sfResolve(ATTR_SYSPROPERTIES, (Vector) null, false);
         Vector flatSysProperties = flatten(sysProperties, "-D", "=", "");
         Boolean assertions=(Boolean) sfResolve(ATTR_ASSERTIONS,(Boolean)null,false);
         Boolean sysAssertions = (Boolean) sfResolve(ATTR_SYSTEMASSERTIONS, (Boolean) null, false);
@@ -140,17 +142,32 @@ public class RunJavaImpl extends RunShellImpl implements RunJava {
 
 
         //now patch our attributes, ready for our parent class
-        sfReplaceAttribute(varEnvProp, flatEnv);
-        sfReplaceAttribute(varShellArguments, args);
+        if(flatEnv!=null) {
+            sfReplaceAttribute(varEnvProp, flatEnv);
+        }
+
+        if (varShellArguments != null) {
+            sfReplaceAttribute(varShellArguments, args);
+        }
 
         //and verify that the shell command is not empty
         String javacmd=sfResolve(varShellCommand,(String)null,true);
-        if ( debugEnabled ) {
-            log.debug("final command ="+javacmd);
+        if (debugEnabled) {
+            log.debug("executing =" + javacmd);
         }
-
-        //now invoke our superclass; this relies on 
+        //now invoke our superclass; 
         super.readSFAttributes();
+    }
+
+    /**
+     * set our log var if it is null
+     * @throws SmartFrogException
+     * @throws RemoteException
+     */
+    private void setupLog() throws SmartFrogException, RemoteException {
+        if(log==null) {
+            log = sfGetApplicationLog();
+        }
     }
 
     /**
@@ -198,7 +215,7 @@ public class RunJavaImpl extends RunShellImpl implements RunJava {
             Iterator subit=subvector.iterator();
             String key = (String) subit.next();
             //take any value and stringify it -we dont care about its underlying type
-            Object valueObj=(Object) subit.next();
+            Object valueObj=subit.next();
             String value;
             value=valueObj.toString();
             String entry=prefix+key+joiner+value+suffix;
@@ -214,8 +231,9 @@ public class RunJavaImpl extends RunShellImpl implements RunJava {
      * @throws SmartFrogResolutionException
      * @throws RemoteException
      */
-    private String buildClasspath(boolean mandatory) throws SmartFrogResolutionException, RemoteException {
-        Vector classpathV=(Vector)sfResolve(ATTR_CLASSPATH,(Vector)null,mandatory);
+    private String buildClasspath(boolean mandatory)
+            throws SmartFrogResolutionException, RemoteException {
+        Vector classpathV=sfResolve(ATTR_CLASSPATH,(Vector)null,mandatory);
         if(classpathV==null) {
             return null;
         }
@@ -232,7 +250,7 @@ public class RunJavaImpl extends RunShellImpl implements RunJava {
     private String buildEndorsedDirs() throws SmartFrogResolutionException, RemoteException {
         final boolean debugEnabled = log.isDebugEnabled();
         log.debug("building endorsed directory parameter");
-        Vector pathV = (Vector) sfResolve(ATTR_ENDORSED_DIRS, (Vector) null, false);
+        Vector pathV = sfResolve(ATTR_ENDORSED_DIRS, (Vector) null, false);
         if(pathV==null) {
             if(debugEnabled ) {
                 log.debug(ATTR_ENDORSED_DIRS+" is unset");
@@ -243,7 +261,7 @@ public class RunJavaImpl extends RunShellImpl implements RunJava {
         Iterator entries=classpathFlat.iterator();
         StringBuffer result= new StringBuffer();
         while (entries.hasNext()) {
-            Object entry = (Object) entries.next();
+            Object entry = entries.next();
             String dirname=entry.toString();
             dirname = platform.convertFilename(dirname);
             if(debugEnabled) {
@@ -276,26 +294,42 @@ public class RunJavaImpl extends RunShellImpl implements RunJava {
      * @param pathVector
      * @return
      */
-    private String makePath(Vector pathVector) throws RemoteException {
+    private String makePath(Vector pathVector) throws RemoteException, SmartFrogResolutionException {
         Vector classpathFlat=RunJavaUtils.recursivelyFlatten(pathVector);
         Iterator entries=classpathFlat.iterator();
         StringBuffer result= new StringBuffer();
         while (entries.hasNext()) {
-            Object entry = (Object) entries.next();
-            if(entry instanceof FileIntf) {
-                FileIntf file=(FileIntf) entry;
-                appendOnePathEntry(result,file.getAbsolutePath());
-            } else if (entry instanceof JavaPackage) {
-                JavaPackage jpackage=(JavaPackage) entry;
-                //jpackage.
-
-            } else if (entry instanceof String) {
-                String file;
-                file = platform.convertFilename((String)entry);
-                appendOnePathEntry(result,file);
-            }
+            Object entry = entries.next();
+            processOnePathEntry(result, entry);
         }
         return result.toString();
+    }
+
+    private void processOnePathEntry(StringBuffer result, Object entry)
+            throws RemoteException, SmartFrogResolutionException {
+        if(entry instanceof FileIntf) {
+            FileIntf file=(FileIntf) entry;
+            appendOnePathEntry(result,file.getAbsolutePath());
+        } else if (entry instanceof JavaPackage) {
+            JavaPackage jpackage=(JavaPackage) entry;
+            //TODO
+            throw new SmartFrogResolutionException("JPackage integration TODO" +
+                    entry);
+
+
+        } else if (entry instanceof String) {
+            String file;
+            file = platform.convertFilename((String)entry);
+            appendOnePathEntry(result,file);
+        } else if (entry instanceof Reference) {
+            Reference r=(Reference)entry;
+            Object resolved = sfResolve(r);
+            //recurse!
+            processOnePathEntry(result, resolved);
+        } else {
+            throw new SmartFrogResolutionException("Unknown entry in classpath "
+                    +entry+ " type "+entry.getClass());
+        }
     }
 
     private void appendOnePathEntry(StringBuffer result, String entry) {
