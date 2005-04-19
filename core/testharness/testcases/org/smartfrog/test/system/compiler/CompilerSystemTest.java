@@ -138,7 +138,7 @@ public class CompilerSystemTest extends SmartFrogTestBase {
                 EXCEPTION_DEPLOYMENT,
                 null,
                 EXCEPTION_RESOLUTION,
-                "Unresolved Reference, data: [dataLazy in: HERE sfConfig:c3], source: HERE sfConfig, resolutionPhase: link] ");
+                "Unresolved Reference, data: [dataLazy in: HERE sfConfig:c3], source: HERE sfConfig, resolutionPhase: link]");
     }
     public void testCaseTCN28() throws Exception {
         deployExpectingException(FILES + "tcn28.sf",
