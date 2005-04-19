@@ -32,6 +32,7 @@
 package org.smartfrog.services.xml.interfaces;
 
 import org.smartfrog.services.xml.impl.SerializedXomDocument;
+import org.smartfrog.services.filesystem.FileUsingComponent;
 
 import java.rmi.RemoteException;
 import java.io.IOException;
@@ -40,7 +41,7 @@ import java.io.IOException;
 /**
  * XML Document
  */
-public interface XmlDocument extends XmlNode {
+public interface XmlDocument extends XmlNode, FileUsingComponent {
 
 
     /**
@@ -51,7 +52,7 @@ public interface XmlDocument extends XmlNode {
     /**
      * can be a string or a File instance/reference filename extends Optional
      */
-    static final String ATTR_SOURCEFILE = "sourceFile";
+    static final String ATTR_SOURCEFILE = ATTR_FILENAME;
 
     /**
      * document type of type DocType; docType extends Optional

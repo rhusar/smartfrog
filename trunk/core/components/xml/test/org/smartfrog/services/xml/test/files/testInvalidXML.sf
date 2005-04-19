@@ -32,34 +32,8 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 
 #include "org/smartfrog/services/xml/test/files/xmlTestBase.sf"
 
-
-/**
- * test a document
+/*
+ this file tests that we dont load an invalid XML document
  */
 
-rootDoc extends XmlDocument {
-
-    root extends XmlElement {
-        localname "root";
-        a1 extends XmlAttribute {
-            localname "attr1";
-            value PARENT:localname;
-        }
-        a2 extends XmlAttribute {
-            namespace "urn:isbn:0-201-61981-0";
-            localname "soup";
-            value "warm";
-        }
-        /*
-        textElement extends XmlText {
-            text "this is a nested text element";
-        }*/
-        
-        text "inline text";
-    }
-
-}
-
-
-sfConfig extends rootDoc ;
-    
+sfConfig extends XmlNode(
