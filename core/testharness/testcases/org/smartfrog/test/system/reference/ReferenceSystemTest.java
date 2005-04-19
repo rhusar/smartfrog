@@ -31,7 +31,7 @@ import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 
 
 /**
- * JUnit class for negative test cases using attribute resolution 
+ * JUnit class for negative test cases using attribute resolution
  * functionality provided by SmartFrog framework.
  */
 public class ReferenceSystemTest extends SmartFrogTestBase {
@@ -48,10 +48,10 @@ public class ReferenceSystemTest extends SmartFrogTestBase {
                 "tcn19",
                 "SmartFrogDeploymentException",
                 "Failed to resolve 'attr ",
-                "SmartFrogCompileResolutionException",
+                "SmartFrogResolutionException",
                 "java.lang.StackOverflowError");
     }
-    
+
     public void testCaseTCN39() throws Exception {
         deployExpectingException(FILES + "tcn39.sf",
                 "tcn39",
@@ -60,7 +60,7 @@ public class ReferenceSystemTest extends SmartFrogTestBase {
                 "SmartFrogResolutionException",
                 "Illegal ClassType");
     }
-    
+
     public void testCaseTCN40() throws Exception {
         deployExpectingException(FILES + "tcn40.sf",
                 "tcn40",
@@ -77,7 +77,7 @@ public class ReferenceSystemTest extends SmartFrogTestBase {
                 "SmartFrogResolutionException",
                 "Error: sfResolved int '10' < '12'(minValue)");
     }
-    
+
     public void testCaseTCN42() throws Exception {
         deployExpectingException(FILES + "tcn42.sf",
                 "tcn42",
@@ -153,7 +153,7 @@ public class ReferenceSystemTest extends SmartFrogTestBase {
 	int expected = 5;
 	component1 = application.sfResolve("component1",component1,true);
         assertNotNull(component1);
-	actual = component1.sfResolve("limit",actual,true);  
+	actual = component1.sfResolve("limit",actual,true);
         assertEquals(expected, actual);
     }
 
@@ -174,7 +174,7 @@ public class ReferenceSystemTest extends SmartFrogTestBase {
 	spawn = application.sfResolve("spawn",spawn,true);
         assertNotNull(spawn);
 	cd = spawn.sfResolve("sfOffspringDescription",cd,true);
-        String actual =cd.toString();	
+        String actual =cd.toString();
 	assertNotNull(cd);
 	assertContains(actual,expected);
     }
