@@ -44,7 +44,7 @@ To Be Written
     <property name="Name.Framework" value="SmartFrog Framework"/>
     <property name="Name.System" value="SmartFrog"/>
     <property name="Name.Company" value="(C) Copyright 1998-2004 Hewlett-Packard Development Company, LP"/>
-    <property name="version" value="3.04.014.beta"/>
+    <!--property name="version" value="3.04.014.beta"/-->
     <property name="year" value="2004"/>
 
     <echo message=""/>
@@ -141,6 +141,7 @@ To Be Written
      <property name="docs" value="docs"/>
      <property name="examples" value="examples"/>
      <property name="examplesSrc" value="src"/>
+     <property name="dist.lib.dir" location="${dist}/${lib}"/>
 
      <property name="examplesFiles" value="org/smartfrog/examples/**/*"/>
        <!-- a list of files for rmic -->
@@ -186,7 +187,30 @@ To Be Written
   <!-- initrelease                                                             -->
   <!-- =================================================================== -->
   <target name="initrelease">
-    <mkdir dir="../releases"/>
+	  <mkdir dir="../releases"/>
+       <java classname="org.smartfrog.Version"
+	 failonerror="true" fork="true"
+	 outputproperty="version">
+	 <arg value="-b"/>
+	 <classpath>
+	    <fileset dir="${dist.lib.dir}">
+        		<include name="**/*.jar"/>
+      	    </fileset>
+	 </classpath>
+      </java>
+      <copy todir="${dist.lib.dir}">
+	 <fileset dir="${dist.lib.dir}">
+		 <include name="**/*.jar"/>
+	 </fileset>
+	 <mapper type="glob" from="*.jar" to="*-${version}.jar"/>
+     </copy>
+
+     <copy todir="${lib}">
+	 <fileset dir="${lib}">
+		 <include name="**/*.jar"/>
+	 </fileset>
+	 <mapper type="glob" from="*.jar" to="*-${version}.jar"/>
+     </copy>
   </target>
   <!-- =================================================================== -->
   <!-- release                                                             -->
@@ -194,7 +218,8 @@ To Be Written
   <target name="release" depends="init, initrelease, fixCRLF" description="Creates zip with release packages">
     <zip destfile="../releases/${Name.System}.${version}.${DSTAMP}_DIST.zip">
        <zipfileset dir="." prefix="${Name.System}.${version}">
-          <include name="${dist}/**"/>
+	  <include name="${dist}/**"/>
+	  <exclude name="${dist}/lib/**"/>
           <exclude name="${dist}/docs/**"/>
           <exclude name="${dist}/classes/**"/>
        </zipfileset>
@@ -207,6 +232,9 @@ To Be Written
         <include name="${dist}/docs/sfDynamicWebServerExample.pdf"/>
         <include name="${dist}/docs/jdocs/**"/>
        </zipfileset>
+       <zipfileset dir="." prefix="${Name.System}.${version}">
+	  <include name="${dist}/lib/**/*-${version}.jar"/>
+       </zipfileset>
     </zip>
 
     <zip destfile="../releases/${Name.System}.${version}.${DSTAMP}_ALL.zip">
@@ -218,7 +246,8 @@ To Be Written
         <include name="docs/dir.JPG"/>
         <include name="docs/sfReference.pdf"/>
         <include name="docs/sfDynamicWebServerExample.pdf"/>
-        <include name="lib/**"/>
+	<include name="lib/**/*-${version}.jar"/>
+	<include name="lib/readme.txt"/>
         <include name="src/**"/>
         <include name="private/**"/>
         <include name="testCA/**"/>
@@ -241,7 +270,8 @@ To Be Written
         <include name="../testharness/testcases/build.xml"/>
        </zipfileset>
        <zipfileset dir="." prefix="${Name.System}.${version}">
-          <include name="${dist}/**"/>
+	  <include name="${dist}/**"/>
+	  <exclude name="${dist}/lib/**"/>
           <exclude name="${dist}/docs/**"/>
           <exclude name="${dist}/classes/**"/>
        </zipfileset>
@@ -254,6 +284,9 @@ To Be Written
         <include name="${dist}/docs/sfDynamicWebServerExample.pdf"/>
         <include name="${dist}/docs/jdocs/**"/>
        </zipfileset>
+       <zipfileset dir="." prefix="${Name.System}.${version}">
+	  <include name="${dist}/lib/**/*-${version}.jar"/>
+       </zipfileset>
     </zip>
      <tar tarfile="../releases/${Name.System}.${version}.${DSTAMP}_DIST.tar" >
        <tarfileset dir="." prefix="${Name.System}.${version}">
@@ -263,7 +296,8 @@ To Be Written
         </tarfileset>
        <tarfileset dir="." prefix="${Name.System}.${version}" >
          <exclude name="${dist}/bin/**"/>
-         <include name="${dist}/**"/>
+	 <include name="${dist}/**"/>
+	 <exclude name="${dist}/lib/**"/>
          <exclude name="${dist}/classes/**"/>
          <exclude name="${dist}/docs/**"/>
         </tarfileset>
@@ -275,6 +309,9 @@ To Be Written
         <include name="${dist}/docs/sfReference.pdf"/>
         <include name="${dist}/docs/sfDynamicWebServerExample.pdf"/>
         <include name="${dist}/docs/jdocs/**"/>
+       </tarfileset>
+       <tarfileset dir="." prefix="${Name.System}.${version}">
+	  <include name="${dist}/lib/**/*-${version}.jar"/>
        </tarfileset>
        <tarfileset dir="." mode="755" prefix="${Name.System}.${version}">
          <include name="${dist}/bin/**"/>
@@ -297,7 +334,8 @@ To Be Written
         <include name="docs/dir.JPG"/>
         <include name="docs/sfReference.pdf"/>
         <include name="docs/sfDynamicWebServerExample.pdf"/>
-        <include name="lib/**"/>
+	<include name="lib/*-${version}.jar"/>
+	<include name="lib/readme.txt"/>
         <include name="src/**"/>
         <include name="private/**"/>
         <include name="testCA/**"/>
@@ -334,7 +372,9 @@ To Be Written
         </tarfileset>
        <tarfileset dir="." prefix="${Name.System}.${version}">
          <exclude name="${dist}/bin/**"/>
-         <include name="${dist}/**"/>
+	 <include name="${dist}/**"/>
+	 <exclude name="${dist}/lib/**"/>
+         <exclude name="${dist}/classes/**"/>
          <exclude name="${dist}/classes/**"/>
          <exclude name="${dist}/docs/**"/>
         </tarfileset>
@@ -346,6 +386,9 @@ To Be Written
         <include name="${dist}/docs/sfReference.pdf"/>
         <include name="${dist}/docs/sfDynamicWebServerExample.pdf"/>
         <include name="${dist}/docs/jdocs/**"/>
+       </tarfileset>
+       <tarfileset dir="." prefix="${Name.System}.${version}">
+	  <include name="${dist}/lib/**/*-${version}.jar"/>
        </tarfileset>
        <tarfileset dir="." mode="755" prefix="${Name.System}.${version}">
          <include name="${dist}/bin/**"/>
@@ -369,7 +412,14 @@ To Be Written
      </tar>
     <gzip src="../${Name.System}.${version}.${DSTAMP}_JDOCS.tar" zipfile="../${Name.System}.${version}.${DSTAMP}_JDOCS.tar.gz"/>
     <delete file="../${Name.System}.${version}.${DSTAMP}_JDOCS.tar"/>
--->
+    -->
+    
+    <delete>
+	 <fileset dir="${dist.lib.dir}" includes="**/*-${version}.jar"/>
+    </delete>
+    <delete>
+	  <fileset dir="${lib}" includes="**/*-${version}.jar"/>
+     </delete>
   </target>
 </project>
 

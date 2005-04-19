@@ -62,7 +62,7 @@ These are the meaningful targets for this build file:
     <property name="Name" value="SmartFrog"/>
     <property name="name" value="(C) Copyright 1998-2003 Hewlett-Packard Development Company, LP"/>
     <property name="version" value="DIST"/>
-    <property name="Version" value="3.04.014.beta"/>
+    <!--property name="Version" value="3.04.014.beta"/-->
     <property name="year" value=""/>
     <echo message=""/>
     <echo message="==================================================================="/>
@@ -116,6 +116,7 @@ These are the meaningful targets for this build file:
      <property name="debugmode" value="on"/> <!-- turn on compile -g -->
      <property name="rmitargets" value="rmitargets"/>
      <property name="jdocs" value="jdocs"/>
+     <property name="dist.lib.dir" location="${dist}/${lib}"/>
      <!-- Sercurity related files -->
      <property name="manifestName" value="${private}/sealManifest.mf"/>
 
@@ -211,10 +212,26 @@ These are the meaningful targets for this build file:
        manifest ="${manifestName}"/>
   </target>
 
+  <!-- ================================================================== -->
+  <!-- running Version.java to generate version information               -->
+  <!-- ================================================================== -->
+  <target name="generateversion" depends="init">
+  <java classname="org.smartfrog.Version"
+	 failonerror="true" fork="true"
+	 outputproperty="Version">
+	 <arg value="-b"/>
+	 <classpath>
+	   <fileset dir="${dist.lib.dir}">
+        	 <include name="**/*.jar"/>
+      	   </fileset>
+	 </classpath>
+  </java>
+  </target> 
+  
   <!-- =================================================================== -->
   <!--   JDocs                                                                  -->
   <!-- =================================================================== -->
-  <target name="jdocs" depends="init" description="Generates the API documentation">
+  <target name="jdocs" depends="init, generateversion" description="Generates the API documentation">
     <!--  Java Docs for all                                                -->
     <echo message=""/>
     <echo message="------------------------------------------------------------------------"/>
