@@ -346,7 +346,7 @@ public class ConfigurationDescriptor implements MessageKeys{
                   messageError.append(lineSeparator);
                   messageError.append("Result:");
                   lineSeparator=lineSeparator+"  ";
-                  if ((resultMessage!=null)&&(resultMessage.toString().trim()!="")) {
+                  if ((resultMessage!=null)&&(!(resultMessage.toString().trim().equals("")))) {
                      messageError.append(lineSeparator);
                      messageError.append("* Message: '"+ resultMessage.toString()+"'");
                   }
