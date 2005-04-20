@@ -15,8 +15,8 @@ import org.smartfrog.services.display.PrintErrMsgInt;
 /** Implements a filter that scans the output of a process for
  * certain patterns, and notifies an scheduler of that event with a
  * predetermined tag.
- *
  */
+
 public class NotifyOutputFilterImpl implements NotifyOutputFilter, Runnable , PrintMsgInt, PrintErrMsgInt {
 
   boolean verbose = true;
@@ -307,7 +307,11 @@ private String exploreTag(String line) throws RemoteException {
     if ((resultTag = scanTag(line,searchNormalPatterns,resultNormalTags)) != null)
       submitTag(resultTag,false, line);
     else if ((resultTag = scanTag(line,searchForcePatterns,resultForceTags)) != null)
+    {
       submitTag(resultTag,true, line);
+         ReportGenerator.report.add(PROCESS_ID);
+         ReportGenerator.report.add(line);
+    }
     else if ((resultTag = scanCustomTag(line,searchCustomPatterns,resultCustomTags)) != null)
       submitTag(resultTag,false, line);
     return resultTag;
