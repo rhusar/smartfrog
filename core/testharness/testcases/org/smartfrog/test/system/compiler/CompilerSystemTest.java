@@ -41,7 +41,7 @@ public class CompilerSystemTest extends SmartFrogTestBase {
         deployExpectingException(FILES+"tcn5.sf",
                 "tcn5",
                 EXCEPTION_DEPLOYMENT,
-                "failed to deploy 'tcn5' component.",
+                "failed to deploy 'tcn5' component. Wrong class when resolving 'HERE sfClass': 'NULL' (org.smartfrog.sfcore.common.SFNull)",
                 EXCEPTION_CLASSCAST,
                 null);
     }
