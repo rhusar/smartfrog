@@ -329,7 +329,7 @@ public class NewAttributeDialog extends JDialog {
                 // Parse up to the phase selected in sfComboBox
                 Vector auxphases = new Vector();
 
-                if ((phases != null) && (!phases.equals("all"))) {
+                if ((phases != null) && (!phase.equals("all"))) {
                     Iterator iter = phases.iterator();
                     String temp;
 

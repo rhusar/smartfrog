@@ -228,7 +228,7 @@ public class WindowUtilities {
       int west = 0;
 
       //C
-      positionDisplay.toUpperCase();
+      positionDisplay=positionDisplay.toUpperCase();
 
       if (positionDisplay.equals("C") == true) {
          north = 0;
