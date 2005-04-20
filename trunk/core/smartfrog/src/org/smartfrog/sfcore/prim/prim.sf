@@ -25,7 +25,7 @@ For more information: www.smartfrog.org
 
 //Schema
 SchemaPrim extends Schema {
-    sfClass extends String {description "class that implements component"; }
+    sfClass extends Optional {description "class that implements component"; } //It is mandatory but check is done at runtime
     sfCodeBase extends Optional {description "codebase used during dynamic classloading"; }
     sfDeployerClass extends OptionalString {description "deployer class";}
     sfExport extends OptionalBoolean {description "decides if a component is remotely exported";}
@@ -46,8 +46,9 @@ SchemaPrim extends Schema {
  * are used */
 sfCodeBase "default";
 
+//Prim with any schema
 Prim extends NULL {
-//  schemaPrim extends SchemaPrim;
+    schemaPrim extends SchemaPrim;    
     sfCodeBase PARENT:ATTRIB sfCodeBase;
 //  sfDeployerClass "org.smartfrog.sfcore.processcompound.PrimProcessDeployerImpl";
 //  sfExport true;  // Export remote interface?
@@ -56,3 +57,4 @@ Prim extends NULL {
 //  sfLivenessFactor 2;
 //  sfLog "name"; //optional attribute to define a log name for a component.
 }
+

@@ -18,11 +18,8 @@ For more information: www.smartfrog.org
 
 */
 
-// Defines compound as a primitive with specific class
+/** Defines the basic smartfrog components */
 
-//Compound with Schema
-Compound extends Prim {
-  sfClass "org.smartfrog.sfcore.compound.CompoundImpl";
-  //sfSyncTerminate false;
-  //schemaPrim:sfSyncTerminate extends OptionalBoolean {description "decides if a component should terminate synchronously or asynchronously";}
-}
+#include "/org/smartfrog/sfcore/prim/primlean.sf"
+#include "/org/smartfrog/sfcore/compound/compoundlean.sf"
+
