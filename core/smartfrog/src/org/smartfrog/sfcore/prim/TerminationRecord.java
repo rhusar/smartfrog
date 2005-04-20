@@ -33,13 +33,13 @@ import org.smartfrog.sfcore.reference.Reference;
  */
 public class TerminationRecord implements Serializable {
     /** String name for errortype normal. */
-    public static String NORMAL = "normal";
+    public final static String NORMAL = "normal";
 
     /** String name for errortype abnormal. */
-    public static String ABNORMAL = "abnormal";
+    public final static String ABNORMAL = "abnormal";
 
     /** String name for errortype externalReferenceDead. */
-    public static String EXTERNAL_REFERENCE_DEAD = "externalReferenceDead";
+    public final static String EXTERNAL_REFERENCE_DEAD = "externalReferenceDead";
 
     /** Errortype. */
     public String errorType;
@@ -143,7 +143,7 @@ public class TerminationRecord implements Serializable {
         return "Termination Record: " +
         (((id == null) || (id.size() == 0)) ? "" : ("" + id.toString())) +
         ((errorType == null) ? "" : (",  type: " + errorType.toString())) +
-        ((description == null) ? "" : (",  description: " + description)) + 
+        ((description == null) ? "" : (",  description: " + description)) +
         ((cause == null) ? "" : (",  cause: " + cause)) ;
     }
 }
