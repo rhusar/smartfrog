@@ -34,7 +34,7 @@ import java.util.Date;
 /**
  * <p>Only out and err output are printed. </p>
  */
-public class LogToNothingImpl implements LogToErr, Log, LogMessage, LogLevel, Serializable  {
+public class LogToNothingImpl implements LogToErr, Log, LogMessage, LogLevel  {
 
     /** The name of this simple log instance */
     protected String logName = null;

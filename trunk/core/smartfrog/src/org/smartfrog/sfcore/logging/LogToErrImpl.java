@@ -53,7 +53,7 @@ import java.util.Date;
  * to be included in output messages. Default is false.</li>
  * </ul>
  */
-public class LogToErrImpl implements LogToErr, Log, LogMessage, LogLevel, Serializable {
+public class LogToErrImpl implements LogToErr, Log, LogMessage, LogLevel{
 
   //Configuration for LogImpl class
    protected ComponentDescription classComponentDescription = null;
