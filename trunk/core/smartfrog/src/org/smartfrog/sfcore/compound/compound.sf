@@ -23,5 +23,5 @@ For more information: www.smartfrog.org
 Compound extends Prim {
   sfClass "org.smartfrog.sfcore.compound.CompoundImpl";
 //  sfSyncTerminate false;
-  schemaPrim:sfSyncTerminate extends OptionalBoolean {description "decides if a component should terminate synchronously or asynchronously";}
+  //schemaPrim:sfSyncTerminate extends OptionalBoolean {description "decides if a component should terminate synchronously or asynchronously";}
 }
