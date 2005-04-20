@@ -18,13 +18,14 @@ For more information: www.smartfrog.org
 
 */
 
-#include "org/smartfrog/components.sf"
-
 // Parser extensions
 #include "org/smartfrog/functions.sf"
 
 // Counter component
 #include "org/smartfrog/examples/counter/components.sf"
+
+//Running without Prim and Compound schemas.
+#include "org/smartfrog/componentslean.sf"
 
 /*
 Error tested:

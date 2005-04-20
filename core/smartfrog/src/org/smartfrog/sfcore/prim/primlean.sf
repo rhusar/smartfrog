@@ -18,11 +18,13 @@ For more information: www.smartfrog.org
 
 */
 
-// Defines compound as a primitive with specific class
+/** Defines the basic primitive components.
+ * Unless liveness values are set here (or in the
+ * the descriptions) the values from the processcompound.sf
+ * are used */
+sfCodeBase "default";
 
-//Compound with Schema
-Compound extends Prim {
-  sfClass "org.smartfrog.sfcore.compound.CompoundImpl";
-  //sfSyncTerminate false;
-  //schemaPrim:sfSyncTerminate extends OptionalBoolean {description "decides if a component should terminate synchronously or asynchronously";}
+//Prim with schema
+Prim extends NULL {
+    sfCodeBase PARENT:ATTRIB sfCodeBase;    
 }
