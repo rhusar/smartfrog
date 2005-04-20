@@ -47,8 +47,8 @@ SchemaPrim extends Schema {
 sfCodeBase "default";
 
 Prim extends NULL {
-  schemaPrim extends SchemaPrim;
-  sfCodeBase PARENT:ATTRIB sfCodeBase;
+//  schemaPrim extends SchemaPrim;
+    sfCodeBase PARENT:ATTRIB sfCodeBase;
 //  sfDeployerClass "org.smartfrog.sfcore.processcompound.PrimProcessDeployerImpl";
 //  sfExport true;  // Export remote interface?
 //  sfExportPort 0; //Use anonymous port for export.
