@@ -198,12 +198,12 @@ To Be Written
       	    </fileset>
 	 </classpath>
       </java>
-      <copy todir="${dist.lib.dir}">
+      <!--copy todir="${dist.lib.dir}">
 	 <fileset dir="${dist.lib.dir}">
 		 <include name="**/*.jar"/>
 	 </fileset>
 	 <mapper type="glob" from="*.jar" to="*-${version}.jar"/>
-     </copy>
+     </copy-->
 
      <copy todir="${lib}">
 	 <fileset dir="${lib}">
@@ -219,7 +219,7 @@ To Be Written
     <zip destfile="../releases/${Name.System}.${version}.${DSTAMP}_DIST.zip">
        <zipfileset dir="." prefix="${Name.System}.${version}">
 	  <include name="${dist}/**"/>
-	  <exclude name="${dist}/lib/**"/>
+	  <!--exclude name="${dist}/lib/**"/-->
           <exclude name="${dist}/docs/**"/>
           <exclude name="${dist}/classes/**"/>
        </zipfileset>
@@ -232,9 +232,9 @@ To Be Written
         <include name="${dist}/docs/sfDynamicWebServerExample.pdf"/>
         <include name="${dist}/docs/jdocs/**"/>
        </zipfileset>
-       <zipfileset dir="." prefix="${Name.System}.${version}">
+       <!--zipfileset dir="." prefix="${Name.System}.${version}">
 	  <include name="${dist}/lib/**/*-${version}.jar"/>
-       </zipfileset>
+       </zipfileset-->
     </zip>
 
     <zip destfile="../releases/${Name.System}.${version}.${DSTAMP}_ALL.zip">
@@ -271,7 +271,7 @@ To Be Written
        </zipfileset>
        <zipfileset dir="." prefix="${Name.System}.${version}">
 	  <include name="${dist}/**"/>
-	  <exclude name="${dist}/lib/**"/>
+	  <!--exclude name="${dist}/lib/**"/-->
           <exclude name="${dist}/docs/**"/>
           <exclude name="${dist}/classes/**"/>
        </zipfileset>
@@ -284,9 +284,9 @@ To Be Written
         <include name="${dist}/docs/sfDynamicWebServerExample.pdf"/>
         <include name="${dist}/docs/jdocs/**"/>
        </zipfileset>
-       <zipfileset dir="." prefix="${Name.System}.${version}">
+       <!--zipfileset dir="." prefix="${Name.System}.${version}">
 	  <include name="${dist}/lib/**/*-${version}.jar"/>
-       </zipfileset>
+       </zipfileset-->
     </zip>
      <tar tarfile="../releases/${Name.System}.${version}.${DSTAMP}_DIST.tar" >
        <tarfileset dir="." prefix="${Name.System}.${version}">
@@ -297,7 +297,7 @@ To Be Written
        <tarfileset dir="." prefix="${Name.System}.${version}" >
          <exclude name="${dist}/bin/**"/>
 	 <include name="${dist}/**"/>
-	 <exclude name="${dist}/lib/**"/>
+	 <!--exclude name="${dist}/lib/**"/-->
          <exclude name="${dist}/classes/**"/>
          <exclude name="${dist}/docs/**"/>
         </tarfileset>
@@ -310,9 +310,9 @@ To Be Written
         <include name="${dist}/docs/sfDynamicWebServerExample.pdf"/>
         <include name="${dist}/docs/jdocs/**"/>
        </tarfileset>
-       <tarfileset dir="." prefix="${Name.System}.${version}">
+       <!--tarfileset dir="." prefix="${Name.System}.${version}">
 	  <include name="${dist}/lib/**/*-${version}.jar"/>
-       </tarfileset>
+       </tarfileset-->
        <tarfileset dir="." mode="755" prefix="${Name.System}.${version}">
          <include name="${dist}/bin/**"/>
          <exclude name="${dist}/bin/**/*.sf"/>
@@ -373,7 +373,7 @@ To Be Written
        <tarfileset dir="." prefix="${Name.System}.${version}">
          <exclude name="${dist}/bin/**"/>
 	 <include name="${dist}/**"/>
-	 <exclude name="${dist}/lib/**"/>
+	 <!--exclude name="${dist}/lib/**"/-->
          <exclude name="${dist}/classes/**"/>
          <exclude name="${dist}/classes/**"/>
          <exclude name="${dist}/docs/**"/>
@@ -387,9 +387,9 @@ To Be Written
         <include name="${dist}/docs/sfDynamicWebServerExample.pdf"/>
         <include name="${dist}/docs/jdocs/**"/>
        </tarfileset>
-       <tarfileset dir="." prefix="${Name.System}.${version}">
+       <!--tarfileset dir="." prefix="${Name.System}.${version}">
 	  <include name="${dist}/lib/**/*-${version}.jar"/>
-       </tarfileset>
+       </tarfileset-->
        <tarfileset dir="." mode="755" prefix="${Name.System}.${version}">
          <include name="${dist}/bin/**"/>
          <exclude name="${dist}/bin/**/*.sf"/>
@@ -414,9 +414,6 @@ To Be Written
     <delete file="../${Name.System}.${version}.${DSTAMP}_JDOCS.tar"/>
     -->
     
-    <delete>
-	 <fileset dir="${dist.lib.dir}" includes="**/*-${version}.jar"/>
-    </delete>
     <delete>
 	  <fileset dir="${lib}" includes="**/*-${version}.jar"/>
      </delete>
