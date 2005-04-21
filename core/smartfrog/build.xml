@@ -182,8 +182,9 @@ relevant JAR files into the javacc subdirectory
 	     <fileset dir="${dist.lib.dir}">
         	 <include name="**/*.jar"/>
       	     </fileset>
-	 </classpath>
+     </classpath>
      </java>
+     <!--property name="Version" value="${sfversion}"/-->
   </target> 
   
   <!-- =================================================================== -->
@@ -371,8 +372,9 @@ relevant JAR files into the javacc subdirectory
   <target name="copylibs" depends="initdist">
     <copy todir="${dist.lib.dir}">
       <fileset dir="${lib}">
-        <include name="**/*.jar" />
+	      <include name="**/*.jar" />
       </fileset>
+      <mapper type="glob" from="*.jar" to="*-${Version}.jar"/>
     </copy>
   </target>
 
@@ -451,7 +453,7 @@ relevant JAR files into the javacc subdirectory
   <!-- =================================================================== -->
   <!--   JDocs                                                             -->
   <!-- =================================================================== -->
-  <target name="jdocs" depends="initdist, generateversion" description="Generates the API documentation">
+  <target name="jdocs" depends="initdist,generateversion" description="Generates the API documentation">
     <!--  Java Docs for all                                                -->
     <echo message=""/>
     <echo message="------------------------------------------------------------------------"/>
@@ -498,16 +500,15 @@ relevant JAR files into the javacc subdirectory
 
   <!--  SmartFrog Jar                                                     -->
   <target name="sfJar" depends="build">
-    <jar jarfile="${dist.lib.dir}/smartfrog.jar" basedir="${build}"
+	  <jar jarfile="${dist.lib.dir}/smartfrog.jar" basedir="${build}"
          includes="**/smartfrog/**"
          excludes="**/services/**,**/examples/**"
-         manifest ="${manifestName}"/>
+	 manifest ="${manifestName}"/>
   </target>
-
 
   <!--  sfServices.jar                                               -->
   <target name="sfServicesJar" depends="build">
-    <jar jarfile="${dist.lib.dir}/sfServices.jar"
+	  <jar jarfile="${dist.lib.dir}/sfServices-${Version}.jar"
          basedir="${build.classes.dir}"
          includes="**/services/**"
          manifest ="${manifestName}"/>
@@ -517,21 +518,24 @@ relevant JAR files into the javacc subdirectory
   <!--  sfExamples.jar                                               -->
   <target name="sfExamplesJar" depends="build">
     <!-- Create sfExamples.jar file -->
-    <jar jarfile="${dist.lib.dir}/sfExamples.jar"
+    <jar jarfile="${dist.lib.dir}/sfExamples-${Version}.jar"
          basedir="${build.classes.dir}"
          includes="**/examples/**"
          manifest ="${manifestName}"/>
   </target>
 
-  <target name="jars" depends="initdist, sfJar,sfServicesJar,sfExamplesJar"/>
+  <target name="jars" depends="initdist,sfJar,generateversion,sfServicesJar,sfExamplesJar">
+	  <move file="${dist.lib.dir}/smartfrog.jar" tofile="${dist.lib.dir}/smartfrog-${Version}.jar"/>
+  </target>
+
   <!-- =================================================================== -->
   <!-- Initialization path for SF Libs                                     -->
   <!-- =================================================================== -->
-  <path id="smartfrog.run.class.path">
-       <pathelement location="${dist.lib.dir}/smartfrog.jar"/>
-       <pathelement location="${dist.lib.dir}/sfServices.jar"/>
-       <pathelement location="${dist.lib.dir}/sfExamples.jar"/>
-  </path>
+  <!--path id="smartfrog.run.class.path">
+	  <pathelement location="${dist.lib.dir}/smartfrog.jar"/>
+	  <pathelement location="${dist.lib.dir}/sfServices.jar"/>
+	  <pathelement location="${dist.lib.dir}/sfExamples.jar"/>
+  </path-->
 
   <!-- =================================================================== -->
   <!--  build, create jars and signs them.                                 -->
@@ -600,8 +604,13 @@ relevant JAR files into the javacc subdirectory
   <!-- =================================================================== -->
   <target name="sfParseTest"  depends="build,jars">
     <java classname="org.smartfrog.SFParse"
-        failonerror="true" fork="true"
-        classpathref="smartfrog.run.class.path">
+        failonerror="true" fork="true">
+	<!--classpathref="smartfrog.run.class.path"-->
+	<classpath>
+	  <pathelement location="${dist.lib.dir}/smartfrog-${Version}.jar"/>
+	  <pathelement location="${dist.lib.dir}/sfServices-${Version}.jar"/>
+	  <pathelement location="${dist.lib.dir}/sfExamples-${Version}.jar"/>
+        </classpath>
       <arg value="-R"/>
       <!--<arg value="-r"/> -->
       <arg value="-q"/>
