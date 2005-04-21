@@ -159,7 +159,7 @@ public interface ComponentDescription extends PrettyPrinting, Copying, Reference
      *
      * @return old context
      *
-     * @see #getContext
+     * @see #sfContext()
      */
     public Context setContext(Context cxt);
 
