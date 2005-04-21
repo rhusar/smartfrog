@@ -76,6 +76,8 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
     *@throws  Exception  If any error
     */
    public static void main(String[] args) throws Exception {
+      //Init system
+      org.smartfrog.SFSystem.initSystem();
       //Logger.log("Starting management window...");
       LogSF sflog = LogFactory.getLog("SFManagamentConsole");
       sflog.out("Starting management window...");
