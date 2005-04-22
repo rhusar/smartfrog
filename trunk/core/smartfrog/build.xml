@@ -602,8 +602,8 @@ relevant JAR files into the javacc subdirectory
   <!-- =================================================================== -->
   <target name="sfParseTest"  depends="build,jars">
     <java classname="org.smartfrog.SFParse"
-        failonerror="true" fork="true">
-	<classpathref="smartfrog.run.class.path">
+        failonerror="true" fork="true"
+	classpathref="smartfrog.run.class.path">
       <arg value="-R"/>
       <!--<arg value="-r"/> -->
       <arg value="-q"/>
