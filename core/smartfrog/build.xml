@@ -373,7 +373,6 @@ relevant JAR files into the javacc subdirectory
       <fileset dir="${lib}">
 	      <include name="**/*.jar" />
       </fileset>
-      <mapper type="glob" from="*.jar" to="*-${Version}.jar"/>
     </copy>
   </target>
 
@@ -523,8 +522,7 @@ relevant JAR files into the javacc subdirectory
          manifest ="${manifestName}"/>
   </target>
 
-  <target name="jars" depends="initdist,sfJar,sfServicesJar,sfExamplesJar">
-  </target>
+  <target name="jars" depends="initdist,sfJar,sfServicesJar,sfExamplesJar"/>
 
   <!-- =================================================================== -->
   <!-- Initialization path for SF Libs                                     -->
