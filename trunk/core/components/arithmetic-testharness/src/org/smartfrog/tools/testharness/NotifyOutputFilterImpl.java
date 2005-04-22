@@ -11,6 +11,7 @@ import java.rmi.RemoteException;
 import java.io.InputStreamReader;
 import org.smartfrog.services.display.PrintMsgInt;
 import org.smartfrog.services.display.PrintErrMsgInt;
+import java.util.Vector;
 
 /** Implements a filter that scans the output of a process for
  * certain patterns, and notifies an scheduler of that event with a
@@ -21,6 +22,7 @@ public class NotifyOutputFilterImpl implements NotifyOutputFilter, Runnable , Pr
 
   boolean verbose = true;
   boolean formatMsg = true;
+
 
   /** An array of tags that represents search patterns for ALL semantics.*/
   String[] searchNormalPatterns;
@@ -72,6 +74,8 @@ public class NotifyOutputFilterImpl implements NotifyOutputFilter, Runnable , Pr
   /** Indicates if this Filter is connected to other component*/
   boolean havePrinter = false;
 
+
+  ReportGenerator repGen = null;
   /**
    * Class Constructor.
    */
@@ -89,15 +93,15 @@ public class NotifyOutputFilterImpl implements NotifyOutputFilter, Runnable , Pr
     this.myId = myId;
     this.fileOutputName = fileOutputName;
 	System.out.println("fileOutputName in NotifyOutputFilterImpl =============> " +fileOutputName);
-   
-   
+
+
  /*  if (fileOutputName==null)
        dumpOut = System.out;
     else {
       try {
         FileOutputStream temp  = new FileOutputStream(fileOutputName,true);
         dumpOut = new PrintStream(temp);
-		
+
 		dumpOut.println("dumpout is created =============>");
 
       } catch (IOException e) {
@@ -126,9 +130,12 @@ public class NotifyOutputFilterImpl implements NotifyOutputFilter, Runnable , Pr
     pIn = new PipedInputStream(pOut);
     bIn =  new BufferedReader(new InputStreamReader(pIn));
 
+    repGen= new ReportGenerator();
+
     thread = new Thread(this);
 
     thread.start();
+
 
 //    if (debug) System.out.println("Create NotifyOutputFilterImpl:"+this.toString());
   }
@@ -253,14 +260,14 @@ public class NotifyOutputFilterImpl implements NotifyOutputFilter, Runnable , Pr
     try {
 			 if (this.fileOutputName==null)
         dumpOut = System.out;
-		else 
-		
+		else
+
 		{
 			try {
 			FileOutputStream temp  = new FileOutputStream(this.fileOutputName,true);
 			dumpOut = new PrintStream(temp, true);
 			}
-			catch (IOException e) 
+			catch (IOException e)
 			{
 				System.out.println(e.getMessage());
 				dumpOut = System.out;
@@ -275,11 +282,11 @@ public class NotifyOutputFilterImpl implements NotifyOutputFilter, Runnable , Pr
 //        else {log(line);}
 //		System.out.println("NotifyOutputFilter: Line!!"+line);
 		log(line);
-	
-	
-	
+
+
+
 		//dumpOut.flush();
-		
+
 		//dumpOut.println(line);
 		String resultTag = exploreTag(line);
       }
@@ -308,9 +315,13 @@ private String exploreTag(String line) throws RemoteException {
       submitTag(resultTag,false, line);
     else if ((resultTag = scanTag(line,searchForcePatterns,resultForceTags)) != null)
     {
-      submitTag(resultTag,true, line);
-         ReportGenerator.report.add(PROCESS_ID);
-         ReportGenerator.report.add(line);
+         System.out.println(":::::::::::::::::::: searchForcePatterns"+ line);
+         submitTag(resultTag,true, line);
+         Vector tagVect=new Vector();
+         //tagVect.add(PROCESS_ID);
+         tagVect.add(line);
+         ReportGenerator.report.add(tagVect);
+        System.out.println("*************************** size of report"+ ReportGenerator.report.size());
     }
     else if ((resultTag = scanCustomTag(line,searchCustomPatterns,resultCustomTags)) != null)
       submitTag(resultTag,false, line);
@@ -319,11 +330,14 @@ private String exploreTag(String line) throws RemoteException {
 
   /** Closes all the output streams/resources associated with this filter.*/
   public void shutdown() {
+        ReportGenerator repGen = new ReportGenerator();
+        repGen.generateReport();
     try {
       // This should kill the thread and this closes dumpOut...
+
       pIn.close();
       pOut.close();
-    } catch (IOException e) {
+   } catch (IOException e) {
     }
 
   }
@@ -375,7 +389,7 @@ private String exploreTag(String line) throws RemoteException {
    */
 
   private void log (String message){
-	
+
 	//System.out.println("In LOG =====================>");
      message = "[NOTIFY_OUTPUT_FILTER."+myId+"] "+message;
 	 if (formatMsg) message= formatMsg(message);
