@@ -184,7 +184,6 @@ relevant JAR files into the javacc subdirectory
       	     </fileset>
      </classpath>
      </java>
-     <!--property name="Version" value="${sfversion}"/-->
   </target> 
   
   <!-- =================================================================== -->
@@ -524,20 +523,17 @@ relevant JAR files into the javacc subdirectory
          manifest ="${manifestName}"/>
   </target>
 
-  <target name="jars" depends="initdist,sfJar,generateversion,sfServicesJar,sfExamplesJar">
-	  <move file="${dist.lib.dir}/smartfrog.jar" tofile="${dist.lib.dir}/smartfrog-${Version}.jar"/>
-	  <move file="${dist.lib.dir}/sfServices.jar" tofile="${dist.lib.dir}/sfServices-${Version}.jar"/>
-	  <move file="${dist.lib.dir}/sfExamples.jar" tofile="${dist.lib.dir}/sfExamples-${Version}.jar"/>
+  <target name="jars" depends="initdist,sfJar,sfServicesJar,sfExamplesJar">
   </target>
 
   <!-- =================================================================== -->
   <!-- Initialization path for SF Libs                                     -->
   <!-- =================================================================== -->
-  <!--path id="smartfrog.run.class.path">
+  <path id="smartfrog.run.class.path">
 	  <pathelement location="${dist.lib.dir}/smartfrog.jar"/>
 	  <pathelement location="${dist.lib.dir}/sfServices.jar"/>
 	  <pathelement location="${dist.lib.dir}/sfExamples.jar"/>
-  </path-->
+  </path>
 
   <!-- =================================================================== -->
   <!--  build, create jars and signs them.                                 -->
@@ -607,12 +603,7 @@ relevant JAR files into the javacc subdirectory
   <target name="sfParseTest"  depends="build,jars">
     <java classname="org.smartfrog.SFParse"
         failonerror="true" fork="true">
-	<!--classpathref="smartfrog.run.class.path"-->
-	<classpath>
-	  <pathelement location="${dist.lib.dir}/smartfrog-${Version}.jar"/>
-	  <pathelement location="${dist.lib.dir}/sfServices-${Version}.jar"/>
-	  <pathelement location="${dist.lib.dir}/sfExamples-${Version}.jar"/>
-        </classpath>
+	<classpathref="smartfrog.run.class.path">
       <arg value="-R"/>
       <!--<arg value="-r"/> -->
       <arg value="-q"/>
