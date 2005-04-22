@@ -27,6 +27,7 @@ For more information: www.smartfrog.org
 TelnetSchema extends Schema {
 	host extends String;
 	username extends String;
+	ostype extends String;
 	commands extends Vector;
 	cmdsFailureMsgs extends OptionalVector;
 	timeout extends OptionalInteger;
@@ -52,6 +53,8 @@ TelnetSession extends Compound {
         
         // login name in remote FTP server
         //username "ashish";
+
+	// ostype "linux";
 
         // write comma separated commands in the order of execution
         //commands [];

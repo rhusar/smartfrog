@@ -56,6 +56,7 @@ public class TelnetImpl extends PrimImpl implements Telnet,
     
     private String host = null;
     private String user = null;
+    private String ostype = null;
     private String password = "";
     private String shellPrompt = "$";
     private int port = DEFAULT_PORT;
@@ -128,8 +129,13 @@ public class TelnetImpl extends PrimImpl implements Telnet,
                 String loginName = user+"\n";
                 opStream.write(loginName.getBytes());
                 opStream.flush();
-                operationStatus = waitForString(inpStream, "Password:", 
+                if (ostype == "linux") {
+		operationStatus = waitForString(inpStream, "Password:", 
                                             timeout);
+		} else if (ostype =="windows") {
+                operationStatus = waitForString(inpStream, "password:", 
+                                            timeout);
+		}
             }
             if (operationStatus) {
                 //System.out.println("Password :"+ operationStatus);
@@ -139,7 +145,9 @@ public class TelnetImpl extends PrimImpl implements Telnet,
             }
             operationStatus = isLoginSuccessful(inpStream, shellPrompt, 
                                                                 timeout);    
-            if(!operationStatus) {
+            
+            
+	    if(!operationStatus) {
                 throw new SmartFrogLifecycleException(
                         "Unable to login in remote machine");
             } else {
@@ -220,6 +228,7 @@ public class TelnetImpl extends PrimImpl implements Telnet,
         // Mandatory attributes
         host = sfResolve(HOST, host, true);
         user = sfResolve(USER, user, true);
+        ostype = sfResolve(OSTYPE, ostype, true);
         pwdProvider = (PasswordProvider) sfResolve(pwdProviderRef);
         password = pwdProvider.getPassword();
         commandsList = sfResolve(COMMANDS, commandsList, true);
@@ -314,7 +323,7 @@ public class TelnetImpl extends PrimImpl implements Telnet,
                 Thread.sleep(500);
             }
         }
-
+	
         if( (readbytes.indexOf(end) >= 0) || 
                     (readbytes.indexOf(DEFAULT_PROMPT) >=0 ) ) {
             return true;

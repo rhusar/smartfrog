@@ -34,6 +34,7 @@ public interface Telnet extends Prim {
     public static String HOST = "host";
     public static String PORT = "port";
     public static String USER = "username";
+    public static String OSTYPE = "ostype";
     public static String TELNET_PASSWORD = "telnetPassword";
     public static String COMMANDS = "commands";
     public static String TIMEOUT = "timeout";
