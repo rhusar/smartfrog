@@ -508,7 +508,7 @@ relevant JAR files into the javacc subdirectory
 
   <!--  sfServices.jar                                               -->
   <target name="sfServicesJar" depends="build">
-	  <jar jarfile="${dist.lib.dir}/sfServices-${Version}.jar"
+	  <jar jarfile="${dist.lib.dir}/sfServices.jar"
          basedir="${build.classes.dir}"
          includes="**/services/**"
          manifest ="${manifestName}"/>
@@ -518,7 +518,7 @@ relevant JAR files into the javacc subdirectory
   <!--  sfExamples.jar                                               -->
   <target name="sfExamplesJar" depends="build">
     <!-- Create sfExamples.jar file -->
-    <jar jarfile="${dist.lib.dir}/sfExamples-${Version}.jar"
+    <jar jarfile="${dist.lib.dir}/sfExamples.jar"
          basedir="${build.classes.dir}"
          includes="**/examples/**"
          manifest ="${manifestName}"/>
@@ -526,6 +526,8 @@ relevant JAR files into the javacc subdirectory
 
   <target name="jars" depends="initdist,sfJar,generateversion,sfServicesJar,sfExamplesJar">
 	  <move file="${dist.lib.dir}/smartfrog.jar" tofile="${dist.lib.dir}/smartfrog-${Version}.jar"/>
+	  <move file="${dist.lib.dir}/sfServices.jar" tofile="${dist.lib.dir}/sfServices-${Version}.jar"/>
+	  <move file="${dist.lib.dir}/sfExamples.jar" tofile="${dist.lib.dir}/sfExamples-${Version}.jar"/>
   </target>
 
   <!-- =================================================================== -->
