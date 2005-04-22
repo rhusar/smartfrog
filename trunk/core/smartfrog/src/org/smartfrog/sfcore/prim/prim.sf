@@ -24,13 +24,13 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/sfcore/languages/sf/predicates/schema.sf"
 
 //Schema
-SchemaPrim extends Schema {
+PrimSchema extends Schema {
     sfClass extends Optional {description "class that implements component"; } //It is mandatory but check is done at runtime
     sfCodeBase extends Optional {description "codebase used during dynamic classloading"; }
     sfDeployerClass extends OptionalString {description "deployer class";}
     sfExport extends OptionalBoolean {description "decides if a component is remotely exported";}
     sfExportPort extends OptionalInteger {description "port used to export the component. O means use anonymous port";}
-    sfLivenessDelay extends OptionalInteger {description "how often to send liveness in seconds";}
+    sfLivenessDelay extends OptionalLong {description "how often to send liveness in seconds";}
     sfLivenessFactor extends OptionalInteger {description "how many multiples of the liveness delay to wait till a failure is sent";}
     sfLog extends OptionalString {description "defines a name for the log used by this component";}
     sfProcessName extends Optional {description "name of the processCompound where the component has to be deployed"; }
@@ -46,9 +46,14 @@ SchemaPrim extends Schema {
  * are used */
 sfCodeBase "default";
 
+/**
+ * Defines if the schema for Prim/Compound/ProcessCompound should be appplied
+ */
+sfSchema true;
+
 //Prim with any schema
 Prim extends NULL {
-    schemaPrim extends SchemaPrim;    
+    sfPrimSchema IF sfSchema THEN PrimSchema ELSE NULL FI;
     sfCodeBase PARENT:ATTRIB sfCodeBase;
 //  sfDeployerClass "org.smartfrog.sfcore.processcompound.PrimProcessDeployerImpl";
 //  sfExport true;  // Export remote interface?

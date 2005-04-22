@@ -20,9 +20,13 @@ For more information: www.smartfrog.org
 
 // Defines compound as a primitive with specific class
 
+CompoundSchema extends PrimSchema {
+   sfSyncTerminate extends OptionalBoolean {description "decides if a component should terminate synchronously or asynchronously";}
+}
+
 //Compound with Schema
 Compound extends Prim {
+  sfPrimSchema IF sfSchema THEN CompoundSchema ELSE NULL FI;
   sfClass "org.smartfrog.sfcore.compound.CompoundImpl";
   //sfSyncTerminate false;
-  schemaPrim:sfSyncTerminate extends OptionalBoolean {description "decides if a component should terminate synchronously or asynchronously";}
 }
