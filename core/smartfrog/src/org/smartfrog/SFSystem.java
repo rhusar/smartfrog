@@ -570,10 +570,11 @@ public class SFSystem implements MessageKeys {
      * @see SFClassLoader
      */
     public static byte[] getByteArrayForResource(String resourceSFURL) throws SmartFrogException {
+        ByteArrayOutputStream bStrm = null;
         try {
             DataInputStream iStrm = new DataInputStream(getInputStreamForResource(resourceSFURL));
             byte resourceData[];
-            ByteArrayOutputStream bStrm = new ByteArrayOutputStream();
+            bStrm = new ByteArrayOutputStream();
             int ch;
             while ((ch = iStrm.read())!=-1) {
                 bStrm.write(ch);
@@ -582,7 +583,11 @@ public class SFSystem implements MessageKeys {
             bStrm.close();
             return resourceData;
         } catch (IOException ex) {
-            throw SmartFrogException.forward(ex);
+          try {
+            bStrm.close();
+          } catch (IOException ex1) {
+          }
+          throw SmartFrogException.forward(ex);
         }
     }
 
