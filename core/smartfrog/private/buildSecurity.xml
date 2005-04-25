@@ -230,20 +230,20 @@ For more information: www.smartfrog.org
 </target>
 
 <!-- 1.7 Sign jars, need to edit to change what is signed -->
-<target name="signJars">
+<target name="signJars" depends="generateversion">
 	<antcall target="signjarbuild">
-		<param name="jarname" value="${dist.lib.dir}/smartfrog.jar"/>
-	    <param name="signedjarname" value="${dist.signedLib.dir}/smartfrog.jar"/>
+		<param name="jarname" value="${dist.lib.dir}/smartfrog-${Version}.jar"/>
+	    <param name="signedjarname" value="${dist.signedLib.dir}/smartfrog-${Version}.jar"/>
     </antcall>
 
     <antcall target="signjarbuild">
-	    <param name="jarname" value="${dist.lib.dir}/sfExamples.jar"/>
-	    <param name="signedjarname" value="${dist.signedLib.dir}/sfExamples.jar"/>
+	    <param name="jarname" value="${dist.lib.dir}/sfExamples-${Version}.jar"/>
+	    <param name="signedjarname" value="${dist.signedLib.dir}/sfExamples-${Version}.jar"/>
     </antcall>
 
     <antcall target="signjarbuild">
-	    <param name="jarname" value="${dist.lib.dir}/sfServices.jar"/>
-	    <param name="signedjarname" value="${dist.signedLib.dir}/sfServices.jar"/>
+	    <param name="jarname" value="${dist.lib.dir}/sfServices-${Version}.jar"/>
+	    <param name="signedjarname" value="${dist.signedLib.dir}/sfServices-${Version}.jar"/>
   </antcall>
 
   <!-- don't sign those considered insecure, or not required -->
