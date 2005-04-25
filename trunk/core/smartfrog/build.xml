@@ -173,9 +173,7 @@
     <java classname="org.smartfrog.Version" failonerror="true" fork="true" outputproperty="Version">
       <arg value="-b"/>
       <classpath>
-        <fileset dir="${dist.lib.dir}">
-          <include name="**/*.jar"/>
-        </fileset>
+        <pathelement location="${build.classes.dir}"/>
       </classpath>
     </java>
     <!--property name="Version" value="${sfversion}"/-->
@@ -431,7 +429,7 @@
   <!-- =================================================================== -->
   <!--  SmartFrog Jar                                                     -->
   <target name="sfJar" depends="build">
-    <jar jarfile="${dist.lib.dir}/smartfrog.jar" basedir="${build}" includes="**/smartfrog/**" excludes="**/services/**,**/examples/**" manifest="${manifestName}"/>
+    <jar jarfile="${dist.lib.dir}/smartfrog-${Version}.jar" basedir="${build.classes.dir}" includes="**/smartfrog/**" excludes="**/services/**,**/examples/**" manifest="${manifestName}"/>
   </target>
   <!--  sfServices.jar                                               -->
   <target name="sfServicesJar" depends="build">
@@ -442,8 +440,7 @@
     <!-- Create sfExamples.jar file -->
     <jar jarfile="${dist.lib.dir}/sfExamples-${Version}.jar" basedir="${build.classes.dir}" includes="**/examples/**" manifest="${manifestName}"/>
   </target>
-  <target name="jars" depends="initdist,sfJar,generateversion,sfServicesJar,sfExamplesJar">
-    <move file="${dist.lib.dir}/smartfrog.jar" tofile="${dist.lib.dir}/smartfrog-${Version}.jar"/>
+  <target name="jars" depends="initdist,generateversion,sfJar,sfServicesJar,sfExamplesJar">
   </target>
   <!-- =================================================================== -->
   <!-- Initialization path for SF Libs                                     -->
