@@ -100,18 +100,18 @@ should be useful during development.
 \subsection{A Community SOAP Stack}
 \label{alpine:community}
 
-From perspective of an open source project, JAX-RPC creates many
-problems. Because the API hides all the XML, it creates a gulf between
-the implementation code and the end user code. This makes it hard for
-end users to become developers, something that open source platforms
-depend on.
 
-An open source project succeeds from the contributions of its users,
-and so is dependent upon users who are able and willing to understand
-the implementation. JAX-RPC, by its very nature, places too firm a
-divide between end users and developers.With Alpine, we hope to avoid
-creating such a split, because the XML runs all the way through the
-toolkit.
+An open source project is written by its users, and so it
+is critical that as many users as possible can contribute to
+the implementation. JAX-RPC, by its very nature, places a firm divide
+between end users and developers. The split between XML in its internal API, and
+mapped object instances in the external API, creates
+a gulf between the implementation and the end user codebases. This creates
+an artificial barrier between being being a user and being a developer. 
+
+With Alpine, we hope to avoid creating such a
+split, because the unified XML representation will run all 
+through the toolkit.
 
 
 \subsection{The Implications of Alpine}
@@ -135,18 +135,38 @@ they writing web services?} If the developers want to use a less portable,
 more brittle, remote method invocation system, they would be better off
 using a stable technology such as Java RMI or CORBA.
 
-If it fails, then either the design was unworkable, or it did not
-appeal to enough of a developer community for it to survive. The the
-workability problem is the most pressing one. We have argued that
-JAX-RPC is the wrong API for SOAP in Java; if an XML-centric design
-does not work either, what would that mean? In our opinion, it would
-mean that the promised flexibility of XML messaging infrastructures
-are inaccessible to the ``Java generation'' of languages, into which
-we include C\# and VB.NET, all of which share a similar type system
-and object model, with different syntaxes around them. If these
-languages are not flexible enough to work with XML, then the true
-promise of XML messaging systems, both REST and SOAP, will only be
-realised by the next generation of platforms, be they extensions of
-existing languages, such as C$\omega$, or XML runtimes such as Apache
-Cocoon and NetKernel by 1060research
+One concern we have with this approach is that XSD and WSDL are both hard
+technologies to use. If something as simple to read and write as classic IDL
+languages existed, perhaps there would be less reticence to write the service
+contracts by hand. Perhaps an alternate XML Schema language ---specifically
+RelaxNG--- will be needed to make XML type declarations easy
+\cite{spec:RelaxNG}. Similarly, WSDL2.0 may be an improvement
+on WSDL1.1 \cite{spec:WSDL2.0}. We do not yet have enough practial experience
+of WSDL2.0 to come to a valid conclusion.
+
+One of the flaws with using handwritten contracts to define SOAP stacks is
+that there no guarantee that any mainstream SOAP stack will be able to
+interoperate with a naively written XSD or WSDL contract. Unless all SOAP
+implementations adopt a pure-XML view of the world, the risk of interoperability
+problems remain. Clearly, the authors of service contracts will have to
+write their schemas and WSDL files with a clear understanding of which types and
+operations are supported in the client stacks expected to call the service. 
+It is for this reason that some SOAP developers advocate implementation-first
+development, on the grounds that may makes it possible for at least one SOAP
+stack to operate correctly with the service. This is essentially ignoring the
+cross-platform goal of SOAP, in order to avoid the interoperability problems
+that exist today. 
+
+If our Alpine project does not get adopted, then either the design was wrong,
+or it did not appeal to enough of a developer community for it to survive. The
+design problem is the most pressing one. We have argued that JAX-RPC is the
+wrong API for SOAP in Java; if an XML-centric design does not work either, what
+would that mean? In our opinion, it would mean that the promised flexibility of
+XML messaging infrastructures are inaccessible to the ``Java generation'' of
+languages, into which we include C\# and VB.NET, all of which share a similar
+static type system and object model. If these languages are not flexible enough
+to work with XML, then the true promise of XML messaging systems, both REST and
+SOAP, will only be realised by the next generation of platforms, be they
+extensions of existing languages, such as C$\omega$, or XML runtimes such as
+Apache Cocoon and NetKernel by 1060 Research
 \cite{MSFT:TransitionsInProgrammingModels,pjr:NKonTSS}.

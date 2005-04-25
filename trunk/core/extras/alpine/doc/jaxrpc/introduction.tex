@@ -22,7 +22,7 @@ alongside data, and provide human readable names.
 of incoming data.
 
 \item Long-haul: It is designed to work through firewalls,
-over HTTP.
+using HTTP and other protocols underneath.
 
 \item Loosely-coupled: Participants are not expected to share
 implementation code.
@@ -40,7 +40,7 @@ desiderata against which any SOAP technology should be judged.
 
 Communication with SOAP can be viewed either as XML-based remote
 procedure calls, or as a way of submitting XML documents to remote
-URLs (optionally eliciting responses in the form of XML
+\emph{endpoints} (optionally eliciting responses in the form of XML
 documents). These two different perspectives represent the RPC-centric
 and message-centric viewpoints. In Java, the RPC-centric model has
 become the primary model of SOAP APIs.
@@ -84,8 +84,8 @@ work with SOAP in Java.
 
 In JAX-RPC\footnote{The current edition of the JAX-RPC specification
 is version 1.1, and this is the version we discuss here. JAX-RPC 2.0
-is discussed in section \ref{implications:future}.}, all the details of
-how a message was encoded are hidden, and the developer works with
+is discussed in section \ref{implications:future}.}, the XML representation of
+how a message is hidden; the developer works with
 Java objects created automatically from the XML data using a
 semi-standardised mapping process. Java classes can be automatically
 turned into SOAP endpoints, with each public method in the class

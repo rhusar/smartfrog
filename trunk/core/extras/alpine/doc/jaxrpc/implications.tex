@@ -62,3 +62,16 @@ have control of the messages that get sent over the wire, and that
 without that control, interoperability and loose coupling will remain
 out of reach.
 
+The next version of Apache Axis, Axis 2.0, has adopted a more XML-centric design
+than before. The XML representation of a message is represented in the Message
+Object Model, \emph{MOM}, which is intended to be simpler than DOM, yet still a
+usable representation of messages. Extensions to the core runtime are expected
+to provide the mapping between the MOM tree and Java object graphs, with this
+mapping being an optional way of working with messages, rather than the standard
+mechanism. We admire this change in direction, and believe that this
+architecture could be a foundation for more robust SOAP server and client
+applications. However, the fact that O/X mapping and contract-last development
+are still enabled within the infrastructure imply that users are still being
+encouraged to write their code and have the SOAP stack handle the marshalling.
+This is precisely what we believe is a mistake.
+

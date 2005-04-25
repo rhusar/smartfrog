@@ -86,7 +86,8 @@ examples are: {\tt schr\"odinger}, {\tt \_unknown.type-set}, and {\tt
 String}.
 
 Java identifiers almost comprise a proper subset of XML
-names\footnote{XML names beginning in ``xml'' (any case) are reserved.}.
+names\footnote{XML names beginning in ``xml'' (any case) are reserved, whereas in
+Java they are valid identifier names.}.
 Because of the much greater range of allowable XML identifiers, the
 system will often need to perform a non-trivial mapping from the XML
 names to valid class and package names. Package names are typically
@@ -216,17 +217,21 @@ packages provides many of the problems discussed in section
 \ref{objections:o-x:names}, since these are more examples of identifiers). 
 
 The problems that typically arise are of two kinds:
+
 \begin{enumerate}
+
 \item Mapping an incoming message to a web service object requires
 that either the namespace of either the operation itself or its
 parameters be guessed. This guessing can be wildly inaccurate when the
 web service's Java interface was generated from WSDL using package
 renaming.
+
 \item When dynamic invocation is desired (service invocation without
 the use of pre-built stub classes) it can be very difficult to
 determine the correct namespaces for service invocations (the WSDL
 typically leaves this unspecified, meaning that for JAX-RPC services
 the WSDL is not a complete description of the service interface).
+
 \end{enumerate}
 
 If more metadata were recorded with generated types, this problem would not
@@ -238,7 +243,7 @@ language.
 \label{objections:o-x:validation}
 
 When a message is received, the serialised form is generated and
-passed to the handlers for processing. In typical web service stacks,
+passed to the handlers for processing. In typical SOAP stacks,
 no validation of the incoming XML against the message schema is
 performed, and in particular any restrictions on the number of times
 an item is required are not checked. This forces the implementation
@@ -336,7 +341,7 @@ recipient to process them.
 \label{objections:soap-not-just-rmi}
 
 SOAP's parentage includes XML-RPC \cite{winer:xmlrpc} and (indirectly)
-COM/DCOM \cite{dbox:SoapHistory,dbox:com}and CORBA
+COM/DCOM \cite{dbox:SoapHistory,dbox:com} and CORBA
 \cite{vinoski:CORBA}. It was clearly designed at its outset to be a
 form of remote procedure call in XML, over HTTP. Over time, the
 world-view that lead to that choice has changed. Though it is often
@@ -412,15 +417,14 @@ appears to have a reference to something like an object, though one
 that represents the current conversation with an endpoint, not a
 direct endpoint proxy.
 
-SOAP strove to overcome many of the failings of precursor technologies
-like CORBA and DCOM. These technologies work well over local area
-networks, and enable rich bidirectional communications, but are not
-completely cross platform\footnote{Admittedly for arguably political
-rather than technical reasons}, and ended up being used to produce
-distributed object systems that were too tightly coupled. Recall that
-one of our key hopes in adopting SOAP (section \ref{introduction}) was
-to enable loose coupling between the components of a distributed
-system.
+Recall that one of our key hopes in adopting SOAP (section \ref{introduction})
+was to enable loose coupling between the components of a distributed system.
+SOAP strove to overcome many of the failings of precursor technologies like
+CORBA and DCOM. These technologies work well over local area networks, and
+enable rich bidirectional communications, but are not completely cross
+platform\footnote{Admittedly for arguably political rather than technical
+reasons}, and ended up being used to produce distributed object systems that
+were too tightly coupled.
 
 While Java RMI provides convenience, the one thing it does not provide
 in any way is loose coupling. Interacting systems typically run from
