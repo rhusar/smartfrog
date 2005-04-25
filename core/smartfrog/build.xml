@@ -53,7 +53,7 @@
       = ${Name.Company}
       ===================================================================
       (${ant.version})
-</echo>
+    </echo>
     <available property="nice.task.present" classname="org.apache.tools.ant.taskdefs.Nice"/>
   </target>
   <!-- =================================================================== -->
@@ -66,38 +66,24 @@
     <echo message="-------------------------------------------------------------"/>
     <echo message="* General: "/>
     <echo message=" build        -->      recompiles and creates all packages"/>
-      <echo message=" dist         -->        prepares distribution package (Default)"/>
-        <echo message=" compile      -->          compiles the contributed source code"/>
-          <echo message=" sfParseTest  -->            runs sfParser for 'parsertargets' file"/>
-            <echo message=" jdocs        -->              generates the Java Docs API documentation"/>
-              <echo message=" clean        -->                restores the distribution to its clean state"/>
-                <echo message=" release      -->                  clean, dist, jdocs"/>
-                  <echo message=" all          -->                    builds all the packages"/>
-                    <echo message=" cleanall     -->                      cleans all the packages"/>
-                      <echo message="* Security: "/>
-                      <echo message=" initCA -->                        initializes a Certificate Authority"/>
-                        <echo message=" dummyInitCA -->                          initialise a dummyCA. Needed first time before any build"/>
-                          <echo message=" cleanCA     -->                            cleans the Certificate Authority"/>
-                            <echo message=" signJars    -->                              signs the jar files and copies from lib to signedLib"/>
-                              <echo message=" "/>
-                              <echo message=" help -->                                this help"/>
-                                <echo message="See the comments inside the build.xml file for more details."/>
-                                <echo message="-------------------------------------------------------------"/>
-                                <echo message=""/>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    <echo message=" dist         -->        prepares distribution package (Default)"/>
+    <echo message=" compile      -->          compiles the contributed source code"/>
+    <echo message=" sfParseTest  -->            runs sfParser for 'parsertargets' file"/>
+    <echo message=" jdocs        -->              generates the Java Docs API documentation"/>
+    <echo message=" clean        -->                restores the distribution to its clean state"/>
+    <echo message=" release      -->                  clean, dist, jdocs"/>
+    <echo message=" all          -->                    builds all the packages"/>
+    <echo message=" cleanall     -->                      cleans all the packages"/>
+    <echo message="* Security: "/>
+    <echo message=" initCA -->                        initializes a Certificate Authority"/>
+    <echo message=" dummyInitCA -->                          initialise a dummyCA. Needed first time before any build"/>
+    <echo message=" cleanCA     -->                            cleans the Certificate Authority"/>
+    <echo message=" signJars    -->                              signs the jar files and copies from lib to signedLib"/>
+    <echo message=" "/>
+    <echo message=" help -->                                this help"/>
+    <echo message="See the comments inside the build.xml file for more details."/>
+    <echo message="-------------------------------------------------------------"/>
+    <echo message=""/>
   </target>
   <!-- =================================================================== -->
   <!-- Initialization path (Libs needed for compiling)                     -->
@@ -169,13 +155,28 @@
   <!-- ================================================================== -->
   <!-- running Version.java to generate version information               -->
   <!-- ================================================================== -->
-  <target name="generateversion" depends="init">
+  
+  <target name="generateversion" depends="prebuild">
     <java classname="org.smartfrog.Version" failonerror="true" fork="true" outputproperty="Version">
       <arg value="-b"/>
       <classpath>
         <pathelement location="${build.classes.dir}"/>
       </classpath>
     </java>
+    
+    <!-- save everything to a file -->
+    <!-- keep this in sync w/ common.xml's declaration -->
+    <property name="sf.version.file" location="smartfrog-version.properties" />
+    
+    <propertyfile
+        file="${sf.version.file}"
+        comment="This is machine generated. Do Not Edit!">
+      <entry  key="sf.build.date" type="date" value="now"/>
+      <entry  key="sf.build.version" value = "${Version}"/>
+    </propertyfile>
+
+    <copy file="${sf.version.file}" todir="${build.classes.dir}/org/smartfrog" />
+    <echo level="verbose">version=${sfversion}</echo> 
     <!--property name="Version" value="${sfversion}"/-->
   </target>
   <!-- =================================================================== -->
@@ -350,7 +351,9 @@
     </copy>
   </target>
   <!-- =================================================================== -->
-  <!--                                                                     -->
+  <!-- Copy binary files.                                                  -->
+  <!-- execute permissions are set on binary stuff, permissions that get   --> 
+  <!--     lost                                                            -->
   <!-- =================================================================== -->
   <target name="copybins" depends="initdist">
     <copy todir="${dist.bin.dir}">
@@ -364,7 +367,7 @@
     <chmod dir="${dist.bin.dir}/security" perm="ugo+rx" excludes="**/*.ico, **/*.ini, **/*.sf*,**/*.bat"/>
   </target>
   <!-- =================================================================== -->
-  <!--                                                                     -->
+  <!-- Copy PDF, HTML files from docs to dist/docs                         -->
   <!-- =================================================================== -->
   <target name="copydocs" depends="initdist">
     <copy todir="${dist.docs.dir}">
@@ -423,7 +426,13 @@
   <!-- =================================================================== -->
   <!--  BUILD                                                              -->
   <!-- =================================================================== -->
-  <target name="build" depends="initbuild,compile,copySF,copyGif,copyBAT,copyHTML,copyDefault,copySFCD" description="Recompile and create all packages"/>
+  <target name="prebuild"
+    depends="initbuild,compile,copySF,copyGif,copyBAT,copyHTML,copyDefault,copySFCD" />
+
+  <target name="build"
+    depends="generateversion"
+    description="Recompile and create all packages"/>
+    
   <!-- =================================================================== -->
   <!--  Jar Files                                                              -->
   <!-- =================================================================== -->
@@ -432,15 +441,18 @@
     <jar jarfile="${dist.lib.dir}/smartfrog-${Version}.jar" basedir="${build.classes.dir}" includes="**/smartfrog/**" excludes="**/services/**,**/examples/**" manifest="${manifestName}"/>
   </target>
   <!--  sfServices.jar                                               -->
+  
   <target name="sfServicesJar" depends="build">
     <jar jarfile="${dist.lib.dir}/sfServices-${Version}.jar" basedir="${build.classes.dir}" includes="**/services/**" manifest="${manifestName}"/>
   </target>
+  
   <!--  sfExamples.jar                                               -->
   <target name="sfExamplesJar" depends="build">
     <!-- Create sfExamples.jar file -->
     <jar jarfile="${dist.lib.dir}/sfExamples-${Version}.jar" basedir="${build.classes.dir}" includes="**/examples/**" manifest="${manifestName}"/>
   </target>
-  <target name="jars" depends="initdist,generateversion,sfJar,sfServicesJar,sfExamplesJar">
+  
+  <target name="jars" depends="initdist,sfJar,sfServicesJar,sfExamplesJar">
   </target>
   <!-- =================================================================== -->
   <!-- Initialization path for SF Libs                                     -->
