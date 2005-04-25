@@ -29,7 +29,7 @@ generally accepted practise for working with JAX-RPC discards all
 these notions. Instead of generating implementation classes from WSDL,
 the WSDL description is usually generated from the implementation
 classes using tools leveraging Java's Reflection API. We shall term
-this process \emph{WSDL-last development}.
+this process \emph{contract-last development}.
 
 This has the following consequences.
 
@@ -37,7 +37,7 @@ This has the following consequences.
 
 \item
     
-There is no way to ensure that the published interface of a service
+There is no way to ensure that the published contract of a service
 remains constant over time. Every redeployment of the service, every
 upgrade of the SOAP stack or even the underlying Java runtime may
 change the WSDL, and hence the interface.
@@ -55,14 +55,14 @@ attachment needs of the service.
 
 There is no warning of portability issues before integration time.
 When defining a service using an IDL, the author typically knows when
-there are problems as the IDL will not compile. Yet with WSDL-last
+there are problems as the IDL will not compile. Yet with contract-last
 development, everything may well seem to work until the service goes
 live and a customer using a different language attempts to import the
 WSDL and invoke the service.
     
 \end{itemize}
 
-The alternative to WSDL-last development is clearly \emph{WSDL-first
+The alternative to contract-last development is clearly \emph{contract-first
 development}. Although this is the better approach from the perspective
 of portability and interface stability, web service developers are not
 pushed in this direction.
@@ -82,7 +82,7 @@ human-readable documentation. This would appear to be sub-optimal, yet
 REST is growing in popularity, despite (or perhaps because of) the
 lack of WSDL integration.
 
-Returning to the desiderata for SOAP, following a WSDL-last process
+Returning to the desiderata for SOAP, following a contract-last process
 sacrifices interoperability for ease of service development. Perhaps
 WSDL is not the appropriate language for describing SOAP services (we
 are certainly not enthused about it), yet the sole solution being
@@ -92,7 +92,7 @@ the challenge of deriving a stable and portable service interface from
 the inherently unstable and unportable service implementation.
 
 We are not proposing any changes to WSDL, merely mourning the fact
-that its over-complexity discourages WSDL-first, contract-driven
+that its over-complexity discourages contract-first, contract-driven
 development more aggressively than any previous IDL ever did. We do
 observe that once the type declarations of a service have been moved
 into their own document, WSDL becomes much more manageable and this is
