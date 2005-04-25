@@ -127,12 +127,12 @@ These are the meaningful targets for this build file:
   <!-- =================================================================== -->
   <!-- Initialization path (Libs needed for compiling)                     -->
   <!-- =================================================================== -->
-  <path id="smartfrog.class.path">
+  <!--path id="smartfrog.class.path">
      <pathelement path="${classpath}"/>
-     <pathelement location="lib/smartfrog.jar"/>
-     <pathelement location="lib/sfServices.jar"/>
-     <pathelement location="lib/sfExamples.jar"/>
-  </path>
+     <pathelement location="lib/smartfrog-${Version}.jar"/>
+     <pathelement location="lib/sfServices-${Version}.jar"/>
+     <pathelement location="lib/sfExamples-${Version}.jar"/>
+  </path-->
 
   <!-- =================================================================== -->
   <!--  Creates directories                                                -->
@@ -199,10 +199,22 @@ These are the meaningful targets for this build file:
   <target name="build" depends="copyFiles,initbuild,generateversion" description="Compiles source code">
     <!-- Compile the java code from ${src} into ${build} -->
     <javac srcdir="${src}" destdir="${build}" debug="${debugmode}" compiler="javac1.4" source="1.4">
-      <classpath refid="smartfrog.class.path"/>
+      <!--classpath refid="smartfrog.class.path"/-->
+      <classpath>
+      	<pathelement path="${classpath}"/>
+     	<pathelement location="lib/smartfrog-${Version}.jar"/>
+     	<pathelement location="lib/sfServices-${Version}.jar"/>
+     	<pathelement location="lib/sfExamples-${Version}.jar"/>
+     </classpath>
     </javac>
     <rmic includesfile="${rmitargets}" base="${build}">
-      <classpath refid="smartfrog.class.path"/>
+      <!--classpath refid="smartfrog.class.path"/-->
+      <classpath>
+      	<pathelement path="${classpath}"/>
+     	<pathelement location="lib/smartfrog-${Version}.jar"/>
+     	<pathelement location="lib/sfServices-${Version}.jar"/>
+     	<pathelement location="lib/sfExamples-${Version}.jar"/>
+     </classpath>
     </rmic>
     <!--  sfExamples.jar                                               -->
     <!-- Create sfExamples.jar file -->
@@ -251,17 +263,29 @@ These are the meaningful targets for this build file:
            bottom="${name}"
            source="1.4">
       <group title="SmartFrog Examples Package" packages="org.smartfrog.examples"/>
-      <classpath refid="smartfrog.class.path"/>
+      <!--classpath refid="smartfrog.class.path"/-->
+      <classpath>
+      	<pathelement path="${classpath}"/>
+     	<pathelement location="lib/smartfrog-${Version}.jar"/>
+     	<pathelement location="lib/sfServices-${Version}.jar"/>
+     	<pathelement location="lib/sfExamples-${Version}.jar"/>
+     </classpath>
     </javadoc>
   </target>
 
   <!-- =================================================================== -->
   <!-- sfParse parsertargets                                                -->
   <!-- =================================================================== -->
-  <target name="sfParseTest">
+  <target name="sfParseTest" depends="generateversion">
     <java classname="org.smartfrog.SFParse"
 	    failonerror="true" fork="true">
-	    <classpathref="smartfrog.class.path"/>
+	    <!--classpathref="smartfrog.class.path"/-->
+      <classpath>
+      	<pathelement path="${classpath}"/>
+     	<pathelement location="lib/smartfrog-${Version}.jar"/>
+     	<pathelement location="lib/sfServices-${Version}.jar"/>
+     	<pathelement location="lib/sfExamples-${Version}.jar"/>
+     </classpath>
       <arg value="-R"/>
       <arg value="-q"/>
       <arg value="-f"/>
