@@ -44,6 +44,8 @@ import java.io.File;
 
      private String echoCommand ="echo";
 
+     private String exitErrorCommand="$?"; // Unix= *?, Windows "%ERRORLEVEL%";
+
      public Cmd() {
 
      }
