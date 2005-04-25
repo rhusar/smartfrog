@@ -20,6 +20,7 @@
 package org.smartfrog.sfcore.languages.cdl.dom;
 
 /**
+ * Import element
  * created 21-Apr-2005 14:26:27
  */
 

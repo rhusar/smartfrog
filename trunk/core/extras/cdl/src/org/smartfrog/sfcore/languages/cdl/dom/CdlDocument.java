@@ -22,8 +22,12 @@ package org.smartfrog.sfcore.languages.cdl.dom;
 import nu.xom.Document;
 import nu.xom.Element;
 import nu.xom.ParsingException;
+import nu.xom.Node;
 import org.smartfrog.sfcore.languages.cdl.CdlParsingException;
 import org.smartfrog.sfcore.languages.cdl.Constants;
+import org.smartfrog.sfcore.languages.cdl.utils.ParentNodeIterable;
+
+import javax.xml.namespace.QName;
 
 /**
  * This represents a parsed CDL document, or an error caused during parsing.
@@ -42,9 +46,9 @@ public class CdlDocument extends DocumentedNode {
 
     private ParsingException exception;
 
-    private PropertyList configuration;
+    private ToplevelList configuration= new ToplevelList();
 
-    private PropertyList system;
+    private ToplevelList system;
 
 
     /**
@@ -101,20 +105,33 @@ public class CdlDocument extends DocumentedNode {
         }
     }
 
-
-    public void assertTrue(String message, boolean test)
-            throws CdlParsingException {
-        if (!test) {
-            throw new CdlParsingException(message);
-        }
+    /**
+     * Get the configuration
+      * @return configuration; null for no none
+     */
+    public ToplevelList getConfiguration() {
+        return configuration;
     }
 
-    public void validateRootElement() throws CdlParsingException {
+    /**
+     * Get the system declaration
+     * @return system or null for none defined
+     */
+    public ToplevelList getSystem() {
+        return system;
+    }
+
+    /**
+     * this routine encodes all the logic around the validity of the scham
+     *
+     * @throws CdlParsingException
+     */
+    public void validate() throws CdlParsingException {
         Element root = document.getRootElement();
         String uri = root.getNamespaceURI();
-        assertTrue(ERROR_WRONG_NAMESPACE, Constants.CDL_NAMESPACE.equals(uri));
-        assertTrue(ERROR_WRONG_ROOT_ELEMENT,
-                Constants.CDL_ELT_CDL.equals(root.getLocalName()));
+        CdlParsingException.assertValid(Constants.CDL_NAMESPACE.equals(uri),ERROR_WRONG_NAMESPACE);
+        CdlParsingException.assertValid(Constants.CDL_ELT_CDL.equals(root.getLocalName()),ERROR_WRONG_ROOT_ELEMENT);
+
         /*
         Attribute pathLangAttr = root.getAttribute("pathlanguage", Constants.CDL_NAMESPACE);
         if ( pathLangAttr != null ) {
@@ -123,14 +140,35 @@ public class CdlDocument extends DocumentedNode {
             assertTrue(ERROR_BAD_PATHLANGUAGE, Constants.XPATH_URI.equals(language));
         }
         */
+
+        if(configuration!=null) {
+            configuration.validateToplevel();
+        }
+        if (system!= null) {
+            system.validateToplevel();
+        }
+
     }
 
     /**
-     * this routine encodes all the logic around the validity fo the scham
-     *
+     * Look up a toplevel node
+     * @see ToplevelList#lookup(QName)
+     * @param name
+     * @return
+     */
+    public PropertyList lookup(QName name) {
+        return configuration.lookup(name);
+    }
+
+    /**
+     * parse the document
      * @throws CdlParsingException
      */
-    public void validate() throws CdlParsingException {
-        validateRootElement();
+    protected void parse() throws CdlParsingException {
+        for(Node element:ParentNodeIterable.iterateOver(document)) {
+            
+
+        }
     }
+
 }
