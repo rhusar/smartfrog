@@ -1,0 +1,65 @@
+<!--
+/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+-->
+<property name="testcasedir" value = "testcases"/>
+
+<target name="createtests" depends="bld, copySFDesc,createjar ,copylib" description="Compiles and Prepares testcases in sfTestCaes.jar file">
+</target>
+
+<target name="bld" description="Compiles the testcases">
+    <javac srcdir="${testharnessdir}/${testcasedir}" destdir="${build}" debug="${debugmode}" compiler="javac1.4" source="1.4">
+      <classpath refid="smartfrog.class.path"/>
+    </javac>
+    <rmic includesfile="${testharnessdir}/${testcasedir}/rmitargets" base="${build}">
+      <classpath refid="smartfrog.class.path"/>
+    </rmic>
+</target>
+
+<target name="createjar" depends="bld" description="creates the jar file for the test cases">
+<!-- Create sfTestCases.jar file -->
+    <jar jarfile="${dist}/${lib}/sfTestCases.jar"
+         basedir="${build}"
+         includes="**/system/**, **/unit/**"
+         manifest ="${manifestName}">
+    </jar>
+</target>
+<target name="copylib" depends="createjar" description="Copies the test case jar file to dist/lib">
+    <copy todir="${dist}/${lib}">
+      <fileset dir="${lib}">
+          <include name="sfTestCases.jar" />
+      </fileset>
+    </copy>
+</target> 
+<target name="copySFDesc" description="copies sf description files to appropriate directory"> 
+    <!-- Copy SF Description of the test cases -->
+    <copy todir="${build}">
+        <fileset dir="${testharnessdir}/${testcasedir}">
+        <include name="**/*.sf*" />
+      </fileset>
+    </copy>
+</target>
+
+<target name="cleantests" description="Restores the testcases to its clean state">
+    <delete file="${dist}/${lib}/sfTestCases.jar"/>
+    <delete includeEmptyDirs="true">
+        <fileset dir="${build}" includes="**/test/**"/>
+    </delete>
+</target>

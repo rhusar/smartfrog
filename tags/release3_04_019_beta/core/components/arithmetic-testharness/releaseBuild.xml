@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+
+<!--
+/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+-->
+<!DOCTYPE project [
+     <!ENTITY security SYSTEM "private/buildSecurity.xml">
+]>
+<!-- ===========================================================================
+
+
+
+Introduction
+============
+To Be Written
+
+
+
+
+
+Installing the build tools
+==========================
+To Be Written
+
+
+
+Build targets
+=============
+These are the meaningful targets for this build file:
+ - build
+ - jdocs
+-->
+
+<project  name="Arithmetic-testharnessDist" default="help" basedir=".">
+  <!-- =================================================================== -->
+  <!-- Initialization target                                               -->
+  <!-- =================================================================== -->
+  <target name="init">
+    <property name="Name" value="Emailer Component"/>
+    <property name="name" value="(C) Copyright 1998-2003 Hewlett-Packard Development Company, LP"/>
+    <property name="version" value="DIST"/>
+    <property name="Version" value="@version"/>
+    <property name="year" value=""/>
+    <echo message=""/>
+    <echo message="==================================================================="/>
+    <echo message="= ${Name} ${version}"/>
+    <echo message="= ${name} "/>
+    <echo message="==================================================================="/>
+  </target>
+
+</project>
+
+
+
+<!-- End of file -->
+

@@ -1,0 +1,368 @@
+/*
+ a smartfrog example: a distributed data analysis system.
+ This is based on the CDDLM financial analysis use case,
+ but adopts a tuplespace architecture, and the worklet/container
+ model discussed in Wall Street Computing and Jini:
+ http://www.jini.org/meetings/seventh/wallstreet.pdf 
+ 
+ Here a worklet is a component that listens on a tuplespace topic
+ for incoming content, processes it and pushes responses into the same
+ (or different) topic. 
+ 
+ The tuplespace becomes a load-balancing queue. It is not completely
+ fault tolerant; any worklet that crashes after taking a document from
+ the queue will remove a document from the world. 
+ 
+ The system architecture (for testing) has
+ 
+ -a Database that provide historical data
+ -a test datafeed that provides new data
+ -a past history analyser worklet that uses the database.
+ -a predictive worklet that uses the results of the past history worklet
+ -a number of worklet containers hosted on different nodes,
+ -a results analyser
+ 
+ */
+ 
+//include the base schemas 
+#include "/org/smartfrog/predicates.sf"
+
+ /**
+  define dateTime as a string
+  */
+dateTime extends String {}
+
+
+/**
+ * add a new schema type, the list, exposing some implementation
+ * details in the process
+ */
+ /*
+List extends Compulsory {
+    class "java.util.Vector";
+}
+
+OptionalList extends Optional {
+    class "java.util.Vector";
+}
+*/
+/**
+ * the schema for a java process
+ */ 
+JavaProcessSchema extends Schema {
+    minMemory extends OptionalInteger;
+    maxMemory extends OptionalInteger;
+    JVM_options extends OptionalVector; 
+}
+
+
+/**
+ * define a java process
+ */
+JavaProcess extends {
+    javaProcessSchema extends JavaProcessSchema;
+}
+
+
+/**
+ A TSpace is some hypothetical implementation of a TupleSpace
+ */
+
+TSpaceSchema extends Schema {
+    name extends String;
+    port extends OptionalInteger;
+    capacity extends OptionalInteger;
+}
+ 
+TSpace extends {
+    tspaceSchema extends TSpaceSchema;
+    sfClass "org.example.TSpace";
+}
+   
+
+/**
+ * A worklet is a handler of incoming requests from a tuple space.
+ * it's aim in life is to listen for requests coming in in a topic
+ * space; what it does with those requests is its business
+ */
+ 
+WorkletSchema extends Schema {
+    classname extends String;
+    sourceTopic extends String;
+    destTopic extends String;
+}
+  
+Worklet extends {
+    sfClass "org.example.sf.Worklet";
+    workletSchema extends WorkletSchema;
+}
+
+/**
+ * A worker container is a separate Java process that hosts 
+ * one or more worklets
+ */
+ 
+WorkletContainerSchema extends Schema {
+    //how many threads
+    threads extends Integer;
+    //what tuplespace is this container bound to
+    tspace extends CD;
+}
+ 
+ 
+ /**
+  * the java process schema remains in place
+  */
+ WorkletContainer extends JavaProcess {
+     sfClass "org.example.sf.Container";
+     workletContainerSchema extends WorkletContainerSchema;
+ }
+ 
+ /**
+  * credentials are defined by a login and password
+  */
+ CredentialsSchema extends {
+     username extends String;
+     password extends OptionalString;
+ }
+ 
+ Credentials extends {
+     credentialsSchema extends CredentialsSchema;
+ }
+ 
+ /**
+  * a database has a URL and credentials
+  * this is intended to maps to the JDBC binding model. 
+  */
+ DatabaseSchema extends {
+     //URL to database
+     URL extends String;
+     //credentials
+     login extends CD;
+ }
+ 
+ Database extends {
+     databaseSchema extends DatabaseSchema;
+ }
+ 
+
+  /**
+   * the past history worklet looks at a stock over
+   * a period of time from a database and analyses it
+   */
+
+ PastHistoryAnalyzerSchema extends Schema {
+     database extends CD;
+     startDate extends dateTime;
+     endDate extends dateTime;
+     stock extends Vector;
+ }
+     
+ PastHistoryAnalyzer extends Worklet {
+     classname "org.example.PHA";
+     pastHistoryAnalyzerSchema extends PastHistoryAnalyzerSchema;
+ }
+ 
+ /**
+  * The predictor looks at the analyzed history and predicts it 
+  */
+ PredictorSchema extends Schema {
+    startDate extends dateTime;
+    endDate extends dateTime;   
+    stock extends Vector;
+ }
+ 
+ PredictorWorklet extends Worklet {
+     classname "org.example.Predictor";
+     predictorSchema extends PredictorSchema;
+ }
+ 
+ /**
+  * A datafeed takes external data and adds it to a tuplespace
+  * An accessor class is mandatory; a cleaner class can sanitise the
+  * data; this is optional.
+  */
+ DataFeedSchema extends Schema {
+     URL extends String;
+     //credentials
+     login extends CD;
+     //classname of an accessor
+     accessor extends String;
+     //classname of an optional cleaner
+     cleaner extends OptionalString;
+     
+     //tuple space information
+     tspace extends CD;
+     topic extends String;
+ }
+ 
+ DataFeed extends {
+     dataFeedSchema extends DataFeedSchema;
+     sfClass "org.example.sf.dataFeed";
+ }
+ 
+ /**
+  a bulk node deployer deploys the same component to a list of nodes.
+  */
+ BulkNodeDeployerSchema extends {
+    component extends CD;
+    hosts extends Vector;
+ }
+
+ BulkNodeDeployer extends {
+    bulkNodeDeployerSchema extends BulkNodeDeployerSchema;
+    sfClass "org.example.sf.bulkNodeDeployer";
+ }
+
+ /**
+  * the test configuration runs a little database app internally 
+  * when running, the property TestSourceDatabase:URL exports the
+  current URL to the database
+  */
+ 
+
+  TestSourceDatabase extends {
+      sfClass "org.example.sf.db.Test";
+      location "/org/example/db/files";
+      URL;
+  }
+  
+  /**
+   * the test tspace
+   */
+  TestTSpace extends TSpace {
+      name "test-tspace";
+      port 5600;
+      capacity 1000;
+  }
+  
+  /**
+   * test logins to the database
+   */
+  TestCredentials extends Credentials {
+      username "guest";
+      password "hello";
+  }
+  
+  
+  /**
+   * the test worklet container contains both types of worklet
+   * demand will keep the system busy as appropriate
+   */
+  TestWorkletContainer extends WorkletContainer {
+      tspace LAZY TestTSpace;
+      threads 20;
+      sourceTopic;
+      intermediateTopic;
+      destTopic;
+      
+      //declare things that will be defined later
+      oldDate;
+      currentDate;
+      futureDate;
+      stock;
+      
+      analyzer extends PastHistoryAnalyzer {
+          //bind to the source database
+          database LAZY TestSourceDatabase;
+          sourceTopic PARENT:ATTRIB sourceTopic;
+          destTopic PARENT:ATTRIB destTopic;
+          startDate ATTRIB oldDate;
+          endDate ATTRIB currentDate;
+          stock PARENT:ATTRIB stock;
+      }
+
+      predictor extends PredictorWorklet {
+          //bind to the source database
+          database LAZY TestSourceDatabase;
+          sourceTopic LAZY PARENT:ATTRIB sourceTopic;
+          destTopic PARENT:ATTRIB destTopic;
+          startDate ATTRIB currentDate;
+          endDate ATTRIB futureDate;
+          stock PARENT:ATTRIB stock;
+      }
+      
+  }
+  
+
+  /**
+   * This declares the test harness, 
+   */
+TestHarness extends {
+
+    
+    tspace extends TestTSpace {    }
+    
+    sourceTopic "source";
+    intermediateTopic "interim";
+    destTopic "dest";   
+    //where the results are to be saved.
+    resultFile "//fileserver/pub/results.xml";
+    //here are the hosts we deploy worklets onto
+    hostlist ["h1","h2","h3","h4","h5","h6","h7","h8"];
+    
+    //the date range. During testing, past dates are better
+    oldDate "2003-04-04";
+    currentDate "2003-04-06";
+    futureDate "2003-04-07";
+    //compare pepsi and coca-cola
+    stock ["PEP","CO"];    
+    
+    //the test database
+    testDatabase extends TestSourceDatabase {   }
+    
+    testLogin extends TestCredentials;
+    
+    /**
+     * this datafeed generates test data on the topics
+     */
+    testDataFeed extends DataFeed {
+        accessor "org.example.db.Test";
+        URL LAZY testDatabase:URL;
+        login LAZY testLogin;
+        tspace LAZY PARENT:ATTRIB tspace;
+        topic LAZY PARENT:ATTRIB topic;
+        stock PARENT:ATTRIB stock;
+    }
+    
+    //now bulk define the nodes
+    testNodes extends BulkNodeDeployer {
+        //each node has the same component, a test container
+        //bound to the test settings
+        component extends TestWorkletContainer {
+            tspace LAZY PARENT:ATTRIB tspace;
+            oldDate PARENT:ATTRIB oldDate;
+            currentDate PARENT:ATTRIB currentDate;
+            futureDate PARENT:ATTRIB futureDate;
+            stock PARENT:ATTRIB stock;
+            sourceTopic PARENT:ATTRIB sourceTopic;
+            intermediateTopic PARENT:ATTRIB intermediateTopic;
+            destTopic PARENT:ATTRIB destTopic;
+        }
+        
+        //repeat the list of hosts.
+        hosts PARENT:ATTRIB hostlist;
+    }
+    
+    /**
+     * and something to analyze the results
+     */
+    resultAnalyzer extends {
+        sfClass "org.example.sf.ResultAnalyzer";
+        tspace LAZY PARENT:ATTRIB tspace;
+        topic PARENT:ATTRIB destTopic;
+        resultFile PARENT:ATTRIB resultFile;
+    }
+}
+ 
+Main extends TestHarness {
+    
+}
+ 
+ sfConfig extends {
+     main extends Main {};
+ }
+    
+
+
+
