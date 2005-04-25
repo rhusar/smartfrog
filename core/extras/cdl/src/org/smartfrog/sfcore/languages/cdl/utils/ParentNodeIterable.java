@@ -17,13 +17,36 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.sfcore.languages.cdl.dom;
+
+package org.smartfrog.sfcore.languages.cdl.utils;
+
+import nu.xom.ParentNode;
+import nu.xom.Node;
+
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
- * Types contain XSD declarations (blech). Wouldnt it be nice if we could use other
- * schema types. 
- * created 21-Apr-2005 14:26:35
+ * Java1.5 iteration support
  */
+public class ParentNodeIterable implements Iterable<Node> {
 
-public class Types extends DocumentedNode {
+    private ParentNode parent;
+
+    public ParentNodeIterable(ParentNode node) {
+        this.parent = node;
+    }
+
+    public static ParentNodeIterable iterateOver(ParentNode node) {
+        return new ParentNodeIterable(node);
+    }
+
+    /**
+     * Returns an iterator over a set of elements of type T.
+     *
+     * @return an Iterator.
+     */
+    public Iterator<Node> iterator() {
+        return new ParentNodeIterator(parent);
+    }
 }

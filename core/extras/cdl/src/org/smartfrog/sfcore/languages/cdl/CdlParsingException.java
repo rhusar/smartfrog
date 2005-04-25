@@ -35,4 +35,17 @@ public class CdlParsingException extends ParsingException {
     public CdlParsingException(String message) {
         super(message);
     }
+
+
+    /**
+     * Assert that a test holds, if not, throw an exception.
+     * @param test test to verify
+     * @param errorText text in exception
+     * @throws CdlParsingException iff test==false
+     */
+    public static void assertValid(boolean test,String errorText) throws CdlParsingException {
+        if(!test) {
+            throw new CdlParsingException(errorText);
+        }
+    }
 }

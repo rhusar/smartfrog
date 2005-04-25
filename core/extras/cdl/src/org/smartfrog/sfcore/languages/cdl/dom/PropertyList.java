@@ -19,9 +19,12 @@
  */
 package org.smartfrog.sfcore.languages.cdl.dom;
 
-import java.util.Iterator;
+import org.smartfrog.sfcore.languages.cdl.CdlParsingException;
+
+import javax.xml.namespace.QName;
 import java.util.List;
 import java.util.LinkedList;
+import java.util.ListIterator;
 
 /**
  * created 21-Apr-2005 14:26:55
@@ -29,15 +32,67 @@ import java.util.LinkedList;
 
 public class PropertyList extends DocumentedNode {
 
-    /** child list */
-    private List<PropertyList> children=new LinkedList<PropertyList>();
+    /**
+     * Our name.
+     * Only toplevel elements can have a qname
+     */
+    QName name;
 
     /**
-     * Returns an iterator over a set of elements of type T.
+     * Name of the template that we extend.
+     * Null if we do not extend anything
+     */
+    QName extendsName;
+
+    /**
+     * And the resolved extension
+     * Null if extendsName==null;
+     */
+    PropertyList extendsResolved;
+
+    /** child list */
+    private List<PropertyList> children=new LinkedList<PropertyList>();
+    public static final String ERROR_LOWLEVEL_NAMED = "low-level PropertyList elements cannot be given names";
+
+    /**
+     * Child elements
      *
-     * @return an Iterator.
+     * @return our child list (may be null)
      */
     public List<PropertyList> children() {
         return children;
+    }
+
+    /**
+     * Get an iterator over the child list
+     * @return
+     */
+    public ListIterator<PropertyList> childIterator() {
+        return children.listIterator();
+    }
+
+
+    /**
+     * Assert that we are valid as toplevel.
+     */
+    public void validateToplevel() throws CdlParsingException {
+
+    }
+
+    /**
+     * validate lowerlevel nodes
+     */
+    public void validateLowerLevel() throws CdlParsingException {
+        CdlParsingException.assertValid(name==null,
+                ERROR_LOWLEVEL_NAMED);
+    }
+
+    /**
+     * Test for a propertylist instance name
+     * @param testName
+     * @return
+     */
+    public boolean isNamed(QName testName) {
+        return testName.equals(name);
     }
 }
