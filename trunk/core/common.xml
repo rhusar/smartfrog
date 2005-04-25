@@ -522,6 +522,8 @@
   
   <!-- ========================================================== -->
   <!-- cleanup target -->
+  <!-- This MUST work even if clean has already been run; test -->
+  <!-- changes with ant clean clean -->
   <!-- ========================================================== -->
   <target name="clean" description="clean up build and dist"
       depends="init-common-simpledefinitions">
