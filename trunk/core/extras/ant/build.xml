@@ -26,6 +26,7 @@
     <property name="src.dir" location="src"/>
     <property name="target.name" value="${smartfrog.tasks.name}"/>
     <property name="target.jar" location="${smartfrog.tasks.jar}" />
+    <echo>building ${target.jar}</echo>
     <property name="dist.tar" 
       location="${smartfrog.tasks.dist.dir}/${smartfrog.tasks.prefix}.tar" />
     <property name="dist.zip" 
@@ -39,6 +40,7 @@
       <istrue value="${system.tests}"/>
       </not>
     </condition>   
+    
     <echo>system.tests.enabled=${system.tests.enabled}</echo>
 
     <condition property="jar.name.correct">
@@ -76,6 +78,25 @@
     </jar>
     <echo >created package ${target.jar}</echo>
   </target>
+  
+  
+  <!-- ========================================================== -->
+  <!-- Our override of this target declares that we want to use  -->
+  <!-- whatever version of the tasks we just compiled, not any   -->
+  <!-- existing version -->
+  <!-- ========================================================== -->
+  <target name="use-smartfrog-tasks" depends="package"
+    description="declare the classpath and imports for the smartfrog tasks">
+    <path id="smartfrog.tasks.classpath">
+      <path refid="smartfrog.core.classpath"/>
+      <pathelement location="${build.classes.dir}"/>
+    </path>
+    <typedef 
+      resource="org/smartfrog/tools/ant/tasks.properties"
+      classpathref="smartfrog.tasks.classpath"
+      />
+  </target>
+  
   
   <target name="test1" depends="package,use-smartfrog-tasks">
     <sf-parse />
