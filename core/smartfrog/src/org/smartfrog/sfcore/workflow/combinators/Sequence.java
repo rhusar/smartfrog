@@ -32,6 +32,7 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
+import org.smartfrog.sfcore.common.*;
 
 /**
  * Sequence is a modified compound which differs in that the sub-components
@@ -96,9 +97,19 @@ public class Sequence extends EventCompoundImpl implements Compound {
             } catch (java.util.NoSuchElementException nex){
                throw new SmartFrogRuntimeException ("Empty actions",this);
             }
-            ComponentDescription act = (ComponentDescription) actions.
-                                get(componentName);
-            sfCreateNewChild(componentName, act, null);
+            ComponentDescription act =null;
+            try {
+              act = (ComponentDescription) actions.get(componentName);
+              sfCreateNewChild(componentName, act, null);
+            } catch (Exception ex) {
+              if (ex instanceof java.lang.ClassCastException){
+                throw new SmartFrogDeploymentException("Error when deploying " + componentName
+                    + " Class" +(actions.get(componentName)).getClass().getName(), ex, this, null);
+              } else{
+                throw SmartFrogDeploymentException.forward("Error when deploying "
+                        + componentName +" in " +sfCompleteNameSafe() ,ex);
+              }
+            }
     }
 
     /**
