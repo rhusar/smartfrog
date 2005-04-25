@@ -161,7 +161,7 @@
 	     classpathref="smartfrog.classpath"    
 	     outputproperty="Version">
 	 <arg value="-b"/>
-   </java>
+    </java>
     <!-- build the name of our JAR file from the name of the project.
       override any of this stuff for alternate naming -->
     <property name="jar.prefix" value="sf-" />
