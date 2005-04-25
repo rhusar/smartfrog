@@ -185,7 +185,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
 
         if (sfParent != null) {
             return (ProcessCompound) sfParent;
-    }
+        }
 
         if (sfProcessName == null) {
             return null;

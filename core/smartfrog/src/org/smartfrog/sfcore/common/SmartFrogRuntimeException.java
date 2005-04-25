@@ -142,6 +142,26 @@ public class SmartFrogRuntimeException extends SmartFrogException implements Ser
 
 
     /**
+     * To forward SmartFrog exceptions instead of chain them.
+     * If thr is an instance of SmartFrogRuntimeException then the exception is returned
+     * without any modification, if not a new SmartFrogRuntimeException is created
+     * with message as a paramenter
+     * @param thr throwable object to be forwarded
+     * @return Throwable that is a SmartFrogRuntimeException
+     */
+    public static SmartFrogException forward (String message, Throwable thr){
+        if (thr instanceof SmartFrogRuntimeException) {
+            if (message!=null){
+                ((SmartFrogRuntimeException)thr).add("msg: ",message);
+            }
+            return (SmartFrogRuntimeException)thr;
+        } else {
+            return new SmartFrogRuntimeException(message, thr);
+        }
+    }
+
+
+    /**
      * Returns a string representation of the runtime exception.
      *
      * @param nm  Message separator (ex. "\n");
