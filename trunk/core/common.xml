@@ -21,15 +21,17 @@
   
 </description>
 
+
   <!-- ========================================================== -->
-  <!-- common init loads in various settings, 
-       declaring paths and properties, and preset/macro tasks
-       but not the smartfrog custom tasks -->
+  <!-- this is the simple definitions part of the common init -->
+  <!-- IT must contain -->
+  <!-- NO side effects -->
+  <!-- NO requirement for smartfrog jar or similar to exist -->
   <!-- ========================================================== -->
 
   
-  <target name="init-common">
-   <!-- load in the local override -->
+  <target name="init-common-simpledefinitions">
+     <!-- load in the local override -->
     <property file="build.properties"/>
     
     <!-- this is where we work out the base directory    -->
@@ -156,6 +158,37 @@
 
     <property name="dist.src.dir" location="${build.dir}/dist/src"/>
 
+    <!-- name of a file for runtime properties 
+      This is optional and allows users to define extra 
+      properties for the smartfrog daemons and other runtimes-->
+    <property name="runtime.properties"
+      location="${core.dir}/runtime.properties"/>
+    <echo level="verbose">Looking at ${runtime.properties} 
+      for optional SmartFrog runtime properties</echo>
+      
+      <!-- turn on the tests. If you dont want this, set one (or both) to false)  in the unit tests-->
+    <property name="system.tests" value="true" />
+    <property name="unit.tests" value="true" />
+
+    <condition property="system.tests.enabled">
+      <istrue value="${system.tests}"/>
+    </condition>
+
+    <condition property="unit.tests.enabled">
+      <istrue value="${unit.tests}"/>
+    </condition>
+    
+  </target>
+
+
+  <!-- ========================================================== -->
+  <!-- common init loads in various settings, 
+       declaring paths and properties, and preset/macro tasks
+       but not the smartfrog custom tasks -->
+  <!-- ========================================================== -->
+
+  
+  <target name="init-common" depends="init-common-simpledefinitions">
     
     <!-- name the resource -->
     <property name="smartfrog.version.property.resource"
@@ -178,14 +211,6 @@
       classpathref="smartfrog.classpath"/>
     <fail unless="sf.build.version">No property sf.build.version found in resource ${smartfrog.version.property.resource}</fail>
     <property name="Version" value="${sf.build.version}" />
-    
-<!--     <java classname="org.smartfrog.Version"
-	     failonerror="true" fork="true"
-	     classpathref="smartfrog.classpath"    
-	     outputproperty="Version">
-     <arg value="-b"/>
-    </java>
- -->
  
     <!-- build the name of our JAR file from the name of the project.
       override any of this stuff for alternate naming -->
@@ -229,25 +254,7 @@
     </condition>
     
    
-    <!-- name of a file for runtime properties 
-      This is optional and allows users to define extra 
-      properties for the smartfrog daemons and other runtimes-->
-    <property name="runtime.properties"
-      location="${core.dir}/runtime.properties"/>
-    <echo level="verbose">Looking at ${runtime.properties} 
-      for optional SmartFrog runtime properties</echo>
-      
-      <!-- turn on the tests. If you dont want this, set one (or both) to false)  in the unit tests-->
-    <property name="system.tests" value="true" />
-    <property name="unit.tests" value="true" />
-
-    <condition property="system.tests.enabled">
-      <istrue value="${system.tests}"/>
-    </condition>
-
-    <condition property="unit.tests.enabled">
-      <istrue value="${unit.tests}"/>
-    </condition>
+  
 
     <echo >In project ${project.name}</echo>
     <echo level="verbose">system.tests.enabled=${system.tests.enabled}</echo>
@@ -375,10 +382,10 @@
 
   <!--Logic to have conditional directory strecture for components -->
   <target name="init-component" if="is.component.enabled">
-  <echo> Here in init-component "${is.component}" </echo>
-   <mkdir dir="${dist.bin.dir}"/>
-   <mkdir dir="${dist.src.dir}"/>
-   <mkdir dir="${dist.jdocs.dir}"/>
+    <echo level="verbose"> Here in init-component "${is.component}" </echo>
+    <mkdir dir="${dist.bin.dir}"/>
+    <mkdir dir="${dist.src.dir}"/>
+    <mkdir dir="${dist.jdocs.dir}"/>
   </target>
 
   <!-- ========================================================== -->
@@ -391,8 +398,8 @@
 
   <!--logic to have conditional directory strecture for components -->
     <condition property="is.component.enabled">
-	<istrue value="${is.component}"/>
-	</condition>
+      <istrue value="${is.component}"/>
+    </condition>
 
 
     <mkdir dir="${build.dir}" />    
@@ -408,16 +415,16 @@
     <mkdir dir="${dist.dir}"/>
     <mkdir dir="${dist.lib.dir}"/>
     <mkdir dir="${dist.doc.dir}"/>
-	<antcall target="init-component"/>
-	<!--param name="is.component.enabled" refid="is.component"/>
-	</antcall-->
+    <antcall target="init-component"/>
+    <!--param name="is.component.enabled" refid="is.component"/>
+    </antcall-->
   </target>
   
   
   <target name="assert-junit" depends="init" >
     <available file="${junit.jar}" property="junit.found"/>
     <fail unless="junit.found">
-    Not found: ${junit.jar}
+     Not found: ${junit.jar}
     </fail>
   </target>
   
@@ -517,11 +524,9 @@
   <!-- cleanup target -->
   <!-- ========================================================== -->
   <target name="clean" description="clean up build and dist"
-      depends="init-standard-output-dirs">
+      depends="init-common-simpledefinitions">
     <delete dir="${build.dir}" />    
     <delete dir="${dist.dir}"  />  
-	
-
   </target>  
    
   <!-- ========================================================== -->
