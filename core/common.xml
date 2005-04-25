@@ -76,9 +76,9 @@
 
     <fileset id="smartfrog.core.fileset"
       dir="${smartfrog.dist.lib.dir}">
-      <include name="smartfrog.jar"/>
-      <include name="sfExamples.jar"/>
-      <include name="sfServices.jar"/>
+      <include name="smartfrog*.jar"/>
+      <include name="sfExamples*.jar"/>
+      <include name="sfServices*.jar"/>
     </fileset>
     
     <fileset id="smartfrog.lib.fileset"
@@ -156,15 +156,20 @@
 
     <property name="dist.src.dir" location="${build.dir}/dist/src"/>
 
+    <java classname="org.smartfrog.Version"
+	     failonerror="true" fork="true"
+	     classpathref="smartfrog.classpath"    
+	     outputproperty="Version">
+	 <arg value="-b"/>
+   </java>
     <!-- build the name of our JAR file from the name of the project.
       override any of this stuff for alternate naming -->
     <property name="jar.prefix" value="sf-" />
     <property name="project.name" value="${jar.prefix}${ant.project.name}" />
     <property name="jarfile.suffix" value=""/>
-    <property name="jarfile.name" value="${project.name}${jarfile.suffix}.jar"/>
+    <property name="jarfile.name" value="${project.name}${jarfile.suffix}-${Version}.jar"/>
     <property name="target.jar" 
         location="${dist.lib.dir}/${jarfile.name}" />  
-        
 <!--     name JAR files that tests go into. this is for signing all
     test code (inc deployment descriptors) for deployment onto secure
     boxes
@@ -177,10 +182,9 @@
     <!-- standard location for distributed stuff; used when locating
       other things -->
     <property name="dist.lib.dir.relative" value="/build/dist/lib" />
-    
       <!-- information about the ant tasks -->
-    <property name="smartfrog.tasks.prefix" value="${jar.prefix}tasks"/>      
-    <property name="smartfrog.tasks.name" value="${smartfrog.tasks.prefix}.jar"/>      
+      <property name="smartfrog.tasks.prefix" value="${jar.prefix}tasks"/>      
+      <property name="smartfrog.tasks.name" value="${smartfrog.tasks.prefix}-${Version}.jar"/>      
 <!--     <property name="smartfrog.tasks.lib.dir"
       location="${extras.dir}/ant/${dist.lib.dir.relative}"/> -->
       

@@ -69,7 +69,7 @@
     <copy-useful-files src="${src.dir}" dest="${build.classes.dir}" />
   </target>
   
-  <target name="package" depends="compile"
+  <target name="package" depends="init, compile"
     description="make the jar">
     <jar destfile="${target.jar}">
       <fileset dir="${build.classes.dir}" includes="**/*" />

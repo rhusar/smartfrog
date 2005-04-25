@@ -63,7 +63,7 @@ For more information: www.smartfrog.org
   <import file="${root.dir}/common.xml"/>
 
   <!-- pre-init overrides -->
-  <property name="jarfile.name" value="sf-testharness.jar"/>
+  <!--property name="jarfile.name" value="sf-testharness.jar"/-->
 
   <!-- ========================================================== -->
   <!-- Test settings                                              -->
@@ -302,7 +302,7 @@ For more information: www.smartfrog.org
   <target name="test-package" depends="compile-tests"
     description="creates the jar file for the test cases">
     <!-- Create sfTestCases.jar file -->
-    <property name="testcases.jar" value="sfTestCases.jar"/>
+    <property name="testcases.jar" value="sfTestCases-${Version}.jar"/>
     <property name="testcases.jar.dist.dir"
       location="${smartfrog.dist.lib.dir}"/>
     <property name="testcases.jar.file"
