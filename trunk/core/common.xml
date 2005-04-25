@@ -156,12 +156,37 @@
 
     <property name="dist.src.dir" location="${build.dir}/dist/src"/>
 
-    <java classname="org.smartfrog.Version"
+    
+    <!-- name the resource -->
+    <property name="smartfrog.version.property.resource"
+      value="org/smartfrog/smartfrog-version.properties"
+      classpathref="smartfrog.classpath"/>
+    <!-- check for its presence; break the build if missing -->
+    <fail >
+      <condition>
+      <not>
+        <available resource="${smartfrog.version.property.resource}"
+          classpathref="smartfrog.classpath"/>
+      </not>
+      </condition>
+      Smartfrog distribution not found. Please create the smartfrog distribution first.
+      Alternatively, make sure that this project is configured to locate the distribution
+      correctly.
+    </fail>
+    <!-- load in our version -->
+    <loadproperties resource="${smartfrog.version.property.resource}"
+      classpathref="smartfrog.classpath"/>
+    <fail unless="sf.build.version">No property sf.build.version found in resource ${smartfrog.version.property.resource}</fail>
+    <property name="Version" value="${sf.build.version}" />
+    
+<!--     <java classname="org.smartfrog.Version"
 	     failonerror="true" fork="true"
 	     classpathref="smartfrog.classpath"    
 	     outputproperty="Version">
-	 <arg value="-b"/>
+     <arg value="-b"/>
     </java>
+ -->
+ 
     <!-- build the name of our JAR file from the name of the project.
       override any of this stuff for alternate naming -->
     <property name="jar.prefix" value="sf-" />
