@@ -76,26 +76,6 @@
     <!-- assume the sun compiler -->
     <property name="rmic.compiler" value="sun" />
 
-    <fileset id="smartfrog.core.fileset"
-      dir="${smartfrog.dist.lib.dir}">
-      <include name="smartfrog*.jar"/>
-      <include name="sfExamples*.jar"/>
-      <include name="sfServices*.jar"/>
-    </fileset>
-    
-    <fileset id="smartfrog.lib.fileset"
-      dir="${smartfrog.dist.lib.dir}">
-      <include name="**/*.jar"/>
-    </fileset>
-
-    <!-- set up the path of common files in the dist/lib directory -->
-    <path id="smartfrog.classpath">
-      <fileset refid="smartfrog.lib.fileset" />
-    </path>
-    <path id="smartfrog.core.classpath">
-      <fileset refid="smartfrog.core.fileset" />
-    </path>
-
     
     <property name="extras.dir"
       location="${core.dir}/extras"/>
@@ -178,6 +158,16 @@
       <istrue value="${unit.tests}"/>
     </condition>
     
+
+    <!-- build the name of our JAR file from the name of the project.
+      override any of this stuff for alternate naming -->
+    <property name="jar.prefix" value="sf-" />
+    <!-- this is the name of the outer project, not common.xml's name -->
+    <property name="project.name" value="${jar.prefix}${ant.project.name}" />
+
+        <!-- information about the ant tasks -->
+    <property name="smartfrog.tasks.prefix" value="${jar.prefix}tasks"/>      
+
   </target>
 
 
@@ -190,10 +180,37 @@
   
   <target name="init-common" depends="init-common-simpledefinitions">
     
+    <fileset id="smartfrog.core.fileset"
+      dir="${smartfrog.dist.lib.dir}">
+      <include name="smartfrog*.jar"/>
+      <!-- we DO NOT want smarfrog tasks -->
+      <exclude name="${smartfrog.tasks.prefix}*.jar"/>
+      <include name="sfExamples*.jar"/>
+      <include name="sfServices*.jar"/>
+    </fileset>
+    
+    <fileset id="smartfrog.lib.fileset"
+      dir="${smartfrog.dist.lib.dir}">
+      <include name="**/*.jar"/>
+      <!-- we DO NOT want smarfrog tasks -->
+      <exclude name="${smartfrog.tasks.prefix}*.jar"/>
+    </fileset>
+    
+
+    <!-- set up the path of common files in the dist/lib directory -->
+    <path id="smartfrog.classpath">
+      <fileset refid="smartfrog.lib.fileset" />
+    </path>
+    <path id="smartfrog.core.classpath">
+      <fileset refid="smartfrog.core.fileset" />
+    </path>
+    
+    
     <!-- name the resource -->
     <property name="smartfrog.version.property.resource"
       value="org/smartfrog/smartfrog-version.properties"
       classpathref="smartfrog.classpath"/>
+      
     <!-- check for its presence; break the build if missing -->
     <fail >
       <condition>
@@ -212,10 +229,7 @@
     <fail unless="sf.build.version">No property sf.build.version found in resource ${smartfrog.version.property.resource}</fail>
     <property name="Version" value="${sf.build.version}" />
  
-    <!-- build the name of our JAR file from the name of the project.
-      override any of this stuff for alternate naming -->
-    <property name="jar.prefix" value="sf-" />
-    <property name="project.name" value="${jar.prefix}${ant.project.name}" />
+    <!-- this is an override point; components call this -component -->
     <property name="jarfile.suffix" value=""/>
     <property name="jarfile.name" value="${project.name}${jarfile.suffix}-${Version}.jar"/>
     <property name="target.jar" 
@@ -232,11 +246,7 @@
     <!-- standard location for distributed stuff; used when locating
       other things -->
     <property name="dist.lib.dir.relative" value="/build/dist/lib" />
-      <!-- information about the ant tasks -->
-      <property name="smartfrog.tasks.prefix" value="${jar.prefix}tasks"/>      
-      <property name="smartfrog.tasks.name" value="${smartfrog.tasks.prefix}-${Version}.jar"/>      
-<!--     <property name="smartfrog.tasks.lib.dir"
-      location="${extras.dir}/ant/${dist.lib.dir.relative}"/> -->
+    <property name="smartfrog.tasks.name" value="${smartfrog.tasks.prefix}-${Version}.jar"/>      
       
     <property name="smartfrog.tasks.lib.dir"
       location="${extras.dir}/ant/${dist.lib.dir.relative}"/>
@@ -252,9 +262,6 @@
     <condition property="junit.jar" value="${ant.home}/lib/junit-3.8.1.jar">
       <available file="${ant.home}/lib/junit-3.8.1.jar" />
     </condition>
-    
-   
-  
 
     <echo >In project ${project.name}</echo>
     <echo level="verbose">system.tests.enabled=${system.tests.enabled}</echo>
@@ -562,8 +569,8 @@
   <target name="use-smartfrog-tasks" depends="init-common"
     description="declare the classpath and imports for the smartfrog tasks">
     <path id="smartfrog.tasks.classpath">
-      <path refid="smartfrog.classpath"/>
-       <pathelement location="${smartfrog.tasks.jar}"/>
+      <path refid="smartfrog.core.classpath"/>
+      <pathelement location="${smartfrog.tasks.jar}"/>
     </path>
     <available 
       classname="org.smartfrog.tools.ant.Parse" 
