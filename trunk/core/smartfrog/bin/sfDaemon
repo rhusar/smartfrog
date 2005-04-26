@@ -39,7 +39,7 @@ while [ $# -ge 1 ]; do
 done
 
 if test "$SFCODEBASE"; then
-    JVMARGS="$SFCODEBASE" 
+    JVMARGS="$JVMARGS $SFCODEBASE" 
 fi
 if test "$SFSECURITY"; then
     JVMARGS="$JVMARGS $SFSECURITY"
