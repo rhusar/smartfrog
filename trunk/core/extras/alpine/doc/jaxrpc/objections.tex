@@ -235,8 +235,8 @@ the WSDL is not a complete description of the service interface).
 \end{enumerate}
 
 If more metadata were recorded with generated types, this problem would not
-arise. We therefore expect that future versions of JAX-RPC will address this 
-problem by way of the code annotation facility recently added to the Java
+arise. We therefore believe that future versions of JAX-RPC will address this 
+problem by way of the annotation facility recently added to the Java
 language. 
 
 \subsubsection{Message validation}
@@ -259,8 +259,8 @@ only surfacing when a third party attempts to use the service.
 Java classes representing a deserialised message have a structure that
 matches their expectations given the schema. This requires an
 understanding of the schema, knowledge of the serialisation mapping
-and its potential trouble spots, the willingness to write the tests to
-validate this extra logic, and most of all, the time to do so.
+and its potential trouble spots, and the willingness to write the tests to
+validate this extra logic.
 
 \end{enumerate}
 
@@ -340,15 +340,13 @@ recipient to process them.
 \subsection{SOAP is not just RPC}
 \label{objections:soap-not-just-rmi}
 
-SOAP's parentage includes XML-RPC \cite{winer:xmlrpc} and (indirectly)
-COM/DCOM \cite{dbox:SoapHistory,dbox:com} and CORBA
-\cite{vinoski:CORBA}. It was clearly designed at its outset to be a
-form of remote procedure call in XML, over HTTP. Over time, the
-world-view that lead to that choice has changed. Though it is often
-presented as a form of RPC, we would argue that it is coming to be
-seen as more powerful when viewed as a system where arbitrary XML
-documents are exchanged between parties, perhaps asynchronously,
-and potentially via intermediaries.
+SOAP's parentage includes XML-RPC \cite{winer:xmlrpc} and (indirectly) COM/DCOM
+\cite{dbox:com} and CORBA \cite{vinoski:CORBA}. It was clearly designed at its
+outset to be a form of remote procedure call in XML, over HTTP. Over time, the
+world-view that lead to that choice has changed. Though it is often presented as
+a form of RPC, we would argue that it is coming to be seen as more powerful when
+viewed as a system where arbitrary XML documents are exchanged between parties,
+perhaps asynchronously, and potentially via intermediaries.
 
 In this world, the programming paradigms that seemed appropriate for
 an RPC infrastructure look out of place. On a fast network, RPC
@@ -393,21 +391,21 @@ JAX-RPC suffers from a greater flaw than those classically associated
 with RPC invocation: it tries to make the communications look like
 Java RMI. Java's RMI system is a simple and effective mechanism for
 connecting Java classes running on different machines. It is an
-IDL-free communication mechanism, which relies on introspection to
-create proxy classes and to marshal classes. It works because the
+IDL-free system that relies on introspection to
+create proxy classes and to marshal data. It works because the
 systems at both ends are running on the Java platform, typically
-different pieces of a single larger application. Even then, it is
+different pieces of a single larger application. Even then, it's
+implementation-first design means that it is brittle to change, and
 most effective when both ends are using the same versions of all
 classes.
 
-In a system with shared code at both ends,
-objects can be trivially serialised and transmitted across a
-network connection. Exceptions are just another type of object, and
-so too can be sent over the wire. There is less need for an IDL, as Java
-interface declarations can perform much of the same role. And as the
-recipient is a remote object, state is automatic. One can even keep
-code synchronised by using a special class loader, one that fetches
-code from jointly accessible URLs.
+In a system with shared code at both ends, objects can be trivially serialised
+and transmitted across a network connection. Exceptions are just another type of
+object, and so too can be sent over the wire. There is less need for an IDL, as
+Java interface declarations can perform much of the same role. And as the
+recipient is a remote object, state is automatic. One can even keep code
+synchronised by using a special class loader, one that fetches code from jointly
+accessible URLs.
 
 JAX-RPC tries to reuse many of the programming patterns of RMI. For
 example, the runtime will attempt to serialise classes marked as {\tt
@@ -420,8 +418,8 @@ direct endpoint proxy.
 Recall that one of our key hopes in adopting SOAP (section \ref{introduction})
 was to enable loose coupling between the components of a distributed system.
 SOAP strove to overcome many of the failings of precursor technologies like
-CORBA and DCOM. These technologies work well over local area networks, and
-enable rich bidirectional communications, but are not completely cross
+CORBA and DCOM. These technologies worked over local area networks, and
+enabled rich bidirectional communications, but were not cross
 platform\footnote{Admittedly for arguably political rather than technical
 reasons}, and ended up being used to produce distributed object systems that
 were too tightly coupled.

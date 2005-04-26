@@ -14,18 +14,17 @@ language needs an explicit notion of interfaces. The interface is
 inherently implementation independent, and can be frozen or carefully
 managed with respect to versioning.
 
-\item Secondly, the act of writing an IDL description inherently
-forces the author to define the system in terms of the portable
-datatypes and operations available in the restricted language of the
-IDL.  This can effectively guarantee portability, and is a significant
-improvement over similar definitions in implementation languages,
-which invariably contain constructs which are not portable. As such
-constructs are excluded from the interface language, a portability
-issue is the exception, rather than being commonplace.
+\item Secondly, the act of writing an IDL description forces the author to
+define the system in terms of the portable datatypes and operations available in
+the restricted language of the IDL. This can effectively guarantee portability,
+and is a significant improvement over interfaces defined in the implementation
+languages themselves, which invariably contain constructs which are not
+portable.
+
 \end{enumerate}
 
 IDLs have many advantages for creating interoperable systems, yet the
-generally accepted practise for working with JAX-RPC discards all
+generally accepted practice for working with JAX-RPC discards all
 these notions. Instead of generating implementation classes from WSDL,
 the WSDL description is usually generated from the implementation
 classes using tools leveraging Java's Reflection API. We shall term
@@ -40,7 +39,7 @@ This has the following consequences.
 There is no way to ensure that the published contract of a service
 remains constant over time. Every redeployment of the service, every
 upgrade of the SOAP stack or even the underlying Java runtime may
-change the WSDL, and hence the interface.
+change the classes, and hence the contract.
 
 \item
 
@@ -92,7 +91,7 @@ the challenge of deriving a stable and portable service interface from
 the inherently unstable and unportable service implementation.
 
 We are not proposing any changes to WSDL, merely mourning the fact
-that its over-complexity discourages contract-first, contract-driven
+that its over-complexity discourages contract-driven
 development more aggressively than any previous IDL ever did. We do
 observe that once the type declarations of a service have been moved
 into their own document, WSDL becomes much more manageable and this is
