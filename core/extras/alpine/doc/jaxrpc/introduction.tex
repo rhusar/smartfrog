@@ -84,16 +84,14 @@ work with SOAP in Java.
 
 In JAX-RPC\footnote{The current edition of the JAX-RPC specification
 is version 1.1, and this is the version we discuss here. JAX-RPC 2.0
-is discussed in section \ref{implications:future}.}, the XML representation of
-how a message is hidden; the developer works with
-Java objects created automatically from the XML data using a
-semi-standardised mapping process. Java classes can be automatically
-turned into SOAP endpoints, with each public method in the class
-exported as an operation with a request message and a response
-message. The message structure is described in a WSDL descriptor and an
-associated XML Schema, both of which can
-be hand-written, or automatically extracted from the Java classes
-through introspection.
+is discussed in section \ref{implications:future}.}, 
+the XML representation of how a message is hidden; the developer works with Java
+objects created automatically from the XML data using a semi-standardised
+mapping process. Java classes can be automatically turned into SOAP endpoints,
+with each public method in the class exported as an operation with a request
+message and a response message. The message structure is described in a WSDL
+descriptor and an associated XML Schema, both of which can be hand-written, or
+automatically extracted from the Java classes through introspection.
 
 Client side proxy classes can be generated from the WSDL files, proxy
 classes which again provide a method for every operation the service
@@ -142,9 +140,9 @@ best practise. However, the XSD file for the service messages is
 approximately 2000 lines, including all the comments and annotations
 needed to make it comprehensible. That it takes so many lines to
 describe a relatively simple service is clearly one reason why this
-approach, despite its alleged superiority of output, is so unpopular.
+approach, is so unpopular.
 
-Many problems were encountered turning this WSDL specification into
+Many problems were encountered turning this service specification into
 functional clients and servers, problems that we attribute to JAX-RPC.
 In section \ref{objections} we discuss a number of the problems we
 believe this work highlighted. Section \ref{objections:wsdl-gen}
