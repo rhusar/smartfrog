@@ -767,10 +767,18 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
             if (key.startsWith(startWith)) {
                 Object value = props.get(key);
                 try {
-                    // convert to number
-                    value = Double.valueOf((String)value);
+                    String res = value.toString();
+                    if (res.toUpperCase().charAt(res.length() - 1) == 'D') {
+                        value = Double.valueOf(res.substring(0, res.length()-1));
+                    } else if (res.toUpperCase().charAt(res.length() - 1) == 'F') {
+                        value = Float.valueOf(res.substring(0, res.length()-1));
+                    } else if (res.toUpperCase().charAt(res.length() - 1) == 'L') {
+                        value = Long.valueOf(res.substring(0, res.length()-1));
+                    } else {
+                        value = Integer.valueOf((String)value);
+                    }
                 } catch (Exception ex) {
-                // ignore, value is not a number
+                    // ignore, value is not a number
                 }
                 if ((value.toString().equals("true"))||
                     (value.toString().equals("false"))){
