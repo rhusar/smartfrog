@@ -22,7 +22,7 @@ Version extends {
   name "SmartFrog";
   majorRelease "3";
   minorRelease "04";
-  build "019"; // odd numbers are development versions
+  build "020"; // odd numbers are development versions
   status "beta"; //alpha, beta, stable
   copyright "(C) Copyright 1998-2005 Hewlett-Packard Development Company, LP";
 }
