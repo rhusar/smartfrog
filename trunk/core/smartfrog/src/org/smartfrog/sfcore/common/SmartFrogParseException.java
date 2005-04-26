@@ -115,5 +115,23 @@ public class SmartFrogParseException extends SmartFrogCompilationException imple
             return new SmartFrogParseException (thr);
         }
     }
+    /**
+     * To forward SmartFrogParseException exceptions instead of chain them.
+     * If thr is an instance of SmartFrogParseException then the exception is returned
+     * without any modification, if not a new SmartFrogParseException is created
+     * with message as a paramenter
+     * @param thr throwable object to be forwarded
+     * @return Throwable that is a SmartFrogParseException
+     */
+    public static SmartFrogException forward (String message, Throwable thr){
+        if (thr instanceof SmartFrogParseException) {
+            if (message!=null){
+                ((SmartFrogException)thr).add("msg: ",message);
+            }
+            return (SmartFrogParseException)thr;
+        } else {
+            return new SmartFrogParseException(message, thr);
+        }
+    }
 
 }
