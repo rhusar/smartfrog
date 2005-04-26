@@ -108,4 +108,24 @@ public class SmartFrogInitException extends SmartFrogException implements Serial
             return new SmartFrogInitException (thr);
         }
     }
+
+    /**
+     * To forward SmartFrogInitException exceptions instead of chain them.
+     * If thr is an instance of SmartFrogInitException then the exception is returned
+     * without any modification, if not a new SmartFrogInitException is created
+     * with message as a paramenter
+     * @param thr throwable object to be forwarded
+     * @return Throwable that is a SmartFrogInitException
+     */
+    public static SmartFrogException forward (String message, Throwable thr){
+        if (thr instanceof SmartFrogInitException) {
+            if (message!=null){
+                ((SmartFrogException)thr).add("msg: ",message);
+            }
+            return (SmartFrogInitException)thr;
+        } else {
+            return new SmartFrogInitException(message, thr);
+        }
+    }
+
 }

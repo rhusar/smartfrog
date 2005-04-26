@@ -124,6 +124,26 @@ public class SmartFrogLivenessException extends SmartFrogRuntimeException implem
     }
 
     /**
+     * To forward SmartFrogLivenessException exceptions instead of chain them.
+     * If thr is an instance of SmartFrogLivenessException then the exception is returned
+     * without any modification, if not a new SmartFrogLivenessException is created
+     * with message as a paramenter
+     * @param thr throwable object to be forwarded
+     * @return Throwable that is a SmartFrogLivenessException
+     */
+    public static SmartFrogException forward (String message, Throwable thr){
+        if (thr instanceof SmartFrogLivenessException) {
+            if (message!=null){
+                ((SmartFrogException)thr).add("msg: ",message);
+            }
+            return (SmartFrogLivenessException)thr;
+        } else {
+            return new SmartFrogLivenessException(message, thr);
+        }
+    }
+
+
+    /**
      * Initializes the exception context with the SmartFrog component.
      *
      * @param sfObject component that encountered exception

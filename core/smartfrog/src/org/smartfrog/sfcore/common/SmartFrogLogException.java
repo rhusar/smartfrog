@@ -136,6 +136,24 @@ public class SmartFrogLogException extends SmartFrogException implements Seriali
         }
     }
 
+    /**
+     * To forward SmartFrogLogException exceptions instead of chain them.
+     * If thr is an instance of SmartFrogLogException then the exception is returned
+     * without any modification, if not a new SmartFrogLogException is created
+     * with message as a paramenter
+     * @param thr throwable object to be forwarded
+     * @return Throwable that is a SmartFrogLogException
+     */
+    public static SmartFrogException forward (String message, Throwable thr){
+        if (thr instanceof SmartFrogLogException) {
+            if (message!=null){
+                ((SmartFrogException)thr).add("msg: ",message);
+            }
+            return (SmartFrogLogException)thr;
+        } else {
+            return new SmartFrogLogException(message, thr);
+        }
+    }
 
     /**
      * Returns a string representation of the runtime exception.

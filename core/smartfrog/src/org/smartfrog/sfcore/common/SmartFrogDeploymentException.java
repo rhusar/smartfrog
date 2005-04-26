@@ -178,6 +178,26 @@ public class SmartFrogDeploymentException extends SmartFrogRuntimeException impl
     }
 
     /**
+     * To forward SmartFrogDeploymentException exceptions instead of chain them.
+     * If thr is an instance of SmartFrogDeploymentException then the exception is returned
+     * without any modification, if not a new SmartFrogDeploymentException is created
+     * with message as a paramenter
+     * @param thr throwable object to be forwarded
+     * @return Throwable that is a SmartFrogDeploymentException
+     */
+    public static SmartFrogException forward (String message, Throwable thr){
+        if (thr instanceof SmartFrogDeploymentException) {
+            if (message!=null){
+                ((SmartFrogException)thr).add("msg: ",message);
+            }
+            return (SmartFrogDeploymentException)thr;
+        } else {
+            return new SmartFrogDeploymentException(message, thr);
+        }
+    }
+
+
+    /**
      * Returns the message.
      *
      * @return the message value
