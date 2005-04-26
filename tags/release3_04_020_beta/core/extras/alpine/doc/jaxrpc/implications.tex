@@ -1,0 +1,77 @@
+\section{Implications}
+\label{implications}
+
+We believe that only two categories of web service developer exist:
+those who are comfortable with XML and want to work with it, and those
+who aren't but end up doing so anyway. JAX-RPC provides a sugar coated
+wrapping that encourages developers who are relatively unfamiliar with
+XML to bite. Yet, as anyone who has written a web service of any
+complexity knows, the XML must be faced and understood eventually. In
+practise, the task of creating a real web service is made more
+difficult, not less, by the huge volume of code JAX-RPC introduces
+into a project.
+
+JAX-RPC only superficially benefits developers who do not want to work
+with XML: by hiding all the details, and giving developers a model of
+remote method calls via serialised Java graphs, JAX-RPC makes it
+harder to write true, interoperable SOAP services. Not only that, but
+it introduces the O/X mapping problem, while retaining an invocation
+model that is inappropriate for long-distance networks and slow
+communications.
+
+We argue that JAX-RPC greatly complicates users' software by
+introducing a complex and fickle serialisation system. The generation
+of WSDL from Java code, which JAX-RPC encourages, makes it very
+difficult to maintain version consistency of an interface, and
+creates significant interoperability problems.
+
+On top of all of this, for users who do want to work with the XML
+(typically those whose first project did not!) JAX-RPC is
+inappropriate because it hides everything. Trying to integrate custom
+XML documents with JAX-RPC serialisations is possible, but very hard
+work. In Apache Axis, DOM trees get recreated when assigning or
+extracting them from {\tt SoapMessageElement} implementations.
+
+
+\subsection{The Future}
+\label{implications:future}
+
+JAX-RPC has become a cornerstone of Enterprise Java
+\cite{spec:J2EE-14}, alongside RMI and RMI-over-CORBA. That is not by
+itself a bad thing, but we believe that it creates the misconception
+that developers can trivially migrate from RMI to web services. If
+they attempt to do, they will fall into the traps that JAX-RPC creates
+for them.
+
+The forthcoming 2.0 release of the JAX-RPC specification promises to
+correct some of these flaws, it is unclear whether it corrects
+sufficiently many of them. An alternate O/X mapping, JAX-B, the Java
+Architecture for XML Binding, is introduced which is a compile-time
+declaration of what XML is to be expected, but is independent of the
+SOAP stack. The 2.0 release also retains the core metaphor of service
+calls as method invocation, with the payload of most invocations
+being Java objects that are somehow mapped to XML content. The
+automated generation of WSDL from Java source is retained, despite
+this approach having been shown to be fundamentally flawed.
+
+We understand the rationale for much of this. Working with raw XML is
+hard.  Writing good XML Schema documents is hard. WSDL is exceedingly
+painful to work with. However, we believe that if developers do not
+create the XSD and WSDL definitions of their service, they will never
+have control of the messages that get sent over the wire, and that
+without that control, interoperability and loose coupling will remain
+out of reach.
+
+The next version of Apache Axis, Axis 2.0, has adopted a more XML-centric design
+than before. The XML representation of a message is represented in the Message
+Object Model, \emph{MOM}, which is intended to be simpler than DOM, yet still a
+usable representation of messages. Extensions to the core runtime are expected
+to provide the mapping between the MOM tree and Java object graphs, with this
+mapping being an optional way of working with messages, rather than the standard
+mechanism. We admire this change in direction, and believe that this
+architecture could be a foundation for more robust SOAP server and client
+applications. However, the fact that O/X mapping and contract-last development
+are still enabled within the infrastructure imply that users are still being
+encouraged to write their code and have the SOAP stack handle the marshalling.
+This is precisely what we believe is a mistake.
+

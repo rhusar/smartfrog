@@ -1,0 +1,166 @@
+\#include "org/smartfrog/components.sf"
+\#include "org/smartfrog/services/installer/sfinstaller.sf"
+\#include "org/smartfrog/sfcore/workflow/components.sf"
+ 
+#if ($dynamicLoadingOn) 
+#set ($httpJars = ["velocity-1.1.jar"])
+#end
+
+sfConfig extends Parallel {
+    actions extends LAZY {
+#foreach ($daemon in $allDaemons)
+      $daemon.name extends $daemon.type {
+        host "$daemon.host";
+        telnetLogfile "${daemon.name}.log";
+        user "$daemon.user";
+	passwordFile "$daemon.passwordfile";
+#if ($daemon.isLinux())
+	ftpLocalFiles ["${daemon.localfile1}"];
+	telnet:Telnet:ostype "linux";
+        #if ($daemon.isRoot()) 
+             ftpRemoteFiles ["/root/release.tar.gz"];
+	     #if($securityOn)
+		#if($dynamicLoadingOn)
+		telnetCommands ["gunzip release.tar.gz", 
+			"tar -xf release.tar",
+			"cd /root/${daemon.releasename}";
+			"ant initCA",
+			"ant signJars",
+			"ant newDaemon",
+			"mv dist/private/h* dist/private/host1",
+                        "export SFHOME=/root/${daemon.releasename}/dist",
+                        "export PATH=$SFHOME/bin:$PATH",
+ 			"export SFSECURITY_ON=ENABLED",
+			"export SFCODEBASE=-Dorg.smartfrog.codebase=#foreach ($jar in $httpJars)http://${principalDaemon.host}:8080/${jar} #end",
+			"cd /root/${daemon.releasename}",
+                        "nohup sfDaemon &"];  
+		#else
+		telnetCommands ["gunzip release.tar.gz", 
+			"tar -xf release.tar",
+			"cd /root/${daemon.releasename}";
+			"ant initCA",
+			"ant signJars",
+			"ant newDaemon",
+			"mv dist/private/h* dist/private/host1",
+                        "export SFHOME=/root/${daemon.releasename}/dist",
+                        "export PATH=$SFHOME/bin:$PATH",
+ 			"export SFSECURITY_ON=ENABLED",
+			"cd /root/${daemon.releasename}",
+                        "nohup sfDaemon &"];  
+		#end
+	     #else
+		#if($dynamicLoadingOn)
+             	telnetCommands ["gunzip release.tar.gz", 
+			"tar -xf release.tar",
+                        "export SFHOME=/root/${daemon.releasename}/dist",
+                        "export PATH=$SFHOME/bin:$PATH",
+			"export SFCODEBASE=-Dorg.smartfrog.codebase=#foreach ($jar in $httpJars)http://${principalDaemon.host}:8080/${jar} #end",
+			"nohup sfDaemon &"]; 
+		#else
+		telnetCommands ["gunzip release.tar.gz", 
+			"tar -xf release.tar",
+                        "export SFHOME=/root/${daemon.releasename}/dist",
+                        "export PATH=$SFHOME/bin:$PATH",
+	                "nohup sfDaemon &"];
+		#end
+	     #end 
+        #else
+	     ftpRemoteFiles ["/home/${daemon.user}/release.tar.gz"];
+	     #if($securityOn)
+	     	#if($dynamicLoadingOn) 
+             	telnetCommands ["gunzip release.tar.gz",
+			"tar -xf release.tar",
+			"cd /home/${daemon.user}/${daemon.releasename}";
+			"ant initCA",
+			"ant signJars",
+			"ant newDaemon",
+			"mv dist/private/h* dist/private/host1",
+                        "export SFHOME=/home/${daemon.user}/${daemon.releasename}/dist",
+                        "export PATH=$SFHOME/bin:$PATH",
+			"export SFSECURITY_ON=ENABLED",
+			"export SFCODEBASE=-Dorg.smartfrog.codebase=#foreach ($jar in $httpJars)http://${principalDaemon.host}:8080/${jar} #end",
+			"cd /home/${daemon.user}/${daemon.releasename}", 
+                        "nohup sfDaemon &"]; 
+		#else
+		telnetCommands ["gunzip release.tar.gz",
+			"tar -xf release.tar",
+			"cd /home/${daemon.user}/${daemon.releasename}";
+			"ant initCA",
+			"ant signJars",
+			"ant newDaemon",
+			"mv dist/private/h* dist/private/host1",
+                        "export SFHOME=/home/${daemon.user}/${daemon.releasename}/dist",
+                        "export PATH=$SFHOME/bin:$PATH",
+			"export SFSECURITY_ON=ENABLED",
+			"cd /home/${daemon.user}/${daemon.releasename}", 
+                        "nohup sfDaemon &"]; 
+		 #end
+	    #else
+		#if($dynamicLoadingOn) 
+             	telnetCommands ["gunzip release.tar.gz",
+			"tar -xf release.tar",
+                        "export SFHOME=/home/${daemon.user}/${daemon.releasename}/dist",
+                        "export PATH=$SFHOME/bin:$PATH",
+			"export SFCODEBASE=-Dorg.smartfrog.codebase=#foreach ($jar in $httpJars)http://${principalDaemon.host}:8080/${jar} #end", 
+                        "nohup sfDaemon &"]; 
+		#else
+		telnetCommands ["gunzip release.tar.gz",
+			"tar -xf release.tar",
+                        "export SFHOME=/home/${daemon.user}/${daemon.releasename}/dist",
+                        "export PATH=$SFHOME/bin:$PATH",
+                        "nohup sfDaemon &"]; 
+		 #end
+	    #end	
+        #end
+#elseif ($daemon.isWindows())
+	     ftpLocalFiles ["${daemon.localfile1}", "${daemon.localfile2}", "${daemon.localfile3}"];
+             ftpRemoteFiles ["release.zip", "JavaService.exe", "start_sfdaemon.bat"];
+	     telnet:Telnet:timeout 70000;
+	     telnet:Telnet:shellPrompt "C:\\>";
+	     telnet:Telnet:ostype "windows";
+	     #if($securityOn)
+		#if($dynamicLoadingOn)
+             	telnetCommands ["wzunzip -d release.zip",
+			("cd C:\\" ++ "${daemon.releasename}"),
+			"ant initCA",
+			"ant signJars",
+			"ant newDaemon",
+			"move dist\\private\\h* dist\\private\\host1",
+			"cd C:\\",
+	                ("start_sfdaemon.bat ${daemon.javahome} C:\\" ++ "${daemon.releasename}\\dist server -s -d #foreach ($jar in $httpJars)http://${principalDaemon.host}:8080/${jar} #end"),
+			"net start Daemon"];
+		#else 
+		telnetCommands ["wzunzip -d release.zip ",
+			("cd C:\\" ++ "${daemon.releasename}"),
+			"ant initCA",
+			"ant signJars",
+			"ant newDaemon",
+			"move dist\\private\\h* dist\\private\\host1",
+			"cd C:\\",
+			("start_sfdaemon.bat ${daemon.javahome} C:\\" ++ "${daemon.releasename}\\dist server -s"),
+			"net start Daemon"];
+		#end
+	   #else
+		#if($dynamicLoadingOn)
+             	telnetCommands ["wzunzip -d release.zip ",
+	                        ("start_sfdaemon.bat ${daemon.javahome} C:\\" ++"${daemon.releasename}\\dist server -d #foreach ($jar in $httpJars)http://${principalDaemon.host}:8080/${jar} #end"),
+				"net start Daemon"];
+		#else
+		//sfhome ("C:\\" ++ "${daemon.releasename}\\dist"); 
+		telnetCommands ["wzunzip -d release.zip ",
+	                	("start_sfdaemon.bat ${daemon.javahome} C:\\" ++"${daemon.releasename}\\dist server"), 
+				"net start Daemon"];
+		#end
+	  #end
+#end
+      emailTo "$daemon.emailto";  
+      emailFrom "$daemon.emailfrom";
+      emailHost "$daemon.emailserver";
+      emailAttachments ["${daemon.name}.log"];
+      emailMessage ("SmartFrog installation status  on node:" ++ ATTRIB host ++                     " :Successful.\n Please see attached telnet log file for details.");
+   }
+#end
+ }
+}
+
+

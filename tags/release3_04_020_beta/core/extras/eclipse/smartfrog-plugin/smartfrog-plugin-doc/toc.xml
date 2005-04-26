@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?NLS TYPE="org.eclipse.help.toc"?>
+
+<toc label="SmartFrog Plug-In Guide">
+   <topic label="Getting Started">
+      <link toc="tocgettingstarted.xml"/>
+   </topic>
+   
+  
+   <topic label="Concepts">
+      <link toc="tocconcepts.xml"/>
+   </topic>
+ 
+   
+   <topic label="Tasks">
+      <link toc="toctasks.xml"/>
+   </topic>
+   
+  
+   <topic label="Reference">
+      <link toc="tocreference.xml"/>
+   </topic>
+   
+</toc>
