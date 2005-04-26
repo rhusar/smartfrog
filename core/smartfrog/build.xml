@@ -155,7 +155,7 @@
   <!-- ================================================================== -->
   <!-- running Version.java to generate version information               -->
   <!-- ================================================================== -->
-  
+
   <target name="generateversion" depends="prebuild">
     <java classname="org.smartfrog.Version" failonerror="true" fork="true" outputproperty="Version">
       <arg value="-b"/>
@@ -163,11 +163,11 @@
         <pathelement location="${build.classes.dir}"/>
       </classpath>
     </java>
-    
+
     <!-- save everything to a file -->
     <!-- keep this in sync w/ common.xml's declaration -->
     <property name="sf.version.file" location="smartfrog-version.properties" />
-    
+
     <propertyfile
         file="${sf.version.file}"
         comment="This is machine generated. Do Not Edit!">
@@ -176,7 +176,7 @@
     </propertyfile>
 
     <copy file="${sf.version.file}" todir="${build.classes.dir}/org/smartfrog" />
-    <echo level="verbose">version=${sfversion}</echo> 
+    <echo level="verbose">version=${sfversion}</echo>
     <!--property name="Version" value="${sfversion}"/-->
   </target>
   <!-- =================================================================== -->
@@ -326,7 +326,6 @@
       <fileset dir="${lib}">
         <include name="**/*.jar"/>
       </fileset>
-      <mapper type="glob" from="*.jar" to="*-${Version}.jar"/>
     </copy>
   </target>
   <!-- =================================================================== -->
@@ -352,7 +351,7 @@
   </target>
   <!-- =================================================================== -->
   <!-- Copy binary files.                                                  -->
-  <!-- execute permissions are set on binary stuff, permissions that get   --> 
+  <!-- execute permissions are set on binary stuff, permissions that get   -->
   <!--     lost                                                            -->
   <!-- =================================================================== -->
   <target name="copybins" depends="initdist">
@@ -432,7 +431,7 @@
   <target name="build"
     depends="generateversion"
     description="Recompile and create all packages"/>
-    
+
   <!-- =================================================================== -->
   <!--  Jar Files                                                              -->
   <!-- =================================================================== -->
@@ -441,17 +440,17 @@
     <jar jarfile="${dist.lib.dir}/smartfrog-${Version}.jar" basedir="${build.classes.dir}" includes="**/smartfrog/**" excludes="**/services/**,**/examples/**" manifest="${manifestName}"/>
   </target>
   <!--  sfServices.jar                                               -->
-  
+
   <target name="sfServicesJar" depends="build">
     <jar jarfile="${dist.lib.dir}/sfServices-${Version}.jar" basedir="${build.classes.dir}" includes="**/services/**" manifest="${manifestName}"/>
   </target>
-  
+
   <!--  sfExamples.jar                                               -->
   <target name="sfExamplesJar" depends="build">
     <!-- Create sfExamples.jar file -->
     <jar jarfile="${dist.lib.dir}/sfExamples-${Version}.jar" basedir="${build.classes.dir}" includes="**/examples/**" manifest="${manifestName}"/>
   </target>
-  
+
   <target name="jars" depends="initdist,sfJar,sfServicesJar,sfExamplesJar">
   </target>
   <!-- =================================================================== -->
