@@ -1,3 +1,49 @@
+release 3.04.020_beta
+----------------------
+2005-Apr-26 Release date
+2005-Apr-24 Mod: sfDaemon.bat and sfDaemon: #JVMARGS are passed as args to the java exec #sort cmd line args into JVMARGS or CLASSARGS. #JVMARGS are declared using -J token #e.g. -J "-Djava.library.path=/libs -Xmx400M" #e.g. -J -Djava.library.path=/libs -J -Xmx400M2005-Apr-19 Add: Functional example of dynamic download and execute an application
+2005-Apr-19 Add: New method to bind and unbind from registry using a separate thread to avoid problems when using remote calls
+2005-Apr-19 Add: The jar files are available with tagged version number of the release 
+2005-Apr-18 Modified exceptions during creation of CompDesc from url
+2005-Apr-15 Add: New schemas added to Prim/Compound/ProcessCompound
+2005-Apr-14 sfCreateNewChild refactored and sfStartChildren and sfDeployChildren now using a temporal list to protect any interference from an outsider registering new children
+2005-Apr-14 Mod: Synchronize registry: public synchronized void setRootProcessCompound(ProcessCompound c) and public synchronized void unbindRootProcessCompound()
+2005-Apr-12 Add: sfExport() method to use anonymous port for export in PrimImpl
+2005-Apr-08 Add: IDE_development.sxw, jedit-smartfrog.xml: IDE documentation and syntax file for jedit
+2005-Apr-07 Add: New attribute "sfExportPort" to define the port number for exporting the remote interface. Inside the same process several component can share the same port. The JVM will multiplex the port. But two components running in the two different processes can not share the same port.
+2005-Apr-07 Improved messages for Ping and message formatting in Configurationecriptor
+2005-Apr-07 Fix: % missing in sfPing.bat
+2005-Apr-07 Mod: Factoring out of child creation in CompoundImpl. This is to give subclasses more control of the ordering of the process
+2005-Apr-05 Renamed and factored download implementation class. It's still a minimal download; no support for timestamps, http auth, etc, etc
+2005-Apr-01 Mod: Filesystem enhancements - mkdir can have a parent dir (string or File) -mkdir implements FileIntf; sets absolutePath on deployment. -File component can have a File as a parent directory (not just a string). -FileImpl implementation cleaned up to reuse static methods
+2005-Apr-01 Updated sfQuickRef.sxw
+2005-Mar-31 Removed remote log access from Prim interface. It should be local always.
+2005-Mar-31 Changed outSW.append() to outSW.write()
+2005-Mar-31 Mod: sfReference.sxw: update year of (c) fix quote marks in syntax and Extended Parser basic types for Double and Float examples
+2005-Mar-31 Add: Documentation of the filesystem components 
+2005-Mar-24 Add: In parser: Added characters +, @, #, ~, $, %, ^, &, <, > to the list of special characters
+2005-Mar-15: Add: New component shellscript under services
+2005-Mar-14 Mod: sfCoreLog now named sfGetCoreLog()
+2005-Mar-14 Mod: Changes in Log. By default sfLog() method should be use to log from a component
+2005-Mar-13 Improved StackTrace print
+2005-Mar-11 Add: Conditional liveness tracing
+2005-Mar-11 Common.Logger methods removed
+2005-Mar-11 Add: New Version class: reads version infromation from version.sf file
+2005-Mar-11 ReferencePart now uses Marshallable object when possible
+2005-Mar-07 Fix: single-line commment and EOF bug
+2005-Mar-04 Mod: "Event" to be an object instead of a String
+2005-Mar-03 Changed default value for pause in counter example. Now is false.
+2005-Mar-03 Improved Send LivenessFailure Message in PrimImpl
+2005-Feb-28 Add: A new property which causes SF to exit if security is not turned on. For use in non-shell launchers to force security in daemon side operation
+2005-Feb-02 Moved hook actions to more sensible places in PrimImpl 
+2005-Feb-02 Add: Persistent counter example
+2005-Feb-02 Add: Persistance service
+2005-Feb-01 Add: New indented printing interface for comopnent description and context
+2005-Jan-26 Improved log messages in SFSystem
+2005-Jan-18 Mod: Parallel workflow to support deployment of actions in separate threads. Plus test examples. New class CreateNewChlidThread to create a child/app in a separate thread
+2005-Jan-13 Add: Wrapper for LogImpl that implements asynchronous logging
+2005-Jan-12 Add: Interfaces to new shellscipt component
+
 release 3.04.0014_beta
 ----------------------
 2005-Jan-03 Release date
