@@ -1,0 +1,9 @@
+#include "org/smartfrog/components.sf"
+#include "org/smartfrog/services/net/telnet.sf"
+
+sfConfig extends TelnetSession {
+	Telnet:host "ebnt171.india.hp.com";
+        Telnet:username "ritu";	
+	PasswordProvider:passwordFile "passwd.txt";
+        Telnet:logFile "spy.log";
+}

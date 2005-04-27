@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+
+<project name="example" default="init" basedir=".">
+  
+<property name="root.dir" location="../../.."  />
+
+<property name="verbose" value="false"  />
+
+<!-- Import common stuff -->
+<import file="${root.dir}/common.xml"/>
+
+  <target name="init" 
+    depends="init-common,verify-smartfrog,use-smartfrog-tasks">
+  </target>
+  
+  <target name="webapp"  depends="init">
+      <sf-parse file="webapp.sf" verbose="${verbose}"/>
+  </target>
+
+  <target name="gridapp"  depends="init" >
+      <sf-parse file="gridapp.sf" verbose="${verbose}"/>
+  </target>
+  
+</project>   
