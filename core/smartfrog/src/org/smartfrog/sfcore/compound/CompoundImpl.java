@@ -23,7 +23,6 @@ package org.smartfrog.sfcore.compound;
 import java.rmi.RemoteException;
 import java.util.Enumeration;
 import java.util.Vector;
-import java.util.List;
 
 import org.smartfrog.sfcore.common.TerminatorThread;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
@@ -38,6 +37,7 @@ import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.deployer.SFDeployer;
 import org.smartfrog.sfcore.prim.Dump;
 import org.smartfrog.sfcore.prim.Liveness;
@@ -46,9 +46,6 @@ import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferencePart;
-import java.util.Collections;
-import java.util.ArrayList;
-
 
 
 /**
@@ -291,7 +288,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
                     sfLog().trace(ex1.toString());
                 }
             }
-            comp = sfDeployComponentDescription(name, parent, cmp, parms);
+            comp = sfDeployComponentDescription(name, parent, ((ComponentDescriptionImpl)cmp), parms);
             // it is now a child, so need to guard against double calling of lifecycle...
             try {
                 comp.sfDeploy();
