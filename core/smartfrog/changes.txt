@@ -1,6 +1,6 @@
-release 3.04.020_beta
+release 3.04.022_beta
 ----------------------
-2005-Apr-26 Release date
+2005-Apr-27 Release date
 2005-Apr-24 Mod: sfDaemon.bat and sfDaemon: #JVMARGS are passed as args to the java exec #sort cmd line args into JVMARGS or CLASSARGS. #JVMARGS are declared using -J token #e.g. -J "-Djava.library.path=/libs -Xmx400M" #e.g. -J -Djava.library.path=/libs -J -Xmx400M2005-Apr-19 Add: Functional example of dynamic download and execute an application
 2005-Apr-19 Add: New method to bind and unbind from registry using a separate thread to avoid problems when using remote calls
 2005-Apr-19 Add: The jar files are available with tagged version number of the release 
