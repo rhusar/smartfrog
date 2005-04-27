@@ -288,7 +288,9 @@ public class CompoundImpl extends PrimImpl implements Compound {
                     sfLog().trace(ex1.toString());
                 }
             }
-            comp = sfDeployComponentDescription(name, parent, ((ComponentDescriptionImpl)cmp), parms);
+
+            //Copies component description before deploying it!
+            comp = sfDeployComponentDescription(name, parent, (ComponentDescription)cmp.copy(), parms);
             // it is now a child, so need to guard against double calling of lifecycle...
             try {
                 comp.sfDeploy();
