@@ -43,16 +43,22 @@ change the classes, and hence the contract.
 
 \item
 
-Some aspects of the service are not extracted from the raw signatures
-of the classes and methods. For example, if a method chooses to
-extract attachments from a message, that information can be hidden in
-the contents of the message, instead of in the signature of the
-call. The generated WSDL will hence omit any information about the
-attachment needs of the service.
+Some aspects of the service are not extracted from the raw signatures of the
+classes and methods. For example, A method may extract attachments from a
+message programmatically, rather than declaring the attachment in the signature.
+This can be done for two reasons. It may be that the attachment is optional; the
+programmatic extraction can handle a missing attachment more gracefully. The
+other reason is to deliberately avoid including attachment information in the
+WSDL, in the knowledge that some clients cannot handle attachments in WSDL
+properly. The developers are reduced to moving part of the service contract out
+of band, to avoid portability problems. As a consequence, those clients that can
+process attachment declarations in WSDL correctly are being deprived of the
+opportunity to use it. With handwritten WSDL, one could have two WSDL service
+descriptions, one containing the attachment information, and one omitting it.
 
 \item
 
-There is no warning of portability issues before integration time.
+There is no pre-deployment warning of portability issues.
 When defining a service using an IDL, the author typically knows when
 there are problems as the IDL will not compile. Yet with contract-last
 development, everything may well seem to work until the service goes
