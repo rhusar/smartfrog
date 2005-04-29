@@ -29,6 +29,7 @@ EventPrinter extends DisplayProgress {
     nameDisplay "installation progress";
     heightDisplay  200;
     widthDisplay   520;
+    positionDisplay "N";
 }
 
 /*
@@ -42,14 +43,14 @@ ListDirUnix extends BashShellScript {
 	processName "list";
 	dir TBD;
 	cmd ("/bin/ls " ++ dir);
-}	
+}
 
 //Windows
 ListDirWind extends WinNTShellScript {
 	processName "list";
 	dir TBD;
-	cmd ("dir " ++ dir);	
-}	
+	cmd ("dir " ++ dir);
+}
 
 genericInstallSequence extends Sequence {
 	// The hostname or address of the target host
@@ -71,9 +72,9 @@ genericInstallSequence extends Sequence {
         doNothing3 extends DoNothing {time 2000;};
 		Install extends ListDir {
 			sfProcessHost targetHost;
-            sfProcessName "LIST_DIR_VM";  
+            sfProcessName "LIST_DIR_VM";
 			dir PARENT:ATTRIB dir;
-		} 
+		}
         doNothing4 extends DoNothing {time 2000;};
 		InstalledEvent extends LAZY EventSend {
             sendTo:printer LAZY eventPrinter;
@@ -89,9 +90,9 @@ genericInstallSequence extends Sequence {
 
 //ListDir extends ListDirUnix;
   ListDir extends ListDirWind;
-    
+
 sfConfig extends genericInstallSequence {
     eventPrinter extends EventPrinter;
-	targetHost "localhost";	
+	targetHost "localhost";
 	dir "\\"; // Unix use "/";
 }
