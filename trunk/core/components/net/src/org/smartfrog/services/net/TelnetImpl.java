@@ -129,10 +129,10 @@ public class TelnetImpl extends PrimImpl implements Telnet,
                 String loginName = user+"\n";
                 opStream.write(loginName.getBytes());
                 opStream.flush();
-                if (ostype == "linux") {
+                if (ostype.equals("linux")) {
 		operationStatus = waitForString(inpStream, "Password:", 
                                             timeout);
-		} else if (ostype =="windows") {
+		} else if (ostype.equals("windows")) {
                 operationStatus = waitForString(inpStream, "password:", 
                                             timeout);
 		}
@@ -145,7 +145,6 @@ public class TelnetImpl extends PrimImpl implements Telnet,
             }
             operationStatus = isLoginSuccessful(inpStream, shellPrompt, 
                                                                 timeout);    
-            
             
 	    if(!operationStatus) {
                 throw new SmartFrogLifecycleException(
