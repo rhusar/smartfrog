@@ -237,9 +237,12 @@ public class GraphPanel extends JPanel implements ComponentListener,
 
             return img;
         } catch (Exception e) {
-            if (log.isWarnEnabled()){
+            if (log.isDebugEnabled()){
+                log.error("Resulting image will be null. " + e.getMessage(),e);
+            } else  if (log.isWarnEnabled()){
                log.warn("Resulting image will be null. " + e.getMessage());
             }
+
         }
         return null;
     }
