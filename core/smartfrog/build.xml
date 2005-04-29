@@ -176,6 +176,7 @@
     </propertyfile>
 
     <copy file="${sf.version.file}" todir="${build.classes.dir}/org/smartfrog" />
+    <copy file="${sf.version.file}" todir="${dist.dir}" />
     <echo level="verbose">version=${sfversion}</echo>
     <!--property name="Version" value="${sfversion}"/-->
   </target>
@@ -195,6 +196,7 @@
   <!-- =================================================================== -->
   <target name="initdist" depends="init">
     <mkdir dir="${dist.dir}"/>
+    <delete dir="${dist.lib.dir}" failonerror="false"/>
     <mkdir dir="${dist.lib.dir}"/>
     <mkdir dir="${dist.bin.dir}"/>
     <mkdir dir="${dist.docs.dir}"/>
@@ -482,7 +484,8 @@
   <!-- =================================================================== -->
   <!--  DIST                                                               -->
   <!-- =================================================================== -->
-  <target name="dist" depends="build,initdist,jars,copylibs,copybins,copyPrivate,copydocs, copyexamples,copyTestCA,buildSetup,fixCRLF,srczip" description="Prepares distribution package">  </target>
+  <target name="dist" depends="build,initdist,jars,copylibs,copybins,copyPrivate,copydocs, copyexamples,copyTestCA,buildSetup,fixCRLF,srczip" description="Prepares distribution package">
+  </target>
   <!-- =================================================================== -->
   <!--  SECUREDIST                                                         -->
   <!-- =================================================================== -->
