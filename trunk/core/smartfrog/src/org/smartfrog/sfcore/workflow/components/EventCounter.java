@@ -69,7 +69,7 @@ public class EventCounter extends EventPrimImpl implements Prim {
      *
      * @param event The event
      */
-    synchronized public void handleEvent(String event) {
+    synchronized public void handleEvent(Object event) {
         if (allDifferent) {
             if (!events.contains(event)) {
                 count--;

@@ -76,11 +76,7 @@ public class Attribute extends EventPrimImpl implements Prim {
         } catch (Exception e) {
             term = TerminationRecord.abnormal(e.toString(), id);
         }
-        Runnable terminator = new Runnable() {
-                    public void run() {
-                        sfTerminate(term);
-                    }
-                };
+        Runnable terminator = new Runnable() { public void run() { sfTerminate(term); } };
         new Thread(terminator).start();
     }
 }

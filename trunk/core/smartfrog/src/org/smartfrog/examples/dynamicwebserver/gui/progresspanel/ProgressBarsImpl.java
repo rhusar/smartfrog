@@ -83,12 +83,13 @@ public class ProgressBarsImpl extends SFDisplay implements Prim, ProgressBars,
      *
      * @param event event
      */
-    public void handleEvent(Object eventO) {
+    public void handleEvent(Object eventObj) {
         String event = "";
-        if (eventO instanceof String){
-           event = (String) eventO;
-        } else return;
-
+        if (eventObj==null) {
+            event = "null";
+        }  else {
+            event = eventObj.toString();
+        }
         if (printEvents) {
             System.out.println(name + " received event " + event);
         }
@@ -223,19 +224,18 @@ public class ProgressBarsImpl extends SFDisplay implements Prim, ProgressBars,
      * @return The eventMsg value
      */
     private Object getEventMsg(Object msgO) {
-        String msg = "";
-        if (msgO instanceof String){
-           msg = (String) msgO;
-        } else return msgO;
-
+        String msg = msgO.toString();
         try {
             msg = msg.substring(msg.lastIndexOf(':') + 1, msg.length());
-
             //System.out.println("msg:"+msg);
             return msg;
         } catch (Exception ex) {
             //ex.printStackTrace();
-            return "";
+            if (msgO!=null){
+                return msgO.toString();
+            } else {
+                return "null";
+            }
         }
     }
 
@@ -307,7 +307,8 @@ public class ProgressBarsImpl extends SFDisplay implements Prim, ProgressBars,
             masterPanel.setVisible(true);
             masterPanel.setEnabled(true);
             scrollPane.getViewport().add(masterPanel, null);
-            display.tabPane.add(scrollPane, "Progress ...", 0);
+            display.tabPane.add(scrollPane, "Progress ...",0);
+            display.tabPane.setSelectedIndex(0);
         } catch (Exception ex) {
             throw new SmartFrogException("Failure sfDeploy SFDeployDisplay!",
                 ex, this);

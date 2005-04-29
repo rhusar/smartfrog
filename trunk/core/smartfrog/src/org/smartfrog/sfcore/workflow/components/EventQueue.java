@@ -59,7 +59,7 @@ public class EventQueue extends EventPrimImpl implements Prim {
 		    for (int i = soFar; i < index; i++) {
 			//send it to the sink;
 			try {
-			    s.event((String) messages.get(i));
+			    s.event(messages.get(i));
 			} catch (Exception ex) {
 			    ex.printStackTrace();
 			}
@@ -157,9 +157,9 @@ public class EventQueue extends EventPrimImpl implements Prim {
      * Default implementation of the EventBus event method to
      * forward an event to this component
      *
-     * @param event java.lang.String
+     * @param event java.lang.Object
      */
-    synchronized public void event(String event) {
+    synchronized public void event(Object event) {
 	synchronized (messages) {
 	    messages.add(event);
 	    messageIndex += 1;
