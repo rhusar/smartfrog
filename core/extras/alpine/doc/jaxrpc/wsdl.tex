@@ -36,10 +36,8 @@ This has the following consequences.
 
 \item
     
-There is no way to ensure that a service's published interface, and
-hence the contract to which it adheres, remains constant over
-time. Every redeployment of the service, every upgrade of the SOAP
-stack or even the underlying Java runtime may change the classes, and
+There is no way to ensure that a service's published interface remains constant
+over time. Every redeployment of the service or may change the classes, and
 hence the contract.
 
 \item
@@ -74,12 +72,12 @@ broad variety of products that aim to make authoring XSD and WSDL
 documents easier, and recall that such products were never necessary
 in the IDL-era of distributed systems programming.
 
-We note in passing that that REST systems \cite{fielding:rest} tend not to
-make use of WSDL, even though it is theoretically possible. Instead
-they resort to their XML type language of choice and quality
-human-readable documentation. This would appear to be sub-optimal, yet
-REST is growing in popularity, despite (or perhaps because of) the
-lack of WSDL integration.
+%We note in passing that that REST systems \cite{fielding:rest} tend not to
+%make use of WSDL, even though it is theoretically possible. Instead
+%they resort to their XML type language of choice and quality
+%human-readable documentation. This would appear to be sub-optimal, yet
+%REST is growing in popularity, despite (or perhaps because of) the
+%lack of WSDL integration.
 
 Returning to the desiderata for SOAP, following a contract-last process
 sacrifices interoperability for ease of service development. Perhaps
