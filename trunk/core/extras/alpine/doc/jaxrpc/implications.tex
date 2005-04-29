@@ -39,66 +39,44 @@ extracting them from {\tt SoapMessageElement} implementations.
 JAX-RPC has become a cornerstone of Enterprise Java
 \cite{spec:J2EE-14}, alongside RMI and RMI-over-CORBA. That is not by
 itself a bad thing, but we believe that it creates the misconception
-that developers can trivially migrate from RMI to SOAP. If
-they attempt to do, they will fall into the traps that JAX-RPC creates
-for them.
+that developers can trivially migrate from RMI to SOAP. If they
+attempt to do, they will fall into the traps that JAX-RPC creates for
+them.
 
-The 2.0 revision of the JAX-RPC specification promises to correct some of these
-flaws, but not, we fear, enough. It uses a new O/X mapping, the Java
-Architecture for XML Binding 2.0 (JAXB 2.0)\cite{spec:JAX-B-20}. This is possibly the most
-sophisticated XML to Java mapping framework yet designed, with broad support
-for generating classes from XML Schema, and XML Schema from annotated classes.
-It is, however, still an O/X mapping technology; something we have argued is
-inherently flawed.  
- 
-JAX-RPC 2.0 retains the metaphor of method-invocation of an object instance, with
-a payload of Java objects that are somehow mapped to and from XML content. This
-and the automated generation of WSDL from Java source, means that it still
-retains the pretense of enabling communication between Java programs, using Java
-objects. This is the metaphor that lies at the root of much of JAX-RPC's
-problems.
+The 2.0 revision of the JAX-RPC specification promises to correct some
+of these flaws, but we believe many problems remain. It uses a new O/X
+mapping, the Java Architecture for XML Binding 2.0 (JAXB
+2.0)\cite{spec:JAX-B-20}. This is a sophisticated framework for
+mapping XML into Java, having broad support for the generation of
+classes from XML Schema, and of XML Schema from annotated classes. 
+Despite many improvements over its predecessors, we believe JAXB is
+simply a more comprehensive approach to a problem that is
+fundamentally ill-posed.
+  
+JAX-RPC 2.0 continues the attempt to provide a metaphor of
+method-invocation on object instances across SOAP transport. 
+This fundamentally unmaintainable metaphor, coupled with the
+automated generation of WSDL from Java source code, means that in our
+opinion JAX-RPC has not outgrown its limitations. 
 
-We understand the rationale for design decisions of JAX-RPC and JAXB 2.0. Working
-with raw XML is hard. Writing good XML Schema documents is hard. WSDL is
-exceedingly painful to work with. Asynchronous messaging is more complex than
-blocking RPC calls. Yet we believe that all these things need to be done, else
-interoperability and loose coupling will remain unrealised.
+It is easy to understand the rationale behind the decisions made in
+designs JAX-RPC and JAXB 2.0. Working with raw XML is hard. Writing
+good XML Schema documents is hard. WSDL is exceedingly painful to work
+with. Asynchronous messaging is more complex than blocking
+RPC. Nevertheless, we believe that all these things will be part of
+any solution enabling developers to realise the promised
+interoperability and loose coupling of SOAP-based systems.
 
-The next version of Apache Axis, Axis 2.0, has adopted a more XML-centric design
-than its predecessors. A message is represented in the Message Object Model,
-\emph{MOM}, which is intended to be simpler than DOM, yet still a usable
-representation of messages. Extensions to the core runtime are expected to
-provide the mapping between the MOM tree and Java object graphs, an
-implementation of JAXB 2.0 being the primary such extension. We admire this
-change in direction, and believe that this architecture could be a foundation
-for more robust SOAP server and client applications. However, the fact that O/X
-mapping and contract-last development are still enabled within the
-infrastructure implies that users are still being encouraged to write their code
-and have the SOAP stack handle the marshalling. 
-
-Finally, WSDL itself is evolving; WSDL2.0 is nearing the end of its
-specification process \cite{spec:WSDL-20}. Will a new WSDL syntax make it easier
-to specificy service contracts. We certainly hope it will, and can see that some
-aspects of the language, such as the {\tt interface} construct will make it
-easier to reuse and extend other service interfaces. Unfortunately, the sheer
-broadness of the goals of WSDL ---a language to specify arbitrary
-XML-based communications across multiple protocols--- makes it exceedingly
-complex. WSDL 2.0 still appears to require repeated declarations of a similar
-syntax, first the abstract operations, then the actual binding, and many, many,
-XML messages need to be defined. In handwritten WSDL, the risk of errors is
-high, and the ease of tracking down the problems low. As any SOAP stack
-developer will certify, bug reports involving handwritten WSDL are the ones they
-fear. 
-
-If the broadness of WSDL is a key problem, then a possible solution would be to
-define a subset of interoperable WSDL; this is essentially what the Web Service
-Interoperability (WS-I) group have done. One could then design a minimal service
-description language that only covered this subset, a new XML language that
-could be turned into valid WSDL though an XSL transformation. This could be a
-workable solution to the problem of making it easy to write WSDL: a
-human-writeable language that had a one-way transformation into valid WSDL 1.1
-or 2.0. We may explore this concept.
-
-
+WSDL itself is also evolving, with the 2.0 revision of the
+specification nearing completion \cite{spec:WSDL-20}. It is to be
+hoped that a new WSDL syntax will make it easier to specify service
+contracts, and some new features of the language (for example the {\tt
+interface} construct) promise to increase the opportunities for reuse
+and extension of service interfaces. Unfortunately, the sheer breadth
+of the WSDL goal set makes it exceedingly complex, and this, coupled
+with the needless verbosity that it enforces, is likely to make it a
+difficult language to work with for some time\footnote{As any SOAP
+stack developer will attest, bug reports involving handwritten WSDL
+are the ones they fear.}.
 
 

@@ -24,7 +24,7 @@ alongside data, and provide human readable names.
 of incoming data.
 
 \item Long-haul: It is designed to work through firewalls,
-using HTTP and other protocols underneath.
+building upon HTTP and other established protocols.
 
 \item Loosely-coupled: Participants are not expected to share
 implementation code.
@@ -42,10 +42,10 @@ desiderata against which any SOAP technology should be judged.
 
 Communication with SOAP can be viewed either as XML-based remote
 procedure calls, or as a way of submitting XML documents to remote
-\emph{endpoints} (optionally eliciting responses in the form of XML
-documents). These two different perspectives represent the RPC-centric
+endpoints (optionally eliciting responses in the form of XML
+documents.) These two different perspectives represent the RPC-centric
 and message-centric viewpoints. In Java, the RPC-centric model has
-become the primary model of SOAP APIs.
+become the primary model for SOAP APIs.
 
 The Java APIs representing the two different underlying perspectives
 are JAXM\footnote{Java API for XML Messaging}
@@ -86,13 +86,14 @@ work with SOAP in Java.
 
 In JAX-RPC\footnote{The current edition of the JAX-RPC specification
 is version 1.1, and this is the version we discuss here. JAX-RPC 2.0
-is discussed in section \ref{implications:future}.}, 
-the XML representation of how a message is hidden; the developer works with Java
-objects created automatically from the XML data using a semi-standardised
-mapping process. Java classes can be automatically turned into SOAP endpoints,
-with each public method in the class exported as an operation with a request
-message and a response message. The message structure is described in a WSDL
-descriptor and an associated XML Schema, both of which can be hand-written, or
+is discussed in section \ref{implications:future}.} the XML
+representation of a message's encoding is hidden and developers work
+with Java objects created automatically from the XML data using a
+semi-standardised mapping process. Java classes can be automatically
+turned into SOAP endpoints, with each public method in the class
+exported as an operation with both a request message and a response
+message. The message structure is described in a WSDL descriptor and
+an associated XML Schema, both of which can be hand-written, or
 automatically extracted from the Java classes through introspection.
 
 Client side proxy classes can be generated from the WSDL files, proxy
@@ -142,14 +143,14 @@ best practise. However, the XSD file for the service messages is
 approximately 2000 lines, including all the comments and annotations
 needed to make it comprehensible. That it takes so many lines to
 describe a relatively simple service is clearly one reason why this
-approach, is so unpopular.
+approach is so unpopular.
 
 Many problems were encountered turning this service specification into
-functional clients and servers, problems that we attribute to JAX-RPC.
-In section \ref{objections} we discuss a number of the problems we
-believe this work highlighted. Section \ref{objections:wsdl-gen}
-outlines the particular problems we believe typical JAX-RPC oriented
-approaches to WSDL generation create.
+functional clients and servers, problems that we attribute largely to
+JAX-RPC. In section \ref{objections} we discuss a number of the
+problems we believe this work highlighted. Section
+\ref{objections:wsdl-gen} outlines the particular problems we believe
+typical JAX-RPC oriented approaches to WSDL generation create.
 
 
 
