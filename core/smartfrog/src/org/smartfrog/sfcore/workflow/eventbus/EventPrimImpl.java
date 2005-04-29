@@ -102,7 +102,7 @@ public class EventPrimImpl extends PrimImpl implements EventRegistration,
      * Default implmentation of the event Handler hook to be overridden in
      * sub-classes. The default implementation does nothing.
      *
-     * @param event java.lang.String The event
+     * @param event java.lang.Object The event
      */
     public void handleEvent(Object event) {
         //try {
@@ -119,15 +119,21 @@ public class EventPrimImpl extends PrimImpl implements EventRegistration,
     synchronized public void sendEvent(Object event) {
         for (Enumeration e = sendTo.elements(); e.hasMoreElements();) {
             EventSink s = (EventSink) e.nextElement();
-
+            //System.out.println(sfCompleteName().toString() + " sending " + event + " to " + s.toString());
             try {
-                //System.out.println(sfCompleteName().toString() + " sending " + event + " to " + s.toString());
-                String infoStr=sfCompleteName().toString() + " sending " + event + " to " + s.toString();
-                if (log.isInfoEnabled())
-                	log.info(infoStr);
-
+                String infoStr = sfCompleteName().toString()+" sending "+ event+" to "+s.toString();
+                if (log.isInfoEnabled()) {
+                    log.info(infoStr);
+                }
                 s.event(event);
-            } catch (RemoteException ex) {
+            } catch (Exception ex1) {
+                String evStr="null event";
+                if (event!=null ) {
+                    evStr=event.toString()+"["+event.getClass().toString()+"]";
+                }
+                if (log.isErrorEnabled()) {
+                   log.error("Failed to send event: "+evStr+", cause: "+ex1.getMessage(),ex1);
+               }
             }
         }
     }

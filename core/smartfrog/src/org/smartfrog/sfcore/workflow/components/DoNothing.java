@@ -62,10 +62,10 @@ public class DoNothing extends EventPrimImpl implements Prim {
      *
      * @param event The event
      */
-    public void handleEvent(String event) {
+    public void handleEvent(Object event) {
         if (printEvents) {
            //  System.out.println(myId + " received event " + event);
-            String infoStr=myId + " received event " + event;
+            String infoStr=myId + " received event " + event.toString();
             if (log.isInfoEnabled())
                 log.info(infoStr);
         }
@@ -82,7 +82,7 @@ public class DoNothing extends EventPrimImpl implements Prim {
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
         log = this.sfGetCoreLog();
-        myId = sfCompleteName().toString();
+        myId = sfCompleteNameSafe().toString();
 
         try {
             time = ((Integer) sfResolve(TIME)).intValue();
@@ -121,8 +121,7 @@ public class DoNothing extends EventPrimImpl implements Prim {
         if (message != null) {
    // System.out.println(message);
            String infoStr=message;
-            if (log.isInfoEnabled())
-                log.info(infoStr);
+            if (log.isInfoEnabled()) log.info(infoStr);
         }
 
         Runnable terminator = new Runnable() {
@@ -134,8 +133,7 @@ public class DoNothing extends EventPrimImpl implements Prim {
                     } catch (Exception ex) {
                     }
 
-                    sfTerminate(new TerminationRecord(terminationType,
-                            myId, null));
+                    sfTerminate(new TerminationRecord(terminationType,  myId, null));
                 }
             };
 

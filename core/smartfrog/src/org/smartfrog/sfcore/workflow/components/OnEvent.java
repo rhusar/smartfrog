@@ -33,7 +33,7 @@ import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
 
 
 /**
- * This component waits for an event to arrive, deploys the appropriate event
+ * This component waits for a event to arrive, deploys the appropriate event
  * handler and when this terminates, also terminate. OnEvent is normally used
  * as part of a sequence of other components to provide synchronization.
  * Attributes are documented in onEvent.sf
@@ -63,15 +63,15 @@ public class OnEvent extends EventCompoundImpl implements Compound {
      *
      * @param event event to be handled
      */
-    public void handleEvent(String event) {
+    public void handleEvent(Object event) {
         ComponentDescription act;
 
 
         try {
             String name = "otherwise";
             try {
-                act = (ComponentDescription) sfResolve(event);
-                name = event;
+                act = (ComponentDescription) sfResolve(event.toString());
+                name = event.toString();
             } catch (SmartFrogResolutionException e) {
                 act = (ComponentDescription) sfResolve(name);
             }
