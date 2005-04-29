@@ -33,7 +33,7 @@ import org.smartfrog.sfcore.workflow.eventbus.EventPrimImpl;
  * starting, it sends the event to all registered sinks and then terminates.
  */
 public class EventSend extends EventPrimImpl implements Prim {
-    String event = "";
+    Object event = "";
     public static final String EVENT = "event";
 
     /**
@@ -54,7 +54,7 @@ public class EventSend extends EventPrimImpl implements Prim {
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
-        event = (String) sfResolve(EVENT);
+        event = sfResolve(EVENT);
     }
 
     /**
