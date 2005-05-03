@@ -137,7 +137,9 @@ public class DefaultRootLocatorImpl implements RootLocator, MessageKeys {
     }
 
     /**
-     * Gets the port of RMI registry on which input process compound is running.
+     * Gets the port of RMI registry on which input process compound is running or
+     * if ProcessCompound is null then the 'sfRootLocatorPort' is read from
+     * processcompound.sf description
      *
      * @param c Instance of process compound
      *
@@ -150,13 +152,17 @@ public class DefaultRootLocatorImpl implements RootLocator, MessageKeys {
         throws SmartFrogException, RemoteException {
         Object portObj=null;
         try {
-            if (registryPort==-1) {
-                portObj = (c.sfResolveHere(SmartFrogCoreKeys.SF_ROOT_LOCATOR_PORT,false));
-                if (portObj==null) {
-                    throw new SmartFrogResolutionException(
-                        "Unable to locate registry port from ", c);
+            if (registryPort<=-1) {
+                if (c!=null) {
+                  portObj = (c.sfResolveHere(SmartFrogCoreKeys.SF_ROOT_LOCATOR_PORT, false));
+                } else {
+                  portObj = SFProcess.getProcessCompoundDescription().sfResolveHere(SmartFrogCoreKeys.
+                                             SF_ROOT_LOCATOR_PORT, false);
                 }
-                Number port = (Number)portObj;
+                if (portObj == null) {
+                  throw new SmartFrogResolutionException("Unable to locate registry port from ", c);
+                }
+                Number port = (Number) portObj;
                 registryPort = port.intValue();
             }
         } catch (ClassCastException ccex){
@@ -164,7 +170,6 @@ public class DefaultRootLocatorImpl implements RootLocator, MessageKeys {
                 "Wrong object for "+SmartFrogCoreKeys.SF_ROOT_LOCATOR_PORT
                 +": "+portObj+", "+portObj.getClass().getName()+"", ccex, c);
         }
-
         return registryPort;
     }
 
@@ -291,22 +296,16 @@ public class DefaultRootLocatorImpl implements RootLocator, MessageKeys {
 
         ProcessCompound localCompound = SFProcess.getProcessCompound();
 
-        if((localCompound == null) &&(portNum <=-1)) {
-            throw new SmartFrogRuntimeException("No local process compound");
-        }
-
         if (hostAddress == null) {
             hostAddress = InetAddress.getLocalHost();
         }
 
-        if (portNum <= -1){
-            portNum = getRegistryPort(localCompound);
+        if ((localCompound != null)&& hostAddress.equals(InetAddress.getLocalHost()) && localCompound.sfIsRoot()) {
+            return localCompound;
         }
 
-        if ((localCompound != null)&&
-            hostAddress.equals(InetAddress.getLocalHost()) &&
-              localCompound.sfIsRoot()) {
-            return localCompound;
+        if (portNum <= -1){
+            portNum = getRegistryPort(localCompound);
         }
 
         Registry reg = SFSecurity.getRegistry(hostAddress.getHostAddress(), portNum);
