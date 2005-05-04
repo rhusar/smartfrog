@@ -136,6 +136,7 @@ public class ScriptExecutionImpl  extends PrimImpl implements Prim, ScriptExecut
     runProcess = new RunProcessImpl (ID, name, cmd);
     this.ID = ID;
     this.name = name;
+    this.cmd = cmd;
 
     if (cmd.getFilterOutListener()==null){
         String filters[]={TYPE_DONE+" "+name+"_"+ID,TYPE_NEXT_CMD+" "+name+"_"+ID};
@@ -146,17 +147,22 @@ public class ScriptExecutionImpl  extends PrimImpl implements Prim, ScriptExecut
     }
     results = new ScriptResultsImpl();
     ((RunProcessImpl) runProcess).start();
-    runProcess.waitForReady(200);;
+    runProcess.waitForReady(200);
+
   }
 
 
   /**
-   *
+   * Runs an echo commnad unless cmd.echoCommand is null.
    * @param text String Echoed string.
-   * @return String
+   * @return String, null if echoCommnand is null.
    */
   private String runEcho(String type, String text) {
+    if (cmd.getEchoCommand()==null) return null;
     String echo = "MARK - "+type+" "+name+"_"+ID+ " ["+text+", "+dateFormatter.format(new Date())+"]";
+
+    if (cmd.getExitErrorCommand()!=null) echo = echo + " Exit code#: "+cmd.getExitErrorCommand();
+
     runProcess.execCommand(cmd.getEchoCommand()+" "+echo);
     return echo;
   }
@@ -266,7 +272,7 @@ public class ScriptExecutionImpl  extends PrimImpl implements Prim, ScriptExecut
     for (int i = 0; i < commands.size(); ++i) {
       //sfLog.trace("Comparing: "+ line +", "+filters[i]);
       runProcess.execCommand(commands.get(i).toString());
-      runEcho(TYPE_NEXT_CMD,commands.get(i).toString());
+      //runEcho(TYPE_NEXT_CMD,commands.get(i).toString());
     }
 
     //Finish resulSet
@@ -357,7 +363,7 @@ public class ScriptExecutionImpl  extends PrimImpl implements Prim, ScriptExecut
 
   public synchronized void found( String line, int filterIndex, String filterName){
     if (sfLog().isTraceEnabled()) {
-       this.sfLog().trace("FOUND LINE "+line+", "+filterIndex+", "+filterName);
+       sfLog().trace("FOUND LINE "+line+", "+filterIndex+", "+filterName);
     }
     if (filterIndex == 0) {
       //Finished
@@ -366,8 +372,17 @@ public class ScriptExecutionImpl  extends PrimImpl implements Prim, ScriptExecut
       //What do we do if err continues producing output?, should we wait forever?
       ((ScriptResultsImpl)results).stdOut.add("-finished-");
       ((ScriptResultsImpl)results).stdErr.add("-finished-");
+       Integer exitCode = new Integer(-999999);
+       int index = line.indexOf("Exit code#:"); // 11 chars
+       if (index!=-1){
+        try {
+          exitCode = new Integer(line.substring(index+ 12).trim());
+        } catch (NumberFormatException ex) {
+          if (sfLog().isWarnEnabled()) { sfLog().warn(ex);}
+        }
+       }
        //System.out.println("\n -- Finished -- "+line);
-       createNewScriptResults();
+       createNewScriptResults(exitCode);
     } else if (filterIndex==1){
       //Next command will follow
        if (line.indexOf(cmd.getEchoCommand()+" "+"MARK - "+TYPE_NEXT_CMD+" "+name+"_"+ID)!=-1) return; // This is the echo command itself, ignore
@@ -383,10 +398,10 @@ public class ScriptExecutionImpl  extends PrimImpl implements Prim, ScriptExecut
    * Finishes present ScriptResult and creates a new one.
    * @return ScriptResults finished ScriptResult.
    */
-  private ScriptResults createNewScriptResults() {
+  private ScriptResults createNewScriptResults(Integer exitCode) {
     ScriptResults finishedResults = this.results;
     this.results = new ScriptResultsImpl();
-    ((ScriptResultsImpl)finishedResults).ready(new Integer(0));
+    ((ScriptResultsImpl)finishedResults).ready(exitCode);
     return finishedResults;
   }
 

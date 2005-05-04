@@ -67,7 +67,7 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 
      private String echoCommand ="echo";
 
-     private String exitErrorCommand="$?"; // Unix= *?, Windows "%ERRORLEVEL%";
+     private String exitErrorCommand=null; // Unix= $?, Windows "%ERRORLEVEL%";
 
      public Cmd() {
 
@@ -76,11 +76,11 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 
      public Cmd(ComponentDescription cd) throws SmartFrogException {
           try {
-              this.cmdarray = cd.sfResolve(ATR_CMD, cmdarray, false);
-              this.envp = cd.sfResolve(ATR_ENVP, envp, false);
-              this.echoCommand = cd.sfResolve(ATR_ECHO_CMD, echoCommand, false);
-              this.dir = cd.sfResolve(ATR_DIR, dir, false);
-              this.exitErrorCommand = cd.sfResolve(ATR_EXIT_ERROR_CMD, exitErrorCommand, false);
+              this.setCmdArray(cd.sfResolve(ATR_CMD, cmdarray, false));
+              this.setEnvp( cd.sfResolve(ATR_ENVP, envp, false));
+              this.setEchoCommand( cd.sfResolve(ATR_ECHO_CMD, echoCommand, false));
+              this.setFile(cd.sfResolve(ATR_DIR, dir, false));
+              this.setExitErrorCommand( cd.sfResolve(ATR_EXIT_ERROR_CMD, exitErrorCommand, false));
               this.filtersOut = cd.sfResolve(ATR_FILTERS_OUT, filtersOut, false);
               this.filtersErr = cd.sfResolve(ATR_FILTERS_ERR, filtersErr, false);
           } catch (Exception ex) {
@@ -140,12 +140,22 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 
      public Cmd setEchoCommand(String echoCommand){
         if (echoCommand==null) {
-          this.echoCommand ="";
+          this.echoCommand = echoCommand;
         } else {
           this.echoCommand = echoCommand.trim();
         }
         return this;
      }
+
+     public Cmd setExitErrorCommand(String exitErrorCommand){
+        if (exitErrorCommand==null) {
+          this.exitErrorCommand = exitErrorCommand;
+        } else {
+          this.exitErrorCommand = exitErrorCommand.trim();
+        }
+        return this;
+     }
+
 
      public String[] getCmdArray() {
          return cmdarray;
@@ -182,6 +192,11 @@ import org.smartfrog.sfcore.common.SmartFrogException;
      public String getEchoCommand() {
          return this.echoCommand;
      }
+
+     public String getExitErrorCommand() {
+              return this.exitErrorCommand;
+     }
+
 
      public String toString(){
          StringBuffer str = new StringBuffer();
