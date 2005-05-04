@@ -62,7 +62,6 @@ public class SFScriptExecutionImpl  extends PrimImpl implements Prim, SFScriptEx
         this.ID = sfResolve(ATR_ID, ID , true);
         this.name = sfResolve(ATR_NAME, name , false);
         this.cmd = new Cmd(sfResolve(ATR_EXEC,new ComponentDescriptionImpl(null,null,false),true));
-        System.out.println("Got : "+cmd);
   }
 
   /**
@@ -98,6 +97,7 @@ private void test1() throws SmartFrogException {
   ScriptResults resultCD = scriptExec.execute("cd ",lock);
   scriptExec.execute("cd \\",lock);
   ScriptResults resultCD2 = scriptExec.execute("cd ",lock);
+  ScriptResults resultCD3 = scriptExec.execute("cdd ",lock);
   try {
     scriptExec.execute("dir /s", new ScriptLockImpl(this));
   } catch (SmartFrogException ex) {
@@ -111,6 +111,8 @@ private void test1() throws SmartFrogException {
   System.out.println("Test1- Result (Dir): "+resultDir.toString());
   resultExit.waitForResults(0);
   System.out.println("Test1- Result (CDEnd): "+resultExit.toString());
+  resultCD3.waitForResults(0);
+  System.out.println("Test1- Result (CD3) Failed: "+resultCD3.toString());
   resultCD2.waitForResults(0);
   System.out.println("Test1- Result (CD2): "+resultCD2.toString());
 
@@ -122,7 +124,10 @@ private void test2() throws SmartFrogException {
   List commands = new ArrayList();
   commands.add("cd ");
   commands.add("dir");
-  commands.add("echo Julio");
+  commands.add("echo Julio1");
+  commands.add("echo Julio2");
+  commands.add("echo Julio3");
+  commands.add("echo JulioEnd4");
   commands.add("exit");
 
   ScriptResults result = scriptExec.execute(commands,lock);

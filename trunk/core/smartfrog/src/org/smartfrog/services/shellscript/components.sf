@@ -44,6 +44,7 @@ BashExec extends Exec{
    //---shellWorkingDirectory
    //dir      ".";
    //envProperties ["SFHOME=.","JAVA_HOME=/"]; //Example
+   echoErrorCmd "$?";
 }
 
 WinXPExec extends Exec{
@@ -51,6 +52,7 @@ WinXPExec extends Exec{
    //---shellWorkingDirectory
    //dir      ".";
    //envProperties ["SFHOME=.","JAVA_HOME=/"]; //Example
+   echoErrorCmd "%ERRORLEVEL%";
 }
 
 ScriptExecutionSchema extends Schema {
