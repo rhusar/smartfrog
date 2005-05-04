@@ -43,7 +43,7 @@ public class NoProcessTest extends TestCase {
         InetAddress self= InetAddress.getByName("127.0.0.1");
         try {
             ProcessCompound process=locator.getRootProcessCompound(self);
-        } catch (SmartFrogException e) {
+        } catch (Exception e) {
             assert(e.getMessage().indexOf("Connection refused to host: 127.0.0.1")>=0);
         }
     }
