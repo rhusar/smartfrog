@@ -23,7 +23,8 @@ package org.smartfrog.services.shellscript;
 
 import java.util.*;
 
-import org.smartfrog.sfcore.common.*;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import java.rmi.RemoteException;
@@ -53,15 +54,15 @@ public class SFScriptExecutionImpl  extends PrimImpl implements Prim, SFScriptEx
    * the superclass afterwards
    */
   protected void readSFAttributes() throws SmartFrogException, RemoteException {
-        java.io.File f =new java.io.File(".");
-        cmd.setCmdArray(sfResolve(ATR_CMD,cmd.getCmdArray(),true));
-        cmd.setEnvp(sfResolve(ATR_ENVP,cmd.getEnvp(),false));
-        cmd.setFile(sfResolve(ATR_DIR,f,false));
-        cmd.setLineSeparator(sfResolve(ATR_LINE_SEPARATOR,cmd.getLineSeparator(),false));
-
-        ID = sfResolve(ATR_ID, ID , true);
-        name = sfResolve(ATR_NAME, name , false);
-
+//        java.io.File f =new java.io.File(".");
+//        cmd.setCmdArray(sfResolve(Cmd.ATR_CMD,cmd.getCmdArray(),true));
+//        cmd.setEnvp(sfResolve(Cmd.ATR_ENVP,cmd.getEnvp(),false));
+//        cmd.setFile(sfResolve(Cmd.ATR_DIR,f,false));
+//        cmd.setLineSeparator(sfResolve(Cmd.ATR_LINE_SEPARATOR,cmd.getLineSeparator(),false));
+        this.ID = sfResolve(ATR_ID, ID , true);
+        this.name = sfResolve(ATR_NAME, name , false);
+        this.cmd = new Cmd(sfResolve(ATR_EXEC,new ComponentDescriptionImpl(null,null,false),true));
+        System.out.println("Got : "+cmd);
   }
 
   /**
