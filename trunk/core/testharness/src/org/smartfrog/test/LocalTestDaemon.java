@@ -129,12 +129,12 @@ public class LocalTestDaemon {
     }
 
     /**
-     * start a daemon. After this point the
+     * start a daemon. After this point the daemon is running
      * @param optionset
-     * @throws java.lang.Exception
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
-     * @throws java.rmi.RemoteException
-     * @throws java.rmi.ConnectException
+     * @throws Exception if a daemon is already running.
+     * @throws SmartFrogException
+     * @throws RemoteException network trouble
+     * @throws ConnectException
      */
     public synchronized void start(OptionSet optionset)
             throws Exception, SmartFrogException, RemoteException, ConnectException {
