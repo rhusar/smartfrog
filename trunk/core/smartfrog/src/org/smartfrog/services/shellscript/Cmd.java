@@ -174,6 +174,11 @@ import java.io.File;
              str.append(this.echoCommand);
          }
 
+         if (exitErrorCommand !=null){
+             str.append(", exitErrorCommand: ");
+             str.append(this.exitErrorCommand);
+         }
+
          return str.toString();
      }
 
