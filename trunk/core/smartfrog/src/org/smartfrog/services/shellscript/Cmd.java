@@ -22,10 +22,33 @@ package org.smartfrog.services.shellscript;
 
 import java.util.Vector;
 import java.io.File;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
+import org.smartfrog.sfcore.common.SmartFrogException;
 
 // RumCmd class - Data holder for Process parameters
 
  public class Cmd {
+
+     /** String name for optional attribute. Value {@value}. */
+     public final static String ATR_CMD = "cmd";
+     /** String name for optional attribute. Value {@value}. */
+     public final static String ATR_ENVP = "envProperties";
+     /** String name for optional attribute. Value {@value}. */
+     public final static String ATR_DIR = "dir";
+
+     /** String name for optional attribute. Value {@value}. */
+     public final static String ATR_LINE_SEPARATOR = "lineSeparator";
+
+     /** String name for optional attribute. Value {@value}. */
+     public static final String ATR_ECHO_CMD = "echoCmd";
+     /** String name for optional attribute. Value {@value}. */
+     public static final String ATR_EXIT_ERROR_CMD = "echoErrorCmd";
+
+     /** String name for optional attribute. Value {@value}. */
+     public static final String ATR_FILTERS_OUT = "filtersOut";
+     /** String name for optional attribute. Value {@value}. */
+     public static final String ATR_FILTERS_ERR = "filtersErr";
 
      // Data needed for runTime Exec.
 
@@ -50,9 +73,24 @@ import java.io.File;
 
      }
 
+
+     public Cmd(ComponentDescription cd) throws SmartFrogException {
+          try {
+              this.cmdarray = cd.sfResolve(ATR_CMD, cmdarray, false);
+              this.envp = cd.sfResolve(ATR_ENVP, envp, false);
+              this.echoCommand = cd.sfResolve(ATR_ECHO_CMD, echoCommand, false);
+              this.dir = cd.sfResolve(ATR_DIR, dir, false);
+              this.exitErrorCommand = cd.sfResolve(ATR_EXIT_ERROR_CMD, exitErrorCommand, false);
+              this.filtersOut = cd.sfResolve(ATR_FILTERS_OUT, filtersOut, false);
+              this.filtersErr = cd.sfResolve(ATR_FILTERS_ERR, filtersErr, false);
+          } catch (Exception ex) {
+              throw SmartFrogException.forward("Failed to create CMD", ex);
+          }
+     }
+
      public Cmd(String cmdarray[], String envp[], File dir) {
          this.cmdarray = cmdarray;
-         this.cmdarray = cmdarray;
+         this.dir = dir;
          this.envp = envp;
      }
 

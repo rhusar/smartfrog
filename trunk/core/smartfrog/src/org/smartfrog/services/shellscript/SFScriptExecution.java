@@ -45,18 +45,11 @@ import java.util.List;
  */
 public interface SFScriptExecution extends  ScriptExecution {
 
-   /** String name for optional attribute "cmd". Value {@value}. */
-   final static String ATR_CMD = "cmd";
-   /** String name for optional attribute "envp". Value {@value}. */
-   final static String ATR_ENVP = "envp";
-   /** String name for optional attribute "dir". Value {@value}. */
-   final static String ATR_DIR = "dir";
-
-   /** String name for optional attribute "message". Value {@value}. */
-   final static String ATR_LINE_SEPARATOR = "lineSeparator";
-
-   /** String name for optional attribute "ID". Value {@value}. */
+   /** String name for attribute. Value {@value}. */
    final static String ATR_ID = "ID";
-   /** String name for optional attribute "name". Value {@value}. */
+   /** String name for optional attribute. Value {@value}. */
    final static String ATR_NAME = "name";
+   /** String name for attribute. Value {@value}. */
+   final static String ATR_EXEC = "exec";
+
 }

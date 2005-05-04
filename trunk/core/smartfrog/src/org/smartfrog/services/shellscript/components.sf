@@ -21,16 +21,42 @@ For more information: www.smartfrog.org
 #include "org/smartfrog/components.sf"
 #include "/org/smartfrog/predicates.sf"
 
-ScriptExecutionSchema extends Schema {
-    name extends OptionalString;
-    ID extends Long;
 
+ExecSchema extends Schema {
     cmd extends Vector;
     dir extends OptionalString;
     envProperties extends OptionalVector;
-
     lineSeparator extends OptionalString;
 
+    echoCmd extends OptionalString;
+    echoErrorCmd extends OptionalString;
+    filtersOut extends OptionalVector;
+    filtersErr extends OptionalVector;
+}
+
+
+Exec extends LAZY {
+  execSchema extends ExecSchema;
+}
+
+BashExec extends Exec{
+  cmd  ["/etc/bash"]; //cmd    ["cmd.exe"];
+   //---shellWorkingDirectory
+   //dir      ".";
+   //envProperties ["SFHOME=.","JAVA_HOME=/"]; //Example
+}
+
+WinXPExec extends Exec{
+   cmd    ["cmd.exe"];
+   //---shellWorkingDirectory
+   //dir      ".";
+   //envProperties ["SFHOME=.","JAVA_HOME=/"]; //Example
+}
+
+ScriptExecutionSchema extends Schema {
+    name extends OptionalString;
+    //ID extends Long;
+    exec extends CD;
 }
 
 /**
@@ -39,28 +65,22 @@ ScriptExecutionSchema extends Schema {
 ScriptExecution extends Prim {
    scriptExecutionSchema extends ScriptExecutionSchema;
    sfClass "org.smartfrog.services.shellscript.SFScriptExecutionImpl";
-
+   exec extends LAZY Exec;
 }
 
 /**
  * this is the component for running a shell script
  */
 RunShellScripts extends ScriptExecution {
-
-   cmd  ["/etc/bash"];
-   //---shellWorkingDirectory
-   //dir      ".";
-   //envProperties ["SFHOME=.","JAVA_HOME=/"]; //Example
-
 }
 
 BashShellScript extends RunShellScripts {
-   cmd    ["/bin/bash"];
+   exec extends LAZY BashExec;
    name   "bash";
 }
 
 WinXPShellScript extends RunShellScripts {
-   cmd    ["cmd.exe"];
+   exec extends LAZY WinXPExec;
    name   "WinXP";
 }
 
