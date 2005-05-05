@@ -21,24 +21,30 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.shellscript;
 
-import java.util.*;
-
-import org.smartfrog.sfcore.common.*;
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.prim.PrimImpl;
-import java.rmi.RemoteException;
-import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
 import java.lang.reflect.InvocationTargetException;
 import java.text.SimpleDateFormat;
 import java.text.DateFormat;
+import java.rmi.RemoteException;
+import java.io.Serializable;
+
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.ContextImpl;
+import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.logging.LogFactory;
 
 
-public class ScriptExecutionImpl  extends PrimImpl implements Prim, ScriptExecution, FilterListener {
+public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
 
 // Inner class that implements futures ---
 
-  public class ScriptResultsImpl implements ScriptResults {
+  public class ScriptResultsImpl implements ScriptResults, Serializable {
 
       protected boolean resultReady = false;
 
@@ -131,6 +137,13 @@ public class ScriptExecutionImpl  extends PrimImpl implements Prim, ScriptExecut
   /** Used to format times */
   protected static DateFormat dateFormatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss:SSS zzz");
 
+  /** Component Log. This log is used to from any component.
+   *  Initialized to log into the core log: SF_CORE_LOG
+   *  It can be replaced using sfSetLog()
+   */
+  private LogSF  sflog = LogFactory.sfGetProcessLog();
+
+
   public ScriptExecutionImpl(long ID, String name, Cmd cmd) throws RemoteException {
     // RunProcessImpl
     runProcess = new RunProcessImpl (ID, name, cmd);
@@ -194,8 +207,7 @@ public class ScriptExecutionImpl  extends PrimImpl implements Prim, ScriptExecut
    * @todo Implement this org.smartfrog.services.shellscript.ScriptExecution
    *   method
    */
-  public ScriptResults execute(String command, ScriptLock lock) throws
-      SmartFrogException {
+  public ScriptResults execute(String command, ScriptLock lock) throws SmartFrogException {
     if (this.lock!=lock) throw new SmartFrogException( runProcess.toString() + " failed to execute '"+command.toString()+"': Wrong lock. ");
 
     //Close results blocking
@@ -404,5 +416,21 @@ public class ScriptExecutionImpl  extends PrimImpl implements Prim, ScriptExecut
     ((ScriptResultsImpl)finishedResults).ready(exitCode);
     return finishedResults;
   }
+
+  /**
+   * This method should be used to log Core messages
+   * @return Logger implementing LogSF and Log
+   */
+  public LogSF sfLog() {
+     if (sflog!=null)
+       return sflog;
+     else {
+      try {
+        return LogFactory.getLog(name);
+      } catch (Exception ex) {
+        return LogFactory.sfGetProcessLog();
+      }
+     }
+    }
 
 }
