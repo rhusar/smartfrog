@@ -25,6 +25,7 @@ import java.util.*;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import java.rmi.RemoteException;
@@ -32,13 +33,32 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
 
 public class SFScriptExecutionImpl  extends PrimImpl implements Prim, SFScriptExecution{
 
-  // cmd Data
-  private Cmd cmd = new Cmd();
-
   private long ID = -1;
   private String name = null;
 
+  /**
+   * Exec data
+   */
+  private Cmd cmd = new Cmd();
 
+
+  private  Object deployScript = null;
+  private  Object startScript = null;
+  private  Object terminateScript = null;
+
+  /**
+   * This component should terminate when exec terminates
+   */
+  private boolean shouldTerminate = true;
+
+  /**
+   * This component should detach when exec terminates
+   */
+  private boolean shouldDetatch = false;
+
+  /**
+   * Script Exec component
+   */
   private  ScriptExecution scriptExec = null;
 
   // For Prim
@@ -54,14 +74,17 @@ public class SFScriptExecutionImpl  extends PrimImpl implements Prim, SFScriptEx
    * the superclass afterwards
    */
   protected void readSFAttributes() throws SmartFrogException, RemoteException {
-//        java.io.File f =new java.io.File(".");
-//        cmd.setCmdArray(sfResolve(Cmd.ATR_CMD,cmd.getCmdArray(),true));
-//        cmd.setEnvp(sfResolve(Cmd.ATR_ENVP,cmd.getEnvp(),false));
-//        cmd.setFile(sfResolve(Cmd.ATR_DIR,f,false));
-//        cmd.setLineSeparator(sfResolve(Cmd.ATR_LINE_SEPARATOR,cmd.getLineSeparator(),false));
+
         this.ID = sfResolve(ATR_ID, ID , true);
         this.name = sfResolve(ATR_NAME, name , false);
         this.cmd = new Cmd(sfResolve(ATR_EXEC,new ComponentDescriptionImpl(null,null,false),true));
+
+        this.deployScript = sfResolve(ATTR_DEPLOY_SCRIPT,false);
+        this.startScript = sfResolve(ATTR_START_SCRIPT,false);
+        this.terminateScript = sfResolve(ATTR_TERMINATE_SCRIPT,false);
+
+        this.shouldTerminate = sfResolve (ATR_SHOULD_TERMINATE,shouldTerminate,false);
+        this.shouldDetatch = sfResolve (ATR_SHOULD_DETATCH,shouldDetatch,false);
   }
 
   /**
@@ -76,6 +99,7 @@ public class SFScriptExecutionImpl  extends PrimImpl implements Prim, SFScriptEx
       readSFAttributes();
       scriptExec = new ScriptExecutionImpl (ID, name, cmd);
       sfLog().info("Init done");
+      run(deployScript);
   }
   /**
   *  This sets a flag that will start the httpd process running.
@@ -85,64 +109,47 @@ public class SFScriptExecutionImpl  extends PrimImpl implements Prim, SFScriptEx
   */
  public synchronized void sfStart() throws SmartFrogException,RemoteException {
      super.sfStart();
-     test1();
-     System.out.println("#############################################");
-     test2();
+     run(startScript);
+
+     //test1();
+     //System.out.println("#############################################");
+     //test2();
      //@Todo: if defined we could run an initial set of commands here
      // execute(commands,timeout);P
  }
 
-private void test1() throws SmartFrogException {
-  ScriptLock lock = scriptExec.lockShell(1000);
-  ScriptResults resultCD = scriptExec.execute("cd ",lock);
-  scriptExec.execute("cd \\",lock);
-  ScriptResults resultCD2 = scriptExec.execute("cd ",lock);
-  ScriptResults resultCD3 = scriptExec.execute("cdd ",lock);
-  try {
-    scriptExec.execute("dir /s", new ScriptLockImpl(this));
-  } catch (SmartFrogException ex) {
-    sfLog().error("", ex);
-  }
-  ScriptResults resultDir = scriptExec.execute("dir",lock);
-  ScriptResults resultExit = scriptExec.execute("cd",lock);
-  resultCD.waitForResults(0);
-  System.out.println("Test1- Result (CD): "+resultCD.toString());
-  resultDir.waitForResults(0);
-  System.out.println("Test1- Result (Dir): "+resultDir.toString());
-  resultExit.waitForResults(0);
-  System.out.println("Test1- Result (CDEnd): "+resultExit.toString());
-  resultCD3.waitForResults(0);
-  System.out.println("Test1- Result (CD3) Failed: "+resultCD3.toString());
-  resultCD2.waitForResults(0);
-  System.out.println("Test1- Result (CD2): "+resultCD2.toString());
+ private void run (Object script) throws SmartFrogException {
 
-  scriptExec.releaseShell(lock);
-}
+    if (script == null) {return;}
 
-private void test2() throws SmartFrogException {
-  ScriptLock lock = scriptExec.lockShell(1000);
-  List commands = new ArrayList();
-  commands.add("cd ");
-  commands.add("dir");
-  commands.add("echo Julio1");
-  commands.add("echo Julio2");
-  commands.add("echo Julio3");
-  commands.add("echo JulioEnd4");
-  commands.add("exit");
+    if (script instanceof String) {
+      run ((String)script);
+    } else if (script instanceof Vector) {
+      run ((Vector)script);
+    } else if (script instanceof ComponentDescription) {
+      run ((ComponentDescription)script);
+    } else {
+      if (sfLog().isErrorEnabled()){ sfLog().error("Wrong command: "+script.toString() +"["+script.getClass().getName()+"]"); }
+    }
+ }
 
-  ScriptResults result = scriptExec.execute(commands,lock);
-  result.waitForResults(0);
-  System.out.println("Test2- Result: "+result.toString());
-  try {
-    System.out.println("\n Getting new lock (5 sec timeout)");
-    ScriptLock lock2 = scriptExec.lockShell(5000);
-  } catch (SmartFrogException ex) {
-    System.out.println("\n Timeout "+ex.toString());
-  }
-  System.out.println("\n Releasing lock");
-  scriptExec.releaseShell(lock);
+ private void run (String script) throws SmartFrogException {
+    ScriptResults result = scriptExec.execute (script,0);
+    result.waitForResults(0);
+    if (sfLog().isInfoEnabled()){ sfLog().info("Executed: "+result.toString()); }
+ }
 
-}
+ private void run (Vector script) throws SmartFrogException {
+   ScriptResults result = scriptExec.execute (script,0);
+   result.waitForResults(0);
+   if (sfLog().isInfoEnabled()){ sfLog().info("Executed: "+result.toString()); }
+ }
+
+ private void run (ComponentDescription script) throws SmartFrogException {
+   for (Iterator i = script.sfValues(); i.hasNext();) {
+     run(i.next());
+   }
+ }
 
  /**
   *  This shuts down Apache by requesting that the ApacheState variable be
@@ -156,6 +163,7 @@ private void test2() throws SmartFrogException {
              sfLog().debug("Terminating.",null,tr);
           }
          if (scriptExec != null) {
+              run(terminateScript);
              ((ScriptExecutionImpl)scriptExec).kill();
              scriptExec = null;
          }
@@ -264,4 +272,59 @@ private void test2() throws SmartFrogException {
     if (this.scriptExec == null) return;
     scriptExec.releaseShell(lock);
   }
+
+  //----------------------------------------------
+  private void test1() throws SmartFrogException {
+    ScriptLock lock = scriptExec.lockShell(1000);
+    ScriptResults resultCD = scriptExec.execute("cd ",lock);
+    scriptExec.execute("cd \\",lock);
+    ScriptResults resultCD2 = scriptExec.execute("cd ",lock);
+    ScriptResults resultCD3 = scriptExec.execute("cdd ",lock);
+    try {
+      scriptExec.execute("dir /s", new ScriptLockImpl(this));
+    } catch (SmartFrogException ex) {
+      sfLog().error("", ex);
+    }
+    ScriptResults resultDir = scriptExec.execute("dir",lock);
+    ScriptResults resultExit = scriptExec.execute("cd",lock);
+    resultCD.waitForResults(0);
+    System.out.println("Test1- Result (CD): "+resultCD.toString());
+    resultDir.waitForResults(0);
+    System.out.println("Test1- Result (Dir): "+resultDir.toString());
+    resultExit.waitForResults(0);
+    System.out.println("Test1- Result (CDEnd): "+resultExit.toString());
+    resultCD3.waitForResults(0);
+    System.out.println("Test1- Result (CD3) Failed: "+resultCD3.toString());
+    resultCD2.waitForResults(0);
+    System.out.println("Test1- Result (CD2): "+resultCD2.toString());
+
+    scriptExec.releaseShell(lock);
+  }
+
+  private void test2() throws SmartFrogException {
+    ScriptLock lock = scriptExec.lockShell(1000);
+    List commands = new ArrayList();
+    commands.add("cd ");
+    commands.add("dir");
+    commands.add("echo Julio1");
+    commands.add("echo Julio2");
+    commands.add("echo Julio3");
+    commands.add("echo JulioEnd4");
+    commands.add("exit");
+
+    ScriptResults result = scriptExec.execute(commands,lock);
+    result.waitForResults(0);
+    System.out.println("Test2- Result: "+result.toString());
+    try {
+      System.out.println("\n Getting new lock (5 sec timeout)");
+      ScriptLock lock2 = scriptExec.lockShell(5000);
+    } catch (SmartFrogException ex) {
+      System.out.println("\n Timeout "+ex.toString());
+    }
+    System.out.println("\n Releasing lock");
+    scriptExec.releaseShell(lock);
+
+  }
+
+
 }

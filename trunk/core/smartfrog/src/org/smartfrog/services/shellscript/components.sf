@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 1998-2005 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -21,6 +21,9 @@ For more information: www.smartfrog.org
 #include "org/smartfrog/components.sf"
 #include "/org/smartfrog/predicates.sf"
 
+OptionalScript extends Optional {
+    class ["java.lang.String","java.util.Vector","org.smartfrog.sfcore.componentdescription.ComponentDescription"];
+}
 
 ExecSchema extends Schema {
     cmd extends Vector;
@@ -30,6 +33,7 @@ ExecSchema extends Schema {
 
     echoCmd extends OptionalString;
     echoErrorCmd extends OptionalString;
+
     filtersOut extends OptionalVector;
     filtersErr extends OptionalVector;
 }
@@ -59,6 +63,14 @@ ScriptExecutionSchema extends Schema {
     name extends OptionalString;
     //ID extends Long;
     exec extends CD;
+
+    deployScript extends OptionalScript;
+    startScript extends OptionalScript;
+    terminateScript extends OptionalScript;
+
+    //shouldDetach extends OptionalBoolean;
+    //shouldTerminate extends OptionalBoolean;
+
 }
 
 /**
