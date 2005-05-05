@@ -51,5 +51,50 @@ public interface SFScriptExecution extends  ScriptExecution {
    final static String ATR_NAME = "name";
    /** String name for attribute. Value {@value}. */
    final static String ATR_EXEC = "exec";
+   /** String name for attribute. Value {@value}. */
+   final static String ATR_SCRIPT = "script";
+
+   /** Command executed during sfStart. They could be Strings or
+    Vectors of Strings or component description.
+   String name for attribute. Value {@value}. */
+   final static String ATTR_START_SCRIPT = "startScript";
+
+
+   /** Command executed during sfDeploy. They could be Strings or
+    Vectors of Strings or component description.
+    String name for attribute. Value {@value}.*/
+   final static String ATTR_DEPLOY_SCRIPT = "deployScript";
+
+
+   /** Exit command executed during sfTerminate. They could be Strings or
+    Vectors of Strings or component description.
+    String name for attribute. Value {@value}.*/
+   final static String ATTR_TERMINATE_SCRIPT = "terminateScript";
+
+
+  /** This indicates if the component should detach when the
+   * exec finishes. String name for attribute. Value {@value}. */
+   final static String ATR_SHOULD_DETATCH = "shouldDetach";
+
+   /** This indicates if the component should terminate when the
+    * exec finishes. String name for attribute. Value {@value}. */
+   final static String ATR_SHOULD_TERMINATE = "shouldTerminate";
+
+
+   // @TODO add extra control for filters: message listeners and outputStreams
+//   /** Output message to. */
+//   final static String varOutputMsgTo = "outputMsgTo";
+//
+//   /** Object that implements org.smartfrog.services.display.PrintMsgInt
+//    * /sfServices.sfDisplay uses it. */
+//   final static String varErrorMsgTo = "errorMsgTo";
+//
+//   /** Object that implements org.smartfrog.services.display.PrintErrMsgInt
+//    * /sfServices.sfDisplay uses it. */
+//   final static String varOutputStreamTo = "OutputStreamTo";
+//
+//   /** Object that implements
+//    * org.smartfrog.services.os.runCmd.OutputStreamInt. */
+//   final static String varErrorStreamTo = "errorStreamTo";
 
 }
