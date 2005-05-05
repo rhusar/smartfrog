@@ -80,7 +80,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
      *  Initialized to log into the core log: SF_CORE_LOG
      *  It can be replaced using sfSetLog()
      */
-    private LogSF  sflog = LogFactory.sfGetProcessLog();
+    private LogSF  sflog = null;
 
     /** Static attribute that hold the lifecycle hooks for sfDeploy. */
     public static PrimHookSet sfDeployHooks = new PrimHookSet();
@@ -296,16 +296,16 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
                     return java.net.InetAddress.getByName(hostName);
                 }
             } catch (UnknownHostException ex) {
-               if (sflog.isIgnoreEnabled()){
-                 sflog.ignore(MessageUtil.formatMessage(MSG_FAILED_INET_ADDRESS_LOOKUP),ex);
+               if (sfLog().isIgnoreEnabled()){
+                 sfLog().ignore(MessageUtil.formatMessage(MSG_FAILED_INET_ADDRESS_LOOKUP),ex);
                }
 //               Logger.logQuietly(MessageUtil.formatMessage(MSG_FAILED_INET_ADDRESS_LOOKUP),ex);
             }
             return java.net.InetAddress.getLocalHost();
         } catch (Exception ex) {
 //            Logger.logQuietly(MessageUtil.formatMessage(MSG_FAILED_INET_ADDRESS_LOOKUP),ex);
-          if (sflog.isIgnoreEnabled()){
-            sflog.ignore(MessageUtil.formatMessage(MSG_FAILED_INET_ADDRESS_LOOKUP),ex);
+          if (sfLog().isIgnoreEnabled()){
+            sfLog().ignore(MessageUtil.formatMessage(MSG_FAILED_INET_ADDRESS_LOOKUP),ex);
           }
         }
         return null;
@@ -598,8 +598,8 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
             sfReplaceAttribute(SmartFrogCoreKeys.SF_PROCESS, sfDeployedProcessName());
 
         } catch (Exception sfex) {
-            if (sflog.isErrorEnabled()) {
-                sflog.error(sfex);
+            if (sfLog().isErrorEnabled()) {
+                sfLog().error(sfex);
             }
             //Logger.log(sfex);
             new TerminatorThread(this, sfex, null).quietly().run();
@@ -639,8 +639,8 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
         } catch (Exception ex) {
             // @TODO: Log. Ignore.
             //Logger.logQuietly(ex);
-            if (sflog.isIgnoreEnabled()){
-              sflog.ignore(ex);
+            if (sfLog().isIgnoreEnabled()){
+              sfLog().ignore(ex);
             }
         }
 
@@ -814,16 +814,16 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
      */
     public synchronized void sfTerminateWith(TerminationRecord status) {
         //org.smartfrog.sfcore.common.Logger.log (this.sfCompleteNameSafe().toString(),status);
-        if (sflog.isTraceEnabled()){
-          sflog.trace(this.sfCompleteNameSafe().toString(),null,status);
+        if (sfLog().isTraceEnabled()){
+          sfLog().trace(this.sfCompleteNameSafe().toString(),null,status);
         }
         try {
             sfTerminateWithHooks.applyHooks(this, status);
         } catch (Exception ex) {
             // @TODO: Log. Ignore.
             //Logger.logQuietly(ex);
-            if (sflog.isIgnoreEnabled()){
-              sflog.ignore(ex);
+            if (sfLog().isIgnoreEnabled()){
+              sfLog().ignore(ex);
             }
         }
 
@@ -874,8 +874,8 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
         } catch (Exception ex) {
             // ignore
             //Logger.logQuietly(ex);
-            if (sflog.isIgnoreEnabled()){
-              sflog.ignore(ex);
+            if (sfLog().isIgnoreEnabled()){
+              sfLog().ignore(ex);
             }
         }
 
@@ -884,8 +884,8 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
                 comp.sfTerminatedWith(status, this);
             } catch (Exception ex) {
                // Logger.logQuietly(ex);
-               if (sflog.isIgnoreEnabled()){
-                 sflog.ignore(ex);
+               if (sfLog().isIgnoreEnabled()){
+                 sfLog().ignore(ex);
                }
             }
         }
@@ -897,8 +897,8 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
         } catch (NoSuchObjectException ex) {
             // @TODO: Log. Ignore.
             //Logger.logQuietly(ex);
-            if (sflog.isIgnoreEnabled()){
-              sflog.ignore(ex);
+            if (sfLog().isIgnoreEnabled()){
+              sfLog().ignore(ex);
             }
         }
 
@@ -960,8 +960,8 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
             terminateNotifying(status, null);
         } catch (Exception ex) {
             //Logger.logQuietly(ex);
-            if (sflog.isIgnoreEnabled()){
-              sflog.ignore(ex);
+            if (sfLog().isIgnoreEnabled()){
+              sfLog().ignore(ex);
             }
         }
     }
