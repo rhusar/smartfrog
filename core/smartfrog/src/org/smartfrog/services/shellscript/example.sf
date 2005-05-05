@@ -22,15 +22,18 @@ For more information: www.smartfrog.org
 #include "org/smartfrog/services/shellscript/components.sf"
 
 // --- EXAMPLE
-sfConfig extends WinXPShellScript {
-  ID 1234L;
+sfConfig extends Compound {
+  shell extends WinXPShell {
+    ID 1;
+    exec:dir ".";
+  }
 
-  exec:dir ".";
+  script extends Script {
+    shell LAZY PARENT:shell;
+    // deploy, start and terminate scripts are blocking
+    deployScript ["cd","dir","echo user_name: %USERNAME%"];
 
-  // deploy, start and terminate scripts are blocking
-  deployScript ["cd","dir","echo user_name: %USERNAME%"];
-
-  startScript extends LAZY {
+    startScript extends LAZY {
      -- "cd \\";
      -- ["cd","dir","cdd"]; //Error in cdd, it will report error code
      -- 123L;
@@ -41,7 +44,7 @@ sfConfig extends WinXPShellScript {
            -- "echo user_name: %USERNAME%";
      }
      -- ["exit"];
+    }
+    terminateScript "exit";
   }
-
-  terminateScript "exit";
 }

@@ -20,10 +20,6 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.shellscript;
 
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.common.SmartFrogException;
-import java.util.List;
-
 /**
  * Interface that provides the API to the script component, allowing
  * other co-located components to submit script commands.
@@ -43,7 +39,7 @@ import java.util.List;
  * a list in which case the command is the space-separated "toString" of its elements.
  *
  */
-public interface SFScriptExecution extends  ScriptExecution {
+public interface SFScriptExecution extends ScriptExecution {
 
    /** String name for attribute. Value {@value}. */
    final static String ATR_ID = "ID";

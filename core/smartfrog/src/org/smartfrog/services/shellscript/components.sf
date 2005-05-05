@@ -21,80 +21,103 @@ For more information: www.smartfrog.org
 #include "org/smartfrog/components.sf"
 #include "/org/smartfrog/predicates.sf"
 
+//----------------------------------------------
+
 OptionalScript extends Optional {
     class ["java.lang.String","java.util.Vector","org.smartfrog.sfcore.componentdescription.ComponentDescription"];
 }
+
+//------------ EXEC ----------------------------
 
 ExecSchema extends Schema {
     cmd extends Vector;
     dir extends OptionalString;
     envProperties extends OptionalVector;
-    lineSeparator extends OptionalString;
-
-    echoCmd extends OptionalString;
-    echoErrorCmd extends OptionalString;
 
     filtersOut extends OptionalVector;
     filtersErr extends OptionalVector;
 }
 
-
 Exec extends LAZY {
   execSchema extends ExecSchema;
 }
 
-BashExec extends Exec{
-  cmd  ["/etc/bash"]; //cmd    ["cmd.exe"];
-   //---shellWorkingDirectory
-   //dir      ".";
-   //envProperties ["SFHOME=.","JAVA_HOME=/"]; //Example
-   echoErrorCmd "$?";
+
+//----------- PROCESS  ----------------------------------------
+    //TBD
+    //detach extends OptionalBoolean;
+    //restart extends OptionalBoolean;
+    //terminate extends OptionalBoolean;
+
+//----------- SHELL EXEC -----------------------------------
+ShellExecSchema extends ExecSchema {
+    lineSeparator extends OptionalString;
+
+    echoCmd extends OptionalString;
+    echoErrorCmd extends OptionalString;
 }
 
-WinXPExec extends Exec{
+ShellExec extends Exec {
+  execShema extends ShellExecSchema;
+  echoCmd "echo";
+}
+
+BashExec extends ShellExec{
+  cmd  ["/etc/bash"];
+  echoErrorCmd "$?";
+}
+
+WinXPExec extends ShellExec{
    cmd    ["cmd.exe"];
-   //---shellWorkingDirectory
-   //dir      ".";
-   //envProperties ["SFHOME=.","JAVA_HOME=/"]; //Example
    echoErrorCmd "%ERRORLEVEL%";
 }
 
-ScriptExecutionSchema extends Schema {
+//----------- SHELL ----------------------------------------
+
+ShellSchema extends Schema {
     name extends OptionalString;
-    //ID extends Long;
+    ID extends Long;
     exec extends CD;
+}
 
-    deployScript extends OptionalScript;
-    startScript extends OptionalScript;
-    terminateScript extends OptionalScript;
 
-    //shouldDetach extends OptionalBoolean;
-    //shouldTerminate extends OptionalBoolean;
+/**
+ * execute an arbitrary program
+ */
+Shell extends Prim {
+   sfExport false;
+   shellSchema extends ShellSchema;
+   sfClass "org.smartfrog.services.shellscript.SFScriptExecutionImpl";
+   exec extends LAZY Exec;
+}
 
+BashShell extends Shell {
+   exec extends LAZY BashExec;
+   //name "bashShell";
+}
+
+WinXPShell extends Shell {
+   exec extends LAZY WinXPExec;
+   //name   "WinXPShell";
+}
+
+//---------------------- SCRIPTING ---------------------------
+
+/**
+ * execute an arbitrary program
+ */
+ScriptSchema extends Schema {
+   shell extends Reference;
+
+   deployScript extends OptionalScript;
+   startScript extends OptionalScript;
+   terminateScript extends OptionalScript;
 }
 
 /**
  * execute an arbitrary program
  */
-ScriptExecution extends Prim {
-   scriptExecutionSchema extends ScriptExecutionSchema;
-   sfClass "org.smartfrog.services.shellscript.SFScriptExecutionImpl";
-   exec extends LAZY Exec;
+Script extends Prim {
+   scriptSchema extends ScriptSchema;
+   sfClass "org.smartfrog.services.shellscript.SFScriptImpl";
 }
-
-/**
- * this is the component for running a shell script
- */
-RunShellScripts extends ScriptExecution {
-}
-
-BashShellScript extends RunShellScripts {
-   exec extends LAZY BashExec;
-   name   "bash";
-}
-
-WinXPShellScript extends RunShellScripts {
-   exec extends LAZY WinXPExec;
-   name   "WinXP";
-}
-

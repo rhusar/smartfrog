@@ -20,7 +20,6 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.shellscript;
 
-import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import java.util.List;
 

@@ -25,10 +25,11 @@ import java.io.File;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import java.io.Serializable;
 
 // RumCmd class - Data holder for Process parameters
 
- public class Cmd {
+ public class Cmd implements Serializable{
 
      /** String name for optional attribute. Value {@value}. */
      public final static String ATR_CMD = "cmd";
