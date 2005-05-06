@@ -23,6 +23,14 @@ For more information: www.smartfrog.org
 
 // --- EXAMPLE
 sfConfig extends Compound {
+  //sfProcessHost "localhost";
+  //sfProcessName "SHELL_VM";
+
+  process extends WinXPProcess {
+    ID 1;
+    exec:dir ".";
+  }
+
   shell extends WinXPShell {
     ID 1;
     exec:dir ".";
@@ -46,5 +54,8 @@ sfConfig extends Compound {
      -- ["exit"];
     }
     terminateScript "exit";
+
   }
+  reference_Process LAZY process;
+  reference_Shell LAZY shell;
 }

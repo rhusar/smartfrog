@@ -77,8 +77,8 @@ public class SFScriptExecutionImpl  extends PrimImpl implements Prim, SFScriptEx
 
         this.cmd = new Cmd(sfResolve(ATR_EXEC,new ComponentDescriptionImpl(null,null,false),true));
 
-        this.shouldTerminate = sfResolve (ATR_SHOULD_TERMINATE,shouldTerminate,false);
-        this.shouldDetatch = sfResolve (ATR_SHOULD_DETATCH,shouldDetatch,false);
+        this.shouldTerminate = sfResolve (ATR_TERMINATE,shouldTerminate,false);
+        this.shouldDetatch = sfResolve (ATR_DETATCH,shouldDetatch,false);
   }
 
   /**

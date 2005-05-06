@@ -18,21 +18,18 @@ For more information: www.smartfrog.org
 
 */
 
-
 package org.smartfrog.services.shellscript;
 
 import org.smartfrog.services.shellscript.FilterImpl;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.logging.LogSF;
 
-import java.util.Date;
 import java.text.SimpleDateFormat;
 import java.text.DateFormat;
 import java.io.DataOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.IOException;
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-
 
 //------------------- RUNProcess -------------------------------
 public class RunProcessImpl  extends Thread implements RunProcess {
@@ -419,6 +416,53 @@ public class RunProcessImpl  extends Thread implements RunProcess {
              }
            }
          }
+     }
+
+
+     /**
+      * Gets the input stream of the subprocess.
+      * The stream obtains data piped from the standard output stream
+      * of the process (<code>Process</code>) object.
+      * <p>
+      * Implementation note: It is a good idea for the input stream to
+      * be buffered.
+      *
+      * @return  the input stream connected to the normal output of the
+      *          subprocess.
+      */
+
+     public synchronized InputStream getInputStream(){
+       return process.getInputStream();
+     }
+
+     /**
+      * Gets the error stream of the subprocess.
+      * The stream obtains data piped from the error output stream of the
+      * process (<code>Process</code>) object.
+      * <p>
+      * Implementation note: It is a good idea for the input stream to be
+      * buffered.
+      *
+      * @return  the input stream connected to the error stream of the
+      *          subprocess.
+      */
+     public synchronized InputStream getErrorStream(){
+        return process.getErrorStream();
+     }
+
+     /**
+      * Gets the output stream of the subprocess.
+      * Output to the stream is piped into the standard input stream of
+      * the process (<code>Process</code>) object.
+      * <p>
+      * Implementation note: It is a good idea for the output stream to
+      * be buffered.
+      *
+      * @return  the output stream connected to the normal input of the
+      *          subprocess.
+      */
+     public synchronized OutputStream getOutputStream() {
+         return process.getOutputStream();
      }
 
 }

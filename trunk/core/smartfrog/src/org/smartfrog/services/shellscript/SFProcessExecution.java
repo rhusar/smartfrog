@@ -20,6 +20,9 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.shellscript;
 
+import java.io.InputStream;
+import java.io.OutputStream;
+
 /**
  * Interface that provides the API to the script component, allowing
  * other co-located components to submit script commands.
@@ -39,23 +42,46 @@ package org.smartfrog.services.shellscript;
  * a list in which case the command is the space-separated "toString" of its elements.
  *
  */
-public interface SFScriptExecution extends ScriptExecution, SFExecution {
+public interface SFProcessExecution extends SFExecution {
 
+   /**
+    * Gets the input stream of the subprocess.
+    * The stream obtains data piped from the standard output stream
+    * of the process (<code>Process</code>) object.
+    * <p>
+    * Implementation note: It is a good idea for the input stream to
+    * be buffered.
+    *
+    * @return  the input stream connected to the normal output of the
+    *          subprocess.
+    */
 
-   // @TODO add extra control for filters: message listeners and outputStreams
-//   /** Output message to. */
-//   final static String varOutputMsgTo = "outputMsgTo";
-//
-//   /** Object that implements org.smartfrog.services.display.PrintMsgInt
-//    * /sfServices.sfDisplay uses it. */
-//   final static String varErrorMsgTo = "errorMsgTo";
-//
-//   /** Object that implements org.smartfrog.services.display.PrintErrMsgInt
-//    * /sfServices.sfDisplay uses it. */
-//   final static String varOutputStreamTo = "OutputStreamTo";
-//
-//   /** Object that implements
-//    * org.smartfrog.services.os.runCmd.OutputStreamInt. */
-//   final static String varErrorStreamTo = "errorStreamTo";
+   public InputStream getInputStream();
+
+   /**
+    * Gets the error stream of the subprocess.
+    * The stream obtains data piped from the error output stream of the
+    * process (<code>Process</code>) object.
+    * <p>
+    * Implementation note: It is a good idea for the input stream to be
+    * buffered.
+    *
+    * @return  the input stream connected to the error stream of the
+    *          subprocess.
+    */
+   public InputStream getErrorStream();
+
+   /**
+    * Gets the output stream of the subprocess.
+    * Output to the stream is piped into the standard input stream of
+    * the process (<code>Process</code>) object.
+    * <p>
+    * Implementation note: It is a good idea for the output stream to
+    * be buffered.
+    *
+    * @return  the output stream connected to the normal input of the
+    *          subprocess.
+    */
+    public OutputStream getOutputStream();
 
 }

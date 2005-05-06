@@ -38,16 +38,9 @@ ExecSchema extends Schema {
     filtersErr extends OptionalVector;
 }
 
-Exec extends LAZY {
+Exec extends DATA {
   execSchema extends ExecSchema;
 }
-
-
-//----------- PROCESS  ----------------------------------------
-    //TBD
-    //detach extends OptionalBoolean;
-    //restart extends OptionalBoolean;
-    //terminate extends OptionalBoolean;
 
 //----------- SHELL EXEC -----------------------------------
 ShellExecSchema extends ExecSchema {
@@ -72,6 +65,32 @@ WinXPExec extends ShellExec{
    echoErrorCmd "%ERRORLEVEL%";
 }
 
+//----------- PROCESS  ----------------------------------------
+
+ProcessSchema extends Schema {
+  detach extends OptionalBoolean;
+  restart extends OptionalBoolean;
+  terminate extends OptionalBoolean;
+}
+
+Process extends Prim {
+   execShema extends ProcessSchema;
+   sfClass "org.smartfrog.services.shellscript.SFProcessExecutionImpl";
+   //detach false;
+   //retart false;
+   //terminate false;
+   exec extends DATA Exec;
+   sfExport false;
+}
+
+BashProcess extends Process {
+   exec extends DATA BashExec;
+}
+
+WinXPProcess extends Process {
+   exec extends DATA WinXPExec;
+}
+
 //----------- SHELL ----------------------------------------
 
 ShellSchema extends Schema {
@@ -85,19 +104,19 @@ ShellSchema extends Schema {
  * execute an arbitrary program
  */
 Shell extends Prim {
-   sfExport false;
    shellSchema extends ShellSchema;
    sfClass "org.smartfrog.services.shellscript.SFScriptExecutionImpl";
-   exec extends LAZY Exec;
+   exec extends DATA Exec;
+   sfExport false;
 }
 
 BashShell extends Shell {
-   exec extends LAZY BashExec;
+   exec extends DATA BashExec;
    //name "bashShell";
 }
 
 WinXPShell extends Shell {
-   exec extends LAZY WinXPExec;
+   exec extends DATA WinXPExec;
    //name   "WinXPShell";
 }
 
