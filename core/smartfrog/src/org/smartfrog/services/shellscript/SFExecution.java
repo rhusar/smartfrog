@@ -39,23 +39,26 @@ package org.smartfrog.services.shellscript;
  * a list in which case the command is the space-separated "toString" of its elements.
  *
  */
-public interface SFScriptExecution extends ScriptExecution, SFExecution {
+public interface SFExecution {
+
+   /** String name for attribute. Value {@value}. */
+   final static String ATR_ID = "ID";
+   /** String name for optional attribute. Value {@value}. */
+   final static String ATR_NAME = "name";
+   /** String name for attribute. Value {@value}. */
+   final static String ATR_EXEC = "exec";
+
+   /** This indicates if the component should detach when the
+    * exec finishes. String name for attribute. Value {@value}. */
+   final static String ATR_RESTART = "restart";
 
 
-   // @TODO add extra control for filters: message listeners and outputStreams
-//   /** Output message to. */
-//   final static String varOutputMsgTo = "outputMsgTo";
-//
-//   /** Object that implements org.smartfrog.services.display.PrintMsgInt
-//    * /sfServices.sfDisplay uses it. */
-//   final static String varErrorMsgTo = "errorMsgTo";
-//
-//   /** Object that implements org.smartfrog.services.display.PrintErrMsgInt
-//    * /sfServices.sfDisplay uses it. */
-//   final static String varOutputStreamTo = "OutputStreamTo";
-//
-//   /** Object that implements
-//    * org.smartfrog.services.os.runCmd.OutputStreamInt. */
-//   final static String varErrorStreamTo = "errorStreamTo";
+ /** This indicates if the component should detach when the
+  * exec finishes. String name for attribute. Value {@value}. */
+  final static String ATR_DETATCH = "detach";
+
+  /** This indicates if the component should terminate when the
+   * exec finishes. String name for attribute. Value {@value}. */
+   final static String ATR_TERMINATE = "terminate";
 
 }
