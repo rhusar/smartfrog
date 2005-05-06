@@ -28,6 +28,7 @@ org/smartfrog/services/trace/SFTrace.class
 org/smartfrog/services/persistance/SFPersist.class
 org/smartfrog/services/display/SFDisplay.class
 org/smartfrog/services/os/runshell/RunShellImpl.class
+org/smartfrog/services/shellscript/SFProcessExecutionImpl.class
 org/smartfrog/services/shellscript/SFScriptExecutionImpl.class
 org/smartfrog/services/shellscript/SFScriptImpl.class
 org/smartfrog/services/os/download/DownloadImpl.class
