@@ -17,36 +17,37 @@
  For more information: www.smartfrog.org
 
  */
-
 package org.smartfrog.sfcore.languages.cdl.utils;
 
-import nu.xom.ParentNode;
-import nu.xom.Node;
-
-import java.util.Iterator;
-import java.util.NoSuchElementException;
+import org.jdom.filter.Filter;
+import org.jdom.Element;
 
 /**
- * Java1.5 iteration support
+ * created 06-May-2005 13:58:26
  */
-public class ParentNodeIterable implements Iterable<Node> {
 
-    private ParentNode parent;
+public class TypeFilter implements Filter {
 
-    public ParentNodeIterable(ParentNode node) {
-        this.parent = node;
+    Class clazz;
+
+    public TypeFilter(Class clazz) {
+        assert clazz!=null;
+        this.clazz = clazz;
     }
 
-    public static ParentNodeIterable iterateOver(ParentNode node) {
-        return new ParentNodeIterable(node);
-    }
 
     /**
-     * Returns an iterator over a set of elements of type T.
+     * Check to see if the object is an element
      *
-     * @return an Iterator.
+     * @param obj The object to verify.
+     * @return <code>true</code> if the object matches a predfined set of
+     *         rules.
      */
-    public Iterator<Node> iterator() {
-        return new ParentNodeIterator(parent);
+    public boolean matches(Object obj) {
+        return obj.getClass().equals(clazz);
+    }
+
+    public static Filter elementFilter() {
+        return new TypeFilter(Element.class);
     }
 }

@@ -20,15 +20,15 @@
 package org.smartfrog.sfcore.languages.cdl;
 
 
-import nu.xom.Builder;
-import nu.xom.Document;
-import nu.xom.ParsingException;
-import org.apache.axis.message.MessageElement;
 import org.smartfrog.services.xml.utils.ParserHelper;
 import org.smartfrog.services.xml.utils.ResourceLoader;
 import org.smartfrog.sfcore.languages.cdl.dom.CdlDocument;
+import org.smartfrog.sfcore.languages.cdl.utils.JDomHelper;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
+import org.jdom.input.SAXBuilder;
+import org.jdom.Document;
+import org.jdom.JDOMException;
 
 import java.io.File;
 import java.io.IOException;
@@ -50,7 +50,7 @@ public class CdlParser {
     /**
      * builder class
      */
-    private Builder builder;
+    private SAXBuilder builder;
 
     /**
      * create a parser;
@@ -64,13 +64,14 @@ public class CdlParser {
         assert loader!=null:"null ResourceLoader";
         resourceLoader = loader;
         //we mandate Xerces, as the others cannot handle schema so well
-        XMLReader xerces = ParserHelper.createXmlParser(validate,true,true);
+        //XMLReader xerces = ParserHelper.createXmlParser(validate,true,true);
 
+        builder = new SAXBuilder();
+        JDomHelper.configureSaxBuilder(builder, validate, true,true);
         if (validate) {
             CdlCatalog resolver = new CdlCatalog(loader);
-            resolver.bind(xerces);
+            //resolver.bind(xerces);
         }
-        builder = new Builder(xerces, validate);
     }
 
 
@@ -80,10 +81,10 @@ public class CdlParser {
      * @param filename
      * @return
      * @throws IOException
-     * @throws ParsingException
      */
     public CdlDocument parseFile(String filename) throws IOException,
-            ParsingException {
+            JDOMException
+            {
         File f = new File(filename);
         return new CdlDocument(builder.build(f));
     }
@@ -94,10 +95,11 @@ public class CdlParser {
      * @param instream
      * @return
      * @throws IOException
-     * @throws ParsingException
+     * @throws JDOMException
      */
     public CdlDocument parseStream(InputStream instream) throws IOException,
-            ParsingException {
+            JDOMException
+            {
         Document doc = builder.build(instream);
         return new CdlDocument(doc);
     }
@@ -108,10 +110,10 @@ public class CdlParser {
      * @param resource
      * @return
      * @throws IOException
-     * @throws ParsingException
+     * @throws JDOMException
      */
     public CdlDocument parseResource(String resource) throws IOException,
-            ParsingException {
+            JDOMException {
         InputStream in = resourceLoader.loadResource(resource);
         return parseStream(in);
     }
@@ -122,7 +124,7 @@ public class CdlParser {
      *
      * @param descriptor
      * @return
-     * @throws ParsingException
+     * @throws JDOMException
      * @throws IOException
      * @throws Exception
      */
