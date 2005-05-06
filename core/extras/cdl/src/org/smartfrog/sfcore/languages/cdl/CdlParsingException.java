@@ -19,14 +19,13 @@
  */
 package org.smartfrog.sfcore.languages.cdl;
 
-import nu.xom.ParsingException;
 
 /**
  * we add our own exception under the CDL parsing exception
  * created Jul 15, 2004 4:57:59 PM
  */
 
-public class CdlParsingException extends ParsingException {
+public class CdlParsingException extends Exception {
 
     public CdlParsingException(String message, Throwable ex) {
         super(message, ex);

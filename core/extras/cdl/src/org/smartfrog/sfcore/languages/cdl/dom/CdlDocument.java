@@ -19,15 +19,20 @@
  */
 package org.smartfrog.sfcore.languages.cdl.dom;
 
-import nu.xom.Document;
-import nu.xom.Element;
-import nu.xom.ParsingException;
-import nu.xom.Node;
 import org.smartfrog.sfcore.languages.cdl.CdlParsingException;
-import org.smartfrog.sfcore.languages.cdl.Constants;
-import org.smartfrog.sfcore.languages.cdl.utils.ParentNodeIterable;
+import static org.smartfrog.sfcore.languages.cdl.Constants.*;
+import static org.ggf.cddlm.generated.api.CddlmConstants.*;
+import org.smartfrog.sfcore.languages.cdl.utils.TypeFilter;
+import org.jdom.Document;
+import org.jdom.JDOMException;
+import org.jdom.Element;
+import org.jdom.Content;
+import org.jdom.Namespace;
+import org.jdom.Parent;
+import org.jdom.filter.Filter;
 
 import javax.xml.namespace.QName;
+import java.util.List;
 
 /**
  * This represents a parsed CDL document, or an error caused during parsing.
@@ -44,31 +49,46 @@ public class CdlDocument extends DocumentedNode {
      * Any exception that ocurred during parsing.
      */
 
-    private ParsingException exception;
+    private JDOMException exception;
 
-    private ToplevelList configuration= new ToplevelList();
 
+    /**
+     * our root node
+     */
+    private Element root;
+
+    /**
+     * configuration elements
+     *
+     */
+    private ToplevelList configuration = new ToplevelList();
+
+    /**
+     * System declaration
+     */
     private ToplevelList system;
 
 
+
+
     /**
      * error message for tests {@value}
      */
-    public static final String ERROR_WRONG_NAMESPACE = "The document is not in CDL namespace";
+    public static final String ERROR_WRONG_NAMESPACE = "The element is not in CDL namespace";
     /**
      * error message for tests {@value}
      */
-    public static final String ERROR_WRONG_ROOT_ELEMENT = "Root element is not 'cdl'";
+    public static final String ERROR_WRONG_ELEMENT = "Expected an element named " ;
     /*
     public static final String ERROR_BAD_PATHLANGUAGE = "Attribute 'pathlanguage' is not allowed to appear in element 'cdl:cdl'";
     public static final String ERROR_NO_PATHLANGUAGE = "pathlanguage attribute not found";
 */
 
-    public CdlDocument(Document doc) throws CdlParsingException {
+    public CdlDocument(Document doc) {
         this.document = doc;
     }
 
-    public CdlDocument(ParsingException exception) {
+    public CdlDocument(JDOMException exception) {
         this.exception = exception;
     }
 
@@ -87,19 +107,11 @@ public class CdlDocument extends DocumentedNode {
         return document;
     }
 
-    public ParsingException getException() {
+    public JDOMException getException() {
         return exception;
     }
 
-    public int getErrorLine() {
-        return exception == null ? 0 : exception.getLineNumber();
-    }
-
-    public int getErrorColumn() {
-        return exception == null ? 0 : exception.getColumnNumber();
-    }
-
-    public void throwAnyException() throws ParsingException {
+    public void throwAnyException() throws JDOMException {
         if (exception != null) {
             throw exception;
         }
@@ -107,7 +119,8 @@ public class CdlDocument extends DocumentedNode {
 
     /**
      * Get the configuration
-      * @return configuration; null for no none
+     *
+     * @return configuration; null for no none
      */
     public ToplevelList getConfiguration() {
         return configuration;
@@ -115,6 +128,7 @@ public class CdlDocument extends DocumentedNode {
 
     /**
      * Get the system declaration
+     *
      * @return system or null for none defined
      */
     public ToplevelList getSystem() {
@@ -129,8 +143,6 @@ public class CdlDocument extends DocumentedNode {
     public void validate() throws CdlParsingException {
         Element root = document.getRootElement();
         String uri = root.getNamespaceURI();
-        CdlParsingException.assertValid(Constants.CDL_NAMESPACE.equals(uri),ERROR_WRONG_NAMESPACE);
-        CdlParsingException.assertValid(Constants.CDL_ELT_CDL.equals(root.getLocalName()),ERROR_WRONG_ROOT_ELEMENT);
 
         /*
         Attribute pathLangAttr = root.getAttribute("pathlanguage", Constants.CDL_NAMESPACE);
@@ -141,10 +153,10 @@ public class CdlDocument extends DocumentedNode {
         }
         */
 
-        if(configuration!=null) {
+        if (configuration != null) {
             configuration.validateToplevel();
         }
-        if (system!= null) {
+        if (system != null) {
             system.validateToplevel();
         }
 
@@ -152,9 +164,10 @@ public class CdlDocument extends DocumentedNode {
 
     /**
      * Look up a toplevel node
-     * @see ToplevelList#lookup(QName)
+     *
      * @param name
      * @return
+     * @see ToplevelList#lookup(QName)
      */
     public PropertyList lookup(QName name) {
         return configuration.lookup(name);
@@ -162,13 +175,86 @@ public class CdlDocument extends DocumentedNode {
 
     /**
      * parse the document
+     *
      * @throws CdlParsingException
      */
     protected void parse() throws CdlParsingException {
-        for(Node element:ParentNodeIterable.iterateOver(document)) {
-            
+        for(Element element:elementIterator(document)) {
+            verifyInCdlNamespace(element);
+            verifyNodeName(element, ELEMENT_NAME_ROOT);
+            processRootNode(element);
+        }
+    }
+
+    private void verifyInCdlNamespace(Element element)
+            throws CdlParsingException {
+        CdlParsingException.assertValid(CDL_NAMESPACE.equals(element.getNamespaceURI()),
+                ERROR_WRONG_NAMESPACE);
+
+    }
+
+    private void verifyNodeName(Element element,String name)
+            throws CdlParsingException {
+        CdlParsingException.assertValid(ELEMENT_NAME_ROOT.equals(element.getName()),
+                ERROR_WRONG_ELEMENT +name
+                    +" but got "+element);
+    }
+
+    /**
+     * this is the root node; lets extract everything from it
+     *
+     * @param node
+     * @throws CdlParsingException
+     */
+    private void processRootNode(Element node) throws CdlParsingException {
+        root = node;
+        for (Element element : elementIterator(root)) {
+            verifyInCdlNamespace(element);
+
 
         }
+
+
+    }
+
+    /**
+     * Get all content nodes of our document. Will be null if there is no
+     * content
+     *
+     * @return
+     */
+    public List<Content> getContent() {
+        assert document != null: "no document";
+        return document.getContent();
+    }
+
+    /**
+     * iterate over the list
+     * @param element
+     * @return
+     */
+    public List<Content> iterator(Parent element) {
+        return element.getContent();
+    }
+
+    /**
+     * iterate over the list
+     *
+     * @param element
+     * @param filter
+     * @return
+     */
+    public List<Content> iterator(Parent element,Filter filter) {
+        return element.getContent(filter);
+    }
+
+    /**
+     * Iterate just over elements
+     * @param element
+     * @return
+     */
+    public List<Element> elementIterator(Parent element) {
+        return element.getContent(TypeFilter.elementFilter());
     }
 
 }

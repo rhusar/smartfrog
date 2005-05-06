@@ -52,6 +52,10 @@ public class PropertyList extends DocumentedNode {
 
     /** child list */
     private List<PropertyList> children=new LinkedList<PropertyList>();
+
+    /**
+     * Error text for testing
+     */
     public static final String ERROR_LOWLEVEL_NAMED = "low-level PropertyList elements cannot be given names";
 
     /**
