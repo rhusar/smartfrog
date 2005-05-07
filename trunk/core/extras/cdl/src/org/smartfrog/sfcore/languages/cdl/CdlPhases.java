@@ -41,7 +41,8 @@ public class CdlPhases extends SFComponentDescriptionImpl {
     }
 
     public Iterator sfValues() {
-        return null;
+        //TODO
+        return super.sfValues();
     }
 }
 
