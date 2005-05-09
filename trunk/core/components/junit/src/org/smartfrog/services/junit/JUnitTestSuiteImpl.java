@@ -381,7 +381,7 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
         try {
             // check if there is a suite method
             Method method = clazz.getMethod("suite", new Class[0]);
-            return (Test) method.invoke(null, new Class[0]);
+            return (Test) method.invoke(null, (Object[])new Class[0]);
         } catch (NoSuchMethodException e) {
             //if not, assume that it is a testclass and do it that way
             return new junit.framework.TestSuite(clazz);
