@@ -60,6 +60,11 @@ public class ParserHelper {
      * {@value}
      */
     public static final String PARSER_JAVA_15 = "com.sun.org.apache.xerces.internal.parsers.SAXParser";
+    public static final String XERCES_XSD = "http://apache.org/xml/features/validation/schema";
+    public static final String XERCES_XSD_FULLCHECKING = "http://apache.org/xml/features/validation/schema-full-checking";
+    public static final String XERCES_URI_CONFORMANT = "http://apache.org/xml/features/standard-uri-conformant";
+    public static final String XERCES_DOCTYPES = "http://apache.org/xml/features/disallow-doctype-decl";
+    public static final String SAX_GENERAL_ENTITIES = "http://xml.org/sax/features/external-general-entities";
 
     /**
      * create our XML parser. We are relying on xerces here, and will fail if it
@@ -81,19 +86,19 @@ public class ParserHelper {
                 FEATURE_SECURE_PROCESSING,
                 secureLoading);
         setFeature(xerces,
-                "http://apache.org/xml/features/validation/schema",
+                XERCES_XSD,
                 validate);
         setFeature(xerces,
-                "http://apache.org/xml/features/validation/schema-full-checking",
+                XERCES_XSD_FULLCHECKING,
                 validate);
         setFeature(xerces,
-                "http://apache.org/xml/features/standard-uri-conformant",
+                XERCES_URI_CONFORMANT,
                 true);
         setFeature(xerces,
-                "http://apache.org/xml/features/disallow-doctype-decl",
+                XERCES_DOCTYPES,
                 disableDoctypes);
         setFeature(xerces,
-                "http://xml.org/sax/features/external-general-entities",
+                SAX_GENERAL_ENTITIES,
                 !secureLoading);
         return xerces;
     }

@@ -68,9 +68,11 @@ public class JDomHelper {
     public static void configureSaxBuilder(SAXBuilder builder, boolean validate,
             boolean disableDoctypes,
             boolean secureLoading) {
+/*
         setFeature(builder,
                 FEATURE_SECURE_PROCESSING,
                 secureLoading);
+*/
         setFeature(builder,
                 XERCES_XSD,
                 validate);
