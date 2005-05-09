@@ -201,7 +201,7 @@ public class AssertComponent extends PrimImpl implements Assert {
             Class[] params = new Class[0];
             Method method = clazz.getMethod(methodName, params);
             Object result = null;
-            result = method.invoke(target, null);
+            result = method.invoke(target, (Object[])null);
 
             if (!(result instanceof Boolean)) {
                 throw new SmartFrogAssertionException("method " + methodName
