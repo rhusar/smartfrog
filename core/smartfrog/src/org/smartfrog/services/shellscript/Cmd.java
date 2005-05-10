@@ -51,6 +51,27 @@ import java.io.Serializable;
      /** String name for optional attribute. Value {@value}. */
      public static final String ATR_FILTERS_ERR = "filtersErr";
 
+     /** This indicates if the component should detach when the
+      * exec finishes. String name for attribute. Value {@value}. */
+     public final static String ATR_RESTART = "restart";
+
+
+     /** This indicates if the component should detach when the
+      * exec finishes. String name for attribute. Value {@value}. */
+     public final static String ATR_DETACH = "detach";
+
+     /** This indicates if the component should terminate when the
+      * exec finishes. String name for attribute. Value {@value}. */
+     public final static String ATR_TERMINATE = "terminate";
+
+     /** This indicates if the component should start during deploy
+      * phase. String name for attribute. Value {@value}. */
+     public final static String ATR_AUTO_START = "autoStart";
+
+     /** This indicates if the component should terminate when exec termainates
+      * . String name for attribute. Value {@value}. */
+     public final static String ATR_AUTO_TERMINATE = "autoTerminate";
+
      // Data needed for runTime Exec.
 
      private String cmdarray[] = null;
@@ -70,6 +91,33 @@ import java.io.Serializable;
 
      private String exitErrorCommand=null; // Unix= $?, Windows "%ERRORLEVEL%";
 
+     //Parameters for hosting Prim components
+
+     /**
+      * Host component should start process during deploy phase
+      */
+     private boolean autoStart = true;
+
+     /**
+      * Host component should terminate when process terminates
+      */
+     private boolean autoTerminate = true;
+
+     /**
+      * Host component should terminate when exec terminates
+      */
+     private boolean shouldTerminate = false;
+
+     /**
+      * Host component should detach when exec terminates
+      */
+     private boolean shouldDetach = false;
+
+     /**
+      * Host component should restart exec when it terminates
+     */
+     private boolean shouldRestart = false;
+
      public Cmd() {
 
      }
@@ -84,9 +132,16 @@ import java.io.Serializable;
               this.setExitErrorCommand( cd.sfResolve(ATR_EXIT_ERROR_CMD, exitErrorCommand, false));
               this.filtersOut = cd.sfResolve(ATR_FILTERS_OUT, filtersOut, false);
               this.filtersErr = cd.sfResolve(ATR_FILTERS_ERR, filtersErr, false);
+              //Host Prim component
+              this.shouldTerminate = cd.sfResolve (ATR_TERMINATE,shouldTerminate,false);
+              this.shouldDetach = cd.sfResolve (ATR_DETACH,shouldDetach,false);
+              this.shouldRestart = cd.sfResolve (ATR_RESTART,shouldRestart,false);
+              this.autoStart = cd.sfResolve (ATR_AUTO_START,autoStart,false);
+              this.autoTerminate = cd.sfResolve (ATR_AUTO_TERMINATE,autoTerminate,false);
           } catch (Exception ex) {
               throw SmartFrogException.forward("Failed to create CMD", ex);
           }
+          //System.out.println(" INFO CMD: "+this.toString());
      }
 
      public Cmd(String cmdarray[], String envp[], File dir) {
@@ -157,6 +212,30 @@ import java.io.Serializable;
         return this;
      }
 
+     public Cmd setRestart(boolean restart) {
+         this.shouldRestart = restart;
+         return this;
+     }
+
+     public Cmd setDetatch(boolean detatch) {
+         this.shouldDetach = detatch;
+         return this;
+     }
+
+     public Cmd setTerminate(boolean terminate) {
+         this.shouldTerminate = terminate;
+         return this;
+     }
+
+     public Cmd setAutoStart(boolean autoStart) {
+         this.autoStart = autoStart;
+         return this;
+     }
+
+     public Cmd setAutoTerminate(boolean autoTerminate) {
+         this.autoTerminate = autoTerminate;
+         return this;
+     }
 
      public String[] getCmdArray() {
          return cmdarray;
@@ -199,6 +278,26 @@ import java.io.Serializable;
      }
 
 
+     public boolean autoStart() {
+        return this.autoStart;
+     }
+
+     public boolean autoTerminate() {
+        return this.autoTerminate;
+     }
+
+     public boolean detatch() {
+         return this.shouldDetach;
+     }
+
+     public boolean terminate() {
+         return this.shouldTerminate;
+     }
+
+     public boolean restart() {
+         return this.shouldRestart;
+     }
+
      public String toString(){
          StringBuffer str = new StringBuffer();
          str.append("Cmd: ");
@@ -208,15 +307,18 @@ import java.io.Serializable;
              str.append(", envp: ");
              str.append(this.getEnvp().toString());
          }
+
          if (dir !=null){
              str.append(", dir: ");
              str.append(this.getFile().toString());
          }
+
          if (filtersOut !=null){
              str.append(", filtersOutputStream: ");
              v = new Vector(java.util.Arrays.asList(getFiltersOut()));
              str.append(v.toString());
          }
+
          if (filtersErr !=null){
              str.append(", filtersErrorStream: ");
              v = new Vector(java.util.Arrays.asList(getFiltersErr()));
@@ -232,6 +334,17 @@ import java.io.Serializable;
              str.append(", exitErrorCommand: ");
              str.append(this.exitErrorCommand);
          }
+
+         str.append(", autoStart: ");
+         str.append(this.autoStart());
+         str.append(", autoTerminate: ");
+         str.append(this.autoTerminate());
+         str.append(", detach: ");
+         str.append(this.detatch());
+         str.append(", terminate: ");
+         str.append(this.terminate());
+         str.append(", restart: ");
+         str.append(this.restart());
 
          return str.toString();
      }
