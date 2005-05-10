@@ -22,6 +22,8 @@ package org.smartfrog.services.shellscript;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import java.util.Vector;
 
 /**
  * Interface that provides the API to the script component, allowing
@@ -56,7 +58,7 @@ public interface SFProcessExecution extends SFExecution {
     *          subprocess.
     */
 
-   public InputStream getInputStream();
+   public InputStream getStdOutStream();
 
    /**
     * Gets the error stream of the subprocess.
@@ -69,7 +71,7 @@ public interface SFProcessExecution extends SFExecution {
     * @return  the input stream connected to the error stream of the
     *          subprocess.
     */
-   public InputStream getErrorStream();
+   public InputStream getStdErrStream();
 
    /**
     * Gets the output stream of the subprocess.
@@ -82,6 +84,24 @@ public interface SFProcessExecution extends SFExecution {
     * @return  the output stream connected to the normal input of the
     *          subprocess.
     */
-    public OutputStream getOutputStream();
+    public OutputStream getStdInpStream();
+
+    /**
+     * Kill the process
+     */
+    public void kill();
+
+    /**
+     * Restarts the process
+     */
+    public void restart() throws SmartFrogException ;
+
+
+    /**
+     * Is the process running?
+     * @return boolean
+     */
+    public boolean isRunning();
+
 
 }

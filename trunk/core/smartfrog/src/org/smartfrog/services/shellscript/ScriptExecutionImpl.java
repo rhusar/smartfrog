@@ -39,6 +39,7 @@ import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.logging.LogFactory;
 
+import org.smartfrog.sfcore.prim.Prim;
 
 public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
 
@@ -143,24 +144,31 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
    */
   private LogSF  sflog = LogFactory.sfGetProcessLog();
 
+  public ScriptExecutionImpl(long ID, String name, Cmd cmd, Prim prim) throws RemoteException {
+      // RunProcessImpl
+      this.ID = ID;
+      this.name = name;
+      this.cmd = cmd;
+
+      if (cmd.getFilterOutListener()==null) {
+          String filters[] = {TYPE_DONE+" "+name+"_"+ID,
+              TYPE_NEXT_CMD+" "+name+"_"+ID};
+          cmd.setFilterOutListener(this, filters);
+      }
+      if (cmd.getFilterErrListener()==null) {
+          cmd.setFilterErrListener(this, null);
+      }
+      runProcess = new RunProcessImpl(ID, name, cmd, prim);
+      results = new ScriptResultsImpl();
+      ((RunProcessImpl)runProcess).start();
+      runProcess.waitForReady(200);
+  }
 
   public ScriptExecutionImpl(long ID, String name, Cmd cmd) throws RemoteException {
-    // RunProcessImpl
-    runProcess = new RunProcessImpl (ID, name, cmd);
-    this.ID = ID;
-    this.name = name;
-    this.cmd = cmd;
+    this(ID, name, cmd,null);
+  }
 
-    if (cmd.getFilterOutListener()==null){
-        String filters[]={TYPE_DONE+" "+name+"_"+ID,TYPE_NEXT_CMD+" "+name+"_"+ID};
-        cmd.setFilterOutListener(this,filters);
-    }
-    if (cmd.getFilterErrListener()==null){
-        cmd.setFilterErrListener(this,null);
-    }
-    results = new ScriptResultsImpl();
-    ((RunProcessImpl) runProcess).start();
-    runProcess.waitForReady(200);
+  private void runProcess(long ID, String name, Cmd cmd) {
 
   }
 

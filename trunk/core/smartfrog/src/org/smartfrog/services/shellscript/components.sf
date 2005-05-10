@@ -36,10 +36,19 @@ ExecSchema extends Schema {
 
     filtersOut extends OptionalVector;
     filtersErr extends OptionalVector;
+
+    detach extends OptionalBoolean;
+    terminate extends OptionalBoolean;
+    restart extends OptionalBoolean;
+    autoStart extends OptionalBoolean;
+    autoTerminate extends OptionalBoolean;
 }
 
 Exec extends DATA {
   execSchema extends ExecSchema;
+  detach LAZY PARENT:detatch;
+  terminate LAZY PARENT:terminate;
+  autoTerminate LAZY PARENT:terminate;
 }
 
 //----------- SHELL EXEC -----------------------------------
@@ -71,15 +80,24 @@ ProcessSchema extends Schema {
   detach extends OptionalBoolean;
   restart extends OptionalBoolean;
   terminate extends OptionalBoolean;
+  autoStart extends OptionalBoolean;
+  autoTerminate extends OptionalBoolean;
 }
 
 Process extends Prim {
-   execShema extends ProcessSchema;
+   exec:autoStart LAZY PARENT:autoStart;
+
    sfClass "org.smartfrog.services.shellscript.SFProcessExecutionImpl";
-   //detach false;
-   //retart false;
-   //terminate false;
+
+   execShema extends ProcessSchema;
+   exec:restart LAZY PARENT:restart;
    exec extends DATA Exec;
+
+   detach false;
+   retart false;
+   terminate false;
+   autoStart true;
+
    sfExport false;
 }
 
@@ -97,6 +115,9 @@ ShellSchema extends Schema {
     name extends OptionalString;
     ID extends Long;
     exec extends CD;
+    detach extends OptionalBoolean;
+    terminate extends OptionalBoolean;
+    autoTerminate extends OptionalBoolean;
 }
 
 
@@ -107,6 +128,11 @@ Shell extends Prim {
    shellSchema extends ShellSchema;
    sfClass "org.smartfrog.services.shellscript.SFScriptExecutionImpl";
    exec extends DATA Exec;
+
+   detach false;
+   terminate false;
+   autoTerminate false;
+
    sfExport false;
 }
 

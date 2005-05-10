@@ -32,7 +32,7 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public class SFProcessExecutionImpl  extends PrimImpl implements Prim, SFProcessExecution {
+public class SFProcessExecutionImpl  extends PrimImpl implements Prim, SFProcessExecution, SFReadConfig {
 
   private long ID = -1;
   private String name = null;
@@ -41,21 +41,6 @@ public class SFProcessExecutionImpl  extends PrimImpl implements Prim, SFProcess
    * Exec data
    */
   private Cmd cmd = new Cmd();
-
-  /**
-   * This component should terminate when exec terminates
-   */
-  private boolean shouldTerminate = true;
-
-  /**
-   * This component should detach when exec terminates
-   */
-  private boolean shouldDetatch = false;
-
-  /**
-   * This component should restart exec when it terminates
-  */
-  private boolean shouldRestart = false;
 
   /**
    * Process Exec component
@@ -74,19 +59,13 @@ public class SFProcessExecutionImpl  extends PrimImpl implements Prim, SFProcess
    * Override this to read/set properties before we read ours, but remember to call
    * the superclass afterwards
    */
-  protected void readSFAttributes() throws SmartFrogException, RemoteException {
-
-        this.ID = sfResolve(ATR_ID, ID , true);
-        this.name = sfResolve(ATR_NAME, name , false);
-        if (name == null) {
-            name = this.sfCompleteNameSafe().toString();
-        }
-
-        this.cmd = new Cmd(sfResolve(ATR_EXEC,new ComponentDescriptionImpl(null,null,false),true));
-
-        this.shouldTerminate = sfResolve (ATR_TERMINATE,shouldTerminate,false);
-        this.shouldDetatch = sfResolve (ATR_DETATCH,shouldDetatch,false);
-        this.shouldRestart = sfResolve (ATR_RESTART,shouldRestart,false);
+  public void  readConfig() throws SmartFrogException, RemoteException {
+      this.ID = sfResolve(ATR_ID, ID, true);
+      this.name = sfResolve(ATR_NAME, name, false);
+      if (name==null) {
+          name = this.sfCompleteNameSafe().toString();
+      }
+      this.cmd = new Cmd(sfResolve(ATR_EXEC, new ComponentDescriptionImpl(null, null, false), true));
   }
 
   /**
@@ -98,10 +77,14 @@ public class SFProcessExecutionImpl  extends PrimImpl implements Prim, SFProcess
    */
   public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
       super.sfDeploy();
-      readSFAttributes();
+      readConfig();
       // RunProcessImpl
-      runProcess = new RunProcessImpl (ID, name, cmd);
-      sfLog().info("Init done");
+      if (cmd.autoStart()){
+          runProcess = new RunProcessImpl(ID, name, cmd, this);
+          ((RunProcessImpl)runProcess).start();
+          runProcess.waitForReady(200);
+          sfLog().info("Process started");
+      }
   }
   /**
   *  This sets a flag that will start the httpd process running.
@@ -146,8 +129,12 @@ public class SFProcessExecutionImpl  extends PrimImpl implements Prim, SFProcess
    *          subprocess.
    */
 
-  public InputStream getInputStream(){
-    return runProcess.getInputStream();
+  public InputStream getStdOutStream(){
+      if (runProcess!=null) {
+          return runProcess.getInputStream();
+      } else {
+          return null;
+      }
   }
 
   /**
@@ -161,8 +148,12 @@ public class SFProcessExecutionImpl  extends PrimImpl implements Prim, SFProcess
    * @return  the input stream connected to the error stream of the
    *          subprocess.
    */
-  public InputStream getErrorStream(){
+  public InputStream getStdErrStream(){
+      if ( runProcess!=null){
      return runProcess.getErrorStream();
+      } else {
+          return null;
+      }
   }
 
   /**
@@ -176,8 +167,55 @@ public class SFProcessExecutionImpl  extends PrimImpl implements Prim, SFProcess
    * @return  the output stream connected to the normal input of the
    *          subprocess.
    */
-  public OutputStream getOutputStream() {
-      return runProcess.getOutputStream();
+  public OutputStream getStdInpStream() {
+      if ( runProcess!=null){
+          return runProcess.getOutputStream();
+      } else {
+          return null;
+      }
+     }
+
+     /**
+      * Kill the process
+      */
+     public void kill(){
+         if (runProcess==null) {
+             return;
+         } else {
+            runProcess.kill();
+         }
+     }
+
+     /**
+      * Restarts the process
+      */
+     public void restart() throws SmartFrogException {
+         if (runProcess!=null){
+            runProcess.kill();
+            runProcess = null;
+         }
+        try {
+            readConfig();
+        } catch (RemoteException rex) {
+            throw SmartFrogException.forward("Problem during reStart ",rex);
+        }
+         // RunProcessImpl
+         runProcess = new RunProcessImpl (ID, name, cmd);
+         runProcess.waitForReady(200);
+         sfLog().info("Restart done");
+
+     }
+
+     /**
+      * Is the process ready?
+      * @return boolean
+      */
+     public boolean isRunning() {
+         if (runProcess!=null){
+             return runProcess.ready();
+         } else {
+             return false;
+         }
      }
 
 }

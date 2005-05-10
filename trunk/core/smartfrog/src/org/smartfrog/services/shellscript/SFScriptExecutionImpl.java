@@ -30,7 +30,7 @@ import org.smartfrog.sfcore.prim.PrimImpl;
 import java.rmi.RemoteException;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 
-public class SFScriptExecutionImpl  extends PrimImpl implements Prim, SFScriptExecution {
+public class SFScriptExecutionImpl  extends PrimImpl implements Prim, SFScriptExecution, SFReadConfig {
 
   private long ID = -1;
   private String name = null;
@@ -67,7 +67,7 @@ public class SFScriptExecutionImpl  extends PrimImpl implements Prim, SFScriptEx
    * Override this to read/set properties before we read ours, but remember to call
    * the superclass afterwards
    */
-  protected void readSFAttributes() throws SmartFrogException, RemoteException {
+  public void readConfig () throws SmartFrogException, RemoteException {
 
         this.ID = sfResolve(ATR_ID, ID , true);
         this.name = sfResolve(ATR_NAME, name , false);
@@ -77,8 +77,6 @@ public class SFScriptExecutionImpl  extends PrimImpl implements Prim, SFScriptEx
 
         this.cmd = new Cmd(sfResolve(ATR_EXEC,new ComponentDescriptionImpl(null,null,false),true));
 
-        this.shouldTerminate = sfResolve (ATR_TERMINATE,shouldTerminate,false);
-        this.shouldDetatch = sfResolve (ATR_DETATCH,shouldDetatch,false);
   }
 
   /**
@@ -90,8 +88,8 @@ public class SFScriptExecutionImpl  extends PrimImpl implements Prim, SFScriptEx
    */
   public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
       super.sfDeploy();
-      readSFAttributes();
-      scriptExec = new ScriptExecutionImpl (ID, name, cmd);
+      readConfig();
+      scriptExec = new ScriptExecutionImpl (ID, name, cmd,this);
       sfLog().info("Init done");
   }
   /**

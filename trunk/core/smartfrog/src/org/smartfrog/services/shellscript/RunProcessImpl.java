@@ -23,6 +23,7 @@ package org.smartfrog.services.shellscript;
 import org.smartfrog.services.shellscript.FilterImpl;
 import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.prim.Prim;
 
 import java.text.SimpleDateFormat;
 import java.text.DateFormat;
@@ -30,9 +31,12 @@ import java.io.DataOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.IOException;
+import java.util.Vector;
 
 //------------------- RUNProcess -------------------------------
 public class RunProcessImpl  extends Thread implements RunProcess {
+
+    private Prim prim = null; // SF wrapper, it can be null.
 
     /** Used to format times */
     protected static DateFormat dateFormatter = null;
@@ -47,6 +51,20 @@ public class RunProcessImpl  extends Thread implements RunProcess {
     public static final int STATE_PROCESSING = 3;
 
     private int state = 0;
+
+    /**
+     * Number of execs done, 0 = none
+     */
+    private Integer numberOfExecs = new Integer(0);
+
+    /**
+     * Exit codes from execs. Postion 0 contains 'numberOfExecs' copleted.
+     */
+
+    private Vector execExitCodes = new Vector();
+
+    // java Exec exitValue
+    int exitValue = -9999;
 
     public int getProcessState()
     {
@@ -65,6 +83,8 @@ public class RunProcessImpl  extends Thread implements RunProcess {
       }
       state = newState;
     }
+
+
 
     public void waitForReady(long time){
 
@@ -134,6 +154,13 @@ public class RunProcessImpl  extends Thread implements RunProcess {
 
     private LogSF sfLog = LogFactory.sfGetProcessLog(); //Temp log until getting its own.
 
+
+    // Name can be null, not sure if we still need name.
+    public RunProcessImpl(long ID, String name, Cmd cmd, Prim prim) {
+        this(ID,name,cmd);
+        this.prim=prim;
+    }
+
     // Name can be null, not sure if we still need name.
     public RunProcessImpl(long ID, String name, Cmd cmd) {
         if (name == null) name = "";
@@ -145,17 +172,30 @@ public class RunProcessImpl  extends Thread implements RunProcess {
         setName(this.name);
         sfLog = LogFactory.getLog(this.name);
         killRequested = false;
+        execExitCodes.add(numberOfExecs);
     }
 
     public void run() {
+        {
+            startProcess();
+            if ((prim!=null) && (prim instanceof SFReadConfig)){
+                try {
+                    ((SFReadConfig)prim).readConfig();
+                } catch (Exception ex) {
+                    if (sfLog.isWarnEnabled()){ sfLog.warn(ex); }
+                }
+            }
+        } while (cmd.restart());
+    }
 
+    private void startProcess() {
         // Check that a kill has not been requested even before the application has started.
         if (killRequested==true) {
             setState(STATE_INACTIVE);
             return;
         }
         setState(STATE_STARTING);
-        int exitValue = -9999;
+        exitValue = -9999;
 
         try {
             synchronized (cmd) {
@@ -186,7 +226,10 @@ public class RunProcessImpl  extends Thread implements RunProcess {
                 if (sfLog.isTraceEnabled()){
                       sfLog.trace("waiting for application to exit");
                 }
+                processStarted();
                 exitValue = process.waitFor();
+                processFinished();
+
             } else {
                 cmd.notify();
                 if (sfLog.isWarnEnabled()){
@@ -251,6 +294,34 @@ public class RunProcessImpl  extends Thread implements RunProcess {
         }
         if (sfLog.isInfoEnabled()){
             sfLog.info("exit code = " + exitValue);
+        }
+    }
+
+
+    private void processStarted(){
+        //Update counter
+        int count = numberOfExecs.intValue()+1;
+        this.numberOfExecs = new Integer(count);
+        if (prim!=null) {
+            try {
+                prim.sfReplaceAttribute(SFExecution.ATR_NUMBER_OF_EXECS,this.numberOfExecs);
+            } catch (Exception ex) {
+                if (sfLog.isWarnEnabled()) { sfLog.warn(ex); }
+            }
+        }
+    }
+    private void processFinished(){
+        //Update counters
+        Integer exitCode = new Integer(exitValue);
+        this.execExitCodes.add(0,numberOfExecs);
+        this.execExitCodes.add(exitCode);
+        if (prim!=null) {
+            try {
+                prim.sfReplaceAttribute(SFExecution.ATR_EXEC_EXIT_CODE, exitCode);
+                prim.sfReplaceAttribute(SFExecution.ATR_EXEC_EXIT_CODES, execExitCodes);
+            } catch (Exception ex) {
+                if (sfLog.isWarnEnabled()){ sfLog.warn(ex); }
+            }
         }
     }
 
@@ -384,6 +455,7 @@ public class RunProcessImpl  extends Thread implements RunProcess {
           // @todo
           ID = -1;
         }
+        prim = null;
     }
 
     /**

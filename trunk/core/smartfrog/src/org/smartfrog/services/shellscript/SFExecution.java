@@ -20,6 +20,9 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.shellscript;
 
+import org.smartfrog.sfcore.common.SmartFrogException;
+import java.rmi.RemoteException;
+
 /**
  * Interface that provides the API to the script component, allowing
  * other co-located components to submit script commands.
@@ -47,18 +50,22 @@ public interface SFExecution {
    final static String ATR_NAME = "name";
    /** String name for attribute. Value {@value}. */
    final static String ATR_EXEC = "exec";
+   /** String name for attribute. Value {@value}. */
+   final static String ATR_EXEC_EXIT_CODE = "execExitCode";
 
-   /** This indicates if the component should detach when the
-    * exec finishes. String name for attribute. Value {@value}. */
-   final static String ATR_RESTART = "restart";
+   /**
+    * Number of execs done, 0 = none
+    * String name for attribute. Value {@value}.
+    */
+   final static String ATR_NUMBER_OF_EXECS = "numberOfExecs";
+
+   /**
+    * Exit codes from execs. Postion 0 contains 'numberOfExecs'.
+    * String name for attribute. Value {@value}.
+    * */
+    final static String ATR_EXEC_EXIT_CODES = "execExitCodes";
 
 
- /** This indicates if the component should detach when the
-  * exec finishes. String name for attribute. Value {@value}. */
-  final static String ATR_DETATCH = "detach";
-
-  /** This indicates if the component should terminate when the
-   * exec finishes. String name for attribute. Value {@value}. */
-   final static String ATR_TERMINATE = "terminate";
+   public void readConfig() throws SmartFrogException, RemoteException;
 
 }
