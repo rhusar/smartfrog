@@ -125,7 +125,6 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
   // cmd Data
   private Cmd cmd = new Cmd();
 
-  private long ID = -1;
   private String name = null;
 
   private  RunProcess runProcess = null;
@@ -144,34 +143,28 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
    */
   private LogSF  sflog = LogFactory.sfGetProcessLog();
 
-  public ScriptExecutionImpl(long ID, String name, Cmd cmd, Prim prim) throws RemoteException {
+  public ScriptExecutionImpl(String name, Cmd cmd, Prim prim) throws RemoteException {
       // RunProcessImpl
-      this.ID = ID;
       this.name = name;
       this.cmd = cmd;
 
       if (cmd.getFilterOutListener()==null) {
-          String filters[] = {TYPE_DONE+" "+name+"_"+ID,
-              TYPE_NEXT_CMD+" "+name+"_"+ID};
+          String filters[] = {TYPE_DONE+" "+name,
+              TYPE_NEXT_CMD+" "+name};
           cmd.setFilterOutListener(this, filters);
       }
       if (cmd.getFilterErrListener()==null) {
           cmd.setFilterErrListener(this, null);
       }
-      runProcess = new RunProcessImpl(ID, name, cmd, prim);
+      runProcess = new RunProcessImpl(name, cmd, prim);
       results = new ScriptResultsImpl();
       ((RunProcessImpl)runProcess).start();
       runProcess.waitForReady(200);
   }
 
   public ScriptExecutionImpl(long ID, String name, Cmd cmd) throws RemoteException {
-    this(ID, name, cmd,null);
+    this(name, cmd,null);
   }
-
-  private void runProcess(long ID, String name, Cmd cmd) {
-
-  }
-
 
   /**
    * Runs an echo commnad unless cmd.echoCommand is null.
@@ -180,7 +173,7 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
    */
   private String runEcho(String type, String text) {
     if (cmd.getEchoCommand()==null) return null;
-    String echo = "MARK - "+type+" "+name+"_"+ID+ " ["+text+", "+dateFormatter.format(new Date())+"]";
+    String echo = "MARK - "+type+" "+name+ " ["+text+", "+dateFormatter.format(new Date())+"]";
 
     if (cmd.getExitErrorCommand()!=null) echo = echo + " Exit code#: "+cmd.getExitErrorCommand();
 
@@ -387,7 +380,7 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
     }
     if (filterIndex == 0) {
       //Finished
-      if (line.indexOf(cmd.getEchoCommand()+" "+"MARK - "+TYPE_DONE+" "+name+"_"+ID)!=-1) return; // This is the echo command itself, ignore
+      if (line.indexOf(cmd.getEchoCommand()+" "+"MARK - "+TYPE_DONE+" "+name)!=-1) return; // This is the echo command itself, ignore
 
       //What do we do if err continues producing output?, should we wait forever?
       ((ScriptResultsImpl)results).stdOut.add("-finished-");
@@ -405,7 +398,7 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
        createNewScriptResults(exitCode);
     } else if (filterIndex==1){
       //Next command will follow
-       if (line.indexOf(cmd.getEchoCommand()+" "+"MARK - "+TYPE_NEXT_CMD+" "+name+"_"+ID)!=-1) return; // This is the echo command itself, ignore
+       if (line.indexOf(cmd.getEchoCommand()+" "+"MARK - "+TYPE_NEXT_CMD+" "+name)!=-1) return; // This is the echo command itself, ignore
       ((ScriptResultsImpl)results).stdOut.add("--- NEXT Command ---");
       ((ScriptResultsImpl)results).stdErr.add("--- NEXT Command ---");
        //System.out.println("\n -- GO NEXT Command -- "+line);

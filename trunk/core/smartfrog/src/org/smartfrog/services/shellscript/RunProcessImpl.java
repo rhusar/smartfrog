@@ -32,6 +32,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.IOException;
 import java.util.Vector;
+import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.common.TerminatorThread;
 
 //------------------- RUNProcess -------------------------------
 public class RunProcessImpl  extends Thread implements RunProcess {
@@ -139,7 +141,7 @@ public class RunProcessImpl  extends Thread implements RunProcess {
     // cmd Data
     private Cmd cmd = new Cmd();
 
-    private long ID = -1;
+//    private long ID = -1;
     private String name = null;
 
     private FilterImpl stdoutFilter = null;
@@ -154,21 +156,22 @@ public class RunProcessImpl  extends Thread implements RunProcess {
 
     private LogSF sfLog = LogFactory.sfGetProcessLog(); //Temp log until getting its own.
 
+    private int sleepBeforeRestart = 1000;
 
     // Name can be null, not sure if we still need name.
-    public RunProcessImpl(long ID, String name, Cmd cmd, Prim prim) {
-        this(ID,name,cmd);
+    public RunProcessImpl( String name, Cmd cmd, Prim prim) {
+        this(name,cmd);
         this.prim=prim;
     }
 
     // Name can be null, not sure if we still need name.
-    public RunProcessImpl(long ID, String name, Cmd cmd) {
+    public RunProcessImpl( String name, Cmd cmd) {
         if (name == null) name = "";
         else name = name +"_";
 
         this.cmd = cmd;
-        this.ID = ID;
-        this.name = "RunProcess_"+name+ID;
+//        this.ID = ID;
+        this.name = "RunProcess_"+name;
         setName(this.name);
         sfLog = LogFactory.getLog(this.name);
         killRequested = false;
@@ -185,7 +188,28 @@ public class RunProcessImpl  extends Thread implements RunProcess {
                     if (sfLog.isWarnEnabled()){ sfLog.warn(ex); }
                 }
             }
+            if (cmd.restart()) {
+                try {  this.sleep(sleepBeforeRestart); } catch (InterruptedException ex1) {  }
+            }
         } while (cmd.restart());
+
+        if ((prim!=null)&&(cmd.terminate()||cmd.detatch())){
+           String terminationType = TerminationRecord.ABNORMAL;
+           if (exitValue==0){
+               terminationType=TerminationRecord.NORMAL;
+           }
+           TerminationRecord termR = new TerminationRecord(terminationType, "Exit code: " + exitValue , null);
+
+           TerminatorThread terminator = new TerminatorThread(prim,termR);
+           if (cmd.detatch())   {
+               terminator.detach();
+           }
+           if (!cmd.terminate()) {
+               terminator.dontTerminate();
+           }
+           terminator.start();
+           this.prim = null;
+        }
     }
 
     private void startProcess() {
@@ -211,8 +235,8 @@ public class RunProcessImpl  extends Thread implements RunProcess {
                 processDos = new DataOutputStream(process.getOutputStream());
 
                 replaceFilters(
-                  new FilterImpl( ID, process.getInputStream(), "out", cmd.getFiltersOut(), cmd.getFilterOutListener()),
-                  new FilterImpl( ID, process.getErrorStream(), "err", cmd.getFiltersErr(), cmd.getFilterErrListener())
+                  new FilterImpl( name, process.getInputStream(), "out", cmd.getFiltersOut(), cmd.getFilterOutListener()),
+                  new FilterImpl( name, process.getErrorStream(), "err", cmd.getFiltersErr(), cmd.getFilterErrListener())
                 );
 
             // process may be null by the time we get here after the synchronized
@@ -419,7 +443,7 @@ public class RunProcessImpl  extends Thread implements RunProcess {
         synchronized (this) {
             if (process==null) {
               if (sfLog.isTraceEnabled()) {
-                sfLog.trace("kill" + ID + " -- application has not started yet");
+                sfLog.trace("kill " + name + " -- application has not started yet");
               }
               killRequested = true;
             }
@@ -453,9 +477,7 @@ public class RunProcessImpl  extends Thread implements RunProcess {
           stopFilters();
           // notify termination!
           // @todo
-          ID = -1;
         }
-        prim = null;
     }
 
     /**

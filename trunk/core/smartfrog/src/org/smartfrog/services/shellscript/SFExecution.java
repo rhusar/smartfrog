@@ -44,8 +44,6 @@ import java.rmi.RemoteException;
  */
 public interface SFExecution {
 
-   /** String name for attribute. Value {@value}. */
-   final static String ATR_ID = "ID";
    /** String name for optional attribute. Value {@value}. */
    final static String ATR_NAME = "name";
    /** String name for attribute. Value {@value}. */

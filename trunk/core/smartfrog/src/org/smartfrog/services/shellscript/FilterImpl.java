@@ -130,7 +130,7 @@ public class FilterImpl extends Thread {
   private boolean stopRequested = false;
 //  private RunProcess process = null;
   private String name = null;
-  private long ID = -1;
+  private String ID = "";
 
   private FilterListener listener = null;
 
@@ -138,13 +138,15 @@ public class FilterImpl extends Thread {
 
   private String filters[] = null;
 
-  public FilterImpl( long ID, InputStream in, String name, String filters[], FilterListener listener) {
-    super("Filter(" + name + ")_" + ID);
+
+  public FilterImpl( String ID, InputStream in, String name, String filters[], FilterListener listener) {
+    super (ID);
+    this.name = "Filter "+ "[" + name + "]" + ID ;
+    this.setName(name);
     sfLog = LogFactory.getLog(getName());
-    this.name = name;
+
     this.listener = listener;
     this.filters=filters;
-    this.ID = ID;
 
     this.in = in;
     buffer = new Vector();
