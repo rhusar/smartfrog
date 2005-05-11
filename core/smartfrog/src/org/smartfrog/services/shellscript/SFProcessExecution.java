@@ -23,7 +23,6 @@ package org.smartfrog.services.shellscript;
 import java.io.InputStream;
 import java.io.OutputStream;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import java.util.Vector;
 
 /**
  * Interface that provides the API to the script component, allowing
@@ -45,6 +44,11 @@ import java.util.Vector;
  *
  */
 public interface SFProcessExecution extends SFExecution {
+
+    /** This indicates if the component should start during deploy
+     * phase. String name for attribute. Value {@value}. */
+    public final static String ATR_AUTO_START = "autoStart";
+
 
    /**
     * Gets the input stream of the subprocess.

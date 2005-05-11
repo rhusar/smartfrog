@@ -21,8 +21,6 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.shellscript;
 
-import java.util.*;
-
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.prim.Prim;
@@ -36,7 +34,10 @@ public class SFProcessExecutionImpl  extends PrimImpl implements Prim, SFProcess
 
   private long ID = -1;
   private String name = null;
-
+  /**
+   * Host component should start process during deploy phase
+   */
+  private boolean autoStart = true;
   /**
    * Exec data
    */
@@ -62,6 +63,7 @@ public class SFProcessExecutionImpl  extends PrimImpl implements Prim, SFProcess
   public void  readConfig() throws SmartFrogException, RemoteException {
       this.ID = sfResolve(ATR_ID, ID, true);
       this.name = sfResolve(ATR_NAME, name, false);
+      this.autoStart = sfResolve (ATR_AUTO_START,autoStart,false);
       if (name==null) {
           name = this.sfCompleteNameSafe().toString();
       }
@@ -79,7 +81,7 @@ public class SFProcessExecutionImpl  extends PrimImpl implements Prim, SFProcess
       super.sfDeploy();
       readConfig();
       // RunProcessImpl
-      if (cmd.autoStart()){
+      if (autoStart){
           runProcess = new RunProcessImpl(ID, name, cmd, this);
           ((RunProcessImpl)runProcess).start();
           runProcess.waitForReady(200);

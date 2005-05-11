@@ -64,13 +64,6 @@ import java.io.Serializable;
       * exec finishes. String name for attribute. Value {@value}. */
      public final static String ATR_TERMINATE = "terminate";
 
-     /** This indicates if the component should start during deploy
-      * phase. String name for attribute. Value {@value}. */
-     public final static String ATR_AUTO_START = "autoStart";
-
-     /** This indicates if the component should terminate when exec termainates
-      * . String name for attribute. Value {@value}. */
-     public final static String ATR_AUTO_TERMINATE = "autoTerminate";
 
      // Data needed for runTime Exec.
 
@@ -93,15 +86,6 @@ import java.io.Serializable;
 
      //Parameters for hosting Prim components
 
-     /**
-      * Host component should start process during deploy phase
-      */
-     private boolean autoStart = true;
-
-     /**
-      * Host component should terminate when process terminates
-      */
-     private boolean autoTerminate = true;
 
      /**
       * Host component should terminate when exec terminates
@@ -136,8 +120,6 @@ import java.io.Serializable;
               this.shouldTerminate = cd.sfResolve (ATR_TERMINATE,shouldTerminate,false);
               this.shouldDetach = cd.sfResolve (ATR_DETACH,shouldDetach,false);
               this.shouldRestart = cd.sfResolve (ATR_RESTART,shouldRestart,false);
-              this.autoStart = cd.sfResolve (ATR_AUTO_START,autoStart,false);
-              this.autoTerminate = cd.sfResolve (ATR_AUTO_TERMINATE,autoTerminate,false);
           } catch (Exception ex) {
               throw SmartFrogException.forward("Failed to create CMD", ex);
           }
@@ -227,16 +209,6 @@ import java.io.Serializable;
          return this;
      }
 
-     public Cmd setAutoStart(boolean autoStart) {
-         this.autoStart = autoStart;
-         return this;
-     }
-
-     public Cmd setAutoTerminate(boolean autoTerminate) {
-         this.autoTerminate = autoTerminate;
-         return this;
-     }
-
      public String[] getCmdArray() {
          return cmdarray;
      }
@@ -275,15 +247,6 @@ import java.io.Serializable;
 
      public String getExitErrorCommand() {
               return this.exitErrorCommand;
-     }
-
-
-     public boolean autoStart() {
-        return this.autoStart;
-     }
-
-     public boolean autoTerminate() {
-        return this.autoTerminate;
      }
 
      public boolean detatch() {
@@ -335,10 +298,6 @@ import java.io.Serializable;
              str.append(this.exitErrorCommand);
          }
 
-         str.append(", autoStart: ");
-         str.append(this.autoStart());
-         str.append(", autoTerminate: ");
-         str.append(this.autoTerminate());
          str.append(", detach: ");
          str.append(this.detatch());
          str.append(", terminate: ");
