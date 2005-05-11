@@ -24,6 +24,7 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
  */
 public class RunProcess extends Thread {
 
+	static int count = 0;
    /**
     *  Description of the Field
     */
@@ -279,7 +280,9 @@ public class RunProcess extends Thread {
     *  Description of the Method
     */
    public void clean() {
+	  
       this.subProcess.destroy();
+	System.out.println("RunProcess.clean=============>");
       this.status = "stopped";
    }
 
@@ -287,12 +290,19 @@ public class RunProcess extends Thread {
     *  Main processing method for the RunProcess object
     */
    public void run() {
+	  
       String terminationType = "normal";
-      do {
+     do {
          try {
-            //this.log("Command Start: "+command,3);
+           // this.log("Command Start: "+command.toString() ,3);
+			//System.out.println("COUNT=====" + count++);
+	
+			/*if (count == 2){
+				System.out.println("Breaking=============because of Count value>");
+				break;
+			}*/
             this.log("RunProcessInfo > " + this.toString(), 5);
-            this.log("Started "+"[" + this.nameProcess + "]> " + this.getCommand() + "| workdir: " + this.getWorkDir() + " ", 2);
+          //  this.log("Started "+"[" + this.nameProcess + "]> " + this.getCommand() + "| workdir: " + this.getWorkDir() + " ", 2);
 
             subProcess = runtime.exec(command, envProp, workDir);
 
@@ -333,17 +343,20 @@ public class RunProcess extends Thread {
 			errorGobbler.start(); //india- team changes
             outputGobbler.start();//india- team changes
             this.log("Process (re)started,"+"[" + this.nameProcess + "]> ", 3);
-            status = "running";
+            this.status = "running";
             int exitVal = subProcess.waitFor();
             // wait until process finishes
 
             this.log("Exit Val "+"[" + this.nameProcess + "]>"+ exitVal + "", 2);
 
-            this.clean();
+				System.out.println("In RunPreocess ===========> Status" + this.status);		
+
+         //   this.clean();
 
             if(exitVal == 0) {
                 terminationType = "normal";
                 if ((this.sfObj instanceof SFRunCommand) && (((SFRunCommand)this.sfObj).printMsgImp != null)) {
+					System.out.println("In RunPreocess ===========> NORMAL Termination");		
                    ((SFRunCommand)this.sfObj).printMsgImp.printMsg("NORMAL Termination. "+"Exit Val "+"[" + this.nameProcess + "]>"+ exitVal + "");
                 }
             } else {
@@ -352,13 +365,17 @@ public class RunProcess extends Thread {
                   ((SFRunCommand)this.sfObj).printErrMsgImp.printErrMsg("ABNORMAL Termination. "+"Exit Val "+"[" + this.nameProcess + "]>"+ exitVal + "");
                 }
             }
+	
 
             if (stop) {
+			System.out.println("In RunPreocess ===========> if(stop) ");		
                break;
             }
 
             Thread.sleep(delay);
          } catch (Exception ex) {
+			System.out.println("EXCEPTION AFTER STARTING THE APP");// india team changes
+			   ex.printStackTrace(); // india team changes
             terminationType = "abnormal";
             this.log("Problem starting "+"[" + this.nameProcess + "]> " + ex.getMessage() + ", " + this.toString(), 1);
             if ((this.sfObj instanceof SFRunCommand) && (((SFRunCommand)this.sfObj).printErrMsgImp != null)) {
@@ -376,15 +393,32 @@ public class RunProcess extends Thread {
                this.kill();
                Thread.sleep(10 * 1000);
             } catch (Exception e) {
-               //e.printStackTrace();
+               e.printStackTrace();
             }
          }
+	
       } while (reStart);
-      if (shouldTerminate) {
+
+		System.out.println("RunProcess==========> outside while loop");// india team changes
+		if (shouldTerminate)
+			System.out.println("RunProcess==========> shouldTerminate true");// india team changes
+		else 
+			System.out.println("RunProcess==========> shouldTerminate false");// india team changes
+	  if (shouldTerminate) {
+		
         // Do a propper terminate of the whole lot!!!
-        if (shouldDetach) detach();
-           terminate(terminationType);
-        } else if (shouldDetach) {
+			if (shouldDetach) 
+			{
+					System.out.println("RunProcess==========> T & D");// india team changes
+				detach();
+           }
+		System.out.println("RunProcess==========> T ");// india team changes
+		terminate(terminationType);
+        } 
+		
+		
+		else if (shouldDetach) {
+			System.out.println("RunProcess==========> & D");// india team changes
            detach();
         }
    }
