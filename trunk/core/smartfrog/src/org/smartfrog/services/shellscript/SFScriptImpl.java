@@ -30,7 +30,7 @@ import org.smartfrog.sfcore.prim.PrimImpl;
 import java.rmi.RemoteException;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 
-public class SFScriptImpl  extends PrimImpl implements Prim, SFScript{
+public class SFScriptImpl  extends PrimImpl implements Prim, SFScript, SFReadConfig {
 
     /**
      * Script run during deployment phase
@@ -44,7 +44,10 @@ public class SFScriptImpl  extends PrimImpl implements Prim, SFScript{
      * Script run during terminate phase
      */
     private Object terminateScript = null;
-
+    /**
+     * Host component should terminate when process terminates
+     */
+    private boolean autoTerminate = true;
 
     /**
      * Script Exec component
@@ -63,11 +66,12 @@ public class SFScriptImpl  extends PrimImpl implements Prim, SFScript{
    * Override this to read/set properties before we read ours, but remember to call
    * the superclass afterwards
    */
-  protected void readSFAttributes() throws SmartFrogException, RemoteException {
+  public void readConfig() throws SmartFrogException, RemoteException {
         this.shell = (SFScriptExecution) sfResolve (ATTR_SHELL,shell,true);
         this.deployScript = sfResolve(ATTR_DEPLOY_SCRIPT,false);
         this.startScript = sfResolve(ATTR_START_SCRIPT,false);
         this.terminateScript = sfResolve(ATTR_TERMINATE_SCRIPT,false);
+        this.autoTerminate = sfResolve (ATR_AUTO_TERMINATE,autoTerminate,false);
   }
 
 
@@ -80,7 +84,7 @@ public class SFScriptImpl  extends PrimImpl implements Prim, SFScript{
    */
   public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
       super.sfDeploy();
-      readSFAttributes();
+      readConfig();
       if (deployScript !=null) {
           run(deployScript);
       }

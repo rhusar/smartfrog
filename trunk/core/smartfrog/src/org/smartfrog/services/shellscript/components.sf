@@ -40,15 +40,10 @@ ExecSchema extends Schema {
     detach extends OptionalBoolean;
     terminate extends OptionalBoolean;
     restart extends OptionalBoolean;
-    autoStart extends OptionalBoolean;
-    autoTerminate extends OptionalBoolean;
 }
 
 Exec extends DATA {
   execSchema extends ExecSchema;
-  detach LAZY PARENT:detatch;
-  terminate LAZY PARENT:terminate;
-  autoTerminate LAZY PARENT:terminate;
 }
 
 //----------- SHELL EXEC -----------------------------------
@@ -81,16 +76,15 @@ ProcessSchema extends Schema {
   restart extends OptionalBoolean;
   terminate extends OptionalBoolean;
   autoStart extends OptionalBoolean;
-  autoTerminate extends OptionalBoolean;
 }
 
 Process extends Prim {
-   exec:autoStart LAZY PARENT:autoStart;
-
+   processShema extends ProcessSchema;
    sfClass "org.smartfrog.services.shellscript.SFProcessExecutionImpl";
 
-   execShema extends ProcessSchema;
    exec:restart LAZY PARENT:restart;
+   exec:detach LAZY PARENT:detatch;
+   exec:terminate LAZY PARENT:terminate;
    exec extends DATA Exec;
 
    detach false;
@@ -115,11 +109,7 @@ ShellSchema extends Schema {
     name extends OptionalString;
     ID extends Long;
     exec extends CD;
-    detach extends OptionalBoolean;
-    terminate extends OptionalBoolean;
-    autoTerminate extends OptionalBoolean;
 }
-
 
 /**
  * execute an arbitrary program
@@ -128,10 +118,6 @@ Shell extends Prim {
    shellSchema extends ShellSchema;
    sfClass "org.smartfrog.services.shellscript.SFScriptExecutionImpl";
    exec extends DATA Exec;
-
-   detach false;
-   terminate false;
-   autoTerminate false;
 
    sfExport false;
 }
@@ -157,6 +143,8 @@ ScriptSchema extends Schema {
    deployScript extends OptionalScript;
    startScript extends OptionalScript;
    terminateScript extends OptionalScript;
+
+   autoTerminate extends OptionalBoolean;
 }
 
 /**
@@ -165,4 +153,5 @@ ScriptSchema extends Schema {
 Script extends Prim {
    scriptSchema extends ScriptSchema;
    sfClass "org.smartfrog.services.shellscript.SFScriptImpl";
+   //autoTerminate false;
 }

@@ -45,4 +45,9 @@ public interface SFScript {
     String name for attribute. Value {@value}.*/
    final static String ATTR_TERMINATE_SCRIPT = "terminateScript";
 
+   /** This indicates if the component should terminate when exec termainates
+    * . String name for attribute. Value {@value}. */
+   public final static String ATR_AUTO_TERMINATE = "autoTerminate";
+
+
 }
