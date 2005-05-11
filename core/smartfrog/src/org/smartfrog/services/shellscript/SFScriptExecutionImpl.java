@@ -21,7 +21,7 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.services.shellscript;
 
-import java.util.*;
+import java.util.List;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
@@ -32,7 +32,6 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
 
 public class SFScriptExecutionImpl  extends PrimImpl implements Prim, SFScriptExecution, SFReadConfig {
 
-  private long ID = -1;
   private String name = null;
 
   /**
@@ -69,7 +68,6 @@ public class SFScriptExecutionImpl  extends PrimImpl implements Prim, SFScriptEx
    */
   public void readConfig () throws SmartFrogException, RemoteException {
 
-        this.ID = sfResolve(ATR_ID, ID , true);
         this.name = sfResolve(ATR_NAME, name , false);
         if (name == null) {
             name = this.sfCompleteNameSafe().toString();
@@ -89,7 +87,7 @@ public class SFScriptExecutionImpl  extends PrimImpl implements Prim, SFScriptEx
   public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
       super.sfDeploy();
       readConfig();
-      scriptExec = new ScriptExecutionImpl (ID, name, cmd,this);
+      scriptExec = new ScriptExecutionImpl (name, cmd,this);
       sfLog().info("Init done");
   }
   /**

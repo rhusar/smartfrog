@@ -32,7 +32,6 @@ import java.io.OutputStream;
 
 public class SFProcessExecutionImpl  extends PrimImpl implements Prim, SFProcessExecution, SFReadConfig {
 
-  private long ID = -1;
   private String name = null;
   /**
    * Host component should start process during deploy phase
@@ -61,9 +60,8 @@ public class SFProcessExecutionImpl  extends PrimImpl implements Prim, SFProcess
    * the superclass afterwards
    */
   public void  readConfig() throws SmartFrogException, RemoteException {
-      this.ID = sfResolve(ATR_ID, ID, true);
-      this.name = sfResolve(ATR_NAME, name, false);
       this.autoStart = sfResolve (ATR_AUTO_START,autoStart,false);
+      this.name = sfResolve(ATR_NAME, name, false);
       if (name==null) {
           name = this.sfCompleteNameSafe().toString();
       }
@@ -82,7 +80,7 @@ public class SFProcessExecutionImpl  extends PrimImpl implements Prim, SFProcess
       readConfig();
       // RunProcessImpl
       if (autoStart){
-          runProcess = new RunProcessImpl(ID, name, cmd, this);
+          runProcess = new RunProcessImpl(name, cmd, this);
           ((RunProcessImpl)runProcess).start();
           runProcess.waitForReady(200);
           sfLog().info("Process started");
@@ -202,7 +200,7 @@ public class SFProcessExecutionImpl  extends PrimImpl implements Prim, SFProcess
             throw SmartFrogException.forward("Problem during reStart ",rex);
         }
          // RunProcessImpl
-         runProcess = new RunProcessImpl (ID, name, cmd);
+         runProcess = new RunProcessImpl (name, cmd);
          runProcess.waitForReady(200);
          sfLog().info("Restart done");
 

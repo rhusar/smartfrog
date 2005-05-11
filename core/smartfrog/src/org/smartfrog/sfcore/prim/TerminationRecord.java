@@ -65,7 +65,7 @@ public class TerminationRecord implements Serializable {
         errorType = errType.intern();
         description = descr;
         this.id = id;
-	this.cause = null;
+	    this.cause = null;
     }
 
     /**

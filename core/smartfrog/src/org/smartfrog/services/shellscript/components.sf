@@ -107,7 +107,6 @@ WinXPProcess extends Process {
 
 ShellSchema extends Schema {
     name extends OptionalString;
-    ID extends Long;
     exec extends CD;
 }
 
