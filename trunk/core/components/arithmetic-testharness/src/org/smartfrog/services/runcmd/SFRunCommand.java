@@ -308,6 +308,7 @@ public class SFRunCommand extends PrimImpl implements Prim, RunCommandInt {
       //createProcess();
       if (runDuringDeploy) {
             //process.start();
+		System.out.println("Inside Deploy of runcmd ==============>" );
             { this.start();}
       }
       log("SFdeployed", 3);
@@ -356,6 +357,7 @@ public class SFRunCommand extends PrimImpl implements Prim, RunCommandInt {
       if (!runDuringDeploy) {
          if ((this.autoStart)) {
             //process.start();
+			System.out.println("Inside sfStart of runcmd ==============>" );
             { this.start();}
          }
       }
@@ -392,6 +394,7 @@ public class SFRunCommand extends PrimImpl implements Prim, RunCommandInt {
       log("Starting (.start())..."+this.getProcessName(), 3);
       createProcess();
       if (process != null) {
+			System.out.println("Inside Start of runcmd ==============>" );  
          process.start();
        log("SFstarted (.start()).", 3);
       }
@@ -491,6 +494,7 @@ public class SFRunCommand extends PrimImpl implements Prim, RunCommandInt {
       try {
          String[] globalStartCmd = this.createCmd(cmdGeneral, startCmd, startAtt);
          String[] globalStopCmd = this.createCmd(cmdGeneral, stopCmd, stopAtt);
+	 
          process = new InfoProcess(this.getNotifierId(), globalStartCmd, globalStopCmd, workDir, envProp);
          log("InfoProcess: "+this.getNotifierId() + " created.", 5);
          process.setAutoReStart(this.autoReStart);
@@ -589,8 +593,9 @@ public class SFRunCommand extends PrimImpl implements Prim, RunCommandInt {
          }
 
          //Mandatory
-         processName = (String)sfResolve(varSFProcessName);
-
+         //processName = (String)sfResolve(varSFProcessName);
+		   processName = sfResolve(varSFProcessName, processName, false);
+		   System.out.println("Process Name   =======" + processName);
          //     // Not mandatory
 
          try {
@@ -612,6 +617,7 @@ public class SFRunCommand extends PrimImpl implements Prim, RunCommandInt {
             stopCmd = sfResolve(varSFCmdStop,stopCmd,false);
          } catch (SmartFrogResolutionException e) {
             log(varSFCmdStop + " not found.", 5);
+			
          }
 
 //         try {
@@ -851,7 +857,7 @@ public class SFRunCommand extends PrimImpl implements Prim, RunCommandInt {
          if ((cmdGeneral[1] != null) && (!(cmdGeneral[1].equals(""))) && (!(cmdGeneral[1].equals(" ")))) {
             cmd[i++] = cmdGeneral[1];
          }
-         if ((cmdStr != null) && (!(cmdStr.equals(""))) && (!(cmdStr.equals(" ")))) {
+         if ((cmdStr != null) && !(cmdStr.equals("NULL")) && (!(cmdStr.equals(""))) && (!(cmdStr.equals(" ")))) {
             cmd[i++] = cmdStr;
          }
 

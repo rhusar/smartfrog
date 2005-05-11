@@ -11,16 +11,20 @@ import org.smartfrog.SFSystem;
 
 
 public class ReportGenerator {
+
    String fileName="Distributed_TestHarness";
    public static Vector  report = new Vector();
+   FileWriter newFile = null;
 
-    
+
+
   public void generateReport()
   {
 
+           System.out.println("VEL :::::::::::::::::::: Report Generator_generateReport()" +  report.size());
            printItemReportHTML(report);
            try {
-              FileWriter newFile = new FileWriter(fileName+"_report.html");
+              newFile = new FileWriter(fileName+"_report.html");
               newFile.write("<!doctype HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\"><html>");
               newFile.write("<body>"+"\n");
               newFile.write("<font color=\"BLUE\" size=\"5\">Distributed Test report<font/>"+"\n");
@@ -54,7 +58,7 @@ public class ReportGenerator {
       StringBuffer reportHTML = new StringBuffer();
        reportHTML.append(printItemReportHTML(myreport));
 
-      for (Enumeration e = report.elements(); e.hasMoreElements(); )
+      for (Enumeration e = myreport.elements(); e.hasMoreElements(); )
       {
         reportHTML.append(printItemReportHTML((Vector) e.nextElement()));
       }
@@ -81,13 +85,8 @@ public class ReportGenerator {
 
           ReportGenerator rg = new ReportGenerator();
           String str= "test1";
-          ReportGenerator.report.add(str);
-          rg.generateReport();
-
-
-
-
-
+  //        ReportGenerator.report.add(str);
+//          rg.generateReport();
 
       }
   }

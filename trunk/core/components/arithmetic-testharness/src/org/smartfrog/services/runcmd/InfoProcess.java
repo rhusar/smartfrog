@@ -10,6 +10,7 @@ package org.smartfrog.services.runcmd;
 
 import org.smartfrog.services.runcmd.RunProcess;
 import org.smartfrog.sfcore.prim.*;
+import org.smartfrog.sfcore.common.SFNull;
 
 /**
  *  Description of the Class
@@ -171,13 +172,13 @@ public class InfoProcess {
          System.err.println("InfoProcess: StartCmd=null");
          return;
       }
-      //System.out.println("process.Start:stating -"+this.getProcessName());
+      System.out.println("process.Start:stating -"+this.getProcessName());
       cleanProcess();
       process = new RunProcess(this.startCmdAtt, this.workDir, this.processName, this.envProp);
       setProcessParam();
       process.start();
       this.statusInfo = "Started";
-      //System.out.println("process.Start:started -"+this.getProcessName());
+      System.out.println("process.Start:started -"+this.getProcessName());
    }
 
    /**
@@ -186,17 +187,23 @@ public class InfoProcess {
    public void stop() {
       cleanProcess();
       // Review this for not killing it! Use an auxiliary process.
-      //System.out.println("process.Stop:stopping -"+this.getProcessName()+" Cmd:"+this.stopCmd);
-      if (this.stopCmdAtt != null) {
-         process = new RunProcess(this.stopCmdAtt, this.workDir, this.processName, this.envProp);
+   
+	//System.out.println("process.Stop:stopping =====>"+ this.getProcessName() + " Cmd:"+ this.stopCmdAtt);
+//System.out.println("process.Stop:stopping =====>"+ this.getProcessName() + " Cmd:"+ this.getCmd());
+
+ /*     if (this.stopCmdAtt != null) {
+         process = new RunProcess(stopCmdAtt, this.workDir, this.processName, this.envProp);
          setProcessParam();
          process.start();
          this.statusInfo = "Stopped";
-      } else {
+     // } else {
          //process=new RunProcess(this.startCmd+" "+this.startAtt, this.workDir, this.processName);
+*/
          this.statusInfo = "Stopped(no Stop cmd)";
-      }
-      //System.out.println("process.Stop:stop end -"+this.getProcessName());
+      //}
+	System.out.println("Stopcmd depricated");
+      	System.out.println("process.Stop:stop end -"+this.getProcessName());
+	System.out.println("process.Stop:stop end -"+this.statusInfo);
    }
 
    /**
