@@ -166,8 +166,8 @@ public class RunProcessImpl  extends Thread implements RunProcess {
 
     // Name can be null, not sure if we still need name.
     public RunProcessImpl( String name, Cmd cmd) {
+        this.setName(name);
         if (name == null) name = "";
-        else name = name +"_";
 
         this.cmd = cmd;
 //        this.ID = ID;

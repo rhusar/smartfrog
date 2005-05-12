@@ -32,6 +32,7 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.common.ContextImpl;
 import org.smartfrog.sfcore.common.TerminatorThread;
+import org.smartfrog.sfcore.common.*;
 
 public class SFScriptImpl  extends PrimImpl implements Prim, SFScript, SFReadConfig {
 
@@ -90,8 +91,9 @@ public class SFScriptImpl  extends PrimImpl implements Prim, SFScript, SFReadCon
       readConfig();
       if (deployScript !=null) {
           ComponentDescription cd = run(deployScript);
-          if (sfLog().isInfoEnabled()){
-             sfLog().info("run ["+ deployScript+"] with result ["+cd+"]");
+          checkResult(deployScript, cd);
+          if (sfLog().isDebugEnabled()){
+             sfLog().debug("run \n["+ deployScript+"]\n with result ["+cd+"]");
          }
 
       }
@@ -107,10 +109,10 @@ public class SFScriptImpl  extends PrimImpl implements Prim, SFScript, SFReadCon
      super.sfStart();
      if (startScript !=null) {
          ComponentDescription cd = run(startScript);
-         if (sfLog().isInfoEnabled()){
-             sfLog().info("run ["+ startScript+"] with result ["+cd+"]");
+         if (sfLog().isDebugEnabled()){
+             sfLog().debug("run\n ["+ startScript+"]\n with result ["+cd+"]");
          }
-
+         checkResult(startScript, cd);
      }
      if (this.autoTerminate){
        TerminationRecord termR = new TerminationRecord(
@@ -133,8 +135,8 @@ public class SFScriptImpl  extends PrimImpl implements Prim, SFScript, SFReadCon
           }
           if (terminateScript !=null) {
               ComponentDescription cd = run(terminateScript);
-              if (sfLog().isInfoEnabled()){
-                  sfLog().info("run ["+ terminateScript+"] with result ["+cd+"]");
+              if (sfLog().isDebugEnabled()){
+                  sfLog().debug("\nrun ["+ terminateScript+"]\n with result ["+cd+"]");
               }
           }
      } catch (Exception ex) {
@@ -156,35 +158,46 @@ public class SFScriptImpl  extends PrimImpl implements Prim, SFScript, SFReadCon
     } else if (script instanceof ComponentDescription) {
       cd = run ((ComponentDescription)script);
     } else {
-      String msg = "Wrong command: "+script.toString() +"["+script.getClass().getName()+"]";
+      String msg = "Wrong script class: "+script.toString() +" ["+script.getClass().getName()+"]";
+      ComponentDescription cdWrongCmd = new ComponentDescriptionImpl(null,  new ContextImpl(), false);
       if (sfLog().isErrorEnabled()){ sfLog().error(msg); }
-      throw new SmartFrogException(msg);
+      cdWrongCmd.sfAddAttribute("Wrong script", script );
+      cdWrongCmd.sfAddAttribute("Wrong script class", script.getClass().getName() );
+      cdWrongCmd.sfAddAttribute("code", new Integer (-9999));
     }
+    // checkResult(deployScript, cd);    //Only if we want to check every individual command.
+    return cd;
+ }
+
+private void checkResult(Object script, ComponentDescription cd) throws
+    SmartFrogResolutionException, SmartFrogException {
     if (cd!=null) {
     Integer exitCode=new Integer (-9999);
     exitCode = (Integer) cd.sfResolve("code",exitCode,false);
-    if (exitCode.intValue()!=0){
+    if (exitCode.intValue()!=0) {
         String msg = " Error running script [exit code ="+exitCode+"]:"+script.toString();
-        SmartFrogException sex =  new SmartFrogException(msg,this);
+        SmartFrogException sex = new SmartFrogException(msg, this);
         sex.add("script", script);
-        if (sfLog().isErrorEnabled()){ sfLog().error(msg); }
+        sex.add("result", cd);
+        if (sfLog().isErrorEnabled()) {
+            sfLog().error(msg + "\n"+cd.toString());
+        }
         throw sex;
     }
     }
-    return cd;
- }
+}
 
  private ComponentDescription run (String script) throws SmartFrogException, RemoteException {
     ScriptResults result = shell.execute (script,0);
     ComponentDescription cd = result.waitForResults(0);
-    if (sfLog().isInfoEnabled()){ sfLog().info("Executed: "+result.toString()); }
+    if (sfLog().isTraceEnabled()){ sfLog().trace("Executed (String script):\n "+result.toString()); }
     return cd;
  }
 
  private ComponentDescription run (Vector script) throws SmartFrogException, RemoteException {
    ScriptResults result = shell.execute (script,0);
    ComponentDescription cd =result.waitForResults(0);
-   if (sfLog().isInfoEnabled()){ sfLog().info("Executed: "+result.toString()); }
+   if (sfLog().isTraceEnabled()){ sfLog().trace("Executed (Vector script):\n "+result.toString()); }
    return cd;
  }
 
@@ -195,7 +208,7 @@ public class SFScriptImpl  extends PrimImpl implements Prim, SFScript, SFReadCon
    for (Iterator i = script.sfValues(); i.hasNext();) {
       cd =run(i.next());
       count++;
-      cdAll.sfAddAttribute(new Integer(count).toString(),cd);
+      if (cd !=null) cdAll.sfAddAttribute(new Integer(count).toString(),cd);
    }
    Integer lastExitCode=new Integer (-9999);
    lastExitCode = (Integer) cd.sfResolve("code",lastExitCode,false);
