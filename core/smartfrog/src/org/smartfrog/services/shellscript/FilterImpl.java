@@ -39,8 +39,8 @@ public class FilterImpl extends Thread {
     private LogSF sfLog = LogFactory.sfGetProcessLog(); //Temp log until getting its own.
 
     public BufferFiller() {
-      super("BufferFiller-Filter_" + ID+"(" + name + ")");
-      sfLog = LogFactory.getLog("BufferFiller-Filter_" + ID+"(" + name + ")");
+      super("BufferFiller-Filter " +"(" + type + ")");
+      sfLog = LogFactory.getLog(ID);
     }
 
     public void stopRequest() {
@@ -129,7 +129,7 @@ public class FilterImpl extends Thread {
   private BufferFiller bufferFiller = null;
   private boolean stopRequested = false;
 //  private RunProcess process = null;
-  private String name = null;
+  private String type = null;
   private String ID = "";
 
   private FilterListener listener = null;
@@ -139,11 +139,12 @@ public class FilterImpl extends Thread {
   private String filters[] = null;
 
 
-  public FilterImpl( String ID, InputStream in, String name, String filters[], FilterListener listener) {
-    super ("Filter "+ ID+ "(" + name + ")");
-    this.name = "Filter "+ ID+ "(" + name + ")" ;
-    this.setName(name);
-    sfLog = LogFactory.getLog(getName());
+  public FilterImpl( String ID, InputStream in, String type, String filters[], FilterListener listener) {
+    super ("Filter(" + type + ")");
+    this.type = type;
+    //this.type = "Filter "+ ID+ "(" + type + ")" ;
+//    this.setName(this.type);
+    sfLog = LogFactory.getLog(ID);
 
     this.listener = listener;
     this.filters=filters;
