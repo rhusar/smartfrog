@@ -44,13 +44,28 @@ public class CdlLoaderTest extends TestCase {
 
     public static final String WRONG_NAMESPACE_TEXT = "Cannot find the declaration of element 'cdl:cdl'";
     public static final String CDL_DOC_MINIMAL = VALID_RESOURCES + "minimal.cdl";
+
+    /**
+     * This is our list of valid documents. These must all parse
+     */
     private final static String VALID_CDL[] = {
         CDL_DOC_MINIMAL,
-        VALID_RESOURCES + "webserver.cdl",
         VALID_RESOURCES + "extra-elements.cdl",
-//        VALID_RESOURCES + "webserver-no-namespace.cdl",
-//        VALID_RESOURCES + "documented.cdl",
+        VALID_RESOURCES + "webserver.cdl",
+        VALID_RESOURCES + "webserver-no-namespace.cdl",
         VALID_RESOURCES + "webserver-default-namespace.cdl",
+        VALID_RESOURCES + "documented.cdl",
+        VALID_RESOURCES + "references-1.cdl",
+        VALID_RESOURCES + "references-2.cdl",
+        VALID_RESOURCES + "references-3.cdl",
+        VALID_RESOURCES + "expression-1.cdl",
+        VALID_RESOURCES + "type-1.cdl",
+        VALID_RESOURCES + "lazy-1.cdl",
+        VALID_RESOURCES + "lazy-2.cdl",
+        VALID_RESOURCES + "parameterization-1.cdl",
+        VALID_RESOURCES + "full-example-1.cdl",
+        VALID_RESOURCES + "full-example-2.cdl",
+        VALID_RESOURCES + "full-example-3.cdl",
     };
     public static final String CDL_DOC_WRONG_ELT_ORDER = INVALID_RESOURCES +
             "wrong_elt_order.cdl";

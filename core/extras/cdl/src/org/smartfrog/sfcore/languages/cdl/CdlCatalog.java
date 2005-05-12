@@ -29,6 +29,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.XMLReader;
+import org.jdom.input.SAXBuilder;
 
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerException;
@@ -50,17 +51,31 @@ public class CdlCatalog implements URIResolver, EntityResolver {
     private ResourceLoader loader;
 
     private static final Log log = LogFactory.getLog(CdlCatalog.class);
-
-    private static final String CDDLM_MAPPINGS[] = {
-        CddlmConstants.XML_CDL_NAMESPACE, Constants.CDDLM_XSD_FILENAME,
-        CddlmConstants.CDL_API_NAMESPACE, Constants.DEPLOY_API_SCHEMA_FILENAME,
-        CddlmConstants.WS_ADDRESSING_NAMESPACE, "ws-addressing.xsd",
-    };
+    private static final String PACKAGE_BASE = "org/ggf/cddlm/";
+    /**
+     * where all the WSRF files really live {@value}
+     */
+    private static final String WSRF_PACKAGE = PACKAGE_BASE +
+            CddlmConstants.XML_FILENAME_WSRF_DIRECTORY;
 
     /**
-     * where all the files really live
+     * where the API files really live {@value}
      */
-    private static final String WSRF_PACKAGE = "org/ggf/cddlm/xml/wsrf/";
+    private static final String API_PACKAGE = PACKAGE_BASE +
+            CddlmConstants.CDL_FILENAME_XML_DIRECTORY;
+
+
+    /**
+     * This maps from namespaces to resources in our classpath
+     */
+    private static final String CDDLM_MAPPINGS[] = {
+        CddlmConstants.XML_CDL_NAMESPACE, API_PACKAGE +
+            Constants.CDL_XSD_FILENAME,
+        CddlmConstants.CDL_API_NAMESPACE, API_PACKAGE +
+            Constants.DEPLOY_API_SCHEMA_FILENAME,
+        CddlmConstants.WS_ADDRESSING_NAMESPACE, WSRF_PACKAGE +
+            CddlmConstants.XML_FILENAME_WS_ADDRESSING,
+    };
 
     /**
      * property to set on the parser to fix a schema
@@ -70,7 +85,7 @@ public class CdlCatalog implements URIResolver, EntityResolver {
     /**
      * map table
      */
-    private HashMap mappings;
+    private HashMap<String,String> mappings;
 
     public CdlCatalog(ResourceLoader loader) {
         assert loader != null:"null ResourceLoader";
@@ -83,7 +98,7 @@ public class CdlCatalog implements URIResolver, EntityResolver {
      * reset the resolution table
      */
     public void resetMap() {
-        mappings = new HashMap();
+        mappings = new HashMap<String, String>();
     }
 
 
@@ -116,12 +131,15 @@ public class CdlCatalog implements URIResolver, EntityResolver {
      * @return
      */
     public String lookup(String uri) {
-        Object value = mappings.get(uri);
+        String value = mappings.get(uri);
+        return value;
+/*
         if (value != null) {
-            return WSRF_PACKAGE + (String) value;
+            return PACKAGE_BASE + (String) value;
         } else {
             return null;
         }
+*/
     }
 
     /**
@@ -253,6 +271,7 @@ public class CdlCatalog implements URIResolver, EntityResolver {
         parser.setProperty(SCHEMA_LOCATION, s);
     }
 
+
     /**
      * bind an XML reader to this bunny
      *
@@ -263,4 +282,39 @@ public class CdlCatalog implements URIResolver, EntityResolver {
         setImportPaths(parser);
         parser.setEntityResolver(this);
     }
+
+    /**
+     * parser.setProperty( "http://apache.org/xml/properties/schema/external-schemaLocation",
+     * "http: //domain.com/mynamespace mySchema.xsd");
+     *
+     * @param parser
+     */
+    public void setImportPaths(SAXBuilder parser) {
+        String[] map = CDDLM_MAPPINGS;
+        StringBuffer buffer = new StringBuffer();
+        for (int i = 0; i < map.length; i += 2) {
+            String schema = map[i];
+            String filename = map[i + 1];
+            buffer.append(schema);
+            buffer.append(' ');
+            buffer.append(filename);
+            buffer.append(' ');
+        }
+        String s = new String(buffer);
+        parser.setProperty(SCHEMA_LOCATION, s);
+    }
+
+
+    /**
+     * bind an XML reader to this resolver.
+     * The way JDom works, this must be before you instantiate the
+     * parser, and so nothing is thrown till instantation time, when it
+     * is too late to fix.
+     * @param parser
+     */
+    public void bind(SAXBuilder parser)  {
+        setImportPaths(parser);
+        parser.setEntityResolver(this);
+    }
+
 }
