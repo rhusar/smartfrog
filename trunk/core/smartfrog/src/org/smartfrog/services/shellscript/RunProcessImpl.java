@@ -171,9 +171,9 @@ public class RunProcessImpl  extends Thread implements RunProcess {
 
         this.cmd = cmd;
 //        this.ID = ID;
-        this.name = "RunProcess_"+name;
-        setName(this.name);
-        sfLog = LogFactory.getLog(this.name);
+        this.name = name;
+        setName("RunProcess");
+        sfLog = LogFactory.getLog(name);
         killRequested = false;
         execExitCodes.add(numberOfExecs);
     }

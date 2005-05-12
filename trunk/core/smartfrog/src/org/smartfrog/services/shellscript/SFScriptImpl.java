@@ -53,6 +53,9 @@ public class SFScriptImpl  extends PrimImpl implements Prim, SFScript, SFReadCon
      */
     private boolean autoTerminate = false;
 
+    /** String name for line return. */
+     private String lineSeparator = System.getProperty("line.separator");
+
     /**
      * Script Exec component
      */
@@ -93,7 +96,7 @@ public class SFScriptImpl  extends PrimImpl implements Prim, SFScript, SFReadCon
           ComponentDescription cd = run(deployScript);
           checkResult(deployScript, cd);
           if (sfLog().isDebugEnabled()){
-             sfLog().debug("run \n["+ deployScript+"]\n with result ["+cd+"]");
+             sfLog().debug(("run"+lineSeparator+"["+ deployScript+"]"+lineSeparator+" with result "+lineSeparator+"["+cd+"]"));
          }
 
       }
@@ -110,7 +113,7 @@ public class SFScriptImpl  extends PrimImpl implements Prim, SFScript, SFReadCon
      if (startScript !=null) {
          ComponentDescription cd = run(startScript);
          if (sfLog().isDebugEnabled()){
-             sfLog().debug("run\n ["+ startScript+"]\n with result ["+cd+"]");
+             sfLog().debug(("run"+lineSeparator+"["+ startScript+"]"+lineSeparator+" with result "+lineSeparator+"["+cd+"]"));
          }
          checkResult(startScript, cd);
      }
@@ -136,7 +139,7 @@ public class SFScriptImpl  extends PrimImpl implements Prim, SFScript, SFReadCon
           if (terminateScript !=null) {
               ComponentDescription cd = run(terminateScript);
               if (sfLog().isDebugEnabled()){
-                  sfLog().debug("\nrun ["+ terminateScript+"]\n with result ["+cd+"]");
+                  sfLog().debug(("run"+lineSeparator+"["+ terminateScript+"]"+lineSeparator+" with result"+lineSeparator+"["+cd+"]"));
               }
           }
      } catch (Exception ex) {
