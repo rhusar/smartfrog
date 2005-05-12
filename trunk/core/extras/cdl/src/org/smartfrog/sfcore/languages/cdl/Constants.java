@@ -31,9 +31,17 @@ public class Constants {
     private Constants() {
     }
 
-    public static final String CDDLM_XSD_FILENAME = "cddlm.xsd";
-    public static final String DEPLOY_API_SCHEMA_FILENAME = "deployAPIschema.xsd";
 
+
+    /**
+     * full path to CDDLM
+     * {@value}
+     * */
+    public static final String CDL_XSD_FILENAME = CddlmConstants.CDL_FILENAME_XML_DIRECTORY+
+        CddlmConstants.CDL_FILENAME_XML_CDL;
+
+    public static final String DEPLOY_API_SCHEMA_FILENAME = CddlmConstants.CDL_FILENAME_XML_DIRECTORY +
+            CddlmConstants.CDL_FILENAME_DEPLOYMENT_API;
 
     public static final String CDL_NAMESPACE = CddlmConstants.XML_CDL_NAMESPACE;
 

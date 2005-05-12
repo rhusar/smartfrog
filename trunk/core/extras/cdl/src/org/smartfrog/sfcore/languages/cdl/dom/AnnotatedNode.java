@@ -20,8 +20,8 @@
 package org.smartfrog.sfcore.languages.cdl.dom;
 
 /**
- * created 21-Apr-2005 14:42:51
+ * created 12-May-2005 17:33:10
  */
 
-public class Expression extends AnnotatedNode {
+public class AnnotatedNode extends DocNode {
 }

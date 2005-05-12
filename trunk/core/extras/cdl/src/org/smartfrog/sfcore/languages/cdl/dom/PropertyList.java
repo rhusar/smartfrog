@@ -30,7 +30,7 @@ import java.util.ListIterator;
  * created 21-Apr-2005 14:26:55
  */
 
-public class PropertyList extends DocumentedNode {
+public class PropertyList extends DocumentedNode implements ToSmartFrog {
 
     /**
      * Our name.
@@ -58,6 +58,7 @@ public class PropertyList extends DocumentedNode {
      */
     public static final String ERROR_LOWLEVEL_NAMED = "low-level PropertyList elements cannot be given names";
 
+        
     /**
      * Child elements
      *

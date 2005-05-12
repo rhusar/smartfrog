@@ -20,8 +20,13 @@
 package org.smartfrog.sfcore.languages.cdl.dom;
 
 /**
- * created 21-Apr-2005 14:42:51
+ * A property entry
+ * created 12-May-2005 17:38:26
  */
 
-public class Expression extends AnnotatedNode {
+public class PropertyEntry extends AnnotatedNode {
+
+    private String name;
+    private String value;
+
 }

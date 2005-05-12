@@ -51,7 +51,7 @@ public class CdlCatalogTest extends TestCase {
 
     public void testCdlLookup() {
         String cddlm=catalog.lookup(Constants.CDL_NAMESPACE);
-        assertTrue(cddlm != null && cddlm.endsWith(Constants.CDDLM_XSD_FILENAME));
+        assertTrue(cddlm != null && cddlm.endsWith(Constants.CDL_XSD_FILENAME));
     }
 
     public void testApiLookup() {

@@ -70,7 +70,7 @@ public class CdlParser {
         JDomHelper.configureSaxBuilder(builder, validate, true,true);
         if (validate) {
             CdlCatalog resolver = new CdlCatalog(loader);
-            //resolver.bind(xerces);
+            resolver.bind(builder);
         }
     }
 
@@ -118,6 +118,21 @@ public class CdlParser {
         return parseStream(in);
     }
 
+    /**
+     * Get our builder
+     * @return
+     */
+    public SAXBuilder getBuilder() {
+        return builder;
+    }
+
+    /**
+     * Get our resource loader
+     * @return
+     */
+    public ResourceLoader getResourceLoader() {
+        return resourceLoader;
+    }
 
     /**
      * get a CDL document from a message element

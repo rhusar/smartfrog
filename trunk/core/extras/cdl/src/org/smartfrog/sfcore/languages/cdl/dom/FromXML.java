@@ -19,9 +19,14 @@
  */
 package org.smartfrog.sfcore.languages.cdl.dom;
 
+import org.jdom.Content;
+import org.smartfrog.sfcore.languages.cdl.CdlParsingException;
+
 /**
- * created 21-Apr-2005 14:42:51
+ * created 12-May-2005 17:35:15
  */
 
-public class Expression extends AnnotatedNode {
+
+public interface FromXML {
+    void fromXML(Content content) throws CdlParsingException;
 }
