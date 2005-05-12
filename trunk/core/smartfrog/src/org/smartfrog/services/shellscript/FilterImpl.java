@@ -39,8 +39,8 @@ public class FilterImpl extends Thread {
     private LogSF sfLog = LogFactory.sfGetProcessLog(); //Temp log until getting its own.
 
     public BufferFiller() {
-      super("BufferFiller-Filter(" + name + ")_" + ID);
-      sfLog = LogFactory.getLog("BufferFiller-Filter(" + name + ")_" + ID);
+      super("BufferFiller-Filter_" + ID+"(" + name + ")");
+      sfLog = LogFactory.getLog("BufferFiller-Filter_" + ID+"(" + name + ")");
     }
 
     public void stopRequest() {
@@ -140,8 +140,8 @@ public class FilterImpl extends Thread {
 
 
   public FilterImpl( String ID, InputStream in, String name, String filters[], FilterListener listener) {
-    super (ID);
-    this.name = "Filter "+ "[" + name + "]" + ID ;
+    super ("Filter "+ ID+ "(" + name + ")");
+    this.name = "Filter "+ ID+ "(" + name + ")" ;
     this.setName(name);
     sfLog = LogFactory.getLog(getName());
 
