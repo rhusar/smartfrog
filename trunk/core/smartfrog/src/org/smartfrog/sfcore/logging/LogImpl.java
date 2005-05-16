@@ -218,6 +218,16 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
    }
 
    /**
+    * <p> Get log name. </p>
+    *
+    * @param log name
+    */
+    public String getLogName(){
+        return this.logName;
+    }
+
+
+   /**
     * Gets the class code base by resolving the sfCodeBase attribute in the
     * given description.
     *
