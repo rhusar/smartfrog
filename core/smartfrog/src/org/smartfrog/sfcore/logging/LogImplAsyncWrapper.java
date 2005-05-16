@@ -86,6 +86,14 @@ public class LogImplAsyncWrapper implements LogSF {
         return "[ActualLogThread: " + Thread.currentThread().getName() + "] ";
     }
 
+    /**
+     * <p> Get log name. </p>
+     *
+     * @param log name
+     */
+    public String getLogName(){
+        return logImpl.getLogName();
+    }
 
     /**
      * <p> Set logging level. </p>

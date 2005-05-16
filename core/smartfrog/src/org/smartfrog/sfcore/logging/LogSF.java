@@ -51,6 +51,14 @@ public interface LogSF extends Log, LogMessage, LogLevel {
 
 
     /**
+     * <p> Get log name. </p>
+     *
+     * @param log name
+     */
+    public String getLogName();
+
+
+    /**
      * <p> Is ignore logging currently enabled? </p>
      *
      * <p> Call this method to prevent having to perform expensive operations

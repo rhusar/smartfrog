@@ -1201,6 +1201,12 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     public synchronized LogSF sfSetLog(LogSF newlog) {
        LogSF oldlog = sflog;
        this.sflog = newlog;
+       // add attribute
+       try {
+           sfReplaceAttribute(SmartFrogCoreKeys.SF_APP_LOG_NAME, newlog.getLogName());
+       } catch (Exception ex) {
+         if (sfLog().isErrorEnabled()){ sfLog().err(ex);}
+       }
        return oldlog;
     }
 
@@ -1235,13 +1241,32 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     public LogSF sfGetApplicationLog() throws SmartFrogException, RemoteException {
         //@todo should we use prim name and get a hierarchy of logs?
          //this.sfResolveHere(SmartFrogCoreKeys.SF_APP_LOG_NAME,false);
+        String sfLogName=null;
         try {
-            return sfGetLog(sfResolve(SmartFrogCoreKeys.SF_APP_LOG_NAME, "", true));
+            // Check or sfLog attribute in component, if not initially defined
+            // then it will be created during sfDeploy.
+            Object obj =sfResolve(SmartFrogCoreKeys.SF_APP_LOG_NAME, true);
+            if (obj instanceof Prim) {
+                sfLogName = ((Prim)obj).sfCompleteName().toString();
+            } else {
+              sfLogName = obj.toString();
+            }
+            return sfGetLog(sfLogName);
         } catch (SmartFrogResolutionException ex) {
             //Get root Log name
-            String sfLogName = ((Prim)sfResolveWithParser(SmartFrogCoreKeys.SF_ROOT)).sfCompleteName().toString();
-            // add attribute
-            sfAddAttribute(SmartFrogCoreKeys.SF_APP_LOG_NAME,sfLogName);
+            // Very expensive call
+            //String sfLogName = ((Prim)sfResolveWithParser(SmartFrogCoreKeys.SF_ROOT)).sfCompleteName().toString();
+            if (sfParent()!=null){
+                try {
+                    // Check or sfLog attribute in parent
+                    sfLogName = (sfParent().sfResolve(SmartFrogCoreKeys.SF_APP_LOG_NAME,"", true));
+                } catch (SmartFrogResolutionException rex){
+                    sfLogName = (this.sfCompleteName().toString());
+                }
+            } else {
+                //I am the Root component for this application
+                sfLogName = (this.sfCompleteName().toString());
+            }
             return sfGetLog(sfLogName);
         }
 
