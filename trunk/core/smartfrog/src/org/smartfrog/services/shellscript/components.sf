@@ -92,6 +92,7 @@ Process extends Prim {
    terminate false;
    autoStart true;
 
+   sfLog LAZY THIS;
    sfExport false;
 }
 
@@ -118,6 +119,7 @@ Shell extends Prim {
    sfClass "org.smartfrog.services.shellscript.SFScriptExecutionImpl";
    exec extends DATA Exec;
 
+   sfLog LAZY THIS;
    sfExport false;
 }
 

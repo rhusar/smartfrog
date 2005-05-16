@@ -40,6 +40,7 @@ import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.logging.LogFactory;
 
 import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 
 public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
 
@@ -147,6 +148,14 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
       // RunProcessImpl
       this.name = name;
       this.cmd = cmd;
+
+      try {
+          if (prim!=null){
+              sflog = LogFactory.getLog(prim.sfResolve(SmartFrogCoreKeys.SF_APP_LOG_NAME, "", true));
+          }
+      } catch (Exception ex) {
+          if (sflog.isErrorEnabled()){sflog.error("",ex);};
+      }
 
       if (cmd.getFilterOutListener()==null) {
           String filters[] = {TYPE_DONE+" "+name,

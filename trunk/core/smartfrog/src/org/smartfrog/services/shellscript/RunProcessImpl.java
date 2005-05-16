@@ -34,6 +34,9 @@ import java.io.IOException;
 import java.util.Vector;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.common.TerminatorThread;
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
+import java.rmi.*;
+import org.smartfrog.sfcore.common.*;
 
 //------------------- RUNProcess -------------------------------
 public class RunProcessImpl  extends Thread implements RunProcess {
@@ -158,24 +161,30 @@ public class RunProcessImpl  extends Thread implements RunProcess {
 
     private int sleepBeforeRestart = 1000;
 
-    // Name can be null, not sure if we still need name.
+    // Name can be null
     public RunProcessImpl( String name, Cmd cmd, Prim prim) {
-        this(name,cmd);
+        if (name == null) name = "";
+        this.name = name;
+        setName("RunProcess");
+
+        this.cmd = cmd;
+
+        killRequested = false;
+        execExitCodes.add(numberOfExecs);
+
         this.prim=prim;
+        try {
+            if (prim!=null){
+              sfLog = LogFactory.getLog(prim.sfResolve(SmartFrogCoreKeys.SF_APP_LOG_NAME, "", true));
+            }
+        } catch (Exception ex) {
+            if (sfLog.isIgnoreEnabled()){sfLog.ignore("",ex);};
+        }
     }
 
     // Name can be null, not sure if we still need name.
     public RunProcessImpl( String name, Cmd cmd) {
-        this.setName(name);
-        if (name == null) name = "";
-
-        this.cmd = cmd;
-//        this.ID = ID;
-        this.name = name;
-        setName("RunProcess");
-        sfLog = LogFactory.getLog(name);
-        killRequested = false;
-        execExitCodes.add(numberOfExecs);
+      this(name,cmd,null);
     }
 
     public void run() {
@@ -235,8 +244,8 @@ public class RunProcessImpl  extends Thread implements RunProcess {
                 processDos = new DataOutputStream(process.getOutputStream());
 
                 replaceFilters(
-                  new FilterImpl( name, process.getInputStream(), "out", cmd.getFiltersOut(), cmd.getFilterOutListener()),
-                  new FilterImpl( name, process.getErrorStream(), "err", cmd.getFiltersErr(), cmd.getFilterErrListener())
+                  new FilterImpl( sfLog.getLogName(), process.getInputStream(), "out", cmd.getFiltersOut(), cmd.getFilterOutListener()),
+                  new FilterImpl( sfLog.getLogName(), process.getErrorStream(), "err", cmd.getFiltersErr(), cmd.getFilterErrListener())
                 );
 
             // process may be null by the time we get here after the synchronized
