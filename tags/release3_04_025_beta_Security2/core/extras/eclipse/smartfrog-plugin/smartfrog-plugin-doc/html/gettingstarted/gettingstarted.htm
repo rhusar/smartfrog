@@ -1,0 +1,169 @@
+<html>
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN">
+
+<head>
+<meta HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=ISO-8859-1">
+<meta HTTP-EQUIV="Content-Style-Type" CONTENT="text/css">
+<meta name="GENERATOR" content="Microsoft FrontPage 5.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<link REL="STYLESHEET" HREF="../../book.css" CHARSET="ISO-8859-1" TYPE="text/css">
+<title>Getting Started</title>
+<style type="text/css">
+<!--
+.style1 {font-family: "Courier New", Courier, mono}
+.style2 {font-family: Verdana, Arial, Helvetica, sans-serif}
+.style3 {font-family: Arial, Helvetica, sans-serif}
+-->
+</style>
+</head>
+
+<body>
+<p class="Chapter">Getting Started</p>
+
+<a name="overview"></a>
+<h1>Overview of the SmartFrog Eclipse plug-in</h1>
+
+<p>SmartFrog™ (Smart Framework for Object Groups) is a framework for configuring 
+and automatically activating distributed applications. SmartFrog is both a 
+language for describing component collections and component configuration 
+parameters and a runtime environment, which activates and manages these 
+components. In this model, a component is a Java application that has 
+implemented the SmartFrog interface APIs, which support various lifecycle operations. 
+The Java component is described using the SmartFrog description language 
+notation.
+These descriptions are contained in SmartFrog description files, which specify component
+definitions, associations and relationships between the 
+components, and
+workflows associated with the lifecycle of the components and 
+the system as
+a whole. </p>
+
+<p>The  SmartFrog Eclipse plug-in provides the user with one common integrated 
+development environment (IDE) in which to develop SmartFrog description files 
+and Java component files. The Eclipse platform offers the benefits of project 
+management, version control, and  sophisticated Java development tools for 
+writing, compiling, testing, and debugging Java applications.</p>
+<p>In the Tasks section of the online help, we use the counter example located in the <em>SmartFrog_Install_Dir</em><span class="style1">\src\org\smartfrog\examples\counter<span class="style2"> <span class="style3">directory</span></span></span> to explain how to use the plug-in to create and deploy SmartFrog description and component files. The counter component is relatively simple. It generates a counter with a given seed value and increments it by one untill it 
+reaches the limit attribute value specified in the description file. We selected a simple example by design so that you are not caught up in application details but rather focused on the description and component files and their interaction.</p>
+<p><img border="0" src="../../images/ngrelt.gif" alt="Related tasks" width="159" height="27" /></p>
+
+<ul>
+<li>
+<a href="../tasks/create_SF_project.html">Creating a SmartFrog project</a>
+</li>
+
+<li>
+<a href="../tasks/create_SF_desc.html">Creating a SmartFrog description file</a>
+</li>
+<li>
+<a href="../tasks/create_SF_java.html">Creating a Java component file with SmartFrog interfaces</a></li>
+<li>
+<a href="../tasks/test_SF_app.html">Testing a SmartFrog application</a></li>
+<li><a href="runconfig_SF_app.html">Creating SmartFrog run configurations</a></li>
+<li>
+  <a href="../tasks/spec_diff_install.html">Specifying SmartFrog properties</a></li>
+</ul>
+<p><img border="0" src="../../images/ngrelc.gif" alt="Related concepts" width="159" height="27" /></p>
+<ul>
+<li>
+<a href="../concepts/concepts.html">SmartFrog introduction</a></li>
+<li><a href="../concepts/concepts_goals.html">SmartFrog goals
+  </a>
+</li>
+<li>
+<a href="../concepts/concepts_approach.html"> SmartFrog approach
+</a>
+</li>
+<li>
+<a href="../concepts/concepts_framework.html">
+SmartFrog framework</a></li>
+</ul>
+<p><img src="../../images/ngrelr.gif" alt="Related reference" width="159" height="27" /></p>
+
+<ul><li><a href="http://www.hpl.hp.com/research/smartfrog/">SmartFrog Web site</a> </li>
+<li> <a href=
+"http://www.smartfrog.org/manuals/current/sfReference.pdf"> SmartFrog Reference Manual</a> </li>
+<li> <a href=
+"http://www.smartfrog.org/manuals/current/sfUserManual.pdf"> SmartFrog User Manual</a> </li>
+<li> <a href=
+"http://www.smartfrog.org/manuals/current/SFGuiManual.pdf"> SmartFrog GUI Quick Reference Guide (Draft)</a> </li>
+<li> <a href=
+"http://www.smartfrog.org/manuals/current/sfWorkflow.pdf"> SmartFrog Work Flow Manual (Draft)</a> </li>
+<li> <a href=
+"http://www.smartfrog.org/manuals/current/sfDynamicWebServerExample.pdf"> SmartFrog Dynamic Web Server Example</a></li>
+<li>
+<a href="http://eclipse.org">Eclipse Web site</a>
+</li>
+</ul>
+
+<a name="eclipse"></a>
+<h1>About Eclipse</h1>
+
+<p>Eclipse is an open extensible framework that uses a
+plug-in architecture for integrating development tools.
+The Eclipse
+platform is structured around the concept of <b>extension points</b>. Extension
+points are well-defined places in the system where tools (called <b>plug-ins</b>)
+can extend and contribute new functionality to the platform.</p>
+
+<p>The Eclipse framework includes: 
+<ul>
+<li>
+Eclipse platform - basic workbench
+</li>
+<li>
+Java Development Toolkit (JDT) — full
+featured Java development environment
+</li>
+<li>
+Plug-in Developer Environment (PDE) — specialized tools to aid in the
+development of plug-ins
+</li>
+</ul>
+<a name="read"></a>
+<h2>Recommended reading</h2>
+<p>The Eclipse platform comes with the following online books that you can 
+access as part of the available online help:</p>
+<ul>
+<li>
+<i>
+Workbench User Guide</i> - provides basic end user information about using the
+platform
+</li>
+
+<li><i>Java Development User Guide</i> - provides information on how to use the
+  platform to develop Java applications</li>
+
+<li><i>Platform Plug-in Developer Guide</i> - provides information for the plug-in
+  developer to extend the platform</li>
+
+<li><i>JDT Plug-in Developer Guide</i> - provides information about the extension points and API
+  provided by the JDT that allow the Java developer to write, compile, test, debug, and edit Java applications</li>
+
+<li><i>PDE
+Guide</i> - provides information about a set of platform extension contributions
+  (views, editors, perspectives, etc.) that collectively allow the plug-in
+  developer to streamline the process of developing plug-ins inside the
+  workbench</li>
+</ul>
+
+<a name="assumptions"></a>
+<h1>Assumptions</h1>
+To use this plug-in, you must be familiar with the following:
+<ul>
+<li>
+Java development
+</li>
+<li>
+Eclipse IDE 
+</li>
+<li>
+Principles of SmartFrog technology</li>
+</ul>
+
+<p><img src="../../images/hp_copyright.gif" width="314" height="32"></p>
+
+</body>
+
+</html>
