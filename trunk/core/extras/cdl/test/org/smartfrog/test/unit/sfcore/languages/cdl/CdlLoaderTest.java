@@ -21,12 +21,13 @@
 package org.smartfrog.test.unit.sfcore.languages.cdl;
 
 import junit.framework.TestCase;
-import org.jdom.JDOMException;
 import org.smartfrog.services.xml.utils.ResourceLoader;
 import org.smartfrog.sfcore.languages.cdl.CdlParser;
 import org.smartfrog.sfcore.languages.cdl.dom.CdlDocument;
 
 import java.io.IOException;
+
+import nu.xom.ParsingException;
 
 /**
  * Junit test cause
@@ -106,7 +107,7 @@ public class CdlLoaderTest extends TestCase {
             CdlDocument doc = load(filename);
             doc.validate();
             fail("expected a validity failure with " + text);
-        } catch (JDOMException e) {
+        } catch (ParsingException e) {
             if (e.getMessage().indexOf(text) < 0) {
                 log("expected [" + text + "] but got " + e.toString());
                 throw e;
@@ -129,7 +130,7 @@ public class CdlLoaderTest extends TestCase {
     }
 
     protected CdlDocument load(String filename) throws IOException,
-            JDOMException {
+            ParsingException {
         CdlDocument doc;
         loading(filename);
         doc = parser.parseResource(filename);

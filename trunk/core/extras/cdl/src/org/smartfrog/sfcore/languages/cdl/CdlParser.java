@@ -23,18 +23,15 @@ package org.smartfrog.sfcore.languages.cdl;
 import org.smartfrog.services.xml.utils.ParserHelper;
 import org.smartfrog.services.xml.utils.ResourceLoader;
 import org.smartfrog.sfcore.languages.cdl.dom.CdlDocument;
-import org.smartfrog.sfcore.languages.cdl.utils.JDomHelper;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
-import org.jdom.input.SAXBuilder;
-import org.jdom.Document;
-import org.jdom.JDOMException;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Reader;
-import java.io.StringReader;
+
+import nu.xom.Builder;
+import nu.xom.ParsingException;
 
 /**
  * JDom based utility to parse CDL files. created Jul 1, 2004 1:49:31 PM
@@ -47,10 +44,6 @@ public class CdlParser {
      */
     private ResourceLoader resourceLoader;
 
-    /**
-     * builder class
-     */
-    private SAXBuilder builder;
 
     /**
      * create a parser;
@@ -58,7 +51,7 @@ public class CdlParser {
      * @param loader   resource loader algorithm
      * @param validate validation logic.
      */
-    public CdlParser(ResourceLoader loader, boolean validate)
+/*    public CdlParser(ResourceLoader loader, boolean validate)
             throws SAXException {
 
         assert loader!=null:"null ResourceLoader";
@@ -72,6 +65,31 @@ public class CdlParser {
             CdlCatalog resolver = new CdlCatalog(loader);
             resolver.bind(builder);
         }
+    }*/
+
+
+    /**
+     * builder class
+     */
+    private Builder builder;
+
+    /**
+     * create a parser;
+     *
+     * @param loader   resource loader algorithm
+     * @param validate validation logic.
+     */
+    public CdlParser(ResourceLoader loader, boolean validate)
+            throws SAXException {
+        resourceLoader = loader;
+        //we mandate Xerces, as the others cannot handle schema so well
+        XMLReader xerces = ParserHelper.createXmlParser(validate,true,true);
+
+        if (validate) {
+            CdlCatalog resolver = new CdlCatalog(loader);
+            resolver.bind(xerces);
+        }
+        builder = new Builder(xerces, validate);
     }
 
 
@@ -81,10 +99,10 @@ public class CdlParser {
      * @param filename
      * @return
      * @throws IOException
+     * @throws ParsingException
      */
     public CdlDocument parseFile(String filename) throws IOException,
-            JDOMException
-            {
+            ParsingException {
         File f = new File(filename);
         return new CdlDocument(builder.build(f));
     }
@@ -95,12 +113,11 @@ public class CdlParser {
      * @param instream
      * @return
      * @throws IOException
-     * @throws JDOMException
+     * @throws ParsingException
      */
     public CdlDocument parseStream(InputStream instream) throws IOException,
-            JDOMException
-            {
-        Document doc = builder.build(instream);
+            ParsingException {
+        nu.xom.Document doc = builder.build(instream);
         return new CdlDocument(doc);
     }
 
@@ -110,20 +127,12 @@ public class CdlParser {
      * @param resource
      * @return
      * @throws IOException
-     * @throws JDOMException
+     * @throws ParsingException
      */
     public CdlDocument parseResource(String resource) throws IOException,
-            JDOMException {
+            ParsingException {
         InputStream in = resourceLoader.loadResource(resource);
         return parseStream(in);
-    }
-
-    /**
-     * Get our builder
-     * @return
-     */
-    public SAXBuilder getBuilder() {
-        return builder;
     }
 
     /**
@@ -134,25 +143,4 @@ public class CdlParser {
         return resourceLoader;
     }
 
-    /**
-     * get a CDL document from a message element
-     *
-     * @param descriptor
-     * @return
-     * @throws JDOMException
-     * @throws IOException
-     * @throws Exception
-     */
-/* Axis-specific
-public CdlDocument parseMessageElement(MessageElement descriptor)
-            throws ParsingException, IOException, Exception {
-        // yes, this is truly atrocious, us casting the subtree to a
-        // string and then reparsing it. But there you go.
-        //note that getAsDOM does this internally :(
-        final String subtreeAsString = descriptor.getAsString();
-        final Reader r = new StringReader(subtreeAsString);
-        //parse the document
-        return new CdlDocument(builder.build(r));
-
-    }*/
 }

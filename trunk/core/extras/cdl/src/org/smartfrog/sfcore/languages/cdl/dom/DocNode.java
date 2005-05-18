@@ -20,7 +20,7 @@
 package org.smartfrog.sfcore.languages.cdl.dom;
 
 import org.smartfrog.sfcore.languages.cdl.CdlParsingException;
-import org.jdom.Content;
+import nu.xom.Node;
 
 /**
  * created 21-Apr-2005 14:25:53
@@ -32,7 +32,7 @@ public class DocNode implements FromXML {
      * Parse from XM
      * @throws CdlParsingException
      */
-    public void fromXML(Content content) throws CdlParsingException {
+    public void fromXML(Node content) throws CdlParsingException {
 
     }
 

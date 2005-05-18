@@ -17,16 +17,18 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.sfcore.languages.cdl.dom;
+package org.smartfrog.sfcore.languages.cdl.utils;
 
-import org.smartfrog.sfcore.languages.cdl.CdlParsingException;
 import nu.xom.Node;
+import nu.xom.ParentNode;
 
 /**
- * created 12-May-2005 17:35:15
+ * A node iterator that is explicitly all nodes
+ * created 16-May-2005 17:24:34
  */
 
-
-public interface FromXML {
-    void fromXML(Node content) throws CdlParsingException;
+public class NodeIterator extends BaseNodeIterator<Node> {
+    public NodeIterator(ParentNode parent) {
+        super(parent);
+    }
 }
