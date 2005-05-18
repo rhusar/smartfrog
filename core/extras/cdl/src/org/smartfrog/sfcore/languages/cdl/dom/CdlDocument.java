@@ -22,17 +22,15 @@ package org.smartfrog.sfcore.languages.cdl.dom;
 import org.smartfrog.sfcore.languages.cdl.CdlParsingException;
 import static org.smartfrog.sfcore.languages.cdl.Constants.*;
 import static org.ggf.cddlm.generated.api.CddlmConstants.*;
-import org.smartfrog.sfcore.languages.cdl.utils.TypeFilter;
-import org.jdom.Document;
-import org.jdom.JDOMException;
-import org.jdom.Element;
-import org.jdom.Content;
-import org.jdom.Namespace;
-import org.jdom.Parent;
-import org.jdom.filter.Filter;
+import org.smartfrog.sfcore.languages.cdl.utils.ElementIterator;
+import org.smartfrog.sfcore.languages.cdl.utils.IteratorRelay;
 
 import javax.xml.namespace.QName;
-import java.util.List;
+
+import nu.xom.ParsingException;
+import nu.xom.Document;
+import nu.xom.Element;
+import nu.xom.ParentNode;
 
 /**
  * This represents a parsed CDL document, or an error caused during parsing.
@@ -44,12 +42,6 @@ public class CdlDocument extends DocumentedNode {
      * Original Document
      */
     private Document document;
-
-    /**
-     * Any exception that ocurred during parsing.
-     */
-
-    private JDOMException exception;
 
 
     /**
@@ -88,7 +80,7 @@ public class CdlDocument extends DocumentedNode {
         this.document = doc;
     }
 
-    public CdlDocument(JDOMException exception) {
+    public CdlDocument(ParsingException exception) {
         this.exception = exception;
     }
 
@@ -107,15 +99,26 @@ public class CdlDocument extends DocumentedNode {
         return document;
     }
 
-    public JDOMException getException() {
+    private ParsingException exception;
+
+    public ParsingException getException() {
         return exception;
     }
 
-    public void throwAnyException() throws JDOMException {
+    public int getErrorLine() {
+        return exception == null ? 0 : exception.getLineNumber();
+    }
+
+    public int getErrorColumn() {
+        return exception == null ? 0 : exception.getColumnNumber();
+    }
+
+    public void throwAnyException() throws ParsingException {
         if (exception != null) {
             throw exception;
         }
     }
+
 
     /**
      * Get the configuration
@@ -179,7 +182,7 @@ public class CdlDocument extends DocumentedNode {
      * @throws CdlParsingException
      */
     protected void parse() throws CdlParsingException {
-        for(Element element:elementIterator(document)) {
+        for(Element element: elements(document)) {
             verifyInCdlNamespace(element);
             verifyNodeName(element, ELEMENT_NAME_ROOT);
             processRootNode(element);
@@ -195,7 +198,7 @@ public class CdlDocument extends DocumentedNode {
 
     private void verifyNodeName(Element element,String name)
             throws CdlParsingException {
-        CdlParsingException.assertValid(ELEMENT_NAME_ROOT.equals(element.getName()),
+        CdlParsingException.assertValid(ELEMENT_NAME_ROOT.equals(element.getLocalName()),
                 ERROR_WRONG_ELEMENT +name
                     +" but got "+element);
     }
@@ -208,7 +211,7 @@ public class CdlDocument extends DocumentedNode {
      */
     private void processRootNode(Element node) throws CdlParsingException {
         root = node;
-        for (Element element : elementIterator(root)) {
+        for (Element element : elements(root)) {
             verifyInCdlNamespace(element);
 
 
@@ -223,19 +226,21 @@ public class CdlDocument extends DocumentedNode {
      *
      * @return
      */
-    public List<Content> getContent() {
+/*    public List<Content> getContent() {
         assert document != null: "no document";
         return document.getContent();
-    }
+    }*/
 
     /**
      * iterate over the list
      * @param element
      * @return
      */
+/*
     public List<Content> iterator(Parent element) {
         return element.getContent();
     }
+*/
 
     /**
      * iterate over the list
@@ -244,17 +249,22 @@ public class CdlDocument extends DocumentedNode {
      * @param filter
      * @return
      */
+/*
     public List<Content> iterator(Parent element,Filter filter) {
         return element.getContent(filter);
     }
+*/
 
     /**
      * Iterate just over elements
      * @param element
      * @return
      */
-    public List<Element> elementIterator(Parent element) {
-        return element.getContent(TypeFilter.elementFilter());
+    public ElementIterator elementIterator(ParentNode element) {
+        return new ElementIterator(element);
     }
 
+    public IteratorRelay<Element> elements(ParentNode element) {
+        return new IteratorRelay(elementIterator(element));
+    }
 }

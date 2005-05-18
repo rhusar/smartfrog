@@ -29,7 +29,6 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.XMLReader;
-import org.jdom.input.SAXBuilder;
 
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerException;
@@ -55,14 +54,14 @@ public class CdlCatalog implements URIResolver, EntityResolver {
     /**
      * where all the WSRF files really live {@value}
      */
-    private static final String WSRF_PACKAGE = PACKAGE_BASE +
-            CddlmConstants.XML_FILENAME_WSRF_DIRECTORY;
+    private static final String WSRF_PACKAGE = PACKAGE_BASE;
+//            + CddlmConstants.XML_FILENAME_WSRF_DIRECTORY;
 
     /**
      * where the API files really live {@value}
      */
-    private static final String API_PACKAGE = PACKAGE_BASE +
-            CddlmConstants.CDL_FILENAME_XML_DIRECTORY;
+    private static final String API_PACKAGE = PACKAGE_BASE;
+    //+CddlmConstants.CDL_FILENAME_XML_DIRECTORY;
 
 
     /**
@@ -281,6 +280,7 @@ public class CdlCatalog implements URIResolver, EntityResolver {
             SAXNotRecognizedException {
         setImportPaths(parser);
         parser.setEntityResolver(this);
+
     }
 
     /**
@@ -289,6 +289,7 @@ public class CdlCatalog implements URIResolver, EntityResolver {
      *
      * @param parser
      */
+/*
     public void setImportPaths(SAXBuilder parser) {
         String[] map = CDDLM_MAPPINGS;
         StringBuffer buffer = new StringBuffer();
@@ -303,6 +304,7 @@ public class CdlCatalog implements URIResolver, EntityResolver {
         String s = new String(buffer);
         parser.setProperty(SCHEMA_LOCATION, s);
     }
+*/
 
 
     /**
@@ -312,9 +314,11 @@ public class CdlCatalog implements URIResolver, EntityResolver {
      * is too late to fix.
      * @param parser
      */
+/*
     public void bind(SAXBuilder parser)  {
         setImportPaths(parser);
         parser.setEntityResolver(this);
     }
+*/
 
 }

@@ -19,35 +19,28 @@
  */
 package org.smartfrog.sfcore.languages.cdl.utils;
 
-import org.jdom.filter.Filter;
-import org.jdom.Element;
+import java.util.Iterator;
 
 /**
- * created 06-May-2005 13:58:26
+ * Dumb little class to relay iterators, just to force them into for() loops.
+ *
+ * created 17-May-2005 14:46:09
  */
 
-public class TypeFilter implements Filter {
+public class IteratorRelay<T> implements Iterable<T>{
 
-    Class clazz;
+    Iterator<T> iterator;
 
-    public TypeFilter(Class clazz) {
-        assert clazz!=null;
-        this.clazz = clazz;
+    public IteratorRelay(Iterator<T> iterator) {
+        this.iterator = iterator;
     }
-
 
     /**
-     * Check to see if the object is an element
+     * Returns an iterator over a set of elements of type T.
      *
-     * @param obj The object to verify.
-     * @return <code>true</code> if the object matches a predfined set of
-     *         rules.
+     * @return an Iterator.
      */
-    public boolean matches(Object obj) {
-        return obj.getClass().equals(clazz);
-    }
-
-    public static Filter elementFilter() {
-        return new TypeFilter(Element.class);
+    public Iterator<T> iterator() {
+        return iterator;
     }
 }
