@@ -38,7 +38,6 @@ import java.io.StringWriter;
 import java.io.PrintWriter;
 
 public class ConfigurationDescriptor implements MessageKeys{
-
     /**
      * an enumeration of our options
      */
@@ -46,18 +45,29 @@ public class ConfigurationDescriptor implements MessageKeys{
         private Action() {
         }
 
-        final static public int DEPLOY=0;
-        final static public int TERMINATE=1;
-        final static public int UNDEFINED=2;
-        final static public int DETACH=3;
-        final static public int DETaTERM=4;
-        public static final int PING=5;
-        static public String[] type= {"DEPLOY",
-                      "TERMINATE",
-                      "UNDEFINED",
-                      "DETACH",
-                      "DETaTERM",
-                       "PING"};
+        final static public String ACT_DEPLOY = "DEPLOY";
+        final static public int DEPLOY = 0;
+        final static public String ACT_TERMINATE = "TERMINATE";
+        final static public int TERMINATE = 1;
+        final static public String ACT_UNDEFINED = "UNDEFINED";
+        final static public int UNDEFINED = 2;
+        final static public String ACT_DETACH= "DETACH";
+        final static public int DETACH = 3;
+        final static public String ACT_DETaTERM = "DETaTERM";
+        final static public int DETaTERM = 4;
+        final static public String ACT_PING = "PING";
+        final static public int PING = 5;
+        final static public String ACT_PARSE = "PARSE";
+        final static public int PARSE = 6;
+
+        static public String[] type= {
+                      ACT_DEPLOY,
+                      ACT_TERMINATE,
+                      ACT_UNDEFINED,
+                      ACT_DETACH,
+                      ACT_DETaTERM,
+                      ACT_PING,
+                      ACT_PARSE};
     }
 
 
@@ -317,6 +327,10 @@ public class ConfigurationDescriptor implements MessageKeys{
                                                        host.toString(),
                                                        this.getResultMessage().toString());
                     }
+                 break;
+                 case ConfigurationDescriptor.Action.PARSE: {
+                        result = "Parsed :"+this.getUrl() +"\n"+ this.getContextAttribute("parseReport").toString();
+                        }
                  break;
 
                 default:
@@ -750,6 +764,9 @@ public class ConfigurationDescriptor implements MessageKeys{
                 break;
             case Action.PING:
                 action = new ActionPing();
+                break;
+            case Action.PARSE:
+                action = new ActionParse();
                 break;
             default:
                 throw new SmartFrogInitException("Action type unknown");
