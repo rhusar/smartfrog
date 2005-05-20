@@ -112,6 +112,14 @@ For more information: www.smartfrog.org
     <forward2 dir="${components.project}" target="dist"  />
   </target>
 
+  <!-- =================================================================== -->
+  <!-- m2 installation distribution                                                    -->
+  <!-- =================================================================== -->
+
+  <target name="m2-install" depends="main-dist,tasks" 
+    description="components installation into the m2 cache">
+    <forward2 dir="${components.project}" target="m2-install"  />
+  </target>  
   
   <!-- =================================================================== -->
   <!-- main distribution                                                    -->
@@ -157,8 +165,6 @@ For more information: www.smartfrog.org
   <!-- =================================================================== -->
   <target name="test" depends="test-main,test-ant,test-testharness"
     description="test everything"/>
-
-
 
 
   <!-- the following targets are for use in CruiseControl automated builds;

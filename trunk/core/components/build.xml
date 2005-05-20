@@ -32,6 +32,7 @@ For more information: www.smartfrog.org
       maybe-test        test if prereqs are met
       maybe-install     conditional install
       clean             clean up the output dirs
+      m2-install
       
     The easiest way to do this is import root.dir/common.xml 
     as a common build file; it provides template operations for this process.  
@@ -174,6 +175,11 @@ For more information: www.smartfrog.org
     description="install all projects">
     <delegate target="maybe-install"/>
   </target> 
+  
+  <target name="m2-install" depends="init"
+    description="install all projects">
+    <delegate target="maybe-install"/>
+  </target>
   
   <target name="diagnostics" depends="init"
     description="diagnostics">
