@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
-<project name="xml" default="default">
+<project name="xml" default="default"
+  xmlns:artifact="antlib:org.apache.maven.artifact.ant">
 
   <!--
   /** (C) Copyright 1998-2005 Hewlett-Packard Development Company, LP
@@ -47,15 +48,41 @@
 
   </target>
 
+  
+  
+  <target name="declare-versions" depends="init">
+    <property file="libraries.properties"/>
+    <property file="${smartfrog.components.dir}/libraries.properties"/>
+  </target>
+  
+  <!-- import libs. may need proxy setup -->
+  <!-- note that this is a very unstable corner of Ant; needs
+       CVS_HEAD releases and will definitely change before long -->
+  <target name="m2" depends="init,setproxy,declare-versions" >
+  
+    <artifact:dependencies pathID="axis.classpath">
+    <!--  <localRepository location="${basedir}/target/local-repo" />  -->
+      <dependency groupID="xerces"
+        artifactID="xercesImpl"
+        version="${xerces.version}"/>        
+      <dependency groupID="xerces"
+        artifactID="xmlParserAPIs"
+        version="${xerces.version}"/>
+      <dependency groupID="xom"
+        artifactID="xom"
+        version="${xom.version}"/>
+      <dependency groupID="jaxen"
+        artifactID="jaxen"
+        version="${jaxen.version}"/>        
+    </artifact:dependencies>
+  
+  </target>  
     
   <!-- ========================================================== -->
   <!-- set everything up to download stuff to the maven repo -->
   <!-- ========================================================== -->
-  <target name="libraries" depends="setproxy">
-    <property file="libraries.properties"/>
-    <property file="${smartfrog.components.dir}/libraries.properties"/>
+  <target name="libraries" depends="setproxy,declare-versions">
     <libraries destdir="${lib.dir}" flatten="true">
-      
       <mavenrepository url="${maven.url}"/>
       <library project="xerces"
         archive="xercesImpl"
@@ -72,6 +99,7 @@
     </libraries>
   </target>
     
+  
   
   <!-- ========================================================== -->
   <!-- declare our compile time classpath -->

@@ -6,12 +6,12 @@
   inclusion into other build files. It is a self contained build file
   for importing and overriding in subsidiary build files. 
   
-    This build file is cutting-edge Ant1.6 scalability at work. It is 
+    This build file is cutting-edge Ant1.6+ scalability at work. It is 
     not going to run on older versions, and the documentation for what
     is in use is still sparse. 
     Best docs so far: http://otn.oracle.com/pub/articles/bodewig_ant1.6.html
   
-  When ant 1.6 imports stuff into a project, the value of ".", the project
+  When ant imports stuff into a project, the value of ".", the project
   directory is that of the importing project, not the imported. But it sets
   a property ant.file.PROJECTNAME to that of the directory of the imported 
   project, where PROJECTNAME is not the filename, but the name of the project
@@ -82,7 +82,7 @@
     <property name="maven.lib.dir"
       location="${core.dir}/lib"/>
     <property name="maven.url"
-      value="http://ibiblio.org/maven/"/>
+      value="http://ibiblio.org/maven2/"/>
       
       
       <!-- common directories are relative to the build file loaded-->
@@ -168,6 +168,7 @@
         <!-- information about the ant tasks -->
     <property name="smartfrog.tasks.prefix" value="${jar.prefix}tasks"/>      
 
+    
   </target>
 
 
@@ -231,7 +232,10 @@
  
     <!-- this is an override point; components call this -component -->
     <property name="jarfile.suffix" value=""/>
-    <property name="jarfile.name" value="${project.name}${jarfile.suffix}-${Version}.jar"/>
+    <property name="jarfile.extension" value="jar"/>
+    <property name="artifact.name" value="${project.name}" />
+    <property name="jarfile.stub" value="${artifact.name}${jarfile.suffix}-${Version}" />
+    <property name="jarfile.name" value="${jarfile.stub}.${jarfile.extension}"/>
     <property name="target.jar" 
         location="${dist.lib.dir}/${jarfile.name}" />  
 <!--     name JAR files that tests go into. this is for signing all
@@ -241,7 +245,6 @@
     <property name="test.jar.name" value="${project.name}-test.jar"/>
     <property name="test.jar" 
         location="${dist.lib.dir}/${test.jar.name}" />  
-            
 
     <!-- standard location for distributed stuff; used when locating
       other things -->
@@ -890,7 +893,6 @@
   <!-- ========================================================== -->
   <target name="dist" depends="package"
     description="create a distribution">
-
   </target>    
     
  
@@ -905,7 +907,7 @@
     <copy-useful-files src="${lib.dir}" 
 	    pattern="**/*.jar" dest="${smartfrog.dist.lib.dir}" failonerror="false"/>       
   </target>
-  
+
   <!-- ========================================================== -->
   <!-- this is an override point -->
   <!-- generate test reports and break on failure-->
@@ -1072,8 +1074,75 @@
   </target>
   
   <target name="sign-target-jar"
-    description="sign our target jar">
+    description="sign our target jar" depends="package,init-security">
     <!-- TODO -->
+  </target>
+
+  <target name="checksum-target-jar"
+    description="checksum our target jar" depends="sign-target-jar">
+    <checksum file="${target.jar}" algorithm="md5"/>
+    <checksum file="${target.jar}" algorithm="sha1"/>
+  </target>
+
+  <!-- ========================================================== -->
+  <!-- init all the maven2 support   -->
+  <!-- ========================================================== -->
+     <target name="m2-init" depends="init,init-proxy">
+    <property file="${smartfrog.components.dir}/libraries.properties" />
+
+    <!-- Maven2 stuff
+      All components build into the org.smartfrog group, unless otherwise stated, but
+      are their own artifacts. 
+      -->
+    <property name="m2.dir" location="${user.home}/.m2/repository" />
+    <property name="m2.groupID" value="org.smartfrog" />
+    <property name="m2.groupID.path" value="org/smartfrog" />
+    <property name="m2.subdir" 
+      location="${m2.dir}/${m2.groupID.path}/${artifact.name}/${Version}" />
+      <!-- pom setup -->
+    <property name="target.pom" location="${jarfile.stub}.pom" />
+    <property name="project.pom" location="project.pom" />
+    <available property="project.haspom" file="${project.pom}" />
+        
+   </target>  
+
+  <!-- ========================================================== -->
+  <!-- POM creation/copy, depending on whether it exists or not   -->
+  <!-- ========================================================== -->
+  
+   <target name="m2-copy-pom" depends="m2-init" if="project.haspom">
+     <copy file="${project.pom}" to="${target.pom}" />
+   </target>
+
+   <!-- inline creation of a very minimal (zero dependency) pom -->
+   <target name="m2-make-pom" depends="m2-init" unless="project.haspom">
+   <echo message="Creating Pom ${target.pom}" level="verbose"/>
+   <echo file="${target.pom}"><![CDATA[<project>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>${m2.groupID}</groupId>
+  <artifactId>${artifact.name}</artifactId>
+  <packaging>jar</packaging>
+  <version>${Version}</version>
+</project>
+]]></echo>
+   
+   </target>
+   
+   <target name="m2-pom" depends="m2-copy-pom,m2-make-pom" />
+  
+  <!-- ========================================================== -->
+  <!-- this is not  normally for overriding -->
+  <!-- install the jar, to the local maven2 repository -->
+  <!-- ========================================================== -->
+  <target name="m2-install" depends="checksum-target-jar,m2-pom"
+      description="copy the JAR file local maven repository">
+      
+    <mkdir dir="${m2.subdir}"/>    
+    <copy file="${target.jar}" todir="${m2.subdir}"/>
+    <!-- copy a pom -->
+    <copy file="${target.pom}" todir="${m2.subdir}" failonerror="false"/>
+    <copy file="${target.jar}.md5" todir="${m2.subdir}" failonerror="false"/>
+
   </target>
   
   
