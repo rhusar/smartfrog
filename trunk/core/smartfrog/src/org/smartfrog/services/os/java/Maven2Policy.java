@@ -31,7 +31,14 @@ public class Maven2Policy extends AbstractPolicy implements LocalCachePolicy,
         SerializedArtifact.assertValid(library, true);
         String filename = createMavenArtifactName(library);
         String patchedProject = LibraryHelper.patchProject(library.project);
-        String urlPath = patchedProject + "/" + library.artifact + "/" + library.version + "/" + filename;
+        String urlPath = new StringBuffer().append(patchedProject)
+                .append("/")
+                .append(library.artifact)
+                .append("/")
+                .append(library.version)
+                .append("/")
+                .append(filename)
+                .toString();
         return urlPath;
     }
 
