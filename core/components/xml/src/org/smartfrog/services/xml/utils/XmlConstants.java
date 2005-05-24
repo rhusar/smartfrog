@@ -36,14 +36,30 @@ public interface XmlConstants {
      * what ships with Java1.5 {@value}
      */
     final static String PARSER_JAVA_15 = "com.sun.org.apache.xerces.internal.parsers.SAXParser";
-    final static String XERCES_XSD = "http://apache.org/xml/features/validation/schema";
-    final static String XERCES_XSD_FULLCHECKING = "http://apache.org/xml/features/validation/schema-full-checking";
-    final static String XERCES_URI_CONFORMANT = "http://apache.org/xml/features/standard-uri-conformant";
-    final static String XERCES_DOCTYPES = "http://apache.org/xml/features/disallow-doctype-decl";
-    final static String SAX_GENERAL_ENTITIES = "http://xml.org/sax/features/external-general-entities";
+
+    static final String FEATURE_XERCES_XSD = "http://apache.org/xml/features/validation/schema";
+
+    final static String FEATURE_XERCES_XSD_FULLCHECKING = "http://apache.org/xml/features/validation/schema-full-checking";
+    final static String FEATURE_XERCES_URI_CONFORMANT = "http://apache.org/xml/features/standard-uri-conformant";
+    final static String FEATURE_XERCES_DISALLOW_DOCTYPES = "http://apache.org/xml/features/disallow-doctype-decl";
+    final static String FEATURE_SAX_GENERAL_ENTITIES = "http://xml.org/sax/features/external-general-entities";
     /**
      * ask for secure XML prarsing
      * {@value}
      */
     final static String FEATURE_SECURE_PROCESSING = "http://javax.xml.XMLConstants/feature/secure-processing";
+
+    public static final String PROPERTY_SCHEMA_LOCATION =
+            "http://apache.org/xml/properties/schema/external-schemaLocation";
+    public static final String PROPERTY_NO_NAMESPACE_SCHEMA_LOCATION =
+            "http://apache.org/xml/properties/schema/external-noNamespaceSchemaLocation";
+
+    public static final String FEATURE_SAX_VALIDATION = "http://xml.org/sax/features/validation";
+    public static final String FEATURE_SAX_NAMESPACES = "http://xml.org/sax/features/namespaces";
+    public static final String FEATURE_JAXP12_SCHEMA_LANGUAGE =
+            "http://java.sun.com/xml/jaxp/properties/schemaLanguage";
+    public static final String FEATURE_JAXP12_SCHEMA_SOURCE =
+            "http://java.sun.com/xml/jaxp/properties/schemaSource";
+    public static final String URI_XSD =
+            "http://www.w3.org/2001/XMLSchema";
 }

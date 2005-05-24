@@ -21,17 +21,23 @@ package org.smartfrog.test.unit.sfcore.languages.cdl;
 import junit.framework.TestCase;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
+import org.xml.sax.InputSource;
 import org.xml.sax.helpers.XMLReaderFactory;
+import org.smartfrog.sfcore.languages.cdl.CdlCatalog;
+import org.smartfrog.services.xml.utils.ResourceLoader;
+import org.smartfrog.services.xml.utils.ParserHelper;
+import org.smartfrog.services.xml.utils.XmlConstants;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
+import java.io.InputStream;
 
 /**
  * created Aug 12, 2004 1:39:59 PM
  */
 
-public class XmlParserTest extends TestCase {
+public class XmlParserTest extends XmlTestBase {
     public static final String PARSER_NAME = "org.apache.xerces.parsers.SAXParser";
 
     public XmlParserTest(String s) {
@@ -76,4 +82,26 @@ public class XmlParserTest extends TestCase {
     }
 */
 
+    public void testXercesHandlesOurCatalog() throws Exception {
+        XMLReader xerces;
+        xerces = createXerces();
+        xerces.setFeature("http://apache.org/xml/features/validation/schema",
+                true);
+        ResourceLoader loader = new ResourceLoader(this.getClass());
+        CdlCatalog catalog = new CdlCatalog(loader);
+        catalog.bind(xerces);
+        assertEquals(catalog,xerces.getEntityResolver());
+        //set the parser options
+        xerces.setFeature(XmlConstants.FEATURE_XERCES_XSD,true);
+        xerces.setFeature(XmlConstants.FEATURE_SAX_NAMESPACES, true);
+        xerces.setFeature(XmlConstants.FEATURE_SAX_VALIDATION, true);
+        xerces.setFeature(XmlConstants.FEATURE_XERCES_XSD_FULLCHECKING, true);
+        InputStream in = loader.loadResource(CDL_DOC_MINIMAL);
+        InputSource ins=new InputSource(in);
+        try {
+            xerces.parse(ins);
+        } finally {
+            in.close();
+        }
+    }
 }

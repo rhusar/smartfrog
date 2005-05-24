@@ -36,7 +36,10 @@ import javax.xml.parsers.ParserConfigurationException;
  * XML support. Only for use with Xerces. created 26-Jan-2005 16:18:18
  */
 
-public class ParserHelper implements XmlConstants {
+public final class ParserHelper implements XmlConstants {
+
+    private ParserHelper() {
+    }
 
     /**
      * log
@@ -59,25 +62,37 @@ public class ParserHelper implements XmlConstants {
             throws SAXException {
         
         XMLReader xerces = createBaseXercesInstance();
-        setFeature(xerces,
+        setFeatures(xerces, secureLoading, validate, disableDoctypes);
+        return xerces;
+    }
+
+    public static void setFeatures(XMLReader xerces,
+                                    boolean secureLoading,
+                                    boolean validate, boolean disableDoctypes) {
+/*        setFeature(xerces,
                 FEATURE_SECURE_PROCESSING,
-                secureLoading);
+                secureLoading);*/
         setFeature(xerces,
-                XERCES_XSD,
+                FEATURE_XERCES_XSD,
                 validate);
         setFeature(xerces,
-                XERCES_XSD_FULLCHECKING,
-                validate);
-        setFeature(xerces,
-                XERCES_URI_CONFORMANT,
+                FEATURE_SAX_NAMESPACES,
                 true);
         setFeature(xerces,
-                XERCES_DOCTYPES,
+                FEATURE_SAX_VALIDATION,
+                validate);
+        setFeature(xerces,
+                FEATURE_XERCES_XSD_FULLCHECKING,
+                validate);
+/*        setFeature(xerces,
+                FEATURE_XERCES_URI_CONFORMANT,
+                true);*/
+/*        setFeature(xerces,
+                FEATURE_XERCES_DISALLOW_DOCTYPES,
                 disableDoctypes);
         setFeature(xerces,
-                SAX_GENERAL_ENTITIES,
-                !secureLoading);
-        return xerces;
+                FEATURE_SAX_GENERAL_ENTITIES,
+                !secureLoading);*/
     }
 
     /**
@@ -105,14 +120,14 @@ public class ParserHelper implements XmlConstants {
      * @param name   feature name
      * @param flag   flag to set/reset
      */
-    private static void setFeature(XMLReader parser, String name,
+    public static void setFeature(XMLReader parser, String name,
             boolean flag) {
         try {
             parser.setFeature(name, flag);
         } catch (SAXNotRecognizedException e) {
-            log.info("SAXNotRecognizedException setting " + name);
+            log.debug("SAXNotRecognizedException setting " + name);
         } catch (SAXNotSupportedException e) {
-            log.info("SAXNotSupportedException setting " + name);
+            log.debug("SAXNotSupportedException setting " + name);
         }
     }
 

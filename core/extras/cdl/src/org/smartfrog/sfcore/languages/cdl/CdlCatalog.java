@@ -23,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.ggf.cddlm.generated.api.CddlmConstants;
 import org.smartfrog.services.xml.utils.ResourceLoader;
+import org.smartfrog.services.xml.utils.XmlConstants;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -55,14 +56,14 @@ public class CdlCatalog implements URIResolver, EntityResolver {
     /**
      * where all the WSRF files really live {@value}
      */
-    private static final String WSRF_PACKAGE = PACKAGE_BASE;
-//            + CddlmConstants.XML_FILENAME_WSRF_DIRECTORY;
+    private static final String WSRF_PACKAGE = PACKAGE_BASE
+            + CddlmConstants.XML_FILENAME_WSRF_DIRECTORY;
 
     /**
      * where the API files really live {@value}
      */
-    private static final String API_PACKAGE = PACKAGE_BASE;
-    //+CddlmConstants.CDL_FILENAME_XML_DIRECTORY;
+    private static final String API_PACKAGE = PACKAGE_BASE
+    +CddlmConstants.CDL_FILENAME_XML_DIRECTORY;
 
 
     /**
@@ -78,10 +79,6 @@ public class CdlCatalog implements URIResolver, EntityResolver {
             CddlmConstants.XML_FILENAME_WS_ADDRESSING,
     };
 
-    /**
-     * property to set on the parser to fix a schema
-     */
-    public static final String SCHEMA_LOCATION = "http://apache.org/xml/properties/schema/external-schemaLocation";
 
     /**
      * map table
@@ -280,9 +277,9 @@ public class CdlCatalog implements URIResolver, EntityResolver {
             buffer.append(filename);
             buffer.append(' ');
         }
-        log.info(buffer);
+        log.debug(buffer);
         String s = new String(buffer);
-        parser.setProperty(SCHEMA_LOCATION, s);
+        parser.setProperty(XmlConstants.PROPERTY_SCHEMA_LOCATION, s);
     }
 
     /**
@@ -295,7 +292,7 @@ public class CdlCatalog implements URIResolver, EntityResolver {
         for (int i = 0; i < map.length; i += 2) {
             String schema = map[i];
             String filename = map[i + 1];
-            log.info(schema +" -> "+filename);
+            log.debug(schema +" -> "+filename);
             try {
                 loadStreamSource(filename, schema);
             } catch (IOException e) {
@@ -311,10 +308,8 @@ public class CdlCatalog implements URIResolver, EntityResolver {
      */
     public void bind(XMLReader parser) throws SAXNotSupportedException,
             SAXNotRecognizedException, IOException {
-        validateImportPaths();
         setImportPaths(parser);
         parser.setEntityResolver(this);
-
     }
 
     /**
