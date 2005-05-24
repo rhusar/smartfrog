@@ -242,7 +242,7 @@
     test code (inc deployment descriptors) for deployment onto secure
     boxes
  -->
-    <property name="test.jar.name" value="${project.name}-test.jar"/>
+    <property name="test.jar.name" value="${artifact.name}-${Version}-test.jar"/>
     <property name="test.jar" 
         location="${dist.lib.dir}/${test.jar.name}" />  
 
@@ -653,7 +653,7 @@
     <property name="testharness.dir" 
       location="${core.dir}/testharness" />
     <property name="testharness.jar.name"
-      value="sf-testharness.jar" /> 
+      value="sf-testharness-${Version}.jar" /> 
     <property name="testharness.jar"
         location="${testharness.dir}/${dist.lib.dir.relative}/${testharness.jar.name}" /> 
     <available file="${testharness.jar}" 
