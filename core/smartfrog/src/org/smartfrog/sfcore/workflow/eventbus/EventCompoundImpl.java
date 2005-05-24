@@ -102,9 +102,9 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
      * @param event java.lang.Object The event
      */
     public void handleEvent(Object event) {
-        //try {
-        //    System.out.println( sfCompleteName().toString() + " saw " + event );
-        //} catch (Exception e) {}
+        if (sfLog().isDebugEnabled()){
+          sfLog().debug(sfCompleteNameSafe().toString() + " saw " + event);
+        }
     }
 
     /**
@@ -118,7 +118,9 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
             EventSink s = (EventSink) e.nextElement();
 
             try {
-                //System.out.println( sfCompleteName().toString() + " sending " + event + " to " + s.toString() );
+                if (sfLog().isDebugEnabled()){
+                  sfLog().debug( sfCompleteNameSafe().toString() + " sending " + event + " to " + s.toString() );
+                }
                 s.event(event);
             } catch (RemoteException ex) {
             }
@@ -137,8 +139,7 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
         super.sfDeploy();
 
         /* find local registrations and register them */
-        ComponentDescription sends = (ComponentDescription)
-                                                sfResolve(sendRef);
+        ComponentDescription sends = (ComponentDescription) sfResolve(sendRef);
         Context scxt = sends.sfContext();
 
         for (Enumeration e = scxt.keys(); e.hasMoreElements();) {
@@ -149,8 +150,7 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
         }
 
         /* find own registrations, and register remotely */
-        ComponentDescription regs = (ComponentDescription)
-                                            sfResolve(receiveRef);
+        ComponentDescription regs = (ComponentDescription) sfResolve(receiveRef);
         Context rcxt = regs.sfContext();
 
         for (Enumeration e = rcxt.keys(); e.hasMoreElements();) {
