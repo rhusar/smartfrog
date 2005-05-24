@@ -45,7 +45,7 @@ public class Constants {
 
     public static final String CDL_NAMESPACE = CddlmConstants.XML_CDL_NAMESPACE;
 
-    public static final String CDL_API_NAMESPACE =  CddlmConstants.CDL_API_NAMESPACE;
+    public static final String CDL_API_TYPES_NAMESPACE =  CddlmConstants.CDL_API_TYPES_NAMESPACE;
 
 
     public static final String CDL_ELT_CDL = "cdl";
