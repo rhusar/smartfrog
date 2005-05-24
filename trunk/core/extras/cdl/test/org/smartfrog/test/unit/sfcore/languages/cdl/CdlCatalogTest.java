@@ -34,9 +34,8 @@ import java.io.IOException;
  * created Jul 16, 2004 4:38:12 PM
  */
 
-public class CdlCatalogTest extends TestCase {
+public class CdlCatalogTest extends XmlTestBase {
 
-    private ResourceLoader loader;
     private CdlCatalog catalog;
 
     public CdlCatalogTest(String name) {
@@ -45,10 +44,13 @@ public class CdlCatalogTest extends TestCase {
 
     protected void setUp() throws Exception {
         super.setUp();
-        loader = new ResourceLoader(this.getClass());
-        catalog= new CdlCatalog(loader);
+        catalog = createCatalog();
     }
 
+
+    public void testValidate() throws Exception {
+        catalog.validateImportPaths();
+    }
     public void testCdlLookup() {
         String cddlm=catalog.lookup(Constants.CDL_NAMESPACE);
         assertTrue(cddlm != null && cddlm.endsWith(Constants.CDL_XSD_FILENAME));
