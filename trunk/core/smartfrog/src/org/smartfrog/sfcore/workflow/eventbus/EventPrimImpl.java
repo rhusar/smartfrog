@@ -40,8 +40,7 @@ import org.smartfrog.sfcore.logging.LogSF;
  */
 public class EventPrimImpl extends PrimImpl implements EventRegistration,
     EventSink, EventBus, Prim {
-    static Reference receiveRef = new Reference(
-                "registerWith");
+    static Reference receiveRef = new Reference("registerWith");
     static Reference sendRef = new Reference("sendTo");
     Vector receiveFrom = new Vector();
     Vector sendTo = new Vector();
