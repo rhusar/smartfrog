@@ -31,8 +31,6 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.logging.LogSF;
-
 
 /**
  * An extension of Prim providing the Primitive SmartFrog Component with the
@@ -44,7 +42,6 @@ public class EventPrimImpl extends PrimImpl implements EventRegistration,
     static Reference sendRef = new Reference("sendTo");
     Vector receiveFrom = new Vector();
     Vector sendTo = new Vector();
-    LogSF log = null;
 
     /**
      * Constructs EventPrimImpl.
@@ -54,7 +51,6 @@ public class EventPrimImpl extends PrimImpl implements EventRegistration,
     public EventPrimImpl() throws RemoteException {
 	    //, SmartFrogException {
         super();
-        //log = this.sfGetProcessLog();
     }
 
     /**
@@ -64,9 +60,9 @@ public class EventPrimImpl extends PrimImpl implements EventRegistration,
      * @see EventRegistration
      */
     synchronized public void register(EventSink sink) {
-        //try {
-        //    System.out.println( sfCompleteName().toString() + " had registration from " + sink.toString() );
-        //} catch (Exception e) {}
+        if (sfLog().isDebugEnabled()){
+           sfLog().debug( sfCompleteNameSafe().toString() + " had registration from " + sink.toString() );
+        }
         if (!sendTo.contains(sink)) {
             sendTo.addElement(sink);
         }
@@ -79,9 +75,9 @@ public class EventPrimImpl extends PrimImpl implements EventRegistration,
      * @see EventRegistration
      */
     synchronized public void deregister(EventSink sink) {
-        //try {
-        //    System.out.println( sfCompleteName().toString() + " had deregistration from " + sink.toString() );
-        //} catch (Exception e) {}
+        if (sfLog().isDebugEnabled()){
+           sfLog().debug( sfCompleteNameSafe().toString() + " had deregistration from " + sink.toString() );
+        }
         if (sendTo.contains(sink)) {
             sendTo.removeElement(sink);
         }
@@ -104,9 +100,9 @@ public class EventPrimImpl extends PrimImpl implements EventRegistration,
      * @param event java.lang.Object The event
      */
     public void handleEvent(Object event) {
-        //try {
-        //    System.out.println( sfCompleteName().toString() + " saw " + event );
-        //} catch (Exception e) {}
+        if (sfLog().isDebugEnabled()){
+          sfLog().debug( sfCompleteNameSafe().toString() + " saw " + event );
+        }
     }
 
     /**
@@ -118,11 +114,10 @@ public class EventPrimImpl extends PrimImpl implements EventRegistration,
     synchronized public void sendEvent(Object event) {
         for (Enumeration e = sendTo.elements(); e.hasMoreElements();) {
             EventSink s = (EventSink) e.nextElement();
-            //System.out.println(sfCompleteName().toString() + " sending " + event + " to " + s.toString());
             try {
-                String infoStr = sfCompleteName().toString()+" sending "+ event+" to "+s.toString();
-                if (log.isInfoEnabled()) {
-                    log.info(infoStr);
+                String infoStr = sfCompleteNameSafe().toString()+" sending "+ event+" to "+s.toString();
+                if (sfLog().isInfoEnabled()) {
+                    sfLog().info(infoStr);
                 }
                 s.event(event);
             } catch (Exception ex1) {
@@ -130,8 +125,8 @@ public class EventPrimImpl extends PrimImpl implements EventRegistration,
                 if (event!=null ) {
                     evStr=event.toString()+"["+event.getClass().toString()+"]";
                 }
-                if (log.isErrorEnabled()) {
-                   log.error("Failed to send event: "+evStr+", cause: "+ex1.getMessage(),ex1);
+                if (sfLog().isErrorEnabled()) {
+                   sfLog().error("Failed to send event: "+evStr+", cause: "+ex1.getMessage(),ex1);
                }
             }
         }
@@ -149,7 +144,6 @@ public class EventPrimImpl extends PrimImpl implements EventRegistration,
     public synchronized void sfDeploy() throws SmartFrogException,
     RemoteException {
         super.sfDeploy();
-        log = sfGetCoreLog();
 
         /* find local registrations and register them */
         ComponentDescription sends = (ComponentDescription)

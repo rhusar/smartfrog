@@ -39,8 +39,7 @@ import org.smartfrog.sfcore.reference.Reference;
  */
 public class EventCompoundImpl extends CompoundImpl implements EventBus,
     EventRegistration, EventSink, Compound {
-    static Reference receiveRef = new Reference(
-                "registerWith");
+    static Reference receiveRef = new Reference( "registerWith");
     static Reference sendRef = new Reference("sendTo");
     Vector receiveFrom = new Vector();
     Vector sendTo = new Vector();
@@ -61,8 +60,9 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
      * @see EventRegistration
      */
     synchronized public void register(EventSink sink) {
-        //try {
-        //    System.out.println( sfCompleteName().toString() + " had registration from " + sink.toString() );
+        if (sfLog().isDebugEnabled()){
+          sfLog().debug(sfCompleteNameSafe().toString() + " had registration from " + sink.toString());
+        }
         //} catch (Exception e) {}
         if (!sendTo.contains(sink)) {
             sendTo.addElement(sink);
@@ -76,9 +76,9 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
      * @see EventRegistration
      */
     synchronized public void deregister(EventSink sink) {
-        //try {
-        //    System.out.println( sfCompleteName().toString() + " had deregistration from " + sink.toString() );
-        //} catch (Exception e) {}
+        if (sfLog().isDebugEnabled()){
+          sfLog().debug(sfCompleteNameSafe().toString() + " had deregistration from " + sink.toString());
+        }
         if (sendTo.contains(sink)) {
             sendTo.removeElement(sink);
         }
