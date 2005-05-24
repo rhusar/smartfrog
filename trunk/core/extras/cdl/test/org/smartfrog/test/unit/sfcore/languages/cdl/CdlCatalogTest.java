@@ -55,7 +55,7 @@ public class CdlCatalogTest extends TestCase {
     }
 
     public void testApiLookup() {
-        String resource = catalog.lookup(Constants.CDL_API_NAMESPACE);
+        String resource = catalog.lookup(Constants.CDL_API_TYPES_NAMESPACE);
         assertTrue(resource != null &&
                 resource.endsWith(Constants.DEPLOY_API_SCHEMA_FILENAME));
     }
@@ -66,7 +66,7 @@ public class CdlCatalogTest extends TestCase {
     }
 
     public void testSaxResolve() throws IOException, SAXException {
-        assertResolved(Constants.CDL_API_NAMESPACE);
+        assertResolved(Constants.CDL_API_TYPES_NAMESPACE);
     }
 
     private void assertResolved(String uri) throws SAXException, IOException {
@@ -79,13 +79,17 @@ public class CdlCatalogTest extends TestCase {
         assertTrue("Did not want to resolve " + uri, src == null);
     }
 
+/*
     public void testResolveFile() throws IOException, SAXException {
         assertResolved("file://cddlm.xsd");
     }
+*/
 
+/*
     public void testResolveFile2() throws IOException, SAXException {
         assertResolved("file:///dir/subdir/cddlm.xsd");
     }
+*/
 
     public void testNoResolveFile3() throws IOException, SAXException {
         assertNotResolved("file://cddlm.xsd/");

@@ -87,7 +87,11 @@ public class CdlParser {
 
         if (validate) {
             CdlCatalog resolver = new CdlCatalog(loader);
-            resolver.bind(xerces);
+            try {
+                resolver.bind(xerces);
+            } catch (IOException e) {
+                throw new SAXException(e.getMessage(),e);
+            }
         }
         builder = new Builder(xerces, validate);
     }

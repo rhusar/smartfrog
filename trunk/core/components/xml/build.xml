@@ -60,7 +60,7 @@
        CVS_HEAD releases and will definitely change before long -->
   <target name="m2" depends="init,setproxy,declare-versions" >
   
-    <artifact:dependencies pathID="axis.classpath">
+    <artifact:dependencies pathID="libraries.path">
     <!--  <localRepository location="${basedir}/target/local-repo" />  -->
       <dependency groupID="xerces"
         artifactID="xercesImpl"
@@ -71,9 +71,9 @@
       <dependency groupID="xom"
         artifactID="xom"
         version="${xom.version}"/>
-      <dependency groupID="jaxen"
+<!--       <dependency groupID="jaxen"
         artifactID="jaxen"
-        version="${jaxen.version}"/>        
+        version="${jaxen.version}"/>         -->
     </artifact:dependencies>
   
   </target>  
@@ -104,15 +104,16 @@
   <!-- ========================================================== -->
   <!-- declare our compile time classpath -->
   <!-- ========================================================== -->
-<!--   <target name="declare-compile.classpath"
-    depends="declare-base.compile.classpath,libraries">
+  <target name="declare-compile.classpath"
+    depends="declare-base.compile.classpath,m2">
     <path id="compile.classpath">
       <path refid="base.compile.classpath"/>
       <path refid="libraries.path"/>
+      <fileset file="lib/nux-${nux.version}.jar" />
     </path>
     <property name="compile.classpath.value" refid="exec.classpath"/>
     <echo level="verbose">compile.classpath=${compile.classpath.value}</echo>
-  </target> -->
+  </target> 
   
   <!-- this is the classpath for running the daemon -->
   

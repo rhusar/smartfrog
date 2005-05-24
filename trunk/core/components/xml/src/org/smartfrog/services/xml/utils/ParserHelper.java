@@ -36,35 +36,12 @@ import javax.xml.parsers.ParserConfigurationException;
  * XML support. Only for use with Xerces. created 26-Jan-2005 16:18:18
  */
 
-public class ParserHelper {
+public class ParserHelper implements XmlConstants {
 
     /**
      * log
      */
     private static final Log log = LogFactory.getLog(ParserHelper.class);
-
-    /**
-     * ask for secure XML prarsing
-     * {@value}
-     */
-    private static final String FEATURE_SECURE_PROCESSING = "http://javax.xml.XMLConstants/feature/secure-processing";
-    /**
-     * parser of choice is Apache Xerces; fallback is Sun xerces.
-     * {@value}
-     */
-
-    public static final String PARSER_XERCES = "org.apache.xerces.parsers.SAXParser";
-
-    /**
-     * what ships with Java1.5
-     * {@value}
-     */
-    public static final String PARSER_JAVA_15 = "com.sun.org.apache.xerces.internal.parsers.SAXParser";
-    public static final String XERCES_XSD = "http://apache.org/xml/features/validation/schema";
-    public static final String XERCES_XSD_FULLCHECKING = "http://apache.org/xml/features/validation/schema-full-checking";
-    public static final String XERCES_URI_CONFORMANT = "http://apache.org/xml/features/standard-uri-conformant";
-    public static final String XERCES_DOCTYPES = "http://apache.org/xml/features/disallow-doctype-decl";
-    public static final String SAX_GENERAL_ENTITIES = "http://xml.org/sax/features/external-general-entities";
 
     /**
      * create our XML parser. We are relying on xerces here, and will fail if it
@@ -133,9 +110,9 @@ public class ParserHelper {
         try {
             parser.setFeature(name, flag);
         } catch (SAXNotRecognizedException e) {
-            log.error("SAXNotRecognizedException setting " + name);
+            log.info("SAXNotRecognizedException setting " + name);
         } catch (SAXNotSupportedException e) {
-            log.error("SAXNotSupportedException setting " + name);
+            log.info("SAXNotSupportedException setting " + name);
         }
     }
 

@@ -36,6 +36,7 @@ import javax.xml.transform.URIResolver;
 import javax.xml.transform.stream.StreamSource;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 
 /**
@@ -66,11 +67,12 @@ public class CdlCatalog implements URIResolver, EntityResolver {
 
     /**
      * This maps from namespaces to resources in our classpath
+     * {@value}
      */
     private static final String CDDLM_MAPPINGS[] = {
         CddlmConstants.XML_CDL_NAMESPACE, API_PACKAGE +
             Constants.CDL_XSD_FILENAME,
-        CddlmConstants.CDL_API_NAMESPACE, API_PACKAGE +
+        CddlmConstants.CDL_API_TYPES_NAMESPACE, API_PACKAGE +
             Constants.DEPLOY_API_SCHEMA_FILENAME,
         CddlmConstants.WS_ADDRESSING_NAMESPACE, WSRF_PACKAGE +
             CddlmConstants.XML_FILENAME_WS_ADDRESSING,
@@ -160,12 +162,24 @@ public class CdlCatalog implements URIResolver, EntityResolver {
             return null;
         }
         try {
-            InputStream in = loader.loadResource(resource);
-            StreamSource source = new StreamSource(in, href);
-            return source;
+            return loadStreamSource(resource, href);
         } catch (IOException e) {
             throw new TransformerException(e);
         }
+    }
+
+    /**
+     * Create a new stream source from a resource in the classloader
+     * @param resource resource to load
+     * @param href href for relative URI resolution
+     * @return source
+     * @throws IOException on trouble
+     */
+    private Source loadStreamSource(String resource, String href)
+            throws IOException {
+            InputStream in = loader.loadResource(resource);
+            StreamSource source = new StreamSource(in, href);
+            return source;
     }
 
 
@@ -266,18 +280,38 @@ public class CdlCatalog implements URIResolver, EntityResolver {
             buffer.append(filename);
             buffer.append(' ');
         }
+        log.info(buffer);
         String s = new String(buffer);
         parser.setProperty(SCHEMA_LOCATION, s);
     }
 
-
+    /**
+     * verify that our import paths are all working in this component
+     * @throws IOException
+     */
+    public void validateImportPaths()
+            throws IOException {
+        String[] map = CDDLM_MAPPINGS;
+        for (int i = 0; i < map.length; i += 2) {
+            String schema = map[i];
+            String filename = map[i + 1];
+            log.info(schema +" -> "+filename);
+            try {
+                loadStreamSource(filename, schema);
+            } catch (IOException e) {
+                throw new FileNotFoundException("No resource: "+filename
+                +" for "+schema);
+            }
+        }
+    }
     /**
      * bind an XML reader to this bunny
      *
      * @param parser
      */
     public void bind(XMLReader parser) throws SAXNotSupportedException,
-            SAXNotRecognizedException {
+            SAXNotRecognizedException, IOException {
+        validateImportPaths();
         setImportPaths(parser);
         parser.setEntityResolver(this);
 
