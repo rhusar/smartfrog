@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
-<project name="common" basedir=".">
+<project name="common" basedir="."
+  xmlns:artifact="antlib:org.apache.maven.artifact.ant">
   
 <description>
   This is not a standalone build file; nor is it an XML fragment for 
@@ -265,7 +266,11 @@
     <condition property="junit.jar" value="${ant.home}/lib/junit-3.8.1.jar">
       <available file="${ant.home}/lib/junit-3.8.1.jar" />
     </condition>
-
+    
+    <condition property="junit.jar" value="${user.home}/.ant/lib/junit-3.8.1.jar">
+      <available file="${user.home}/.ant/lib/junit-3.8.1.jar" />
+    </condition>
+    
     <echo >In project ${project.name}</echo>
     <echo level="verbose">system.tests.enabled=${system.tests.enabled}</echo>
     <echo level="verbose">unit.tests.enabled=${unit.tests.enabled}</echo>
@@ -1087,31 +1092,85 @@
   <!-- ========================================================== -->
   <!-- init all the maven2 support   -->
   <!-- ========================================================== -->
-     <target name="m2-init" depends="init,init-proxy">
+   <target name="m2-init" depends="init,init-proxy">
     <property file="${smartfrog.components.dir}/libraries.properties" />
 
     <!-- Maven2 stuff
       All components build into the org.smartfrog group, unless otherwise stated, but
       are their own artifacts. 
       -->
-    <property name="m2.dir" location="${user.home}/.m2/repository" />
+    <property name="m2.repository" location="${user.home}/.m2/repository" />
+    
+        
+    <!-- make the root path of an artifact -->
+    <macrodef name="m2-makepath">
+      <attribute name="property"/>
+      <attribute name="groupIDpath"/>
+      <attribute name="artifactID" default="@{groupIDpath}"/>
+      <attribute name="version"/>
+      <sequential>
+        <property name="@{property}" 
+          location="${m2.repository}/@{groupIDpath}/@{artifactID}/@{version}" />
+      </sequential>
+    </macrodef>
+    
     <property name="m2.groupID" value="org.smartfrog" />
     <property name="m2.groupID.path" value="org/smartfrog" />
-    <property name="m2.subdir" 
-      location="${m2.dir}/${m2.groupID.path}/${artifact.name}/${Version}" />
-      <!-- pom setup -->
-    <property name="target.pom" location="${jarfile.stub}.pom" />
-    <property name="project.pom" location="project.pom" />
+    <m2-makepath property="m2.subdir"
+      groupIDpath="${m2.groupID.path}"
+      artifactID="${artifact.name}"
+      version="${Version}" />
+<!--     <property name="m2.subdir" 
+      location="${m2.repository}/${m2.groupID.path}/${artifact.name}/${Version}" />
+ -->
+    <!-- pom setup -->
+    <property name="target.pom" location="${dist.lib.dir}/${jarfile.stub}.pom" />
+    <property name="project.pom" location="project-template.pom" />
     <available property="project.haspom" file="${project.pom}" />
-        
-   </target>  
+    <property name="m2.tasks.uri" value= "antlib:org.apache.maven.artifact.ant" />
+    <available property="m2.tasks.available"
+      resource="org/apache/maven/artifact/ant/antlib.xml" />
+      <!-- location of the bit of the repository we keep under SCM -->
+    <property name="m2.smartfrog.scm.repository"
+      location="${smartfrog.components.dir}/lib" />
+    <sf-tourl file="${m2.smartfrog.scm.repository}"
+        property="m2.smartfrog.scm.repository.url" />
+   </target>
+   
+   
+   <target name="m2-tasks" depends="m2-init,setproxy">
+     <fail unless="m2.tasks.available">
+     you need the maven2 tasks from http://maven.apache.org/maven2/ant-tasks.html
+     </fail>
+    <presetdef name="m2-libraries">
+      <artifact:dependencies>
+        <localRepository location="${m2.repository}" />
+        <!-- look in SCM first -->
+        <remoteRepository url="${m2.smartfrog.scm.repository.url}" />
+        <!-- then hit ibiblio -->
+        <remoteRepository url="http://ibiblio.org/maven2" />
+      </artifact:dependencies>
+    </presetdef>
+
+   </target>
+   
+   <!-- look for local then remote definitions of library versions -->
+  <target name="m2-load-versions" depends="init">
+    <property file="libraries.properties"/>
+    <property file="${smartfrog.components.dir}/libraries.properties"/>
+  </target>   
 
   <!-- ========================================================== -->
   <!-- POM creation/copy, depending on whether it exists or not   -->
   <!-- ========================================================== -->
   
    <target name="m2-copy-pom" depends="m2-init" if="project.haspom">
-     <copy file="${project.pom}" to="${target.pom}" />
+     <copy file="${project.pom}" tofile="${target.pom}" > 
+      <!-- we expand ant properties here.  -->
+       <filterchain>
+        <expandproperties/>
+       </filterchain>
+     </copy>
    </target>
 
    <!-- inline creation of a very minimal (zero dependency) pom -->
