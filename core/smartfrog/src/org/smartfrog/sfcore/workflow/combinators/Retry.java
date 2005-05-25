@@ -49,11 +49,8 @@ import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
  * </p>
  */
 public class Retry extends EventCompoundImpl implements Compound {
-    static Reference actionRef = new Reference("action");
     static Reference retryRef = new Reference("retry");
-    ComponentDescription action;
     int retry;
-    Reference name;
     int currentRetries = 0;
 
     /**
@@ -74,9 +71,7 @@ public class Retry extends EventCompoundImpl implements Compound {
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
-        action = (ComponentDescription) sfResolve(actionRef);
         retry = ((Integer) sfResolve(retryRef)).intValue();
-        name = sfCompleteNameSafe();
     }
 
     /**
@@ -89,8 +84,7 @@ public class Retry extends EventCompoundImpl implements Compound {
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
 
-        sfCreateNewChild(name+"_actionRunning", 
-			 (ComponentDescription) action.copy(), null);
+        sfCreateNewChild(name+"_retryActionRunning", (ComponentDescription) action.copy(), null);
     }
 
     /**
@@ -109,20 +103,22 @@ public class Retry extends EventCompoundImpl implements Compound {
 
                 if (!(status.errorType.equals("normal".intern()))) {
                     if (currentRetries++ < retry) {
-                        sfCreateNewChild(name+"_actionRunning"+currentRetries,
-					 (ComponentDescription) action.copy(), null);
+                        sfCreateNewChild(name+"_actionRunning"+currentRetries,(ComponentDescription) action.copy(), null);
                     } else {
-                        //System.out.println("terminated incorrectly: too many reties - fail " + name.toString());
-                        sfTerminate(TerminationRecord.abnormal(
-                                "too many retries...", name));
+                        if (sfLog().isDebugEnabled()) {
+                           sfLog().debug(sfCompleteNameSafe().toString()  + "terminated incorrectly: too many reties - fail ");
+                        }
+                        sfTerminate(TerminationRecord.abnormal("too many retries...", name));
                     }
                 } else {
-                    //System.out.println("terminated correctly - no need to retry " + name.toString());
+                    if (sfLog().isDebugEnabled()) {
+                        sfLog().debug(sfCompleteNameSafe().toString()  + "terminated correctly - no need to retry  ");
+                    }
+
                     sfTerminate(TerminationRecord.normal(name));
                 }
             } catch (Exception e) {
-                sfTerminate(TerminationRecord.abnormal(
-                        "error in restarting next component", name));
+                sfTerminate(TerminationRecord.abnormal( "error in restarting next component", name));
             }
         }
     }

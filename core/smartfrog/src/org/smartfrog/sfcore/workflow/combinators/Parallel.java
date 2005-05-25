@@ -53,12 +53,9 @@ import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
  * </p>
  */
 public class Parallel extends EventCompoundImpl implements Compound {
-    static Reference actionsRef = new Reference("actions");
+
     static Reference asynchCreateChildRef = new Reference ("asynchCreateChild");
 
-    Context actions;
-    Enumeration actionKeys;
-    Reference name;
     boolean asynchCreateChild=false;
     Vector asynchChildren = null;
 
@@ -80,9 +77,7 @@ public class Parallel extends EventCompoundImpl implements Compound {
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
-        actions = ((ComponentDescription) sfResolve(actionsRef)).sfContext();
         asynchCreateChild = sfResolve(asynchCreateChildRef,asynchCreateChild,false);
-        name = sfCompleteNameSafe();
     }
 
     /**

@@ -59,14 +59,10 @@ import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
  *
  */
 public class RandomSequence extends EventCompoundImpl implements Compound {
-    static Reference actionsRef = new Reference("actions");
-    Context actions;
-    Vector actionKeys;
-    Reference name;
     boolean loop;
     int seed;
     Random random;
-
+    Vector actionKeysVector;
     /**
      * Constructs RandomSequence.
      *
@@ -82,10 +78,10 @@ public class RandomSequence extends EventCompoundImpl implements Compound {
      * among those described in 'actions'
      */
     private void initActionKeys() {
-        actionKeys = new Vector();
+        actionKeysVector = new Vector();
 
         for (Enumeration en = actions.keys(); en.hasMoreElements();) {
-            actionKeys.addElement(en.nextElement());
+            actionKeysVector.addElement(en.nextElement());
         }
     }
 
@@ -98,12 +94,11 @@ public class RandomSequence extends EventCompoundImpl implements Compound {
      */
     private void startNextRandom() throws Exception {
         // get a random component description in the action
-        Object randomKey = actionKeys.elementAt((int) (random.nextInt(
-                    actionKeys.size())));
+        Object randomKey = actionKeysVector.elementAt((int) (random.nextInt(actionKeysVector.size())));
         ComponentDescription act = (ComponentDescription) actions.get(randomKey);
 
         // remove current key
-        actionKeys.removeElement(randomKey);
+        actionKeysVector.removeElement(randomKey);
 
         // deploy and start the component
         sfCreateNewChild(randomKey.toString(),
@@ -119,7 +114,6 @@ public class RandomSequence extends EventCompoundImpl implements Compound {
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
-        actions = ((ComponentDescription) sfResolve(actionsRef)).sfContext();
         seed = ((Integer) sfResolve("seed")).intValue();
         random = new Random(seed);
         initActionKeys();
@@ -160,7 +154,7 @@ public class RandomSequence extends EventCompoundImpl implements Compound {
             try {
                 if (status.errorType.equals("normal".intern())) {
 		    sfRemoveChild(comp);
-                    if (actionKeys.size() != 0) {
+                    if (actionKeysVector.size() != 0) {
                         startNextRandom();
                     } else {
                         sfTerminate(TerminationRecord.normal(name));

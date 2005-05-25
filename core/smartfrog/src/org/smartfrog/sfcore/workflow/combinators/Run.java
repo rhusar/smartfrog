@@ -48,11 +48,8 @@ import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
  * </p>
  */
 public class Run extends EventCompoundImpl implements Compound {
-    static Reference actionRef = new Reference("action");
     static Reference parentRef = new Reference("parent");
     static Reference asNameRef = new Reference("asName");
-    ComponentDescription action;
-    Reference name;
     Compound parent=null;
     String asName;
 
@@ -71,14 +68,10 @@ public class Run extends EventCompoundImpl implements Compound {
      * attributes
      * @throws RemoteException In case of RMI or network failure.
      */
-    private void readSFAttributes() throws SmartFrogResolutionException,
-                                                         RemoteException {
+    private void readSFAttributes() throws SmartFrogResolutionException, RemoteException {
         // Optional attributes
         parent =  sfResolve(parentRef, parent, false);
         asName =  sfResolve(asNameRef, asName, false);
-        // Mandatory attribute
-        action = sfResolve(actionRef, action, true);
-        name = sfCompleteNameSafe();
     }
     /**
      * Deploys and reads the basic configuration of the component.

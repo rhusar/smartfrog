@@ -51,10 +51,6 @@ import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
  * </p>
  */
 public class FireBreak extends EventCompoundImpl implements Compound {
-    static Reference actionsRef = new Reference("actions");
-    Context actions;
-    Enumeration actionKeys;
-    Reference name;
 
     /**
      * Constructs Container.
@@ -74,8 +70,6 @@ public class FireBreak extends EventCompoundImpl implements Compound {
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
-        actions = ((ComponentDescription) sfResolve(actionsRef)).sfContext();
-        name = sfCompleteNameSafe();
     }
 
     /**
@@ -93,8 +87,7 @@ public class FireBreak extends EventCompoundImpl implements Compound {
             try {
                 while (actionKeys.hasMoreElements()) {
                     Object key = actionKeys.nextElement();
-                    ComponentDescription act = (ComponentDescription)
-                        actions.get(key);
+                    ComponentDescription act = (ComponentDescription) actions.get(key);
                     Prim comp = sfDeployComponentDescription(key, this, act, null);
                 }
             } catch (java.util.NoSuchElementException nex){

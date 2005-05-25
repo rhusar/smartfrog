@@ -1,22 +1,21 @@
 /** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
 
-This library is free software; you can redistribute it and/or
-modify it under the terms of the GNU Lesser General Public
-License as published by the Free Software Foundation; either
-version 2.1 of the License, or (at your option) any later version.
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
 
-This library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-Lesser General Public License for more details.
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-You should have received a copy of the GNU Lesser General Public
-License along with this library; if not, write to the Free Software
-Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ For more information: www.smartfrog.org
 
-For more information: www.smartfrog.org
-
-*/
+ */
 
 package org.smartfrog.sfcore.workflow.combinators;
 
@@ -29,7 +28,6 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
-
 
 /**
  * Delay is a modified compound which differs in that the single sub-component
@@ -48,7 +46,8 @@ import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
  * may be passed to Delay.
  * </p>
  */
-public class Delay extends EventCompoundImpl implements Compound {
+public class Delay
+    extends EventCompoundImpl implements Compound {
     /**
      * Reference for attribute action
      */
@@ -98,10 +97,11 @@ public class Delay extends EventCompoundImpl implements Compound {
      * @throws SmartFrogDeploymentException In case of any error while
      *         deploying the component
      */
-    public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
+    public synchronized void sfDeploy() throws SmartFrogException,
+        RemoteException {
         super.sfDeploy();
-        action = (ComponentDescription) sfResolve(actionRef);
-        time = ((Integer) sfResolve(timeRef)).intValue();
+        action = (ComponentDescription)sfResolve(actionRef);
+        time = ((Integer)sfResolve(timeRef)).intValue();
         name = sfCompleteNameSafe();
     }
 
@@ -112,30 +112,30 @@ public class Delay extends EventCompoundImpl implements Compound {
      * @throws SmartFrogException In case of SmartFrog system error
      * @throws RemoteException In case of network/rmi error
      */
-    public synchronized void sfStart() throws SmartFrogException, RemoteException {
+    public synchronized void sfStart() throws SmartFrogException,
+        RemoteException {
         super.sfStart();
         timer = new Thread(new Runnable() {
-                public void run() {
-                    if (time > 0) {
+            public void run() {
+                if (time>0) {
+                    try {
+                        Thread.sleep(time);
+                    } catch (Exception e) {
+                        // ignore
+                    }
+                    if (!terminated) {
                         try {
-                            Thread.sleep(time);
+                            synchronized (this) {
+                                (Delay.this).sfCreateNewChild(name+"_actionRunning", action, null);
+                            }
                         } catch (Exception e) {
-                            // ignore
+                            (Delay.this).sfTerminate(TerminationRecord.abnormal(
+                                "error in launching delayed component", null));
                         }
-			if (!terminated) {
-			    try {
-				synchronized (this) {
-				    (Delay.this).sfCreateNewChild(name+"_actionRunning", action, null);
-				}
-			    } catch (Exception e) {
-				(Delay.this).sfTerminate(TerminationRecord.abnormal(
-					    "error in launching delayed component",
-					    null));
-			    }
-			}
                     }
                 }
-                });
+            }
+        });
         timer.start();
     }
 
@@ -147,11 +147,12 @@ public class Delay extends EventCompoundImpl implements Compound {
      * @param status termination status of sender
      * @param comp sender of termination
      */
-    public synchronized void sfTerminatedWith(TerminationRecord status, Prim comp) {
+    public synchronized void sfTerminatedWith(TerminationRecord status,
+                                              Prim comp) {
         if (sfContainsChild(comp)) {
-            if (timer != null) {
+            if (timer!=null) {
                 try {
-		    terminated = true;
+                    terminated = true;
                     timer.interrupt();
                 } catch (Exception e) {
                     //ignore

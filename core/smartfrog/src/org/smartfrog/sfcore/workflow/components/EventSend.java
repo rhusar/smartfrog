@@ -64,15 +64,15 @@ public class EventSend extends EventPrimImpl implements Prim {
      * @throws RemoteException In case of network/rmi error
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
-            super.sfStart();
-            sendEvent(event);
+        super.sfStart();
+        sendEvent(event);
 
-            Runnable terminator = new Runnable() {
-                    public void run() {
-                        sfTerminate(new TerminationRecord("normal", null, null));
-                    }
-                };
+        Runnable terminator = new Runnable() {
+            public void run() {
+                sfTerminate(new TerminationRecord("normal", null, null));
+            }
+        };
 
-            new Thread(terminator).start();
+        new Thread(terminator).start();
     }
 }

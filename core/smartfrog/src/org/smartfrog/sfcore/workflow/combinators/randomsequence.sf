@@ -20,6 +20,6 @@ For more information: www.smartfrog.org
 
 RandomSequence extends EventCompound {
     sfClass "org.smartfrog.sfcore.workflow.combinators.RandomSequence";
-    actions extends LAZY {}
+    //actions extends LAZY {}
     seed 6387315;
 }

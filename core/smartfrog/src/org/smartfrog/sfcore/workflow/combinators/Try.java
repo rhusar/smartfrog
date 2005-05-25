@@ -47,9 +47,7 @@ import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
  * </p>
  */
 public class Try extends EventCompoundImpl implements Compound {
-    static Reference actionRef = new Reference("action");
-    ComponentDescription action;
-    Reference name;
+
     int currentRetries = 0;
     boolean primary = true;
 
@@ -72,8 +70,6 @@ public class Try extends EventCompoundImpl implements Compound {
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
-        action = (ComponentDescription) sfResolve(actionRef);
-        name = sfCompleteNameSafe();
     }
 
     /**
@@ -85,8 +81,7 @@ public class Try extends EventCompoundImpl implements Compound {
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-
-	sfCreateNewChild("action", action, null);
+        sfCreateNewChild("action", action, null);
     }
 
     /**
@@ -107,10 +102,11 @@ public class Try extends EventCompoundImpl implements Compound {
                     sfRemoveChild(comp);
 
                     ComponentDescription nextAction = (ComponentDescription) sfResolve(status.errorType);
-//                    System.out.println("Try carrying out \n" + nextAction +
-//                        " for status " + status.errorType);
-
-		    sfCreateNewChild(name + "_actionRunning", nextAction, null);
+                    if (sfLog().isDebugEnabled()){
+                        sfLog().debug("Try carrying out \n"+nextAction+
+                                      " for status "+status.errorType);
+                    }
+                    sfCreateNewChild(name + "_tryActionRunning", nextAction, null);
 
                 } catch (Exception e) {
                     sfTerminate(TerminationRecord.abnormal(
