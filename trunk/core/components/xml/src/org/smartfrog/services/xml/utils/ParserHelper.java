@@ -72,17 +72,14 @@ public final class ParserHelper implements XmlConstants {
 /*        setFeature(xerces,
                 FEATURE_SECURE_PROCESSING,
                 secureLoading);*/
-        setFeature(xerces,
-                FEATURE_XERCES_XSD,
-                validate);
+        if(validate) {
+            enableXmlSchema(xerces);
+        }
         setFeature(xerces,
                 FEATURE_SAX_NAMESPACES,
                 true);
         setFeature(xerces,
                 FEATURE_SAX_VALIDATION,
-                validate);
-        setFeature(xerces,
-                FEATURE_XERCES_XSD_FULLCHECKING,
                 validate);
 /*        setFeature(xerces,
                 FEATURE_XERCES_URI_CONFORMANT,
@@ -93,6 +90,19 @@ public final class ParserHelper implements XmlConstants {
         setFeature(xerces,
                 FEATURE_SAX_GENERAL_ENTITIES,
                 !secureLoading);*/
+    }
+
+    /**
+     * turn XSD support on
+     * @param xerces
+     */
+    public static void enableXmlSchema(XMLReader xerces) {
+        setFeature(xerces,
+                FEATURE_XERCES_XSD,
+                true);
+        setFeature(xerces,
+                FEATURE_XERCES_XSD_FULLCHECKING,
+                true);
     }
 
     /**

@@ -26,7 +26,7 @@ import nu.xom.Node;
  * created 21-Apr-2005 14:46:47
  */
 
-public class DocAttribute implements FromXML {
+public class DocAttribute  {
 
     public void fromXML(Node content) throws CdlParsingException {
 

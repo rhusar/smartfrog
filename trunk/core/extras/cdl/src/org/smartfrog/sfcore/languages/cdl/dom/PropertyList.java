@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
+import nu.xom.Element;
+
 /**
  * created 21-Apr-2005 14:26:55
  */
@@ -36,19 +38,37 @@ public class PropertyList extends DocumentedNode implements ToSmartFrog {
      * Our name.
      * Only toplevel elements can have a qname
      */
-    QName name;
+    public QName name;
 
     /**
      * Name of the template that we extend.
      * Null if we do not extend anything
      */
-    QName extendsName;
+    public QName extendsName;
 
     /**
      * And the resolved extension
      * Null if extendsName==null;
      */
-    PropertyList extendsResolved;
+    public PropertyList extendsResolved;
+
+
+    public PropertyList() {
+    }
+
+    public PropertyList(Element element) throws CdlParsingException {
+        fromXML(element);
+    }
+
+    /**
+     * Parse from XM
+     *
+     * @throws CdlParsingException
+     */
+    public void fromXML(Element element) throws CdlParsingException {
+        //TODO
+
+    }
 
     /** child list */
     private List<PropertyList> children=new LinkedList<PropertyList>();

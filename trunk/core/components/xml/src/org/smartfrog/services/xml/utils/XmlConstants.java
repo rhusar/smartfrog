@@ -44,14 +44,14 @@ public interface XmlConstants {
     final static String FEATURE_XERCES_DISALLOW_DOCTYPES = "http://apache.org/xml/features/disallow-doctype-decl";
     final static String FEATURE_SAX_GENERAL_ENTITIES = "http://xml.org/sax/features/external-general-entities";
     /**
-     * ask for secure XML prarsing
+     * ask for secure XML parsing
      * {@value}
      */
-    final static String FEATURE_SECURE_PROCESSING = "http://javax.xml.XMLConstants/feature/secure-processing";
+    final static String FEATURE_JAXP_SECURE_PROCESSING = "http://javax.xml.XMLConstants/feature/secure-processing";
 
-    public static final String PROPERTY_SCHEMA_LOCATION =
+    public static final String PROPERTY_XERCES_SCHEMA_LOCATION =
             "http://apache.org/xml/properties/schema/external-schemaLocation";
-    public static final String PROPERTY_NO_NAMESPACE_SCHEMA_LOCATION =
+    public static final String PROPERTY_XERCES_NO_NAMESPACE_SCHEMA_LOCATION =
             "http://apache.org/xml/properties/schema/external-noNamespaceSchemaLocation";
 
     public static final String FEATURE_SAX_VALIDATION = "http://xml.org/sax/features/validation";

@@ -279,7 +279,7 @@ public class CdlCatalog implements URIResolver, EntityResolver {
         }
         log.debug(buffer);
         String s = new String(buffer);
-        parser.setProperty(XmlConstants.PROPERTY_SCHEMA_LOCATION, s);
+        parser.setProperty(XmlConstants.PROPERTY_XERCES_SCHEMA_LOCATION, s);
     }
 
     /**

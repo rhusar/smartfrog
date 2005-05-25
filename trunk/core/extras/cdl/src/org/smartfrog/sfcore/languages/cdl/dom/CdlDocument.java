@@ -32,6 +32,9 @@ import nu.xom.Document;
 import nu.xom.Element;
 import nu.xom.ParentNode;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * This represents a parsed CDL document, or an error caused during parsing.
  */
@@ -58,8 +61,18 @@ public class CdlDocument extends DocumentedNode {
     /**
      * System declaration
      */
-    private ToplevelList system;
+    private ToplevelList system = new ToplevelList();
 
+    /**
+     * Our list of imports
+     */
+    private List<Import> imports=new ArrayList<Import>();
+
+
+    /**
+     * Our types
+     */
+    private Type types = null;
 
 
 
@@ -204,6 +217,15 @@ public class CdlDocument extends DocumentedNode {
     }
 
     /**
+     * from the document, parser ourselves
+     */
+    private void processDocument() throws CdlParsingException {
+        assert document != null;
+        processRootNode(document.getRootElement());
+
+    }
+
+    /**
      * this is the root node; lets extract everything from it
      *
      * @param node
@@ -211,11 +233,45 @@ public class CdlDocument extends DocumentedNode {
      */
     private void processRootNode(Element node) throws CdlParsingException {
         root = node;
-        for (Element element : elements(root)) {
-            verifyInCdlNamespace(element);
+        for (Element child : elements(root)) {
 
+            if(Import.isA(child)) {
+                imports.add(new Import(child));
+                continue;
+            }
+
+            if(Type.isA(child)) {
+                types=new Type(child);
+                continue;
+            }
+
+            if(ToplevelList.isConfigurationElement(child)) {
+                configuration=new ToplevelList(child);
+                continue;
+            }
+
+            if (ToplevelList.isSystemElement(child)) {
+                system = new ToplevelList(child);
+                continue;
+            }
+
+            if(Documentation.isA(child)) {
+                Documentation documentation = new Documentation(child);
+                //TODO
+                continue;
+            }
+            //if we get here, then either there is stuff that we dont recognise
+            //or its in another namespace
+            if(!DocNode.inCdlNamespace(child)) {
+                //strange stuff here
+                throw new CdlParsingException("Unknown element "+child);
+            } else {
+                //do nothing
+                //TODO: log this?
+            }
 
         }
+
 
 
     }
@@ -267,4 +323,5 @@ public class CdlDocument extends DocumentedNode {
     public IteratorRelay<Element> elements(ParentNode element) {
         return new IteratorRelay(elementIterator(element));
     }
+
 }
