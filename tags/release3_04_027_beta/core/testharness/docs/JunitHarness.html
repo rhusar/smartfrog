@@ -1,0 +1,463 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=utf-8">
+	<TITLE></TITLE>
+	<META NAME="GENERATOR" CONTENT="OpenOffice.org 1.1.0  (Linux)">
+	<META NAME="AUTHOR" CONTENT="Steve Loughran">
+	<META NAME="CREATED" CONTENT="20040208;21151155">
+	<META NAME="CHANGEDBY" CONTENT="Steve Loughran">
+	<META NAME="CHANGED" CONTENT="20040217;11205800">
+</HEAD>
+<BODY LANG="en-GB" DIR="LTR">
+<H1>JUnit-based SmartFrog Test Framework</H1>
+<H2>Requirements</H2>
+<P>The document RSTestHarness listed the requirements for the test
+harness:</P>
+<OL>
+	<LI><P>Test case execution should be fully automated with least
+	human interventions. 
+	</P>
+	<LI><P>Test harness framework should be developed on Java language
+	so that it could run on Windows, Linux and HP-UX and other platforms
+	supported by Java. 
+	</P>
+	<LI><P>Test harness should be driven by configuration. 
+	</P>
+	<LI><P>All the test cases should be identical as viewed from test
+	harness, i.e. test harness should treat test cases in identical
+	fashion. 
+	</P>
+	<LI><P>Test harness should be extensible. Adding a new test case
+	should be as simple as adding few lines in the configuration file. 
+	</P>
+	<LI><P>Each test case should be a self-describing and totally
+	independent entity [It should not have a dependency on other test
+	cases] 
+	</P>
+	<LI><P>Since a test case is nothing but a SmartFrog component it
+	should implement all the life cycle methods expected by SmartFrog
+	framework. 
+	</P>
+	<LI><P>The test case itself should be able to determine its status
+	whether it was successful or failed. 
+	</P>
+	<LI><P>Test harness should generate summary report of test run. 
+	</P>
+	<LI><P>If a test fails, test harness should log the appropriate
+	message and continue with other test cases. 
+	</P>
+	<LI><P>If a test fails, reason for failure should be logged in the
+	test summary report. 
+	</P>
+	<LI><P>Test harness should augment the existing framework, i.e. test
+	harness should be designed to leverage SF framework. 
+	</P>
+	<LI><P>Test case description should be available only at one node
+	and need not be copied at all the nodes. 
+	</P>
+	<LI><P>The communication between test harness and test cases should
+	be standard. [Need to drill down further]. 
+	</P>
+	<LI><P>Test harness should have positive as well as negative test
+	cases 
+	</P>
+	<LI><P>Test harness engine should be able to execute test cases
+	locally as well as remotely on other nodes. 
+	</P>
+	<LI><P>Test cases should have test cases to cover overall
+	functionality of SF system. This includes: 
+	</P>
+	<OL TYPE=a>
+		<LI><P>Deployment and life cycle management framework 
+		</P>
+		<LI><P>Security framework 
+		</P>
+		<LI><P>Workflow components 
+		</P>
+		<LI><P>Dynamic remote download 
+		</P>
+		<LI><P>Performance 
+		</P>
+		<LI><P>Scalability 
+		</P>
+		<LI><P>Fail recovery and error reporting 
+		</P>
+		<LI><P>Security</P>
+	</OL>
+	<LI><P>Test cases should not have dependency on OS graphical
+	interface. [This is an extension to point 16] 
+	</P>
+	<LI><P>Each test case would be driven by a test case component. This
+	component should be able to gather result of execution and report
+	back to test harness engine. 
+	</P>
+	<LI><P>Test case should be able to interact with test harness engine
+	to locate the predefined test result for it. 
+	</P>
+	<LI><P>Test case should be able to compare the results and report
+	the status. 
+	</P>
+	<LI><P>Support for testing of the parser. This can be done without a
+	daemon running -simply parse a document and then assert that the
+	result contains certain resources set to expected values.</P>
+	<LI><P>Test harness should be reusable by people writing components.</P>
+	<LI><P>Testing needs to verify that the public entry points
+	(SFSystem work and the batch files work)</P>
+</OL>
+<H2>JUnit</H2>
+<P>JUnit is the proposed base test execution system to meet these
+requirements. It has the following features</P>
+<UL>
+	<LI><P>Java based. 
+	</P>
+	<LI><P>Reflection-managed -adding a new test is as simple as writing
+	a method.</P>
+	<LI><P>Has the direct ability to call arbitrary Java code, both to
+	exercise system components and to analyse and validate the results.</P>
+	<LI><P>Integration with modern IDEs for excellent debugging</P>
+	<LI><P>Integration with Ant for automated execution</P>
+	<LI><P>XML output and -in Ant- XSL transformation into an HTML
+	status page</P>
+	<LI><P>Easy to learn. Exactly how JUnit works is a detail one does
+	not need to care much about; how to write a test is all one needs to
+	know -and that is simple.</P>
+	<LI><P>Widely used. This implies stability and quality, good
+	documentation and a broad developer base familiar with the tool. 
+	</P>
+</UL>
+<H2>Using JUnit</H2>
+<H3>Test Cases</H3>
+<P STYLE="font-style: normal">The core of JUnit is the test case. In
+JUnit, a TestCase is a class containing tests. For a simple test
+case, you follow three simple steps:</P>
+<OL>
+	<LI><P STYLE="font-style: normal">Create a subclass of
+	junit.framework.TestCase.</P>
+	<LI><P STYLE="font-style: normal">Provide a constructor, accepting a
+	single String name parameter, which calls super(name).</P>
+	<LI><P STYLE="font-style: normal">Implement one or more no-argument
+	void methods prefixed by the word test.</P>
+</OL>
+<P STYLE="font-style: normal">An example is shown in the SimpleTest
+class code:</P>
+<PRE>package org.example.antbook.junit;
+import junit.framework.TestCase;
+public class SimpleTest extends TestCase
+{
+  public SimpleTest (String name) {
+    super(name);
+  }
+
+  public void testSomething() {
+    assertTrue(4 == (2 * 2));
+  }
+}</PRE><H3>
+Test Methods</H3>
+<P>Every method that begins with the word <I>test</I> is
+automatically a test. These methods can be declared as throwing an
+Exception or subclass thereof -when the test throws an exception it
+is deemed as failing. 
+</P>
+<P>4.3.3 Asserting desired results</P>
+<P>The mechanism by which JUnit determines the success or failure of
+a test is via assertion statements. An assert is simply a comparison
+between an expected value and an actual value. There are variants of
+the assert methods for each primitive datatype and for
+<U>java.lang.String</U> and <U>java.lang.Object</U>, each with the
+following signatures:</P>
+<P><U>assertEquals(expected, actual)</U></P>
+<P><U>assertEquals(String message, expected, actual)</U></P>
+<P>The second signature for each datatype allows a message to be
+inserted into the results, which allows clear identification of which
+assertion failed. There are several other assertion methods:</P>
+<P><U>assertEquals(expected, actual)</U></P>
+<P><U>assertEquals(String message, expected, actual)</U></P>
+<P>This assertion holds the test expected.equals(actual) return true,
+or both objects are null. The equality test for a double also lets
+you specify a range, to cope with floating point errors better. There
+are overloaded versions of this method for all primitive types also.</P>
+<P><I>Important: equality tests are based on calling the
+<U>Object.equals() </U>method -if you want these tests to work on
+your datatypes, implement the method.</I></P>
+<P STYLE="font-style: normal">There is an <U>assertSame()</U> and
+<U>assertNotSame()</U> pair of tests that really do verify that the
+object references point to the same instance, but they are rarely
+used.</P>
+<P STYLE="font-style: normal"><U>assertNull(Object object),
+assertNull(String message, Object object)</U></P>
+<P>This asserts that an object reference equals null.</P>
+<P STYLE="font-style: normal"><U>assertNotNull(Object object),
+assertNotNull(String message, Object)</U></P>
+<P>This asserts that an object reference is not null.</P>
+<P STYLE="font-style: normal"><U>assertSame(Object expected, Object
+actual), <BR>assertSame(String message, Object expected, Object
+actual)</U></P>
+<P>Asserts that the two objects are the same. This is a stricter
+condition than simple equality, as it compares the object identities
+using expected == actual.</P>
+<P STYLE="font-style: normal"><U>assertTrue(boolean condition),
+<BR>assertTrue(String message, boolean condition)</U></P>
+<P>This assertion fails if the condition is false, printing a message
+string if supplied. The <U>assertTrue</U> methods were previously
+named simply <U>assert</U>, but JDK 1.4 introduced a new <U>assert</U>
+keyword, hence the change.</P>
+<P><I>fail(), fail(String message)</I></P>
+<P>forces a failure. This is useful to close off paths through the
+code that should not be reached. 
+</P>
+<P>JUnit uses the term “failure” for a test which fails
+expectedly, meaning that an assertion was not valid or a fail was
+encountered. The term “error” refers to an unexpected error (such
+as a NullPointerException). It doesn't really matter in practice, as
+both means the test didn't finish as intended. 
+</P>
+<H3>TestCase lifecycle</H3>
+<P>The lifecycle of a TestCase used by the JUnit framework is:</P>
+<OL>
+	<LI><P>Execute <U>public void setUp()</U></P>
+	<LI><P>Call a “test”-prefixed method</P>
+	<LI><P>Execute public void <U>tearDown()</U></P>
+	<LI><P>Repeat these steps for each “test” method</P>
+</OL>
+<P>Any number of test methods can be added to a TestCase, all
+beginning with the prefix “test”. The goal is for each test to be
+small and simple, and tests will almost always require instantiating
+objects. In order to create a some objects and pre-configure their
+state prior to running each individual test method, override the
+empty <U>TestCase.setUp</U> method, and store state as member
+variables to your test case class. Use the <U>tearDown</U> method to
+close any open connections or in some way reset state.</P>
+<P>The setUp and tearDown methods are called before and after every
+test method is invoked, preventing one test from affecting the
+behaviour of another. 
+</P>
+<P><I>It is critical for system state to be cleaned up between runs,
+else an initial test could break a successor. Worse yet, a test could
+pass when it would otherwise fail.</I></P>
+<H3>Test Suites</H3>
+<P>JUnit runs a <I>TestSuite</I>; that is, a class implementing the
+junit.TestSuite interface. A TestSuite is a list of 0 or more tests</P>
+<PRE>package org.example.antbook;
+
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
+
+import org.example.antbook.junit.SimpleTest;
+import org.example.antbook.ant.lucene.HtmlDocumentTest;
+
+public class AllTests {
+  static public Test suite() {
+    TestSuite suite = new TestSuite();
+    suite.addTestSuite(SimpleTest.class);
+    suite.addTestSuite(HtmlDocumentTest.class);
+    return suite;
+  }
+}</PRE><P>
+<BR><BR>
+</P>
+<P>Few people bother to write test suites, because Ant can
+autogenerate test suites from classes. Instead one sets on a naming
+convention for the tests, such as *Test.java, or *TestCase.java, then
+tells Ant's &lt;junit&gt; task 
+</P>
+<H3>Running a test case</H3>
+<P STYLE="font-style: normal">TestRunner classes provided by JUnit
+are used to execute all tests prefixed by the word “test.” The
+two most popular test runners are a text-based one, <U>junit.textui.
+TestRunner</U>, and an attractive Swing-based one,
+<U>junit.swingui.TestRunner</U>. From the command line, the result of
+running the text TestRunner is 
+</P>
+<PRE>java junit.textui.TestRunner org.example.antbook.junit.SimpleTest
+.
+Time: 0.01
+OK (1 tests)</PRE><P>
+<BR><BR>
+</P>
+<P STYLE="font-style: normal">The dot character (.) indicates a test
+case being run, and in this example only one exists, <U>testSomething</U>.
+The Swing TestRunner displays success as green and failure as red,
+has a feature to reload classes dynamically so that it can remain
+open while code is recompiled, and will pick up the latest test case
+class each time. For this same test case, its display appears in
+figure 4.2.</P>
+<H3><BR><BR>
+</H3>
+<H2>In Practice</H2>
+<P>Unit tests are easy to write -simply create new TestCase
+subclasses, and add testMethods. Rather than catch exceptions, just
+declare that they are thrown in the test methods. Don't forget to use
+<U>finally {}</U> clauses to clean up when things throw, and <U>setUp()</U>
+and <U>tearDown()</U> calls for cleanup between methods.</P>
+<P>It is conventional to have all methods in a single TestCase
+subclass to test a single thing. Such as a class, a particular
+interaction with a web site, a remote SOAP endpoint, etc. This makes
+it easier to process reports (you know what bit failed without even
+looking at the specific test), and lets you add member variables to
+the class that can be used for setup or communal information across
+the entire set of tests. Also it lets you rerun the same set of tests
+again and again when fixing a test, without running all the other
+tests. This saves lots of time.</P>
+<P>Key best practice items are</P>
+<UL>
+	<LI><P>Test Everything That Could Possibly Break. This is an XP
+	maxim and it holds. 
+	</P>
+	<LI><P>A well written test is hard to pass. If all your tests pass
+	the first time, you are probably not testing vigorously enough.</P>
+	<LI><P>Test invalid parameters to every method, rather than just
+	valid data. Robust software needs to recognise and handle invalid
+	data, and the tests which pass using incorrect data are often the
+	most informative.</P>
+	<LI><P>Clear previous test results before running new tests; delete
+	and recreate the test results and reports directories.</P>
+	<LI><P>Stick to our naming convention for test cases: *Test.java. 
+	</P>
+	<LI><P>Separate test code from production code. 
+	</P>
+	<LI><P>Use informative names for tests. It is better to know that
+	<U>testDocumentLoad</U> failed, rather than test17 failed,
+	especially when the test suddenly breaks four months after being
+	written.</P>
+	<LI><P>Try to only test one thing per test method. If
+	<U>testDocumentLoad</U> fails and this test method only contains
+	only one possible point of failure, it is easier to track down the
+	bug than to try and find out which line the failure occurred on out
+	of twenty.</P>
+	<LI><P>Tests can be configured through system properties, as IDEs,
+	and and the test runners can be given system properties for test
+	classes to parse.</P>
+	<LI><P>Never assume that the current directory of the test suite
+	will be what you think. What may be valid for Ant is not valid for
+	an IDE. Either include data files as resources in the classpath, or
+	point the tests at data directories via system properties.</P>
+</UL>
+<H2>Extending JUnit for SmartFrog Functional Tests</H2>
+<P>Being originally a unit test framework, JUnit is optimised for
+running unit tests against in-JVM classes. We want to do this for the
+unit tests, but for the functional tests we will need to extend it.
+There are various standard tactics here</P>
+<OL>
+	<LI><P>Helper classes. These make running tests and validating data
+	easier</P>
+	<LI><P>Base classes that extend <U>junit.TestCase</U>. A good base
+	class can share common code and configuration data across many
+	tests. This is often the best extension mechanism</P>
+	<LI><P>Mock Objects. These are simulations of system components that
+	can be used for better testing. They can either simulate server-side
+	code in a client (the servlet mock object), system failures and for
+	validating certain behaviours. For example you can count the number
+	of times a mock file gets opened and make assertions on that. The
+	ability to simulate failures is a key feature of mock objects.</P>
+	<LI><P>Coupling to a remote system.<BR>Cactus uses this to run tests
+	on a J2EE application server -the tests need to be loaded on the
+	server; networking code runs these tests on the system instead of in
+	the client-side JVM. It uses a custom servlet to do this.</P>
+	<LI><P>Built in server code. Apache Axis uses this to host a mini
+	SOAP server. As all the functional tests are testing SOAP-based RPC,
+	the client test cases make SOAP calls against the server. To
+	simplify this process, Axis autogenerates the basic outline of a
+	test case against a SOAP endpoint. 
+	</P>
+</OL>
+<P>For SmartFrog, we will start with (1) and (2) – a base class for
+the functional tests, and helper classes for the tests to use. That
+is the simple decision. 
+</P>
+<P>The hard decision is what next? 
+</P>
+<OL>
+	<LI><P>Run SmartFrog in-JVM and talk to it within the tests via
+	helper classes.</P>
+	<LI><P>Fork a new SmartFrog JVM and talk to it with RMI.</P>
+	<LI><P>(2) with the option of binding to a remote SmartFrog
+	instance. 
+	</P>
+	<LI><P>Somehow make use of MockObjects.</P>
+</OL>
+<P>Another possibility is to consider having a test-language that
+declares what to do and what results to expect. This is probably too
+much engineering, but it is worth noting that this often what Ant's
+unit tests do -they run Ant then either test the results in Java, or,
+if they are simple enough, in the build file themselves. Java is
+better for the complex tests; Ant OK for operations that are expected
+to create files or set properties. 
+</P>
+<P>In a similar way, we could have SmartFrog test components that
+test other parts of the system, and contain all the assertions. The
+output of these components needs to be redirected to the test runner,
+in a similar way to Cactus. 
+</P>
+<H3>SmartFrog parser testing</H3>
+<P>One tractable subset of testing is parser testing. This is needed
+for regression testing of the parser, and is done by 
+</P>
+<OL>
+	<LI><P>submitting invalid files for parsing and making assertions
+	about the errors raised</P>
+	<LI><P>parsing valid files and making 
+	</P>
+</OL>
+<H3>Security Testing</H3>
+<P>Testing the security of the system is a special problem, as it
+requires running the tests under a new classloader, one that only
+loads signed JARs. Furthermore, core system components such as RMI
+are managed by security, and behave differently.</P>
+<H3>Network Testing</H3>
+<P>We want to simulate: delays, network failures. We could maybe use
+the Apache Axis tcpmon application here; it has delay simulation, but
+network failures are new. There is no real substitute for physical
+network disconnections, except perhaps networking changes on a
+virtualized OS. 
+</P>
+<H2>Automation</H2>
+<P>We have two options for testing: CruiseControl [CC] and Jakarta
+Gump [Gump]. CruiseControl will automatically rebuild and retest an
+SCM repository when files in the repository fail. We are running it
+locally on serrano.hpl.hp.com; it will be the core test system, and
+configured to run the core of the tests on every check in. If some
+tests take longer, then we can take them out the default build, and
+then run 
+</P>
+<P>Gump is a scheduled process which can be run nightly. Gump clean
+builds the entire open source Java stack from CVS; each project
+proves an XML descriptor that covers how to check out the file, what
+targets to build, who to email when the build fails. The descriptor
+also states the artifacts that a project depends on, and the
+artifacts it itself generates. Gump determines the correct order for
+all projects to build, and calls them in that order, emailing any
+team whose project failed to build because of an error or a
+dependency failure. 
+</P>
+<P>The nice thing about Gump is that it is essentially a nightly
+integration test of every open source project. There is always a bit
+of recrimination when a team breaks someone else's build through some
+unannounced API change or a bug of some sort, but the fact that
+builds are so regular mean that these issues get caught.</P>
+<P>We are registered to run on the main Apache servers; we could also
+run a local Gump system here if needed. The Apache tests run on a few
+different platforms -mostly Linux; Solaris used to be used but as it
+has problems building the projects due to bugs in the OS/JRE, it is
+currently off line (!). 
+</P>
+<P>As well as compiling the code, we can link the SmartFrog web site
+to the nightly build JAR files. It would also be good to have Gump
+run all unit tests that can be run on somebody else's system. 
+</P>
+<H2><BR><BR>
+</H2>
+<H2>References</H2>
+<UL>
+	<LI><P>[CC] CruiseControl: <A HREF="http://cruisecontrol.org/">http://cruisecontrol.org/</A></P>
+	<LI><P>[Gump] Jakarta Gump: <A HREF="http://jakarta.apache.org/gump/">http://jakarta.apache.org/gump/</A></P>
+	<LI><P>[JdwA] Java Development with Ant. The explanation about JUnit
+	was cut and paste from the chapter 4 which is up on the web at
+	<A HREF="http://manning.com/antbook">http://manning.com/antbook</A>.
+		</P>
+	<LI><P>[JUnit]: Junit.org</P>
+	<LI><P>[MO] Mock Objects: <A HREF="http://www.mockobjects.com/wiki/">http://www.mockobjects.com/wiki/</A></P>
+</UL>
+</BODY>
+</HTML>

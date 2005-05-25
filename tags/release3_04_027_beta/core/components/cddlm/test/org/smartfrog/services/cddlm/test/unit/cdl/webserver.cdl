@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<cdl:cdl xmlns:cdl="urn:cddlm/xml/0.1"
+  xmlns:xs="http://www.w3.org/2001/XMLSchema"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="urn:cddlm/xml/0.1 cddml.xsd">
+  <!--<import/>-->
+  <cdl:types>
+  </cdl:types>
+  <cdl:configuration>
+
+    <webapps cdl:name="webapp-base">
+      <app>security</app>
+      <app>logging</app>
+    </webapps>
+
+    <webapps cdl:name="apps2" cdl:extends="webapp-base">
+      <app>testing</app>
+    </webapps>
+
+
+
+
+    <server cdl:name="server">
+      <port>8080</port>
+      <security>true</security>
+      <webapps cdl:lazy="true" cdl:ref="/webapps[@cdl:name='apps2']/app" />
+    </server>
+    <server cdl:name="tomcat" cdl:extends="server">
+      <basedir>
+      </basedir>
+    </server>
+
+ </cdl:configuration>
+  <cdl:system>
+  </cdl:system>
+</cdl:cdl>
