@@ -20,5 +20,5 @@ For more information: www.smartfrog.org
 #include "org/smartfrog/sfcore/workflow/eventbus/eventbus.sf"
 Sequence extends EventCompound {
     sfClass "org.smartfrog.sfcore.workflow.combinators.Sequence";
-    actions extends LAZY {}
+    //actions extends LAZY {}
 }

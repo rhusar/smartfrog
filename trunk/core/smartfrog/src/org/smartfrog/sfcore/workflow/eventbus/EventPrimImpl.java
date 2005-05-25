@@ -49,7 +49,6 @@ public class EventPrimImpl extends PrimImpl implements EventRegistration,
      * @throws RemoteException In case of RMI or network failure.
      */
     public EventPrimImpl() throws RemoteException {
-	    //, SmartFrogException {
         super();
     }
 
@@ -60,9 +59,10 @@ public class EventPrimImpl extends PrimImpl implements EventRegistration,
      * @see EventRegistration
      */
     synchronized public void register(EventSink sink) {
-        if (sfLog().isDebugEnabled()){
-           sfLog().debug( sfCompleteNameSafe().toString() + " had registration from " + sink.toString() );
+        if (sfLog().isDebugEnabled()) {
+           sfLog().debug(sfCompleteNameSafe().toString()  + " had registration from " + sink.toString());
         }
+
         if (!sendTo.contains(sink)) {
             sendTo.addElement(sink);
         }
@@ -75,8 +75,8 @@ public class EventPrimImpl extends PrimImpl implements EventRegistration,
      * @see EventRegistration
      */
     synchronized public void deregister(EventSink sink) {
-        if (sfLog().isDebugEnabled()){
-           sfLog().debug( sfCompleteNameSafe().toString() + " had deregistration from " + sink.toString() );
+        if (sfLog().isDebugEnabled()) {
+           sfLog().debug(sfCompleteNameSafe().toString()  + " had deregistration from " + sink.toString());
         }
         if (sendTo.contains(sink)) {
             sendTo.removeElement(sink);
@@ -100,8 +100,8 @@ public class EventPrimImpl extends PrimImpl implements EventRegistration,
      * @param event java.lang.Object The event
      */
     public void handleEvent(Object event) {
-        if (sfLog().isDebugEnabled()){
-          sfLog().debug( sfCompleteNameSafe().toString() + " saw " + event );
+        if (sfLog().isDebugEnabled()) {
+           sfLog().debug(sfCompleteNameSafe().toString() + " saw " + event);
         }
     }
 
@@ -115,10 +115,9 @@ public class EventPrimImpl extends PrimImpl implements EventRegistration,
         for (Enumeration e = sendTo.elements(); e.hasMoreElements();) {
             EventSink s = (EventSink) e.nextElement();
             try {
-                String infoStr = sfCompleteNameSafe().toString()+" sending "+ event+" to "+s.toString();
-                if (sfLog().isInfoEnabled()) {
-                    sfLog().info(infoStr);
-                }
+                String infoStr = sfCompleteName().toString()+" sending "+ event+" to "+s.toString();
+                if (sfLog().isDebugEnabled()) { sfLog().debug(infoStr);   }
+
                 s.event(event);
             } catch (Exception ex1) {
                 String evStr="null event";
@@ -141,13 +140,11 @@ public class EventPrimImpl extends PrimImpl implements EventRegistration,
      * @throws SmartFrogDeploymentException In case of any error while
      *         deploying the component
      */
-    public synchronized void sfDeploy() throws SmartFrogException,
-    RemoteException {
+    public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
 
         /* find local registrations and register them */
-        ComponentDescription sends = (ComponentDescription)
-                                            sfResolve(sendRef);
+        ComponentDescription sends = (ComponentDescription) sfResolve(sendRef);
         Context scxt = sends.sfContext();
 
         for (Enumeration e = scxt.keys(); e.hasMoreElements();) {
@@ -158,8 +155,7 @@ public class EventPrimImpl extends PrimImpl implements EventRegistration,
         }
 
         /* find own registrations, and register remotely */
-        ComponentDescription regs = (ComponentDescription)
-                                            sfResolve(receiveRef);
+        ComponentDescription regs = (ComponentDescription) sfResolve(receiveRef);
         Context rcxt = regs.sfContext();
 
         for (Enumeration e = rcxt.keys(); e.hasMoreElements();) {
@@ -185,7 +181,7 @@ public class EventPrimImpl extends PrimImpl implements EventRegistration,
             try {
                 s.deregister(this);
             } catch (RemoteException ex) {
-		ex.printStackTrace();
+                ex.printStackTrace();
             }
         }
 

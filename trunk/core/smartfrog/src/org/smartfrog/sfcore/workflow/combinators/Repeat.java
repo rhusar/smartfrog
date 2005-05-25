@@ -44,11 +44,8 @@ import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
  * details of the attributes which may be passed to Repeat.
  */
 public class Repeat extends EventCompoundImpl implements Compound {
-    static Reference actionRef = new Reference("action");
     static Reference retryRef = new Reference("repeat");
-    ComponentDescription action;
     int repeat;
-    Reference name;
     int currentRepeats = 1;
 
     /**
@@ -69,9 +66,7 @@ public class Repeat extends EventCompoundImpl implements Compound {
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
-        action = (ComponentDescription) sfResolve(actionRef);
         repeat = ((Integer) sfResolve(retryRef)).intValue();
-        name = sfCompleteNameSafe();
     }
 
     /**
@@ -82,7 +77,7 @@ public class Repeat extends EventCompoundImpl implements Compound {
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        sfCreateNewChild(name+"_actionRunning",
+        sfCreateNewChild(name+"_RepeatActionRunning",
 			 (ComponentDescription) action.copy(), null);
     }
 

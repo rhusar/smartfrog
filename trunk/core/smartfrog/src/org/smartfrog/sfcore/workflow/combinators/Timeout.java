@@ -50,11 +50,8 @@ import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
  * </p>
  */
 public class Timeout extends EventCompoundImpl implements Compound {
-    static Reference actionRef = new Reference("action");
     static Reference timeRef = new Reference("time");
-    ComponentDescription action;
     int time;
-    Reference name;
     Thread timer;
     boolean terminated = false;
 
@@ -76,9 +73,7 @@ public class Timeout extends EventCompoundImpl implements Compound {
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
-        action = (ComponentDescription) sfResolve(actionRef);
         time = ((Integer) sfResolve(timeRef)).intValue();
-        name = sfCompleteNameSafe();
     }
 
     /**
@@ -88,27 +83,27 @@ public class Timeout extends EventCompoundImpl implements Compound {
      * @throws SmartFrogException In case of any error while  starting
      *         the component
      */
-    public synchronized void sfStart() throws SmartFrogException, RemoteException {
+    public synchronized void sfStart() throws SmartFrogException,
+        RemoteException {
         super.sfStart();
 
         // let any errors be thrown and caught by SmartFrog for abnormal
         // termination  - including empty actions
         timer = new Thread(new Runnable() {
-                    public void run() {
-                        if (time > 0) {
-                            try {
-                                Thread.sleep(time);
-                            } catch (Exception e) {
-                            }
-
-                            if (!terminated) 
-				sfTerminate(TerminationRecord.abnormal("timeout occurred", name));
-                        }
+            public void run() {
+                if (time>0) {
+                    try {
+                        Thread.sleep(time);
+                    } catch (Exception e) {
                     }
-                });
-        timer.start();
 
-        sfCreateNewChild(name+"_actionRunning", action, null);
+                    if (!terminated)
+                        sfTerminate(TerminationRecord.abnormal("timeout occurred", name));
+                }
+            }
+        });
+        timer.start();
+        sfCreateNewChild(name+"_timeoutActionRunning", action, null);
     }
 
     /**
@@ -123,12 +118,11 @@ public class Timeout extends EventCompoundImpl implements Compound {
         if (sfContainsChild(comp)) {
             if (timer != null) {
                 try {
-		    terminated = true;
+                    terminated = true;
                     timer.interrupt();
                 } catch (Exception e) {
                 }
             }
-
             sfTerminate(status);
         }
     }

@@ -38,33 +38,32 @@ import org.smartfrog.sfcore.reference.Reference;
  * component can be set to terminate itself.
  *
  */
-public class DetachingCompoundImpl extends CompoundImpl
-    implements DetachingCompound {
-    
+public class DetachingCompoundImpl extends CompoundImpl implements DetachingCompound {
+
     /**
      * Name of the component.
-     */    
+     */
     Reference name = null;
     /**
      * Set to true if you want the compound to detach its children on start
      */
-    boolean detachDownwards; 
+    boolean detachDownwards;
     /**
      * Set to true if you want the compound to detach itself on start
-     */ 
+     */
     boolean detachUpwards;
-    /** 
+    /**
      * Set to true if you want the compound to terminate at the end of the
-     */ 
+     */
     boolean autoDestruct;
     /**
      * Flag to indicate terminate is called.
-     */ 
+     */
     boolean terminateCalled = false;
-    /** 
+    /**
      * A thread for lifecycle operations during the start phase
-     */ 
-    Thread detacher; 
+     */
+    Thread detacher;
 
     //  boolean normalDeath = true;
     /**

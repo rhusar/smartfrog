@@ -49,41 +49,41 @@ public class EventQueue extends EventPrimImpl implements Prim {
 	}
 
 	private void doAll() {
-	    int index = messageIndex;
-	    Hashtable t = (Hashtable)registrationMessages.clone(); // save the keys and order...
+        int index = messageIndex;
+        Hashtable t = (Hashtable)registrationMessages.clone(); // save the keys and order...
 
-	    for (Enumeration e = t.keys(); e.hasMoreElements();) {
-		EventSink s = (EventSink)e.nextElement();
-		int soFar = ((Integer) t.get(s)).intValue();
-		if (soFar < index) {
-		    for (int i = soFar; i < index; i++) {
-			//send it to the sink;
-			try {
-			    s.event(messages.get(i));
-			} catch (Exception ex) {
-			    ex.printStackTrace();
-			}
-		    }
-		    synchronized (registrationMessages) {
-			registrationMessages.put(s, new Integer(index));
-		    }
-		}
-	    }
+        for (Enumeration e = t.keys(); e.hasMoreElements(); ) {
+            EventSink s = (EventSink)e.nextElement();
+            int soFar = ((Integer)t.get(s)).intValue();
+            if (soFar<index) {
+                for (int i = soFar; i<index; i++) {
+                    //send it to the sink;
+                    try {
+                        s.event(messages.get(i));
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                }
+                synchronized (registrationMessages) {
+                    registrationMessages.put(s, new Integer(index));
+                }
+            }
+        }
 	}
 
 	private boolean allDone() {
-	    // note: synchronized with messages already
-	    synchronized (registrationMessages) {
-		for (Enumeration e = registrationMessages.keys(); e.hasMoreElements();) {
-		    EventSink s = (EventSink)e.nextElement();
-		    int soFar = ((Integer) registrationMessages.get(s)).intValue();
-		    if (soFar < messageIndex) {
-			return false;
-		    }
-		}
+    // note: synchronized with messages already
+        synchronized (registrationMessages) {
+            for (Enumeration e = registrationMessages.keys(); e.hasMoreElements(); ) {
+                EventSink s = (EventSink)e.nextElement();
+                int soFar = ((Integer)registrationMessages.get(s)).intValue();
+                if (soFar<messageIndex) {
+                    return false;
+                }
+            }
 
-	    }
-	    return true;
+        }
+        return true;
 	}
 
 	public void run() {
@@ -126,14 +126,14 @@ public class EventQueue extends EventPrimImpl implements Prim {
      * @see EventRegistration
      */
     synchronized public void register(EventSink sink) {
-	super.register(sink);
+        super.register(sink);
         if (!registrationMessages.containsKey(sink)) {
-	    synchronized (messages) {
-		synchronized (registrationMessages) {
-		    registrationMessages.put(sink, new Integer(0));
-		}
-		messages.notify();
-	    }
+            synchronized (messages) {
+                synchronized (registrationMessages) {
+                    registrationMessages.put(sink, new Integer(0));
+                }
+                messages.notify();
+            }
         }
     }
 
@@ -145,11 +145,11 @@ public class EventQueue extends EventPrimImpl implements Prim {
      * @see EventRegistration
      */
     synchronized public void deregister(EventSink sink) {
-	super.deregister(sink);
+        super.deregister(sink);
         if (registrationMessages.containsKey(sink)) {
-	    synchronized (registrationMessages) {
-		registrationMessages.remove(sink);
-	    }
+            synchronized (registrationMessages) {
+                registrationMessages.remove(sink);
+            }
         }
     }
 
@@ -160,11 +160,11 @@ public class EventQueue extends EventPrimImpl implements Prim {
      * @param event java.lang.Object
      */
     synchronized public void event(Object event) {
-	synchronized (messages) {
-	    messages.add(event);
-	    messageIndex += 1;
-	    messages.notify();
-	}
+        synchronized (messages) {
+            messages.add(event);
+            messageIndex += 1;
+            messages.notify();
+        }
     }
 
     /**
@@ -179,8 +179,8 @@ public class EventQueue extends EventPrimImpl implements Prim {
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
-	sender = new SenderThread();
-	sender.start();
+        sender = new SenderThread();
+        sender.start();
     }
 
     /**
@@ -190,11 +190,10 @@ public class EventQueue extends EventPrimImpl implements Prim {
      * @param comp The terminated component
      */
     public synchronized void sfTerminateWith(TerminationRecord status, Prim comp) {
-
-	try {
-	    sender.finished();
-	    sender.interrupt();
-	} catch (Exception e) {}
+        try {
+            sender.finished();
+            sender.interrupt();
+        } catch (Exception e) {}
 
         super.sfTerminatedWith(status, comp);
     }

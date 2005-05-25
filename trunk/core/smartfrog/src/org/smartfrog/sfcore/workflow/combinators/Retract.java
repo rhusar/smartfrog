@@ -40,7 +40,6 @@ public class Retract extends EventCompoundImpl implements Compound {
      *
      * @throws RemoteException In case of RMI or network error.
      */
-    LogSF log = null;
     public Retract() throws RemoteException , SmartFrogException {
         super();
 
@@ -54,16 +53,13 @@ public class Retract extends EventCompoundImpl implements Compound {
      * @param status termination status
      */
     public synchronized void sfTerminateWith(TerminationRecord status) {
-        log = sfGetCoreLog();
         for (int i = sfChildren.size() - 1; i >= 0; i--) {
             try {
                 ((Prim) sfChildren.elementAt(i)).sfTerminateQuietlyWith(status);
             } catch (Exception ex) {
                // System.out.println("Exception while terminating one of the children");
               String errStr="Exception while terminating one of the children";
-                  if (log.isErrorEnabled())
-                    log.error(errStr);
-                ex.printStackTrace();
+              if (sfLog().isErrorEnabled()) sfLog().error(errStr,ex);
             }
         }
 

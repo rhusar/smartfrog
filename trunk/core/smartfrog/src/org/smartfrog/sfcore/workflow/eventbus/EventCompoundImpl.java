@@ -31,6 +31,11 @@ import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.compound.CompoundImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.common.TerminatorThread;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
+import org.smartfrog.sfcore.common.ContextImpl;
+import org.smartfrog.sfcore.common.*;
 
 
 /**
@@ -44,6 +49,16 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
     Vector receiveFrom = new Vector();
     Vector sendTo = new Vector();
 
+
+    public ComponentDescription action;
+    public Context actions;
+    public Enumeration actionKeys;
+    public Reference name;
+
+    boolean oldNotation = true;
+    static Reference actionsRef = new Reference("actions");
+    static Reference actionRef =  new Reference("action");
+
     /**
      * Constructs EventCompoundImpl.
      *
@@ -53,6 +68,68 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
         super();
     }
 
+
+    /**
+     * Primitive deploy call. Causes the compound to do initial deployment of
+     * its contained eager component descriptions. Deployed results are then
+     * placed in the compound context. It is the responsibility of the
+     * deployed component to register with the heart beat of the compound.
+     * PrimImpl takes care of that as part of the sfDeployWith call.
+     *
+     * @param parent parent component
+     * @param cxt context for compound
+     *
+     * @exception SmartFrogDeploymentException failed to deploy sub-components
+     * @throws RemoteException In case of Remote/nework error
+     */
+    public synchronized void sfDeployWith(Prim parent, Context cxt) throws SmartFrogDeploymentException, RemoteException {
+        super.sfDeployWith(parent, cxt);
+
+        if (sfContext().containsKey("action")||sfContext().containsKey("actions")){
+            oldNotation=true;
+            //Old WF notation using action/actions
+            // Here follows normal Compound deployement
+            try { // if an exception is thrown in the super call - the termination is already handled
+                for (Enumeration e = sfContext().keys(); e.hasMoreElements(); ) {
+                    Object key = e.nextElement();
+                    Object elem = sfContext.get(key);
+
+                    if ((elem instanceof ComponentDescription)&&(((ComponentDescription)elem).getEager())) {
+                        lifecycleChildren.add(sfDeployComponentDescription(key, this, (ComponentDescription)elem, null));
+                    }
+                }
+            } catch (Exception sfex) {
+                new TerminatorThread(this, sfex, null).quietly().run();
+                throw (SmartFrogDeploymentException)SmartFrogDeploymentException.forward(sfex);
+            }
+        } else {
+            oldNotation=false;
+            // New WF notation
+            // Delays any child component deployment
+            try { // if an exception is thrown in the super call - the termination is already handled
+                Context childCtx= new ContextImpl();
+                for (Enumeration e = sfContext().keys(); e.hasMoreElements(); ) {
+                    Object key = e.nextElement();
+                    Object elem = sfContext.get(key);
+                    if ((elem instanceof ComponentDescription)&& (((ComponentDescription)elem).getEager())) {
+                        childCtx.sfAddAttribute(key, (ComponentDescription)elem);
+                        if (action == null) {
+                            action = (ComponentDescription)elem;
+                        }
+                    }
+                }
+
+                this.actionKeys = childCtx.keys();
+                this.actions = childCtx;
+
+            } catch (Exception sfex) {
+                new TerminatorThread(this, sfex, null).quietly().run();
+                throw (SmartFrogDeploymentException)SmartFrogDeploymentException.forward(sfex);
+            }
+        }
+    }
+
+
     /**
      * Registers an EventSink for forwarding of events.
      *
@@ -60,10 +137,10 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
      * @see EventRegistration
      */
     synchronized public void register(EventSink sink) {
-        if (sfLog().isDebugEnabled()){
-          sfLog().debug(sfCompleteNameSafe().toString() + " had registration from " + sink.toString());
+        if (sfLog().isDebugEnabled()) {
+           sfLog().debug(sfCompleteNameSafe().toString()  + " had registration from " + sink.toString());
         }
-        //} catch (Exception e) {}
+
         if (!sendTo.contains(sink)) {
             sendTo.addElement(sink);
         }
@@ -76,9 +153,10 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
      * @see EventRegistration
      */
     synchronized public void deregister(EventSink sink) {
-        if (sfLog().isDebugEnabled()){
-          sfLog().debug(sfCompleteNameSafe().toString() + " had deregistration from " + sink.toString());
+        if (sfLog().isDebugEnabled()) {
+           sfLog().debug(sfCompleteNameSafe().toString()  + " had deregistration from " + sink.toString());
         }
+
         if (sendTo.contains(sink)) {
             sendTo.removeElement(sink);
         }
@@ -116,13 +194,18 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
     synchronized public void sendEvent(Object event) {
         for (Enumeration e = sendTo.elements(); e.hasMoreElements();) {
             EventSink s = (EventSink) e.nextElement();
-
             try {
-                if (sfLog().isDebugEnabled()){
-                  sfLog().debug( sfCompleteNameSafe().toString() + " sending " + event + " to " + s.toString() );
-                }
+                String infoStr = sfCompleteName().toString()+" sending "+ event+" to "+s.toString();
+                if (sfLog().isDebugEnabled()) { sfLog().debug(infoStr);  }
                 s.event(event);
-            } catch (RemoteException ex) {
+            } catch (Exception ex) {
+                String evStr="null event";
+                if (event!=null ) {
+                    evStr=event.toString()+"["+event.getClass().toString()+"]";
+                }
+                if (sfLog().isErrorEnabled()) {
+                   sfLog().error("Failed to send event: "+evStr+", cause: "+ex.getMessage(),ex);
+               }
             }
         }
     }
@@ -150,7 +233,8 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
         }
 
         /* find own registrations, and register remotely */
-        ComponentDescription regs = (ComponentDescription) sfResolve(receiveRef);
+        ComponentDescription regs = (ComponentDescription)  sfResolve(receiveRef);
+
         Context rcxt = regs.sfContext();
 
         for (Enumeration e = rcxt.keys(); e.hasMoreElements();) {
@@ -160,6 +244,26 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
             receiveFrom.addElement(s);
             s.register((EventSink) this);
         }
+
+        if (oldNotation) {
+            try {
+                action = (ComponentDescription)sfResolve(actionRef, true);
+                if (sfLog().isWarnEnabled()){
+                    sfLog().warn("'action' workflow notation is deprecated");
+                }
+            } catch (SmartFrogResolutionException ex) {
+                actions = ((ComponentDescription)sfResolve(actionsRef,true)).sfContext();
+                actionKeys = actions.keys();
+                if (sfLog().isWarnEnabled()){
+                    sfLog().warn(" 'actions' workflow notation is deprecated");
+                }
+
+            }
+        } else {
+            // actions/action and actionKeys created during sfDeployWith
+        }
+        name = sfCompleteNameSafe();
+
     }
 
     /**

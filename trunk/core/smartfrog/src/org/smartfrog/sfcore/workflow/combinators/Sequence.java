@@ -51,10 +51,6 @@ import org.smartfrog.sfcore.common.*;
  * </p>
  */
 public class Sequence extends EventCompoundImpl implements Compound {
-    static Reference actionsRef = new Reference("actions");
-    Context actions;
-    Enumeration actionKeys;
-    Reference name;
 
     /**
      * Constructs Sequence.
@@ -74,8 +70,6 @@ public class Sequence extends EventCompoundImpl implements Compound {
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
-        actions = ((ComponentDescription) sfResolve(actionsRef)).sfContext();
-        actionKeys = actions.keys();
         name = sfCompleteNameSafe();
     }
 
@@ -128,15 +122,18 @@ public class Sequence extends EventCompoundImpl implements Compound {
                 if (status.errorType.equals("normal".intern())) {
                     if (actionKeys.hasMoreElements()) {
                         sfRemoveChild(comp);
-                        // log msg
-                        //System.out.println("starting next component in sequence " + name.toString());
                         String componentName = (String)actionKeys.nextElement();
+                        if (sfLog().isDebugEnabled()){
+                            sfLog().debug( "starting next component '"+componentName+"' in sequence "+ name.toString());
+                        }
                         ComponentDescription act = (ComponentDescription) actions.get(componentName);
                         sfCreateNewChild(componentName, act, null);
                     } else {
                         // Sequence terminates if there are no more sub-components
                         //log message
-                        //System.out.println("no more components for sequence " + name.toString());
+                        if (sfLog().isDebugEnabled()){
+                            sfLog().debug("no more components for sequence "+ name.toString());
+                        }
                         sfTerminate(TerminationRecord.normal(name));
                     }
                 } else {

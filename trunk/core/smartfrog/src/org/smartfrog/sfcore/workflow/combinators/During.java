@@ -51,25 +51,13 @@ import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
 public class During extends EventCompoundImpl implements Compound {
 
     /**
-     * Reference for attribute action.
-     */
-    static Reference actionRef = new Reference("action");
-    /**
      * Reference for attribute time.
      */
     static Reference timeRef = new Reference("time");
     /**
-     * ComponentDescription
-     */
-    ComponentDescription action;
-    /**
      * Time taken.
      */
     int time;
-    /**
-     * Component Name
-     */
-    Reference name;
     /**
      * Timer thread.
      */
@@ -94,9 +82,7 @@ public class During extends EventCompoundImpl implements Compound {
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
-        action = (ComponentDescription) sfResolve(actionRef);
         time = ((Integer) sfResolve(timeRef)).intValue();
-        name = sfCompleteNameSafe();
     }
 
     /**
@@ -113,12 +99,7 @@ public class During extends EventCompoundImpl implements Compound {
         timer = new Thread(new Runnable() {
                     public void run() {
                         if (time > 0) {
-                            try {
-                                Thread.sleep(time);
-                            } catch (Exception e) {
-                                //ignore
-                                //log exception
-                            }
+                            try { Thread.sleep(time); } catch (Exception e) { }
                             sfTerminate(TerminationRecord.normal(name));
                         }
                     }

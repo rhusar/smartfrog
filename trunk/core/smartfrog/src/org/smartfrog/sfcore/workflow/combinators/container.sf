@@ -21,5 +21,5 @@ For more information: www.smartfrog.org
 
 Container extends EventCompound {
     sfClass "org.smartfrog.sfcore.workflow.combinators.Container";
-    actions extends LAZY {}
+    //actions extends LAZY {}
 }
