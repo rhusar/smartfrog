@@ -20,21 +20,64 @@
 package org.smartfrog.sfcore.languages.cdl.dom;
 
 import org.smartfrog.sfcore.languages.cdl.CdlParsingException;
+import org.ggf.cddlm.generated.api.CddlmConstants;
 import nu.xom.Node;
+import nu.xom.Element;
+import nu.xom.Attribute;
 
 /**
  * created 21-Apr-2005 14:25:53
  */
 
-public class DocNode implements FromXML {
+public class DocNode implements FromXML, Names {
 
     /**
      * Parse from XM
      * @throws CdlParsingException
      */
-    public void fromXML(Node content) throws CdlParsingException {
+    public void fromXML(Element element) throws CdlParsingException {
 
     }
 
+    /**
+     * Test for an element being in the namespace
+     * @param e
+     * @return true iff we are in the CDL namespace
+     * @see #DOC_NAMESPACE
+     */
+    public static boolean inCdlNamespace(Element e) {
+        return DOC_NAMESPACE.equals(e.getNamespaceURI());
+    }
 
+    /**
+     * Test for an attribute being in the namespace
+     *
+     * @param a
+     * @return true iff we are in the CDL namespace
+     * @see #DOC_NAMESPACE
+     */
+    public static boolean inCdlNamespace(Attribute a) {
+        return DOC_NAMESPACE.equals(a.getNamespaceURI());
+    }
+
+    public static boolean isNode(Element e,String name) {
+        return inCdlNamespace(e) && name.equals(e.getLocalName());
+    }
+
+    /**
+     * Get an attribute in the CDL namespace
+     * @param element node to examine
+     * @param attribute attribute to get
+     * @param required flag set to true if needed
+     * @return the string value of the attribute
+     * @throws CdlParsingException
+     */
+    protected String getCdlAttribute(Element element, String attribute,boolean required)
+        throws CdlParsingException {
+        String value = element.getAttribute(attribute,DOC_NAMESPACE).getValue();
+        if(value==null && required) {
+            throw new CdlParsingException("Missing attribute "+attribute+" from element "+element); 
+        }
+        return value;
+    }
 }

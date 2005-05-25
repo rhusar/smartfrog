@@ -32,6 +32,7 @@ import java.io.InputStream;
 
 import nu.xom.Builder;
 import nu.xom.ParsingException;
+import nu.xom.Document;
 
 /**
  * JDom based utility to parse CDL files. created Jul 1, 2004 1:49:31 PM
@@ -121,7 +122,7 @@ public class CdlParser {
      */
     public CdlDocument parseStream(InputStream instream) throws IOException,
             ParsingException {
-        nu.xom.Document doc = builder.build(instream);
+        Document doc = builder.build(instream);
         return new CdlDocument(doc);
     }
 

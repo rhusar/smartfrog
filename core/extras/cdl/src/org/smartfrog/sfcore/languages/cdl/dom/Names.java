@@ -19,47 +19,40 @@
  */
 package org.smartfrog.sfcore.languages.cdl.dom;
 
-import nu.xom.Element;
-import nu.xom.Node;
 import org.ggf.cddlm.generated.api.CddlmConstants;
-import org.smartfrog.sfcore.languages.cdl.CdlParsingException;
 
 /**
- * Import element
- * created 21-Apr-2005 14:26:27
+ * created 25-May-2005 17:06:13
  */
 
-public class Import extends DocNode {
 
-    public String namespace;
-
-    public String location;
-
-    public Import() {
-    }
-
-    public Import(Element node) throws CdlParsingException {
-        fromXML(node);
-    }
-
+public interface Names {
     /**
-     * Parse from XM
-     *
-     * @throws CdlParsingException
+     * element name
+     * {@value}
      */
-    public void fromXML(Element element) throws CdlParsingException {
-        namespace = getCdlAttribute(element, ATTR_NAMESPACE, false);
-        location = getCdlAttribute(element, ATTR_LOCATION, true);
-    }
+    String ELEMENT_IMPORT = "import";
+    String ELEMENT_TYPES = "types";
+    String ELEMENT_CONFIGURATION = "configuration";
+    String ELEMENT_SYSTEM = "system";
+    String ELEMENT_CDL = "cdl";
+    String ELEMENT_DOCUMENTATION = "documentation";
+    String ELEMENT_EXPRESSION = "expression";
+    String ELEMENT_VARIABLETYPE = "variableType";
+    String ELEMENT_REF = "ref";
 
-
+    String ATTR_NAMESPACE="namespace";
+    String ATTR_LOCATION = "location";
+    String ATTR_REFROOT = "refroot";
+    String ATTR_REF = "ref";
+    String ATTR_LAZY = "lazy";
+    String ATTR_NAME = "name";
+    String ATTR_VALUE_OF = "value-of";
+    String ATTR_EXTENDS = "extends";
+    String ATTR_TYPE = "type";
+    String ATTR_TARGET_NAMESPACE = "targetNamespace";
     /**
-     * test that a node is of the right type
-     * @param element
-     * @return true if the element namespace and localname match what we handle
+     * our namespace {@value}
      */
-    static boolean isA(Element element) {
-        return isNode(element,ELEMENT_IMPORT);
-    }
-
+    String DOC_NAMESPACE= CddlmConstants.XML_CDL_NAMESPACE;
 }

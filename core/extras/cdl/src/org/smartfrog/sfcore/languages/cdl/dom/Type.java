@@ -19,11 +19,42 @@
  */
 package org.smartfrog.sfcore.languages.cdl.dom;
 
+import nu.xom.Element;
+import org.smartfrog.sfcore.languages.cdl.CdlParsingException;
+
 /**
  * Types contain XSD declarations (blech). Wouldnt it be nice if we could use other
  * schema types. 
  * created 21-Apr-2005 14:26:35
  */
 
-public class Types extends DocumentedNode {
+public class Type extends DocumentedNode {
+
+    public Type() {
+    }
+
+    public Type(Element node) throws CdlParsingException {
+        fromXML(node);
+    }
+
+    /**
+     * Parse from XM
+     *
+     * @throws CdlParsingException
+     */
+    public void fromXML(Element element) throws CdlParsingException {
+        //not implemented
+        //TODO
+    }
+
+    /**
+     * test that a node is of the right type
+     *
+     * @param element
+     * @return true if the element namespace and localname match what we handle
+     */
+    static boolean isA(Element element) {
+        return isNode(element, ELEMENT_TYPES);
+    }
+
 }

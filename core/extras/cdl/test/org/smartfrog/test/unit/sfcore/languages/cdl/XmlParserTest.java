@@ -22,6 +22,8 @@ import junit.framework.TestCase;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.InputSource;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.XMLReaderFactory;
 import org.smartfrog.sfcore.languages.cdl.CdlCatalog;
 import org.smartfrog.services.xml.utils.ResourceLoader;
@@ -32,6 +34,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import java.io.InputStream;
+import java.io.IOException;
+import java.io.File;
 
 /**
  * created Aug 12, 2004 1:39:59 PM
@@ -84,6 +88,20 @@ public class XmlParserTest extends XmlTestBase {
 
     public void testXercesHandlesOurCatalog() throws Exception {
         XMLReader xerces;
+        xerces = createAndConfigureXerces();
+        parse(xerces, CDL_DOC_MINIMAL);
+        parseToFailure(xerces, CDL_DOC_WRONG_ELT_ORDER);
+    }
+
+    public void testOurCatalogFails() throws Exception {
+        XMLReader xerces;
+        xerces = createAndConfigureXerces();
+        parseToFailure(xerces, CDL_DOC_WRONG_NAMESPACE);
+    }
+
+    private XMLReader createAndConfigureXerces() throws SAXException,
+            IOException {
+        XMLReader xerces;
         xerces = createXerces();
         xerces.setFeature("http://apache.org/xml/features/validation/schema",
                 true);
@@ -91,17 +109,77 @@ public class XmlParserTest extends XmlTestBase {
         CdlCatalog catalog = new CdlCatalog(loader);
         catalog.bind(xerces);
         assertEquals(catalog,xerces.getEntityResolver());
-        //set the parser options
-        xerces.setFeature(XmlConstants.FEATURE_XERCES_XSD,true);
         xerces.setFeature(XmlConstants.FEATURE_SAX_NAMESPACES, true);
+        ParserHelper.enableXmlSchema(xerces);
         xerces.setFeature(XmlConstants.FEATURE_SAX_VALIDATION, true);
-        xerces.setFeature(XmlConstants.FEATURE_XERCES_XSD_FULLCHECKING, true);
-        InputStream in = loader.loadResource(CDL_DOC_MINIMAL);
-        InputSource ins=new InputSource(in);
+        return xerces;
+    }
+
+    public void testParserSetupCodeWorks() throws Exception {
+        XMLReader xerces;
+        xerces=ParserHelper.createXmlParser(true,true,true);
+        parse(xerces, CDL_DOC_MINIMAL);
+    }
+
+    public void testParserSetupIsValidating() throws Exception {
+        XMLReader xerces;
+        xerces = ParserHelper.createXmlParser(true, true, true);
+        parseToFailure(xerces, CDL_DOC_WRONG_ELT_ORDER);
+    }
+
+    private void parseToFailure(XMLReader xerces, String resource)
+            throws IOException, SAXException {
         try {
+            parse(xerces, resource);
+            fail("Should have failed to parse "+resource);
+        } catch (SAXException e) {
+            //accept
+        }
+    }
+
+    private void parse(XMLReader xerces, String resource) throws IOException,
+            SAXException {
+        ResourceLoader loader2 = new ResourceLoader(this.getClass());
+        InputStream in = loader2.loadResource(resource);
+        InputSource ins=new InputSource(in);
+        SaxErrorHandler handler=new SaxErrorHandler();
+        try {
+            xerces.setErrorHandler(handler);
             xerces.parse(ins);
+            handler.rethrow();
         } finally {
             in.close();
         }
     }
+
+    protected class SaxErrorHandler implements ErrorHandler {
+        private SAXParseException fault;
+
+        public void rethrow() throws SAXParseException {
+            if(fault!=null) {
+                throw fault;
+            }
+        }
+
+        public void fatalError(SAXParseException exception) {
+            fault = exception;
+        }
+
+        /**
+         * receive notification of a recoverable error
+         *
+         * @param exception the error
+         */
+        public void error(SAXParseException exception) {
+            fault = exception;
+        }
+
+        public void warning(SAXParseException exception) {
+        }
+
+        private void doLog(SAXParseException e, int logLevel) {
+        }
+
+    }
+
 }
