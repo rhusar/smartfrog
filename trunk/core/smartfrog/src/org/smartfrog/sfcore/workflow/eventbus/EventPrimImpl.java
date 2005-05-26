@@ -99,7 +99,7 @@ public class EventPrimImpl extends PrimImpl implements EventRegistration,
      *
      * @param event java.lang.Object The event
      */
-    public void handleEvent(Object event) {
+    protected void handleEvent(Object event) {
         if (sfLog().isDebugEnabled()) {
            sfLog().debug(sfCompleteNameSafe().toString() + " saw " + event);
         }

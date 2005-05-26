@@ -31,7 +31,6 @@ import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.compound.CompoundImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.common.TerminatorThread;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.ContextImpl;
@@ -50,14 +49,14 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
     Vector sendTo = new Vector();
 
 
-    public ComponentDescription action;
-    public Context actions;
-    public Enumeration actionKeys;
-    public Reference name;
+    protected ComponentDescription action=null;
+    protected Context actions=null;
+    protected Enumeration actionKeys=null;
+    protected Reference name=null;
 
     boolean oldNotation = true;
-    static Reference actionsRef = new Reference("actions");
-    static Reference actionRef =  new Reference("action");
+    static final Reference actionsRef = new Reference("actions");
+    static final Reference actionRef =  new Reference("action");
 
     /**
      * Constructs EventCompoundImpl.
@@ -74,10 +73,10 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
     * If action or actions atributes are present then it behaves like compound and loads all eager components.
     */
     protected void sfDeployWithChildren() throws SmartFrogDeploymentException {
-      if (sfContext().containsKey("action")||sfContext().containsKey("actions")){
+      if (sfContext().containsKey("actions")){
           oldNotation=true;
-          //Old WF notation using action/actions
-          // Here follows normal Compound deployement
+          //Old WF notation using actions
+          // Here follows normal CompoundImpl deployment
           try { // if an exception is thrown in the super call - the termination is already handled
               for (Enumeration e = sfContext().keys(); e.hasMoreElements(); ) {
                   Object key = e.nextElement();
@@ -109,6 +108,7 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
               }
 
               this.actionKeys = childCtx.keys();
+
               this.actions = childCtx;
 
           } catch (Exception sfex) {
@@ -167,7 +167,7 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
      *
      * @param event java.lang.Object The event
      */
-    public void handleEvent(Object event) {
+    protected void handleEvent(Object event) {
         if (sfLog().isDebugEnabled()){
           sfLog().debug(sfCompleteNameSafe().toString() + " saw " + event);
         }
@@ -234,24 +234,17 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
         }
 
         if (oldNotation) {
-            try {
-                action = (ComponentDescription)sfResolve(actionRef, true);
-                if (sfLog().isWarnEnabled()){
-                    sfLog().warn("'action' workflow notation is deprecated");
-                }
-            } catch (SmartFrogResolutionException ex) {
-                actions = ((ComponentDescription)sfResolve(actionsRef,true)).sfContext();
-                actionKeys = actions.keys();
-                if (sfLog().isWarnEnabled()){
-                    sfLog().warn(" 'actions' workflow notation is deprecated");
-                }
-
+            actions = ((ComponentDescription)sfResolve(actionsRef,true)).sfContext();
+            actionKeys = actions.keys();
+            if (sfLog().isWarnEnabled()){
+                sfLog().warn(" 'actions' workflow notation is deprecated");
             }
         } else {
-            // actions/action and actionKeys created during sfDeployWith
+            // actions and actionKeys created during sfDeployWith
         }
-        name = sfCompleteNameSafe();
 
+        action = (ComponentDescription)sfResolve(actionRef, false);
+        name = sfCompleteNameSafe();
     }
 
     /**

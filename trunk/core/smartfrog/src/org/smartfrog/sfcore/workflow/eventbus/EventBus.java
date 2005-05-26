@@ -27,12 +27,6 @@ package org.smartfrog.sfcore.workflow.eventbus;
  * events.
  */
 public interface EventBus {
-    /**
-     * method to deal with the event locally after receipt by the component.
-     *
-     * @param event java.lang.Object The Event received
-     */
-    void handleEvent(Object event);
 
     /**
      * method which forwards an event to all registered EventSinks.
