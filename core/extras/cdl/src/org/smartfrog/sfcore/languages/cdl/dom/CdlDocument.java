@@ -160,6 +160,15 @@ public class CdlDocument extends DocumentedNode {
         Element root = document.getRootElement();
         String uri = root.getNamespaceURI();
 
+        /*
+        Attribute pathLangAttr = root.getAttribute("pathlanguage", Constants.CDL_NAMESPACE);
+        if ( pathLangAttr != null ) {
+            assertTrue(ERROR_NO_PATHLANGUAGE, pathLangAttr != null);
+            String language = pathLangAttr.getValue();
+            assertTrue(ERROR_BAD_PATHLANGUAGE, Constants.XPATH_URI.equals(language));
+        }
+        */
+
         if (configuration != null) {
             configuration.validateToplevel();
         }
