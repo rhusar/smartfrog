@@ -1,0 +1,367 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE faults [
+<!ELEMENT faultset (description|fault)*>
+<!ATTLIST faultset
+    name CDATA #REQUIRED
+    namespace CDATA #REQUIRED>
+<!ELEMENT fault (name|code|wiremessage|errormessage|documentation)*>
+<!ELEMENT int (description)*>
+<!ATTLIST int
+    name CDATA #REQUIRED
+    value CDATA #REQUIRED>
+<!ELEMENT code (#PCDATA)>
+<!ELEMENT constants (string|int|uri)*>
+<!ELEMENT string (description)*>
+<!ATTLIST string
+    name CDATA #REQUIRED
+    value CDATA #REQUIRED>
+<!ELEMENT errormessage (#PCDATA)>
+<!ELEMENT uri (description)*>
+<!ATTLIST uri
+    name CDATA #REQUIRED
+    value CDATA #REQUIRED>
+<!ELEMENT wiremessage (#PCDATA)>
+<!ELEMENT documentation (#PCDATA)>
+<!ELEMENT description (#PCDATA)>
+<!ELEMENT name (#PCDATA)>
+<!ELEMENT faults (constants|faultset)*>
+<!ATTLIST faults
+    xmlns CDATA #REQUIRED>
+]>
+<faults xmlns="http://gridforum.org/cddlm/serviceAPI/faultsets/2004/10/11/">
+
+  <constants>
+
+    <uri name="WS_ADDRESSING_NAMESPACE" value="http://schemas.xmlsoap.org/ws/2003/03/addressing">
+      <description>URL for WS-Addressing</description>
+    </uri>
+
+    <uri name="XML_CDL_NAMESPACE" value="http://gridforge.org/cddlm/xml/2004/07/30/">
+      <description>Namespace of XML-CDL documents</description>
+    </uri>
+
+    <uri name="CDL_API_NAMESPACE" value="http://gridforum.org/cddlm/serviceAPI/api/2004/10/11/">
+      <description>Namespace of deployment API WSDL</description>
+    </uri>
+		
+    <uri name="CDL_TYPES_NAMESPACE" value="http://gridforum.org/cddlm/serviceAPI/types/2004/10/11/">
+      <description>Namespace of deployment API types</description>
+    </uri>
+		
+    <uri name="XPATH_NAMESPACE" value="http://www.w3.org/TR/1999/REC-xpath-19991116">
+      <description>URI of XPath 1999</description>
+    </uri>
+
+    <uri name="SMARTFROG_NAMESPACE" value="http://gridforge.org/cddlm/smartfrog/2004/07/30">
+      <description>SmartFrog XML wrapper namespace</description>
+    </uri>
+
+    <uri name="ANT_NAMESPACE" value="http://ant.apache.org/xsd/1.7">
+      <description>Placeholder for ant namespace</description>
+    </uri>
+
+    <uri name="OPTION_VALIDATE_ONLY" value="http://gridforum.org/cddlm/serviceAPI/options/2004/10/11/validateOnly">
+      <description>URI of option to indicate that a descriptor should be validated, but not deployed
+        "validation" is a per-language option</description>
+    </uri>
+
+    <uri name="OPTION_PROPERTIES" value="http://gridforum.org/cddlm/serviceAPI/options/2004/10/11/properties">
+      <description>URI of option to include a property mapping</description>
+    </uri>
+
+    <uri name="OPTION_ENVIRONMENT" value="http://gridforum.org/cddlm/serviceAPI/options/2004/10/11/environment">
+      <description>URI of option to include a property mapping</description>
+    </uri>
+		
+    <uri name="OPTION_NAME" value="http://gridforum.org/cddlm/serviceAPI/options/2004/10/11/name">
+      <description>URI of option to declare a name for this service.
+        When a literal name is provided, deployment will fail if there is already
+        one of this name in the system.
+      </description>
+    </uri>
+
+    <uri name="OPTION_BLOCKING_DEPLOY" value="http://gridforum.org/cddlm/serviceAPI/options/2004/10/11/blocking">
+      <description>
+        Flag to indicate whether deployment should be blocking or non-blocking (default)
+      </description>
+    </uri>
+
+    <!--
+        <uri name="" value="">
+          <description></description>
+        </uri>
+    -->
+    <string name="SMARTFROG_ELEMENT_NAME" value="smartfrog">
+      <description>Element name of smartfrog descriptors</description>
+    </string>
+
+    <string name="CDL_ELT_CDL" value="cdl">
+      <description>Element name of smartfrog descriptors</description>
+    </string>
+
+    <string name="SMARTFROG_ELEMENT_VERSION_ATTR" value="version">
+      <description>version attribute of smartfrog documents</description>
+    </string>
+
+    <uri name="CALLBACK_WS_NOTIFICATION" value="http://www.ibm.com/xmlns/stdwip/web-services/WS-BaseNotification">
+      <description>name of ws-notification notification type</description>
+    </uri>
+
+    <uri name="CALLBACK_WS_EVENTING" value="http://schemas.xmlsoap.org/ws/2004/08/eventing">
+      <description>name of ws-eventing notification type</description>
+    </uri>
+
+    <uri name="CALLBACK_CDDLM_PROTOTYPE" value="http://gridforum.org/cddlm/serviceAPI/notifications/2004/10/11/">
+      <description>name of prototype-quality CDDLM notification type</description>
+    </uri>
+
+
+    <!-- state constants. These are non-normative; the normative definitions
+     are in the deploy API XSD File. This copy is because SOAP stacks
+     give enumerations bad names
+     -->
+    <string name="STATE_INSTANTIATED" value="instantiated">
+      <description>instantiated state</description>
+    </string>
+
+    <string name="STATE_INITIALIZED" value="initialized">
+      <description>initialized state</description>
+    </string>
+
+    <string name="STATE_RUNNING" value="running">
+      <description>running state</description>
+    </string>
+
+    <string name="STATE_FAILED" value="failed">
+      <description>failed state</description>
+    </string>
+
+    <string name="STATE_TERMINATED" value="terminated">
+      <description>terminated state</description>
+    </string>
+
+    <string name="CDDLM_PROTOTYPE_SUBSCRIPTION_ROOT_ELEMENT"
+      value="prototypeSubscriptionRequest">
+      <description> element local name for prototype subscription</description>
+    </string>
+
+    <string name="CDDLM_PROTOTYPE_SUBSCRIPTION_ADDRESS_ELEMENT"
+      value="address">
+      <description> element local name for prototype subscription address</description>
+    </string>
+
+
+    <!--
+        <string name="" value="">
+          <description></description>
+        </string>
+
+        <string name="" value="">
+          <description></description>
+        </string>
+    -->
+  </constants>
+
+
+  <!-- this document lists standard faults of the deployment services -->
+  <faultset name="CDDLM_FAULT"
+    namespace="http://gridforge.org/cddlm/serviceAPI/faults/2004/10/11/"
+    >
+    <description>
+      These are the faults that are explicitly part of the CDDLM deployment
+      API. They are returned by the endpoint when the message sent
+      is (somehow) not compatible with the current implementation or state of
+      the server.
+    </description>
+    <fault>
+      <name>BAD_ARGUMENT</name>
+      <code>bad-argument</code>
+      <wiremessage>bad argument</wiremessage>
+      <errormessage>A bad argument was sent in a message</errormessage>
+      <documentation>
+        This is the generic response when some argument is out of bounds, invalid
+        or otherwise not parseable.
+        The wire message should be extended to explain which particular part of
+        the message is at fault, where possible.
+      </documentation>
+    </fault>
+    <fault>
+      <name>NOT_UNDERSTOOD</name>
+      <code>not-understood</code>
+      <wiremessage>A mustUnderstand option was not understood</wiremessage>
+      <errormessage>A mustUnderstand option was not understood</errormessage>
+      <documentation>
+        An option was sent to this endpoint with a mustUnderstand
+        header that was true, yet it was not understood.
+        The particular header should be identified in the subcode.
+      </documentation>
+    </fault>
+
+    <fault>
+      <name>NESTED_EXCEPTION</name>
+      <code>nested-exception</code>
+      <wiremessage>nested-exception</wiremessage>
+      <errormessage>This message contains a nested exception</errormessage>
+      <documentation>
+      A nested exception is being thrown.
+      </documentation>
+    </fault>
+
+    <fault>
+      <name>NO_SUCH_APPLICATION</name>
+      <code>no-such-application</code>
+      <wiremessage>The specified application was not found</wiremessage>
+      <errormessage>There is no such application running in the deployment system</errormessage>
+      <documentation>
+        The name or URI used to refer to an application did not map to an existing
+        application. Either it has already terminated, or it was never deployed.
+      </documentation>
+    </fault>
+
+    <fault>
+      <name>WRONG_APPLICATION_STATE</name>
+      <code>wrong-application-state</code>
+      <wiremessage>The application is in the wrong state for the operation.</wiremessage>
+      <errormessage>The application is in the wrong state for the operation.</errormessage>
+      <documentation>
+        An attempt was made to move an application to a new state, but it cannot
+        make that state transition from the state it is currently in.
+        For example, you cannot terminate an already-terminated application.
+      </documentation>
+    </fault>
+
+
+    <fault>
+      <name>UNSUPPORTED_LANGUAGE</name>
+      <code>unsupported-language</code>
+      <wiremessage>The language is unsupported</wiremessage>
+      <errormessage>The server does not support that language</errormessage>
+      <documentation>
+        The language (or language version) is not supported.
+        The list of supported languages can be enumerated from the
+        server information operation
+      </documentation>
+    </fault>
+
+    <fault>
+      <name>UNSUPPORTED_CALLBACK</name>
+      <code>unsupported-notification</code>
+      <wiremessage>The notification option is not supported</wiremessage>
+      <errormessage>The server does not support that notification mechanism</errormessage>
+      <documentation>
+        The server does not support that notification mechanism.
+      </documentation>
+    </fault>
+
+    <fault>
+      <name>DESCRIPTOR_PARSE_ERROR</name>
+      <code>descriptor-parse-error</code>
+      <wiremessage>unable to parse the descriptor</wiremessage>
+      <errormessage>The deployment descriptor could not be parsed</errormessage>
+      <documentation>
+        There was an error parsing the deployment descriptor.
+      </documentation>
+    </fault>
+
+    <fault>
+      <name>DESCRIPTOR_COMPILATION_ERROR</name>
+      <code>descriptor-compilation-error</code>
+      <wiremessage>unable to compile the descriptor</wiremessage>
+      <errormessage>The deployment descriptor could not be compiled</errormessage>
+      <documentation>
+        There was an error compiling the deployment descriptor.
+      </documentation>
+    </fault>
+
+    <fault>
+      <name>DEPLOYMENT_FAILURE</name>
+      <code>deployment-failure</code>
+      <wiremessage>failed to deploy</wiremessage>
+      <errormessage>The deployment encountered a problem</errormessage>
+      <documentation>
+        There was some error with the deployment itself, an error which resulted in
+        the deployment failing. This is usually either an error in the deployment
+        descriptor, or an error in executing the descriptor.
+      </documentation>
+    </fault>
+
+    <fault>
+      <name>RESOLUTION_FAILURE</name>
+      <code>resolution-failure</code>
+      <wiremessage>unresolved reference</wiremessage>
+      <errormessage>The descriptor contained a reference which could not be resolved</errormessage>
+      <documentation>
+        The descriptor contained a reference which could not be resolved.
+      </documentation>
+    </fault>
+
+    <fault>
+      <name>INITIALIZATION_FAILURE</name>
+      <code>initialisation-failure</code>
+      <wiremessage>unable to initialise</wiremessage>
+      <errormessage>a failure was encountered during the initialisation stage of deployment</errormessage>
+      <documentation>
+        When the runtime tried to move a component into the initialisation state,
+        it threw a fault instead.
+      </documentation>
+    </fault>
+
+    <fault>
+      <name>RUNTIME_EXCEPTION</name>
+      <code>runtime-failure</code>
+      <wiremessage>An error has occurred in the deployment run-time</wiremessage>
+      <errormessage>An error has occurred in the deployment run-time</errormessage>
+      <documentation>
+        An internal fault has occurred in a deployment component
+      </documentation>
+    </fault>
+
+    <fault>
+      <name>LIFECYCLE_EXCEPTION</name>
+      <code>lifecycle-exception</code>
+      <wiremessage>An error has occurred during a lifecycle transition</wiremessage>
+      <errormessage>An attempt to move a component to a new lifecycle stage failed</errormessage>
+      <documentation>
+        An error occurred while attempting to move a component to a new stage in
+        the deployment lifecycle
+      </documentation>
+    </fault>
+
+    <fault>
+      <name>LIVENESS_EXCEPTION</name>
+      <code>liveness-exception</code>
+      <wiremessage>A liveness test on a component failed</wiremessage>
+      <errormessage>An attempt to verify the liveness of a component failed</errormessage>
+      <documentation>
+        An error occurred while probing the liveness of a component.
+        This can mean it is in a terminated state, or that the component's internal health
+        check failed.
+      </documentation>
+    </fault>
+
+    <fault>
+      <name>COMPILE_RESOLUTION_FAILURE</name>
+      <code>compile-resolution-failure</code>
+      <wiremessage>Compile-time resolution failure</wiremessage>
+      <errormessage>unable to resolve references</errormessage>
+      <documentation>
+        References which needed to be resolved at compile time
+        could not be so resolved.
+        This may be an error in the deployment descriptor, or
+        simply that some references need to be marked for deployment-time
+        resolution.
+      </documentation>
+    </fault>
+    <!--
+        <fault>
+          <name></name>
+          <code></code>
+          <wiremessage></wiremessage>
+          <errormessage></errormessage>
+          <documentation>
+          </documentation>
+        </fault>
+    -->
+
+  </faultset>
+</faults>
