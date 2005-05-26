@@ -112,7 +112,6 @@ public class FireBreak extends EventCompoundImpl implements Compound {
                 }
             }
         } catch (Exception ex) {
-            //Logger.log(this.sfCompleteNameSafe()+" - Failed to start sub-components ",ex);
             if (sfLog().isErrorEnabled()){
               sfLog().error(this.sfCompleteNameSafe()+" - Failed to start sub-components ",ex);
             }
@@ -132,7 +131,6 @@ public class FireBreak extends EventCompoundImpl implements Compound {
             try {
 		sfDetachAndTerminate(status);
             } catch (Exception e) {
-                //Logger.log(this.sfCompleteNameSafe()+" - error handling child termination ",e );
                 if (sfLog().isErrorEnabled()){
                   sfLog().error(this.sfCompleteNameSafe()+" - error handling child termination ",e);
                 }
