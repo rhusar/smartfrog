@@ -37,7 +37,7 @@ System extends Parallel {
     host4 "localhost";
     rogueHost "localhost";
 
-    actions extends LAZY {
+//    actions extends LAZY {
         h1 extends SysNode {
             sfProcessHost ATTRIB host1;
         }
@@ -53,7 +53,7 @@ System extends Parallel {
         rh extends RogueSysNode {
             sfProcessHost ATTRIB rogueHost;
         }
-    }
+//    } // end actions - deprecated
 }
 
 

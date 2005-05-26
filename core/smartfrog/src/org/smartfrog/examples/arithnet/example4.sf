@@ -51,7 +51,7 @@ Example4Base extends Compound {
 }
 
 Example4 extends Sequence {
-     actions extends LAZY  {
+//     actions extends LAZY  {
          case1 extends Example4Base {
                hostG ATTRIB host1;
                hostP ATTRIB host2;
@@ -62,7 +62,7 @@ Example4 extends Sequence {
                hostP ATTRIB host1;
                runtime 10000;
          }
-     }
+//     }
 }
 
 

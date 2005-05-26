@@ -61,7 +61,7 @@ ApacheInstallScript extends GenericInstallScript {
     //----------------------------------
 
     installScript  [ ("cd " ++ home),
-                     "./configure", 
+                     "./configure",
                      "make install" ];
 
 
@@ -71,47 +71,58 @@ ApacheInstallScript extends GenericInstallScript {
     // specialise the messages from the generic install script
     //----------------------------------
 
-    actions:startEvent:event    (name ++ ":1:4:Apache download started");
-    actions:downloadEvent:event (name ++ ":2:4:Apache downloaded, starting install");
-    actions:completeEvent:event  (name ++ ":3:4:Apache install complete, downloading data");
+// New notation
+//    actions:startEvent:event    (name ++ ":1:4:Apache download started");
+//    actions:downloadEvent:event (name ++ ":2:4:Apache downloaded, starting install");
+//    actions:completeEvent:event  (name ++ ":3:4:Apache install complete, downloading data");
+    startEvent:event    (name ++ ":1:4:Apache download started");
+    downloadEvent:event (name ++ ":2:4:Apache downloaded, starting install");
+    completeEvent:event  (name ++ ":3:4:Apache install complete, downloading data");
 
     //----------------------------------
     // add additional steps to the generic install script workflow
     //----------------------------------
 
 
-    actions:downloadCGI extends Downloader {
+//    actions:downloadCGI extends Downloader {
+    downloadCGI extends Downloader {
         url         ("http://" ++ webServerHost ++ ":" ++ webServerPort ++ cgiScriptsLocation);
         toLocalFile "/usr/local/apache/cgi-bin/cgiScripts.tar";
     }
 
-    actions:untarCGI extends BashShellScript {
+//    actions:untarCGI extends BashShellScript {
+    untarCGI extends BashShellScript {
         processName   name;
         cmd           ["cd /usr/local/apache/cgi-bin", "tar -xf cgiScripts.tar", "exit 0"];
     }
 
-    actions:cgiEvent extends EventSend {
+    //actions:cgiEvent extends EventSend {
+    cgiEvent extends EventSend {
         sendTo:top  LAZY PARENT;
         event       (name ++ ":4:4: cgi download complete, loading pages");
     }
 
-    actions:downloadPages extends Downloader {
+    //actions:downloadPages extends Downloader {
+    downloadPages extends Downloader {
         url          ("http://" ++  webServerHost ++ ":" ++ webServerPort ++ webPagesLocation);
         toLocalFile  "/usr/local/apache/htdocs/webPages.tar";
     }
 
-    actions:untarPages extends BashShellScript {
+    //actions:untarPages extends BashShellScript {
+    untarPages extends BashShellScript {
         processName  name;
         cmd          ["cd /usr/local/apache/htdocs", "tar -xf webPages.tar", "exit 0"];
     }
 
 
-    actions:webPagesEvent extends EventSend {
+    //actions:webPagesEvent extends EventSend {
+    webPagesEvent extends EventSend {
         sendTo:top   LAZY PARENT;
         event        (name ++ ":5:4: Apache install complete");
     }
 
-    actions:delayTermination extends DoNothing {
+    //actions:delayTermination extends DoNothing {
+    delayTermination extends DoNothing {
         time 2000;
     }
 
@@ -129,7 +140,7 @@ ApacheInstallScript extends GenericInstallScript {
 SimulatedApacheInstallScript extends Sequence {
     name "apache";
 
-    actions extends LAZY {
+//    actions extends LAZY {
         e1 extends EventSend {
             sendTo:top  LAZY PARENT;
             event       (name ++ ":1:4: ");
@@ -158,6 +169,6 @@ SimulatedApacheInstallScript extends Sequence {
         delayTermination extends DoNothing {
             time 2000;
         }
-    }
+//    }
 }
 

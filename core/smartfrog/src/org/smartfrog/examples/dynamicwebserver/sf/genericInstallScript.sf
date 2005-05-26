@@ -75,14 +75,14 @@ GenericInstallScript extends Sequence {
     //-------------------------------------
     // script to move to home and untar
     //-------------------------------------
-    prefixUntarScript [ ("cd " ++ installLocation), 
+    prefixUntarScript [ ("cd " ++ installLocation),
                         ("tar -xf " ++ file) ];
 
     //-------------------------------------
     // build the complete script
     //-------------------------------------
-    completeInstallScript (prefixUntarScript <> 
-                           installScript     <> 
+    completeInstallScript (prefixUntarScript <>
+                           installScript     <>
                            ["exit 0"]);
 
 
@@ -91,7 +91,7 @@ GenericInstallScript extends Sequence {
     //   downloading
     //   running the install script
     //-------------------------------------
-    actions extends LAZY {
+//    actions extends LAZY {
         startEvent extends EventSend {
             sendTo:top  LAZY PARENT;
             event       (name ++ ":1:2:downloading");
@@ -112,6 +112,6 @@ GenericInstallScript extends Sequence {
             sendTo:top  LAZY PARENT;
             event       (name ++ ":3:2:install complete");
         }
-    }
+//    } //end actions - deprecated
 }
 

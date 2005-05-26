@@ -53,11 +53,11 @@ For more information: www.smartfrog.org
 p1 extends Parallel {
      //asynchCreateChild true-> deploy and start actions in separate threads.
      asynchCreateChild true;
-     actions extends LAZY  {
+//     actions extends LAZY  {
          //Note: pause true -> pause "limit" secs during sfDeploy and sfStart.
          caseP11 extends Counter {message "p1.c1"; limit 5;terminate true;pause true;}
          caseP12 extends Counter {message "p1.c2"; limit 10;terminate true;pause false;}
-     }
+//     }
 }
 
 
