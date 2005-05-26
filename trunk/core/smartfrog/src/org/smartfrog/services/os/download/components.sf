@@ -119,7 +119,7 @@ Install extends Try {
     localFile "/tmp/tmp.tar";
 
     action extends LAZY Sequence {
-        actions extends LAZY {
+//        actions extends LAZY {
             download extends Downloader {
                 url ATTRIB file;
                 toLocalFile ATTRIB localFile;
@@ -132,7 +132,7 @@ Install extends Try {
                 installScript PARENT:ATTRIB installScript;
                 installScriptContext  PARENT:ATTRIB installScriptContext;
             }
-        }
+//        }
     }
 
     abnormal extends LAZY DeleteFiles {

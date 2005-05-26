@@ -22,14 +22,14 @@ For more information: www.smartfrog.org
 #include "org/smartfrog/sfcore/workflow/combinators/parallel.sf"
 
 sfConfig extends Parallel {
-       actions extends LAZY {
+//       actions extends LAZY {
             bar extends Compound {
                  sfProcessComponentName "Bar";
             }
             foo extends Compound {
                  sfProcessComponentName "Foo";
             }
-       }
+//       }
 }
 
 

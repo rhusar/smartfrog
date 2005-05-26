@@ -23,9 +23,9 @@ For more information: www.smartfrog.org
 /**
  * Define an application to be a sequence of:
  * copy file; run command for a period of time; remove file
- * Running a command for a period involves wrapping in "during" to limit the 
+ * Running a command for a period involves wrapping in "during" to limit the
  * time of the run.
- * An application is parameterized by the file URL, filename and the 
+ * An application is parameterized by the file URL, filename and the
  * commandline, plus the length of time to run the daemon
  */
 
@@ -36,7 +36,7 @@ Application extends Sequence {
     time 10000;                                  // default time in millisecs
     sfSyncTerminate true;
 
-    actions extends LAZY {
+//    actions extends LAZY {
     a extends Copyfile {
         toFile ATTRIB filename;
         fromURL ATTRIB fileURL;
@@ -51,11 +51,11 @@ Application extends Sequence {
     c extends Removefile {
         file ATTRIB filename;
     }
-    }
+//    }
 }
 
 /**
- * Some specific examples of applications: 
+ * Some specific examples of applications:
  * a web server and an application server
  */
 

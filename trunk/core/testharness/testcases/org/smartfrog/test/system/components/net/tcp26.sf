@@ -24,7 +24,7 @@ For more information: www.smartfrog.org
 #include "org/smartfrog/sfcore/workflow/components.sf"
 
 sfConfig extends Sequence {
-   actions extends LAZY { 
+//   actions extends LAZY {
     sampleTelnet extends TelnetSession {
 	PasswordProvider:passwordFile "D:\\cvs\\forge\\passwd.txt";
 	Telnet:commands ["cd /home/ritu",
@@ -42,5 +42,5 @@ sfConfig extends Sequence {
 	FTP:remoteFiles ["/home/ritu/tmp/test1",
                      "/home/ritu/tmp/test2"];
     }
- }
+// }
 }

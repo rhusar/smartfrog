@@ -24,7 +24,7 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/examples/dynamicwebserver/gui/graphpanel/components.sf"
 
 /*
- * The following global values must be defined in the include location 
+ * The following global values must be defined in the include location
  * for this file, otherwise errors will be thrown.
  *
  * The Apache tarballs locations - either leave as is, or modify to
@@ -90,7 +90,7 @@ CoreWebServer extends Compound {
 
 
 WebServer extends Sequence {
-    actions extends LAZY {
+//    actions extends LAZY {
         install extends Install {
 	    // for simplicity, we will assume this is being defined in a context
 	    // with these attributes defined... probably in the root
@@ -102,7 +102,7 @@ WebServer extends Sequence {
             webPagesLocation   PARENT:ATTRIB webPagesLocation;
         }
         server extends CoreWebServer;
-    }
+//    } //end actions
 }
 
 WebServerTemplate extends Compound {

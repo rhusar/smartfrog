@@ -22,26 +22,26 @@ For more information: www.smartfrog.org
 #include "org/smartfrog/sfcore/workflow/components.sf"
 
 /**
- * dataProvider creates a Sequence component. 
- * It's sub-components define the values of the attributes that are referenced 
+ * dataProvider creates a Sequence component.
+ * It's sub-components define the values of the attributes that are referenced
  * by dataConsumer component.
- * Hence, once dataProvider is started the references in dataConsumer are 
- * resolved at run-time. 
+ * Hence, once dataProvider is started the references in dataConsumer are
+ * resolved at run-time.
  */
 
 
 /**
- * sfConfig defines a Sequence component in which the sub-components operate 
+ * sfConfig defines a Sequence component in which the sub-components operate
  * sequentially.
  */
 sfConfig extends Sequence {
    /**
-    * The basic configuration of the Sequence component is defined under 
+    * The basic configuration of the Sequence component is defined under
     * "actions" component.
     */
-    actions extends LAZY {
+//    actions extends LAZY {
         /**
-         * The Run component creates its only sub-component and then left it 
+         * The Run component creates its only sub-component and then left it
          * parentless to fend for itself.
          */
     doit extends Run {
@@ -53,12 +53,12 @@ sfConfig extends Sequence {
         /**
                  * SmartFrog attribute for defining the name of first component
              * (of the application tree) to be deployed in the process.
-                 */ 
+                 */
                 sfProcessComponentName "foo";
         step1 extends Compound {
             step2 extends Compound {
                         /**
-                         * This component has a Lazy reference and so it is 
+                         * This component has a Lazy reference and so it is
                          * resolved at run-time.
                          */
             step3 extends LAZY {
@@ -73,7 +73,7 @@ sfConfig extends Sequence {
                         step5 extends Compound {
                //inside a compound
                            /**
-                            * This attribute has a Lazy reference and so it is 
+                            * This attribute has a Lazy reference and so it is
                             * resolved at run-time.
                             */
                 value LAZY PARENT:step4:value2;
@@ -82,7 +82,7 @@ sfConfig extends Sequence {
         }
         }
     }
-    }
+//    } //end actions
 }
 
 
