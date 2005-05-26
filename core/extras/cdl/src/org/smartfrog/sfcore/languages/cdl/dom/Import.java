@@ -23,6 +23,7 @@ import nu.xom.Element;
 import nu.xom.Node;
 import org.ggf.cddlm.generated.api.CddlmConstants;
 import org.smartfrog.sfcore.languages.cdl.CdlParsingException;
+import org.smartfrog.sfcore.languages.cdl.dom.attributes.GenericAttribute;
 
 /**
  * Import element
@@ -31,15 +32,15 @@ import org.smartfrog.sfcore.languages.cdl.CdlParsingException;
 
 public class Import extends DocNode {
 
-    public String namespace;
+    private String namespace;
 
-    public String location;
+    private String location;
 
     public Import() {
     }
 
     public Import(Element node) throws CdlParsingException {
-        fromXML(node);
+        super(node);
     }
 
     /**
@@ -47,9 +48,10 @@ public class Import extends DocNode {
      *
      * @throws CdlParsingException
      */
-    public void fromXML(Element element) throws CdlParsingException {
-        namespace = getCdlAttribute(element, ATTR_NAMESPACE, false);
-        location = getCdlAttribute(element, ATTR_LOCATION, true);
+    public void bind(Element element) throws CdlParsingException {
+        super.bind(element);
+        namespace = GenericAttribute.extractCdlAttributeValue(element, ATTR_NAMESPACE, false);
+        location = GenericAttribute.extractCdlAttributeValue(element, ATTR_LOCATION, true);
     }
 
 

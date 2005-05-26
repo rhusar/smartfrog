@@ -34,7 +34,7 @@ public class Type extends DocumentedNode {
     }
 
     public Type(Element node) throws CdlParsingException {
-        fromXML(node);
+        bind(node);
     }
 
     /**
@@ -42,7 +42,8 @@ public class Type extends DocumentedNode {
      *
      * @throws CdlParsingException
      */
-    public void fromXML(Element element) throws CdlParsingException {
+    public void bind(Element element) throws CdlParsingException {
+        super.bind(element);
         //not implemented
         //TODO
     }

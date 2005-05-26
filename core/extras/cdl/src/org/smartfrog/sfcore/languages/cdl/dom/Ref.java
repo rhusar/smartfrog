@@ -19,39 +19,40 @@
  */
 package org.smartfrog.sfcore.languages.cdl.dom;
 
-import nu.xom.Element;
+import org.smartfrog.sfcore.languages.cdl.dom.attributes.RefRootAttribute;
+import org.smartfrog.sfcore.languages.cdl.dom.attributes.RefAttribute;
+import org.smartfrog.sfcore.languages.cdl.dom.attributes.LazyAttribute;
 import org.smartfrog.sfcore.languages.cdl.CdlParsingException;
 
+import javax.xml.namespace.QName;
+
+import nu.xom.Element;
+
 /**
- * created 21-Apr-2005 14:26:16
+ * Reference type
+ * created 26-May-2005 11:14:38
  */
 
-public class Documentation extends DocNode {
+public class Ref extends DocNode {
 
-    public Documentation() {
+    public Ref() {
     }
 
-    public Documentation(Element element) throws CdlParsingException {
-        bind(element);
+    public Ref(Element node) throws CdlParsingException {
+        super(node);
     }
 
     /**
-     * Parse from XM
-     *
-     * @throws CdlParsingException
+     * optional reference root
      */
+    private RefRootAttribute refRoot;
+    private RefAttribute refAttr;
+    private boolean lazy;
+
     public void bind(Element element) throws CdlParsingException {
-        //TODO
+        super.bind(element);
+        lazy=LazyAttribute.isLazy(element,false);
+        refRoot = RefRootAttribute.extract(element, false);
+        refAttr = RefAttribute.extract(element, true);
     }
-
-    /**
-     * test that a node is of the right type
-     *
-     * @param element
-     * @return true if the element namespace and localname match what we handle
-     */
-    static boolean isA(Element element) {
-        return isNode(element, ELEMENT_DOCUMENTATION);
-    }
-
 }

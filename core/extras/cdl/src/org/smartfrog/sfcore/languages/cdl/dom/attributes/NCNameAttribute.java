@@ -17,41 +17,26 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.sfcore.languages.cdl.dom;
+package org.smartfrog.sfcore.languages.cdl.dom.attributes;
 
+import nu.xom.Attribute;
 import nu.xom.Element;
 import org.smartfrog.sfcore.languages.cdl.CdlParsingException;
 
 /**
- * created 21-Apr-2005 14:26:16
+ * created 26-May-2005 15:50:01
  */
 
-public class Documentation extends DocNode {
-
-    public Documentation() {
+public class NCNameAttribute extends GenericAttribute {
+    public NCNameAttribute() {
     }
 
-    public Documentation(Element element) throws CdlParsingException {
-        bind(element);
+    public NCNameAttribute(Attribute attribute) throws CdlParsingException {
+        super(attribute);
     }
 
-    /**
-     * Parse from XM
-     *
-     * @throws CdlParsingException
-     */
-    public void bind(Element element) throws CdlParsingException {
-        //TODO
+    public void bind(Attribute attr) throws CdlParsingException {
+        super.bind(attr);
     }
-
-    /**
-     * test that a node is of the right type
-     *
-     * @param element
-     * @return true if the element namespace and localname match what we handle
-     */
-    static boolean isA(Element element) {
-        return isNode(element, ELEMENT_DOCUMENTATION);
-    }
-
+   
 }

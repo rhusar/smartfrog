@@ -17,41 +17,38 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.sfcore.languages.cdl.dom;
+package org.smartfrog.sfcore.languages.cdl.dom.attributes;
 
+import nu.xom.Attribute;
 import nu.xom.Element;
 import org.smartfrog.sfcore.languages.cdl.CdlParsingException;
+import org.smartfrog.sfcore.languages.cdl.dom.DocNode;
 
 /**
- * created 21-Apr-2005 14:26:16
+ * created 26-May-2005 14:27:47
  */
 
-public class Documentation extends DocNode {
+public class TypeAttribute extends QNameAttribute {
 
-    public Documentation() {
+    public TypeAttribute() {
     }
 
-    public Documentation(Element element) throws CdlParsingException {
-        bind(element);
-    }
-
-    /**
-     * Parse from XM
-     *
-     * @throws CdlParsingException
-     */
-    public void bind(Element element) throws CdlParsingException {
-        //TODO
+    public TypeAttribute(Attribute attribute) throws CdlParsingException {
+        super(attribute);
     }
 
     /**
-     * test that a node is of the right type
+     * Extract an attribute from an element.
      *
-     * @param element
-     * @return true if the element namespace and localname match what we handle
+     * @param element  element to extract from
+     * @param required flag to set to true if the attribute is required
+     * @return
      */
-    static boolean isA(Element element) {
-        return isNode(element, ELEMENT_DOCUMENTATION);
+    public static TypeAttribute extract(Element element, boolean required)
+            throws CdlParsingException {
+        return (TypeAttribute) findAndBind(ATTR_TYPE,
+                TypeAttribute.class,
+                element,
+                required);
     }
-
 }

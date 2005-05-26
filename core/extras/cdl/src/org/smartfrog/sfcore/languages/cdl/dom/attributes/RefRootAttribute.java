@@ -17,41 +17,47 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.sfcore.languages.cdl.dom;
+package org.smartfrog.sfcore.languages.cdl.dom.attributes;
 
+import nu.xom.Attribute;
 import nu.xom.Element;
 import org.smartfrog.sfcore.languages.cdl.CdlParsingException;
+import org.smartfrog.sfcore.languages.cdl.dom.DocNode;
+
+import javax.xml.namespace.QName;
+import javax.xml.XMLConstants;
 
 /**
- * created 21-Apr-2005 14:26:16
+ * created 26-May-2005 11:18:11
  */
 
-public class Documentation extends DocNode {
+public class RefRootAttribute extends QNameAttribute {
 
-    public Documentation() {
-    }
-
-    public Documentation(Element element) throws CdlParsingException {
-        bind(element);
+    public RefRootAttribute() {
     }
 
     /**
-     * Parse from XM
-     *
+     * construct a refroot; crack open the value and build a qname from it.
+     * @param attribute
      * @throws CdlParsingException
      */
-    public void bind(Element element) throws CdlParsingException {
-        //TODO
+    public RefRootAttribute(Attribute attribute) throws CdlParsingException {
+        super(attribute);
     }
 
     /**
-     * test that a node is of the right type
+     * Extract an attribute from an element.
      *
-     * @param element
-     * @return true if the element namespace and localname match what we handle
+     * @param element  element to extract from
+     * @param required flag to set to true if the attribute is required
+     * @return
      */
-    static boolean isA(Element element) {
-        return isNode(element, ELEMENT_DOCUMENTATION);
+    public static RefRootAttribute extract(Element element, boolean required)
+            throws CdlParsingException {
+        return (RefRootAttribute) findAndBind(ATTR_REFROOT,
+                RefRootAttribute.class,
+                element,
+                required);
     }
 
 }

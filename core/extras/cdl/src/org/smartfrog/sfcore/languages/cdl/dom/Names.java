@@ -38,7 +38,7 @@ public interface Names {
     String ELEMENT_CDL = "cdl";
     String ELEMENT_DOCUMENTATION = "documentation";
     String ELEMENT_EXPRESSION = "expression";
-    String ELEMENT_VARIABLETYPE = "variableType";
+    String ELEMENT_VARIABLE = "variable";
     String ELEMENT_REF = "ref";
 
     String ATTR_NAMESPACE="namespace";
