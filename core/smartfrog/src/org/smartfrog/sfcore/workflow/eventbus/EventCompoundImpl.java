@@ -69,66 +69,54 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
     }
 
 
-    /**
-     * Primitive deploy call. Causes the compound to do initial deployment of
-     * its contained eager component descriptions. Deployed results are then
-     * placed in the compound context. It is the responsibility of the
-     * deployed component to register with the heart beat of the compound.
-     * PrimImpl takes care of that as part of the sfDeployWith call.
-     *
-     * @param parent parent component
-     * @param cxt context for compound
-     *
-     * @exception SmartFrogDeploymentException failed to deploy sub-components
-     * @throws RemoteException In case of Remote/nework error
-     */
-    public synchronized void sfDeployWith(Prim parent, Context cxt) throws SmartFrogDeploymentException, RemoteException {
-        super.sfDeployWith(parent, cxt);
+    /*
+    * Method that overwrites compoundImpl behavior and delays loading eager components to sfStart phase.
+    * If action or actions atributes are present then it behaves like compound and loads all eager components.
+    */
+    protected void sfDeployWithChildren() throws SmartFrogDeploymentException {
+      if (sfContext().containsKey("action")||sfContext().containsKey("actions")){
+          oldNotation=true;
+          //Old WF notation using action/actions
+          // Here follows normal Compound deployement
+          try { // if an exception is thrown in the super call - the termination is already handled
+              for (Enumeration e = sfContext().keys(); e.hasMoreElements(); ) {
+                  Object key = e.nextElement();
+                  Object elem = sfContext.get(key);
 
-        if (sfContext().containsKey("action")||sfContext().containsKey("actions")){
-            oldNotation=true;
-            //Old WF notation using action/actions
-            // Here follows normal Compound deployement
-            try { // if an exception is thrown in the super call - the termination is already handled
-                for (Enumeration e = sfContext().keys(); e.hasMoreElements(); ) {
-                    Object key = e.nextElement();
-                    Object elem = sfContext.get(key);
+                  if ((elem instanceof ComponentDescription)&&(((ComponentDescription)elem).getEager())) {
+                      lifecycleChildren.add(sfDeployComponentDescription(key, this, (ComponentDescription)elem, null));
+                  }
+              }
+          } catch (Exception sfex) {
+              new TerminatorThread(this, sfex, null).quietly().run();
+              throw (SmartFrogDeploymentException)SmartFrogDeploymentException.forward(sfex);
+          }
+      } else {
+          oldNotation=false;
+          // New WF notation
+          // Delays any child component deployment
+          try { // if an exception is thrown in the super call - the termination is already handled
+              Context childCtx= new ContextImpl();
+              for (Enumeration e = sfContext().keys(); e.hasMoreElements(); ) {
+                  Object key = e.nextElement();
+                  Object elem = sfContext.get(key);
+                  if ((elem instanceof ComponentDescription)&& (((ComponentDescription)elem).getEager())) {
+                      childCtx.sfAddAttribute(key, (ComponentDescription)elem);
+                      if (action == null) {
+                          action = (ComponentDescription)elem;
+                      }
+                  }
+              }
 
-                    if ((elem instanceof ComponentDescription)&&(((ComponentDescription)elem).getEager())) {
-                        lifecycleChildren.add(sfDeployComponentDescription(key, this, (ComponentDescription)elem, null));
-                    }
-                }
-            } catch (Exception sfex) {
-                new TerminatorThread(this, sfex, null).quietly().run();
-                throw (SmartFrogDeploymentException)SmartFrogDeploymentException.forward(sfex);
-            }
-        } else {
-            oldNotation=false;
-            // New WF notation
-            // Delays any child component deployment
-            try { // if an exception is thrown in the super call - the termination is already handled
-                Context childCtx= new ContextImpl();
-                for (Enumeration e = sfContext().keys(); e.hasMoreElements(); ) {
-                    Object key = e.nextElement();
-                    Object elem = sfContext.get(key);
-                    if ((elem instanceof ComponentDescription)&& (((ComponentDescription)elem).getEager())) {
-                        childCtx.sfAddAttribute(key, (ComponentDescription)elem);
-                        if (action == null) {
-                            action = (ComponentDescription)elem;
-                        }
-                    }
-                }
+              this.actionKeys = childCtx.keys();
+              this.actions = childCtx;
 
-                this.actionKeys = childCtx.keys();
-                this.actions = childCtx;
-
-            } catch (Exception sfex) {
-                new TerminatorThread(this, sfex, null).quietly().run();
-                throw (SmartFrogDeploymentException)SmartFrogDeploymentException.forward(sfex);
-            }
-        }
+          } catch (Exception sfex) {
+              new TerminatorThread(this, sfex, null).quietly().run();
+              throw (SmartFrogDeploymentException)SmartFrogDeploymentException.forward(sfex);
+          }
+      }
     }
-
 
     /**
      * Registers an EventSink for forwarding of events.
