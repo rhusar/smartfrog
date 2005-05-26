@@ -19,9 +19,60 @@
  */
 package org.smartfrog.sfcore.languages.cdl.dom;
 
+import org.smartfrog.sfcore.languages.cdl.dom.attributes.ValueOfAttribute;
+import org.smartfrog.sfcore.languages.cdl.CdlParsingException;
+
+import java.util.List;
+import java.util.LinkedList;
+import java.util.HashMap;
+import java.util.Collection;
+
+import nu.xom.Element;
+
 /**
  * created 21-Apr-2005 14:42:51
  */
 
-public class Expression extends AnnotatedNode {
+public class Expression extends DocNode {
+
+    public Expression() {
+    }
+
+    private ValueOfAttribute valueOf;
+
+    private HashMap<String,Variable> variables =new HashMap<String, Variable>();
+
+    public Collection<Variable> getVariables() {
+        return variables.values();
+    }
+
+    public ValueOfAttribute getValueOf() {
+        return valueOf;
+    }
+
+    protected void add(Variable v) {
+        variables.put(v.getNameValue(),v);
+    }
+
+    /**
+     * find a variable with a give name
+     * @param name
+     * @return
+     */
+    public Variable lookupVariable(String name) {
+        return variables.get(name);
+    }
+
+    public void bind(Element element) throws CdlParsingException {
+        super.bind(element);
+        valueOf=ValueOfAttribute.extract(element, true);
+        //now run though our children, which must all be variables
+        for(Element child:childElements()) {
+            if(!Variable.isA(child)) {
+                throw new CdlParsingException("Unexpected element "+element);
+            }
+            Variable v=new Variable(child);
+            add(v);
+        }
+    }
 }

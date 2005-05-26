@@ -27,13 +27,22 @@ package org.smartfrog.sfcore.languages.cdl;
 
 public class CdlParsingException extends Exception {
 
-    public CdlParsingException(String message, Throwable ex) {
-        super(message, ex);
+
+    public CdlParsingException() {
     }
 
     public CdlParsingException(String message) {
         super(message);
     }
+
+    public CdlParsingException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public CdlParsingException(Throwable cause) {
+        super(cause);
+    }
+
 
 
     /**
