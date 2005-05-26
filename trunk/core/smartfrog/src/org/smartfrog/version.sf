@@ -21,9 +21,9 @@ For more information: www.smartfrog.org
 Version extends {
   name "SmartFrog";
   majorRelease "3";
-  minorRelease "04";
-  build "031"; // odd numbers are development versions
-  status "beta"; //alpha, beta, stable
+  minorRelease "06";
+  build "000"; // odd numbers are development versions
+  status "rc1"; //alpha, beta, (stable), rc (release candidate)
   copyright "(C) Copyright 1998-2005 Hewlett-Packard Development Company, LP";
 }
 
