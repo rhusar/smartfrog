@@ -438,19 +438,28 @@ public class CompoundImpl extends PrimImpl implements Compound {
 
         super.sfDeployWith(parent, cxt);
 
-        try { // if an exception is thrown in the super call - the termination is already handled
-            for (Enumeration e = sfContext().keys(); e.hasMoreElements(); ) {
-                Object key = e.nextElement();
-                Object elem = sfContext.get(key);
+        sfDeployWithChildren();
+    }
 
-                if ((elem instanceof ComponentDescription)&&(((ComponentDescription)elem).getEager())) {
-                    lifecycleChildren.add(sfDeployComponentDescription(key, this, (ComponentDescription)elem, null));
-                }
-            }
-        } catch (Exception sfex) {
-            new TerminatorThread(this, sfex, null).quietly().run();
-            throw (SmartFrogDeploymentException)SmartFrogDeploymentException.forward(sfex);
-        }
+    /**
+     * Method that selects the children that compound will drive through their lifecycle
+     * The children are stored in 'lifecycleChildren'
+     * @throws SmartFrogDeploymentException
+     */
+    protected void sfDeployWithChildren() throws SmartFrogDeploymentException {
+      try { // if an exception is thrown in the super call - the termination is already handled
+          for (Enumeration e = sfContext().keys(); e.hasMoreElements(); ) {
+              Object key = e.nextElement();
+              Object elem = sfContext.get(key);
+
+              if ((elem instanceof ComponentDescription)&&(((ComponentDescription)elem).getEager())) {
+                  lifecycleChildren.add(sfDeployComponentDescription(key, this, (ComponentDescription)elem, null));
+              }
+          }
+      } catch (Exception sfex) {
+          new TerminatorThread(this, sfex, null).quietly().run();
+          throw (SmartFrogDeploymentException)SmartFrogDeploymentException.forward(sfex);
+      }
     }
 
     /**
