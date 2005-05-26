@@ -53,6 +53,6 @@ public class SequenceTest extends SmartFrogTestBase {
 //                "sequencefail",
 //                "SmartFrogDeploymentException",
 //                "Class not found");
-        this.deployExpectingSuccess(FILES+"testSequence.sf","sequencenewfail");
+        this.deployExpectingSuccess(FILES+"testNewSequence.sf","sequencenewfail");
     }    
 }
