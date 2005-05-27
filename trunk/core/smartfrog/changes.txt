@@ -1,3 +1,29 @@
+release 3_06_000_rc1
+----------------------
+2005-May-27 Release date
+2005-May-26 Mod: Updated worlflow notation. Commented any "actions extend LAZY"
+2005-May-26 Mod: Updated workflow logging
+2005-May-26 Mod: handleEvent is now protected and out of the EventBus interface
+2005-May-26 Add: New testCA and certificates valid for 365 days
+2005-May-26 Add: New method sfDeployWithChildren in CompoundImpl and EventCompoundImpl
+2005-May-26 Mod: CompoundImpl to protect lifecycleChildren
+2005-May-26 Add: New example in counter using new workflow notation
+2005-May-25 Add: New workflow notation. Backwards compatible
+2005-May-24 Add: Debug messages in EventPrimImpl and EventCompoundImpl 
+2005-May-20 Add: New ActionPARSE in ConfigurationDescriptor
+2005-May-17 Mod: Added type to name in StreamGobbler
+2005-May-17 Mod: Changed the way sfLog is created
+2005-May-16 Add: getLogName to LogSF and corrected initialization of sfLog in PrimImpl
+2005-May-16 Add: Dirst versions of shell script documentation
+2005-May-10 Fix: Attribute name "retry" corrected to "repeat" in Repeat workflow
+2005-May-10 Add: New version of shellscript component under services
+2005-May-06 Add: SmartFrog Tutorial v1.1
+2005-May-03 Fix: Problem when processcompound null in getRegistryPort(ProcessCompound c)
+2005-Apr-29 Mod: Changed exception message when creating images in dynamicwebserver example 
+2005-Apr-29 Mod: Event is now an Object
+2005-Apr-28 Add: New example using workflow in runshell
+2005-Apr-27 Mod: ComponentDescription Cloned in CreateNewChild
+
 release 3.04.022_beta
 ----------------------
 2005-Apr-27 Release date
