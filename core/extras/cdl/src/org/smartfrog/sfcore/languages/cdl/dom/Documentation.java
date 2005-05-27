@@ -32,7 +32,7 @@ public class Documentation extends DocNode {
     }
 
     public Documentation(Element element) throws CdlParsingException {
-        bind(element);
+        fromXML(element);
     }
 
     /**
@@ -40,7 +40,7 @@ public class Documentation extends DocNode {
      *
      * @throws CdlParsingException
      */
-    public void bind(Element element) throws CdlParsingException {
+    public void fromXML(Element element) throws CdlParsingException {
         //TODO
     }
 

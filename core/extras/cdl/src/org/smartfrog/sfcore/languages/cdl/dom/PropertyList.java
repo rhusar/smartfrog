@@ -57,7 +57,7 @@ public class PropertyList extends DocumentedNode implements ToSmartFrog {
     }
 
     public PropertyList(Element element) throws CdlParsingException {
-        bind(element);
+        fromXML(element);
     }
 
     /**
@@ -65,7 +65,7 @@ public class PropertyList extends DocumentedNode implements ToSmartFrog {
      *
      * @throws CdlParsingException
      */
-    public void bind(Element element) throws CdlParsingException {
+    public void fromXML(Element element) throws CdlParsingException {
         //TODO
 
     }

@@ -19,54 +19,9 @@
  */
 package org.smartfrog.sfcore.languages.cdl.dom;
 
-import nu.xom.Element;
-
-import javax.xml.namespace.QName;
-
-import org.smartfrog.sfcore.languages.cdl.CdlParsingException;
-import org.smartfrog.sfcore.languages.cdl.dom.attributes.NameAttribute;
-
 /**
  * created 21-Apr-2005 14:43:52
  */
 
-public class Variable extends Ref {
-
-    private NameAttribute name;
-
-    public Variable() {
-    }
-
-    public Variable(Element node) throws CdlParsingException {
-        super(node);
-    }
-
-    public void bind(Element element) throws CdlParsingException {
-        //get the bits of ref
-        super.bind(element);
-        //add a name attribute
-        name=NameAttribute.extract(element, true);
-    }
-
-    public NameAttribute getName() {
-        return name;
-    }
-
-    /**
-     * get the string value of the name; valid only when bound
-     * @return
-     */
-    public String getNameValue() {
-        return name.getValue();
-    }
-
-    /**
-     * test that a node is of the right type
-     *
-     * @param element
-     * @return true if the element namespace and localname match what we handle
-     */
-    static boolean isA(Element element) {
-        return isNode(element, ELEMENT_VARIABLE);
-    }
+public class Variable extends DocNode {
 }

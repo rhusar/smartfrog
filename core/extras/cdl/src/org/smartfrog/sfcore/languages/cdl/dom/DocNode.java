@@ -20,56 +20,23 @@
 package org.smartfrog.sfcore.languages.cdl.dom;
 
 import org.smartfrog.sfcore.languages.cdl.CdlParsingException;
-import org.smartfrog.sfcore.languages.cdl.utils.ElementIterator;
 import org.ggf.cddlm.generated.api.CddlmConstants;
 import nu.xom.Node;
 import nu.xom.Element;
 import nu.xom.Attribute;
-import nu.xom.ParentNode;
 
 /**
- * Representation of any node.
  * created 21-Apr-2005 14:25:53
  */
 
-public abstract class DocNode implements Names {
-
-    protected DocNode() {
-    }
-
-    protected DocNode(Element node) throws CdlParsingException {
-        bind(node);
-    }
+public class DocNode implements FromXML, Names {
 
     /**
-     * the node under the system here.
-     */
-    private Element node;
-
-    public Element getNode() {
-        return node;
-    }
-
-    public void setNode(Element node) {
-        this.node = node;
-    }
-
-    /**
-     * Iterate just over elements
-     *
-     * @return
-     */
-    public ElementIterator childElements() {
-        return new ElementIterator(node);
-    }
-
-    /**
-     * Parse from XML.
-     * The base implementation sets the {@link #node} attribute
+     * Parse from XM
      * @throws CdlParsingException
      */
-    public void bind(Element element) throws CdlParsingException {
-        setNode(element);
+    public void fromXML(Element element) throws CdlParsingException {
+
     }
 
     /**
@@ -97,4 +64,20 @@ public abstract class DocNode implements Names {
         return inCdlNamespace(e) && name.equals(e.getLocalName());
     }
 
+    /**
+     * Get an attribute in the CDL namespace
+     * @param element node to examine
+     * @param attribute attribute to get
+     * @param required flag set to true if needed
+     * @return the string value of the attribute
+     * @throws CdlParsingException
+     */
+    protected String getCdlAttribute(Element element, String attribute,boolean required)
+        throws CdlParsingException {
+        String value = element.getAttribute(attribute,DOC_NAMESPACE).getValue();
+        if(value==null && required) {
+            throw new CdlParsingException("Missing attribute "+attribute+" from element "+element); 
+        }
+        return value;
+    }
 }
