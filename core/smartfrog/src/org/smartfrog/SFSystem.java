@@ -445,7 +445,7 @@ public class SFSystem implements MessageKeys {
      * @throws Exception if anything else went wrong
      */
 
-    public ProcessCompound runSmartFrog(Vector cfgDescriptors) throws
+    public static ProcessCompound runSmartFrog(Vector cfgDescriptors) throws
         Exception {
         ProcessCompound process;
         process = runSmartFrog();
@@ -467,7 +467,7 @@ public class SFSystem implements MessageKeys {
      * @throws RemoteException if something goes wrong during the communication
      * @throws SFGeneralSecurityException for security trouble
      */
-    public ProcessCompound runSmartFrog()
+    public static ProcessCompound runSmartFrog()
             throws SmartFrogException, UnknownHostException, ConnectException,
             RemoteException, SFGeneralSecurityException {
 
@@ -484,7 +484,7 @@ public class SFSystem implements MessageKeys {
         return process;
     }
 
-    protected ProcessCompound createRootProcess() throws SmartFrogException, RemoteException {
+    protected static ProcessCompound createRootProcess() throws SmartFrogException, RemoteException {
         return SFProcess.deployProcessCompound(true);
     }
 
