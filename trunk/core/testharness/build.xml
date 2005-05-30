@@ -153,9 +153,8 @@ For more information: www.smartfrog.org
     
     <probe4 resource="org/smartfrog/services/email/emailer.sf" 
       property="emailer.present"/>
-    <probe4 resource="org/smartfrog/services/logger/logger.sf"
-      property="logger.present"/>    
-    <probe4 resource="org/smartfrog/services/net/telnet.sf "
+    
+    <probe4 resource="org/smartfrog/services/net/telnet.sf"
       property="net.present"/>    
     <probe4 resource="org/smartfrog/services/scripting/scriptPrim.sf"
       property="scripting.present"/>    
@@ -273,8 +272,7 @@ For more information: www.smartfrog.org
                 unless="scripting.present"/>
               <exclude name="${componenttests}net/**/*Test.class"
                 unless="net.present"/>
-              <exclude name="${componenttests}logger/**/*Test.class"
-                unless="logger.present"/>
+            
               <exclude name="${componenttests}emailer/**/*Test.class"
                 unless="emailer.present"/>
               <exclude name="${componenttests}slp/**/*Test.class"

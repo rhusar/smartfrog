@@ -86,7 +86,7 @@ For more information: www.smartfrog.org
     <property name="emailer.project" location="emailer" />
     <property name="jetty.project" location="jetty" />
     <property name="junit.project" location="junit" />
-    <property name="logger.project" location="logger" />
+    <!--property name="logger.project" location="logger" /-->
     <property name="net.project" location="net" />
     <property name="scripting.project" location="scripting" />
     <property name="sfcoreloggers.project" location="sfcoreloggers" />
@@ -118,7 +118,7 @@ For more information: www.smartfrog.org
     
     <path id="component.path">
       <pathelement location="${utils.project}"/>
-      <pathelement location="${logger.project}"/>
+      <!--pathelement location="${logger.project}"/-->
       <pathelement location="${ssh.project}"/>
       <pathelement location="${net.project}"/>
       <pathelement location="${emailer.project}"/>
@@ -246,7 +246,7 @@ For more information: www.smartfrog.org
        <!--pathelement path="${cddlm.project}/${src}"/-->
        <pathelement path="${emailer.project}/${src}"/>
        <pathelement path="${jetty.project}/${src}"/>
-       <pathelement path="${logger.project}/${src}"/>
+       <!--pathelement path="${logger.project}/${src}"/-->
        <pathelement path="${net.project}/${src}"/>
        <pathelement path="${scripting.project}/${src}"/>
        <pathelement path="${sfcoreloggers.project}/${src}"/>
@@ -291,7 +291,7 @@ For more information: www.smartfrog.org
 
     <copybuild project="${emailer.project}" />
     <copybuild project="${jetty.project}" />
-    <copybuild project="${logger.project}" />
+    <!--copybuild project="${logger.project}" /-->
     <copybuild project="${net.project}" />
     <copybuild project="${scripting.project}" />
     <copybuild project="${sfcoreloggers.project}" />
@@ -320,7 +320,7 @@ For more information: www.smartfrog.org
 
     <copybins project="${emailer.project}" />
     <copybins project="${jetty.project}" />
-    <copybins project="${logger.project}" />
+    <!--copybins project="${logger.project}" /!-->
     <copybins project="${net.project}" />
     <copybins project="${scripting.project}" />
     <copybins project="${sfcoreloggers.project}"/>
@@ -349,7 +349,7 @@ For more information: www.smartfrog.org
 
     <copylibs project="${emailer.project}" />
     <copylibs project="${jetty.project}" />
-    <copylibs project="${logger.project}" />
+    <!--copylibs project="${logger.project}" /-->
     <copylibs project="${net.project}" />
     <copylibs project="${scripting.project}" />
     <copylibs project="${sfcoreloggers.project}" />
@@ -380,7 +380,7 @@ For more information: www.smartfrog.org
 
     <copycomponents project="${emailer.project}" />
     <copycomponents project="${jetty.project}" />
-    <copycomponents project="${logger.project}" />
+    <!--copycomponents project="${logger.project}" /-->
     <copycomponents project="${net.project}"  />
     <copycomponents project="${scripting.project}" />
     <copycomponents project="${sfcoreloggers.project}" />
@@ -409,7 +409,7 @@ For more information: www.smartfrog.org
 
     <copydocs project="${emailer.project}" />
     <copydocs project="${jetty.project}" />
-    <copydocs project="${logger.project}" />
+    <!--copydocs project="${logger.project}" /-->
     <copydocs project="${net.project}" />
     <copydocs project="${scripting.project}" />
     <copydocs project="${sfcoreloggers.project}" />
@@ -436,10 +436,10 @@ For more information: www.smartfrog.org
         <include name="**/**"/>
         <exclude name="**/*.dfPackage"/>
       </zipfileset>
-      <zipfileset dir="${logger.project}/${dist.src.dir}">
+      <!--zipfileset dir="${logger.project}/${dist.src.dir}">
         <include name="**/**"/>
         <exclude name="**/*.dfPackage"/>
-      </zipfileset>
+      </zipfileset-->
       <zipfileset dir="${net.project}/${dist.src.dir}">
         <include name="**/**"/>
         <exclude name="**/*.dfPackage"/>
@@ -549,7 +549,7 @@ For more information: www.smartfrog.org
 
     <updateversion project="${emailer.project}" compname="emailer"/>
     <updateversion project="${jetty.project}" compname="jetty" />
-    <updateversion project="${logger.project}" compname="logger" />
+    <!--updateversion project="${logger.project}" compname="logger" /-->
     <updateversion project="${net.project}" compname="net"/>
     <updateversion project="${scripting.project}" compname="scripting"/>
     <updateversion project="${sfcoreloggers.project}" compname="sfcoreloggers"/>
