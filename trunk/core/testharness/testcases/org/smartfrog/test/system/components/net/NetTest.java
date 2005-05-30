@@ -50,7 +50,7 @@ public class NetTest
                                  "tcn69",
                                  "SmartFrogDeploymentException",
                                  null,
-                                 "SmartFrogCompileResolutionException",
+                                 EXCEPTION_RESOLUTION,
                                  "error in schema: non-optional attribute 'host' is missing");
     }
 
@@ -59,7 +59,7 @@ public class NetTest
                                  "tcn70",
                                  "SmartFrogDeploymentException",
                                  null,
-                                 "SmartFrogCompileResolutionException",
+                                 EXCEPTION_RESOLUTION,
                                  "error in schema: non-optional attribute 'username' is missing");
     }
 
@@ -68,7 +68,7 @@ public class NetTest
                                  "tcn71",
                                  "SmartFrogDeploymentException",
                                  null,
-                                 "SmartFrogCompileResolutionException",
+                                 EXCEPTION_RESOLUTION,
                                  "error in schema: non-optional attribute 'commands' is missing");
     }
 
@@ -86,7 +86,7 @@ public class NetTest
                                  "tcn73",
                                  "SmartFrogDeploymentException",
                                  null,
-                                 "SmartFrogCompileResolutionException",
+                                 EXCEPTION_RESOLUTION,
                                  "error in schema: non-optional attribute 'ftpHost' is missing");
     }
 
@@ -95,7 +95,7 @@ public class NetTest
                                  "tcn74",
                                  "SmartFrogDeploymentException",
                                  null,
-                                 "SmartFrogCompileResolutionException",
+                                 EXCEPTION_RESOLUTION,
                                  "error in schema: non-optional attribute 'username' is missing");
     }
 
@@ -104,7 +104,7 @@ public class NetTest
                                  "tcn75",
                                  "SmartFrogDeploymentException",
                                  null,
-                                 "SmartFrogCompileResolutionException",
+                                 EXCEPTION_RESOLUTION,
                                  "error in schema: non-optional attribute 'localFiles' is missing");
     }
 
@@ -113,7 +113,7 @@ public class NetTest
                                  "tcn76",
                                  "SmartFrogDeploymentException",
                                  null,
-                                 "SmartFrogCompileResolutionException",
+                                 EXCEPTION_RESOLUTION,
                                  "error in schema: non-optional attribute 'remoteFiles' is missing");
     }
 }

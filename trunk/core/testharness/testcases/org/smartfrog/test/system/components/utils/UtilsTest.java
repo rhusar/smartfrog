@@ -50,7 +50,7 @@ public class UtilsTest
                                  "tcn78",
                                  "SmartFrogDeploymentException",
                                  null,
-                                 "SmartFrogCompileResolutionException",
+                                 EXCEPTION_RESOLUTION,
                                  "Unresolved Reference");
     }
 }
