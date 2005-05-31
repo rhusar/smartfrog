@@ -8,4 +8,5 @@ sfConfig extends TelnetSession {
                  ];
 	PasswordProvider:passwordFile "passwd.txt";
         Telnet:logFile "spy.log";
+	Telnet:ostype "linux";
 }

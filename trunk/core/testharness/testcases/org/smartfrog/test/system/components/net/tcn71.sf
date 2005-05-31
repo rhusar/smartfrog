@@ -6,4 +6,5 @@ sfConfig extends TelnetSession {
         Telnet:username "ritu";	
 	PasswordProvider:passwordFile "passwd.txt";
         Telnet:logFile "spy.log";
+	Telnet:ostype "linux";
 }
