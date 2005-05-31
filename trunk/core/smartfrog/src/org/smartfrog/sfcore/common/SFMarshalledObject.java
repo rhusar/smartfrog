@@ -26,18 +26,48 @@ import java.io.IOException;
 import java.io.Serializable;
 
 
-public class SFMarshalledObject implements Serializable{
+/**
+ * A wrapper class to avoid stub classes in intermediate nodes.
+ * We delay the packing of the inner object until we serialize the
+ * wrapper to avoid replacing exported objects by stubs in a single VM.
+ * 
+ * 
+ */
+final public class SFMarshalledObject implements Serializable{
 
+    /** The original object or a packed version of it. */ 
     private Object value = null;
+    
+    /** Whether we have already "packed" an inner object.*/
+    private boolean alreadySet = false;
 
-    public SFMarshalledObject(Object value) {
-        set(value);
-    }
-
+    /** Whether the original object was of type MarshalledOnject, so 
+        we do not need to unwrap it. */
     private boolean wasMarshalled = false;
 
-    public Object get() {
-        if (value == null) return null;
+    /**
+     * Creates a new <code>SFMarshalledObject</code> instance.
+     *
+     * @param value an <code>Object</code> value
+     */
+    public SFMarshalledObject(Object value) {
+        this.value = value;
+    }
+
+
+
+    /**
+     * Gets an unwrapped version of the original object, or exactly 
+     * the original object if we have not been serialized.
+     *
+     * @return An unwrapped version of the original object, or exactly 
+     * the original object if we have not been serialized.
+     */
+    public synchronized Object get() {
+        
+        if ((!alreadySet) || (value == null)) {
+            return value;
+        }
         if (value instanceof MarshalledObject && !wasMarshalled) {
             try {
                 return ((MarshalledObject)value).get();
@@ -51,22 +81,45 @@ public class SFMarshalledObject implements Serializable{
         }
     }
 
-    public Object  set(Object value){
+    /**
+     * Customize the serialization of this object so it "packs" the 
+     * inner object the first time we serialize the "wrapper" object.
+     *
+     * @param out a <code>java.io.ObjectOutputStream</code> value
+     * @exception IOException if an error occurs
+     */
+    private void writeObject(java.io.ObjectOutputStream out)
+        throws IOException {
 
-        Object oldValue = get();
-        synchronized (value) {
-            if (value instanceof MarshalledObject) {
-                wasMarshalled = true;
-                this.value = (MarshalledObject)value;
-            } else {
-                try {
-                    this.value = new MarshalledObject(value);
-                } catch (IOException ex) {
-                    this.value = value;
-                }
-            }
-        }
-        return oldValue;
+        pack();
+        out.defaultWriteObject();
     }
 
+
+    /**
+     * Packs the inner object in a MarshalledObject to avoid 
+     * stub classes being needed in intermediate nodes. We avoid
+     * "packing" multiple times in case we serialize multiple times. 
+     *
+     */
+    private synchronized void pack(){
+
+        if (alreadySet) {
+            return;
+        }
+        try {
+            if (value instanceof MarshalledObject) {
+                wasMarshalled = true;
+            } else {
+                try {
+                    value = new MarshalledObject(value);
+                } catch (IOException ex) {
+                    // need to log this...
+                }
+            } 
+        } finally {
+            alreadySet = true;
+        }
+    }
+    
 }
