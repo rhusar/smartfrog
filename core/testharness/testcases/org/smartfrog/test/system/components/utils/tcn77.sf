@@ -14,6 +14,7 @@ sfConfig extends Compound {
                 ftpRemoteFiles ["cvs/smartfrog.tar.gz"];
 
                 telnetLogfile "SFNode1.log";
+		telnet:Telnet:ostype "linux";
                 telnetCommands ["cd cvs",
                                  "mkdir test",
                                  "cp SmartFrog.3.02.002.beta.20040429_ALL.tar.gz ./test",

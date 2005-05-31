@@ -32,6 +32,7 @@ sfConfig extends Sequence {
             Telnet:host "ebnt171.india.hp.com";
             Telnet:username "ritu";
             Telnet:logFile "spy.log";
+	    Telnet:ostype "linux";
      }
      sampleFTPClient extends FTPClient {
 	PasswordProvider:passwordFile "D:\\cvs\\forge\\passwd.txt";
