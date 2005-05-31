@@ -273,7 +273,8 @@ For more information: www.smartfrog.org
                 unless="scripting.present"/>
               <exclude name="${componenttests}net/**/*Test.class"
                 unless="net.present"/>
-            
+              <exclude name="${componenttests}logger/**/*Test.class"
+                unless="logger.present"/>
               <exclude name="${componenttests}emailer/**/*Test.class"
                 unless="emailer.present"/>
               <exclude name="${componenttests}slp/**/*Test.class"
