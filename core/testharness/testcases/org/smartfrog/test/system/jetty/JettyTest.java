@@ -62,7 +62,7 @@ public class JettyTest
                                  "tcn54",
                                  "SmartFrogDeploymentException",
                                  "unnamed component",
-                                 "SmartFrogCompileResolutionException",
+                                 "SmartFrogResolutionException",
                                  "java.lang.StackOverflowError");
     }
 
@@ -71,7 +71,7 @@ public class JettyTest
                                  "tcn55",
                                  "SmartFrogDeploymentException",
                                  "unnamed component",
-                                 "SmartFrogCompileResolutionException",
+                                 "SmartFrogResolutionException",
                                  "Unresolved Reference, data: [jettyhome");
     }
 
@@ -80,7 +80,7 @@ public class JettyTest
                                  "tcn56",
                                  "SmartFrogDeploymentException",
                                  "unnamed component",
-                                 "SmartFrogCompileResolutionException",
+                                 "SmartFrogResolutionException",
             "error in schema: non-optional attribute 'listenerPort' is missing");
     }
 
@@ -89,7 +89,7 @@ public class JettyTest
                                  "tcn57",
                                  "SmartFrogDeploymentException",
                                  "unnamed component",
-                                 "SmartFrogCompileResolutionException",
+                                 "SmartFrogResolutionException",
                                  "error in schema: wrong class found for attribute 'server', expected: java.lang.String");
     }
 
