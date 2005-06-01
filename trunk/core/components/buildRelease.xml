@@ -47,7 +47,10 @@ To use: ant -f buildRelease release
     <property name="Name.Components" value="SmartFrog Components"/>
     <property name="Name.System" value="components"/>
     <property name="Name.Company" value="(C) Copyright 1998-2004 Hewlett-Packard Development Company, LP"/>
-    <property name="version" value="1.00.000_beta"/>
+    <loadproperties srcFile="version.properties"/>
+    <fail unless="component.version">No property component.version found in file version.properties</fail>
+    <property name="version" value="${component.version}" />
+    <!--property name="version" value="1.00.000_beta"/-->
     <property name="year" value="2004"/>
 
     <property name="root.dir" location=".."  />
@@ -64,7 +67,7 @@ To use: ant -f buildRelease release
     <property name="emailer.project" location="emailer" />
     <property name="jetty.project" location="jetty" />
     <property name="junit.project" location="junit" />
-    <property name="logger.project" location="logger" />
+    <!--property name="logger.project" location="logger" /-->
     <property name="net.project" location="net" />
     <property name="scripting.project" location="scripting" />
     <property name="sfcoreloggers.project" location="sfcoreloggers" />
@@ -128,7 +131,7 @@ To use: ant -f buildRelease release
 	    <zipfileset dir="." prefix="${Name.System}.${version}/components">
 	<include name="emailer/**"/>
 	<include name="jetty/**"/>
-	<include name="logger/**"/>
+	<!--include name="logger/**"/-->
 	<include name="net/**"/>
 	<include name="scripting/**"/>
 	<include name="sfcoreloggers/**"/>
@@ -170,7 +173,7 @@ To use: ant -f buildRelease release
 	    <tarfileset dir="." prefix="${Name.System}.${version}/components">
 	<include name="emailer/**"/>
 	<include name="jetty/**"/>
-	<include name="logger/**"/>
+	<!--include name="logger/**"/-->
 	<include name="net/**"/>
 	<include name="scripting/**"/>
 	<include name="sfcoreloggers/**"/>
@@ -266,7 +269,7 @@ To use: ant -f buildRelease release
 
     <copyreleaseszips project="${emailer.project}" />
     <copyreleaseszips project="${jetty.project}" />
-    <copyreleaseszips project="${logger.project}" />
+    <!--copyreleaseszips project="${logger.project}" /-->
     <copyreleaseszips project="${net.project}" />
     <copyreleaseszips project="${scripting.project}" />
     <copyreleaseszips project="${sfcoreloggers.project}"/>
@@ -296,7 +299,7 @@ To use: ant -f buildRelease release
 
     <copyreleasestars project="${emailer.project}" />
     <copyreleasestars project="${jetty.project}" />
-    <copyreleasestars project="${logger.project}" />
+    <!--copyreleasestars project="${logger.project}" /-->
     <copyreleasestars project="${net.project}" />
     <copyreleasestars project="${scripting.project}" />
     <copyreleasestars project="${sfcoreloggers.project}"/>

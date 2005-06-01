@@ -482,28 +482,28 @@ For more information: www.smartfrog.org
   <!-- =================================================================== -->
  <target name="updateversion" depends="init-common, init">
     <property name="skin.dir" location="forrest_skin" />
-    <replace 
+    <!--replace 
         file="buildRelease.xml"
       propertyFile="version.properties">
       <replacefilter 
         token="@version" 
         property="component.version"/>
-    </replace>
+    </replace-->
 
-  <replace 
+  <!--replace 
         file="releaseBuild.xml"
       propertyFile="version.properties">
       <replacefilter 
         token="@version" 
         property="component.version"/>
-    </replace>
+    </replace-->
 
     <macrodef name="updateversion" >
       <attribute name="project" description="component to update"/>
      <attribute name="compname" description="component to update"/> 
      
      <sequential>
-  <replace 
+  <!--replace 
         file="@{project}/buildRelease.xml"
       propertyFile="version.properties">
       <replacefilter 
@@ -517,27 +517,27 @@ For more information: www.smartfrog.org
       <replacefilter 
         token="@version" 
         property="@{compname}.version"/>
-  </replace>
+  </replace-->
 
-  <replace 
+  <!--replace 
         file="@{project}/releaseBuild.xml"
-      propertyFile="version.properties">
+	propertyFile="@{project}/version.properties">
       <replacefilter 
         token="@version" 
-        property="@{compname}.version"/>
-  </replace>
+        property="sf.build.version"/>
+  </replace-->
   
   
   
   <replace 
         file="${skin.dir}/SFComponents.xml"
-      propertyFile="version.properties">
+	propertyFile="@{project}/version.properties">
       <replacefilter 
         token="@{compname}-ver" 
-        property="@{compname}.version"/>
+        property="sf.build.version"/>
       <replacefilter 
         token="@{compname}-minver" 
-        property="@{compname}.minversion"/>
+        property="sf.min.version"/>
       <!--replacefilter 
         token="@{compname}-maxver" 
         property="@{compname}.maxversion"/-->
@@ -561,9 +561,10 @@ For more information: www.smartfrog.org
   <!-- =================================================================== -->
   <!--  Release                                                            -->
   <!-- =================================================================== -->
-  <target name="release"  depends=" verify-smartfrog,  clean, updateversion, dist, initdist, copybuild, copybins, copylibs, copydocs, copycomponents, srczip,generatedoc, buildrelease " description="Creates clean new release">
+  <target name="release"  depends=" verify-smartfrog,  clean, dist, updateversion, initdist, copybuild, copybins, copylibs, copydocs, copycomponents, srczip,generatedoc, buildrelease " description="Creates clean new release">
     <copy tofile="${dist.dir}/build.xml" file="releaseBuild.xml"/>
-     <copy tofile="${dist.dir}/build.example.properties" file="build.example.properties"/>
+    <copy tofile="${dist.dir}/build.example.properties" file="build.example.properties"/>
+    <copy file="version.properties" todir="${dist.dir}" />
   </target>
 
   <target name="default" depends="dist"
