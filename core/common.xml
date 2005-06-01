@@ -178,7 +178,10 @@
        declaring paths and properties, and preset/macro tasks
        but not the smartfrog custom tasks -->
   <!-- ========================================================== -->
-
+  <target name="settarget" if="is.component.not.enabled">
+    <property name="target.jar" 
+	    location="${dist.lib.dir}/${jarfile.name}"/> 
+    </target> 
   
   <target name="init-common" depends="init-common-simpledefinitions">
     
@@ -237,8 +240,10 @@
     <property name="artifact.name" value="${project.name}" />
     <property name="jarfile.stub" value="${artifact.name}${jarfile.suffix}-${Version}" />
     <property name="jarfile.name" value="${jarfile.stub}.${jarfile.extension}"/>
-    <property name="target.jar" 
-        location="${dist.lib.dir}/${jarfile.name}" />  
+    <antcall target="settarget"/>
+    
+    <!--property name="target.jar" 
+    location="${dist.lib.dir}/${jarfile.name}"/--> 
 <!--     name JAR files that tests go into. this is for signing all
     test code (inc deployment descriptors) for deployment onto secure
     boxes
@@ -416,6 +421,9 @@
       <istrue value="${is.component}"/>
     </condition>
 
+    <condition property="is.component.not.enabled">
+      <isfalse value="${is.component}"/>
+    </condition>
 
     <mkdir dir="${build.dir}" />    
     <mkdir dir="${build.classes.dir}" />    
@@ -868,16 +876,71 @@
   </target>  
 
 
+  <target name="generateversion" if="is.component.enabled">
+	  <java classname="org.Version" failonerror="true" fork="true" outputproperty="CVersion">
+      <arg value="-b"/>
+      <classpath>
+	      <pathelement location="${build.classes.dir}"/>
+	      <fileset refid="smartfrog.lib.fileset" />
+      </classpath>
+    </java>
+    <java classname="org.Version" failonerror="true" fork="true" outputproperty="minVersion">
+      <arg value="-min"/>
+      <classpath>
+	      <pathelement location="${build.classes.dir}"/>
+	      <fileset refid="smartfrog.lib.fileset" />
+      </classpath>
+    </java>
+    <java classname="org.Version" failonerror="true" fork="true" outputproperty="maxVersion">
+      <arg value="-max"/>
+      <classpath>
+	      <pathelement location="${build.classes.dir}"/>
+	      <fileset refid="smartfrog.lib.fileset" />
+      </classpath>
+    </java>
+    <property name="jar.name" value="${artifact.name}${jarfile.suffix}-${CVersion}.${jarfile.extension}"/>
+    <property name="target.jar" 
+	    location="${dist.lib.dir}/${jar.name}"/>  
+    <jar destfile="${target.jar}" 
+        basedir="${build.classes.dir}" 
+        includes="**/*"/>
+   <echo level="verbose">created package ${target.jar}</echo>
+
+ <!-- save everything to a file -->
+     <!-- keep this in sync w/ common.xml's declaration -->
+     <property name="sf.version.file" location="version.properties"/>
+
+    <propertyfile
+        file="${sf.version.file}"
+        comment="This is machine generated. Do Not Edit!">
+      <entry  key="sf.build.date" type="date" value="now"/>
+      <entry  key="sf.build.version" value = "${CVersion}"/>
+      <entry  key="sf.min.version" value = "${minVersion}"/>
+      <entry  key="sf.max.version" value = "${maxVersion}"/>
+    </propertyfile>
+
+    <copy file="${sf.version.file}" todir="${dist.dir}" />
+    <echo level="verbose">version=${sfversion}</echo>
+    <!--property name="Version" value="${sfversion}"/-->
+    
+  </target>
+
+  <target name="createjar" depends="settarget" if="is.component.not.enabled">
+	  <jar destfile="${target.jar}" 
+             basedir="${build.classes.dir}" 
+             includes="**/*"/>
+     <echo level="verbose">created package ${target.jar}</echo>
+     
+    
+  </target>
   <!-- ========================================================== -->
   <!-- this is an override point -->
   <!-- create the JAR ${target.jar}-->
   <!-- ========================================================== -->
   <target name="package" depends="compile,rmi"
-      description="create the JAR files">
-      <jar destfile="${target.jar}" 
-        basedir="${build.classes.dir}" 
-        includes="**/*"/>
-      <echo level="verbose">created package ${target.jar}</echo>
+	  description="create the JAR files">
+	  <antcall target="generateversion"/>
+          <antcall target="createjar"/>
   </target>  
 
   <!-- ========================================================== -->

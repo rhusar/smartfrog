@@ -37,14 +37,11 @@ For more information: www.smartfrog.org
   <import file="${root.dir}/common.xml"/>
 
   <property name="is.component" value="true"  />
-
-
-
   
  <!-- =================================================================== -->
   <!--   JDocs                                                             -->
   <!-- =================================================================== -->
-  <target name="jdocs" depends="init" description="Generates the API documentation">
+  <target name="jdocs" depends="init, generateversion" description="Generates the API documentation">
     <!--  Java Docs for all                                                -->
     <echo message=""/>
     <echo message="------------------------------------------------------------------------"/>
@@ -58,8 +55,8 @@ For more information: www.smartfrog.org
            version="true"
            use="true"
            windowtitle="${Name.System}"
-           Header="${Name.System} ${Version}"
-           Footer="${Name.System} ${version} ${Version}"
+           Header="${Name.System} ${CVersion}"
+           Footer="${Name.System} ${version} ${CVersion}"
            doctitle="${Name.System}"
            bottom="${Name.Company}"
            source="1.4"
@@ -84,7 +81,7 @@ For more information: www.smartfrog.org
   <tstamp/>
     <property name="Name.Company" value="(C) Copyright 1998-2004 Hewlett-Packard Development Company, LP"/>
     <property name="version" value="smartfrog components"/>
-    <property name="Version" value="@version"/>
+    <!--property name="Version" value="1.00.000_beta"/-->
     <property name="year" value="2004"/>
 	
     <echo message=""/>
@@ -103,7 +100,8 @@ For more information: www.smartfrog.org
 
  <target name="clean" depends="common.clean" description="clean up build ,dist and releases" >
     <delete dir="releases"  />  
-    <delete dir="test"  />  
+    <delete dir="test"  /> 
+    <delete file="version.properties"/> 
  </target>  
 
 
@@ -118,10 +116,10 @@ For more information: www.smartfrog.org
         <fileset dir ="${doc.dir}" />
     </copy>   
 		 <copy todir = "${dist.src.dir}">
-        <fileset dir ="${src.dir}">
-		  <include name="**/examples/**"/>
-		</fileset>
-	</copy>
+		    <fileset dir ="${src.dir}">
+		        <include name="**/examples/**"/>
+		    </fileset>
+	         </copy>
      <copy tofile="${dist.dir}/build.xml" file="releaseBuild.xml"/>	
 	 <copy tofile="${dist.dir}/build.example.properties" file="build.example.properties"/>
 	</target>

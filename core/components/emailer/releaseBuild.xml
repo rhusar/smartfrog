@@ -57,7 +57,10 @@ These are the meaningful targets for this build file:
     <property name="Name" value="Emailer Component"/>
     <property name="name" value="(C) Copyright 1998-2003 Hewlett-Packard Development Company, LP"/>
     <property name="version" value="DIST"/>
-    <property name="Version" value="@version"/>
+    <loadproperties srcFile="version.properties"/>
+    <fail unless="sf.build.version">No property sf.build.version found in file version.properties</fail>
+    <property name="Version" value="${sf.build.version}" />
+    <!--property name="Version" value="1.01.001_beta"/-->
     <property name="year" value=""/>
     <echo message=""/>
     <echo message="==================================================================="/>
@@ -106,9 +109,10 @@ These are the meaningful targets for this build file:
   <!-- =================================================================== -->
   <path id="emailer.class.path">
      <pathelement path="${classpath}"/>
-     <pathelement location="lib/sf-emailer.jar"/>
+     <pathelement location="lib/**.jar"/>
+     <!--pathelement location="lib/sf-emailer.jar"/>
      <pathelement location="lib/activation.jar"/>
-     <pathelement location="lib/mail.jar"/>
+     <pathelement location="lib/mail.jar"/-->
   </path>
 
   <!-- =================================================================== -->

@@ -57,7 +57,10 @@ These are the meaningful targets for this build file:
     <property name="Name" value="Jetty Component"/>
     <property name="name" value="(C) Copyright 1998-2003 Hewlett-Packard Development Company, LP"/>
     <property name="version" value="DIST"/>
-    <property name="Version" value="@version"/>
+    <loadproperties srcFile="version.properties"/>
+    <fail unless="sf.build.version">No property sf.build.version found in file version.properties</fail>
+    <property name="Version" value="${sf.build.version}" />
+    <!--property name="Version" value="1.00.000_beta"/-->
     <property name="year" value=""/>
     <echo message=""/>
     <echo message="==================================================================="/>
@@ -105,12 +108,13 @@ These are the meaningful targets for this build file:
   <!-- Initialization path (Libs needed for compiling)                     -->
   <!-- =================================================================== -->
   <path id="jetty.class.path">
-     <pathelement path="${classpath}"/>
-     <pathelement location="lib/jasper-compiler.jar"/>
+	  <pathelement path="${classpath}"/>
+	  <pathelement location="lib/**.jar"/>
+     <!--pathelement location="lib/jasper-compiler.jar"/>
      <pathelement location="lib/jasper-runtime.jar"/>
      <pathelement location="lib/javax.servlet.jar"/>
 	 <pathelement location="lib/org.mortbay.jetty.jar"/>
-	 <pathelement location="lib/org.mortbay.jmx.jar"/>
+	 <pathelement location="lib/org.mortbay.jmx.jar"/-->
   </path>
 
   <!-- =================================================================== -->
