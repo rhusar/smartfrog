@@ -53,9 +53,9 @@ public class Daemon {
 
   public Daemon(String name,String host, String user, String passwordfile, String localfile1, String localfile2, String localfile3, String releasename, String emailto, String emailfrom, String emailserver, String os, String javahome) {
    
-    if (!((os.equals(WINDOWS) || (os.equals(LINUX))))) {
+    /*if ((os.equals(WINDOWS) && (!os.equals(LINUX)))) {
        throw new IllegalArgumentException("invalid OS "+os);
-    }
+    }*/
     if (os.equals(LINUX))
        { 
     	if ((name==null) || (host==null) || (user ==null) || (passwordfile ==null) || (localfile1==null) || (releasename==null) || (emailto==null) || (emailfrom==null) || (emailserver==null) ||(os ==null))
