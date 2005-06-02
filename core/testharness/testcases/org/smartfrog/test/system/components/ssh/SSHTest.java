@@ -42,72 +42,55 @@ public class SSHTest
                                  "SmartFrogLifecycleException",
                                  "sfDeploy",
                                  "SmartFrogException",
-                                 "java.io.FileNotFoundException: c:\\cvs\\forge\\password1.txt");
+                                 "java.io.FileNotFoundException");
     }
-/*scp : improper host*/
+/*scp :  host is missing*/
     public void testCaseTCN84() throws Exception {
         deployExpectingException(FILES+"tcn84.sf",
                                  "tcn84",
-                                 "SmartFrogLifecycleException",
+                                 "SmartFrogDeploymentException",
                                  null,
-                                 "JSchException",
-                                 "UnknownHostException");
+                                 EXCEPTION_RESOLUTION,
+                                 "error in schema: non-optional attribute 'host' is missing");
     }
 
-/*scp : improper user id*/
-    public void testCaseTCN85() throws Exception {
-        deployExpectingException(FILES+"tcn85.sf",
-                                 "tcn85",
-                                 "SmartFrogLifecycleException",
-                                 null,
-                                 "JSchException",
-                                 "Auth fail");
-    }
 	/*scp : userid missing*/
 	public void testCaseTCN86() throws Exception {
         deployExpectingException(FILES+"tcn86.sf",
                                  "tcn86",
-                                 "SmartFrogLifecycleException",
+                                 "SmartFrogDeploymentException",
                                  null,
-                                 "JSchException",
-                                 "Auth fail");
+                                 EXCEPTION_RESOLUTION,
+                                 "error in schema: non-optional attribute 'username' is missing");
     }
 	/*scp : local file missing*/
 	public void testCaseTCN87() throws Exception {
         deployExpectingException(FILES+"tcn87.sf",
                                  "tcn87",
-                                 "SmartFrogLifecycleException",
+                                 "SmartFrogDeploymentException",
                                  null,
-                                 "JSchException",
-                                 "Auth fail");
+                                 EXCEPTION_RESOLUTION,
+                                 "error in schema: non-optional attribute 'localFiles' is missing");
     }
 		/*scp : remote file missing*/
 		public void testCaseTCN88() throws Exception {
         deployExpectingException(FILES+"tcn88.sf",
                                  "tcn88",
-                                 "SmartFrogLifecycleException",
+                                 "SmartFrogDeploymentException",
                                  null,
-                                 "JSchException",
-                                 "Auth fail");
+                                 EXCEPTION_RESOLUTION,
+                                 "error in schema: non-optional attribute 'remoteFiles' is missing");
     }
 		/*scp : transferType  missing*/
 		public void testCaseTCN89() throws Exception {
         deployExpectingException(FILES+"tcn89.sf",
                                  "tcn89",
-                                 "SmartFrogLifecycleException",
+                                 "SmartFrogDeploymentException",
                                  null,
-                                 "JSchException",
-                                 "Auth fail");
+                                 EXCEPTION_RESOLUTION,
+                                 "error in schema: non-optional attribute 'transferType' is missing");
     }
-			/*scp : improper transferType  */
-		public void testCaseTCN90() throws Exception {
-        deployExpectingException(FILES+"tcn90.sf",
-                                 "tcn90",
-                                 "SmartFrogLifecycleException",
-                                 null,
-                                 "JSchException",
-                                 "Auth fail");
-    }
+
 /*scp : success manual test case
 	public void testCaseTCP_scp() throws Throwable {
 
@@ -119,29 +102,29 @@ public class SSHTest
     public void testCaseTCN91() throws Exception {
         deployExpectingException(FILES+"tcn91.sf",
                                  "tcn91",
-                                 "SmartFrogLifecycleException",
+                                 "SmartFrogDeploymentException",
                                  null,
-                                 "JSchException",
-                                 "UnknownHostException");
+                                 EXCEPTION_RESOLUTION,
+                                 "error in schema: non-optional attribute 'host' is missing");
     }
 	
 	/*sshexec : userid missing*/
 	public void testCaseTCN92() throws Exception {
         deployExpectingException(FILES+"tcn92.sf",
                                  "tcn92",
-                                 "SmartFrogLifecycleException",
+                                 "SmartFrogDeploymentException",
                                  null,
-                                 "JSchException",
-                                 "");
+                                 EXCEPTION_RESOLUTION,
+                                 "error in schema: non-optional attribute 'username' is missing");
     }
 	/*sshexec : command missing*/
 	public void testCaseTCN93() throws Exception {
         deployExpectingException(FILES+"tcn93.sf",
                                  "tcn93",
-                                 "SmartFrogLifecycleException",
+                                 "SmartFrogDeploymentException",
                                  null,
-                                 "SmartFrogException",
-                                 "Remote command: cmd1 failed with exit status");
+                                 EXCEPTION_RESOLUTION,
+                                 "error in schema: non-optional attribute 'commands' is missing");
     }
 	/*sshexec : password file missing*/
     public void testCaseTCN94() throws Exception {
@@ -149,8 +132,8 @@ public class SSHTest
                                  "tcn94",
                                  "SmartFrogLifecycleException",
                                  "sfDeploy",
-                                 "SmartFrogException",
-                                 "java.io.FileNotFoundException: c:\\cvs\\forge\\password1.txt");
+                                  "SmartFrogException",
+                                 "java.io.FileNotFoundException");
     }
 	
 
