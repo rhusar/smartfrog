@@ -104,7 +104,12 @@ For more information: www.smartfrog.org
 <!-- ========================================================== -->
   <!-- create the jar -->
   <!-- ========================================================== -->
-	<target name="dist" depends="common.dist" description="create the jar files">
+  <target name="dist" depends="common.dist, jdocs" description="create the jar files">
+	  <copy toDir = "${dist.lib.dir}">
+        <fileset dir ="${lib.dir}">
+            <include name = "**/*.jar"/>
+        </fileset>    
+    </copy>
 	 <copy todir = "${dist.doc.dir}">
         <fileset dir ="${doc.dir}" />
     </copy>   
