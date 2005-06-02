@@ -294,6 +294,7 @@ public class SFParse implements MessageKeys {
              exit();
            } else {
                SFSystem.sflog().out( "SFParse: SUCCESSFUL");
+	       System.exit(0);
            }
         } catch (Throwable thr){
 //           Logger.log(thr);
