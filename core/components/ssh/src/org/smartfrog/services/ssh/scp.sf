@@ -26,48 +26,37 @@ For more information: www.smartfrog.org
  * files over SSH..
  */
 
+ ScpSchema extends Schema {
+ 	host extends String;
+ 	username extends String;
+   	localFiles extends Vector;
+    remoteFiles extends Vector;
+ 	transferType extends String;
+
+ }
+
 ScpSession extends Compound {
-   /*----------------------------Mandatory Parameters --------------------*/
-    host "localhost";
-    userId "someuser";
-    passwordFile "pwdFile";
-    localFiles [];
-    remoteFiles [];
-    transferType "get";
+
     /*---------------------------Optional Parameters -----------------------*/
     port 22;
     shouldTerminate true;
     /*---------------------Component's Definition --------------------------*/ 
  
     PasswordProvider extends Password {
-        passwordFile PARENT:ATTRIB passwordFile;
+        //passwordFile PARENT:ATTRIB passwordFile;
     }
     SCP extends Prim {
-        /* ========================================================
-         * Mandatory attributes 
-         *=========================================================
-         */
         sfClass "org.smartfrog.services.ssh.ScpImpl";
-        
-        host PARENT:ATTRIB host;
-        
-        // login name in remote host
-        username PARENT:ATTRIB userId;
+      scpSchema extends ScpSchema;
 
         // reference to password provider
         passwordProvider LAZY PARENT:PasswordProvider;
-
-        // vector of local files 
-        localFiles PARENT:ATTRIB localFiles;
-
-        // vector of remote files corresponding to local files.
-        remoteFiles PARENT:ATTRIB remoteFiles;
         /* ========================================================
          * Optional attributes 
          *=========================================================
          */
          // two possible values are "get" and "put" 
-        transferType PARENT:ATTRIB transferType;
+       // transferType PARENT:ATTRIB transferType;
 
         shouldTerminate PARENT:ATTRIB shouldTerminate;
     }
