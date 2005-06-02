@@ -24,12 +24,20 @@ For more information: www.smartfrog.org
  * SSHSession component executes commands on a remote host over SSH. Refer to 
  * ssHExample.sf for sample usage.
  */
+
+ SSHSchema extends Schema {
+  	host extends String;
+  	username extends String;
+    commands extends Vector;
+
+  }
+
 SSHSession extends Compound {
     /*----------------------------Mandatory Parameters --------------------*/
-    host "localhost";
-    userId "someuser";
-    passwordFile "pwdFile";
-    commands ["cmd1", "cmd2"];
+  //  host "localhost";
+  //  userId "someuser";
+  //  passwordFile "pwdFile";
+  //  commands ["cmd1", "cmd2"];
 
     /*---------------------------Optional Parameters -----------------------*/
     // Recommendation: Please keep the default values
@@ -40,25 +48,17 @@ SSHSession extends Compound {
 
     /*---------------------Component's Definition --------------------------*/  
     PasswordProvider extends Password {
-        passwordFile PARENT:ATTRIB passwordFile;
+        //passwordFile PARENT:ATTRIB passwordFile;
     }
     SSHCmdExec extends Prim{
         sfClass "org.smartfrog.services.ssh.SSHExecImpl";
+        sshSchema extends SSHSchema;
         /* ========================================================
          * Mandatory attributes 
          *=========================================================
          */
-        // host name
-        host PARENT:ATTRIB host;
-        
-        // login user id
-        username PARENT:ATTRIB userId;
-
         // reference to password provider
         passwordProvider LAZY PARENT:PasswordProvider;
-        
-        // comma separated commands in the order of execution
-        commands PARENT:ATTRIB commands;
 
         // cmdsFailureMsgs [];
 
