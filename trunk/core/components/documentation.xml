@@ -114,7 +114,7 @@ For more information: www.smartfrog.org
 		</copy>	
     <forrest-component component="emailer" />
     <forrest-component component="jetty" />
-    <forrest-component component="logger" />
+    <!--forrest-component component="logger" /-->
     <forrest-component component="net" />
     <forrest-component component="ssh" />
     <forrest-component component="utils" />
