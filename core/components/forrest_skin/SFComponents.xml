@@ -29,7 +29,7 @@
 		 
 <p><link href="emailer/emailer.html">Emailer Version=emailer-ver SFCore-Min-version=emailer-minver </link></p>
 		 <p><link href="jetty/jetty.html">Jetty Version=jetty-ver SFCore-Min-version=jetty-minver </link></p>
-		 <p><link href="logger/logger.html">Logger Version=logger-ver SFCore-Min-version=logger-minver</link></p>
+	
 		 <p><link href="net/net.html">Net Version=net-ver SFCore-Min-version=net-minver </link></p>
 		 <p><link href="ssh/ssh.html">SSH Version=ssh-ver SFCore-Min-version=ssh-minver </link></p>
 		 <p><link href="utils/utils.html">Utils Version=utils-ver SFCore-Min-version=utils-minver </link></p>
