@@ -29,7 +29,7 @@ import java.io.Serializable;
  * created 15-Apr-2004 13:44:19
  */
 
-public class ThrowableTraceInfo implements Serializable, Cloneable {
+public final class ThrowableTraceInfo implements Serializable, Cloneable {
 
     /**
      * the classname of the exception
