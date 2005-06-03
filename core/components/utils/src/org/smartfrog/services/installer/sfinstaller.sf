@@ -42,6 +42,7 @@ SFInstaller extends Compound  {
         // Parameters for Telnet component
         telnetLogfile "logfile"; // telnet session log file
         telnetCommands [""];
+	telnetOstype "linux";
 
          // common paremeters for ftp and telnet components
         passwordFile "e:\\cvs\\forge\\may14\\core\\smartfrog\\passwd.txt";        
@@ -73,6 +74,7 @@ SFInstaller extends Compound  {
             Telnet:host PARENT:ATTRIB host;
             Telnet:username PARENT:ATTRIB user;
             Telnet:logFile PARENT:ATTRIB telnetLogfile;
+            Telnet:ostype PARENT:ATTRIB telnetOstype;
         }
         email extends Emailer{
             to PARENT:ATTRIB emailTo;
@@ -103,6 +105,7 @@ sfConfig extends Parallel {
                 ftpRemoteFiles ["cvs/SmartFrog.3.02.002.beta.20040429_ALL.tar.gz"];
 
                 telnetLogfile "SFNode1.log";
+		telnetOstype "linux";
                 telnetCommands ["cd cvs",
                                  "mkdir may17",
                                  "cp SmartFrog.3.02.002.beta.20040429_ALL.tar.gz ./may17",
@@ -128,6 +131,7 @@ sfConfig extends Parallel {
                 ftpRemoteFiles ["ashish/SmartFrog.3.02.002.beta.20040429_ALL.tar.gz"];
 
                 telnetLogfile "SFNode2.log";
+		telnetOstype "linux";
                 telnetCommands ["cd ashish",
                                  "mkdir may17",
                                  "cp SmartFrog.3.02.002.beta.20040429_ALL.tar.gz ./may17",

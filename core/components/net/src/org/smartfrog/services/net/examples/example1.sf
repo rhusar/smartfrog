@@ -34,5 +34,6 @@ sfConfig extends Compound {
                                 ];
         // optional log file for the telnet session
         Telnet:logFile "spy.log";
+	Telnet:ostype "linux";
     }
 }

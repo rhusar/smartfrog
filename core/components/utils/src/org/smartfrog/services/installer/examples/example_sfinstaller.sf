@@ -19,6 +19,7 @@ For more information: www.smartfrog.org
 */
 
 #include "org/smartfrog/components.sf"
+#include "org/smartfrog/services/installer/sfinstaller.sf"
 #include "org/smartfrog/services/net/ftp.sf"
 #include "org/smartfrog/services/net/telnet.sf"
 #include "org/smartfrog/services/email/emailer.sf"
@@ -34,7 +35,7 @@ For more information: www.smartfrog.org
  * installer component is terminated.
  */
 sfConfig extends Parallel {
-       actions extends LAZY {
+      // actions extends LAZY {
            Installer1 extends SFInstaller {
                 host"ebnt171.india.hp.com"; 
                 user "ashish";
@@ -44,6 +45,7 @@ sfConfig extends Parallel {
                 ftpRemoteFiles ["cvs/SmartFrog.3.02.002.beta.20040429_ALL.tar.gz"];
 
                 telnetLogfile "SFNode1.log";
+	        telnetOstype "linux";	
                 telnetCommands ["cd cvs",
                                  "mkdir may17",
                                  "cp SmartFrog.3.02.002.beta.20040429_ALL.tar.gz ./may17",
@@ -69,6 +71,7 @@ sfConfig extends Parallel {
                 ftpRemoteFiles ["ashish/SmartFrog.3.02.002.beta.20040429_ALL.tar.gz"];
 
                 telnetLogfile "SFNode2.log";
+	        telnetOstype "linux";	
                 telnetCommands ["cd ashish",
                                  "mkdir may17",
                                  "cp SmartFrog.3.02.002.beta.20040429_ALL.tar.gz ./may17",
@@ -83,5 +86,5 @@ sfConfig extends Parallel {
                 emailAttachments ["SFNode2.log"];
                 emailMessage ("Installation status of node:" ++ ATTRIB host);
            };
-    }
+    //}
 }
