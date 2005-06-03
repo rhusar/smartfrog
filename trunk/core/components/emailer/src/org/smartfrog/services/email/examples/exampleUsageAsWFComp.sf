@@ -23,7 +23,7 @@ For more information: www.smartfrog.org
 #include "org/smartfrog/sfcore/workflow/components.sf"
 
 Example extends Sequence {
-    actions extends LAZY {
+    //actions extends LAZY {
         Foo extends Prim {
         	sfClass "org.smartfrog.services.email.EmailerTest";
         	sfProcessHost "eb97201.india.hp.com";
@@ -43,6 +43,6 @@ Example extends Sequence {
                 subject "SF Emailer Test";
                 smtpHost "stash.india.hp.com";     // SMTP host name
        }
-    }
+    //}
 }
 sfConfig extends Example;
