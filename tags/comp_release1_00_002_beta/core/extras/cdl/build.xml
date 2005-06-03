@@ -1,0 +1,130 @@
+<?xml version="1.0"?>
+<project name="cdl" default="default" 
+  xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+
+  <!--
+  /** (C) Copyright 2005 Hewlett-Packard Development Company, LP
+
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 2.1 of the License, or (at your option) any later version.
+
+  This library is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  You should have received a copy of the GNU Lesser General Public
+  License along with this library; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+  For more information: www.smartfrog.org
+
+  */
+  -->
+
+  <description>
+     Build file for CDL language.
+     Needs the Maven2 task library to build, and is java1.5+
+     
+  </description>
+
+  
+  <!-- override point -->
+  <property file="build.properties"/>
+  <property name="javac.java.version" value="1.5" />
+
+  <property name="root.dir" location="../.."/>
+  <!-- Import common stuff -->
+  <import file="${root.dir}/common.xml"/>
+
+
+  <!-- ========================================================== -->
+  <!-- ========================================================== -->
+  <target name="init" depends="init-standard-output-dirs,use-smartfrog-tasks">
+    <!--  leave this for 'legacy' reasons, even though we have embraced m2 work-->
+    <mkdir dir="lib" />
+  </target>
+
+  <target name="m2-files" depends="m2-tasks">
+    <m2-libraries pathID="m2.classpath">
+      <dependency groupID="org.ggf"
+        artifactID="cddlm"
+        version="${cddlm.version}"/>          
+      <dependency groupID="commons-logging"
+        artifactID="commons-logging-api"
+        version="${commons-logging.version}"/>          
+       <dependency groupID="org.smartfrog"
+        artifactID="sf-xml"
+        version="${Version}"/>
+      <dependency groupID="xom"
+        artifactID="xom"
+        version="${xom.version}"/>
+      <dependency groupID="xalan"
+        artifactID="xalan"
+        version="${xalan.version}"/> 
+    </m2-libraries> 
+  </target>
+
+ <target name="declare-compile.classpath-lib-dir" 
+    depends="declare-base.compile.classpath,probe-lib-dir,m2-files" 
+    if="lib.dir.found">  
+    <path id="compile.classpath">
+      <path refid="base.compile.classpath"/>
+      <path refid="m2.classpath"/>
+      <fileset dir="${lib.dir}">
+        <include name="**/*.jar"/>
+      </fileset>
+    </path>  
+  </target>
+ 
+  <!-- =================================================================== -->
+  <!--   JDocs                                                             -->
+  <!-- =================================================================== -->
+  <target name="javadoc" depends="init" description="Generates the API documentation">
+    <property name="dist.jdocs.dir" value="${build.dir}/javadocs/" />
+    <mkdir dir="${dist.jdocs.dir}"/>
+    <javadoc packagenames="org.smartfrog.*"
+           sourcepath="${src.dir}"
+           destdir="${dist.jdocs.dir}"
+           version="true"
+           use="true"
+           source="1.5"
+           classpathref="exec.classpath"
+           >
+      <group title="SmartFrog Packages" packages="org.smartfrog.*"/>
+    </javadoc>
+
+  </target>  
+  
+  <target name="default" depends="dist"
+    description="make the distribution"/>
+
+    
+  <!-- ========================================================== -->
+  <!-- this is an override point -->
+  <!-- unit tests : anything which does not need deployment to run-->
+  <!-- ========================================================== -->
+  <target name="unit-tests" depends="compile-tests" if="unit.tests.enabled"
+    description="run the unit tests">
+    <sf-junit
+      errorProperty="test.failed"
+      failureProperty="test.failed"
+      includeAntRuntime="true"
+      >
+      <sysproperty key="test.classes.dir"
+        value="${test.classes.dir}"/>
+      <classpath>
+        <path refid="tests.run.classpath"/>
+      </classpath>
+      <batchtest todir="${test.data.dir}" if="unit.tests.enabled">
+        <!-- bulk test case -->
+        <fileset dir="${test.classes.dir}">
+          <include name="org/smartfrog/test/unit/sfcore/languages/cdl/**/*Test.class"/>
+        </fileset>
+      </batchtest>
+    </sf-junit>
+  </target>
+  
+</project>
