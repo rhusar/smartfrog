@@ -20,6 +20,7 @@
 package org.smartfrog.services.junit;
 
 import junit.framework.Test;
+import junit.framework.TestCase;
 
 import java.io.Serializable;
 
@@ -28,7 +29,7 @@ import java.io.Serializable;
  * 15-Apr-2004 13:15:32
  */
 
-public class TestInfo implements Serializable, Cloneable {
+public final class TestInfo implements Serializable, Cloneable {
 
     /**
      * session info to use when forwarding
@@ -121,7 +122,15 @@ public class TestInfo implements Serializable, Cloneable {
      */
     protected void extractTestInfo(Test test) {
         classname = test.getClass().getName();
-        text = test.toString();
+        if(test instanceof TestCase) {
+            //TestCase information is extracted specially
+            TestCase testCase=(TestCase) test;
+            text=testCase.getName();
+        } else {
+            //any other kind of test has no name, just
+            //a string value
+            text = test.toString();
+        }
     }
 
     /**
@@ -244,4 +253,20 @@ public class TestInfo implements Serializable, Cloneable {
         }
     }
 
+    /**
+     * Returns a string representation of the object.
+     *
+     * @return a string representation of the object.
+     */
+    public String toString() {
+        return getTitle();
+    }
+
+    /**
+     * get the classname.text of this test
+     * @return
+     */
+    public String getTitle() {
+        return getClassname()+"."+getText();
+    }
 }

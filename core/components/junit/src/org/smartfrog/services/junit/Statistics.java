@@ -61,7 +61,7 @@ public final class Statistics implements Serializable {
     }
 
     /**
-     * extract test info from an prim class
+     * extract test info from a Prim class
      *
      * @param node
      * @throws org.smartfrog.sfcore.common.SmartFrogResolutionException

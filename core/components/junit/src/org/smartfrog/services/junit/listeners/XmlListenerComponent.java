@@ -19,6 +19,7 @@ import java.util.Date;
 import java.util.HashMap;
 
 /**
+ * This is a listener of tests
  * Implement the {@link XmlListenerFactory} interface and so provide a component
  * for XML logging. Note that we are only a factory; the listening is done by
  * {@link OneHostXMLListener }
