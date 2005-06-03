@@ -25,7 +25,7 @@ Version extends {
   build "002"; // odd numbers are development versions
   status "beta"; //alpha, beta, (stable), rc (release candidate)
   copyright "(C) Copyright 1998-2005 Hewlett-Packard Development Company, LP";
-  minCoreVersion "4";
-  maxCoreVersion "10";
+  minCoreVersion "3.04.0014_beta";
+  maxCoreVersion "3.06.000_rc1";
 }
 
