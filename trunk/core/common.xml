@@ -240,10 +240,11 @@
     <property name="artifact.name" value="${project.name}" />
     <property name="jarfile.stub" value="${artifact.name}${jarfile.suffix}-${Version}" />
     <property name="jarfile.name" value="${jarfile.stub}.${jarfile.extension}"/>
-    <antcall target="settarget"/>
+<!--    <antcall target="settarget"/>-->
     
-    <!--property name="target.jar" 
-    location="${dist.lib.dir}/${jarfile.name}"/--> 
+    <property name="target.jar"
+    location="${dist.lib.dir}/${jarfile.name}"/>
+
 <!--     name JAR files that tests go into. this is for signing all
     test code (inc deployment descriptors) for deployment onto secure
     boxes
