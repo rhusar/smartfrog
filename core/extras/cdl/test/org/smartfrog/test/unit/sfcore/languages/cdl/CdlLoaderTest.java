@@ -38,7 +38,6 @@ import nu.xom.ParsingException;
 public class CdlLoaderTest extends XmlTestBase {
 
     CdlParser laxParser;
-    CdlParser parser;
 
 
     public CdlLoaderTest(String test) {
@@ -49,72 +48,34 @@ public class CdlLoaderTest extends XmlTestBase {
      * The fixture set up called before every test method.
      */
     protected void setUp() throws Exception {
-        initParsers();
+        super.setUp();
+        initLaxParser();
     }
 
-    private void initParsers() throws SAXException {
+    private void initLaxParser() throws SAXException {
         ResourceLoader loader = new ResourceLoader(this.getClass());
         laxParser = new CdlParser(loader, false);
-        parser = new CdlParser(loader, true);
     }
 
 
     public void testValid() throws Exception {
-        initParsers();
+        initLaxParser();
         for (int i = 0; i < VALID_CDL.length; i++) {
-            assertValid(VALID_CDL[i]);
+            assertValidCDL(VALID_CDL[i]);
         }
     }
 
-
-    protected void assertInvalid(String filename, String text) throws Exception {
-        try {
-            if (text == null) {
-                text = "";
-            }
-            CdlDocument doc = load(filename);
-            doc.validate();
-            fail("expected a validity failure with " + text);
-        } catch (ParsingException e) {
-            if (e.getMessage().indexOf(text) < 0) {
-                log("expected [" + text + "] but got " + e.toString());
-                throw e;
-            }
-        }
-    }
-
-    private void loading(String filename) {
-        log(filename);
-    }
-
-    private void log(String message) {
-        System.out.println(message);
-    }
-
-
-    protected void assertValid(String filename) throws Exception {
-        CdlDocument doc = load(filename);
-        doc.validate();
-    }
-
-    protected CdlDocument load(String filename) throws IOException,
-            ParsingException {
-        CdlDocument doc;
-        loading(filename);
-        doc = parser.parseResource(filename);
-        return doc;
-    }
 
     public void testWrongDocNamespace() throws Exception {
-        assertInvalid(CDL_DOC_WRONG_NAMESPACE, WRONG_NAMESPACE_TEXT);
+        assertInvalidCDL(CDL_DOC_WRONG_NAMESPACE, WRONG_NAMESPACE_TEXT);
     }
 
     public void testWrongEltOrder() throws Exception {
-        assertInvalid(CDL_DOC_WRONG_ELT_ORDER, null);
+        assertInvalidCDL(CDL_DOC_WRONG_ELT_ORDER, null);
     }
 
     public void testWrongRootEltType() throws Exception {
-        assertInvalid(CDL_DOC_WRONG_ROOT_ELT_TYPE,
+        assertInvalidCDL(CDL_DOC_WRONG_ROOT_ELT_TYPE,
                 "Cannot find the declaration of element");
     }
 
@@ -127,7 +88,7 @@ public class CdlLoaderTest extends XmlTestBase {
 
     public void testMissingFile() throws Exception {
         try {
-            assertInvalid("no-such-document.cdl", "Not found");
+            assertInvalidCDL("no-such-document.cdl", "Not found");
         } catch (IOException e) {
             //expected
         }

@@ -141,12 +141,12 @@ public class WrappedSFSystem extends SFSystem implements Runnable,
 
     /**
      * create a root process with no termination.
-     *
+     * TODO: fix this with the now static createRootProcess
      * @return
      * @throws SmartFrogException
      * @throws RemoteException
      */
-    protected ProcessCompound createRootProcess() throws SmartFrogException,
+    protected ProcessCompound createRootProcessBroken() throws SmartFrogException,
             RemoteException {
         ProcessCompound rootProcess = SFProcess.deployProcessCompound(false);
         rootProcess.systemExitOnTermination(systemExitOnRootProcessTermination);

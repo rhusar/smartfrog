@@ -12,6 +12,7 @@ import org.smartfrog.sfcore.languages.cdl.CdlParsingException;
 public class ToplevelList extends PropertyList {
 
     public ToplevelList() {
+        super();
     }
 
     public ToplevelList(Element element) throws CdlParsingException {
@@ -52,5 +53,6 @@ public class ToplevelList extends PropertyList {
     static boolean isSystemElement(Element element) {
         return isNode(element, ELEMENT_SYSTEM);
     }
+
 
 }

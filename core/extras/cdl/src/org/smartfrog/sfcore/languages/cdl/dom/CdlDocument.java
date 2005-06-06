@@ -20,10 +20,11 @@
 package org.smartfrog.sfcore.languages.cdl.dom;
 
 import org.smartfrog.sfcore.languages.cdl.CdlParsingException;
-import static org.smartfrog.sfcore.languages.cdl.Constants.*;
-import static org.ggf.cddlm.generated.api.CddlmConstants.*;
+import org.ggf.cddlm.generated.api.CddlmConstants;
 import org.smartfrog.sfcore.languages.cdl.utils.ElementIterator;
 import org.smartfrog.sfcore.languages.cdl.utils.IteratorRelay;
+import org.smartfrog.sfcore.languages.cdl.utils.ClassLogger;
+import org.smartfrog.sfcore.logging.Log;
 
 import javax.xml.namespace.QName;
 
@@ -35,11 +36,17 @@ import nu.xom.ParentNode;
 import java.util.ArrayList;
 import java.util.List;
 
+
 /**
  * This represents a parsed CDL document, or an error caused during parsing.
  */
 
 public class CdlDocument extends DocumentedNode {
+
+    /**
+     * a log
+     */
+    private Log log=ClassLogger.getLog(this);
 
     /**
      * Original Document
@@ -89,7 +96,7 @@ public class CdlDocument extends DocumentedNode {
     public static final String ERROR_NO_PATHLANGUAGE = "pathlanguage attribute not found";
 */
 
-    public CdlDocument(Document doc) {
+    public CdlDocument(Document doc) throws CdlParsingException {
         this.document = doc;
     }
 
@@ -188,21 +195,21 @@ public class CdlDocument extends DocumentedNode {
     protected void parse() throws CdlParsingException {
         for(Element element: elements(document)) {
             verifyInCdlNamespace(element);
-            verifyNodeName(element, ELEMENT_NAME_ROOT);
+            verifyNodeName(element, CddlmConstants.ELEMENT_NAME_ROOT);
             processRootNode(element);
         }
     }
 
     private void verifyInCdlNamespace(Element element)
             throws CdlParsingException {
-        CdlParsingException.assertValid(CDL_NAMESPACE.equals(element.getNamespaceURI()),
+        CdlParsingException.assertValid(CddlmConstants.XML_CDL_NAMESPACE.equals(element.getNamespaceURI()),
                 ERROR_WRONG_NAMESPACE);
 
     }
 
     private void verifyNodeName(Element element,String name)
             throws CdlParsingException {
-        CdlParsingException.assertValid(ELEMENT_NAME_ROOT.equals(element.getLocalName()),
+        CdlParsingException.assertValid(CddlmConstants.ELEMENT_NAME_ROOT.equals(element.getLocalName()),
                 ERROR_WRONG_ELEMENT +name
                     +" but got "+element);
     }
@@ -226,32 +233,39 @@ public class CdlDocument extends DocumentedNode {
         root = node;
         for (Element child : elements(root)) {
 
+            //imports come first
             if(Import.isA(child)) {
                 imports.add(new Import(child));
                 continue;
             }
 
+            //type declarations
+            //what to do with these?
             if(Type.isA(child)) {
                 types=new Type(child);
                 continue;
             }
 
+            //<configuration> element
             if(ToplevelList.isConfigurationElement(child)) {
                 configuration=new ToplevelList(child);
                 continue;
             }
 
+            //<system> element
             if (ToplevelList.isSystemElement(child)) {
                 system = new ToplevelList(child);
                 continue;
             }
 
+            //add a doc node
             if(Documentation.isA(child)) {
                 Documentation documentation = new Documentation(child);
                 //TODO
                 continue;
             }
-            //if we get here, then either there is stuff that we dont recognise
+
+            //if we get here, then either there is stuff that we don't recognise
             //or its in another namespace
             if(!DocNode.inCdlNamespace(child)) {
                 //strange stuff here
@@ -263,44 +277,9 @@ public class CdlDocument extends DocumentedNode {
 
         }
 
-
+        //at this point, we are mapped into custom classes to represent stuff
 
     }
-
-    /**
-     * Get all content nodes of our document. Will be null if there is no
-     * content
-     *
-     * @return
-     */
-/*    public List<Content> getContent() {
-        assert document != null: "no document";
-        return document.getContent();
-    }*/
-
-    /**
-     * iterate over the list
-     * @param element
-     * @return
-     */
-/*
-    public List<Content> iterator(Parent element) {
-        return element.getContent();
-    }
-*/
-
-    /**
-     * iterate over the list
-     *
-     * @param element
-     * @param filter
-     * @return
-     */
-/*
-    public List<Content> iterator(Parent element,Filter filter) {
-        return element.getContent(filter);
-    }
-*/
 
     /**
      * Iterate just over elements

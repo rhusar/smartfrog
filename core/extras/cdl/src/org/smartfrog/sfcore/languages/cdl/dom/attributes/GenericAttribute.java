@@ -30,6 +30,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 /**
+ * This is the base class for attributes; it represents an attribute of some type.
  * created 26-May-2005 11:20:02
  */
 
@@ -94,6 +95,17 @@ public class GenericAttribute implements Names {
     }
 
 
+    /**
+     * Find a CDL attribute and bind to it. There are some
+     * reflection tricks here to instantiate a class instance
+     * and call #extract on it.
+     * @param localname
+     * @param clazz
+     * @param element
+     * @param required
+     * @return
+     * @throws CdlParsingException
+     */
     protected static GenericAttribute findAndBind(String localname,
             Class clazz,
             Element element, boolean required)
@@ -106,7 +118,7 @@ public class GenericAttribute implements Names {
         } else {
             try {
                 Constructor ctor = clazz.getConstructor();
-                GenericAttribute newattr=(GenericAttribute)ctor.newInstance();
+                GenericAttribute newattr = (GenericAttribute) ctor.newInstance();
                 newattr.bind(attr);
                 return newattr;
             } catch (NoSuchMethodException e) {
@@ -117,6 +129,11 @@ public class GenericAttribute implements Names {
                 throw new CdlParsingException(e);
             } catch (InvocationTargetException e) {
                 throw new CdlParsingException(e);
+            } catch (ClassCastException e) {
+                throw new CdlParsingException("Cannot cast " +
+                        clazz +
+                        " to a GenericAttribute",
+                        e);
             }
         }
     }
