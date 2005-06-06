@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <project name="xml" default="default"
-  xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+  >
 
   <!--
   /** (C) Copyright 1998-2005 Hewlett-Packard Development Company, LP
