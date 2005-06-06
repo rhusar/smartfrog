@@ -19,6 +19,8 @@
  */
 package org.smartfrog.sfcore.languages.cdl;
 
+import nu.xom.Node;
+
 
 /**
  * we add our own exception under the CDL parsing exception
@@ -27,6 +29,7 @@ package org.smartfrog.sfcore.languages.cdl;
 
 public class CdlParsingException extends Exception {
 
+    private Node source;
 
     public CdlParsingException() {
     }
@@ -43,7 +46,32 @@ public class CdlParsingException extends Exception {
         super(cause);
     }
 
+    public CdlParsingException(Node node) {
+        setSource(node);
+    }
 
+    public CdlParsingException(Node node,String message) {
+        super(message);
+        setSource(node);
+    }
+
+    public CdlParsingException(Node node,String message, Throwable cause) {
+        super(message, cause);
+        setSource(node);
+    }
+
+    public CdlParsingException(Node node,Throwable cause) {
+        super(cause);
+        setSource(node);
+    }
+
+    public Node getSource() {
+        return source;
+    }
+
+    public void setSource(Node source) {
+        this.source = source;
+    }
 
     /**
      * Assert that a test holds, if not, throw an exception.

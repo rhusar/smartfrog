@@ -52,7 +52,6 @@ public class PropertyList extends DocumentedNode implements ToSmartFrog {
      */
     public PropertyList extendsResolved;
 
-
     public PropertyList() {
     }
 
@@ -60,14 +59,21 @@ public class PropertyList extends DocumentedNode implements ToSmartFrog {
         bind(element);
     }
 
+
     /**
-     * Parse from XM
+     * Parse from XML
      *
      * @throws CdlParsingException
      */
     public void bind(Element element) throws CdlParsingException {
+        super.bind(element);
         //TODO
 
+    }
+
+
+    protected void addChild(Element node) {
+        //TODO
     }
 
     /** child list */

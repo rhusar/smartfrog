@@ -49,10 +49,39 @@ public class Ref extends DocNode {
     private RefAttribute refAttr;
     private boolean lazy;
 
+    /**
+     * bind to an element
+     * @param element
+     * @throws CdlParsingException
+     */
     public void bind(Element element) throws CdlParsingException {
         super.bind(element);
         lazy=LazyAttribute.isLazy(element,false);
         refRoot = RefRootAttribute.extract(element, false);
         refAttr = RefAttribute.extract(element, true);
+    }
+
+    public RefRootAttribute getRefRoot() {
+        return refRoot;
+    }
+
+    public void setRefRoot(RefRootAttribute refRoot) {
+        this.refRoot = refRoot;
+    }
+
+    public RefAttribute getRefAttr() {
+        return refAttr;
+    }
+
+    public void setRefAttr(RefAttribute refAttr) {
+        this.refAttr = refAttr;
+    }
+
+    public boolean isLazy() {
+        return lazy;
+    }
+
+    public void setLazy(boolean lazy) {
+        this.lazy = lazy;
     }
 }

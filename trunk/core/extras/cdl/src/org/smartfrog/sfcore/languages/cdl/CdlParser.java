@@ -107,7 +107,7 @@ public class CdlParser {
      * @throws ParsingException
      */
     public CdlDocument parseFile(String filename) throws IOException,
-            ParsingException {
+            ParsingException, CdlParsingException {
         File f = new File(filename);
         return new CdlDocument(builder.build(f));
     }
@@ -121,7 +121,7 @@ public class CdlParser {
      * @throws ParsingException
      */
     public CdlDocument parseStream(InputStream instream) throws IOException,
-            ParsingException {
+            ParsingException, CdlParsingException {
         Document doc = builder.build(instream);
         return new CdlDocument(doc);
     }
@@ -135,7 +135,7 @@ public class CdlParser {
      * @throws ParsingException
      */
     public CdlDocument parseResource(String resource) throws IOException,
-            ParsingException {
+            ParsingException, CdlParsingException {
         InputStream in = resourceLoader.loadResource(resource);
         return parseStream(in);
     }

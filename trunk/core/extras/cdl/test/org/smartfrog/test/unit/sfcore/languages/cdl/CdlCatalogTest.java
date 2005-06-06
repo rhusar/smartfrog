@@ -52,9 +52,10 @@ public class CdlCatalogTest extends XmlTestBase {
         catalog.validateImportPaths();
     }
     public void testCdlLookup() {
-        String cddlm=catalog.lookup(Constants.CDL_NAMESPACE);
+        String cddlm=catalog.lookup(Constants.XML_CDL_NAMESPACE);
         assertTrue(cddlm != null && cddlm.endsWith(Constants.CDL_XSD_FILENAME));
     }
+
 
     public void testApiLookup() {
         String resource = catalog.lookup(Constants.CDL_API_TYPES_NAMESPACE);
@@ -63,8 +64,12 @@ public class CdlCatalogTest extends XmlTestBase {
     }
 
     public void testCdlResolve() throws TransformerException {
-        Source src=catalog.resolve(Constants.CDL_NAMESPACE,"");
+        Source src=catalog.resolve(Constants.XML_CDL_NAMESPACE,"");
         assertTrue(src!=null);
+    }
+
+    public void testCdlEntityResolved() throws IOException, SAXException {
+        assertResolved(Constants.XML_CDL_NAMESPACE);
     }
 
     public void testSaxResolve() throws IOException, SAXException {

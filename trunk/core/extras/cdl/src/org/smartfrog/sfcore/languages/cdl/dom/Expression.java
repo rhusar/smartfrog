@@ -34,6 +34,8 @@ import nu.xom.Element;
  */
 
 public class Expression extends DocNode {
+    public static final String ERROR_UNEXPECTED_ELEMENT_IN_EXPRESSION = "Unexpected element ";
+    public static final String ERROR_DUPLICATE_VALUE = "Duplicate variable in expression: ";
 
     public Expression() {
     }
@@ -50,8 +52,19 @@ public class Expression extends DocNode {
         return valueOf;
     }
 
-    protected void add(Variable v) {
-        variables.put(v.getNameValue(),v);
+    /**
+     * add a variable
+     * @param variable variable to add
+     * @throws CdlParsingException if it already exists
+     */
+    protected void add(Variable variable) throws CdlParsingException {
+        String nameValue = variable.getNameValue();
+        if(lookupVariable(nameValue)!=null) {
+            throw new CdlParsingException(getNode(),
+                    ERROR_DUPLICATE_VALUE + nameValue);
+        }
+        variables.put(nameValue,variable);
+
     }
 
     /**
@@ -69,10 +82,19 @@ public class Expression extends DocNode {
         //now run though our children, which must all be variables
         for(Element child:childElements()) {
             if(!Variable.isA(child)) {
-                throw new CdlParsingException("Unexpected element "+element);
+                throw new CdlParsingException(getNode(),
+                        ERROR_UNEXPECTED_ELEMENT_IN_EXPRESSION+element);
             }
             Variable v=new Variable(child);
             add(v);
         }
+    }
+
+    /**
+     * Evaluate an expression
+     */
+    public void evaluate() {
+        //TODO
+        throw new RuntimeException("Not implemented");
     }
 }
