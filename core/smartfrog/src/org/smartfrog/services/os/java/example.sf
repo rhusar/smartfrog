@@ -62,7 +62,6 @@ sfConfig extends Compound {
         classpath [
             LAZY axis:absolutePath,
             LAZY commons-logging:absolutePath];
-        logLevel 5;
     }
 
 }
