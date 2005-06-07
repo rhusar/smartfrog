@@ -55,14 +55,14 @@ For more information: www.smartfrog.org
  */
 
 Maven1Policy extends Prim {
-	sfClass "org.smartfrog.services.os.java.Maven1Policy";
+    sfClass "org.smartfrog.services.os.java.Maven1Policy";
 }
 
 /**
  * Maven2 provides both a remote and a local naming policy
  */
 Maven2Policy extends Prim {
-	sfClass "org.smartfrog.services.os.java.Maven2Policy";
+    sfClass "org.smartfrog.services.os.java.Maven2Policy";
 }
 
 /**
@@ -70,7 +70,7 @@ Maven2Policy extends Prim {
  * It tells the library to save stuff flat
  */
 FlattenLocalFilesPolicy extends Prim {
-	sfClass "org.smartfrog.services.os.java.FlattenLocalFilesPolicy";
+    sfClass "org.smartfrog.services.os.java.FlattenLocalFilesPolicy";
 }
 
 
@@ -89,17 +89,17 @@ Library extends FileUsingComponent {
         repositories extends Vector;
         //cache dir; is created if needed
         cacheDir extends Compulsory;
-	
-	    /**
-	     * Component implementing local cache policy
-	     */
-	    localCachePolicy extends CD;
-	    
-	    /**
-	     * Component implementing local cache policy
-	     */
-	    remoteCachePolicy extends CD;
-	            
+    
+        /**
+         * Component implementing local cache policy
+         */
+        localCachePolicy extends CD;
+        
+        /**
+         * Component implementing local cache policy
+         */
+        remoteCachePolicy extends CD;
+                
     }
 }
 
@@ -110,22 +110,22 @@ Library extends FileUsingComponent {
 
 Maven1Library extends Library {
 
-	/**
-	 * Maven file policy
-	 */
-	 
-	policy extends Maven1Policy;
-	
-	/**
-	 * local policy is maven1
-	 */
-	localCachePolicy policy;
-	
-	/**
-	 * Remote policy is maven1
-	 */
-	remoteCachePolicy policy;	
-	
+    /**
+     * Maven file policy
+     */
+     
+    policy extends Maven1Policy;
+    
+    /**
+     * local policy is maven1
+     */
+    localCachePolicy policy;
+    
+    /**
+     * Remote policy is maven1
+     */
+    remoteCachePolicy policy;   
+    
     /**
      * Well known cache directory
      */
@@ -150,24 +150,24 @@ Maven1Library extends Library {
 
 Maven2Library extends Library {
 
-	/**
-	 * Maven file policy
-	 */
-	 
-	policy extends Maven2Policy;
-	
-	/**
-	 * local policy is maven2
-	 */
-	localCachePolicy policy;
-	
-	/**
-	 * Remote policy is maven2
-	 */
-	remoteCachePolicy policy;	
+    /**
+     * Maven file policy
+     */
+     
+    policy extends Maven2Policy;
+    
+    /**
+     * local policy is maven2
+     */
+    localCachePolicy policy;
+    
+    /**
+     * Remote policy is maven2
+     */
+    remoteCachePolicy policy;   
 
 
-	
+    
     /**
      * Well known cache directory
      */
@@ -178,7 +178,7 @@ Maven2Library extends Library {
         filename ".m2/repository";
     }
 
-	
+    
 
     /**
      * Maven2 repository at ibiblio.org. Really we should permit mirrors; or include
@@ -215,7 +215,7 @@ LibraryArtifact extends FileUsingComponent {
         version extends String;
         //true or false
         synchronousDownload extends Boolean;
-		//sha1 hex string
+        //sha1 hex string
         sha1 extends OptionalString;
         //MD5 is not as secure as sha1, but is retained because the md5 values
         //of maven artifacts are so common.
