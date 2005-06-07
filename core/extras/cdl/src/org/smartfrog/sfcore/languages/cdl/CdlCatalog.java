@@ -117,8 +117,12 @@ public class CdlCatalog implements URIResolver, EntityResolver {
         for (int i = 0; i < map.length; i += 2) {
             String schema = map[i];
             String filename = map[i + 1];
+            //schema to filename mapping
             mappings.put(schema, filename);
+            //filename to filename
             mappings.put(filename, filename);
+            //and file in path to filename mapping.
+            mappings.put(extractLastPathElement(filename), filename);
         }
     }
 
