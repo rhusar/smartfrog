@@ -27,12 +27,13 @@ import java.util.LinkedList;
 import java.util.ListIterator;
 
 import nu.xom.Element;
+import nu.xom.Node;
 
 /**
  * created 21-Apr-2005 14:26:55
  */
 
-public class PropertyList extends DocumentedNode implements ToSmartFrog {
+public class PropertyList extends DocNode implements ToSmartFrog {
 
     /**
      * Our name.
@@ -52,6 +53,17 @@ public class PropertyList extends DocumentedNode implements ToSmartFrog {
      */
     public PropertyList extendsResolved;
 
+    /**
+     * child list
+     */
+    private List<DocNode> children = new LinkedList<DocNode>();
+
+    /**
+     * Error text for testing
+     */
+    public static final String ERROR_LOWLEVEL_NAMED = "low-level PropertyList elements cannot be given names";
+
+
     public PropertyList() {
     }
 
@@ -67,8 +79,28 @@ public class PropertyList extends DocumentedNode implements ToSmartFrog {
      */
     public void bind(Element element) throws CdlParsingException {
         super.bind(element);
-        //TODO
+        //run through all our child elements and processs them
+        for(Node child:children()) {
+            if(child instanceof Element) {
+                children.add(createNodeFromElement((Element)child));
+            }
+        }
 
+    }
+
+    /**
+     * create the appropriate node for an element type
+     * @return
+     */
+    DocNode createNodeFromElement(Element element) throws CdlParsingException {
+        if(Documentation.isA(element)) {
+            return new Documentation(element);
+        }
+        if(Expression.isA(element)) {
+            return new Expression(element);
+        }
+        //else, it is not a recognised type, so we make another propertly list from it
+        return new PropertyList(element);
     }
 
 
@@ -76,21 +108,12 @@ public class PropertyList extends DocumentedNode implements ToSmartFrog {
         //TODO
     }
 
-    /** child list */
-    private List<PropertyList> children=new LinkedList<PropertyList>();
-
-    /**
-     * Error text for testing
-     */
-    public static final String ERROR_LOWLEVEL_NAMED = "low-level PropertyList elements cannot be given names";
-
-        
     /**
      * Child elements
      *
      * @return our child list (may be null)
      */
-    public List<PropertyList> children() {
+    public List<DocNode> childDocNodes() {
         return children;
     }
 
@@ -98,7 +121,7 @@ public class PropertyList extends DocumentedNode implements ToSmartFrog {
      * Get an iterator over the child list
      * @return
      */
-    public ListIterator<PropertyList> childIterator() {
+    public ListIterator<DocNode> childIterator() {
         return children.listIterator();
     }
 

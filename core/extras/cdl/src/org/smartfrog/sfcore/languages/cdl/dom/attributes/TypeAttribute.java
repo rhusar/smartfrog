@@ -49,6 +49,6 @@ public class TypeAttribute extends QNameAttribute {
         return (TypeAttribute) findAndBind(ATTR_TYPE,
                 TypeAttribute.class,
                 element,
-                required);
+                required, false);
     }
 }

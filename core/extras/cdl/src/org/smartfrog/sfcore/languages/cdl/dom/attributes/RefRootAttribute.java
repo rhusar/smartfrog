@@ -57,7 +57,7 @@ public class RefRootAttribute extends QNameAttribute {
         return (RefRootAttribute) findAndBind(ATTR_REFROOT,
                 RefRootAttribute.class,
                 element,
-                required);
+                required, true);
     }
 
 }

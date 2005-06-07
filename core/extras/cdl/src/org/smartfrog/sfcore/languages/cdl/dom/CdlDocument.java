@@ -24,6 +24,7 @@ import org.ggf.cddlm.generated.api.CddlmConstants;
 import org.smartfrog.sfcore.languages.cdl.utils.ElementIterator;
 import org.smartfrog.sfcore.languages.cdl.utils.IteratorRelay;
 import org.smartfrog.sfcore.languages.cdl.utils.ClassLogger;
+import org.smartfrog.sfcore.languages.cdl.utils.NodeIterator;
 import org.smartfrog.sfcore.logging.Log;
 
 import javax.xml.namespace.QName;
@@ -32,6 +33,7 @@ import nu.xom.ParsingException;
 import nu.xom.Document;
 import nu.xom.Element;
 import nu.xom.ParentNode;
+import nu.xom.Node;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,10 +56,6 @@ public class CdlDocument extends DocumentedNode {
     private Document document;
 
 
-    /**
-     * our root node
-     */
-    private Element root;
 
     /**
      * configuration elements
@@ -97,7 +95,9 @@ public class CdlDocument extends DocumentedNode {
 */
 
     public CdlDocument(Document doc) throws CdlParsingException {
+        super(doc.getRootElement());
         this.document = doc;
+        processDocument();
     }
 
     public CdlDocument(ParsingException exception) {
@@ -187,18 +187,6 @@ public class CdlDocument extends DocumentedNode {
         return configuration.lookup(name);
     }
 
-    /**
-     * parse the document
-     *
-     * @throws CdlParsingException
-     */
-    protected void parse() throws CdlParsingException {
-        for(Element element: elements(document)) {
-            verifyInCdlNamespace(element);
-            verifyNodeName(element, CddlmConstants.ELEMENT_NAME_ROOT);
-            processRootNode(element);
-        }
-    }
 
     private void verifyInCdlNamespace(Element element)
             throws CdlParsingException {
@@ -219,20 +207,38 @@ public class CdlDocument extends DocumentedNode {
      */
     private void processDocument() throws CdlParsingException {
         assert document != null;
-        processRootNode(document.getRootElement());
-
+        parse();
     }
 
     /**
-     * this is the root node; lets extract everything from it
+     * our binding here sets the root node
      *
-     * @param node
+     * @throws org.smartfrog.sfcore.languages.cdl.CdlParsingException
+     *
+     */
+    public void bind(Element element) throws CdlParsingException {
+        super.bind(element);
+    }
+
+    Element getRoot() {
+        return getNode();
+    }
+
+
+    /**
+     * we have the root node; lets extract everything from it
+     *
      * @throws CdlParsingException
      */
-    private void processRootNode(Element node) throws CdlParsingException {
-        root = node;
-        for (Element child : elements(root)) {
-
+    private void parse() throws CdlParsingException {
+        Element root=getRoot();
+        verifyInCdlNamespace(root);
+        verifyNodeName(root, CddlmConstants.ELEMENT_NAME_ROOT);
+        for (Node childnode: nodes(root)) {
+            if(!(childnode instanceof Element)) {
+                continue;
+            }
+            Element child=(Element)childnode;
             //imports come first
             if(Import.isA(child)) {
                 imports.add(new Import(child));
@@ -261,18 +267,19 @@ public class CdlDocument extends DocumentedNode {
             //add a doc node
             if(Documentation.isA(child)) {
                 Documentation documentation = new Documentation(child);
-                //TODO
+                log.warn("Ignoring documentation " + child);
                 continue;
             }
 
             //if we get here, then either there is stuff that we don't recognise
             //or its in another namespace
-            if(!DocNode.inCdlNamespace(child)) {
+            if(DocNode.inCdlNamespace(child)) {
                 //strange stuff here
                 throw new CdlParsingException("Unknown element "+child);
             } else {
                 //do nothing
                 //TODO: log this?
+                log.warn("Ignoring unknown element "+child);
             }
 
         }
@@ -286,12 +293,12 @@ public class CdlDocument extends DocumentedNode {
      * @param element
      * @return
      */
-    public ElementIterator elementIterator(ParentNode element) {
-        return new ElementIterator(element);
+    public NodeIterator nodeIterator(ParentNode element) {
+        return new NodeIterator(element);
     }
 
-    public IteratorRelay<Element> elements(ParentNode element) {
-        return new IteratorRelay(elementIterator(element));
+    public IteratorRelay<Node> nodes(ParentNode element) {
+        return new IteratorRelay<Node>(nodeIterator(element));
     }
 
 }

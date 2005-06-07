@@ -50,8 +50,8 @@ public class Import extends DocNode {
      */
     public void bind(Element element) throws CdlParsingException {
         super.bind(element);
-        namespace = GenericAttribute.extractCdlAttributeValue(element, ATTR_NAMESPACE, false);
-        location = GenericAttribute.extractCdlAttributeValue(element, ATTR_LOCATION, true);
+        namespace = GenericAttribute.extractLocalAttributeValue(element, ATTR_NAMESPACE, false);
+        location = GenericAttribute.extractLocalAttributeValue(element, ATTR_LOCATION, true);
     }
 
 
