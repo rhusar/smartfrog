@@ -21,7 +21,7 @@ public abstract class NetElemImpl extends CompoundImpl implements Compound, NetE
   int currentInvocation=0;
   int maxInvocations=99999999;
 
-  protected void addValue(int i) {
+    protected void addValue(int i) {
    currentInvocation++;
     System.out.println("                                       (addValue: Invo# " + currentInvocation + ", value " +  i+", maxInvoc "+maxInvocations+")");
     if (currentInvocation> maxInvocations)
@@ -48,7 +48,7 @@ public abstract class NetElemImpl extends CompoundImpl implements Compound, NetE
 			currentValues.removeElementAt(0);
 		}
                 synchronized(outputs){
-                  outputs = ((Prim) sfResolve("outputs")).sfContext();
+                  outputs = ((Prim) sfResolve(ATTR_OUTPUTS)).sfContext();
 
                   for (Enumeration o = outputs.keys(); o.hasMoreElements(); ) {
 	   	 	Object name = o.nextElement();
@@ -71,17 +71,18 @@ public abstract class NetElemImpl extends CompoundImpl implements Compound, NetE
 
   // need a thread to decouple incoming RPC thread in from the RPCs out
   // otherwise the RPCs will block until the entire NetElem tree has been traversed
-  Thread outputer = null;
+  Thread outputter = null;
   class Outputer extends Thread {
-    public void run() {
-	try {
-		doOutputs();
-    	} finally {
-		try{
-                   System.out.println( sfCompleteName() + " Thread terminated ");
-		} catch (Exception e) {}
-	}
-	}
+      public void run() {
+          try {
+              doOutputs();
+          } finally {
+              try {
+                  System.out.println(sfCompleteName() + " Thread terminated ");
+              } catch (Exception e) {
+              }
+          }
+      }
   }
 
   // standard constructor
@@ -107,11 +108,11 @@ public abstract class NetElemImpl extends CompoundImpl implements Compound, NetE
   public void sfDeploy() throws SmartFrogException, RemoteException {
 	// get the list of outputs
 	super.sfDeploy();
-	outputs = ((Prim) sfResolveHere("outputs")).sfContext();
+	outputs = ((Prim) sfResolveHere(ATTR_OUTPUTS)).sfContext();
 	nameRef = sfCompleteName();
 	name = nameRef.toString();
         try {
-          maxInvocations = ((Number) sfResolve("maxInvocations")).intValue();
+          maxInvocations = ((Number) sfResolve(ATTR_MAX_INVOCATIONS)).intValue();
         } catch (Exception e) {
           // use large default...
         }
@@ -119,21 +120,26 @@ public abstract class NetElemImpl extends CompoundImpl implements Compound, NetE
 	// start the thread here because we need to make sure that when the
 	// constants and generators issue their values - triggered in sfStart()
 	// the outputer is waiting to pass them on.
-	outputer = new Outputer();
-	outputer.start();
-	//System.out.println(name + " deployed");
+	outputter = new Outputer();
+	outputter.start();
   }
   public void sfStart() throws SmartFrogException, RemoteException {
 	super.sfStart();
-	//System.out.println(name + " started");
   }
-  public void sfTerminateWith(TerminationRecord tr) {
-	try {
-	  if (outputer != null) outputer.stop();
-	} catch (Exception e) {}
-	System.out.println(name + " has terminated with " + tr.toString());
-        TestHelper.printSFStopDone(System.out,true);
+    /**
+     * terminate
+     * @param tr
+     */
+    public void sfTerminateWith(TerminationRecord tr) {
+        try {
+            if (outputter != null) {
+                outputter.stop();
+            }
+        } catch (Exception e) {
+        }
+        System.out.println(name + " has terminated with " + tr.toString());
+        TestHelper.printSFStopDone(System.out, true);
         super.sfTerminateWith(tr);
         System.out.println("sfTerminateWith ending !!!"); //DEBUG
-  }
+    }
 }
