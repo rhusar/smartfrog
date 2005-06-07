@@ -58,12 +58,71 @@ public class CdlLoaderTest extends XmlTestBase {
     }
 
 
-    public void testValid() throws Exception {
-        initLaxParser();
-        for (int i = 0; i < VALID_CDL.length; i++) {
-            assertValidCDL(VALID_CDL[i]);
-        }
+    public void testMinimal() throws Exception {
+        assertValidCDL(CDL_DOC_MINIMAL);
     }
+
+    public void testExtraElements() throws Exception {
+        assertValidCDL(CDL_DOC_EXTRA_ELEMENTS);
+    }
+
+    public void testDocumented() throws Exception {
+        assertValidCDL(CDL_DOC_DOCUMENTED);
+    }
+    public void testExpression() throws Exception {
+        assertValidCDL(CDL_DOC_EXPRESSION_1);
+    }
+    public void testLazy1() throws Exception {
+        assertValidCDL(CDL_DOC_LAZY_1);
+    }
+    public void testLazy2() throws Exception {
+        assertValidCDL(CDL_DOC_LAZY_2);
+    }
+    public void testParameterization1() throws Exception {
+        assertValidCDL(CDL_DOC_PARAMETERIZATION_1);
+    }
+    public void testFullExample1() throws Exception {
+        assertValidCDL(CDL_DOC_FULL_EXAMPLE_1);
+    }
+    public void testFullExample2() throws Exception {
+        assertValidCDL(CDL_DOC_FULL_EXAMPLE_2);
+    }
+    public void testFullExample3() throws Exception {
+        assertValidCDL(CDL_DOC_FULL_EXAMPLE_3);
+    }
+    public void testReferences1() throws Exception {
+        assertValidCDL(CDL_DOC_REFERENCES_1);
+    }
+    public void testReferences2() throws Exception {
+        assertValidCDL(CDL_DOC_REFERENCES_2);
+    }
+    public void testReferences3() throws Exception {
+        assertValidCDL(CDL_DOC_REFERENCES_3);
+    }
+
+    public void testWebServer() throws Exception {
+        assertValidCDL(CDL_DOC_WEBSERVER);
+    }
+    public void testWebServerDefaultNamespace() throws Exception {
+        assertValidCDL(CDL_DOC_WEBSERVER_DEFAULT_NAMESPACE);
+    }
+    public void testWebServerNoNamespace() throws Exception {
+        assertValidCDL(CDL_DOC_WEBSERVER_NO_NAMESPACE);
+    }
+
+/*    public void test() throws Exception {
+        assertValidCDL(CDL_DOC_);
+    }
+    public void test() throws Exception {
+        assertValidCDL(CDL_DOC_);
+    }
+    public void test() throws Exception {
+        assertValidCDL(CDL_DOC_);
+    }
+    public void test() throws Exception {
+        assertValidCDL(CDL_DOC_);
+    }*/
+
 
 
     public void testWrongDocNamespace() throws Exception {
@@ -74,7 +133,7 @@ public class CdlLoaderTest extends XmlTestBase {
         assertInvalidCDL(CDL_DOC_WRONG_ELT_ORDER, null);
     }
 
-    public void testWrongRootEltType() throws Exception {
+    public void NotestWrongRootEltType() throws Exception {
         assertInvalidCDL(CDL_DOC_WRONG_ROOT_ELT_TYPE,
                 "Cannot find the declaration of element");
     }

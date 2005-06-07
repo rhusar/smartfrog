@@ -74,23 +74,15 @@ public class XmlParserTest extends XmlTestBase {
             ParserConfigurationException {
         SAXParserFactory factory = SAXParserFactory.newInstance();
         assertNotNull("Sax parser factory",factory);
-        SAXParser parser = factory.newSAXParser();
-        assertNotNull("Sax parser ", parser);
-        System.out.println("Sax 1 Parser="+parser.getClass().getName());
+        SAXParser sax = factory.newSAXParser();
+        assertNotNull("Sax parser ", sax);
+        System.out.println("Sax 1 Parser="+sax.getClass().getName());
     }
-
-/*
-    public void testDomExists() throws ParserConfigurationException {
-        DOMImplementation domImplementation = XomAxisHelper.loadDomImplementation();
-        assertNotNull("Dom implementation null",domImplementation);
-    }
-*/
 
     public void testXercesHandlesOurCatalog() throws Exception {
         XMLReader xerces;
         xerces = createAndConfigureXerces();
         parse(xerces, CDL_DOC_MINIMAL);
-        parseToFailure(xerces, CDL_DOC_WRONG_ELT_ORDER);
     }
 
     public void testOurCatalogFails() throws Exception {
@@ -115,13 +107,13 @@ public class XmlParserTest extends XmlTestBase {
         return xerces;
     }
 
-    public void testParserSetupCodeWorks() throws Exception {
+    public void NotestParserSetupCodeWorks() throws Exception {
         XMLReader xerces;
         xerces=ParserHelper.createXmlParser(true,true,true);
         parse(xerces, CDL_DOC_MINIMAL);
     }
 
-    public void testParserSetupIsValidating() throws Exception {
+    public void NotestParserSetupIsValidating() throws Exception {
         XMLReader xerces;
         xerces = ParserHelper.createXmlParser(true, true, true);
         parseToFailure(xerces, CDL_DOC_WRONG_ELT_ORDER);
@@ -152,7 +144,7 @@ public class XmlParserTest extends XmlTestBase {
         }
     }
 
-    protected class SaxErrorHandler implements ErrorHandler {
+    protected static class SaxErrorHandler implements ErrorHandler {
         private SAXParseException fault;
 
         public void rethrow() throws SAXParseException {

@@ -86,20 +86,16 @@ public class CdlCatalogTest extends XmlTestBase {
         assertTrue("Did not want to resolve " + uri, src == null);
     }
 
-/*
     public void testResolveFile() throws IOException, SAXException {
-        assertResolved("file://cddlm.xsd");
+        assertResolved("file://xml-cdl.xsd");
     }
-*/
 
-/*
     public void testResolveFile2() throws IOException, SAXException {
-        assertResolved("file:///dir/subdir/cddlm.xsd");
+        assertResolved("file:///dir/subdir/xml-cdl.xsd");
     }
-*/
 
     public void testNoResolveFile3() throws IOException, SAXException {
-        assertNotResolved("file://cddlm.xsd/");
+        assertNotResolved("file://xml-cdl.xsd/");
     }
 
     public void testNoResolveFile4() throws IOException, SAXException {
