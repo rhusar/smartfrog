@@ -21,6 +21,7 @@ package org.smartfrog.sfcore.languages.cdl.dom;
 
 import org.smartfrog.sfcore.languages.cdl.CdlParsingException;
 import org.smartfrog.sfcore.languages.cdl.utils.ElementIterator;
+import org.smartfrog.sfcore.languages.cdl.utils.NodeIterator;
 import org.ggf.cddlm.generated.api.CddlmConstants;
 import nu.xom.Node;
 import nu.xom.Element;
@@ -59,8 +60,9 @@ public abstract class DocNode implements Names {
      *
      * @return
      */
-    public ElementIterator childElements() {
-        return new ElementIterator(node);
+    public NodeIterator children() {
+        return new NodeIterator(node);
+
     }
 
     /**

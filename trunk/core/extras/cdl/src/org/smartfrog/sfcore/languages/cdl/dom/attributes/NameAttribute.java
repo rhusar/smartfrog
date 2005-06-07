@@ -47,6 +47,6 @@ public class NameAttribute extends NCNameAttribute {
         return (NameAttribute) findAndBind(ATTR_NAME,
                 NameAttribute.class,
                 element,
-                required);
+                required, true);
     }
 }

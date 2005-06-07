@@ -28,6 +28,7 @@ import java.util.HashMap;
 import java.util.Collection;
 
 import nu.xom.Element;
+import nu.xom.Node;
 
 /**
  * created 21-Apr-2005 14:42:51
@@ -37,12 +38,18 @@ public class Expression extends DocNode {
     public static final String ERROR_UNEXPECTED_ELEMENT_IN_EXPRESSION = "Unexpected element ";
     public static final String ERROR_DUPLICATE_VALUE = "Duplicate variable in expression: ";
 
+    private ValueOfAttribute valueOf;
+
+    private HashMap<String, Variable> variables = new HashMap<String, Variable>();
+
     public Expression() {
     }
 
-    private ValueOfAttribute valueOf;
+    public Expression(Element node) throws CdlParsingException {
+        super();
+        bind(node);
+    }
 
-    private HashMap<String,Variable> variables =new HashMap<String, Variable>();
 
     public Collection<Variable> getVariables() {
         return variables.values();
@@ -80,13 +87,17 @@ public class Expression extends DocNode {
         super.bind(element);
         valueOf=ValueOfAttribute.extract(element, true);
         //now run though our children, which must all be variables
-        for(Element child:childElements()) {
-            if(!Variable.isA(child)) {
-                throw new CdlParsingException(getNode(),
-                        ERROR_UNEXPECTED_ELEMENT_IN_EXPRESSION+element);
+        for(Node child:children()) {
+
+            if (child instanceof Element) {
+                Element childElement=(Element) child;
+                if(!Variable.isA(childElement)) {
+                    throw new CdlParsingException(getNode(),
+                            ERROR_UNEXPECTED_ELEMENT_IN_EXPRESSION+element);
+                }
+                Variable v=new Variable(childElement);
+                add(v);
             }
-            Variable v=new Variable(child);
-            add(v);
         }
     }
 
@@ -96,5 +107,16 @@ public class Expression extends DocNode {
     public void evaluate() {
         //TODO
         throw new RuntimeException("Not implemented");
+    }
+
+    /**
+     * test that a node is of the right type
+     *
+     * @param element
+     *
+     * @return true if the element namespace and localname match what we handle
+     */
+    static boolean isA(Element element) {
+        return isNode(element, ELEMENT_EXPRESSION);
     }
 }

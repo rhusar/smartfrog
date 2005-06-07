@@ -19,12 +19,23 @@
  */
 package org.smartfrog.sfcore.languages.cdl.dom;
 
+import nu.xom.Element;
+import org.smartfrog.sfcore.languages.cdl.CdlParsingException;
+
 /**
  * A node that has an (optional) documentation element
  * created 21-Apr-2005 14:55:02
  */
 
 public class DocumentedNode extends DocNode {
+
+    public DocumentedNode() {
+    }
+
+    public DocumentedNode(Element node) throws CdlParsingException {
+        super(node);
+    }
+
     /**
      * optional documentation attribute
      */

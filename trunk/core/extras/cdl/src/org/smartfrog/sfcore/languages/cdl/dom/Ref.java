@@ -42,6 +42,7 @@ public class Ref extends DocNode {
         super(node);
     }
 
+
     /**
      * optional reference root
      */

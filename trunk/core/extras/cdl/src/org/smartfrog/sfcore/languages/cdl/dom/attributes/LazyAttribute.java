@@ -61,15 +61,16 @@ public class LazyAttribute extends GenericAttribute {
         return (LazyAttribute) findAndBind(ATTR_LAZY,
                 LazyAttribute.class,
                 element,
-                required);
+                required, false);
     }
 
     public static boolean isLazy(Element element,boolean required) throws CdlParsingException {
         LazyAttribute lazy=extract(element,required);
-        if(lazy.isTrue()) {
-            return true;
+        if (lazy==null || lazy.isFalse()) {
+            return false;
         }
-        if (lazy.isFalse()) {
+
+        if(lazy.isTrue()) {
             return true;
         }
         //if we get here: neither true nor false: error

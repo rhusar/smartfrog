@@ -24,6 +24,7 @@ import nu.xom.Element;
 import org.smartfrog.sfcore.languages.cdl.CdlParsingException;
 
 /**
+ * this is only used inside an {@link org.smartfrog.sfcore.languages.cdl.dom.Expression}
  * created 26-May-2005 11:19:00
  */
 
@@ -47,6 +48,6 @@ public class ValueOfAttribute extends GenericAttribute  {
         return (ValueOfAttribute) findAndBind(ATTR_VALUE_OF,
                 ValueOfAttribute.class,
                 element,
-                required);
+                required, true);
     }
 }

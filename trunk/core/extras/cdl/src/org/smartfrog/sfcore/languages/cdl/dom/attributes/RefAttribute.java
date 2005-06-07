@@ -45,6 +45,6 @@ public class RefAttribute extends GenericAttribute {
      */
     public static RefAttribute extract(Element element, boolean required)
             throws CdlParsingException {
-        return (RefAttribute)findAndBind(ATTR_REF,RefAttribute.class,element,required);
+        return (RefAttribute)findAndBind(ATTR_REF,RefAttribute.class,element,required, true);
     }
 }

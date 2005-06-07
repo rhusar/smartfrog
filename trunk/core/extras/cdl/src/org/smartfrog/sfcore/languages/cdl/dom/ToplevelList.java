@@ -25,9 +25,12 @@ public class ToplevelList extends PropertyList {
      * @return element or null
      */
     PropertyList lookup(QName childName) {
-        for(PropertyList child:children()) {
-            if(child.isNamed(childName)) {
-                return child;
+        for (DocNode child : childDocNodes()) {
+            if (child instanceof PropertyList) {
+                PropertyList propertyList = (PropertyList) child;
+                if (propertyList.isNamed(childName)) {
+                    return propertyList;
+                }
             }
         }
         //No match

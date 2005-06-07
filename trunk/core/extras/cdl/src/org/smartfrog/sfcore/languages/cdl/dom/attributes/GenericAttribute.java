@@ -103,16 +103,27 @@ public class GenericAttribute implements Names {
      * @param clazz
      * @param element
      * @param required
+     * @param local
      * @return
      * @throws CdlParsingException
      */
     protected static GenericAttribute findAndBind(String localname,
-            Class clazz,
-            Element element, boolean required)
+                                                  Class clazz,
+                                                  Element element,
+                                                  boolean required,
+                                                  boolean local)
             throws CdlParsingException {
-        Attribute attr = extractCdlAttribute(element,
+        Attribute attr;
+        if (!local) {
+            attr = extractCdlAttribute(element,
                 localname,
                 required);
+        } else {
+            attr = extractLocalAttribute(element,
+                    localname,
+                    required);
+        }
+
         if (attr == null) {
             return null;
         } else {
@@ -168,5 +179,48 @@ public class GenericAttribute implements Names {
             throw new CdlParsingException("Missing attribute "+attributeName+" from element "+element);
         }
         return attribute;
+    }
+
+    /**
+     * Get a local attribute
+     *
+     * @param element       node to examine
+     * @param attributeName attribute to get
+     * @param required      flag set to true if needed
+     *
+     * @return the string value of the attribute
+     *
+     * @throws CdlParsingException
+     */
+    public static Attribute extractLocalAttribute(Element element,
+                                                String attributeName,
+                                                boolean required)
+            throws CdlParsingException {
+        Attribute attribute = element.getAttribute(attributeName);
+        if (attribute == null && required) {
+            throw new CdlParsingException("Missing attribute " + attributeName + " from element " + element);
+        }
+        return attribute;
+    }
+
+    /**
+     * Get the value of a local attribute
+     *
+     * @param element       node to examine
+     * @param attributeName attribute to get
+     * @param required      flag set to true if needed
+     *
+     * @return the string value of the attribute
+     *
+     * @throws CdlParsingException
+     */
+    public static String extractLocalAttributeValue(Element element,
+                                                  String attributeName,
+                                                  boolean required)
+            throws CdlParsingException {
+        Attribute attribute = extractLocalAttribute(element,
+                attributeName,
+                required);
+        return attribute != null ? attribute.getValue() : null;
     }
 }
