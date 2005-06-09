@@ -41,6 +41,15 @@ import java.io.FileNotFoundException;
 import java.util.HashMap;
 
 /**
+ * This class handles entity resolution problems.
+ * When used with XSD, file paths come in as absolute paths, not relative ones,
+ * and they are absolute relative to where xerces is working, at least when
+ * importing resource files.
+ * So, this catalog does something special: it matches by the short name of a file.
+ *
+ * Any path to xml-cdl.xsd will match to our copy, regardless of the rest of the URL.
+ * without this, everything breaks,
+ * 
  * created Jul 15, 2004 3:58:11 PM
  */
 

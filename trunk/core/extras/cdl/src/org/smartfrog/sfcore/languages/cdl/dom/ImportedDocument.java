@@ -19,28 +19,24 @@
  */
 package org.smartfrog.sfcore.languages.cdl.dom;
 
-import nu.xom.Element;
-import nu.xom.Node;
-import org.ggf.cddlm.generated.api.CddlmConstants;
-import org.smartfrog.sfcore.languages.cdl.CdlParsingException;
-import org.smartfrog.sfcore.languages.cdl.dom.attributes.GenericAttribute;
+import org.smartfrog.sfcore.languages.cdl.dom.CdlDocument;
+
+import java.util.HashMap;
 
 /**
- * Import element
- * created 21-Apr-2005 14:26:27
+ * Represents an imported document.
+ * created 08-Jun-2005 13:39:12
  */
 
-public class Import extends DocNode {
+public class ImportedDocument /*extends CdlDocument */{
 
     private String namespace;
 
     private String location;
 
-    public Import() {
-    }
-
     /**
      * Get the namespace of a document (may be null)
+     *
      * @return namespace or null
      */
     public String getNamespace() {
@@ -49,35 +45,39 @@ public class Import extends DocNode {
 
     /**
      * get the location of a document
+     *
      * @return the documents location
      */
     public String getLocation() {
         return location;
     }
 
-    public Import(Element node) throws CdlParsingException {
-        super(node);
+    public void setNamespace(String namespace) {
+        this.namespace = namespace;
     }
 
-    /**
-     * Parse from XM
-     *
-     * @throws CdlParsingException
-     */
-    public void bind(Element element) throws CdlParsingException {
-        super.bind(element);
-        namespace = GenericAttribute.extractLocalAttributeValue(element, ATTR_NAMESPACE, false);
-        location = GenericAttribute.extractLocalAttributeValue(element, ATTR_LOCATION, true);
+    public void setLocation(String location) {
+        this.location = location;
     }
 
+    public static class ImportMap extends HashMap<String,ImportedDocument> {
+        /**
+         * Constructs an empty <tt>HashMap</tt> with the default initial capacity
+         * (16) and the default load factor (0.75).
+         */
+        public ImportMap() {
+        }
 
-    /**
-     * test that a node is of the right type
-     * @param element
-     * @return true if the element namespace and localname match what we handle
-     */
-    static boolean isA(Element element) {
-        return isNode(element,ELEMENT_IMPORT);
+        /**
+         * Returns a shallow copy of this <tt>HashMap</tt> instance: the keys and
+         * values themselves are not cloned.
+         *
+         * @return a shallow copy of this map.
+         */
+        public Object clone() {
+            return super.clone();
+        }
+
+        
     }
-
 }

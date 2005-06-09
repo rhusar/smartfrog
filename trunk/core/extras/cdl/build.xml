@@ -55,6 +55,9 @@
       <dependency groupID="commons-logging"
         artifactID="commons-logging-api"
         version="${commons-logging.version}"/>          
+      <dependency groupID="log4j"
+        artifactID="log4j"
+        version="${commons-logging.version}"/>
        <dependency groupID="org.smartfrog"
         artifactID="sf-xml"
         version="${Version}"/>
