@@ -19,17 +19,32 @@
  */
 package org.smartfrog.sfcore.languages.cdl;
 
+import org.smartfrog.sfcore.languages.cdl.importing.ImportedDocumentMap;
+import org.smartfrog.sfcore.languages.cdl.importing.ImportResolver;
+
 import java.util.HashMap;
 import java.util.Properties;
 
 /**
- * This class represents the context of the execution; the
+ * This class represents the context of the execution; the environment
+ * in which a CDL file is parsed. This includes
+ * <ol>
+ * <li>import resolver implementation</li>
+ * <li>live property binding</li>
+ * <li>deployment options</li>
+ * <li>JSDL for the deployment</li>
+ * <li>a cache of resolved imports</li>
+ * </ol>
+ * The rest of the doc context should go in here too.
+ *
  * created 08-Jun-2005 13:21:27
  */
 
 public class ParseContext {
 
-    HashMap imports=new HashMap();
+    ImportResolver importResolver;
+
+    ImportedDocumentMap imports=new ImportedDocumentMap();
 
     /**
      * option lookup for remote deployment
@@ -42,7 +57,7 @@ public class ParseContext {
 
     Properties properties;
 
-    public HashMap getImports() {
+    public ImportedDocumentMap getImports() {
         return imports;
     }
 
