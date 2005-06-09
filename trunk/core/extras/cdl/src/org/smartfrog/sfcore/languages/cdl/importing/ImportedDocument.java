@@ -17,7 +17,7 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.sfcore.languages.cdl.dom;
+package org.smartfrog.sfcore.languages.cdl.importing;
 
 import org.smartfrog.sfcore.languages.cdl.dom.CdlDocument;
 
@@ -60,24 +60,25 @@ public class ImportedDocument /*extends CdlDocument */{
         this.location = location;
     }
 
-    public static class ImportMap extends HashMap<String,ImportedDocument> {
-        /**
-         * Constructs an empty <tt>HashMap</tt> with the default initial capacity
-         * (16) and the default load factor (0.75).
-         */
-        public ImportMap() {
+
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof ImportedDocument)) {
+            return false;
         }
 
-        /**
-         * Returns a shallow copy of this <tt>HashMap</tt> instance: the keys and
-         * values themselves are not cloned.
-         *
-         * @return a shallow copy of this map.
-         */
-        public Object clone() {
-            return super.clone();
+        final ImportedDocument importedDocument = (ImportedDocument) o;
+
+        if (namespace != null ? !namespace.equals(importedDocument.namespace) : importedDocument.namespace != null) {
+            return false;
         }
 
-        
+        return true;
+    }
+
+    public int hashCode() {
+        return (namespace != null ? namespace.hashCode() : 0);
     }
 }
