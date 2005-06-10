@@ -19,7 +19,7 @@
  */
 package org.smartfrog.sfcore.languages.cdl.dom;
 
-import org.smartfrog.sfcore.languages.cdl.CdlParsingException;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
 import nu.xom.Node;
 import nu.xom.Element;
 
@@ -29,5 +29,5 @@ import nu.xom.Element;
 
 
 public interface FromXML {
-    void fromXML(Element element) throws CdlParsingException;
+    void fromXML(Element element) throws CdlXmlParsingException;
 }

@@ -19,12 +19,15 @@
  */
 package org.smartfrog.sfcore.languages.cdl.dom;
 
-import org.smartfrog.sfcore.languages.cdl.CdlParsingException;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
 import org.ggf.cddlm.generated.api.CddlmConstants;
 import org.smartfrog.sfcore.languages.cdl.utils.ElementIterator;
 import org.smartfrog.sfcore.languages.cdl.utils.IteratorRelay;
 import org.smartfrog.sfcore.languages.cdl.utils.ClassLogger;
 import org.smartfrog.sfcore.languages.cdl.utils.NodeIterator;
+import org.smartfrog.sfcore.languages.cdl.ParseContext;
 import org.smartfrog.sfcore.logging.Log;
 
 import javax.xml.namespace.QName;
@@ -51,7 +54,7 @@ public class CdlDocument extends DocumentedNode {
     private Log log=ClassLogger.getLog(this);
 
     /**
-     * Original Document
+     * Original Xom Document
      */
     private Document document;
 
@@ -79,7 +82,12 @@ public class CdlDocument extends DocumentedNode {
      */
     private Type types = null;
 
-
+    /**
+     * the parse context for this document. We may or may not be the primary
+     * document in the context. Indeed, we wont be for any importation, but that
+     * is mostly irrelevant.
+     */
+    private ParseContext parseContext= null;
 
     /**
      * error message for tests {@value}
@@ -89,19 +97,38 @@ public class CdlDocument extends DocumentedNode {
      * error message for tests {@value}
      */
     public static final String ERROR_WRONG_ELEMENT = "Expected an element named " ;
-    /*
-    public static final String ERROR_BAD_PATHLANGUAGE = "Attribute 'pathlanguage' is not allowed to appear in element 'cdl:cdl'";
-    public static final String ERROR_NO_PATHLANGUAGE = "pathlanguage attribute not found";
-*/
 
-    public CdlDocument(Document doc) throws CdlParsingException {
-        super(doc.getRootElement());
-        this.document = doc;
-        processDocument();
+    public CdlDocument() {
+        super();
+        owner = this;
     }
 
-    public CdlDocument(ParsingException exception) {
-        this.exception = exception;
+    public CdlDocument(ParseContext parseContext) {
+        this();
+        this.parseContext = parseContext;
+    }
+
+    public CdlDocument(Document doc) throws CdlException {
+        super(doc.getRootElement());
+        owner=this;
+        bind(doc);
+    }
+
+
+    /**
+     * get the parse context
+     * @return
+     */
+    public ParseContext getParseContext() {
+        return parseContext;
+    }
+
+    /**
+     * set the parse context.
+     * @param parseContext
+     */
+    public void setParseContext(ParseContext parseContext) {
+        this.parseContext = parseContext;
     }
 
 
@@ -118,27 +145,6 @@ public class CdlDocument extends DocumentedNode {
     public Document getDocument() {
         return document;
     }
-
-    private ParsingException exception;
-
-    public ParsingException getException() {
-        return exception;
-    }
-
-    public int getErrorLine() {
-        return exception == null ? 0 : exception.getLineNumber();
-    }
-
-    public int getErrorColumn() {
-        return exception == null ? 0 : exception.getColumnNumber();
-    }
-
-    public void throwAnyException() throws ParsingException {
-        if (exception != null) {
-            throw exception;
-        }
-    }
-
 
     /**
      * Get the configuration
@@ -161,9 +167,9 @@ public class CdlDocument extends DocumentedNode {
     /**
      * this routine encodes all the logic around the validity of the scham
      *
-     * @throws CdlParsingException
+     * @throws CdlXmlParsingException
      */
-    public void validate() throws CdlParsingException {
+    public void validate() throws CdlXmlParsingException {
         Element root = document.getRootElement();
         String uri = root.getNamespaceURI();
 
@@ -189,37 +195,39 @@ public class CdlDocument extends DocumentedNode {
 
 
     private void verifyInCdlNamespace(Element element)
-            throws CdlParsingException {
-        CdlParsingException.assertValid(CddlmConstants.XML_CDL_NAMESPACE.equals(element.getNamespaceURI()),
+            throws CdlXmlParsingException {
+        CdlXmlParsingException.assertValid(CddlmConstants.XML_CDL_NAMESPACE.equals(element.getNamespaceURI()),
                 ERROR_WRONG_NAMESPACE);
 
     }
 
     private void verifyNodeName(Element element,String name)
-            throws CdlParsingException {
-        CdlParsingException.assertValid(CddlmConstants.ELEMENT_NAME_ROOT.equals(element.getLocalName()),
+            throws CdlXmlParsingException {
+        CdlXmlParsingException.assertValid(CddlmConstants.ELEMENT_NAME_ROOT.equals(element.getLocalName()),
                 ERROR_WRONG_ELEMENT +name
                     +" but got "+element);
     }
 
     /**
-     * from the document, parser ourselves
+     * our binding here sets the root node
+     *
+     * @throws org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException
+     *
      */
-    private void processDocument() throws CdlParsingException {
-        assert document != null;
+    public void bind(Element element) throws CdlXmlParsingException {
+        super.bind(element);
+    }
+
+    public void bind(Document doc) throws CdlException {
+        assert doc != null;
+        this.document = doc;
         parse();
     }
 
     /**
-     * our binding here sets the root node
-     *
-     * @throws org.smartfrog.sfcore.languages.cdl.CdlParsingException
-     *
+     * Get the root node
+     * @return
      */
-    public void bind(Element element) throws CdlParsingException {
-        super.bind(element);
-    }
-
     Element getRoot() {
         return getNode();
     }
@@ -228,9 +236,9 @@ public class CdlDocument extends DocumentedNode {
     /**
      * we have the root node; lets extract everything from it
      *
-     * @throws CdlParsingException
+     * @throws CdlXmlParsingException
      */
-    private void parse() throws CdlParsingException {
+    private void parse() throws CdlXmlParsingException {
         Element root=getRoot();
         verifyInCdlNamespace(root);
         verifyNodeName(root, CddlmConstants.ELEMENT_NAME_ROOT);
@@ -267,7 +275,7 @@ public class CdlDocument extends DocumentedNode {
             //add a doc node
             if(Documentation.isA(child)) {
                 Documentation documentation = new Documentation(child);
-                log.warn("Ignoring documentation " + child);
+                log.info("Ignoring documentation " + child);
                 continue;
             }
 
@@ -275,11 +283,11 @@ public class CdlDocument extends DocumentedNode {
             //or its in another namespace
             if(DocNode.inCdlNamespace(child)) {
                 //strange stuff here
-                throw new CdlParsingException("Unknown element "+child);
+                throw new CdlXmlParsingException("Unknown element "+child);
             } else {
                 //do nothing
                 //TODO: log this?
-                log.warn("Ignoring unknown element "+child);
+                log.info("Ignoring unknown element "+child);
             }
 
         }

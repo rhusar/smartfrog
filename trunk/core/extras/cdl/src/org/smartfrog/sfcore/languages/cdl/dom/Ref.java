@@ -22,7 +22,8 @@ package org.smartfrog.sfcore.languages.cdl.dom;
 import org.smartfrog.sfcore.languages.cdl.dom.attributes.RefRootAttribute;
 import org.smartfrog.sfcore.languages.cdl.dom.attributes.RefAttribute;
 import org.smartfrog.sfcore.languages.cdl.dom.attributes.LazyAttribute;
-import org.smartfrog.sfcore.languages.cdl.CdlParsingException;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
 
 import javax.xml.namespace.QName;
 
@@ -38,7 +39,7 @@ public class Ref extends DocNode {
     public Ref() {
     }
 
-    public Ref(Element node) throws CdlParsingException {
+    public Ref(Element node) throws CdlXmlParsingException {
         super(node);
     }
 
@@ -53,9 +54,9 @@ public class Ref extends DocNode {
     /**
      * bind to an element
      * @param element
-     * @throws CdlParsingException
+     * @throws CdlXmlParsingException
      */
-    public void bind(Element element) throws CdlParsingException {
+    public void bind(Element element) throws CdlXmlParsingException {
         super.bind(element);
         lazy=LazyAttribute.isLazy(element,false);
         refRoot = RefRootAttribute.extract(element, false);

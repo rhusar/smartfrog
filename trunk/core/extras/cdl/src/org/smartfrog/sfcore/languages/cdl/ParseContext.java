@@ -21,9 +21,13 @@ package org.smartfrog.sfcore.languages.cdl;
 
 import org.smartfrog.sfcore.languages.cdl.importing.ImportedDocumentMap;
 import org.smartfrog.sfcore.languages.cdl.importing.ImportResolver;
+import org.smartfrog.sfcore.languages.cdl.importing.ImportedDocument;
+import org.smartfrog.sfcore.languages.cdl.dom.CdlDocument;
 
 import java.util.HashMap;
 import java.util.Properties;
+import java.net.URL;
+import java.io.IOException;
 
 /**
  * This class represents the context of the execution; the environment
@@ -42,23 +46,50 @@ import java.util.Properties;
 
 public class ParseContext {
 
-    ImportResolver importResolver;
+    /**
+     * import resolution class. This is mandatory (in the constructor)
+     * and so can never be null
+     */
+    private ImportResolver importResolver;
 
-    ImportedDocumentMap imports=new ImportedDocumentMap();
+    private ImportedDocumentMap imports=new ImportedDocumentMap();
 
     /**
      * option lookup for remote deployment
      */
-    HashMap options=new HashMap();
+    private HashMap options=new HashMap();
 
     /**
      * properties are any extra properties set at deploy time
      */
 
-    Properties properties;
+    private Properties properties;
 
+
+    /**
+     * base document. may be null
+     */
+    private CdlDocument document;
+
+    public ParseContext(ImportResolver importResolver) {
+        this.importResolver = importResolver;
+    }
+
+    /**
+     * get our import map
+     * @return
+     */
     public ImportedDocumentMap getImports() {
         return imports;
+    }
+
+    /**
+     * Map from a namespace to an imported document
+     * @param namespace
+     * @return
+     */
+    public ImportedDocument lookupImportByNamespace(String namespace) {
+        return getImports().get(namespace);
     }
 
     public HashMap getOptions() {
@@ -68,4 +99,47 @@ public class ParseContext {
     public Properties getProperties() {
         return properties;
     }
+
+    public ImportResolver getImportResolver() {
+        return importResolver;
+    }
+
+    public void setImportResolver(ImportResolver importResolver) {
+        this.importResolver = importResolver;
+    }
+
+    /**
+     * Get the base document (may be null)
+     * @return
+     */
+    public CdlDocument getDocument() {
+        return document;
+    }
+
+    /**
+     * creates a new document, with the parse context set up.
+     * The doc is not registered in any way.
+     *
+     * @return a new document
+     * @throws AssertionError if getDocument()!=null, that is, a reused context
+     */
+    public CdlDocument createRootDocument() {
+        assert document==null;
+        document= new CdlDocument(this);
+        return document;
+    }
+
+    /**
+     * map the path to a URI.
+     * Hands off to the importResolver
+     *
+     * @param path
+     * @return the URL to the resource
+     * @throws java.io.IOException on failure to locate or other problems
+     */
+    public URL resolveToURL(String path) throws IOException {
+        return importResolver.resolveToURL(path);
+    }
+
+
 }

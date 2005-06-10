@@ -21,7 +21,8 @@ package org.smartfrog.sfcore.languages.cdl.dom.attributes;
 
 import nu.xom.Attribute;
 import nu.xom.Element;
-import org.smartfrog.sfcore.languages.cdl.CdlParsingException;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
 import org.smartfrog.sfcore.languages.cdl.dom.DocNode;
 
 /**
@@ -33,7 +34,7 @@ public class RefAttribute extends GenericAttribute {
     public RefAttribute() {
     }
 
-    public RefAttribute(Attribute attribute) throws CdlParsingException {
+    public RefAttribute(Attribute attribute) throws CdlXmlParsingException {
         super(attribute);
     }
 
@@ -44,7 +45,7 @@ public class RefAttribute extends GenericAttribute {
      * @return
      */
     public static RefAttribute extract(Element element, boolean required)
-            throws CdlParsingException {
+            throws CdlXmlParsingException {
         return (RefAttribute)findAndBind(ATTR_REF,RefAttribute.class,element,required, true);
     }
 }

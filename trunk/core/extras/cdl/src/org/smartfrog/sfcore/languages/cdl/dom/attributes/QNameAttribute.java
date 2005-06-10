@@ -21,7 +21,8 @@ package org.smartfrog.sfcore.languages.cdl.dom.attributes;
 
 import nu.xom.Attribute;
 import nu.xom.Element;
-import org.smartfrog.sfcore.languages.cdl.CdlParsingException;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
 
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
@@ -38,7 +39,7 @@ public class QNameAttribute extends GenericAttribute {
     public QNameAttribute() {
     }
 
-    public QNameAttribute(Attribute attribute) throws CdlParsingException {
+    public QNameAttribute(Attribute attribute) throws CdlXmlParsingException {
         super(attribute);
     }
 
@@ -50,10 +51,10 @@ public class QNameAttribute extends GenericAttribute {
      * @param value qname to parse
      * @return a QName. the namespace may be {@link XMLConstants.DEFAULT_NS_PREFIX},
      * which means "default namespace".
-     * @throws CdlParsingException for parse failure. Error text may inclue
+     * @throws CdlXmlParsingException for parse failure. Error text may inclue
      * {@link #ERROR_NO_LOCALNAME} and {@link #ERROR_UNKNOWN_PREFIX}
      */
-    protected QName parseQname(String value) throws CdlParsingException {
+    protected QName parseQname(String value) throws CdlXmlParsingException {
         String prefix;
         String localname;
         String namespace;
@@ -70,12 +71,12 @@ public class QNameAttribute extends GenericAttribute {
             namespace = parent.getNamespaceURI(prefix);
             if(namespace==null) {
                 //unknown prefix
-                throw new CdlParsingException(ERROR_UNKNOWN_PREFIX+prefix+" in "+value);
+                throw new CdlXmlParsingException(ERROR_UNKNOWN_PREFIX+prefix+" in "+value);
             }
 
         }
         if (localname.length() == 0) {
-            throw new CdlParsingException(ERROR_NO_LOCALNAME + value);
+            throw new CdlXmlParsingException(ERROR_NO_LOCALNAME + value);
         }
         QName qName = new QName(namespace, localname,prefix);
         return qName;
@@ -89,9 +90,9 @@ public class QNameAttribute extends GenericAttribute {
      * bind the attribute; extract the qname
      * This cannot be applied to an attribute without a parent.
      * @param attr attribute source
-     * @throws CdlParsingException
+     * @throws CdlXmlParsingException
      */
-    public void bind(Attribute attr) throws CdlParsingException {
+    public void bind(Attribute attr) throws CdlXmlParsingException {
         super.bind(attr);
         String value = getValue();
         QName qName = parseQname(value);

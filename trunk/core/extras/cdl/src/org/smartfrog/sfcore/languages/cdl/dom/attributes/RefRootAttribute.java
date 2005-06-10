@@ -21,7 +21,8 @@ package org.smartfrog.sfcore.languages.cdl.dom.attributes;
 
 import nu.xom.Attribute;
 import nu.xom.Element;
-import org.smartfrog.sfcore.languages.cdl.CdlParsingException;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
 import org.smartfrog.sfcore.languages.cdl.dom.DocNode;
 
 import javax.xml.namespace.QName;
@@ -39,9 +40,9 @@ public class RefRootAttribute extends QNameAttribute {
     /**
      * construct a refroot; crack open the value and build a qname from it.
      * @param attribute
-     * @throws CdlParsingException
+     * @throws CdlXmlParsingException
      */
-    public RefRootAttribute(Attribute attribute) throws CdlParsingException {
+    public RefRootAttribute(Attribute attribute) throws CdlXmlParsingException {
         super(attribute);
     }
 
@@ -53,7 +54,7 @@ public class RefRootAttribute extends QNameAttribute {
      * @return
      */
     public static RefRootAttribute extract(Element element, boolean required)
-            throws CdlParsingException {
+            throws CdlXmlParsingException {
         return (RefRootAttribute) findAndBind(ATTR_REFROOT,
                 RefRootAttribute.class,
                 element,

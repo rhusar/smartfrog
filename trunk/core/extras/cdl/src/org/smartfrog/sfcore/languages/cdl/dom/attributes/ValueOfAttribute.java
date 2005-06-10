@@ -21,7 +21,7 @@ package org.smartfrog.sfcore.languages.cdl.dom.attributes;
 
 import nu.xom.Attribute;
 import nu.xom.Element;
-import org.smartfrog.sfcore.languages.cdl.CdlParsingException;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
 
 /**
  * this is only used inside an {@link org.smartfrog.sfcore.languages.cdl.dom.Expression}
@@ -32,7 +32,7 @@ public class ValueOfAttribute extends GenericAttribute  {
     public ValueOfAttribute() {
     }
 
-    public ValueOfAttribute(Attribute attribute) throws CdlParsingException {
+    public ValueOfAttribute(Attribute attribute) throws CdlXmlParsingException {
         super(attribute);
     }
 
@@ -44,7 +44,7 @@ public class ValueOfAttribute extends GenericAttribute  {
      * @return
      */
     public static ValueOfAttribute extract(Element element, boolean required)
-            throws CdlParsingException {
+            throws CdlXmlParsingException {
         return (ValueOfAttribute) findAndBind(ATTR_VALUE_OF,
                 ValueOfAttribute.class,
                 element,

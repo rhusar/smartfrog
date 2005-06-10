@@ -23,6 +23,8 @@ package org.smartfrog.sfcore.languages.cdl;
 import org.smartfrog.services.xml.utils.ParserHelper;
 import org.smartfrog.services.xml.utils.ResourceLoader;
 import org.smartfrog.sfcore.languages.cdl.dom.CdlDocument;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
@@ -107,7 +109,7 @@ public class CdlParser {
      * @throws ParsingException
      */
     public CdlDocument parseFile(String filename) throws IOException,
-            ParsingException, CdlParsingException {
+            ParsingException, CdlException {
         File f = new File(filename);
         return new CdlDocument(builder.build(f));
     }
@@ -121,7 +123,7 @@ public class CdlParser {
      * @throws ParsingException
      */
     public CdlDocument parseStream(InputStream instream) throws IOException,
-            ParsingException, CdlParsingException {
+            ParsingException, CdlException {
         Document doc = builder.build(instream);
         return new CdlDocument(doc);
     }
@@ -135,7 +137,7 @@ public class CdlParser {
      * @throws ParsingException
      */
     public CdlDocument parseResource(String resource) throws IOException,
-            ParsingException, CdlParsingException {
+            ParsingException, CdlException {
         InputStream in = resourceLoader.loadResource(resource);
         return parseStream(in);
     }

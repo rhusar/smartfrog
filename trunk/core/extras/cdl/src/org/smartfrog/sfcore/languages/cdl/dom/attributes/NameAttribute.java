@@ -21,7 +21,7 @@ package org.smartfrog.sfcore.languages.cdl.dom.attributes;
 
 import nu.xom.Attribute;
 import nu.xom.Element;
-import org.smartfrog.sfcore.languages.cdl.CdlParsingException;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
 
 /**
  * created 26-May-2005 15:50:48
@@ -31,7 +31,7 @@ public class NameAttribute extends NCNameAttribute {
     public NameAttribute() {
     }
 
-    public NameAttribute(Attribute attribute) throws CdlParsingException {
+    public NameAttribute(Attribute attribute) throws CdlXmlParsingException {
         super(attribute);
     }
 
@@ -43,7 +43,7 @@ public class NameAttribute extends NCNameAttribute {
      * @return
      */
     public static NameAttribute extract(Element element, boolean required)
-            throws CdlParsingException {
+            throws CdlXmlParsingException {
         return (NameAttribute) findAndBind(ATTR_NAME,
                 NameAttribute.class,
                 element,

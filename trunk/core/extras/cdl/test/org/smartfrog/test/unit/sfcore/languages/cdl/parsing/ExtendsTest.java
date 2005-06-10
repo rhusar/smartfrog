@@ -17,26 +17,29 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.sfcore.languages.cdl.dom.attributes;
+package org.smartfrog.test.unit.sfcore.languages.cdl.parsing;
 
-import nu.xom.Attribute;
-import nu.xom.Element;
-import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
+import org.smartfrog.test.unit.sfcore.languages.cdl.XmlTestBase;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
+import org.smartfrog.sfcore.languages.cdl.dom.CdlDocument;
+
+import java.io.IOException;
+
+import nu.xom.ParsingException;
 
 /**
- * created 26-May-2005 15:50:01
+ * created 10-Jun-2005 16:53:50
  */
 
-public class NCNameAttribute extends GenericAttribute {
-    public NCNameAttribute() {
+public class ExtendsTest extends XmlTestBase {
+
+    public ExtendsTest(String name) {
+        super(name);
     }
 
-    public NCNameAttribute(Attribute attribute) throws CdlXmlParsingException {
-        super(attribute);
+    public void testExtendsIsExtracted() throws IOException, CdlException,
+            ParsingException {
+        CdlDocument cdlDocument = loadValidCDL(CDL_DOC_EXTENDS_1);
+        
     }
-
-    public void bind(Attribute attr) throws CdlXmlParsingException {
-        super.bind(attr);
-    }
-   
 }

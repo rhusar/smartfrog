@@ -21,7 +21,8 @@ package org.smartfrog.sfcore.languages.cdl.dom.attributes;
 
 import nu.xom.Attribute;
 import nu.xom.Element;
-import org.smartfrog.sfcore.languages.cdl.CdlParsingException;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
 import org.smartfrog.services.xml.utils.XsdUtils;
 
 /**
@@ -35,7 +36,7 @@ public class LazyAttribute extends GenericAttribute {
     public LazyAttribute() {
     }
 
-    public LazyAttribute(Attribute attribute) throws CdlParsingException {
+    public LazyAttribute(Attribute attribute) throws CdlXmlParsingException {
         super(attribute);
     }
 
@@ -57,14 +58,14 @@ public class LazyAttribute extends GenericAttribute {
      * @return
      */
     public static LazyAttribute extract(Element element, boolean required)
-            throws CdlParsingException {
+            throws CdlXmlParsingException {
         return (LazyAttribute) findAndBind(ATTR_LAZY,
                 LazyAttribute.class,
                 element,
                 required, false);
     }
 
-    public static boolean isLazy(Element element,boolean required) throws CdlParsingException {
+    public static boolean isLazy(Element element,boolean required) throws CdlXmlParsingException {
         LazyAttribute lazy=extract(element,required);
         if (lazy==null || lazy.isFalse()) {
             return false;
@@ -74,7 +75,7 @@ public class LazyAttribute extends GenericAttribute {
             return true;
         }
         //if we get here: neither true nor false: error
-        throw new CdlParsingException(ERROR_NOT_BOOLEAN+lazy.getValue());
+        throw new CdlXmlParsingException(ERROR_NOT_BOOLEAN+lazy.getValue());
     }
 
 }

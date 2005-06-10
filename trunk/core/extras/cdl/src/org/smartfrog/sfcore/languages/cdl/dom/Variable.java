@@ -23,7 +23,8 @@ import nu.xom.Element;
 
 import javax.xml.namespace.QName;
 
-import org.smartfrog.sfcore.languages.cdl.CdlParsingException;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
 import org.smartfrog.sfcore.languages.cdl.dom.attributes.NameAttribute;
 
 /**
@@ -37,11 +38,11 @@ public class Variable extends Ref {
     public Variable() {
     }
 
-    public Variable(Element node) throws CdlParsingException {
+    public Variable(Element node) throws CdlXmlParsingException {
         super(node);
     }
 
-    public void bind(Element element) throws CdlParsingException {
+    public void bind(Element element) throws CdlXmlParsingException {
         //get the bits of ref
         super.bind(element);
         //add a name attribute

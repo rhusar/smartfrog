@@ -17,26 +17,31 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.sfcore.languages.cdl.dom.attributes;
+package org.smartfrog.sfcore.languages.cdl.resolving;
 
-import nu.xom.Attribute;
-import nu.xom.Element;
-import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
+import org.smartfrog.sfcore.languages.cdl.ParseContext;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlResolutionException;
+import org.smartfrog.sfcore.languages.cdl.dom.CdlDocument;
+import org.smartfrog.sfcore.languages.cdl.dom.PropertyList;
 
 /**
- * created 26-May-2005 15:50:01
+ * Implement "extends" semantics. This could be implemented in the property list
+ * itself, but is kept separate to let us play with alternate algorithms/implementations
+ * created 10-Jun-2005 16:28:47
  */
 
-public class NCNameAttribute extends GenericAttribute {
-    public NCNameAttribute() {
+public class ExtendsResolver {
+
+    private ParseContext context;
+
+    public ExtendsResolver(ParseContext context) {
+        this.context = context;
     }
 
-    public NCNameAttribute(Attribute attribute) throws CdlXmlParsingException {
-        super(attribute);
+    public ResolveResult resolveExtends(CdlDocument document,PropertyList target)
+            throws CdlResolutionException{
+        throw new CdlResolutionException("unimplemented");
     }
 
-    public void bind(Attribute attr) throws CdlXmlParsingException {
-        super.bind(attr);
-    }
-   
+
 }

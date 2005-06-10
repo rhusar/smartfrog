@@ -1,0 +1,59 @@
+/** (C) Copyright 2005 Hewlett-Packard Development Company, LP
+
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
+
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+ For more information: www.smartfrog.org
+
+ */
+package org.smartfrog.test.unit.sfcore.languages.cdl.parsing;
+
+import org.smartfrog.test.unit.sfcore.languages.cdl.XmlTestBase;
+import org.smartfrog.sfcore.languages.cdl.ParseContext;
+import org.smartfrog.sfcore.languages.cdl.importing.ClasspathResolver;
+import org.smartfrog.sfcore.languages.cdl.dom.CdlDocument;
+
+/**
+ * created 10-Jun-2005 15:48:34
+ */
+
+public class ParseContextTest extends XmlTestBase {
+
+    public ParseContextTest(String name) {
+        super(name);
+    }
+
+    public void testContext() throws Exception{
+        ParseContext context=new ParseContext(new ClasspathResolver() );
+        CdlDocument doc=new CdlDocument();
+        doc.setParseContext(context);
+        assertEquals(context,doc.getParseContext());
+        assertEquals(doc, doc.getOwner());
+    }
+
+    /**
+     * test that we can create a doc
+     * @throws Exception
+     */
+    public void testDocCreation() throws Exception {
+        ParseContext context = new ParseContext(new ClasspathResolver());
+        assertNotNull(context.getImportResolver());
+        CdlDocument doc = context.createRootDocument();
+        assertNotNull(doc);
+        assertEquals(context, doc.getParseContext());
+        assertEquals(doc, context.getDocument());
+    }
+    
+
+}
