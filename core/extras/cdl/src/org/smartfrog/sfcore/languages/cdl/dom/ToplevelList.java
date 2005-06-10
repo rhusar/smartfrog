@@ -4,7 +4,7 @@ import nu.xom.Element;
 
 import javax.xml.namespace.QName;
 
-import org.smartfrog.sfcore.languages.cdl.CdlParsingException;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
 
 /**
  * This is the toplevel container
@@ -15,7 +15,7 @@ public class ToplevelList extends PropertyList {
         super();
     }
 
-    public ToplevelList(Element element) throws CdlParsingException {
+    public ToplevelList(Element element) throws CdlXmlParsingException {
         super(element);
     }
 

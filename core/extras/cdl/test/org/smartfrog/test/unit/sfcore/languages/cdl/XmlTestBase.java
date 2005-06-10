@@ -2,11 +2,15 @@ package org.smartfrog.test.unit.sfcore.languages.cdl;
 
 import junit.framework.TestCase;
 import org.smartfrog.sfcore.languages.cdl.CdlCatalog;
-import org.smartfrog.sfcore.languages.cdl.CdlParsingException;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
 import org.smartfrog.sfcore.languages.cdl.CdlParser;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
 import org.smartfrog.sfcore.languages.cdl.dom.CdlDocument;
 import org.smartfrog.services.xml.utils.ResourceLoader;
 import org.xml.sax.SAXException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.io.IOException;
 
@@ -18,9 +22,13 @@ import nu.xom.ParsingException;
 public abstract class XmlTestBase extends TestCase {
     private final static String RESOURCES = "test/cdl/";
     private final static String INVALID_RESOURCES = RESOURCES + "invalid/";
+    private final static String RESOLUTION_RESOURCES = RESOURCES +
+            "resolution/";
+    private final static String INVALID_RESOLUTION_RESOURCES = INVALID_RESOURCES + "resolution/";
     private final static String VALID_RESOURCES = RESOURCES + "valid/";
     public static final String WRONG_NAMESPACE_TEXT = "Cannot find the declaration of element 'cdl:cdl'";
 
+    protected Log log=LogFactory.getLog(this.getClass());
 
     /**
      * {@value}
@@ -97,6 +105,14 @@ public abstract class XmlTestBase extends TestCase {
      * {@value}
      */
     public static final String CDL_DOC_EXTRA_ELEMENTS = VALID_RESOURCES + "extra-elements.cdl";
+
+    /**
+     * extends gets tested
+     * {@value}
+     */
+    public static final String CDL_DOC_EXTENDS_1 = RESOLUTION_RESOURCES +
+            "extends-1.cdl";
+
     /**
      * This is our list of valid documents. These must all parse
      */
@@ -127,7 +143,13 @@ public abstract class XmlTestBase extends TestCase {
             "duplicate-names.cdl";
     public static final String CDL_DOC_WRONG_NAMESPACE = INVALID_RESOURCES +
             "wrong_doc_namespace.cdl";
-    CdlParser parser;
+
+    public static final String CDL_DOC_DIRECT_LOOP = INVALID_RESOLUTION_RESOURCES
+            + "extends-direct-loop.cdl";
+    public static final String CDL_DOC_INDIRECT_LOOP = INVALID_RESOLUTION_RESOURCES
+            + "extends-indirect-loop.cdl";
+
+    protected CdlParser parser;
 
     //made non-validating as too many errors were rising
     public static final boolean PARSER_MUST_VALIDATE = true;
@@ -155,11 +177,11 @@ public abstract class XmlTestBase extends TestCase {
     }
 
     protected void log(String message) {
-        System.out.println(message);
+        log.info(message);
     }
 
     protected CdlDocument load(String filename) throws IOException,
-            ParsingException, CdlParsingException {
+            ParsingException, CdlException {
         CdlDocument doc;
         loading(filename);
         doc = parser.parseResource(filename);
@@ -203,7 +225,7 @@ public abstract class XmlTestBase extends TestCase {
                 log("expected [" + text + "] but got " + e.toString());
                 throw e;
             }
-        } catch (CdlParsingException e) {
+        } catch (CdlXmlParsingException e) {
             if (e.getMessage().indexOf(text) < 0) {
                 log("expected [" + text + "] but got " + e.toString());
                 throw e;
@@ -216,10 +238,10 @@ public abstract class XmlTestBase extends TestCase {
      * @param resource
      * @throws IOException
      * @throws ParsingException
-     * @throws CdlParsingException
+     * @throws CdlXmlParsingException
      */
     protected void assertValidCDL(String resource) throws IOException,
-            ParsingException, CdlParsingException  {
+            ParsingException, CdlException  {
         loadValidCDL(resource);
     }
 
@@ -229,7 +251,7 @@ public abstract class XmlTestBase extends TestCase {
      * @return
      */
     protected CdlDocument loadValidCDL(String resource) throws IOException,
-            ParsingException, CdlParsingException {
+            ParsingException, CdlException {
         CdlDocument doc = load(resource);
         doc.validate();
         return doc;

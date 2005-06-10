@@ -44,6 +44,15 @@ public class CdlPhases extends SFComponentDescriptionImpl {
         //TODO
         return super.sfValues();
     }
+
+    /**
+     * Returns the clone.
+     *
+     * @return an Object clone
+     */
+    public Object clone() {
+        return super.clone();
+    }
 }
 
 

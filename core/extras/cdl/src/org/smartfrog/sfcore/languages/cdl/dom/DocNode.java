@@ -19,9 +19,11 @@
  */
 package org.smartfrog.sfcore.languages.cdl.dom;
 
-import org.smartfrog.sfcore.languages.cdl.CdlParsingException;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
 import org.smartfrog.sfcore.languages.cdl.utils.ElementIterator;
 import org.smartfrog.sfcore.languages.cdl.utils.NodeIterator;
+import org.smartfrog.sfcore.languages.cdl.ParseContext;
 import org.ggf.cddlm.generated.api.CddlmConstants;
 import nu.xom.Node;
 import nu.xom.Element;
@@ -35,11 +37,40 @@ import nu.xom.ParentNode;
 
 public abstract class DocNode implements Names {
 
+
+    /**
+     * owner document. may be null.
+     */
+    CdlDocument owner;
+
     protected DocNode() {
     }
 
-    protected DocNode(Element node) throws CdlParsingException {
+    protected DocNode(Element node) throws CdlXmlParsingException {
         bind(node);
+    }
+
+
+    public CdlDocument getOwner() {
+        return owner;
+    }
+
+    public void setOwner(CdlDocument owner) {
+        this.owner = owner;
+    }
+
+
+    /**
+     * Get the parse context for this document
+     * Nodes without a document dont have one of these.
+     * @return the parse context (or null if we dont have one)
+     */
+    public ParseContext getParseContext() {
+        if(owner!=null) {
+            return owner.getParseContext();
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -47,20 +78,29 @@ public abstract class DocNode implements Names {
      */
     private Element node;
 
+    /**
+     * get the XML node underneath
+     * @return
+     */
     public Element getNode() {
         return node;
     }
 
+    /**
+     * set the node underneath
+     * @param node new value; can be null
+     */
     public void setNode(Element node) {
         this.node = node;
     }
 
     /**
      * Iterate just over elements
-     *
-     * @return
+     * only valid if node!=null
+     * @return an iterator
      */
     public NodeIterator children() {
+        assert node!=null;
         return new NodeIterator(node);
 
     }
@@ -68,9 +108,9 @@ public abstract class DocNode implements Names {
     /**
      * Parse from XML.
      * The base implementation sets the {@link #node} attribute
-     * @throws CdlParsingException
+     * @throws CdlXmlParsingException
      */
-    public void bind(Element element) throws CdlParsingException {
+    public void bind(Element element) throws CdlXmlParsingException {
         setNode(element);
     }
 

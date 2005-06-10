@@ -19,7 +19,9 @@
  */
 package org.smartfrog.sfcore.languages.cdl.dom;
 
-import org.smartfrog.sfcore.languages.cdl.CdlParsingException;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
+import org.smartfrog.sfcore.languages.cdl.resolving.ResolveEnum;
 
 import javax.xml.namespace.QName;
 import java.util.List;
@@ -39,13 +41,13 @@ public class PropertyList extends DocNode implements ToSmartFrog {
      * Our name.
      * Only toplevel elements can have a qname
      */
-    public QName name;
+    protected QName name;
 
     /**
      * Name of the template that we extend.
      * Null if we do not extend anything
      */
-    public QName extendsName;
+    protected QName extendsName;
 
     /**
      * And the resolved extension
@@ -58,16 +60,11 @@ public class PropertyList extends DocNode implements ToSmartFrog {
      */
     private List<DocNode> children = new LinkedList<DocNode>();
 
-    /**
-     * Error text for testing
-     */
-    public static final String ERROR_LOWLEVEL_NAMED = "low-level PropertyList elements cannot be given names";
-
 
     public PropertyList() {
     }
 
-    public PropertyList(Element element) throws CdlParsingException {
+    public PropertyList(Element element) throws CdlXmlParsingException {
         bind(element);
     }
 
@@ -75,9 +72,9 @@ public class PropertyList extends DocNode implements ToSmartFrog {
     /**
      * Parse from XML
      *
-     * @throws CdlParsingException
+     * @throws CdlXmlParsingException
      */
-    public void bind(Element element) throws CdlParsingException {
+    public void bind(Element element) throws CdlXmlParsingException {
         super.bind(element);
         //run through all our child elements and processs them
         for(Node child:children()) {
@@ -92,7 +89,7 @@ public class PropertyList extends DocNode implements ToSmartFrog {
      * create the appropriate node for an element type
      * @return
      */
-    DocNode createNodeFromElement(Element element) throws CdlParsingException {
+    DocNode createNodeFromElement(Element element) throws CdlXmlParsingException {
         if(Documentation.isA(element)) {
             return new Documentation(element);
         }
@@ -129,16 +126,15 @@ public class PropertyList extends DocNode implements ToSmartFrog {
     /**
      * Assert that we are valid as toplevel.
      */
-    public void validateToplevel() throws CdlParsingException {
+    public void validateToplevel() throws CdlXmlParsingException {
 
     }
 
     /**
      * validate lowerlevel nodes
      */
-    public void validateLowerLevel() throws CdlParsingException {
-        CdlParsingException.assertValid(name==null,
-                ERROR_LOWLEVEL_NAMED);
+    public void validateLowerLevel() throws CdlXmlParsingException {
+        validateToplevel();
     }
 
     /**
@@ -149,4 +145,7 @@ public class PropertyList extends DocNode implements ToSmartFrog {
     public boolean isNamed(QName testName) {
         return testName.equals(name);
     }
+
+
+
 }

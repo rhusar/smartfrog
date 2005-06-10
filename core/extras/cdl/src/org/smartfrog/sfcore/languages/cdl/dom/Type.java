@@ -20,7 +20,8 @@
 package org.smartfrog.sfcore.languages.cdl.dom;
 
 import nu.xom.Element;
-import org.smartfrog.sfcore.languages.cdl.CdlParsingException;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
 
 /**
  * Types contain XSD declarations (blech). Wouldnt it be nice if we could use other
@@ -33,16 +34,16 @@ public class Type extends DocumentedNode {
     public Type() {
     }
 
-    public Type(Element node) throws CdlParsingException {
+    public Type(Element node) throws CdlXmlParsingException {
         bind(node);
     }
 
     /**
      * Parse from XM
      *
-     * @throws CdlParsingException
+     * @throws CdlXmlParsingException
      */
-    public void bind(Element element) throws CdlParsingException {
+    public void bind(Element element) throws CdlXmlParsingException {
         super.bind(element);
         //not implemented
         //TODO

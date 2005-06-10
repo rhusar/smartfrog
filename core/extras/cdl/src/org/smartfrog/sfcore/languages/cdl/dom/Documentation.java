@@ -20,7 +20,8 @@
 package org.smartfrog.sfcore.languages.cdl.dom;
 
 import nu.xom.Element;
-import org.smartfrog.sfcore.languages.cdl.CdlParsingException;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
 
 /**
  * created 21-Apr-2005 14:26:16
@@ -31,16 +32,16 @@ public class Documentation extends DocNode {
     public Documentation() {
     }
 
-    public Documentation(Element element) throws CdlParsingException {
+    public Documentation(Element element) throws CdlXmlParsingException {
         bind(element);
     }
 
     /**
      * Parse from XM
      *
-     * @throws CdlParsingException
+     * @throws CdlXmlParsingException
      */
-    public void bind(Element element) throws CdlParsingException {
+    public void bind(Element element) throws CdlXmlParsingException {
         //TODO
     }
 

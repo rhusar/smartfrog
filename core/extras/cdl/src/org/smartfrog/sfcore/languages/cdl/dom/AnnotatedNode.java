@@ -19,7 +19,8 @@
  */
 package org.smartfrog.sfcore.languages.cdl.dom;
 
-import org.smartfrog.sfcore.languages.cdl.CdlParsingException;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
 import nu.xom.Element;
 
 /**
@@ -31,9 +32,9 @@ public class AnnotatedNode extends DocNode {
     /**
      * Parse from XML. The base implementation sets the {@link #node} attribute
      *
-     * @throws CdlParsingException
+     * @throws CdlXmlParsingException
      */
-    public void bind(Element element) throws CdlParsingException {
+    public void bind(Element element) throws CdlXmlParsingException {
         super.bind(element);
     }
 }

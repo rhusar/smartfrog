@@ -20,7 +20,8 @@
 package org.smartfrog.sfcore.languages.cdl.dom;
 
 import org.smartfrog.sfcore.languages.cdl.dom.attributes.ValueOfAttribute;
-import org.smartfrog.sfcore.languages.cdl.CdlParsingException;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
 
 import java.util.List;
 import java.util.LinkedList;
@@ -45,7 +46,7 @@ public class Expression extends DocNode {
     public Expression() {
     }
 
-    public Expression(Element node) throws CdlParsingException {
+    public Expression(Element node) throws CdlXmlParsingException {
         super();
         bind(node);
     }
@@ -62,12 +63,12 @@ public class Expression extends DocNode {
     /**
      * add a variable
      * @param variable variable to add
-     * @throws CdlParsingException if it already exists
+     * @throws CdlXmlParsingException if it already exists
      */
-    protected void add(Variable variable) throws CdlParsingException {
+    protected void add(Variable variable) throws CdlXmlParsingException {
         String nameValue = variable.getNameValue();
         if(lookupVariable(nameValue)!=null) {
-            throw new CdlParsingException(getNode(),
+            throw new CdlXmlParsingException(getNode(),
                     ERROR_DUPLICATE_VALUE + nameValue);
         }
         variables.put(nameValue,variable);
@@ -83,7 +84,7 @@ public class Expression extends DocNode {
         return variables.get(name);
     }
 
-    public void bind(Element element) throws CdlParsingException {
+    public void bind(Element element) throws CdlXmlParsingException {
         super.bind(element);
         valueOf=ValueOfAttribute.extract(element, true);
         //now run though our children, which must all be variables
@@ -92,7 +93,7 @@ public class Expression extends DocNode {
             if (child instanceof Element) {
                 Element childElement=(Element) child;
                 if(!Variable.isA(childElement)) {
-                    throw new CdlParsingException(getNode(),
+                    throw new CdlXmlParsingException(getNode(),
                             ERROR_UNEXPECTED_ELEMENT_IN_EXPRESSION+element);
                 }
                 Variable v=new Variable(childElement);

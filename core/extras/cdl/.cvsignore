@@ -9,3 +9,4 @@ common.properties
 *.iws
 .classpath
 .project
+lib

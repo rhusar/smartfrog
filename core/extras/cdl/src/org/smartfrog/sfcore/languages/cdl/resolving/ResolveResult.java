@@ -17,26 +17,30 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.sfcore.languages.cdl.dom.attributes;
+package org.smartfrog.sfcore.languages.cdl.resolving;
 
-import nu.xom.Attribute;
-import nu.xom.Element;
-import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
+import org.smartfrog.sfcore.languages.cdl.dom.PropertyList;
 
 /**
- * created 26-May-2005 15:50:01
+ * created 10-Jun-2005 16:47:23
  */
 
-public class NCNameAttribute extends GenericAttribute {
-    public NCNameAttribute() {
+public class ResolveResult {
+
+    public ResolveEnum state;
+
+    public PropertyList resolvedPropertyList;
+
+    public ResolveResult(ResolveEnum state, PropertyList resolvedPropertyList) {
+        this.state = state;
+        this.resolvedPropertyList = resolvedPropertyList;
     }
 
-    public NCNameAttribute(Attribute attribute) throws CdlXmlParsingException {
-        super(attribute);
+    public ResolveEnum getState() {
+        return state;
     }
 
-    public void bind(Attribute attr) throws CdlXmlParsingException {
-        super.bind(attr);
+    public PropertyList getResolvedPropertyList() {
+        return resolvedPropertyList;
     }
-   
 }

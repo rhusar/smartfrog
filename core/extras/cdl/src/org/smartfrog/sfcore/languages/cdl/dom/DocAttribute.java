@@ -19,7 +19,8 @@
  */
 package org.smartfrog.sfcore.languages.cdl.dom;
 
-import org.smartfrog.sfcore.languages.cdl.CdlParsingException;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
 import nu.xom.Node;
 
 /**
@@ -28,7 +29,7 @@ import nu.xom.Node;
 
 public class DocAttribute  {
 
-    public void fromXML(Node content) throws CdlParsingException {
+    public void fromXML(Node content) throws CdlXmlParsingException {
 
     }
 }

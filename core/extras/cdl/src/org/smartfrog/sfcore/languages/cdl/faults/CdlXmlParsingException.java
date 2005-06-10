@@ -17,7 +17,7 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.sfcore.languages.cdl;
+package org.smartfrog.sfcore.languages.cdl.faults;
 
 import nu.xom.Node;
 
@@ -27,40 +27,43 @@ import nu.xom.Node;
  * created Jul 15, 2004 4:57:59 PM
  */
 
-public class CdlParsingException extends Exception {
+public class CdlXmlParsingException extends CdlException {
 
-    private Node source;
+    /**
+     * Xom nodes cannot be serialized.
+     */
+    private transient Node source;
 
-    public CdlParsingException() {
+    public CdlXmlParsingException() {
     }
 
-    public CdlParsingException(String message) {
+    public CdlXmlParsingException(String message) {
         super(message);
     }
 
-    public CdlParsingException(String message, Throwable cause) {
+    public CdlXmlParsingException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public CdlParsingException(Throwable cause) {
+    public CdlXmlParsingException(Throwable cause) {
         super(cause);
     }
 
-    public CdlParsingException(Node node) {
+    public CdlXmlParsingException(Node node) {
         setSource(node);
     }
 
-    public CdlParsingException(Node node,String message) {
+    public CdlXmlParsingException(Node node,String message) {
         super(message);
         setSource(node);
     }
 
-    public CdlParsingException(Node node,String message, Throwable cause) {
+    public CdlXmlParsingException(Node node,String message, Throwable cause) {
         super(message, cause);
         setSource(node);
     }
 
-    public CdlParsingException(Node node,Throwable cause) {
+    public CdlXmlParsingException(Node node,Throwable cause) {
         super(cause);
         setSource(node);
     }
@@ -77,11 +80,11 @@ public class CdlParsingException extends Exception {
      * Assert that a test holds, if not, throw an exception.
      * @param test test to verify
      * @param errorText text in exception
-     * @throws CdlParsingException iff test==false
+     * @throws CdlXmlParsingException iff test==false
      */
-    public static void assertValid(boolean test,String errorText) throws CdlParsingException {
+    public static void assertValid(boolean test,String errorText) throws CdlXmlParsingException {
         if(!test) {
-            throw new CdlParsingException(errorText);
+            throw new CdlXmlParsingException(errorText);
         }
     }
 }
