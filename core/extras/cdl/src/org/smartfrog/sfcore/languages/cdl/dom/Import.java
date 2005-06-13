@@ -20,15 +20,11 @@
 package org.smartfrog.sfcore.languages.cdl.dom;
 
 import nu.xom.Element;
-import nu.xom.Node;
-import org.ggf.cddlm.generated.api.CddlmConstants;
-import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
-import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
 import org.smartfrog.sfcore.languages.cdl.dom.attributes.GenericAttribute;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
 
 /**
- * Import element
- * created 21-Apr-2005 14:26:27
+ * Import element created 21-Apr-2005 14:26:27
  */
 
 public class Import extends DocNode {
@@ -42,6 +38,7 @@ public class Import extends DocNode {
 
     /**
      * Get the namespace of a document (may be null)
+     *
      * @return namespace or null
      */
     public String getNamespace() {
@@ -50,6 +47,7 @@ public class Import extends DocNode {
 
     /**
      * get the location of a document
+     *
      * @return the documents location
      */
     public String getLocation() {
@@ -67,18 +65,25 @@ public class Import extends DocNode {
      */
     public void bind(Element element) throws CdlXmlParsingException {
         super.bind(element);
-        namespace = GenericAttribute.extractLocalAttributeValue(element, ATTR_NAMESPACE, false);
-        location = GenericAttribute.extractLocalAttributeValue(element, ATTR_LOCATION, true);
+        namespace =
+                GenericAttribute.extractLocalAttributeValue(element,
+                        ATTR_NAMESPACE,
+                        false);
+        location =
+                GenericAttribute.extractLocalAttributeValue(element,
+                        ATTR_LOCATION,
+                        true);
     }
 
 
     /**
      * test that a node is of the right type
+     *
      * @param element
      * @return true if the element namespace and localname match what we handle
      */
     static boolean isA(Element element) {
-        return isNode(element,ELEMENT_IMPORT);
+        return isNode(element, ELEMENT_IMPORT);
     }
 
 }

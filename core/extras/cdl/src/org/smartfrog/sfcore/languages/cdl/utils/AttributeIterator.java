@@ -19,13 +19,11 @@
  */
 package org.smartfrog.sfcore.languages.cdl.utils;
 
-import nu.xom.Node;
 import nu.xom.Attribute;
 import nu.xom.ParentNode;
 
 /**
- * An attribute iterator
- * created 16-May-2005 17:25:15
+ * An attribute iterator created 16-May-2005 17:25:15
  */
 
 public class AttributeIterator extends BaseNodeIterator<Attribute> {

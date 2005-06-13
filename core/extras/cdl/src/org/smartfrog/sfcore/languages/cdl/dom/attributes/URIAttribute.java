@@ -22,20 +22,65 @@ package org.smartfrog.sfcore.languages.cdl.dom.attributes;
 import nu.xom.Attribute;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
 /**
- * created 26-May-2005 15:50:01
+ * Attribute for URIs created 13-Jun-2005 15:08:34
  */
 
-public class NCNameAttribute extends GenericAttribute {
-    public NCNameAttribute() {
+public class URIAttribute extends GenericAttribute {
+
+    private URI uri;
+
+
+    /**
+     * simple constructor
+     */
+    public URIAttribute() {
     }
 
-    public NCNameAttribute(Attribute attribute) throws CdlXmlParsingException {
+    /**
+     * bind at construct time. calls {@link #bind(Attribute)}
+     *
+     * @param attribute
+     */
+    public URIAttribute(Attribute attribute) throws CdlXmlParsingException {
         super(attribute);
     }
 
+    /**
+     * Get the URI
+     *
+     * @return
+     */
+    public URI getUri() {
+        return uri;
+    }
+
+    /**
+     * Set the URI
+     *
+     * @param uri
+     */
+    public void setUri(URI uri) {
+        this.uri = uri;
+    }
+
+    /**
+     * bind to an attribute. Sets the attribute value subclasses can extend to
+     * extract more information; always call the parent
+     *
+     * @param attr
+     */
     public void bind(Attribute attr) throws CdlXmlParsingException {
         super.bind(attr);
+        try {
+            uri = new URI(getValue());
+        } catch (URISyntaxException e) {
+            throw new CdlXmlParsingException("Not a URI: " + getValue(), e);
+        }
+
     }
 
 }

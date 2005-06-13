@@ -20,26 +20,52 @@
 package org.smartfrog.sfcore.languages.cdl.resolving;
 
 import org.smartfrog.sfcore.languages.cdl.ParseContext;
-import org.smartfrog.sfcore.languages.cdl.faults.CdlResolutionException;
 import org.smartfrog.sfcore.languages.cdl.dom.CdlDocument;
 import org.smartfrog.sfcore.languages.cdl.dom.PropertyList;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlResolutionException;
+import org.smartfrog.sfcore.languages.cdl.utils.ClassLogger;
+import org.smartfrog.sfcore.logging.Log;
 
 /**
  * Implement "extends" semantics. This could be implemented in the property list
- * itself, but is kept separate to let us play with alternate algorithms/implementations
- * created 10-Jun-2005 16:28:47
+ * itself, but is kept separate to let us play with alternate
+ * algorithms/implementations created 10-Jun-2005 16:28:47
  */
 
 public class ExtendsResolver {
 
-    private ParseContext context;
+    ExtendsContext stack = new ExtendsContext();
 
+    /**
+     * a log
+     */
+    private Log log = ClassLogger.getLog(this);
+
+    private ParseContext parseContext;
+
+    /**
+     * Extends support has a parse context
+     *
+     * @param context
+     */
     public ExtendsResolver(ParseContext context) {
-        this.context = context;
+        this.parseContext = context;
     }
 
-    public ResolveResult resolveExtends(CdlDocument document,PropertyList target)
-            throws CdlResolutionException{
+    /**
+     * The algorithm for resolution is defined in the CDL document
+     * specification.
+     *
+     * @param document
+     * @param target
+     * @return
+     * @throws CdlResolutionException
+     */
+    public ResolveResult resolveExtends(CdlDocument document,
+            PropertyList target)
+            throws CdlResolutionException {
+
+
         throw new CdlResolutionException("unimplemented");
     }
 

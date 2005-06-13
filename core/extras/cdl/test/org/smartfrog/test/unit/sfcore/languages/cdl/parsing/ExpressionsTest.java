@@ -19,8 +19,8 @@
  */
 package org.smartfrog.test.unit.sfcore.languages.cdl.parsing;
 
-import org.smartfrog.test.unit.sfcore.languages.cdl.XmlTestBase;
 import org.smartfrog.sfcore.languages.cdl.dom.Expression;
+import org.smartfrog.test.unit.sfcore.languages.cdl.XmlTestBase;
 
 /**
  * created 06-Jun-2005 15:02:33

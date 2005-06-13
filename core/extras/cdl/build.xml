@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<project name="cdl" default="default" 
- >
+<project name="cdl" default="default"
+  >
 
   <!--
   /** (C) Copyright 2005 Hewlett-Packard Development Company, LP
@@ -33,7 +33,7 @@
   
   <!-- override point -->
   <property file="build.properties"/>
-  <property name="javac.java.version" value="1.5" />
+  <property name="javac.java.version" value="1.5"/>
 
   <property name="root.dir" location="../.."/>
   <!-- Import common stuff -->
@@ -44,21 +44,21 @@
   <!-- ========================================================== -->
   <target name="init" depends="init-standard-output-dirs,use-smartfrog-tasks">
     <!--  leave this for 'legacy' reasons, even though we have embraced m2 work-->
-    <mkdir dir="lib" />
+    <mkdir dir="lib"/>
   </target>
 
   <target name="m2-files" depends="m2-tasks">
     <m2-libraries pathID="m2.classpath">
       <dependency groupID="org.ggf"
         artifactID="cddlm"
-        version="${cddlm.version}"/>          
+        version="${cddlm.version}"/>
       <dependency groupID="commons-logging"
         artifactID="commons-logging-api"
-        version="${commons-logging.version}"/>          
+        version="${commons-logging.version}"/>
       <dependency groupID="log4j"
         artifactID="log4j"
-        version="${commons-logging.version}"/>
-       <dependency groupID="org.smartfrog"
+        version="${log4j.version}"/>
+      <dependency groupID="org.smartfrog"
         artifactID="sf-xml"
         version="${Version}"/>
       <dependency groupID="xom"
@@ -66,41 +66,41 @@
         version="${xom.version}"/>
       <dependency groupID="xalan"
         artifactID="xalan"
-        version="${xalan.version}"/> 
-    </m2-libraries> 
+        version="${xalan.version}"/>
+    </m2-libraries>
   </target>
 
- <target name="declare-compile.classpath-lib-dir" 
-    depends="declare-base.compile.classpath,probe-lib-dir,m2-files" 
-    if="lib.dir.found">  
+  <target name="declare-compile.classpath-lib-dir"
+    depends="declare-base.compile.classpath,probe-lib-dir,m2-files"
+    if="lib.dir.found">
     <path id="compile.classpath">
       <path refid="base.compile.classpath"/>
       <path refid="m2.classpath"/>
       <fileset dir="${lib.dir}">
         <include name="**/*.jar"/>
       </fileset>
-    </path>  
+    </path>
   </target>
  
   <!-- =================================================================== -->
   <!--   JDocs                                                             -->
   <!-- =================================================================== -->
   <target name="javadoc" depends="init" description="Generates the API documentation">
-    <property name="dist.jdocs.dir" value="${build.dir}/javadocs/" />
+    <property name="dist.jdocs.dir" value="${build.dir}/javadocs/"/>
     <mkdir dir="${dist.jdocs.dir}"/>
     <javadoc packagenames="org.smartfrog.*"
-           sourcepath="${src.dir}"
-           destdir="${dist.jdocs.dir}"
-           version="true"
-           use="true"
-           source="1.5"
-           classpathref="exec.classpath"
-           >
+      sourcepath="${src.dir}"
+      destdir="${dist.jdocs.dir}"
+      version="true"
+      use="true"
+      source="1.5"
+      classpathref="exec.classpath"
+      >
       <group title="SmartFrog Packages" packages="org.smartfrog.*"/>
     </javadoc>
 
-  </target>  
-  
+  </target>
+
   <target name="default" depends="dist"
     description="make the distribution"/>
 
@@ -129,5 +129,5 @@
       </batchtest>
     </sf-junit>
   </target>
-  
+
 </project>

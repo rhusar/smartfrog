@@ -19,22 +19,21 @@
  */
 package org.smartfrog.sfcore.languages.cdl.utils;
 
-import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 
 /**
  * This is something to do smartfrog logging for classes, that is, other than
- * Prim objects.
- * Its current pass just bridges to commons logging; it is here to make switching
- * to something else easier
- * created 06-Jun-2005 14:10:48
+ * Prim objects. Its current pass just bridges to commons logging; it is here to
+ * make switching to something else easier created 06-Jun-2005 14:10:48
  */
 
 public class ClassLogger implements org.smartfrog.sfcore.logging.Log {
 
     /**
      * Get a log for a class
+     *
      * @param clazz
      * @return a log for a class
      */
@@ -44,6 +43,7 @@ public class ClassLogger implements org.smartfrog.sfcore.logging.Log {
 
     /**
      * get a log by name
+     *
      * @param logname name of the log
      * @returna log
      */
@@ -53,6 +53,7 @@ public class ClassLogger implements org.smartfrog.sfcore.logging.Log {
 
     /**
      * get the class of an instance, and return it
+     *
      * @param instance (must not be null)
      * @return a new log
      */
@@ -148,7 +149,7 @@ public class ClassLogger implements org.smartfrog.sfcore.logging.Log {
      * @param t       log this cause
      */
     public void trace(Object message, Throwable t) {
-        commonsLog.trace(message,t);
+        commonsLog.trace(message, t);
 
     }
 

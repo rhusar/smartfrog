@@ -28,7 +28,7 @@ import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
  * created 26-May-2005 11:19:00
  */
 
-public class ValueOfAttribute extends GenericAttribute  {
+public class ValueOfAttribute extends GenericAttribute {
     public ValueOfAttribute() {
     }
 
@@ -45,7 +45,7 @@ public class ValueOfAttribute extends GenericAttribute  {
      */
     public static ValueOfAttribute extract(Element element, boolean required)
             throws CdlXmlParsingException {
-        return (ValueOfAttribute) findAndBind(ATTR_VALUE_OF,
+        return findAndBind(ATTR_VALUE_OF,
                 ValueOfAttribute.class,
                 element,
                 required, true);

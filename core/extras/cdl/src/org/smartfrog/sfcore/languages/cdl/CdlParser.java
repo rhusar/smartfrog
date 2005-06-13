@@ -20,10 +20,12 @@
 package org.smartfrog.sfcore.languages.cdl;
 
 
+import nu.xom.Builder;
+import nu.xom.Document;
+import nu.xom.ParsingException;
 import org.smartfrog.services.xml.utils.ParserHelper;
 import org.smartfrog.services.xml.utils.ResourceLoader;
 import org.smartfrog.sfcore.languages.cdl.dom.CdlDocument;
-import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
@@ -31,10 +33,6 @@ import org.xml.sax.XMLReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-
-import nu.xom.Builder;
-import nu.xom.ParsingException;
-import nu.xom.Document;
 
 /**
  * JDom based utility to parse CDL files. created Jul 1, 2004 1:49:31 PM
@@ -46,30 +44,6 @@ public class CdlParser {
      * logic for resource loading
      */
     private ResourceLoader resourceLoader;
-
-
-    /**
-     * create a parser;
-     *
-     * @param loader   resource loader algorithm
-     * @param validate validation logic.
-     */
-/*    public CdlParser(ResourceLoader loader, boolean validate)
-            throws SAXException {
-
-        assert loader!=null:"null ResourceLoader";
-        resourceLoader = loader;
-        //we mandate Xerces, as the others cannot handle schema so well
-        //XMLReader xerces = ParserHelper.createXmlParser(validate,true,true);
-
-        builder = new SAXBuilder();
-        JDomHelper.configureSaxBuilder(builder, validate, true,true);
-        if (validate) {
-            CdlCatalog resolver = new CdlCatalog(loader);
-            resolver.bind(builder);
-        }
-    }*/
-
 
     /**
      * builder class
@@ -86,14 +60,14 @@ public class CdlParser {
             throws SAXException {
         resourceLoader = loader;
         //we mandate Xerces, as the others cannot handle schema so well
-        XMLReader xerces = ParserHelper.createXmlParser(validate,true,true);
+        XMLReader xerces = ParserHelper.createXmlParser(validate, true, true);
 
         if (validate) {
             CdlCatalog resolver = new CdlCatalog(loader);
             try {
                 resolver.bind(xerces);
             } catch (IOException e) {
-                throw new SAXException(e.getMessage(),e);
+                throw new SAXException(e.getMessage(), e);
             }
         }
         builder = new Builder(xerces, validate);
@@ -144,6 +118,7 @@ public class CdlParser {
 
     /**
      * Get our resource loader
+     *
      * @return
      */
     public ResourceLoader getResourceLoader() {

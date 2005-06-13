@@ -19,9 +19,8 @@
  */
 package org.smartfrog.sfcore.languages.cdl.dom;
 
-import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
-import nu.xom.Node;
 import nu.xom.Element;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
 
 /**
  * created 12-May-2005 17:35:15

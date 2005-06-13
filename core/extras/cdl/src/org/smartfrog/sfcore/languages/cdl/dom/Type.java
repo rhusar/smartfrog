@@ -21,12 +21,10 @@ package org.smartfrog.sfcore.languages.cdl.dom;
 
 import nu.xom.Element;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
-import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
 
 /**
- * Types contain XSD declarations (blech). Wouldnt it be nice if we could use other
- * schema types. 
- * created 21-Apr-2005 14:26:35
+ * Types contain XSD declarations (blech). Wouldnt it be nice if we could use
+ * other schema types. created 21-Apr-2005 14:26:35
  */
 
 public class Type extends DocumentedNode {

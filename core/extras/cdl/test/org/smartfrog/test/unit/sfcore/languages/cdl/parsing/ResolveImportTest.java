@@ -1,12 +1,12 @@
 package org.smartfrog.test.unit.sfcore.languages.cdl.parsing;
 
-import org.smartfrog.test.unit.sfcore.languages.cdl.XmlTestBase;
-import org.smartfrog.sfcore.languages.cdl.importing.ImportResolver;
 import org.smartfrog.sfcore.languages.cdl.importing.ClasspathResolver;
+import org.smartfrog.sfcore.languages.cdl.importing.ImportResolver;
+import org.smartfrog.test.unit.sfcore.languages.cdl.XmlTestBase;
 
-import java.net.URL;
-import java.io.IOException;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.URL;
 
 /**
  * Test our importation
@@ -20,7 +20,7 @@ public class ResolveImportTest extends XmlTestBase {
     }
 
     public void testResolveNoPath() throws Exception {
-        URL url=resolve(RESOURCE);
+        URL url = resolve(RESOURCE);
     }
 
     private URL resolve(String path) throws IOException {
@@ -30,7 +30,7 @@ public class ResolveImportTest extends XmlTestBase {
     private void expectResolveFailure(String path) throws IOException {
         try {
             URL url = resolve(path);
-            fail("Expected to fail, got "+url.toString());
+            fail("Expected to fail, got " + url.toString());
         } catch (FileNotFoundException e) {
             //swallow
         }
@@ -38,7 +38,7 @@ public class ResolveImportTest extends XmlTestBase {
 
 
     public void testResolveForwardSlash() throws Exception {
-        expectResolveFailure("/"+RESOURCE);
+        expectResolveFailure("/" + RESOURCE);
     }
 
     public void testBadPath() throws Exception {

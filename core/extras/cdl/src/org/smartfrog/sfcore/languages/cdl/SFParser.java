@@ -22,18 +22,18 @@ package org.smartfrog.sfcore.languages.cdl;
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.ContextImpl;
 import org.smartfrog.sfcore.common.SmartFrogParseException;
+import org.smartfrog.sfcore.languages.cdl.dom.CdlDocument;
 import org.smartfrog.sfcore.parser.Phases;
 import org.smartfrog.sfcore.parser.StreamParser;
 import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.languages.cdl.dom.CdlDocument;
 
 import java.io.InputStream;
 
 /**
- * This is a parser for CDL XML streams.
- * The base SFParser class contains some assumptions about package names
- * That force the name of this class. DO NOT RENAME.
- * created 18-Apr-2005 13:50:53
+ * This is a parser for CDL XML streams. The base SFParser class contains some
+ * assumptions about package names That force the name of this class. DO NOT
+ * RENAME. created 18-Apr-2005 13:50:53
+ *
  * @see org.smartfrog.sfcore.parser.SFParser
  * @see org.smartfrog.sfcore.languages.sf.SFParser for the reference example
  */
@@ -51,15 +51,16 @@ public class SFParser implements StreamParser {
      */
     public Phases sfParse(InputStream is) throws SmartFrogParseException {
         try {
-         //   return sfParse(is, getIncludeHandler());
-            CdlParser parser= new CdlParser(null,true);
+            //   return sfParse(is, getIncludeHandler());
+            CdlParser parser = new CdlParser(null, true);
             CdlDocument cdlDocument = parser.parseStream(is);
             //TODO
-            Context context=new ContextImpl();
-            Phases result=new CdlPhases(null,null,context, false);
+            Context context = new ContextImpl();
+            Phases result = new CdlPhases(null, null, context, false);
             return result;
         } catch (Throwable thrown) {
-            throw (SmartFrogParseException) SmartFrogParseException.forward(thrown);
+            throw (SmartFrogParseException) SmartFrogParseException.forward(
+                    thrown);
         }
 
 

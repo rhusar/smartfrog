@@ -2,8 +2,8 @@ package org.smartfrog.sfcore.languages.cdl.importing;
 
 import org.smartfrog.sfcore.languages.cdl.ParseContext;
 
-import java.io.IOException;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.URL;
 
 /**
@@ -19,11 +19,12 @@ public class BaseImportResolver implements ImportResolver {
      * @param newcontext new context
      */
     public void bind(ParseContext newcontext) {
-        context=newcontext;
+        context = newcontext;
     }
 
     /**
      * Get our parse context
+     *
      * @return
      */
     public ParseContext getContext() {
@@ -31,9 +32,9 @@ public class BaseImportResolver implements ImportResolver {
     }
 
     /**
-     * map the path to a URI.
-     * For in-classpath resolution, URLs of the type returned
-     * by
+     * map the path to a URI. For in-classpath resolution, URLs of the type
+     * returned by
+     *
      * @param path
      * @return the URL to the resource
      * @throws java.io.IOException on failure to locate or other problems
@@ -44,11 +45,12 @@ public class BaseImportResolver implements ImportResolver {
 
     /**
      * creat an exception for throwing when there is a resolution failure
+     *
      * @param path
      * @return
      */
     public IOException createResolutionFailure(String path) {
-        return new FileNotFoundException(ERROR_NO_RESOLUTION+path);
+        return new FileNotFoundException(ERROR_NO_RESOLUTION + path);
     }
 
 

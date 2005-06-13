@@ -17,37 +17,25 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.sfcore.languages.cdl.dom.attributes;
-
-import nu.xom.Attribute;
-import nu.xom.Element;
-import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
+package org.smartfrog.sfcore.languages.cdl.faults;
 
 /**
- * created 26-May-2005 14:27:47
+ * created 13-Jun-2005 15:36:20
  */
 
-public class TypeAttribute extends QNameAttribute {
-
-    public TypeAttribute() {
+public class CdlDuplicatePrototypeException extends CdlException {
+    public CdlDuplicatePrototypeException() {
     }
 
-    public TypeAttribute(Attribute attribute) throws CdlXmlParsingException {
-        super(attribute);
+    public CdlDuplicatePrototypeException(String message) {
+        super(message);
     }
 
-    /**
-     * Extract an attribute from an element.
-     *
-     * @param element  element to extract from
-     * @param required flag to set to true if the attribute is required
-     * @return
-     */
-    public static TypeAttribute extract(Element element, boolean required)
-            throws CdlXmlParsingException {
-        return findAndBind(ATTR_TYPE,
-                TypeAttribute.class,
-                element,
-                required, false);
+    public CdlDuplicatePrototypeException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public CdlDuplicatePrototypeException(Throwable cause) {
+        super(cause);
     }
 }

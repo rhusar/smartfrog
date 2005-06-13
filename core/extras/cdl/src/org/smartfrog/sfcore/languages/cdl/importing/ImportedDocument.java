@@ -19,16 +19,12 @@
  */
 package org.smartfrog.sfcore.languages.cdl.importing;
 
-import org.smartfrog.sfcore.languages.cdl.dom.CdlDocument;
-
-import java.util.HashMap;
 
 /**
- * Represents an imported document.
- * created 08-Jun-2005 13:39:12
+ * Represents an imported document. created 08-Jun-2005 13:39:12
  */
 
-public class ImportedDocument /*extends CdlDocument */{
+public class ImportedDocument /*extends CdlDocument */ {
 
     private String namespace;
 
@@ -71,7 +67,9 @@ public class ImportedDocument /*extends CdlDocument */{
 
         final ImportedDocument importedDocument = (ImportedDocument) o;
 
-        if (namespace != null ? !namespace.equals(importedDocument.namespace) : importedDocument.namespace != null) {
+        if (namespace != null ?
+                !namespace.equals(importedDocument.namespace) :
+                importedDocument.namespace != null) {
             return false;
         }
 

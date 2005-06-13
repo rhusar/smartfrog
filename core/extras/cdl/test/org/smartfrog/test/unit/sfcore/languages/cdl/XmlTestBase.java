@@ -1,83 +1,95 @@
 package org.smartfrog.test.unit.sfcore.languages.cdl;
 
 import junit.framework.TestCase;
-import org.smartfrog.sfcore.languages.cdl.CdlCatalog;
-import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
-import org.smartfrog.sfcore.languages.cdl.CdlParser;
-import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
-import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
-import org.smartfrog.sfcore.languages.cdl.dom.CdlDocument;
-import org.smartfrog.services.xml.utils.ResourceLoader;
-import org.xml.sax.SAXException;
+import nu.xom.ParsingException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.smartfrog.services.xml.utils.ResourceLoader;
+import org.smartfrog.sfcore.languages.cdl.CdlCatalog;
+import org.smartfrog.sfcore.languages.cdl.CdlParser;
+import org.smartfrog.sfcore.languages.cdl.ParseContext;
+import org.smartfrog.sfcore.languages.cdl.dom.CdlDocument;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
+import org.xml.sax.SAXException;
 
 import java.io.IOException;
-
-import nu.xom.ParsingException;
 
 /**
  * this is the testbase for the tests that load files
  */
 public abstract class XmlTestBase extends TestCase {
-    private final static String RESOURCES = "test/cdl/";
-    private final static String INVALID_RESOURCES = RESOURCES + "invalid/";
-    private final static String RESOLUTION_RESOURCES = RESOURCES +
+    public final static String RESOURCES = "test/cdl/";
+    public final static String VALID_RESOURCES = RESOURCES + "valid/";
+    public final static String INVALID_RESOURCES = RESOURCES + "invalid/";
+    public final static String RESOLUTION_RESOURCES = VALID_RESOURCES +
             "resolution/";
-    private final static String INVALID_RESOLUTION_RESOURCES = INVALID_RESOURCES + "resolution/";
-    private final static String VALID_RESOURCES = RESOURCES + "valid/";
+    public final static String INVALID_RESOLUTION_RESOURCES = INVALID_RESOURCES +
+            "resolution/";
     public static final String WRONG_NAMESPACE_TEXT = "Cannot find the declaration of element 'cdl:cdl'";
 
-    protected Log log=LogFactory.getLog(this.getClass());
+    protected Log log = LogFactory.getLog(this.getClass());
 
     /**
      * {@value}
      */
-    public static final String CDL_DOC_MINIMAL = VALID_RESOURCES + "minimal.cdl";
+    public static final String CDL_DOC_MINIMAL = VALID_RESOURCES +
+            "minimal.cdl";
     /**
      * {@value}
      */
-    public static final String CDL_DOC_FULL_EXAMPLE_1 = VALID_RESOURCES + "full-example-1.cdl";
+    public static final String CDL_DOC_FULL_EXAMPLE_1 = VALID_RESOURCES +
+            "full-example-1.cdl";
     /**
      * {@value}
      */
-    public static final String CDL_DOC_FULL_EXAMPLE_2 = VALID_RESOURCES + "full-example-2.cdl";
+    public static final String CDL_DOC_FULL_EXAMPLE_2 = VALID_RESOURCES +
+            "full-example-2.cdl";
     /**
      * {@value}
      */
-    public static final String CDL_DOC_FULL_EXAMPLE_3 = VALID_RESOURCES + "full-example-3.cdl";
+    public static final String CDL_DOC_FULL_EXAMPLE_3 = VALID_RESOURCES +
+            "full-example-3.cdl";
     /**
      * {@value}
      */
-    public static final String CDL_DOC_WEBSERVER = VALID_RESOURCES + "webserver.cdl";
+    public static final String CDL_DOC_WEBSERVER = VALID_RESOURCES +
+            "webserver.cdl";
     /**
      * {@value}
      */
-    public static final String CDL_DOC_WEBSERVER_NO_NAMESPACE = VALID_RESOURCES + "webserver-no-namespace.cdl";
+    public static final String CDL_DOC_WEBSERVER_NO_NAMESPACE = VALID_RESOURCES +
+            "webserver-no-namespace.cdl";
     /**
      * {@value}
      */
-    public static final String CDL_DOC_WEBSERVER_DEFAULT_NAMESPACE = VALID_RESOURCES + "webserver-default-namespace.cdl";
+    public static final String CDL_DOC_WEBSERVER_DEFAULT_NAMESPACE = VALID_RESOURCES +
+            "webserver-default-namespace.cdl";
     /**
      * {@value}
      */
-    public static final String CDL_DOC_DOCUMENTED = VALID_RESOURCES + "documented.cdl";
+    public static final String CDL_DOC_DOCUMENTED = VALID_RESOURCES +
+            "documented.cdl";
     /**
      * {@value}
      */
-    public static final String CDL_DOC_REFERENCES_1 = VALID_RESOURCES + "references-1.cdl";
+    public static final String CDL_DOC_REFERENCES_1 = VALID_RESOURCES +
+            "references-1.cdl";
     /**
      * {@value}
      */
-    public static final String CDL_DOC_REFERENCES_2 = VALID_RESOURCES + "references-2.cdl";
+    public static final String CDL_DOC_REFERENCES_2 = VALID_RESOURCES +
+            "references-2.cdl";
     /**
      * {@value}
      */
-    public static final String CDL_DOC_REFERENCES_3 = VALID_RESOURCES + "references-3.cdl";
+    public static final String CDL_DOC_REFERENCES_3 = VALID_RESOURCES +
+            "references-3.cdl";
     /**
      * {@value}
      */
-    public static final String CDL_DOC_EXPRESSION_1 = VALID_RESOURCES + "expression-1.cdl";
+    public static final String CDL_DOC_EXPRESSION_1 = VALID_RESOURCES +
+            "expression-1.cdl";
 
     /**
      * {@value}
@@ -100,15 +112,16 @@ public abstract class XmlTestBase extends TestCase {
     /**
      * {@value}
      */
-    public static final String CDL_DOC_PARAMETERIZATION_1 = VALID_RESOURCES + "parameterization-1.cdl";
+    public static final String CDL_DOC_PARAMETERIZATION_1 = VALID_RESOURCES +
+            "parameterization-1.cdl";
     /**
      * {@value}
      */
-    public static final String CDL_DOC_EXTRA_ELEMENTS = VALID_RESOURCES + "extra-elements.cdl";
+    public static final String CDL_DOC_EXTRA_ELEMENTS = VALID_RESOURCES +
+            "extra-elements.cdl";
 
     /**
-     * extends gets tested
-     * {@value}
+     * extends gets tested {@value}
      */
     public static final String CDL_DOC_EXTENDS_1 = RESOLUTION_RESOURCES +
             "extends-1.cdl";
@@ -139,15 +152,24 @@ public abstract class XmlTestBase extends TestCase {
             "wrong_elt_order.cdl";
     public static final String CDL_DOC_WRONG_ROOT_ELT_TYPE = INVALID_RESOURCES +
             "wrong_root_elt_type.cdl";
-    public static final String CDL_DOC_DUPLICATE_NAMES = INVALID_RESOURCES +
-            "duplicate-names.cdl";
+
     public static final String CDL_DOC_WRONG_NAMESPACE = INVALID_RESOURCES +
             "wrong_doc_namespace.cdl";
 
-    public static final String CDL_DOC_DIRECT_LOOP = INVALID_RESOLUTION_RESOURCES
-            + "extends-direct-loop.cdl";
+
+    public static final String CDL_DOC_BAD_NAMESPACE = INVALID_RESOLUTION_RESOURCES
+            + "extends-bad-namespace.cdl";
+    public static final String CDL_DOC_BAD_REFERENCE = INVALID_RESOLUTION_RESOURCES
+            + "extends-bad-reference.cdl";
+    public static final String CDL_DOC_DUPLICATE_NAME = INVALID_RESOLUTION_RESOURCES
+            + "extends-duplicate-name.cdl";
+
     public static final String CDL_DOC_INDIRECT_LOOP = INVALID_RESOLUTION_RESOURCES
             + "extends-indirect-loop.cdl";
+
+    public static final String CDL_DOC_DIRECT_LOOP = INVALID_RESOLUTION_RESOURCES
+            + "extends-direct-loop.cdl";
+
 
     protected CdlParser parser;
 
@@ -164,6 +186,7 @@ public abstract class XmlTestBase extends TestCase {
 
     /**
      * create a new catalog, using the local classloader for resolution
+     *
      * @return
      */
     protected CdlCatalog createCatalog() {
@@ -190,6 +213,7 @@ public abstract class XmlTestBase extends TestCase {
 
     /**
      * configure the parser
+     *
      * @throws SAXException
      */
     protected void initParser() throws SAXException {
@@ -207,25 +231,45 @@ public abstract class XmlTestBase extends TestCase {
 
     /**
      * assert that a resource loads as invalid CDL
+     *
      * @param resource resource to load
-     * @param text text to look for in the exception
-     *  (ParsingException or CdlParsingException only)
-     * @throws Exception for any other type of exception thrown during load/parse
+     * @param text     text to look for in the exception (ParsingException or
+     *                 CdlParsingException only)
+     * @throws Exception for any other type of exception thrown during
+     *                   load/parse
      */
-    protected void assertInvalidCDL(String resource, String text) throws Exception {
+    protected void assertInvalidCDL(String resource, String text)
+            throws Exception {
+        ParseContext context = new ParseContext();
+        assertInvalidCDL(context, resource, text);
+    }
+
+    /**
+     * assert that a resource loads as invalid CDL
+     *
+     * @param resource resource to load
+     * @param text     text to look for in the exception (ParsingException or
+     *                 CdlParsingException only)
+     * @throws Exception for any other type of exception thrown during
+     *                   load/parse
+     */
+    protected void assertInvalidCDL(ParseContext context,
+            String resource,
+            String text) throws Exception {
         try {
             if (text == null) {
                 text = "";
             }
             CdlDocument doc = load(resource);
             doc.validate();
+            doc.parse(context);
             fail("expected a validity failure with " + text);
         } catch (ParsingException e) {
             if (e.getMessage().indexOf(text) < 0) {
                 log("expected [" + text + "] but got " + e.toString());
                 throw e;
             }
-        } catch (CdlXmlParsingException e) {
+        } catch (CdlException e) {
             if (e.getMessage().indexOf(text) < 0) {
                 log("expected [" + text + "] but got " + e.toString());
                 throw e;
@@ -234,19 +278,38 @@ public abstract class XmlTestBase extends TestCase {
     }
 
     /**
-     * load a file; assert that it is valid
+     * load a file; assert that it is valid. This
+     *
      * @param resource
      * @throws IOException
      * @throws ParsingException
      * @throws CdlXmlParsingException
      */
     protected void assertValidCDL(String resource) throws IOException,
-            ParsingException, CdlException  {
-        loadValidCDL(resource);
+            ParsingException, CdlException {
+        ParseContext context = new ParseContext();
+        assertValidCDL(context, resource);
     }
 
     /**
+     * load a file; assert that it is valid by initiating parsing
+     *
+     * @param resource
+     * @throws IOException
+     * @throws ParsingException
+     * @throws CdlXmlParsingException
+     */
+    protected void assertValidCDL(ParseContext context, String resource)
+            throws IOException,
+            ParsingException, CdlException {
+        CdlDocument cdlDocument = loadValidCDL(resource);
+        cdlDocument.parse(context);
+    }
+
+
+    /**
      * Load a valid CDL document
+     *
      * @param resource
      * @return
      */
