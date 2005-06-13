@@ -44,7 +44,7 @@ public class NameAttribute extends NCNameAttribute {
      */
     public static NameAttribute extract(Element element, boolean required)
             throws CdlXmlParsingException {
-        return (NameAttribute) findAndBind(ATTR_NAME,
+        return findAndBind(ATTR_NAME,
                 NameAttribute.class,
                 element,
                 required, true);

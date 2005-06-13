@@ -19,17 +19,13 @@
  */
 package org.smartfrog.sfcore.languages.cdl.dom;
 
-import org.smartfrog.sfcore.languages.cdl.dom.attributes.ValueOfAttribute;
-import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
-import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
-
-import java.util.List;
-import java.util.LinkedList;
-import java.util.HashMap;
-import java.util.Collection;
-
 import nu.xom.Element;
 import nu.xom.Node;
+import org.smartfrog.sfcore.languages.cdl.dom.attributes.ValueOfAttribute;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
+
+import java.util.Collection;
+import java.util.HashMap;
 
 /**
  * created 21-Apr-2005 14:42:51
@@ -62,21 +58,23 @@ public class Expression extends DocNode {
 
     /**
      * add a variable
+     *
      * @param variable variable to add
      * @throws CdlXmlParsingException if it already exists
      */
     protected void add(Variable variable) throws CdlXmlParsingException {
         String nameValue = variable.getNameValue();
-        if(lookupVariable(nameValue)!=null) {
+        if (lookupVariable(nameValue) != null) {
             throw new CdlXmlParsingException(getNode(),
                     ERROR_DUPLICATE_VALUE + nameValue);
         }
-        variables.put(nameValue,variable);
+        variables.put(nameValue, variable);
 
     }
 
     /**
      * find a variable with a give name
+     *
      * @param name
      * @return
      */
@@ -86,17 +84,17 @@ public class Expression extends DocNode {
 
     public void bind(Element element) throws CdlXmlParsingException {
         super.bind(element);
-        valueOf=ValueOfAttribute.extract(element, true);
+        valueOf = ValueOfAttribute.extract(element, true);
         //now run though our children, which must all be variables
-        for(Node child:children()) {
+        for (Node child : children()) {
 
             if (child instanceof Element) {
-                Element childElement=(Element) child;
-                if(!Variable.isA(childElement)) {
+                Element childElement = (Element) child;
+                if (!Variable.isA(childElement)) {
                     throw new CdlXmlParsingException(getNode(),
-                            ERROR_UNEXPECTED_ELEMENT_IN_EXPRESSION+element);
+                            ERROR_UNEXPECTED_ELEMENT_IN_EXPRESSION + element);
                 }
-                Variable v=new Variable(childElement);
+                Variable v = new Variable(childElement);
                 add(v);
             }
         }
@@ -114,7 +112,6 @@ public class Expression extends DocNode {
      * test that a node is of the right type
      *
      * @param element
-     *
      * @return true if the element namespace and localname match what we handle
      */
     static boolean isA(Element element) {

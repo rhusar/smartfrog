@@ -19,17 +19,15 @@
  */
 package org.smartfrog.sfcore.languages.cdl.dom;
 
-import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
-import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
-import org.smartfrog.sfcore.languages.cdl.resolving.ResolveEnum;
-
-import javax.xml.namespace.QName;
-import java.util.List;
-import java.util.LinkedList;
-import java.util.ListIterator;
-
 import nu.xom.Element;
 import nu.xom.Node;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
+import org.smartfrog.sfcore.languages.cdl.utils.XmlUtils;
+
+import javax.xml.namespace.QName;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
 
 /**
  * created 21-Apr-2005 14:26:55
@@ -38,20 +36,17 @@ import nu.xom.Node;
 public class PropertyList extends DocNode implements ToSmartFrog {
 
     /**
-     * Our name.
-     * Only toplevel elements can have a qname
+     * Our name. Only toplevel elements can have a qname
      */
     protected QName name;
 
     /**
-     * Name of the template that we extend.
-     * Null if we do not extend anything
+     * Name of the template that we extend. Null if we do not extend anything
      */
     protected QName extendsName;
 
     /**
-     * And the resolved extension
-     * Null if extendsName==null;
+     * And the resolved extension Null if extendsName==null;
      */
     public PropertyList extendsResolved;
 
@@ -68,6 +63,21 @@ public class PropertyList extends DocNode implements ToSmartFrog {
         bind(element);
     }
 
+    public QName getName() {
+        return name;
+    }
+
+    public void setName(QName name) {
+        this.name = name;
+    }
+
+    public QName getExtendsName() {
+        return extendsName;
+    }
+
+    public void setExtendsName(QName extendsName) {
+        this.extendsName = extendsName;
+    }
 
     /**
      * Parse from XML
@@ -75,11 +85,21 @@ public class PropertyList extends DocNode implements ToSmartFrog {
      * @throws CdlXmlParsingException
      */
     public void bind(Element element) throws CdlXmlParsingException {
+        //parent
         super.bind(element);
+
+        //get our name and extends attribute
+        QName prototypeName = XmlUtils.makeQName(element.getNamespaceURI(),
+                element.getLocalName(),
+                element.getNamespacePrefix());
+        setName(prototypeName);
+
+        //TODO: extends
+
         //run through all our child elements and processs them
-        for(Node child:children()) {
-            if(child instanceof Element) {
-                children.add(createNodeFromElement((Element)child));
+        for (Node child : children()) {
+            if (child instanceof Element) {
+                children.add(createNodeFromElement((Element) child));
             }
         }
 
@@ -87,13 +107,15 @@ public class PropertyList extends DocNode implements ToSmartFrog {
 
     /**
      * create the appropriate node for an element type
+     *
      * @return
      */
-    DocNode createNodeFromElement(Element element) throws CdlXmlParsingException {
-        if(Documentation.isA(element)) {
+    DocNode createNodeFromElement(Element element)
+            throws CdlXmlParsingException {
+        if (Documentation.isA(element)) {
             return new Documentation(element);
         }
-        if(Expression.isA(element)) {
+        if (Expression.isA(element)) {
             return new Expression(element);
         }
         //else, it is not a recognised type, so we make another propertly list from it
@@ -116,6 +138,7 @@ public class PropertyList extends DocNode implements ToSmartFrog {
 
     /**
      * Get an iterator over the child list
+     *
      * @return
      */
     public ListIterator<DocNode> childIterator() {
@@ -139,6 +162,7 @@ public class PropertyList extends DocNode implements ToSmartFrog {
 
     /**
      * Test for a propertylist instance name
+     *
      * @param testName
      * @return
      */
@@ -147,5 +171,17 @@ public class PropertyList extends DocNode implements ToSmartFrog {
     }
 
 
+    public String toString() {
+        StringBuffer buffer = new StringBuffer();
+        buffer.append("Prototype : ");
+        buffer.append(name);
+        if (extendsName != null) {
+            buffer.append(" extends ");
+            buffer.append(extendsName);
+        }
+        buffer.append(" from ");
+        buffer.append(getOwner());
+        return buffer.toString();
+    }
 
 }

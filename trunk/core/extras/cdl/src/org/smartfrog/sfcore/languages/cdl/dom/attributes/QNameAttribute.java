@@ -22,7 +22,6 @@ package org.smartfrog.sfcore.languages.cdl.dom.attributes;
 import nu.xom.Attribute;
 import nu.xom.Element;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
-import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
 
 import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
@@ -44,15 +43,16 @@ public class QNameAttribute extends GenericAttribute {
     }
 
 
-
     /**
-     * crack up a prefix:localname string into a (prefix,localname) tuple
-     * and then map the prefix to a URI by way of the parent node.
+     * crack up a prefix:localname string into a (prefix,localname) tuple and
+     * then map the prefix to a URI by way of the parent node.
+     *
      * @param value qname to parse
      * @return a QName. the namespace may be {@link XMLConstants.DEFAULT_NS_PREFIX},
-     * which means "default namespace".
+     *         which means "default namespace".
      * @throws CdlXmlParsingException for parse failure. Error text may inclue
-     * {@link #ERROR_NO_LOCALNAME} and {@link #ERROR_UNKNOWN_PREFIX}
+     *                                {@link #ERROR_NO_LOCALNAME} and {@link
+     *                                #ERROR_UNKNOWN_PREFIX}
      */
     protected QName parseQname(String value) throws CdlXmlParsingException {
         String prefix;
@@ -60,25 +60,26 @@ public class QNameAttribute extends GenericAttribute {
         String namespace;
         Element parent = getParentElement();
         int prefixIndex = value.indexOf(':');
-        if(prefixIndex<0) {
+        if (prefixIndex < 0) {
             //could mean this is the default NS
-            prefix= XMLConstants.DEFAULT_NS_PREFIX;
-            namespace=parent.getNamespaceURI();
-            localname=value;
+            prefix = XMLConstants.DEFAULT_NS_PREFIX;
+            namespace = parent.getNamespaceURI();
+            localname = value;
         } else {
             prefix = value.substring(0, prefixIndex);
             localname = value.substring(prefixIndex + 1);
             namespace = parent.getNamespaceURI(prefix);
-            if(namespace==null) {
+            if (namespace == null) {
                 //unknown prefix
-                throw new CdlXmlParsingException(ERROR_UNKNOWN_PREFIX+prefix+" in "+value);
+                throw new CdlXmlParsingException(
+                        ERROR_UNKNOWN_PREFIX + prefix + " in " + value);
             }
 
         }
         if (localname.length() == 0) {
             throw new CdlXmlParsingException(ERROR_NO_LOCALNAME + value);
         }
-        QName qName = new QName(namespace, localname,prefix);
+        QName qName = new QName(namespace, localname, prefix);
         return qName;
     }
 
@@ -87,8 +88,9 @@ public class QNameAttribute extends GenericAttribute {
     }
 
     /**
-     * bind the attribute; extract the qname
-     * This cannot be applied to an attribute without a parent.
+     * bind the attribute; extract the qname This cannot be applied to an
+     * attribute without a parent.
+     *
      * @param attr attribute source
      * @throws CdlXmlParsingException
      */

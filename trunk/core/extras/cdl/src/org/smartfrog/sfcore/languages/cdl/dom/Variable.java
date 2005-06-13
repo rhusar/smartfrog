@@ -20,12 +20,8 @@
 package org.smartfrog.sfcore.languages.cdl.dom;
 
 import nu.xom.Element;
-
-import javax.xml.namespace.QName;
-
-import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
-import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
 import org.smartfrog.sfcore.languages.cdl.dom.attributes.NameAttribute;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
 
 /**
  * created 21-Apr-2005 14:43:52
@@ -46,7 +42,7 @@ public class Variable extends Ref {
         //get the bits of ref
         super.bind(element);
         //add a name attribute
-        name=NameAttribute.extract(element, true);
+        name = NameAttribute.extract(element, true);
     }
 
     public NameAttribute getName() {
@@ -55,6 +51,7 @@ public class Variable extends Ref {
 
     /**
      * get the string value of the name; valid only when bound
+     *
      * @return
      */
     public String getNameValue() {

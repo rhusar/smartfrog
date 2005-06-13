@@ -19,10 +19,16 @@
  */
 package org.smartfrog.test.unit.sfcore.languages.cdl.parsing;
 
-import org.smartfrog.test.unit.sfcore.languages.cdl.XmlTestBase;
+import org.smartfrog.sfcore.languages.cdl.Constants;
 import org.smartfrog.sfcore.languages.cdl.ParseContext;
-import org.smartfrog.sfcore.languages.cdl.importing.ClasspathResolver;
 import org.smartfrog.sfcore.languages.cdl.dom.CdlDocument;
+import org.smartfrog.sfcore.languages.cdl.dom.PropertyList;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlDuplicatePrototypeException;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlRuntimeException;
+import org.smartfrog.sfcore.languages.cdl.importing.ClasspathResolver;
+import org.smartfrog.test.unit.sfcore.languages.cdl.XmlTestBase;
+
+import javax.xml.namespace.QName;
 
 /**
  * created 10-Jun-2005 15:48:34
@@ -34,16 +40,17 @@ public class ParseContextTest extends XmlTestBase {
         super(name);
     }
 
-    public void testContext() throws Exception{
-        ParseContext context=new ParseContext(new ClasspathResolver() );
-        CdlDocument doc=new CdlDocument();
+    public void testContext() throws Exception {
+        ParseContext context = new ParseContext(new ClasspathResolver());
+        CdlDocument doc = new CdlDocument();
         doc.setParseContext(context);
-        assertEquals(context,doc.getParseContext());
+        assertEquals(context, doc.getParseContext());
         assertEquals(doc, doc.getOwner());
     }
 
     /**
      * test that we can create a doc
+     *
      * @throws Exception
      */
     public void testDocCreation() throws Exception {
@@ -54,6 +61,39 @@ public class ParseContextTest extends XmlTestBase {
         assertEquals(context, doc.getParseContext());
         assertEquals(doc, context.getDocument());
     }
-    
 
+    public void testNullPrototype() throws Exception {
+        ParseContext context = new ParseContext();
+        PropertyList prototype = new PropertyList();
+        try {
+            context.prototypeAddNew(prototype);
+            fail("expected a fault");
+        } catch (CdlRuntimeException e) {
+            //success
+        }
+    }
+
+    public void testDuplicatePrototype() throws Exception {
+        ParseContext context = new ParseContext();
+        PropertyList prototype = new PropertyList();
+        QName name = new QName(Constants.SMARTFROG_NAMESPACE, "smartfrog");
+        prototype.setName(name);
+        try {
+            context.prototypeAddNew(prototype);
+            context.prototypeAddNew(prototype);
+            fail("expected a fault");
+        } catch (CdlDuplicatePrototypeException e) {
+            //success
+        }
+    }
+
+
+    public void testUpdatePrototype() throws Exception {
+        ParseContext context = new ParseContext();
+        PropertyList prototype = new PropertyList();
+        QName name = new QName(Constants.SMARTFROG_NAMESPACE, "smartfrog");
+        prototype.setName(name);
+        context.prototypeAddNew(prototype);
+        context.prototypeAdd(prototype);
+    }
 }

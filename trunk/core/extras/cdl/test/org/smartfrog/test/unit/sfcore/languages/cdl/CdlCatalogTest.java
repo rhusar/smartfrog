@@ -19,8 +19,6 @@
  */
 package org.smartfrog.test.unit.sfcore.languages.cdl;
 
-import junit.framework.TestCase;
-import org.smartfrog.services.xml.utils.ResourceLoader;
 import org.smartfrog.sfcore.languages.cdl.CdlCatalog;
 import org.smartfrog.sfcore.languages.cdl.Constants;
 import org.xml.sax.InputSource;
@@ -51,8 +49,9 @@ public class CdlCatalogTest extends XmlTestBase {
     public void testValidate() throws Exception {
         catalog.validateImportPaths();
     }
+
     public void testCdlLookup() {
-        String cddlm=catalog.lookup(Constants.XML_CDL_NAMESPACE);
+        String cddlm = catalog.lookup(Constants.XML_CDL_NAMESPACE);
         assertTrue(cddlm != null && cddlm.endsWith(Constants.CDL_XSD_FILENAME));
     }
 
@@ -64,8 +63,8 @@ public class CdlCatalogTest extends XmlTestBase {
     }
 
     public void testCdlResolve() throws TransformerException {
-        Source src=catalog.resolve(Constants.XML_CDL_NAMESPACE,"");
-        assertTrue(src!=null);
+        Source src = catalog.resolve(Constants.XML_CDL_NAMESPACE, "");
+        assertTrue(src != null);
     }
 
     public void testCdlEntityResolved() throws IOException, SAXException {
@@ -77,11 +76,12 @@ public class CdlCatalogTest extends XmlTestBase {
     }
 
     private void assertResolved(String uri) throws SAXException, IOException {
-        InputSource src=catalog.resolveEntity("",uri);
-        assertTrue("Did not resolve "+uri,src != null);
+        InputSource src = catalog.resolveEntity("", uri);
+        assertTrue("Did not resolve " + uri, src != null);
     }
 
-    private void assertNotResolved(String uri) throws SAXException, IOException {
+    private void assertNotResolved(String uri) throws SAXException,
+            IOException {
         InputSource src = catalog.resolveEntity("", uri);
         assertTrue("Did not want to resolve " + uri, src == null);
     }

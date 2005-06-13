@@ -17,37 +17,30 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.sfcore.languages.cdl.dom.attributes;
-
-import nu.xom.Attribute;
-import nu.xom.Element;
-import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
+package org.smartfrog.sfcore.languages.cdl.faults;
 
 /**
- * created 26-May-2005 14:27:47
+ * created 13-Jun-2005 13:39:14
  */
 
-public class TypeAttribute extends QNameAttribute {
-
-    public TypeAttribute() {
-    }
-
-    public TypeAttribute(Attribute attribute) throws CdlXmlParsingException {
-        super(attribute);
+public class CdlRecursiveExtendsException extends CdlException {
+    /**
+     * Constructs a new exception with <code>null</code> as its detail message.
+     * The cause is not initialized, and may subsequently be initialized by a
+     * call to {@link #initCause}.
+     */
+    public CdlRecursiveExtendsException() {
     }
 
     /**
-     * Extract an attribute from an element.
+     * Constructs a new exception with the specified detail message.  The cause
+     * is not initialized, and may subsequently be initialized by a call to
+     * {@link #initCause}.
      *
-     * @param element  element to extract from
-     * @param required flag to set to true if the attribute is required
-     * @return
+     * @param message the detail message. The detail message is saved for later
+     *                retrieval by the {@link #getMessage()} method.
      */
-    public static TypeAttribute extract(Element element, boolean required)
-            throws CdlXmlParsingException {
-        return findAndBind(ATTR_TYPE,
-                TypeAttribute.class,
-                element,
-                required, false);
+    public CdlRecursiveExtendsException(String message) {
+        super(message);
     }
 }

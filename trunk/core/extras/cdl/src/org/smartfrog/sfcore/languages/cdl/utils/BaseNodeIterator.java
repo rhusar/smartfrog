@@ -19,28 +19,29 @@
  */
 package org.smartfrog.sfcore.languages.cdl.utils;
 
-import nu.xom.ParentNode;
 import nu.xom.Node;
+import nu.xom.ParentNode;
 
 import java.util.Iterator;
-import java.util.NoSuchElementException;
 import java.util.LinkedList;
+import java.util.NoSuchElementException;
 
 /**
  * A XOM node iterator. Valid for all, E, where E is derived from Node.
- *
- * There is a devious little hack here, where when you invoke us, you get a
- * new instance back. This for java1.5 foreach integration.
- *
+ * <p/>
+ * There is a devious little hack here, where when you invoke us, you get a new
+ * instance back. This for java1.5 foreach integration.
+ * <p/>
  * created 16-May-2005 17:17:59
  */
 
-public class  BaseNodeIterator<E extends Node> implements Iterator<E>, Iterable<E> {
+public class BaseNodeIterator <E extends Node> implements Iterator<E>,
+        Iterable<E> {
 
     LinkedList l;
     ParentNode parent;
 
-    int index=0;
+    int index = 0;
 
     public BaseNodeIterator(ParentNode parent) {
         this.parent = parent;
@@ -54,7 +55,7 @@ public class  BaseNodeIterator<E extends Node> implements Iterator<E>, Iterable<
      * @return <tt>true</tt> if the iterator has more elements.
      */
     public boolean hasNext() {
-        return index<parent.getChildCount();
+        return index < parent.getChildCount();
     }
 
     /**
@@ -66,15 +67,14 @@ public class  BaseNodeIterator<E extends Node> implements Iterator<E>, Iterable<
      * @throws NoSuchElementException iteration has no more elements.
      */
     public E next() {
-        if(!hasNext()) {
+        if (!hasNext()) {
             throw new NoSuchElementException();
         }
         //bit of casting abuse here.
-        return (E)(Object)parent.getChild(index++);
+        return (E) (Object) parent.getChild(index++);
     }
 
     /**
-     *
      * Optional remove operation.
      *
      * @throws UnsupportedOperationException always
@@ -85,6 +85,7 @@ public class  BaseNodeIterator<E extends Node> implements Iterator<E>, Iterable<
 
     /**
      * iterator operator returns a new iterator over us.
+     *
      * @return
      */
     public Iterator<E> iterator() {

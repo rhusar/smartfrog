@@ -19,20 +19,15 @@
  */
 package org.smartfrog.sfcore.languages.cdl.dom;
 
-import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
-import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
-import org.smartfrog.sfcore.languages.cdl.utils.ElementIterator;
-import org.smartfrog.sfcore.languages.cdl.utils.NodeIterator;
-import org.smartfrog.sfcore.languages.cdl.ParseContext;
-import org.ggf.cddlm.generated.api.CddlmConstants;
-import nu.xom.Node;
-import nu.xom.Element;
 import nu.xom.Attribute;
-import nu.xom.ParentNode;
+import nu.xom.Element;
+import org.smartfrog.sfcore.languages.cdl.ParseContext;
+import org.smartfrog.sfcore.languages.cdl.dom.attributes.GenericAttribute;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
+import org.smartfrog.sfcore.languages.cdl.utils.NodeIterator;
 
 /**
- * Representation of any node.
- * created 21-Apr-2005 14:25:53
+ * Representation of any element. created 21-Apr-2005 14:25:53
  */
 
 public abstract class DocNode implements Names {
@@ -61,12 +56,13 @@ public abstract class DocNode implements Names {
 
 
     /**
-     * Get the parse context for this document
-     * Nodes without a document dont have one of these.
+     * Get the parse context for this document Nodes without a document dont
+     * have one of these.
+     *
      * @return the parse context (or null if we dont have one)
      */
     public ParseContext getParseContext() {
-        if(owner!=null) {
+        if (owner != null) {
             return owner.getParseContext();
         } else {
             return null;
@@ -80,6 +76,7 @@ public abstract class DocNode implements Names {
 
     /**
      * get the XML node underneath
+     *
      * @return
      */
     public Element getNode() {
@@ -88,6 +85,7 @@ public abstract class DocNode implements Names {
 
     /**
      * set the node underneath
+     *
      * @param node new value; can be null
      */
     public void setNode(Element node) {
@@ -95,19 +93,19 @@ public abstract class DocNode implements Names {
     }
 
     /**
-     * Iterate just over elements
-     * only valid if node!=null
+     * Iterate just over elements only valid if node!=null
+     *
      * @return an iterator
      */
     public NodeIterator children() {
-        assert node!=null;
+        assert node != null;
         return new NodeIterator(node);
 
     }
 
     /**
-     * Parse from XML.
-     * The base implementation sets the {@link #node} attribute
+     * Parse from XML. The base implementation sets the {@link #node} attribute
+     *
      * @throws CdlXmlParsingException
      */
     public void bind(Element element) throws CdlXmlParsingException {
@@ -116,6 +114,7 @@ public abstract class DocNode implements Names {
 
     /**
      * Test for an element being in the namespace
+     *
      * @param e
      * @return true iff we are in the CDL namespace
      * @see #DOC_NAMESPACE
@@ -135,8 +134,25 @@ public abstract class DocNode implements Names {
         return DOC_NAMESPACE.equals(a.getNamespaceURI());
     }
 
-    public static boolean isNode(Element e,String name) {
+    public static boolean isNode(Element e, String name) {
         return inCdlNamespace(e) && name.equals(e.getLocalName());
     }
+
+    /**
+     * Get an attribute in the CDL namespace
+     *
+     * @param attributeName attribute to get
+     * @param required      flag set to true if needed
+     * @return the string value of the attribute
+     * @throws CdlXmlParsingException
+     */
+    public Attribute extractCdlAttribute(String attributeName,
+            boolean required)
+            throws CdlXmlParsingException {
+        return GenericAttribute.extractCdlAttribute(node,
+                attributeName,
+                required);
+    }
+
 
 }

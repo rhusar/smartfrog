@@ -18,24 +18,23 @@
 
  */
 package org.smartfrog.test.unit.sfcore.languages.cdl;
-import junit.framework.TestCase;
-import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
-import org.xml.sax.InputSource;
-import org.xml.sax.ErrorHandler;
-import org.xml.sax.SAXParseException;
-import org.xml.sax.helpers.XMLReaderFactory;
-import org.smartfrog.sfcore.languages.cdl.CdlCatalog;
-import org.smartfrog.services.xml.utils.ResourceLoader;
+
 import org.smartfrog.services.xml.utils.ParserHelper;
+import org.smartfrog.services.xml.utils.ResourceLoader;
 import org.smartfrog.services.xml.utils.XmlConstants;
+import org.smartfrog.sfcore.languages.cdl.CdlCatalog;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.XMLReaderFactory;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-import java.io.InputStream;
 import java.io.IOException;
-import java.io.File;
+import java.io.InputStream;
 
 /**
  * created Aug 12, 2004 1:39:59 PM
@@ -54,29 +53,30 @@ public class XmlParserTest extends XmlTestBase {
 
     public void testXercesHandlesSchema() throws SAXException {
         XMLReader xerces;
-        xerces =  createXerces();
+        xerces = createXerces();
         xerces.setFeature("http://apache.org/xml/features/validation/schema",
                 true);
     }
 
     private XMLReader createXerces() throws SAXException {
         XMLReader xmlReader = XMLReaderFactory.createXMLReader(PARSER_NAME);
-        assertNotNull(PARSER_NAME,xmlReader);
+        assertNotNull(PARSER_NAME, xmlReader);
         return xmlReader;
     }
 
     /**
      * as crimson is so common, we skip this test
+     *
      * @throws SAXException
      * @throws ParserConfigurationException
      */
     public void testSaxParserExists() throws SAXException,
             ParserConfigurationException {
         SAXParserFactory factory = SAXParserFactory.newInstance();
-        assertNotNull("Sax parser factory",factory);
+        assertNotNull("Sax parser factory", factory);
         SAXParser sax = factory.newSAXParser();
         assertNotNull("Sax parser ", sax);
-        System.out.println("Sax 1 Parser="+sax.getClass().getName());
+        System.out.println("Sax 1 Parser=" + sax.getClass().getName());
     }
 
     public void testXercesHandlesOurCatalog() throws Exception {
@@ -100,7 +100,7 @@ public class XmlParserTest extends XmlTestBase {
         ResourceLoader loader = new ResourceLoader(this.getClass());
         CdlCatalog catalog = new CdlCatalog(loader);
         catalog.bind(xerces);
-        assertEquals(catalog,xerces.getEntityResolver());
+        assertEquals(catalog, xerces.getEntityResolver());
         xerces.setFeature(XmlConstants.FEATURE_SAX_NAMESPACES, true);
         ParserHelper.enableXmlSchema(xerces);
         xerces.setFeature(XmlConstants.FEATURE_SAX_VALIDATION, true);
@@ -109,7 +109,7 @@ public class XmlParserTest extends XmlTestBase {
 
     public void NotestParserSetupCodeWorks() throws Exception {
         XMLReader xerces;
-        xerces=ParserHelper.createXmlParser(true,true,true);
+        xerces = ParserHelper.createXmlParser(true, true, true);
         parse(xerces, CDL_DOC_MINIMAL);
     }
 
@@ -123,7 +123,7 @@ public class XmlParserTest extends XmlTestBase {
             throws IOException, SAXException {
         try {
             parse(xerces, resource);
-            fail("Should have failed to parse "+resource);
+            fail("Should have failed to parse " + resource);
         } catch (SAXException e) {
             //accept
         }
@@ -133,8 +133,8 @@ public class XmlParserTest extends XmlTestBase {
             SAXException {
         ResourceLoader loader2 = new ResourceLoader(this.getClass());
         InputStream in = loader2.loadResource(resource);
-        InputSource ins=new InputSource(in);
-        SaxErrorHandler handler=new SaxErrorHandler();
+        InputSource ins = new InputSource(in);
+        SaxErrorHandler handler = new SaxErrorHandler();
         try {
             xerces.setErrorHandler(handler);
             xerces.parse(ins);
@@ -148,7 +148,7 @@ public class XmlParserTest extends XmlTestBase {
         private SAXParseException fault;
 
         public void rethrow() throws SAXParseException {
-            if(fault!=null) {
+            if (fault != null) {
                 throw fault;
             }
         }

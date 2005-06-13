@@ -22,17 +22,15 @@ package org.smartfrog.sfcore.languages.cdl.dom.attributes;
 import nu.xom.Attribute;
 import nu.xom.Element;
 import nu.xom.Node;
-import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
-import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
 import org.smartfrog.sfcore.languages.cdl.dom.Names;
-import org.smartfrog.sfcore.languages.cdl.dom.DocNode;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 /**
- * This is the base class for attributes; it represents an attribute of some type.
- * created 26-May-2005 11:20:02
+ * This is the base class for attributes; it represents an attribute of some
+ * type. created 26-May-2005 11:20:02
  */
 
 public class GenericAttribute implements Names {
@@ -44,6 +42,7 @@ public class GenericAttribute implements Names {
 
     /**
      * Get the value of this attribute - only valid when bound
+     *
      * @return
      */
     public String getValue() {
@@ -62,44 +61,47 @@ public class GenericAttribute implements Names {
     }
 
     /**
-     * bind at construct time.
-     * calls {@link #bind(Attribute)}
+     * bind at construct time. calls {@link #bind(Attribute)}
+     *
      * @param attribute
      */
-    protected GenericAttribute(Attribute attribute) throws CdlXmlParsingException {
+    protected GenericAttribute(Attribute attribute)
+            throws CdlXmlParsingException {
         bind(attribute);
     }
 
 
-
     /**
-     * bind to an attribute. Sets the attribute value
-     * subclasses can extend to extract more information; always call the parent
+     * bind to an attribute. Sets the attribute value subclasses can extend to
+     * extract more information; always call the parent
+     *
      * @param attr
      */
     public void bind(Attribute attr) throws CdlXmlParsingException {
-        attribute=attr;
+        attribute = attr;
     }
 
     /**
-     * Get the parent element of an attribute.
-     * Only valid when bound to an attribute/
+     * Get the parent element of an attribute. Only valid when bound to an
+     * attribute/
+     *
      * @returns the parent element or null for no parent.
      */
     Element getParentElement() {
-        assert attribute!=null;
-        Node parent=attribute.getParent();
-        if(parent==null) {
+        assert attribute != null;
+        Node parent = attribute.getParent();
+        if (parent == null) {
             return null;
+        } else {
+            return (Element) parent;
         }
-        else return (Element)parent;
     }
 
 
     /**
-     * Find a CDL attribute and bind to it. There are some
-     * reflection tricks here to instantiate a class instance
-     * and call #extract on it.
+     * Find a CDL attribute and bind to it. There are some reflection tricks
+     * here to instantiate a class instance and call #extract on it.
+     *
      * @param localname
      * @param clazz
      * @param element
@@ -108,17 +110,17 @@ public class GenericAttribute implements Names {
      * @return
      * @throws CdlXmlParsingException
      */
-    protected static GenericAttribute findAndBind(String localname,
-                                                  Class clazz,
-                                                  Element element,
-                                                  boolean required,
-                                                  boolean local)
+    public static <T extends GenericAttribute> T findAndBind(String localname,
+            Class<T> clazz,
+            Element element,
+            boolean required,
+            boolean local)
             throws CdlXmlParsingException {
         Attribute attr;
         if (!local) {
             attr = extractCdlAttribute(element,
-                localname,
-                required);
+                    localname,
+                    required);
         } else {
             attr = extractLocalAttribute(element,
                     localname,
@@ -130,7 +132,7 @@ public class GenericAttribute implements Names {
         } else {
             try {
                 Constructor ctor = clazz.getConstructor();
-                GenericAttribute newattr = (GenericAttribute) ctor.newInstance();
+                T newattr = (T) ctor.newInstance();
                 newattr.bind(attr);
                 return newattr;
             } catch (NoSuchMethodException e) {
@@ -152,16 +154,21 @@ public class GenericAttribute implements Names {
 
     /**
      * Get the value of an attribute in the CDL namespace
-     * @param element node to examine
+     *
+     * @param element       node to examine
      * @param attributeName attribute to get
-     * @param required flag set to true if needed
+     * @param required      flag set to true if needed
      * @return the string value of the attribute
      * @throws CdlXmlParsingException
      */
-    public static String extractCdlAttributeValue(Element element, String attributeName,boolean required)
-        throws CdlXmlParsingException {
-        Attribute attribute = extractCdlAttribute(element, attributeName, required);
-        return attribute!=null? attribute.getValue() : null;
+    public static String extractCdlAttributeValue(Element element,
+            String attributeName,
+            boolean required)
+            throws CdlXmlParsingException {
+        Attribute attribute = extractCdlAttribute(element,
+                attributeName,
+                required);
+        return attribute != null ? attribute.getValue() : null;
     }
 
     /**
@@ -174,10 +181,16 @@ public class GenericAttribute implements Names {
      * @throws CdlXmlParsingException
      */
     public static Attribute extractCdlAttribute(Element element,
-            String attributeName, boolean required) throws CdlXmlParsingException {
-        Attribute attribute = element.getAttribute(attributeName,DOC_NAMESPACE);
-        if(attribute==null && required) {
-            throw new CdlXmlParsingException("Missing attribute "+attributeName+" from element "+element);
+            String attributeName, boolean required)
+            throws CdlXmlParsingException {
+        Attribute attribute = element.getAttribute(attributeName,
+                DOC_NAMESPACE);
+        if (attribute == null && required) {
+            throw new CdlXmlParsingException(
+                    "Missing attribute " +
+                    attributeName +
+                    " from element " +
+                    element);
         }
         return attribute;
     }
@@ -188,18 +201,20 @@ public class GenericAttribute implements Names {
      * @param element       node to examine
      * @param attributeName attribute to get
      * @param required      flag set to true if needed
-     *
      * @return the string value of the attribute
-     *
      * @throws CdlXmlParsingException
      */
     public static Attribute extractLocalAttribute(Element element,
-                                                String attributeName,
-                                                boolean required)
+            String attributeName,
+            boolean required)
             throws CdlXmlParsingException {
         Attribute attribute = element.getAttribute(attributeName);
         if (attribute == null && required) {
-            throw new CdlXmlParsingException("Missing attribute " + attributeName + " from element " + element);
+            throw new CdlXmlParsingException(
+                    "Missing attribute " +
+                    attributeName +
+                    " from element " +
+                    element);
         }
         return attribute;
     }
@@ -210,14 +225,12 @@ public class GenericAttribute implements Names {
      * @param element       node to examine
      * @param attributeName attribute to get
      * @param required      flag set to true if needed
-     *
      * @return the string value of the attribute
-     *
      * @throws CdlXmlParsingException
      */
     public static String extractLocalAttributeValue(Element element,
-                                                  String attributeName,
-                                                  boolean required)
+            String attributeName,
+            boolean required)
             throws CdlXmlParsingException {
         Attribute attribute = extractLocalAttribute(element,
                 attributeName,

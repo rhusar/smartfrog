@@ -19,25 +19,24 @@
  */
 package org.smartfrog.sfcore.languages.cdl.dom;
 
-import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
-import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
-import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
+import nu.xom.Document;
+import nu.xom.Element;
+import nu.xom.Node;
+import nu.xom.ParentNode;
 import org.ggf.cddlm.generated.api.CddlmConstants;
-import org.smartfrog.sfcore.languages.cdl.utils.ElementIterator;
-import org.smartfrog.sfcore.languages.cdl.utils.IteratorRelay;
-import org.smartfrog.sfcore.languages.cdl.utils.ClassLogger;
-import org.smartfrog.sfcore.languages.cdl.utils.NodeIterator;
 import org.smartfrog.sfcore.languages.cdl.ParseContext;
+import org.smartfrog.sfcore.languages.cdl.dom.attributes.GenericAttribute;
+import org.smartfrog.sfcore.languages.cdl.dom.attributes.URIAttribute;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlDuplicatePrototypeException;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
+import org.smartfrog.sfcore.languages.cdl.utils.ClassLogger;
+import org.smartfrog.sfcore.languages.cdl.utils.IteratorRelay;
+import org.smartfrog.sfcore.languages.cdl.utils.NodeIterator;
 import org.smartfrog.sfcore.logging.Log;
 
 import javax.xml.namespace.QName;
-
-import nu.xom.ParsingException;
-import nu.xom.Document;
-import nu.xom.Element;
-import nu.xom.ParentNode;
-import nu.xom.Node;
-
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,31 +50,33 @@ public class CdlDocument extends DocumentedNode {
     /**
      * a log
      */
-    private Log log=ClassLogger.getLog(this);
+    private Log log = ClassLogger.getLog(this);
 
     /**
      * Original Xom Document
      */
     private Document document;
 
-
+    /**
+     * the target namespace of this document (may be null)
+     */
+    private URI targetNamespace;
+    private URIAttribute targetNamespaceAttr;
 
     /**
      * configuration elements
-     *
      */
-    private ToplevelList configuration = new ToplevelList();
+    private ToplevelList configuration;
 
     /**
      * System declaration
      */
-    private ToplevelList system = new ToplevelList();
+    private ToplevelList system;
 
     /**
      * Our list of imports
      */
-    private List<Import> imports=new ArrayList<Import>();
-
+    private List<Import> imports = new ArrayList<Import>();
 
     /**
      * Our types
@@ -87,7 +88,7 @@ public class CdlDocument extends DocumentedNode {
      * document in the context. Indeed, we wont be for any importation, but that
      * is mostly irrelevant.
      */
-    private ParseContext parseContext= null;
+    private ParseContext parseContext = null;
 
     /**
      * error message for tests {@value}
@@ -96,7 +97,7 @@ public class CdlDocument extends DocumentedNode {
     /**
      * error message for tests {@value}
      */
-    public static final String ERROR_WRONG_ELEMENT = "Expected an element named " ;
+    public static final String ERROR_WRONG_ELEMENT = "Expected an element named ";
 
     public CdlDocument() {
         super();
@@ -110,13 +111,23 @@ public class CdlDocument extends DocumentedNode {
 
     public CdlDocument(Document doc) throws CdlException {
         super(doc.getRootElement());
-        owner=this;
+        owner = this;
         bind(doc);
     }
 
+    /**
+     * string info for debugging
+     *
+     * @return
+     */
+    public String toString() {
+        return "CDL document namespace=" +
+                (targetNamespace == null ? "local" : targetNamespace.toString());
+    }
 
     /**
      * get the parse context
+     *
      * @return
      */
     public ParseContext getParseContext() {
@@ -125,6 +136,7 @@ public class CdlDocument extends DocumentedNode {
 
     /**
      * set the parse context.
+     *
      * @param parseContext
      */
     public void setParseContext(ParseContext parseContext) {
@@ -165,6 +177,54 @@ public class CdlDocument extends DocumentedNode {
     }
 
     /**
+     * Target namespace of the doc
+     *
+     * @return URI to the namespace, or null
+     */
+    public URI getTargetNamespace() {
+        return targetNamespace;
+    }
+
+    /**
+     * Get at the import list
+     *
+     * @return Potentially empty list of imports
+     */
+    public List<Import> getImports() {
+        return imports;
+    }
+
+    /**
+     * Get the type declaration
+     *
+     * @return type declaration
+     */
+    public Type getTypes() {
+        return types;
+    }
+
+
+    /**
+     * Iterate just over elements
+     *
+     * @param element
+     * @return
+     */
+    public static NodeIterator nodeIterator(ParentNode element) {
+        return new NodeIterator(element);
+    }
+
+    /**
+     * Iteratable over the nodes
+     *
+     * @param element
+     * @return
+     */
+    public static IteratorRelay<Node> nodes(ParentNode element) {
+        return new IteratorRelay<Node>(nodeIterator(element));
+    }
+
+    /**
      * this routine encodes all the logic around the validity of the scham
      *
      * @throws CdlXmlParsingException
@@ -194,22 +254,39 @@ public class CdlDocument extends DocumentedNode {
     }
 
 
+    /**
+     * Verify that we are in the CDL namespace
+     *
+     * @param element
+     * @throws CdlXmlParsingException
+     */
     private void verifyInCdlNamespace(Element element)
             throws CdlXmlParsingException {
-        CdlXmlParsingException.assertValid(CddlmConstants.XML_CDL_NAMESPACE.equals(element.getNamespaceURI()),
+        CdlXmlParsingException.assertValid(
+                CddlmConstants.XML_CDL_NAMESPACE.equals(
+                        element.getNamespaceURI()),
                 ERROR_WRONG_NAMESPACE);
 
     }
 
-    private void verifyNodeName(Element element,String name)
+    /**
+     * verify the name of a node
+     *
+     * @param element
+     * @param name
+     * @throws CdlXmlParsingException
+     */
+    private void verifyNodeName(Element element, String name)
             throws CdlXmlParsingException {
-        CdlXmlParsingException.assertValid(CddlmConstants.ELEMENT_NAME_ROOT.equals(element.getLocalName()),
-                ERROR_WRONG_ELEMENT +name
-                    +" but got "+element);
+        CdlXmlParsingException.assertValid(
+                CddlmConstants.ELEMENT_NAME_ROOT.equals(element.getLocalName()),
+                ERROR_WRONG_ELEMENT +
+                name
+                + " but got " + element);
     }
 
     /**
-     * our binding here sets the root node
+     * call our superclass binding. This does not do any parsing of the XML
      *
      * @throws org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException
      *
@@ -218,14 +295,20 @@ public class CdlDocument extends DocumentedNode {
         super.bind(element);
     }
 
+    /**
+     * bind the document. This does not do any parsing of the XML
+     *
+     * @param doc
+     * @throws CdlException
+     */
     public void bind(Document doc) throws CdlException {
         assert doc != null;
         this.document = doc;
-        parse();
     }
 
     /**
      * Get the root node
+     *
      * @return
      */
     Element getRoot() {
@@ -236,44 +319,58 @@ public class CdlDocument extends DocumentedNode {
     /**
      * we have the root node; lets extract everything from it
      *
+     * @param context the parsing context
      * @throws CdlXmlParsingException
      */
-    private void parse() throws CdlXmlParsingException {
-        Element root=getRoot();
+    public void parse(ParseContext context) throws CdlException {
+        setParseContext(context);
+        Element root = getRoot();
         verifyInCdlNamespace(root);
         verifyNodeName(root, CddlmConstants.ELEMENT_NAME_ROOT);
-        for (Node childnode: nodes(root)) {
-            if(!(childnode instanceof Element)) {
+
+        //get our target namespace.
+        targetNamespaceAttr = GenericAttribute.findAndBind("targetNamespace",
+                URIAttribute.class,
+                getNode(),
+                false,
+                false);
+        if (targetNamespaceAttr != null) {
+            targetNamespace = targetNamespaceAttr.getUri();
+        }
+
+        //now process our children
+        for (Node childnode : nodes(root)) {
+            if (!(childnode instanceof Element)) {
                 continue;
             }
-            Element child=(Element)childnode;
+            Element child = (Element) childnode;
             //imports come first
-            if(Import.isA(child)) {
+            if (Import.isA(child)) {
                 imports.add(new Import(child));
                 continue;
             }
 
             //type declarations
             //what to do with these?
-            if(Type.isA(child)) {
-                types=new Type(child);
+            if (Type.isA(child)) {
+                types = new Type(child);
                 continue;
             }
 
             //<configuration> element
-            if(ToplevelList.isConfigurationElement(child)) {
-                configuration=new ToplevelList(child);
+            if (ToplevelList.isConfigurationElement(child)) {
+                configuration = new ToplevelList(this, child);
                 continue;
             }
 
             //<system> element
             if (ToplevelList.isSystemElement(child)) {
-                system = new ToplevelList(child);
+                system = new ToplevelList(this, child);
                 continue;
             }
 
             //add a doc node
-            if(Documentation.isA(child)) {
+            if (Documentation.isA(child)) {
                 Documentation documentation = new Documentation(child);
                 log.info("Ignoring documentation " + child);
                 continue;
@@ -281,32 +378,38 @@ public class CdlDocument extends DocumentedNode {
 
             //if we get here, then either there is stuff that we don't recognise
             //or its in another namespace
-            if(DocNode.inCdlNamespace(child)) {
+            if (DocNode.inCdlNamespace(child)) {
                 //strange stuff here
-                throw new CdlXmlParsingException("Unknown element "+child);
+                throw new CdlXmlParsingException("Unknown element " + child);
             } else {
                 //do nothing
                 //TODO: log this?
-                log.info("Ignoring unknown element "+child);
+                log.info("Ignoring unknown element " + child);
             }
 
         }
 
         //at this point, we are mapped into custom classes to represent stuff
+        registerPrototypes();
 
     }
+
 
     /**
-     * Iterate just over elements
-     * @param element
-     * @return
+     * register all our prototypes
+     *
+     * @throws CdlDuplicatePrototypeException if there is one in use already
      */
-    public NodeIterator nodeIterator(ParentNode element) {
-        return new NodeIterator(element);
-    }
+    private void registerPrototypes() throws CdlDuplicatePrototypeException {
+        if (configuration != null) {
+            configuration.registerPrototypes();
+        }
 
-    public IteratorRelay<Node> nodes(ParentNode element) {
-        return new IteratorRelay<Node>(nodeIterator(element));
+        if (system != null) {
+            system.registerPrototypes();
+        }
+
+
     }
 
 }

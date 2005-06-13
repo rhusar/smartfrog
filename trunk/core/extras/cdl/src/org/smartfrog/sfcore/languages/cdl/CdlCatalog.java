@@ -35,21 +35,20 @@ import javax.xml.transform.Source;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.URIResolver;
 import javax.xml.transform.stream.StreamSource;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.FileNotFoundException;
 import java.util.HashMap;
 
 /**
- * This class handles entity resolution problems.
- * When used with XSD, file paths come in as absolute paths, not relative ones,
- * and they are absolute relative to where xerces is working, at least when
- * importing resource files.
- * So, this catalog does something special: it matches by the short name of a file.
- *
- * Any path to xml-cdl.xsd will match to our copy, regardless of the rest of the URL.
- * without this, everything breaks,
- * 
+ * This class handles entity resolution problems. When used with XSD, file paths
+ * come in as absolute paths, not relative ones, and they are absolute relative
+ * to where xerces is working, at least when importing resource files. So, this
+ * catalog does something special: it matches by the short name of a file.
+ * <p/>
+ * Any path to xml-cdl.xsd will match to our copy, regardless of the rest of the
+ * URL. without this, everything breaks,
+ * <p/>
  * created Jul 15, 2004 3:58:11 PM
  */
 
@@ -72,12 +71,11 @@ public class CdlCatalog implements URIResolver, EntityResolver {
      * where the API files really live {@value}
      */
     private static final String API_PACKAGE = PACKAGE_BASE
-    +CddlmConstants.CDL_FILENAME_XML_DIRECTORY;
+            + CddlmConstants.CDL_FILENAME_XML_DIRECTORY;
 
 
     /**
-     * This maps from namespaces to resources in our classpath
-     * {@value}
+     * This maps from namespaces to resources in our classpath {@value}
      */
     private static final String CDDLM_MAPPINGS[] = {
         CddlmConstants.XML_CDL_NAMESPACE, API_PACKAGE +
@@ -92,7 +90,7 @@ public class CdlCatalog implements URIResolver, EntityResolver {
     /**
      * map table
      */
-    private HashMap<String,String> mappings;
+    private HashMap<String, String> mappings;
 
     public CdlCatalog(ResourceLoader loader) {
         assert loader != null:"null ResourceLoader";
@@ -162,8 +160,8 @@ public class CdlCatalog implements URIResolver, EntityResolver {
      *             encountered.
      * @return A Source object, or null if the href cannot be resolved, and the
      *         processor should try to resolve the URI itself.
-     * @throws TransformerException
-     *          if an error occurs when trying to resolve the URI.
+     * @throws TransformerException if an error occurs when trying to resolve
+     *                              the URI.
      */
     public Source resolve(String href, String base)
             throws TransformerException {
@@ -180,16 +178,17 @@ public class CdlCatalog implements URIResolver, EntityResolver {
 
     /**
      * Create a new stream source from a resource in the classloader
+     *
      * @param resource resource to load
-     * @param href href for relative URI resolution
+     * @param href     href for relative URI resolution
      * @return source
      * @throws IOException on trouble
      */
     private Source loadStreamSource(String resource, String href)
             throws IOException {
-            InputStream in = loader.loadResource(resource);
-            StreamSource source = new StreamSource(in, href);
-            return source;
+        InputStream in = loader.loadResource(resource);
+        StreamSource source = new StreamSource(in, href);
+        return source;
     }
 
 
@@ -218,11 +217,11 @@ public class CdlCatalog implements URIResolver, EntityResolver {
      * @return An InputSource object describing the new input source, or null to
      *         request that the parser open a regular URI connection to the
      *         system identifier.
-     * @throws SAXException Any SAX exception, possibly wrapping
-     *                                  another exception.
-     * @throws IOException      A Java-specific IO exception, possibly
-     *                                  the result of creating a new InputStream
-     *                                  or Reader for the InputSource.
+     * @throws SAXException Any SAX exception, possibly wrapping another
+     *                      exception.
+     * @throws IOException  A Java-specific IO exception, possibly the result of
+     *                      creating a new InputStream or Reader for the
+     *                      InputSource.
      * @see InputSource
      */
     public InputSource resolveEntity(String publicId, String systemId)
@@ -297,6 +296,7 @@ public class CdlCatalog implements URIResolver, EntityResolver {
 
     /**
      * verify that our import paths are all working in this component
+     *
      * @throws IOException
      */
     public void validateImportPaths()
@@ -305,15 +305,17 @@ public class CdlCatalog implements URIResolver, EntityResolver {
         for (int i = 0; i < map.length; i += 2) {
             String schema = map[i];
             String filename = map[i + 1];
-            log.debug(schema +" -> "+filename);
+            log.debug(schema + " -> " + filename);
             try {
                 loadStreamSource(filename, schema);
             } catch (IOException e) {
-                throw new FileNotFoundException("No resource: "+filename
-                +" for "+schema);
+                throw new FileNotFoundException("No resource: " +
+                        filename
+                        + " for " + schema);
             }
         }
     }
+
     /**
      * bind an XML reader to this bunny
      *

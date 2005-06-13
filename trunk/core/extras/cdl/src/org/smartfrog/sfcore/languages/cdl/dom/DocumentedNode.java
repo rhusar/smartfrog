@@ -21,11 +21,10 @@ package org.smartfrog.sfcore.languages.cdl.dom;
 
 import nu.xom.Element;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
-import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
 
 /**
- * A node that has an (optional) documentation element
- * created 21-Apr-2005 14:55:02
+ * A node that has an (optional) documentation element created 21-Apr-2005
+ * 14:55:02
  */
 
 public class DocumentedNode extends DocNode {
@@ -44,6 +43,7 @@ public class DocumentedNode extends DocNode {
 
     /**
      * Get the documentation
+     *
      * @return documentation (may be null)
      */
     public Documentation getDocumentation() {
@@ -52,6 +52,7 @@ public class DocumentedNode extends DocNode {
 
     /**
      * Set the documentation
+     *
      * @param documentation (can be null)
      */
     public void setDocumentation(Documentation documentation) {

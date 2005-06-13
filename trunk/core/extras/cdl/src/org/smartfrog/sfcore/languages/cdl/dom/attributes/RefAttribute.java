@@ -22,8 +22,6 @@ package org.smartfrog.sfcore.languages.cdl.dom.attributes;
 import nu.xom.Attribute;
 import nu.xom.Element;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
-import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
-import org.smartfrog.sfcore.languages.cdl.dom.DocNode;
 
 /**
  * created 26-May-2005 11:17:40
@@ -40,12 +38,17 @@ public class RefAttribute extends GenericAttribute {
 
     /**
      * Extract a ref attribute from an element.
-     * @param element element to extract from
+     *
+     * @param element  element to extract from
      * @param required flag to set to true if the attribute is required
      * @return
      */
     public static RefAttribute extract(Element element, boolean required)
             throws CdlXmlParsingException {
-        return (RefAttribute)findAndBind(ATTR_REF,RefAttribute.class,element,required, true);
+        return findAndBind(ATTR_REF,
+                RefAttribute.class,
+                element,
+                required,
+                true);
     }
 }
