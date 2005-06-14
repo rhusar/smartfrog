@@ -25,6 +25,7 @@ import org.smartfrog.sfcore.languages.cdl.ParseContext;
 import org.smartfrog.sfcore.languages.cdl.dom.attributes.GenericAttribute;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
 import org.smartfrog.sfcore.languages.cdl.utils.NodeIterator;
+import org.smartfrog.sfcore.languages.cdl.utils.AttributeIterator;
 
 /**
  * Representation of any element. created 21-Apr-2005 14:25:53
@@ -117,10 +118,10 @@ public abstract class DocNode implements Names {
      *
      * @param e
      * @return true iff we are in the CDL namespace
-     * @see #DOC_NAMESPACE
+     * @see #CDL_NAMESPACE
      */
     public static boolean inCdlNamespace(Element e) {
-        return DOC_NAMESPACE.equals(e.getNamespaceURI());
+        return CDL_NAMESPACE.equals(e.getNamespaceURI());
     }
 
     /**
@@ -128,14 +129,22 @@ public abstract class DocNode implements Names {
      *
      * @param a
      * @return true iff we are in the CDL namespace
-     * @see #DOC_NAMESPACE
+     * @see #CDL_NAMESPACE
      */
     public static boolean inCdlNamespace(Attribute a) {
-        return DOC_NAMESPACE.equals(a.getNamespaceURI());
+        return CDL_NAMESPACE.equals(a.getNamespaceURI());
     }
 
     public static boolean isNode(Element e, String name) {
         return inCdlNamespace(e) && name.equals(e.getLocalName());
+    }
+
+    /**
+     * Iterate over the attributes
+     * @return a new iterator that is also iterable
+     */
+    public AttributeIterator attributes() {
+        return new AttributeIterator(node);
     }
 
     /**
@@ -155,4 +164,33 @@ public abstract class DocNode implements Names {
     }
 
 
+
+    /**
+     * get an attribute
+     *
+     * @param namespace namespace URI; null for ##local
+     * @param local local name
+     *
+     * @return
+     */
+    public Attribute getAttribute(String namespace, String local) {
+        Element self = getNode();
+        if (namespace == null) {
+            //no namespace match
+            return self.getAttribute(local);
+        } else {
+            //in namespace match
+            return self.getAttribute(local, namespace);
+        }
+    }
+
+    /**
+     * Test for an elemeent having a child
+     * @param namespace
+     * @param local
+     * @return
+     */
+    public boolean hasAttribute(String namespace,String local) {
+        return getAttribute(namespace,local)!=null;
+    }
 }

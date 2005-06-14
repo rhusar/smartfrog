@@ -22,6 +22,7 @@ package org.smartfrog.sfcore.languages.cdl.resolving;
 import org.smartfrog.sfcore.languages.cdl.dom.PropertyList;
 
 /**
+ * POJO for results of an extension resolve
  * created 10-Jun-2005 16:47:23
  */
 
@@ -43,4 +44,5 @@ public class ResolveResult {
     public PropertyList getResolvedPropertyList() {
         return resolvedPropertyList;
     }
+
 }

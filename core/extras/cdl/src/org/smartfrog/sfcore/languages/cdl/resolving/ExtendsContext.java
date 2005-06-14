@@ -21,6 +21,7 @@ package org.smartfrog.sfcore.languages.cdl.resolving;
 
 import org.smartfrog.sfcore.languages.cdl.faults.CdlRecursiveExtendsException;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlRuntimeException;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlResolutionException;
 import org.smartfrog.sfcore.languages.cdl.utils.ClassLogger;
 import org.smartfrog.sfcore.logging.Log;
 
@@ -44,6 +45,7 @@ public class ExtendsContext {
     public static final String ERROR_WRONG_EXIT = "runtime exception: we are not exiting what we entered";
     public static final String ERROR_RECURSING = "Recursive extension. " +
             "Already extending: ";
+    public static final String ERROR_NULL_QNAME = "Entered a null element";
 
     /**
      * search the stack for a particular element
@@ -65,12 +67,14 @@ public class ExtendsContext {
     }
 
     /**
-     * Enter a
+     * Enter an element
      *
      * @param element
-     * @return
      */
-    public void enter(QName element) throws CdlRecursiveExtendsException {
+    public void enter(QName element) throws CdlResolutionException {
+        if(element==null) {
+            throw new CdlResolutionException(ERROR_NULL_QNAME);
+        }
         if (lookup(element)) {
             //bail out early on a match
             throw new CdlRecursiveExtendsException(ERROR_RECURSING + element);

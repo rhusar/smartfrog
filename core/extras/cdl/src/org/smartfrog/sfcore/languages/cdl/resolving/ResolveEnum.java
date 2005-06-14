@@ -21,8 +21,10 @@ package org.smartfrog.sfcore.languages.cdl.resolving;
  */
 public enum ResolveEnum {
 
-    ResolvedNoWorkDone,
+    ResolvedNoWorkNeeded,
     ResolvedComplete,
     ResolvedIncomplete,
     ResolvedLazyLinksRemaining
+
+
 }
