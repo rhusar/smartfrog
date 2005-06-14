@@ -25,6 +25,7 @@ import nu.xom.Node;
 import nu.xom.ParentNode;
 import org.ggf.cddlm.generated.api.CddlmConstants;
 import org.smartfrog.sfcore.languages.cdl.ParseContext;
+import org.smartfrog.sfcore.languages.cdl.resolving.ExtendsResolver;
 import org.smartfrog.sfcore.languages.cdl.dom.attributes.GenericAttribute;
 import org.smartfrog.sfcore.languages.cdl.dom.attributes.URIAttribute;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlDuplicatePrototypeException;
@@ -391,7 +392,9 @@ public class CdlDocument extends DocumentedNode {
 
         //at this point, we are mapped into custom classes to represent stuff
         registerPrototypes();
-
+        //extends our extendendables
+        ExtendsResolver extendsResolver=new ExtendsResolver(getParseContext());
+        extendsResolver.resolveExtends(this);
     }
 
 

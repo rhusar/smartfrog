@@ -54,5 +54,5 @@ public interface Names {
     /**
      * our namespace {@value}
      */
-    String DOC_NAMESPACE= CddlmConstants.XML_CDL_NAMESPACE;
+    String CDL_NAMESPACE= CddlmConstants.XML_CDL_NAMESPACE;
 }

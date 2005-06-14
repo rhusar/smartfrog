@@ -21,13 +21,65 @@ package org.smartfrog.sfcore.languages.cdl.utils;
 
 import nu.xom.Attribute;
 import nu.xom.ParentNode;
+import nu.xom.Element;
+
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
  * An attribute iterator created 16-May-2005 17:25:15
  */
 
-public class AttributeIterator extends BaseNodeIterator<Attribute> {
-    public AttributeIterator(ParentNode parent) {
-        super(parent);
+public class AttributeIterator implements Iterator<Attribute>,
+        Iterable<Attribute> {
+
+    Element element;
+    int index=0;
+    Attribute currentAttribute;
+
+    public AttributeIterator(Element element) {
+        this.element = element;
+    }
+
+    public boolean hasNext() {
+        return index<element.getAttributeCount();
+    }
+
+    public Attribute next() {
+        Attribute attribute = getCurrent();
+        index++;
+        return attribute;
+    }
+
+    /**
+     * Get the current element
+     * @return
+     * @throws NoSuchElementException if there isnt one
+     */
+    private Attribute getCurrent() {
+        if (!hasNext()) {
+            throw new NoSuchElementException();
+        }
+        Attribute attribute = element.getAttribute(index);
+        return attribute;
+    }
+
+    /**
+     * remove the current attribute. 
+     *
+     * @throws NoSuchElementException if there isnt one
+     */
+    public void remove() {
+        Attribute attr=getCurrent();
+        element.removeAttribute(attr);
+    }
+
+
+    /**
+     * Return a new iterator over the element
+     * @return
+     */
+    public Iterator<Attribute> iterator() {
+        return new AttributeIterator(element);
     }
 }

@@ -23,7 +23,7 @@ package org.smartfrog.sfcore.languages.cdl.faults;
  * created 13-Jun-2005 13:39:14
  */
 
-public class CdlRecursiveExtendsException extends CdlException {
+public class CdlRecursiveExtendsException extends CdlResolutionException {
     /**
      * Constructs a new exception with <code>null</code> as its detail message.
      * The cause is not initialized, and may subsequently be initialized by a

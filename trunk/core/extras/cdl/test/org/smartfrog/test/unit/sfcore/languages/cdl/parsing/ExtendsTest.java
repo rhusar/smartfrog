@@ -23,9 +23,11 @@ import nu.xom.ParsingException;
 import org.smartfrog.sfcore.languages.cdl.Constants;
 import org.smartfrog.sfcore.languages.cdl.ParseContext;
 import org.smartfrog.sfcore.languages.cdl.dom.CdlDocument;
+import org.smartfrog.sfcore.languages.cdl.dom.PropertyList;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlRecursiveExtendsException;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlRuntimeException;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlResolutionException;
 import org.smartfrog.sfcore.languages.cdl.resolving.ExtendsContext;
 import org.smartfrog.test.unit.sfcore.languages.cdl.XmlTestBase;
 
@@ -45,16 +47,15 @@ public class ExtendsTest extends XmlTestBase {
             "propertylist");
     public static final QName LOCALONLY = new QName("propertylist");
 
+    private QName a1 = new QName("a1");
+    private QName a2 = new QName("a2");
+    private QName a3 = new QName("a3");
 
     public ExtendsTest(String name) {
         super(name);
     }
 
-    public void testExtendsIsExtracted() throws IOException, CdlException,
-            ParsingException {
-        CdlDocument cdlDocument = loadValidCDL(CDL_DOC_EXTENDS_1);
 
-    }
 
     public void testExtendsContextWorks() throws Exception {
         extendsContext.enter(PROPERTYLIST);
@@ -86,6 +87,14 @@ public class ExtendsTest extends XmlTestBase {
         }
     }
 
+    public void testExtendsContextNull() throws Exception {
+        try {
+            extendsContext.enter(null);
+            fail("expected error");
+        } catch (CdlResolutionException e) {
+            //success!
+        }
+    }
     public void testExtendsContextWrongExit() throws Exception {
         extendsContext.enter(PROPERTYLIST);
         try {
@@ -116,23 +125,65 @@ public class ExtendsTest extends XmlTestBase {
     }
 
     public void testDuplicatePrototypes() throws Exception {
-        assertInvalidCDL(CDL_DOC_DUPLICATE_NAME,
+        assertInvalidCDL(EXTENDS_DUPLICATE_NAME,
                 ParseContext.ERROR_DUPLICATE_PROTOTYPE);
     }
 
+    public void testAttributeCopyOnExtends() throws IOException, CdlException,
+            ParsingException {
+        ParseContext context = new ParseContext();
+        CdlDocument cdlDocument = loadValidCDL(context, CDL_DOC_EXTENDS_1);
+        PropertyList propertyList = context.prototypeResolve(a2);
+        assertNotNull(propertyList);
+        assertEquals("a1",propertyList.getAttribute(null,"attr"));
+    }
+
+    public void testAttributeOverrideCopyOnExtends() throws IOException, CdlException,
+            ParsingException {
+        ParseContext context = new ParseContext();
+        CdlDocument cdlDocument = loadValidCDL(context, CDL_DOC_EXTENDS_1);
+        PropertyList propertyList = context.prototypeResolve(a3);
+        assertNotNull(propertyList);
+        assertEquals("a3", propertyList.getAttribute(null, "attr"));
+    }
+
     public void testDirectLoop() throws Exception {
-        assertInvalidCDL(CDL_DOC_DIRECT_LOOP,
+        assertInvalidCDL(EXTENDS_DIRECT_LOOP,
                 ExtendsContext.ERROR_RECURSING);
     }
 
     public void testIndirectLoop() throws Exception {
-        assertInvalidCDL(CDL_DOC_INDIRECT_LOOP,
+        assertInvalidCDL(EXTENDS_INDIRECT_LOOP,
                 ExtendsContext.ERROR_RECURSING);
     }
 
     public void testBadReference() throws Exception {
-        assertInvalidCDL(CDL_DOC_BAD_REFERENCE,
+        assertInvalidCDL(EXTENDS_BAD_REFERENCE,
                 "Unknown reference");
     }
+
+    public void testUnknownNamespace() throws Exception {
+        assertInvalidCDL(EXTENDS_UNKNOWN_NAMESPACE,
+                PropertyList.ERROR_UNKNOWN_NAMESPACE);
+    }
+
+    public void testExtends2() throws IOException, CdlException,
+            ParsingException {
+        ParseContext context = new ParseContext();
+        CdlDocument cdlDocument = loadValidCDL(context, CDL_DOC_EXTENDS_2);
+    }
+
+    public void testExtendsNamespaces1() throws IOException, CdlException,
+            ParsingException {
+        ParseContext context = new ParseContext();
+        CdlDocument cdlDocument = loadValidCDL(context, CDL_DOC_EXTENDS_NAMESPACES_1);
+    }
+
+    public void testExtendsChildExtension() throws IOException, CdlException,
+            ParsingException {
+        ParseContext context = new ParseContext();
+        CdlDocument cdlDocument = loadValidCDL(context, CDL_DOC_EXTENDS_CHILD_EXTENSION);
+    }
+
 
 }

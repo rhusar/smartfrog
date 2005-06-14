@@ -184,7 +184,7 @@ public class GenericAttribute implements Names {
             String attributeName, boolean required)
             throws CdlXmlParsingException {
         Attribute attribute = element.getAttribute(attributeName,
-                DOC_NAMESPACE);
+                CDL_NAMESPACE);
         if (attribute == null && required) {
             throw new CdlXmlParsingException(
                     "Missing attribute " +

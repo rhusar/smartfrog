@@ -21,8 +21,11 @@ package org.smartfrog.sfcore.languages.cdl.dom;
 
 import nu.xom.Element;
 import nu.xom.Node;
+import nu.xom.Attribute;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlResolutionException;
 import org.smartfrog.sfcore.languages.cdl.utils.XmlUtils;
+import org.smartfrog.sfcore.languages.cdl.resolving.ExtendsResolver;
 
 import javax.xml.namespace.QName;
 import java.util.LinkedList;
@@ -54,6 +57,7 @@ public class PropertyList extends DocNode implements ToSmartFrog {
      * child list
      */
     private List<DocNode> children = new LinkedList<DocNode>();
+    public static final String ERROR_UNKNOWN_NAMESPACE = "Unknown namespace ";
 
 
     public PropertyList() {
@@ -94,7 +98,21 @@ public class PropertyList extends DocNode implements ToSmartFrog {
                 element.getNamespacePrefix());
         setName(prototypeName);
 
-        //TODO: extends
+        //what are we extending?
+        Attribute extendsAttr = getExtendsAttribute();
+        if(extendsAttr!=null) {
+            String rawextension=extendsAttr.getValue();
+            //now split that into namespace
+            String prefix=XmlUtils.extractNamespacePrefix(rawextension);
+            String local = XmlUtils.extractLocalname(rawextension);
+            String namespace=null;
+            if(prefix!=null) {
+                namespace = getNode().getNamespaceURI(prefix);
+                if(namespace==null) {
+                    throw new CdlXmlParsingException(ERROR_UNKNOWN_NAMESPACE+prefix);
+                }
+            }
+        }
 
         //run through all our child elements and processs them
         for (Node child : children()) {
@@ -110,7 +128,7 @@ public class PropertyList extends DocNode implements ToSmartFrog {
      *
      * @return
      */
-    DocNode createNodeFromElement(Element element)
+    private DocNode createNodeFromElement(Element element)
             throws CdlXmlParsingException {
         if (Documentation.isA(element)) {
             return new Documentation(element);
@@ -171,6 +189,10 @@ public class PropertyList extends DocNode implements ToSmartFrog {
     }
 
 
+    /**
+     * stringify for debugging: shows local and extends name only
+     * @return
+     */
     public String toString() {
         StringBuffer buffer = new StringBuffer();
         buffer.append("Prototype : ");
@@ -184,4 +206,68 @@ public class PropertyList extends DocNode implements ToSmartFrog {
         return buffer.toString();
     }
 
+    /**
+     * Merge with the extension
+     * @param extension
+     */
+    public void merge(PropertyList extension) {
+        //sanity check: we are merging ourselves
+        assert extension.name.equals(extendsName);
+        //now apply the rules of the CDL spec, section 7.2.2
+        mergeAttributes(extension);
+        mergeElements(extension);
+        //clear our extendsname, as we are now merged. no more extending for us.
+        extendsName = null;
+        //strip @cdl:extends
+        Attribute extendsAttr = getExtendsAttribute();
+        if(extendsAttr!=null) {
+            getNode().removeAttribute(extendsAttr);
+        }
+    }
+
+    private Attribute getExtendsAttribute() {
+        Attribute extendsAttr= getAttribute(CDL_NAMESPACE,ATTR_EXTENDS);
+        return extendsAttr;
+    }
+
+    /**
+     * merge in all attributes. public for testing
+     * @param extension
+     */
+    public void mergeAttributes(PropertyList extension) {
+        //this is where we start to work at the XOM level.
+        Element self=getNode();
+        for(Attribute extAttr: extension.attributes()) {
+            String namespace = extAttr.getNamespaceURI();
+            String local= extAttr.getLocalName();
+            if(!hasAttribute(namespace, local)) {
+                //no match: copy the attribute
+                self.addAttribute((Attribute)extAttr.copy());
+            }
+        }
+    }
+
+    /**
+     * merge in all elements. public for testing
+     *
+     * @param extension
+     */
+    private void mergeElements(PropertyList extension) {
+        //TODO
+    }
+
+    /**
+     * (recursively) resolve the extends attributes of all our child nodes
+     * BUGBUG: does not properly distinguish child nodes and not enter/exit them properly
+     * @param resolver
+     */
+    public void resolveChildExtends(CdlDocument document,ExtendsResolver resolver)
+            throws CdlResolutionException {
+        for(DocNode node:children) {
+            if(node instanceof PropertyList) {
+                PropertyList list=(PropertyList) node;
+                resolver.resolveExtends(document,list);
+            }
+        }
+    }
 }
