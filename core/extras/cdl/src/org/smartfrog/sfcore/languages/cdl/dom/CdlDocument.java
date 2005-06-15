@@ -25,12 +25,13 @@ import nu.xom.Node;
 import nu.xom.ParentNode;
 import org.ggf.cddlm.generated.api.CddlmConstants;
 import org.smartfrog.sfcore.languages.cdl.ParseContext;
-import org.smartfrog.sfcore.languages.cdl.resolving.ExtendsResolver;
 import org.smartfrog.sfcore.languages.cdl.dom.attributes.GenericAttribute;
 import org.smartfrog.sfcore.languages.cdl.dom.attributes.URIAttribute;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlDuplicatePrototypeException;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlResolutionException;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
+import org.smartfrog.sfcore.languages.cdl.resolving.ExtendsResolver;
 import org.smartfrog.sfcore.languages.cdl.utils.ClassLogger;
 import org.smartfrog.sfcore.languages.cdl.utils.IteratorRelay;
 import org.smartfrog.sfcore.languages.cdl.utils.NodeIterator;
@@ -123,7 +124,9 @@ public class CdlDocument extends DocumentedNode {
      */
     public String toString() {
         return "CDL document namespace=" +
-                (targetNamespace == null ? "local" : targetNamespace.toString());
+                (targetNamespace == null ?
+                "local" :
+                targetNamespace.toString());
     }
 
     /**
@@ -226,24 +229,6 @@ public class CdlDocument extends DocumentedNode {
     }
 
     /**
-     * this routine encodes all the logic around the validity of the scham
-     *
-     * @throws CdlXmlParsingException
-     */
-    public void validate() throws CdlXmlParsingException {
-        Element root = document.getRootElement();
-        String uri = root.getNamespaceURI();
-
-        if (configuration != null) {
-            configuration.validateToplevel();
-        }
-        if (system != null) {
-            system.validateToplevel();
-        }
-
-    }
-
-    /**
      * Look up a toplevel node
      *
      * @param name
@@ -263,9 +248,8 @@ public class CdlDocument extends DocumentedNode {
      */
     private void verifyInCdlNamespace(Element element)
             throws CdlXmlParsingException {
-        CdlXmlParsingException.assertValid(
-                CddlmConstants.XML_CDL_NAMESPACE.equals(
-                        element.getNamespaceURI()),
+        CdlXmlParsingException.assertValid(CddlmConstants.XML_CDL_NAMESPACE.equals(
+                element.getNamespaceURI()),
                 ERROR_WRONG_NAMESPACE);
 
     }
@@ -318,19 +302,36 @@ public class CdlDocument extends DocumentedNode {
 
 
     /**
-     * we have the root node; lets extract everything from it
+     * This is the complete parse process. The parse context is bound, and the
+     * different phases are invoked
      *
      * @param context the parsing context
      * @throws CdlXmlParsingException
      */
     public void parse(ParseContext context) throws CdlException {
         setParseContext(context);
+        parsePhaseBuildDom();
+        parsePhaseProcessImports();
+        parsePhaseExtendProcessing();
+        parsePhaseResolveVariables();
+        parsePhaseEvaluateExpressions();
+    }
+
+
+    /**
+     * This is the parse  phase where the DOM is extracted, and the root
+     * prototypes are registered
+     *
+     * @throws CdlXmlParsingException
+     */
+    public void parsePhaseBuildDom() throws CdlException {
         Element root = getRoot();
         verifyInCdlNamespace(root);
         verifyNodeName(root, CddlmConstants.ELEMENT_NAME_ROOT);
 
         //get our target namespace.
-        targetNamespaceAttr = GenericAttribute.findAndBind("targetNamespace",
+        targetNamespaceAttr = GenericAttribute.findAndBind(
+                ATTR_TARGET_NAMESPACE,
                 URIAttribute.class,
                 getNode(),
                 false,
@@ -384,17 +385,41 @@ public class CdlDocument extends DocumentedNode {
                 throw new CdlXmlParsingException("Unknown element " + child);
             } else {
                 //do nothing
-                //TODO: log this?
                 log.info("Ignoring unknown element " + child);
             }
-
         }
-
         //at this point, we are mapped into custom classes to represent stuff
         registerPrototypes();
+    }
+
+    /**
+     * All imports are processed here
+     *
+     * @throws CdlException
+     * @todo: implement
+     */
+    public void parsePhaseProcessImports() throws CdlException {
+        log.debug("Import processing not implemented");
+    }
+
+    /**
+     * Apply extends logic to the document
+     *
+     * @throws CdlResolutionException
+     */
+    public void parsePhaseExtendProcessing() throws CdlResolutionException {
         //extends our extendendables
-        ExtendsResolver extendsResolver=new ExtendsResolver(getParseContext());
+        ExtendsResolver extendsResolver = new ExtendsResolver(
+                getParseContext());
         extendsResolver.resolveExtends(this);
+    }
+
+    public void parsePhaseResolveVariables() throws CdlResolutionException {
+
+    }
+
+    public void parsePhaseEvaluateExpressions() throws CdlResolutionException {
+
     }
 
 
@@ -411,8 +436,6 @@ public class CdlDocument extends DocumentedNode {
         if (system != null) {
             system.registerPrototypes();
         }
-
-
     }
 
 }

@@ -135,7 +135,6 @@ public abstract class XmlTestBase extends TestCase implements Filenames {
                 text = "";
             }
             CdlDocument doc = load(resource);
-            doc.validate();
             doc.parse(context);
             fail("expected a validity failure with " + text);
         } catch (ParsingException e) {
@@ -152,7 +151,8 @@ public abstract class XmlTestBase extends TestCase implements Filenames {
     }
 
     /**
-     * load a file; assert that it is valid. This
+     * load a file; assert that it is valid. This parses the doc as well as
+     * loading it.
      *
      * @param resource
      * @throws IOException
@@ -162,7 +162,7 @@ public abstract class XmlTestBase extends TestCase implements Filenames {
     protected void assertValidCDL(String resource) throws IOException,
             ParsingException, CdlException {
         ParseContext context = new ParseContext();
-        loadValidCDL(context, resource);
+        parseValidCDL(context, resource);
     }
 
     /**
@@ -173,7 +173,7 @@ public abstract class XmlTestBase extends TestCase implements Filenames {
      * @throws ParsingException
      * @throws CdlXmlParsingException
      */
-    protected CdlDocument loadValidCDL(ParseContext context, String resource)
+    protected CdlDocument parseValidCDL(ParseContext context, String resource)
             throws IOException,
             ParsingException, CdlException {
         CdlDocument cdlDocument = loadValidCDL(resource);
@@ -191,7 +191,23 @@ public abstract class XmlTestBase extends TestCase implements Filenames {
     protected CdlDocument loadValidCDL(String resource) throws IOException,
             ParsingException, CdlException {
         CdlDocument doc = load(resource);
-        doc.validate();
+        return doc;
+    }
+
+    /**
+     * Load a valid CDL document and build the DOM, but do not apply any other
+     * phases
+     *
+     * @param resource
+     * @return the document, built up but without imports, expands or other
+     *         operations
+     */
+    protected CdlDocument loadCDLToDOM(String resource) throws IOException,
+            ParsingException, CdlException {
+        CdlDocument doc = load(resource);
+        ParseContext context = new ParseContext();
+        doc.setParseContext(context);
+        doc.parsePhaseBuildDom();
         return doc;
     }
 }

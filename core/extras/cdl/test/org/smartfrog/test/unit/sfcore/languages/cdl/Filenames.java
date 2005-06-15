@@ -132,4 +132,9 @@ public interface Filenames {
             + "extends-unknown-namespace.cdl";
     String EXTENDS_RECURSIVE_EXTENDS = INVALID_RESOLUTION_RESOURCES
             + "extends-recursive-extends.cdl";
+    String EXTENDS_DEFAULT_NAMESPACE_NOT_IN_EXTENDS = INVALID_RESOLUTION_RESOURCES
+            + "extends-default-namespace-not-in-extends.cdl";
+    String EXTENDS_SYSTEM_EXTENDS = INVALID_RESOLUTION_RESOURCES
+            + "extends-default-namespace-not-in-extends.cdl";
+
 }

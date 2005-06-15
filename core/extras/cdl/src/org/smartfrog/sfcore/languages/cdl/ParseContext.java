@@ -27,6 +27,8 @@ import org.smartfrog.sfcore.languages.cdl.importing.ClasspathResolver;
 import org.smartfrog.sfcore.languages.cdl.importing.ImportResolver;
 import org.smartfrog.sfcore.languages.cdl.importing.ImportedDocument;
 import org.smartfrog.sfcore.languages.cdl.importing.ImportedDocumentMap;
+import org.smartfrog.sfcore.languages.cdl.utils.ClassLogger;
+import org.smartfrog.sfcore.logging.Log;
 
 import javax.xml.namespace.QName;
 import java.io.IOException;
@@ -46,6 +48,11 @@ import java.util.Properties;
  */
 
 public class ParseContext {
+
+    /**
+     * a log
+     */
+    private Log log = ClassLogger.getLog(this);
 
     /**
      * import resolution class. This is mandatory (in the constructor) and so
@@ -183,7 +190,7 @@ public class ParseContext {
      *
      * @param prototype
      */
-    public void prototypeAdd(PropertyList prototype) {
+    public void prototypeUpdate(PropertyList prototype) {
         QName prototypeName = prototype.getName();
         if (prototypeName == null) {
             throw new CdlRuntimeException(ERROR_NO_PROTOTYPE_NAME + prototype);
@@ -200,6 +207,7 @@ public class ParseContext {
      */
     public void prototypeAddNew(PropertyList prototype)
             throws CdlDuplicatePrototypeException {
+
         QName prototypeName = prototype.getName();
         if (prototypeName == null) {
             throw new CdlRuntimeException(ERROR_NO_PROTOTYPE_NAME + prototype);
@@ -208,7 +216,10 @@ public class ParseContext {
             throw new CdlDuplicatePrototypeException(
                     ERROR_DUPLICATE_PROTOTYPE + prototypeName);
         }
+        log.debug("Adding prototype " + prototypeName);
         resolvablePrototypes.put(prototypeName, prototype);
+        //mark the proto as toplevel
+        prototype.setToplevel(true);
     }
 
     /**
@@ -220,4 +231,7 @@ public class ParseContext {
         return resolvablePrototypes.values();
     }
 
+    public Log getLog() {
+        return log;
+    }
 }
