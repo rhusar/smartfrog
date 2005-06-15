@@ -62,20 +62,21 @@ public final class XmlUtils {
                     prefix);
 
         } else {
-            dest = new QName(namespace, prefix);
+            dest = new QName(namespace, local);
         }
         return dest;
     }
 
     /**
      * map from, say tns:something to 'tns'
+     *
      * @param string
      * @return null for no namespace
      */
     public static String extractNamespacePrefix(String string) {
-        int offset=string.indexOf(':');
-        if(offset>=0) {
-            return string.substring(0,offset);
+        int offset = string.indexOf(':');
+        if (offset >= 0) {
+            return string.substring(0, offset);
         } else {
             return null;
         }
@@ -85,13 +86,13 @@ public final class XmlUtils {
      * map from, say tns:something to 'something'
      *
      * @param string
-     *
-     * @return everything following the : or the whole string if one is not there
+     * @return everything following the : or the whole string if one is not
+     *         there
      */
     public static String extractLocalname(String string) {
         int offset = string.indexOf(':');
         if (offset >= 0) {
-            return string.substring(offset+1);
+            return string.substring(offset + 1);
         } else {
             return string;
         }

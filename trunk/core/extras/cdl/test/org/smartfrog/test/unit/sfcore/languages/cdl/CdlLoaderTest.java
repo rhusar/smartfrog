@@ -90,9 +90,6 @@ public class CdlLoaderTest extends XmlTestBase {
         assertValidCDL(CDL_DOC_FULL_EXAMPLE_2);
     }
 
-    public void testFullExample3() throws Exception {
-        assertValidCDL(CDL_DOC_FULL_EXAMPLE_3);
-    }
 
     public void testReferences1() throws Exception {
         assertValidCDL(CDL_DOC_REFERENCES_1);

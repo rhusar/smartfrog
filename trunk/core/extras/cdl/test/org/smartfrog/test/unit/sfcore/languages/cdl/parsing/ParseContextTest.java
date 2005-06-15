@@ -94,6 +94,6 @@ public class ParseContextTest extends XmlTestBase {
         QName name = new QName(Constants.SMARTFROG_NAMESPACE, "smartfrog");
         prototype.setName(name);
         context.prototypeAddNew(prototype);
-        context.prototypeAdd(prototype);
+        context.prototypeUpdate(prototype);
     }
 }

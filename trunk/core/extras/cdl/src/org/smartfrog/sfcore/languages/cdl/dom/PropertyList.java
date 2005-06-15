@@ -19,13 +19,16 @@
  */
 package org.smartfrog.sfcore.languages.cdl.dom;
 
+import nu.xom.Attribute;
 import nu.xom.Element;
 import nu.xom.Node;
-import nu.xom.Attribute;
-import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlResolutionException;
-import org.smartfrog.sfcore.languages.cdl.utils.XmlUtils;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
 import org.smartfrog.sfcore.languages.cdl.resolving.ExtendsResolver;
+import org.smartfrog.sfcore.languages.cdl.utils.ClassLogger;
+import org.smartfrog.sfcore.languages.cdl.utils.NodeIterator;
+import org.smartfrog.sfcore.languages.cdl.utils.XmlUtils;
+import org.smartfrog.sfcore.logging.Log;
 
 import javax.xml.namespace.QName;
 import java.util.LinkedList;
@@ -37,6 +40,8 @@ import java.util.ListIterator;
  */
 
 public class PropertyList extends DocNode implements ToSmartFrog {
+
+    protected boolean toplevel = false;
 
     /**
      * Our name. Only toplevel elements can have a qname
@@ -53,6 +58,10 @@ public class PropertyList extends DocNode implements ToSmartFrog {
      */
     public PropertyList extendsResolved;
 
+    /**
+     * a log
+     */
+    protected Log log = ClassLogger.getLog(this);
     /**
      * child list
      */
@@ -100,21 +109,23 @@ public class PropertyList extends DocNode implements ToSmartFrog {
 
         //what are we extending?
         Attribute extendsAttr = getExtendsAttribute();
-        if(extendsAttr!=null) {
-            String rawextension=extendsAttr.getValue();
+        if (extendsAttr != null) {
+            String rawextension = extendsAttr.getValue();
             //now split that into namespace
-            String prefix=XmlUtils.extractNamespacePrefix(rawextension);
+            String prefix = XmlUtils.extractNamespacePrefix(rawextension);
             String local = XmlUtils.extractLocalname(rawextension);
-            String namespace=null;
-            if(prefix!=null) {
+            String namespace = null;
+            if (prefix != null) {
                 namespace = getNode().getNamespaceURI(prefix);
-                if(namespace==null) {
-                    throw new CdlXmlParsingException(ERROR_UNKNOWN_NAMESPACE+prefix);
+                if (namespace == null) {
+                    throw new CdlXmlParsingException(
+                            ERROR_UNKNOWN_NAMESPACE + prefix);
                 }
             }
+            setExtendsName(XmlUtils.makeQName(namespace, local, prefix));
         }
 
-        //run through all our child elements and processs them
+        //run through all our child elements and process them
         for (Node child : children()) {
             if (child instanceof Element) {
                 children.add(createNodeFromElement((Element) child));
@@ -165,20 +176,6 @@ public class PropertyList extends DocNode implements ToSmartFrog {
 
 
     /**
-     * Assert that we are valid as toplevel.
-     */
-    public void validateToplevel() throws CdlXmlParsingException {
-
-    }
-
-    /**
-     * validate lowerlevel nodes
-     */
-    public void validateLowerLevel() throws CdlXmlParsingException {
-        validateToplevel();
-    }
-
-    /**
      * Test for a propertylist instance name
      *
      * @param testName
@@ -188,9 +185,17 @@ public class PropertyList extends DocNode implements ToSmartFrog {
         return testName.equals(name);
     }
 
+    public boolean isToplevel() {
+        return toplevel;
+    }
+
+    public void setToplevel(boolean toplevel) {
+        this.toplevel = toplevel;
+    }
 
     /**
      * stringify for debugging: shows local and extends name only
+     *
      * @return
      */
     public String toString() {
@@ -201,13 +206,16 @@ public class PropertyList extends DocNode implements ToSmartFrog {
             buffer.append(" extends ");
             buffer.append(extendsName);
         }
-        buffer.append(" from ");
-        buffer.append(getOwner());
+        if (getOwner() != null) {
+            buffer.append(" from ");
+            buffer.append(getOwner());
+        }
         return buffer.toString();
     }
 
     /**
      * Merge with the extension
+     *
      * @param extension
      */
     public void merge(PropertyList extension) {
@@ -220,29 +228,40 @@ public class PropertyList extends DocNode implements ToSmartFrog {
         extendsName = null;
         //strip @cdl:extends
         Attribute extendsAttr = getExtendsAttribute();
-        if(extendsAttr!=null) {
+        if (extendsAttr != null) {
             getNode().removeAttribute(extendsAttr);
         }
     }
 
     private Attribute getExtendsAttribute() {
-        Attribute extendsAttr= getAttribute(CDL_NAMESPACE,ATTR_EXTENDS);
+        Attribute extendsAttr = getAttribute(CDL_NAMESPACE, ATTR_EXTENDS);
+        if (extendsAttr == null) {
+            if (getAttribute(null, ATTR_EXTENDS) != null) {
+                //this is here because I always get this wrong myself, and wanted
+                //some extra diagnostics. SteveL.
+                log.warn("Template " +
+                        toString() +
+                        " has an extends attribute, but it is " +
+                        "not in the CDL namespace. This may be an error.");
+            }
+        }
         return extendsAttr;
     }
 
     /**
      * merge in all attributes. public for testing
+     *
      * @param extension
      */
     public void mergeAttributes(PropertyList extension) {
         //this is where we start to work at the XOM level.
-        Element self=getNode();
-        for(Attribute extAttr: extension.attributes()) {
+        Element self = getNode();
+        for (Attribute extAttr : extension.attributes()) {
             String namespace = extAttr.getNamespaceURI();
-            String local= extAttr.getLocalName();
-            if(!hasAttribute(namespace, local)) {
+            String local = extAttr.getLocalName();
+            if (!hasAttribute(namespace, local)) {
                 //no match: copy the attribute
-                self.addAttribute((Attribute)extAttr.copy());
+                self.addAttribute((Attribute) extAttr.copy());
             }
         }
     }
@@ -253,20 +272,57 @@ public class PropertyList extends DocNode implements ToSmartFrog {
      * @param extension
      */
     private void mergeElements(PropertyList extension) {
-        //TODO
+        Element templateElt = extension.getNode();
+        for (Node node : new NodeIterator(templateElt)) {
+            if (node instanceof Element) {
+                Element element = (Element) node;
+                //now, look for a match locally, or bail out.
+                Element match = getFirstChildElement(element);
+                if (match == null) {
+                    //simple insertion
+                } else {
+                    //complex merge
+                }
+
+            }
+        }
+    }
+
+    /**
+     * get the first child element of a node
+     *
+     * @param namespace optional namespace
+     * @param localname localname
+     * @return
+     * @see Element#getFirstChildElement(String, String)
+     */
+    private Element getFirstChildElement(String namespace, String localname) {
+        if (localname != null) {
+            return getNode().getFirstChildElement(namespace, localname);
+        } else {
+            return getNode().getFirstChildElement(localname);
+        }
+    }
+
+    private Element getFirstChildElement(Element source) {
+        return getFirstChildElement(source.getNamespaceURI(),
+                source.getLocalName());
     }
 
     /**
      * (recursively) resolve the extends attributes of all our child nodes
-     * BUGBUG: does not properly distinguish child nodes and not enter/exit them properly
+     * BUGBUG: does not properly distinguish child nodes and not enter/exit them
+     * properly
+     *
      * @param resolver
      */
-    public void resolveChildExtends(CdlDocument document,ExtendsResolver resolver)
+    public void resolveChildExtends(CdlDocument document,
+            ExtendsResolver resolver)
             throws CdlResolutionException {
-        for(DocNode node:children) {
-            if(node instanceof PropertyList) {
-                PropertyList list=(PropertyList) node;
-                resolver.resolveExtends(document,list);
+        for (DocNode node : children) {
+            if (node instanceof PropertyList) {
+                PropertyList list = (PropertyList) node;
+                resolver.resolveExtends(document, list);
             }
         }
     }

@@ -72,6 +72,7 @@ public class ToplevelList extends PropertyList {
             if (docnode instanceof PropertyList) {
                 PropertyList prototype = (PropertyList) docnode;
                 getParseContext().prototypeAddNew(prototype);
+
             }
         }
     }

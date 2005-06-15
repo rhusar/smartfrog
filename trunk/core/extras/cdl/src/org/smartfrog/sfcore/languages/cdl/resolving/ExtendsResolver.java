@@ -24,7 +24,6 @@ import org.smartfrog.sfcore.languages.cdl.dom.CdlDocument;
 import org.smartfrog.sfcore.languages.cdl.dom.PropertyList;
 import org.smartfrog.sfcore.languages.cdl.dom.ToplevelList;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlResolutionException;
-import org.smartfrog.sfcore.languages.cdl.faults.CdlRecursiveExtendsException;
 import org.smartfrog.sfcore.languages.cdl.utils.ClassLogger;
 import org.smartfrog.sfcore.logging.Log;
 
@@ -49,6 +48,7 @@ public class ExtendsResolver {
      * parsing context
      */
     private ParseContext parseContext;
+    public static final String ERROR_UNKNOWN_TEMPLATE = "Unknown Template :";
 
     /**
      * Extends support has a parse context
@@ -65,9 +65,8 @@ public class ExtendsResolver {
      * Resolve the extends for an entire document
      *
      * @param document
-     *
-     * @throws CdlResolutionException
      * @return true iff there was a system element needing resolving
+     * @throws CdlResolutionException
      */
     public boolean resolveExtends(CdlDocument document)
             throws CdlResolutionException {
@@ -87,15 +86,18 @@ public class ExtendsResolver {
      *
      * @param document
      * @param targetName name of the target
-     *
      * @return
-     *
      * @throws CdlResolutionException
      */
     public ResolveResult resolveExtends(CdlDocument document,
-                                        QName targetName)
+            QName targetName)
             throws CdlResolutionException {
-        return resolveExtends(document, lookup(targetName));
+        PropertyList target = lookup(targetName);
+        if (target == null) {
+            throw new CdlResolutionException(ERROR_UNKNOWN_TEMPLATE +
+                    targetName);
+        }
+        return resolveExtends(document, target);
     }
 
     /**
@@ -104,22 +106,28 @@ public class ExtendsResolver {
      *
      * @param document
      * @param target
-     *
      * @return
-     *
      * @throws CdlResolutionException
      */
     public ResolveResult resolveExtends(CdlDocument document,
-                                        PropertyList target)
+            PropertyList target)
             throws CdlResolutionException {
+        boolean toplevel = target.isToplevel();
         QName name = target.getName();
         assert name != null;
-        stack.enter(name);
+        if (toplevel) {
+            //only track names on entry and exit when we are toplevel.
+            //after the first resolve, this case will always hold, but
+            //the initial resolve may not be so extended
+            stack.enter(name);
+        }
         ResolveResult result;
         try {
             result = innerResolve(document, target);
         } finally {
-            stack.exit(name);
+            if (toplevel) {
+                stack.exit(name);
+            }
         }
         return result;
     }
@@ -130,13 +138,11 @@ public class ExtendsResolver {
      *
      * @param document
      * @param target
-     *
      * @return
-     *
      * @throws CdlResolutionException
      */
     private ResolveResult innerResolve(CdlDocument document,
-                                       PropertyList target)
+            PropertyList target)
             throws CdlResolutionException {
         ResolveResult result;
         ResolveEnum state = ResolveEnum.ResolvedIncomplete;
@@ -148,7 +154,8 @@ public class ExtendsResolver {
         } else {
             //something to resolve.
             ResolveResult extended;
-            log.debug("Resolving " + target.getName() + " extends " + extending);
+            log.debug(
+                    "Resolving " + target.getName() + " extends " + extending);
             extended = resolveExtends(document, extending);
             if (extended.state == ResolveEnum.ResolvedIncomplete) {
                 //if there is something that is unfinished at this level,
@@ -175,7 +182,6 @@ public class ExtendsResolver {
      * lookup a property in our context
      *
      * @param nodeName
-     *
      * @return
      */
     private PropertyList lookup(QName nodeName) {
@@ -186,7 +192,6 @@ public class ExtendsResolver {
      * Propagate resolution
      *
      * @param parent
-     *
      * @return
      */
     private ResolveEnum propagate(ResolveEnum parent) {
