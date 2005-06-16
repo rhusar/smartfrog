@@ -21,15 +21,12 @@ package org.smartfrog.sfcore.languages.cdl.resolving;
 
 import nu.xom.Element;
 import nu.xom.Node;
-import org.apache.commons.lang.NotImplementedException;
 import org.smartfrog.sfcore.languages.cdl.ParseContext;
 import org.smartfrog.sfcore.languages.cdl.dom.CdlDocument;
-import org.smartfrog.sfcore.languages.cdl.dom.DocNode;
 import org.smartfrog.sfcore.languages.cdl.dom.PropertyList;
 import org.smartfrog.sfcore.languages.cdl.dom.ToplevelList;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlResolutionException;
-import org.smartfrog.sfcore.languages.cdl.faults.CdlRuntimeException;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
 import org.smartfrog.sfcore.languages.cdl.utils.ClassLogger;
 import org.smartfrog.sfcore.logging.Log;
@@ -203,11 +200,6 @@ public class ExtendsResolver {
         return result;
     }
 
-    private void unimplemented(String text) {
-        throw new NotImplementedException(text);
-    }
-
-
     /**
      * merge in all elements. public for testing we extend any elements that
      * need extending before merging.
@@ -232,6 +224,15 @@ public class ExtendsResolver {
                 //find the matching property list element
                 PropertyList elementAsList = extension.getChildListContaining(
                         element);
+                if(elementAsList==null) {
+                    //this is an element, but not mapped to a PropertyList
+                    //which means that it is actually a CDL special type.
+                    //add it as is, and go on to the next element
+                    //todo: Write some tests that play with extending expressions
+                    newChildren.add(node);
+                    //go on to the next element
+                    continue;
+                }
                 assert elementAsList != null;
                 QName name = elementAsList.getName();
 
@@ -271,17 +272,6 @@ public class ExtendsResolver {
         // all nodes get added too.
         List<Node> leftovers = copyAndResolve(target, entries);
         newChildren.addAll(leftovers);
-        for (DocNode node : target.childDocNodes()) {
-            if (node instanceof PropertyList) {
-                PropertyList child = (PropertyList) node;
-                QName name = child.getName();
-                if (entries.get(name) != null) {
-                    entries.put(name, name);
-                    newChildren.add(child.getNode());
-                }
-            }
-        }
-
 
         //as this point our element list is updated, and the mappings list contains
         //a mapping for every element that we have used. So, what do we do now.
@@ -292,11 +282,22 @@ public class ExtendsResolver {
         return replaceNode(target, newChildren);
     }
 
+    /**
+     * This method resolves and copies all elements beneath our target into a list,
+     * unless their qname appears in the hashmap of known qnames. Elements
+     * are added to the #map as they are propagated
+     * If the hashmap is null, the mapping lookup/add is skipped,
+     * returning a list of all elements, resolved when appropriate.
+     * @param target
+     * @param map
+     * @return a list of nodes, any extended elements are resolved and @cdl:extends stripped.
+     * @throws CdlException in the event of trouble
+     */
     private List<Node> copyAndResolve(PropertyList target,
             HashMap<QName, QName> map)
             throws CdlException {
-        List<Node> newChildren = new ArrayList<Node>(
-                target.getNode().getChildCount());
+        int childCount = target.getNode().getChildCount();
+        List<Node> newChildren = new ArrayList<Node>(childCount);
         for (Node node : target.children()) {
             if (node instanceof Element) {
                 //get the element
@@ -305,8 +306,10 @@ public class ExtendsResolver {
                 PropertyList elementAsList = target.getChildListContaining(
                         element);
                 if (elementAsList == null) {
-                    throw new CdlRuntimeException(
-                            "this element is unknown" + element);
+                    //special elt, so special handling.
+                    //add and continue
+                    newChildren.add(node);
+                    continue;
                 }
                 QName name = elementAsList.getName();
                 //merge it
@@ -326,6 +329,7 @@ public class ExtendsResolver {
                     }
                 }
             } else {
+                //anything other than an element. Just merge it in
                 newChildren.add(node);
             }
         }
@@ -342,8 +346,8 @@ public class ExtendsResolver {
      *         newChildren as elements
      * @throws CdlXmlParsingException
      */
-    private PropertyList replaceNode(PropertyList target,
-            List<Node> newChildren) throws CdlXmlParsingException {
+    private PropertyList replaceNode(PropertyList target, List<Node> newChildren)
+            throws CdlXmlParsingException {
         //copy the target element
         Element newElement = (Element) target.getNode().copy();
         //strip its children away (a bit wasteful)
