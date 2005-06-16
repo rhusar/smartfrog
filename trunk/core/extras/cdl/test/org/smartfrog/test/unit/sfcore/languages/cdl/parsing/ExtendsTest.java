@@ -198,4 +198,28 @@ public class ExtendsTest extends XmlTestBase {
                 CDL_DOC_EXTENDS_CHILD_EXTENSION);
     }
 
+    public void testExtendsAttributeInheritance() throws IOException, CdlException,
+            ParsingException {
+        ParseContext context = new ParseContext();
+        CdlDocument cdlDocument = parseValidCDL(context,
+                CDL_DOC_ATTRIBUTE_INHERITANCE);
+        //TODO: xpath tests to verify the stuff
+    }
+
+    public void testExtendsNonElementChildren() throws IOException, CdlException,
+            ParsingException {
+        ParseContext context = new ParseContext();
+        CdlDocument cdlDocument = parseValidCDL(context,
+                CDL_DOC_EXTENDS_NON_ELEMENT_CHILDREN);
+    }
+
+    public void testExtendsIndirectRecursive() throws Exception {
+        assertInvalidCDL(EXTENDS_INDIRECT_RECURSIVE,
+                ExtendsContext.ERROR_RECURSING);
+    }
+
+    public void testExtendsRecursiveOverride() throws Exception {
+        assertInvalidCDL(EXTENDS_RECURSIVE_OVERRIDE,
+                ExtendsContext.ERROR_RECURSING);
+    }
 }

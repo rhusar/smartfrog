@@ -52,6 +52,9 @@
       <dependency groupID="org.ggf"
         artifactID="cddlm"
         version="${cddlm.version}"/>
+      <dependency groupID="commons-lang"
+        artifactID="commons-lang"
+        version="${commons-lang.version}"/>
       <dependency groupID="commons-logging"
         artifactID="commons-logging-api"
         version="${commons-logging.version}"/>
