@@ -110,6 +110,12 @@ public interface Filenames {
             "extends-namespaces-1.cdl";
     String CDL_DOC_EXTENDS_CHILD_EXTENSION = RESOLUTION_RESOURCES +
             "extends-child-extension.cdl";
+    String CDL_DOC_ATTRIBUTE_INHERITANCE = RESOLUTION_RESOURCES +
+            "extends-attribute-inheritance.cdl";
+
+    String CDL_DOC_EXTENDS_NON_ELEMENT_CHILDREN = RESOLUTION_RESOURCES +
+            "extends-non-element-children.cdl";
+
     String CDL_DOC_WRONG_ELT_ORDER = INVALID_RESOURCES +
             "wrong_elt_order.cdl";
     String CDL_DOC_WRONG_ROOT_ELT_TYPE = INVALID_RESOURCES +
@@ -136,5 +142,8 @@ public interface Filenames {
             + "extends-default-namespace-not-in-extends.cdl";
     String EXTENDS_SYSTEM_EXTENDS = INVALID_RESOLUTION_RESOURCES
             + "extends-default-namespace-not-in-extends.cdl";
-
+    String EXTENDS_INDIRECT_RECURSIVE = INVALID_RESOLUTION_RESOURCES
+            + "extends-indirect-recursive.cdl";
+    String EXTENDS_RECURSIVE_OVERRIDE = INVALID_RESOLUTION_RESOURCES
+            + "extends-recursive-override.cdl";
 }

@@ -22,11 +22,8 @@ package org.smartfrog.sfcore.languages.cdl.dom;
 import nu.xom.Attribute;
 import nu.xom.Element;
 import nu.xom.Node;
-import org.smartfrog.sfcore.languages.cdl.faults.CdlResolutionException;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
-import org.smartfrog.sfcore.languages.cdl.resolving.ExtendsResolver;
 import org.smartfrog.sfcore.languages.cdl.utils.ClassLogger;
-import org.smartfrog.sfcore.languages.cdl.utils.NodeIterator;
 import org.smartfrog.sfcore.languages.cdl.utils.XmlUtils;
 import org.smartfrog.sfcore.logging.Log;
 
@@ -147,7 +144,7 @@ public class PropertyList extends DocNode implements ToSmartFrog {
         if (Expression.isA(element)) {
             return new Expression(element);
         }
-        //else, it is not a recognised type, so we make another propertly list from it
+        //else, it is not a recognised type, so we make another property list from it
         return new PropertyList(element);
     }
 
@@ -214,16 +211,16 @@ public class PropertyList extends DocNode implements ToSmartFrog {
     }
 
     /**
-     * Merge with the extension
+     * Merge with another context, by inherting attributes and stripping
+     * extension information
      *
      * @param extension
      */
-    public void merge(PropertyList extension) {
+    public void mergeAttributes(PropertyList extension) {
         //sanity check: we are merging ourselves
         assert extension.name.equals(extendsName);
         //now apply the rules of the CDL spec, section 7.2.2
-        mergeAttributes(extension);
-        mergeElements(extension);
+        inheritAttributes(extension);
         //clear our extendsname, as we are now merged. no more extending for us.
         extendsName = null;
         //strip @cdl:extends
@@ -233,6 +230,12 @@ public class PropertyList extends DocNode implements ToSmartFrog {
         }
     }
 
+    /**
+     * Get the extends attribute of the element. Prints a warning if there is an
+     * attribute called extends that is not in the cdl: namespace.
+     *
+     * @return
+     */
     private Attribute getExtendsAttribute() {
         Attribute extendsAttr = getAttribute(CDL_NAMESPACE, ATTR_EXTENDS);
         if (extendsAttr == null) {
@@ -253,7 +256,7 @@ public class PropertyList extends DocNode implements ToSmartFrog {
      *
      * @param extension
      */
-    public void mergeAttributes(PropertyList extension) {
+    public void inheritAttributes(PropertyList extension) {
         //this is where we start to work at the XOM level.
         Element self = getNode();
         for (Attribute extAttr : extension.attributes()) {
@@ -262,28 +265,6 @@ public class PropertyList extends DocNode implements ToSmartFrog {
             if (!hasAttribute(namespace, local)) {
                 //no match: copy the attribute
                 self.addAttribute((Attribute) extAttr.copy());
-            }
-        }
-    }
-
-    /**
-     * merge in all elements. public for testing
-     *
-     * @param extension
-     */
-    private void mergeElements(PropertyList extension) {
-        Element templateElt = extension.getNode();
-        for (Node node : new NodeIterator(templateElt)) {
-            if (node instanceof Element) {
-                Element element = (Element) node;
-                //now, look for a match locally, or bail out.
-                Element match = getFirstChildElement(element);
-                if (match == null) {
-                    //simple insertion
-                } else {
-                    //complex merge
-                }
-
             }
         }
     }
@@ -304,26 +285,67 @@ public class PropertyList extends DocNode implements ToSmartFrog {
         }
     }
 
-    private Element getFirstChildElement(Element source) {
+    /**
+     * Get the first child element whose name matches that of the source
+     *
+     * @param source
+     * @return
+     */
+    public Element getFirstChildElement(Element source) {
         return getFirstChildElement(source.getNamespaceURI(),
                 source.getLocalName());
     }
 
     /**
-     * (recursively) resolve the extends attributes of all our child nodes
-     * BUGBUG: does not properly distinguish child nodes and not enter/exit them
-     * properly
+     * look up the child property list node containing this element.
      *
-     * @param resolver
+     * @param element element to look for
+     * @return the propertly list or null for no match
      */
-    public void resolveChildExtends(CdlDocument document,
-            ExtendsResolver resolver)
-            throws CdlResolutionException {
-        for (DocNode node : children) {
+    public PropertyList getChildListContaining(Element element) {
+        for (DocNode node : childDocNodes()) {
             if (node instanceof PropertyList) {
-                PropertyList list = (PropertyList) node;
-                resolver.resolveExtends(document, list);
+                PropertyList child = (PropertyList) node;
+                //yes, we use reference equality here
+                if (child.getNode() == element) {
+                    return child;
+                }
             }
         }
+        return null;
     }
+
+    /**
+     * look up the child property list node whose qname matches that of the one
+     * passed in
+     *
+     * @param that property list to look for
+     * @return the propertly list or null for no match
+     * @see #getChildListMatching(QName)
+     */
+    public PropertyList getChildListMatching(PropertyList that) {
+        QName thatName = that.getName();
+        return getChildListMatching(thatName);
+    }
+
+
+    /**
+     * look up the child property list node whose qname matches that of the one
+     * passed in
+     *
+     * @param name qname to search on
+     * @return the propertly list or null for no match
+     */
+    public PropertyList getChildListMatching(QName name) {
+        for (DocNode node : childDocNodes()) {
+            if (node instanceof PropertyList) {
+                PropertyList child = (PropertyList) node;
+                if (child.isNamed(name)) {
+                    return child;
+                }
+            }
+        }
+        return null;
+    }
+
 }

@@ -180,6 +180,14 @@ public class CdlDocument extends DocumentedNode {
         return system;
     }
 
+    public void setConfiguration(ToplevelList configuration) {
+        this.configuration = configuration;
+    }
+
+    public void setSystem(ToplevelList system) {
+        this.system = system;
+    }
+
     /**
      * Target namespace of the doc
      *
@@ -407,18 +415,18 @@ public class CdlDocument extends DocumentedNode {
      *
      * @throws CdlResolutionException
      */
-    public void parsePhaseExtendProcessing() throws CdlResolutionException {
+    public void parsePhaseExtendProcessing() throws CdlException {
         //extends our extendendables
         ExtendsResolver extendsResolver = new ExtendsResolver(
                 getParseContext());
         extendsResolver.resolveExtends(this);
     }
 
-    public void parsePhaseResolveVariables() throws CdlResolutionException {
+    public void parsePhaseResolveVariables() throws CdlException {
 
     }
 
-    public void parsePhaseEvaluateExpressions() throws CdlResolutionException {
+    public void parsePhaseEvaluateExpressions() throws CdlException {
 
     }
 
