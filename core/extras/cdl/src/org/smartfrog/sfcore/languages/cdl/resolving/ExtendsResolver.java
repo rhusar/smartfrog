@@ -23,11 +23,23 @@ import org.smartfrog.sfcore.languages.cdl.ParseContext;
 import org.smartfrog.sfcore.languages.cdl.dom.CdlDocument;
 import org.smartfrog.sfcore.languages.cdl.dom.PropertyList;
 import org.smartfrog.sfcore.languages.cdl.dom.ToplevelList;
+import org.smartfrog.sfcore.languages.cdl.dom.DocNode;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlResolutionException;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
 import org.smartfrog.sfcore.languages.cdl.utils.ClassLogger;
+import org.smartfrog.sfcore.languages.cdl.utils.NodeIterator;
 import org.smartfrog.sfcore.logging.Log;
+import org.apache.commons.lang.NotImplementedException;
 
 import javax.xml.namespace.QName;
+
+import nu.xom.Element;
+import nu.xom.Node;
+
+import java.util.List;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Implement "extends" semantics. This could be implemented in the property list
@@ -69,7 +81,7 @@ public class ExtendsResolver {
      * @throws CdlResolutionException
      */
     public boolean resolveExtends(CdlDocument document)
-            throws CdlResolutionException {
+            throws CdlException {
         ToplevelList system = document.getSystem();
         if (system != null) {
             system.resolveChildExtends(document, this);
@@ -84,34 +96,30 @@ public class ExtendsResolver {
      * Resolve the extends for a single node. The algorithm for resolution is
      * defined in the CDL document specification.
      *
-     * @param document
      * @param targetName name of the target
      * @return
      * @throws CdlResolutionException
      */
-    public ResolveResult resolveExtends(CdlDocument document,
-            QName targetName)
-            throws CdlResolutionException {
+    public ResolveResult resolveExtends(QName targetName)
+            throws CdlException {
         PropertyList target = lookup(targetName);
         if (target == null) {
             throw new CdlResolutionException(ERROR_UNKNOWN_TEMPLATE +
                     targetName);
         }
-        return resolveExtends(document, target);
+        return resolveExtends(target);
     }
 
     /**
      * Resolve the extends for a single node. The algorithm for resolution is
      * defined in the CDL document specification.
      *
-     * @param document
      * @param target
      * @return
      * @throws CdlResolutionException
      */
-    public ResolveResult resolveExtends(CdlDocument document,
-            PropertyList target)
-            throws CdlResolutionException {
+    public ResolveResult resolveExtends(PropertyList target)
+            throws CdlException {
         boolean toplevel = target.isToplevel();
         QName name = target.getName();
         assert name != null;
@@ -123,7 +131,7 @@ public class ExtendsResolver {
         }
         ResolveResult result;
         try {
-            result = innerResolve(document, target);
+            result = innerResolve(target);
         } finally {
             if (toplevel) {
                 stack.exit(name);
@@ -136,15 +144,14 @@ public class ExtendsResolver {
      * Inner resolve is for child elements; we do not save our name on the stack
      * as we do not need to.
      *
-     * @param document
      * @param target
      * @return
      * @throws CdlResolutionException
      */
-    private ResolveResult innerResolve(CdlDocument document,
-            PropertyList target)
-            throws CdlResolutionException {
+    private ResolveResult innerResolve(PropertyList target)
+            throws CdlException {
         ResolveResult result;
+        PropertyList output=target;
         ResolveEnum state = ResolveEnum.ResolvedIncomplete;
         //do the work
         QName extending = target.getExtendsName();
@@ -154,9 +161,11 @@ public class ExtendsResolver {
         } else {
             //something to resolve.
             ResolveResult extended;
-            log.debug(
-                    "Resolving " + target.getName() + " extends " + extending);
-            extended = resolveExtends(document, extending);
+            log.debug("Resolving " +
+                    target.getName() +
+                    " extends " +
+                    extending);
+            extended = resolveExtends(extending);
             if (extended.state == ResolveEnum.ResolvedIncomplete) {
                 //if there is something that is unfinished at this level,
                 //leave off it for now. though this state should be
@@ -166,7 +175,11 @@ public class ExtendsResolver {
             } else {
                 //we have now resolved our parent.
                 //get on with it
-                target.merge(extended.getResolvedPropertyList());
+                PropertyList resolvedPropertyList = extended.getResolvedPropertyList();
+                //copy attributes
+                target.mergeAttributes(resolvedPropertyList);
+                //now do the element inheritance
+                output=inheritElements(target, resolvedPropertyList);
             }
             state = propagate(extended.state);
         }
@@ -174,9 +187,109 @@ public class ExtendsResolver {
         return result;
     }
 
-    private void unimplemented() throws CdlResolutionException {
-        throw new CdlResolutionException("unimplemented");
+    private void unimplemented(String text) {
+        throw new NotImplementedException(text);
     }
+
+
+    /**
+     * merge in all elements. public for testing we extend any elements that
+     * need extending before merging.
+     *
+     * @param extension
+     */
+    private PropertyList inheritElements(PropertyList target, PropertyList extension)
+            throws CdlException {
+        Element templateElt = extension.getNode();
+        //max size of our list is the sum of all children
+        int maxsize = target.getNode().getChildCount() +
+                templateElt.getChildCount();
+        //list of elements (this retains the overall order of things)
+        List<Node> newChildren = new ArrayList<Node>(maxsize);
+        //this is a map that caches mappings of things
+        HashMap<QName,QName> entries=new HashMap<QName,QName>(maxsize);
+        for (Node node : new NodeIterator(templateElt)) {
+            if (node instanceof Element) {
+                //get the element
+                Element element = (Element) node;
+                //find the matching property list element
+                PropertyList elementAsList = extension.getChildListContaining(element);
+                assert elementAsList!=null;
+                QName name = elementAsList.getName();
+
+                //merge it
+                ResolveResult resolved = resolveExtends(elementAsList);
+                PropertyList resolvedList=resolved.getResolvedPropertyList();
+
+                //now, at this point we have a property list which contains
+                //a resolved element. We are going to get that element out because
+                //it is what we want.
+                Element resolvedElement=resolvedList.getNode();
+
+                //now, look for a match locally
+                PropertyList matchedList = target.getChildListContaining(resolvedElement);
+                if (matchedList == null) {
+                    //insert a copy of the resolved element.
+                    //the copy is needed in case it gets manipulated later
+                    Element copiedElement =(Element) resolvedElement.copy();
+                    newChildren.add(copiedElement);
+                    entries.put(name, name);
+                } else {
+                    //complex merge.
+                    //first, pull in the attributes of the child
+                    matchedList.inheritAttributes(resolvedList);
+                    //then insert the element of the current list into place
+                    newChildren.add(matchedList.getNode());
+                    entries.put(name, name);
+                }
+            } else {
+                newChildren.add(node);
+            }
+        }
+        //now we run through the local list, and if there is any
+        // element not found in the remote, add it to the end
+        for (DocNode node : target.childDocNodes()) {
+            if (node instanceof PropertyList) {
+                PropertyList child = (PropertyList) node;
+                QName name = child.getName();
+                if(entries.get(name) !=null) {
+                    entries.put(name,name);
+                }
+            }
+        }
+
+
+        //as this point our element list is updated, and the mappings list contains
+        //a mapping for every element that we have used. So, what do we do now.
+        //two options:
+        // 1: create a new parent element, set up the children and delegate to ourselves
+        // 2: patch stuff together by hand.
+
+        //copy the target element
+        Element newElement=(Element) target.getNode().copy();
+        //strip its children away (a bit wasteful)
+        newElement.removeChildren();
+        //add the new ones in order
+        for(Node sprog:newChildren) {
+            sprog.detach();
+            newElement.appendChild(sprog);
+        }
+        //here we have our new element, ready to go
+        PropertyList resultTemplate=new PropertyList(newElement);
+        return resultTemplate;
+    }
+
+    private static class PropertyMapping extends HashMap<QName, PropertyList> {
+
+        public void put(PropertyList template) {
+            put(template.getName(), template);
+        }
+
+        public PropertyList findMatch(PropertyList that) {
+            return get(that.getName());
+        }
+    }
+
 
     /**
      * lookup a property in our context
