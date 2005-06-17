@@ -321,11 +321,11 @@ public class PropertyList extends DocNode implements ToSmartFrog {
      *
      * @param that property list to look for
      * @return the propertly list or null for no match
-     * @see #getChildListMatching(QName)
+     * @see #getChildTemplateMatching(QName)
      */
-    public PropertyList getChildListMatching(PropertyList that) {
+    public PropertyList getChildTemplateMatching(PropertyList that) {
         QName thatName = that.getName();
-        return getChildListMatching(thatName);
+        return getChildTemplateMatching(thatName);
     }
 
 
@@ -336,7 +336,7 @@ public class PropertyList extends DocNode implements ToSmartFrog {
      * @param name qname to search on
      * @return the propertly list or null for no match
      */
-    public PropertyList getChildListMatching(QName name) {
+    public PropertyList getChildTemplateMatching(QName name) {
         for (DocNode node : childDocNodes()) {
             if (node instanceof PropertyList) {
                 PropertyList child = (PropertyList) node;
