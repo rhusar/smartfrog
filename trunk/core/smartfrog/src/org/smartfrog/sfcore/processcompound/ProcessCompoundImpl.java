@@ -1056,11 +1056,16 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
      * attribute out of the current target
      *
      * @param cmd command to append to
+     * @param cd component description with extra process configuration (ex. sfProcessClass)
      *
      * @exception Exception failed to construct classname
      */
-    protected void addProcessClassName(Vector cmd) throws Exception {
-        cmd.addElement((String) sfResolveHere(SmartFrogCoreKeys.SF_PROCESS_CLASS));
+    protected void addProcessClassName(Vector cmd, ComponentDescription cd)  throws Exception {
+        String pClass = (String) cd.sfResolveHere(SmartFrogCoreKeys.SF_PROCESS_CLASS, false);
+        if (pClass == null) {
+           pClass = (String) sfResolveHere(SmartFrogCoreKeys.SF_PROCESS_CLASS);
+        }
+        cmd.addElement(pClass);
     }
 
     /**
