@@ -19,12 +19,47 @@
  */
 package org.smartfrog.sfcore.languages.cdl.dom;
 
+import nu.xom.Element;
+
 /**
  * A property entry
  * created 12-May-2005 17:38:26
  */
 
 public class PropertyEntry extends AnnotatedNode {
+
+    public PropertyEntry(String name) {
+        super(name);
+    }
+
+    public PropertyEntry(String name, String uri) {
+        super(name, uri);
+    }
+
+    public PropertyEntry(Element element) {
+        super(element);
+    }
+
+    /**
+     * <p/>
+     * Creates a very shallow copy of the element with the same name and
+     * namespace URI, but no children, attributes, base URI, or namespace
+     * declaration. This method is invoked as necessary by the {@link
+     * nu.xom.Element#copy() copy} method and the {@link
+     * nu.xom.Element#Element(nu.xom.Element) copy constructor}. </p>
+     * <p/>
+     * <p/>
+     * Subclasses should override this method so that it returns an instance of
+     * the subclass so that types are preserved when copying. This method should
+     * not add any attributes, namespace declarations, or children to the
+     * shallow copy. Any such items will be overwritten. </p>
+     *
+     * @return an empty element with the same name and namespace as this
+     *         element
+     */
+    protected Element shallowCopy() {
+        return new PropertyEntry(getQualifiedName(), getNamespaceURI());
+    }
 
     private String name;
     private String value;

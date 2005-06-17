@@ -115,7 +115,7 @@ public class ExtendsResolver {
      */
     public ResolveResult resolveExtends(PropertyList target)
             throws CdlException {
-        boolean toplevel = target.isToplevel();
+        boolean toplevel = target.isTemplate();
         QName name = target.getName();
         assert name != null;
         if (toplevel) {
@@ -143,7 +143,6 @@ public class ExtendsResolver {
      */
     public PropertyList resolveChildExtends(PropertyList target)
             throws CdlException {
-        int maxsize = target.getNode().getChildCount();
         //list of elements (this retains the overall order of things)
         List<Node> newChildren;
         newChildren = copyAndResolve(target, null);
@@ -209,10 +208,9 @@ public class ExtendsResolver {
     private PropertyList inheritElements(PropertyList target,
             PropertyList extension)
             throws CdlException {
-        Element templateElt = extension.getNode();
         //max size of our list is the sum of all children
-        int maxsize = target.getNode().getChildCount() +
-                templateElt.getChildCount();
+        int maxsize = target.getChildCount() +
+                extension.getChildCount();
         //list of elements (this retains the overall order of things)
         List<Node> newChildren = new ArrayList<Node>(maxsize);
         //this is a map that caches mappings of things
@@ -222,7 +220,7 @@ public class ExtendsResolver {
                 //get the element
                 Element element = (Element) node;
                 //find the matching property list element
-                PropertyList elementAsList = extension.getChildListContaining(
+                PropertyList elementAsList = extension.mapToPropertyList(
                         element);
                 if(elementAsList==null) {
                     //this is an element, but not mapped to a PropertyList
@@ -243,23 +241,22 @@ public class ExtendsResolver {
                 //now, at this point we have a property list which contains
                 //a resolved element. We are going to get that element out because
                 //it is what we want.
-                Element resolvedElement = resolvedList.getNode();
 
                 //now, look for a match locally
-                PropertyList matchedList = target.getChildListContaining(
-                        resolvedElement);
+                PropertyList matchedList = target.mapToPropertyList(
+                        resolvedList);
                 if (matchedList == null) {
                     //insert a copy of the resolved element.
                     //the copy is needed in case it gets manipulated later
-                    Element copiedElement = (Element) resolvedElement.copy();
-                    newChildren.add(copiedElement);
+                    PropertyList copiedList = (PropertyList) resolvedList.copy();
+                    newChildren.add(copiedList);
                     entries.put(name, name);
                 } else {
                     //complex merge.
                     //first, pull in the attributes of the child
                     matchedList.inheritAttributes(resolvedList);
                     //then insert the element of the current list into place
-                    newChildren.add(matchedList.getNode());
+                    newChildren.add(matchedList);
                     entries.put(name, name);
                 }
             } else {
@@ -296,40 +293,33 @@ public class ExtendsResolver {
     private List<Node> copyAndResolve(PropertyList target,
             HashMap<QName, QName> map)
             throws CdlException {
-        int childCount = target.getNode().getChildCount();
+        int childCount = target.getChildCount();
         List<Node> newChildren = new ArrayList<Node>(childCount);
         for (Node node : target.children()) {
-            if (node instanceof Element) {
-                //get the element
-                Element element = (Element) node;
+            if (node instanceof PropertyList) {
+
                 //find the matching property list element
-                PropertyList elementAsList = target.getChildListContaining(
-                        element);
-                if (elementAsList == null) {
-                    //special elt, so special handling.
-                    //add and continue
-                    newChildren.add(node);
-                    continue;
-                }
-                QName name = elementAsList.getName();
+                PropertyList entry = (PropertyList)node;
+                QName name = entry.getName();
                 //merge it
-                ResolveResult resolved = resolveExtends(elementAsList);
+                ResolveResult resolved = resolveExtends(entry);
                 PropertyList resolvedList = resolved.getResolvedPropertyList();
 
-                //now, at this point we have a property list which contains
-                //a resolved element. We are going to get that element out because
-                //it is what we want.
-                Element resolvedElement = resolvedList.getNode();
+                //now, at this point we have a resolved property list.
+                //we add this to our children
                 if (map == null) {
-                    newChildren.add(resolvedElement);
+                    //when not mapping, we add everything
+                    newChildren.add(resolvedList);
                 } else {
+                    //when mapping, we do a lookup
                     if (map.get(name) != null) {
+                        //and only add unique things
                         map.put(name, name);
-                        newChildren.add(resolvedElement);
+                        newChildren.add(resolvedList);
                     }
                 }
             } else {
-                //anything other than an element. Just merge it in
+                //anything other than a PropertyList. Just merge it in
                 newChildren.add(node);
             }
         }
@@ -359,6 +349,7 @@ public class ExtendsResolver {
         }
         //here we have our new element, ready to go
         PropertyList resultTemplate = new PropertyList(newElement);
+        resultTemplate.bind();
         return resultTemplate;
     }
 

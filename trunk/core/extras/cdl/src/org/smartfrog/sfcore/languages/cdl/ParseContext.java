@@ -219,7 +219,7 @@ public class ParseContext {
         log.debug("Adding prototype " + prototypeName);
         resolvablePrototypes.put(prototypeName, prototype);
         //mark the proto as toplevel
-        prototype.setToplevel(true);
+        prototype.setTemplate(true);
     }
 
     /**

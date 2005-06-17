@@ -17,30 +17,42 @@
  For more information: www.smartfrog.org
 
  */
+
 package org.smartfrog.sfcore.languages.cdl.dom;
 
+import nu.xom.Document;
 import nu.xom.Element;
 
 /**
- * created 21-Apr-2005 14:43:28
  */
+public class DocumentNode extends Document{
 
-public class DocReference extends DocNode {
-
-    public DocReference(String name) {
-        super(name);
+    public DocumentNode(Element root) {
+        super(root);
     }
 
-    public DocReference(String name, String uri) {
-        super(name, uri);
+    public DocumentNode(Document doc) {
+        super(doc);
     }
 
-    public DocReference(Element element) {
-        super(element);
+    public static DocumentNode create() {
+        return new DocumentNode(new Element("root",
+                "http://www.xom.nu/fakeRoot"));
     }
 
 
-    protected Element shallowCopy() {
-        return new AnnotatedNode(getQualifiedName(), getNamespaceURI());
+    /**
+     * owner document. may be null.
+     */
+    private CdlDocument owner;
+
+
+    public CdlDocument getOwner() {
+        return owner;
     }
+
+    public void setOwner(CdlDocument owner) {
+        this.owner = owner;
+    }
+
 }

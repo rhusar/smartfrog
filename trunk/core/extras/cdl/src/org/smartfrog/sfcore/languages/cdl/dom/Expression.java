@@ -39,12 +39,20 @@ public class Expression extends DocNode {
 
     private HashMap<String, Variable> variables = new HashMap<String, Variable>();
 
-    public Expression() {
+    public Expression(String name) {
+        super(name);
     }
 
-    public Expression(Element node) throws CdlXmlParsingException {
-        super();
-        bind(node);
+    public Expression(String name, String uri) {
+        super(name, uri);
+    }
+
+    protected Element shallowCopy() {
+        return new Expression(getQualifiedName(), getNamespaceURI());
+    }
+
+    public Expression(Element node) {
+        super(node);
     }
 
 
@@ -65,7 +73,7 @@ public class Expression extends DocNode {
     protected void add(Variable variable) throws CdlXmlParsingException {
         String nameValue = variable.getNameValue();
         if (lookupVariable(nameValue) != null) {
-            throw new CdlXmlParsingException(getNode(),
+            throw new CdlXmlParsingException(this,
                     ERROR_DUPLICATE_VALUE + nameValue);
         }
         variables.put(nameValue, variable);
@@ -82,20 +90,24 @@ public class Expression extends DocNode {
         return variables.get(name);
     }
 
-    public void bind(Element element) throws CdlXmlParsingException {
-        super.bind(element);
-        valueOf = ValueOfAttribute.extract(element, true);
+    public void bind() throws CdlXmlParsingException {
+        super.bind();
+        valueOf = ValueOfAttribute.extract(this, true);
         //now run though our children, which must all be variables
         for (Node child : children()) {
 
             if (child instanceof Element) {
-                Element childElement = (Element) child;
-                if (!Variable.isA(childElement)) {
-                    throw new CdlXmlParsingException(getNode(),
-                            ERROR_UNEXPECTED_ELEMENT_IN_EXPRESSION + element);
+                if(child instanceof Variable) {
+                    //add variables to our list of vars
+                    add((Variable) child);
+                } else {
+                    if(!(child instanceof Documentation)) {
+                        //everything that is not documentation is rejected
+                        //the XSD should prevent this, anyway
+                        throw new CdlXmlParsingException(this,
+                            ERROR_UNEXPECTED_ELEMENT_IN_EXPRESSION + child);
+                    }
                 }
-                Variable v = new Variable(childElement);
-                add(v);
             }
         }
     }
@@ -108,13 +120,17 @@ public class Expression extends DocNode {
         throw new RuntimeException("Not implemented");
     }
 
+
+
     /**
-     * test that a node is of the right type
+     * Test that a (namespace,localname) pair matches our type
      *
-     * @param element
-     * @return true if the element namespace and localname match what we handle
+     * @param namespace
+     * @param localname
+     *
+     * @return true for a match
      */
-    static boolean isA(Element element) {
-        return isNode(element, ELEMENT_EXPRESSION);
+    public static boolean isA(String namespace, String localname) {
+        return isNode(namespace, localname, ELEMENT_EXPRESSION);
     }
 }

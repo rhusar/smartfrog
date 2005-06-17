@@ -29,13 +29,23 @@ import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
 
 public class DocumentedNode extends DocNode {
 
-    public DocumentedNode() {
+    public DocumentedNode(String name) {
+        super(name);
     }
 
-    public DocumentedNode(Element node) throws CdlXmlParsingException {
-        super(node);
+    public DocumentedNode(String name, String uri) {
+        super(name, uri);
     }
 
+    public DocumentedNode(Element element) {
+        super(element);
+    }
+
+
+    protected Element shallowCopy() {
+        return new DocumentedNode(getQualifiedName(), getNamespaceURI());
+    }
+    
     /**
      * optional documentation attribute
      */

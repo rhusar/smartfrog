@@ -31,13 +31,38 @@ import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
 
 public class Ref extends DocNode {
 
-    public Ref() {
+    public Ref(String name) {
+        super(name);
     }
 
-    public Ref(Element node) throws CdlXmlParsingException {
-        super(node);
+    public Ref(String name, String uri) {
+        super(name, uri);
     }
 
+    public Ref(Element element) {
+        super(element);
+    }
+
+    /**
+     * <p/>
+     * Creates a very shallow copy of the element with the same name and
+     * namespace URI, but no children, attributes, base URI, or namespace
+     * declaration. This method is invoked as necessary by the {@link
+     * nu.xom.Element#copy() copy} method and the {@link
+     * nu.xom.Element#Element(nu.xom.Element) copy constructor}. </p>
+     * <p/>
+     * <p/>
+     * Subclasses should override this method so that it returns an instance of
+     * the subclass so that types are preserved when copying. This method should
+     * not add any attributes, namespace declarations, or children to the
+     * shallow copy. Any such items will be overwritten. </p>
+     *
+     * @return an empty element with the same name and namespace as this
+     *         element
+     */
+    protected Element shallowCopy() {
+        return new Ref(getQualifiedName(), getNamespaceURI());
+    }
 
     /**
      * optional reference root
@@ -49,14 +74,13 @@ public class Ref extends DocNode {
     /**
      * bind to an element
      *
-     * @param element
      * @throws CdlXmlParsingException
      */
-    public void bind(Element element) throws CdlXmlParsingException {
-        super.bind(element);
-        lazy = LazyAttribute.isLazy(element, false);
-        refRoot = RefRootAttribute.extract(element, false);
-        refAttr = RefAttribute.extract(element, true);
+    public void bind() throws CdlXmlParsingException {
+        super.bind();
+        lazy = LazyAttribute.isLazy(this, false);
+        refRoot = RefRootAttribute.extract(this, false);
+        refAttr = RefAttribute.extract(this, true);
     }
 
     public RefRootAttribute getRefRoot() {

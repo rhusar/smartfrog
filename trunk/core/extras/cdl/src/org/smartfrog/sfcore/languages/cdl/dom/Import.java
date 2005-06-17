@@ -33,7 +33,16 @@ public class Import extends DocNode {
 
     private String location;
 
-    public Import() {
+    public Import(String name) {
+        super(name);
+    }
+
+    public Import(String name, String uri) {
+        super(name, uri);
+    }
+
+    public Import(Element element) {
+        super(element);
     }
 
     /**
@@ -54,36 +63,35 @@ public class Import extends DocNode {
         return location;
     }
 
-    public Import(Element node) throws CdlXmlParsingException {
-        super(node);
-    }
 
     /**
-     * Parse from XM
+     * Parse from XML
      *
      * @throws CdlXmlParsingException
      */
-    public void bind(Element element) throws CdlXmlParsingException {
-        super.bind(element);
+    public void bind() throws CdlXmlParsingException {
+        super.bind();
         namespace =
-                GenericAttribute.extractLocalAttributeValue(element,
+                GenericAttribute.extractLocalAttributeValue(this,
                         ATTR_NAMESPACE,
                         false);
         location =
-                GenericAttribute.extractLocalAttributeValue(element,
+                GenericAttribute.extractLocalAttributeValue(this,
                         ATTR_LOCATION,
                         true);
     }
 
 
     /**
-     * test that a node is of the right type
+     * Test that a (namespace,localname) pair matches our type
      *
-     * @param element
-     * @return true if the element namespace and localname match what we handle
+     * @param namespace
+     * @param localname
+     *
+     * @return true for a match
      */
-    static boolean isA(Element element) {
-        return isNode(element, ELEMENT_IMPORT);
+    public static boolean isA(String namespace, String localname) {
+        return isNode(namespace, localname, ELEMENT_IMPORT);
     }
 
 }

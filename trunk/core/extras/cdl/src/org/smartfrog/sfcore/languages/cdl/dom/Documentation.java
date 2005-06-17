@@ -28,30 +28,37 @@ import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
 
 public class Documentation extends DocNode {
 
-    public Documentation() {
+    public Documentation(String name) {
+        super(name);
     }
 
-    public Documentation(Element element) throws CdlXmlParsingException {
-        bind(element);
+    public Documentation(String name, String uri) {
+        super(name, uri);
     }
+
+    public Documentation(Element element) {
+        super(element);
+    }
+
+
+    protected Element shallowCopy() {
+        return new Documentation(getQualifiedName(), getNamespaceURI());
+    }
+
+
 
     /**
-     * Parse from XM
+     * Test that a (namespace,localname) pair matches our type
      *
-     * @throws CdlXmlParsingException
+     * @param namespace
+     * @param localname
+     *
+     * @return true for a match
      */
-    public void bind(Element element) throws CdlXmlParsingException {
-        //TODO
+    public static boolean isA(String namespace, String localname) {
+        return isNode(namespace, localname, ELEMENT_DOCUMENTATION);
     }
 
-    /**
-     * test that a node is of the right type
-     *
-     * @param element
-     * @return true if the element namespace and localname match what we handle
-     */
-    static boolean isA(Element element) {
-        return isNode(element, ELEMENT_DOCUMENTATION);
-    }
+
 
 }

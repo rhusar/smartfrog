@@ -45,7 +45,6 @@ public class ParseContextTest extends XmlTestBase {
         CdlDocument doc = new CdlDocument();
         doc.setParseContext(context);
         assertEquals(context, doc.getParseContext());
-        assertEquals(doc, doc.getOwner());
     }
 
     /**
@@ -64,7 +63,7 @@ public class ParseContextTest extends XmlTestBase {
 
     public void testNullPrototype() throws Exception {
         ParseContext context = new ParseContext();
-        PropertyList prototype = new PropertyList();
+        PropertyList prototype = new PropertyList("empty");
         try {
             context.prototypeAddNew(prototype);
             fail("expected a fault");
@@ -75,7 +74,7 @@ public class ParseContextTest extends XmlTestBase {
 
     public void testDuplicatePrototype() throws Exception {
         ParseContext context = new ParseContext();
-        PropertyList prototype = new PropertyList();
+        PropertyList prototype = new PropertyList("smartfrog");
         QName name = new QName(Constants.SMARTFROG_NAMESPACE, "smartfrog");
         prototype.setName(name);
         try {
@@ -90,7 +89,7 @@ public class ParseContextTest extends XmlTestBase {
 
     public void testUpdatePrototype() throws Exception {
         ParseContext context = new ParseContext();
-        PropertyList prototype = new PropertyList();
+        PropertyList prototype = new PropertyList("smartfrog");
         QName name = new QName(Constants.SMARTFROG_NAMESPACE, "smartfrog");
         prototype.setName(name);
         context.prototypeAddNew(prototype);
