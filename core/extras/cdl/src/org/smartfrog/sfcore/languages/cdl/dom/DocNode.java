@@ -198,6 +198,10 @@ public abstract class DocNode implements Names {
         }
     }
 
+    public Attribute getAttribute(String local) {
+        Element self = getNode();
+        return self.getAttribute(local);
+    }
     /**
      * Test for an elemeent having a child
      * @param namespace
@@ -207,4 +211,6 @@ public abstract class DocNode implements Names {
     public boolean hasAttribute(String namespace,String local) {
         return getAttribute(namespace,local)!=null;
     }
+
+
 }

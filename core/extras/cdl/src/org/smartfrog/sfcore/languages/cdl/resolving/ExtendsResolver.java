@@ -196,7 +196,7 @@ public class ExtendsResolver {
             }
             state = propagate(extended.state);
         }
-        result = new ResolveResult(state, target);
+        result = new ResolveResult(state, output);
         return result;
     }
 
