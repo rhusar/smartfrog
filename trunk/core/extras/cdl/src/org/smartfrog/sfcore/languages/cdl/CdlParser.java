@@ -23,9 +23,11 @@ package org.smartfrog.sfcore.languages.cdl;
 import nu.xom.Builder;
 import nu.xom.Document;
 import nu.xom.ParsingException;
+import nu.xom.NodeFactory;
 import org.smartfrog.services.xml.utils.ParserHelper;
 import org.smartfrog.services.xml.utils.ResourceLoader;
 import org.smartfrog.sfcore.languages.cdl.dom.CdlDocument;
+import org.smartfrog.sfcore.languages.cdl.dom.ExtendedNodeFactory;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
@@ -52,7 +54,8 @@ public class CdlParser {
 
     /**
      * create a parser;
-     *
+     * This includes creating an {@link nu.xom.Builder} with
+     * {@link ExtendedNodeFactory} as the node factory
      * @param loader   resource loader algorithm
      * @param validate validation logic.
      */
@@ -70,7 +73,7 @@ public class CdlParser {
                 throw new SAXException(e.getMessage(), e);
             }
         }
-        builder = new Builder(xerces, validate);
+        builder = new Builder(xerces, validate, new ExtendedNodeFactory());
     }
 
 

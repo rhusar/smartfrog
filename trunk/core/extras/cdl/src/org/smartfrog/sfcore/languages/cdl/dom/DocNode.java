@@ -29,6 +29,7 @@ import org.smartfrog.sfcore.languages.cdl.utils.AttributeIterator;
 
 /**
  * Representation of any element. created 21-Apr-2005 14:25:53
+ * The node stored inside may be of Element, ElementEx or some subclass.
  */
 
 public abstract class DocNode implements Names {
@@ -73,24 +74,37 @@ public abstract class DocNode implements Names {
     /**
      * the node under the system here.
      */
-    private Element node;
+    private ElementEx node;
 
     /**
      * get the XML node underneath
      *
      * @return
      */
-    public Element getNode() {
+    public ElementEx getNode() {
         return node;
     }
 
     /**
      * set the node underneath
      *
-     * @param node new value; can be null
+     * @param node new value; can be null. If not null, it must extend ElementEx.
      */
     public void setNode(Element node) {
-        this.node = node;
+        ElementEx ex = (ElementEx) node;
+        this.node = ex;
+        if (ex != null ) {
+            ex.backpointer = this;
+        }
+    }
+
+    /**
+     * get the node as an elementEx. Will throw an exception if we cannot be
+     * cast.
+     * @return the element or  null
+     */
+    public ElementEx getAsElementEx() {
+        return (ElementEx) node;
     }
 
     /**
