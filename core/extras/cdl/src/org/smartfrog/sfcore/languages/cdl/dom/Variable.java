@@ -31,18 +31,23 @@ public class Variable extends Ref {
 
     private NameAttribute name;
 
-    public Variable() {
+    public Variable(String name) {
+        super(name);
     }
 
-    public Variable(Element node) throws CdlXmlParsingException {
-        super(node);
+    public Variable(String name, String uri) {
+        super(name, uri);
     }
 
-    public void bind(Element element) throws CdlXmlParsingException {
+    public Variable(Element element) {
+        super(element);
+    }
+
+    public void bind() throws CdlXmlParsingException {
         //get the bits of ref
-        super.bind(element);
+        super.bind();
         //add a name attribute
-        name = NameAttribute.extract(element, true);
+        name = NameAttribute.extract(this, true);
     }
 
     public NameAttribute getName() {
@@ -58,13 +63,7 @@ public class Variable extends Ref {
         return name.getValue();
     }
 
-    /**
-     * test that a node is of the right type
-     *
-     * @param element
-     * @return true if the element namespace and localname match what we handle
-     */
-    static boolean isA(Element element) {
-        return isNode(element, ELEMENT_VARIABLE);
+    public static boolean isA(String namespace,String localname) {
+        return isNode(namespace,localname, ELEMENT_VARIABLE);
     }
 }

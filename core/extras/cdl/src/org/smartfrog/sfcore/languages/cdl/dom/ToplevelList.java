@@ -11,7 +11,39 @@ import javax.xml.namespace.QName;
  */
 public class ToplevelList extends PropertyList {
 
-    public ToplevelList(CdlDocument owner) {
+    public ToplevelList(String name) {
+        super(name);
+    }
+
+    public ToplevelList(String name, String uri) {
+        super(name, uri);
+    }
+
+    public ToplevelList(Element element) {
+        super(element);
+    }
+
+    /**
+     * <p/>
+     * Creates a very shallow copy of the element with the same name and
+     * namespace URI, but no children, attributes, base URI, or namespace
+     * declaration. This method is invoked as necessary by the {@link
+     * nu.xom.Element#copy() copy} method and the {@link
+     * nu.xom.Element#Element(nu.xom.Element) copy constructor}. </p>
+     * <p/>
+     * <p/>
+     * Subclasses should override this method so that it returns an instance of
+     * the subclass so that types are preserved when copying. This method should
+     * not add any attributes, namespace declarations, or children to the
+     * shallow copy. Any such items will be overwritten. </p>
+     *
+     * @return an empty element with the same name and namespace as this
+     *         element
+     */
+    protected Element shallowCopy() {
+        return new ToplevelList(getQualifiedName(), getNamespaceURI());
+    }
+/*    public ToplevelList(CdlDocument owner) {
         super();
         setOwner(owner);
     }
@@ -20,7 +52,7 @@ public class ToplevelList extends PropertyList {
             throws CdlXmlParsingException {
         super(element);
         setOwner(owner);
-    }
+    }*/
 
     /**
      * Look up a child elemnt
@@ -42,23 +74,28 @@ public class ToplevelList extends PropertyList {
     }
 
     /**
-     * test that a node is of the right type
+     * Test that a (namespace,localname) pair matches our type
      *
-     * @param element
-     * @return true if the element namespace and localname match what we handle
+     * @param namespace
+     * @param localname
+     *
+     * @return true for a match
      */
-    public static boolean isConfigurationElement(Element element) {
-        return isNode(element, ELEMENT_CONFIGURATION);
+    public static boolean isConfigurationElement(String namespace, String localname) {
+        return isNode(namespace, localname, ELEMENT_CONFIGURATION);
     }
 
     /**
-     * test that a node is of the right type
+     * Test that a (namespace,localname) pair matches our type
      *
-     * @param element
-     * @return true if the element namespace and localname match what we handle
+     * @param namespace
+     * @param localname
+     *
+     * @return true for a match
      */
-    public static boolean isSystemElement(Element element) {
-        return isNode(element, ELEMENT_SYSTEM);
+    public static boolean isSystemElement(String namespace,
+                                                 String localname) {
+        return isNode(namespace, localname, ELEMENT_SYSTEM);
     }
 
     /**
@@ -72,7 +109,6 @@ public class ToplevelList extends PropertyList {
             if (docnode instanceof PropertyList) {
                 PropertyList prototype = (PropertyList) docnode;
                 getParseContext().prototypeAddNew(prototype);
-
             }
         }
     }

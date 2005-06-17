@@ -17,16 +17,19 @@
  For more information: www.smartfrog.org
 
  */
+
 package org.smartfrog.sfcore.languages.cdl.dom;
 
-import nu.xom.Element;
-import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
-
 /**
- * created 12-May-2005 17:35:15
+ * all the error messages
  */
-
-
-public interface FromXML {
-    void fromXML(Element element) throws CdlXmlParsingException;
+public class ErrorMessages {
+    /**
+     * error message for tests {@value}
+     */
+    public static final String ERROR_WRONG_NAMESPACE = "The element is not in CDL namespace";
+    /**
+     * error message for tests {@value}
+     */
+    public static final String ERROR_WRONG_ELEMENT = "Expected an element named ";
 }

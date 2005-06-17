@@ -146,4 +146,8 @@ public interface Filenames {
             + "extends-indirect-recursive.cdl";
     String EXTENDS_RECURSIVE_OVERRIDE = INVALID_RESOLUTION_RESOURCES
             + "extends-recursive-override.cdl";
+    String EXTENDS_DOCUMENTATION = INVALID_RESOLUTION_RESOURCES
+            + "extends-documentation.cdl";
+    String EXTENDS_DOCUMENTATION2 = INVALID_RESOLUTION_RESOURCES
+            + "extends-documentation2.cdl";
 }

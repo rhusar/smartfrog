@@ -32,29 +32,29 @@ import org.smartfrog.sfcore.languages.cdl.utils.AttributeIterator;
  * The node stored inside may be of Element, ElementEx or some subclass.
  */
 
-public abstract class DocNode implements Names {
+public abstract class DocNode extends ElementEx implements Names {
 
-
-    /**
-     * owner document. may be null.
-     */
-    CdlDocument owner;
-
-    protected DocNode() {
+    protected DocNode(String name) {
+        super(name);
     }
 
-    protected DocNode(Element node) throws CdlXmlParsingException {
-        bind(node);
+    protected DocNode(String name, String uri) {
+        super(name, uri);
     }
 
+    protected DocNode(Element element) {
+        super(element);
+    }
+
+
+    public DocumentNode getDocumentNode() {
+        return (DocumentNode) getDocument();
+    }
 
     public CdlDocument getOwner() {
-        return owner;
+        return getDocumentNode().getOwner();
     }
 
-    public void setOwner(CdlDocument owner) {
-        this.owner = owner;
-    }
 
 
     /**
@@ -64,68 +64,24 @@ public abstract class DocNode implements Names {
      * @return the parse context (or null if we dont have one)
      */
     public ParseContext getParseContext() {
-        if (owner != null) {
-            return owner.getParseContext();
+        if (getOwner() != null) {
+            return getOwner().getParseContext();
         } else {
             return null;
         }
     }
 
-    /**
-     * the node under the system here.
-     */
-    private ElementEx node;
+
 
     /**
      * get the XML node underneath
-     *
+     * @deprecated
      * @return
      */
     public ElementEx getNode() {
-        return node;
+        return this;
     }
 
-    /**
-     * set the node underneath
-     *
-     * @param node new value; can be null. If not null, it must extend ElementEx.
-     */
-    public void setNode(Element node) {
-        ElementEx ex = (ElementEx) node;
-        this.node = ex;
-        if (ex != null ) {
-            ex.backpointer = this;
-        }
-    }
-
-    /**
-     * get the node as an elementEx. Will throw an exception if we cannot be
-     * cast.
-     * @return the element or  null
-     */
-    public ElementEx getAsElementEx() {
-        return (ElementEx) node;
-    }
-
-    /**
-     * Iterate just over elements only valid if node!=null
-     *
-     * @return an iterator
-     */
-    public NodeIterator children() {
-        assert node != null;
-        return new NodeIterator(node);
-
-    }
-
-    /**
-     * Parse from XML. The base implementation sets the {@link #node} attribute
-     *
-     * @throws CdlXmlParsingException
-     */
-    public void bind(Element element) throws CdlXmlParsingException {
-        setNode(element);
-    }
 
     /**
      * Test for an element being in the namespace
@@ -135,9 +91,12 @@ public abstract class DocNode implements Names {
      * @see #CDL_NAMESPACE
      */
     public static boolean inCdlNamespace(Element e) {
-        return CDL_NAMESPACE.equals(e.getNamespaceURI());
+        return inCdlNamespace(e.getNamespaceURI());
     }
 
+    public static boolean inCdlNamespace(String namespace) {
+        return CDL_NAMESPACE.equals(namespace);
+    }
     /**
      * Test for an attribute being in the namespace
      *
@@ -146,7 +105,7 @@ public abstract class DocNode implements Names {
      * @see #CDL_NAMESPACE
      */
     public static boolean inCdlNamespace(Attribute a) {
-        return CDL_NAMESPACE.equals(a.getNamespaceURI());
+        return inCdlNamespace(a.getNamespaceURI());
     }
 
     public static boolean isNode(Element e, String name) {
@@ -154,11 +113,23 @@ public abstract class DocNode implements Names {
     }
 
     /**
+     * check that a (namespace,location) tuple refers to something in
+     * the CDL namespace with an expected name
+     * @param namespace
+     * @param localname
+     * @param expected
+     * @return true for a match
+     */
+    public static boolean isNode(String namespace, String localname,String expected) {
+        return inCdlNamespace(namespace) && expected.equals(localname);
+    }
+
+    /**
      * Iterate over the attributes
      * @return a new iterator that is also iterable
      */
     public AttributeIterator attributes() {
-        return new AttributeIterator(node);
+        return new AttributeIterator(this);
     }
 
     /**
@@ -172,7 +143,7 @@ public abstract class DocNode implements Names {
     public Attribute extractCdlAttribute(String attributeName,
             boolean required)
             throws CdlXmlParsingException {
-        return GenericAttribute.extractCdlAttribute(node,
+        return GenericAttribute.extractCdlAttribute(this,
                 attributeName,
                 required);
     }
@@ -180,36 +151,13 @@ public abstract class DocNode implements Names {
 
 
     /**
-     * get an attribute
-     *
-     * @param namespace namespace URI; null for ##local
-     * @param local local name
-     *
-     * @return
-     */
-    public Attribute getAttribute(String namespace, String local) {
-        Element self = getNode();
-        if (namespace == null) {
-            //no namespace match
-            return self.getAttribute(local);
-        } else {
-            //in namespace match
-            return self.getAttribute(local, namespace);
-        }
-    }
-
-    public Attribute getAttribute(String local) {
-        Element self = getNode();
-        return self.getAttribute(local);
-    }
-    /**
      * Test for an elemeent having a child
      * @param namespace
      * @param local
      * @return
      */
     public boolean hasAttribute(String namespace,String local) {
-        return getAttribute(namespace,local)!=null;
+        return getAttribute(local,namespace)!=null;
     }
 
 

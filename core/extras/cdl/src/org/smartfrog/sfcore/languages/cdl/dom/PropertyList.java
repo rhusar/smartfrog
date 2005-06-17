@@ -38,7 +38,7 @@ import java.util.ListIterator;
 
 public class PropertyList extends DocNode implements ToSmartFrog {
 
-    protected boolean toplevel = false;
+    protected boolean template = false;
 
     /**
      * Our name. Only toplevel elements can have a qname
@@ -65,13 +65,18 @@ public class PropertyList extends DocNode implements ToSmartFrog {
     private List<DocNode> children = new LinkedList<DocNode>();
     public static final String ERROR_UNKNOWN_NAMESPACE = "Unknown namespace ";
 
-
-    public PropertyList() {
+    public PropertyList(String name) {
+        super(name);
     }
 
-    public PropertyList(Element element) throws CdlXmlParsingException {
-        bind(element);
+    public PropertyList(String name, String uri) {
+        super(name, uri);
     }
+
+    public PropertyList(Element element) {
+        super(element);
+    }
+
 
     public QName getName() {
         return name;
@@ -94,14 +99,14 @@ public class PropertyList extends DocNode implements ToSmartFrog {
      *
      * @throws CdlXmlParsingException
      */
-    public void bind(Element element) throws CdlXmlParsingException {
+    public void bind() throws CdlXmlParsingException {
         //parent
-        super.bind(element);
+        super.bind();
 
         //get our name and extends attribute
-        QName prototypeName = XmlUtils.makeQName(element.getNamespaceURI(),
-                element.getLocalName(),
-                element.getNamespacePrefix());
+        QName prototypeName = XmlUtils.makeQName(getNamespaceURI(),
+                getLocalName(),
+                getNamespacePrefix());
         setName(prototypeName);
 
         //what are we extending?
@@ -113,7 +118,7 @@ public class PropertyList extends DocNode implements ToSmartFrog {
             String local = XmlUtils.extractLocalname(rawextension);
             String namespace = null;
             if (prefix != null) {
-                namespace = getNode().getNamespaceURI(prefix);
+                namespace = getNamespaceURI(prefix);
                 if (namespace == null) {
                     throw new CdlXmlParsingException(
                             ERROR_UNKNOWN_NAMESPACE + prefix);
@@ -124,34 +129,13 @@ public class PropertyList extends DocNode implements ToSmartFrog {
 
         //run through all our child elements and process them
         for (Node child : children()) {
-            if (child instanceof Element) {
-                children.add(createNodeFromElement((Element) child));
+            if (child instanceof DocNode) {
+                children.add((DocNode) child);
             }
         }
 
     }
 
-    /**
-     * create the appropriate node for an element type
-     *
-     * @return
-     */
-    private DocNode createNodeFromElement(Element element)
-            throws CdlXmlParsingException {
-        if (Documentation.isA(element)) {
-            return new Documentation(element);
-        }
-        if (Expression.isA(element)) {
-            return new Expression(element);
-        }
-        //else, it is not a recognised type, so we make another property list from it
-        return new PropertyList(element);
-    }
-
-
-    protected void addChild(Element node) {
-        //TODO
-    }
 
     /**
      * Child elements
@@ -182,12 +166,17 @@ public class PropertyList extends DocNode implements ToSmartFrog {
         return testName.equals(name);
     }
 
-    public boolean isToplevel() {
-        return toplevel;
+    /**
+     * flag set to true if we are an addressable toplevel
+     * template
+     * @return
+     */
+    public boolean isTemplate() {
+        return template;
     }
 
-    public void setToplevel(boolean toplevel) {
-        this.toplevel = toplevel;
+    public void setTemplate(boolean template) {
+        this.template = template;
     }
 
     /**
@@ -195,7 +184,7 @@ public class PropertyList extends DocNode implements ToSmartFrog {
      *
      * @return
      */
-    public String toString() {
+    public String getDescription() {
         StringBuffer buffer = new StringBuffer();
         buffer.append("Prototype : ");
         buffer.append(name);
@@ -226,7 +215,7 @@ public class PropertyList extends DocNode implements ToSmartFrog {
         //strip @cdl:extends
         Attribute extendsAttr = getExtendsAttribute();
         if (extendsAttr != null) {
-            getNode().removeAttribute(extendsAttr);
+            removeAttribute(extendsAttr);
         }
     }
 
@@ -237,13 +226,13 @@ public class PropertyList extends DocNode implements ToSmartFrog {
      * @return
      */
     private Attribute getExtendsAttribute() {
-        Attribute extendsAttr = getAttribute(CDL_NAMESPACE, ATTR_EXTENDS);
+        Attribute extendsAttr = getAttribute(ATTR_EXTENDS, CDL_NAMESPACE);
         if (extendsAttr == null) {
-            if (getAttribute(null, ATTR_EXTENDS) != null) {
+            if (getAttribute(ATTR_EXTENDS) != null) {
                 //this is here because I always get this wrong myself, and wanted
                 //some extra diagnostics. SteveL.
                 log.warn("Template " +
-                        toString() +
+                        getDescription() +
                         " has an extends attribute, but it is " +
                         "not in the CDL namespace. This may be an error.");
             }
@@ -258,30 +247,13 @@ public class PropertyList extends DocNode implements ToSmartFrog {
      */
     public void inheritAttributes(PropertyList extension) {
         //this is where we start to work at the XOM level.
-        Element self = getNode();
         for (Attribute extAttr : extension.attributes()) {
             String namespace = extAttr.getNamespaceURI();
             String local = extAttr.getLocalName();
             if (!hasAttribute(namespace, local)) {
                 //no match: copy the attribute
-                self.addAttribute((Attribute) extAttr.copy());
+                addAttribute((Attribute) extAttr.copy());
             }
-        }
-    }
-
-    /**
-     * get the first child element of a node
-     *
-     * @param namespace optional namespace
-     * @param localname localname
-     * @return
-     * @see Element#getFirstChildElement(String, String)
-     */
-    private Element getFirstChildElement(String namespace, String localname) {
-        if (localname != null) {
-            return getNode().getFirstChildElement(namespace, localname);
-        } else {
-            return getNode().getFirstChildElement(localname);
         }
     }
 
@@ -297,22 +269,17 @@ public class PropertyList extends DocNode implements ToSmartFrog {
     }
 
     /**
-     * look up the child property list node containing this element.
+     * convert from an element to a property list
      *
-     * @param element element to look for
+     * @param element element to convert
      * @return the propertly list or null for no match
      */
-    public PropertyList getChildListContaining(Element element) {
-        for (DocNode node : childDocNodes()) {
-            if (node instanceof PropertyList) {
-                PropertyList child = (PropertyList) node;
-                //yes, we use reference equality here
-                if (child.getNode() == element) {
-                    return child;
-                }
-            }
+    public PropertyList mapToPropertyList(Element element) {
+        if(element instanceof PropertyList) {
+            return (PropertyList) element;
+        } else {
+            return null;
         }
-        return null;
     }
 
     /**
