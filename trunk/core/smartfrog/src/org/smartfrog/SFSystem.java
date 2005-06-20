@@ -583,11 +583,9 @@ public class SFSystem implements MessageKeys {
             bStrm.close();
             return resourceData;
         } catch (IOException ex) {
-          try {
-            bStrm.close();
-          } catch (IOException ex1) {
-          }
           throw SmartFrogException.forward(ex);
+        } finally {
+          if (bStrm!=null) { try { bStrm.close();} catch (IOException swallowed) { } }
         }
     }
 
