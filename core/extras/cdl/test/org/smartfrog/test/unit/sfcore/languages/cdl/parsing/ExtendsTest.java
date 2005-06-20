@@ -39,8 +39,7 @@ import java.io.IOException;
 import java.util.EmptyStackException;
 
 /**
- * Test extension
- * created 10-Jun-2005 16:53:50
+ * Test extension created 10-Jun-2005 16:53:50
  */
 
 public class ExtendsTest extends XmlTestBase {
@@ -207,63 +206,13 @@ public class ExtendsTest extends XmlTestBase {
                 CDL_DOC_ATTRIBUTE_INHERITANCE);
         //xpath tests to verify the stuff
         ToplevelList system = cdlDocument.getSystem();
-        PropertyList child = system.getChildTemplateMatching(new QName("child"));
+        PropertyList child = system.getChildTemplateMatching(
+                new QName("child"));
         assertHasAttribute(child, "attr_a2");
-        assertAttributeValueEquals(child, "attr_a3","a3");
-        assertAttributeValueEquals(child, "attr_a1","a1");
+        assertAttributeValueEquals(child, "attr_a3", "a3");
+        assertAttributeValueEquals(child, "attr_a1", "a1");
         assertHasAttribute(child, "attr_system");
 
-    }
-
-    /**
-     * Assert that a template has an attribute
-     * @param template
-     * @param local
-     */
-    private void assertHasAttribute(PropertyList template, String local) {
-        assertHasAttribute(template,"",local);
-    }
-
-    /**
-     * Assert that a template has an attribute
-     *
-     * @param template
-     * @param local
-     */
-    private void assertHasAttribute(PropertyList template, String namespace,String local) {
-        assertTrue("Template " + template + " lacks the attribute " + local,
-                template.hasAttribute(namespace, local));
-    }
-
-    /**
-     * Assert that a template has an attribute of a given value
-     *
-     * @param template
-     * @param namespace
-     * @param local
-     * @param expected
-     */
-    private void assertAttributeValueEquals(PropertyList template,
-                                    String namespace,
-                                    String local,
-                                    String expected) {
-        Attribute attribute = template.getAttribute(local,namespace);
-        assertNotNull("Template " + template + " lacks the attribute " + local,
-                attribute);
-        assertEquals(expected,attribute.getValue());
-    }
-
-    /**
-     * Assert that a template has an attribute of a given value
-     *
-     * @param template
-     * @param local
-     * @param expected
-     */
-    private void assertAttributeValueEquals(PropertyList template,
-                                            String local,
-                                            String expected) {
-        assertAttributeValueEquals(template,"",local,expected);
     }
 
     public void testExtendsNonElementChildren() throws IOException, CdlException,
@@ -292,4 +241,68 @@ public class ExtendsTest extends XmlTestBase {
         assertInvalidCDL(EXTENDS_DOCUMENTATION,
                 ExtendsResolver.ERROR_UNKNOWN_TEMPLATE);
     }
+
+    public void testElementsChildExtension() throws Exception {
+        ParseContext context = new ParseContext();
+        CdlDocument cdlDocument = parseValidCDL(context,
+                CDL_DOC_EXTENDS_CHILD_EXTENSION);
+        //xpath tests to verify the stuff
+        ToplevelList system = cdlDocument.getSystem();
+        PropertyList component = lookupChildPropertyList(system,
+                "Component",
+                "");
+        PropertyList child = lookupChildPropertyList(component, "child");
+        assertElementValueEquals(child, "text");
+    }
+
+    /**
+     * lookup a child property list entry; throw an assertion if it is null
+     *
+     * @param parent    parent component
+     * @param name      local name
+     * @param namespace namespace (or "")
+     * @return property list
+     */
+    public PropertyList lookupChildPropertyList(PropertyList parent,
+            String name,
+            String namespace) {
+        PropertyList child = (PropertyList) parent.getFirstChildElement(name,
+                namespace);
+        assertNotNull("Failed to resolve child on " + parent, child);
+        return child;
+    }
+
+    public PropertyList lookupChildPropertyList(PropertyList parent,
+            String name) {
+        return lookupChildPropertyList(parent, name, "");
+    }
+
+
+    public void testElementExtension1() throws Exception {
+        ParseContext context = new ParseContext();
+        CdlDocument cdlDocument = parseValidCDL(context,
+                CDL_DOC_EXTENDS_1);
+        //xpath tests to verify the stuff
+        ToplevelList system = cdlDocument.getSystem();
+        PropertyList a3 = system.getChildTemplateMatching("", "a3");
+    }
+
+    /**
+     * Assert that nested text takes priority
+     *
+     * @throws Exception
+     */
+    public void testNestedTextIsOverridden() throws Exception {
+        ParseContext context = new ParseContext();
+        CdlDocument cdlDocument = parseValidCDL(context,
+                CDL_DOC_EXTENDS_NON_ELEMENT_CHILDREN);
+        //xpath tests to verify the stuff
+        ToplevelList system = cdlDocument.getSystem();
+        PropertyList component = lookupChildPropertyList(system,
+                "Extension",
+                "");
+        assertElementTextContains(component, "Extension :");
+    }
+
+
 }
