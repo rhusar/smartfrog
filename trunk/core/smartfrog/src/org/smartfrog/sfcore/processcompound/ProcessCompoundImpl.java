@@ -1020,7 +1020,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
         addProcessClassPath(runCmd, name, cd);
         addProcessDefines(runCmd, name);
         addProcessAttributes(runCmd, name, cd);
-        addProcessClassName(runCmd);
+        addProcessClassName(runCmd,cd);
 
         String[] runCmdArray = new String[runCmd.size()];
         runCmd.copyInto(runCmdArray);
