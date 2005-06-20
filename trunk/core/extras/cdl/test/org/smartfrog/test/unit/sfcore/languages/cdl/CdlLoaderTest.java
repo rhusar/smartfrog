@@ -21,19 +21,16 @@
 package org.smartfrog.test.unit.sfcore.languages.cdl;
 
 import org.smartfrog.services.xml.utils.ResourceLoader;
-import org.smartfrog.sfcore.languages.cdl.CdlParser;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
 
 /**
- * Junit test cause
+ * verify that basic doc loading works
  *
  * @author root
  */
 public class CdlLoaderTest extends XmlTestBase {
-
-    CdlParser laxParser;
 
 
     public CdlLoaderTest(String test) {
@@ -50,7 +47,6 @@ public class CdlLoaderTest extends XmlTestBase {
 
     private void initLaxParser() throws SAXException {
         ResourceLoader loader = new ResourceLoader(this.getClass());
-        laxParser = new CdlParser(loader, false);
     }
 
 

@@ -1,6 +1,8 @@
 package org.smartfrog.test.unit.sfcore.languages.cdl;
 
 import junit.framework.TestCase;
+import nu.xom.Attribute;
+import nu.xom.Element;
 import nu.xom.ParsingException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -9,10 +11,12 @@ import org.smartfrog.sfcore.languages.cdl.CdlCatalog;
 import org.smartfrog.sfcore.languages.cdl.CdlParser;
 import org.smartfrog.sfcore.languages.cdl.ParseContext;
 import org.smartfrog.sfcore.languages.cdl.dom.CdlDocument;
+import org.smartfrog.sfcore.languages.cdl.dom.PropertyList;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
 import org.xml.sax.SAXException;
 
+import javax.xml.namespace.QName;
 import java.io.IOException;
 
 /**
@@ -209,5 +213,89 @@ public abstract class XmlTestBase extends TestCase implements Filenames {
         doc.setParseContext(context);
         doc.parsePhaseBuildDom();
         return doc;
+    }
+
+    /**
+     * Assert that a template has an attribute
+     *
+     * @param template
+     * @param local
+     */
+    protected void assertHasAttribute(PropertyList template, String local) {
+        assertHasAttribute(template, "", local);
+    }
+
+    /**
+     * Assert that a template has an attribute
+     *
+     * @param template
+     * @param local
+     */
+    protected void assertHasAttribute(PropertyList template,
+            String namespace,
+            String local) {
+        assertTrue("Template " + template + " lacks the attribute " + local,
+                template.hasAttribute(namespace, local));
+    }
+
+    /**
+     * Assert that a template has an attribute of a given value
+     *
+     * @param template
+     * @param namespace
+     * @param local
+     * @param expected
+     */
+    protected void assertAttributeValueEquals(PropertyList template,
+            String namespace,
+            String local,
+            String expected) {
+        Attribute attribute = template.getAttribute(local, namespace);
+        assertNotNull("Template " + template + " lacks the attribute " + local,
+                attribute);
+        assertEquals(expected, attribute.getValue());
+    }
+
+    /**
+     * Assert that a template has an attribute of a given value
+     *
+     * @param template
+     * @param local
+     * @param expected
+     */
+    protected void assertAttributeValueEquals(PropertyList template,
+            String local,
+            String expected) {
+        assertAttributeValueEquals(template, "", local, expected);
+    }
+
+    public void assertElementValueEquals(Element e, String value) {
+        assertNotNull("Null element", e);
+        String actual = e.getValue();
+        assertEquals("Element " +
+                e +
+                " has value [" +
+                actual +
+                "] and not the expected value [" + value + "]",
+                value, actual);
+    }
+
+    protected void assertElementTextContains(Element element,
+            String search) {
+        String value = element.getValue();
+        assertTrue("Not found: [" + search + "] in [" + value + "]",
+                value.indexOf(search) >= 0);
+    }
+
+    /**
+     * looku up a component; thro
+     *
+     * @param doc
+     * @param localname
+     */
+    protected PropertyList lookup(CdlDocument doc, String localname) {
+        PropertyList template = doc.lookup(new QName(localname));
+        assertNotNull("Lookup failed for element name " + localname, template);
+        return template;
     }
 }

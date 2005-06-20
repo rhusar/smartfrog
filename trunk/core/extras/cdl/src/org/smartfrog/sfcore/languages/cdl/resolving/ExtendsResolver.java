@@ -19,7 +19,6 @@
  */
 package org.smartfrog.sfcore.languages.cdl.resolving;
 
-import nu.xom.Element;
 import nu.xom.Node;
 import org.smartfrog.sfcore.languages.cdl.ParseContext;
 import org.smartfrog.sfcore.languages.cdl.dom.CdlDocument;
@@ -79,7 +78,8 @@ public class ExtendsResolver {
             throws CdlException {
         ToplevelList system = document.getSystem();
         if (system != null) {
-            resolveChildExtends(system);
+            PropertyList newSystem = resolveChildExtends(system);
+            document.setSystem((ToplevelList) newSystem);
             return true;
         } else {
             return false;
@@ -169,7 +169,7 @@ public class ExtendsResolver {
         if (extending == null) {
             //we are not extending anything...but our children might be.
             output = resolveChildExtends(target);
-            state = ResolveEnum.ResolvedNoWorkNeeded;
+            state = ResolveEnum.ResolvedComplete;
         } else {
             //something to resolve.
             ResolveResult extended;
@@ -191,7 +191,7 @@ public class ExtendsResolver {
                 //copy attributes
                 target.mergeAttributes(resolvedPropertyList);
                 //now do the element inheritance
-                output = inheritElements(target, resolvedPropertyList);
+                output = inheritChildren(target, resolvedPropertyList);
             }
             state = propagate(extended.state);
         }
@@ -200,12 +200,11 @@ public class ExtendsResolver {
     }
 
     /**
-     * merge in all elements. public for testing we extend any elements that
-     * need extending before merging.
+     * merge in all children.
      *
      * @param extension
      */
-    private PropertyList inheritElements(PropertyList target,
+    private PropertyList inheritChildren(PropertyList target,
             PropertyList extension)
             throws CdlException {
         //max size of our list is the sum of all children
@@ -216,26 +215,13 @@ public class ExtendsResolver {
         //this is a map that caches mappings of things
         HashMap<QName, QName> entries = new HashMap<QName, QName>(maxsize);
         for (Node node : extension.children()) {
-            if (node instanceof Element) {
-                //get the element
-                Element element = (Element) node;
-                //find the matching property list element
-                PropertyList elementAsList = extension.mapToPropertyList(
-                        element);
-                if(elementAsList==null) {
-                    //this is an element, but not mapped to a PropertyList
-                    //which means that it is actually a CDL special type.
-                    //add it as is, and go on to the next element
-                    //todo: Write some tests that play with extending expressions
-                    newChildren.add(node);
-                    //go on to the next element
-                    continue;
-                }
-                assert elementAsList != null;
-                QName name = elementAsList.getName();
+            if (node instanceof PropertyList) {
+                //cast it
+                PropertyList template = (PropertyList) node;
+                QName name = template.getName();
 
                 //merge it
-                ResolveResult resolved = resolveExtends(elementAsList);
+                ResolveResult resolved = resolveExtends(template);
                 PropertyList resolvedList = resolved.getResolvedPropertyList();
 
                 //now, at this point we have a property list which contains
@@ -250,16 +236,18 @@ public class ExtendsResolver {
                     //the copy is needed in case it gets manipulated later
                     PropertyList copiedList = (PropertyList) resolvedList.copy();
                     newChildren.add(copiedList);
+                    //register in the cache of mapped things.
                     entries.put(name, name);
                 } else {
                     //complex merge.
                     //first, pull in the attributes of the child
                     matchedList.inheritAttributes(resolvedList);
-                    //then insert the element of the current list into place
+                    //then insert the children of the current list into place
                     newChildren.add(matchedList);
                     entries.put(name, name);
                 }
             } else {
+                //something other than Element; could be Text
                 newChildren.add(node);
             }
         }
@@ -280,14 +268,16 @@ public class ExtendsResolver {
     }
 
     /**
-     * This method resolves and copies all elements beneath our target into a list,
-     * unless their qname appears in the hashmap of known qnames. Elements
-     * are added to the #map as they are propagated
-     * If the hashmap is null, the mapping lookup/add is skipped,
-     * returning a list of all elements, resolved when appropriate.
+     * This method resolves and copies all elements beneath our target into a
+     * list, unless their qname appears in the hashmap of known qnames. Elements
+     * are added to the #map as they are propagated If the hashmap is null, the
+     * mapping lookup/add is skipped, returning a list of all elements, resolved
+     * when appropriate.
+     *
      * @param target
      * @param map
-     * @return a list of nodes, any extended elements are resolved and @cdl:extends stripped.
+     * @return a list of nodes, any extended elements are resolved and
+     *         @cdl:extends stripped.
      * @throws CdlException in the event of trouble
      */
     private List<Node> copyAndResolve(PropertyList target,
@@ -299,7 +289,7 @@ public class ExtendsResolver {
             if (node instanceof PropertyList) {
 
                 //find the matching property list element
-                PropertyList entry = (PropertyList)node;
+                PropertyList entry = (PropertyList) node;
                 QName name = entry.getName();
                 //merge it
                 ResolveResult resolved = resolveExtends(entry);
@@ -336,21 +326,20 @@ public class ExtendsResolver {
      *         newChildren as elements
      * @throws CdlXmlParsingException
      */
-    private PropertyList replaceNode(PropertyList target, List<Node> newChildren)
+    private PropertyList replaceNode(PropertyList target,
+            List<Node> newChildren)
             throws CdlXmlParsingException {
         //copy the target element
-        Element newElement = (Element) target.getNode().copy();
+        PropertyList replacement = (PropertyList) target.copy();
         //strip its children away (a bit wasteful)
-        newElement.removeChildren();
+        replacement.removeChildren();
         //add the new ones in order
         for (Node sprog : newChildren) {
             sprog.detach();
-            newElement.appendChild(sprog);
+            replacement.appendChild(sprog);
         }
-        //here we have our new element, ready to go
-        PropertyList resultTemplate = new PropertyList(newElement);
-        resultTemplate.bind();
-        return resultTemplate;
+        replacement.bind();
+        return replacement;
     }
 
     /**

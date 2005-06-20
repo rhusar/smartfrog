@@ -167,8 +167,8 @@ public class PropertyList extends DocNode implements ToSmartFrog {
     }
 
     /**
-     * flag set to true if we are an addressable toplevel
-     * template
+     * flag set to true if we are an addressable toplevel template
+     *
      * @return
      */
     public boolean isTemplate() {
@@ -275,7 +275,7 @@ public class PropertyList extends DocNode implements ToSmartFrog {
      * @return the propertly list or null for no match
      */
     public PropertyList mapToPropertyList(Element element) {
-        if(element instanceof PropertyList) {
+        if (element instanceof PropertyList) {
             return (PropertyList) element;
         } else {
             return null;
@@ -315,4 +315,16 @@ public class PropertyList extends DocNode implements ToSmartFrog {
         return null;
     }
 
+    /**
+     * look up the child property list node whose (namespaceURI,localname)
+     * matches the params
+     *
+     * @param namespaceURI
+     * @param localname
+     * @return
+     */
+    public PropertyList getChildTemplateMatching(String namespaceURI,
+            String localname) {
+        return getChildTemplateMatching(new QName(namespaceURI, localname));
+    }
 }

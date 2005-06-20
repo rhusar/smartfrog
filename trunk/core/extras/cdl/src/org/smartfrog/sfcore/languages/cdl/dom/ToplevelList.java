@@ -2,7 +2,6 @@ package org.smartfrog.sfcore.languages.cdl.dom;
 
 import nu.xom.Element;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlDuplicatePrototypeException;
-import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
 
 import javax.xml.namespace.QName;
 
@@ -43,16 +42,6 @@ public class ToplevelList extends PropertyList {
     protected Element shallowCopy() {
         return new ToplevelList(getQualifiedName(), getNamespaceURI());
     }
-/*    public ToplevelList(CdlDocument owner) {
-        super();
-        setOwner(owner);
-    }
-
-    public ToplevelList(CdlDocument owner, Element element)
-            throws CdlXmlParsingException {
-        super(element);
-        setOwner(owner);
-    }*/
 
     /**
      * Look up a child elemnt
@@ -78,10 +67,10 @@ public class ToplevelList extends PropertyList {
      *
      * @param namespace
      * @param localname
-     *
      * @return true for a match
      */
-    public static boolean isConfigurationElement(String namespace, String localname) {
+    public static boolean isConfigurationElement(String namespace,
+            String localname) {
         return isNode(namespace, localname, ELEMENT_CONFIGURATION);
     }
 
@@ -90,11 +79,10 @@ public class ToplevelList extends PropertyList {
      *
      * @param namespace
      * @param localname
-     *
      * @return true for a match
      */
     public static boolean isSystemElement(String namespace,
-                                                 String localname) {
+            String localname) {
         return isNode(namespace, localname, ELEMENT_SYSTEM);
     }
 

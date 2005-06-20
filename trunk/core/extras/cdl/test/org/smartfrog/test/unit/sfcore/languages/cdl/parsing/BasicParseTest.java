@@ -19,36 +19,34 @@
  */
 package org.smartfrog.test.unit.sfcore.languages.cdl.parsing;
 
-import nu.xom.ParsingException;
-import org.smartfrog.sfcore.languages.cdl.ParseContext;
+import org.ggf.cddlm.generated.api.CddlmConstants;
 import org.smartfrog.sfcore.languages.cdl.dom.CdlDocument;
-import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
+import org.smartfrog.sfcore.languages.cdl.dom.PropertyList;
 import org.smartfrog.test.unit.sfcore.languages.cdl.XmlTestBase;
 
-import java.io.IOException;
-
 /**
- * created 15-Jun-2005 17:49:59
+ * created 20-Jun-2005 16:07:10
  */
 
-public class KnownToFailTest extends XmlTestBase {
+public class BasicParseTest extends XmlTestBase {
 
-    public KnownToFailTest(String name) {
+    public BasicParseTest(String name) {
         super(name);
     }
 
-    public void testExtendsNamespaces1() throws IOException, CdlException,
-            ParsingException {
-        ParseContext context = new ParseContext();
-        CdlDocument cdlDocument = parseValidCDL(context,
-                CDL_DOC_EXTENDS_NAMESPACES_1);
+
+    public void testTextRetained() throws Exception {
+        //test that text is retained
+        CdlDocument doc = loadCDLToDOM(CDL_DOC_TYPE_1);
+        String localname = "WebServer";
+        PropertyList component = lookup(doc, localname);
+        PropertyList port = component.getChildTemplateMatching("", "port");
+        assertNotNull(port);
+        assertAttributeValueEquals(port, CddlmConstants.XML_CDL_NAMESPACE,
+                CddlmConstants.ATTRIBUTE_USE, "required");
+        assertAttributeValueEquals(port, CddlmConstants.XML_CDL_NAMESPACE,
+                CddlmConstants.ATTRIBUTE_TYPE, "xsd:positiveInteger");
+        assertElementValueEquals(port, "80");
     }
 
-    /**
-     * @throws Exception
-     * @deprecated only when imports work.
-     */
-    public void testImportFullExample3() throws Exception {
-        assertValidCDL(CDL_DOC_FULL_EXAMPLE_3);
-    }
 }
