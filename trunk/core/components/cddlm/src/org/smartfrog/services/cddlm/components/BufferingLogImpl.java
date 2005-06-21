@@ -22,7 +22,7 @@
 package org.smartfrog.services.cddlm.components;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.logging.LogToErrImpl;
+import org.smartfrog.sfcore.logging.LogToStreamsImpl;
 
 import java.util.LinkedList;
 
@@ -30,7 +30,7 @@ import java.util.LinkedList;
  * Date: 16-Sep-2004
  * Time: 12:08:13
  */
-public class BufferingLogImpl extends LogToErrImpl implements BufferingLog {
+public class BufferingLogImpl extends LogToStreamsImpl implements BufferingLog {
 
     private int limit;
 
