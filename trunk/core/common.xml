@@ -180,7 +180,7 @@
   <!-- ========================================================== -->
   <target name="settarget" if="is.component.not.enabled">
     <property name="target.jar" 
-	    location="${dist.lib.dir}/${jarfile.name}"/> 
+      location="${dist.lib.dir}/${jarfile.name}"/> 
     </target> 
   
   <target name="init-common" depends="init-common-simpledefinitions">
@@ -878,30 +878,26 @@
 
 
   <target name="generateversion" if="is.component.enabled">
-	  <java classname="org.Version" failonerror="true" fork="true" outputproperty="CVersion">
+    <presetdef name="get-version">
+      <java classname="org.smartfrog.Version" failonerror="true" fork="true" >
+      <classpath>
+        <pathelement location="${build.classes.dir}"/>
+        <fileset refid="smartfrog.lib.fileset" />
+      </classpath>
+    </java>
+    </presetdef>
+    <get-version outputproperty="CVersion">
       <arg value="-b"/>
-      <classpath>
-	      <pathelement location="${build.classes.dir}"/>
-	      <fileset refid="smartfrog.lib.fileset" />
-      </classpath>
-    </java>
-    <java classname="org.Version" failonerror="true" fork="true" outputproperty="minVersion">
+    </get-version>
+    <get-version outputproperty="minVersion">
       <arg value="-min"/>
-      <classpath>
-	      <pathelement location="${build.classes.dir}"/>
-	      <fileset refid="smartfrog.lib.fileset" />
-      </classpath>
-    </java>
-    <java classname="org.Version" failonerror="true" fork="true" outputproperty="maxVersion">
+    </get-version>
+    <get-version outputproperty="maxVersion">
       <arg value="-max"/>
-      <classpath>
-	      <pathelement location="${build.classes.dir}"/>
-	      <fileset refid="smartfrog.lib.fileset" />
-      </classpath>
-    </java>
+    </get-version>
     <property name="jar.name" value="${artifact.name}${jarfile.suffix}-${CVersion}.${jarfile.extension}"/>
     <property name="target.jar" 
-	    location="${dist.lib.dir}/${jar.name}"/>  
+      location="${dist.lib.dir}/${jar.name}"/>  
     <jar destfile="${target.jar}" 
         basedir="${build.classes.dir}" 
         includes="**/*"/>
@@ -927,7 +923,7 @@
   </target>
 
   <target name="createjar" depends="settarget" if="is.component.not.enabled">
-	  <jar destfile="${target.jar}" 
+    <jar destfile="${target.jar}" 
              basedir="${build.classes.dir}" 
              includes="**/*"/>
      <echo level="verbose">created package ${target.jar}</echo>
@@ -939,8 +935,8 @@
   <!-- create the JAR ${target.jar}-->
   <!-- ========================================================== -->
   <target name="package" depends="compile,rmi"
-	  description="create the JAR files">
-	  <antcall target="generateversion"/>
+    description="create the JAR files">
+    <antcall target="generateversion"/>
           <antcall target="createjar"/>
   </target>  
 
@@ -974,7 +970,7 @@
       description="copy the jar file to the SmartFrog distribution directory">
     <copy file="${target.jar}" todir="${smartfrog.dist.lib.dir}"/>
     <copy-useful-files src="${lib.dir}" 
-	    pattern="**/*.jar" dest="${smartfrog.dist.lib.dir}" failonerror="false"/>       
+      pattern="**/*.jar" dest="${smartfrog.dist.lib.dir}" failonerror="false"/>       
   </target>
 
   <!-- ========================================================== -->
@@ -1046,6 +1042,14 @@
     depends="run-tests,reports-no-failure"
     description="compile and run all the tests; do not break on test failure"
     />
+    
+  <!-- ========================================================== -->
+  <!-- this is the gump entry point; it does packaging and tests -->
+  <!-- ========================================================== -->
+  <target name="gump"
+    depends="test,dist"
+    description="target for gump builds"
+    />    
     
   <!-- ========================================================== -->
   <!-- shortcut for testing -->
