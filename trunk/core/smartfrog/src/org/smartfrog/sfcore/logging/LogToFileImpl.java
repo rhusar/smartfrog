@@ -22,15 +22,14 @@ For more information: www.smartfrog.org
 package org.smartfrog.sfcore.logging;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SFNull;
 
-import java.io.PrintStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.PrintStream;
+import java.net.UnknownHostException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.net.*;
 
 /**
  *
@@ -38,7 +37,7 @@ import java.net.*;
  *
  */
 
-public class LogToFileImpl extends LogToErrImpl implements LogToFile {
+public class LogToFileImpl extends LogToStreamsImpl implements LogToFile {
 
    //Configuration parameters
 
@@ -76,12 +75,12 @@ public class LogToFileImpl extends LogToErrImpl implements LogToFile {
      * Construct a simple log with given name and log level
      * and log to output level
      * @param name log name
-     * @param intialLogLevel level to log at
+     * @param initialLogLevel level to log at
      */
     public LogToFileImpl (String name, Integer initialLogLevel) {
         super(name,initialLogLevel);
         try {
-          readSFAttributes();
+          readSFFileAttributes();
         } catch (SmartFrogException ex1) {
            this.error("",ex1);
         }
@@ -128,10 +127,8 @@ public class LogToFileImpl extends LogToErrImpl implements LogToFile {
      *  Reads optional and mandatory attributes.
      *
      * @exception  SmartFrogException error while reading attributes
-     * @exception  RemoteException In case of network/rmi error
      */
-    protected void readSFAttributes() throws SmartFrogException {
-        super.readSFAttributes();
+    protected void readSFFileAttributes() throws SmartFrogException {
         if (classComponentDescription==null) return;
         //Optional attributes.
         try {
@@ -220,39 +217,43 @@ public class LogToFileImpl extends LogToErrImpl implements LogToFile {
      * @throws Exception if any io error
      */
     public void redirectOutputs() throws Exception {
-        //   InputStream din = System.in;
-        /** Output stream. */
-        PrintStream originalSysOut = System.out;
-        /** Error stream. */
-        PrintStream originalSysErr = System.err;
+        PrintStream originalOut = System.out;
+        PrintStream originalErr = System.err;
 
-        /** Direct brand new outputs to a file. */
+        /** Direct brand new outs to a file. */
         PrintStream newOut = null;
-        /** Direct brand new outputs to a file. */
+        /** Direct brand new errs to a file. */
         PrintStream newErr = null;
 
         /** Log OUT file. */
         File logOutFile= new File(fullLogFileName.toString()+".out");
         /** Log ERR file. */
-        File logErrFile= new File(fullLogFileName.toString()+".err");
+        File logErrFile = null;
+        if (!errToOut) {
+             logErrFile = new File(fullLogFileName.toString()+".err");
+        }
 
         if (logFile != null) {
             FileOutputStream fos = new FileOutputStream(logOutFile);
             newOut = new PrintStream(fos);
 
-            FileOutputStream fes = new FileOutputStream(logErrFile);
-            newErr = new PrintStream(fes);
+            FileOutputStream fes = null;
+            if (!errToOut) {
+                fes = new FileOutputStream(logErrFile);
+                newErr = new PrintStream(fes);
+            }
 
             try {
-                // Redirecting standard output
+                // Redirecting  output
                 System.setOut(newOut);
-                // Redirecting standard err
-                System.setErr(newErr);
-
+                // Redirecting  err
+                if (errToOut)
+                   System.setErr(newOut);
+                else
+                   System.setErr(newErr);
             } catch (Exception e) {
-                System.setOut(originalSysOut);
-                System.setErr(originalSysErr);
-                e.printStackTrace();
+                System.setOut(originalOut);
+                System.setErr(originalErr);            
             }
         }
     }

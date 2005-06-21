@@ -88,8 +88,6 @@ public class LogImplAsyncWrapper implements LogSF {
 
     /**
      * <p> Get log name. </p>
-     *
-     * @param log name
      */
     public String getLogName(){
         return logImpl.getLogName();

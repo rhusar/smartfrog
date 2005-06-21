@@ -18,9 +18,9 @@ For more information: www.smartfrog.org
 
 */
 
-#include "org/smartfrog/sfcore/logging/logtoerrimpl.sf"
+#include "org/smartfrog/sfcore/logging/logtostreamsimpl.sf"
 
-LogToFileImpl extends  LogToErrImpl {
+LogToFileImpl extends  LogToStreamsImpl {
   path PROPERTY java.io.tmpdir; //".";
   logFileExtension "logJ";
   useDatedFileName true;

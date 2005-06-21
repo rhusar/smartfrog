@@ -23,18 +23,20 @@ package org.smartfrog.sfcore.logging;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 
 import java.io.PrintStream;
-import java.io.Serializable;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+
 
 
 /**
  * <p>Only out and err output are printed. </p>
  */
-public class LogToNothingImpl implements LogToErr, Log, LogMessage, LogLevel  {
+public class LogToNothingImpl implements LogToNothing, Log, LogMessage, LogLevel  {
+
+    //Configuration for LogImpl class
+    protected ComponentDescription classComponentDescription = null;
 
     /** The name of this simple log instance */
     protected String logName = null;
@@ -43,6 +45,15 @@ public class LogToNothingImpl implements LogToErr, Log, LogMessage, LogLevel  {
      * otherwise chosen
      */
     protected PrintStream outstream;
+
+    /** error stream to print to. Bonded at construct time, and usually system.err unless
+     * otherwise chosen
+     */
+
+    protected PrintStream errstream;
+
+    /** Send error output to normal ouput - used to simplify collecting all output */
+    protected boolean errToOut = false;
 
     /**
      * Construct a simple log with given name and log level
@@ -56,24 +67,51 @@ public class LogToNothingImpl implements LogToErr, Log, LogMessage, LogLevel  {
      * Construct a simple log with given name and log level
      * and log to output level
      * @param name log name
-     * @param intialLogLevel level to log at
+     * @param initialLogLevel level to log at
      */
     public LogToNothingImpl(String name, Integer initialLogLevel) {
-       this(name,initialLogLevel,System.err);
+       this(name, initialLogLevel, System.out, System.err);
     }
 
     /**
      * Construct a simple log with given name and log level
      * and log to output level
      * @param name log name
-     * @param intialLogLevel level to log at. It will be ignored.
+     * @param initialLogLevel level to log at. It will be ignored.
      * @param out output stream to log to
+     * @param err error stream to log to
      */
 
-    public LogToNothingImpl(String name, Integer initialLogLevel,PrintStream out) {
+    public LogToNothingImpl(String name, Integer initialLogLevel, PrintStream out, PrintStream err) {
         assert name != null;
         logName = name;
         setOutstream(out);
+        setErrstream(err);
+        try {
+          classComponentDescription = ComponentDescriptionImpl.getClassComponentDescription(this, true, null);
+        } catch (SmartFrogException ex) {
+           this.warn(ex.toString());
+        }
+        try {
+          readSFNothingAttributes();
+          if (errToOut) setErrstream(outstream);
+        } catch (SmartFrogException ex1) {
+           this.error("",ex1);
+        }
+    }
+
+        /**
+     *  Reads optional and mandatory attributes.
+     *
+     * @exception  SmartFrogException error while reading attributes
+     */
+    protected void readSFNothingAttributes() throws SmartFrogException {
+        //Optional attributes.
+        try {
+          errToOut = classComponentDescription.sfResolve(ATR_ERR_TO_OUT, errToOut, false);
+        } catch (Exception sex){
+           this.warn("",sex);;
+        }
     }
 
 
@@ -84,6 +122,15 @@ public class LogToNothingImpl implements LogToErr, Log, LogMessage, LogLevel  {
     public void setOutstream(PrintStream outstream) {
         assert(outstream != null);
         this.outstream = outstream;
+    }
+
+    /**
+     * set the output stream for logging. must not be null
+     * @param errstream
+     */
+    public void setErrstream(PrintStream errstream) {
+        assert(errstream != null);
+        this.errstream = errstream;
     }
 
 
@@ -125,7 +172,7 @@ public class LogToNothingImpl implements LogToErr, Log, LogMessage, LogLevel  {
     /**
      * <p> Log a message with debug log level.</p>
      */
-    public final void debug(Object message) {
+    public void debug(Object message) {
         return;
     }
 
@@ -133,7 +180,7 @@ public class LogToNothingImpl implements LogToErr, Log, LogMessage, LogLevel  {
     /**
      * <p> Log an error with debug log level.</p>
      */
-    public final void debug(Object message, Throwable t) {
+    public void debug(Object message, Throwable t) {
         return;
     }
 
@@ -141,7 +188,7 @@ public class LogToNothingImpl implements LogToErr, Log, LogMessage, LogLevel  {
     /**
      * <p> Log a message with trace log level.</p>
      */
-    public final void trace(Object message) {
+    public void trace(Object message) {
         return;
     }
 
@@ -149,7 +196,7 @@ public class LogToNothingImpl implements LogToErr, Log, LogMessage, LogLevel  {
     /**
      * <p> Log an error with trace log level.</p>
      */
-    public final void trace(Object message, Throwable t) {
+    public void trace(Object message, Throwable t) {
         return;
     }
 
@@ -157,7 +204,7 @@ public class LogToNothingImpl implements LogToErr, Log, LogMessage, LogLevel  {
     /**
      * <p> Log a message with info log level.</p>
      */
-    public final void info(Object message) {
+    public void info(Object message) {
         return;
     }
 
@@ -165,7 +212,7 @@ public class LogToNothingImpl implements LogToErr, Log, LogMessage, LogLevel  {
     /**
      * <p> Log an error with info log level.</p>
      */
-    public final void info(Object message, Throwable t) {
+    public void info(Object message, Throwable t) {
         return;
     }
 
@@ -173,7 +220,7 @@ public class LogToNothingImpl implements LogToErr, Log, LogMessage, LogLevel  {
     /**
      * <p> Log a message with warn log level.</p>
      */
-    public final void warn(Object message) {
+    public void warn(Object message) {
         return;
     }
 
@@ -181,7 +228,7 @@ public class LogToNothingImpl implements LogToErr, Log, LogMessage, LogLevel  {
     /**
      * <p> Log an error with warn log level.</p>
      */
-    public final void warn(Object message, Throwable t) {
+    public void warn(Object message, Throwable t) {
         return;
     }
 
@@ -189,7 +236,7 @@ public class LogToNothingImpl implements LogToErr, Log, LogMessage, LogLevel  {
     /**
      * <p> Log a message with error log level.</p>
      */
-    public final void error(Object message) {
+    public void error(Object message) {
         return;
     }
 
@@ -197,7 +244,7 @@ public class LogToNothingImpl implements LogToErr, Log, LogMessage, LogLevel  {
     /**
      * <p> Log an error with error log level.</p>
      */
-    public final void error(Object message, Throwable t) {
+    public void error(Object message, Throwable t) {
         return;
     }
 
@@ -205,7 +252,7 @@ public class LogToNothingImpl implements LogToErr, Log, LogMessage, LogLevel  {
     /**
      * <p> Log a message with fatal log level.</p>
      */
-    public final void fatal(Object message) {
+    public void fatal(Object message) {
         return;
     }
 
@@ -213,7 +260,7 @@ public class LogToNothingImpl implements LogToErr, Log, LogMessage, LogLevel  {
     /**
      * <p> Log an error with fatal log level.</p>
      */
-    public final void fatal(Object message, Throwable t) {
+    public void fatal(Object message, Throwable t) {
         return;
     }
 
@@ -225,7 +272,7 @@ public class LogToNothingImpl implements LogToErr, Log, LogMessage, LogLevel  {
      * concatenation to be avoided when the message will be ignored by the
      * logger. </p>
      */
-    public final boolean isDebugEnabled() {
+    public boolean isDebugEnabled() {
         return false;
     }
 
@@ -237,7 +284,7 @@ public class LogToNothingImpl implements LogToErr, Log, LogMessage, LogLevel  {
      * concatenation to be avoided when the message will be ignored by the
      * logger. </p>
      */
-    public final boolean isErrorEnabled() {
+    public boolean isErrorEnabled() {
         return false;
     }
 
@@ -249,7 +296,7 @@ public class LogToNothingImpl implements LogToErr, Log, LogMessage, LogLevel  {
      * concatenation to be avoided when the message will be ignored by the
      * logger. </p>
      */
-    public final boolean isFatalEnabled() {
+    public boolean isFatalEnabled() {
         return false;
     }
 
@@ -261,7 +308,7 @@ public class LogToNothingImpl implements LogToErr, Log, LogMessage, LogLevel  {
      * concatenation to be avoided when the message will be ignored by the
      * logger. </p>
      */
-    public final boolean isInfoEnabled() {
+    public boolean isInfoEnabled() {
         return false;
     }
 
@@ -272,7 +319,7 @@ public class LogToNothingImpl implements LogToErr, Log, LogMessage, LogLevel  {
      * concatenation to be avoided when the message will be ignored by the
      * logger. </p>
      */
-    public final boolean isTraceEnabled() {
+    public boolean isTraceEnabled() {
         return false;
     }
 
@@ -283,9 +330,10 @@ public class LogToNothingImpl implements LogToErr, Log, LogMessage, LogLevel  {
      * concatenation to be avoided when the message will be ignored by the
      * logger. </p>
      */
-    public final boolean isWarnEnabled() {
+    public boolean isWarnEnabled() {
         return false;
     }
+
 
 
     // Special LogMessages interface to produce output.
@@ -307,7 +355,7 @@ public class LogToNothingImpl implements LogToErr, Log, LogMessage, LogLevel  {
      * @param message log this message
      */
     public void err(Object message) {
-          outstream.println(message.toString());
+          err(message,null);
     }
 
 
@@ -319,8 +367,10 @@ public class LogToNothingImpl implements LogToErr, Log, LogMessage, LogLevel  {
      * @param t log this cause
      */
     public void err(Object message, Throwable t) {
-          outstream.println(message.toString());
-          t.printStackTrace(outstream);
+          errstream.println(message.toString());
+          if (t!=null){
+              t.printStackTrace(errstream);
+          }
     }
 
     /**
@@ -331,7 +381,7 @@ public class LogToNothingImpl implements LogToErr, Log, LogMessage, LogLevel  {
      */
     public void err(Object message, SmartFrogException t, TerminationRecord tr) {
         err(message, t);
-        outstream.println(tr.toString());
+        errstream.println(tr.toString());
     }
 
     /**
@@ -342,8 +392,7 @@ public class LogToNothingImpl implements LogToErr, Log, LogMessage, LogLevel  {
      * @param t log this cause
      */
     public void err(Object message, SmartFrogException t) {
-        err(message, (Throwable)t);
+        err(message, t);
     }
-
 }
 
