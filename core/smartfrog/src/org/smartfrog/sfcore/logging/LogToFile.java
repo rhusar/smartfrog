@@ -28,7 +28,7 @@ package org.smartfrog.sfcore.logging;
  *
  */
 
-public interface LogToFile extends LogToErr {
+public interface LogToFile extends LogToStreams {
 
    //Configuration parameters
    /** String name for optional attribute "path". */
