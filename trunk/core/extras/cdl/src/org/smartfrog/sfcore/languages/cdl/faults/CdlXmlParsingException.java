@@ -23,7 +23,9 @@ import nu.xom.Node;
 
 
 /**
- * we add our own exception under the CDL parsing exception
+ * we add our own exception under
+ * This is a runtime exception as it can be thrown on any getter that queries
+ * an attribute of an element.
  * created Jul 15, 2004 4:57:59 PM
  */
 
