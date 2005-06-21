@@ -191,7 +191,7 @@ public class ParseContext {
      * @param prototype
      */
     public void prototypeUpdate(PropertyList prototype) {
-        QName prototypeName = prototype.getName();
+        QName prototypeName = prototype.getQName();
         if (prototypeName == null) {
             throw new CdlRuntimeException(ERROR_NO_PROTOTYPE_NAME + prototype);
         }
@@ -208,7 +208,7 @@ public class ParseContext {
     public void prototypeAddNew(PropertyList prototype)
             throws CdlDuplicatePrototypeException {
 
-        QName prototypeName = prototype.getName();
+        QName prototypeName = prototype.getQName();
         if (prototypeName == null) {
             throw new CdlRuntimeException(ERROR_NO_PROTOTYPE_NAME + prototype);
         }

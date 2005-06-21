@@ -61,7 +61,8 @@ public class ParseContextTest extends XmlTestBase {
         assertEquals(doc, context.getDocument());
     }
 
-    public void testNullPrototype() throws Exception {
+    //obsolete w/ integral binding of qname and element name
+    public void ObsoletetestNullPrototype() throws Exception {
         ParseContext context = new ParseContext();
         PropertyList prototype = new PropertyList("empty");
         try {
@@ -74,9 +75,8 @@ public class ParseContextTest extends XmlTestBase {
 
     public void testDuplicatePrototype() throws Exception {
         ParseContext context = new ParseContext();
-        PropertyList prototype = new PropertyList("smartfrog");
-        QName name = new QName(Constants.SMARTFROG_NAMESPACE, "smartfrog");
-        prototype.setName(name);
+        PropertyList prototype = new PropertyList("smartfrog",
+                Constants.SMARTFROG_NAMESPACE);
         try {
             context.prototypeAddNew(prototype);
             context.prototypeAddNew(prototype);
@@ -89,9 +89,8 @@ public class ParseContextTest extends XmlTestBase {
 
     public void testUpdatePrototype() throws Exception {
         ParseContext context = new ParseContext();
-        PropertyList prototype = new PropertyList("smartfrog");
-        QName name = new QName(Constants.SMARTFROG_NAMESPACE, "smartfrog");
-        prototype.setName(name);
+        PropertyList prototype = new PropertyList("smartfrog",
+                Constants.SMARTFROG_NAMESPACE);
         context.prototypeAddNew(prototype);
         context.prototypeUpdate(prototype);
     }

@@ -22,7 +22,10 @@ package org.smartfrog.sfcore.languages.cdl.dom;
 import nu.xom.Element;
 import nu.xom.Node;
 import org.smartfrog.sfcore.languages.cdl.utils.NodeIterator;
+import org.smartfrog.sfcore.languages.cdl.utils.XmlUtils;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
+
+import javax.xml.namespace.QName;
 
 /**
  * Extended element with a backpointer to the element
@@ -64,11 +67,11 @@ public class ElementEx extends Element {
     }
 
     /**
-     * Iterate just over elements only valid if node!=null
+     * Iterate just over elements
      *
      * @return an iterator
      */
-    public NodeIterator children() {
+    public NodeIterator nodes() {
         return new NodeIterator(this);
     }
 
@@ -80,11 +83,30 @@ public class ElementEx extends Element {
      */
     public void bind() throws CdlXmlParsingException {
         //recurse through children, binding them
-        for(Node child:children()) {
+        for(Node child:nodes()) {
             if(child instanceof ElementEx) {
                 ElementEx ex=(ElementEx) child;
                 ex.bind();
             }
         }
+    }
+
+    /**
+     * Get the QName of an element
+     * @return
+     */
+    public QName getQName() {
+        return XmlUtils.makeQName(this);
+    }
+
+    /**
+     * Test for a propertylist instance name
+     *
+     * @param testName
+     * @return
+     */
+    public boolean isNamed(QName testName) {
+        return getLocalName().equals(testName.getLocalPart()) &&
+                getNamespaceURI().equals(testName.getNamespaceURI());
     }
 }

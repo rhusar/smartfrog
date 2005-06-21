@@ -223,44 +223,10 @@ public class CdlDocument implements Names {
      *
      * @param name
      * @return
-     * @see ToplevelList#lookup(QName)
      */
     public PropertyList lookup(QName name) {
-        return configuration.lookup(name);
+        return configuration.getChildTemplateMatching(name);
     }
-
-
-    /**
-     * Verify that we are in the CDL namespace
-     *
-     * @param element
-     * @throws CdlXmlParsingException
-     */
-    private void verifyInCdlNamespace(Element element)
-            throws CdlXmlParsingException {
-        CdlXmlParsingException.assertValid(CddlmConstants.XML_CDL_NAMESPACE.equals(
-                element.getNamespaceURI()),
-                ErrorMessages.ERROR_WRONG_NAMESPACE);
-
-    }
-
-    /**
-     * verify the name of a node
-     *
-     * @param element
-     * @param name
-     * @throws CdlXmlParsingException
-     */
-    private void verifyNodeName(Element element, String name)
-            throws CdlXmlParsingException {
-        CdlXmlParsingException.assertValid(
-                CddlmConstants.ELEMENT_NAME_ROOT.equals(element.getLocalName()),
-                ErrorMessages.ERROR_WRONG_ELEMENT +
-                name
-                + " but got " + element);
-    }
-
-
 
     /**
      * bind the document. This does not do any parsing of the XML
@@ -346,7 +312,7 @@ public class CdlDocument implements Names {
         getRoot().bind();
 
         //now process our children
-        for (Node node : root.children()) {
+        for (Node node : root.nodes()) {
             if (!(node instanceof Element)) {
                 continue;
             }

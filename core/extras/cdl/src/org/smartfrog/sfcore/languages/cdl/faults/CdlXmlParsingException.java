@@ -27,7 +27,7 @@ import nu.xom.Node;
  * created Jul 15, 2004 4:57:59 PM
  */
 
-public class CdlXmlParsingException extends CdlException {
+public class CdlXmlParsingException extends CdlRuntimeException {
 
     /**
      * Xom nodes cannot be serialized.

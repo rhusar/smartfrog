@@ -32,8 +32,6 @@ import java.util.HashMap;
  */
 
 public class Expression extends DocNode {
-    public static final String ERROR_UNEXPECTED_ELEMENT_IN_EXPRESSION = "Unexpected element ";
-    public static final String ERROR_DUPLICATE_VALUE = "Duplicate variable in expression: ";
 
     private ValueOfAttribute valueOf;
 
@@ -74,7 +72,7 @@ public class Expression extends DocNode {
         String nameValue = variable.getNameValue();
         if (lookupVariable(nameValue) != null) {
             throw new CdlXmlParsingException(this,
-                    ERROR_DUPLICATE_VALUE + nameValue);
+                    ErrorMessages.ERROR_DUPLICATE_VALUE + nameValue);
         }
         variables.put(nameValue, variable);
 
@@ -93,20 +91,18 @@ public class Expression extends DocNode {
     public void bind() throws CdlXmlParsingException {
         super.bind();
         valueOf = ValueOfAttribute.extract(this, true);
-        //now run though our children, which must all be variables
-        for (Node child : children()) {
+        //now run though our children
+        for (Node child : nodes()) {
 
-            if (child instanceof Element) {
-                if(child instanceof Variable) {
-                    //add variables to our list of vars
-                    add((Variable) child);
-                } else {
-                    if(!(child instanceof Documentation)) {
-                        //everything that is not documentation is rejected
-                        //the XSD should prevent this, anyway
-                        throw new CdlXmlParsingException(this,
-                            ERROR_UNEXPECTED_ELEMENT_IN_EXPRESSION + child);
-                    }
+            if (child instanceof Variable) {
+                //add variables to our list of vars
+                add((Variable) child);
+            } else {
+                if (child instanceof Element && !(child instanceof Documentation)) {
+                    //everything that is not documentation is rejected
+                    //the XSD should prevent this, anyway
+                    throw new CdlXmlParsingException(this,
+                            ErrorMessages.ERROR_UNEXPECTED_ELEMENT_IN_EXPRESSION + child);
                 }
             }
         }

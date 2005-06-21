@@ -29,10 +29,6 @@ import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
 
 public class Import extends DocNode {
 
-    private String namespace;
-
-    private String location;
-
     public Import(String name) {
         super(name);
     }
@@ -51,7 +47,9 @@ public class Import extends DocNode {
      * @return namespace or null
      */
     public String getNamespace() {
-        return namespace;
+        return GenericAttribute.extractLocalAttributeValue(this,
+                ATTR_NAMESPACE,
+                false);
     }
 
     /**
@@ -60,7 +58,9 @@ public class Import extends DocNode {
      * @return the documents location
      */
     public String getLocation() {
-        return location;
+        return GenericAttribute.extractLocalAttributeValue(this,
+                ATTR_LOCATION,
+                true);
     }
 
 
@@ -71,14 +71,8 @@ public class Import extends DocNode {
      */
     public void bind() throws CdlXmlParsingException {
         super.bind();
-        namespace =
-                GenericAttribute.extractLocalAttributeValue(this,
-                        ATTR_NAMESPACE,
-                        false);
-        location =
-                GenericAttribute.extractLocalAttributeValue(this,
-                        ATTR_LOCATION,
-                        true);
+        getNamespace();
+        getLocation();
     }
 
 

@@ -41,11 +41,6 @@ public class PropertyList extends DocNode implements ToSmartFrog {
     protected boolean template = false;
 
     /**
-     * Our name. Only toplevel elements can have a qname
-     */
-    protected QName name;
-
-    /**
      * Name of the template that we extend. Null if we do not extend anything
      */
     protected QName extendsName;
@@ -59,11 +54,6 @@ public class PropertyList extends DocNode implements ToSmartFrog {
      * a log
      */
     protected Log log = ClassLogger.getLog(this);
-    /**
-     * child list
-     */
-    private List<DocNode> children = new LinkedList<DocNode>();
-    public static final String ERROR_UNKNOWN_NAMESPACE = "Unknown namespace ";
 
     public PropertyList(String name) {
         super(name);
@@ -77,14 +67,6 @@ public class PropertyList extends DocNode implements ToSmartFrog {
         super(element);
     }
 
-
-    public QName getName() {
-        return name;
-    }
-
-    public void setName(QName name) {
-        this.name = name;
-    }
 
     public QName getExtendsName() {
         return extendsName;
@@ -103,12 +85,6 @@ public class PropertyList extends DocNode implements ToSmartFrog {
         //parent
         super.bind();
 
-        //get our name and extends attribute
-        QName prototypeName = XmlUtils.makeQName(getNamespaceURI(),
-                getLocalName(),
-                getNamespacePrefix());
-        setName(prototypeName);
-
         //what are we extending?
         Attribute extendsAttr = getExtendsAttribute();
         if (extendsAttr != null) {
@@ -121,49 +97,15 @@ public class PropertyList extends DocNode implements ToSmartFrog {
                 namespace = getNamespaceURI(prefix);
                 if (namespace == null) {
                     throw new CdlXmlParsingException(
-                            ERROR_UNKNOWN_NAMESPACE + prefix);
+                            ErrorMessages.ERROR_UNKNOWN_NAMESPACE + prefix);
                 }
             }
             setExtendsName(XmlUtils.makeQName(namespace, local, prefix));
         }
-
-        //run through all our child elements and process them
-        for (Node child : children()) {
-            if (child instanceof DocNode) {
-                children.add((DocNode) child);
-            }
-        }
-
     }
 
-
-    /**
-     * Child elements
-     *
-     * @return our child list (may be null)
-     */
-    public List<DocNode> childDocNodes() {
-        return children;
-    }
-
-    /**
-     * Get an iterator over the child list
-     *
-     * @return
-     */
-    public ListIterator<DocNode> childIterator() {
-        return children.listIterator();
-    }
-
-
-    /**
-     * Test for a propertylist instance name
-     *
-     * @param testName
-     * @return
-     */
-    public boolean isNamed(QName testName) {
-        return testName.equals(name);
+    protected Element shallowCopy() {
+        return new PropertyList(getQualifiedName(), getNamespaceURI());
     }
 
     /**
@@ -187,7 +129,7 @@ public class PropertyList extends DocNode implements ToSmartFrog {
     public String getDescription() {
         StringBuffer buffer = new StringBuffer();
         buffer.append("Prototype : ");
-        buffer.append(name);
+        buffer.append(getQName());
         if (extendsName != null) {
             buffer.append(" extends ");
             buffer.append(extendsName);
@@ -207,7 +149,7 @@ public class PropertyList extends DocNode implements ToSmartFrog {
      */
     public void mergeAttributes(PropertyList extension) {
         //sanity check: we are merging ourselves
-        assert extension.name.equals(extendsName);
+        assert extension.getQName().equals(extendsName);
         //now apply the rules of the CDL spec, section 7.2.2
         inheritAttributes(extension);
         //clear our extendsname, as we are now merged. no more extending for us.
@@ -291,7 +233,7 @@ public class PropertyList extends DocNode implements ToSmartFrog {
      * @see #getChildTemplateMatching(QName)
      */
     public PropertyList getChildTemplateMatching(PropertyList that) {
-        QName thatName = that.getName();
+        QName thatName = that.getQName();
         return getChildTemplateMatching(thatName);
     }
 
@@ -304,7 +246,7 @@ public class PropertyList extends DocNode implements ToSmartFrog {
      * @return the propertly list or null for no match
      */
     public PropertyList getChildTemplateMatching(QName name) {
-        for (DocNode node : childDocNodes()) {
+        for (Node node : nodes()) {
             if (node instanceof PropertyList) {
                 PropertyList child = (PropertyList) node;
                 if (child.isNamed(name)) {
@@ -327,4 +269,5 @@ public class PropertyList extends DocNode implements ToSmartFrog {
             String localname) {
         return getChildTemplateMatching(new QName(namespaceURI, localname));
     }
+
 }
