@@ -41,6 +41,8 @@ import javax.xml.namespace.QName;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.io.PrintWriter;
+import java.io.IOException;
 
 
 /**
@@ -406,4 +408,26 @@ public class CdlDocument implements Names {
         }
     }
 
+    /**
+     * Write something to a smartfrog file. Parent elements should delegate to
+     * their children as appropriate.
+     * <p/>
+     * The Base class delegates to children and otherwise does nothing
+     *
+     * @param out
+     *
+     * @throws java.io.IOException
+     * @throws org.smartfrog.sfcore.languages.cdl.faults.CdlException
+     *
+     */
+    public void toSmartFrog(PrintWriter out) throws IOException, CdlException {
+        if(getConfiguration()!=null) {
+            getConfiguration().toSmartFrog(out);
+        }
+        if(getSystem()!=null) {
+            out.println("sfSystem {");
+            getSystem().toSmartFrog(out);
+            out.println("}");
+        }
+    }
 }

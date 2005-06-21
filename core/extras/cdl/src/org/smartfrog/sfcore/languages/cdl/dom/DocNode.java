@@ -21,18 +21,23 @@ package org.smartfrog.sfcore.languages.cdl.dom;
 
 import nu.xom.Attribute;
 import nu.xom.Element;
+import nu.xom.Node;
 import org.smartfrog.sfcore.languages.cdl.ParseContext;
 import org.smartfrog.sfcore.languages.cdl.dom.attributes.GenericAttribute;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
 import org.smartfrog.sfcore.languages.cdl.utils.NodeIterator;
 import org.smartfrog.sfcore.languages.cdl.utils.AttributeIterator;
+
+import java.io.PrintWriter;
+import java.io.IOException;
 
 /**
  * Representation of any element. created 21-Apr-2005 14:25:53
  * The node stored inside may be of Element, ElementEx or some subclass.
  */
 
-public abstract class DocNode extends ElementEx implements Names {
+public abstract class DocNode extends ElementEx implements Names{
 
     protected DocNode(String name) {
         super(name);
@@ -160,5 +165,34 @@ public abstract class DocNode extends ElementEx implements Names {
         return getAttribute(local,namespace)!=null;
     }
 
-
+    /**
+     * create a smartfrog name from a component
+     * This is a string that is a valid SF name. no spaces, colons or other
+     * forbidden stuff, and it includes the qname if needed.
+     * <p/>
+     * If there is a weakness in this algorithm, it is that it is neither
+     * complete nor unique. Better to have unique names in the firstplace, maybe.
+     * <p/>
+     * A big troublespot is qnames. Things would be simpler if they were not there,
+     * or aliased to something. but they are always incorporated, if present.
+     *
+     * @return a safer string.
+     */
+    public String getSfName() {
+        String source;
+        if (getNamespaceURI().length() > 0) {
+            source = getNamespaceURI() + "/" + getLocalName();
+        } else {
+            source = getLocalName();
+        }
+        String dest=source.replace("/",".");
+        dest = dest.replace("\\", ".");
+        dest = dest.replace("#", "_");
+        char firstchar = dest.charAt(0);
+        if(firstchar>='0' && firstchar<='9') {
+            //somebody started an element with a number
+            dest="_"+dest;
+        }
+        return dest;
+    }
 }

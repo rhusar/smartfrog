@@ -23,6 +23,7 @@ import nu.xom.Attribute;
 import nu.xom.Element;
 import nu.xom.Node;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
 import org.smartfrog.sfcore.languages.cdl.utils.ClassLogger;
 import org.smartfrog.sfcore.languages.cdl.utils.XmlUtils;
 import org.smartfrog.sfcore.logging.Log;
@@ -31,12 +32,14 @@ import javax.xml.namespace.QName;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
+import java.io.PrintWriter;
+import java.io.IOException;
 
 /**
  * created 21-Apr-2005 14:26:55
  */
 
-public class PropertyList extends DocNode implements ToSmartFrog {
+public class PropertyList extends DocNode  {
 
     protected boolean template = false;
 
@@ -268,6 +271,27 @@ public class PropertyList extends DocNode implements ToSmartFrog {
     public PropertyList getChildTemplateMatching(String namespaceURI,
             String localname) {
         return getChildTemplateMatching(new QName(namespaceURI, localname));
+    }
+
+    /**
+     * Write something to a smartfrog file. Parent elements should delegate to
+     * their children as appropriate.
+     * <p/>
+     * The Base class delegates to children and otherwise does nothing
+     *
+     * @param out
+     *
+     * @throws java.io.IOException
+     * @throws org.smartfrog.sfcore.languages.cdl.faults.CdlException
+     *
+     */
+    public void toSmartFrog(PrintWriter out) throws IOException, CdlException {
+        printNodeAsSFComment(out);
+        out.print(getSfName());
+        out.println(" { ");
+        printAttributesToSmartFrog(out);
+        printChildrenToSmartFrog(out);
+        out.println("}");
     }
 
 }
