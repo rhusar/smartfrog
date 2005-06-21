@@ -307,4 +307,14 @@ public interface MessageKeys {
      */
     public static String LIVENESS_SEND_FAILURE = "LIVENESS_SEND_FAILURE";
 
+    /**
+     * Message key: Warning: security is not enabled.
+     */
+    public static String WARN_NO_SECURITY = "WARN_NO_SECURITY";
+
+    /**
+     * Message key: Warning: security is not enabled and it is required
+     */
+    public static String ERROR_NO_SECURITY_BUT_REQUIRED = "ERROR_NO_SECURITY_BUT_REQUIRED";
+
 }

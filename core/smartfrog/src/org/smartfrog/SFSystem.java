@@ -91,8 +91,6 @@ public class SFSystem implements MessageKeys {
      * root process. Will be null after termination.
      */
     private ProcessCompound rootProcess;
-    public static final String WARN_NO_SECURITY = "SmartFrog security is NOT active";
-    public static final String ERROR_NO_SECURITY_BUT_REQUIRED = "Smartfrog Security was not active, but was marked as required";
 
     /**
      * Entry point to get system properties. Works around a bug in some JVM's
@@ -509,10 +507,10 @@ public class SFSystem implements MessageKeys {
                 Boolean secured=Boolean.valueOf(securityRequired);
                 if(secured.booleanValue()) {
                     //we need security, but it is not enabled
-                    throw new SFGeneralSecurityException(ERROR_NO_SECURITY_BUT_REQUIRED);
+                    throw new SFGeneralSecurityException(MessageUtil.formatMessage(ERROR_NO_SECURITY_BUT_REQUIRED));
                 }
                 if (sflog().isWarnEnabled()) {
-                    sflog().warn(WARN_NO_SECURITY);
+                    sflog().warn(MessageUtil.formatMessage(WARN_NO_SECURITY));
                 }
 
             }
