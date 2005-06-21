@@ -108,7 +108,9 @@ public class ErrorMessageBundle extends ListResourceBundle
         { MSG_FAILED_INET_ADDRESS_LOOKUP, "Failed to get Inet address of the localhost"},
         { LIVENESS_SEND_FAILURE_IN , "Liveness Send Failure in {0} when calling {1}"},
         { LIVENESS_SEND_FAILURE , "Liveness Send Failure when calling {1}"},
-        { COMPONENT_TERMINATED, "Component Terminated"}
+        { COMPONENT_TERMINATED, "Component Terminated"},
+        { WARN_NO_SECURITY, "SmartFrog security is NOT active"},
+        { ERROR_NO_SECURITY_BUT_REQUIRED, "Smartfrog Security was not active, but was marked as required"}
     };
 
     /**
