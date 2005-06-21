@@ -29,8 +29,6 @@ import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
 
 public class Variable extends Ref {
 
-    private NameAttribute name;
-
     public Variable(String name) {
         super(name);
     }
@@ -47,11 +45,11 @@ public class Variable extends Ref {
         //get the bits of ref
         super.bind();
         //add a name attribute
-        name = NameAttribute.extract(this, true);
+        getNameAttribute();
     }
 
-    public NameAttribute getName() {
-        return name;
+    public NameAttribute getNameAttribute() {
+        return NameAttribute.extract(this, true);
     }
 
     /**
@@ -60,7 +58,7 @@ public class Variable extends Ref {
      * @return
      */
     public String getNameValue() {
-        return name.getValue();
+        return getNameAttribute().getValue();
     }
 
     public static boolean isA(String namespace,String localname) {

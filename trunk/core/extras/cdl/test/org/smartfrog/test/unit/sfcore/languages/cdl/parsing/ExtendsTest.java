@@ -192,12 +192,6 @@ public class ExtendsTest extends XmlTestBase {
     }
 
 
-    public void testExtendsChildExtension() throws IOException, CdlException,
-            ParsingException {
-        ParseContext context = new ParseContext();
-        CdlDocument cdlDocument = parseValidCDL(context,
-                CDL_DOC_EXTENDS_CHILD_EXTENSION);
-    }
 
     public void testExtendsAttributeInheritance() throws IOException, CdlException,
             ParsingException {
@@ -242,7 +236,34 @@ public class ExtendsTest extends XmlTestBase {
                 ExtendsResolver.ERROR_UNKNOWN_TEMPLATE);
     }
 
-    public void testElementsChildExtension() throws Exception {
+    public void testElementsElementPropagation() throws Exception {
+        ParseContext context = new ParseContext();
+        CdlDocument cdlDocument = parseValidCDL(context,
+                CDL_DOC_EXTENDS_ELEMENT_PROPAGATION);
+        //xpath tests to verify the stuff
+        ToplevelList system = cdlDocument.getSystem();
+        PropertyList component = lookupChildPropertyList(system,
+                "Component",
+                "");
+        assertElementValueEquals(component, "text");
+    }
+
+    public void testElementsNestedElements() throws Exception {
+        ParseContext context = new ParseContext();
+        CdlDocument cdlDocument = parseValidCDL(context,
+                CDL_DOC_EXTENDS_NESTED_ELEMENTS);
+        //xpath tests to verify the stuff
+        ToplevelList system = cdlDocument.getSystem();
+        PropertyList component = lookupChildPropertyList(system,
+                "Component",
+                "");
+        PropertyList nested = lookupChildPropertyList(component, "nested");
+
+        assertElementValueEquals(nested, "text");
+    }
+
+
+    public void testExtendsChildExtension() throws Exception {
         ParseContext context = new ParseContext();
         CdlDocument cdlDocument = parseValidCDL(context,
                 CDL_DOC_EXTENDS_CHILD_EXTENSION);
@@ -251,9 +272,24 @@ public class ExtendsTest extends XmlTestBase {
         PropertyList component = lookupChildPropertyList(system,
                 "Component",
                 "");
-        PropertyList child = lookupChildPropertyList(component, "child");
+        PropertyList child = lookupChildPropertyList(component, "child2");
         assertElementValueEquals(child, "text");
     }
+
+    public void testExtendsWithinSystem() throws Exception {
+        ParseContext context = new ParseContext();
+        CdlDocument cdlDocument = parseValidCDL(context,
+                CDL_DOC_EXTENDS_WITHIN_SYSTEM);
+        //xpath tests to verify the stuff
+        ToplevelList system = cdlDocument.getSystem();
+        PropertyList component = lookupChildPropertyList(system,
+                "Component",
+                "");
+        PropertyList child = lookupChildPropertyList(component, "child2");
+        assertAttributeValueEquals(child,"size","20");
+        assertElementValueEquals(child, "text");
+    }
+
 
     /**
      * lookup a child property list entry; throw an assertion if it is null

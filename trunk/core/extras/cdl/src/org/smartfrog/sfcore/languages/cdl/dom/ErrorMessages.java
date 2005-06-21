@@ -32,4 +32,7 @@ public class ErrorMessages {
      * error message for tests {@value}
      */
     public static final String ERROR_WRONG_ELEMENT = "Expected an element named ";
+    public static final String ERROR_UNEXPECTED_ELEMENT_IN_EXPRESSION = "Unexpected element ";
+    public static final String ERROR_DUPLICATE_VALUE = "Duplicate variable in expression: ";
+    public static final String ERROR_UNKNOWN_NAMESPACE = "Unknown namespace ";
 }

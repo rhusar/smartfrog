@@ -102,7 +102,11 @@ public class ExtendsResolver {
             throw new CdlResolutionException(ERROR_UNKNOWN_TEMPLATE +
                     targetName);
         }
-        return resolveExtends(target);
+        //resolve the reference, the thing we are extending
+        ResolveResult resolveResult = resolveExtends(target);
+        //now patch the context so that it is updated.
+        parseContext.prototypeUpdate(resolveResult.getResolvedPropertyList());
+        return resolveResult;
     }
 
     /**
@@ -116,7 +120,7 @@ public class ExtendsResolver {
     public ResolveResult resolveExtends(PropertyList target)
             throws CdlException {
         boolean toplevel = target.isTemplate();
-        QName name = target.getName();
+        QName name = target.getQName();
         assert name != null;
         if (toplevel) {
             //only track names on entry and exit when we are toplevel.
@@ -174,7 +178,7 @@ public class ExtendsResolver {
             //something to resolve.
             ResolveResult extended;
             log.debug("Resolving " +
-                    target.getName() +
+                    target.getQName() +
                     " extends " +
                     extending);
             extended = resolveExtends(extending);
@@ -214,11 +218,11 @@ public class ExtendsResolver {
         List<Node> newChildren = new ArrayList<Node>(maxsize);
         //this is a map that caches mappings of things
         HashMap<QName, QName> entries = new HashMap<QName, QName>(maxsize);
-        for (Node node : extension.children()) {
+        for (Node node : extension.nodes()) {
             if (node instanceof PropertyList) {
                 //cast it
                 PropertyList template = (PropertyList) node;
-                QName name = template.getName();
+                QName name = template.getQName();
 
                 //merge it
                 ResolveResult resolved = resolveExtends(template);
@@ -285,12 +289,12 @@ public class ExtendsResolver {
             throws CdlException {
         int childCount = target.getChildCount();
         List<Node> newChildren = new ArrayList<Node>(childCount);
-        for (Node node : target.children()) {
+        for (Node node : target.nodes()) {
             if (node instanceof PropertyList) {
 
                 //find the matching property list element
                 PropertyList entry = (PropertyList) node;
-                QName name = entry.getName();
+                QName name = entry.getQName();
                 //merge it
                 ResolveResult resolved = resolveExtends(entry);
                 PropertyList resolvedList = resolved.getResolvedPropertyList();

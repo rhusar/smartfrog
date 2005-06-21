@@ -115,6 +115,13 @@ public interface Filenames {
 
     String CDL_DOC_EXTENDS_NON_ELEMENT_CHILDREN = RESOLUTION_RESOURCES +
             "extends-non-element-children.cdl";
+    String CDL_DOC_EXTENDS_ELEMENT_PROPAGATION = RESOLUTION_RESOURCES +
+            "extends-element-propagation.cdl";
+    String CDL_DOC_EXTENDS_NESTED_ELEMENTS = RESOLUTION_RESOURCES +
+            "extends-nested-elements.cdl";
+    String CDL_DOC_EXTENDS_WITHIN_SYSTEM = RESOLUTION_RESOURCES +
+            "extends-within-system.cdl";
+
 
     String CDL_DOC_WRONG_ELT_ORDER = INVALID_RESOURCES +
             "wrong_elt_order.cdl";
@@ -150,4 +157,5 @@ public interface Filenames {
             + "extends-documentation.cdl";
     String EXTENDS_DOCUMENTATION2 = INVALID_RESOLUTION_RESOURCES
             + "extends-documentation2.cdl";
+
 }

@@ -1,6 +1,7 @@
 package org.smartfrog.sfcore.languages.cdl.dom;
 
 import nu.xom.Element;
+import nu.xom.Node;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlDuplicatePrototypeException;
 
 import javax.xml.namespace.QName;
@@ -44,25 +45,6 @@ public class ToplevelList extends PropertyList {
     }
 
     /**
-     * Look up a child elemnt
-     *
-     * @param childName name of child
-     * @return element or null
-     */
-    public PropertyList lookup(QName childName) {
-        for (DocNode child : childDocNodes()) {
-            if (child instanceof PropertyList) {
-                PropertyList propertyList = (PropertyList) child;
-                if (propertyList.isNamed(childName)) {
-                    return propertyList;
-                }
-            }
-        }
-        //No match
-        return null;
-    }
-
-    /**
      * Test that a (namespace,localname) pair matches our type
      *
      * @param namespace
@@ -93,9 +75,9 @@ public class ToplevelList extends PropertyList {
      *                                        already
      */
     public void registerPrototypes() throws CdlDuplicatePrototypeException {
-        for (DocNode docnode : childDocNodes()) {
-            if (docnode instanceof PropertyList) {
-                PropertyList prototype = (PropertyList) docnode;
+        for (Node node : nodes()) {
+            if (node instanceof PropertyList) {
+                PropertyList prototype = (PropertyList) node;
                 getParseContext().prototypeAddNew(prototype);
             }
         }

@@ -141,12 +141,7 @@ public abstract class XmlTestBase extends TestCase implements Filenames {
             CdlDocument doc = load(resource);
             doc.parse(context);
             fail("expected a validity failure with " + text);
-        } catch (ParsingException e) {
-            if (e.getMessage().indexOf(text) < 0) {
-                log("expected [" + text + "] but got " + e.toString());
-                throw e;
-            }
-        } catch (CdlException e) {
+        } catch (Exception e) {
             if (e.getMessage().indexOf(text) < 0) {
                 log("expected [" + text + "] but got " + e.toString());
                 throw e;

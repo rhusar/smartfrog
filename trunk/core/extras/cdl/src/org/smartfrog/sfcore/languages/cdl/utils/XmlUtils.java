@@ -23,6 +23,8 @@ import org.ggf.cddlm.utils.QualifiedName;
 
 import javax.xml.namespace.QName;
 
+import nu.xom.Element;
+
 /**
  * Minor XML utility stuff, unique to CDL created 13-Jun-2005 14:51:30
  */
@@ -98,4 +100,12 @@ public final class XmlUtils {
         }
     }
 
+    /**
+     * Get the qname of an element
+     * @param element
+     * @return
+     */
+    public static QName makeQName(Element element) {
+        return new QName(element.getNamespaceURI(),element.getLocalName());
+    }
 }
