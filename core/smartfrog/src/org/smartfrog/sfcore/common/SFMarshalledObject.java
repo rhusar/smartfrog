@@ -21,50 +21,44 @@ For more information: www.smartfrog.org
 package org.smartfrog.sfcore.common;
 
 import java.rmi.MarshalledObject;
-
 import java.io.IOException;
 import java.io.Serializable;
-
 
 /**
  * A wrapper class to avoid stub classes in intermediate nodes.
  * We delay the packing of the inner object until we serialize the
  * wrapper to avoid replacing exported objects by stubs in a single VM.
- * 
- * 
+ *
+ *
  */
 final public class SFMarshalledObject implements Serializable{
 
-    /** The original object or a packed version of it. */ 
+    /** The original object or a packed version of it. */
     private Object value = null;
-    
+
     /** Whether we have already "packed" an inner object.*/
     private boolean alreadySet = false;
 
-    /** Whether the original object was of type MarshalledOnject, so 
+    /** Whether the original object was of type MarshalledOnject, so
         we do not need to unwrap it. */
     private boolean wasMarshalled = false;
 
     /**
      * Creates a new <code>SFMarshalledObject</code> instance.
-     *
      * @param value an <code>Object</code> value
      */
     public SFMarshalledObject(Object value) {
         this.value = value;
     }
 
-
-
     /**
-     * Gets an unwrapped version of the original object, or exactly 
+     * Gets an unwrapped version of the original object, or exactly
      * the original object if we have not been serialized.
      *
-     * @return An unwrapped version of the original object, or exactly 
+     * @return An unwrapped version of the original object, or exactly
      * the original object if we have not been serialized.
      */
     public synchronized Object get() {
-        
         if ((!alreadySet) || (value == null)) {
             return value;
         }
@@ -82,7 +76,7 @@ final public class SFMarshalledObject implements Serializable{
     }
 
     /**
-     * Customize the serialization of this object so it "packs" the 
+     * Customize the serialization of this object so it "packs" the
      * inner object the first time we serialize the "wrapper" object.
      *
      * @param out a <code>java.io.ObjectOutputStream</code> value
@@ -90,20 +84,17 @@ final public class SFMarshalledObject implements Serializable{
      */
     private void writeObject(java.io.ObjectOutputStream out)
         throws IOException {
-
         pack();
         out.defaultWriteObject();
     }
 
-
     /**
-     * Packs the inner object in a MarshalledObject to avoid 
+     * Packs the inner object in a MarshalledObject to avoid
      * stub classes being needed in intermediate nodes. We avoid
-     * "packing" multiple times in case we serialize multiple times. 
+     * "packing" multiple times in case we serialize multiple times.
      *
      */
     private synchronized void pack(){
-
         if (alreadySet) {
             return;
         }
@@ -116,10 +107,9 @@ final public class SFMarshalledObject implements Serializable{
                 } catch (IOException ex) {
                     // need to log this...
                 }
-            } 
+            }
         } finally {
             alreadySet = true;
         }
     }
-    
 }
