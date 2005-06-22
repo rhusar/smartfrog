@@ -113,20 +113,6 @@ public class LogToStreamsImpl extends LogToNothingImpl implements LogToStreams, 
     protected int callDepth = 8;
 
     /**
-     * output stream to print to. Bonded at construct time, and usually system.out unless
-     * otherwise chosen
-     */
-
-    protected PrintStream outstream;
-
-    /**
-     * error stream to print to. Bonded at construct time, and usually system.err unless
-     * otherwise chosen
-     */
-
-    protected PrintStream errstream;
-
-    /**
      * buffer size
      */
     private static final int STACK_BUFFER_SIZE = 1024;
