@@ -22,9 +22,6 @@
 package org.smartfrog.sfcore.logging;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 
 import java.io.PrintStream;
 import java.text.DateFormat;
@@ -53,9 +50,6 @@ import java.util.Date;
  * </ul>
  */
 public class LogToStreamsImpl extends LogToNothingImpl implements LogToStreams, Log, LogMessage, LogLevel {
-
-    //Configuration for LogImpl class
-    protected ComponentDescription classComponentDescription = null;
 
     /**
      * Include the instance name in the log message?
