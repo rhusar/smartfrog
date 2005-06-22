@@ -1,6 +1,5 @@
 package org.smartfrog.test.unit.sfcore.languages.cdl;
 
-import junit.framework.TestCase;
 import nu.xom.Attribute;
 import nu.xom.Element;
 import nu.xom.ParsingException;
@@ -14,6 +13,7 @@ import org.smartfrog.sfcore.languages.cdl.dom.CdlDocument;
 import org.smartfrog.sfcore.languages.cdl.dom.PropertyList;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
+import org.smartfrog.test.SmartFrogTestBase;
 import org.xml.sax.SAXException;
 
 import javax.xml.namespace.QName;
@@ -22,7 +22,8 @@ import java.io.IOException;
 /**
  * this is the testbase for the tests that load files
  */
-public abstract class XmlTestBase extends TestCase implements Filenames {
+public abstract class XmlTestBase extends SmartFrogTestBase
+        implements Filenames {
 
     protected Log log = LogFactory.getLog(this.getClass());
 
@@ -167,14 +168,34 @@ public abstract class XmlTestBase extends TestCase implements Filenames {
     /**
      * load a file; assert that it is valid by initiating parsing
      *
+     * @param context
      * @param resource
+     * @return a parsed document
      * @throws IOException
      * @throws ParsingException
-     * @throws CdlXmlParsingException
+     * @throws CdlException
      */
     protected CdlDocument parseValidCDL(ParseContext context, String resource)
             throws IOException,
             ParsingException, CdlException {
+        CdlDocument cdlDocument = loadValidCDL(resource);
+        cdlDocument.parse(context);
+        return cdlDocument;
+    }
+
+    /**
+     * load a file; assert that it is valid by initiating parsing
+     *
+     * @param resource
+     * @return a parsed document
+     * @throws IOException
+     * @throws ParsingException
+     * @throws CdlException
+     */
+    protected CdlDocument parseValidCDL(String resource)
+            throws IOException,
+            ParsingException, CdlException {
+        ParseContext context = new ParseContext();
         CdlDocument cdlDocument = loadValidCDL(resource);
         cdlDocument.parse(context);
         return cdlDocument;
