@@ -936,8 +936,9 @@
   <!-- ========================================================== -->
   <target name="package" depends="compile,rmi"
     description="create the JAR files">
+    <!-- TODO: this is broken here, because the version wont propagate back-->
     <antcall target="generateversion"/>
-          <antcall target="createjar"/>
+    <antcall target="createjar"/>
   </target>  
 
   <!-- ========================================================== -->
