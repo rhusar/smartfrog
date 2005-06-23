@@ -46,7 +46,7 @@ public class ExtendsTest extends XmlTestBase {
 
     ExtendsContext extendsContext = new ExtendsContext();
     public static final QName PROPERTYLIST = new QName(
-            Constants.CDL_API_TYPES_NAMESPACE,
+            Constants.DEPLOY_API_TYPES_NAMESPACE,
             "propertylist");
     public static final QName LOCALONLY = new QName("propertylist");
 
@@ -192,7 +192,6 @@ public class ExtendsTest extends XmlTestBase {
     }
 
 
-
     public void testExtendsAttributeInheritance() throws IOException, CdlException,
             ParsingException {
         ParseContext context = new ParseContext();
@@ -286,7 +285,7 @@ public class ExtendsTest extends XmlTestBase {
                 "Component",
                 "");
         PropertyList child = lookupChildPropertyList(component, "child2");
-        assertAttributeValueEquals(child,"size","20");
+        assertAttributeValueEquals(child, "size", "20");
         assertElementValueEquals(child, "text");
     }
 

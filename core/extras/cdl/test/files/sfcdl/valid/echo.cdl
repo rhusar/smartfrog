@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<cdl:cdl xmlns:cdl="http://www.gridforum.org/namespaces/2005/02/cddlm/CDL-1.0"
+  xmlns:sf="http://smartfrog.org/services/cddlm/cdl">
+
+  <cdl:import location="org/smartfrog/services/cddlm/cdl/components.cdl"/>
+  <cdl:system>
+    <echo cdl:extends="sf:echo" message="test"/>
+  </cdl:system>
+</cdl:cdl>

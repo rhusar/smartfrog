@@ -8,7 +8,7 @@ import java.net.URL;
  */
 public class ClasspathResolver extends BaseImportResolver {
 
-    ClassLoader classLoader;
+    private ClassLoader classLoader;
 
     public ClasspathResolver(ClassLoader classLoader) {
         setClassLoader(classLoader);

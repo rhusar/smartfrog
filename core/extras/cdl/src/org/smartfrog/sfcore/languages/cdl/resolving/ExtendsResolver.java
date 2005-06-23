@@ -79,7 +79,7 @@ public class ExtendsResolver {
         ToplevelList system = document.getSystem();
         if (system != null) {
             PropertyList newSystem = resolveChildExtends(system);
-            document.setSystem((ToplevelList) newSystem);
+            document.replaceSystem((ToplevelList) newSystem);
             return true;
         } else {
             return false;
@@ -281,8 +281,8 @@ public class ExtendsResolver {
      * @param target
      * @param map
      * @return a list of nodes, any extended elements are resolved and
-     *         @cdl:extends stripped.
      * @throws CdlException in the event of trouble
+     * @cdl:extends stripped.
      */
     private List<Node> copyAndResolve(PropertyList target,
             HashMap<QName, QName> map)

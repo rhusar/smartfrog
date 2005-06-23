@@ -26,11 +26,9 @@ import org.smartfrog.sfcore.logging.Log;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
 
 /**
- * This class generates a smartfrog source file from
- * a CDL document
+ * This class generates a smartfrog source file from a CDL document
  */
 public class SmartFrogSourceGenerator {
 
@@ -41,19 +39,15 @@ public class SmartFrogSourceGenerator {
 
 
     private CdlDocument document;
-    /**
-     * the default charset for this doc is defined here.
-     * {@value}
-     */
-    public static final String DEFAULT_CHARSET = "US-ASCII";
 
 
     /**
      * prepare to generate source for a particular file
+     *
      * @param document
      * @throws IOException
      */
-    public SmartFrogSourceGenerator(CdlDocument document )
+    public SmartFrogSourceGenerator(CdlDocument document)
             throws IOException {
         this.document = document;
 
@@ -61,9 +55,10 @@ public class SmartFrogSourceGenerator {
 
     /**
      * Generate a new file
+     *
      * @throws IOException
      */
-    public void generate(String filename) throws IOException,CdlException {
+    public void generate(String filename) throws IOException, CdlException {
         File destFile;
         destFile = new File(filename);
         generate(destFile);
@@ -74,31 +69,17 @@ public class SmartFrogSourceGenerator {
      *
      * @throws IOException
      */
-    public void generate(File destFile) throws IOException, CdlException  {
-        PrintWriter out=new PrintWriter(destFile,DEFAULT_CHARSET);
-        try {
-            String destname=destFile.getAbsolutePath();
-            if(log.isDebugEnabled())  { log.debug("Writing to "+destname); }
-            //ask the doc to print itself
-            document.toSmartFrog(out);
-
-            PrintWriter out2 = out;
-            out=null;
-            out2.close();
-            if(out2.checkError()) {
-                throw new IOException("Something went wrong with writing to "+destname);
-            }
-
-        } finally {
-            if(out!=null) {
-                try {
-                    out.close();
-                } catch (Exception e) {
-                    log.warn("when closing "+destFile,e);
-                }
-            }
+    public void generate(File destFile) throws IOException, CdlException {
+        String destname = destFile.getAbsolutePath();
+        if (log.isDebugEnabled()) {
+            log.debug("Writing to " + destname);
         }
+        //ask the doc to print itself
 
+        GenerateContext context = new GenerateContext();
+        context.begin(destFile);
+        document.toSmartFrog(context);
+        context.end();
     }
 
 }

@@ -22,24 +22,21 @@ package org.smartfrog.sfcore.languages.cdl.dom;
 import nu.xom.Attribute;
 import nu.xom.Element;
 import nu.xom.Node;
-import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
+import org.smartfrog.sfcore.languages.cdl.generate.GenerateContext;
 import org.smartfrog.sfcore.languages.cdl.utils.ClassLogger;
 import org.smartfrog.sfcore.languages.cdl.utils.XmlUtils;
 import org.smartfrog.sfcore.logging.Log;
 
 import javax.xml.namespace.QName;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ListIterator;
-import java.io.PrintWriter;
 import java.io.IOException;
 
 /**
  * created 21-Apr-2005 14:26:55
  */
 
-public class PropertyList extends DocNode  {
+public class PropertyList extends DocNode {
 
     protected boolean template = false;
 
@@ -280,18 +277,22 @@ public class PropertyList extends DocNode  {
      * The Base class delegates to children and otherwise does nothing
      *
      * @param out
-     *
      * @throws java.io.IOException
      * @throws org.smartfrog.sfcore.languages.cdl.faults.CdlException
      *
      */
-    public void toSmartFrog(PrintWriter out) throws IOException, CdlException {
+    public void toSmartFrog(GenerateContext out) throws IOException,
+            CdlException {
         printNodeAsSFComment(out);
-        out.print(getSfName());
-        out.println(" { ");
+        String name = getSfName(out);
+        out.enter(name);
         printAttributesToSmartFrog(out);
         printChildrenToSmartFrog(out);
-        out.println("}");
+        out.leave();
+    }
+
+    protected String getSfName(GenerateContext out) {
+        return out.convertElementName(this);
     }
 
 }

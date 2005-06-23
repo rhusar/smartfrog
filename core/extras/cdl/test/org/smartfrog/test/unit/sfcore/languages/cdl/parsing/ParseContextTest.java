@@ -28,8 +28,6 @@ import org.smartfrog.sfcore.languages.cdl.faults.CdlRuntimeException;
 import org.smartfrog.sfcore.languages.cdl.importing.ClasspathResolver;
 import org.smartfrog.test.unit.sfcore.languages.cdl.XmlTestBase;
 
-import javax.xml.namespace.QName;
-
 /**
  * created 10-Jun-2005 15:48:34
  */
@@ -41,7 +39,7 @@ public class ParseContextTest extends XmlTestBase {
     }
 
     public void testContext() throws Exception {
-        ParseContext context = new ParseContext(new ClasspathResolver());
+        ParseContext context = new ParseContext(new ClasspathResolver(), null);
         CdlDocument doc = new CdlDocument();
         doc.setParseContext(context);
         assertEquals(context, doc.getParseContext());
@@ -53,7 +51,7 @@ public class ParseContextTest extends XmlTestBase {
      * @throws Exception
      */
     public void testDocCreation() throws Exception {
-        ParseContext context = new ParseContext(new ClasspathResolver());
+        ParseContext context = new ParseContext(new ClasspathResolver(), null);
         assertNotNull(context.getImportResolver());
         CdlDocument doc = context.createRootDocument();
         assertNotNull(doc);

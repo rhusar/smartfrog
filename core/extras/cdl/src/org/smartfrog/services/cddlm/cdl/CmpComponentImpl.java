@@ -17,28 +17,31 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.sfcore.languages.cdl.generate;
 
-import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
 
-import java.io.IOException;
+package org.smartfrog.services.cddlm.cdl;
+
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.compound.CompoundImpl;
+
+import java.rmi.RemoteException;
 
 /**
- * created 12-May-2005 17:33:45
+ * created 22-Jun-2005 13:14:43
  */
 
+public class CmpComponentImpl extends CompoundImpl implements CmpComponent {
 
-public interface ToSmartFrog {
+    public CmpComponentImpl() throws RemoteException {
+    }
 
+    public synchronized void sfDeploy() throws SmartFrogException,
+            RemoteException {
+        super.sfDeploy();
+    }
 
-    /**
-     * Write something to a smartfrog file. Parent elements should delegate to
-     * their children as appropriate.
-     *
-     * @param out output stream
-     * @throws IOException
-     * @throws CdlException
-     */
-    public void toSmartFrog(GenerateContext out) throws IOException,
-            CdlException;
+    public synchronized void sfStart() throws SmartFrogException,
+            RemoteException {
+        super.sfStart();
+    }
 }

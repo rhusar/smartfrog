@@ -32,20 +32,19 @@ public class Constants {
     }
 
 
-
     /**
-     * full path to CDDLM
-     * {@value}
-     * */
+     * full path to CDDLM {@value}
+     */
     public static final String CDL_XSD_FILENAME = CddlmConstants.CDL_FILENAME_XML_CDL;
 
-    public static final String DEPLOY_API_SCHEMA_FILENAME = 
+    public static final String DEPLOY_API_SCHEMA_FILENAME =
             CddlmConstants.CDL_FILENAME_DEPLOYMENT_API;
 
     public static final String XML_CDL_NAMESPACE = CddlmConstants.XML_CDL_NAMESPACE;
 
-    public static final String CDL_API_TYPES_NAMESPACE =  CddlmConstants.CDL_API_TYPES_NAMESPACE;
+    public static final String DEPLOY_API_TYPES_NAMESPACE = CddlmConstants.CDL_API_TYPES_NAMESPACE;
 
+    public static final String CMP_NAMESPACE = CddlmConstants.CDL_CMP_TYPES_NAMESPACE;
 
     public static final String CDL_ELT_CDL = "cdl";
 

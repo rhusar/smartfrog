@@ -19,11 +19,14 @@
  */
 package org.smartfrog.test.unit.sfcore.languages.cdl.generate;
 
+import org.smartfrog.sfcore.languages.cdl.ParseContext;
 import org.smartfrog.sfcore.languages.cdl.dom.CdlDocument;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
 import org.smartfrog.sfcore.languages.cdl.generate.SmartFrogSourceGenerator;
 import org.smartfrog.test.unit.sfcore.languages.cdl.XmlTestBase;
 
 import java.io.File;
+import java.io.IOException;
 
 /**
  * created 22-Jun-2005 12:59:27
@@ -39,10 +42,25 @@ public class BasicGenerateTest extends XmlTestBase {
     public void testFirstGenerate() throws Exception {
         CdlDocument cdlDocument = parseValidCDL(
                 CDL_DOC_EXTENDS_CHILD_EXTENSION);
+        saveToSmartFrog(cdlDocument);
+    }
+
+    private File saveToSmartFrog(CdlDocument cdlDocument) throws IOException,
+            CdlException {
         SmartFrogSourceGenerator generator = new SmartFrogSourceGenerator(
                 cdlDocument);
         File tempFile = File.createTempFile("cdl", ".sf");
         log.info("Tempfile=" + tempFile);
         generator.generate(tempFile);
+        return tempFile;
     }
+
+
+    public void testEcho() throws Exception {
+        ParseContext context = new ParseContext();
+        CdlDocument cdlDocument = parseValidCDL(context,
+                CDL_SF_ECHO);
+        saveToSmartFrog(cdlDocument);
+    }
+
 }
