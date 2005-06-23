@@ -97,6 +97,7 @@ public class ParseContext {
     private CdlParser parser;
     public static final String ERROR_RECURSIVE_IMPORT = "Recursive import of (%s,%s)";
     public static final String ERROR_DIFFERENT_LOCATION = "Cannot import %s into %s because %s is there already";
+    public static final String ERROR_RECURSIVE_LOCAL_IMPORT = "Recursive import of ";
 
     /**
      * Create a parse context
@@ -115,7 +116,7 @@ public class ParseContext {
         try {
             parser = new CdlParser(loader, true);
         } catch (SAXException e) {
-            throw new CdlRuntimeException("when creaing parser", e);
+            throw new CdlRuntimeException("when creating parser", e);
         }
     }
 
@@ -211,7 +212,7 @@ public class ParseContext {
         ImportedDocument importedDocument = localImports.get(path);
         if (importedDocument != null) {
             if (importedDocument.getDocument() == null) {
-                throw new CdlException("Recursive import of " + path);
+                throw new CdlException(ERROR_RECURSIVE_LOCAL_IMPORT + path);
             }
             return null;
         }
@@ -263,6 +264,9 @@ public class ParseContext {
     private ImportedDocument doImport(String path, String namespace)
             throws IOException, ParsingException, CdlException {
         URL location = getImportResolver().resolveToURL(path);
+        if (log.isDebugEnabled()) {
+            log.debug("Importing " + namespace + " url" + location);
+        }
         //we now have a location; lets load it.
         InputStream inputStream = location.openStream();
         CdlDocument doc;

@@ -161,4 +161,13 @@ public interface Filenames {
     String CDL_SF_VALID = "files/sfcdl/valid/";
 
     String CDL_SF_ECHO = CDL_SF_VALID + "echo.cdl";
-}
+
+    String INVALID_IMPORT= INVALID_RESOURCES +
+            "imports/";
+    String IMPORT_DUPLICATE_CLASH = INVALID_IMPORT 
+            + "import-duplicate-clash.cdl";
+    String IMPORT_RECURSIVE_LOCAL = INVALID_IMPORT
+            + "import-recursive-local.cdl";
+    String IMPORT_RECURSIVE = INVALID_IMPORT
+            + "import-recursive-local.cdl";
+ }

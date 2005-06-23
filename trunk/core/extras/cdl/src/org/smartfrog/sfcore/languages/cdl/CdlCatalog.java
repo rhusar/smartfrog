@@ -351,18 +351,4 @@ public class CdlCatalog implements URIResolver, EntityResolver {
 */
 
 
-    /**
-     * bind an XML reader to this resolver.
-     * The way JDom works, this must be before you instantiate the
-     * parser, and so nothing is thrown till instantation time, when it
-     * is too late to fix.
-     * @param parser
-     */
-/*
-    public void bind(SAXBuilder parser)  {
-        setImportPaths(parser);
-        parser.setEntityResolver(this);
-    }
-*/
-
 }
