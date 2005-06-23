@@ -39,5 +39,13 @@ public class ImportTest extends XmlTestBase {
         CdlDocument cdlDocument = parseValidCDL(context,
                 CDL_SF_ECHO);
     }
+    
+    public void testImportRecursiveLocal() throws Exception {
+        assertInvalidCDL(IMPORT_RECURSIVE_LOCAL,ParseContext.ERROR_RECURSIVE_LOCAL_IMPORT);
+    }
 
+    public void testImportRecursive() throws Exception {
+        assertInvalidCDL(IMPORT_RECURSIVE, ParseContext.ERROR_RECURSIVE_IMPORT);
+    }
+    
 }

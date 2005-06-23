@@ -394,7 +394,6 @@ public class CdlDocument implements Names, ToSmartFrog {
      */
     public void parsePhaseProcessImports() throws CdlException, IOException,
             ParsingException {
-        log.debug("Import processing not implemented");
         for (Import imp : getImports()) {
             CdlDocument imported = getParseContext().importDocument(imp);
         }
