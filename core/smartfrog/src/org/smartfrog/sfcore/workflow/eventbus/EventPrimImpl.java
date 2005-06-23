@@ -115,8 +115,10 @@ public class EventPrimImpl extends PrimImpl implements EventRegistration,
         for (Enumeration e = sendTo.elements(); e.hasMoreElements();) {
             EventSink s = (EventSink) e.nextElement();
             try {
-                String infoStr = sfCompleteName().toString()+" sending "+ event+" to "+s.toString();
-                if (sfLog().isDebugEnabled()) { sfLog().debug(infoStr);   }
+                if (sfLog().isDebugEnabled()) {
+                    String infoStr = "'"+sfCompleteNameSafe().toString()+"' sending '"+ event+"' to '"+s+"'";
+                    sfLog().debug(infoStr);
+                }
 
                 s.event(event);
             } catch (Exception ex1) {
@@ -124,8 +126,12 @@ public class EventPrimImpl extends PrimImpl implements EventRegistration,
                 if (event!=null ) {
                     evStr=event.toString()+"["+event.getClass().toString()+"]";
                 }
+                String sStr="null eventSink";
+                if (s!=null ) {
+                     sStr=s.toString()+"["+s.getClass().toString()+"]";
+                }
                 if (sfLog().isErrorEnabled()) {
-                   sfLog().error("Failed to send event: "+evStr+", cause: "+ex1.getMessage(),ex1);
+                   sfLog().error("Failed to send event: '"+evStr+"' to '"+sStr+"', cause: "+ex1.getMessage(),ex1);
                }
             }
         }
