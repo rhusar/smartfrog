@@ -29,7 +29,6 @@ import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import java.io.PrintStream;
 
 
-
 /**
  * <p>Only out and err output are printed. </p>
  */

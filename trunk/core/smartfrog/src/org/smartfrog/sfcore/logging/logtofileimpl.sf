@@ -28,4 +28,4 @@ LogToFileImpl extends  LogToStreamsImpl {
   useHostNameInFileName true;
   //fileNamePrefix //"prefix"; //or PROPERTY java.io.tmpdir;
   redirectSystemOutputs false;
-}
+} 
