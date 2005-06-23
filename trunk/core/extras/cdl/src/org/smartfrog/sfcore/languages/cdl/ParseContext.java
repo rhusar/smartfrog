@@ -19,9 +19,13 @@
  */
 package org.smartfrog.sfcore.languages.cdl;
 
+import nu.xom.ParsingException;
+import org.smartfrog.services.xml.utils.ResourceLoader;
 import org.smartfrog.sfcore.languages.cdl.dom.CdlDocument;
+import org.smartfrog.sfcore.languages.cdl.dom.Import;
 import org.smartfrog.sfcore.languages.cdl.dom.PropertyList;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlDuplicatePrototypeException;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlRuntimeException;
 import org.smartfrog.sfcore.languages.cdl.importing.ClasspathResolver;
 import org.smartfrog.sfcore.languages.cdl.importing.ImportResolver;
@@ -29,9 +33,11 @@ import org.smartfrog.sfcore.languages.cdl.importing.ImportedDocument;
 import org.smartfrog.sfcore.languages.cdl.importing.ImportedDocumentMap;
 import org.smartfrog.sfcore.languages.cdl.utils.ClassLogger;
 import org.smartfrog.sfcore.logging.Log;
+import org.xml.sax.SAXException;
 
 import javax.xml.namespace.QName;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.Collection;
 import java.util.HashMap;
@@ -49,6 +55,7 @@ import java.util.Properties;
 
 public class ParseContext {
 
+
     /**
      * a log
      */
@@ -61,6 +68,8 @@ public class ParseContext {
     private ImportResolver importResolver;
 
     private ImportedDocumentMap imports = new ImportedDocumentMap();
+
+    private ImportedDocumentMap localImports = new ImportedDocumentMap();
 
     /**
      * option lookup for remote deployment
@@ -85,14 +94,29 @@ public class ParseContext {
     private CdlDocument document;
     public static final String ERROR_NO_PROTOTYPE_NAME = "Prototype has no qname ";
     public static final String ERROR_DUPLICATE_PROTOTYPE = "Duplicate prototype :";
+    private CdlParser parser;
+    public static final String ERROR_RECURSIVE_IMPORT = "Recursive import of (%s,%s)";
+    public static final String ERROR_DIFFERENT_LOCATION = "Cannot import %s into %s because %s is there already";
 
     /**
      * Create a parse context
      *
      * @param importResolver instance of whatever resolves imports
+     * @param loader
      */
-    public ParseContext(ImportResolver importResolver) {
+    public ParseContext(ImportResolver importResolver, ResourceLoader loader) {
+        if (importResolver == null) {
+            importResolver = new ClasspathResolver();
+        }
         this.importResolver = importResolver;
+        if (loader == null) {
+            loader = new ResourceLoader(this.getClass());
+        }
+        try {
+            parser = new CdlParser(loader, true);
+        } catch (SAXException e) {
+            throw new CdlRuntimeException("when creaing parser", e);
+        }
     }
 
     /**
@@ -101,7 +125,7 @@ public class ParseContext {
      * @see ClasspathResolver
      */
     public ParseContext() {
-        this.importResolver = new ClasspathResolver();
+        this(null, null);
     }
 
     /**
@@ -123,6 +147,16 @@ public class ParseContext {
         return getImports().get(namespace);
     }
 
+    /**
+     * look up imports by path, not name
+     *
+     * @param path
+     * @return
+     */
+    public ImportedDocument lookupImportByPath(String path) {
+        return getImports().get(path);
+    }
+
     public HashMap getOptions() {
         return options;
     }
@@ -135,8 +169,115 @@ public class ParseContext {
         return importResolver;
     }
 
+    /**
+     * set the resolver; bind if needed.
+     *
+     * @param importResolver
+     */
     public void setImportResolver(ImportResolver importResolver) {
         this.importResolver = importResolver;
+        if (importResolver != null) {
+            importResolver.bind(this);
+        }
+    }
+
+    public CdlDocument importDocument(Import imp) throws IOException, CdlException,
+            ParsingException {
+        assert imp != null;
+        String namespace = imp.getNamespace();
+        String path = imp.getLocation();
+        if (namespace == null) {
+            return importLocalDocument(path);
+        } else {
+            return importDocument(namespace, path);
+        }
+    }
+
+    /**
+     * do the full document import, to the extent of including and parsing the
+     * doc
+     *
+     * @param path
+     * @return the imported document
+     * @throws IOException
+     * @throws CdlException
+     */
+    public CdlDocument importLocalDocument(String path)
+            throws IOException, CdlException,
+            ParsingException {
+        assert path != null;
+        //first, check for it already being present.
+        //no namespace, check in local paths
+        ImportedDocument importedDocument = localImports.get(path);
+        if (importedDocument != null) {
+            if (importedDocument.getDocument() == null) {
+                throw new CdlException("Recursive import of " + path);
+            }
+            return null;
+        }
+
+        ImportedDocument imported = doImport(path, null);
+        localImports.put(path, imported);
+        return imported.getDocument();
+    }
+
+    /**
+     * do the full document import, to the extent of including and parsing the
+     * doc
+     *
+     * @param namespace namespace
+     * @param path
+     * @return the imported document
+     * @throws IOException
+     * @throws CdlException
+     */
+    public CdlDocument importDocument(String namespace, String path)
+            throws IOException, CdlException,
+            ParsingException {
+        assert namespace != null;
+        assert path != null;
+        //first, check for it already being present.
+        ImportedDocument importedDocument = lookupImportByNamespace(namespace);
+        if (importedDocument != null) {
+            CdlDocument document = importedDocument.getDocument();
+            if (document == null) {
+                throw new CdlException(String.format(ERROR_RECURSIVE_IMPORT,
+                        namespace,
+                        path));
+            }
+            if (importedDocument.getLocation() != path) {
+                throw new CdlException(String.format(ERROR_DIFFERENT_LOCATION,
+                        path,
+                        namespace,
+                        importedDocument.getLocation()));
+            }
+            //we have already been imported, skip it.
+            return null;
+        }
+
+        ImportedDocument imported = doImport(path, namespace);
+        imports.put(namespace, imported);
+        return imported.getDocument();
+    }
+
+    private ImportedDocument doImport(String path, String namespace)
+            throws IOException, ParsingException, CdlException {
+        URL location = getImportResolver().resolveToURL(path);
+        //we now have a location; lets load it.
+        InputStream inputStream = location.openStream();
+        CdlDocument doc;
+        try {
+            doc = parser.parseStream(inputStream);
+            //recursive parse
+            doc.parse(this);
+        } finally {
+            inputStream.close();
+        }
+        ImportedDocument imported = new ImportedDocument();
+        imported.setDocument(doc);
+        imported.setNamespace(namespace);
+        imported.setLocation(path);
+        return imported;
     }
 
     /**

@@ -3,8 +3,7 @@ package org.smartfrog.sfcore.languages.cdl.dom;
 import nu.xom.Element;
 import nu.xom.Node;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlDuplicatePrototypeException;
-
-import javax.xml.namespace.QName;
+import org.smartfrog.sfcore.languages.cdl.generate.GenerateContext;
 
 /**
  * This is the toplevel container
@@ -98,15 +97,15 @@ public class ToplevelList extends PropertyList {
      *
      * @return a safer string.
      */
-    public String getSfName() {
+    public String getSfName(GenerateContext out) {
         //are we the system node?
-        if(getOwner().getSystem()==this) {
-            return "sfSystem";
+        if (getOwner().getSystem() == this) {
+            return GenerateContext.COMPONENT_SFSYSTEM;
         } else {
             if (getOwner().getConfiguration() == this) {
-                return "configuration";
+                return GenerateContext.COMPONENT_CONFIGURATION;
             } else {
-                return super.getSfName();
+                return super.getSfName(out);
             }
         }
     }

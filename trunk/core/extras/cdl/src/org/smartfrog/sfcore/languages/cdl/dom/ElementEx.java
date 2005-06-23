@@ -19,18 +19,18 @@
  */
 package org.smartfrog.sfcore.languages.cdl.dom;
 
+import nu.xom.Attribute;
 import nu.xom.Element;
 import nu.xom.Node;
-import nu.xom.Attribute;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
+import org.smartfrog.sfcore.languages.cdl.generate.GenerateContext;
+import org.smartfrog.sfcore.languages.cdl.generate.ToSmartFrog;
+import org.smartfrog.sfcore.languages.cdl.utils.AttributeIterator;
 import org.smartfrog.sfcore.languages.cdl.utils.NodeIterator;
 import org.smartfrog.sfcore.languages.cdl.utils.XmlUtils;
-import org.smartfrog.sfcore.languages.cdl.utils.AttributeIterator;
-import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
-import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
-import org.smartfrog.sfcore.languages.cdl.generate.ToSmartFrog;
 
 import javax.xml.namespace.QName;
-import java.io.PrintWriter;
 import java.io.IOException;
 
 /**
@@ -83,6 +83,7 @@ public class ElementEx extends Element implements ToSmartFrog {
 
     /**
      * get our attributes
+     *
      * @return
      */
     public AttributeIterator attributes() {
@@ -90,16 +91,16 @@ public class ElementEx extends Element implements ToSmartFrog {
     }
 
     /**
-     * Parse from XML.
-     * The base implementation binds all children
+     * Parse from XML. The base implementation binds all children
      *
      * @throws org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException
+     *
      */
     public void bind() throws CdlXmlParsingException {
         //recurse through children, binding them
-        for(Node child:nodes()) {
-            if(child instanceof ElementEx) {
-                ElementEx ex=(ElementEx) child;
+        for (Node child : nodes()) {
+            if (child instanceof ElementEx) {
+                ElementEx ex = (ElementEx) child;
                 ex.bind();
             }
         }
@@ -107,6 +108,7 @@ public class ElementEx extends Element implements ToSmartFrog {
 
     /**
      * Get the QName of an element
+     *
      * @return
      */
     public QName getQName() {
@@ -127,16 +129,17 @@ public class ElementEx extends Element implements ToSmartFrog {
     /**
      * Write something to a smartfrog file. Parent elements should delegate to
      * their children as appropriate.
-     *
+     * <p/>
      * The Base class delegates to children and otherwise does nothing
-     * @param out
      *
+     * @param out
      * @throws java.io.IOException
      * @throws org.smartfrog.sfcore.languages.cdl.faults.CdlException
      *
      */
-    public void toSmartFrog(PrintWriter out) throws IOException, CdlException {
-        printNodeAsSFComment(out);
+    public void toSmartFrog(GenerateContext out) throws IOException,
+            CdlException {
+        //printNodeAsSFComment(out);
         //printAttributesToSmartFrog(out);
         printChildrenToSmartFrog(out);
     }
@@ -144,57 +147,48 @@ public class ElementEx extends Element implements ToSmartFrog {
     /**
      * print our node value as a comment
      */
-    protected void printNodeAsSFComment(PrintWriter out) {
-        out.print("/* node:");
-        out.println(getQualifiedName());
+    protected void printNodeAsSFComment(GenerateContext out) {
+        out.commentln(getQualifiedName());
         String value = getValue();
-        if(value!=null && value.length()>0) {
-            out.print("\n value:");
-            out.println(value);
+        if (value != null && value.length() > 0) {
+            String v = value.replace("\n", " ");
+            out.commentln("value:" + v);
         }
-        out.println("*/");
     }
 
     /**
      * print out all the children to smartfrog
+     *
      * @param out
      * @throws IOException
      * @throws CdlException
      */
-    public void printChildrenToSmartFrog(PrintWriter out) throws IOException,
+    public void printChildrenToSmartFrog(GenerateContext out)
+            throws IOException,
             CdlException {
-        for(Node node:nodes()) {
-            if(node instanceof ToSmartFrog) {
-                ToSmartFrog sfwriter=(ToSmartFrog) node;
+        for (Node node : nodes()) {
+            if (node instanceof ToSmartFrog) {
+                ToSmartFrog sfwriter = (ToSmartFrog) node;
                 sfwriter.toSmartFrog(out);
             }
         }
     }
 
     /**
-     * print out our attribute as name "value"; pairs, with a leading underscore on each.
-     * If the local namespace matches that of us, no namespace info is included.
+     * print out our attribute as name "value"; pairs, with a leading underscore
+     * on each. If the local namespace matches that of us, no namespace info is
+     * included.
+     *
      * @param out
      * @throws IOException
      * @throws CdlException
      */
-    public void printAttributesToSmartFrog(PrintWriter out) throws IOException,
+    public void printAttributesToSmartFrog(GenerateContext out)
+            throws IOException,
             CdlException {
-        for(Attribute attr:attributes()) {
-            out.print(getAttributeSfName(attr));
-            out.print(" \"");
-            out.print(attr.getValue());
-            out.print("\";");
+        for (Attribute attr : attributes()) {
+            out.printAttribute(attr);
         }
     }
 
-    /**
-     * Get the attribute name
-     * @param attr
-     * @return
-     * TODO: add namespace support
-     */
-    String getAttributeSfName(Attribute attr) {
-        return "_"+attr.getLocalName();
-    }
 }

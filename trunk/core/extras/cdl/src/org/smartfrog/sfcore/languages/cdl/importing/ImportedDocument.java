@@ -19,6 +19,10 @@
  */
 package org.smartfrog.sfcore.languages.cdl.importing;
 
+import org.smartfrog.sfcore.languages.cdl.dom.CdlDocument;
+
+import java.net.URL;
+
 
 /**
  * Represents an imported document. created 08-Jun-2005 13:39:12
@@ -29,6 +33,13 @@ public class ImportedDocument /*extends CdlDocument */ {
     private String namespace;
 
     private String location;
+
+    private URL url;
+
+    /**
+     * the imported document itself
+     */
+    private CdlDocument document;
 
     /**
      * Get the namespace of a document (may be null)
@@ -56,7 +67,28 @@ public class ImportedDocument /*extends CdlDocument */ {
         this.location = location;
     }
 
+    public CdlDocument getDocument() {
+        return document;
+    }
 
+    public void setDocument(CdlDocument document) {
+        this.document = document;
+    }
+
+    public URL getUrl() {
+        return url;
+    }
+
+    public void setUrl(URL url) {
+        this.url = url;
+    }
+
+    /**
+     * equality test is on namespace only
+     *
+     * @param o
+     * @return
+     */
     public boolean equals(Object o) {
         if (this == o) {
             return true;

@@ -17,28 +17,14 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.sfcore.languages.cdl.generate;
-
-import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
-
-import java.io.IOException;
+package org.smartfrog.services.cddlm.cdl;
 
 /**
- * created 12-May-2005 17:33:45
+ * created 23-Jun-2005 16:39:43
  */
 
 
-public interface ToSmartFrog {
+public interface CmpControlFlow extends CmpComponent {
 
-
-    /**
-     * Write something to a smartfrog file. Parent elements should delegate to
-     * their children as appropriate.
-     *
-     * @param out output stream
-     * @throws IOException
-     * @throws CdlException
-     */
-    public void toSmartFrog(GenerateContext out) throws IOException,
-            CdlException;
+    public static final String ATTR_LIFECYCLE = "a_lifecycle";
 }

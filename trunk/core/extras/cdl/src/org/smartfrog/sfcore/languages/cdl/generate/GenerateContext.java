@@ -19,23 +19,20 @@
  */
 package org.smartfrog.sfcore.languages.cdl.generate;
 
-import org.smartfrog.sfcore.logging.Log;
-import org.smartfrog.sfcore.languages.cdl.utils.ClassLogger;
+import nu.xom.Attribute;
+import nu.xom.Element;
 import org.smartfrog.sfcore.languages.cdl.Constants;
+import org.smartfrog.sfcore.languages.cdl.utils.ClassLogger;
+import org.smartfrog.sfcore.logging.Log;
 
-import java.io.PrintWriter;
-import java.io.IOException;
 import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Formatter;
 import java.util.HashMap;
 
-import nu.xom.Attribute;
-import nu.xom.Element;
-import nu.xom.Node;
-
 /**
- * This file handles the generation
- * created 23-Jun-2005 11:06:50
+ * This file handles the generation created 23-Jun-2005 11:06:50
  */
 
 public class GenerateContext {
@@ -47,13 +44,15 @@ public class GenerateContext {
 
     private File destFile;
 
-    private int depth=0;
+    private int depth = 0;
 
-    private String prefix="";
+    private String prefix = "";
 
     private Formatter formatter;
 
-    private HashMap<String,String> names;
+    private HashMap<String, String> names;
+
+    private HashMap<String, String> extenders;
 
     /**
      * a log
@@ -61,8 +60,7 @@ public class GenerateContext {
     private Log log = ClassLogger.getLog(this);
 
     /**
-     * the default charset for this doc is defined here.
-     * {@value}
+     * the default charset for this doc is defined here. {@value}
      */
     public static final String DEFAULT_CHARSET = "US-ASCII";
     public static final String COMPONENT_SFSYSTEM = "sfSystem";
@@ -73,34 +71,74 @@ public class GenerateContext {
     private String destFilename;
     public static final int INDENT = 1;
     public static final String COMPONENT_CONFIGURATION = "configuration";
+    public static final String CDL_COMPONENT_FILE = "/org/smartfrog/services/cdl/components.sf";
 
     public GenerateContext() {
-        initHashMap();
+        initHashMaps();
     }
 
 
-    protected void initHashMap() {
+    /**
+     * These are things we know how to extend specially, so when generating them
+     * we extend to the smartfrog things
+     * <p/>
+     * This is all a bit of a hack, because it doesnt track expansion properly;
+     * it is driven by the name of the element, not what they extended
+     * <p/>
+     * we would catch &lt;cmp:OnInitialized /&gt; but not &lt;something
+     * cdl:extends="cmp:OnInitialized" /&gt;
+     */
+    private static String known_extenders[] =
+            {
+                "_cmp_OnInitalized",
+                "_cmp_OnRunning",
+                "_cmp_OnFailed",
+                "_cmp_OnTerminated",
+                "_cmp_OnFault",
+                "_cmp_OnChange",
+                "_cmp_sequence",
+                "_cmp_reverse",
+                "_cmp_flow",
+                "_cmp_wait",
+                "_cmp_switch"
+            };
+
+
+    protected void initHashMaps() {
+        //namespaces
         names = new HashMap<String, String>();
-        names.put(Constants.XML_CDL_NAMESPACE,"cdl");
+        names.put(Constants.XML_CDL_NAMESPACE, "cdl");
         names.put(Constants.CMP_NAMESPACE, "cmp");
+
+        //known extensions
+        extenders = new HashMap<String, String>();
+        for (int i = 0; i < known_extenders.length; i++) {
+            extenders.put(known_extenders[i], known_extenders[i]);
+        }
+
+
     }
 
     public void begin(File dest) throws IOException {
-        destFile=dest;
+        destFile = dest;
         destFilename = destFile.getAbsolutePath();
         out = new PrintWriter(destFile, DEFAULT_CHARSET);
-        formatter=new Formatter(out);
+        formatter = new Formatter(out);
         setDepth(0);
+        //pull in CDL includes
+        hashInclude(CDL_COMPONENT_FILE);
+
     }
 
     /**
      * End generation
+     *
      * @throws IOException
      */
     public void end() throws IOException {
-        boolean hadError=out.checkError();
+        boolean hadError = out.checkError();
         close();
-        if(hadError) {
+        if (hadError) {
             reportError();
         }
     }
@@ -108,17 +146,19 @@ public class GenerateContext {
 
     /**
      * Error check.
+     *
      * @throws IOException
      */
     public void checkForErrors() throws IOException {
 
-        if (out!=null && out.checkError()) {
+        if (out != null && out.checkError()) {
             reportError();
         }
     }
 
     /**
      * report any errors on the output stream
+     *
      * @throws IOException
      */
     private void reportError() throws IOException {
@@ -134,7 +174,7 @@ public class GenerateContext {
         if (out != null) {
             try {
                 out.close();
-                out=null;
+                out = null;
             } catch (Exception e) {
                 log.warn("when closing " + destFile, e);
             }
@@ -143,23 +183,27 @@ public class GenerateContext {
 
 
     /**
-     * set the depth of nesting, and create an appropriate
-     * prefix line
+     * set the depth of nesting, and create an appropriate prefix line
+     *
      * @param value
      */
     private void setDepth(int value) {
-        depth=value;
-        StringBuilder builder=new StringBuilder();
-        for(int i=0;i<depth;i++) {
+        depth = value;
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < depth; i++) {
             builder.append(" ");
         }
-        prefix=builder.toString();
+        prefix = builder.toString();
     }
 
-    public void enter(String componentName,String extending) {
-        String text=componentName+" extends "+extending+" {";
+    public void hashInclude(String resource) {
+        println("#include \"%s\";", resource);
+    }
+
+    public void enter(String componentName, String extending) {
+        String text = componentName + " extends " + extending + " {";
         println(text);
-        setDepth(depth+INDENT);
+        setDepth(depth + INDENT);
     }
 
     public void enter(String componentName) {
@@ -184,24 +228,24 @@ public class GenerateContext {
 
     /**
      * varargs println
+     *
      * @param format
      * @param args
      */
-    public void println(String format,Object ... args) {
+    public void println(String format, Object... args) {
         out.print(prefix);
-        formatter.format(format,args);
+        formatter.format(format, args);
         formatter.flush();
         out.println();
     }
 
-    public void printTuple(String name,String value) {
-        println("%s \"%s\"",name,value);
+    public void printTuple(String name, String value) {
+        println("%s \"%s\"", name, value);
     }
 
     public void printImport(String name) {
         println("#import  \"%s\"", name);
     }
-
 
 
     /**
@@ -214,37 +258,37 @@ public class GenerateContext {
         return "a_" + attr.getLocalName();
     }
 
-    public String namespaceToPrefix(String namespace,String prefix) {
-        if("".equals(namespace)) {
+    public String namespaceToPrefix(String namespace, String prefix) {
+        if ("".equals(namespace)) {
             return "";
         }
         //look for a mapping
         String mapping = names.get(namespace);
-        if(mapping!=null) {
+        if (mapping != null) {
             return mapping;
         }
         //now an empty node
-        if(prefix!=null) {
+        if (prefix != null) {
             mapping = sanitize(prefix);
-            if(names.get(mapping)!=null) {
-                mapping= makeUniquePrefix(prefix);
+            if (names.get(mapping) != null) {
+                mapping = makeUniquePrefix(prefix);
             }
         } else {
-            mapping=makeUniquePrefix(DEFAULT_PREFIX);
+            mapping = makeUniquePrefix(DEFAULT_PREFIX);
         }
         names.put(namespace, mapping);
         return mapping;
     }
 
-    public static final String DEFAULT_PREFIX="p";
+    public static final String DEFAULT_PREFIX = "p";
 
     private String makeUniquePrefix(String start) {
-        int count=0;
+        int count = 0;
         String newstr;
         do {
-            newstr=start+count;
+            newstr = start + count;
             count++;
-        } while(names.get(newstr) == null);
+        } while (names.get(newstr) == null);
         return newstr;
     }
 
@@ -256,22 +300,23 @@ public class GenerateContext {
 
     /**
      * turn a potentially dirty string into a safe one
+     *
      * @param input
      * @return
      */
     public String sanitize(CharSequence input) {
-        StringBuilder builder=new StringBuilder();
-        for(int i=0;i<input.length();i++) {
-            char c=input.charAt(i);
-            int index=INVALID.indexOf(c);
-            if(index>=0) {
-                c=VALID.charAt(index);
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < input.length(); i++) {
+            char c = input.charAt(i);
+            int index = INVALID.indexOf(c);
+            if (index >= 0) {
+                c = VALID.charAt(index);
             }
             builder.append(c);
         }
         return builder.toString();
     }
-    
+
     /**
      * create a smartfrog name from a component This is a string that is a valid
      * SF name. no spaces, colons or other forbidden stuff, and it includes the
@@ -308,36 +353,39 @@ public class GenerateContext {
     public String convertElementName(Element element) {
         String prefix = namespaceToPrefix(element.getNamespaceURI(),
                 element.getNamespacePrefix());
-        String localname=sanitize(element.getLocalName());
-        return "_"+prefix+"_"+localname;
+        String localname = sanitize(element.getLocalName());
+        return "_" + prefix + "_" + localname;
     }
 
     /**
      * Enter, using an element name
+     *
      * @param element
      */
     public void enter(Element element) {
         enter(convertElementName(element));
     }
+
     /**
      * Print an attribute out
+     *
      * @param attr
      */
     public void printAttribute(Attribute attr) {
-        String name=convertAttributeName(attr);
-        String value=attr.getValue();
-        printTuple(name,value);
+        String name = convertAttributeName(attr);
+        String value = attr.getValue();
+        printTuple(name, value);
     }
 
     /**
-     * print a comment line.
-     * any occurence of * / will be intercepted and stripped.
+     * print a comment line. any occurence of * / will be intercepted and
+     * stripped.
+     *
      * @param comment
      */
     public void commentln(String comment) {
-        println("//"+comment);
+        println("//" + comment);
     }
-
 
 
 }

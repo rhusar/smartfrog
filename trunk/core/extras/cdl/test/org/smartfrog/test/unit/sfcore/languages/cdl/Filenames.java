@@ -158,4 +158,7 @@ public interface Filenames {
     String EXTENDS_DOCUMENTATION2 = INVALID_RESOLUTION_RESOURCES
             + "extends-documentation2.cdl";
 
+    String CDL_SF_VALID = "files/sfcdl/valid/";
+
+    String CDL_SF_ECHO = CDL_SF_VALID + "echo.cdl";
 }

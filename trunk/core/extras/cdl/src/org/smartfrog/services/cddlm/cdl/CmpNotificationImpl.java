@@ -17,28 +17,17 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.sfcore.languages.cdl.generate;
+package org.smartfrog.services.cddlm.cdl;
 
-import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
-
-import java.io.IOException;
+import java.rmi.RemoteException;
 
 /**
- * created 12-May-2005 17:33:45
+ * created 23-Jun-2005 16:38:41
  */
 
+public class CmpNotificationImpl extends CmpComponentImpl
+        implements CmpNotification {
 
-public interface ToSmartFrog {
-
-
-    /**
-     * Write something to a smartfrog file. Parent elements should delegate to
-     * their children as appropriate.
-     *
-     * @param out output stream
-     * @throws IOException
-     * @throws CdlException
-     */
-    public void toSmartFrog(GenerateContext out) throws IOException,
-            CdlException;
+    public CmpNotificationImpl() throws RemoteException {
+    }
 }

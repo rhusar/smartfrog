@@ -19,6 +19,8 @@
  */
 package org.smartfrog.test.unit.sfcore.languages.cdl.parsing;
 
+import org.smartfrog.sfcore.languages.cdl.ParseContext;
+import org.smartfrog.sfcore.languages.cdl.dom.CdlDocument;
 import org.smartfrog.test.unit.sfcore.languages.cdl.XmlTestBase;
 
 /**
@@ -32,8 +34,10 @@ public class ImportTest extends XmlTestBase {
     }
 
 
-    public void testnothing() throws Exception {
-
+    public void testEchoImport() throws Exception {
+        ParseContext context = new ParseContext();
+        CdlDocument cdlDocument = parseValidCDL(context,
+                CDL_SF_ECHO);
     }
 
 }

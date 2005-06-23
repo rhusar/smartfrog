@@ -57,7 +57,7 @@ public class CdlCatalogTest extends XmlTestBase {
 
 
     public void testApiLookup() {
-        String resource = catalog.lookup(Constants.CDL_API_TYPES_NAMESPACE);
+        String resource = catalog.lookup(Constants.DEPLOY_API_TYPES_NAMESPACE);
         assertTrue(resource != null &&
                 resource.endsWith(Constants.DEPLOY_API_SCHEMA_FILENAME));
     }
@@ -72,7 +72,7 @@ public class CdlCatalogTest extends XmlTestBase {
     }
 
     public void testSaxResolve() throws IOException, SAXException {
-        assertResolved(Constants.CDL_API_TYPES_NAMESPACE);
+        assertResolved(Constants.DEPLOY_API_TYPES_NAMESPACE);
     }
 
     private void assertResolved(String uri) throws SAXException, IOException {

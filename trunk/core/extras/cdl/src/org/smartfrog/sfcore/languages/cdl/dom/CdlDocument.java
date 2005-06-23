@@ -23,7 +23,7 @@ import nu.xom.Document;
 import nu.xom.Element;
 import nu.xom.Node;
 import nu.xom.ParentNode;
-import org.ggf.cddlm.generated.api.CddlmConstants;
+import nu.xom.ParsingException;
 import org.smartfrog.sfcore.languages.cdl.ParseContext;
 import org.smartfrog.sfcore.languages.cdl.dom.attributes.GenericAttribute;
 import org.smartfrog.sfcore.languages.cdl.dom.attributes.URIAttribute;
@@ -31,6 +31,8 @@ import org.smartfrog.sfcore.languages.cdl.faults.CdlDuplicatePrototypeException;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlResolutionException;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
+import org.smartfrog.sfcore.languages.cdl.generate.GenerateContext;
+import org.smartfrog.sfcore.languages.cdl.generate.ToSmartFrog;
 import org.smartfrog.sfcore.languages.cdl.resolving.ExtendsResolver;
 import org.smartfrog.sfcore.languages.cdl.utils.ClassLogger;
 import org.smartfrog.sfcore.languages.cdl.utils.IteratorRelay;
@@ -38,18 +40,17 @@ import org.smartfrog.sfcore.languages.cdl.utils.NodeIterator;
 import org.smartfrog.sfcore.logging.Log;
 
 import javax.xml.namespace.QName;
+import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-import java.io.PrintWriter;
-import java.io.IOException;
 
 
 /**
  * This represents a parsed CDL document, or an error caused during parsing.
  */
 
-public class CdlDocument implements Names {
+public class CdlDocument implements Names, ToSmartFrog {
 
     /**
      * a log
@@ -168,8 +169,27 @@ public class CdlDocument implements Names {
         this.configuration = configuration;
     }
 
-    public void setSystem(ToplevelList system) {
+    /**
+     * set the system property. Protected as most callers should call {@link
+     * #replaceSystem(ToplevelList)}
+     *
+     * @param system
+     */
+    protected void setSystem(ToplevelList system) {
         this.system = system;
+    }
+
+    /**
+     * replace the system element in our cache and in the document itself.
+     *
+     * @param newsystem
+     */
+    public void replaceSystem(ToplevelList newsystem) {
+
+        if (system != null) {
+            root.replaceChild(system, newsystem);
+        }
+        setSystem(newsystem);
     }
 
     /**
@@ -258,7 +278,8 @@ public class CdlDocument implements Names {
      * @param context the parsing context
      * @throws CdlXmlParsingException
      */
-    public void parse(ParseContext context) throws CdlException {
+    public void parse(ParseContext context) throws CdlException, IOException,
+            ParsingException {
         setParseContext(context);
         parsePhaseBuildDom();
         parsePhaseProcessImports();
@@ -277,8 +298,8 @@ public class CdlDocument implements Names {
     public void parsePhaseBuildDom() throws CdlException {
 
         Element rootElement = document.getRootElement();
-        if(rootElement instanceof RootNode) {
-            root=(RootNode) rootElement;
+        if (rootElement instanceof RootNode) {
+            root = (RootNode) rootElement;
         } else {
             throw new CdlXmlParsingException(rootElement,
                     ERROR_WRONG_ROOT_ELT);
@@ -292,6 +313,7 @@ public class CdlDocument implements Names {
 
     /**
      * Bind ourselves; extract stuff from the root node
+     *
      * @throws CdlXmlParsingException
      */
     private void bind() throws CdlXmlParsingException {
@@ -318,15 +340,15 @@ public class CdlDocument implements Names {
             if (!(node instanceof Element)) {
                 continue;
             }
-            ElementEx child=(ElementEx) node;
+            ElementEx child = (ElementEx) node;
 
-            if(child instanceof Import) {
+            if (child instanceof Import) {
                 imports.add((Import) child);
                 continue;
             }
             //type declarations
             //what to do with these?
-           if (child instanceof Type) {
+            if (child instanceof Type) {
                 types = (Type) child;
                 continue;
             }
@@ -334,7 +356,7 @@ public class CdlDocument implements Names {
             //<configuration> and system elements
             if (child instanceof ToplevelList) {
                 ToplevelList toplevelList = (ToplevelList) child;
-                if(ELEMENT_CONFIGURATION.equals(toplevelList.getLocalName())) {
+                if (ELEMENT_CONFIGURATION.equals(toplevelList.getLocalName())) {
                     configuration = toplevelList;
                 } else {
                     system = toplevelList;
@@ -344,7 +366,7 @@ public class CdlDocument implements Names {
 
             //add a doc node
             if (child instanceof Documentation) {
-                Documentation documentation = (Documentation)child;
+                Documentation documentation = (Documentation) child;
                 log.info("Ignoring documentation " + child);
                 continue;
             }
@@ -364,12 +386,20 @@ public class CdlDocument implements Names {
 
     /**
      * All imports are processed here
+     * <p/>
+     * the way we import is that every import is inserted under the
+     * configuration. this keeps everything under the tree.
      *
-     * @throws CdlException
-     * TODOimplement
+     * @throws CdlException TODOimplement
      */
-    public void parsePhaseProcessImports() throws CdlException {
+    public void parsePhaseProcessImports() throws CdlException, IOException,
+            ParsingException {
         log.debug("Import processing not implemented");
+        for (Import imp : getImports()) {
+            CdlDocument imported = getParseContext().importDocument(imp);
+        }
+
+
     }
 
     /**
@@ -415,19 +445,19 @@ public class CdlDocument implements Names {
      * The Base class delegates to children and otherwise does nothing
      *
      * @param out
-     *
      * @throws java.io.IOException
      * @throws org.smartfrog.sfcore.languages.cdl.faults.CdlException
      *
      */
-    public void toSmartFrog(PrintWriter out) throws IOException, CdlException {
-        if(getConfiguration()!=null) {
+    public void toSmartFrog(GenerateContext out) throws IOException,
+            CdlException {
+        if (getConfiguration() != null) {
             getConfiguration().toSmartFrog(out);
         }
-        if(getSystem()!=null) {
-            out.println("sfSystem {");
+        if (getSystem() != null) {
+            out.enter(GenerateContext.COMPONENT_SFSYSTEM);
             getSystem().toSmartFrog(out);
-            out.println("}");
+            out.leave();
         }
     }
 }

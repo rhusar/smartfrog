@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<cdl:cdl xmlns:cdl="http://www.gridforum.org/namespaces/2005/02/cddlm/CDL-1.0">
+
+  <cdl:documentation>
+    This is a base class for defining stuff to extend for the component model; it is
+    where we define our cmp and test classes.
+
+    Historical note: this is the first ever CDL component declaration in the SF tree.
+  </cdl:documentation>
+  <cdl:configuration xmlns:sf="http://smartfrog.org/services/cddlm/cdl">
+    <sf:echo message="test">
+      <CommandPath>org.smartfrog</CommandPath>
+    </sf:echo>
+  </cdl:configuration>
+</cdl:cdl>
