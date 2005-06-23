@@ -18,7 +18,6 @@ For more information: www.smartfrog.org
 
 */
 
-
 package org.smartfrog.sfcore.logging;
 
 
