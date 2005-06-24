@@ -437,8 +437,8 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
             obj = ((SFMarshalledObject)obj).get();
         }
         try {
-            if ((sflog()!= null) && sflog().isTraceEnabled()) {
-                sflog().trace("sfResolved: "+r.toString()+" to "+obj.toString());
+            if ((sfLog()!= null) && sfLog().isTraceEnabled()) {
+                sfLog().trace("sfResolved: "+r.toString()+" to "+obj.toString());
             }
         } catch (Exception ex) {ex.printStackTrace();}//ignore}
         return obj;
@@ -860,7 +860,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      *  To log into sfCore logger. This method should be used to log Core messages
      * @return Logger implementing LogSF and Log
      */
-    public LogSF sflog() {
+    public LogSF sfLog() {
        return sflog;
     }
 
