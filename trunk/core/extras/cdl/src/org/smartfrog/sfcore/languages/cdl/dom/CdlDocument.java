@@ -367,7 +367,7 @@ public class CdlDocument implements Names, ToSmartFrog {
             //add a doc node
             if (child instanceof Documentation) {
                 Documentation documentation = (Documentation) child;
-                log.info("Ignoring documentation " + child);
+                //TODO: do something
                 continue;
             }
 
@@ -454,9 +454,9 @@ public class CdlDocument implements Names, ToSmartFrog {
             getConfiguration().toSmartFrog(out);
         }
         if (getSystem() != null) {
-            out.enter(GenerateContext.COMPONENT_SFSYSTEM);
+            //out.enter(GenerateContext.COMPONENT_SFSYSTEM);
             getSystem().toSmartFrog(out);
-            out.leave();
+            //out.leave();
         }
     }
 }

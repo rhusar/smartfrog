@@ -283,9 +283,10 @@ public class PropertyList extends DocNode {
      */
     public void toSmartFrog(GenerateContext out) throws IOException,
             CdlException {
-        printNodeAsSFComment(out);
+        //printNodeAsSFComment(out);
         String name = getSfName(out);
         out.enter(name);
+        printValueToSF(out);
         printAttributesToSmartFrog(out);
         printChildrenToSmartFrog(out);
         out.leave();

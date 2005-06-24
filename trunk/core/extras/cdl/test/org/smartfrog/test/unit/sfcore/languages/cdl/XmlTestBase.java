@@ -13,10 +13,12 @@ import org.smartfrog.sfcore.languages.cdl.dom.CdlDocument;
 import org.smartfrog.sfcore.languages.cdl.dom.PropertyList;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
+import org.smartfrog.sfcore.languages.cdl.generate.SmartFrogSourceGenerator;
 import org.smartfrog.test.SmartFrogTestBase;
 import org.xml.sax.SAXException;
 
 import javax.xml.namespace.QName;
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -313,5 +315,10 @@ public abstract class XmlTestBase extends SmartFrogTestBase
         PropertyList template = doc.lookup(new QName(localname));
         assertNotNull("Lookup failed for element name " + localname, template);
         return template;
+    }
+
+    protected File saveToSmartFrog(CdlDocument cdlDocument) throws IOException,
+            CdlException {
+        return SmartFrogSourceGenerator.translate(cdlDocument);
     }
 }

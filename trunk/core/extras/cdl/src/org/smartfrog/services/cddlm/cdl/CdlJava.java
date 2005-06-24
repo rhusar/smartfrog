@@ -19,13 +19,15 @@
  */
 package org.smartfrog.services.cddlm.cdl;
 
-import java.rmi.Remote;
-
 /**
- * created 23-Jun-2005 17:51:37
+ * created 24-Jun-2005 14:00:46
  */
 
 
-public interface Echo extends Remote {
-    public static final String ATTR_MESSAGE = "a_sf_message";
+public interface CdlJava extends CmpComponent {
+
+    /**
+     *  {@value}
+     */
+    public static final String ATTR_JAVA_CLASSNAME= "a_sf_classname";
 }

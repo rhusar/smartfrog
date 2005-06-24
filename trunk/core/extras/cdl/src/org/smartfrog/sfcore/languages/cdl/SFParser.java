@@ -19,14 +19,16 @@
  */
 package org.smartfrog.sfcore.languages.cdl;
 
-import org.smartfrog.sfcore.common.Context;
-import org.smartfrog.sfcore.common.ContextImpl;
+import org.smartfrog.services.xml.utils.ResourceLoader;
 import org.smartfrog.sfcore.common.SmartFrogParseException;
 import org.smartfrog.sfcore.languages.cdl.dom.CdlDocument;
+import org.smartfrog.sfcore.languages.cdl.generate.SmartFrogSourceGenerator;
 import org.smartfrog.sfcore.parser.Phases;
 import org.smartfrog.sfcore.parser.StreamParser;
 import org.smartfrog.sfcore.reference.Reference;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 
 /**
@@ -51,13 +53,34 @@ public class SFParser implements StreamParser {
      */
     public Phases sfParse(InputStream is) throws SmartFrogParseException {
         try {
-            //   return sfParse(is, getIncludeHandler());
-            CdlParser parser = new CdlParser(null, true);
+            //first, parse the CDL into smartfrog
+
+            //TODO: use the smartfrog classloader
+            ResourceLoader loader = new ResourceLoader(this.getClass());
+            CdlParser parser = new CdlParser(loader, true);
+            ParseContext parseContext = new ParseContext();
             CdlDocument cdlDocument = parser.parseStream(is);
-            //TODO
-            Context context = new ContextImpl();
-            Phases result = new CdlPhases(null, null, context, false);
-            return result;
+            //here it is loaded; create the dom
+            cdlDocument.parse(parseContext);
+
+            //now we are ready to create a smartfrog file.
+            File generated=SmartFrogSourceGenerator.translate(cdlDocument);
+            //it is created, now parse that
+            org.smartfrog.sfcore.parser.SFParser sfparser;
+            sfparser=new org.smartfrog.sfcore.parser.SFParser("sf");
+
+            InputStream newIn=null;
+            Phases phases=null;
+            try {
+                newIn = new FileInputStream(generated);
+                phases = sfparser.sfParse(newIn);
+            } finally {
+                if(newIn!=null) {
+                    newIn.close();
+                }
+            }
+            return phases;
+
         } catch (Throwable thrown) {
             throw (SmartFrogParseException) SmartFrogParseException.forward(
                     thrown);
@@ -65,6 +88,8 @@ public class SFParser implements StreamParser {
 
 
     }
+
+
 
     /**
      * Parses a reference from an input stream. Used by components and
