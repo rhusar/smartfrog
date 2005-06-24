@@ -59,7 +59,7 @@ public class SFParser implements Parser, MessageKeys {
     public static String language = SFSystem.getProperty( SmartFrogCoreProperty.parserLanguage, "sf");
 
     /** Define the language to use to be the default language. */
-    private static String theLanguage = language;
+    private String theLanguage = language;
 
     /**
      * The package prefix for all language implementations. This is the
@@ -96,7 +96,7 @@ public class SFParser implements Parser, MessageKeys {
      * @throws SmartFrogException error crearing instance of parser
      */
     public SFParser(String languageOrUrl) throws SmartFrogException {
-        theLanguage = getLanguageFromUrl(language);
+        theLanguage = getLanguageFromUrl(languageOrUrl);
         parser = getParser();
     }
 
