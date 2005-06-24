@@ -162,8 +162,8 @@ public class SFSystem implements MessageKeys {
         }
         System.setProperties(sysProps);
 
-        if (sflog().isTraceEnabled()){
-            sflog().trace("New system properties: \n" +sysProps.toString().replace(',','\n'));
+        if (sfLog().isTraceEnabled()){
+            sfLog().trace("New system properties: \n" +sysProps.toString().replace(',','\n'));
         }
     }
 
@@ -246,7 +246,7 @@ public class SFSystem implements MessageKeys {
      * Shows the version info of the SmartFrog system.
      */
     private static void showVersionInfo(){
-        sflog().out(Version.versionString()+"\n"+Version.copyright());
+        sfLog().out(Version.versionString()+"\n"+Version.copyright());
     }
 
     /**
@@ -271,8 +271,8 @@ public class SFSystem implements MessageKeys {
         try {
             return runConfigurationDescriptor(cfgDesc, false);
         } catch (SmartFrogException ex) {
-            if (sflog().isIgnoreEnabled()){
-              sflog().ignore(ex);
+            if (sfLog().isIgnoreEnabled()){
+              sfLog().ignore(ex);
             }
             //Logger.logQuietly(ex);
         }
@@ -301,8 +301,8 @@ public class SFSystem implements MessageKeys {
                         thrown);
             } else {
                 //Logger.logQuietly(thrown);
-                if (sflog().isIgnoreEnabled()){
-                  sflog().ignore(thrown);
+                if (sfLog().isIgnoreEnabled()){
+                  sfLog().ignore(thrown);
                 }
             }
             if (throwException) {
@@ -337,8 +337,8 @@ public class SFSystem implements MessageKeys {
             initSystem();
         } catch (Exception ex) {
             try {
-                if (sflog().isErrorEnabled()) {
-                    sflog().error(ex);
+                if (sfLog().isErrorEnabled()) {
+                    sfLog().error(ex);
                 }
             } catch (Exception ex1) {ex1.printStackTrace();}
             exitWithError();
@@ -351,32 +351,32 @@ public class SFSystem implements MessageKeys {
         OptionSet opts = new OptionSet(args);
 
         if (opts.errorString != null) {
-            sflog().out(opts.errorString);
+            sfLog().out(opts.errorString);
             exitWithError();
         }
         try {
             setRootProcess(runSmartFrog(opts.cfgDescriptors));
         } catch (SmartFrogException sfex) {
-            sflog().out(sfex);
+            sfLog().out(sfex);
             if (Logger.logStackTrace){ printStackTrace(sfex); }
             exitWithError();
         } catch (UnknownHostException uhex) {
-            sflog().err(MessageUtil.formatMessage(MSG_UNKNOWN_HOST, opts.host), uhex);
+            sfLog().err(MessageUtil.formatMessage(MSG_UNKNOWN_HOST, opts.host), uhex);
             if (Logger.logStackTrace){ printStackTrace(uhex); }
             exitWithError();
         } catch (ConnectException cex) {
-            sflog().err(MessageUtil.formatMessage(MSG_CONNECT_ERR, opts.host), cex);
+            sfLog().err(MessageUtil.formatMessage(MSG_CONNECT_ERR, opts.host), cex);
             if (Logger.logStackTrace){ printStackTrace(cex); }
             exitWithError();
         } catch (RemoteException rmiEx) {
             // log stack trace
-            sflog().err(MessageUtil.formatMessage(MSG_REMOTE_CONNECT_ERR,
+            sfLog().err(MessageUtil.formatMessage(MSG_REMOTE_CONNECT_ERR,
                     opts.host), rmiEx);
             if (Logger.logStackTrace){ printStackTrace(rmiEx); }
             exitWithError();
         } catch (Exception ex) {
             //log stack trace
-            sflog().err(MessageUtil.
+            sfLog().err(MessageUtil.
                     formatMessage(MSG_UNHANDLED_EXCEPTION), ex);
             if (Logger.logStackTrace){ printStackTrace(ex); }
             exitWithError();
@@ -391,17 +391,17 @@ public class SFSystem implements MessageKeys {
              if (cfgDesc.getResultType()==ConfigurationDescriptor.Result.FAILED) {
                  somethingFailed = true;
              }
-             sflog().out(" - "+(cfgDesc).statusString()+"\n");
+             sfLog().out(" - "+(cfgDesc).statusString()+"\n");
              //Logger.logQuietly(cfgDesc.resultException);
-             if (sflog().isIgnoreEnabled() && cfgDesc.resultException!=null){
-               sflog().ignore(cfgDesc.resultException);
+             if (sfLog().isIgnoreEnabled() && cfgDesc.resultException!=null){
+               sfLog().ignore(cfgDesc.resultException);
             }
          }
         // Check for exit flag
         if (opts.exit) {
             exitWithStatus(somethingFailed);
         } else {
-            //sflog().out(MessageUtil.formatMessage(MSG_SF_READY));
+            //sfLog().out(MessageUtil.formatMessage(MSG_SF_READY));
             if (true) {
                 String name = "";
                 int port =0;
@@ -413,9 +413,9 @@ public class SFSystem implements MessageKeys {
                 } catch (Exception ex) {
                     //ignore.
                 }
-                sflog().out(MessageUtil.formatMessage(MSG_SF_READY, "[" + name + ":"+ port+"]") + " " + new Date(System.currentTimeMillis()));
+                sfLog().out(MessageUtil.formatMessage(MSG_SF_READY, "[" + name + ":"+ port+"]") + " " + new Date(System.currentTimeMillis()));
             } else {
-                sflog().out(MessageUtil.formatMessage(MSG_SF_READY, ""));
+                sfLog().out(MessageUtil.formatMessage(MSG_SF_READY, ""));
             }
         }
     }
@@ -500,7 +500,7 @@ public class SFSystem implements MessageKeys {
             SFSecurity.initSecurity();
             // Read init properties
             readPropertiesFromIniFile();
-            sflog();
+            sfLog();
             // Notify status of Security
             if (!SFSecurity.isSecurityOn()){
                 String securityRequired = System.getProperty(SFSecurityProperties.propSecurityRequired,"false");
@@ -509,8 +509,8 @@ public class SFSystem implements MessageKeys {
                     //we need security, but it is not enabled
                     throw new SFGeneralSecurityException(MessageUtil.formatMessage(ERROR_NO_SECURITY_BUT_REQUIRED));
                 }
-                if (sflog().isWarnEnabled()) {
-                    sflog().warn(MessageUtil.formatMessage(WARN_NO_SECURITY));
+                if (sfLog().isWarnEnabled()) {
+                    sfLog().warn(MessageUtil.formatMessage(WARN_NO_SECURITY));
                 }
 
             }
@@ -525,7 +525,7 @@ public class SFSystem implements MessageKeys {
      *
      * @return LogSF
      */
-    public static LogSF sflog(){
+    public static LogSF sfLog(){
          if (sflog==null) {
              sflog=LogFactory.sfGetProcessLog();
          }

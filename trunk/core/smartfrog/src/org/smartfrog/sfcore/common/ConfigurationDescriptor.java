@@ -277,8 +277,8 @@ public class ConfigurationDescriptor implements MessageKeys{
               }
               catch (Exception ex1) {
                 //Logger.logQuietly(ex1);
-                if (SFSystem.sflog().isIgnoreEnabled()){
-                  SFSystem.sflog().ignore(ex1);
+                if (SFSystem.sfLog().isIgnoreEnabled()){
+                  SFSystem.sfLog().ignore(ex1);
                }
               }
             }
@@ -291,8 +291,8 @@ public class ConfigurationDescriptor implements MessageKeys{
               }
               catch (Exception ex1) {
                 //Logger.logQuietly(ex1);
-                if (SFSystem.sflog().isIgnoreEnabled()){
-                  SFSystem.sflog().ignore(ex1);
+                if (SFSystem.sfLog().isIgnoreEnabled()){
+                  SFSystem.sfLog().ignore(ex1);
                }
               }
             }
@@ -724,8 +724,8 @@ public class ConfigurationDescriptor implements MessageKeys{
                 throw new SmartFrogInitException("Result type unknown");
             } catch (Exception ex) {
                 //Logger.log(ex);
-                if (SFSystem.sflog().isTraceEnabled()){
-                  SFSystem.sflog().trace(ex);
+                if (SFSystem.sfLog().isTraceEnabled()){
+                  SFSystem.sfLog().trace(ex);
                }
             }
         } else this.resultType = type;

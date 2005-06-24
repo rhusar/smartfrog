@@ -146,8 +146,8 @@ public class ParseOptionSet {
             } catch (Exception e) {
                 errorString = "illegal format for options ";
                 //Logger.log(ex);
-                if (SFSystem.sflog().isErrorEnabled()) {
-                    SFSystem.sflog().error(e);
+                if (SFSystem.sfLog().isErrorEnabled()) {
+                    SFSystem.sfLog().error(e);
                 }
 
             }
@@ -164,8 +164,8 @@ public class ParseOptionSet {
         }
        } catch (Exception ex){
            //Logger.log(ex);
-           if (SFSystem.sflog().isErrorEnabled()) {
-               SFSystem.sflog().error(ex);
+           if (SFSystem.sfLog().isErrorEnabled()) {
+               SFSystem.sfLog().error(ex);
            }
        }
     }
@@ -190,13 +190,13 @@ public class ParseOptionSet {
       } catch (IOException ex) {
          errorString = ex.getMessage();
          //Logger.log(ex);
-         if (SFSystem.sflog().isErrorEnabled()) {
-             SFSystem.sflog().error(ex);
+         if (SFSystem.sfLog().isErrorEnabled()) {
+             SFSystem.sfLog().error(ex);
          }
       } catch (Exception ex){
           //Logger.log(ex);
-          if (SFSystem.sflog().isErrorEnabled()) {
-              SFSystem.sflog().error(ex);
+          if (SFSystem.sfLog().isErrorEnabled()) {
+              SFSystem.sfLog().error(ex);
           }
       }
       return list;

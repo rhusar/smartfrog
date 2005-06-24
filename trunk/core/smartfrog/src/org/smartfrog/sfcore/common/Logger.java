@@ -56,8 +56,8 @@ public class Logger implements MessageKeys {
         String source = System.getProperty(SmartFrogCoreProperty.propLogStackTrace);
         if ("true".equals(source)) {
             Logger.logStackTrace = true;
-            if (SFSystem.sflog().isWarnEnabled()) {
-              SFSystem.sflog().warn(MessageUtil.
+            if (SFSystem.sfLog().isWarnEnabled()) {
+              SFSystem.sfLog().warn(MessageUtil.
                     formatMessage(MSG_WARNING_STACKTRACE_ENABLED));
             }
         }
@@ -69,8 +69,8 @@ public class Logger implements MessageKeys {
         source = System.getProperty(SmartFrogCoreProperty.propLogLiveness);
         if ("true".equals(source)) {
             Logger.logLiveness = true;
-            if (SFSystem.sflog().isWarnEnabled()) {
-              SFSystem.sflog().warn(MessageUtil.
+            if (SFSystem.sfLog().isWarnEnabled()) {
+              SFSystem.sfLog().warn(MessageUtil.
                     formatMessage(MSG_WARNING_LIVENESS_ENABLED));
             }
         }
