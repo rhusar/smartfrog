@@ -95,7 +95,7 @@ For more information: www.smartfrog.org
   </target>
 
   <!-- =================================================================== -->
-  <!-- ant tasks distribution                                                    -->
+  <!-- ant tasks distribution                                              -->
   <!-- =================================================================== -->
 
   <target name="tasks" depends="init" description="ant tasks">
@@ -104,7 +104,7 @@ For more information: www.smartfrog.org
 
 
   <!-- =================================================================== -->
-  <!-- components distribution                                                    -->
+  <!-- components distribution                                            -->
   <!-- =================================================================== -->
 
   <target name="components" depends="main-dist,tasks" 
@@ -113,7 +113,7 @@ For more information: www.smartfrog.org
   </target>
 
   <!-- =================================================================== -->
-  <!-- m2 installation distribution                                                    -->
+  <!-- m2 installation distribution                                        -->
   <!-- =================================================================== -->
 
   <target name="m2-install" depends="main-dist,tasks" 
@@ -172,7 +172,7 @@ For more information: www.smartfrog.org
 
 
   <!-- =================================================================== -->
-  <!-- any cruise control initialisations                                          -->
+  <!-- any cruise control initialisations                                  -->
   <!-- =================================================================== -->
     <target name="cc-init" depends="cc-set-build-priority">
       <property name="cc.artifacts.dir" location="${toplevel.dir}/artifacts" />
@@ -214,7 +214,7 @@ For more information: www.smartfrog.org
         depends="cvsupdate,dist,tasks"/>
 
     <!-- =================================================================== -->
-    <!-- Cruise control test suite                                    -->
+    <!-- Cruise control test suite                                           -->
     <!-- =================================================================== -->
     <target name="cc-test"
         depends="test-main,test-testharness,test-ant"/>
