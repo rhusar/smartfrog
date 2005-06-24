@@ -519,32 +519,13 @@ public abstract class SmartFrogTestBase extends TestCase {
             throw new SmartFrogParseException(msg);
         }
 
-
-        Phases phases=null;
-        InputStream is=null;
-        try {
-            is = SFClassLoader.getResourceAsStream(fileUrl);
-            if (is == null) {
-                String msg = MessageUtil.
-                        formatMessage(MessageKeys.MSG_URL_TO_PARSE_NOT_FOUND, fileUrl);
-                throw new SmartFrogParseException(msg);
-            }
-            phases = (new SFParser("sf")).sfParse(is);
-        } finally {
-            if (is != null) {
-                try {
-                    is.close();
-                } catch (IOException swallowed) {
-
-                }
-            }
-        }
-        return phases;
-
+        return parse(fileUrl);
     }
 
      /**
      * parse a smartfrog file; throw an exception if something went wrong
+      * The language of the parser is determined from the file extension; if there
+      * is none, then 'sf' is assumed.
      * @param fileUrl
      * @throws SmartFrogException
      */
@@ -558,7 +539,8 @@ public abstract class SmartFrogTestBase extends TestCase {
                         formatMessage(MessageKeys.MSG_URL_TO_PARSE_NOT_FOUND, fileUrl);
                 throw new SmartFrogParseException(msg);
             }
-            phases = (new SFParser("sf")).sfParse(is);
+            String extension = determineLanguage(fileUrl);
+            phases = (new SFParser(extension)).sfParse(is);
         } finally {
             if (is != null) {
                 try {
@@ -569,6 +551,20 @@ public abstract class SmartFrogTestBase extends TestCase {
             }
         }
         return phases;
+    }
+
+    /**
+     * work out the language of a file by getting the extension
+     * @param filename
+     * @return the extension; default is .sf
+     */
+    protected String determineLanguage(String filename) {
+        String extension="sf";
+        int index=filename.lastIndexOf('.');
+        if(index>=0) {
+            extension=filename.substring(index+1);
+        }
+        return extension;
     }
 
     /**
