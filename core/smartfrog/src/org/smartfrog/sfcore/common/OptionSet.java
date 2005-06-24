@@ -130,8 +130,8 @@ public class OptionSet {
                             this.cfgDescriptors.add(new ConfigurationDescriptor(args[++i]));
                         } catch (SmartFrogInitException ex){
                           //Logger.log(ex);
-                          if (SFSystem.sflog().isErrorEnabled()) {
-                              SFSystem.sflog().error(ex);
+                          if (SFSystem.sfLog().isErrorEnabled()) {
+                              SFSystem.sfLog().error(ex);
                           }
                         }
                         break;
@@ -141,8 +141,8 @@ public class OptionSet {
                             this.readCfgDescriptorsFile(args[++i]);
                         } catch (SmartFrogInitException ex){
                           //Logger.log(ex);
-                          if (SFSystem.sflog().isErrorEnabled()) {
-                              SFSystem.sflog().error(ex);
+                          if (SFSystem.sfLog().isErrorEnabled()) {
+                              SFSystem.sfLog().error(ex);
                           }
                         }
                          break;
@@ -166,8 +166,8 @@ public class OptionSet {
                    errorString = "illegal format for options ";
                 }
                 //Logger.logQuietly(e);
-                if (SFSystem.sflog().isIgnoreEnabled()) {
-                  SFSystem.sflog().ignore(e);
+                if (SFSystem.sfLog().isIgnoreEnabled()) {
+                  SFSystem.sfLog().ignore(e);
                 }
 
             }
@@ -208,16 +208,16 @@ public class OptionSet {
                    }
                } catch (SmartFrogInitException ex){
 //                 Logger.logQuietly(ex);
-                 if (SFSystem.sflog().isIgnoreEnabled()) {
-                   SFSystem.sflog().ignore(ex);
+                 if (SFSystem.sfLog().isIgnoreEnabled()) {
+                   SFSystem.sfLog().ignore(ex);
                  }
 
                }
             }
         }  catch (Exception e) {
 //            Logger.log(e);
-          if (SFSystem.sflog().isTraceEnabled()) {
-            SFSystem.sflog().trace(e);
+          if (SFSystem.sfLog().isTraceEnabled()) {
+            SFSystem.sfLog().trace(e);
           }
           throw SmartFrogException.forward(e);
         } finally {
@@ -225,8 +225,8 @@ public class OptionSet {
                 file.close();
             } catch (Exception ex){
               //Logger.logQuietly(ex);
-              if (SFSystem.sflog().isIgnoreEnabled()) {
-                SFSystem.sflog().ignore(ex);
+              if (SFSystem.sfLog().isIgnoreEnabled()) {
+                SFSystem.sfLog().ignore(ex);
               }
             }
         }

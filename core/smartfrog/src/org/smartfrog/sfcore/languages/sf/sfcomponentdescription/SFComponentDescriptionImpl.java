@@ -653,7 +653,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
            }
            else if (name.equals("print")) {
              //org.smartfrog.sfcore.common.Logger.log(actOn.toString());
-             org.smartfrog.SFSystem.sflog().out(actOn.toString());
+             org.smartfrog.SFSystem.sfLog().out(actOn.toString());
            }
            else {
              actOn.visit(new Phase(name), false);
