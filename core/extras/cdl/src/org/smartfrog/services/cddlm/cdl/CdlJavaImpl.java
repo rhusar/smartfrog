@@ -19,13 +19,22 @@
  */
 package org.smartfrog.services.cddlm.cdl;
 
-import java.rmi.Remote;
+import org.smartfrog.sfcore.common.SmartFrogException;
+
+import java.rmi.RemoteException;
 
 /**
- * created 23-Jun-2005 17:51:37
+ * created 24-Jun-2005 14:01:08
  */
 
+public class CdlJavaImpl extends CmpComponentImpl implements CdlJava {
 
-public interface Echo extends Remote {
-    public static final String ATTR_MESSAGE = "a_sf_message";
+    public CdlJavaImpl() throws RemoteException {
+    }
+
+    public synchronized void sfStart() throws SmartFrogException,
+            RemoteException {
+        super.sfStart();
+        
+    }
 }

@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
-<cdl:cdl xmlns:cdl="http://www.gridforum.org/namespaces/2005/02/cddlm/CDL-1.0">
+<cdl:cdl xmlns:cdl="http://www.gridforum.org/namespaces/2005/02/cddlm/CDL-1.0"
+  xmlns:cmp="http://www.gridforum.org/cddlm/components/2005/02" >
 
   <cdl:documentation>
     This is a base class for defining stuff to extend for the component model; it is
@@ -7,9 +8,38 @@
 
     Historical note: this is the first ever CDL component declaration in the SF tree.
   </cdl:documentation>
-  <cdl:configuration xmlns:sf="http://smartfrog.org/services/cddlm/cdl">
-    <sf:echo message="test">
-      <CommandPath>org.smartfrog</CommandPath>
-    </sf:echo>
+
+  <cdl:configuration >
+
+ <!-- Events -->
+    <cmp:Event process="" target="">
+      <cmp:CommandPath>org.smartfrog.services.cdl.CmpEventImpl</cmp:CommandPath>
+    </cmp:Event>
+
+    <cmp:OnInitalized cdl:extends="cmp:Event"/>
+    <cmp:OnRunning cdl:extends="cmp:Event"/>
+    <cmp:OnFailed cdl:extends="cmp:Event"/>
+    <cmp:OnTerminated cdl:extends="cmp:Event"/>
+
+<!--Notifications -->
+
+    <cmp:Notification process="" target="">
+      <cmp:CommandPath>org.smartfrog.services.cdl.CmpNotificationImpl</cmp:CommandPath>
+    </cmp:Notification>
+
+    <cmp:OnFault cdl:extends="cmp:Notification" cmp:faultName="" cmp:faultType="" />
+    <cmp:OnChange cdl:extends="cmp:Notification" cmp:property=""/>
+
+
+    <cmp:CmpControlFlow lifecycle="">
+      <cmp:CommandPath>org.smartfrog.services.cdl.CmpControlFlowImpl</cmp:CommandPath>
+    </cmp:CmpControlFlow>
+
+    <cmp:sequence cdl:extends="cmp:CmpControlFlow" />
+    <cmp:reverse cdl:extends="cmp:CmpControlFlow"/>
+    <cmp:flow cdl:extends="cmp:CmpControlFlow"/>
+    <cmp:wait cdl:extends="cmp:CmpControlFlow" cmp:duration="" cmp:until=""/>
+    <cmp:switch cdl:extends="cmp:CmpControlFlow"/>
+
   </cdl:configuration>
 </cdl:cdl>

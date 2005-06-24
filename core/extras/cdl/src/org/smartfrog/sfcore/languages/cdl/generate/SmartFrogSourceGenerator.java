@@ -82,4 +82,34 @@ public class SmartFrogSourceGenerator {
         context.end();
     }
 
+
+
+    /**
+     * Save a file to smartfrog
+     * @param cdlDocument
+     * @return
+     * @throws IOException
+     * @throws CdlException
+     */
+    public File saveToSmartFrog(CdlDocument cdlDocument) throws IOException,
+            CdlException {
+        File tempFile = File.createTempFile("cdl", ".sf");
+        log.info("Tempfile=" + tempFile);
+        generate(tempFile);
+        return tempFile;
+    }
+
+    /**
+     * save a file
+     * @param cdlDocument
+     * @return
+     * @throws IOException
+     * @throws CdlException
+     */
+    public static File translate(CdlDocument cdlDocument) throws IOException,
+            CdlException {
+        SmartFrogSourceGenerator generator = new SmartFrogSourceGenerator(cdlDocument);
+        return generator.saveToSmartFrog(cdlDocument);
+    }
+
 }

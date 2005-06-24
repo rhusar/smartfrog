@@ -63,7 +63,7 @@ public class GenerateContext {
      * the default charset for this doc is defined here. {@value}
      */
     public static final String DEFAULT_CHARSET = "US-ASCII";
-    public static final String COMPONENT_SFSYSTEM = "sfSystem";
+    public static final String COMPONENT_SFSYSTEM = "sfConfig";
 
     /**
      * name of the dest file
@@ -71,7 +71,10 @@ public class GenerateContext {
     private String destFilename;
     public static final int INDENT = 1;
     public static final String COMPONENT_CONFIGURATION = "configuration";
-    public static final String CDL_COMPONENT_FILE = "/org/smartfrog/services/cdl/components.sf";
+    public static final String CDL_COMPONENT_FILE = "/org/smartfrog/services/cddlm/cdl/components.sf";
+    public static final String ATTRIBUTE_PREFIX = "a_";
+    public static final String ELEMENT_PREFIX = "_";
+    public static final String SF_COMPONENTS_NAMESPACE = "http://smartfrog.org/services/cdl/2005/06";
 
     public GenerateContext() {
         initHashMaps();
@@ -109,6 +112,8 @@ public class GenerateContext {
         names = new HashMap<String, String>();
         names.put(Constants.XML_CDL_NAMESPACE, "cdl");
         names.put(Constants.CMP_NAMESPACE, "cmp");
+        names.put(SF_COMPONENTS_NAMESPACE, "sf");
+
 
         //known extensions
         extenders = new HashMap<String, String>();
@@ -207,9 +212,7 @@ public class GenerateContext {
     }
 
     public void enter(String componentName) {
-        String text = componentName + " {";
-        println(text);
-        setDepth(depth + INDENT);
+        enter(componentName,"CmpComponent");
     }
 
     public void leave() {
@@ -240,7 +243,7 @@ public class GenerateContext {
     }
 
     public void printTuple(String name, String value) {
-        println("%s \"%s\"", name, value);
+        println("%s \"%s\";", name, value);
     }
 
     public void printImport(String name) {
@@ -248,15 +251,6 @@ public class GenerateContext {
     }
 
 
-    /**
-     * Get the attribute name
-     *
-     * @param attr
-     * @return TODO: add namespace support
-     */
-    String convertAttributeName(Attribute attr) {
-        return "a_" + attr.getLocalName();
-    }
 
     public String namespaceToPrefix(String namespace, String prefix) {
         if ("".equals(namespace)) {
@@ -317,44 +311,39 @@ public class GenerateContext {
         return builder.toString();
     }
 
+
     /**
-     * create a smartfrog name from a component This is a string that is a valid
-     * SF name. no spaces, colons or other forbidden stuff, and it includes the
-     * qname if needed.
-     * <p/>
-     * If there is a weakness in this algorithm, it is that it is neither
-     * complete nor unique. Better to have unique names in the firstplace,
-     * maybe.
-     * <p/>
-     * A big troublespot is qnames. Things would be simpler if they were not
-     * there, or aliased to something. but they are always incorporated, if
-     * present.
+     * Get the attribute name
      *
-     * @return a safer string.
+     * @param attr
+     * @return a_${namespacePrefix}_uri
      */
-    public String getSfName(Element element) {
-        String source;
-        if (element.getNamespaceURI().length() > 0) {
-            source = element.getNamespaceURI() + "/" + element.getLocalName();
-        } else {
-            source = element.getLocalName();
-        }
-        String dest = source.replace("/", ".");
-        dest = dest.replace("\\", ".");
-        dest = dest.replace("#", "_");
-        char firstchar = dest.charAt(0);
-        if (firstchar >= '0' && firstchar <= '9') {
-            //somebody started an element with a number
-            dest = "_" + dest;
-        }
-        return dest;
+    String convertAttributeName(Attribute attr) {
+        return makeSfKey(attr.getNamespaceURI(),
+                attr.getNamespacePrefix(),
+                attr.getLocalName(),
+                ATTRIBUTE_PREFIX);
     }
 
+    /**
+     * turn an element name into something that we can work with
+     * @param element
+     * @return
+     */
     public String convertElementName(Element element) {
-        String prefix = namespaceToPrefix(element.getNamespaceURI(),
-                element.getNamespacePrefix());
-        String localname = sanitize(element.getLocalName());
-        return "_" + prefix + "_" + localname;
+        return makeSfKey(element.getNamespaceURI(),
+                element.getNamespacePrefix(),
+                element.getLocalName(),
+                ELEMENT_PREFIX);
+    }
+
+    private String makeSfKey(String namespaceURI,
+            String namespacePrefix,
+            String localName, String keyPrefix) {
+        String prefix = namespaceToPrefix(namespaceURI,
+                namespacePrefix);
+        String localname = sanitize(localName);
+        return keyPrefix + prefix + "_" + localname;
     }
 
     /**

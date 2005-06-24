@@ -22,6 +22,7 @@ package org.smartfrog.sfcore.languages.cdl.dom;
 import nu.xom.Attribute;
 import nu.xom.Element;
 import nu.xom.Node;
+import nu.xom.Text;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
 import org.smartfrog.sfcore.languages.cdl.generate.GenerateContext;
@@ -157,6 +158,37 @@ public class ElementEx extends Element implements ToSmartFrog {
     }
 
     /**
+     * get the value of anode, print its value
+     * @param out
+     * @param key
+     * @param includeEmptyStrings
+     * @param trim
+     */
+    protected void printValueToSF(GenerateContext out,
+            String key,
+            boolean includeEmptyStrings,
+            boolean trim) {
+
+        String value = getTextValue();
+        if(trim) {
+            value=value.trim();
+        }
+        if(value.length()==0 && !includeEmptyStrings) {
+            return;
+        }
+        //replace the # statement with the 0x23, decimal 35 value
+        value = value.replace("#", "\u0023");
+        out.printTuple(key,value);
+    }
+
+
+    protected void printValueToSF(GenerateContext out) {
+        printValueToSF(out,"value",false,true);
+    }
+
+
+
+    /**
      * print out all the children to smartfrog
      *
      * @param out
@@ -191,4 +223,14 @@ public class ElementEx extends Element implements ToSmartFrog {
         }
     }
 
+    public String getTextValue() {
+        StringBuilder builder=new StringBuilder();
+        for (Node n:nodes()) {
+            if (n instanceof Text) {
+                Text text=(Text) n;
+                builder.append(text.getValue());
+            }
+        }
+        return builder.toString();
+    }
 }

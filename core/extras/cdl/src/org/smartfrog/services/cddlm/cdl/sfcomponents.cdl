@@ -4,17 +4,20 @@
   xmlns:sf="http://smartfrog.org/services/cdl/2005/06">
 
   <cdl:import location="org/smartfrog/services/cddlm/cdl/components.cdl"
-    namespace="http://www.gridforum.org/cddlm/components/2005/02" />
+    namespace="http://www.gridforum.org/cddlm/components/2005/02"/>
+
+  <!--smartfrog extra classes-->
+
   <cdl:configuration>
 
     <!-- Echo something -->
-    <sf:echo sf:message="">
+    <sf:echo sf:message="" >
       <cmp:CommandPath>org.smartfrog.services.cddlm.cdl.EchoImpl</cmp:CommandPath>
     </sf:echo>
 
+    <sf:java sf:classname="">
+      <cmp:CommandPath>org.smartfrog.services.cddlm.cdl.JavaImpl</cmp:CommandPath>
+    </sf:java>
 
   </cdl:configuration>
-  <cdl:system>
-    <echo cdl:extends="sf:echo" sf:message="test"/>
-  </cdl:system>
 </cdl:cdl>
