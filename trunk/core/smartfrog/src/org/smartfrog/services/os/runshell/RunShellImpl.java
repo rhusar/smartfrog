@@ -43,8 +43,6 @@ import java.rmi.RemoteException;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Vector;
-import java.util.logging.Logger;
-import java.util.logging.Level;
 
 
 /**
