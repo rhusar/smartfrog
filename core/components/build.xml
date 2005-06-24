@@ -32,7 +32,7 @@ For more information: www.smartfrog.org
       maybe-test        test if prereqs are met
       maybe-install     conditional install
       clean             clean up the output dirs
-      m2-install
+      m2-install        install into the local maven2 repository
       
     The easiest way to do this is import root.dir/common.xml 
     as a common build file; it provides template operations for this process.  
