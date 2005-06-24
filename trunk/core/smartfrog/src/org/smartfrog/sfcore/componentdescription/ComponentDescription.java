@@ -189,7 +189,7 @@ public interface ComponentDescription extends PrettyPrinting, Copying, Reference
      * This is so that attribute resolution works through the component description
      * in to the Prim hierarchy. For typenig reasons, the PrimParent has to be handled
      * specially and not through the normal interface (due to RemoteExceptions in the interface).
-     * 
+     *
      * Gets the parent for this description.
      *
      * @return component parent description
@@ -204,7 +204,7 @@ public interface ComponentDescription extends PrettyPrinting, Copying, Reference
      * This is so that attribute resolution works through the component description
      * in to the Prim hierarchy. For typenig reasons, the PrimParent has to be handled
      * specially and not through the normal interface (due to RemoteExceptions in the interface).
-     * 
+     *
      * Sets parent for this component.
      *
      * @param parent new parent component
@@ -272,7 +272,7 @@ public interface ComponentDescription extends PrettyPrinting, Copying, Reference
      * @throws SmartFrogException
      * @throws RemoteException
      */
-    public LogSF sflog();
+    public LogSF sfLog();
 
 
 }
