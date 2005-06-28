@@ -620,7 +620,32 @@
           <!-- load in a property file if it is present --> 
         <propertyfile file="${runtime.properties}" optional="true"/>
       </sf-startdaemon>
+    </presetdef>
+    
+    <presetdef name="sf-gui-debug">
+      <sf-gui classpathref="run.classpath"
+        logStackTraces="true" spawn="true">
+          <!-- assertions are enabled -->
+        <assertions enableSystemAssertions="true">
+          <enable/>
+        </assertions>
+          <!-- load in a property file if it is present --> 
+        <propertyfile file="${runtime.properties}" optional="true"/>
+      </sf-gui>
+    </presetdef>
+    
+    <presetdef name="sf-console-debug">
+      <sf-console classpathref="run.classpath"
+        logStackTraces="true" spawn="true">
+          <!-- assertions are enabled -->
+        <assertions enableSystemAssertions="true">
+          <enable/>
+        </assertions>
+          <!-- load in a property file if it is present --> 
+        <propertyfile file="${runtime.properties}" optional="true"/>
+      </sf-console>
     </presetdef>      
+
   </target>  
   
   <!-- ========================================================== -->
@@ -700,7 +725,35 @@
     unless="local.daemon.running">
       <sf-startdaemon-debug  />
   </target>
+
+  <!-- ========================================================== -->
+  <!-- start the daemon in the foreground                         -->
+  <!-- ========================================================== -->
+  <target name="start-daemon-fg"
+    description="start a daemon in the foreground"
+    depends="declare-extended-smartfrog-tasks"
+    >
+      <sf-startdaemon-debug  spawn="false" timeout="-1"/>
+  </target>
   
+  <!-- ========================================================== -->
+  <!-- conditionally start the daemon if one was not found already-->
+  <!-- ========================================================== -->
+  <target name="start-gui" 
+    depends="declare-extended-smartfrog-tasks" >
+      <sf-gui-debug  />
+  </target>
+
+  
+  <!-- ========================================================== -->
+  <!-- Start the console -->
+  <!-- ========================================================== -->
+  <target name="start-console"
+    description="start a console"
+    depends="declare-extended-smartfrog-tasks" >
+      <sf-console-debug  timeout="-1"/>
+  </target>
+
   <!-- ========================================================== -->
   <!-- conditionally start the daemon if one was not found already-->
   <!-- and do not complain if it could not start (or execution timed out) -->
@@ -710,7 +763,7 @@
     unless="local.daemon.running">
       <sf-startdaemon-debug failonerror="false"/>
   </target>
-  
+
   
   <!-- ========================================================== -->
   <!-- this is the counterpoint to start-daemon-if-needed 
@@ -1161,7 +1214,7 @@
   <!-- ========================================================== -->
   <!-- init all the maven2 support   -->
   <!-- ========================================================== -->
-   <target name="m2-init" depends="init,init-proxy">
+   <target name="m2-init" depends="init,init-proxy,declare-extended-smartfrog-tasks">
     <property file="${smartfrog.components.dir}/libraries.properties" />
 
     <!-- Maven2 stuff
