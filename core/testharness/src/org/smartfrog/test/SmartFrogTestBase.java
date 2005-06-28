@@ -397,7 +397,7 @@ public abstract class SmartFrogTestBase extends TestCase {
     public void startSmartFrog() throws SmartFrogException, RemoteException,
             SFGeneralSecurityException, UnknownHostException {
         if(!SFSystem.isSmartfrogInit()) {
-            new SFSystem().runSmartFrog();
+            SFSystem.runSmartFrog();
         }
     }
 
