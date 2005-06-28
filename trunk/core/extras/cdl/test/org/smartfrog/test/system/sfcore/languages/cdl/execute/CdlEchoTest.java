@@ -41,7 +41,6 @@ public class CdlEchoTest extends XmlTestBase {
 
     protected void setUp() throws Exception {
         super.setUp();
-        //startSmartFrog();
     }
 
 
@@ -67,7 +66,6 @@ public class CdlEchoTest extends XmlTestBase {
         try {
             application = deployExpectingSuccess(ECHO_CDL, "testSimplePackage");
             Object echo=resolveAttribute(application,"__echo");
-            Echo echoImpl=(Echo)echo;
             String message=resolveStringAttribute((Prim)echo,Echo.ATTR_MESSAGE);
             assertTrue("Empty message attribute",message.length()>0);
 
