@@ -486,6 +486,10 @@ public class SFClassLoader {
                         " getting exception " + se.getMessage());
             }
 
+        } catch (NullPointerException npe) {
+            //BUGBUG NPEs get thrown during startup when trying to load nonexistent property files
+            //this log/ignore is a substitute for fixing the problem.
+            logOpHelperException(msg, name, codebase,npe);
         } catch (LinkageError le) {
             //we found the class, but could not handle it
             // We try next class loader throw e;
@@ -493,16 +497,31 @@ public class SFClassLoader {
                 debug.println(msg + " found "+name+" in " + codebase +
                     " getting exception " + le.getMessage());
             }
-        } catch (Throwable t) {
+        } catch (Error t) {
+            //anything else of type error here is bad
+            //These are things that should not be caught and ignored.
+            logOpHelperException(msg, name, codebase, t);
+            throw t;
+        } catch (ClassNotFoundException cnfe) {
             //ClassNotFound or IOException
             // Not valid, continuing ...
-            if (debug != null) {
-                debug.println(msg + " cannot find "+name+" in " + codebase +
-                    " getting exception " + t.getMessage());
-            }
+            logOpHelperException(msg, name, codebase, cnfe);
+
+        } catch (IOException ioe) {
+            //ClassNotFound or IOException
+            // Not valid, continuing ...
+            //Revisit: SteveL:  Bad things can get caught here, like StackOverthrowError. Things that should not be caught
+            logOpHelperException(msg, name, codebase, ioe);
 
         }
         return result;
+    }
+
+    private static void logOpHelperException(String msg, String name, String codebase, Throwable t) {
+        if (debug != null) {
+            debug.println(msg + " cannot find "+name+" in " + codebase +
+                " getting exception " + t.getMessage());
+        }
     }
 
     /**
