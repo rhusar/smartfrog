@@ -15,6 +15,6 @@
 
   </cdl:configuration>
   <cdl:system>
-    <echo cdl:extends="sf:echo" sf:message="test"/>
+    <echo cdl:extends="sf:echo" sf:message="hello everyone"/>
   </cdl:system>
 </cdl:cdl>

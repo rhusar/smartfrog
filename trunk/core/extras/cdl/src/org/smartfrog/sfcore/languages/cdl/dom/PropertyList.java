@@ -27,17 +27,25 @@ import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
 import org.smartfrog.sfcore.languages.cdl.generate.GenerateContext;
 import org.smartfrog.sfcore.languages.cdl.utils.ClassLogger;
 import org.smartfrog.sfcore.languages.cdl.utils.XmlUtils;
+import org.smartfrog.sfcore.languages.cdl.Constants;
 import org.smartfrog.sfcore.logging.Log;
+import org.ggf.cddlm.generated.api.CddlmConstants;
 
 import javax.xml.namespace.QName;
 import java.io.IOException;
 
 /**
+ * This represents a template in the CDL
  * created 21-Apr-2005 14:26:55
  */
 
 public class PropertyList extends DocNode {
 
+    /**
+     * this flag is set if we are toplevel, something that
+     * can be extended
+     * 
+     */ 
     protected boolean template = false;
 
     /**
@@ -81,6 +89,7 @@ public class PropertyList extends DocNode {
      *
      * @throws CdlXmlParsingException
      */
+    @Override
     public void bind() throws CdlXmlParsingException {
         //parent
         super.bind();
@@ -104,6 +113,7 @@ public class PropertyList extends DocNode {
         }
     }
 
+    @Override
     protected Element shallowCopy() {
         return new PropertyList(getQualifiedName(), getNamespaceURI());
     }
@@ -281,11 +291,12 @@ public class PropertyList extends DocNode {
      * @throws org.smartfrog.sfcore.languages.cdl.faults.CdlException
      *
      */
+    @Override
     public void toSmartFrog(GenerateContext out) throws IOException,
             CdlException {
         //printNodeAsSFComment(out);
         String name = getSfName(out);
-        out.enter(name);
+        out.enter(name,getBaseComponent(out));
         printValueToSF(out);
         printAttributesToSmartFrog(out);
         printChildrenToSmartFrog(out);
@@ -296,4 +307,26 @@ public class PropertyList extends DocNode {
         return out.convertElementName(this);
     }
 
+    /** 
+     * logic to extract a command or a java classname from 
+     * the command. Crude and ugly.
+     * 1. anything that begins with an @ is a reference
+     * 2. anything that begins with a normal char is not.
+     * TODO use the arguments to split it properly, add inclusion 
+     * @param out
+     * @return
+     */
+    protected String getBaseComponent(GenerateContext out) {
+        String parent = out.getDefaultBaseComponent();
+        ElementEx commandPath = (ElementEx) getFirstChildElement(Constants.CMP_NAMESPACE,
+                        CddlmConstants.CMP_ELEMENT_COMMAND_PATH);
+        if (commandPath!=null) {
+            //we have a new extensor.
+            String command = commandPath.getTextValue().trim();
+            if(command.startsWith("@")) {
+                parent=command.substring(1);
+            }
+        }
+        return parent;
+    }
 }

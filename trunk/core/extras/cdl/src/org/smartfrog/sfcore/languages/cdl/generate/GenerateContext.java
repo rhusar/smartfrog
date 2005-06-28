@@ -75,6 +75,7 @@ public class GenerateContext {
     public static final String ATTRIBUTE_PREFIX = "a_";
     public static final String ELEMENT_PREFIX = "_";
     public static final String SF_COMPONENTS_NAMESPACE = "http://smartfrog.org/services/cdl/2005/06";
+    private static final String DEFAULT_BASE_COMPONENT = "CmpComponent";
 
     public GenerateContext() {
         initHashMaps();
@@ -212,7 +213,7 @@ public class GenerateContext {
     }
 
     public void enter(String componentName) {
-        enter(componentName,"CmpComponent");
+        enter(componentName,DEFAULT_BASE_COMPONENT);
     }
 
     public void leave() {
@@ -227,6 +228,14 @@ public class GenerateContext {
 
     public void println() {
         out.println();
+    }
+    
+    /**
+     * Get the default base template for componet declarations 
+     * @return the (non-empty, non-null base template);
+     */ 
+    public String getDefaultBaseComponent() {
+        return DEFAULT_BASE_COMPONENT;
     }
 
     /**

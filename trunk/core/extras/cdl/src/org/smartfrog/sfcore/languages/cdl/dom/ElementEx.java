@@ -223,6 +223,11 @@ public class ElementEx extends Element implements ToSmartFrog {
         }
     }
 
+    /**
+     * Get the immediate text value of an element. That is -the concatenation
+     * of all direct child text elements. This string is not trimmed.
+     * @return a next string, which will be empty "" if there is no text
+     */ 
     public String getTextValue() {
         StringBuilder builder=new StringBuilder();
         for (Node n:nodes()) {
