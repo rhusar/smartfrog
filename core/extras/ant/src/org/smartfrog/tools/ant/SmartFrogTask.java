@@ -60,6 +60,11 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
      * what is the default timeout for those tasks that have a timeout
      */
     public static final long DEFAULT_TIMEOUT_VALUE = 60 * 10 * 1000L;
+    
+    /**
+     * option for 'don't timeout'
+     */ 
+    public static final long NO_DEFAULT_TIMEOUT = -1L;
     /**
      * spawn flag, false by default. Needs Ant1.7 or later to work.
      */
@@ -94,8 +99,18 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
         super.init();
         smartfrog = getBaseJavaTask();
         setFailOnError(true);
-        setTimeout(DEFAULT_TIMEOUT_VALUE);
+        setTimeout(getDefaultTimeout());
     }
+
+    /**
+     * override point
+     * @return default timeout, return 1 number less than 0 for no timeout
+     */ 
+    protected long getDefaultTimeout() {
+        return DEFAULT_TIMEOUT_VALUE;
+    }
+    
+    
 
 
     /**
@@ -178,7 +193,7 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
     /**
      * timeout
      */
-    private long timeout=DEFAULT_TIMEOUT_VALUE;
+    private long timeout=0;
 
 
     /**

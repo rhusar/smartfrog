@@ -34,4 +34,13 @@ public class StartManagementConsole extends StartDaemon {
     protected String getEntrypoint() {
         return SmartFrogJVMProperties.MANAGEMENT_ENTRY_POINT;
     }
+
+    /**
+     * override point
+     *
+     * @return default timeout, return 1 number less than 0 for no timeout
+     */
+    protected long getDefaultTimeout() {
+        return NO_DEFAULT_TIMEOUT;
+    }
 }

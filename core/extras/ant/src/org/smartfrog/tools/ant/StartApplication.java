@@ -49,7 +49,6 @@ public class StartApplication extends DeployingTaskBase {
         super.init();
         setFailOnError(true);
         setHost("localhost");
-        setTimeout(DEFAULT_TIMEOUT_VALUE);
     }
 
     /**
