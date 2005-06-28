@@ -49,13 +49,13 @@ These are the meaningful targets for this build file:
  - jdocs
 -->
 
-<project  name="SFCoreLoggersDist" default="help" basedir=".">
+<project  name="sfLoggingServicesDist" default="help" basedir=".">
   <!-- =================================================================== -->
   <!-- Initialization target                                               -->
   <!-- =================================================================== -->
   <target name="init">
-    <property name="Name" value="SFCoreLoggers Component"/>
-    <property name="name" value="(C) Copyright 1998-2003 Hewlett-Packard Development Company, LP"/>
+    <property name="Name" value="sfLoggingServices Components"/>
+    <property name="name" value="(C) Copyright 1998-2005 Hewlett-Packard Development Company, LP"/>
     <property name="version" value="DIST"/>
     <loadproperties srcFile="version.properties"/>
     <fail unless="sf.build.version">No property sf.build.version found in file version.properties</fail>
@@ -75,7 +75,7 @@ These are the meaningful targets for this build file:
   <target name="help" depends="init">
     <echo message=""/>
     <echo message=""/>
-    <echo message="SFCoreLoggers Component ${version} Build file"/>
+    <echo message="sfLoggingServices Components ${version} Build file"/>
     <echo message="-------------------------------------------------------------"/>
     <echo message=""/>
     <echo message=" available targets are:"/>
@@ -103,7 +103,7 @@ These are the meaningful targets for this build file:
      <property name="src" value="src"/> <!-- all protected files -->
      <property name="debugmode" value="on"/> <!-- turn on compile -g -->
      <property name="jdocs" value="${dist}/${docs}/jdocs"/>
-     
+
   <!-- =================================================================== -->
   <!-- Initialization path (Libs needed for compiling)                     -->
   <!-- =================================================================== -->
@@ -183,7 +183,7 @@ These are the meaningful targets for this build file:
            doctitle="${Name}"
            bottom="${name}"
            source="1.4">
-      <group title="SFcoreloggers Examples Package" packages="org.smartfrog.*"/>
+      <group title="sfLoggingServices Examples Package" packages="org.smartfrog.*"/>
       <classpath refid="sfcoreloggers.class.path"/>
     </javadoc>
   </target>
