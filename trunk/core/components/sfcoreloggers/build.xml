@@ -34,7 +34,7 @@ For more information: www.smartfrog.org
 
 
   <!-- Import common stuff -->
-  <!--available file="../../common.xml" property="root.dir" value="../.."/--> 
+  <!--available file="../../common.xml" property="root.dir" value="../.."/-->
   <import file="${root.dir}/common.xml"/>
 
   <property name="is.component" value="true"  />
@@ -42,15 +42,15 @@ For more information: www.smartfrog.org
 <!--    <property name="net.lib.dir" location="lib" description=
                         "place to put third party libraries"/>
         -->
- 
 
-  
- <property name="Name.System" value="SFCoreLogger"/>
-  
+
+
+ <property name="Name.System" value="sfLoggingServices"/>
+
   <!-- ========================================================== -->
   <!-- ========================================================== -->
   <target name="init" depends="init-standard-output-dirs,use-smartfrog-tasks">
-          
+
     <!-- the compile time path includes net-->
 <!--     <path id="compile.classpath">
       <path refid="smartfrog.classpath"/>
@@ -58,17 +58,17 @@ For more information: www.smartfrog.org
         <include name="**/*.jar"/>
       </fileset>
     </path>
-    
+
     <path id="run.classpath">
       <path refid="compile.classpath"/>
       <path location="${target.jar}" />
-    </path>  
+    </path>
      -->
 	 <tstamp/>
-    <property name="Name.Company" value="(C) Copyright 1998-2004 Hewlett-Packard Development Company, LP"/>
-    <property name="version" value="smartfrog components"/>
+    <property name="Name.Company" value="(C) Copyright 1998-2005 Hewlett-Packard Development Company, LP"/>
+    <property name="version" value="smartfrog logging services"/>
     <!--property name="Version" value="1.00.000_beta"/-->
-    <property name="year" value="2004"/>
+    <property name="year" value="2005"/>
 	<property name="releases.dir" value="releases"/>
 
 
@@ -80,7 +80,7 @@ For more information: www.smartfrog.org
     <echo message=""/>
     <echo message="(${ant.version})"/>
   </target>
-  
+
   <!-- =================================================================== -->
   <!--   JDocs                                                             -->
   <!-- =================================================================== -->
@@ -115,13 +115,13 @@ For more information: www.smartfrog.org
   </target>
 
 
-  
+
   <!-- ========================================================== -->
   <!-- this is an override point -->
   <!-- set the verified.ok property if everything needed is present -->
   <!-- Do Not Fail. This test is used to control conditional builds -->
   <!-- NB, set property verify.fail.message to something meaningful
-       for better diagnostic messages on failure (see assert-prerequisites) 
+       for better diagnostic messages on failure (see assert-prerequisites)
        -->
   <!-- ========================================================== -->
   <target name="verify-prerequisites" depends="pre-verify-prerequisites">
@@ -130,18 +130,18 @@ For more information: www.smartfrog.org
           classpathref="compile.classpath"
           ignoresystemclasses="false"/>
       <property name="verify.fail.message"
-        value="No apache Log4J found"/>    
+        value="No apache Log4J found"/>
   </target>
-  
+
    <!-- ========================================================== -->
   <!-- clean -->
   <!-- ========================================================== -->
 
 <target name="clean" depends="common.clean" description="clean up build ,dist and releases" >
-    <delete dir="releases"  />  
-    <delete dir="test"  />  
+    <delete dir="releases"  />
+    <delete dir="test"  />
     <delete file="version.properties"/>
- </target>  
+ </target>
 
   <!-- ========================================================== -->
   <!-- create the jar -->
@@ -149,16 +149,16 @@ For more information: www.smartfrog.org
   <target name="dist" depends="common.dist,jdocs" description="create the jar files">
     <copy todir = "${dist.lib.dir}">
         <fileset dir ="${lib.dir}" />
-    </copy>   
+    </copy>
 		 <!--copy todir = "${dist.doc.dir}">
         <fileset dir ="${doc.dir}" />
-    </copy-->   
+    </copy-->
 	<!--copy todir = "${dist.src.dir}">
                <fileset dir ="${src.dir}">
 		  <include name="**/examples/**"/>
 		</fileset>
 	</copy-->
-	 <copy tofile="${dist.dir}/build.xml" file="releaseBuild.xml"/>	
+	 <copy tofile="${dist.dir}/build.xml" file="releaseBuild.xml"/>
 	 <copy tofile="${dist.dir}/build.example.properties" file="build.example.properties"/>
   </target>
 

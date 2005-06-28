@@ -34,7 +34,7 @@ Installing the build tools
 To Be Written
 
 -->
-<project name="sfcoreloggers" default="process" basedir=".">
+<project name="sfLoggingServices" default="process" basedir=".">
 
 
  <property file="build.properties" />
@@ -42,7 +42,7 @@ To Be Written
 
 
   <!-- Import common stuff -->
-  <!--available file="../../common.xml" property="root.dir" value="../.."/--> 
+  <!--available file="../../common.xml" property="root.dir" value="../.."/-->
   <import file="${root.dir}/common.xml"/>
 
   <property name="is.component" value="true"  />
@@ -54,10 +54,10 @@ To Be Written
   <target name="init">
     <tstamp/>
 	<property name="Name.Framework" value="SmartFrog"/>
-     <property name="Name.System" value="sfcoreloggers"/>
+     <property name="Name.System" value="sfLoggingServices"/>
     <property name="Name.Company" value="(C) Copyright 1998-2004 Hewlett-Packard Development Company, LP"/>
     <!--property name="version" value="1.00.000_beta"/-->
-    <property name="year" value="2004"/>
+    <property name="year" value="2005"/>
 
 	<echo message=""/>
     <echo message="==================================================================="/>
@@ -91,7 +91,7 @@ To Be Written
     <echo message="-------------------------------------------------------------"/>
     <echo message=" Step by step guide to make a release"/>
     <echo message="-------------------------------------------------------------"/>
- 
+
     <echo message="         	==>    ant release "/>
     <echo message="            	==> ant -f buildRelease.xml release"/>
     <echo message=" "/>
@@ -192,7 +192,7 @@ To Be Written
         <!--include name="${dist}/docs/sfcoreloggers_readme*"/-->
         <include name="${dist}/docs/jdocs/**"/>
        </zipfileset>
-	   
+
     </zip>
 <!-- ================================ -->
     <zip destfile="releases/${Name.System}.${version}.${DSTAMP}_ALL.zip">
@@ -259,7 +259,7 @@ To Be Written
 
     <tar tarfile="releases/${Name.System}.${version}.${DSTAMP}_ALL.tar">
       <tarfileset dir="." prefix="${Name.System}.${version}">
-        
+
 		<include name="bin/**/*.sf"/>
         <include name="bin/**/*.bat"/>
         <include name="bin/**/*.ini"/>
