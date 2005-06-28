@@ -451,7 +451,8 @@ public class CdlDocument implements Names, ToSmartFrog {
     public void toSmartFrog(GenerateContext out) throws IOException,
             CdlException {
         if (getConfiguration() != null) {
-            getConfiguration().toSmartFrog(out);
+            //ignore the configuration
+            //getConfiguration().toSmartFrog(out);
         }
         if (getSystem() != null) {
             //out.enter(GenerateContext.COMPONENT_SFSYSTEM);
