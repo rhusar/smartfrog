@@ -57,6 +57,13 @@ public class StartDaemon extends DeployingTaskBase {
     }
 
 
+    /**
+     * Set the entry point of the daemon. This defaults to that of the command line
+     * @param method
+     */ 
+    public void setEntrypoint(String method) {
+        getBaseJavaTask().setClassname(method);
+    }
 
     /**
      * Start the daemon in this thread or a new process.

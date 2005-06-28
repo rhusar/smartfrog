@@ -116,9 +116,7 @@ public abstract class TaskBase extends Task {
         Java java;
         java = new Java();
         bindToChild(java);
-        java = (Java) getProject().createTask("java");
         java.setClassname(entryPoint);
-        java.setTaskName(getTaskName());
         return java;
     }
 
