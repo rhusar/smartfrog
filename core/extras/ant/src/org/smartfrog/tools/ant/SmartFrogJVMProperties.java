@@ -128,6 +128,11 @@ public class SmartFrogJVMProperties {
      */ 
     public static final String SMARTFROG_ENTRY_POINT = "org.smartfrog.SFSystem";
     
+    
+    public static final String GUI_ENTRY_POINT = "org.smartfrog.tools.gui.browser.SFGui";
+
+    public static final String MANAGEMENT_ENTRY_POINT = "org.smartfrog.services.management.SFDeployDisplay";
+        
     /**
      * parser entry point
      * @value org.smartfrog.SFParse

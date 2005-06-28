@@ -78,6 +78,7 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
     public static final String ERROR_UNEXPECTED_FILE_TYPE = "Unexpected file type: ";
     public static final String ERROR_MISSING_INITIAL_SMARTFROG_FILE = "Not found: ";
     public static final String LOCALHOST_IPV4 = "127.0.0.1";
+    public static final String EXIT_AFTER_STARTING = "-e";
 
     public SmartFrogTask() {
 
@@ -339,10 +340,19 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
      * @return a java task set up with forking, the entry point set to SFSystem, timeout maybe enabled
      */
     protected Java getBaseJavaTask() {
-        Java java = createJavaTask(SmartFrogJVMProperties.SMARTFROG_ENTRY_POINT);
+        Java java = createJavaTask(getEntrypoint());
         java.setFork(true);
         java.setDir(getProject().getBaseDir());
         return java;
+    }
+
+    /**
+     * Override point: declare the name of the entry point of this task.
+     * @see SmartFrogJVMProperties#SMARTFROG_ENTRY_POINT
+     * @return name of the class providing a static void Main(String args[]) method
+     */ 
+    protected String getEntrypoint() {
+        return SmartFrogJVMProperties.SMARTFROG_ENTRY_POINT;
     }
 
     /**
@@ -358,7 +368,7 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
      * set a flag to tell the runtime to exit after actioning something
      */
     protected void addExitFlag() {
-        addArg("-e");
+        addArg(EXIT_AFTER_STARTING);
     }
 
     /**
