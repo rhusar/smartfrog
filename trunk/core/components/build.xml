@@ -26,43 +26,43 @@ For more information: www.smartfrog.org
 
 <description>
      Build file for components.
-     Each component supported must have the following targets in 
+     Each component supported must have the following targets in
      its build.xml
       maybe-dist        distribute if prereqs are met
       maybe-test        test if prereqs are met
       maybe-install     conditional install
       clean             clean up the output dirs
       m2-install        install into the local maven2 repository
-      
-    The easiest way to do this is import root.dir/common.xml 
-    as a common build file; it provides template operations for this process.  
-     
+
+    The easiest way to do this is import root.dir/common.xml
+    as a common build file; it provides template operations for this process.
+
 </description>
  <!-- ========================================================== -->
  <!--
     Implementation notes
-    
-    This build file is cutting-edge Ant1.6 scalability at work. It is 
+
+    This build file is cutting-edge Ant1.6 scalability at work. It is
     not going to run on older versions, and the documentation for what
-    is in use is still sparse. 
+    is in use is still sparse.
     Best docs so far: http://otn.oracle.com/pub/articles/bodewig_ant1.6.html
-    
+
     <subant> is a new task that delegates the same task to any build files
     listed in files and directores. We set up a path for this task,
-    which is ordered such that projects other components depend on 
+    which is ordered such that projects other components depend on
     must build first. Then we create a preset wrapper for the process,
     called <delegate>.
-    
+
     It is inevitable that not all projects will have their dependent
     libraries in place on all machines. So each component build file must
-    have conditional targets that only do a dist or test if they are 
+    have conditional targets that only do a dist or test if they are
     present.
-    
+
     This has one adverse consequence: if something needs a predecessor, and
     the predecessor wont build, the build file does not automatically stop.
     Every build file must therefore consider the problem of the dependent
     components being missing.
-    
+
   -->
  <!-- ========================================================== -->
    <!-- override point -->
@@ -89,19 +89,19 @@ For more information: www.smartfrog.org
     <!--property name="logger.project" location="logger" /-->
     <property name="net.project" location="net" />
     <property name="scripting.project" location="scripting" />
-    <property name="sfcoreloggers.project" location="sfcoreloggers" />
+    <property name="sfLoggingServicess.project" location="loggingservices" />
     <property name="ssh.project" location="ssh" />
     <property name="slp.project" location="slp" />
     <property name="utils.project" location="utils" />
     <property name="releasetest.project" location="releasetest" />
-        
+
     <!--where the files for release will go-->
     <property name="bin" value="bin"/>
     <property name="lib" value="lib"/>
     <property name="docs" value="docs"/>
     <property name="src" value="src"/>
     <property name="jdocs" value="jdocs"/>
-    <property name="build" value="build"/>      
+    <property name="build" value="build"/>
     <property name="comp.dist.dir" value="dist"/>         <!-- where the files to zip go -->
     <property name="comp.dist.bin.dir" value="${comp.dist.dir}/${bin}"/>
     <property name="comp.dist.lib.dir" value="${comp.dist.dir}/${lib}"/>
@@ -110,12 +110,12 @@ For more information: www.smartfrog.org
     <property name="comp.dist.jdocs.dir" value="${comp.dist.docs.dir}/${jdocs}"/>
 
     <property name="componentsFiles" value="org/smartfrog/services/**/*"/>
-    
+
     <!-- this is where dependency logic is imposed
          the path must be ordered such that dependent projects
          come in the path after the things they depend on
     -->
-    
+
     <path id="component.path">
       <pathelement location="${utils.project}"/>
       <!--pathelement location="${logger.project}"/-->
@@ -125,7 +125,7 @@ For more information: www.smartfrog.org
        <pathelement location="${jetty.project}"/>
       <pathelement location="${slp.project}"/>
       <pathelement location="${scripting.project}"/>
-      <pathelement location="${sfcoreloggers.project}"/>
+      <pathelement location="${sfLoggingServicess.project}"/>
     <!--pathelement location="${arithmetic-testharness.project}"/-->
       <!--pathelement location="${junit.project}"/-->
       <!--pathelement location="${cddlm.project}"/-->
@@ -134,13 +134,13 @@ For more information: www.smartfrog.org
     <property name="component.path.asproperty"
       refid="component.path"/>
     <echo level="verbose">component.path :=   ${component.path.asproperty}    </echo>
-    
+
   <presetdef name="delegate">
       <subant buildpathref="component.path"
         antfile="build.xml"
         inheritall ="false" inheritrefs="false"/>
     </presetdef>
-  
+
   <presetdef name="delegateBuild">
       <subant buildpathref="component.path"
         antfile="buildRelease.xml"
@@ -148,7 +148,7 @@ For more information: www.smartfrog.org
     </presetdef>
 
   </target>
-  
+
 
   <target name="clean" depends="init, clean-dist"
     description="clean all projects">
@@ -160,7 +160,7 @@ For more information: www.smartfrog.org
 
 
   </target>
-  
+
   <target name="test" depends="init"
     description=" all projects">
     <delegate target="maybe-test"/>
@@ -170,22 +170,22 @@ For more information: www.smartfrog.org
     description="build distributions of all projects">
     <delegate target="maybe-dist"/>
   </target>
-  
+
   <target name="install" depends="init"
     description="install all projects">
     <delegate target="maybe-install"/>
-  </target> 
-  
+  </target>
+
   <target name="m2-install" depends="init"
     description="install all projects">
     <delegate target="maybe-install"/>
   </target>
-  
+
   <target name="diagnostics" depends="init"
     description="diagnostics">
     <delegate target="diagnostics"/>
-  </target>  
-  
+  </target>
+
   <target name="diag2" depends="init"
     description="diagnostics">
     <delegate target="diag2"/>
@@ -197,7 +197,7 @@ For more information: www.smartfrog.org
   </target>
 
 
- 
+
 
   <!-- =================================================================== -->
   <!-- clean jdocs                                                               -->
@@ -206,7 +206,7 @@ For more information: www.smartfrog.org
     <delete dir="${comp.dist.dir}"/>
     <delete dir="${build.dir}"/>
   </target>
-  
+
    <!-- =================================================================== -->
   <!-- Initialization target                                               -->
   <!-- =================================================================== -->
@@ -242,22 +242,22 @@ For more information: www.smartfrog.org
              bottom="${Name.Company}"
              source="${javac.java.version}"
        >
-     <sourcepath> 
+     <sourcepath>
        <!--pathelement path="${cddlm.project}/${src}"/-->
        <pathelement path="${emailer.project}/${src}"/>
        <pathelement path="${jetty.project}/${src}"/>
        <!--pathelement path="${logger.project}/${src}"/-->
        <pathelement path="${net.project}/${src}"/>
        <pathelement path="${scripting.project}/${src}"/>
-       <pathelement path="${sfcoreloggers.project}/${src}"/>
+       <pathelement path="${sfLoggingServicess.project}/${src}"/>
        <pathelement path="${slp.project}/${src}"/>
        <pathelement path="${ssh.project}/${src}"/>
        <pathelement path="${utils.project}/${src}"/>
-      </sourcepath>     
+      </sourcepath>
       <group title="SmartFrog Component Packages" packages="org.smartfrog.*"/>
     </javadoc>
 
-    
+
   </target>
 
   <!-- =================================================================== -->
@@ -276,12 +276,12 @@ For more information: www.smartfrog.org
   <!--                                                                     -->
   <!-- =================================================================== -->
   <target name="copybuild" depends="init">
-  
+
     <macrodef name="copybuild" >
       <attribute name="project" description="component to copy"/>
       <attribute name="builddir" default="${build}" />
       <attribute name="includes" default="**/*" />
-      
+
       <sequential>
         <copy todir="${build.dir}">
           <fileset dir="@{project}/@{builddir}" includes="@{includes}" />
@@ -294,23 +294,23 @@ For more information: www.smartfrog.org
     <!--copybuild project="${logger.project}" /-->
     <copybuild project="${net.project}" />
     <copybuild project="${scripting.project}" />
-    <copybuild project="${sfcoreloggers.project}" />
+    <copybuild project="${sfLoggingServicess.project}" />
     <copybuild project="${slp.project}"  />
     <copybuild project="${ssh.project}" />
     <copybuild project="${utils.project}" />
 
   </target>
-    
+
   <!-- =================================================================== -->
   <!--                                                                     -->
   <!-- =================================================================== -->
   <target name="copybins" depends="init-common,initdist,dist">
-  
+
     <macrodef name="copybins" >
       <attribute name="project" description="component to copy"/>
       <attribute name="bindir" default="${dist.bin.dir}" />
       <attribute name="includes" default="**/*" />
-      
+
       <sequential>
         <copy todir="${comp.dist.bin.dir}">
           <fileset dir="@{project}/@{bindir}" includes="@{includes}" />
@@ -323,23 +323,23 @@ For more information: www.smartfrog.org
     <!--copybins project="${logger.project}" /!-->
     <copybins project="${net.project}" />
     <copybins project="${scripting.project}" />
-    <copybins project="${sfcoreloggers.project}"/>
+    <copybins project="${sfLoggingServicess.project}"/>
     <copybins project="${slp.project}"  />
     <copybins project="${ssh.project}" />
     <copybins project="${utils.project}" />
 
   </target>
-  
+
   <!-- =================================================================== -->
   <!--                                                                     -->
   <!-- =================================================================== -->
   <target name="copylibs" depends="init-common,initdist,dist">
-  
+
     <macrodef name="copylibs" >
       <attribute name="project" description="component to copy"/>
       <attribute name="libdir" default="${dist.lib.dir}" />
       <attribute name="includes" default="**/*" />
-      
+
       <sequential>
         <copy todir="${comp.dist.lib.dir}">
           <fileset dir="@{project}/@{libdir}" includes="@{includes}" />
@@ -352,7 +352,7 @@ For more information: www.smartfrog.org
     <!--copylibs project="${logger.project}" /-->
     <copylibs project="${net.project}" />
     <copylibs project="${scripting.project}" />
-    <copylibs project="${sfcoreloggers.project}" />
+    <copylibs project="${sfLoggingServicess.project}" />
     <copylibs project="${slp.project}"  />
     <copylibs project="${ssh.project}" />
     <copylibs project="${utils.project}" />
@@ -363,7 +363,7 @@ For more information: www.smartfrog.org
   <!--                                                                     -->
   <!-- =================================================================== -->
   <target name="copycomponents" depends="init-common,initdist">
-  
+
     <macrodef name="copycomponents" >
       <attribute name="project" description="component to copy"/>
       <attribute name="srcdir" default="${dist.src.dir}" />
@@ -383,7 +383,7 @@ For more information: www.smartfrog.org
     <!--copycomponents project="${logger.project}" /-->
     <copycomponents project="${net.project}"  />
     <copycomponents project="${scripting.project}" />
-    <copycomponents project="${sfcoreloggers.project}" />
+    <copycomponents project="${sfLoggingServicess.project}" />
     <copycomponents project="${net.project}"  />
     <copycomponents project="${slp.project}"  />
     <copycomponents project="${ssh.project}" />
@@ -394,12 +394,12 @@ For more information: www.smartfrog.org
   <!--                                                                     -->
   <!-- =================================================================== -->
   <target name="copydocs" depends="init-common,initdist,dist">
-  
+
     <macrodef name="copydocs" >
       <attribute name="project" description="component to copy"/>
       <attribute name="docdir" default="${dist.doc.dir}" />
       <attribute name="includes" default="**/*" />
-      
+
       <sequential>
         <copy todir="${comp.dist.docs.dir}">
           <fileset dir="@{project}/@{docdir}" includes="@{includes}" />
@@ -412,7 +412,7 @@ For more information: www.smartfrog.org
     <!--copydocs project="${logger.project}" /-->
     <copydocs project="${net.project}" />
     <copydocs project="${scripting.project}" />
-    <copydocs project="${sfcoreloggers.project}" />
+    <copydocs project="${sfLoggingServicess.project}" />
     <copydocs project="${slp.project}" />
     <copydocs project="${ssh.project}" />
     <copydocs project="${utils.project}" />
@@ -422,7 +422,7 @@ For more information: www.smartfrog.org
   <!-- src.zip                                                             -->
   <!-- =================================================================== -->
   <target name="srczip" depends="initdist"  description="Creates src.zip with Components sources">
-  
+
     <zip destfile="${comp.dist.dir}/src.zip" >
       <!--zipfileset dir="${cddlm.project}/${src}">
         <include name="**/**"/>
@@ -448,7 +448,7 @@ For more information: www.smartfrog.org
         <include name="**/**"/>
         <exclude name="**/*.dfPackage"/>
       </zipfileset>
-     <zipfileset dir="${sfcoreloggers.project}/${dist.src.dir}">
+     <zipfileset dir="${sfLoggingServicess.project}/${dist.src.dir}">
         <include name="**/**"/>
         <exclude name="**/*.dfPackage"/>
       </zipfileset>
@@ -470,7 +470,7 @@ For more information: www.smartfrog.org
 <!-- =================================================================== -->
   <!--  Generte Forrest Docs -->
   <!-- =================================================================== -->
-  
+
 
   <target name="generatedoc" depends="init" description="Document Generation" if="env.FORREST_HOME">
     <ant antfile="documentation.xml" inheritall="false" />
@@ -482,64 +482,64 @@ For more information: www.smartfrog.org
   <!-- =================================================================== -->
  <target name="updateversion" depends="init-common, init">
     <property name="skin.dir" location="forrest_skin" />
-    <!--replace 
+    <!--replace
         file="buildRelease.xml"
       propertyFile="version.properties">
-      <replacefilter 
-        token="@version" 
+      <replacefilter
+        token="@version"
         property="component.version"/>
     </replace-->
 
-  <!--replace 
+  <!--replace
         file="releaseBuild.xml"
       propertyFile="version.properties">
-      <replacefilter 
-        token="@version" 
+      <replacefilter
+        token="@version"
         property="component.version"/>
     </replace-->
 
     <macrodef name="updateversion" >
       <attribute name="project" description="component to update"/>
-     <attribute name="compname" description="component to update"/> 
-     
+     <attribute name="compname" description="component to update"/>
+
      <sequential>
-  <!--replace 
+  <!--replace
         file="@{project}/buildRelease.xml"
       propertyFile="version.properties">
-      <replacefilter 
-        token="@version" 
+      <replacefilter
+        token="@version"
         property="@{compname}.version"/>
   </replace>
-  
-  <replace 
+
+  <replace
         file="@{project}/build.xml"
       propertyFile="version.properties">
-      <replacefilter 
-        token="@version" 
+      <replacefilter
+        token="@version"
         property="@{compname}.version"/>
   </replace-->
 
-  <!--replace 
+  <!--replace
         file="@{project}/releaseBuild.xml"
 	propertyFile="@{project}/version.properties">
-      <replacefilter 
-        token="@version" 
+      <replacefilter
+        token="@version"
         property="sf.build.version"/>
   </replace-->
-  
-  
-  
-  <replace 
+
+
+
+  <replace
         file="${skin.dir}/SFComponents.xml"
 	propertyFile="@{project}/version.properties">
-      <replacefilter 
-        token="@{compname}-ver" 
+      <replacefilter
+        token="@{compname}-ver"
         property="sf.build.version"/>
-      <replacefilter 
-        token="@{compname}-minver" 
+      <replacefilter
+        token="@{compname}-minver"
         property="sf.min.version"/>
-      <!--replacefilter 
-        token="@{compname}-maxver" 
+      <!--replacefilter
+        token="@{compname}-maxver"
         property="@{compname}.maxversion"/-->
   </replace>
       </sequential>
@@ -552,7 +552,7 @@ For more information: www.smartfrog.org
     <!--updateversion project="${logger.project}" compname="logger" /-->
     <updateversion project="${net.project}" compname="net"/>
     <updateversion project="${scripting.project}" compname="scripting"/>
-    <updateversion project="${sfcoreloggers.project}" compname="sfcoreloggers"/>
+    <updateversion project="${sfLoggingServicess.project}" compname="sfLoggingServicess"/>
     <updateversion project="${slp.project}" compname="slp"/>
     <updateversion project="${ssh.project}" compname="ssh"/>
     <updateversion project="${utils.project}" compname="utils"/>
@@ -569,45 +569,45 @@ For more information: www.smartfrog.org
 
   <target name="default" depends="dist"
     description="default target creates a distribution" />
-    
+
   <!-- =================================================================== -->
   <!--  Library update                                                     -->
   <!-- =================================================================== -->
-    
+
 
   <target name="fetch-libraries" depends="init,init-common,setproxy" >
     <property file="libraries.properties" />
       <libraries destdir="${maven.lib.dir}">
       <mavenrepository url="${maven.url}"/>
       <library project="xerces"
-        archive="xercesImpl" 
+        archive="xercesImpl"
         version="${xerces.version}" />
       <library project="xerces"
-        archive="xmlParserAPIs" 
+        archive="xmlParserAPIs"
         version="${xerces.version}" />
-<!--       <library project="xom"  
-        version="${xom.version}" /> 
+<!--       <library project="xom"
+        version="${xom.version}" />
         -->
-      <library project="jaxen"  
+      <library project="jaxen"
         version="${jaxen.version}" />
-      <library project="commons-net"  
+      <library project="commons-net"
         version="${commons-net.version}" />
-      <library project="junit"  
+      <library project="junit"
         version="${junit.version}" />
-      <library project="log4j"  
+      <library project="log4j"
         version="${log4j.version}" />
-      <library project="bsh"  
+      <library project="bsh"
         version="${bsh.version}" />
-      <library project="rhino"  
+      <library project="rhino"
         version="${rhino.version}" />
-      <library project="velocity"  
+      <library project="velocity"
         version="${velocity.version}" />
-<!--       <library project="ant" archive="ant-testutil"  
+<!--       <library project="ant" archive="ant-testutil"
         version="${ant-testutil.version}" /> -->
-<!-- 
-      <library project=""  
+<!--
+      <library project=""
         version="${.version}" archive=""/>
-       -->  
+       -->
     </libraries>
   </target>
 

@@ -70,7 +70,7 @@ To use: ant -f buildRelease release
     <!--property name="logger.project" location="logger" /-->
     <property name="net.project" location="net" />
     <property name="scripting.project" location="scripting" />
-    <property name="sfcoreloggers.project" location="sfcoreloggers" />
+    <property name="loggingservices.project" location="loggingservices" />
     <property name="ssh.project" location="ssh" />
     <property name="slp.project" location="slp" />
     <property name="utils.project" location="utils" />
@@ -134,7 +134,7 @@ To use: ant -f buildRelease release
 	<!--include name="logger/**"/-->
 	<include name="net/**"/>
 	<include name="scripting/**"/>
-	<include name="sfcoreloggers/**"/>
+	<include name="loggingservices/**"/>
 	<include name="slp/**"/>
 	<include name="ssh/**"/>
 	<include name="utils/**"/>
@@ -176,7 +176,7 @@ To use: ant -f buildRelease release
 	<!--include name="logger/**"/-->
 	<include name="net/**"/>
 	<include name="scripting/**"/>
-	<include name="sfcoreloggers/**"/>
+	<include name="loggingservices/**"/>
 	<include name="slp/**"/>
 	<include name="ssh/**"/>
 	<include name="utils/**"/>
@@ -272,7 +272,7 @@ To use: ant -f buildRelease release
     <!--copyreleaseszips project="${logger.project}" /-->
     <copyreleaseszips project="${net.project}" />
     <copyreleaseszips project="${scripting.project}" />
-    <copyreleaseszips project="${sfcoreloggers.project}"/>
+    <copyreleaseszips project="${loggingservices.project}"/>
     <copyreleaseszips project="${slp.project}"  />
     <copyreleaseszips project="${ssh.project}" />
     <copyreleaseszips project="${utils.project}" />
@@ -302,7 +302,7 @@ To use: ant -f buildRelease release
     <!--copyreleasestars project="${logger.project}" /-->
     <copyreleasestars project="${net.project}" />
     <copyreleasestars project="${scripting.project}" />
-    <copyreleasestars project="${sfcoreloggers.project}"/>
+    <copyreleasestars project="${loggingservices.project}"/>
     <copyreleasestars project="${slp.project}"  />
     <copyreleasestars project="${ssh.project}" />
     <copyreleasestars project="${utils.project}" />
