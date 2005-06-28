@@ -35,7 +35,7 @@
 		 <p><link href="utils/utils.html">Utils Version=utils-ver SFCore-Min-version=utils-minver </link></p>
 		 <p><link href="slp/slp.html">Slp Version=slp-ver SFCore-Min-version=slp-minver </link></p>
 	 <p><link href="scripting/scripting.html">Scripting Version=scripting-ver SFCore-Min-version=scripting-minver </link></p>
-	 <p><link href="sfcoreloggers/sfcoreloggers.html">SFCoreLoggers Version=sfcoreloggers-ver SFCore-Min-version=sfcoreloggers-minver </link></p>
+	 <p><link href="loggingservices/loggingservices.html">SFLoggingServices Version=loggingservices-ver SFCore-Min-version=loggingservices-minver </link></p>
 		 
      
 
