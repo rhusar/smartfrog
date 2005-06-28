@@ -43,7 +43,6 @@ public class StopDaemon extends SmartFrogTask {
         super.init();
         bindToLocalhost();
         setFailOnError(true);
-        setTimeout(DEFAULT_TIMEOUT_VALUE);
     }
 
     /**
