@@ -66,6 +66,11 @@ public class ParseContext {
      * can never be null
      */
     private ImportResolver importResolver;
+    
+    /**
+     * resource loader
+     */ 
+    ResourceLoader loader;
 
     private ImportedDocumentMap imports = new ImportedDocumentMap();
 
@@ -94,10 +99,12 @@ public class ParseContext {
     private CdlDocument document;
     public static final String ERROR_NO_PROTOTYPE_NAME = "Prototype has no qname ";
     public static final String ERROR_DUPLICATE_PROTOTYPE = "Duplicate prototype :";
-    private CdlParser parser;
-    public static final String ERROR_RECURSIVE_IMPORT = "Recursive import of (%s,%s)";
+    //private CdlParser parser;
+    public static final String ERROR_RECURSIVE_IMPORT_PREFIX = "Recursive import of ";
+    private static final String ERROR_RECURSIVE_IMPORT = ERROR_RECURSIVE_IMPORT_PREFIX +"(%s,%s)";
     public static final String ERROR_DIFFERENT_LOCATION = "Cannot import %s into %s because %s is there already";
     public static final String ERROR_RECURSIVE_LOCAL_IMPORT = "Recursive import of ";
+    public static final String ERROR_PARSER_SAX_FAULT = "when creating parser";
 
     /**
      * Create a parse context
@@ -113,12 +120,24 @@ public class ParseContext {
         if (loader == null) {
             loader = new ResourceLoader(this.getClass());
         }
+        this.loader=loader;
+
+    }
+    
+    /**
+     * create a new parser
+     * @throws CdlRuntimeException if a parser cannot be created
+     * @return a new parser
+     */ 
+    CdlParser createParser() {
         try {
-            parser = new CdlParser(loader, true);
+            CdlParser parser = new CdlParser(loader, true);
+            return parser;
         } catch (SAXException e) {
-            throw new CdlRuntimeException("when creating parser", e);
+            throw new CdlRuntimeException(ERROR_PARSER_SAX_FAULT, e);
         }
     }
+    
 
     /**
      * create a parse context with the default resolver
@@ -217,6 +236,7 @@ public class ParseContext {
             return null;
         }
 
+        localImports.put(path, new ImportedDocument());
         ImportedDocument imported = doImport(path, null);
         localImports.put(path, imported);
         return imported.getDocument();
@@ -255,23 +275,32 @@ public class ParseContext {
             //we have already been imported, skip it.
             return null;
         }
-
+        imports.put(namespace, new ImportedDocument());
         ImportedDocument imported = doImport(path, namespace);
         imports.put(namespace, imported);
         return imported.getDocument();
     }
 
+    /**
+     * do the actual import
+     * @param path
+     * @param namespace
+     * @return
+     * @throws IOException
+     * @throws ParsingException
+     * @throws CdlException
+     */ 
     private ImportedDocument doImport(String path, String namespace)
             throws IOException, ParsingException, CdlException {
         URL location = getImportResolver().resolveToURL(path);
         if (log.isDebugEnabled()) {
-            log.debug("Importing " + namespace + " url" + location);
+            log.debug("Importing " + namespace + " url " + location);
         }
         //we now have a location; lets load it.
         InputStream inputStream = location.openStream();
         CdlDocument doc;
         try {
-            doc = parser.parseStream(inputStream);
+            doc = createParser().parseStream(inputStream);
             //recursive parse
             doc.parse(this);
         } finally {

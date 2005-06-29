@@ -169,5 +169,5 @@ public interface Filenames {
     String IMPORT_RECURSIVE_LOCAL = INVALID_IMPORT
             + "import-recursive-local.cdl";
     String IMPORT_RECURSIVE = INVALID_IMPORT
-            + "import-recursive-local.cdl";
+            + "import-recursive.cdl";
  }
