@@ -29,6 +29,11 @@ import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
  * The data on which to operate is defined to be the attribute "data".
  */
 public abstract class BaseUnaryOperator extends BaseFunction implements PhaseAction {
+    /**
+     * Name of the attribute used for unary operators
+     * {@value}
+     */ 
+    public static final String DATA_ATTRIBUTE = "data";
 
     /**
      * The method to implement the functionality of any operator.
@@ -44,10 +49,10 @@ public abstract class BaseUnaryOperator extends BaseFunction implements PhaseAct
      * @throws SmartFrogCompileResolutionException if the attribute "data" does not exist or the  operator throws the exception
      **/
     protected Object doFunction() throws SmartFrogCompileResolutionException {
-	Object data = context.get("data");
+	Object data = context.get(DATA_ATTRIBUTE);
 
 	if (data == null)
-	    throw new SmartFrogCompileResolutionException(MessageUtil.formatMessage(MISSING_PARAMETER, "data"),
+	    throw new SmartFrogCompileResolutionException(MessageUtil.formatMessage(MISSING_PARAMETER, DATA_ATTRIBUTE),
 							  null, name, "function", null);
 
 	return doOperator(data);
