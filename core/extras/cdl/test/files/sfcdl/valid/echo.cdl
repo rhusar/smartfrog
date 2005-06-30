@@ -15,6 +15,6 @@
 
   </cdl:configuration>
   <cdl:system>
-    <echo cdl:extends="sf:echo" sf:message="hello everyone"/>
+    <echo cdl:extends="sf:echo" sf:message="this is not a hoax"/>
   </cdl:system>
 </cdl:cdl>

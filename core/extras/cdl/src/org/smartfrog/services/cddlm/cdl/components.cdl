@@ -35,6 +35,11 @@
       <cmp:CommandPath>org.smartfrog.services.cdl.CmpControlFlowImpl</cmp:CommandPath>
     </cmp:CmpControlFlow>
 
+    
+    <CmpControlFlow cdl:extends="cmp:CmpControlFlow" cmp:lifecycle=""
+      xmns="http:..gfljklfr">
+    </CmpControlFlow>
+    
     <cmp:sequence cdl:extends="cmp:CmpControlFlow" />
     <cmp:reverse cdl:extends="cmp:CmpControlFlow"/>
     <cmp:flow cdl:extends="cmp:CmpControlFlow"/>

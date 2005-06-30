@@ -39,9 +39,6 @@ public class CdlEchoTest extends XmlTestBase {
     public static final String INVALID = FILES + "invalid/";
     public static final String ECHO_CDL = VALID + "echo.cdl";
 
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
 
 
     public void testEchoValid() throws Exception {

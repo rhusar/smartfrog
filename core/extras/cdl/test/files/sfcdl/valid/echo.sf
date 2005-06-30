@@ -1,5 +1,9 @@
+
+something extends {
+
 #include "/org/smartfrog/services/cddlm/cdl/components.sf";
 
+}
 /*
  * this thing exists to let me isolate problems into .sf side and .cdl side
  */
@@ -7,7 +11,7 @@ sfConfig extends CmpComponent {
  __echo extends CmpComponent {
   a_sf_message "echo.sf";
   _cmp_CommandPath extends CmpComponent {
-   value "org.smartfrog.services.cddlm.cdl.EchoImpl";
+   data "org.smartfrog.services.cddlm.cdl.EchoImpl";
   }
  }
 }
