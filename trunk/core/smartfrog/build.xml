@@ -94,6 +94,8 @@
   <!-- =================================================================== -->
   <!-- Global properties                                                   -->
   <!-- =================================================================== -->
+  <!-- properties file to modify version.sf -->
+  <property file="sf-build-version.properties"/>
   <!-- override point -->
   <property file="build.properties"/>
   <property environment="env"/>
@@ -157,12 +159,24 @@
   <!-- ================================================================== -->
 
   <target name="generateversion" depends="prebuild">
+    <!--
     <java classname="org.smartfrog.Version" failonerror="true" fork="true" outputproperty="Version">
       <arg value="-b"/>
       <classpath>
         <pathelement location="${build.classes.dir}"/>
       </classpath>
     </java>
+    -->
+    <!-- save everything to a file -->
+    <property name="Version" value="${sf.majorRelease}.${sf.minorRelease}.${sf.build}${sf.status}"/>
+    <copy file="${src}/org/smartfrog/version.sf.build"
+          tofile="${src}/org/smartfrog/version.sf" overwrite="true" />
+    <replace file="${src}/org/smartfrog/version.sf">
+        <replacefilter token="@majorRelease@" value="${sf.majorRelease}"/>
+        <replacefilter token="@minorRelease@" value="${sf.minorRelease}"/>
+        <replacefilter token="@build@" value="${sf.build}"/>
+        <replacefilter token="@status@" value="${sf.status}"/>
+    </replace>
 
     <!-- save everything to a file -->
     <!-- keep this in sync w/ common.xml's declaration -->
