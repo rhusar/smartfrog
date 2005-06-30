@@ -106,7 +106,7 @@ public class Version {
         if (!initialized) new Version();
         String newStatus=null;
         if (!status.trim().equals("")){
-            newStatus="_"+status;
+            newStatus=""+status;
         } else newStatus="";
         return name+" "+majorRelease+"."+minorRelease+"."+build+newStatus;
     }
@@ -120,7 +120,7 @@ public class Version {
         if (!initialized) new Version();
         String newStatus=null;
         if (!status.trim().equals("")){
-            newStatus="_"+status;
+            newStatus=""+status;
         } else newStatus="";
         return majorRelease+"."+minorRelease+"."+build+newStatus;
     }
@@ -254,7 +254,7 @@ public class Version {
     public static void main(String[] args) {
 	if ((args.length > 0) && (args[0].equals("-b")))
 	    System.out.print(versionStringforrelease());
-	else    
+	else
 	    System.out.print(versionString());
     }
 }
