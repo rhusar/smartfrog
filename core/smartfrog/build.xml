@@ -159,6 +159,8 @@
   <!-- ================================================================== -->
 
   <target name="generateversion" depends="prebuild">
+
+    <!-- This code can be use to read SF version from smartfrog.jar file and put it in a Version property -->
     <!--
     <java classname="org.smartfrog.Version" failonerror="true" fork="true" outputproperty="Version">
       <arg value="-b"/>
