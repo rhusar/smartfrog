@@ -30,6 +30,7 @@ import org.smartfrog.sfcore.languages.cdl.generate.ToSmartFrog;
 import org.smartfrog.sfcore.languages.cdl.utils.AttributeIterator;
 import org.smartfrog.sfcore.languages.cdl.utils.NodeIterator;
 import org.smartfrog.sfcore.languages.cdl.utils.XmlUtils;
+import org.smartfrog.sfcore.languages.sf.functions.BaseUnaryOperator;
 
 import javax.xml.namespace.QName;
 import java.io.IOException;
@@ -183,7 +184,7 @@ public class ElementEx extends Element implements ToSmartFrog {
 
 
     protected void printValueToSF(GenerateContext out) {
-        printValueToSF(out,"value",false,true);
+        printValueToSF(out,BaseUnaryOperator.DATA_ATTRIBUTE,false,true);
     }
 
 

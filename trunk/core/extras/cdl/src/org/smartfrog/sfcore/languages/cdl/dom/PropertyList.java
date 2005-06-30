@@ -318,8 +318,8 @@ public class PropertyList extends DocNode {
      */
     protected String getBaseComponent(GenerateContext out) {
         String parent = out.getDefaultBaseComponent();
-        ElementEx commandPath = (ElementEx) getFirstChildElement(Constants.CMP_NAMESPACE,
-                        CddlmConstants.CMP_ELEMENT_COMMAND_PATH);
+        ElementEx commandPath = (ElementEx) getFirstChildElement(
+                        CddlmConstants.CMP_ELEMENT_COMMAND_PATH, Constants.CMP_NAMESPACE);
         if (commandPath!=null) {
             //we have a new extensor.
             String command = commandPath.getTextValue().trim();

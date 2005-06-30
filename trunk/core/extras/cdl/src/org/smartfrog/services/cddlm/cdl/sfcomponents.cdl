@@ -15,6 +15,13 @@
       <cmp:CommandPath>org.smartfrog.services.cddlm.cdl.EchoImpl</cmp:CommandPath>
     </sf:echo>
 
+    
+    <sf:exec 
+      sf:dir=".">
+      <cmp:CommandPath>@SfExecuteProgram</cmp:CommandPath>
+    </sf:exec>
+
+    
     <sf:java sf:classname="">
       <cmp:CommandPath>org.smartfrog.services.cddlm.cdl.JavaImpl</cmp:CommandPath>
     </sf:java>

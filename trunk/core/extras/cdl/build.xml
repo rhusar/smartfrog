@@ -132,5 +132,46 @@
       </batchtest>
     </sf-junit>
   </target>
+  
+  <!-- ========================================================== -->
+  <!-- start the windowed daemon in the foreground                         -->
+  <!-- ========================================================== -->
+  <target name="start-daemon-window"
+    description="start a daemon with a window"
+    depends="declare-extended-smartfrog-tasks"
+    >
+      <sf-startdaemon-debug  spawn="false" timeout="-1">
+        <application name="console" >
+#include "org/smartfrog/services/display/components.sf"
+#include "org/smartfrog/services/trace/components.sf"
+#include "org/smartfrog/services/persistance/components.sf"
+#include "org/smartfrog/components.sf"
 
+// Default sfDaemon Display
+DefaultDisplay extends  Display {
+    nameDisplay "sfDaemon Display"; // Window Title
+    positionDisplay "NW";         // Window position: North-West 
+    redirectStd true;             // Redirect std output and error to this wind.
+    showIP true;                  // Show IP address in window title
+    showSfProcess true;           // Show sfProcess name in  window title
+    terminateSFProcessOnExit true; // Terminates sfDaemon when window is closed
+};
+
+DefaultCompound extends Compound {
+    sfProcessComponentName "sfDefault";
+    display extends DefaultDisplay;
+}
+        
+
+sfConfig extends DefaultCompound;
+        </application>
+        
+      </sf-startdaemon-debug>
+      
+  </target>
+  
+  <target name="console" 
+    depends="start-daemon-if-needed,start-console"/>
+  
+  
 </project>

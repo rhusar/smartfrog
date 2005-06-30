@@ -45,10 +45,8 @@ public class SmartFrogSourceGenerator {
      * prepare to generate source for a particular file
      *
      * @param document
-     * @throws IOException
      */
-    public SmartFrogSourceGenerator(CdlDocument document)
-            throws IOException {
+    public SmartFrogSourceGenerator(CdlDocument document) {
         this.document = document;
 
     }

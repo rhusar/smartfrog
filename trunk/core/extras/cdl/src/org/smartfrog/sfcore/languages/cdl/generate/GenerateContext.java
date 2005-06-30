@@ -71,7 +71,11 @@ public class GenerateContext {
     private String destFilename;
     public static final int INDENT = 1;
     public static final String COMPONENT_CONFIGURATION = "configuration";
-    public static final String CDL_COMPONENT_FILE = "/org/smartfrog/services/cddlm/cdl/components.sf";
+    public static final String CDL_PACKAGE_DIR = "/org/smartfrog/services/cddlm/cdl/";
+    public static final String CDL_COMPONENT_FILE = CDL_PACKAGE_DIR +
+            "components.sf";
+    public static final String CDL_FULL_SF = CDL_PACKAGE_DIR +
+            "sfcomponents.sf";
     public static final String ATTRIBUTE_PREFIX = "a_";
     public static final String ELEMENT_PREFIX = "_";
     public static final String SF_COMPONENTS_NAMESPACE = "http://smartfrog.org/services/cdl/2005/06";
@@ -132,7 +136,7 @@ public class GenerateContext {
         formatter = new Formatter(out);
         setDepth(0);
         //pull in CDL includes
-        hashInclude(CDL_COMPONENT_FILE);
+        hashInclude(CDL_FULL_SF);
 
     }
 
