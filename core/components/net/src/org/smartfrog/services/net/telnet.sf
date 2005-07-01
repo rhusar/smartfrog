@@ -39,7 +39,7 @@ TelnetSchema extends Schema {
 
 
 TelnetSession extends Compound {
-    PasswordProvider extends Password {
+    PasswordProvider extends NetPassword {
     }
     Telnet extends Prim{
         sfClass "org.smartfrog.services.net.TelnetImpl";
