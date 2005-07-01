@@ -192,6 +192,8 @@
     </propertyfile>
 
     <copy file="${sf.version.file}" todir="${build.classes.dir}/org/smartfrog" />
+    <copy file="${src}/org/smartfrog/version.sf" todir="${build.classes.dir}/org/smartfrog" />
+
     <copy file="${sf.version.file}" todir="${dist.dir}" />
     <echo level="verbose">version=${sfversion}</echo>
     <!--property name="Version" value="${sfversion}"/-->
