@@ -38,7 +38,7 @@ FTPSchema extends Schema {
 }
 
 FTPClient extends Compound {
-    PasswordProvider extends Password {
+    PasswordProvider extends NetPassword {
     }
     FTP extends Prim {
         /* ========================================================
