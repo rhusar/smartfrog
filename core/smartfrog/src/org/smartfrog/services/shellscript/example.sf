@@ -36,6 +36,9 @@ sfConfig extends Compound {
 
   script extends Script {
     sfLog LAZY THIS;
+
+    verbose true;
+
     shell LAZY PARENT:shell;
     // deploy, start and terminate scripts are blocking
     deployScript ["cd","dir","echo user_name: %USERNAME%"];

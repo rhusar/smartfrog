@@ -140,7 +140,25 @@ public class SFScriptExecutionImpl  extends PrimImpl implements Prim, SFScriptEx
   }
 
   /**
-   *
+    * submit  a list of commands to the shell
+    * @param commands the list of commands
+    * @param timeout max number of miliseconds to obtain the lock: 0 is don't
+    *   wait, -1 is wait forever
+   * @param determines if the shell output will be shown using out/err streams.
+    * @throws SmartFrogException if the lock is not obtained in the requisite
+    *   time
+    * @return ScriptResults
+    * @todo Implement this org.smartfrog.services.shellscript.ScriptExecution
+    *   method
+    */
+   public ScriptResults execute(List commands, long timeout, boolean verbose) throws SmartFrogException{
+     if (this.scriptExec==null) return null;
+     return scriptExec.execute(commands,timeout,verbose);
+   }
+
+
+  /**
+   * submit  a list of commands to the shell
    * @param commands the list of commands
    * @param timeout max number of miliseconds to obtain the lock: 0 is don't
    *   wait, -1 is wait forever
@@ -156,7 +174,7 @@ public class SFScriptExecutionImpl  extends PrimImpl implements Prim, SFScriptEx
   }
 
   /**
-   *
+   * submit a command to the shell
    * @param command the command
    * @param timeout max number of miliseconds to obtain the lock: 0 is don't
    *   wait, -1 is wait forever
@@ -169,6 +187,23 @@ public class SFScriptExecutionImpl  extends PrimImpl implements Prim, SFScriptEx
   public ScriptResults execute(String command, long timeout) throws SmartFrogException {
     if (this.scriptExec==null) return null;
     return scriptExec.execute(command,timeout);
+  }
+
+  /**
+   * submit a command to the shell
+   * @param command the command
+   * @param timeout max number of miliseconds to obtain the lock: 0 is don't
+   *   wait, -1 is wait forever
+   * @param determines if the shell output will be shown using out/err streams.
+   * @throws SmartFrogException if the lock is not obtained in the requisite
+   *   time
+   * @return ScriptResults
+   * @todo Implement this org.smartfrog.services.shellscript.ScriptExecution
+   *   method
+   */
+  public ScriptResults execute(String command, long timeout, boolean verbose) throws SmartFrogException {
+    if (this.scriptExec==null) return null;
+    return scriptExec.execute(command,timeout,verbose);
   }
 
   /**
@@ -215,6 +250,21 @@ public class SFScriptExecutionImpl  extends PrimImpl implements Prim, SFScriptEx
     if (this.scriptExec == null) return;
     scriptExec.releaseShell(lock);
   }
+
+  /**
+   * verbose shell
+   *
+   * @param determines if the shell output will be shown using out/err stream.
+   * @param lock the lock object receieved from the lockShell
+   * @return previous verbose status.
+   *
+   * @throws SmartFrogException if the lock object is not valid, i.e. if it is
+   * not currently holding the lock, or if ScriptExec not present
+   */
+    public boolean verbose(boolean verbose, ScriptLock lock) throws SmartFrogException{
+        if (this.scriptExec == null) throw new SmartFrogException(" Script Exec not present.");;
+        return scriptExec.verbose(verbose,lock);
+    }
 
 //----------------------------------------------
 //  private void test1() throws SmartFrogException {

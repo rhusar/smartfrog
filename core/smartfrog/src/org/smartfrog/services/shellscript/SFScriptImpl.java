@@ -53,6 +53,11 @@ public class SFScriptImpl  extends PrimImpl implements Prim, SFScript, SFReadCon
      */
     private boolean autoTerminate = false;
 
+    /**
+     * Script out/err content shown
+     */
+    private boolean verbose = false;
+
     /** String name for line return. */
      private String lineSeparator = System.getProperty("line.separator");
 
@@ -79,6 +84,7 @@ public class SFScriptImpl  extends PrimImpl implements Prim, SFScript, SFReadCon
         this.startScript = sfResolve(ATTR_START_SCRIPT,false);
         this.terminateScript = sfResolve(ATTR_TERMINATE_SCRIPT,false);
         this.autoTerminate = sfResolve (ATR_AUTO_TERMINATE,autoTerminate,false);
+        this.verbose = sfResolve (ATR_VERBOSE,autoTerminate,false);
   }
 
 
@@ -191,14 +197,14 @@ private void checkResult(Object script, ComponentDescription cd) throws
 }
 
  private ComponentDescription run (String script) throws SmartFrogException, RemoteException {
-    ScriptResults result = shell.execute (script,0);
+    ScriptResults result = shell.execute (script,0,verbose);
     ComponentDescription cd = result.waitForResults(0);
     if (sfLog().isTraceEnabled()){ sfLog().trace("Executed (String script):\n "+result.toString()); }
     return cd;
  }
 
  private ComponentDescription run (Vector script) throws SmartFrogException, RemoteException {
-   ScriptResults result = shell.execute (script,0);
+   ScriptResults result = shell.execute (script,0,verbose);
    ComponentDescription cd =result.waitForResults(0);
    if (sfLog().isTraceEnabled()){ sfLog().trace("Executed (Vector script):\n "+result.toString()); }
    return cd;
