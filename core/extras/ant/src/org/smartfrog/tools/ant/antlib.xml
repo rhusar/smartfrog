@@ -22,7 +22,7 @@
     <taskdef name="sign" classname="org.smartfrog.tools.ant.SmartFrogSign"/>
     <taskdef name="ping" classname="org.smartfrog.tools.ant.PingTask"/>
     <taskdef name="gui" classname="org.smartfrog.tools.ant.StartSmartFrogGui"/>
-    <taskdef name="gui" classname="org.smartfrog.tools.ant.StartManagementConsole"/>
+    <taskdef name="management-console" classname="org.smartfrog.tools.ant.StartManagementConsole"/>
 
     <!-- this is the security type declaration -->
     <typedef name="security" classname="org.smartfrog.tools.ant.Security"/>
