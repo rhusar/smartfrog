@@ -635,15 +635,15 @@
     </presetdef>
     
     <presetdef name="sf-console-debug">
-      <sf-console classpathref="run.classpath"
-        logStackTraces="true" spawn="true">
+      <sf-management-console classpathref="run.classpath"
+        logStackTraces="true" >
           <!-- assertions are enabled -->
         <assertions enableSystemAssertions="true">
           <enable/>
         </assertions>
           <!-- load in a property file if it is present --> 
         <propertyfile file="${runtime.properties}" optional="true"/>
-      </sf-console>
+      </sf-management-console>
     </presetdef>      
 
   </target>  
