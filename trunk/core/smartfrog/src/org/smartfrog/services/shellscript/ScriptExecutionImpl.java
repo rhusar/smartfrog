@@ -135,6 +135,9 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
   private static String TYPE_DONE ="done";
   private static String TYPE_NEXT_CMD ="next_cmd";
 
+  /** Verbose script output */
+  protected boolean verbose = false;
+
   /** Used to format times */
   protected static DateFormat dateFormatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss:SSS zzz");
 
@@ -148,7 +151,7 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
       // RunProcessImpl
       this.name = name;
       this.cmd = cmd;
-
+      this.verbose = verbose;
       try {
           if (prim!=null){
               sflog = LogFactory.getLog(prim.sfResolve(SmartFrogCoreKeys.SF_APP_LOG_NAME, "", true));
@@ -208,7 +211,7 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
   }
 
   /**
-   *
+   * submit a command to the shell
    * @throws SmartFrogException if the lock object is not valid, i.e. if it is
    *   not currently holding the lock
    * @param command String
@@ -219,7 +222,8 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
    */
   public ScriptResults execute(String command, ScriptLock lock) throws SmartFrogException {
     if (this.lock!=lock) throw new SmartFrogException( runProcess.toString() + " failed to execute '"+command.toString()+"': Wrong lock. ");
-
+    boolean previousVerbose = verbose;
+    verbose(verbose,lock);
     //Close results blocking
     closeResults(command, true, 0);
     ScriptResults res =  this.results;
@@ -230,7 +234,7 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
   }
 
   /**
-   *
+   * submit a list of commands to the shell
    * @param commands the list of commands
    * @param timeout max number of miliseconds to obtain the lock: 0 is don't
    *   wait, -1 is wait forever
@@ -241,14 +245,57 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
    *   method
    */
   public ScriptResults execute(List commands, long timeout) throws SmartFrogException {
+      return execute (commands,timeout,false);
+  }
+
+  /**
+   * submit  a list of commands to the shell
+   * @param commands the list of commands
+   * @param timeout max number of miliseconds to obtain the lock: 0 is don't
+   *   wait, -1 is wait forever
+   * @param determines if the shell output will be shown using out/err streams.
+   *
+   * @throws SmartFrogException if the lock is not obtained in the requisite
+   *   time
+   * @return ScriptResults
+   * @todo Implement this org.smartfrog.services.shellscript.ScriptExecution
+   *   method
+   */
+  public ScriptResults execute(List commands, long timeout, boolean verbose) throws SmartFrogException {
     ScriptLock lock = this.lockShell(timeout);
+    boolean previousVerbose = verbose;
+    verbose(verbose,lock);
     ScriptResults result = execute (commands,lock);
+    verbose(previousVerbose,lock);
     this.releaseShell(lock);
     return result;
   }
 
   /**
+   * submit a command to the shell
+   * @param command the command
+   * @param timeout max number of miliseconds to obtain the lock: 0 is don't
+   *   wait, -1 is wait forever
+   * @param determines if the shell output will be shown using out/err streams.
    *
+   * @throws SmartFrogException if the lock is not obtained in the requisite
+   *   time
+   * @return ScriptResults
+   * @todo Implement this org.smartfrog.services.shellscript.ScriptExecution
+   *   method
+   */
+  public ScriptResults execute(String command, long timeout, boolean verbose) throws SmartFrogException {
+    ScriptLock lock = this.lockShell(timeout);
+    boolean previousVerbose = verbose;
+    verbose(verbose,lock);
+    ScriptResults result = execute (command,lock);
+    verbose(previousVerbose,lock);
+    this.releaseShell(lock);
+    return result;
+  }
+
+  /**
+   * submit a command to the shell
    * @param command the command
    * @param timeout max number of miliseconds to obtain the lock: 0 is don't
    *   wait, -1 is wait forever
@@ -259,13 +306,13 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
    *   method
    */
   public ScriptResults execute(String command, long timeout) throws SmartFrogException {
-    ScriptLock lock = this.lockShell(timeout);
-    ScriptResults result = execute (command,lock);
-    this.releaseShell(lock);
-    return result;
+    return execute (command,timeout,false);
   }
 
+
   /**
+   * submit  a list of commands to the shell
+   *
    * @throws SmartFrogException if the lock object is not valid, i.e.
    *
    * @throws SmartFrogException if the lock object is not valid, i.e. if it is
@@ -303,7 +350,7 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
   }
 
   /**
-   *
+   * obtain a lock on the shell, will block until it is available
    * @param timeout max number of miliseconds to obtain the lock: 0 is don't
    *   wait, -1 is wait forever
    * @throws SmartFrogException if the lock is not obtained in the requisite
@@ -375,8 +422,10 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
   public void line (String line, String filterName){
       if (filterName.indexOf("out")!=-1){
         ((ScriptResultsImpl)results).stdOut.add(line);
+        if (verbose) this.sfLog().out(line);
       } else {
         ((ScriptResultsImpl)results).stdErr.add(line);
+        if (verbose) this.sfLog().err(line);
       }
       if (sfLog().isTraceEnabled()){
           this.sfLog().trace("LINE "+line+", "+filterName+", "+filterName.indexOf("out")+", "+ filterName.indexOf("err"));
@@ -426,6 +475,22 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
     ((ScriptResultsImpl)finishedResults).ready(exitCode);
     return finishedResults;
   }
+
+  /**
+   * verbose shell
+   *
+   * @param determines if the shell output will be shown using out/err stream.
+   * @param lock the lock object receieved from the lockShell
+   *
+   * @throws SmartFrogException if the lock object is not valid, i.e. if it is
+   * not currently holding the l0ck
+   */
+    public boolean verbose(boolean verbose, ScriptLock lock) throws SmartFrogException{
+        if (this.lock!=lock) throw new SmartFrogException( runProcess.toString() + " failed to change verbose status: Wrong lock. ");
+        boolean previousVerbose = this.verbose;
+        this.verbose = verbose;
+        return previousVerbose;
+    }
 
   /**
    * This method should be used to log Core messages

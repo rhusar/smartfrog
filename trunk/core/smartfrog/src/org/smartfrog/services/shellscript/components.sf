@@ -155,4 +155,5 @@ Script extends Prim {
    scriptSchema extends ScriptSchema;
    sfClass "org.smartfrog.services.shellscript.SFScriptImpl";
    //autoTerminate false;
+   //verbose false;
 }

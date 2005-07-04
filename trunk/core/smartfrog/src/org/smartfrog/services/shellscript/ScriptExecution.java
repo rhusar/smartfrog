@@ -87,6 +87,16 @@ public interface ScriptExecution {
      */
     public ScriptResults execute(String command, ScriptLock lock) throws SmartFrogException;
 
+    /**
+     * verbose shell
+     *
+     * @param determines if the shell output will be shown using out/err streams.
+     * @param lock the lock object receieved from the lockShell
+     *
+     * @throws SmartFrogException if the lock object is not valid, i.e. if it is
+     * not currently holding the l0ck
+     */
+    public boolean verbose(boolean verbose, ScriptLock lock) throws SmartFrogException;
 
     /**
      * relaese the lock on the shell
@@ -115,6 +125,23 @@ public interface ScriptExecution {
     public ScriptResults execute(List commands, long timeout) throws SmartFrogException;
 
     /**
+     * submit  a list of commands to the shell as a single atomic lock/execute/unlock
+     *
+     * @param commands the list of commands
+     * @param timeout max number of miliseconds to obtain the lock:
+     *    0 is don't wait,
+     *    -1 is wait forever
+     * @param determines if the shell output will be shown using out/err streams.
+     *
+     * @returns the "future" ScriptResult implementation that allows the code to
+     * obtain the results of executnig the script
+     *
+     * @throws SmartFrogException  if the lock is not obtained in the requisite
+     * time
+     */
+    public ScriptResults execute(List commands, long timeout, boolean verbose) throws SmartFrogException;
+
+    /**
      * submit  a command to the shell as a single atomic lock/execute/unlock
      *
      * @param command the command
@@ -129,5 +156,22 @@ public interface ScriptExecution {
      * time
      */
     public ScriptResults execute(String command, long timeout) throws SmartFrogException;
+
+    /**
+     * submit  a command to the shell as a single atomic lock/execute/unlock
+     *
+     * @param command the command
+     * @param timeout max number of miliseconds to obtain the lock:
+     *    0 is don't wait,
+     *    -1 is wait forever
+     * @param determines if the shell output will be shown using out/err streams.
+     *
+     * @returns the "future" ScriptResult implementation that allows the code to
+     * obtain the results of executnig the script
+     *
+     * @throws SmartFrogException  if the lock is not obtained in the requisite
+     * time
+     */
+    public ScriptResults execute(String command, long timeout, boolean verbose) throws SmartFrogException;
 
 }

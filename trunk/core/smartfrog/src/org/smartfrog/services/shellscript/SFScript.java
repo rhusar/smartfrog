@@ -49,5 +49,8 @@ public interface SFScript {
     * . String name for attribute. Value {@value}. */
    public final static String ATR_AUTO_TERMINATE = "autoTerminate";
 
+   /** This indicates if the component should redirect the out and err streams of
+    * the script to the system stdout and stderr. Value {@value}. */
+   public final static String ATR_VERBOSE = "verbose";
 
 }
