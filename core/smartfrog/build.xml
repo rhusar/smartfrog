@@ -158,7 +158,7 @@
   <!-- running Version.java to generate version information               -->
   <!-- ================================================================== -->
 
-  <target name="generateversion" depends="prebuild">
+  <target name="generateversion" depends="initbuild">
 
     <!-- This code can be use to read SF version from smartfrog.jar file and put it in a Version property -->
     <!--
@@ -192,7 +192,6 @@
     </propertyfile>
 
     <copy file="${sf.version.file}" todir="${build.classes.dir}/org/smartfrog" />
-    <copy file="${src}/org/smartfrog/version.sf" todir="${build.classes.dir}/org/smartfrog" />
 
     <copy file="${sf.version.file}" todir="${dist.dir}" />
     <echo level="verbose">version=${sfversion}</echo>
@@ -446,10 +445,10 @@
   <!--  BUILD                                                              -->
   <!-- =================================================================== -->
   <target name="prebuild"
-    depends="initbuild,compile,copySF,copyGif,copyBAT,copyHTML,copyDefault,copySFCD" />
+    depends="initbuild,generateversion,compile,copySF,copyGif,copyBAT,copyHTML,copyDefault,copySFCD" />
 
   <target name="build"
-    depends="generateversion"
+    depends="prebuild"
     description="Recompile and create all packages"/>
 
   <!-- =================================================================== -->
