@@ -24,10 +24,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.Vector;
-import java.util.Properties;
+import java.util.*;
 
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.PrettyPrinting;
@@ -75,6 +72,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * LogImpl uses ComponentDescription.sfResolve to read its initial
      * configuration */
     private static  LogSF sflog= null;
+
 
 
     /**
@@ -535,6 +533,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
         writeOn(ps, 0);
     }
 
+
     /**
      * Writes this component description on a writer. Used by toString. Should
      * be used instead of toString to write large descriptions to file, since
@@ -582,26 +581,42 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      *
      * @throws Exception error during applying an action
      */
-    public void visit(CDVisitor action, boolean topDown)
+    public void visit(CDVisitor action, boolean topDown) throws Exception {
+        visit(action, topDown, new Stack());
+    }
+
+     /**
+     * Visit every node in the tree from path downwards, applying an action to that node. The nodes
+     * may be visited top-down or bottom-up
+     *
+     * @param action the action to apply
+     * @param topDown true if top-down, false if bottom-up
+     * @param path the path through the CD hierarchy taken to get here
+     *
+     * @throws Exception error during applying an action
+     */
+     public void visit(CDVisitor action, boolean topDown, Stack path)
         throws Exception {
         Object name;
         Object value;
 
         if (topDown) {
-            action.actOn(this);
+            action.actOn(this, path);
         }
 
-        for (Enumeration e = ((Context) context.clone()).keys();
+         path.push(this);
+         for (Enumeration e = ((Context) context.clone()).keys();
                 e.hasMoreElements();) {
             name = e.nextElement();
 
             if ((value = context.get(name)) instanceof ComponentDescription) {
-                ((ComponentDescription) value).visit(action, topDown);
+                ((ComponentDescription) value).visit(action, topDown, path);
             }
         }
+        path.pop();
 
         if (!topDown) {
-            action.actOn(this);
+            action.actOn(this, path);
         }
     }
 

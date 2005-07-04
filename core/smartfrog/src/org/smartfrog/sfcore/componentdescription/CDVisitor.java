@@ -20,6 +20,8 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.componentdescription;
 
+import java.util.Stack;
+
 
 /**
  * CDVisitor is the interface which defines the action method to be invoked on
@@ -33,5 +35,5 @@ public interface CDVisitor {
      *
      * @exception Exception error thrown during action
      */
-    public void actOn(ComponentDescription node) throws Exception;
+    public void actOn(ComponentDescription node, Stack path) throws Exception;
 }

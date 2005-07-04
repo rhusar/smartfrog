@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.Stack;
 
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.Copying;
@@ -255,22 +256,34 @@ public interface ComponentDescription extends PrettyPrinting, Copying, Reference
 
 
     /**
-     * Visit every node in the tree, applying an action to that node. The nodes
-     * may be visited top-down or bottom-up
-     *
-     * @param action the action to apply
-     * @param topDown true if top-down, false if bottom-up
-     *
-     * @exception Exception error during applying an action
-     */
-    public void visit(CDVisitor action, boolean topDown)
-        throws Exception;
+      * Visit every node in the tree using this as the root, applying an action to the nodes. The nodes
+      * may be visited top-down or bottom-up
+      *
+      * @param action the action to apply
+      * @param topDown true if top-down, false if bottom-up
+      *
+      * @exception Exception error during applying an action
+      */
+     public void visit(CDVisitor action, boolean topDown)
+         throws Exception;
+
+      /**
+      * Visit every node in the tree from this node, applying an action to the nodes. The nodes
+      * may be visited top-down or bottom-up. Used if there is a previous set of ancestor nodes that have
+      * been visited
+      *
+      * @param action the action to apply
+      * @param topDown true if top-down, false if bottom-up
+      * @param path the path of nodes visited before this one, from the root
+      *
+      * @exception Exception error during applying an action
+      */
+     public void visit(CDVisitor action, boolean topDown, Stack path)
+         throws Exception;
 
     /**
      *  To log into sfCore logger. This method should be used to log Core messages
      * @return Logger implementing LogSF and Log
-     * @throws SmartFrogException
-     * @throws RemoteException
      */
     public LogSF sfLog();
 

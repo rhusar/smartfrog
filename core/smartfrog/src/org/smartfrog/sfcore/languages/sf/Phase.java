@@ -21,6 +21,7 @@ For more information: www.smartfrog.org
 package org.smartfrog.sfcore.languages.sf;
 
 import java.util.Enumeration;
+import java.util.Stack;
 
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.componentdescription.CDVisitor;
@@ -83,7 +84,7 @@ public class Phase implements CDVisitor {
      *
      * @throws SmartFrogCompileResolutionException failed to create PhaseAction
      */
-    public void actOn(ComponentDescription cd) throws SmartFrogCompileResolutionException {
+    public void actOn(ComponentDescription cd, Stack path) throws SmartFrogCompileResolutionException {
         Context c = cd.sfContext();
         for (Enumeration e = ((Context) c.clone()).keys(); e.hasMoreElements();) {
             Object name = e.nextElement();
