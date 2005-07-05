@@ -15,6 +15,7 @@ public interface Validatable {
      * Return if the object is valid, thrown an exception if not.
      * It is imperative that this call has <i>No side effects</i>.
      *
+     * Why is this a boolean? For insertion into assert ; statements. 
      * @return true unless an exception is thrown
      * @throws ValidationException with text if not valid
      */

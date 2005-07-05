@@ -24,6 +24,7 @@ import nu.xom.NodeFactory;
 import nu.xom.Element;
 import nu.xom.Nodes;
 import nu.xom.Document;
+import org.smartfrog.projects.alpine.interfaces.NamespaceNodeFactory;
 
 /**
  * A node factory that returns elements all of the right type.
@@ -49,6 +50,10 @@ public class ExtendedNodeFactory extends NodeFactory {
             name=name.substring(colon+1);
         }
     return null;
+    }
+
+    public Nodes finishMakingElement(Element element) {
+        return super.finishMakingElement(element);
     }
 
     /**
@@ -78,20 +83,14 @@ public class ExtendedNodeFactory extends NodeFactory {
 
 
     /**
-     * <p/>
-     * Returns a new <code>Nodes</code> object containing a new
-     * <code>ProcessingInstruction</code> object with the specified target and
-     * data. </p>
-     * <p/>
+     * SOAP says these are forbidden. We just strip them, in an act of silent forgiveness.
+     * 
      * @return the nodes to be added to the tree
      */
     public Nodes makeProcessingInstruction(String target, String data) {
         return EMPTY;
     }
 
-    public Nodes makeComment(String data) {
-        return EMPTY;
-    }
 
 
 
