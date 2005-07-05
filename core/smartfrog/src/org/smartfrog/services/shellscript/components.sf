@@ -60,7 +60,7 @@ ShellExec extends Exec {
 }
 
 BashExec extends ShellExec{
-  cmd  ["/etc/bash"];
+  cmd  ["/bin/bash"];
   echoErrorCmd "$?";
 }
 
