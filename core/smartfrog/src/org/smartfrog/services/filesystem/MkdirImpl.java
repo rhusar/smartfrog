@@ -21,7 +21,6 @@ package org.smartfrog.services.filesystem;
 
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.prim.PrimImpl;
 
 import java.io.File;
 import java.rmi.RemoteException;

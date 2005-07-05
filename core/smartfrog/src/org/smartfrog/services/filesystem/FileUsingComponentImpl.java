@@ -22,7 +22,6 @@ package org.smartfrog.services.filesystem;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
-import org.smartfrog.sfcore.prim.TerminationRecord;
 
 import java.io.File;
 import java.net.URI;

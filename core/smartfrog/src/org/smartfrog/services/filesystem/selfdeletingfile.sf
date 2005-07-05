@@ -20,15 +20,13 @@ For more information: www.smartfrog.org
 
 #include "org/smartfrog/services/filesystem/filesystemtemplate.sf"
 
-#include "org/smartfrog/services/filesystem/textfile.sf"
-#include "org/smartfrog/services/filesystem/selfdeletingfile.sf"
-#include "org/smartfrog/services/filesystem/file.sf"
-#include "org/smartfrog/services/filesystem/tempfile.sf"
-#include "org/smartfrog/services/filesystem/mkdir.sf"
-#include "org/smartfrog/services/filesystem/touchfile.sf"
+/**
+ * this identifies a file (not a directory; a file) which
+ * is deleted when the component is terminated.
+ */
 
-
-
-
-
-
+SelfDeletingFile extends FileUsingComponent {
+    deletableFileSchema extends DeletableFileSchema;
+    sfClass "org.smartfrog.services.filesystem.SelfDeletingFileImpl";
+    deleteOnExit true;
+}

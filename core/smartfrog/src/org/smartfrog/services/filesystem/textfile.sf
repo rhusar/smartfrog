@@ -20,15 +20,24 @@ For more information: www.smartfrog.org
 
 #include "org/smartfrog/services/filesystem/filesystemtemplate.sf"
 
-#include "org/smartfrog/services/filesystem/textfile.sf"
-#include "org/smartfrog/services/filesystem/selfdeletingfile.sf"
-#include "org/smartfrog/services/filesystem/file.sf"
-#include "org/smartfrog/services/filesystem/tempfile.sf"
-#include "org/smartfrog/services/filesystem/mkdir.sf"
-#include "org/smartfrog/services/filesystem/touchfile.sf"
+/**
+ * A text file represents a file that is given the predefined text
+ * on deployment. It is retained after the end of deployment. To create
+ * transient files, link it to a temporary file
+ */
+
+TextFileSchema extends DeletableFileSchema {
+    //text to write out
+    text extends String;
+    //encoding of the optional text. Only needed when text is set
+    encoding extends String;
+}
 
 
+TextFile extends FileUsingComponent {
+    textFileSchema extends TextFileSchema;
+    sfClass "org.smartfrog.services.filesystem.TextFileImpl";
 
-
-
-
+    //default encoding is utf8
+    encoding "UTF-8";
+}
