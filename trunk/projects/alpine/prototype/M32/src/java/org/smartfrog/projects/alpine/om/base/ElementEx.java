@@ -17,7 +17,7 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.projects.alpine.om;
+package org.smartfrog.projects.alpine.om.base;
 
 import nu.xom.Element;
 import nu.xom.Node;
