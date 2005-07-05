@@ -1,0 +1,3 @@
+Different documents/presentations can go under here. Please
+use a separate subdir for each particular conference/paper
+
