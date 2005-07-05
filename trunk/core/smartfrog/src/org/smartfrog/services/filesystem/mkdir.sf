@@ -20,15 +20,22 @@ For more information: www.smartfrog.org
 
 #include "org/smartfrog/services/filesystem/filesystemtemplate.sf"
 
-#include "org/smartfrog/services/filesystem/textfile.sf"
-#include "org/smartfrog/services/filesystem/selfdeletingfile.sf"
-#include "org/smartfrog/services/filesystem/file.sf"
-#include "org/smartfrog/services/filesystem/tempfile.sf"
-#include "org/smartfrog/services/filesystem/mkdir.sf"
-#include "org/smartfrog/services/filesystem/touchfile.sf"
 
+MkdirSchema extends Schema {
+    //file is a file or a string.
+    dir extends Compulsory;
 
+    //parent dir may not be needed.
+    parentDir extends Optional;
+}
 
-
-
-
+/**
+ * mkdir creates a directory where one did not exist before.
+ * and does nothing if it did.
+ * deployment fails if the directory name exists and is not a directory.
+ * Note: no checks for writeability are made
+ */
+Mkdir extends Prim {
+    mkdirSchema extends MkdirSchema;
+    sfClass "org.smartfrog.services.filesystem.MkdirImpl";
+}

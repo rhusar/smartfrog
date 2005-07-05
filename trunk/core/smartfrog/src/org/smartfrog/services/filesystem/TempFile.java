@@ -29,8 +29,26 @@ import java.rmi.RemoteException;
 
 public interface TempFile extends FileUsingComponent {
 
+    /**
+     * any optional text
+     */
+    public static final String ATTR_TEXT = "text";
+    /**
+     * text encoding {@value}
+    */
+    public static final String ATTR_TEXT_ENCODING = "encoding";
+
+    /**
+     * temp filename prefix {@value}
+    */
     public static final String ATTR_PREFIX="prefix";
+    /**
+     * temp filename suffix {@value}
+    */
     public static final String ATTR_SUFFIX = "suffix";
+    /**
+     * temp file directory {@value}
+    */
     public static final String ATTR_DIRECTORY = "dir";
     //this is the filename that is created
     //public static final String ATTR_FILENAME = "filename";

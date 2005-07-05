@@ -20,15 +20,38 @@ For more information: www.smartfrog.org
 
 #include "org/smartfrog/services/filesystem/filesystemtemplate.sf"
 
-#include "org/smartfrog/services/filesystem/textfile.sf"
-#include "org/smartfrog/services/filesystem/selfdeletingfile.sf"
-#include "org/smartfrog/services/filesystem/file.sf"
-#include "org/smartfrog/services/filesystem/tempfile.sf"
-#include "org/smartfrog/services/filesystem/mkdir.sf"
-#include "org/smartfrog/services/filesystem/touchfile.sf"
 
+/**
+ * tempfile
+ */
+TempFileSchema extends DeletableFileSchema {
+    //prefix should be three or more characters long
+    prefix extends String;
+    //suffix, like ".tmp"
+    suffix extends OptionalString;
+    //a directory. If not specified, the temp directory for this JVM will
+    //be used.
+    dir extends Optional;
+    //text to write out
+    text extends OptionalString;
+    //encoding of the optional text. Only needed when text is set
+    encoding extends String;
+}
 
+/**
+ * the temp file component creates a temporary file on deployment.
+ */
+TempFile extends FileUsingComponent {
+    tempFileSchema extends TempFileSchema;
+    sfClass "org.smartfrog.services.filesystem.TempFileImpl";
+    prefix "temp";
+    //default encoding is utf8
+    encoding "UTF-8";
+}
 
-
-
-
+/**
+ * A temp file which auto cleans up
+ */
+TempFileWithCleanup extends TempFile {
+    deleteOnExit true;
+}

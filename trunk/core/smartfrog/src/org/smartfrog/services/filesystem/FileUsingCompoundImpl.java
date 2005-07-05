@@ -22,10 +22,10 @@ import org.smartfrog.sfcore.compound.CompoundImpl;
 
 /**
  * This is a compound object that has the {@link FileUsingComponent} interfaces
- * and attributes. 
+ * and attributes.
  *
  * This is essentially just a cut and paste of {@link FileUsingComponentImpl};
- * it has been reparented to a compound component. Please keep the two 
+ * it has been reparented to a compound component. Please keep the two
  * files synchronised.
  */
 public class FileUsingCompoundImpl extends CompoundImpl implements
@@ -35,7 +35,7 @@ public class FileUsingCompoundImpl extends CompoundImpl implements
      * the file we are bonded to
      */
     private File file;
-    
+
     /**
      * @throws RemoteException
      */
@@ -45,7 +45,7 @@ public class FileUsingCompoundImpl extends CompoundImpl implements
     /**
      * get the absolute path of this file
      *
-     * @return
+     * @return path
      */
     public String getAbsolutePath()  {
         return file.getAbsolutePath();
@@ -67,7 +67,7 @@ public class FileUsingCompoundImpl extends CompoundImpl implements
     public File getFile() {
         return file;
     }
-    
+
 
     /**
      * Bind the class to the filename; indicate in the operation whether to
@@ -114,9 +114,9 @@ public class FileUsingCompoundImpl extends CompoundImpl implements
         file=newfile;
         FileUsingComponentImpl.bind(this,newfile);
     }
-    
-    
-    
-    
+
+
+
+
 
 }

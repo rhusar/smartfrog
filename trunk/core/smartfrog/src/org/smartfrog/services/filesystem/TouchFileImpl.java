@@ -20,8 +20,6 @@
 package org.smartfrog.services.filesystem;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.prim.PrimImpl;
 
 import java.io.File;
 import java.io.IOException;

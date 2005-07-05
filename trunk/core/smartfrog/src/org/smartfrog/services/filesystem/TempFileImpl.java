@@ -20,14 +20,15 @@
 package org.smartfrog.services.filesystem;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.logging.Log;
-import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.prim.Prim;
 
 import java.io.File;
 import java.io.IOException;
 import java.rmi.RemoteException;
+import java.io.OutputStreamWriter;
+import java.io.FileOutputStream;
+import java.io.Writer;
+import java.io.OutputStream;
 
 /**
  * created 18-May-2004 11:46:09
@@ -35,12 +36,6 @@ import java.rmi.RemoteException;
 
 public class TempFileImpl extends FileUsingComponentImpl implements TempFile {
 
-
-
-    /**
-     * our log
-     */
-    private Log log;
     public static final String ERROR_PREFIX_EMPTY = ATTR_PREFIX+ " can not be an empty string";
 
     /**
@@ -58,7 +53,6 @@ public class TempFileImpl extends FileUsingComponentImpl implements TempFile {
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
-        log=LogFactory.getOwnerLog(this,this);
         String prefix = sfResolve(ATTR_PREFIX, "", true);
         if(prefix.length()==0) {
             throw new SmartFrogException(ERROR_PREFIX_EMPTY,this);
@@ -67,9 +61,12 @@ public class TempFileImpl extends FileUsingComponentImpl implements TempFile {
         String dir;
         dir=FileSystem.lookupAbsolutePath(this,ATTR_DIRECTORY,null,null,false,null);
 
+        String text = sfResolve(ATTR_TEXT, (String) null, false);
 
-        log.debug("creating temp file in dir ["+dir+"] prefix="+prefix+" suffix="+suffix);
-
+        if (sfLog().isDebugEnabled()){
+            sfLog().debug("Creating temp file in dir ["+dir+"], prefix="+prefix
+                           +", suffix="+suffix+", text="+text);
+        }
         File tempFile;
         try {
             if (dir == null) {
@@ -81,11 +78,36 @@ public class TempFileImpl extends FileUsingComponentImpl implements TempFile {
             }
         } catch (IOException e) {
             throw SmartFrogException.forward(e);
-
         }
+
+        //Create File content if needed
+        if (text!=null) {
+            String encoding = null;
+            encoding = sfResolve(ATTR_TEXT_ENCODING, (String)null, true);
+            Writer wout = null;
+            try {
+                OutputStream fout;
+                fout = new FileOutputStream(getFile());
+                wout = new OutputStreamWriter(fout, encoding);
+                wout.write(text);
+                wout.flush();
+                wout.close();
+            } catch (IOException ioe) {
+                if (wout!=null) {
+                    try {
+                        wout.close();
+                    } catch (IOException ignored) {
+                        //ignore this
+                    }
+                }
+                throw SmartFrogException.forward("When trying to write to "+ getFile(),ioe);
+            }
+        }
+
         //bind to the temp file
         bind(tempFile);
         sfReplaceAttribute(FileUsingComponent.ATTR_FILENAME, tempFile.toString());
+
     }
 
     /**

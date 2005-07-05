@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 1998-2005 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -48,11 +48,6 @@ public class FileImpl extends FileUsingComponentImpl implements FileIntf {
     private boolean testOnLiveness;
     private boolean testOnStartup;
 
-    /**
-     * a log
-     */
-    private Log log;
-
     public FileImpl() throws RemoteException {
     }
 
@@ -65,7 +60,7 @@ public class FileImpl extends FileUsingComponentImpl implements FileIntf {
      */
     public void bind() throws RemoteException, SmartFrogRuntimeException {
 
-        boolean debugEnabled = log.isDebugEnabled();
+        boolean debugEnabled = sfLog().isDebugEnabled();
 
         File parentDir = null;
         String dir = FileSystem.lookupAbsolutePath(this,
@@ -76,7 +71,7 @@ public class FileImpl extends FileUsingComponentImpl implements FileIntf {
                 null);
         if (dir != null) {
             if (debugEnabled) {
-                log.debug("dir=" + dir);
+                sfLog().debug("dir=" + dir);
             }
             parentDir = new File(dir);
         }
@@ -89,7 +84,7 @@ public class FileImpl extends FileUsingComponentImpl implements FileIntf {
 
         File file = new File(filename);
         if (debugEnabled) {
-            log.debug("absolute file=" + file.toString());
+            sfLog().debug("absolute file=" + file.toString());
         }
         bind(file);
 
@@ -113,18 +108,18 @@ public class FileImpl extends FileUsingComponentImpl implements FileIntf {
         if (exists) {
             isDirectory = file.isDirectory();
             if (isDirectory && debugEnabled) {
-                log.debug("file is a directory");
+                sfLog().debug("file is a directory");
             }
             isFile = file.isFile();
             if (isFile && debugEnabled) {
-                log.debug("file is a normal file");
+                sfLog().debug("file is a normal file");
             }
             timestamp = file.lastModified();
             length = file.length();
             isHidden = file.isHidden();
         } else {
             if (debugEnabled) {
-                log.debug("file does not exist");
+                sfLog().debug("file does not exist");
             }
             isDirectory = false;
             isFile = false;
@@ -149,8 +144,8 @@ public class FileImpl extends FileUsingComponentImpl implements FileIntf {
 
     private void setAttribute(String attr, String value)
             throws SmartFrogRuntimeException, RemoteException {
-        if (log.isDebugEnabled()) {
-            log.debug(attr + " = " + value);
+        if (sfLog().isDebugEnabled()) {
+            sfLog().debug(attr + " = " + value);
         }
         sfReplaceAttribute(attr, value);
     }
@@ -158,8 +153,8 @@ public class FileImpl extends FileUsingComponentImpl implements FileIntf {
 
     private void setAttribute(String attr, boolean flag)
             throws SmartFrogRuntimeException, RemoteException {
-        if (log.isDebugEnabled()) {
-            log.debug(attr + " = " + flag);
+        if (sfLog().isDebugEnabled()) {
+            sfLog().debug(attr + " = " + flag);
         }
         sfReplaceAttribute(attr, Boolean.valueOf(flag));
     }
@@ -183,8 +178,8 @@ public class FileImpl extends FileUsingComponentImpl implements FileIntf {
 
     private void setAttribute(String attr, long value)
             throws SmartFrogRuntimeException, RemoteException {
-        if (log.isDebugEnabled()) {
-            log.debug(attr + " = " + value);
+        if (sfLog().isDebugEnabled()) {
+            sfLog().debug(attr + " = " + value);
         }
         sfReplaceAttribute(attr, new Long(value));
     }
@@ -202,7 +197,6 @@ public class FileImpl extends FileUsingComponentImpl implements FileIntf {
     public synchronized void sfDeploy() throws SmartFrogException,
             RemoteException {
         super.sfDeploy();
-        log = sfGetApplicationLog();
         bind();
     }
 
@@ -245,8 +239,8 @@ public class FileImpl extends FileUsingComponentImpl implements FileIntf {
      * @throws SmartFrogLivenessException if a test failed
      */
     protected void testFileState() throws SmartFrogLivenessException {
-        if (log.isDebugEnabled()) {
-            log.debug("liveness check will look for " + getFile().toString());
+        if (sfLog().isDebugEnabled()) {
+            sfLog().debug("liveness check will look for " + getFile().toString());
         }
 
         if (mustExist && !getFile().exists()) {
