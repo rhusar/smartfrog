@@ -1,7 +1,9 @@
 /**
  * Apache2.0 licensed code from Java Development with Ant, 2nd edition
  */
-package org.smartfrog.projects.alpine.utils;
+package org.smartfrog.projects.alpine.interfaces;
+
+import org.smartfrog.projects.alpine.faults.ValidationException;
 
 
 /**

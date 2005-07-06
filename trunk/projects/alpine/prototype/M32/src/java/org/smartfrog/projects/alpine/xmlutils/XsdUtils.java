@@ -96,7 +96,7 @@ public final class XsdUtils {
 
     /**
      * map from, say tns:something to 'something'
-     *
+     * This is useful in Xom element factories.
      * @param string
      * @return everything following the : or the whole string if one is not
      *         there
@@ -119,6 +119,7 @@ public final class XsdUtils {
     public static QName makeQName(Element element) {
         return new QName(element.getNamespaceURI(), element.getLocalName());
     }
+
 
 
 }

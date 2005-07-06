@@ -25,13 +25,15 @@ import nu.xom.Text;
 import org.smartfrog.projects.alpine.xmlutils.AttributeIterator;
 import org.smartfrog.projects.alpine.xmlutils.NodeIterator;
 import org.smartfrog.projects.alpine.xmlutils.XsdUtils;
+import org.smartfrog.projects.alpine.interfaces.ValidateXml;
+import org.smartfrog.projects.alpine.faults.InvalidXmlException;
 
 import javax.xml.namespace.QName;
 
 /**
  * Extended element with a backpointer to the element
  */
-public class ElementEx extends Element  {
+public class ElementEx extends Element implements ValidateXml {
 
 
     public ElementEx(String name) {
@@ -124,4 +126,18 @@ public class ElementEx extends Element  {
         }
         return builder.toString();
     }
+
+    /**
+     * Validate the Xml. Throw {@link InvalidXmlException} if invalid.
+     */
+    public void validateXml() {
+        for(Node child:nodes()) {
+            if(child instanceof ValidateXml) {
+                ValidateXml validation=(ValidateXml) child;
+                validation.validateXml();
+            }
+        }
+
+    }
+
 }

@@ -25,6 +25,7 @@ import nu.xom.Element;
 import nu.xom.Nodes;
 import nu.xom.Document;
 import org.smartfrog.projects.alpine.interfaces.NamespaceNodeFactory;
+import org.smartfrog.projects.alpine.xmlutils.XsdUtils;
 
 /**
  * A node factory that returns elements all of the right type.
@@ -44,12 +45,8 @@ public class ExtendedNodeFactory extends NodeFactory {
      */
     public Element startMakingElement(String fullname, String namespace) {
 
-        String name=fullname;
-        int colon = name.indexOf(':');
-        if(colon>=0) {
-            name=name.substring(colon+1);
-        }
-    return null;
+        XsdUtils.extractLocalname(fullname);
+        return null;
     }
 
     public Nodes finishMakingElement(Element element) {
