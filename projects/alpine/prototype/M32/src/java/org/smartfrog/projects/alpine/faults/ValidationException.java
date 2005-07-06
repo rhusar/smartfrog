@@ -1,7 +1,7 @@
 /**
  * Apache2.0 licensed code from Java Development with Ant, 2nd edition
  */
-package org.smartfrog.projects.alpine.utils;
+package org.smartfrog.projects.alpine.faults;
 
 /**
  * Raised when validation fails

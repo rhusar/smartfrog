@@ -20,8 +20,10 @@
 
 package org.smartfrog.projects.alpine.core;
 
-import org.smartfrog.projects.alpine.utils.Validatable;
-import org.smartfrog.projects.alpine.utils.ValidationException;
+import org.smartfrog.projects.alpine.interfaces.Validatable;
+import org.smartfrog.projects.alpine.faults.ValidationException;
+import org.smartfrog.projects.alpine.faults.ValidationException;
+import org.smartfrog.projects.alpine.interfaces.Validatable;
 
 import java.util.Hashtable;
 

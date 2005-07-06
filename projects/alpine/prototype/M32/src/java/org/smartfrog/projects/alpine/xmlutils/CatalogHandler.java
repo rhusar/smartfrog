@@ -21,8 +21,9 @@ package org.smartfrog.projects.alpine.xmlutils;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.smartfrog.projects.alpine.utils.Validatable;
-import org.smartfrog.projects.alpine.utils.ValidationException;
+import org.smartfrog.projects.alpine.interfaces.Validatable;
+import org.smartfrog.projects.alpine.faults.ValidationException;
+import org.smartfrog.projects.alpine.faults.ValidationException;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -286,7 +287,7 @@ public class CatalogHandler implements URIResolver, EntityResolver, Validatable 
      * It is imperative that this call has <i>No side effects</i>.
      *
      * @return true unless an exception is thrown
-     * @throws org.smartfrog.projects.alpine.utils.ValidationException
+     * @throws org.smartfrog.projects.alpine.faults.ValidationException
      *          with text if not valid
      */
     public boolean validate() throws ValidationException {

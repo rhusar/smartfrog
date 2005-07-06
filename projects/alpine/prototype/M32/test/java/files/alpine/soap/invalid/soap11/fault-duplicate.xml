@@ -1,0 +1,38 @@
+<!--
+If present, the SOAP Fault element MUST appear as a body entry and MUST NOT 
+appear more than once within a Body element.
+-->
+
+<soap:Envelope
+  xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+  <soap:Body>
+    <soap:Fault>
+      <faultcode>soap:Server</faultcode>
+      <faultstring>Server Error</faultstring>
+      <detail>
+        <e:myfaultdetails xmlns:e="Some-URI">
+          <message>
+                   My application didn't work
+          </message>
+          <errorcode>
+                   1001
+          </errorcode>
+        </e:myfaultdetails>
+      </detail>
+    </soap:Fault>
+    <soap:Fault>
+      <faultcode>soap:Client</faultcode>
+      <faultstring>Client Error</faultstring>
+      <detail>
+        <e:myfaultdetails xmlns:e="Some-URI">
+          <message>
+                   My application didn't work
+          </message>
+          <errorcode>
+                   1001
+          </errorcode>
+        </e:myfaultdetails>
+      </detail>
+    </soap:Fault>
+  </soap:Body>
+</soap:Envelope>

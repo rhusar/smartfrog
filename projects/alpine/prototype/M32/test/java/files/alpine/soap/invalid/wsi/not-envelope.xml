@@ -1,0 +1,8 @@
+<!--  R1015   A RECEIVER MUST generate a fault if they encounter an envelope whose 
+document element is not soap:Envelope.
+-->
+<soap:Fault xmlns:soap='http://schemas.xmlsoap.org/soap/envelope/'>
+  <faultcode>soap:Server</faultcode>
+  <faultstring>An error occured while processing the message
+  </faultstring>
+</soap:Fault>
