@@ -198,14 +198,14 @@ private void checkResult(Object script, ComponentDescription cd) throws
 
  private ComponentDescription run (String script) throws SmartFrogException, RemoteException {
     ScriptResults result = shell.execute (script,0,verbose);
-    ComponentDescription cd = result.waitForResults(0);
+    ComponentDescription cd = result.waitForResults(-1);
     if (sfLog().isTraceEnabled()){ sfLog().trace("Executed (String script):\n "+result.toString()); }
     return cd;
  }
 
  private ComponentDescription run (Vector script) throws SmartFrogException, RemoteException {
    ScriptResults result = shell.execute (script,0,verbose);
-   ComponentDescription cd =result.waitForResults(0);
+   ComponentDescription cd =result.waitForResults(-1);
    if (sfLog().isTraceEnabled()){ sfLog().trace("Executed (Vector script):\n "+result.toString()); }
    return cd;
  }
