@@ -99,7 +99,7 @@ public interface ScriptExecution {
     public boolean verbose(boolean verbose, ScriptLock lock) throws SmartFrogException;
 
     /**
-     * relaese the lock on the shell
+     * release the lock on the shell and resets verbose to false.
      *
      * @param lock the lock object receieved from the lockShell
      *

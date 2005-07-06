@@ -135,6 +135,9 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
   private static String TYPE_DONE ="done";
   private static String TYPE_NEXT_CMD ="next_cmd";
 
+  /** String name for line return. */
+  private static String LR = System.getProperty("line.separator"); //"" + ((char) 10);
+
   /** Verbose script output */
   protected boolean verbose = false;
 
@@ -185,11 +188,12 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
    */
   private String runEcho(String type, String text) {
     if (cmd.getEchoCommand()==null) return null;
+
     String echo = "MARK - "+type+" "+name+ " ["+text+", "+dateFormatter.format(new Date())+"]";
 
     if (cmd.getExitErrorCommand()!=null) echo = echo + " Exit code#: "+cmd.getExitErrorCommand();
 
-    runProcess.execCommand(cmd.getEchoCommand()+" "+echo);
+    runProcess.execCommand(LR+cmd.getEchoCommand()+" "+echo+LR);
     return echo;
   }
 
@@ -399,6 +403,9 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
    }
 
   /**
+   *
+   * release the lock on the shell and resets verbose to false.
+   *
    * @throws SmartFrogException if the lock object is not valid, i.e.
    *
    * @param lock the lock object receieved from the lockShell
@@ -409,6 +416,7 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
    */
   public synchronized void releaseShell(ScriptLock lock) throws SmartFrogException {
     if (this.lock != lock ) throw new SmartFrogException("LockOwnershipException");
+    this.verbose = false;
     this.lock = null;
     notify();
   }
