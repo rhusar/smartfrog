@@ -189,11 +189,11 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
   private String runEcho(String type, String text) {
     if (cmd.getEchoCommand()==null) return null;
 
-    String echo = "MARK - "+type+" "+name+ " ["+text+", "+dateFormatter.format(new Date())+"]";
+    String echo = "MARK - "+type+" "+name+ " ["+dateFormatter.format(new Date())+"]";
 
     if (cmd.getExitErrorCommand()!=null) echo = echo + " Exit code#: "+cmd.getExitErrorCommand();
 
-    runProcess.execCommand(LR+cmd.getEchoCommand()+" "+echo+LR);
+    runProcess.execCommand(cmd.getEchoCommand()+" "+echo);
     return echo;
   }
 
