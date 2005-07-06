@@ -73,16 +73,42 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
           return resultReady;
       }
 
+
+      /**
+       * wait for the results to be ready for the timeout, and return them when they are
+       *
+       * @oaram timeout the maximum time to wait for the results: 0 don't wait, -1 wait forever
+       *
+       * @returns a component description containing aspects of the result:
+       * The resut contains three attributes as follows:
+       *   "code" the int result code of the final command in the vector - 0 if not supported in shell,
+       *   "stdout" a list of lines on stdout - empty if not supported in shell,
+       *   "stderr" a list of lines on stderr - empty if not supported in shell.
+       *
+       * @throws SmartFrogException if the results are not ready in time
+     */
      public synchronized ComponentDescription waitForResults(long timeout) throws SmartFrogException {
         try {
-          while (!resultReady) {
-            wait(timeout);
+
+          if (resultReady)return result;
+
+          if (timeout==0){
+                  return null;
           }
+          if (timeout==-1){
+              //Wait forever
+              timeout = 0;
+          }
+
+          wait(timeout);
+
           if (exception != null)
             // Will throw , InterruptedException, InvocationTargetException
             throw exception;
           else
-            return result;
+            if (resultReady) return result;
+            else return null;
+
         } catch (Exception ex) {
             // Will throw , InterruptedException, InvocationTargetException
             throw SmartFrogException.forward(exception);
@@ -369,9 +395,9 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
     try {
       if (timeout == 0) { // don't wait
         acquire_without_blocking();
-      } else if (timeout == Long.MAX_VALUE) { // wait forever
+      } else if (timeout == -1) { // wait forever
         while (!acquire_without_blocking()) {
-          this.wait(timeout);
+          this.wait(Long.MAX_VALUE);
         }
       } else { // wait  timeout
         if (!acquire_without_blocking()) {
