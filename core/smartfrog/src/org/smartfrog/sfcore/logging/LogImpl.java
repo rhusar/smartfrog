@@ -165,10 +165,12 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
             if (currentLogLevel>i){
               setLevel(i);
             }
-
         } catch (Exception ex ){
+            String msg = "Error during initialization of localLog for LogImpl. Using Default (LogToFile)";
+            System.err.println("[WARN] "+msg+", Reason: "+ex.getMessage());
             localLog=new LogToFileImpl(name,new Integer(currentLogLevel));
-            if (localLog.isWarnEnabled()) localLog.warn("Error during init of localLog for LogImpl. Using Default (LogToFile)",ex);
+            if (localLog.isWarnEnabled()) localLog.warn(msg,ex);
+
         }
         if (localLog.isTraceEnabled()) {
             localLog.trace("Log '"+name+"' using ComponentDescription:\n"+classComponentDescription.toString());
@@ -209,6 +211,8 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
             throw new SmartFrogLogException(MessageUtil.formatMessage(
                     MessageKeys.MSG_ILLEGAL_ACCESS, targetClassName, "newInstance()"), illaexcp);
         } catch (InvocationTargetException intarexcp) {
+            System.out.println("Exllllll: "+intarexcp);
+            intarexcp.printStackTrace();
             throw new SmartFrogLogException(MessageUtil.formatMessage(
                     MessageKeys.MSG_INVOCATION_TARGET, targetClassName), intarexcp);
 
