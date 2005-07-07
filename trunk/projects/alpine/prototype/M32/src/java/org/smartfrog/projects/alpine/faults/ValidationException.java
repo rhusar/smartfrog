@@ -6,7 +6,7 @@ package org.smartfrog.projects.alpine.faults;
 /**
  * Raised when validation fails
  */
-public class ValidationException extends RuntimeException {
+public class ValidationException extends AlpineRuntimeException {
 
     public ValidationException(String message) {
         super(message);
