@@ -90,7 +90,7 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
      public synchronized ComponentDescription waitForResults(long timeout) throws SmartFrogException {
         try {
 
-          if (resultReady)return result;
+          if (resultReady) return result;
 
           if (timeout==0){
                   return null;
@@ -119,8 +119,7 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
         try {
           result.sfAddAttribute("code", code);
         } catch (SmartFrogRuntimeException ex) {
-          //@Todo add log
-          ex.printStackTrace();
+          sfLog().err("",ex);
         }
         resultReady = true;
         notifyAll();

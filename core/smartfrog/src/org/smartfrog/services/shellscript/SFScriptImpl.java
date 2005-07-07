@@ -181,30 +181,31 @@ public class SFScriptImpl  extends PrimImpl implements Prim, SFScript, SFReadCon
 private void checkResult(Object script, ComponentDescription cd) throws
     SmartFrogResolutionException, SmartFrogException {
     if (cd!=null) {
-    Integer exitCode=new Integer (-9999);
-    exitCode = (Integer) cd.sfResolve("code",exitCode,false);
-    if (exitCode.intValue()!=0) {
-        String msg = " Error running script [exit code ="+exitCode+"]:"+script.toString();
-        SmartFrogException sex = new SmartFrogException(msg, this);
-        sex.add("script", script);
-        sex.add("result", cd);
-        if (sfLog().isErrorEnabled()) {
-            sfLog().error(msg + "\n"+cd.toString());
+        Integer exitCode = new Integer(-9999);
+        exitCode = (Integer)cd.sfResolve("code", exitCode, false);
+        if (exitCode.intValue()!=0) {
+            String msg = " Error running script [exit code ="+exitCode+"]:"+
+                script.toString();
+            SmartFrogException sex = new SmartFrogException(msg, this);
+            sex.add("script", script);
+            sex.add("result", cd);
+            if (sfLog().isErrorEnabled()) {
+                sfLog().error(msg+"\n"+cd.toString());
+            }
+            throw sex;
         }
-        throw sex;
-    }
     }
 }
 
  private ComponentDescription run (String script) throws SmartFrogException, RemoteException {
-    ScriptResults result = shell.execute (script,0,verbose);
+    ScriptResults result = shell.execute (script,-1,verbose);
     ComponentDescription cd = result.waitForResults(-1); //wait forever
     if (sfLog().isTraceEnabled()){ sfLog().trace("Executed (String script):\n "+result.toString()); }
     return cd;
  }
 
  private ComponentDescription run (Vector script) throws SmartFrogException, RemoteException {
-   ScriptResults result = shell.execute (script,0,verbose);
+   ScriptResults result = shell.execute (script,-1,verbose);
    ComponentDescription cd =result.waitForResults(-1); //wait forever
    if (sfLog().isTraceEnabled()){ sfLog().trace("Executed (Vector script):\n "+result.toString()); }
    return cd;
