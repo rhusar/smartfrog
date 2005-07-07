@@ -66,6 +66,7 @@ public class BaseNodeIterator <E extends Node> implements Iterator<E>,
      * @return the next element in the iteration.
      * @throws java.util.NoSuchElementException iteration has no more elements.
      */
+    @SuppressWarnings("unchecked")
     public E next() {
         if (!hasNext()) {
             throw new NoSuchElementException();

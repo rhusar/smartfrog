@@ -27,6 +27,7 @@ import org.smartfrog.projects.alpine.om.soap11.SoapMessageParser;
 import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
 import org.smartfrog.projects.alpine.xmlutils.CatalogHandler;
 import org.smartfrog.projects.alpine.xmlutils.ResourceLoader;
+import org.smartfrog.projects.alpine.faults.AlpineRuntimeException;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
@@ -36,7 +37,7 @@ import nu.xom.ParsingException;
 /**
  
  */
-public abstract class ParserTestBase extends TestCase {
+public abstract class ParserTestBase extends TestCase implements Filenames {
 
 
     protected Log log = LogFactory.getLog(this.getClass());
@@ -74,7 +75,7 @@ public abstract class ParserTestBase extends TestCase {
      * @return
      * @throws IOException
      * @throws ParsingException
-     * @throws ValidationException
+     * @throws AlpineRuntimeException
      */ 
     protected MessageDocument load(String filename) throws IOException,
             ParsingException {
@@ -84,6 +85,8 @@ public abstract class ParserTestBase extends TestCase {
         return doc;
     }
 
+    
+    
     /**
      * configure the parser
      *
@@ -91,7 +94,16 @@ public abstract class ParserTestBase extends TestCase {
      */
     protected void initParser() throws SAXException {
         ResourceLoader loader = new ResourceLoader(this.getClass());
-        parser = new SoapMessageParser(loader, true);
+        parser = new SoapMessageParser(loader, isParserValidating());
+    }
+
+    /**
+     * override point: return true if the parser should be validating
+     * 
+     * @return false, by default.
+     */ 
+    protected boolean isParserValidating() {
+        return false;
     }
 
     /**

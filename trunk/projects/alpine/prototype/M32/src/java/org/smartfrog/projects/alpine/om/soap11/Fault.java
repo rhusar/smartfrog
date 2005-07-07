@@ -40,7 +40,7 @@ public class Fault extends Soap11Element {
      * an empty fault is given an empty code and stub details element
      */ 
     public Fault() {
-        this(ELEMENT_FAULT);
+        this(ELEMENT_FAULT,NS_URI_SOAP11);
         setFaultCode("");
         setFaultString("");
         demandCreateFaultDetail();
@@ -57,6 +57,15 @@ public class Fault extends Soap11Element {
     public Fault(Element element) {
         super(element);
     }
+    
+    /**
+     * duplicate ourselves
+     *
+     * @return a copy of ourselves
+     */
+    protected Element shallowCopy() {
+        return new Fault(getQualifiedName(), getNamespaceURI());
+    }    
     
     public String getFaultCode() {
         Element e = getFaultCodeElement();
@@ -232,6 +241,12 @@ public class Fault extends Soap11Element {
     public void addFaultDetail(QName qname, String text) {
         ElementEx element = new ElementEx(qname);
         element.appendChild(text);
+        appendToFaultDetail(element);
+    }
+    
+    public void addFaultDetail(QName qname, Node node) {
+        ElementEx element = new ElementEx(qname);
+        element.appendChild(node);
         appendToFaultDetail(element);
     }
     

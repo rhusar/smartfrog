@@ -18,49 +18,30 @@
 
  */
 
-package org.smartfrog.projects.alpine.om.soap11;
+package org.smartfrog.test.unit.projects.alpine.files.soap.valid.soap11;
 
-import org.smartfrog.projects.alpine.om.base.ElementEx;
-import nu.xom.Element;
-
-import javax.xml.namespace.QName;
+import org.smartfrog.test.unit.projects.alpine.ValidTestBase;
+import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
 
 /**
- * This is the base class of of all Soap11 elements
+ 
  */
-public class Soap11Element extends ElementEx implements Soap11Constants {
+public class SimpleTest extends ValidTestBase {
 
-    public Soap11Element(QName name) {
-        super(name);
-    }
-    
-    public Soap11Element(String name) {
+    public SimpleTest(String name) {
         super(name);
     }
 
-    public Soap11Element(String name, String uri) {
-        super(name, uri);
-    }
-
-    public Soap11Element(Element element) {
-        super(element);
-    }
-
     /**
-     * Get the root document as a message document
-     * @return
-     */ 
-    public MessageDocument getMessageDocument() {
-        return (MessageDocument) getDocument();
+     * Implement this
+     *
+     * @return the resource to test
+     */
+    protected String getTestResource() {
+        return SOAP_SIMPLE;
     }
     
-    /**
-     * Get the envelope
-     * @return
-     */ 
-    public Envelope getEnvelope() {
-        return getMessageDocument().getEnvelope();
+    public void testXpath() throws Exception {
+        
     }
-    
-    
 }

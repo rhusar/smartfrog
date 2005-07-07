@@ -48,11 +48,21 @@ public class AlpineRuntimeException extends RuntimeException implements SoapFaul
      */
     public Fault GenerateSoapFault() {
         Fault fault=new Fault();
-        fault.setFaultCode(Soap11Constants.FAULTCODE_SERVER);
-        
-        return null;
+        fault.setFaultCode(getFaultCode());
+        fault.addException(this);
+        addExtraDetails(fault);
+        return fault;
     }
-    
+
+    /**
+     * Override point: get a fault code. the default is
+     * {@link Soap11Constants#FAULTCODE_SERVER};
+     * @return the string to be used in the fault code
+     */ 
+    protected String getFaultCode() {
+        return Soap11Constants.FAULTCODE_SERVER;
+    }
+
     /**
      * This is an override point, subclasses can add stuff to a fault that already
      * has been preconfigured by the base class

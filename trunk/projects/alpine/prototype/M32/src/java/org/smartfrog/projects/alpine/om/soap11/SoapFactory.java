@@ -24,6 +24,7 @@ import org.smartfrog.projects.alpine.om.ExtendedNodeFactory;
 import org.smartfrog.projects.alpine.om.base.ElementEx;
 import org.smartfrog.projects.alpine.xmlutils.XsdUtils;
 import nu.xom.Element;
+import nu.xom.Document;
 
 /**
  * this iteration doesnt have the envisaged chain of handlers, all we do is create soap nodes
@@ -55,6 +56,44 @@ public class SoapFactory extends ExtendedNodeFactory {
         //something else in our namespace. wierd.
         return new ElementEx(name, namespace);
     }
-    
-    
+
+    /**
+     * <p/>
+     * Creates a new element in the specified namespace with the specified name. The builder calls this method to make
+     * the root element of the document. </p>
+     * <p/>
+     * <p/>
+     * Subclasses may change the name, namespace, content, or other characteristics of the element returned. The default
+     * implementation merely calls <code>startMakingElement</code>. However, when subclassing, it is often useful to be
+     * able to easily distinguish between the root element and a non-root element because the root element cannot be
+     * detached. Therefore, subclasses must not return null from this method. Doing so will cause a
+     * <code>NullPointerException</code>. </p>
+     *
+     * @param name      the qualified name of the element
+     * @param namespace the namespace URI of the element
+     * @return the new root element
+     */
+    public Element makeRootElement(String name, String namespace) {
+        return startMakingElement(name, namespace);
+    }
+
+    /**
+     * <p/>
+     * Creates a new <code>Document</code> object. The root element of this document is initially set to <code>&lt;root
+     * xmlns=http://www.xom.nu/fakeRoot""/></code>. This is only temporary. As soon as the real root element's start-tag
+     * is read, this element is replaced by the real root. This fake root should never be exposed. </p>
+     * <p/>
+     * <p/>
+     * The builder calls this method at the beginning of each document, before it calls any other method in this class.
+     * Thus this is a useful place to perform per-document initialization tasks. </p>
+     * <p/>
+     * <p/>
+     * Subclasses may change the root element, content, or other characteristics of the document returned. However, this
+     * method must not return null or the builder will throw a <code>ParsingException</code>. </p>
+     *
+     * @return the newly created <code>Document</code>
+     */
+    public Document startMakingDocument() {
+        return MessageDocument.create();  
+    }
 }

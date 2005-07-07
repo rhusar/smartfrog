@@ -10,7 +10,7 @@ SOAPAction: "Some-URI"
   xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
   soap:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
   <soap:Body>
-    <m:GetLastTradePrice xmlns:m="Some-URI">
+    <m:GetLastTradePrice xmlns:m="http://example.org/uri">
       <symbol>DIS</symbol>
     </m:GetLastTradePrice>
   </soap:Body>

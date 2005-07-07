@@ -38,6 +38,10 @@ import nu.xom.Element;
  */
 public class Body extends Soap11Element  {
 
+    public Body() {
+        super(QNAME_BODY);
+    }
+
     public Body(String name) {
         super(name);
     }
@@ -48,5 +52,13 @@ public class Body extends Soap11Element  {
 
     public Body(Element element) {
         super(element);
+    }
+
+    /**
+     * duplicate ourselves
+     * @return a copy of ourselves
+     */ 
+    protected Element shallowCopy() {
+        return new Body(getQualifiedName(), getNamespaceURI());
     }
 }

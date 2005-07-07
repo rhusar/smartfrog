@@ -21,6 +21,8 @@
 package org.smartfrog.projects.alpine.om.soap11;
 
 import nu.xom.Element;
+import nu.xom.Elements;
+import org.smartfrog.projects.alpine.xmlutils.BaseElementsIterator;
 
 /**
  * The element name is "Envelope".
@@ -31,6 +33,10 @@ import nu.xom.Element;
  * If present these elements MUST be namespace-qualified and MUST follow the SOAP Body element.
  */
 public class Envelope extends Soap11Element {
+    
+    public Envelope() {
+        super(QNAME_ENVELOPE);
+    }
 
     public Envelope(String name) {
         super(name);
@@ -43,4 +49,32 @@ public class Envelope extends Soap11Element {
     public Envelope(Element element) {
         super(element);
     }
+    
+    /**
+     * duplicate ourselves
+     *
+     * @return a copy of ourselves
+     */
+    protected Element shallowCopy() {
+        return new Envelope(getQualifiedName(), getNamespaceURI());
+    }
+    
+    /**
+     * Get the body
+     * @return the body or null
+     */ 
+    public Body getBody() {
+        return (Body) getFirstChildElement(QNAME_BODY);
+    }
+
+    /**
+     * Get an iterator over the headers
+     *
+     * @return the body or null
+     */
+    public BaseElementsIterator<Header> getHeaders() {
+        Elements childElements = getChildElements(QNAME_HEADER);
+        return new BaseElementsIterator<Header>(childElements);
+    }
+    
 }

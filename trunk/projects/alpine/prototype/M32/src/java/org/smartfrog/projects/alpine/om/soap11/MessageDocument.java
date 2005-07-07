@@ -33,6 +33,7 @@ import org.smartfrog.projects.alpine.faults.InvalidXmlException;
 public class MessageDocument extends Document implements ValidateXml {
     public static final String ERROR_EMPTY_DOCUMENT = "Empty";
 
+    
     public MessageDocument(Element element) {
         super(element);
     }
@@ -40,6 +41,7 @@ public class MessageDocument extends Document implements ValidateXml {
     public MessageDocument(Document document) {
         super(document);
     }
+    
     
     /**
      * Iterate just over elements
@@ -64,6 +66,14 @@ public class MessageDocument extends Document implements ValidateXml {
         if(!(getRootElement() instanceof Envelope)) {
             throw new InvalidXmlException(Soap11Constants.FAULTCODE_VERSION_MISMATCH);
         }
-        
+        Envelope env=(Envelope) getRootElement();
+        env.validateXml();
     }
+    
+    public static MessageDocument create() {
+        return new MessageDocument(new Element("root",
+                "http://www.xom.nu/fakeRoot"));
+    }
+    
+    
 }
