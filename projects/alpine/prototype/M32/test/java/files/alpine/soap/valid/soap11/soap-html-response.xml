@@ -5,9 +5,9 @@ Content-Type: text/xml; charset="utf-8"
 
 <soap:Envelope
   xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
-  soap:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"/>
+  soap:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
 <soap:Body>
-  <m:GetLastTradePriceResponse xmlns:m="Some-URI">
+  <m:GetLastTradePriceResponse xmlns:m="http://example.org/uri">
     <Price>34.5</Price>
   </m:GetLastTradePriceResponse>
 </soap:Body>

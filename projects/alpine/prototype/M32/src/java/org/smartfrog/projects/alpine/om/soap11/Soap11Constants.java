@@ -20,6 +20,8 @@
 
 package org.smartfrog.projects.alpine.om.soap11;
 
+import javax.xml.namespace.QName;
+
 /**
  * constants of soap11
  */
@@ -28,7 +30,7 @@ public interface Soap11Constants {
     /**
      * {@value}
      */
-    public static final String NAMESPACE_SOAP11="http://schemas.xmlsoap.org/soap/envelope/";
+    public static final String NS_URI_SOAP11="http://schemas.xmlsoap.org/soap/envelope/";
     
     /**
      * {@value}
@@ -36,20 +38,38 @@ public interface Soap11Constants {
     public static final String ELEMENT_ENVELOPE="Envelope";
     
     /**
-     * {@value}
-     */
-    public static final String ELEMENT_HEADER="Header";
-
+     * Qname of the element
+     */ 
+    public static final QName QNAME_ENVELOPE=new QName(NS_URI_SOAP11,ELEMENT_ENVELOPE);
+    
     /**
      * {@value}
      */
-    public static final String ELEMENT_BODY = "Body";
+    public static final String ELEMENT_HEADER="Header";
+    /**
+     * Qname of the element
+     */
+    public static final QName QNAME_HEADER = new QName(NS_URI_SOAP11, ELEMENT_HEADER);
     
 
     /**
      * {@value}
      */
+    public static final String ELEMENT_BODY = "Body";
+    /**
+     * Qname of the element
+     */
+    public static final QName QNAME_BODY = new QName(NS_URI_SOAP11, ELEMENT_BODY);
+        
+
+    /**
+     * {@value}
+     */
     public static final String ELEMENT_FAULT = "Fault";
+    /**
+     * Qname of the element
+     */
+    public static final QName QNAME_FAULT = new QName(NS_URI_SOAP11, ELEMENT_FAULT);
 
     /**
      * {@value}
@@ -154,10 +174,6 @@ public interface Soap11Constants {
     public static final String URI_2001_SCHEMA_XSD =
             "http://www.w3.org/2001/XMLSchema";
 
-    public static final String ELEM_ENVELOPE = "Envelope";
-    public static final String ELEM_HEADER = "Header";
-    public static final String ELEM_BODY = "Body";
-    public static final String ELEM_FAULT = "Fault";
 
     public static final String ELEM_NOTUNDERSTOOD = "NotUnderstood";
     public static final String ELEM_UPGRADE = "Upgrade";

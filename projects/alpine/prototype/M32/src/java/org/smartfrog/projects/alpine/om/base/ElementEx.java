@@ -22,6 +22,7 @@ package org.smartfrog.projects.alpine.om.base;
 import nu.xom.Element;
 import nu.xom.Node;
 import nu.xom.Text;
+import nu.xom.Elements;
 import org.smartfrog.projects.alpine.xmlutils.AttributeIterator;
 import org.smartfrog.projects.alpine.xmlutils.NodeIterator;
 import org.smartfrog.projects.alpine.xmlutils.XsdUtils;
@@ -107,7 +108,7 @@ public class ElementEx extends Element implements ValidateXml {
      * Returns the first child element with the specified nqame or null
      * null. </p>
      *
-     * @param qname the name of the element to return
+     * @param name the name of the element to return
      * @return the first child element with the specified name or null if there is no such
      *         element
      */
@@ -115,6 +116,16 @@ public class ElementEx extends Element implements ValidateXml {
         return getFirstChildElement(name.getLocalPart(), name.getNamespaceURI());
     }
     
+    /**
+     * <p/>
+     * Returns the first child element with the specified nqame or null null. </p>
+     *
+     * @param name the name of the element to return
+     * @return the first child element with the specified name or null if there is no such element
+     */
+    public final Elements getChildElements(QName name) {
+        return getChildElements(name.getLocalPart(), name.getNamespaceURI());
+    }    
     /**
      * Test for a propertylist instance name
      *

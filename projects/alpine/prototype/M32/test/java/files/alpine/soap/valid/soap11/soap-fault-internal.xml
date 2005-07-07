@@ -11,7 +11,7 @@ Content-Length: nnnn
       <faultcode>soap:Server</faultcode>
       <faultstring>Server Error</faultstring>
       <detail>
-        <e:myfaultdetails xmlns:e="Some-URI">
+        <e:myfaultdetails xmlns:e="http://example.org/uri">
           <message>
                    My application didn't work
           </message>

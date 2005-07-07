@@ -45,8 +45,21 @@ import javax.xml.namespace.QName;
 public class FaultConstants {
     
     // Axis Namespaces
+    /**
+     * {@value}
+     */ 
     public static final String NS_URI_AXIS = "http://xml.apache.org/axis/";
     
+    /**
+     * {@value}
+     */ 
+    public static final String NS_URI_ALPINE = "http://smartfrog.org/alpine/";
+
+
+    /**
+     * QName of invalid element in an element fault.
+     */
+    public static final QName QNAME_FAULTDETAIL_INVALID_XML = new QName(NS_URI_ALPINE, "invalidNode");
 
     
     /**

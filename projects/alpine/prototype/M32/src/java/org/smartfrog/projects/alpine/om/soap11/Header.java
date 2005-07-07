@@ -31,6 +31,11 @@ import org.smartfrog.projects.alpine.faults.InvalidXmlException;
  */
 public class Header extends Soap11Element {
 
+
+    public Header() {
+        super(QNAME_HEADER);
+    }
+
     public Header(String name) {
         super(name);
     }
@@ -44,13 +49,21 @@ public class Header extends Soap11Element {
     }
 
     /**
+     * duplicate ourselves
+     *
+     * @return a copy of ourselves
+     */
+    protected Element shallowCopy() {
+        return new Header(getQualifiedName(), getNamespaceURI());
+    }
+    /**
      * query the mustUnderstand attribute
      *
      * @return true if it exists and is "1", false if it is absent or "0"
      * @throws InvalidXmlException if it has any other value
      */
     public boolean isMustUnderstand() {
-        Attribute attribute = getAttribute(ATTR_MUST_UNDERSTAND, NAMESPACE_SOAP11);
+        Attribute attribute = getAttribute(ATTR_MUST_UNDERSTAND, NS_URI_SOAP11);
         if (attribute == null) {
             return false;
         }

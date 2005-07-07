@@ -21,6 +21,7 @@
 package org.smartfrog.projects.alpine.faults;
 
 import nu.xom.Node;
+import org.smartfrog.projects.alpine.om.soap11.Fault;
 
 /**
  * This exception is used to indicate some invalid XML 
@@ -40,5 +41,17 @@ public class InvalidXmlException extends AlpineRuntimeException {
 
     public Node getInvalidNode() {
         return invalidNode;
+    }
+
+    /**
+     * if {@link #invalidNode} is not null, clone that node and insert it in the message
+     * @param fault
+     */
+    public void addExtraDetails(Fault fault) {
+        super.addExtraDetails(fault);
+        if(invalidNode!=null) {
+            Node cloned=invalidNode.copy();
+            fault.addFaultDetail(FaultConstants.QNAME_FAULTDETAIL_INVALID_XML, cloned);
+        }
     }
 }
