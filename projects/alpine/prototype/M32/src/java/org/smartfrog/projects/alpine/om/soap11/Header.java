@@ -50,7 +50,7 @@ public class Header extends Soap11Element {
      * @throws InvalidXmlException if it has any other value
      */
     public boolean isMustUnderstand() {
-        Attribute attribute = getAttribute(ATTR_MUSTUNDERSTAND, NAMESPACE_SOAP11);
+        Attribute attribute = getAttribute(ATTR_MUST_UNDERSTAND, NAMESPACE_SOAP11);
         if (attribute == null) {
             return false;
         }

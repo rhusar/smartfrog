@@ -107,12 +107,12 @@ public interface Soap11Constants {
     /**
      * {@value}
      */
-    public static final String ATTR_MUSTUNDERSTAND = "mustUnderstand";
+    public static final String ATTR_MUST_UNDERSTAND = "mustUnderstand";
 
     /**
      * {@value}
      */
-    public static final String ATTR_ENCODING = "encodingStyle";
+    public static final String ATTR_ENCODING_STYLE = "encodingStyle";
     
     /**
      * {@value}
@@ -123,5 +123,54 @@ public interface Soap11Constants {
      * {@value}
      */
     public static final String ENCODING_SECTION_5 = "http://schemas.xmlsoap.org/soap/encoding/";
+    
+    
+    /*
+    * Everything from here down is from Axis
+    */
+/*
+ * Copyright 2001-2004 The Apache Software Foundation.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+    
+    //
+    // Schema XSD Namespaces
+    //
+    public static final String URI_1999_SCHEMA_XSD =
+            "http://www.w3.org/1999/XMLSchema";
+    public static final String URI_2000_SCHEMA_XSD =
+            "http://www.w3.org/2000/10/XMLSchema";
+    public static final String URI_2001_SCHEMA_XSD =
+            "http://www.w3.org/2001/XMLSchema";
+
+    public static final String ELEM_ENVELOPE = "Envelope";
+    public static final String ELEM_HEADER = "Header";
+    public static final String ELEM_BODY = "Body";
+    public static final String ELEM_FAULT = "Fault";
+
+    public static final String ELEM_NOTUNDERSTOOD = "NotUnderstood";
+    public static final String ELEM_UPGRADE = "Upgrade";
+    public static final String ELEM_SUPPORTEDENVELOPE = "SupportedEnvelope";
+
+    public static final String ELEM_FAULT_CODE_SOAP12 = "Code";
+    public static final String ELEM_FAULT_VALUE_SOAP12 = "Value";
+    public static final String ELEM_FAULT_SUBCODE_SOAP12 = "Subcode";
+    public static final String ELEM_FAULT_REASON_SOAP12 = "Reason";
+    public static final String ELEM_FAULT_NODE_SOAP12 = "Node";
+    public static final String ELEM_FAULT_ROLE_SOAP12 = "Role";
+    public static final String ELEM_FAULT_DETAIL_SOAP12 = "Detail";
+    public static final String ELEM_TEXT_SOAP12 = "Text";
+   
     
 }

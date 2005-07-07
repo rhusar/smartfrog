@@ -25,7 +25,7 @@ import nu.xom.Node;
 /**
  * This exception is used to indicate some invalid XML 
  */
-public class InvalidXmlException extends ValidationException {
+public class InvalidXmlException extends AlpineRuntimeException {
 
     private Node invalidNode;
     

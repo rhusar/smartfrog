@@ -40,6 +40,10 @@ public class ElementEx extends Element implements ValidateXml {
         super(name);
     }
 
+    public ElementEx(QName qname) {
+        super(qname.getLocalPart(),qname.getNamespaceURI());
+    }
+    
     public ElementEx(String name, String uri) {
         super(name, uri);
     }
@@ -98,6 +102,19 @@ public class ElementEx extends Element implements ValidateXml {
         return XsdUtils.makeQName(this);
     }
 
+    /**
+     * <p/>
+     * Returns the first child element with the specified nqame or null
+     * null. </p>
+     *
+     * @param qname the name of the element to return
+     * @return the first child element with the specified name or null if there is no such
+     *         element
+     */
+    public final Element getFirstChildElement(QName name) {
+        return getFirstChildElement(name.getLocalPart(), name.getNamespaceURI());
+    }
+    
     /**
      * Test for a propertylist instance name
      *
