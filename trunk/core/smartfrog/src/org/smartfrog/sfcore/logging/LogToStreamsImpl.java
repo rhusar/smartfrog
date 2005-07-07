@@ -148,9 +148,6 @@ public class LogToStreamsImpl extends LogToNothingImpl implements LogToStreams, 
         super(name, initialLogLevel, out, err);
         setLevel(initialLogLevel.intValue());
         //Check Class and read configuration...including system.properties
-        if (isTraceEnabled() && this.getClass().toString().endsWith("LogToStreamsImpl")) {
-            trace(this.getClass().toString() + " '" + name + "' using ComponentDescription:\n" + classComponentDescription.toString());
-        }
         try {
             readSFStreamsAttributes();
         } catch (SmartFrogException ex1) {
@@ -163,6 +160,10 @@ public class LogToStreamsImpl extends LogToNothingImpl implements LogToStreams, 
         if (showDateTime) {
             dateFormatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss:SSS zzz");
         }
+        if (isTraceEnabled() && this.getClass().toString().endsWith("LogToStreamsImpl")) {
+            trace(this.getClass().toString() + " '" + name + "' using ComponentDescription:\n" + classComponentDescription.toString());
+        }
+
     }
 
 

@@ -22,10 +22,10 @@ For more information: www.smartfrog.org
 
 LogToFileImpl extends  LogToStreamsImpl {
   path PROPERTY java.io.tmpdir; //".";
-  logFileExtension "logJ";
+  logFileExtension "sf.log";
   useDatedFileName true;
   useLogNameInFileName true;
   useHostNameInFileName true;
   //fileNamePrefix //"prefix"; //or PROPERTY java.io.tmpdir;
   redirectSystemOutputs false;
-} 
+}
