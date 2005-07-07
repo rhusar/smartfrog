@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2003 Hewlett-Packard Development Company, LP 
+/** (C) Copyright 1998-2003 Hewlett-Packard Development Company, LP
 
 Disclaimer of Warranty
 
@@ -38,7 +38,7 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 // Default sfDaemon Display
 DefaultDisplay extends  Display {
     nameDisplay "sfDaemon Display"; // Window Title
-    positionDisplay "NW";         // Window position: North-West 
+    positionDisplay "NW";         // Window position: North-West
     redirectStd true;             // Redirect std output and error to this wind.
     showIP true;                  // Show IP address in window title
     showSfProcess true;           // Show sfProcess name in  window title
@@ -51,31 +51,27 @@ DisplayTrace extends TraceDisplay{
   stepTrace true; // Should ask for confirmation before stepping through?
 }
 
-DefaultLog extends LogToFile{
-    path PROPERTY java.io.tmpdir;
-    fileName "standardLog";
-    fileExtension ".displayLog";
-}
-
 DefaultCompound extends Compound {
     sfProcessComponentName "sfDefault";
     display extends DefaultDisplay;
-    // log extends DefaultLog;
+}
+
+DefaultTraceDisplayCompound extends DefaultCompound {
+    displayTrace extends DisplayTrace;
+    trace extends Trace{ // Component lifecycle trace notification
+       outputMsg LAZY ATTRIB displayTrace;
+    }
 }
 
 DefaultTraceCompound extends DefaultCompound {
-    displayTrace extends DisplayTrace;
-    trace extends Trace{ // Component lifecycle trace notification
-       //outputMsg LAZY ATTRIB displayTrace;
-       outputMsg LAZY HOST localhost:rootProcess:sfDefault:display;
-    } 
-    // log extends DefaultLog; // Logs standard output and error to a file
+    trace extends Trace; // Component lifecycle trace notification
+    //outputMsg LAZY HOST localhost:rootProcess:sfDefault:display;
 }
 
 DefaultPersistantCompound extends DefaultCompound {
-    persister extends SFPersist { 
+    persister extends SFPersist {
 	directory "/tmp/sfPersist/";
-    } 
+    }
 }
 
 sfConfig extends DefaultCompound;
@@ -86,4 +82,6 @@ sfConfig extends DefaultCompound;
 
 // Alternative default compound with tracing or/and log to file enabled.
 // Uncoment next line to use it.
+//  stepTrace true; // Should ask for confirmation before stepping through?
+//sfConfig extends DefaultTraceDisplayCompound{ displayTrace:stepTrace true;}
 //sfConfig extends DefaultTraceCompound;
