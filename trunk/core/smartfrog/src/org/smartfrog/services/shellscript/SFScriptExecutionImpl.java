@@ -139,6 +139,23 @@ public class SFScriptExecutionImpl  extends PrimImpl implements Prim, SFScriptEx
     return scriptExec.execute(command,lock);
   }
 
+
+  /**
+   *
+   * @throws SmartFrogException if the lock object is not valid, i.e. if it is
+   *   not currently holding the lock
+   * @param command String
+   * @param lock ScriptLock
+   * @param determines if results output will be shown using out/err streams.
+   * @return ScriptResults
+   * @todo Implement this org.smartfrog.services.shellscript.ScriptExecution
+   *   method
+   */
+  public ScriptResults execute(String command, ScriptLock lock, boolean verbose) throws SmartFrogException {
+    if (this.scriptExec==null) return null;
+    return scriptExec.execute(command,lock,verbose);
+  }
+
   /**
     * submit  a list of commands to the shell
     * @param commands the list of commands
@@ -223,6 +240,23 @@ public class SFScriptExecutionImpl  extends PrimImpl implements Prim, SFScriptEx
   }
 
   /**
+   * @throws SmartFrogException if the lock object is not valid, i.e.
+   *
+   * @throws SmartFrogException if the lock object is not valid, i.e. if it is
+   *   not currently holding the lock
+   * @param commands List
+   * @param lock ScriptLock
+   * @param determines if results output will be shown using out/err streams.
+   * @return ScriptResults
+   * @todo Implement this org.smartfrog.services.shellscript.ScriptExecution
+   *   method
+   */
+  public ScriptResults execute(List commands, ScriptLock lock, boolean verbose) throws SmartFrogException {
+    if (this.scriptExec==null) return null;
+    return scriptExec.execute(commands,lock, verbose);
+  }
+
+  /**
    *
    * @param timeout max number of miliseconds to obtain the lock: 0 is don't
    *   wait, -1 is wait forever
@@ -250,21 +284,6 @@ public class SFScriptExecutionImpl  extends PrimImpl implements Prim, SFScriptEx
     if (this.scriptExec == null) return;
     scriptExec.releaseShell(lock);
   }
-
-  /**
-   * verbose shell
-   *
-   * @param determines if the shell output will be shown using out/err stream.
-   * @param lock the lock object receieved from the lockShell
-   * @return previous verbose status.
-   *
-   * @throws SmartFrogException if the lock object is not valid, i.e. if it is
-   * not currently holding the lock, or if ScriptExec not present
-   */
-    public boolean verbose(boolean verbose, ScriptLock lock) throws SmartFrogException{
-        if (this.scriptExec == null) throw new SmartFrogException(" Script Exec not present.");;
-        return scriptExec.verbose(verbose,lock);
-    }
 
 //----------------------------------------------
 //  private void test1() throws SmartFrogException {

@@ -27,8 +27,9 @@ For more information: www.smartfrog.org
     sfLog LAZY THIS;
     shell LAZY ROOT:shell;
     // deploy, start and terminate scripts are blocking
-    startScript ["cd","dir","echo 5 secs", "sleep 5","echo 10 secs", "sleep 10","echo End"];
-    autoTerminate false; 
+    startScript ["echo RPMInstall","cd","dir /s","echo 5 secs", "echo sleep 10","echo 10 secs", "echo sleep 10","echo End","cd"];
+    //autoTerminate true; 
+ 
   }
 
 // --- EXAMPLE
@@ -38,10 +39,14 @@ sfConfig extends Compound {
       shell extends WinXPShell {
         exec:dir ".";
       }
-      rpmInstall extends RPMInstall;
-      endEcho extends RPMInstall{
-        startScript ["echo LAST message ============="];
-        autoTerminate true; 
-      }
+       
+      //scripts extends Sequence {
+        rpmInstall extends RPMInstall;
+        endEcho extends RPMInstall{
+          verbose true;
+          startScript ["echo endEcho","dir","cd"];
+          autoTerminate false;
+        } 
+      //}
 }
 
