@@ -48,8 +48,10 @@ public class SoapFactory extends ExtendedNodeFactory {
         if (Soap11Constants.ELEMENT_HEADER.equals(name)) {
             return new Header(name, namespace);
         }
+        if (Soap11Constants.ELEMENT_BODY.equals(name)) {
+            return new Body(name, namespace);
+        }
         if (Soap11Constants.ELEMENT_FAULT.equals(name)) {
-            //TODO: more fault parsing?
             return new Fault(name, namespace);
         }
         
