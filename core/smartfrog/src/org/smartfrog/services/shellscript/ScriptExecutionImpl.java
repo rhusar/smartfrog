@@ -272,7 +272,7 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
     //Close results blocking
     closeResults(command, true, -1);
     ScriptResults res =  this.results;
-    if (verbose) this.results.verbose();
+    if (verbose) res.verbose();
     runProcess.execCommand(command);
     //Finish resulSet
     closeResults(command, false, -1);
@@ -386,13 +386,12 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
     //Close results blocking
     closeResults(commands.toString(), true, -1);
     ScriptResults res =  this.results;
-
+    if (verbose) res.verbose();
     if (commands==null) {
       runEcho("exec_list_commands","NO Commands to run - NULL command list");
       closeResults(commands.toString(), false, -1);
       return res;
     }
-    if (verbose) this.results.verbose();
     for (int i = 0; i < commands.size(); ++i) {
       //sfLog.trace("Comparing: "+ line +", "+filters[i]);
       runProcess.execCommand(commands.get(i).toString());
@@ -480,13 +479,13 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
   public void line (String line, String filterName){
       if (filterName.indexOf("out")!=-1){
         ((ScriptResultsImpl)results).stdOut.add(line);
-        if (((ScriptResultsImpl)results).verbose) {this.sfLog().out(line);}
+        if (((ScriptResultsImpl)results).verbose) {sfLog().out(line);}
       } else {
         ((ScriptResultsImpl)results).stdErr.add(line);
-        if (((ScriptResultsImpl)results).verbose) {this.sfLog().err(line);}
+        if (((ScriptResultsImpl)results).verbose) {sfLog().err(line);}
       }
       if (sfLog().isTraceEnabled()){
-          this.sfLog().trace("LINE "+line+", "+filterName+", "+filterName.indexOf("out")+", "+ filterName.indexOf("err"));
+          sfLog().trace("LINE "+line+", "+filterName+", "+filterName.indexOf("out")+", "+ filterName.indexOf("err"));
       }
   }
 
