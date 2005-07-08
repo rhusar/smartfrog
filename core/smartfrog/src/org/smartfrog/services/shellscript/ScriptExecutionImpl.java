@@ -54,6 +54,9 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
 
       protected InvocationTargetException exception = null;
 
+      /** Verbose script results output */
+      protected boolean verbose = false;
+
       List stdOut = null;
       List stdErr = null;
 
@@ -73,6 +76,9 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
           return resultReady;
       }
 
+      public void verbose(){
+        verbose = true;
+      }
 
       /**
        * wait for the results to be ready for the timeout, and return them when they are
@@ -163,9 +169,6 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
   /** String name for line return. */
   private static String LR = System.getProperty("line.separator"); //"" + ((char) 10);
 
-  /** Verbose script output */
-  protected boolean verbose = false;
-
   /** Used to format times */
   protected static DateFormat dateFormatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss:SSS zzz");
 
@@ -179,7 +182,6 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
       // RunProcessImpl
       this.name = name;
       this.cmd = cmd;
-      this.verbose = verbose;
       try {
           if (prim!=null){
               sflog = LogFactory.getLog(prim.sfResolve(SmartFrogCoreKeys.SF_APP_LOG_NAME, "", true));
@@ -189,8 +191,7 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
       }
 
       if (cmd.getFilterOutListener()==null) {
-          String filters[] = {TYPE_DONE+" "+name,
-              TYPE_NEXT_CMD+" "+name};
+          String filters[] = {TYPE_DONE+" "+name, TYPE_NEXT_CMD+" "+name};
           cmd.setFilterOutListener(this, filters);
       }
       if (cmd.getFilterErrListener()==null) {
@@ -206,6 +207,7 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
     this(name, cmd,null);
   }
 
+
   /**
    * Runs an echo commnad unless cmd.echoCommand is null.
    * @param text String Echoed string.
@@ -214,19 +216,20 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
   private String runEcho(String type, String text) {
     if (cmd.getEchoCommand()==null) return null;
 
-    String echo = "MARK - "+type+" "+name+ " ["+dateFormatter.format(new Date())+"]";
+    String echoMark = "MARK - "+type+" "+name+ " ["+dateFormatter.format(new Date())+"]";
 
-    if (cmd.getExitErrorCommand()!=null) echo = echo + " Exit code#: "+cmd.getExitErrorCommand();
+    if (cmd.getExitErrorCommand()!=null) echoMark = echoMark + " Exit code#: "+cmd.getExitErrorCommand();
 
-    runProcess.execCommand(cmd.getEchoCommand()+" "+echo);
-    return echo;
+    runProcess.execCommand(cmd.getEchoCommand()+" "+ echoMark);
+    return echoMark;
   }
 
   /**
    *
    * @param text String Text to add to the marking message.
-   * @param block boolean shold we block waiting for ScriptResult to be ready
-   * @param timeout long
+   * @param block boolean should we block waiting (timeout) for ScriptResult to be ready
+   * @param timeout max number of miliseconds wait in case of block true: 0 is don't
+   *   wait, -1 is wait forever
    * @return ScriptResults
    * @throws SmartFrogException
    */
@@ -250,15 +253,29 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
    *   method
    */
   public ScriptResults execute(String command, ScriptLock lock) throws SmartFrogException {
+    return execute (command,lock,false);
+  }
+
+  /**
+   * submit a command to the shell
+   * @throws SmartFrogException if the lock object is not valid, i.e. if it is
+   *   not currently holding the lock
+   * @param command String
+   * @param lock ScriptLock
+   * @param verbose script output
+   * @return ScriptResults
+   * @todo Implement this org.smartfrog.services.shellscript.ScriptExecution
+   *   method
+   */
+  public ScriptResults execute(String command, ScriptLock lock, boolean verbose) throws SmartFrogException {
     if (this.lock!=lock) throw new SmartFrogException( runProcess.toString() + " failed to execute '"+command.toString()+"': Wrong lock. ");
-    boolean previousVerbose = verbose;
-    verbose(verbose,lock);
     //Close results blocking
-    closeResults(command, true, 0);
+    closeResults(command, true, -1);
     ScriptResults res =  this.results;
+    if (verbose) this.results.verbose();
     runProcess.execCommand(command);
     //Finish resulSet
-    closeResults(command, false, 0);
+    closeResults(command, false, -1);
     return res;
   }
 
@@ -282,7 +299,7 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
    * @param commands the list of commands
    * @param timeout max number of miliseconds to obtain the lock: 0 is don't
    *   wait, -1 is wait forever
-   * @param determines if the shell output will be shown using out/err streams.
+   * @param determines if results output will be shown using out/err streams.
    *
    * @throws SmartFrogException if the lock is not obtained in the requisite
    *   time
@@ -292,10 +309,7 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
    */
   public ScriptResults execute(List commands, long timeout, boolean verbose) throws SmartFrogException {
     ScriptLock lock = this.lockShell(timeout);
-    boolean previousVerbose = verbose;
-    verbose(verbose,lock);
-    ScriptResults result = execute (commands,lock);
-    verbose(previousVerbose,lock);
+    ScriptResults result = execute (commands,lock,verbose);
     this.releaseShell(lock);
     return result;
   }
@@ -315,10 +329,7 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
    */
   public ScriptResults execute(String command, long timeout, boolean verbose) throws SmartFrogException {
     ScriptLock lock = this.lockShell(timeout);
-    boolean previousVerbose = verbose;
-    verbose(verbose,lock);
-    ScriptResults result = execute (command,lock);
-    verbose(previousVerbose,lock);
+    ScriptResults result = execute (command,lock,verbose);
     this.releaseShell(lock);
     return result;
   }
@@ -337,8 +348,6 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
   public ScriptResults execute(String command, long timeout) throws SmartFrogException {
     return execute (command,timeout,false);
   }
-
-
   /**
    * submit  a list of commands to the shell
    *
@@ -352,21 +361,38 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
    * @todo Implement this org.smartfrog.services.shellscript.ScriptExecution
    *   method
    */
-  public ScriptResults execute(List commands, ScriptLock lock) throws
-      SmartFrogException {
+  public ScriptResults execute(List commands, ScriptLock lock) throws  SmartFrogException {
+    return execute (commands,lock,false);
+  }
+
+  /**
+   * submit  a list of commands to the shell
+   *
+   * @throws SmartFrogException if the lock object is not valid, i.e.
+   *
+   * @throws SmartFrogException if the lock object is not valid, i.e. if it is
+   *   not currently holding the lock
+   * @param commands List
+   * @param lock ScriptLock
+   * @param verbose script output
+   * @return ScriptResults
+   * @todo Implement this org.smartfrog.services.shellscript.ScriptExecution
+   *   method
+   */
+  public ScriptResults execute(List commands, ScriptLock lock, boolean verbose) throws  SmartFrogException {
     if (this.lock!=lock) throw new SmartFrogException( runProcess.toString() + " failed to execute '"+commands.toString()+"': Wrong lock. ");
     // Loop through using extra echo to mark end of command and a lock to continue.
 
     //Close results blocking
-    closeResults(commands.toString(), true, 0);
+    closeResults(commands.toString(), true, -1);
     ScriptResults res =  this.results;
 
     if (commands==null) {
       runEcho("exec_list_commands","NO Commands to run - NULL command list");
-      closeResults(commands.toString(), false, 0);
+      closeResults(commands.toString(), false, -1);
       return res;
     }
-
+    if (verbose) this.results.verbose();
     for (int i = 0; i < commands.size(); ++i) {
       //sfLog.trace("Comparing: "+ line +", "+filters[i]);
       runProcess.execCommand(commands.get(i).toString());
@@ -374,7 +400,7 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
     }
 
     //Finish resulSet
-    closeResults(commands.toString(), false, 0);
+    closeResults(commands.toString(), false, -1);
     return res;
   }
 
@@ -441,7 +467,6 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
    */
   public synchronized void releaseShell(ScriptLock lock) throws SmartFrogException {
     if (this.lock != lock ) throw new SmartFrogException("LockOwnershipException");
-    this.verbose = false;
     this.lock = null;
     notify();
   }
@@ -455,10 +480,10 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
   public void line (String line, String filterName){
       if (filterName.indexOf("out")!=-1){
         ((ScriptResultsImpl)results).stdOut.add(line);
-        if (verbose) this.sfLog().out(line);
+        if (((ScriptResultsImpl)results).verbose) {this.sfLog().out(line);}
       } else {
         ((ScriptResultsImpl)results).stdErr.add(line);
-        if (verbose) this.sfLog().err(line);
+        if (((ScriptResultsImpl)results).verbose) {this.sfLog().err(line);}
       }
       if (sfLog().isTraceEnabled()){
           this.sfLog().trace("LINE "+line+", "+filterName+", "+filterName.indexOf("out")+", "+ filterName.indexOf("err"));
@@ -466,8 +491,8 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
   }
 
   public synchronized void found( String line, int filterIndex, String filterName){
-    if (sfLog().isTraceEnabled()) {
-       sfLog().trace("FOUND LINE "+line+", "+filterIndex+", "+filterName);
+    if (sfLog().isDebugEnabled()) {
+       sfLog().debug("FOUND LINE "+line+", "+filterIndex+", "+filterName);
     }
     if (filterIndex == 0) {
       //Finished
@@ -508,22 +533,6 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
     ((ScriptResultsImpl)finishedResults).ready(exitCode);
     return finishedResults;
   }
-
-  /**
-   * verbose shell
-   *
-   * @param determines if the shell output will be shown using out/err stream.
-   * @param lock the lock object receieved from the lockShell
-   *
-   * @throws SmartFrogException if the lock object is not valid, i.e. if it is
-   * not currently holding the l0ck
-   */
-    public boolean verbose(boolean verbose, ScriptLock lock) throws SmartFrogException{
-        if (this.lock!=lock) throw new SmartFrogException( runProcess.toString() + " failed to change verbose status: Wrong lock. ");
-        boolean previousVerbose = this.verbose;
-        this.verbose = verbose;
-        return previousVerbose;
-    }
 
   /**
    * This method should be used to log Core messages

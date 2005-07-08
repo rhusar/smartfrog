@@ -74,6 +74,21 @@ public interface ScriptExecution {
     public ScriptResults execute(List commands, ScriptLock lock) throws SmartFrogException;
 
     /**
+     * submit  a list of commands to the shell
+     *
+     * @parameter commands the list of commands
+     * @parameter lock the lock object receieved from the lockShell
+     * @param determines if results output will be shown using out/err streams.
+     *
+     * @returns the "future" ScriptResult implementation that allows the code to
+     * obtain the results of executnig the script
+     *
+     * @throws SmartFrogException if the lock object is not valid, i.e. if it is
+     * not currently holding the l0ck
+     */
+    public ScriptResults execute(List commands, ScriptLock lock, boolean verbose) throws SmartFrogException;
+
+    /**
      * submit  a command to the shell
      *
      * @parameter command the command to execute
@@ -88,15 +103,20 @@ public interface ScriptExecution {
     public ScriptResults execute(String command, ScriptLock lock) throws SmartFrogException;
 
     /**
-     * verbose shell
+     * submit  a command to the shell
      *
-     * @param determines if the shell output will be shown using out/err streams.
-     * @param lock the lock object receieved from the lockShell
+     * @parameter command the command to execute
+     * @parameter lock the lock object receieved from the lockShell
+     * @param determines if results output will be shown using out/err streams.
+     *
+     * @returns the "future" ScriptResult implementation that allows the code to
+     * obtain the results of executnig the script
      *
      * @throws SmartFrogException if the lock object is not valid, i.e. if it is
      * not currently holding the l0ck
      */
-    public boolean verbose(boolean verbose, ScriptLock lock) throws SmartFrogException;
+    public ScriptResults execute(String command, ScriptLock lock, boolean verbose) throws SmartFrogException;
+
 
     /**
      * release the lock on the shell and resets verbose to false.

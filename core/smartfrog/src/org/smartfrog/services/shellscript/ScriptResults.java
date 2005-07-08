@@ -55,4 +55,9 @@ public interface ScriptResults {
      */
     public ComponentDescription waitForResults(long timeout) throws SmartFrogException;
 
+    /**
+      * Script result will be verbose using syste.out and system.err streams
+    */
+    public void verbose();
+
 }

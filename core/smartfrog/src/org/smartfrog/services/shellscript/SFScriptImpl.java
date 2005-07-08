@@ -68,6 +68,11 @@ public class SFScriptImpl  extends PrimImpl implements Prim, SFScript, SFReadCon
 
   // For Prim
   public SFScriptImpl() throws RemoteException {
+    try {
+      jbInit();
+    } catch (Exception ex) {
+      ex.printStackTrace();
+    }
 
   }
 
@@ -178,14 +183,12 @@ public class SFScriptImpl  extends PrimImpl implements Prim, SFScript, SFReadCon
     return cd;
  }
 
-private void checkResult(Object script, ComponentDescription cd) throws
-    SmartFrogResolutionException, SmartFrogException {
+private void checkResult(Object script, ComponentDescription cd) throws  SmartFrogResolutionException, SmartFrogException {
     if (cd!=null) {
         Integer exitCode = new Integer(-9999);
         exitCode = (Integer)cd.sfResolve("code", exitCode, false);
         if (exitCode.intValue()!=0) {
-            String msg = " Error running script [exit code ="+exitCode+"]:"+
-                script.toString();
+            String msg = " Error running script [exit code ="+exitCode+"]:"+ script.toString();
             SmartFrogException sex = new SmartFrogException(msg, this);
             sex.add("script", script);
             sex.add("result", cd);
@@ -225,5 +228,8 @@ private void checkResult(Object script, ComponentDescription cd) throws
    cdAll.sfAddAttribute("code",lastExitCode);
    return cdAll;
  }
+
+  private void jbInit() throws Exception {
+  }
 
 }
