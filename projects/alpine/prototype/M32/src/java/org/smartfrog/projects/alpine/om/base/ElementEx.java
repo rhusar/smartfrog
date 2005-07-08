@@ -19,13 +19,11 @@
  */
 package org.smartfrog.projects.alpine.om.base;
 
-import nu.xom.Element;
-import nu.xom.Node;
-import nu.xom.Text;
-import nu.xom.Elements;
+import nu.xom.*;
 import org.smartfrog.projects.alpine.xmlutils.AttributeIterator;
 import org.smartfrog.projects.alpine.xmlutils.NodeIterator;
 import org.smartfrog.projects.alpine.xmlutils.XsdUtils;
+import org.smartfrog.projects.alpine.xmlutils.NodesIterator;
 import org.smartfrog.projects.alpine.interfaces.ValidateXml;
 import org.smartfrog.projects.alpine.faults.InvalidXmlException;
 
@@ -168,4 +166,10 @@ public class ElementEx extends Element implements ValidateXml {
 
     }
 
+    
+    public NodesIterator xpath(String path,XPathContext context) {
+        Nodes nodes = query(path, context);
+        NodesIterator it = new NodesIterator(nodes);
+        return it;
+    }
 }

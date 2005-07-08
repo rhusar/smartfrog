@@ -22,11 +22,20 @@ package org.smartfrog.test.unit.projects.alpine.files.soap.valid.soap11;
 
 import org.smartfrog.test.unit.projects.alpine.ValidTestBase;
 import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
+import org.smartfrog.projects.alpine.om.soap11.Envelope;
+import org.smartfrog.projects.alpine.om.soap11.Body;
+import org.smartfrog.projects.alpine.xmlutils.NodesIterator;
+import nu.xom.Nodes;
+import nu.xom.Node;
+import nu.xom.XPathContext;
 
 /**
  
  */
 public class SimpleTest extends ValidTestBase {
+    private Body body;
+    private Envelope envelope;
+    private XPathContext xpathContext;
 
     public SimpleTest(String name) {
         super(name);
@@ -40,8 +49,52 @@ public class SimpleTest extends ValidTestBase {
     protected String getTestResource() {
         return SOAP_SIMPLE;
     }
-    
-    public void testXpath() throws Exception {
-        
+
+    /**
+     * Sets up the fixture by initialising the parser and then loading in the resource specified by {@link
+     * #getTestResource()}
+     */
+    protected void setUp() throws Exception {
+        super.setUp();
+        MessageDocument doc = getDocument();
+        envelope = getEnvelope(doc);
+        body = envelope.getBody();
+        xpathContext = XPathContext.makeNamespaceContext(body);
+        xpathContext.addNamespace("m", "http://example.org/uri/1");
     }
+
+    public void testXpath() throws Exception {
+        MessageDocument doc = getDocument();
+        Body body;
+        Envelope envelope = getEnvelope(doc);
+        body = envelope.getBody();
+        XPathContext xpath = XPathContext.makeNamespaceContext(body);
+        xpath.addNamespace("m", "http://example.org/uri/1");
+        Nodes nodes = body.query("m:GetLastTradePriceDetailed/m:symbol", xpath);
+        assertEquals(1, nodes.size());
+        Node n1 = nodes.get(0);
+        String value = n1.getValue();
+        assertEquals("DEF", value);
+        NodesIterator it = new NodesIterator(nodes);
+        for (Node n : it) {
+
+        }
+    }    
+    public void testXpath2() throws Exception {
+        for(Node n: body.xpath("m:GetLastTradePriceDetailed/m:symbol", xpathContext))
+        {
+            //todo
+            
+        }
+    }
+
+    /**
+     * get the envelope
+     * @param doc
+     */ 
+    public Envelope getEnvelope(MessageDocument doc) {
+        return doc.getEnvelope();
+    }
+    
+    
 }

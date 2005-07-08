@@ -64,7 +64,8 @@ public class Envelope extends Soap11Element {
      * @return the body or null
      */ 
     public Body getBody() {
-        return (Body) getFirstChildElement(QNAME_BODY);
+        Element child = getFirstChildElement(QNAME_BODY);
+        return (Body) child;
     }
 
     /**
