@@ -480,11 +480,9 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
       if (filterName.indexOf("out")!=-1){
         ((ScriptResultsImpl)results).stdOut.add(line);
         if (((ScriptResultsImpl)results).verbose) {sfLog().out(line);}
-        //if (((ScriptResultsImpl)results).verbose) {sfLog().info(line);}
       } else {
         ((ScriptResultsImpl)results).stdErr.add(line);
         if (((ScriptResultsImpl)results).verbose) {sfLog().err(line);}
-        //if (((ScriptResultsImpl)results).verbose) {sfLog().error(line);}
       }
       if (sfLog().isTraceEnabled()){
           sfLog().trace("LINE "+line+", "+filterName+", "+filterName.indexOf("out")+", "+ filterName.indexOf("err"));
