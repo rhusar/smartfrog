@@ -1,0 +1,66 @@
+/** (C) Copyright 2005 Hewlett-Packard Development Company, LP
+
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
+
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+ For more information: www.smartfrog.org
+
+ */
+ 
+
+#include "/org/smartfrog/components.sf"
+#include "/org/smartfrog/predicates.sf"
+#include "/org/smartfrog/services/filesystem/components.sf"
+
+
+AlpineEndpoint extends Prim {
+    sfClass "org.smartfrog.projects.alpine.config.smartfrog.AlpineEndpointImpl";
+    alpineEndpointSchema extends Schema {
+        name extends String;
+        getContentType extends String;
+        getMessage extends String;
+        getResponse extends Integer;
+        wsdl extends String;
+        factory extends String;
+        
+    }
+    contentType "text/html; charset='utf8'";
+    
+    /**
+     * an HTML message string
+     */
+    getMessage ##
+     <html>
+      <head>Alpine Endpoint<head>
+      <body>Hello, this is an endpoint</body>
+     </html> 
+     #
+    getResponse 200;
+ }
+
+ /*
+  This is a handler
+  */ 
+ AlpineHandler extends Prim {
+    alpineHandlerSchema extends Schema {
+        //you must point to an endpoint, else there is nothing to handle
+        endpoint extends CD;
+        //the name of the handler class
+        classname extends String;
+    }
+}
+ 
+ 
+
+ 

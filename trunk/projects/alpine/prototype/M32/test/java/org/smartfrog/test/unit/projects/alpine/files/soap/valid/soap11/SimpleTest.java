@@ -68,9 +68,7 @@ public class SimpleTest extends ValidTestBase {
         Body body;
         Envelope envelope = getEnvelope(doc);
         body = envelope.getBody();
-        XPathContext xpath = XPathContext.makeNamespaceContext(body);
-        xpath.addNamespace("m", "http://example.org/uri/1");
-        Nodes nodes = body.query("m:GetLastTradePriceDetailed/m:symbol", xpath);
+        Nodes nodes = body.query("m:GetLastTradePriceDetailed/m:symbol", xpathContext);
         assertEquals(1, nodes.size());
         Node n1 = nodes.get(0);
         String value = n1.getValue();

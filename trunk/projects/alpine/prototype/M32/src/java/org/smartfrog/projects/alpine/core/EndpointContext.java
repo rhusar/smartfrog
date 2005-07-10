@@ -20,8 +20,24 @@
 
 package org.smartfrog.projects.alpine.core;
 
+import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
+import nu.xom.Builder;
+
 /**
  
  */
 public class EndpointContext extends Context {
+    
+    /**
+     * Create a message context, filled in with stub requests and responses
+     * @return the new context
+     */ 
+    public MessageContext createMessageContext() {
+        MessageContext messageContext = new MessageContext();
+        messageContext.createRequest();
+        messageContext.createResponse();
+        return messageContext;
+    }
+    
+    
 }

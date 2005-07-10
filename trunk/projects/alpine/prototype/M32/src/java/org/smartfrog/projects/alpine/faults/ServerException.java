@@ -18,10 +18,33 @@
 
  */
 
-package org.smartfrog.projects.alpine.core;
+package org.smartfrog.projects.alpine.faults;
+
+import org.smartfrog.projects.alpine.om.soap11.Soap11Constants;
 
 /**
- * This represents a message in the system. 
+ * Server side exception
  */
-public class Message extends Context {
+public class ServerException extends AlpineRuntimeException {
+
+    public ServerException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public ServerException(Throwable cause) {
+        super(cause);
+    }
+
+    public ServerException(String message) {
+        super(message);
+    }
+
+    /**
+     * Override point: get a fault code. the default is {@link Soap11Constants#FAULTCODE_SERVER};
+     *
+     * @return the string to be used in the fault code
+     */
+    protected String getFaultCode() {
+        return Soap11Constants.FAULTCODE_SERVER;
+    }
 }

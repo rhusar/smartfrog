@@ -20,16 +20,43 @@
 
 package org.smartfrog.projects.alpine.http;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import javax.servlet.http.HttpServlet;
+import javax.servlet.ServletContext;
 
 /**
  
  */
 public class ServletBase extends HttpServlet {
 
+    private static Log log =
+            LogFactory.getLog(ServletBase.class.getName());
+        
+    
     public ServletBase() {
     }
 
+
+    public static Log getLog() {
+        return log;
+    }
     
-    
+    /**
+     * our initialize routine; subclasses should call this if they override it
+     */
+    public void init() throws javax.servlet.ServletException {
+        ServletContext context = getServletConfig().getServletContext();
+
+    }    
+
+
+    /**
+     * get the svc context
+     * @return
+     */ 
+    public ServletContext getServletContext() {
+        return getServletConfig().getServletContext();
+    }    
 }

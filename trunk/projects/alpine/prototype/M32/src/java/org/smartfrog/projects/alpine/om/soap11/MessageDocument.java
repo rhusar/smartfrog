@@ -26,6 +26,9 @@ import org.smartfrog.projects.alpine.xmlutils.NodeIterator;
 import org.smartfrog.projects.alpine.interfaces.ValidateXml;
 import org.smartfrog.projects.alpine.faults.InvalidXmlException;
 
+import java.util.HashMap;
+import java.util.Enumeration;
+
 
 /**
  * a message
@@ -33,6 +36,7 @@ import org.smartfrog.projects.alpine.faults.InvalidXmlException;
 public class MessageDocument extends Document implements ValidateXml {
     public static final String ERROR_EMPTY_DOCUMENT = "Empty";
 
+    private HashMap<String,String> mimeHeaders=new HashMap<String, String>();
     
     public MessageDocument(Element element) {
         super(element);
@@ -55,7 +59,27 @@ public class MessageDocument extends Document implements ValidateXml {
     public Envelope getEnvelope() {
         return (Envelope) getRootElement();
     }
+    
+    /**
+     * Get the body. Fails horribly if there is no envelope/body
+     * @return
+     */ 
+    public Body getBody() {
+        return getEnvelope().getBody();
+    }
+    
+    /**
+     * Are we a fault. 
+     * precondition: body!=null;
+     * @return
+     */ 
+    public boolean isFault() {
+        Body body= getBody();
+        return body.isFault();
+    }
 
+    
+    
     /**
      * Validate the Xml. Throw {@link InvalidXmlException} if invalid.
      */
@@ -75,5 +99,16 @@ public class MessageDocument extends Document implements ValidateXml {
                 "http://www.xom.nu/fakeRoot"));
     }
     
+    public void putMimeHeader(String name,String value) {
+        mimeHeaders.put(name,value);
+    }
     
+    
+    public String getMimeHeader(String name) {
+        return mimeHeaders.get(name);
+    }
+
+    public HashMap<String, String> getMimeHeaders() {
+        return mimeHeaders;
+    }
 }
