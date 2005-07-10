@@ -20,19 +20,71 @@
 
 package org.smartfrog.projects.alpine.http;
 
+import org.smartfrog.projects.alpine.core.EndpointContext;
+import org.smartfrog.projects.alpine.core.MessageContext;
+import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
+import org.smartfrog.projects.alpine.om.soap11.Fault;
+import org.smartfrog.projects.alpine.om.soap11.Body;
+import org.smartfrog.projects.alpine.interfaces.SoapFaultSource;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.ServletException;
 import java.io.IOException;
+import java.io.PrintWriter;
+
+import sun.net.www.protocol.http.HttpURLConnection;
 
 /**
  * This servlet handles SOAP Posted stuff
  */
 public class SoapPostServlet extends ServletBase {
 
+    
+    
+    /**
+     * this is the wrong place for state
+     */ 
+    private EndpointContext context=new EndpointContext();
+
+    public synchronized void setContext(EndpointContext context) {
+        this.context = context;
+    }
+
+    public EndpointContext getContext() {
+        return context;
+    }
+
+
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.setContentType("text/html");
+        PrintWriter writer = response.getWriter();
+        //todo
+    }
 
     protected void doPost(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws ServletException, IOException {
         super.doPost(httpServletRequest, httpServletResponse);
-        //TODO
+        EndpointContext endpointContext = getContext();
+        MessageContext messageContext = endpointContext.createMessageContext();
+        MessageDocument requestMessage = null;
+        MessageDocument responseMessage=null;
+        HttpBinder binder = new HttpBinder(getContext());
+        try {
+            requestMessage = binder.parseIncomingPost(messageContext,httpServletRequest);
+            //TODO: dispatch
+            responseMessage = messageContext.getResponse();
+        } catch (Exception e) {
+            if(e instanceof SoapFaultSource) {
+                SoapFaultSource source=(SoapFaultSource) e;
+                Fault fault = source.GenerateSoapFault();
+                responseMessage = messageContext.getResponse();
+                Body body = responseMessage.getEnvelope().getBody();
+                body.removeChildren();
+                body.appendChild(fault);
+            }
+        }
+        binder.outputResponse(messageContext, httpServletResponse);
     }
 }

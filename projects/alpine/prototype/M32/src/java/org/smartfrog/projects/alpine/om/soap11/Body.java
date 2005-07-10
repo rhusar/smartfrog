@@ -21,6 +21,7 @@
 package org.smartfrog.projects.alpine.om.soap11;
 
 import nu.xom.Element;
+import org.smartfrog.projects.alpine.faults.InvalidXmlException;
 
 /**
  * The element name is "Body".
@@ -60,5 +61,20 @@ public class Body extends Soap11Element  {
      */ 
     protected Element shallowCopy() {
         return new Body(getQualifiedName(), getNamespaceURI());
+    }
+    
+    /**
+     * do we have a fault
+     * @return true iff there is a fault child
+     */ 
+    public boolean isFault() {
+        return getFirstChildElement(QNAME_FAULT)!=null;
+    }
+
+    /**
+     * Validate the Xml. Throw {@link InvalidXmlException} if invalid.
+     */
+    public void validateXml() {
+        super.validateXml();
     }
 }

@@ -20,12 +20,33 @@
 
 package org.smartfrog.projects.alpine.faults;
 
+import org.smartfrog.projects.alpine.om.soap11.Fault;
+import org.smartfrog.projects.alpine.interfaces.SoapFaultSource;
+
 /**
- * This represents a SOAPException.
- * 
+ * This represents a SOAPException from the XML. 
+ * The fault string is extracted, the rest is retained as XML
  */
-public class SoapException {
+public class SoapException extends AlpineRuntimeException implements SoapFaultSource {
+
+    private Fault fault;
     
-    
-    
+    public SoapException(Fault fault) {
+        super(fault.getFaultString());
+        this.fault = fault;
+    }
+
+    public Fault getFault() {
+        return fault;
+    }
+
+    /**
+     * return the fault we were built with
+     *
+     * @return a fault
+     */
+    public Fault GenerateSoapFault() {
+        return fault;
+    }
+
 }
