@@ -26,10 +26,10 @@ For more information: www.smartfrog.org
 
 sfConfig extends Compound {
 
- linux IF (PROPERTY os.name == "Linux") THEN true ELSE false FI;
+ unix IF (PROPERTY os.name == "Windows XP") THEN false ELSE true FI;
 
 
- shell IF linux THEN BashShell ELSE WinXPShell FI;
+ shell IF unix THEN BashShell ELSE WinXPShell FI;
 
  testFile extends TempFileWithCleanup {
   dir LAZY PROPERTY java.io.tmpdir;
@@ -39,7 +39,7 @@ sfConfig extends Compound {
 
  command extends LazyConcat {
   string extends LAZY {
-   a IF linux THEN "ls -l " ELSE "more " FI;
+   a IF unix THEN "ls -l " ELSE "more " FI;
    b LAZY testFile:filename;
   }
  }
