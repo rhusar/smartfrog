@@ -67,14 +67,14 @@ public class TempFileImpl extends FileUsingComponentImpl implements TempFile {
             sfLog().debug("Creating temp file in dir ["+dir+"], prefix="+prefix
                            +", suffix="+suffix+", text="+text);
         }
-        File tempFile;
+
         try {
             if (dir == null) {
-                tempFile = File.createTempFile(prefix, suffix);
+                file = File.createTempFile(prefix, suffix);
             } else {
                 File directory = new File(dir);
                 directory.mkdirs();
-                tempFile = File.createTempFile(prefix, suffix, directory);
+                file = File.createTempFile(prefix, suffix, directory);
             }
         } catch (IOException e) {
             throw SmartFrogException.forward(e);
@@ -105,8 +105,8 @@ public class TempFileImpl extends FileUsingComponentImpl implements TempFile {
         }
 
         //bind to the temp file
-        bind(tempFile);
-        sfReplaceAttribute(FileUsingComponent.ATTR_FILENAME, tempFile.toString());
+        bind(file);
+        sfReplaceAttribute(FileUsingComponent.ATTR_FILENAME, file.toString());
 
     }
 
