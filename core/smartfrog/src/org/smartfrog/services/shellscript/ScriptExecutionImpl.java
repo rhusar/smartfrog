@@ -216,7 +216,7 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
   private String runEcho(String type, String text) {
     if (cmd.getEchoCommand()==null) return null;
 
-    String echoMark = "MARK - "+type+" "+name+ " ["+dateFormatter.format(new Date())+"]";
+    String echoMark = "ScriptExecEcho - "+type+" "+name+ " ["+dateFormatter.format(new Date())+"]";
 
     if (cmd.getExitErrorCommand()!=null) echoMark = echoMark + " Exit code#: "+cmd.getExitErrorCommand();
 
@@ -495,7 +495,7 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
     }
     if (filterIndex == 0) {
       //Finished
-      if (line.indexOf(cmd.getEchoCommand()+" "+"MARK - "+TYPE_DONE+" "+name)!=-1) return; // This is the echo command itself, ignore
+      if (line.indexOf(cmd.getEchoCommand()+" "+"ScriptExecEcho - "+TYPE_DONE+" "+name)!=-1) return; // This is the echo command itself, ignore
 
       //What do we do if err continues producing output?, should we wait forever?
       ((ScriptResultsImpl)results).stdOut.add("-finished-");
@@ -513,7 +513,7 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
        createNewScriptResults(exitCode);
     } else if (filterIndex==1){
       //Next command will follow
-       if (line.indexOf(cmd.getEchoCommand()+" "+"MARK - "+TYPE_NEXT_CMD+" "+name)!=-1) return; // This is the echo command itself, ignore
+       if (line.indexOf(cmd.getEchoCommand()+" "+"ScriptExecEcho - "+TYPE_NEXT_CMD+" "+name)!=-1) return; // This is the echo command itself, ignore
       ((ScriptResultsImpl)results).stdOut.add("--- NEXT Command ---");
       ((ScriptResultsImpl)results).stdErr.add("--- NEXT Command ---");
        //System.out.println("\n -- GO NEXT Command -- "+line);
