@@ -37,7 +37,7 @@ public class FileUsingComponentImpl extends PrimImpl implements FileUsingCompone
     /**
      * the file we are bonded to
      */
-    private File file;
+    protected File file;
 
     public FileUsingComponentImpl() throws RemoteException {
     }
