@@ -518,8 +518,7 @@ public class ConfigurationDescriptor implements MessageKeys{
               try {
                  this.setSubProcess(getAndCutLastFieldTempURL (separator));
               } catch (Exception ex) {
-                  throw new SmartFrogInitException(
-                      "Error parsing SUBPROCESS_NAME in: "+ deploymentURL, ex);
+                  throw new SmartFrogInitException( "Error parsing SUBPROCESS_NAME in: "+ deploymentURL, ex);
               }
 
               //GET HOST_NAME (5th Element)
@@ -542,8 +541,23 @@ public class ConfigurationDescriptor implements MessageKeys{
                       this.setDeployReference(getAndCutLastFieldTempURL(separator));
                   }
               } catch (Exception ex) {
-                  throw new SmartFrogInitException(
-                      "Error parsing DEPLOY_REFERENCE in: "+ deploymentURL, ex);
+                  throw new SmartFrogInitException("Error parsing DEPLOY_REFERENCE in: "+ deploymentURL, ex);
+              }
+
+              //GET URL (3rd Element)
+              // at this stage only "NAME":ACTION:"DEPLOY_URL" are left.
+              // no separator at the end.
+              //(Everything that is left at the end)
+              try {
+                  if (tempURL.endsWith("\"")){
+                      this.setUrl(tempURL.substring(tempURL.lastIndexOf(separator)+2,tempURL.length()-1));
+                  } else {
+                      this.setUrl(tempURL.substring(tempURL.lastIndexOf(separator)+1));
+                  }
+                  tempURL= tempURL.substring(0,tempURL.lastIndexOf(separator));
+
+              } catch (Exception ex) {
+                  throw new SmartFrogInitException("Error parsing DEPLOY_REFERENCE in: "+ deploymentURL, ex);
               }
 
 
@@ -558,8 +572,8 @@ public class ConfigurationDescriptor implements MessageKeys{
             tempURL=null;
             try {
                 if (deploymentURL.startsWith("\"")) {
-                    setName(deploymentURL.substring(1,deploymentURL.indexOf("\"",1)));
-                    tempURL = deploymentURL.substring(deploymentURL.indexOf("\"",1)+2);
+                    setName(deploymentURL.substring(1,deploymentURL.lastIndexOf("\"")));
+                    tempURL = deploymentURL.substring(deploymentURL.lastIndexOf("\"")+2);
                 } else {
                     setName(deploymentURL.substring(0,deploymentURL.indexOf(separator)));
                     tempURL = deploymentURL.substring(deploymentURL.indexOf(separator)+1);
@@ -571,20 +585,10 @@ public class ConfigurationDescriptor implements MessageKeys{
 
             //GET ACTION(2nd Element)
             try {
-                this.setActionType(tempURL.substring(0,tempURL.indexOf(separator)));
-                tempURL = (tempURL.substring(tempURL.indexOf(":")+1,tempURL.length()));
+                this.setActionType(tempURL);
             } catch (Exception ex) {
                 throw new SmartFrogInitException(
-                    "Error parsing ACTION_TYPE in: "+ deploymentURL, ex);
-            }
-
-            //GET URL (3rd Element)
-            //(Everything that is left at the end)
-            try {
-                this.setUrl(tempURL);
-            } catch (Exception ex) {
-                throw new SmartFrogInitException(
-                    "Error parsing DEPLOY_REFERENCE in: "+ deploymentURL, ex);
+                    "Error parsing ACTION_TYPE in: "+ tempURL, ex);
             }
 
         } catch (Throwable thr){
