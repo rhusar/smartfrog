@@ -128,12 +128,12 @@ Reference URL:http://ant.apache.org
   <!-- =================================================================== -->
   <path id="smartfrog.run.class.path">
        <pathelement location="${lib}/SFGuiTools.jar"/>
-       <pathelement location="${core.smartfrog.lib}/smartfrog.jar"/>
-       <pathelement location="${core.smartfrog.lib}/sfServices.jar"/>
-       <pathelement location="${core.smartfrog.lib}/sfExamples.jar"/>
+       <pathelement location="${core.smartfrog.lib}/smartfrog*"/>
+       <pathelement location="${core.smartfrog.lib}/sfServices*"/>
+       <pathelement location="${core.smartfrog.lib}/sfExamples*"/>
        <pathelement location="${dist.lib.dir}/sfGuiBrowser.jar"/>
   </path>
-  
+
     <!-- Security related files
     =================================================================
     <property name="manifestName" value="${private}/sealManifest.mf"/>
@@ -191,7 +191,7 @@ Reference URL:http://ant.apache.org
       <classpath>
           <fileset dir="${lib}">
               <include name="**/*.jar"/>
-          </fileset>        
+          </fileset>
           <fileset dir="${core.smartfrog.lib}">
               <include name="**/*.jar"/>
           </fileset>
@@ -206,7 +206,7 @@ Reference URL:http://ant.apache.org
       <classpath>
                 <fileset dir="${lib}">
               <include name="**/*.jar"/>
-          </fileset>        
+          </fileset>
 
           <fileset dir="${core.smartfrog.lib}">
               <include name="**/*.jar"/>
@@ -335,7 +335,7 @@ Reference URL:http://ant.apache.org
       <classpath>
           <fileset dir="${lib}">
               <include name="**/*.jar"/>
-          </fileset>      
+          </fileset>
           <fileset dir="${core.smartfrog.lib}">
               <include name="**/*.jar"/>
           </fileset>

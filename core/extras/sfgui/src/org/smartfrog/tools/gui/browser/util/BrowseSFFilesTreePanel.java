@@ -43,7 +43,7 @@ import org.gjt.sp.jedit.textarea.*;
 
 public class BrowseSFFilesTreePanel extends JPanel implements TreeSelectionListener {
 
-   String[] filters = {".sf",".sf2",".sfxml"};
+   String[] filters = {".sf",".sf2",".sfcd",".sfxml"};
 
    BorderLayout borderLayout1 = new BorderLayout();
    JSplitPane jSplitPane1 = new JSplitPane();

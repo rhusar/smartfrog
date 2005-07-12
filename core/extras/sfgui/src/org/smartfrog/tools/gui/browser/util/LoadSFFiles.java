@@ -111,7 +111,7 @@ public class LoadSFFiles {
       int index = list.size();
       while ((index--) > 0) {
          System.out.println("Jar: " + list.get(index));
-         this.listJarContent((String)list.get(index), ".sf");
+         this.listJarContent((String)list.get(index), filters);
       }
    }
 
@@ -156,7 +156,7 @@ public class LoadSFFiles {
     *@param  jarFile  Description of Parameter
     *@param  filter   Description of Parameter
     */
-   public void listJarContent(String jarFile, String filter) {
+   public void listJarContent(String jarFile, String[] filter) {
       try {
 
          ZipFile zf = new ZipFile(jarFile);
@@ -165,13 +165,13 @@ public class LoadSFFiles {
          while (e.hasMoreElements()) {
             ZipEntry ze = (ZipEntry)e.nextElement();
             size = (int)ze.getSize();
-            if (debugOn) {
-               if (ze.getName().endsWith(filter)) {
-                  //System.out.println("name: "+ ze.getName());
-                  //System.out.println("Content:" );
-                  //this.getFileJar(jarFile,ze.getName());
-               }
-            }
+//            if (debugOn) {
+//               if (ze.getName().endsWith(filter)) {
+//                  //System.out.println("name: "+ ze.getName());
+//                  //System.out.println("Content:" );
+//                  //this.getFileJar(jarFile,ze.getName());
+//               }
+//            }
          }
          zf.close();
       } catch (Exception ex) {
