@@ -38,7 +38,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * JDom based utility to parse CDL files. created Jul 1, 2004 1:49:31 PM
+ * Xom based utility to parse CDL files. created Jul 1, 2004 1:49:31 PM
  */
 
 public class CdlParser {

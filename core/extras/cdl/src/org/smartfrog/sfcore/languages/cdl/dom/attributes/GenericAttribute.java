@@ -110,6 +110,7 @@ public class GenericAttribute implements Names {
      * @return
      * @throws CdlXmlParsingException
      */
+    @SuppressWarnings("unchecked")
     public static <T extends GenericAttribute> T findAndBind(String localname,
             Class<T> clazz,
             Element element,
