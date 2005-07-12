@@ -37,7 +37,7 @@ import java.rmi.RemoteException;
 
 /**
  * Defines the Downloader class. It downloads the data from a given url.
- */ 
+ */
 public class DownloadImpl extends FileUsingComponentImpl implements Download {
     public static final String ERROR_IN_DOWNLOAD = "error in downloading of url ";
 
@@ -50,13 +50,13 @@ public class DownloadImpl extends FileUsingComponentImpl implements Download {
      */
     public DownloadImpl() throws RemoteException {
     }
-    
+
     /**
      * Starts the download component.
      *
      * @throws SmartFrogException in case of error in starting
      * @throws RemoteException in case of network/emi error
-     */ 
+     */
     public synchronized void sfStart() throws SmartFrogException,
             RemoteException {
         super.sfStart();
@@ -94,7 +94,7 @@ public class DownloadImpl extends FileUsingComponentImpl implements Download {
                     " to " +
                     localFile;
             if (log.isErrorEnabled()) {
-                log.error(errStr);
+                log.error(errStr,e);
             }
             throw SmartFrogLifecycleException.forward(errStr,e, this);
         }
@@ -123,7 +123,7 @@ public class DownloadImpl extends FileUsingComponentImpl implements Download {
             throws IOException {
         // FileOutputStream object.
         FileOutputStream fs = null;
-        // InputStream. 
+        // InputStream.
         InputStream is = null;
 
         byte[] b = new byte[blocksize];

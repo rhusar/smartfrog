@@ -131,7 +131,7 @@ public class OptionSet {
                         } catch (SmartFrogInitException ex){
                           //Logger.log(ex);
                           if (SFSystem.sfLog().isErrorEnabled()) {
-                              SFSystem.sfLog().error(ex);
+                              SFSystem.sfLog().error(ex.getMessage(),ex);
                           }
                         }
                         break;
@@ -142,7 +142,7 @@ public class OptionSet {
                         } catch (SmartFrogInitException ex){
                           //Logger.log(ex);
                           if (SFSystem.sfLog().isErrorEnabled()) {
-                              SFSystem.sfLog().error(ex);
+                              SFSystem.sfLog().error(ex.getMessage(),ex);
                           }
                         }
                          break;

@@ -94,7 +94,7 @@ public class SFSetPropertyImpl extends CompoundImpl implements Compound, SFSetPr
 
         } catch (Throwable t) {
             if (log.isErrorEnabled()) {
-                log.error(t);
+                log.error(t.getMessage(),t);
             }
             throw new SmartFrogDeploymentException(t, this);
         }
