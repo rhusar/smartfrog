@@ -79,7 +79,7 @@ public class MainFrame extends JFrame implements ActionListener {
    /**
     *  Description of the Field
     */
-   public final static String version = "v0.7 r14";
+   public final static String version = "v0.7 r16";
    // This has to  be done properly !!!!!!!!!!!!!!! no static. Because of crap log.
    static PrintStream msg = System.out;
    static JLabel statusBar = new JLabel();
@@ -1325,6 +1325,7 @@ public class MainFrame extends JFrame implements ActionListener {
 
    /**
     *  Main processing commands method for the MainFrame object
+    *
     */
    void runProcess() {
       // Checks if we are in the Browsing components panel.
@@ -1462,13 +1463,19 @@ public class MainFrame extends JFrame implements ActionListener {
                dir = "./" + batchDir + "/";
             }
 
+          String switchOption ="-a";
+
+          if (sfFilePath.endsWith(".sfcd")){
+            cmdStart = cmdGeneral + " " + dir + "smartfrog" + " -f "
+                  + sfFilePath + " -e";
+          } else {
            cmdStart = cmdGeneral + " " + dir + "smartfrog" + " -a "
                   +"\""+ this.processNameTextField.getText() +"\""+":"
                   +cmdSFStart+":"
                   +"\""+ sfFilePath+"\""+":"
                   +":"
                   + this.hostNameTextField.getText() + ": -e";
-
+          }
               cmdStop = cmdGeneral + " " +dir + "smartfrog" + " -a "
                      +"\""+ this.processNameTextField.getText() +"\""+":"
                      +cmdSFStop+":"
@@ -1886,7 +1893,7 @@ public class MainFrame extends JFrame implements ActionListener {
 //           +"\n  -Classpath: "+System.getProperty("java.class.path")
 //           +"\n  -Loaded classpath: "+classpath,"INFOMnu",3);
       jTextAreaMsg.append("\nRunning: ");
-      jTextAreaMsg.append("\n  -SF v" + org.smartfrog.Version.versionString);
+      jTextAreaMsg.append("\n  -SF v" + org.smartfrog.Version.versionString());
       jTextAreaMsg.append("\n  -Java v " + System.getProperty("java.version"));
       jTextAreaMsg.append("\n  -Classpath: " + System.getProperty("java.class.path"));
       jTextAreaMsg.append("\n  -Loaded classpath: " + classpath);
@@ -1905,7 +1912,7 @@ public class MainFrame extends JFrame implements ActionListener {
       System.out.println("User Name:      " + System.getProperty("user.name"));
       System.out.println("User Home:      " + System.getProperty("user.home"));
       System.out.println("User Work Dir:  " + System.getProperty("user.dir"));
-      System.out.println("Smart Frog:     " + org.smartfrog.Version.versionString);
+      System.out.println("Smart Frog:     " + org.smartfrog.Version.versionString());
       try {
          java.net.InetAddress localhost = java.net.InetAddress.getLocalHost();
          out.println("LocalHost Name: " + localhost.getHostName());
