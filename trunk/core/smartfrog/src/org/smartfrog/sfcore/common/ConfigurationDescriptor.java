@@ -519,16 +519,14 @@ public class ConfigurationDescriptor implements MessageKeys{
                  this.setSubProcess(getAndCutLastFieldTempURL (separator));
               } catch (Exception ex) {
                   throw new SmartFrogInitException(
-                      "Error parsing SUBPROCESS_NAME in: "+
-                      deploymentURL, ex);
+                      "Error parsing SUBPROCESS_NAME in: "+ deploymentURL, ex);
               }
 
               //GET HOST_NAME (5th Element)
               try {
                   this.setHost(getAndCutLastFieldTempURL (separator));
               } catch (Exception ex) {
-                  throw new SmartFrogInitException("Error parsing HOST in: "+
-                                                   deploymentURL, ex);
+                  throw new SmartFrogInitException("Error parsing HOST in: "+ deploymentURL, ex);
               }
 
               //GET DEPLOY_REFERENCE (4th Element)
@@ -545,8 +543,7 @@ public class ConfigurationDescriptor implements MessageKeys{
                   }
               } catch (Exception ex) {
                   throw new SmartFrogInitException(
-                      "Error parsing DEPLOY_REFERENCE in: "+
-                      deploymentURL, ex);
+                      "Error parsing DEPLOY_REFERENCE in: "+ deploymentURL, ex);
               }
 
 
@@ -561,20 +558,15 @@ public class ConfigurationDescriptor implements MessageKeys{
             tempURL=null;
             try {
                 if (deploymentURL.startsWith("\"")) {
-                    setName(deploymentURL.substring(1,
-                        deploymentURL.lastIndexOf("\"")));
-                    tempURL = deploymentURL.substring(deploymentURL.
-                        lastIndexOf("\"")+2);
+                    setName(deploymentURL.substring(1,deploymentURL.indexOf("\"",1)));
+                    tempURL = deploymentURL.substring(deploymentURL.indexOf("\"",1)+2);
                 } else {
-                    setName(deploymentURL.substring(0,
-                        deploymentURL.indexOf(separator)));
-                    tempURL = deploymentURL.substring(deploymentURL.indexOf(
-                            separator)+1);
+                    setName(deploymentURL.substring(0,deploymentURL.indexOf(separator)));
+                    tempURL = deploymentURL.substring(deploymentURL.indexOf(separator)+1);
                 }
 
             } catch (Exception ex) {
-                throw new SmartFrogInitException("Error parsing NAME in: "+
-                                                 deploymentURL, ex);
+                throw new SmartFrogInitException("Error parsing NAME in: "+ deploymentURL, ex);
             }
 
             //GET ACTION(2nd Element)
@@ -583,8 +575,7 @@ public class ConfigurationDescriptor implements MessageKeys{
                 tempURL = (tempURL.substring(tempURL.indexOf(":")+1,tempURL.length()));
             } catch (Exception ex) {
                 throw new SmartFrogInitException(
-                    "Error parsing ACTION_TYPE in: "+
-                    deploymentURL, ex);
+                    "Error parsing ACTION_TYPE in: "+ deploymentURL, ex);
             }
 
             //GET URL (3rd Element)
@@ -593,8 +584,7 @@ public class ConfigurationDescriptor implements MessageKeys{
                 this.setUrl(tempURL);
             } catch (Exception ex) {
                 throw new SmartFrogInitException(
-                    "Error parsing DEPLOY_REFERENCE in: "+
-                    deploymentURL, ex);
+                    "Error parsing DEPLOY_REFERENCE in: "+ deploymentURL, ex);
             }
 
         } catch (Throwable thr){
@@ -700,8 +690,7 @@ public class ConfigurationDescriptor implements MessageKeys{
         if (reference.trim().equals("")){
             return;
         }
-         this.getOptions().put(SF1Options.SFCONFIGREF,
-                                  Reference.fromString(reference));
+         this.getOptions().put(SF1Options.SFCONFIGREF,Reference.fromString(reference));
     }
 
     /**
