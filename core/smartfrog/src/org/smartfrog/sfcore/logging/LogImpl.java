@@ -383,6 +383,16 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
 
      // -------------------------------------------------------- Logging Methods
 
+     /**
+      * Gets a valid message from Throwable if message was not defined.
+      * @param message Object
+      * @param t Throwable
+      * @return Object
+      */
+     private Object getLogMessageIfNull(Object message, Throwable t) {
+         if ((message==null)&& (t!=null)) { message = t.getMessage(); }
+         return message;
+     }
 
 
      private boolean isCurrentLevelEnabled(Log log) {
@@ -412,7 +422,11 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
       * @param message log this message
       */
      public void trace(Object message) {
-         invoke(TRACE_O,new Object[]{message});
+         if (message instanceof Throwable){
+             trace (message,(Throwable)message);
+         } else {
+            invoke(TRACE_O,new Object[]{message});
+         }
      }
 
 
@@ -424,6 +438,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
       * @param t log this cause
       */
      public void trace(Object message, Throwable t){
+         message = getLogMessageIfNull(message, t);
          invoke(TRACE_O_T,new Object[]{message,t});
      }
 
@@ -434,7 +449,11 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
       * @param message log this message
       */
      public void debug(Object message){
-         invoke(DEBUG_O,new Object[]{message});
+         if (message instanceof Throwable){
+             debug (message,(Throwable)message);
+         } else {
+            invoke(DEBUG_O,new Object[]{message});
+         }
      }
 
 
@@ -445,7 +464,8 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
       * @param t log this cause
       */
      public void debug(Object message, Throwable t){
-         invoke(DEBUG_O_T,new Object[]{message,t});
+        message = getLogMessageIfNull(message, t);
+        invoke(DEBUG_O_T,new Object[]{message,t});
      }
 
 
@@ -455,7 +475,11 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
       * @param message log this message
       */
      public void info(Object message){
-         invoke(INFO_O,new Object[]{message});
+         if (message instanceof Throwable){
+             info (message,(Throwable)message);
+         } else {
+             invoke(INFO_O,new Object[]{message});
+         }
      }
 
 
@@ -466,6 +490,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
       * @param t log this cause
       */
      public void info(Object message, Throwable t){
+         message = getLogMessageIfNull(message, t);
          invoke(INFO_O_T,new Object[]{message,t});
      }
 
@@ -476,7 +501,11 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
       * @param message log this message
       */
      public void warn(Object message){
-         invoke(WARN_O,new Object[]{message});
+         if (message instanceof Throwable){
+             warn (message,(Throwable)message);
+         } else {
+             invoke(WARN_O,new Object[]{message});
+         }
      }
 
 
@@ -487,6 +516,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
       * @param t log this cause
       */
      public void warn(Object message, Throwable t){
+         message = getLogMessageIfNull(message, t);
          invoke(WARN_O_T,new Object[]{message,t});
      }
 
@@ -497,7 +527,11 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
       * @param message log this message
       */
      public void error(Object message){
-         invoke(ERROR_O,new Object[]{message});
+         if (message instanceof Throwable){
+             error (message,(Throwable)message);
+         } else {
+            invoke(ERROR_O,new Object[]{message});
+         }
      }
 
 
@@ -508,6 +542,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
       * @param t log this cause
       */
      public void error(Object message, Throwable t){
+         message = getLogMessageIfNull(message, t);
          invoke(ERROR_O_T,new Object[]{message,t});
      }
 
@@ -518,7 +553,11 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
       * @param message log this message
       */
      public void fatal(Object message){
+         if (message instanceof Throwable){
+             fatal (message,(Throwable)message);
+         } else {
          invoke(FATAL_O,new Object[]{message});
+         }
      }
 
 
@@ -529,6 +568,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
       * @param t log this cause
       */
      public void fatal(Object message, Throwable t){
+         message = getLogMessageIfNull(message, t);
          invoke(FATAL_O_T,new Object[]{message,t});
      }
 
@@ -554,7 +594,11 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * @param message log this message
      */
     public void ignore(Object message){
-        invoke(TRACE_O,new Object[]{"IGNORE - "+message.toString()});
+        if (message instanceof Throwable){
+            ignore (message,(Throwable)message);
+        } else {
+            invoke(TRACE_O,new Object[]{"IGNORE - "+message.toString()});
+         }
     }
 
 
@@ -565,6 +609,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * @param t log this cause
      */
     public void ignore(Object message, Throwable t){
+        message = getLogMessageIfNull(message, t);
         invoke(TRACE_O_T,new Object[]{"IGNORE - "+message.toString(),t});
     }
 
@@ -655,6 +700,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * @param t log this cause
      */
     public void err(Object message, Throwable t){
+        message = getLogMessageIfNull(message, t);
         try {
             if (isCurrentLevelEnabled(localLog)) {
                 if ((localLog!=null)&&(localLog instanceof LogMessage)) {
