@@ -240,10 +240,15 @@ public class ConfigurationDescriptorTest extends TestCase implements Configurati
         }
         public void testurlTest12b ()throws Throwable{
            String sfact = urlTest12b;
-           String description = "testurlTest15b("+sfact+")";
+           String description = "testurlTest12b("+sfact+")";
            deployExpectingSuccess2(sfact,description);
         }
 
+        public void testurlTest14 ()throws Throwable{
+           String sfact = urlTest14;
+           String description = "testurlTest14("+sfact+")";
+           deployExpectingSuccess2(sfact,description);
+        }
 //        public void testurlTest13 ()throws Throwable{
 //           String sfact = urlTest13;
 //           String description = "testurlTest13("+sfact+")";
@@ -266,7 +271,7 @@ public class ConfigurationDescriptorTest extends TestCase implements Configurati
         // daemon
         public void testurlTest100 ()throws Throwable{
            String sfact = urlTest100;
-           String description = "testurlTest12("+sfact+")";
+           String description = "testurlTest100("+sfact+")";
            deployExpectingSuccess2(sfact,description);
         }
 
