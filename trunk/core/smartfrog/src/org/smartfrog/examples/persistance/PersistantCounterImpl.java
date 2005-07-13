@@ -23,6 +23,8 @@ package org.smartfrog.examples.persistance;
 import java.rmi.RemoteException;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.Writer;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
@@ -74,12 +76,13 @@ public class PersistantCounterImpl extends CounterImpl implements Prim, Counter,
         //   read state and if fail leave as is...
 
 	try {
-	    String name = sfCompleteNameSafe().toString();
+            // windows does not like ":" in the file name
+	    String name = sfCompleteNameSafe().toString().replaceAll(":", "#");
 
 	    checkpointDir = sfResolve("sfCheckpointDirectory", checkpointDir, false);
 	    checkpointFileRoot = sfResolve("sfCheckpointFileRoot", checkpointFileRoot, false);
 
-	    checkpointFile = new File(checkpointDir, checkpointFileRoot + "." + name + ".chkpt");
+	    checkpointFile = new File(checkpointDir, checkpointFileRoot + "_" + name + ".chkpt" );
 
 	    if (checkpointFile.canRead()) {
 		ObjectInputStream reader = new ObjectInputStream(new FileInputStream(checkpointFile));
@@ -115,7 +118,7 @@ public class PersistantCounterImpl extends CounterImpl implements Prim, Counter,
 
     protected synchronized void checkpointState() throws FileNotFoundException, IOException {
 	    ObjectOutputStream writer = new ObjectOutputStream(new FileOutputStream(checkpointFile));
-	    writer.writeInt(counter);
+            writer.writeInt(counter);
 	    writer.close();
     }
 
