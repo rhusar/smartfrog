@@ -28,6 +28,8 @@ import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
  * {@link #setUp()} operation loads in the chosen test file. 
  */
 public abstract class ValidTestBase extends ParserTestBase {
+    public static final String URI_EXAMPLE_ORG_1 = "http://example.org/uri/1";
+
     protected ValidTestBase(String name) {
         super(name);
     }

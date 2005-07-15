@@ -31,6 +31,13 @@ import java.rmi.RemoteException;
  */
 public class AlpineEndpointImpl extends PrimImpl implements AlpineEndpoint {
 
+    private String name;
+    private String handlerClass;
+    private String getContentType;
+    private String getMessage;
+    private int getResponseCode;
+    private String wsdlResource;
+    
     public AlpineEndpointImpl() throws RemoteException {
     }
 

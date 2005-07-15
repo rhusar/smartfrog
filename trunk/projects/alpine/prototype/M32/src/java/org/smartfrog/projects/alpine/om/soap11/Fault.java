@@ -40,7 +40,7 @@ public class Fault extends Soap11Element {
      * an empty fault is given an empty code and stub details element
      */ 
     public Fault() {
-        this(ELEMENT_FAULT,NS_URI_SOAP11);
+        this(ELEMENT_FAULT,URI_SOAP11);
         setFaultCode("");
         setFaultString("");
         demandCreateFaultDetail();
@@ -210,7 +210,7 @@ public class Fault extends Soap11Element {
      * Using the apache fault information, add stuff to the fault
      * @param thrown the exception (must not be null) to work with
      */ 
-    public void addException(Throwable thrown) {
+    public void addThrowable(Throwable thrown) {
         setFaultString(thrown.getMessage());
         QName qname = FaultConstants.QNAME_FAULTDETAIL_EXCEPTIONNAME;
         String text = thrown.getClass().getName();
