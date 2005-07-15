@@ -1302,6 +1302,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
     protected void addProcessEnvVars(Vector cmd, ComponentDescription cd)
         throws Exception {
             ComponentDescription sfProcessEnvVars = (ComponentDescription) cd.sfResolveHere (SmartFrogCoreKeys.SF_PROCESS_ENV_VARS, false);
+            if (sfProcessEnvVars == null) return;
             Object key = null;
             Object value = null;
             for (Iterator i = sfProcessEnvVars.sfAttributes(); i.hasNext();) {
