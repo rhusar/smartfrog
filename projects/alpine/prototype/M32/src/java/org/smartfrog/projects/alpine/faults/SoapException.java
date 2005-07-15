@@ -31,11 +31,51 @@ public class SoapException extends AlpineRuntimeException implements SoapFaultSo
 
     private Fault fault;
     
+    /**
+     * message is extracted from the fault string
+     * @param fault
+     */ 
     public SoapException(Fault fault) {
         super(fault.getFaultString());
         this.fault = fault;
     }
 
+    /**
+     * a custom message
+     * @param message
+     * @param fault
+     */ 
+    public SoapException(String message, Fault fault) {
+        super(message);
+        this.fault = fault;
+    }
+
+    /**
+     * create w
+     * @param message
+     * @param cause
+     * @param fault
+     */ 
+    public SoapException(String message, Throwable cause, Fault fault) {
+        super(message, cause);
+        this.fault = fault;
+    }
+
+    /**
+     * message is extracted from the fault string
+     * @param cause
+     * @param fault
+     */ 
+    public SoapException(Throwable cause, Fault fault) {
+        super(cause);
+        this.fault = fault;
+    }
+
+
+    /**
+     * Get the fault information
+     * @return
+     */ 
     public Fault getFault() {
         return fault;
     }

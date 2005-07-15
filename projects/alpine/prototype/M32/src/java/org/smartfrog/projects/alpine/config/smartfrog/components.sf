@@ -30,7 +30,7 @@ AlpineEndpoint extends Prim {
         name extends String;
         getContentType extends String;
         getMessage extends String;
-        getResponse extends Integer;
+        getResponseCode extends Integer;
         wsdl extends String;
         factory extends String;
         
@@ -46,7 +46,7 @@ AlpineEndpoint extends Prim {
       <body>Hello, this is an endpoint</body>
      </html> 
      #
-    getResponse 200;
+    getResponseCode 200;
  }
 
  /*

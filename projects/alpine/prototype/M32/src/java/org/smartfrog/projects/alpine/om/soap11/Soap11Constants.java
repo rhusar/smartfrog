@@ -30,7 +30,7 @@ public interface Soap11Constants {
     /**
      * {@value}
      */
-    public static final String NS_URI_SOAP11="http://schemas.xmlsoap.org/soap/envelope/";
+    public static final String URI_SOAP11="http://schemas.xmlsoap.org/soap/envelope/";
     
     /**
      * {@value}
@@ -40,7 +40,7 @@ public interface Soap11Constants {
     /**
      * Qname of the element
      */ 
-    public static final QName QNAME_ENVELOPE=new QName(NS_URI_SOAP11,ELEMENT_ENVELOPE);
+    public static final QName QNAME_ENVELOPE=new QName(URI_SOAP11,ELEMENT_ENVELOPE);
     
     /**
      * {@value}
@@ -49,7 +49,7 @@ public interface Soap11Constants {
     /**
      * Qname of the element
      */
-    public static final QName QNAME_HEADER = new QName(NS_URI_SOAP11, ELEMENT_HEADER);
+    public static final QName QNAME_HEADER = new QName(URI_SOAP11, ELEMENT_HEADER);
     
 
     /**
@@ -59,7 +59,7 @@ public interface Soap11Constants {
     /**
      * Qname of the element
      */
-    public static final QName QNAME_BODY = new QName(NS_URI_SOAP11, ELEMENT_BODY);
+    public static final QName QNAME_BODY = new QName(URI_SOAP11, ELEMENT_BODY);
         
 
     /**
@@ -69,7 +69,7 @@ public interface Soap11Constants {
     /**
      * Qname of the element
      */
-    public static final QName QNAME_FAULT = new QName(NS_URI_SOAP11, ELEMENT_FAULT);
+    public static final QName QNAME_FAULT = new QName(URI_SOAP11, ELEMENT_FAULT);
 
     /**
      * {@value}
@@ -171,7 +171,7 @@ public interface Soap11Constants {
             "http://www.w3.org/1999/XMLSchema";
     public static final String URI_2000_SCHEMA_XSD =
             "http://www.w3.org/2000/10/XMLSchema";
-    public static final String URI_2001_SCHEMA_XSD =
+    public static final String URI_XSD_2001 =
             "http://www.w3.org/2001/XMLSchema";
 
 
@@ -187,6 +187,8 @@ public interface Soap11Constants {
     public static final String ELEM_FAULT_ROLE_SOAP12 = "Role";
     public static final String ELEM_FAULT_DETAIL_SOAP12 = "Detail";
     public static final String ELEM_TEXT_SOAP12 = "Text";
-   
-    
+
+
+    String URI_XML_1998 = "http://www.w3.org/XML/1998/namespace";
+    String URI_WSDL = "http://schemas.xmlsoap.org/wsdl/";
 }

@@ -22,69 +22,142 @@ package org.smartfrog.projects.alpine.http;
 
 import org.smartfrog.projects.alpine.core.EndpointContext;
 import org.smartfrog.projects.alpine.core.MessageContext;
+import org.smartfrog.projects.alpine.core.AlpineContext;
+import org.smartfrog.projects.alpine.core.ContextConstants;
 import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
 import org.smartfrog.projects.alpine.om.soap11.Fault;
 import org.smartfrog.projects.alpine.om.soap11.Body;
 import org.smartfrog.projects.alpine.interfaces.SoapFaultSource;
+import org.smartfrog.projects.alpine.interfaces.MessageHandler;
+import org.smartfrog.projects.alpine.faults.FaultBridge;
+import org.smartfrog.projects.alpine.faults.AlpineRuntimeException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.ServletException;
+import javax.servlet.ServletContext;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import sun.net.www.protocol.http.HttpURLConnection;
 
 /**
  * This servlet handles SOAP Posted stuff
  */
 public class SoapPostServlet extends ServletBase {
+    public static final String ERROR_NO_HANDLER = "No handler class defined for the endpoint";
+    public static final String TEXT_HTML = "text/html";
 
-    
+    /**
+     * get the alpine context from the servlet context
+     * ; create it if needed
+     * @return
+     */ 
+    public synchronized AlpineContext getAlpineContext() {
+        ServletContext ctx = getServletContext();
+        AlpineContext alpineCtx = (AlpineContext) ctx.getAttribute(AlpineContext.NAME);
+        if(alpineCtx==null) {
+            alpineCtx=createAlpineContext();
+            setAlpineContext(alpineCtx);
+        }
+        return alpineCtx;
+    }
     
     /**
-     * this is the wrong place for state
+     * Create a new alpine context
+     * @return
      */ 
-    private EndpointContext context=new EndpointContext();
-
-    public synchronized void setContext(EndpointContext context) {
-        this.context = context;
+    protected AlpineContext createAlpineContext() {
+        return new AlpineContext();
     }
 
-    public EndpointContext getContext() {
-        return context;
+    /**
+     * set the supplied AlpineContext into the servlet context
+     * @param context
+     */ 
+    public void setAlpineContext(AlpineContext context) {
+        getServletContext().setAttribute(AlpineContext.NAME, context);        
+    }
+    
+    
+    
+
+    public EndpointContext getContext(HttpServletRequest request) {
+        AlpineContext ctx=getAlpineContext();
+        return ctx.getEndpoints().lookup(request);
     }
 
+    protected void report404(HttpServletResponse response) throws ServletException {
+        try {
+            PrintWriter writer = beginHttpResponse(response, HttpServletResponse.SC_NOT_FOUND);
+            writer.println(makeHtmlText("Not Found"));
+            writer.flush();
+            writer.close();
+        } catch (IOException e) {
+            throw new ServletException(e);
+        }
+    }
+
+    private String makeHtmlText(String message) {
+        return "<html><head><title>"+message+"</title></head><body>"+message+"</body></html>";
+    }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        response.setStatus(HttpServletResponse.SC_OK);
-        response.setContentType("text/html");
-        PrintWriter writer = response.getWriter();
-        //todo
+        EndpointContext context=getContext(request);
+        if(context==null) {
+            report404(response);
+        } else {
+            PrintWriter writer = beginHttpResponse(response, HttpServletResponse.SC_OK);
+            String text=(String) context.get(ContextConstants.ATTR_GET_MESSAGE);
+            if(text==null) {
+                text=makeHtmlText("Alpine Endpoint");
+            }
+            writer.println(text);
+            writer.flush();
+            writer.close();
+        }
     }
 
-    protected void doPost(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws ServletException, IOException {
-        super.doPost(httpServletRequest, httpServletResponse);
-        EndpointContext endpointContext = getContext();
+    protected PrintWriter beginHttpResponse(HttpServletResponse response, int code) throws IOException {
+        response.setStatus(code);
+        response.setContentType(TEXT_HTML);
+        PrintWriter writer = response.getWriter();
+        return writer;
+    }
+
+
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        super.doPost(request, response);
+        EndpointContext endpointContext = getContext(request);
+        if(endpointContext==null) {
+            //nothing here; keep going
+            report404(response);
+            return;
+        }
         MessageContext messageContext = endpointContext.createMessageContext();
         MessageDocument requestMessage = null;
         MessageDocument responseMessage=null;
-        HttpBinder binder = new HttpBinder(getContext());
+        HttpBinder binder = new HttpBinder(endpointContext);
         try {
-            requestMessage = binder.parseIncomingPost(messageContext,httpServletRequest);
-            //TODO: dispatch
+            requestMessage = binder.parseIncomingPost(messageContext,request);
+            String handlerClass=(String) endpointContext.get(ContextConstants.ATTR_HANDLER_CLASS);
+            if(handlerClass==null) {
+                throw new AlpineRuntimeException(ERROR_NO_HANDLER);
+            }
+            //create a new handler
+            Class<MessageHandler> aClass = (Class<MessageHandler>) Class.forName(handlerClass);
+            MessageHandler handler = aClass.newInstance();
+            //dispatch
             responseMessage = messageContext.getResponse();
         } catch (Exception e) {
-            if(e instanceof SoapFaultSource) {
-                SoapFaultSource source=(SoapFaultSource) e;
-                Fault fault = source.GenerateSoapFault();
-                responseMessage = messageContext.getResponse();
-                Body body = responseMessage.getEnvelope().getBody();
-                body.removeChildren();
-                body.appendChild(fault);
-            }
+            FaultBridge bridge=FaultBridge.getFaultBridge(messageContext);
+            Fault fault=bridge.extractFaultFromThrowable(e);
+            //we have the fault; patch it in
+            responseMessage = messageContext.getResponse();
+            Body body = responseMessage.getEnvelope().getBody();
+            body.removeChildren();
+            body.appendChild(fault);
         }
-        binder.outputResponse(messageContext, httpServletResponse);
+        binder.outputResponse(messageContext, response);
     }
 }

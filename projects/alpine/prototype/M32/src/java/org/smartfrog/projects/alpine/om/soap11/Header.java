@@ -63,7 +63,7 @@ public class Header extends Soap11Element {
      * @throws InvalidXmlException if it has any other value
      */
     public boolean isMustUnderstand() {
-        Attribute attribute = getAttribute(ATTR_MUST_UNDERSTAND, NS_URI_SOAP11);
+        Attribute attribute = getAttribute(ATTR_MUST_UNDERSTAND, URI_SOAP11);
         if (attribute == null) {
             return false;
         }

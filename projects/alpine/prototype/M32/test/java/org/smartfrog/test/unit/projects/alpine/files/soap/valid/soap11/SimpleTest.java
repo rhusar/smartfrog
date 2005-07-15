@@ -24,6 +24,7 @@ import org.smartfrog.test.unit.projects.alpine.ValidTestBase;
 import org.smartfrog.projects.alpine.om.soap11.MessageDocument;
 import org.smartfrog.projects.alpine.om.soap11.Envelope;
 import org.smartfrog.projects.alpine.om.soap11.Body;
+import org.smartfrog.projects.alpine.om.soap11.XPathContextFactory;
 import org.smartfrog.projects.alpine.xmlutils.NodesIterator;
 import nu.xom.Nodes;
 import nu.xom.Node;
@@ -36,6 +37,7 @@ public class SimpleTest extends ValidTestBase {
     private Body body;
     private Envelope envelope;
     private XPathContext xpathContext;
+    public static final String NODE_VALUE = "DEF";
 
     public SimpleTest(String name) {
         super(name);
@@ -59,10 +61,14 @@ public class SimpleTest extends ValidTestBase {
         MessageDocument doc = getDocument();
         envelope = getEnvelope(doc);
         body = envelope.getBody();
-        xpathContext = XPathContext.makeNamespaceContext(body);
-        xpathContext.addNamespace("m", "http://example.org/uri/1");
+        xpathContext = XPathContextFactory.create(); 
+        xpathContext.addNamespace("m", URI_EXAMPLE_ORG_1);
     }
 
+    /**
+     * first xpath test
+     * @throws Exception
+     */ 
     public void testXpath() throws Exception {
         MessageDocument doc = getDocument();
         Body body;
@@ -72,17 +78,21 @@ public class SimpleTest extends ValidTestBase {
         assertEquals(1, nodes.size());
         Node n1 = nodes.get(0);
         String value = n1.getValue();
-        assertEquals("DEF", value);
+        assertEquals(NODE_VALUE, value);
+        //test our nodes iterator
+        int count=0;
         NodesIterator it = new NodesIterator(nodes);
         for (Node n : it) {
-
+            count++;
         }
+        assertEquals("iterated once",1,count);
     }    
+    
     public void testXpath2() throws Exception {
         for(Node n: body.xpath("m:GetLastTradePriceDetailed/m:symbol", xpathContext))
         {
-            //todo
-            
+            String value = n.getValue();
+            assertEquals(NODE_VALUE, value);
         }
     }
 

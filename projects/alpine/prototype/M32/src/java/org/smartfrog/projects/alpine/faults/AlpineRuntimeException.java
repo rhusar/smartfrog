@@ -49,7 +49,7 @@ public class AlpineRuntimeException extends RuntimeException implements SoapFaul
     public Fault GenerateSoapFault() {
         Fault fault=new Fault();
         fault.setFaultCode(getFaultCode());
-        fault.addException(this);
+        fault.addThrowable(this);
         addExtraDetails(fault);
         return fault;
     }

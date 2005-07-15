@@ -48,7 +48,7 @@ public class FaultFromExceptionTest extends ParserTestBase {
         try {
             throw new Exception(MESSAGE);
         } catch (Exception e) {
-            fault.addException(e);
+            fault.addThrowable(e);
         }
     }
     
