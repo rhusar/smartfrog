@@ -291,9 +291,7 @@ public class ConfigurationDescriptor implements MessageKeys{
               }
               catch (Exception ex1) {
                 //Logger.logQuietly(ex1);
-                if (SFSystem.sfLog().isIgnoreEnabled()){
-                  SFSystem.sfLog().ignore(ex1);
-               }
+                if (SFSystem.sfLog().isIgnoreEnabled()){SFSystem.sfLog().ignore(ex1);}
               }
             }
           }
@@ -474,13 +472,14 @@ public class ConfigurationDescriptor implements MessageKeys{
      *      - name: name where to apply ACTION
      *            ex. foo
      *            ex. "HOST localhost:foo"
-     *      - ACTION: possible actions: DEPLOY, TERMINATE, DETACH, DETaTERM, PING
+     *      - ACTION: possible actions: DEPLOY, TERMINATE, DETACH, DETaTERM, PING, PARSE
      *      - url: description used by ACTION
      *            ex. /home/sf/foo.sf
-     *            ex. c:\sf\foo.sf
+     *            ex. "c:\sf\foo.sf"
+     *            ex. "c:\My documents\foo.sf"
      *      - target: component description name to use with action. It can be empty
      *            ex: foo
-     *            ex: fist:foo
+     *            ex: "fist:foo"
      *            note: sfConfig cannot be use with DEPLOY!
      *      - HOST: host name or IP where to apply ACTION. When empty it assumes localhost.
      *            ex: localhost
@@ -501,6 +500,7 @@ public class ConfigurationDescriptor implements MessageKeys{
     public ConfigurationDescriptor (String deploymentURL) throws SmartFrogInitException {
         try {
             this.originalSFACT = deploymentURL;
+            if (SFSystem.sfLog().isDebugEnabled()){SFSystem.sfLog().debug("Parsing SFACT: ["+originalSFACT+"]");               }
 
             if (deploymentURL==null) {
                 throw new SmartFrogInitException("Deployment URL: null");
@@ -510,56 +510,47 @@ public class ConfigurationDescriptor implements MessageKeys{
             deploymentURL = deploymentURL.trim();
             tempURL = deploymentURL;
 
-            if (deploymentURL.length() < 1) throw
-                    new SmartFrogInitException("Deployment URL: wrong format");
+            if (deploymentURL.length() < 1) {
+                throw new SmartFrogInitException("Deployment URL: wrong format");
+            }
 
+            //GET SUBPROCESS_NAME (6th Element)
+            try {
+                this.setSubProcess(getAndCutLastFieldTempURL(separator));
+            } catch (Exception ex) {
+                throw new SmartFrogInitException( "Error parsing SUBPROCESS_NAME in: "+ deploymentURL+"("+ex.getMessage()+")", ex);
+            }
 
-              //GET SUBPROCESS_NAME (6th Element)
-              try {
-                 this.setSubProcess(getAndCutLastFieldTempURL (separator));
-              } catch (Exception ex) {
-                  throw new SmartFrogInitException( "Error parsing SUBPROCESS_NAME in: "+ deploymentURL, ex);
-              }
+            //GET HOST_NAME (5th Element)
+            try {
+                this.setHost(getAndCutLastFieldTempURL(separator));
+            } catch (Exception ex) {
+                throw new SmartFrogInitException("Error parsing HOST in: "+ deploymentURL+"("+ex.getMessage()+")", ex);
+            }
 
-              //GET HOST_NAME (5th Element)
-              try {
-                  this.setHost(getAndCutLastFieldTempURL (separator));
-              } catch (Exception ex) {
-                  throw new SmartFrogInitException("Error parsing HOST in: "+ deploymentURL, ex);
-              }
+            //GET DEPLOY_REFERENCE (4th Element)
+            //If it contains : has to be between double quotes(")
+            //ex. ...:"componentOne:componentTwo":...
+            try {
+                this.setDeployReference(getAndCutLastFieldTempURL(separator));
+            } catch (Exception ex) {
+                throw new SmartFrogInitException("Error parsing DEPLOY_REFERENCE in: "+ deploymentURL +"("+ex.getMessage()+")", ex);
+            }
 
-              //GET DEPLOY_REFERENCE (4th Element)
-              //If it contains : has to be between double quotes(")
-              //ex. ...:"componentOne:componentTwo":...
-              try {
+            //GET URL (3rd Element)
+             //(Everything that is left at the end)
+             try {
+                 this.setUrl(getAndCutLastFieldTempURL(separator));
+             } catch (Exception ex) {
+                 throw new SmartFrogInitException( "Error parsing DEPLOY_REFERENCE in: "+ deploymentURL+"("+ex.getMessage()+")", ex);
+            }
 
-                  if (tempURL.trim().endsWith("\"")){
-                      tempURL=tempURL.substring(0,tempURL.lastIndexOf("\""));
-                     this.setDeployReference(getAndCutLastFieldTempURL("\""));
-                     tempURL=tempURL.substring(0,tempURL.lastIndexOf(separator));
-                  } else {
-                      this.setDeployReference(getAndCutLastFieldTempURL(separator));
-                  }
-              } catch (Exception ex) {
-                  throw new SmartFrogInitException("Error parsing DEPLOY_REFERENCE in: "+ deploymentURL, ex);
-              }
-
-              //GET URL (3rd Element)
-              // at this stage only "NAME":ACTION:"DEPLOY_URL" are left.
-              // no separator at the end.
-              //(Everything that is left at the end)
-              try {
-                  if (tempURL.endsWith("\"")){
-                      this.setUrl(tempURL.substring(tempURL.lastIndexOf(separator)+2,tempURL.length()-1));
-                  } else {
-                      this.setUrl(tempURL.substring(tempURL.lastIndexOf(separator)+1));
-                  }
-                  tempURL= tempURL.substring(0,tempURL.lastIndexOf(separator));
-
-              } catch (Exception ex) {
-                  throw new SmartFrogInitException("Error parsing DEPLOY_REFERENCE in: "+ deploymentURL, ex);
-              }
-
+            //GET ACTION(2nd Element)
+            try {
+                this.setActionType(getAndCutLastFieldTempURL(separator));
+            } catch (Exception ex) {
+                throw new SmartFrogInitException("Error parsing ACTION_TYPE in: "+ deploymentURL +"("+ex.getMessage()+")", ex);
+            }
 
             // GET NAME (1st Element)
             //Check if url starts with " and extract name:
@@ -568,29 +559,20 @@ public class ConfigurationDescriptor implements MessageKeys{
             // "HOST "127.0.0.1":rootProcess:sfDefault:display":TER:::localhost:subprocess;
             // display:TER:::localhost:subprocess;
             // :TER:::localhost:subprocess; ->Unnamed component
-            deploymentURL=tempURL;
-            tempURL=null;
             try {
-                if (deploymentURL.startsWith("\"")) {
-                    setName(deploymentURL.substring(1,deploymentURL.lastIndexOf("\"")));
-                    tempURL = deploymentURL.substring(deploymentURL.lastIndexOf("\"")+2);
+                String field ="";
+                if (tempURL.trim().endsWith("\"")) {
+                    field = tempURL.substring(1,tempURL.length()-1);
                 } else {
-                    setName(deploymentURL.substring(0,deploymentURL.indexOf(separator)));
-                    tempURL = deploymentURL.substring(deploymentURL.indexOf(separator)+1);
+                    field = tempURL;
                 }
-
+                if (SFSystem.sfLog().isTraceEnabled()) {SFSystem.sfLog().trace("  Extracted ["+field+"] from ["+tempURL+"]"); }
+                this.setName(field);
             } catch (Exception ex) {
-                throw new SmartFrogInitException("Error parsing NAME in: "+ deploymentURL, ex);
+                ex.printStackTrace();
+                throw new SmartFrogInitException("Error parsing NAME in: "+ deploymentURL+"("+ex.getMessage()+")", ex);
             }
-
-            //GET ACTION(2nd Element)
-            try {
-                this.setActionType(tempURL);
-            } catch (Exception ex) {
-                throw new SmartFrogInitException(
-                    "Error parsing ACTION_TYPE in: "+ tempURL, ex);
-            }
-
+            if (SFSystem.sfLog().isDebugEnabled()){SFSystem.sfLog().debug("Parsing SFACT produced: ["+this.toString()+"]");}
         } catch (Throwable thr){
            this.resultException = thr;
            throw (SmartFrogInitException)SmartFrogInitException.forward(thr);
@@ -606,8 +588,20 @@ public class ConfigurationDescriptor implements MessageKeys{
      */
     private String getAndCutLastFieldTempURL( String token) throws Exception{
         String field = null;
-        field =  tempURL.substring(tempURL.lastIndexOf(token)+1,tempURL.length());
-        tempURL= (tempURL.substring(0, tempURL.lastIndexOf(token)));
+        if (tempURL.trim().endsWith("\"")) {
+            String newURL = tempURL.substring(0, tempURL.length()-1);
+            int indexFirstQuote = newURL.lastIndexOf("\"");
+            field = tempURL.substring(indexFirstQuote+1,tempURL.length()-1);
+            if (SFSystem.sfLog().isTraceEnabled()) {SFSystem.sfLog().trace("  Extracted ["+field+"] from ["+tempURL+"]"); }
+            if (indexFirstQuote==-1) {
+                indexFirstQuote = 1;
+            }
+            tempURL=tempURL.substring(0,indexFirstQuote-1);
+        } else {
+            field = tempURL.substring(tempURL.lastIndexOf(token)+1, tempURL.length());
+            if (SFSystem.sfLog().isTraceEnabled()) {SFSystem.sfLog().trace("  Extracted ["+field+"] from ["+tempURL+"]"); }
+            tempURL = (tempURL.substring(0, tempURL.lastIndexOf(token)));
+        }
         return field;
     }
     /**
@@ -694,7 +688,8 @@ public class ConfigurationDescriptor implements MessageKeys{
         if (reference.trim().equals("")){
             return;
         }
-         this.getOptions().put(SF1Options.SFCONFIGREF,Reference.fromString(reference));
+         this.getOptions().put(SF1Options.SFCONFIGREF,
+                                  Reference.fromString(reference));
     }
 
     /**

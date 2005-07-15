@@ -15,7 +15,7 @@ rem call %SFHOME%\bin\setClassPath
 call "%SFHOME%\bin\setSFProperties"
 
 echo "Terminating %1"
-java %SFCMDPARAMETERS% org.smartfrog.SFSystem -a %2:TERMINATE:::%1: -e
+java %SFCMDPARAMETERS% org.smartfrog.SFSystem -a \"%2\":TERMINATE:::%1: -e
 
 GOTO end
 :usage

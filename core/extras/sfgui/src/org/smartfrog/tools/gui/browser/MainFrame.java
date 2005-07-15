@@ -79,7 +79,7 @@ public class MainFrame extends JFrame implements ActionListener {
    /**
     *  Description of the Field
     */
-   public final static String version = "v0.7 r16";
+   public final static String version = "v0.7 r18";
    // This has to  be done properly !!!!!!!!!!!!!!! no static. Because of crap log.
    static PrintStream msg = System.out;
    static JLabel statusBar = new JLabel();
@@ -1380,30 +1380,45 @@ public class MainFrame extends JFrame implements ActionListener {
                   }
 
                }
-//               cmdStart = cmdGeneral + " " + dir + cmdStart + " "
-//                      + this.hostNameTextField.getText() + " "
-//                      + this.processNameTextField.getText() + " "
-//                      +"\""+ file.getPath()+"\"" + " ";
-//ProcessName:DEPLOY:org/smartfrog/examples/counter/examplekk.sf::127.0.0.1:
-               cmdStart = cmdGeneral + " " + dir + "smartfrog" + " -a "
-                      +"\""+ this.processNameTextField.getText()+"\"" +":"
-                      +cmdSFStart+":"
-                      +"\""+ file.getPath()+"\""+":"
-                      +":"
-                      + this.hostNameTextField.getText() + ": -e";
 
+                     String switchOption ="-a";
+                     String sfFilePath = file.getPath();
+                     if (sfFilePath.endsWith(".sfcd")){
+                       cmdStart = cmdGeneral + " " + dir + "smartfrog" + " -f "+"\""+ sfFilePath +"\""+ " -e";
+                     } else {
+                      if  (osName.equals("Windows 2000") || osName.equals("Windows NT")|| osName.equals("Windows XP")||osName.equals("Windows 95") || osName.equals("Windows 98")) {
+             cmdStart = cmdGeneral + " " + dir + "smartfrog" + " -a "
+                 + "\\\"\"" + this.processNameTextField.getText() + "\\\"\"" +
+                 ":"
+                 + cmdSFStart + ":"
+                 + "\\\"\"" + sfFilePath + "\\\"\"" + ":"
+                 + ":"
+                 + this.hostNameTextField.getText() + ": -e";
+             cmdStop = cmdGeneral + " " +dir + "smartfrog" + " -a "
+                    +"\\\"\""+ this.processNameTextField.getText() +"\\\"\""+":"
+                    +cmdSFStop+":"
+                    +""+":"
+                    +":"
+                    + this.hostNameTextField.getText() + ": -e";
+                     } else {
+                         //ProcessName:DEPLOY:org/smartfrog/examples/counter/examplekk.sf::127.0.0.1:
+                       cmdStart = cmdGeneral + " " + dir + "smartfrog" + " -a "
+                           + "\"" + this.processNameTextField.getText() + "\"" +
+                           ":"
+                           + cmdSFStart + ":"
+                           + "\"" + file.getPath() + "\"" + ":"
+                           + ":"
+                           + this.hostNameTextField.getText() + ": -e";
 
-//               cmdStop = cmdGeneral + " " + dir + cmdStop + " "
-//                      + this.hostNameTextField.getText() + " "
-//                      + this.processNameTextField.getText() + " "
-//                      + " ";
-//ProcessName:DEPLOY:org/smartfrog/examples/counter/examplekk.sf::127.0.0.1:
-                  cmdStop = cmdGeneral + " " + dir + "smartfrog" + " -a "
-                         +"\""+ this.processNameTextField.getText()+"\"" +":"
-                         +cmdSFStop+":"
-                         +""+":"
-                         +":"
-                         + this.hostNameTextField.getText() + ": -e";
+                       cmdStop = cmdGeneral + " " +dir + "smartfrog" + " -a "
+                              +"\""+ this.processNameTextField.getText() +"\""+":"
+                              +cmdSFStop+":"
+                              +""+":"
+                              +":"
+                              + this.hostNameTextField.getText() + ": -e";
+                          ////ProcessName:DEPLOY:org/smartfrog/examples/counter/examplekk.sf::127.0.0.1:
+                        }
+                     }
 
 
 
@@ -1467,21 +1482,40 @@ public class MainFrame extends JFrame implements ActionListener {
 
           if (sfFilePath.endsWith(".sfcd")){
             cmdStart = cmdGeneral + " " + dir + "smartfrog" + " -f "
-                  + sfFilePath + " -e";
+                  +"\""+ sfFilePath +"\""+ " -e";
           } else {
-           cmdStart = cmdGeneral + " " + dir + "smartfrog" + " -a "
-                  +"\""+ this.processNameTextField.getText() +"\""+":"
-                  +cmdSFStart+":"
-                  +"\""+ sfFilePath+"\""+":"
-                  +":"
-                  + this.hostNameTextField.getText() + ": -e";
+           if  (osName.equals("Windows 2000") || osName.equals("Windows NT")|| osName.equals("Windows XP")||osName.equals("Windows 95") || osName.equals("Windows 98")) {
+             cmdStart = cmdGeneral + " " + dir + "smartfrog" + " -a "
+                 + "\\\"\"" + this.processNameTextField.getText() + "\\\"\"" +
+                 ":"
+                 + cmdSFStart + ":"
+                 + "\\\"\"" + sfFilePath + "\\\"\"" + ":"
+                 + ":"
+                 + this.hostNameTextField.getText() + ": -e";
+             cmdStop = cmdGeneral + " " +dir + "smartfrog" + " -a "
+                    +"\\\"\""+ this.processNameTextField.getText() +"\\\"\""+":"
+                    +cmdSFStop+":"
+                    +""+":"
+                    +":"
+                    + this.hostNameTextField.getText() + ": -e";
+
+          } else {
+            cmdStart = cmdGeneral + " " + dir + "smartfrog" + " -a "
+                + "\"" + this.processNameTextField.getText() + "\"" +
+                ":"
+                + cmdSFStart + ":"
+                + "\"" + sfFilePath + "\"" + ":"
+                + ":"
+                + this.hostNameTextField.getText() + ": -e";
+
+            cmdStop = cmdGeneral + " " +dir + "smartfrog" + " -a "
+                   +"\""+ this.processNameTextField.getText() +"\""+":"
+                   +cmdSFStop+":"
+                   +""+":"
+                   +":"
+                   + this.hostNameTextField.getText() + ": -e";
+             }
           }
-              cmdStop = cmdGeneral + " " +dir + "smartfrog" + " -a "
-                     +"\""+ this.processNameTextField.getText() +"\""+":"
-                     +cmdSFStop+":"
-                     +""+":"
-                     +":"
-                     + this.hostNameTextField.getText() + ": -e";
 
 
 
