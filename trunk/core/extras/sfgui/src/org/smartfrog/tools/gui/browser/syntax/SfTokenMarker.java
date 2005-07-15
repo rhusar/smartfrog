@@ -140,8 +140,14 @@ public class SfTokenMarker extends CTokenMarker {
          sfKeywords.add("sfProcessName", Token.LABEL);
          sfKeywords.add("sfProcessHost", Token.LABEL);
          sfKeywords.add("sfProcessComponentName", Token.LABEL);
+         sfKeywords.add("sfProcess", Token.LABEL);
          sfKeywords.add("sfProcessAllow", Token.LABEL);
-         sfKeywords.add("sfProcessTimeOut", Token.LABEL);
+         sfKeywords.add("sfProcessEnvVars", Token.LABEL);
+         sfKeywords.add("sfProcessConfig", Token.LABEL);
+         sfKeywords.add("sfProcessJava", Token.LABEL);
+         sfKeywords.add("sfProcessTimeout", Token.LABEL);
+         sfKeywords.add("sfProcessClassPath", Token.LABEL);
+         sfKeywords.add("sfProcessReplaceClassPath", Token.LABEL);
 
          sfKeywords.add("sfSyncTerminate", Token.LABEL);
          sfKeywords.add("sfLivenessDelay", Token.LABEL);
