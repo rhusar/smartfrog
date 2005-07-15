@@ -14,7 +14,7 @@ if exist "%SFHOME%\jre\bin\java.exe" set path=%SFHOME%\jre\bin
 rem call %SFHOME%\bin\setClassPath
 call "%SFHOME%\bin\setSFProperties"
 
-java %SFCMDPARAMETERS% org.smartfrog.SFSystem -a %2:DEPLOY:%3::%1: -e
+java %SFCMDPARAMETERS% org.smartfrog.SFSystem -a \"%2\":DEPLOY:\"%3\"::%1: -e
 
 GOTO end
 :usage
