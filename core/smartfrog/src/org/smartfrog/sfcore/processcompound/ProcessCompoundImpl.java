@@ -1019,6 +1019,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
         addProcessJava(runCmd, cd);
         addProcessClassPath(runCmd, name, cd);
         addProcessDefines(runCmd, name);
+        addProcessEnvVars(runCmd,cd);
         addProcessAttributes(runCmd, name, cd);
         addProcessClassName(runCmd,cd);
 
@@ -1189,24 +1190,12 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
                 if (!key.equals(SmartFrogCoreProperty.propBaseSFProcess+ SmartFrogCoreKeys.SF_PROCESS_NAME)) {
                   // Special case relsolved in addClassPath
 
-// No meaning anymore
-//                  if (key.startsWith(SmartFrogCoreProperty.propBaseSFProcess + "java.class.path.")) {
-//                      continue;
-//                  }
                   //Add special parameters to named subprocesses
                   //@todo add Junit test for this feature
                   //@todo test what happens with special caracters
                   // prefixed by 'org.smartfrog.sfcore.processcompound.jvm.'+NAME+property=value
                   String specialParameters = SmartFrogCoreProperty.propBaseSFProcess + "jvm." + name + ".";
-                  //This will be ignored
-                  // The right way is to use: 'org.smartfrog.sfcore.processcompound.java.class.path.NAME';
 
-// No meaning anymore
-//                  if (key.startsWith(specialParameters+ "java.class.path.")) {
-//                      continue;
-//                  }
-                  //Logger.log("Testing: "+specialParameters);
-                  //Logger.log("key: "+key);
                   if (key.startsWith(specialParameters)) {
                     Object value = props.get(key);
                     String keyS = key.toString().substring(specialParameters.length());
@@ -1265,7 +1254,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
 
     /**
      * Resolves sfProcessConfig and adds to it all SystemProperties that
-     * start with org.smartfrog.processcompoun.PROCESS_NAME
+     * start with org.smartfrog.processcompound.PROCESS_NAME
      * @param cd ComponentDescription
      * @return ComponentDescription
      */
@@ -1298,54 +1287,30 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
                                  SmartFrogCoreProperty.propBaseSFProcess +
                                  key.toString() + "=" +
                                  value.toString());
-
             }
     }
 
-
-//    Deprecated: Replaced with common/TerminatorThread
-//    /**
-//     * Implements an asynchronous sfTerminateQuietlyWith call
-//     */
-//    private class TerminateCall implements Runnable {
-//        /**
-//         * Reference to component.
-//         */
-//        private Prim target;
-//
-//        /**
-//         * Termination record.
-//         */
-//        private TerminationRecord record;
-//
-//        /**
-//         * Type of termination.
-//         */
-//        private boolean quiet;
-//
-//
-//        /**
-//         * Constructs TerminateCall with component and termination record.
-//         */
-//        public TerminateCall(Prim target, TerminationRecord record, boolean quiet) {
-//            this.target = target;
-//            this.record = record;
-//            this.quiet = quiet;
-//            (new Thread(this)).start();
-//        }
-//        /**
-//         * Runs the thread.
-//         */
-//        public void run() {
-//            try {
-//               if (quiet)
-//                target.sfTerminateQuietlyWith(record);
-//               else
-//                 target.sfTerminate(record);
-//            } catch (Exception remex) {
-//                // ignore
-//            }
-//        }
-//    }
+    /**
+     * Constructs sequence of -D statements for the new sub-process by
+     * iterating over the sfProcessEnvVars ComponentDescription
+     *
+     * @param cmd command to append to
+     * @param sfProcessAttributes component description with extra process configuration (ex. sfProcessConfig)
+     *
+     * @exception Exception failed to construct defines
+     */
+    protected void addProcessEnvVars(Vector cmd, ComponentDescription cd)
+        throws Exception {
+            ComponentDescription sfProcessEnvVars = (ComponentDescription) cd.sfResolveHere (SmartFrogCoreKeys.SF_PROCESS_ENV_VARS, false);
+            Object key = null;
+            Object value = null;
+            for (Iterator i = sfProcessEnvVars.sfAttributes(); i.hasNext();) {
+                key = i.next().toString();
+                value = sfProcessEnvVars.sfResolveHere(key);
+                cmd.addElement("-D"+
+                                 key.toString() + "=" +
+                                 value.toString());
+            }
+    }
 
 }

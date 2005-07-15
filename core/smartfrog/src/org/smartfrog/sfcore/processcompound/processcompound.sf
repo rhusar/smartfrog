@@ -42,6 +42,7 @@ ProcessCompound extends Compound {
   //sfProcessClassPath "smartfrog.jar";
   //sfProcessReplaceClassPath false;
   //sfProcessConfig extends DATA {} //Component description for special attributes to pass to next subProcess.
+  //sfProcessEnvVars extends DATA {} //Component description for special attributes to pass as env. properties to next subProcess.
 
   sfProcessAllow true;
   sfProcessTimeout 60;
