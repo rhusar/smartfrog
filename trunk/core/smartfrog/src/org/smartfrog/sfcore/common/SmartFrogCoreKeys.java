@@ -94,6 +94,14 @@ public interface SmartFrogCoreKeys {
     public final static String SF_PROCESS_CONFIG ="sfProcessConfig";
 
     /**
+     * Attribute used to define what variables should be added to a subProcesses
+     * jvm environment.
+     *
+     * Value {@value}
+     */
+    public final static String SF_PROCESS_ENV_VARS ="sfProcessEnvVars";
+
+    /**
      * Attribute with subprocess deployment timeout.
      *
      * Value {@value}
