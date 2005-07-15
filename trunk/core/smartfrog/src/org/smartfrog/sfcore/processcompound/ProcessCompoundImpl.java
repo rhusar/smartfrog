@@ -1004,11 +1004,11 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
      * Any property prefixed by 'org.smartfrog.sfcore.processcompound.jvm.'+NAME+property=value
      * will be added  only to the subprocess named 'NAME' as a parameter
      * for the JVM. The parameter will be "property+value". @see addProcessDefines
-     * Every attribute described by cd.sfProcessAttributes will be added to the command line
+     * Every attribute described by cd.sfProcessConfig will be added to the command line
      * as "-Dorg.smartfrog.processcompound.ATTRIBUTE_NAME=ATTRIBUTE_VALUE"
      *
      * @param name name of new process
-     * @param cd component description with extra process configuration (ex. sfProcessAttributes)
+     * @param cd component description with extra process configuration (ex. sfProcessConfig)
      *
      * @return new process
      *
@@ -1034,7 +1034,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
      * attribute. sfProcessJava could be a String or a Collection
      *
      * @param cmd cmd to append to
-     * @param cd component description with extra process configuration (ex. sfProcessAttributes)
+     * @param cd component description with extra process configuration (ex. sfProcessConfig)
      *
      * @exception Exception failed to construct java command
      */
@@ -1264,14 +1264,14 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
     }
 
     /**
-     * Resolves sfProcessAttributes and adds to it all SystemProperties that
+     * Resolves sfProcessConfig and adds to it all SystemProperties that
      * start with org.smartfrog.processcompoun.PROCESS_NAME
      * @param cd ComponentDescription
      * @return ComponentDescription
      */
     private ComponentDescription getProcessAttributes(Object name, ComponentDescription cd) throws  SmartFrogResolutionException {
       ComponentDescription sfProcessAttributes =null;
-      sfProcessAttributes = (ComponentDescription) sfResolveHere (SmartFrogCoreKeys.SF_PROCESS_CONFIG, false);
+      sfProcessAttributes = (ComponentDescription) cd.sfResolveHere (SmartFrogCoreKeys.SF_PROCESS_CONFIG, false);
       if (sfProcessAttributes == null) sfProcessAttributes = new ComponentDescriptionImpl(null, new ContextImpl(),false);
       ComponentDescriptionImpl.addSystemProperties(SmartFrogCoreProperty.propBaseSFProcess + name ,sfProcessAttributes);
       return sfProcessAttributes;
@@ -1279,10 +1279,10 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
 
     /**
      * Constructs sequence of -D statements for the new sub-process by
-     * iterating over the sfProcessAttributes ComponentDescription.
+     * iterating over the sfProcessConfig ComponentDescription.
      *
      * @param cmd command to append to
-     * @param sfProcessAttributes component description with extra process configuration (ex. sfProcessAttributes)
+     * @param sfProcessAttributes component description with extra process configuration (ex. sfProcessConfig)
      *
      * @exception Exception failed to construct defines
      */
