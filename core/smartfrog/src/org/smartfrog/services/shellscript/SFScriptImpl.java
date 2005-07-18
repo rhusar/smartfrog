@@ -24,6 +24,7 @@ package org.smartfrog.services.shellscript;
 import java.util.*;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
@@ -68,12 +69,6 @@ public class SFScriptImpl  extends PrimImpl implements Prim, SFScript, SFReadCon
 
   // For Prim
   public SFScriptImpl() throws RemoteException {
-    try {
-      jbInit();
-    } catch (Exception ex) {
-      ex.printStackTrace();
-    }
-
   }
 
   //Component and LiveCycle methods
@@ -129,8 +124,7 @@ public class SFScriptImpl  extends PrimImpl implements Prim, SFScript, SFReadCon
          checkResult(startScript, cd);
      }
      if (this.autoTerminate){
-       TerminationRecord termR = new TerminationRecord(
-                 TerminationRecord.NORMAL, "Script '"+this.sfCompleteNameSafe() + "' done." , null);
+       TerminationRecord termR = new TerminationRecord(TerminationRecord.NORMAL, "Script '"+this.sfCompleteNameSafe() + "' done." , null);
        TerminatorThread terminator = new TerminatorThread(this,termR);
        terminator.start();
      }
@@ -208,6 +202,7 @@ private void checkResult(Object script, ComponentDescription cd) throws  SmartFr
  }
 
  private ComponentDescription run (Vector script) throws SmartFrogException, RemoteException {
+   script = resolveCommands(script);
    ScriptResults result = shell.execute (script,-1,verbose);
    ComponentDescription cd =result.waitForResults(-1); //wait forever
    if (sfLog().isTraceEnabled()){ sfLog().trace("Executed (Vector script):\n "+result.toString()); }
@@ -219,7 +214,11 @@ private void checkResult(Object script, ComponentDescription cd) throws  SmartFr
    ComponentDescription cd = null;
    int count = 0;
    for (Iterator i = script.sfValues(); i.hasNext();) {
-      cd =run(i.next());
+      Object item = i.next();
+      if (item instanceof Reference){
+          item = this.sfResolve ((Reference)item);
+      }
+      cd =run(item);
       count++;
       if (cd !=null) cdAll.sfAddAttribute(new Integer(count).toString(),cd);
    }
@@ -229,7 +228,18 @@ private void checkResult(Object script, ComponentDescription cd) throws  SmartFr
    return cdAll;
  }
 
-  private void jbInit() throws Exception {
-  }
-
+ /**
+  * Method to sfResolve any lazy reference in the list before it is executed
+  */
+ private Vector resolveCommands(Vector commands) throws SmartFrogException, RemoteException {
+     Vector newCommands = new Vector();
+     for (int i = 0; i<commands.size(); ++i) {
+         Object command = commands.get(i);
+         if (command instanceof Reference) {
+             command = this.sfResolve((Reference)command);
+         }
+         newCommands.add(command);
+     }
+     return newCommands;
+   }
 }
