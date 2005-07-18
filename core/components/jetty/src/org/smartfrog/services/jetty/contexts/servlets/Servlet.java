@@ -66,7 +66,10 @@ public class Servlet extends PrimImpl implements JettyServlet {
     ServletHolder holder = null;
 
     JettyHelper jettyHelper = new JettyHelper(this);
-    public static final int DEFAULT_INIT_ORDER = 0;
+    /**
+     * default inititialisaion order {@value}
+     */
+    public static final int DEFAULT_INIT_ORDER =-1;
 
     /**
      * Standard RMI constructor
