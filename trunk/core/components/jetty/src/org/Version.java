@@ -22,9 +22,8 @@ package org;
 
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
-import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.logging.LogFactory;
-import org.smartfrog.sfcore.common.SFNull;
+import org.smartfrog.sfcore.logging.LogSF;
 
 /**
  * Version class provides version and copyright strings for SmartFrog System.

@@ -27,9 +27,24 @@ import java.rmi.Remote;
 
 
 public interface ServletContextIntf extends Remote {
-    public static final String CONTEXT_PATH = "contextPath";
-    public static final String RESOURCE_BASE = "resourceBase";
-    public static final String CLASSPATH = "classPath";
-    String CONTEXT = "Context";
-    String SERVER = "server";
+    /**
+     * {@value}
+     */
+    public static final String ATTR_CONTEXT_PATH = "contextPath";
+    /**
+     * {@value}
+     */
+    public static final String ATTR_RESOURCE_BASE = "resourceBase";
+    /**
+     * {@value}
+     */
+    public static final String ATTR_CLASSPATH = "classPath";
+    /**
+     * {@value}
+     */
+    public static final String ATTR_CONTEXT = "Context";
+    /**
+     * {@value}
+     */
+    public static final String SERVER = "server";
 }
