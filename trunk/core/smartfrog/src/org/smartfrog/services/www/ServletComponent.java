@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2005 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -22,34 +22,13 @@ package org.smartfrog.services.www;
 import java.rmi.Remote;
 
 /**
- * created 23-Jun-2004 13:42:09
+ * created 18-Jul-2005 15:55:13
  */
 
 
-public interface JavaWebApplication extends Remote {
-
-
-    /**
-     * path on the application server
-     * {@value}
-     */
-    public static final String ATTR_CONTEXT_PATH = "contextPath";
-
-    /**
-     * name or File reference of a war file
-     * {@value}
-     */
-    public static final String ATTR_WARFILE = "warFile";
-
-    /**
-     * reference to the server to deploy on
-     * {@value}
-     */
-    public static final String  ATTR_SERVER = "server";
-
-    /**
-     * run time attribute: the full URL to the component
-     * {@value}
-     */
-    public static final String ATTR_APPLICATION_URL ="applicationURL";
+public interface ServletComponent extends Remote {
+    String ATTR_NAME = "name";
+    String ATTR_PATH_SPEC = "pathSpec";
+    String ATTR_CLASSNAME = "className";
+    String ATTR_INIT_PARAMS = "initParams";
 }

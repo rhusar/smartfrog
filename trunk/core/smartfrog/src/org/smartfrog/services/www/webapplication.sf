@@ -39,9 +39,31 @@ JavaWebApplicationSchema extends Schema {
 
     //application server
     server extends OptionalCD;
+
 }
 
 JavaWebApplication extends Prim {
     javaWebApplicationSchema extends JavaWebApplicationSchema;
-
 }
+
+
+/**
+ * this servlet declaration defines
+ * the servlet information
+ */
+ServletSchema extends Schema {
+    name extends String;
+    pathSpec extends String;
+    className extends String;
+    mappings extends OptionalVector;
+    initParams extends OptionalVector;
+}
+
+/**
+ * declare an abstract servlet
+ */
+Servlet extends Prim {
+    servletSchema extends ServletSchema;
+}
+
+
