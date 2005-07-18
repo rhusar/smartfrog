@@ -218,7 +218,7 @@ TOKEN : /* reserved words */
 TOKEN :
 {
   < WORD: <LETTER> (<LETTER>|<DIGIT>|<SPECIAL>)* >
-| < #SPECIAL: [".", "_", "-", "+", "@", "#", "~", "$", "%", "^", "&", "<", ">"] >
+| < #SPECIAL: [".", "_", "-", "+", "@", "#", "~", "$", "%", "^", "&"] >
 | < #LETTER:
       [
        "\u0024",
