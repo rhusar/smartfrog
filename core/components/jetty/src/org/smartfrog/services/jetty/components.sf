@@ -3,6 +3,7 @@
 #include "org/smartfrog/functions.sf";
 #include "/org/smartfrog/predicates.sf"
 #include "org/smartfrog/services/utils/concat/components.sf"
+#include "org/smartfrog/services/filesystem/components.sf"
 //liveness and webserver
 #include "/org/smartfrog/services/www/components.sf"
 
@@ -11,19 +12,6 @@
  * Listeners for incoming requests
 */
 
-/**
- * This component is a jetty http server, with
- * the standard listeners and contexts
- */ 
-
-HttpServer extends CoreJettyServer {
-   sfClass "org.smartfrog.services.jetty.SFJetty";
-   listeners extends Listeners; //optional
-   contexts extends Contexts;   //optional
-   //if logging is enabled, then it logs to jettyhome/logs.
-   enableLogging true;
-   port 8080;
-}
 
 /**
  * schema for the base jetty server extends
@@ -33,6 +21,11 @@ CoreJettySchema extends WebServerSchema {
     jettyhome extends String;
     enableLogging extends Boolean;
     serverHost extends String;
+    //log pattern
+    logPattern extends String;
+    //could be a file or a directory
+    //relative paths are resolved relative to jetty home
+    logDir extends Optional;
 }
 
 /**
@@ -43,10 +36,28 @@ CoreJettySchema extends WebServerSchema {
 CoreJettyServer extends Compound {
    sfClass "org.smartfrog.services.jetty.SFJetty";
    coreJettySchema extends CoreJettySchema;
-   enableLogging false;
    serverHost "localhost";
    //synchronous deploy/undeploy policy
    sfSyncTerminate true;
+   port 8080;
+
+   //logging is optional. Once turned on, the pattern and logdir are mandatory
+   enableLogging false;
+   logPattern "yyyy_mm_dd.request.log";
+   logDir "log";
+}
+
+/**
+ * This component is a jetty http server, with
+ * the standard listeners and contexts
+ */
+
+HttpServer extends CoreJettyServer {
+   sfClass "org.smartfrog.services.jetty.SFJetty";
+   listeners extends Listeners; //optional
+   contexts extends Contexts;   //optional
+   //if logging is enabled, then it logs to jettyhome/logs.
+   enableLogging true;
    port 8080;
 }
 
@@ -122,24 +133,22 @@ JettyListener extends Prim {
     jettyListenerSchema extends JettyListenerSchema;
 }
 
-/**
- * this servlet declaration defines
- * the servlet information
- */
-JettyServletSchema extends Schema {
-    name extends String;
-    pathSpec extends String;
-    className extends String;
-    initParams extends OptionalVector;
-}
 
 /**
  * and this implementing class binds the servlet to
  * jetty
  */
-JettyServlet extends Prim {
+JettyServlet extends Servlet {
     sfClass "org.smartfrog.services.jetty.contexts.servlets.Servlet";
-    jettyServletSchema extends JettyServletSchema;
+    jettyServletSchema extends Schema {
+        //init order for the servlet;
+        //Holders with order<0, are initialized on use.
+        //Those with order>=0 are initialized in increasing order when the handler is started
+        initOrder extends OptionalInteger;
+     }
+
+     initOrder 0;
+
 }
 
 
@@ -233,48 +242,48 @@ Forward extends JettyHandler {
 ===========================================*/
 
 Servlets extends Compound {
- Servlet1 ATTRIB Invokerservlet;
- Servlet2 ATTRIB Dumpservlet;
+ Servlet1 ATTRIB InvokerServlet;
+ Servlet2 ATTRIB DumpServlet;
  Servlet3 ATTRIB Sessionservlet;
- Servlet4 ATTRIB Dispatchservlet;
- Servlet5 ATTRIB JSPservlet;
- Servlet6 ATTRIB SrcDefaultservlet;
+ Servlet4 ATTRIB DispatchServlet;
+ Servlet5 ATTRIB JSPServlet;
+ Servlet6 ATTRIB SrcDefaultServlet;
 }
 
 
 
-Invokerservlet extends JettyServlet {
+InvokerServlet extends JettyServlet {
  name "Invoker";
  pathSpec "/servlet/*";
  className "org.mortbay.jetty.servlet.Invoker";
 }
 
-Dumpservlet extends JettyServlet {
+DumpServlet extends JettyServlet {
  name "Dump";
  pathSpec "/dump/*:*.DUMP";
  className "org.mortbay.servlet.Dump";
  initParams [["InitParam","Value"]];
 }
 
-Sessionservlet extends JettyServlet {
+SessionServlet extends JettyServlet {
  name "Session";
  pathSpec "/session/*";
  className "org.mortbay.servlet.SessionDump";
 }
 
-Dispatchservlet extends JettyServlet {
+DispatchServlet extends JettyServlet {
  name "Dispatch";
  pathSpec "/dispatch/*";
  className "org.mortbay.servlet.RequestDispatchTest";
 }
 
-JSPservlet extends JettyServlet {
+JSPServlet extends JettyServlet {
  name "JSP";
  pathSpec "*.jsp";
  className "org.apache.jasper.servlet.JspServlet";
 }
 
-SrcDefaultservlet extends JettyServlet {
+SrcDefaultServlet extends JettyServlet {
  name "SrcDefault";
  pathSpec "/src/*";
  className "org.mortbay.jetty.servlet.Default";

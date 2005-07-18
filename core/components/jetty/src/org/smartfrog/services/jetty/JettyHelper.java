@@ -21,20 +21,18 @@
 
 package org.smartfrog.services.jetty;
 
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.reference.Reference;
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.processcompound.SFProcess;
-import org.smartfrog.sfcore.processcompound.ProcessCompound;
-import org.smartfrog.sfcore.utils.ComponentHelper;
-import org.smartfrog.services.jetty.contexts.ServletContextIntf;
-import org.mortbay.http.HttpServer;
+import org.mortbay.http.HttpContext;
 import org.mortbay.http.HttpHandler;
 import org.mortbay.http.HttpListener;
-import org.mortbay.http.HttpContext;
+import org.mortbay.http.HttpServer;
 import org.mortbay.jetty.servlet.ServletHttpContext;
+import org.smartfrog.services.jetty.contexts.ServletContextIntf;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.utils.ComponentHelper;
 
 import java.rmi.RemoteException;
 
@@ -57,6 +55,16 @@ public class JettyHelper extends ComponentHelper {
      * a reference to our server component
      */
     private Prim serverComponent=null;
+
+    /**
+     * Name of the interface of jetty component we look for
+     * {@value}
+     */
+    public static final String JETTY_INTERFACE_NAME = "org.smartfrog.services.jetty.JettyIntf";
+    /**
+     * Name of the servlet interface of jetty component we look for {@value}
+     */
+    public static final String JETTY_SERVLET_INTERFACE = "org.smartfrog.services.jetty.contexts.ServletContextIntf";
 
     public JettyHelper(Prim owner) {
         super(owner);
@@ -97,7 +105,7 @@ public class JettyHelper extends ComponentHelper {
             //look for an attribute first
             serverComponent = getOwner().sfResolve(JettyIntf.SERVER, serverComponent, false);
             if(serverComponent==null) {
-                serverComponent=findAncestorImplementing("org.smartfrog.services.jetty.JettyIntf",
+                serverComponent=findAncestorImplementing(JETTY_INTERFACE_NAME,
                     -1);
                 if ( serverComponent == null ) {
                     throw new SmartFrogResolutionException("No Web Server found");
@@ -158,14 +166,14 @@ public class JettyHelper extends ComponentHelper {
 
         ServletHttpContext context=null;
 
-        Prim ancestor = findAncestorImplementing("org.smartfrog.services.jetty.contexts.ServletContextIntf", -1);
+        Prim ancestor = findAncestorImplementing(JETTY_SERVLET_INTERFACE, -1);
         if(ancestor!=null) {
             context = (ServletHttpContext) ancestor.
-                    sfResolve(ServletContextIntf.CONTEXT);
+                    sfResolve(ServletContextIntf.ATTR_CONTEXT);
         }
         if (mandatory && context == null) {
             throw new SmartFrogException("Could not locate "
-                    + ServletContextIntf.CONTEXT + " in the hierarchy");
+                    + ServletContextIntf.ATTR_CONTEXT + " in the hierarchy");
         }
         return context;
     }
@@ -230,7 +238,6 @@ public class JettyHelper extends ComponentHelper {
               if (getLogger().isErrorEnabled()){
                 getLogger().error(" Interrupted on context termination ", ex);
               }
-              // Logger.log(" Interrupted on context termination ", ex);
             }
             if ( httpServer != null ) {
                 httpServer.removeContext(context);
@@ -250,7 +257,6 @@ public class JettyHelper extends ComponentHelper {
                 if (getLogger().isErrorEnabled()){
                   getLogger().error(" Interrupted on listener termination ", ex);
                 }
-                //Logger.log(" Interrupted on listener termination ", ex);
             }
             removeListener(listener);
         }

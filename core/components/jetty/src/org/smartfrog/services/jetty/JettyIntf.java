@@ -22,8 +22,6 @@ package org.smartfrog.services.jetty;
 
 import org.smartfrog.services.www.JavaWebApplicationServer;
 
-import java.rmi.Remote;
-
 /**
  * created 17-Jun-2004 11:24:28
  */

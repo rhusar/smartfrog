@@ -22,8 +22,6 @@ package org.smartfrog.services.jetty.contexts;
 
 import org.smartfrog.services.www.JavaWebApplication;
 
-import java.rmi.Remote;
-
 /**
  * created 17-Jun-2004 11:41:18
  */
@@ -31,7 +29,8 @@ import java.rmi.Remote;
 
 public interface JettyWebApplicationContext extends JavaWebApplication {
 
-    //String WEBAPP = "webApp";
-    String WEBAPP = "warFile";
-    String REQUEST_ID = "requestId";
+    /**
+     * {@value}
+     */
+    String ATTR_REQUEST_ID = "requestId";
 }

@@ -19,16 +19,14 @@
  */
 package org.smartfrog.services.jetty.contexts.servlets;
 
-import java.rmi.Remote;
+import org.smartfrog.services.www.ServletComponent;
 
 /**
  * created 17-Jun-2004 11:57:47
  */
 
 
-public interface JettyServlet extends Remote {
-    String NAME = "name";
-    String PATH_SPEC = "pathSpec";
-    String CLASSNAME = "className";
-    String INIT_PARAMS = "initParams";
+public interface JettyServlet extends ServletComponent {
+
+    public static final String ATTR_INIT_ORDER="init";
 }

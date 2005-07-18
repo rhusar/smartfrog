@@ -21,11 +21,11 @@
 
 package org.smartfrog.services.jetty.contexts.handlers;
 
-import org.smartfrog.sfcore.prim.PrimImpl;
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.services.jetty.JettyHelper;
 import org.mortbay.http.HttpHandler;
 import org.mortbay.jetty.servlet.ServletHttpContext;
+import org.smartfrog.services.jetty.JettyHelper;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.prim.PrimImpl;
 
 import java.rmi.RemoteException;
 
