@@ -147,7 +147,7 @@ JettyServlet extends Servlet {
         initOrder extends OptionalInteger;
      }
 
-     initOrder 0;
+     initOrder -1;
 
 }
 
