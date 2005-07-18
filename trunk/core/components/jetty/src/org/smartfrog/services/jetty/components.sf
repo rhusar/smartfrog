@@ -91,7 +91,7 @@ JettyServletContext extends Compound {
 JettyWebApplicationSchema extends Schema {
 
     //webapp is a name of an app or a directory
-    warFile extends OptionalString;
+    warFile extends String;
 }
 
 JettyWebApplication extends JavaWebApplication {
