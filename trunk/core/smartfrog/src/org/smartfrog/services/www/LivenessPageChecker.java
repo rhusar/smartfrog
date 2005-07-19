@@ -181,11 +181,21 @@ public class LivenessPageChecker implements LivenessPage {
      * @throws SmartFrogDeploymentException DOCUMENT ME!
      */
     protected void makeURL() throws SmartFrogDeploymentException {
-        String target = protocol + "://" + host + ':' + port + '/' + page;
-        if(queries!=null) {
-            target+=queries;
+        StringBuffer target=new StringBuffer();
+        target.append(protocol);
+        target.append("://" );
+        target.append(host);
+        target.append(':');
+        target.append(port);
+        if(!page.startsWith("/")) {
+            target.append('/');
         }
-        bindToURL(target);
+        target.append(page);
+                                
+        if(queries!=null) {
+            target.append(queries);
+        }
+        bindToURL(target.toString());
     }
 
     /**

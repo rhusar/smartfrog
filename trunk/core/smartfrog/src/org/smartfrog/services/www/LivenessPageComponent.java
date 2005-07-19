@@ -42,6 +42,11 @@ import java.util.Vector;
 public class LivenessPageComponent extends PrimImpl implements LivenessPage {
 
     /**
+     * enabled flag
+     */ 
+    boolean enabled=true;
+    
+    /**
      * the class that contains all the checking code. This is on the side
      * for reuse in other components.
      */
@@ -57,6 +62,11 @@ public class LivenessPageComponent extends PrimImpl implements LivenessPage {
      */
     int nextCheck = 0;
 
+    /**
+     * a log
+     */
+    Log log;
+    
     /**
      * empty constructor
      *
@@ -107,18 +117,16 @@ public class LivenessPageComponent extends PrimImpl implements LivenessPage {
         checkFrequency = sfResolve(CHECK_FREQUENCY, checkFrequency, false);
 
 
+        enabled = sfResolve(ENABLED,enabled,false);
 
         //now tell the liveness page it is deployed
         livenessPage.onDeploy();
 
         log = new ComponentHelper(this).getLogger();
-        log.info("Deployed " + toString());
+        log.info("Checking " + toString());
     }
 
-    /**
-     * a log
-     */
-    Log log;
+
 
     /**
      * Liveness call in to check if this component is still alive.
@@ -131,7 +139,7 @@ public class LivenessPageComponent extends PrimImpl implements LivenessPage {
         super.sfPing(source);
 
         //check the counter
-        if (nextCheck-- <= 0) {
+        if (enabled && nextCheck-- <= 0) {
             //reset it
             nextCheck = checkFrequency;
 
@@ -146,7 +154,7 @@ public class LivenessPageComponent extends PrimImpl implements LivenessPage {
     public String toString() {
         //delegate
         if (livenessPage != null) {
-            return livenessPage.toString();
+            return livenessPage.toString() + (enabled ? "" : " (disabled)");
         } else {
             return "undeployed liveness checker";
         }
