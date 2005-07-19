@@ -22,12 +22,17 @@ package org.smartfrog.projects.alpine.config.smartfrog;
 
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.prim.Liveness;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogLivenessException;
+import org.smartfrog.projects.alpine.core.AlpineContext;
+import org.smartfrog.projects.alpine.core.EndpointContext;
+import org.smartfrog.projects.alpine.core.ContextConstants;
 
 import java.rmi.RemoteException;
 
 /**
- 
+ * binding from smartfrog to configuring an endpoint
  */
 public class AlpineEndpointImpl extends PrimImpl implements AlpineEndpoint {
 
@@ -37,7 +42,9 @@ public class AlpineEndpointImpl extends PrimImpl implements AlpineEndpoint {
     private String getMessage;
     private int getResponseCode;
     private String wsdlResource;
-    
+    private String path;
+    private EndpointContext epx;
+
     public AlpineEndpointImpl() throws RemoteException {
     }
 
@@ -50,6 +57,27 @@ public class AlpineEndpointImpl extends PrimImpl implements AlpineEndpoint {
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
+        name = sfResolve(ATTR_NAME,"",true);
+        handlerClass = sfResolve(ATTR_HANDLER_CLASS,"",true);
+        path = sfResolve(ATTR_PATH, "", true);
+        wsdlResource = sfResolve(ATTR_WSDL,"",false);
+        getContentType = sfResolve(ATTR_CONTENT_TYPE,"",false);
+        getMessage = sfResolve(ATTR_GET_MESSAGE,"",false);
+        getResponseCode = sfResolve(ATTR_GET_RESPONSECODE, 200, false);
+        AlpineContext context=AlpineContext.getAlpineContext();
+        epx = new EndpointContext();
+        putIfSet(epx, ContextConstants.ATTR_GET_MESSAGE, getMessage);
+        putIfSet(epx, ContextConstants.ATTR_WSDL, wsdlResource);
+        putIfSet(epx, ContextConstants.ATTR_HANDLER_CLASS,handlerClass);
+        putIfSet(epx, ContextConstants.ATTR_NAME, name);
+        putIfSet(epx, ContextConstants.ATTR_CONTENT_TYPE, getContentType);
+        context.getEndpoints().register(path,epx);
+    }
+
+    private void putIfSet(EndpointContext epx, String key, String value) {
+        if(value.length()>0) {
+            epx.put(key,value);
+        }
     }
 
     /**
@@ -60,6 +88,8 @@ public class AlpineEndpointImpl extends PrimImpl implements AlpineEndpoint {
      */
     public synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
+        AlpineContext context = AlpineContext.getAlpineContext();
+        context.getEndpoints().unregister(epx);
     }
 
     /**
@@ -69,7 +99,30 @@ public class AlpineEndpointImpl extends PrimImpl implements AlpineEndpoint {
      * @param classname
      */
     public boolean addHandler(String name, String classname) throws RemoteException {
+        //TODO
         return false;
+    }
+
+    /**
+     * Liveness call in to check if this component is still alive. This method can be overriden to check other state of
+     * a component. An example is Compound where all children of the compound are checked. This basic check updates the
+     * liveness count if the ping came from its parent. Otherwise (if source non-null) the liveness count is decreased
+     * by the sfLivenessFactor attribute. If the count ever reaches 0 liveness failure on tha parent has occurred and
+     * sfLivenessFailure is called with source this, and target parent. Note: the sfLivenessCount must be decreased
+     * AFTER doing the test to correctly count the number of ping opportunities that remain before invoking
+     * sfLivenessFailure. If done before then the number of missing pings is reduced by one. E.g. if sfLivenessFactor is
+     * 1 then a sfPing from the parent sets sfLivenessCount to 1. The sfPing from a non-parent would reduce the count to
+     * 0 and immediately fail.
+     *
+     * @param source source of call
+     * @throws SmartFrogLivenessException component is terminated
+     * @throws RemoteException            for consistency with the {@link Liveness} interface
+     */
+    public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
+        super.sfPing(source);
+        if(epx==null) {
+            throw new SmartFrogLivenessException("Not started");
+        }
     }
 
     /**

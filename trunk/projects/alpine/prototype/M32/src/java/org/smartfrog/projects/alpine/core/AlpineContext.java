@@ -20,6 +20,7 @@
 
 package org.smartfrog.projects.alpine.core;
 
+import javax.servlet.ServletContext;
 import java.util.HashMap;
 
 /**
@@ -38,4 +39,30 @@ public class AlpineContext {
         return endpoints;
     }
 
+    /**
+     * yes, singletons are bad
+     */ 
+    private static AlpineContext alpineCtx;
+    
+    /**
+     * get the alpine context from the servlet context ; create it if needed
+     *
+     * @return
+     */
+    public static synchronized AlpineContext getAlpineContext() {
+        
+        if (alpineCtx == null) {
+            alpineCtx = createAlpineContext();
+        }
+        return alpineCtx;
+    }
+    
+    /**
+     * Create a new alpine context
+     *
+     * @return
+     */
+    private static AlpineContext createAlpineContext() {
+        return new AlpineContext();
+    }    
 }

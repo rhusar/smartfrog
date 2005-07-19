@@ -26,80 +26,85 @@ For more information: www.smartfrog.org
  * Include the core smartfrog components.
  */
 #include "/org/smartfrog/components.sf"
-
-/**
- * Include the CDDLM components.
- */
-
-#include "/org/smartfrog/services/cddlm/components.sf"
+#include "/org/smartfrog/functions.sf";
 #include "/org/smartfrog/services/filesystem/components.sf"
-
-//jetty
-#include "org/smartfrog/projects/alpine/config/smartfrog/components.sf";
-
-//alpine
-
-
-sfConfig extends AlpineServer {
+#include "/org/smartfrog/services/www/components.sf";
+#include "/org/smartfrog/services/jetty/components.sf";
+#include "/org/smartfrog/projects/alpine/config/smartfrog/components.sf";
+#include "org/smartfrog/services/utils/concat/components.sf"
 
 
-    host "localhost";
+AlpineServerOnJetty extends CoreJettyServer {
+
+
+    serverHost "localhost";
 
     port TBD;
+    
+    server "alpine";
 
-    //so they terminate one after the other
-    sfSyncTerminate true;
 
-    /*
-     deploy axis on jetty
-     */
-    jettyServer extends CoreJettyServer {
-        sfSyncTerminate true;
-
-        server "alpine";
-
-        serverHost host;
-
-        listeners extends Compound {
-            jetty extends JettyListener {
-                listenerPort port;
-                serverHost host;
-                server LAZY jettyServer;
-            }
+    listeners extends Compound {
+        jetty extends JettyListener {
+            listenerPort port;
+            serverHost host;
+            server LAZY jettyServer;
         }
-/*
-        warFile extends File {
-            dir axishome;
-            filename "axis.war";
-            mustExist true;
-        }
-
-
-
-        AxisWebApp extends JettyWebApplication {
-            webApp LAZY warFile:absolutePath;
-            contextPath "/axis";
-        }
-*/
-
     }
 
+    servlets extends JettyServletContext {
+        
+        resourceBase "./tmp";
+        contextPath "/servlets/";
 
-
-
-    //fetch the WSDL every so often, just to see that we are happy
-/*
-    wsdlFetch extends FetchCddlmWSDL {
-        port PARENT:port;
-    }
-    */
+        alpineServlet extends AlpineServletOnJetty {
+            pathSpec "alpine/*";
+            initOrder 5;
+            fullpath (PARENT:contextPath ++ pathSpec);
+        }
+     }
 }
 
 
-sfConfig extends Compound {
+server extends AlpineServerOnJetty {
 
+    jettyhome LAZY PROPERTY java.io.tmpdir;
+
+    //this is our endpoint
+    endpoint extends EchoEndpoint {
+        name "echoEndpoint";
+        path "/echo/";
+    }
+
+    /**
+     * late binding path information
+     */    
+    endpointPath extends LazyConcat {
+       string extends LAZY {
+          -- LAZY servlets:alpineServlet:absolutePath ;
+          -- LAZY endpoint:path;
+       }
+    }
+    
+
+    //fetch the page every so often, just to see that we are happy
+    ping extends LivenessPage {
+        enabled PARENT:liveness;
+        host PARENT:serverHost;
+        port PARENT:port;
+        page LAZY endpointPath:concat;
+        checkFrequency 1;
+    }
+    
+    liveness true;
+}
+
+
+sfConfig extends server {
 
     host "localhost";
 
     port 5050;
 
+    //liveness false;
+}
