@@ -39,6 +39,9 @@ public class EndpointContextMap {
      */ 
     public EndpointContext lookup(HttpServletRequest request) {
         String path=request.getPathInfo();
+        if(path==null) {
+            return null;
+        }
         return map.get(path);
     }
     
@@ -63,13 +66,21 @@ public class EndpointContextMap {
         if(path==null) {
             return false;
         }
+        return unregister(path);
+    }
+
+    /**
+     * Unregister a context by path
+     * @param path
+     * @return
+     */ 
+    public boolean unregister(String path) {
         if(map.get(path)==null) {
             return false;
         }
         map.remove(path);
         return true;
     }
-    
-    
-    
+
+
 }

@@ -22,6 +22,7 @@ package org.smartfrog.projects.alpine.om.soap11;
 
 import nu.xom.Document;
 import nu.xom.Element;
+import nu.xom.Node;
 import org.smartfrog.projects.alpine.xmlutils.NodeIterator;
 import org.smartfrog.projects.alpine.interfaces.ValidateXml;
 import org.smartfrog.projects.alpine.faults.InvalidXmlException;
@@ -110,5 +111,15 @@ public class MessageDocument extends Document implements ValidateXml {
 
     public HashMap<String, String> getMimeHeaders() {
         return mimeHeaders;
+    }
+
+    /**
+     * <p/>
+     * Returns a complete copy of this document. </p>
+     *
+     * @return a deep copy of this <code>Document</code> object
+     */
+    public MessageDocument copy() {
+        return (MessageDocument) super.copy();
     }
 }

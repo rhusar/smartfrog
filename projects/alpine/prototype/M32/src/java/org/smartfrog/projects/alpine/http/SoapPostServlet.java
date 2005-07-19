@@ -54,32 +54,8 @@ public class SoapPostServlet extends ServletBase {
      * @return
      */ 
     public synchronized AlpineContext getAlpineContext() {
-        ServletContext ctx = getServletContext();
-        AlpineContext alpineCtx = (AlpineContext) ctx.getAttribute(AlpineContext.NAME);
-        if(alpineCtx==null) {
-            alpineCtx=createAlpineContext();
-            setAlpineContext(alpineCtx);
-        }
-        return alpineCtx;
+        return AlpineContext.getAlpineContext();
     }
-    
-    /**
-     * Create a new alpine context
-     * @return
-     */ 
-    protected AlpineContext createAlpineContext() {
-        return new AlpineContext();
-    }
-
-    /**
-     * set the supplied AlpineContext into the servlet context
-     * @param context
-     */ 
-    public void setAlpineContext(AlpineContext context) {
-        getServletContext().setAttribute(AlpineContext.NAME, context);        
-    }
-    
-    
     
 
     public EndpointContext getContext(HttpServletRequest request) {
@@ -127,7 +103,6 @@ public class SoapPostServlet extends ServletBase {
 
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        super.doPost(request, response);
         EndpointContext endpointContext = getContext(request);
         if(endpointContext==null) {
             //nothing here; keep going
@@ -148,6 +123,7 @@ public class SoapPostServlet extends ServletBase {
             Class<MessageHandler> aClass = (Class<MessageHandler>) Class.forName(handlerClass);
             MessageHandler handler = aClass.newInstance();
             //dispatch
+            handler.processMessage(messageContext, endpointContext);
             responseMessage = messageContext.getResponse();
         } catch (Exception e) {
             FaultBridge bridge=FaultBridge.getFaultBridge(messageContext);
@@ -158,6 +134,9 @@ public class SoapPostServlet extends ServletBase {
             body.removeChildren();
             body.appendChild(fault);
         }
+        responseMessage = messageContext.getResponse();
+        response.setStatus(responseMessage.isFault()? 
+                HttpServletResponse.SC_INTERNAL_SERVER_ERROR : HttpServletResponse.SC_OK);
         binder.outputResponse(messageContext, response);
     }
 }
