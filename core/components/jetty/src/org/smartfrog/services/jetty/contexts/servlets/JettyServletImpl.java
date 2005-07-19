@@ -120,7 +120,7 @@ public class JettyServletImpl extends PrimImpl implements JettyServlet {
             //update our path attribute
             Prim ancestor = jettyHelper.findServletContextAncestor();
             String ancestorPath = ancestor.sfResolve(ServletContextIntf.ATTR_ABSOLUTE_PATH,"",true);
-            String absolutePath = jettyHelper.deregexpPath(ancestorPath + pathSpec);
+            String absolutePath = jettyHelper.deregexpPath(jettyHelper.concatPaths(ancestorPath,pathSpec));
             sfReplaceAttribute(ATTR_ABSOLUTE_PATH, absolutePath);
             
 
