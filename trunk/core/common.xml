@@ -106,28 +106,28 @@
   
     <!--Logic to have conditional directory strecture for components -->
     <!--property name="dist.dir" value="${build.dir}/dist"/--> 
-    <condition property="dist.dir" value="dist">
+    <condition property="dist.dir" location="dist">
       <istrue value="${is.component}"/>
     </condition>
     
-    <property name="dist.dir" value="${build.dir}/dist"/>
-    <condition property="dist.lib.dir" value="${dist.dir}/lib">
+    <property name="dist.dir" location="${build.dir}/dist"/>
+    <condition property="dist.lib.dir" location="${dist.dir}/lib">
       <istrue value="${is.component}"/>
     </condition>
       
     <property name="dist.lib.dir" location="${build.dir}/dist/lib"/>
       
-    <condition property="dist.doc.dir" value="${dist.dir}/docs">
+    <condition property="dist.doc.dir" location="${dist.dir}/docs">
       <istrue value="${is.component}"/>
     </condition>
     <property name="dist.doc.dir" location="${build.dir}/dist/doc"/>
     
-    <condition property="dist.jdocs.dir" value="${dist.dir}/docs/jdocs">
+    <condition property="dist.jdocs.dir" location="${dist.dir}/docs/jdocs">
       <istrue value="${is.component}"/>
     </condition>
     <property name="dist.jdocs.dir" location="${build.dir}/dist/docs/jdocs"/>
     
-    <condition property="dist.bin.dir" value="${dist.dir}/bin">
+    <condition property="dist.bin.dir" location="${dist.dir}/bin">
       <istrue value="${is.component}"/>
     </condition>
     
@@ -980,9 +980,8 @@
              basedir="${build.classes.dir}" 
              includes="**/*"/>
      <echo level="verbose">created package ${target.jar}</echo>
-     
-    
   </target>
+  
   <!-- ========================================================== -->
   <!-- this is an override point -->
   <!-- create the JAR ${target.jar}-->
@@ -1195,7 +1194,7 @@
     <!-- TODO -->
   </target>
   
-  <target name="sign-dependent-jars"
+  <target name="sign-dependent-jars" depends="init-security"
     description="sign all jars that we depend upon">
     <!-- TODO -->
   </target>
