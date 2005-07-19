@@ -49,7 +49,6 @@ public class JettyHelper extends ComponentHelper {
      */
     private HttpServer httpServer;
 
-    private Reference serverNameRef = new Reference(JettyIntf.SERVER);
 
     /**
      * a reference to our server component
@@ -58,13 +57,23 @@ public class JettyHelper extends ComponentHelper {
 
     /**
      * Name of the interface of jetty component we look for
+     * "org.smartfrog.services.jetty.JettyIntf";
      * {@value}
      */
-    public static final String JETTY_INTERFACE_NAME = "org.smartfrog.services.jetty.JettyIntf";
+    public static final String JETTY_INTERFACE_NAME = JettyIntf.class.getCanonicalName(); 
+    //
     /**
-     * Name of the servlet interface of jetty component we look for {@value}
+     * Name of the servlet interface of jetty component we look for.
+     * "org.smartfrog.services.jetty.contexts.ServletContextIntf";
+     *  {@value}
      */
-    public static final String JETTY_SERVLET_INTERFACE = "org.smartfrog.services.jetty.contexts.ServletContextIntf";
+    public static final String JETTY_SERVLET_INTERFACE = ServletContextIntf.class.getCanonicalName();
+    
+    /**
+     * max depth to recurse down
+     */ 
+    
+    private static final int MAX_PARENT_DEPTH = 99999;
 
     public JettyHelper(Prim owner) {
         super(owner);
@@ -166,7 +175,7 @@ public class JettyHelper extends ComponentHelper {
 
         ServletHttpContext context=null;
 
-        Prim ancestor = findAncestorImplementing(JETTY_SERVLET_INTERFACE, -1);
+        Prim ancestor = findServletContextAncestor();
         if(ancestor!=null) {
             context = (ServletHttpContext) ancestor.
                     sfResolve(ServletContextIntf.ATTR_CONTEXT);
@@ -178,6 +187,12 @@ public class JettyHelper extends ComponentHelper {
         return context;
     }
 
+    /**
+     * find whatever ancestor is a servlet context
+     */
+    public Prim findServletContextAncestor() throws RemoteException {
+        return findAncestorImplementing(JETTY_SERVLET_INTERFACE, MAX_PARENT_DEPTH);
+    }
 
     /**
      * add a handler to the server
@@ -260,6 +275,24 @@ public class JettyHelper extends ComponentHelper {
             }
             removeListener(listener);
         }
+    }
+    
+    /**
+     * strip any trailing * from a path and give the base bit up to where that began.
+     * @param path
+     * @return
+     */ 
+    public String deregexpPath(String path) {
+        String result;
+        int star=path.indexOf('*');
+        if(star<0) {
+            return path;
+        } 
+        if(star==0) {
+            return "/";
+        }
+        result=path.substring(0,star-1);
+        return result;
     }
 
 }

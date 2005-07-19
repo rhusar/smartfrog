@@ -44,6 +44,7 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
 
 import java.rmi.RemoteException;
+import java.io.File;
 
 /**
  * A wrapper for a Jetty http server.
@@ -74,6 +75,8 @@ public class SFJetty extends CompoundImpl implements Compound,JettyIntf {
 
     protected String logDir;
     protected String logPattern;
+    public static final String LOG_PATTERN = "yyyy_mm_dd.request.log";
+    public static final String LOG_SUBDIR = "/logs/";
 
 
     /**
@@ -98,9 +101,10 @@ public class SFJetty extends CompoundImpl implements Compound,JettyIntf {
         enableLogging=sfResolve(ENABLE_LOGGING,enableLogging,true);
 
         if(enableLogging) {
-            FileSystem.lookupAbsolutePath(this,ATTR_LOGDIR,jettyhome,null,true,null);
+            logDir=FileSystem.lookupAbsolutePath(this,ATTR_LOGDIR,jettyhome,null,true,null);
+            logPattern=sfResolve(ATTR_LOGPATTERN,"",false);
+            configureLogging();
         }
-        configureHttpServer();
         super.sfDeploy();
 
     } catch (Exception ex){
@@ -128,12 +132,11 @@ public class SFJetty extends CompoundImpl implements Compound,JettyIntf {
   /**
    * Configure the http server
    */
-  public void configureHttpServer() throws SmartFrogException {
+  public void configureLogging() throws SmartFrogException {
       try {
           if(enableLogging) {
               NCSARequestLog requestlog = new NCSARequestLog();
-              requestlog.setFilename(jettyhome +
-                      "/logs/yyyy_mm_dd.request.log");
+              requestlog.setFilename(logDir+File.separatorChar+logPattern);
               requestlog.setBuffered(false);
               requestlog.setRetainDays(90);
               requestlog.setAppend(true);

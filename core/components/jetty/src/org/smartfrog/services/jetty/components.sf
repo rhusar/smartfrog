@@ -85,12 +85,23 @@ HttpServerAdmin extends Prim {
  */
 
 JettyServletContextSchema extends Schema {
+    //location of resources
     resourceBase extends String;
+    //url path on server
+    contextPath extends String;
+    
+    //classpath. Not tested yet.
+    classpath extends OptionalString;
+     
+    //at deploy time, the property absolutePath is set to the path up to (but not including)
+    //any regexp. e.g servlets/* maps to servlets/
+     
+     
     //server extends String;
 }
 
 JettyServletContext extends Compound {
-    sfClass "org.smartfrog.services.jetty.contexts.Servlet";
+    sfClass "org.smartfrog.services.jetty.contexts.JettyServletContext";
     jettyServletContextSchema extends JettyServletContextSchema;
 }
 
@@ -139,7 +150,7 @@ JettyListener extends Prim {
  * jetty
  */
 JettyServlet extends Servlet {
-    sfClass "org.smartfrog.services.jetty.contexts.servlets.Servlet";
+    sfClass "org.smartfrog.services.jetty.contexts.servlets.JettyServletImpl";
     jettyServletSchema extends Schema {
         //init order for the servlet;
         //Holders with order<0, are initialized on use.
@@ -184,7 +195,7 @@ context3 extends JettyWebApplication {
 context4 extends JettyServletContext {
  contextPath "/demo";
  resourceBase "/demo/docroot";
- classPath "/demo/servlets"; 
+ classpath "/demo/servlets"; 
  handlers extends Handlers; //optional
  servlets extends Servlets; //optional
 }

@@ -37,5 +37,10 @@ public interface JettyIntf extends JavaWebApplicationServer {
     String SERVER = "server";
 
     String ENABLE_LOGGING="enableLogging";
+    
+    public static final String ATTR_LOGDIR="logDir";
+    
+    public static final String ATTR_LOGPATTERN="logPattern";
+    
 
 }
