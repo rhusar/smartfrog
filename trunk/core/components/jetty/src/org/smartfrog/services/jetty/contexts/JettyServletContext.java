@@ -37,6 +37,8 @@ import org.mortbay.http.handler.ResourceHandler;
 import org.mortbay.jetty.servlet.ServletHttpContext;
 import org.smartfrog.services.jetty.JettyHelper;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
 import org.smartfrog.sfcore.compound.CompoundImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
@@ -51,7 +53,7 @@ import java.rmi.RemoteException;
  * @author Ritu Sabharwal
  */
 
-public class Servlet extends CompoundImpl implements ServletContextIntf {
+public class JettyServletContext extends CompoundImpl implements ServletContextIntf {
     Reference contextPathRef = new Reference(ATTR_CONTEXT_PATH);
     Reference resourceBaseRef = new Reference(ATTR_RESOURCE_BASE);
     Reference classPathRef = new Reference(ATTR_CLASSPATH);
@@ -73,7 +75,7 @@ public class Servlet extends CompoundImpl implements ServletContextIntf {
     /**
      * Standard RMI constructor
      */
-    public Servlet() throws RemoteException {
+    public JettyServletContext() throws RemoteException {
         super();
     }
 
@@ -84,12 +86,16 @@ public class Servlet extends CompoundImpl implements ServletContextIntf {
      * @throws RemoteException    In case of network/rmi error
      */
     public void sfDeploy() throws SmartFrogException, RemoteException {
+        //deploy our parent, but not, through the miracle of subclassing, our children
+        super.sfDeploy();
         context = new ServletHttpContext();
         sfAddAttribute(ATTR_CONTEXT, context);
         server = jettyHelper.bindToServer();
         jettyhome = jettyHelper.findJettyHome();
         contextPath = sfResolve(contextPathRef, contextPath, true);
         resourceBase = sfResolve(resourceBaseRef, resourceBase, true);
+        String absolutePath = jettyHelper.deregexpPath(contextPath);
+        sfReplaceAttribute(ATTR_ABSOLUTE_PATH,absolutePath);
         if (!new File(resourceBase).exists()) {
             resourceBase = jettyhome.concat(resourceBase);
         }
@@ -99,7 +105,18 @@ public class Servlet extends CompoundImpl implements ServletContextIntf {
                 classPath = jettyhome.concat(classPath);
             }
         }
-        super.sfDeploy();
+        //now deploy our children
+        super.sfDeployChildren();
+    }
+
+    /**
+     * This is an override point. 
+     * @throws SmartFrogResolutionException if stuff cannot get resolved
+     * @throws RemoteException              if the network is playing up
+     * @throws SmartFrogLifecycleException  if any exception (or throwable) is raised by a child component.
+     */
+    protected void sfDeployChildren() throws SmartFrogResolutionException, RemoteException, SmartFrogLifecycleException {
+        //super.sfDeployChildren();
     }
 
     /**

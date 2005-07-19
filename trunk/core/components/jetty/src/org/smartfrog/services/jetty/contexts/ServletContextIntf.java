@@ -38,7 +38,7 @@ public interface ServletContextIntf extends Remote {
     /**
      * {@value}
      */
-    public static final String ATTR_CLASSPATH = "classPath";
+    public static final String ATTR_CLASSPATH = "classpath";
     /**
      * {@value}
      */
@@ -47,4 +47,11 @@ public interface ServletContextIntf extends Remote {
      * {@value}
      */
     public static final String SERVER = "server";
+    
+    /**
+     * absolute path is the path up to the first *
+     * {@value}
+     */ 
+    public static final String ATTR_ABSOLUTE_PATH = "absolutePath";
+    
 }

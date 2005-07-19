@@ -34,10 +34,12 @@ package org.smartfrog.services.jetty.contexts.servlets;
 import org.mortbay.jetty.servlet.ServletHolder;
 import org.mortbay.jetty.servlet.ServletHttpContext;
 import org.smartfrog.services.jetty.JettyHelper;
+import org.smartfrog.services.jetty.contexts.ServletContextIntf;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
 
 import java.rmi.RemoteException;
@@ -51,7 +53,7 @@ import java.util.Vector;
  */
 
 
-public class Servlet extends PrimImpl implements JettyServlet {
+public class JettyServletImpl extends PrimImpl implements JettyServlet {
 
     Reference nameRef = new Reference(ATTR_NAME);
     Reference pathSpecRef = new Reference(ATTR_PATH_SPEC);
@@ -74,7 +76,7 @@ public class Servlet extends PrimImpl implements JettyServlet {
     /**
      * Standard RMI constructor
      */
-    public Servlet() throws RemoteException {
+    public JettyServletImpl() throws RemoteException {
         super();
     }
 
@@ -96,7 +98,7 @@ public class Servlet extends PrimImpl implements JettyServlet {
             context = jettyHelper.getServletContext(true);
 
             holder = context.addServlet(name, pathSpec, className);
-
+            
             //get and apply init order
             int initOrder = sfResolve(ATTR_INIT_ORDER,
                     DEFAULT_INIT_ORDER,
@@ -114,6 +116,14 @@ public class Servlet extends PrimImpl implements JettyServlet {
                     holder.setInitParameter(key, value);
                 }
             }
+            
+            //update our path attribute
+            Prim ancestor = jettyHelper.findServletContextAncestor();
+            String ancestorPath = ancestor.sfResolve(ServletContextIntf.ATTR_ABSOLUTE_PATH,"",true);
+            String absolutePath = jettyHelper.deregexpPath(ancestorPath + pathSpec);
+            sfReplaceAttribute(ATTR_ABSOLUTE_PATH, absolutePath);
+            
+
         } catch (Exception ex) {
             throw SmartFrogException.forward(ex);
         }
