@@ -55,10 +55,10 @@ public class BasicSmartFrogBuilder {
 
     protected String mClassPath = SmartFrogPreferencePage
             .getSmartFrogLocation()
-            + ISmartFrogConstants.SMARTFROG_LIBS[0]
+            +  SmartFrogPlugin.getSmartFrogLib()[ 0 ]
             + Util.getClassSeparator()
             + SmartFrogPreferencePage.getSmartFrogLocation()
-            + ISmartFrogConstants.SMARTFROG_LIBS[1]
+            +  SmartFrogPlugin.getSmartFrogLib()[ 1 ]
             + Util.getClassSeparator()
             + SmartFrogPreferencePage.getSmartFrogLocation()
             + ISmartFrogConstants.SMARTFROG_GUI_TOOLS_LIB;

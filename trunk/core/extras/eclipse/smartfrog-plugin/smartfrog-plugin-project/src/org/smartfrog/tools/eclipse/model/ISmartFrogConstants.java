@@ -23,6 +23,8 @@ For more information: www.smartfrog.org
  */
 package org.smartfrog.tools.eclipse.model;
 
+import org.smartfrog.tools.eclipse.ui.preference.SmartFrogPreferencePage;
+
 /**
  * Global constants to use in this plugin
  */
@@ -35,6 +37,7 @@ public interface ISmartFrogConstants
     static final String COLON = ":"; //$NON-NLS-1$
     static final String DOUBLE_QUOTE = "\""; //$NON-NLS-1$
 
+  //  static final String CORE_VERSION= SmartFrogPreferencePage.getVersion();
 
     //GLOBAL ERROR number
     static final int INTERNAL_ERROR = 1;
@@ -49,16 +52,25 @@ public interface ISmartFrogConstants
     static final String NEW_PRIM_COMPONENT_ID =
         "org.smartfrog.tools.eclipse.ui.project.document.ComponentCreationWizard"; //$NON-NLS-1$
     static final String NEW_COMPOUND_COMPONENT_ID = "org.smartfrog.tools.eclipse.ui.project.document.ComponentCompundCreationWizard";//$NON-NLS-1$
-    
-    
-    
-    
+
+
+
+   /*    public static final String[] SMARTFROG_DEFAULT_LIBS = {
+    		FILE_SEPARATOR + "lib" + FILE_SEPARATOR + "smartfrog.jar", //$NON-NLS-1$
+    		FILE_SEPARATOR + "lib" + FILE_SEPARATOR + "sfServices.jar",
+            FILE_SEPARATOR + "lib" + FILE_SEPARATOR + "sfExamples.jar" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        };
     //Libs for SmartFrog Framework
     public static final String[] SMARTFROG_LIBS = {
-    		FILE_SEPARATOR + "lib" + FILE_SEPARATOR + "smartfrog.jar", //$NON-NLS-1$
-    		FILE_SEPARATOR + "lib" + FILE_SEPARATOR + "sfServices.jar", FILE_SEPARATOR + "lib" + FILE_SEPARATOR + "sfExamples.jar" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        };
+    		FILE_SEPARATOR + "lib" + FILE_SEPARATOR + "smartfrog"+SmartFrogPreferencePage.getVersion()+"jar", //$NON-NLS-1$
+    		FILE_SEPARATOR + "lib" + FILE_SEPARATOR + "sfServices"+SmartFrogPreferencePage.getVersion() +"jar",
+            FILE_SEPARATOR + "lib" + FILE_SEPARATOR + "sfExamples"+SmartFrogPreferencePage.getVersion()+"jar" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        };  */
     public static String SMARTFROG_GUI_TOOLS_LIB = FILE_SEPARATOR + "lib" + FILE_SEPARATOR + "SFGuiTools.jar"; //$NON-NLS-1$
-    
+
 	static final String SMARTFROG_CONSOLE_ID = "org.smartfrog.tools.eclipse.ui.console.ConsoleView"; //$NON-NLS-1$
+
+
+
+
 }
