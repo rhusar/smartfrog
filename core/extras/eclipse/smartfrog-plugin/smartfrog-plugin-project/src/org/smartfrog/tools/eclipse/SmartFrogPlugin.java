@@ -34,6 +34,7 @@ import org.osgi.framework.BundleContext;
 
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import java.io.*;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.IPath;
@@ -42,7 +43,9 @@ import org.eclipse.jdt.core.IClasspathEntry;
 import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.JavaCore;
 import org.smartfrog.tools.eclipse.model.Util;
+import org.smartfrog.tools.eclipse.model.ISmartFrogConstants;
 import org.smartfrog.tools.eclipse.model.builder.BasicSmartFrogBuilder;
+import org.smartfrog.tools.eclipse.ui.preference.SmartFrogPreferencePage;
 import org.eclipse.jdt.core.JavaModelException;
 
 /**
@@ -221,4 +224,64 @@ public class SmartFrogPlugin
 	}
        return sb.toString();
     }
+
+
+    public static String[] getSmartFrogLib()
+    {
+         String smartfrogLib[]={
+    		ISmartFrogConstants.FILE_SEPARATOR + "lib" + ISmartFrogConstants.FILE_SEPARATOR + "smartfrog"+getVersion()+"jar", //$NON-NLS-1$
+    		ISmartFrogConstants.FILE_SEPARATOR + "lib" + ISmartFrogConstants.FILE_SEPARATOR + "sfServices"+getVersion() +"jar",
+            ISmartFrogConstants.FILE_SEPARATOR + "lib" + ISmartFrogConstants.FILE_SEPARATOR + "sfExamples"+getVersion()+"jar" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        };
+
+        return smartfrogLib;
+
+
+
+    }
+
+    public static String getVersion()
+         {
+               PrintStream dump = null;
+           FileOutputStream temp= null;
+           try {
+               temp = new FileOutputStream("C:\\temp\\log.txt");
+               dump = new PrintStream(temp);
+           } catch (FileNotFoundException e) {
+               e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+           }
+
+             String version=".";
+             String sfHome=SmartFrogPreferencePage.getSmartFrogLocation();
+             String FILE_SEPARATOR = System.getProperty("file.separator");
+
+              try {
+
+                  FileReader fReader=new FileReader(sfHome+FILE_SEPARATOR+"smartfrog-version.properties");
+                  BufferedReader in =  new BufferedReader(fReader);
+                  String line;
+                  while ((line = in.readLine()) != null) {
+
+                     if(line.indexOf("sf.build.version")>=0)
+                     {
+                        version=line.substring(line.indexOf('=')+1);
+                     }
+                  }
+
+              } catch (FileNotFoundException e) {
+                  e.printStackTrace();
+                 // return "";
+              } catch (IOException e) {
+                  e.printStackTrace();
+                  // return "";
+              }
+             dump.println("VERSION ="+ version);
+
+
+              if(version == ".")
+                 return  ".";
+              else
+                 return new StringBuffer().append("-").append(version).append(".").toString();
+         }
+
 }

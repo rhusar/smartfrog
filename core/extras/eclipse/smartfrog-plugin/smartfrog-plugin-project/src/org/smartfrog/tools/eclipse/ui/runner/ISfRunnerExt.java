@@ -25,6 +25,7 @@ package org.smartfrog.tools.eclipse.ui.runner;
 import org.smartfrog.tools.eclipse.model.ISmartFrogConstants;
 import org.smartfrog.tools.eclipse.model.Util;
 import org.smartfrog.tools.eclipse.ui.preference.SmartFrogPreferencePage;
+import org.smartfrog.tools.eclipse.SmartFrogPlugin;
 
 
 /**
@@ -67,7 +68,7 @@ abstract class ISfRunnerExt
 
     protected static final String CMD_SFPROCESS_TERMINATE = "sfTerminate"; //$NON-NLS-1$
 
-    protected String mClassPath =
+ /*   protected String mClassPath =
         SmartFrogPreferencePage.getSmartFrogLocation() +
         ISmartFrogConstants.SMARTFROG_LIBS[ 0 ] +
         Util.getClassSeparator() +
@@ -76,7 +77,18 @@ abstract class ISfRunnerExt
         Util.getClassSeparator() +
         SmartFrogPreferencePage.getSmartFrogLocation() +
         ISmartFrogConstants.SMARTFROG_GUI_TOOLS_LIB;
+  */
 
+
+      protected String mClassPath =
+        SmartFrogPreferencePage.getSmartFrogLocation() +
+        SmartFrogPlugin.getSmartFrogLib()[ 0 ] +
+        Util.getClassSeparator() +
+        SmartFrogPreferencePage.getSmartFrogLocation() +
+       SmartFrogPlugin.getSmartFrogLib()[ 1 ] +
+        Util.getClassSeparator() +
+        SmartFrogPreferencePage.getSmartFrogLocation() +
+        ISmartFrogConstants.SMARTFROG_GUI_TOOLS_LIB;
     public boolean isRunning()
     {
         return ( mProcess != null );

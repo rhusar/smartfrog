@@ -50,6 +50,8 @@ import org.smartfrog.tools.eclipse.model.IHelpContextIds;
 import org.smartfrog.tools.eclipse.model.ISmartFrogConstants;
 import org.smartfrog.tools.eclipse.model.Util;
 
+import java.io.*;
+
 /**
  * SmartFrog preference page
  */
@@ -357,4 +359,5 @@ public class SmartFrogPreferencePage extends PreferencePage implements
         return SmartFrogPlugin.getDefault().getPreferenceStore().getString(
                 RMIC_LOCATION_PREFERENCE);
     }
+   
 }

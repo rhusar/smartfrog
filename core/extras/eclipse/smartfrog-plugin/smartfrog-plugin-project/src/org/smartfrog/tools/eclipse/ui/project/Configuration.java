@@ -23,6 +23,7 @@ For more information: www.smartfrog.org
 package org.smartfrog.tools.eclipse.ui.project;
 
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 
 import org.eclipse.jdt.core.IClasspathEntry;
 
@@ -34,6 +35,7 @@ import org.smartfrog.tools.eclipse.model.ISmartFrogConstants;
 import org.smartfrog.tools.eclipse.ui.preference.SmartFrogPreferencePage;
 
 import java.net.URL;
+import java.io.IOException;
 
 /**
  * Configure SmartFrog project properties: libs
@@ -43,6 +45,8 @@ public class Configuration
 {
     private IJavaCoreWrapper fJavaCoreWrapper = null;
     private static final int LIB_NUM = 1;
+
+
 
     /**
      * Constructor for Configuration.
@@ -65,7 +69,7 @@ public class Configuration
     /**
      * Returns an array of classpaths to libraries.
      */
-    public IClasspathEntry[] getClasspath()
+  /*  public IClasspathEntry[] getClasspath()
     {
         IClasspathEntry[] cpe = null;
         Bundle bundle = SmartFrogPlugin.getDefault().getBundle();
@@ -75,9 +79,38 @@ public class Configuration
         cpe = new IClasspathEntry[ ISmartFrogConstants.SMARTFROG_LIBS.length ];
 
         for (int i = 0; i < ISmartFrogConstants.SMARTFROG_LIBS.length; i++) {
+
             String libPathStr = SmartFrogPreferencePage.getSmartFrogLocation() +
             ISmartFrogConstants.SMARTFROG_LIBS[ i ];
             
+            Path libPath = new Path(libPathStr);
+            String sourcePathStr = SmartFrogPreferencePage.getSmartFrogLocation() + "/src.zip"; //$NON-NLS-1$
+            Path sourcePath = new Path(sourcePathStr);
+            cpe[ i ] = fJavaCoreWrapper.newLibraryEntry(libPath, sourcePath, null);
+        }
+
+        return cpe;
+    }   */
+
+     public IClasspathEntry[] getClasspath()
+    {
+        IClasspathEntry[] cpe = null;
+        Bundle bundle = SmartFrogPlugin.getDefault().getBundle();
+        URL installURL = bundle.getEntry("/"); //$NON-NLS-1$
+        URL localURL = null;
+
+        cpe = new IClasspathEntry[ SmartFrogPlugin.getSmartFrogLib().length ];
+
+
+         StringBuffer sb = new StringBuffer( getAbsoluteInstallPath(  ) );
+       sb.append( "SmartFrog");
+       //  sb.append( "/" );
+
+
+        for (int i = 0; i < SmartFrogPlugin.getSmartFrogLib().length; i++) {
+
+            String libPathStr = sb.toString() + SmartFrogPlugin.getSmartFrogLib()[ i ];
+
             Path libPath = new Path(libPathStr);
             String sourcePathStr = SmartFrogPreferencePage.getSmartFrogLocation() + "/src.zip"; //$NON-NLS-1$
             Path sourcePath = new Path(sourcePathStr);
@@ -94,4 +127,51 @@ public class Configuration
     {
         return ""; //$NON-NLS-1$
     }
+
+   /* This method returns the Plugin Absolute Install path.
+      *
+      * @return
+      */
+     public static String getAbsoluteInstallPath(  )
+     {
+         String installDir = "";
+
+         try {
+             installDir = Platform.asLocalURL( getInstallURL(  ) ).getFile(  );
+
+             if ( ( installDir.charAt( 0 ) == '/' ) && isWindows()) {
+                 installDir = installDir.replaceFirst( "/", "" );
+             }
+         } catch ( Exception e ) {
+             e.printStackTrace(  );
+         }
+
+         return installDir;
+     }
+
+     /**
+      * Method to get the URL of the installed plugin
+      *
+      * @return
+      */
+     private static URL getInstallURL(  )
+     {
+
+
+         try {
+             return SmartFrogPlugin.getDefault(  ).getBundle(  ).getEntry( "/" );
+         } catch ( Exception  e ) {
+            e.printStackTrace(  );
+         }
+         return null;
+
+       }
+    public static boolean isWindows(  )
+    {
+        String platform = System.getProperty( "os.name" );
+
+        return ( platform.toLowerCase(  ).indexOf( "windows" ) >= 0 );
+    }
+
+
 }
