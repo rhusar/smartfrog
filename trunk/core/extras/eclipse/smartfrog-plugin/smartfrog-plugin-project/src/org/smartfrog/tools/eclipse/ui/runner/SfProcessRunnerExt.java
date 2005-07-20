@@ -24,6 +24,7 @@ package org.smartfrog.tools.eclipse.ui.runner;
 
 import org.eclipse.swt.widgets.Shell;
 
+import org.smartfrog.tools.eclipse.ui.project.Configuration;
 import org.smartfrog.tools.eclipse.model.ISmartFrogConstants;
 import org.smartfrog.tools.eclipse.ui.preference.SmartFrogPreferencePage;
 
@@ -88,7 +89,10 @@ class SfProcessRunnerExt
         }
         cmdsStart +=  SmartFrogPreferencePage.getSmartFrogLocation() + ISmartFrogConstants.FILE_SEPARATOR + "bin"+ ISmartFrogConstants.FILE_SEPARATOR + CMD_SFPROCESS_START  +" " ;
         cmdsStart += "-a ";
+	if (Configuration.isWindows())
         cmdsStart +=mProcessName+":DEPLOY:\\\"" + mFile +"\\\"::"+ mHostName+": ";
+	else
+        cmdsStart +=mProcessName+":DEPLOY:\"" + mFile +"\"::"+ mHostName+": ";
         cmdsStart += "-e";
 //        cmdsStart[cmdGeneral.length+1] = mHostName;
 //		cmdsStart[cmdGeneral.length+2] = mProcessName;
