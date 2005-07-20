@@ -109,13 +109,15 @@ public class Socketlistener extends PrimImpl implements SocketListenerIntf {
    */
   public void addlistener(int listenerPort, String serverHost) throws
           SmartFrogException, RemoteException {
-          try {
+      try {
           listener = new SocketListener();
           listener.setPort(listenerPort);
-          listener.setHost(serverHost);
-          jettyHelper.addAndStartListener(listener);
-          } catch (UnknownHostException unex) {
-                   throw SmartFrogException.forward(unex);
+          if (serverHost != null) {
+              listener.setHost(serverHost);
           }
+          jettyHelper.addAndStartListener(listener);
+      } catch (UnknownHostException unex) {
+          throw SmartFrogException.forward(unex);
+      }
   }
 }

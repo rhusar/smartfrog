@@ -45,6 +45,7 @@ import org.smartfrog.sfcore.reference.Reference;
 
 import java.io.File;
 import java.rmi.RemoteException;
+import java.util.Vector;
 
 
 /**
@@ -92,13 +93,20 @@ public class JettyServletContext extends CompoundImpl implements ServletContextI
         sfAddAttribute(ATTR_CONTEXT, context);
         server = jettyHelper.bindToServer();
         jettyhome = jettyHelper.findJettyHome();
+        //context path attribute
         contextPath = sfResolve(contextPathRef, contextPath, true);
         resourceBase = sfResolve(resourceBaseRef, resourceBase, true);
         String absolutePath = jettyHelper.deregexpPath(contextPath);
         sfReplaceAttribute(ATTR_ABSOLUTE_PATH,absolutePath);
+        //hostnames
+        String address=jettyHelper.getIpAddress();
+        sfReplaceAttribute(ATTR_HOST_ADDRESS, address);
+        
+        //resource base is absolute or relative to jettyhome
         if (!new File(resourceBase).exists()) {
             resourceBase = jettyhome.concat(resourceBase);
         }
+        //classpath stup
         classPath = sfResolve(classPathRef, classPath, false);
         if (classPath != null) {
             if (!new File(classPath).exists()) {
@@ -110,13 +118,13 @@ public class JettyServletContext extends CompoundImpl implements ServletContextI
     }
 
     /**
-     * This is an override point. 
+     * This is an override point. By not delegating up we can delay instantiating our children
+     * until after we have initialised ourself.
      * @throws SmartFrogResolutionException if stuff cannot get resolved
      * @throws RemoteException              if the network is playing up
      * @throws SmartFrogLifecycleException  if any exception (or throwable) is raised by a child component.
      */
     protected void sfDeployChildren() throws SmartFrogResolutionException, RemoteException, SmartFrogLifecycleException {
-        //super.sfDeployChildren();
     }
 
     /**
