@@ -135,7 +135,7 @@ JettyHandler extends Prim {
  */
 JettyListenerSchema extends Schema {
     listenerPort extends Integer;
-    serverHost extends String;
+    serverHost extends OptionalString;
     server extends OptionalString;
 }
 

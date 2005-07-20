@@ -54,4 +54,9 @@ public interface ServletContextIntf extends Remote {
      */ 
     public static final String ATTR_ABSOLUTE_PATH = "absolutePath";
     
+    /**
+     * host ip address. The IPAddr is returned for ease of use on networks where DNS is not there
+     */ 
+    public static final String ATTR_HOST_ADDRESS = "ipaddr";
+    
 }

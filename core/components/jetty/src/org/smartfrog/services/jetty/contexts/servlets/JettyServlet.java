@@ -33,7 +33,7 @@ public interface JettyServlet extends ServletComponent {
      * {@value}
      */ 
     
-    public static final String ATTR_INIT_ORDER="init";
+    public static final String ATTR_INIT_ORDER="initOrder";
     
     
     /**

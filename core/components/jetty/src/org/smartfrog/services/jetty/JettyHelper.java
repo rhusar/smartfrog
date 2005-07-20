@@ -35,6 +35,10 @@ import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 
 import java.rmi.RemoteException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.io.IOException;
+import java.util.Vector;
 
 /**
  * This helper class contains all the binding policy for use in contexts and servlets.
@@ -318,4 +322,13 @@ public class JettyHelper extends ComponentHelper {
         return buffer.toString();
     }
 
+    /**
+     * Get the ipaddrs of the local machine
+     * @return
+     */ 
+    public String getIpAddress() throws RemoteException {
+        InetAddress deployedHost = getOwner().sfDeployedHost();
+        String hostAddress = deployedHost.getHostAddress();
+        return hostAddress;
+    }
 }
