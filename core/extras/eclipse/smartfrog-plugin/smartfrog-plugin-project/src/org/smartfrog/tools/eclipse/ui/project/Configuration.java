@@ -101,7 +101,7 @@ public class Configuration
 
         cpe = new IClasspathEntry[ SmartFrogPlugin.getSmartFrogLib().length ];
 
-
+      /*
          StringBuffer sb = new StringBuffer( getAbsoluteInstallPath(  ) );
        sb.append( "SmartFrog");
        //  sb.append( "/" );
@@ -115,8 +115,8 @@ public class Configuration
             String sourcePathStr = SmartFrogPreferencePage.getSmartFrogLocation() + "/src.zip"; //$NON-NLS-1$
             Path sourcePath = new Path(sourcePathStr);
             cpe[ i ] = fJavaCoreWrapper.newLibraryEntry(libPath, sourcePath, null);
-        }
-
+        }  */
+        cpe[ 0 ] = fJavaCoreWrapper.newLibraryEntry(null, null, null);
         return cpe;
     }
 
