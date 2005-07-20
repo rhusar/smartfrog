@@ -88,7 +88,7 @@ class SfProcessRunnerExt
         }
         cmdsStart +=  SmartFrogPreferencePage.getSmartFrogLocation() + ISmartFrogConstants.FILE_SEPARATOR + "bin"+ ISmartFrogConstants.FILE_SEPARATOR + CMD_SFPROCESS_START  +" " ;
         cmdsStart += "-a ";
-        cmdsStart +=mProcessName+":DEPLOY:\"" + mFile +"\"::"+ mHostName+": ";
+        cmdsStart +=mProcessName+":DEPLOY:\"\\\"" + mFile +"\\\"\"::"+ mHostName+": ";
         cmdsStart += "-e";
 //        cmdsStart[cmdGeneral.length+1] = mHostName;
 //		cmdsStart[cmdGeneral.length+2] = mProcessName;
