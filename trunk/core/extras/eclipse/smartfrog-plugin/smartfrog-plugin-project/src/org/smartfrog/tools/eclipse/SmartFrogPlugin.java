@@ -242,14 +242,7 @@ public class SmartFrogPlugin
 
     public static String getVersion()
          {
-               PrintStream dump = null;
-           FileOutputStream temp= null;
-           try {
-               temp = new FileOutputStream("C:\\temp\\log.txt");
-               dump = new PrintStream(temp);
-           } catch (FileNotFoundException e) {
-               e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-           }
+           
 
              String version=".";
              String sfHome=SmartFrogPreferencePage.getSmartFrogLocation();
@@ -275,7 +268,7 @@ public class SmartFrogPlugin
                   e.printStackTrace();
                   // return "";
               }
-             dump.println("VERSION ="+ version);
+
 
 
               if(version == ".")
