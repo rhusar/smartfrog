@@ -1,0 +1,117 @@
+/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+#include "org/smartfrog/functions.sf";
+#include "org/smartfrog/services/os/download/components.sf";
+#include "org/smartfrog/sfcore/workflow/components.sf";
+#include "org/smartfrog/services/os/runshell/components.sf";
+
+GenericInstallScript extends Sequence {
+
+    //-------------------------------------
+    //  parameters defining download from location
+    //-------------------------------------
+    webServerHost;
+    webServerPort;
+    tarLocation "/generic.tar";
+
+    //-------------------------------------
+    // parameters defining download to location
+    //-------------------------------------
+    installLocation "/";
+    file "generic.tar";
+
+    //-------------------------------------
+    // parameter defining location of install
+    // typically, top level directory created by the tar file
+    // when expanded in install location
+    //-------------------------------------
+    home "generic";
+
+    //-------------------------------------
+    // parameter defining prefix for event notification
+    //-------------------------------------
+    name "GENERIC";
+
+    //-------------------------------------
+    // paramter defining the default install script to be run
+    //-------------------------------------
+    installScript ["echo running generic install script"];
+
+
+
+    //-------------------------------------
+    //-------------------------------------
+    //
+    // below this point is not expected to be modified
+    //
+    //-------------------------------------
+    //-------------------------------------
+
+
+
+    //-------------------------------------
+    // the url to the tar file
+    //-------------------------------------
+    location ("http://" ++ webServerHost ++ ":" ++ webServerPort ++ tarLocation);
+
+    //-------------------------------------
+    // script to move to home and untar
+    //-------------------------------------
+    prefixUntarScript [ ("cd " ++ installLocation),
+                        ("tar -xf " ++ file) ];
+
+    //-------------------------------------
+    // build the complete script
+    //-------------------------------------
+    completeInstallScript (prefixUntarScript <>
+                           installScript     <>
+                           ["exit 0"]);
+
+
+    //-------------------------------------
+    // the core should be a sequence of :
+    //   downloading
+    //   running the install script
+    //-------------------------------------
+//    actions extends LAZY {
+        startEvent extends EventSend {
+            sendTo:top  LAZY PARENT;
+            event       (name ++ ":1:2:downloading");
+        }
+        download extends Downloader {
+            url         location;
+            toLocalFile (installLocation ++ file);
+        }
+        downloadEvent extends EventSend {
+            sendTo:top  LAZY PARENT;
+            event       (name ++ ":2:2: download complete, installing");
+        }
+        script extends BashShellScript {
+            processName  name;
+            cmd          completeInstallScript;
+        }
+        completeEvent extends EventSend {
+            sendTo:top  LAZY PARENT;
+            event       (name ++ ":3:2:install complete");
+        }
+//    } //end actions - deprecated
+}
+
