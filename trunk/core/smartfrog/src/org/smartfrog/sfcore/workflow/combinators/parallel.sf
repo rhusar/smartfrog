@@ -22,4 +22,5 @@ For more information: www.smartfrog.org
 Parallel extends EventCompound {
     sfClass "org.smartfrog.sfcore.workflow.combinators.Parallel";
     //actions extends LAZY {}
+    //asynchCreateChild false; // Deploy children in parallel
 }
