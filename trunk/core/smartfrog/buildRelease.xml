@@ -43,9 +43,9 @@ To Be Written
     <tstamp/>
     <property name="Name.Framework" value="SmartFrog Framework"/>
     <property name="Name.System" value="SmartFrog"/>
-    <property name="Name.Company" value="(C) Copyright 1998-2004 Hewlett-Packard Development Company, LP"/>
+    <property name="Name.Company" value="(C) Copyright 1998-2005 Hewlett-Packard Development Company, LP"/>
     <!--property name="version" value="3.04.014.beta"/-->
-    <property name="year" value="2004"/>
+    <property name="year" value="2005"/>
 
     <echo message=""/>
     <echo message="==================================================================="/>
@@ -80,32 +80,26 @@ To Be Written
     <echo message="-------------------------------------------------------------"/>
     <echo message=" Step by step guide to make a release"/>
     <echo message="-------------------------------------------------------------"/>
-    <echo message="  1. a) Change version in buildRelease.xml file to new release name"/>
-    <echo message="         release in this file: ${version}"/>
-    <echo message="     b) Change version in build.xml file to new release name"/>
-    <echo message="     c) Change version in releaseBuild.xml file to new release name"/>
+    <echo message="  1. Change version in smartfrog/sf-build-version.properties"/>
     <echo message=" "/>
-    <echo message="  2. Change version in file org.smarfrog.version.java"/>
+    <echo message="  2. Change documentation version (if updated):"/>
+    <echo message=" 	   ex. - Check sfReference.sxw"/>
+    <echo message="            - Check sfUserManual.sxw"/>
+    <echo message="            - Generate PDF: sfReference.pdf"/>
+    <echo message="            - Generate PDF: sfUserManual.pdf"/>
     <echo message=" "/>
-    <echo message=" "/>
-    <echo message="  3. Change documentation version (if updated):"/>
-    <echo message=" 	    - Check sfReference.doc"/>
-    <echo message="         - Check sfUserManual.doc"/>
-    <echo message="         - Generate PDF: sfReference.pdf"/>
-    <echo message="         - Generate PDF: sfUserManual.pdf"/>
-    <echo message=" "/>
-    <echo message="  4. Tag cvs with new version using: "/>
+    <echo message="  3. Tag cvs with new version using: "/>
     <echo message="         Ex. cvs tag release3_01_003_alpha "/>
     <echo message=" "/>
-    <echo message="  5. Clean checkout with tag: "/>
+    <echo message="  4. Clean checkout with tag: "/>
     <echo message="         Ex. cvs checkout -r release3_02_000_alpha core"/>
     <echo message=" "/>
-    <echo message="  6. Build new release: "/>
+    <echo message="  5. Build new release: "/>
     <echo message="         Go to fresh module directory and run:"/>
     <echo message="             ant release "/>
     <echo message="             ant -f buildRelease.xml release"/>
     <echo message=" "/>
-    <echo message="  7. Check content of zip and dist files: "/>
+    <echo message="  6. Check content of zip and dist files: "/>
     <echo message="         Ex. SRC distribution: 'build.xml dist' "/>
     <echo message="                               'dist\build.xml build'  "/>
     <echo message="                               'dist\build.xml jdocs'  "/>
@@ -150,7 +144,7 @@ To Be Written
      <property name="unix-executables" value="**/*.sh,**/*.pl,**/*.py" />
      <property name="dos-executables" value="**/*.bat,**/*.cmd" />
      <property name="default" value="**/default*" />
-     
+
   <!-- =================================================================== -->
   <!-- FixCRLF for different platforms                                     -->
   <!-- =================================================================== -->
@@ -176,7 +170,7 @@ To Be Written
        eol="lf"
        includes="${unix-executables}"
      />
-     
+
      <!-- OS dependant -->
      <fixcrlf srcdir="${dist}"
        includes="**/*.txt"
@@ -230,6 +224,13 @@ To Be Written
         <include name="${dist}/docs/dir.JPG"/>
         <include name="${dist}/docs/sfReference.pdf"/>
         <include name="${dist}/docs/sfDynamicWebServerExample.pdf"/>
+        <include name="${dist}/docs/sfWorkflow.pdf"/>
+        <include name="${dist}/docs/sfLogging.pdf"/>
+        <include name="${dist}/docs/sfQuickRef.pdf"/>
+        <include name="${dist}/docs/sfShellScript.pdf"/>
+        <include name="${dist}/docs/SmartFrogTutorial.pdf"/>
+        <include name="${dist}/docs/ant_tasks_for_smartfrog.pdf"/>
+        <include name="${dist}/docs/IDE_development.pdf"/>
         <include name="${dist}/docs/jdocs/**"/>
        </zipfileset>
        <!--zipfileset dir="." prefix="${Name.System}.${version}">
@@ -246,6 +247,13 @@ To Be Written
         <include name="docs/dir.JPG"/>
         <include name="docs/sfReference.pdf"/>
         <include name="docs/sfDynamicWebServerExample.pdf"/>
+        <include name="docs/sfWorkflow.pdf"/>
+        <include name="docs/sfLogging.pdf"/>
+        <include name="docs/sfQuickRef.pdf"/>
+        <include name="docs/sfShellScript.pdf"/>
+        <include name="docs/SmartFrogTutorial.pdf"/>
+        <include name="docs/ant_tasks_for_smartfrog.pdf"/>
+        <include name="${dist}/docs/IDE_development.pdf"/>
 	<include name="lib/**"/>
 	<!--include name="lib/**/*-${version}.jar"/>
 	<include name="lib/readme.txt"/-->
@@ -283,6 +291,13 @@ To Be Written
         <include name="${dist}/docs/dir.JPG"/>
         <include name="${dist}/docs/sfReference.pdf"/>
         <include name="${dist}/docs/sfDynamicWebServerExample.pdf"/>
+        <include name="${dist}/docs/sfWorkflow.pdf"/>
+        <include name="${dist}/docs/sfLogging.pdf"/>
+        <include name="${dist}/docs/sfQuickRef.pdf"/>
+        <include name="${dist}/docs/sfShellScript.pdf"/>
+        <include name="${dist}/docs/SmartFrogTutorial.pdf"/>
+        <include name="${dist}/docs/ant_tasks_for_smartfrog.pdf"/>
+        <include name="${dist}/docs/IDE_development.pdf"/>
         <include name="${dist}/docs/jdocs/**"/>
        </zipfileset>
        <!--zipfileset dir="." prefix="${Name.System}.${version}">
@@ -309,6 +324,13 @@ To Be Written
         <include name="${dist}/docs/dir.JPG"/>
         <include name="${dist}/docs/sfReference.pdf"/>
         <include name="${dist}/docs/sfDynamicWebServerExample.pdf"/>
+        <include name="${dist}/docs/sfWorkflow.pdf"/>
+        <include name="${dist}/docs/sfLogging.pdf"/>
+        <include name="${dist}/docs/sfQuickRef.pdf"/>
+        <include name="${dist}/docs/sfShellScript.pdf"/>
+        <include name="${dist}/docs/SmartFrogTutorial.pdf"/>
+        <include name="${dist}/docs/ant_tasks_for_smartfrog.pdf"/>
+        <include name="${dist}/docs/IDE_development.pdf"/>
         <include name="${dist}/docs/jdocs/**"/>
        </tarfileset>
        <!--tarfileset dir="." prefix="${Name.System}.${version}">
@@ -335,6 +357,13 @@ To Be Written
         <include name="docs/dir.JPG"/>
         <include name="docs/sfReference.pdf"/>
         <include name="docs/sfDynamicWebServerExample.pdf"/>
+        <include name="docs/sfWorkflow.pdf"/>
+        <include name="docs/sfLogging.pdf"/>
+        <include name="docs/sfQuickRef.pdf"/>
+        <include name="docs/sfShellScript.pdf"/>
+        <include name="docs/SmartFrogTutorial.pdf"/>
+        <include name="docs/ant_tasks_for_smartfrog.pdf"/>
+        <include name="${dist}/docs/IDE_development.pdf"/>
 	<include name="lib/**"/>
 	<!--include name="lib/*-${version}.jar"/>
 	<include name="lib/readme.txt"/-->
@@ -387,6 +416,13 @@ To Be Written
         <include name="${dist}/docs/dir.JPG"/>
         <include name="${dist}/docs/sfReference.pdf"/>
         <include name="${dist}/docs/sfDynamicWebServerExample.pdf"/>
+        <include name="${dist}/docs/sfWorkflow.pdf"/>
+        <include name="${dist}/docs/sfLogging.pdf"/>
+        <include name="${dist}/docs/sfQuickRef.pdf"/>
+        <include name="${dist}/docs/sfShellScript.pdf"/>
+        <include name="${dist}/docs/SmartFrogTutorial.pdf"/>
+        <include name="${dist}/docs/ant_tasks_for_smartfrog.pdf"/>
+        <include name="${dist}/docs/IDE_development.pdf"/>
         <include name="${dist}/docs/jdocs/**"/>
        </tarfileset>
        <!--tarfileset dir="." prefix="${Name.System}.${version}">
@@ -415,7 +451,7 @@ To Be Written
     <gzip src="../${Name.System}.${version}.${DSTAMP}_JDOCS.tar" zipfile="../${Name.System}.${version}.${DSTAMP}_JDOCS.tar.gz"/>
     <delete file="../${Name.System}.${version}.${DSTAMP}_JDOCS.tar"/>
     -->
-    
+
     <!--delete>
 	  <fileset dir="${lib}" includes="**/*-${version}.jar"/>
      </delete-->
