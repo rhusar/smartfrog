@@ -33,9 +33,12 @@ import java.rmi.RemoteException;
 
 public interface TestSuite extends Prim, Remote, TestResultAttributes {
 
-    public String ATTR_NAME = "name";
-    public String ATTR_IF = "if";
-    public String ATTR_UNLESS = "unless";
+    public static final String ATTR_NAME = "name";
+    public static final String ATTR_IF = "if";
+    public static final String ATTR_UNLESS = "unless";
+    
+    //list in name, value pairs [[name,value],[n2,v2]]
+    public static final String ATTR_SYSPROPS="sysproperties";
 
     //read only properties
     /**

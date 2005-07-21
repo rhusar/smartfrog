@@ -20,18 +20,24 @@
 package org.smartfrog.services.junit;
 
 import java.io.Serializable;
+import java.util.Properties;
+import java.util.Iterator;
+import java.util.Enumeration;
 
 /**
- * This is the configuration to run
- * created 17-May-2004 17:22:03
- * The clone policy creates a shallow clone, and retains the same listener
+ * This is the configuration to run created 17-May-2004 17:22:03 The clone policy creates a shallow clone, and retains
+ * the same listener
  */
 
 public class RunnerConfiguration implements Serializable, Cloneable {
 
     /**
-     * who listens to the tests?
-     * This is potentially remote
+     * System properties
+     */ 
+    private Properties sysProperties = new Properties();
+
+    /**
+     * who listens to the tests? This is potentially remote
      */
     private TestListenerFactory listenerFactory;
 
@@ -58,10 +64,33 @@ public class RunnerConfiguration implements Serializable, Cloneable {
 
     /**
      * the shallow clone copies all the simple settings, but shares the test listener.
+     *
      * @return
      * @throws CloneNotSupportedException
      */
     protected Object clone() throws CloneNotSupportedException {
-        return super.clone();
+        RunnerConfiguration cloned = (RunnerConfiguration) super.clone();
+        cloned.sysProperties = (Properties) sysProperties.clone();
+        return cloned;
+    }
+
+    /**
+     * Get the local system properties
+     * @return
+     */ 
+    public Properties getSysProperties() {
+        return sysProperties;
+    }
+    
+    /**
+     * Apply system properties. This adds them to the current JVM, and does not unapply it afterwards
+     */ 
+    public void applySysProperties() {
+        Enumeration propertyEnum=sysProperties.keys();
+        while (propertyEnum.hasMoreElements()) {
+            String key = (String) propertyEnum.nextElement();
+            String value=sysProperties.getProperty(key);
+            System.setProperty(key, value);
+        }
     }
 }

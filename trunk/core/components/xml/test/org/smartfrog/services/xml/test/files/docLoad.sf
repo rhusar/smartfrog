@@ -36,13 +36,13 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 /**
  * test a document
  */
-
+/*
 rootDoc extends XmlDocument {
 
-    sourceFile
+    sourceFile 
 
 }
-
+*/
 tempFile extends TempFile {
     prefix "testxml";
     suffix ".xml";
@@ -71,14 +71,14 @@ xmltext
     Cheddar Cheese
   </meal>
 </meals>
-##;
+#;
 
 
 
 sfConfig  extends Compound {
     sfSyncTerminate true;
 
-    file extends ROOT:textFile;
+    file extends textFile;
 
     xml extends XmlDocument {
         filename LAZY file;

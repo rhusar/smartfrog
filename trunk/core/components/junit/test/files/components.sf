@@ -104,7 +104,7 @@ FailureTest extends TestBase {
  */
 ThrowingTest extends TestBase {
     name "ThrowingTest";
-    classes ["ThrowingTest"];
+    classes [name];
 }
 
 /**
@@ -112,6 +112,14 @@ ThrowingTest extends TestBase {
  */
 SuccessTest extends TestBase {
     name "SuccessTest";
+    classes [name];
+}
+
+/**
+ * test success
+ */
+SyspropsTest extends TestBase {
+    name "SyspropsTest";
     classes [name];
 }
 

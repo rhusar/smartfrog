@@ -21,6 +21,7 @@ package org.smartfrog.services.www;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.utils.ComponentHelper;
@@ -44,28 +45,28 @@ public class LivenessPageComponent extends PrimImpl implements LivenessPage {
     /**
      * enabled flag
      */ 
-    boolean enabled=true;
+    private boolean enabled=true;
     
     /**
      * the class that contains all the checking code. This is on the side
      * for reuse in other components.
      */
-    LivenessPageChecker livenessPage;
+    private LivenessPageChecker livenessPage;
 
     /**
      * how often to check
      */
-    int checkFrequency = 1;
+    private int checkFrequency = 1;
 
     /**
      * when is the next check
      */
-    int nextCheck = 0;
+    private int nextCheck = 0;
 
     /**
      * a log
      */
-    Log log;
+    private Log log;
     
     /**
      * empty constructor
@@ -117,8 +118,7 @@ public class LivenessPageComponent extends PrimImpl implements LivenessPage {
         checkFrequency = sfResolve(CHECK_FREQUENCY, checkFrequency, false);
 
 
-        enabled = sfResolve(ENABLED,enabled,false);
-
+        updateEnabledState();
         //now tell the liveness page it is deployed
         livenessPage.onDeploy();
 
@@ -126,6 +126,10 @@ public class LivenessPageComponent extends PrimImpl implements LivenessPage {
         log.info("Checking " + toString());
     }
 
+    private void updateEnabledState() throws SmartFrogResolutionException, RemoteException {
+        enabled = sfResolve(ENABLED,enabled,false);
+        livenessPage.setEnabled(enabled);
+    }
 
 
     /**
@@ -137,9 +141,14 @@ public class LivenessPageComponent extends PrimImpl implements LivenessPage {
      */
     public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
+        try {
+            updateEnabledState();
+        } catch (SmartFrogResolutionException e) {
+            throw new SmartFrogLivenessException(e);
 
+        }
         //check the counter
-        if (enabled && nextCheck-- <= 0) {
+        if (nextCheck-- <= 0) {
             //reset it
             nextCheck = checkFrequency;
 
@@ -154,7 +163,7 @@ public class LivenessPageComponent extends PrimImpl implements LivenessPage {
     public String toString() {
         //delegate
         if (livenessPage != null) {
-            return livenessPage.toString() + (enabled ? "" : " (disabled)");
+            return livenessPage.toString();
         } else {
             return "undeployed liveness checker";
         }

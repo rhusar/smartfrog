@@ -25,7 +25,7 @@
   -->
 
   <description>
-     Build file for the JUnit tests.
+     Build file for the XML component
   </description>
 
   <!-- override point -->
