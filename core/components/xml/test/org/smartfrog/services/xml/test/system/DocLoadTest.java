@@ -38,7 +38,7 @@ public class DocLoadTest extends TestBase {
     }
 
     public void testDocLoad() throws Throwable {
-        deployApplication(FILE_BASE + "DocLoad.sf", "DocLoad");
+        deployApplication(FILE_BASE + "docLoad.sf", "DocLoad");
         XmlNode node = resolveXmlNode();
         assertNotNull(node);
         

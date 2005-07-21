@@ -33,12 +33,14 @@ import org.smartfrog.sfcore.utils.ComponentHelper;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.UnknownHostException;
+import java.net.InetAddress;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
+import java.util.Properties;
+import java.util.ArrayList;
+
 
 
 /**
@@ -87,6 +89,14 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
      * listener for tests; set at binding time
      */
     private TestListener listener;
+    
+    /**
+     * Error if sysproperties are uneven.
+     * {@value}
+     */ 
+    public static final String ERROR_UNEVEN_PROPERTIES = "There is an unbalanced number of properties in " + ATTR_SYSPROPS;
+    private static final String SUITE_METHOD_NAME = "suite";
+    public static final String WARN_IGNORING_REMOTE_FAULT = "Ignoring remote fault";
 
     public JUnitTestSuiteImpl() throws RemoteException {
         helper = new ComponentHelper(this);
@@ -150,6 +160,7 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
         readConfiguration();
     }
 
+    
     /**
      * read in our configuration
      *
@@ -166,6 +177,36 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
         classes = flattenStringList(nestedClasses,
                 ATTR_CLASSES);
 
+        
+        //properties. extract the list, flatten it and bind to sysproperties
+        List propList = (List) sfResolve(ATTR_SYSPROPS,
+                (List) null,
+                false);
+        if(propList!=null && propList.size()>0) {
+            propList = flattenStringList(propList,ATTR_SYSPROPS);
+            String[] values=new String[0];
+            values=(String[]) propList.toArray(values);
+            int len=values.length;
+            if((len%2)!=0) {
+                StringBuffer valuesBuffer=new StringBuffer(" [");
+                for(int i=0;i<len;i++) {
+                    valuesBuffer.append(values[i]);
+                    valuesBuffer.append(' ');
+                }
+                valuesBuffer.append(']');
+                throw new SmartFrogInitException(ERROR_UNEVEN_PROPERTIES+valuesBuffer);
+            }
+            
+            // system properties
+            Properties sysproperties = configuration.getSysProperties();
+            
+            for(int i=0;i<len;i+=2) {
+                String key=values[i];
+                String value=values[i+1];
+                sysproperties.setProperty(key,value);
+            }
+        }
+            
         //package attribute names a package
         packageValue = sfResolve(ATTR_PACKAGE, packageValue, false);
         if (packageValue == null) {
@@ -178,11 +219,8 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
             }
         }
         buildClassList();
-        try {
-            hostname = java.net.InetAddress.getLocalHost().getHostName();
-        } catch (UnknownHostException e) {
-            hostname = "localhost";
-        }
+        InetAddress host = sfDeployedHost();
+        hostname = host.getHostName();
         //name
         suitename = sfResolve(ATTR_NAME, (String) null, true);
         log("Running test suite " + suitename + " on host " + hostname);
@@ -380,7 +418,7 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
         //todo: verify that the class implements test or testsuite
         try {
             // check if there is a suite method
-            Method method = clazz.getMethod("suite", new Class[0]);
+            Method method = clazz.getMethod(SUITE_METHOD_NAME, new Class[0]);
             return (Test) method.invoke(null, (Object[])new Class[0]);
         } catch (NoSuchMethodException e) {
             //if not, assume that it is a testclass and do it that way
@@ -418,7 +456,7 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
      * @param e
      */
     private void IgnoreRemoteFault(Exception e) {
-        log.warn("ignoring", e);
+        log.warn(WARN_IGNORING_REMOTE_FAULT, e);
     }
 
     /**
@@ -526,4 +564,6 @@ public class JUnitTestSuiteImpl extends PrimImpl implements JUnitTestSuite,
         return testInfo;
     }
 
+
+    
 }

@@ -15,7 +15,10 @@ package org.smartfrog.services.www;
 
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
+import org.smartfrog.sfcore.common.SmartFrogLogException;
 import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.logging.Log;
+import org.smartfrog.sfcore.logging.LogFactory;
 import org.smartfrog.services.www.LivenessPage;
 
 import java.io.IOException;
@@ -28,8 +31,10 @@ import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.Iterator;
 import java.util.Vector;
+/*
 import java.util.logging.Level;
 import java.util.logging.Logger;
+*/
 
 
 /**
@@ -100,7 +105,7 @@ public class LivenessPageChecker implements LivenessPage {
     /**
      * our log
      */
-    protected Logger log;
+    protected Log log;
 
     /**
      * create a new liveness page
@@ -127,7 +132,7 @@ public class LivenessPageChecker implements LivenessPage {
      * @param url DOCUMENT ME!
      * @throws MalformedURLException DOCUMENT ME!
      */
-    public LivenessPageChecker(Prim owner, String url) throws MalformedURLException {
+    public LivenessPageChecker(Prim owner, String url) throws MalformedURLException, SmartFrogLogException {
         bind(owner);
         targetURL = new URL(url);
     }
@@ -137,7 +142,7 @@ public class LivenessPageChecker implements LivenessPage {
      *
      * @param url DOCUMENT ME!
      */
-    public LivenessPageChecker(Prim owner, URL url) {
+    public LivenessPageChecker(Prim owner, URL url) throws SmartFrogLogException {
         bind(owner);
         targetURL = url;
     }
@@ -145,7 +150,7 @@ public class LivenessPageChecker implements LivenessPage {
     /**
      * Creates a new LivenessPageChecker object.
      */
-    public LivenessPageChecker(Prim owner) {
+    public LivenessPageChecker(Prim owner) throws SmartFrogLogException {
         bind(owner);
     }
 
@@ -154,9 +159,9 @@ public class LivenessPageChecker implements LivenessPage {
      *
      * @param owner
      */
-    private void bind(Prim owner) {
+    private void bind(Prim owner) throws SmartFrogLogException {
         this.owner = owner;
-        log = Logger.getLogger(owner.getClass().getName());
+        log = LogFactory.getLog(owner);
     }
 
 
@@ -231,8 +236,8 @@ public class LivenessPageChecker implements LivenessPage {
         HttpURLConnection connection = null;
 
         try {
-            if (log.isLoggable(Level.FINE)) {
-                log.fine("connecting to " + targetURL);
+            if (log.isDebugEnabled()) {
+                log.debug("connecting to " + targetURL);
             }
             connection = (HttpURLConnection) targetURL.openConnection();
             connection.setInstanceFollowRedirects(followRedirects);
@@ -246,8 +251,8 @@ public class LivenessPageChecker implements LivenessPage {
             }
 
             String response = connection.getResponseMessage();
-            if (log.isLoggable(Level.FINE)) {
-                log.fine("response=" + response);
+            if (log.isDebugEnabled()) {
+                log.debug("response=" + response);
             }
 
             if ((responseCode < minimumResponseCode)
@@ -262,8 +267,9 @@ public class LivenessPageChecker implements LivenessPage {
             postProcess(responseCode,response,body);
 
         } catch (IOException exception) {
-            String message = "Failed to read" + targetURL.toString() + "\n"
-                    + maybeGetErrorText(connection);
+            String message = "Failed to read " + targetURL.toString() + "\n"
+                    + maybeGetErrorText(connection)+"\n"+exception.getMessage();
+            log.error(message);
             throw new SmartFrogLivenessException(message, exception);
         }
     }
@@ -287,7 +293,10 @@ public class LivenessPageChecker implements LivenessPage {
      * @return "" or remote error text
      */
     protected String maybeGetErrorText(HttpURLConnection connection) {
-        if (fetchErrorText && (connection != null)) {
+        if(connection==null) {
+            return "unable to connect to URL";
+        }
+        if (fetchErrorText) {
             return getInputOrErrorText(connection);
         } else {
             return "";
@@ -315,7 +324,7 @@ public class LivenessPageChecker implements LivenessPage {
             }
 
             if (instream == null) {
-                return null;
+                return "";
             }
 
             text = new StringWriter(BLOCKSIZE);
@@ -368,9 +377,9 @@ public class LivenessPageChecker implements LivenessPage {
     }
 
     /**
-     * DOCUMENT ME!
+     * get the follow redirects flag
      *
-     * @return DOCUMENT ME!
+     * @return true iff redirects should be followed 
      */
     public boolean getFollowRedirects() {
         return followRedirects;

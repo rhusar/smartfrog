@@ -51,6 +51,8 @@ TestSuiteSchema extends Schema {
     name extends String;
     if extends OptionalBoolean;
     unless extends OptionalBoolean;
+    //list in name, value pairs [[name,value],[n2,v2]]
+    sysproperties extends OptionalVector;    
 }
 
 JUnitTestSuiteSchema extends Schema {
@@ -60,6 +62,8 @@ JUnitTestSuiteSchema extends Schema {
     //the classes in the package.
     //e.g. ["test1","subpackage.test2"]
     classes extends Vector;
+    
+
 }
 
 /**

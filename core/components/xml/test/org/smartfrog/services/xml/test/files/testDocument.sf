@@ -30,7 +30,7 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 
 */
 
-#include "org/smartfrog/services/xml/test/files/xmlTestBase.sf"
+#include "/org/smartfrog/services/xml/test/files/xmlTestBase.sf"
 
 
 /**
