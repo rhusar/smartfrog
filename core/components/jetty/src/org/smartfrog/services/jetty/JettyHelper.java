@@ -60,18 +60,18 @@ public class JettyHelper extends ComponentHelper {
     private Prim serverComponent=null;
 
     /**
-     * Name of the interface of jetty component we look for
-     * "org.smartfrog.services.jetty.JettyIntf";
+     * Name of the interface of jetty component we look for.
+     * 
      * {@value}
      */
-    public static final String JETTY_INTERFACE_NAME = JettyIntf.class.getCanonicalName(); 
+    public static final String JETTY_INTERFACE_NAME =  "org.smartfrog.services.jetty.JettyIntf"; 
     //
     /**
      * Name of the servlet interface of jetty component we look for.
-     * "org.smartfrog.services.jetty.contexts.ServletContextIntf";
+     * 
      *  {@value}
      */
-    public static final String JETTY_SERVLET_INTERFACE = ServletContextIntf.class.getCanonicalName();
+    public static final String JETTY_SERVLET_INTERFACE = "org.smartfrog.services.jetty.contexts.ServletContextIntf";;
     
     /**
      * max depth to recurse down
