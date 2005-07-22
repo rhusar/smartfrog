@@ -108,7 +108,7 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
             addArg("-a");
             addArg(application.getName() + ":" //NAME
                     + "DEPLOY" + ":"              //Action: DEPLOY,TERMINATE,DETACH,DETaTERM
-                    + application.getDescriptor() + ":"                    //URL
+                    + "\\\""+application.getDescriptor() + "\\\":"                    //URL
                     + "" + ":"                    // sfConfig or empty
                     + getHost() + ":"              // host
                     + "");                // subprocess
