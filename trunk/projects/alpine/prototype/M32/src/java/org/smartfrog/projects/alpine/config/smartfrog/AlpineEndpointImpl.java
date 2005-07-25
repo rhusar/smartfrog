@@ -23,11 +23,14 @@ package org.smartfrog.projects.alpine.config.smartfrog;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.prim.Liveness;
+import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.projects.alpine.core.AlpineContext;
 import org.smartfrog.projects.alpine.core.EndpointContext;
 import org.smartfrog.projects.alpine.core.ContextConstants;
+import org.smartfrog.services.jetty.contexts.servlets.JettyServlet;
+import org.smartfrog.services.jetty.JettyHelper;
 
 import java.rmi.RemoteException;
 
@@ -49,6 +52,29 @@ public class AlpineEndpointImpl extends PrimImpl implements AlpineEndpoint {
     }
 
     /**
+     * Called after instantiation for deployment purposes. Heart monitor is started and if there is a parent the
+     * deployed component is added to the heartbeat. Subclasses can override to provide additional deployment behavior.
+     *
+     * @throws SmartFrogException error while deploying
+     * @throws RemoteException    In case of network/rmi error
+     */
+    public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
+        super.sfDeploy();
+        name = sfResolve(ATTR_NAME, "", true);
+        handlerClass = sfResolve(ATTR_HANDLER_CLASS, "", true);
+        path = sfResolve(ATTR_PATH, "", true);
+        wsdlResource = sfResolve(ATTR_WSDL, "", false);
+        getContentType = sfResolve(ATTR_CONTENT_TYPE, "", false);
+        getMessage = sfResolve(ATTR_GET_MESSAGE, "", false);
+        getResponseCode = sfResolve(ATTR_GET_RESPONSECODE, 200, false);
+        Prim servlet=sfResolve(ATTR_SERVLET,(Prim)null,true);
+        String servletPath=servlet.sfResolve(JettyServlet.ATTR_ABSOLUTE_PATH,"",true);
+        JettyHelper jettyHelper=new JettyHelper(this);
+        String absolutePath= jettyHelper.concatPaths(servletPath,path);
+        sfReplaceAttribute(JettyServlet.ATTR_ABSOLUTE_PATH,absolutePath);
+    }
+
+    /**
      * Can be called to start components. Subclasses should override to provide functionality Do not block in this call,
      * but spawn off any main loops!
      *
@@ -57,13 +83,7 @@ public class AlpineEndpointImpl extends PrimImpl implements AlpineEndpoint {
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
-        name = sfResolve(ATTR_NAME,"",true);
-        handlerClass = sfResolve(ATTR_HANDLER_CLASS,"",true);
-        path = sfResolve(ATTR_PATH, "", true);
-        wsdlResource = sfResolve(ATTR_WSDL,"",false);
-        getContentType = sfResolve(ATTR_CONTENT_TYPE,"",false);
-        getMessage = sfResolve(ATTR_GET_MESSAGE,"",false);
-        getResponseCode = sfResolve(ATTR_GET_RESPONSECODE, 200, false);
+
         AlpineContext context=AlpineContext.getAlpineContext();
         epx = new EndpointContext();
         putIfSet(epx, ContextConstants.ATTR_GET_MESSAGE, getMessage);
@@ -71,6 +91,7 @@ public class AlpineEndpointImpl extends PrimImpl implements AlpineEndpoint {
         putIfSet(epx, ContextConstants.ATTR_HANDLER_CLASS,handlerClass);
         putIfSet(epx, ContextConstants.ATTR_NAME, name);
         putIfSet(epx, ContextConstants.ATTR_CONTENT_TYPE, getContentType);
+        epx.put(ContextConstants.ATTR_GET_RESPONSECODE, getResponseCode);
         context.getEndpoints().register(path,epx);
     }
 
@@ -80,6 +101,7 @@ public class AlpineEndpointImpl extends PrimImpl implements AlpineEndpoint {
         }
     }
 
+    
     /**
      * Provides hook for subclasses to implement useful termination behavior. Deregisters component from local process
      * compound (if ever registered)
@@ -132,6 +154,7 @@ public class AlpineEndpointImpl extends PrimImpl implements AlpineEndpoint {
      * @throws RemoteException
      */
     public boolean removeHandler(String name) throws RemoteException {
+        //TODO
         return false;
     }
 

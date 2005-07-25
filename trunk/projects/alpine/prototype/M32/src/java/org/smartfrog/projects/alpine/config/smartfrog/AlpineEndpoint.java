@@ -14,6 +14,11 @@ import java.rmi.RemoteException;
 public interface AlpineEndpoint extends Remote {
     
     /**
+     * name of a servlet that we can use to extract information from. 
+     */ 
+    public static final String ATTR_SERVLET="servlet";
+    
+    /**
      * name of the endpoint
      * {@value}
      */ 
