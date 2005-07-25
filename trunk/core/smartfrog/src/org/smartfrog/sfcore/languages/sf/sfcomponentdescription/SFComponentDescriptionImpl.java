@@ -27,13 +27,7 @@ import java.util.Enumeration;
 import java.util.Vector;
 
 
-import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
-import org.smartfrog.sfcore.common.Context;
-import org.smartfrog.sfcore.common.MessageKeys;
-import org.smartfrog.sfcore.common.MessageUtil;
-import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.common.SmartFrogCompilationException;
+import org.smartfrog.sfcore.common.*;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.languages.sf.Phase;
@@ -570,25 +564,46 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
     */
    public ComponentDescription sfAsComponentDescription() throws SmartFrogCompilationException {
        ComponentDescription res = null;
-       // works heavily by side-effect for efficiency
-
-       // don't bother to copy context as we are ditching the original!
        // parent only necessary for the root - gets overwritten below
-       res = new ComponentDescriptionImpl(null, context, eager);
+       ContextImpl newContext = new ContextImpl();
+       res = new ComponentDescriptionImpl(null, newContext, eager);
 
        for (Enumeration e = context.keys(); e.hasMoreElements(); ) {
-       Object key = e.nextElement();
-       Object value = res.sfContext().get(key);
+           Object key = e.nextElement();
+           Object value = res.sfContext().get(key);
 
-       if (value instanceof SFComponentDescription) {
-           value = ((SFComponentDescription) value).sfAsComponentDescription();
-           ((ComponentDescription) value).setParent(res);
-           context.put(key, value);
-       }
+           if (value instanceof SFComponentDescription) {
+               value = ((SFComponentDescription) value).sfAsComponentDescription();
+               ((ComponentDescription) value).setParent(res);
+               newContext.put(key, value);
+           } else
+               newContext.put(key, copyValue(value));
        }
        return res;
    }
 
+
+    protected Object copyValue(Object v) throws SmartFrogCompilationException {
+        if (v instanceof Number) return v;
+        if (v instanceof Boolean) return v;
+        if (v instanceof SFNull) return v;
+        if (v instanceof String) return v;
+        if (v instanceof Reference) return v;
+        if (v instanceof Vector) {
+             return copyVector((Vector)v);
+        }
+        throw new SmartFrogCompilationException("unknown value in context during conversion to ComponentDesscription " +
+                                                v.toString() + " in component " + sfCompleteName());
+    }
+
+    protected Object copyVector(Vector v) throws SmartFrogCompilationException {
+        Vector res = new Vector();
+        for (int i = 0; i < v.size(); i++) {
+            res.add(copyValue(v.elementAt(i)));
+        }
+        throw new SmartFrogCompilationException("illecgal value in vector during conversion to ComponentDesscription " +
+                                                v.toString() + " in component " + sfCompleteName());
+    }
 
    /**
     *  Public method to carry out specific resolution actions as defined by the
