@@ -72,6 +72,8 @@ public abstract class BaseFunction implements PhaseAction, MessageKeys {
         try {
             o = component.sfResolve("sfFunctionResult");
         } catch (SmartFrogResolutionException e) {
+            //remove phase attribute to avoid it being used in function - but must add it back later
+            Object phase = context.remove("phase.function");
             o = doFunction();
 
             try {
@@ -79,6 +81,7 @@ public abstract class BaseFunction implements PhaseAction, MessageKeys {
             } catch (SmartFrogRuntimeException e1) {
                 throw new SmartFrogCompileResolutionException("error recording function result in function", e1);
             }
+            context.put("phase.function", phase);
         }
 
         ComponentDescription parent = (ComponentDescription) component.sfParent();
