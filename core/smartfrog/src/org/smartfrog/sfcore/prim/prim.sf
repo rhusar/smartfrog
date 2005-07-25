@@ -21,7 +21,6 @@ For more information: www.smartfrog.org
 /**
  * Includes the definition of schemas.
  */
-#include "/org/smartfrog/sfcore/languages/sf/predicates/schema.sf"
 
 //Schema
 PrimSchema extends Schema {
@@ -39,7 +38,6 @@ PrimSchema extends Schema {
                                     class ["java.lang.String","java.net.InetAddress"]; }
 }
 
-
 /** Defines the basic primitive components.
  * Unless liveness values are set here (or in the
  * the descriptions) the values from the processcompound.sf
@@ -53,7 +51,11 @@ sfSchema true;
 
 //Prim with any schema
 Prim extends NULL {
-    sfPrimSchema IF sfSchema THEN PrimSchema ELSE NULL FI;
+    sfPrimSchema extends ifThenElse {
+        if sfSchema;
+        then extends PrimSchema;
+        else NULL;
+    }
     sfCodeBase PARENT:ATTRIB sfCodeBase;
 //  sfDeployerClass "org.smartfrog.sfcore.processcompound.PrimProcessDeployerImpl";
 //  sfExport true;  // Export remote interface?
