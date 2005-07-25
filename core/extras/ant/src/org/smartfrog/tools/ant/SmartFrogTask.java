@@ -25,16 +25,15 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.taskdefs.Java;
 import org.apache.tools.ant.types.Assertions;
 import org.apache.tools.ant.types.Commandline;
+import org.apache.tools.ant.types.CommandlineJava;
 import org.apache.tools.ant.types.Environment;
 import org.apache.tools.ant.types.PropertySet;
 import org.apache.tools.ant.types.Reference;
-import org.apache.tools.ant.types.CommandlineJava;
 
 import java.io.File;
+import java.lang.reflect.Method;
 import java.util.LinkedList;
 import java.util.List;
-import java.lang.reflect.Method;
-import java.lang.reflect.InvocationTargetException;
 
 /**
  * Class to let ant task derivatives run smartfrog. How it invokes smartfrog is an implementation detail;
@@ -358,6 +357,7 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
         Java java = createJavaTask(getEntrypoint());
         java.setFork(true);
         java.setDir(getProject().getBaseDir());
+
         return java;
     }
 
