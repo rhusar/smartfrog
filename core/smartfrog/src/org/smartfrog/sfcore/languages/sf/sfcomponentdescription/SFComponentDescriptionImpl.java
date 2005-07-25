@@ -592,7 +592,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
         if (v instanceof Vector) {
              return copyVector((Vector)v);
         }
-        throw new SmartFrogCompilationException("unknown value in context during conversion to ComponentDesscription " +
+        throw new SmartFrogCompilationException("illegal value in context during conversion to ComponentDesscription " +
                                                 v.toString() + " in component " + sfCompleteName());
     }
 
@@ -601,8 +601,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
         for (int i = 0; i < v.size(); i++) {
             res.add(copyValue(v.elementAt(i)));
         }
-        throw new SmartFrogCompilationException("illecgal value in vector during conversion to ComponentDesscription " +
-                                                v.toString() + " in component " + sfCompleteName());
+        return res;
     }
 
    /**
