@@ -41,5 +41,5 @@ public interface PhaseAction {
      *
      * @param cd a componentdescription object 
      */ 
-    public void forComponent(ComponentDescription cd, Stack path);
+    public void forComponent(ComponentDescription cd, String phaseName, Stack path);
 }
