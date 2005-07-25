@@ -19,6 +19,9 @@ For more information: www.smartfrog.org
 */
 
 /** Defines the basic smartfrog components */
+#include "/org/smartfrog/functions.sf"
+#include "/org/smartfrog/predicates.sf"
 
 #include "/org/smartfrog/sfcore/prim/prim.sf"
 #include "/org/smartfrog/sfcore/compound/compound.sf"
+
