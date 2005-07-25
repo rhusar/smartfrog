@@ -570,7 +570,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
 
        for (Enumeration e = context.keys(); e.hasMoreElements(); ) {
            Object key = e.nextElement();
-           Object value = res.sfContext().get(key);
+           Object value = context.get(key);
 
            if (value instanceof SFComponentDescription) {
                value = ((SFComponentDescription) value).sfAsComponentDescription();
