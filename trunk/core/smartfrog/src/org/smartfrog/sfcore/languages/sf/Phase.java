@@ -37,6 +37,7 @@ import org.smartfrog.sfcore.security.SFClassLoader;
 public class Phase implements CDVisitor {
     /** The name of the phase. */
     protected String phaseName;
+    protected Stack path;
 
     /**
      * Construct a phase object for a specific named phase.
@@ -59,11 +60,13 @@ public class Phase implements CDVisitor {
      * @throws SmartFrogCompileResolutionException failed to create PhaseAction
      */
     protected PhaseAction phaseAction(Object action,
-        ComponentDescription cd) throws SmartFrogCompileResolutionException {
+                                      ComponentDescription cd,
+                                      Stack path)
+            throws SmartFrogCompileResolutionException {
         try {
             PhaseAction p = (PhaseAction) (SFClassLoader.forName((String) action)
                     .newInstance());
-            p.forComponent(cd);
+            p.forComponent(cd, path);
             return p;
         } catch (Exception ex){
             String actionClass;
@@ -94,8 +97,8 @@ public class Phase implements CDVisitor {
 
                 if (sname.startsWith(phaseName)) {
                     Object value = c.get(sname);
-                    c.remove(name);
-                    phaseAction(value, cd).doit();
+                    //c.remove(name);
+                    phaseAction(value, cd, path).doit();
                 }
             }
         }

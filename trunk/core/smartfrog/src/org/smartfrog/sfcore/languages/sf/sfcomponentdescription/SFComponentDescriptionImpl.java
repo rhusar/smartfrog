@@ -31,7 +31,6 @@ import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.MessageKeys;
 import org.smartfrog.sfcore.common.MessageUtil;
-import org.smartfrog.sfcore.common.Copying;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogCompilationException;
@@ -485,7 +484,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
                (((Reference) value).getEager())) {
             try {
                result = sfResolve((Reference) value);
-
+/*
                if (result instanceof Copying) {
                   result = ((Copying) result).copy();
 
@@ -495,7 +494,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
                      resState.addUnresolved(((SFComponentDescription) result).sfCompleteName());
                   }
                }
-
+ */
                context.put(key, result);
             } catch (Exception resex) {
                resState.addUnresolved(value, sfCompleteName());
