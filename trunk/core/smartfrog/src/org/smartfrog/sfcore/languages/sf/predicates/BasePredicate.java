@@ -26,6 +26,8 @@ import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.languages.sf.PhaseAction;
 import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
 
+import java.util.Stack;
+
 /**
  * Defines the base predicate for all the schemas.
  */
@@ -63,7 +65,7 @@ public abstract class BasePredicate implements PhaseAction {
      * Sets the component.
      * @param cd component description
      */
-    public void forComponent(ComponentDescription cd) {
+    public void forComponent(ComponentDescription cd, Stack p) {
         component = cd;
         context = cd.sfContext();
     }
