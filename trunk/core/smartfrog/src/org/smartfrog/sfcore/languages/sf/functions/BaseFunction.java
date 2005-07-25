@@ -47,6 +47,9 @@ public abstract class BaseFunction implements PhaseAction, MessageKeys {
     /** The path used to get to this component */
     protected Stack path;
 
+    /** The phase in which this is being invoked */
+    protected String phaseName;
+
     /**
      * The method to implement the functionality of any function.
      *
@@ -73,7 +76,7 @@ public abstract class BaseFunction implements PhaseAction, MessageKeys {
             o = component.sfResolve("sfFunctionResult");
         } catch (SmartFrogResolutionException e) {
             //remove phase attribute to avoid it being used in function - but must add it back later
-            Object phase = context.remove("phase.function");
+            Object phase = context.remove(phaseName);
             o = doFunction();
 
             try {
@@ -81,7 +84,7 @@ public abstract class BaseFunction implements PhaseAction, MessageKeys {
             } catch (SmartFrogRuntimeException e1) {
                 throw new SmartFrogCompileResolutionException("error recording function result in function", e1);
             }
-            context.put("phase.function", phase);
+            context.put(phaseName, phase);
         }
 
         ComponentDescription parent = (ComponentDescription) component.sfParent();
@@ -96,9 +99,10 @@ public abstract class BaseFunction implements PhaseAction, MessageKeys {
     /**
      * Prime the function with the necessary data
      */
-    public void forComponent(ComponentDescription cd, Stack p) {
+    public void forComponent(ComponentDescription cd, String phaseName, Stack p) {
         path = p;
         component = cd;
+        this.phaseName = phaseName;
         name = cd.sfCompleteName();
         context = cd.sfContext();
     }

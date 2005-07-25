@@ -65,7 +65,7 @@ public abstract class BasePredicate implements PhaseAction {
      * Sets the component.
      * @param cd component description
      */
-    public void forComponent(ComponentDescription cd, Stack p) {
+    public void forComponent(ComponentDescription cd, String phasename, Stack p) {
         component = cd;
         context = cd.sfContext();
     }
