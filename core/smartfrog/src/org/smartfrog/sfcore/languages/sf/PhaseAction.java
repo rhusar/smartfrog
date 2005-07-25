@@ -21,7 +21,8 @@ For more information: www.smartfrog.org
 package org.smartfrog.sfcore.languages.sf;
 
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
+
+import java.util.Stack;
 
 /**
  * Defines the methods for different phases.
@@ -40,5 +41,5 @@ public interface PhaseAction {
      *
      * @param cd a componentdescription object 
      */ 
-    public void forComponent(ComponentDescription cd);
+    public void forComponent(ComponentDescription cd, Stack path);
 }

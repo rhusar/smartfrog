@@ -22,10 +22,14 @@ package org.smartfrog.sfcore.languages.sf.functions;
 
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.MessageKeys;
+import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.languages.sf.PhaseAction;
 import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
+
+import java.util.Stack;
 
 /**
  * Defines the base function for all the functions.
@@ -39,6 +43,9 @@ public abstract class BaseFunction implements PhaseAction, MessageKeys {
 
     /** The name of the component for exceptions */
     protected Reference name;
+
+    /** The path used to get to this component */
+    protected Stack path;
 
     /**
      * The method to implement the functionality of any function.
@@ -55,18 +62,39 @@ public abstract class BaseFunction implements PhaseAction, MessageKeys {
      * @throws SmartFrogCompileResolutionException if the doFunction method does.
      */
     public void doit() throws SmartFrogCompileResolutionException {
-        Object o = doFunction();
+        Object o;
+        ComponentDescription origin = null;
+        if (path.size() > 0)
+            origin = (ComponentDescription) path.peek();
+        else
+            throw new SmartFrogCompileResolutionException("root component may not be a function");
+
+        try {
+            o = component.sfResolve("sfFunctionResult");
+        } catch (SmartFrogResolutionException e) {
+            o = doFunction();
+
+            try {
+                component.sfReplaceAttribute("sfFunctionResult", o);
+            } catch (SmartFrogRuntimeException e1) {
+                throw new SmartFrogCompileResolutionException("error recording function result in function", e1);
+            }
+        }
+
         ComponentDescription parent = (ComponentDescription) component.sfParent();
+        if (path.size() > 0) origin = (ComponentDescription) path.peek();
         if (o instanceof ComponentDescription) ((ComponentDescription) o).setParent(parent);
-        Context parentContext = parent.sfContext();
-        Object key = parentContext.keyFor(component);
-        parentContext.put(key, o);
+        Context originContext = origin.sfContext();
+        Object key = originContext.keyFor(component);
+        originContext.put(key, o);
     }
+
 
     /**
      * Prime the function with the necessary data
      */
-    public void forComponent(ComponentDescription cd) {
+    public void forComponent(ComponentDescription cd, Stack p) {
+        path = p;
         component = cd;
         name = cd.sfCompleteName();
         context = cd.sfContext();
