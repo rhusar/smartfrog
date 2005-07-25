@@ -42,8 +42,10 @@ public abstract class BasePredicate implements PhaseAction {
 
     /** The context of the component. */
     protected Context context;
+    protected String phaseName;
+    protected Stack stack;
 
-     /**
+    /**
      * The method to implement the functionality of any schema.
      *
      * @throws SmartFrogCompileResolutionException failed to implement the
@@ -55,6 +57,13 @@ public abstract class BasePredicate implements PhaseAction {
      * Default implementation of doit method.
      */
     public void doit() throws SmartFrogCompileResolutionException {
+        // check that the predicate is being applied to a component which is the parent, and not merely linked
+        if (stack.peek() != component.sfParent())
+            throw new SmartFrogCompileResolutionException("cannot apply predicate to non-parent component: " +
+                                                          "use extends of, and don't link to, predicate: in component " +
+                                                          ((ComponentDescription) stack.peek()).sfCompleteName()
+                                                        );
+
         doPredicate();
         ComponentDescription parent = (ComponentDescription) component.sfParent();
         Context parentContext = parent.sfContext();
@@ -66,7 +75,9 @@ public abstract class BasePredicate implements PhaseAction {
      * @param cd component description
      */
     public void forComponent(ComponentDescription cd, String phasename, Stack p) {
+        stack = p;
         component = cd;
+        phaseName = phasename;
         context = cd.sfContext();
     }
 }
