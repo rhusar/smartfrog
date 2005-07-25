@@ -35,6 +35,7 @@ AlpineEndpoint extends Prim {
         wsdl extends OptionalString;
         factory extends OptionalString;
         handlerClass extends String;
+        servlet extends CD;
         
     }
     

@@ -31,7 +31,6 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/services/www/components.sf";
 #include "/org/smartfrog/services/jetty/components.sf";
 #include "/org/smartfrog/projects/alpine/config/smartfrog/components.sf";
-#include "org/smartfrog/services/utils/concat/components.sf"
 
 
 AlpineServerOnJetty extends CoreJettyServer {
@@ -47,7 +46,7 @@ AlpineServerOnJetty extends CoreJettyServer {
     listeners extends Compound {
         jetty extends JettyListener {
             listenerPort port;
-            serverHost host;
+            //serverHost host;
             server LAZY jettyServer;
         }
     }
@@ -58,9 +57,8 @@ AlpineServerOnJetty extends CoreJettyServer {
         contextPath "/servlets/";
 
         alpineServlet extends AlpineServletOnJetty {
-            pathSpec "alpine/*";
+            pathSpec "/alpine/*";
             initOrder 5;
-            fullpath (PARENT:contextPath ++ pathSpec);
         }
      }
 }
@@ -74,25 +72,18 @@ server extends AlpineServerOnJetty {
     endpoint extends EchoEndpoint {
         name "echoEndpoint";
         path "/echo/";
+        servlet LAZY servlets:alpineServlet;
     }
 
-    /**
-     * late binding path information
-     */    
-    endpointPath extends LazyConcat {
-       string extends LAZY {
-          -- LAZY servlets:alpineServlet:absolutePath ;
-          -- LAZY endpoint:path;
-       }
-    }
     
 
     //fetch the page every so often, just to see that we are happy
     ping extends LivenessPage {
+        sfProcessName "newVM";
         enabled PARENT:liveness;
-        host PARENT:serverHost;
+        host LAZY PARENT:servlets:ipaddr;
         port PARENT:port;
-        page LAZY endpointPath:concat;
+        page LAZY endpoint:absolutePath;
         checkFrequency 1;
     }
     
@@ -106,5 +97,5 @@ sfConfig extends server {
 
     port 5050;
 
-    //liveness false;
+    liveness false;
 }
