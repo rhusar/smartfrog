@@ -21,7 +21,6 @@ package org.smartfrog.tools.ant;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
-import org.apache.tools.ant.Task;
 import org.apache.tools.ant.util.FileUtils;
 
 import java.io.BufferedOutputStream;
@@ -55,6 +54,8 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
      */
     protected List codebase = new LinkedList();
     public static final String ERROR_NO_APPLICATIONS_DECLARED = "No applications declared";
+    public static final String ACTION_DEPLOY = "DEPLOY";
+    public static final String DEFAULT_SUBPROCESS = "";
 
     /**
      * add a new application to the list.
@@ -106,14 +107,40 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
             Application application = (Application) it.next();
             application.validate();
             addArg("-a");
+            String path= makePath(application);
+            String subprocess=getSubprocess();
+
             addArg(application.getName() + ":" //NAME
-                    + "DEPLOY" + ":"              //Action: DEPLOY,TERMINATE,DETACH,DETaTERM
-                    + "\\\""+application.getDescriptor() + "\\\":"                    //URL
-                    + "" + ":"                    // sfConfig or empty
-                    + getHost() + ":"              // host
-                    + "");                // subprocess
+                    + ACTION_DEPLOY + ":"      //Action: DEPLOY,TERMINATE,DETACH,DETaTERM
+                    + path                     //URL
+                    + "" + ":"                 // sfConfig or empty
+                    + getHost() + ":"          // host
+                    + subprocess);                     // subprocess
 
         }
+    }
+
+    /**
+     * Create a path from an application
+     * @param application
+     * @return
+     */
+    private String makePath(Application application) {
+        return "\"" + application.getDescriptor() + "\":";
+    }
+
+    private String makePathWindows(Application application) {
+        return "\\\"" + application.getDescriptor() + "\\\":";
+    }
+
+    /**
+     * Get the subprocess we are deploying to.
+     * The default is {@link #DEFAULT_SUBPROCESS}, though subclasses may override
+     * this
+     * @return the name of the subprocess to deployto
+     */
+    protected String getSubprocess() {
+        return DEFAULT_SUBPROCESS;
     }
 
     /**
