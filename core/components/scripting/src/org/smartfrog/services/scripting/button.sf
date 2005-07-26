@@ -19,6 +19,8 @@ For more information: www.smartfrog.org
 */
 
 #include "org/smartfrog/components.sf"
+#include "org/smartfrog/functions.sf"
+
 /**
  * Creates a button in a frame which executes arbitrary code when clicked,
  * The default behaviour is to terminate the component abnormally.
