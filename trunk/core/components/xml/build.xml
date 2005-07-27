@@ -50,10 +50,7 @@
 
   
   <!-- import libs. may need proxy setup -->
-  <!-- note that this is a very unstable corner of Ant; needs
-       CVS_HEAD releases and will definitely change before long -->
   <target name="m2" depends="m2-tasks" >
-  
     <m2-libraries pathID="libraries.path">
       <dependency groupID="xerces"
         artifactID="xercesImpl"
@@ -68,7 +65,7 @@
         artifactID="nux"
         version="${nux.version}"/>        
       </m2-libraries>
-  </target>  
+  </target>
     
   
   <!-- ========================================================== -->
@@ -115,8 +112,32 @@
     </path>
     <property name="tests.run.classpath.value" refid="tests.run.classpath"/>
     <echo level="verbose">tests.run.classpath=${tests.run.classpath.value}</echo>
-  </target>  
-  
+  </target>
+
+
+  <!-- ========================================================== -->
+  <!-- this is an override
+       with selective use of the nux codec.
+  <!-- ========================================================== -->
+  <target name="compile"
+    depends="pre-compile">
+    <available property="nux.found"
+      classname="nux.xom.binary.BinaryXMLCodec"/>
+    <depend srcdir="${src.dir}"
+      destdir="${build.classes.dir}"
+      cache="${build.dir}/depends"
+      closure="yes"/>
+    <sf-javac
+      classpathref="compile.classpath"
+      srcdir="${src.dir}"
+      destdir="${build.classes.dir}"
+      >
+      <include name="**/*.java"/>
+      <exclude name="**/NuxBinaryCodec.java" unless="nux.found"/>
+    </sf-javac>
+    <copy-useful-files src="${src.dir}" dest="${build.classes.dir}"/>
+  </target>
+
   <!-- ========================================================== -->
   <!-- create a distro. 
        we want both sf-junit and the test har -->
