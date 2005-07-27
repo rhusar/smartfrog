@@ -26,14 +26,16 @@ import nux.xom.binary.BinaryXMLCodec;
 import java.io.IOException;
 import java.io.Serializable;
 
+import org.smartfrog.services.xml.interfaces.XmlWireCodec;
+import org.smartfrog.services.xml.impl.codecs.XmlTextCodec;
+
 /**
- * Use the high performance NUX codec to serialize the XML document to something
- * that can be rapidly marshalled. created 01-Feb-2005 11:41:44
- *
- * @see "http://dsd.lbl.gov/nux/api/nux/xom/binary/BinaryXMLCodec.html"
+ * switchable codec
  */
 
 public class SerializedXomDocument implements Serializable {
+
+    XmlWireCodec codec=new XmlTextCodec();
 
     public SerializedXomDocument() {
     }
@@ -60,10 +62,7 @@ public class SerializedXomDocument implements Serializable {
      */
     private void writeObject(java.io.ObjectOutputStream out) throws
             IOException {
-        out.defaultWriteObject();
-        byte[] data = new BinaryXMLCodec().serialize(document, 0);
-        out.writeInt(data.length);
-        out.write(data);
+        codec.writeObject(document,out);
     }
 
     /**
@@ -75,15 +74,7 @@ public class SerializedXomDocument implements Serializable {
      */
     private void readObject(java.io.ObjectInputStream in) throws
             IOException, ClassNotFoundException {
-        in.defaultReadObject();
-        byte[] data = new byte[in.readInt()];
-        in.readFully(data, 0, data.length);
-        try {
-            document = new BinaryXMLCodec().deserialize(data);
-        } catch (BinaryParsingException e) {
-            //throw this as a runtime as IOE still doesnt support chaining
-            throw new RuntimeException("failed to deserialize doc", e);
-        }
+        document = codec.readObject(in);
     }
 
     /**
