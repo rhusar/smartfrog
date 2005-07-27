@@ -125,13 +125,8 @@ public class ActionDeploy extends ConfigurationAction {
                         c);
              }
 
-             // sfProcessComponentName should overwrite the command line one.
-             if (cd.sfContainsAttribute("sfProcessComponentName")){
-               c.put("sfProcessComponentName",cd.sfResolve("sfProcessComponentName"));
-             }
-
              comp = target.sfDeployComponentDescription(appName, parent, cd, c);
-             //comp = target.sfDeployComponentDescription(null, parent, cd, c);
+
              try {
                  comp.sfDeploy();
              } catch (Throwable thr){
