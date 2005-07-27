@@ -35,7 +35,7 @@ public class ActionTerminate extends ConfigurationAction{
      *
      * @param name name of the application
      * @param targetP the target process compound to request deployment
-     * @return Reference to detached component
+     * @return Reference to terminated component
      * @exception SmartFrogException failure in some part of the process
      * @throws RemoteException In case of network/rmi error
      */

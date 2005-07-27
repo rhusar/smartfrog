@@ -242,8 +242,17 @@ public class ConfigurationDescriptor implements MessageKeys{
               message.append(getResultObjectName().toString());
               message.append("'");
             } catch(Exception ex){
-               message.append(SmartFrogCoreKeys.SF_ROOT_PROCESS);
-               message.append("'");
+               try {
+                 if (getName()!=null) {
+                     //This will happen when a component is terminated.
+                     message.append("'");
+                     message.append(getName().toString());
+                     message.append("'");
+                 }
+               } catch (Exception ex1){
+                   message.append(SmartFrogCoreKeys.SF_ROOT_PROCESS);
+                   message.append("'");
+               }
             }
           } else if (getName()!=null) {
               message.append("'");
