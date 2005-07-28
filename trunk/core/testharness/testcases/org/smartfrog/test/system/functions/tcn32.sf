@@ -21,6 +21,6 @@ For more information: www.smartfrog.org
 #include "org/smartfrog/components.sf"
 
 sfConfig extends Compound {
-    message extends concat {
+    message extends nonExistentConcat {
     }
 }
