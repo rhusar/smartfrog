@@ -21,6 +21,7 @@ For more information: www.smartfrog.org
 package org.smartfrog.sfcore.languages.sf.functions;
 
 import org.smartfrog.sfcore.common.MessageUtil;
+import org.smartfrog.sfcore.common.MessageKeys;
 import org.smartfrog.sfcore.languages.sf.PhaseAction;
 import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
 
@@ -52,7 +53,7 @@ public abstract class BaseUnaryOperator extends BaseFunction implements PhaseAct
 	Object data = context.get(DATA_ATTRIBUTE);
 
 	if (data == null)
-	    throw new SmartFrogCompileResolutionException(MessageUtil.formatMessage(MISSING_PARAMETER, DATA_ATTRIBUTE),
+	    throw new SmartFrogCompileResolutionException(MessageUtil.formatMessage(MessageKeys.MISSING_PARAMETER, DATA_ATTRIBUTE),
 							  null, name, "function", null);
 
 	return doOperator(data);
