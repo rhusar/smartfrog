@@ -22,6 +22,8 @@
 package org.smartfrog.test.system.compiler;
 
 import org.smartfrog.test.SmartFrogTestBase;
+import org.smartfrog.sfcore.common.MessageKeys;
+import org.smartfrog.sfcore.common.MessageUtil;
 
 
 
@@ -50,8 +52,8 @@ public class CompilerSystemTest extends SmartFrogTestBase {
         deployExpectingException(FILES+"tcn47.sf",
                 "tcn47",
                 EXCEPTION_DEPLOYMENT,
-                "Wrong class when resolving 'HERE sfClass'",
-                EXCEPTION_CLASSCAST,
+                MessageUtil.formatMessage(MessageKeys.ROOT_COMPONENT_IS_FUNCTION),
+                EXCEPTION_COMPILE_RESOLUTION,
                 null);
     }
 
