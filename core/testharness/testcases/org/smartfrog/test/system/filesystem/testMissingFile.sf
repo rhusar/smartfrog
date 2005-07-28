@@ -29,7 +29,7 @@ homedir extends File {
 }
 
 sfConfig extends File {
-    parent extends homedir;
+    parent homedir;
     filename "some-other-file-we-have-just-made-up.txt";
     mustBeDir false;
     mustExist false;
