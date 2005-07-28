@@ -478,6 +478,10 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
                (((Reference) value).getEager())) {
             try {
                result = sfResolve((Reference) value);
+               if (result instanceof SFComponentDescription) {
+                   // need to do this as it may link to the file root!
+                   ((SFComponentDescription)result).doLinkResolve(resState);
+               }
 /*
                if (result instanceof Copying) {
                   result = ((Copying) result).copy();
