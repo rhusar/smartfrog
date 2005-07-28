@@ -58,7 +58,7 @@ public class IfThenElse extends BaseFunction implements PhaseAction, MessageKeys
 	if (!(ifObj instanceof Boolean))
 	    throw new SmartFrogCompileResolutionException(
 				      MessageUtil.formatMessage(ILLEGAL_BOOLEAN_PARAMETER),
-				      null, name, "function", ifObj.getClass().toString() + " (" + ifObj + ")");
+				      null, name, "function", "Attribute read: "+ ifObj + " ("+ifObj.getClass().toString() + ")");
 
 
 	Object result;
