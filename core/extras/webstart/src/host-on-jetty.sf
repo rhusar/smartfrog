@@ -26,8 +26,10 @@ For more information: www.smartfrog.org
 
 sfConfig extends Compound {
 
+    //dist.dir "dist/lib";
+    dist.dir PROPERTY dist.dir;
 
-    dist.dir "build/dist";
+    filename "sf-webstart.war";
 
     host "localhost";
 
@@ -36,29 +38,21 @@ sfConfig extends Compound {
     //so they terminate one after the other
     sfSyncTerminate true;
 
-    tmpdir LAZY PROPERTY java.io.tmpdir;
-    
-    /*
-    jettyhome extends File {
-        dir tmpdir;
-        filename "jetty";
+    //this is the warfile, which must exist
+    warFile extends File {
+        dir  dist.dir;
+        filename PARENT:filename;
+        mustExist true;
     }
-    
-    mkdir extends Mkdir {
-        dir LAZY jettyhome:absolutePath;
-    }
-    */
-    
+
     /*
-     deploy axis on jetty
+     deploy webstart on jetty
      */
     jettyServer extends CoreJettyServer {
         sfSyncTerminate true;
 
         server "webstart";
 
-        filename "sfwebstart.war";
-        
         jettyhome  dist.dir;
         
         serverHost host;
@@ -73,11 +67,6 @@ sfConfig extends Compound {
             }
         }
 
-        warFile extends File {
-            dir  dist.dir;
-            filename PARENT:filename;
-            mustExist true;
-        }
 
 
         WebStart extends JettyWebApplication {

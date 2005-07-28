@@ -47,7 +47,7 @@
   <!-- ========================================================== -->
   <!-- ========================================================== -->
   <target name="init" depends="init-standard-output-dirs,use-smartfrog-tasks">
-    <property name="war.name" value="sfwebstart.war"/>
+    <property name="war.name" value="sf-webstart.war"/>
     <property name="war.file" location="${dist.dir}/${war.name}"/>
     <property name="web.dir" location="web"/>
     <property name="web-inf.dir" location="${web.dir}/WEB-INF"/>
