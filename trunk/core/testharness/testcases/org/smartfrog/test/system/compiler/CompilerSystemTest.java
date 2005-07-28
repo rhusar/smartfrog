@@ -53,7 +53,7 @@ public class CompilerSystemTest extends SmartFrogTestBase {
                 "tcn47",
                 EXCEPTION_DEPLOYMENT,
                 MessageUtil.formatMessage(MessageKeys.ROOT_COMPONENT_IS_FUNCTION),
-                EXCEPTION_COMPILE_RESOLUTION,
+                EXCEPTION_RESOLUTION,
                 null);
     }
 
