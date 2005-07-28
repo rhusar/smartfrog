@@ -55,7 +55,7 @@ public class FunctionsSystemTest extends SmartFrogTestBase {
                 EXCEPTION_DEPLOYMENT,
                 null,
                 EXCEPTION_RESOLUTION,
-                "Unresolved Reference, data: [concat in: HERE sfConfig:message], resolutionPhase: type]");
+                "Unresolved Reference, data: [nonExistentConcat in: HERE sfConfig:message], resolutionPhase: type]");
     }
 
     public void testCaseTCN33() throws Throwable {
