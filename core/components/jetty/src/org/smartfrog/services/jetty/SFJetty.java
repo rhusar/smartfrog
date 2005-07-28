@@ -43,8 +43,8 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
 
-import java.rmi.RemoteException;
 import java.io.File;
+import java.rmi.RemoteException;
 
 /**
  * A wrapper for a Jetty http server.
@@ -101,8 +101,8 @@ public class SFJetty extends CompoundImpl implements Compound,JettyIntf {
         enableLogging=sfResolve(ENABLE_LOGGING,enableLogging,true);
 
         if(enableLogging) {
-            logDir=FileSystem.lookupAbsolutePath(this,ATTR_LOGDIR,jettyhome,null,true,null);
-            logPattern=sfResolve(ATTR_LOGPATTERN,"",false);
+            logDir=FileSystem.lookupAbsolutePath(this,JettyIntf.ATTR_LOGDIR,jettyhome,null,true,null);
+            logPattern=sfResolve(JettyIntf.ATTR_LOGPATTERN,"",false);
             configureLogging();
         }
         super.sfDeploy();
@@ -164,7 +164,6 @@ public class SFJetty extends CompoundImpl implements Compound,JettyIntf {
             if (sfLog().isErrorEnabled()){
               sfLog().error(" Interrupted on server termination " , ie);
             }
-//            Logger.log(" Interrupted on server termination " , ie);
 	  }
 	  super.sfTerminateWith(status);
   }

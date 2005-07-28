@@ -55,14 +55,14 @@ public class WebApplication extends PrimImpl implements JettyWebApplicationConte
     Reference contextPathRef = new Reference(ATTR_CONTEXT_PATH);
     Reference webAppRef = new Reference(ATTR_WARFILE);
     Reference requestIdRef = new Reference(ATTR_REQUEST_ID);
-    JettyHelper jettyHelper=new JettyHelper(this);
-   String jettyhome = ".";
-   String contextPath = "/";
-   String webApp = null;
-   String serverName = null;
-   boolean requestId = false;
+    JettyHelper jettyHelper = new JettyHelper(this);
+    String jettyhome = ".";
+    String contextPath = "/";
+    String webApp = null;
+    String serverName = null;
+    boolean requestId = false;
 
-   HttpServer server = null;
+    HttpServer server = null;
    
    WebApplicationContext context = new WebApplicationContext();
 
@@ -96,8 +96,10 @@ public class WebApplication extends PrimImpl implements JettyWebApplicationConte
        //if the file exists, it does not need to be anywhere
        webApp = sfResolve(webAppRef, webApp, false);
        if (webApp != null) {
-           if (!new File(webApp).exists())
-               webApp = jettyhome.concat(webApp);
+           if (!new File(webApp).exists()) {
+               File webAppFile= new File(jettyhome,webApp);
+               webApp = webAppFile.getAbsolutePath();
+           }
        }
        //no webapp? look for the warfile
        if (webApp == null) {
