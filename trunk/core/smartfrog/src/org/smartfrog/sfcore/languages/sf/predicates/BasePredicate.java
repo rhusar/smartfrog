@@ -22,6 +22,8 @@ For more information: www.smartfrog.org
 package org.smartfrog.sfcore.languages.sf.predicates;
 
 import org.smartfrog.sfcore.common.Context;
+import org.smartfrog.sfcore.common.MessageUtil;
+import org.smartfrog.sfcore.common.MessageKeys;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.languages.sf.PhaseAction;
 import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
@@ -59,10 +61,9 @@ public abstract class BasePredicate implements PhaseAction {
     public void doit() throws SmartFrogCompileResolutionException {
         // check that the predicate is being applied to a component which is the parent, and not merely linked
         if (stack.peek() != component.sfParent())
-            throw new SmartFrogCompileResolutionException("cannot apply predicate to non-parent component: " +
-                                                          "use extends of, and don't link to, predicate: in component " +
-                                                          ((ComponentDescription) stack.peek()).sfCompleteName()
-                                                        );
+            throw new SmartFrogCompileResolutionException( MessageUtil.formatMessage(MessageKeys.CANNOT_LINK_TO_PREDICATE,
+                                                          ((ComponentDescription) stack.peek()).sfCompleteName()));
+
 
         doPredicate();
         ComponentDescription parent = (ComponentDescription) component.sfParent();

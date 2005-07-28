@@ -20,10 +20,7 @@ For more information: www.smartfrog.org
 
 package org.smartfrog.sfcore.languages.sf.functions;
 
-import org.smartfrog.sfcore.common.Context;
-import org.smartfrog.sfcore.common.MessageKeys;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
+import org.smartfrog.sfcore.common.*;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.languages.sf.PhaseAction;
@@ -34,7 +31,7 @@ import java.util.Stack;
 /**
  * Defines the base function for all the functions.
  */
-public abstract class BaseFunction implements PhaseAction, MessageKeys {
+public abstract class BaseFunction implements PhaseAction  {
     /** The component description. */
     protected ComponentDescription component;
 
@@ -70,7 +67,7 @@ public abstract class BaseFunction implements PhaseAction, MessageKeys {
         if (path.size() > 0)
             origin = (ComponentDescription) path.peek();
         else
-            throw new SmartFrogCompileResolutionException("root component may not be a function");
+            throw new SmartFrogCompileResolutionException(MessageUtil.formatMessage(MessageKeys.ROOT_COMPONENT_IS_FUNCTION));
 
         try {
             o = component.sfResolve("sfFunctionResult");
