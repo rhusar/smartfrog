@@ -229,7 +229,8 @@ public interface MessageKeys {
     public static String MSG_NOT_FOUND_REFERENCE = "MSG_NOT_FOUND_REFERENCE";
     /**
      * Message key: attribute not found.
-     */    public static String MSG_NOT_FOUND_ATTRIBUTE = "MSG_NOT_FOUND_ATTRIBUTE";
+     */
+    public static String MSG_NOT_FOUND_ATTRIBUTE = "MSG_NOT_FOUND_ATTRIBUTE";
     /**
      * Message key: reference with no value.
      */
@@ -317,4 +318,14 @@ public interface MessageKeys {
      */
     public static String ERROR_NO_SECURITY_BUT_REQUIRED = "ERROR_NO_SECURITY_BUT_REQUIRED";
 
+    /**
+     * * Message Key: A description has been created which has the root component as a function.
+     * This is not possible for technical reasons
+     */
+     public static String ROOT_COMPONENT_IS_FUNCTION = "ROOT_COMPONENT_IS_FUNCTION";
+    /**
+     * * Message Key: A description may not link to a component description that is being used as a predicate.
+     *  Predicates must be extended to ensure a copy is taken.
+     */
+     public static String CANNOT_LINK_TO_PREDICATE = "CANNOT_LINK_TO_PREDICATE";
 }

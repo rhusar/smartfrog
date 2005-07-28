@@ -110,7 +110,10 @@ public class ErrorMessageBundle extends ListResourceBundle
         { LIVENESS_SEND_FAILURE , "Liveness Send Failure when calling {1}"},
         { COMPONENT_TERMINATED, "Component Terminated"},
         { WARN_NO_SECURITY, "SmartFrog security is NOT active"},
-        { ERROR_NO_SECURITY_BUT_REQUIRED, "Smartfrog Security was not active, but was marked as required"}
+        { ERROR_NO_SECURITY_BUT_REQUIRED, "Smartfrog Security was not active, but was marked as required"},
+        { ROOT_COMPONENT_IS_FUNCTION, "The Root component of a SmartFrog description cannot be a function"},
+        { CANNOT_LINK_TO_PREDICATE,
+             "cannot apply predicate to non-parent component: extends, don't link to, but rather extend predicate: in component {0}"}
     };
 
     /**
