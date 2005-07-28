@@ -163,6 +163,26 @@ JettyServlet extends Servlet {
 }
 
 
+
+/*==========================================
+  declare extras
+===========================================*/
+
+/**
+ A mime is a tuple of name,value. that is bound to a servlet context
+ It does not get cleaned up after; you need to terminate the servlet
+ */
+
+MimeType extends Prim {
+    sfClass "org.smartfrog.services.jetty.extras.MimeTypeImpl";
+
+    mimeTypeSchema extends Schema {
+        extension extends String;
+        type extends String;
+    }
+}
+
+
 /*==========================================
   declare jetty contexts
 ===========================================*/
@@ -334,5 +354,4 @@ listener2 extends JettyListener {
  listenerPort 8009;
  serverHost PARENT:PARENT:serverHost;
 }
-
 
