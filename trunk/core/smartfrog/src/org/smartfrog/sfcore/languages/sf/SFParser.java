@@ -209,4 +209,38 @@ public class SFParser implements StreamParser {
            throw new SmartFrogParseException ("Error parsing reference from InputStream", pe);
        }
    }
+
+   /**
+    *  Parses any value (ie as allowed in an attribute definition) from given string. This is NOT a cheap method since a
+    *  new DefaultParser will be constructed to create the reference.
+    *
+    *@param  is                      input stream to parse
+    *@return                         parsed value
+    *@exception  SmartFrogParseException  failure while parsing value
+    */
+   public Object sfParseAnyValue(InputStream is) throws SmartFrogParseException {
+       try {
+           return (new DefaultParser(is, null)).AnyValue();
+       } catch (ParseException pe){
+           //throw new SmartFrogParseException (pe.getMessage(),pe);
+           throw new SmartFrogParseException ("Error parsing any value from InputStream", pe);
+       }
+   }
+
+   /**
+    *  Parses any primtiive value (ie no links, component descriptions) from given string. This is NOT a cheap method since a
+    *  new DefaultParser will be constructed to create the reference.
+    *
+    *@param  is                      input stream to parse
+    *@return                         parsed value
+    *@exception  SmartFrogParseException  failure while parsing primitive value
+    */
+   public Object sfParsePrimitiveValue(InputStream is) throws SmartFrogParseException {
+       try {
+           return (new DefaultParser(is, null)).PrimitiveValue();
+       } catch (ParseException pe){
+           //throw new SmartFrogParseException (pe.getMessage(),pe);
+           throw new SmartFrogParseException ("Error parsing primitive value from InputStream", pe);
+       }
+   }
 }
