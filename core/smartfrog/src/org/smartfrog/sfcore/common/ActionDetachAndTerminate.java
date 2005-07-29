@@ -28,6 +28,11 @@ import java.rmi.RemoteException;
 
 
 public class ActionDetachAndTerminate extends ConfigurationAction{
+
+    /**
+     * Error text when there is no application to terminate.
+     * {@value}
+     */
     public static final String ERROR_NO_APP_NAME = "No application name provided";
 
 
