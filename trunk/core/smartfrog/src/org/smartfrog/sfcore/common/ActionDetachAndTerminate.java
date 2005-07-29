@@ -28,13 +28,14 @@ import java.rmi.RemoteException;
 
 
 public class ActionDetachAndTerminate extends ConfigurationAction{
+    public static final String ERROR_NO_APP_NAME = "No application name provided";
 
 
     /**
      * Detaches and Terminates name from component targetP
      *
-     * @param appName name of the application
-     * @param target the target process compound to request deployment
+     * @param name name of the application
+     * @param targetP the target process compound to request deployment
      * @return Reference to detached component
      * @exception SmartFrogException failure in some part of the process
      * @throws RemoteException In case of network/rmi error
@@ -50,7 +51,7 @@ public class ActionDetachAndTerminate extends ConfigurationAction{
         }
 
         if (name==null) {
-            throw new SmartFrogException("No application name provided");
+            throw new SmartFrogException(ERROR_NO_APP_NAME);
         }
         Prim targetC = (Prim)targetP.sfResolveWithParser(name);
         boolean isRootProcess = false;
