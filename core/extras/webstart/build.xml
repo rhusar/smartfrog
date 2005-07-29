@@ -24,15 +24,8 @@
   -->
 
   <description>
-     Build file for CDDLM.
-     
-     After deploying, get the WSDL From
-     http://localhost:5050/axis/services/cddlm?wsdl
-     
-     Then deploy demos like
-     org/smartfrog/examples/subprocesses/subprocess.sf
-     org/smartfrog/examples/counter/example.sf
-
+     Build file for webstarting.
+    this build needs sf-jetty and the jetty libraries, as it deploys with jetty
   </description>
 
   <!-- override point -->
@@ -64,7 +57,32 @@
         <property name="default.sf" location="test/files/default.sf"/>-->
   </target>
 
-  <target name="makewar" depends="compile"
+
+  <target name="patch-jnlp" depends="init"
+      description="copy and patch the jnlp" >
+    <property name="build.war.dir" location="${build.dir}/war" />
+    <mkdir dir="${build.war.dir}" />
+    <copy todir="${build.war.dir}">
+      <fileset dir="${web.dir}" excludes="**/*.jnlp"/>
+    </copy>
+    <copy todir="${build.war.dir}">
+      <fileset dir="${web.dir}" includes="**/*.jnlp"/>
+      <filterset>
+        <filter token="VERSION" value="${Version}"/>
+      </filterset>
+    </copy>
+  </target>
+
+  <target name="makelib" depends="compile,patch-jnlp"
+    description="make the libraries">
+    <echo >copying from =${smartfrog.dist.lib.dir}</echo>
+    <copy todir="${build.war.dir}/download/lib" >
+      <fileset dir="${smartfrog.dist.lib.dir}" includes="*.jar" />
+    </copy>
+
+  </target>
+
+  <target name="makewar" depends="makelib,patch-jnlp"
     description="make the war file">
     <war destfile="${war.file}"
       webxml="${web.xml}"
