@@ -71,7 +71,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
     /** Log: it cannot be initialized before LogImpl is ready
      * LogImpl uses ComponentDescription.sfResolve to read its initial
      * configuration */
-    private static  LogSF sflog= null;
+    private static  LogSF sfLog= null;
 
 
 
@@ -764,76 +764,127 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      }
 
 
+     /**
+      * Adds system properties to component description using parser.sfParsePrimitiveValue()
+      * for conversion using 'sf' language.
+      * Uses startWith parameter as filter.
+      *
+      * @param startWith system property label (ex. org.smartfrog)
+      * @param compDesc configuration description where to add system properties.
+      * @return this configuration description with system properties added.
+      */
+     public static ComponentDescription addSystemProperties(String startWith,
+        ComponentDescription compDesc){
+        return addSystemProperties(startWith, compDesc, "sf");
+    }
+
     /**
-     * Adds system properties to component description.
+     * Adds system properties to component description using parser.sfParsePrimitiveValue()
+     * for conversion.
      * Uses startWith parameter as filter.
      *
      * @param startWith system property label (ex. org.smartfrog)
      * @param compDesc configuration description where to add system properties.
+     * @language language extension to use.
      * @return this configuration description with system properties added.
      */
     public static ComponentDescription addSystemProperties(String startWith,
-        ComponentDescription compDesc) {
+        ComponentDescription compDesc, String language) {
         Properties props = System.getProperties();
-        for (Enumeration e = props.keys(); e.hasMoreElements(); ) {
-            String key = e.nextElement().toString();
-            //  System.out.println("- Read:    "+key+
-            //                    "\n, Filter: "+startWith);
-            if (key.startsWith(startWith)) {
-                Object value = props.get(key);
-                try {
-                    String res = value.toString();
-                    if (res.toUpperCase().charAt(res.length() - 1) == 'D') {
-                        value = Double.valueOf(res.substring(0, res.length()-1));
-                    } else if (res.toUpperCase().charAt(res.length() - 1) == 'F') {
-                        value = Float.valueOf(res.substring(0, res.length()-1));
-                    } else if (res.toUpperCase().charAt(res.length() - 1) == 'L') {
-                        value = Long.valueOf(res.substring(0, res.length()-1));
-                    } else {
-                        value = Integer.valueOf((String)value);
+        SFParser parser = null;
+        try {
+            parser = new SFParser(language);
+            for (Enumeration e = props.keys(); e.hasMoreElements(); ) {
+                String key = e.nextElement().toString();
+                //  System.out.println("- Read:    "+key+
+                //                    "\n, Filter: "+startWith);
+                if (key.startsWith(startWith)) {
+                    Object value = props.get(key);
+                    value = value.toString();
+                    try {
+                        value = parser.sfParsePrimitiveValue(value.toString());
+                    } catch (Throwable thr) {
+                        // ignore, value is not a PrimValue it is a String
                     }
-                } catch (Exception ex) {
-                    // ignore, value is not a number
+//                try {
+//                    String res = value.toString();
+//                    if (res.toUpperCase().charAt(res.length() - 1) == 'D') {
+//                        value = Double.valueOf(res.substring(0, res.length()-1));
+//                    } else if (res.toUpperCase().charAt(res.length() - 1) == 'F') {
+//                        value = Float.valueOf(res.substring(0, res.length()-1));
+//                    } else if (res.toUpperCase().charAt(res.length() - 1) == 'L') {
+//                        value = Long.valueOf(res.substring(0, res.length()-1));
+//                    } else {
+//                        value = Integer.valueOf((String)value);
+//                    }
+//                } catch (Exception ex) {
+//                    // ignore, value is not a number
+//                }
+//                if ((value.toString().equals("true"))||
+//                    (value.toString().equals("false"))){
+//                  try {
+//                    // convert to boolean
+//                    value = Boolean.valueOf( (String) value);
+//                  } catch (Exception ex) {
+//                  // ignore, value is not a number
+//                  }
+//                }
+                    String cxtKey = key.substring(startWith.length());
+                    try {
+                        compDesc.sfReplaceAttribute(cxtKey, value);
+                        if ((sfLog!=null)&&(sfLog.isTraceEnabled())){
+                            sfLog.trace("Adding to CompDesc system property '"+ cxtKey +"' with value = "+value+", "+ value.getClass().getName());
+                        }
+                    } catch (SmartFrogRuntimeException ex1) {
+                        //System.err.println(ex1);
+                    }
                 }
-                if ((value.toString().equals("true"))||
-                    (value.toString().equals("false"))){
-                  try {
-                    // convert to boolean
-                    value = Boolean.valueOf( (String) value);
-                  } catch (Exception ex) {
-                  // ignore, value is not a number
-                  }
-                }
-                String cxtKey = key.substring(startWith.length());
-                try {
-                  compDesc.sfReplaceAttribute(cxtKey, value);
-                  //System.out.println("*** Added: "+cxtKey.toString()+", "+value.toString());
-                } catch (SmartFrogRuntimeException ex1) {
-                   //System.err.println(ex1);
-                }
+            }
+        } catch (SmartFrogException ex2) {
+            if (((sfLog!=null)&&sfLog.isErrorEnabled())){
+                sfLog.error("Error adding system properties to ComponentDescription",ex2);
             }
         }
         return compDesc;
     }
 
     /**
-     *  Gets configuration description for Obj class. The short class name will
+         *  Gets configuration description for Obj class using "sf" language. The short class name will
+         *  be used to locate its Reference. Name of the description file will be in lower case.
+         *  System properties that start with same package name as obj  are added to
+         * ComponentDescription if addSystemProperties is true.
+         * @param obj which class Component description has to be read
+         * @param addSystemProperties to select if to add system properties
+         * @param newPhases parser phases to apply to component description
+         * @ languageExtension provide extenstion for the language used (ex. sf by default)
+         *  Takes default when vector is null. Default: type, link, function, predicate.
+         * @return Component Description
+         * @throws SmartFrogException
+         */
+        public static ComponentDescription getClassComponentDescription (Object obj,
+          boolean addSystemProperties, Vector newPhases) throws SmartFrogException {
+          return getClassComponentDescription (obj,addSystemProperties,newPhases,"sf");
+      }
+
+    /**
+     *  Gets configuration description for Obj class using the right parser for language. The short class name will
      *  be used to locate its Reference. Name of the description file will be in lower case.
      *  System properties that start with same package name as obj  are added to
      * ComponentDescription if addSystemProperties is true.
      * @param obj which class Component description has to be read
      * @param addSystemProperties to select if to add system properties
      * @param newPhases parser phases to apply to component description
+     * @ languageExtension provide extenstion for the language used (ex. sf by default)
      *  Takes default when vector is null. Default: type, link, function, predicate.
      * @return Component Description
      * @throws SmartFrogException
      */
     public static ComponentDescription getClassComponentDescription (Object obj,
-          boolean addSystemProperties, Vector newPhases) throws SmartFrogException {
+          boolean addSystemProperties, Vector newPhases,String languageExtension) throws SmartFrogException {
         //Get Component description for this log class
         String className = obj.getClass().toString();
         className = className.substring(6).replace('.','/');
-        String urlDescription = className+".sf";
+        String urlDescription = className+"."+languageExtension;
         Reference selectedRef = new Reference (className.substring(className.lastIndexOf("/")+1));
         Vector phases = new Vector();
         if (newPhases!=null){
@@ -853,7 +904,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
             //add properties that start with package name.
             cmpDesc = ComponentDescriptionImpl.addSystemProperties(
                        obj.getClass().toString().substring(6)+"."
-                     , cmpDesc);
+                     , cmpDesc,languageExtension);
         }
 
         return cmpDesc;
@@ -866,8 +917,8 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      *
      */
     static public void initLog(LogSF newlog){
-        if (sflog == null) {
-            sflog = newlog;
+        if (sfLog == null) {
+            sfLog = newlog;
         }
     }
 
@@ -876,7 +927,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * @return Logger implementing LogSF and Log
      */
     public LogSF sfLog() {
-       return sflog;
+       return sfLog;
     }
 
 
