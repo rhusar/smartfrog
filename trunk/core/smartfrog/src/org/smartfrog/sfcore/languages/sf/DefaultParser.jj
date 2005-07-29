@@ -20,6 +20,7 @@ import org.smartfrog.sfcore.reference.AttribReferencePart;
 import org.smartfrog.sfcore.reference.ThisReferencePart;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.common.SFNull;
+import org.smartfrog.sfcore.common.SFBinaryArray;
 import java.io.InputStream;
 import java.util.Vector;
 import java.util.Enumeration;
@@ -59,6 +60,7 @@ public class DefaultParser {
     this.includeHandler = handler;
   }
 
+
   private String fixEscapes(String s) {
     int index = 0;
     int length = s.length();
@@ -96,6 +98,26 @@ public class DefaultParser {
     }
     return fixed.toString();
   }
+
+  private String eliminateWhitespace(String s) {
+    int index = 0;
+    int length = s.length();
+    StringBuffer fixed = new StringBuffer();
+
+    while (index < length) {
+        switch (s.charAt(index)) {
+          case '\n':
+          case '\t':
+          case ' ':
+            break;
+          default:
+            fixed.append(s.charAt(index));
+        }
+        index++;
+    }
+    return fixed.toString();
+  }
+
 
   protected Vector parseInclude(String fName) throws ParseException {
     try {
@@ -301,6 +323,11 @@ TOKEN : /* Literals */
     | <FLOAT:
         <FLOAT_BASE> ["f", "F"]
       >
+    | <BINARRAY:
+          ("#HEX#")
+          (["0"-"9", "a"-"f", "A"-"F", " ", "\n", "\t"])*
+          ("#")
+       >
 }
 
 
@@ -699,6 +726,7 @@ Object Primitive() :
    | (res=String())
    | (res=Number())
    | (res=Boolean())
+   | (res=BinArray())
    | (<VECTORSTART> { res = new Vector(); }
           [tmp=Primitive() { ((Vector)res).addElement(tmp); }
           (<COMMA> tmp=Primitive() { ((Vector)res).addElement(tmp); })*]
@@ -753,10 +781,29 @@ String String() :
 Boolean Boolean() :
 {
     Token res;
-    Boolean b;
+    Boolean b;       
 }
 {
   (  res = <TRUE> { b = Boolean.TRUE; }
    | res = <FALSE> { b = Boolean.FALSE; }
   ) { return b; }
+}
+
+SFBinaryArray BinArray() :
+{
+    Token res;
+    String s;
+}
+{
+  (  ( res=<BINARRAY> { s = eliminateWhitespace(res.image.substring(5, res.image.length() - 1)); })
+  ) {
+      System.out.println("processing binary array");
+
+      try {
+          SFBinaryArray ba = new SFBinaryArray(s, res.beginLine, res.beginColumn);
+          return ba;
+      } catch (Exception e) {
+          throw new ParseException("error constructing binary data:" + e.toString());
+      }
+    }
 }
