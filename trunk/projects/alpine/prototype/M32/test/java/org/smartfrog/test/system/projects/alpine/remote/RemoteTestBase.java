@@ -29,14 +29,29 @@ import java.net.URL;
  */
 public abstract class RemoteTestBase extends TestCase  {
     
-    String echoEndpoint;
-    URL echoEndpointURL;
+    String endpoint;
+    URL endpointURL;
 
     /**
      * Sets up the fixture, for example, open a network connection. This method is called before a test is executed.
      */
     protected void setUp() throws Exception {
-        echoEndpoint=System.getProperty("echoEndpoint");
-        
+        endpoint=System.getProperty(getEndpointPropertyName());
+        if(endpoint==null) {
+            throw new Exception("No endpoint property "+getEndpointPropertyName());
+        }
+        endpointURL=new URL(endpoint);
+    }
+
+    private String getEndpointPropertyName() {
+        return "echoEndpoint";
+    }
+
+    public String getEndpoint() {
+        return endpoint;
+    }
+
+    public URL getEndpointURL() {
+        return endpointURL;
     }
 }

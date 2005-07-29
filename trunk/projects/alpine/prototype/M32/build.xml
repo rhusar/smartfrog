@@ -97,7 +97,10 @@
         artifactID="junit"
         version="3.8.1"
         scope="test"/>
-        
+      <dependency groupID="httpunit"
+        artifactID="httpunit"
+        version="1.6"
+        scope="test"/>
       </m2-libraries>
   </target>  
     
