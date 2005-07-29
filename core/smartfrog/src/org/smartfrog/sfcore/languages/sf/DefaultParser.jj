@@ -20,7 +20,7 @@ import org.smartfrog.sfcore.reference.AttribReferencePart;
 import org.smartfrog.sfcore.reference.ThisReferencePart;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.common.SFNull;
-import org.smartfrog.sfcore.common.SFBinaryArray;
+import org.smartfrog.sfcore.common.SFByteArray;
 import java.io.InputStream;
 import java.util.Vector;
 import java.util.Enumeration;
@@ -323,7 +323,7 @@ TOKEN : /* Literals */
     | <FLOAT:
         <FLOAT_BASE> ["f", "F"]
       >
-    | <BINARRAY:
+    | <BYTEARRAY:
           ("#HEX#")
           (["0"-"9", "a"-"f", "A"-"F", " ", "\n", "\t"])*
           ("#")
@@ -751,7 +751,7 @@ Object Primitive() :
    | (res=String())
    | (res=Number())
    | (res=Boolean())
-   | (res=BinArray())
+   | (res=ByteArray())
    | (<VECTORSTART> { res = new Vector(); }
           [tmp=Primitive() { ((Vector)res).addElement(tmp); }
           (<COMMA> tmp=Primitive() { ((Vector)res).addElement(tmp); })*]
@@ -814,18 +814,18 @@ Boolean Boolean() :
   ) { return b; }
 }
 
-SFBinaryArray BinArray() :
+SFByteArray ByteArray() :
 {
     Token res;
     String s;
 }
 {
-  (  ( res=<BINARRAY> { s = eliminateWhitespace(res.image.substring(5, res.image.length() - 1)); })
+  (  ( res=<BYTEARRAY> { s = eliminateWhitespace(res.image.substring(5, res.image.length() - 1)); })
   ) {
       System.out.println("processing binary array");
 
       try {
-          SFBinaryArray ba = new SFBinaryArray(s, res.beginLine, res.beginColumn);
+          SFByteArray ba = new SFByteArray(s, res.beginLine, res.beginColumn);
           return ba;
       } catch (Exception e) {
           throw new ParseException("error constructing binary data:" + e.toString());
