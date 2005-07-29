@@ -21,14 +21,17 @@
 package org.smartfrog.test.system.projects.alpine.remote;
 
 import junit.framework.TestCase;
+import com.meterware.httpunit.WebConversation;
+import com.meterware.httpunit.WebResponse;
 
 /**
  
  */
-public class PostTest extends TestCase {
-    
-    String endpoint;
-    
-    
-    
+public class PostTest extends RemoteTestBase {
+
+    public void testGet() throws Exception {
+        WebConversation wc = new WebConversation();
+        WebResponse wr = wc.getResponse(getEndpoint());
+
+    }
 }
