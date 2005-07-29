@@ -231,7 +231,62 @@ public class SFParser implements Parser, MessageKeys {
     }
 
 
+       /**
+     * Parses any value from an input stream. (the meaning of "any" is language dependant)
+     *
+     * @param is input stream to parse for a value
+     *
+     * @return parsed value
+     *
+     * @exception SmartFrogParseException failed to parse any value
+     */
+    public Object sfParseAnyValue(InputStream is) throws SmartFrogParseException {
+           return parser.sfParseAnyValue(is);
+    }
+
     /**
+     * Parses any value from a string. (the meaning of "any" is language dependant)
+     *
+     * @param txt string to parse for a value
+     *
+     * @return parsed value
+     *
+     * @exception SmartFrogParseException failed to parse any value
+     */
+    public Object sfParseAnyValue(String txt) throws SmartFrogParseException {
+        return parser.sfParseAnyValue(new ByteArrayInputStream(txt.getBytes()));
+    }
+
+
+    /**
+     * Parses a primitive value from an input stream. (the meaning of primitive is language dependant)
+     *
+     * @param is input stream to parse for a value
+     *
+     * @return parsed value
+     *
+     * @exception SmartFrogParseException failed to parse primtiive value
+     */
+    public Object sfParsePrimitiveValue(InputStream is) throws SmartFrogParseException {
+           return parser.sfParsePrimitiveValue(is);
+    }
+
+
+    /**
+     * Parses a primitive value from a string. (the meaning of primitive is language dependant)
+     *
+     * @param txt string to parse for a value
+     *
+     * @return parsed value
+     *
+     * @exception SmartFrogParseException failed to parse primtiive value
+     */
+    public Object sfParsePrimitiveValue(String txt) throws SmartFrogParseException {
+        return parser.sfParsePrimitiveValue(new ByteArrayInputStream(txt.getBytes()));
+    }
+
+
+   /**
       * Gets language from the URL
       *
       * @param url URL passed to application

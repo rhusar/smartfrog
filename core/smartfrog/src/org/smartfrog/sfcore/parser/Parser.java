@@ -68,7 +68,7 @@ public interface Parser extends StreamParser {
      */
     public Reference sfParseReference(String txt) throws SmartFrogParseException;
 
-        /**
+    /**
      * Parses any value from a string. (the meaning of "any" is language dependant)
      *
      * @param txt string to parse for a value
