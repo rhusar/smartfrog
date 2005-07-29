@@ -478,6 +478,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
                (((Reference) value).getEager())) {
             try {
                result = sfResolve((Reference) value);
+               context.put(key, result);
                if (result instanceof SFComponentDescription) {
                    // need to do this as it may link to the file root!
                    ((SFComponentDescription)result).doLinkResolve(resState);
@@ -493,7 +494,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
                   }
                }
  */
-               context.put(key, result);
+
             } catch (Exception resex) {
                resState.addUnresolved(value, sfCompleteName());
             } catch (Throwable thr){
