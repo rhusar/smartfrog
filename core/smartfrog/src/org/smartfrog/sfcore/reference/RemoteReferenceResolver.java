@@ -44,7 +44,7 @@ public interface RemoteReferenceResolver extends Remote {
      * @param r reference to resolve
      *
      * @return resolved reference
-     * @throws SmartFrogException if any error occurrs while resolving
+     * @throws SmartFrogResolutionException if any error occurrs while resolving
      * @throws RemoteException if there is any network/rmi error
      */
     public Object sfResolve(Reference r)
