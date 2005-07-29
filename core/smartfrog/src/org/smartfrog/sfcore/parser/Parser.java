@@ -38,7 +38,7 @@ public interface Parser extends StreamParser {
      *
      * @return root component containing parsed component(s)
      *
-     * @exception SmartFrogException error parsing string
+     * @exception SmartFrogParseException error parsing string
      */
     public Phases sfParse(String str) throws SmartFrogParseException;
 
@@ -47,7 +47,7 @@ public interface Parser extends StreamParser {
      * contains the parsed components. Includes should be handled by some
      * default include handler.
      *
-     * @param is url to resource to parse and compile from
+     * @param url url to resource to parse and compile from
      *
      * @return root component containing parsed component(s)
      *
@@ -64,7 +64,29 @@ public interface Parser extends StreamParser {
      *
      * @return parsed reference
      *
-     * @exception SmartFrogException failed to parse reference
+     * @exception SmartFrogParseException failed to parse reference
      */
     public Reference sfParseReference(String txt) throws SmartFrogParseException;
+
+        /**
+     * Parses any value from a string. (the meaning of "any" is language dependant)
+     *
+     * @param txt string to parse for a value
+     *
+     * @return parsed value
+     *
+     * @exception SmartFrogParseException failed to parse any value
+     */
+    public Object sfParseAnyValue(String txt) throws SmartFrogParseException;
+
+    /**
+     * Parses a primitive value from a string. (the meaning of primitive is language dependant)
+     *
+     * @param txt string to parse for a value
+     *
+     * @return parsed value
+     *
+     * @exception SmartFrogParseException failed to parse primtiive value
+     */
+    public Object sfParsePrimitiveValue(String txt) throws SmartFrogParseException;
 }
