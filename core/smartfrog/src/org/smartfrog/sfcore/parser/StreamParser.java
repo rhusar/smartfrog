@@ -58,4 +58,26 @@ public interface StreamParser {
      * @exception SmartFrogParseException failed to parse reference
      */
     public Reference sfParseReference(InputStream is) throws SmartFrogParseException;
+
+    /**
+     * Parses any value from an input stream. (the meaning of "any" is language dependant)
+     *
+     * @param is input stream to parse for a value
+     *
+     * @return parsed value
+     *
+     * @exception SmartFrogParseException failed to parse any value
+     */
+    public Object sfParseAnyValue(InputStream is) throws SmartFrogParseException;
+
+    /**
+     * Parses a primitive value from an input stream. (the meaning of primitive is language dependant)
+     *
+     * @param is input stream to parse for a value
+     *
+     * @return parsed value
+     *
+     * @exception SmartFrogParseException failed to parse primtiive value
+     */
+    public Object sfParsePrimitiveValue(InputStream is) throws SmartFrogParseException;
 }
