@@ -3,15 +3,21 @@ package org.smartfrog.sfcore.common;
 import java.io.Serializable;
 
 /**
- * Created by IntelliJ IDEA.
- * User: pcg
- * Date: 28-Jul-2005
- * Time: 16:07:39
- * To change this template use File | Settings | File Templates.
+ * Class that implements the binary array data for the SmartFrog  language.
+ * It is immutable, and accessing the byte array returns a copy, so the data cannot be changed
  */
 public class SFBinaryArray implements Serializable {
     private byte[] array;
 
+    /**
+     * Constructor for an instance of the class for use by the parser - includes line and character info
+     * for error messages.
+     * @param data the string representing the hexadecimal data
+     * @param line the line number in the parsed stream
+     * @param column the colummn in the parsed stream
+     *
+     * @throws SmartFrogParseException if the data cannot be converted
+     */
     public SFBinaryArray(String data, int line, int column) throws SmartFrogParseException {
         if (data.length() != ((data.length() >> 1) << 1))
             throw new SmartFrogParseException(new StringBuffer()
@@ -22,15 +28,25 @@ public class SFBinaryArray implements Serializable {
         processString(data);
     }
 
+    /**
+     * Constructor for an instance of the class from a byte array - clones the data
+     * to ensure immutability
+     * @param array the data
+     */
     public SFBinaryArray(byte[] array) {
         this.array = (byte[])(array.clone());
-        processArray();
     }
 
+    /**
+     * Return a string in canonical form representing the data
+     */
     public String toString() {
         return new StringBuffer().append("#HEX#").append(processArray()).append("#").toString();
     }
 
+    /**
+     * return a copy of the internal array of data
+     */
     public byte[] byteArray() {
         return (byte[])array.clone();
     }
