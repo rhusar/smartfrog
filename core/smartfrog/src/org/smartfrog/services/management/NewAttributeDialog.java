@@ -42,6 +42,11 @@ import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.parser.Phases;
 import org.smartfrog.sfcore.parser.SFParser;
 import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.parser.StreamParser;
+import java.io.InputStream;
+import java.io.StringBufferInputStream;
+import java.io.StringReader;
+import java.io.ByteArrayInputStream;
 
 /**
  *  Dialog to create/add/modify attributes of a SmartFrog component
@@ -70,12 +75,13 @@ public class NewAttributeDialog extends JDialog {
     /** Set of attributes. */
     private Object[] attribute = null;
     /** Component types. */
-    private String[] componentTypes = {
-        "String", "Integer", "Boolean", "ComponentDescription", "Reference",
-        "Long", "Float", "Double"
+    private String[] componentTypes = {"AnyValue",
+        "Integer", "Boolean", "ComponentDescription", "Reference",
+        "Long", "Float", "Double", "String"
     };
+
     /** Integer value for string. */
-    static final int STRING = 0;
+    static final int STRING = 8;
     /** Integer value for integer. */
     static final int INTEGER = 1;
     /** Integer value for boolean. */
@@ -90,6 +96,8 @@ public class NewAttributeDialog extends JDialog {
     static final int FLOAT = 6;
     /** Integer value for double. */
     static final int DOUBLE = 7;
+    /** Integer value for PRIMVALUE. */
+    static final int ANYVALUE = 0;
 
     //final int VECTOR = 3;
     private JComboBox TypejComboBox = new JComboBox(componentTypes);
@@ -238,37 +246,37 @@ public class NewAttributeDialog extends JDialog {
     Object createValueObject(int type, String valueStr) {
         try {
             switch (type) {
-            case STRING:
-                return new String(valueStr);
+                case ANYVALUE:
+                    return parseValue(valueStr,"sf");
+                case STRING:
+                    return new String(valueStr);
 
-            case INTEGER:
-                return Integer.valueOf(valueStr);
+                case INTEGER:
+                    return Integer.valueOf(valueStr);
 
-            case BOOLEAN:
-                return Boolean.valueOf(valueStr);
+                case BOOLEAN:
+                    return Boolean.valueOf(valueStr);
 
-            case COMPONENT_DESCRIPTION:
-                return parsePhase("raw", valueStr, "sf");
+                case COMPONENT_DESCRIPTION:
+                    return parsePhase("raw", valueStr, "sf");
 
-            case REFERENCE:
+                case REFERENCE:
+                    try {
+                        return Reference.fromString(valueStr);
+                    } catch (Exception ex) {
+                        System.out.println(ex.getMessage());
 
-                try {
-                    return Reference.fromString(valueStr);
-                } catch (Exception ex) {
-                    System.out.println(ex.getMessage());
+                        //ex.printStackTrace();
+                        return null;
+                    }
 
-                    //ex.printStackTrace();
-                    return null;
-                }
+                    case LONG:
+                        return Long.valueOf(valueStr);
 
-            case LONG:
-                return Long.valueOf(valueStr);
-
-            case FLOAT:
-                return Float.valueOf(valueStr);
-
-            case DOUBLE:
-                return Double.valueOf(valueStr);
+                case FLOAT:
+                    return Float.valueOf(valueStr);
+                case DOUBLE:
+                    return Double.valueOf(valueStr);
             }
         } catch (Exception ex) {
             System.out.println("Error: " + ex.getMessage());
@@ -381,6 +389,19 @@ public class NewAttributeDialog extends JDialog {
 
         return null;
     }
+
+    public Object parseValue(String textToParse, String language) {
+        try {
+            SFParser parser = new SFParser(language);
+            return parser.sfParseAnyValue( textToParse);
+        } catch (Throwable ex) {
+            ex.printStackTrace();
+        }
+        return null;
+    }
+
+
+
     /**
      * Interface Method.
      * @param e event
