@@ -117,7 +117,7 @@
 
   <!-- ========================================================== -->
   <!-- this is an override
-       with selective use of the nux codec.
+       with selective use of the nux codec. -->
   <!-- ========================================================== -->
   <target name="compile"
     depends="pre-compile">
