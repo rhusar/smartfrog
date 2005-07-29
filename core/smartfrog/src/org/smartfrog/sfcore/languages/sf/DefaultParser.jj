@@ -369,6 +369,31 @@ Reference Reference() :
 }
 
 /*
+ * Entry point for any value parser (e.g. for parsing values in Management Console)
+ */
+ Object AnyValue() :
+{
+  Object res;
+}
+{
+     (res=Component() | res=SimpleValue()) <EOF>
+     { return res; }
+}
+
+
+ /*
+  * Entry point for basic value parser (e.g. for parsing properties)
+  */
+ Object PrimitiveValue() :
+{
+  Object res;
+}
+{
+    res = Primitive() <EOF>
+    { return res; }
+}
+
+/*
  * Main body of grammar
  */
 void AttributesNoEOF(SFComponentDescription descr) :
@@ -781,7 +806,7 @@ String String() :
 Boolean Boolean() :
 {
     Token res;
-    Boolean b;       
+    Boolean b;
 }
 {
   (  res = <TRUE> { b = Boolean.TRUE; }
@@ -807,3 +832,5 @@ SFBinaryArray BinArray() :
       }
     }
 }
+
+
