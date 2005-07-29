@@ -23,11 +23,11 @@
   <resources>
     <j2se version="1.4+"/>
     <j2se version="1.5+"/>
-    <!-- lazy="true" means they dont need to be loaded at start time -->
-    <jar href="smartfrog.jar" main="true"/>
+    <!-- lazy="true" means they don't need to be loaded at start time -->
+    <jar href="lib/smartfrog-@VERSION@.jar" main="true"/>
     <!-- add more jars here that you need at load time -->
-    <jar href="sfServices.jar"/>
-    <jar href="sfExamples.jar"/>
+    <jar href="lib/sfServices-@VERSION@.jar"/>
+    <jar href="lib/sfExamples-@VERSION@.jar"/>
     <property name="org.smartfrog.logger.logStackTrace" value="true"/>
     <property name="org.smartfrog.sfcore.processcompound.sfProcessName" value="rootProcess"/>
   </resources>

@@ -85,7 +85,7 @@ ServerOnJetty extends CoreJettyServer {
         }
 
         jnlp2 extends WebStartServletOnJetty {
-            pathSpec "downloads/";
+            pathSpec "/downloads/";
         }
      }
 
@@ -125,7 +125,7 @@ server extends ServerOnJetty {
         enabled PARENT:liveness;
         host LAZY PARENT:servlets:ipaddr;
         port PARENT:port;
-        page "/";
+        page LAZY PARENT:servlets:jnlp2:absolutePath;
         checkFrequency 1;
     }
 
