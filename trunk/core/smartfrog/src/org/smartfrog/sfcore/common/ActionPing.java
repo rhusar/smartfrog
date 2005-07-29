@@ -22,7 +22,6 @@ package org.smartfrog.sfcore.common;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.sfcore.processcompound.SFProcess;
 import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.prim.TerminationRecord;
 
 import java.rmi.RemoteException;
 import java.io.Serializable;
@@ -31,6 +30,9 @@ import java.io.Serializable;
  * Ping a component
  */
 public class ActionPing extends ConfigurationAction implements Serializable {
+    /**
+     * ping message. {@value}
+     */
     public static final String PING_MESSAGE = "Ping time :";
 
     /**
@@ -86,10 +88,6 @@ public class ActionPing extends ConfigurationAction implements Serializable {
             targetC = targetP;
         } else {
             targetC = (Prim) targetP.sfResolveWithParser(name);
-        }
-        boolean isRootProcess = false;
-        if (targetC instanceof ProcessCompound) {
-            isRootProcess = ((ProcessCompound) targetC).sfIsRoot();
         }
         long start,finish;
         start=System.currentTimeMillis();
