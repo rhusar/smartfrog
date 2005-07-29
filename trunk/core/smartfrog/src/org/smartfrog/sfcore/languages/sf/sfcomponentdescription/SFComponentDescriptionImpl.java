@@ -594,7 +594,7 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
         if (v instanceof SFNull) return v;
         if (v instanceof String) return v;
         if (v instanceof Reference) return v;
-        if (v instanceof SFBinaryArray) return v;
+        if (v instanceof SFByteArray) return v;
         if (v instanceof Vector) {
              return copyVector((Vector)v);
         }
