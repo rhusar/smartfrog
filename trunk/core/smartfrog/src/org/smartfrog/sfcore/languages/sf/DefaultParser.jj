@@ -822,8 +822,6 @@ SFByteArray ByteArray() :
 {
   (  ( res=<BYTEARRAY> { s = eliminateWhitespace(res.image.substring(5, res.image.length() - 1)); })
   ) {
-      System.out.println("processing binary array");
-
       try {
           SFByteArray ba = new SFByteArray(s, res.beginLine, res.beginColumn);
           return ba;
