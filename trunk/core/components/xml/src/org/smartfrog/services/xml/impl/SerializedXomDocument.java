@@ -20,8 +20,6 @@
 package org.smartfrog.services.xml.impl;
 
 import nu.xom.Document;
-import nux.xom.binary.BinaryParsingException;
-import nux.xom.binary.BinaryXMLCodec;
 
 import java.io.IOException;
 import java.io.Serializable;
