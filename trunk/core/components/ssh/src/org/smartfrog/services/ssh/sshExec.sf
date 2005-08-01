@@ -28,8 +28,8 @@ For more information: www.smartfrog.org
  SSHSchema extends Schema {
   	host extends String;
   	username extends String;
-    commands extends Vector;
-
+        commands extends Vector;
+	logFile extends OptionalString;
   }
 
 SSHSession extends Compound {

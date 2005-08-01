@@ -19,15 +19,15 @@ For more information: www.smartfrog.org
 */
 package org.smartfrog.services.ssh;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileWriter;
+import java.io.ByteArrayInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.Vector;
 import java.rmi.RemoteException;
 
 import com.jcraft.jsch.ChannelExec;
+import com.jcraft.jsch.ChannelShell;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.JSch;
@@ -42,7 +42,7 @@ import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.logging.Log;
-
+//import org.smartfrog.services.ssh.FilePasswordProvider;
 /**
  * SmartFrog component to executes a command on a remote machine via ssh. 
  * It is a wrapper around jsch-0.1.14
@@ -55,12 +55,12 @@ public class SSHExecImpl extends PrimImpl implements SSHExec{
     private static final String TIMEOUT_MESSAGE = "Connection timed out";
     private static final int SSH_PORT = 22;
     private long timeout = 0;
-    private File outputFile = null;   
     private boolean append = false;   
     private String host;
     private String userName;
     private String password;
     private int port = SSH_PORT;
+    private String logFile = null;
     private boolean failOnError = true;
     private UserInfoImpl userInfo;
     private Vector commandsList;
@@ -71,6 +71,7 @@ public class SSHExecImpl extends PrimImpl implements SSHExec{
     private Thread waitThread = null;
     private Session session = null;
     private Log log;
+    
     /**
      * Constructs SSHExecImpl object.
      */
@@ -116,17 +117,29 @@ public class SSHExecImpl extends PrimImpl implements SSHExec{
             session = openSession();
             session.setTimeout((int) timeout);
 
+            FileOutputStream tee = new FileOutputStream(logFile);
             // Execute commands
-            for (int i = 0 ; i <commandsList.size() ; i++ ) {
-                final ChannelExec channel = (ChannelExec) session.
-                                            openChannel("exec");
-                String cmd = (String) commandsList.get(i);
-                log.info("Executing command:"+ cmd); 
-                channel.setCommand(cmd);
-                channel.connect();
-
-                // wait for it to finish
-                waitThread = new Thread() {
+	    
+	    StringBuffer buffer = new StringBuffer();	
+           	for (int i = 0 ; i <commandsList.size() ; i++ ) {
+	    		String cmd = (String) commandsList.get(i);
+	    		buffer.append(cmd);
+	    		buffer.append("\n");
+	   	}
+		
+            byte[] bytes = buffer.toString().getBytes();
+	    ByteArrayInputStream bais = new ByteArrayInputStream(bytes); 
+	    
+	    final ChannelShell channel = (ChannelShell) session.openChannel("shell");
+            channel.setOutputStream(tee);
+            channel.setExtOutputStream(tee);	
+	    channel.setInputStream(bais);	
+            channel.connect(); 
+	    
+	    log.info("Executing commands:"+ buffer.toString()); 
+            
+		// wait for it to finish
+               waitThread = new Thread() {
                             public void run() {
                                 while (!channel.isEOF()) {
                                     if (waitThread == null) {
@@ -155,7 +168,7 @@ public class SSHExecImpl extends PrimImpl implements SSHExec{
                 } else {
                     int exitStat = channel.getExitStatus();
                     if (exitStat != 0) {
-                        String msg = "Remote command: "+ cmd+
+                        String msg = "Remote commands: "+ 
                                         " failed with exit status " + exitStat;
                         if (failOnError) {
                             throw new SmartFrogException(msg);
@@ -163,7 +176,8 @@ public class SSHExecImpl extends PrimImpl implements SSHExec{
                     }
                 }
                 waitThread = null;
-            }
+	    channel.disconnect();
+
             // check if it should terminate by itself
             if(shouldTerminate) {
                 log.info("Normal termination :" + sfCompleteNameSafe());
@@ -223,6 +237,7 @@ public class SSHExecImpl extends PrimImpl implements SSHExec{
 
         //optional attributes
         port = sfResolve(PORT, port, false);
+	logFile = sfResolve(LOG_FILE, logFile, false);
         timeout = sfResolve(TIMEOUT, timeout, false);
         failOnError = sfResolve(FAIL_ON_ERROR, failOnError, false);
         shouldTerminate = sfResolve(TERMINATE, shouldTerminate, false);
