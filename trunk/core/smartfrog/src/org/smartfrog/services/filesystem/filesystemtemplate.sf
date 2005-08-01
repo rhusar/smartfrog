@@ -48,5 +48,9 @@ FileUsingComponent extends Prim {
     fileUsingComponentSchema extends FileUsingComponentSchema;
 }
 
-
+/**
+ * declare schema types for these two types, just for ease of reading
+ */
+OptionalFilenameType extends Optional;
+FilenameType extends Compulsory;
 

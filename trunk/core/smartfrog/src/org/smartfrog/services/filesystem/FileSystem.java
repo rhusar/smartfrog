@@ -151,9 +151,9 @@ public class FileSystem {
         }
         if (pathAttr instanceof FileIntf) {
             //file interface: get the info direct from the component
-            FileIntf fileComponent = (FileIntf) pathAttr;
-            Prim fileAsPrim = (Prim)pathAttr;
+            //FileIntf fileComponent = (FileIntf) pathAttr;
             //String path = fileComponent.getAbsolutePath();
+            Prim fileAsPrim = (Prim) pathAttr;
             String path = fileAsPrim.sfResolve(FileUsingComponent.ATTR_ABSOLUTE_PATH,
                     (String)null,
                     true);
@@ -187,7 +187,7 @@ public class FileSystem {
         owner = ComponentHelper.completeNameSafe(component);
         if (pathAttr instanceof ComponentDescription) {
             ComponentDescription cd = (ComponentDescription) pathAttr;
-            throw new SmartFrogResolutionException(ERROR_UNDEPLOYED_CD+pathAttr);
+            throw new SmartFrogResolutionException(ERROR_UNDEPLOYED_CD+cd);
         }
 
         throw new SmartFrogResolutionException(attribute, owner,
