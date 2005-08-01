@@ -790,9 +790,9 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      */
     public static ComponentDescription addSystemProperties(String startWith,
         ComponentDescription compDesc, String language) {
-        Properties props = System.getProperties();
         SFParser parser = null;
         try {
+            Properties props = System.getProperties();
             parser = new SFParser(language);
             for (Enumeration e = props.keys(); e.hasMoreElements(); ) {
                 String key = e.nextElement().toString();
@@ -841,9 +841,16 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
                 }
             }
         } catch (SmartFrogException ex2) {
-            if (((sfLog!=null)&&sfLog.isErrorEnabled())){
-                sfLog.error("Error adding system properties to ComponentDescription",ex2);
+          if (sfLog != null) {
+            if (sfLog.isErrorEnabled()) {
+              sfLog.err("Error adding system properties to ComponentDescription", ex2);
             }
+          } else {
+            System.err.println("Error adding system properties to ComponentDescription: " + ex2.getMessage());
+            if (org.smartfrog.sfcore.common.Logger.logStackTrace) {
+              ex2.printStackTrace();
+            }
+          }
         }
         return compDesc;
     }
