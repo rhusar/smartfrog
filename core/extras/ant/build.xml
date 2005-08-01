@@ -120,7 +120,7 @@
       classpathref="smartfrog.tasks.classpath"/>
   </target>
   
-  <target name="default" depends="package,test">
+  <target name="default" depends="package">
     <!-- todo -->
   </target>  
   
