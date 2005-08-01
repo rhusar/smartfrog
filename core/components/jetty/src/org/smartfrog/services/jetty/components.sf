@@ -33,13 +33,19 @@ CoreJettySchema extends WebServerSchema {
  * It is implemented as a compound; you can add anything underneath it and they
  * will be deployed.
  */
-CoreJettyServer extends Compound {
+CoreJettyServer extends JavaApplicationServer {
    sfClass "org.smartfrog.services.jetty.SFJetty";
    coreJettySchema extends CoreJettySchema;
    serverHost "localhost";
    //synchronous deploy/undeploy policy
    sfSyncTerminate true;
    port 8080;
+
+   //deployment information
+   supportsEAR false;
+   supportsWAR true;
+   supportsServletContext true;
+
 
    //logging is optional. Once turned on, the pattern and logdir are mandatory
    enableLogging false;
@@ -92,15 +98,12 @@ JettyServletContextSchema extends Schema {
     
     //classpath. Not tested yet.
     classpath extends OptionalString;
-     
-    //at deploy time, the property absolutePath is set to the path up to (but not including)
-    //any regexp. e.g servlets/* maps to servlets/
-     
-     
-    //server extends String;
+
+     //runtime only
+    ipaddr extends OptionalString;
 }
 
-JettyServletContext extends Compound {
+JettyServletContext extends ServletContext {
     sfClass "org.smartfrog.services.jetty.contexts.JettyServletContext";
     jettyServletContextSchema extends JettyServletContextSchema;
 }
@@ -151,14 +154,6 @@ JettyListener extends Prim {
  */
 JettyServlet extends Servlet {
     sfClass "org.smartfrog.services.jetty.contexts.servlets.JettyServletImpl";
-    jettyServletSchema extends Schema {
-        //init order for the servlet;
-        //Holders with order<0, are initialized on use.
-        //Those with order>=0 are initialized in increasing order when the handler is started
-        initOrder extends OptionalInteger;
-     }
-
-     initOrder -1;
 
 }
 

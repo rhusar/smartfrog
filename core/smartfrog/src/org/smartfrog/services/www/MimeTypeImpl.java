@@ -17,13 +17,11 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.jetty.extras;
+package org.smartfrog.services.www;
 
-import org.mortbay.jetty.servlet.ServletHttpContext;
-import org.smartfrog.services.jetty.contexts.JettyServletContext;
-import org.smartfrog.services.jetty.contexts.ServletContextIntf;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.prim.TerminationRecord;
 
 import java.rmi.RemoteException;
 
@@ -34,6 +32,7 @@ import java.rmi.RemoteException;
 public class MimeTypeImpl extends PrimImpl implements MimeType {
     private String extension;
     private String type;
+    ServletContextIntf servletContext = null;
 
 
     public MimeTypeImpl() throws RemoteException {
@@ -51,15 +50,20 @@ public class MimeTypeImpl extends PrimImpl implements MimeType {
         super.sfStart();
         extension = sfResolve(ATTR_EXTENSION, extension, true);
         type = sfResolve(ATTR_TYPE, type, true);
-        JettyServletContext jettyServletContext = null;
-        jettyServletContext = (JettyServletContext) sfResolve(ATTR_CONTEXT,
-                jettyServletContext,
+        servletContext = (ServletContextIntf) sfResolve(ATTR_CONTEXT,
+                servletContext,
                 true);
-        ServletHttpContext httpContext = null;
-        httpContext = (ServletHttpContext) jettyServletContext.sfResolve(
-                ServletContextIntf.ATTR_CONTEXT,
-                httpContext, true);
+        servletContext.addMimeMapping(extension,type);
+    }
 
-        httpContext.setMimeMapping(extension, type);
+    /**
+     * remove the servlet context if it is absent.
+     * @param status termination status
+     */
+    public synchronized void sfTerminateWith(TerminationRecord status) {
+        super.sfTerminateWith(status);
+        if(servletContext!=null) {
+            servletContext.removeMimeMapping(extension);
+        }
     }
 }

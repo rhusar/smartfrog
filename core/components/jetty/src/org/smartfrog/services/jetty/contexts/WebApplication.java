@@ -45,101 +45,117 @@ import org.smartfrog.sfcore.reference.Reference;
 
 import java.io.File;
 import java.rmi.RemoteException;
+
 /**
- * A WebApplication context class for jetty server 
+ * A WebApplication context class for jetty server
+ *
  * @author Ritu Sabharwal
  */
 
 
-public class WebApplication extends PrimImpl implements JettyWebApplicationContext {
-    Reference contextPathRef = new Reference(ATTR_CONTEXT_PATH);
-    Reference webAppRef = new Reference(ATTR_WARFILE);
-    Reference requestIdRef = new Reference(ATTR_REQUEST_ID);
-    JettyHelper jettyHelper = new JettyHelper(this);
-    String jettyhome = ".";
-    String contextPath = "/";
-    String webApp = null;
-    String serverName = null;
-    boolean requestId = false;
+public class WebApplication extends PrimImpl
+        implements JettyWebApplicationContext {
+    private Reference contextPathRef = new Reference(ATTR_CONTEXT_PATH);
+    private Reference webAppRef = new Reference(ATTR_WARFILE);
+    private Reference requestIdRef = new Reference(ATTR_REQUEST_ID);
+    private JettyHelper jettyHelper = new JettyHelper(this);
+    private String jettyhome = ".";
+    private String contextPath = "/";
+    private String webApp = null;
+    private boolean requestId = false;
 
-    HttpServer server = null;
-   
-   WebApplicationContext context = new WebApplicationContext();
+    private HttpServer server = null;
 
-    /** Standard RMI constructor */
-       public WebApplication() throws RemoteException {
-       super();
-       }
-      
-   /**
-   * Deploy the WebApplication context
-   * @exception  SmartFrogException In case of error while deploying  
-   * @exception  RemoteException In case of network/rmi error  
-   */ 
-   public void sfDeploy() throws SmartFrogException, RemoteException {
-       super.sfDeploy();
+    private WebApplicationContext context = new WebApplicationContext();
 
-   }
+    /**
+     * Standard RMI constructor
+     */
+    public WebApplication() throws RemoteException {
+        super();
+    }
 
-   /**
-   * sfStart: adds the WebApplication context to the jetty server
-   *
-   * @exception  SmartFrogException In case of error while starting
-   * @exception  RemoteException In case of network/rmi error
-   */
-   public void sfStart() throws SmartFrogException, RemoteException {
-       super.sfStart();
-       server = jettyHelper.bindToServer();
-       jettyhome = jettyHelper.findJettyHome();
-       contextPath = sfResolve(contextPathRef, contextPath, true);
-       //fetch the webapp reference by doing filename resolution
-       //if the file exists, it does not need to be anywhere
-       webApp = sfResolve(webAppRef, webApp, false);
-       if (webApp != null) {
-           if (!new File(webApp).exists()) {
-               File webAppFile= new File(jettyhome,webApp);
-               webApp = webAppFile.getAbsolutePath();
-           }
-       }
-       //no webapp? look for the warfile
-       if (webApp == null) {
-           webApp = FileSystem.lookupAbsolutePath(this, ATTR_WARFILE, null, null, true, null);
-       }
-       //sanity check
-       File webappFile = new File(webApp);
-       if (!webappFile.exists()) {
-           throw new SmartFrogDeploymentException("Web application " + webappFile + " was not found");
-       }
-       //request ID
-       requestId = sfResolve(requestIdRef, requestId, false);
-       addcontext(contextPath,webApp,requestId);
-       server.addContext(context);
-       try {
-           context.start();
-       } catch(Exception ex){
-           throw SmartFrogException.forward(ex);
-       }
-   }   
-  
-   /**
-   * Termination phase
-   */
-   public void sfTerminateWith(TerminationRecord status) {
-       jettyHelper.terminateContext(context);
-       super.sfTerminateWith(status);
-   }
-  
-   /**
-   * Add the context to the http server
-   * @exception  RemoteException In case of network/rmi error 
-   */ 
-   public void addcontext(String contextpath, String webApp, boolean requestId)
-           throws RemoteException {
-       context.setContextPath(contextPath);
-       context.setWAR(webApp);
-       ServletHandler servlethandler = context.getServletHandler();
-       AbstractSessionManager sessionmanager = (AbstractSessionManager)
-               servlethandler.getSessionManager();
-       sessionmanager.setUseRequestedId(requestId);
-   } 
+    /**
+     * Deploy the WebApplication context
+     *
+     * @throws SmartFrogException In case of error while deploying
+     * @throws RemoteException    In case of network/rmi error
+     */
+    public void sfDeploy() throws SmartFrogException, RemoteException {
+        super.sfDeploy();
+
+    }
+
+    /**
+     * sfStart: adds the WebApplication context to the jetty server
+     *
+     * @throws SmartFrogException In case of error while starting
+     * @throws RemoteException    In case of network/rmi error
+     */
+    public void sfStart() throws SmartFrogException, RemoteException {
+        super.sfStart();
+        server = jettyHelper.bindToServer();
+        jettyhome = jettyHelper.findJettyHome();
+        contextPath = sfResolve(contextPathRef, contextPath, true);
+        //fetch the webapp reference by doing filename resolution
+        //if the file exists, it does not need to be anywhere
+        webApp = sfResolve(webAppRef, webApp, false);
+        if (webApp != null) {
+            if (!new File(webApp).exists()) {
+                File webAppFile = new File(jettyhome, webApp);
+                webApp = webAppFile.getAbsolutePath();
+            }
+        }
+        //no webapp? look for the warfile
+        if (webApp == null) {
+            webApp =
+                    FileSystem.lookupAbsolutePath(this,
+                            ATTR_WARFILE,
+                            null,
+                            null,
+                            true,
+                            null);
+        }
+        //sanity check
+        File webappFile = new File(webApp);
+        if (!webappFile.exists()) {
+            throw new SmartFrogDeploymentException("Web application " +
+                    webappFile +
+                    " was not found");
+        }
+        //request ID
+        requestId = sfResolve(requestIdRef, requestId, false);
+        addcontext(contextPath, webApp, requestId);
+        server.addContext(context);
+        try {
+            context.start();
+        } catch (Exception ex) {
+            throw SmartFrogException.forward(ex);
+        }
+    }
+
+    /**
+     * Termination phase
+     */
+    public void sfTerminateWith(TerminationRecord status) {
+        jettyHelper.terminateContext(context);
+        super.sfTerminateWith(status);
+    }
+
+    /**
+     * Add the context to the http server
+     *
+     * @throws RemoteException In case of network/rmi error
+     */
+    public void addcontext(String contextpath,
+            String webApp,
+            boolean requestId)
+            throws RemoteException {
+        context.setContextPath(contextPath);
+        context.setWAR(webApp);
+        ServletHandler servlethandler = context.getServletHandler();
+        AbstractSessionManager sessionmanager = (AbstractSessionManager)
+                servlethandler.getSessionManager();
+        sessionmanager.setUseRequestedId(requestId);
+    }
 }

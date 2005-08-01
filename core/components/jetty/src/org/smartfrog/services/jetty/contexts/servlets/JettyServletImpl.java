@@ -34,7 +34,7 @@ package org.smartfrog.services.jetty.contexts.servlets;
 import org.mortbay.jetty.servlet.ServletHolder;
 import org.mortbay.jetty.servlet.ServletHttpContext;
 import org.smartfrog.services.jetty.JettyHelper;
-import org.smartfrog.services.jetty.contexts.ServletContextIntf;
+import org.smartfrog.services.www.ServletContextIntf;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.prim.PrimImpl;

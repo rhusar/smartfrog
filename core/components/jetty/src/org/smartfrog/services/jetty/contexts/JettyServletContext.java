@@ -45,6 +45,7 @@ import org.smartfrog.sfcore.reference.Reference;
 
 import java.io.File;
 import java.rmi.RemoteException;
+import java.util.Map;
 
 
 /**
@@ -53,24 +54,22 @@ import java.rmi.RemoteException;
  * @author Ritu Sabharwal
  */
 
-public class JettyServletContext extends CompoundImpl implements ServletContextIntf {
-    Reference contextPathRef = new Reference(ATTR_CONTEXT_PATH);
-    Reference resourceBaseRef = new Reference(ATTR_RESOURCE_BASE);
-    Reference classPathRef = new Reference(ATTR_CLASSPATH);
+public class JettyServletContext extends CompoundImpl implements JettyServletContextIntf {
+    private Reference contextPathRef = new Reference(ATTR_CONTEXT_PATH);
+    private Reference resourceBaseRef = new Reference(ATTR_RESOURCE_BASE);
+    private Reference classPathRef = new Reference(ATTR_CLASSPATH);
 
-    String jettyhome = ".";
-    String contextPath = "/";
-    String resourceBase = "";
-    String classPath = null;
-    String mapfromPath;
-    String maptoPath;
+    private String jettyhome = ".";
+    private String contextPath = "/";
+    private String resourceBase = "";
+    private String classPath = null;
 
 
-    JettyHelper jettyHelper = new JettyHelper(this);
+    private JettyHelper jettyHelper = new JettyHelper(this);
 
-    HttpServer server = null;
+    private HttpServer server = null;
 
-    ServletHttpContext context;
+    private ServletHttpContext context;
 
     /**
      * Standard RMI constructor
@@ -164,4 +163,24 @@ public class JettyServletContext extends CompoundImpl implements ServletContextI
         context.addHandler(new ResourceHandler());
     }
 
+    /**
+     * Add a mime mapping
+     *
+     * @param extension extension to map (no '.')
+     * @param mimeType  mimetype to generate
+     */
+    public void addMimeMapping(String extension, String mimeType) {
+        context.setMimeMapping(extension, mimeType);
+
+    }
+
+    /**
+     * Remove a mime mapping for an extension
+     *
+     * @param extension extension to unmap
+     */
+    public boolean removeMimeMapping(String extension) {
+        Map mimeMap = context.getMimeMap();
+        return (mimeMap.remove(extension)!=null);
+    }
 }

@@ -17,7 +17,7 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.jetty.extras;
+package org.smartfrog.services.www;
 
 import java.rmi.Remote;
 
