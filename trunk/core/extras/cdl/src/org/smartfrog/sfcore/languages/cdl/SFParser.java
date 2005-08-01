@@ -105,4 +105,30 @@ public class SFParser implements StreamParser {
         //TODO
         return null;
     }
+
+    /**
+     * Parses any value from an input stream. (the meaning of "any" is language
+     * dependant)
+     *
+     * @param is input stream to parse for a value
+     * @return parsed value
+     * @throws SmartFrogParseException failed to parse any value
+     */
+    public Object sfParseAnyValue(InputStream is)
+            throws SmartFrogParseException {
+        return null;
+    }
+
+    /**
+     * Parses a primitive value from an input stream. (the meaning of primitive
+     * is language dependant)
+     *
+     * @param is input stream to parse for a value
+     * @return parsed value
+     * @throws SmartFrogParseException failed to parse primtiive value
+     */
+    public Object sfParsePrimitiveValue(InputStream is)
+            throws SmartFrogParseException {
+        return null;
+    }
 }

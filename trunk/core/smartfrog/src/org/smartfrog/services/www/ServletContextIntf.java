@@ -17,11 +17,12 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.jetty.contexts;
+package org.smartfrog.services.www;
 
 import java.rmi.Remote;
 
 /**
+ * Generic servlet context
  * created 17-Jun-2004 11:40:11
  */
 
@@ -38,14 +39,6 @@ public interface ServletContextIntf extends Remote {
     /**
      * {@value}
      */
-    public static final String ATTR_CLASSPATH = "classpath";
-    /**
-     * {@value}
-     */
-    public static final String ATTR_CONTEXT = "Context";
-    /**
-     * {@value}
-     */
     public static final String SERVER = "server";
     
     /**
@@ -53,10 +46,30 @@ public interface ServletContextIntf extends Remote {
      * {@value}
      */ 
     public static final String ATTR_ABSOLUTE_PATH = "absolutePath";
-    
+
     /**
-     * host ip address. The IPAddr is returned for ease of use on networks where DNS is not there
-     */ 
-    public static final String ATTR_HOST_ADDRESS = "ipaddr";
-    
+     * {@value}
+     */
+    public static final String ATTR_CLASSPATH = "classpath";
+    /**
+     * host ip address. The IPAddr is returned for ease of use on networks where
+     * DNS is not there
+     */
+    String ATTR_HOST_ADDRESS = "ipaddr";
+
+    /**
+     * Add a mime mapping
+     * @param extension extension to map (no '.')
+     * @param mimeType mimetype to generate
+     */
+    public void addMimeMapping(String extension, String mimeType);
+
+
+    /**
+     * Remove a mime mapping for an extension
+     * @param extension extension to unmap
+     * @return true if the unmapping was successful
+     */
+    public boolean removeMimeMapping(String extension);
+
 }

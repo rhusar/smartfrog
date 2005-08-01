@@ -26,25 +26,89 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/components.sf"
 
 /**
+ * base webserver declarations
+ */
+#include "/org/smartfrog/services/www/webserver.sf"
+
+/**
+ * declare a base Java app server.
+ * This is not instantiable, and must be implemented by an
+ * application server
+ */
+
+ApplicationServer extends WebServer {
+
+ApplicationServerSchema extends Schema {
+
+    //attribute that is to be set only if WAR deployment is supported
+    supportsWAR extends Boolean;
+    //attribute true iff servlet contexts are supported
+    supportsServletContext extends Boolean;
+    //attribute true iff EAR deployment is supported
+    supportsEAR extends Boolean;
+
+    }
+
+}
+
+/**
+ * This schema is required for anything that is deployed
+ * to an app server that is its own 'context'
+ */
+ApplicationServerContextSchema extends Schema {
+
+    //application server. required.
+    server extends CD;
+    //late binding information
+    absolutePath extends OptionalString;
+}
+
+/**
+ * Base application server context. This is not instantiable
+ */
+ApplicationServerContext extends Prim {
+    applicationServerContextSchema extends applicationServerContextSchema;
+}
+
+
+/**
  * a jetty web application has a context path
  * and a a path to its home directory
  */
-JavaWebApplicationSchema extends Schema {
+WebApplicationSchema extends Schema {
     //where to deploy under the server
     contextPath extends String;
 
-    //warFile can also refer to a file reference
-    //may become Compulsory
-    warFile extends Optional;
-
-    //application server
-    server extends OptionalCD;
+    //warFile can be a File or a string
+    warFile extends FilenameType;
 
 }
 
-JavaWebApplication extends Prim {
-    javaWebApplicationSchema extends JavaWebApplicationSchema;
+/**
+ * This is a generic java web application, as defined by a WAR File
+ */
+WebApplication extends applicationServerContext {
+    webApplicationSchema extends WebApplicationSchema;
 }
+
+
+/**
+ * a jetty servlet context is a compound
+ * with a resource base
+ * It defines something to be deployed on a jetty server
+ */
+
+ServletContext extends ApplicationServerContext {
+
+    servletContextSchema extends Schema {
+        //location of resources
+        resourceBase extends String;
+        //url path on server
+        contextPath extends String;
+    }
+
+}
+
 
 
 /**
@@ -57,6 +121,10 @@ ServletSchema extends Schema {
     className extends String;
     mappings extends OptionalVector;
     initParams extends OptionalVector;
+    //init order for the servlet;
+    //Holders with order<0, are initialized on use.
+    //Those with order>=0 are initialized in increasing order when the handler is started
+    initOrder extends OptionalInteger;
 }
 
 /**
@@ -64,6 +132,27 @@ ServletSchema extends Schema {
  */
 Servlet extends Prim {
     servletSchema extends ServletSchema;
+
+    //initialise on use
+    initOrder -1;
+
+}
+
+
+
+
+/**
+ A mime is a tuple of name,value. that is bound to a servlet context
+ It does not get cleaned up after; you need to terminate the servlet
+ */
+
+MimeType extends Prim {
+    sfClass "org.smartfrog.services.www.MimeTypeImpl";
+
+    mimeTypeSchema extends Schema {
+        extension extends String;
+        type extends String;
+    }
 }
 
 
