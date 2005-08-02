@@ -22,20 +22,14 @@ package org.smartfrog.services.jetty.contexts.servlets;
 import org.smartfrog.services.www.ServletComponent;
 
 /**
+ * TODO: delete
  * created 17-Jun-2004 11:57:47
  */
 
 
 public interface JettyServlet extends ServletComponent {
 
-    /**
-     * Initialisation order.
-     * {@value}
-     */ 
-    
-    public static final String ATTR_INIT_ORDER="initOrder";
-    
-    
+
     /**
      * absolute path is the path up to the first "*"
      *  {@value}

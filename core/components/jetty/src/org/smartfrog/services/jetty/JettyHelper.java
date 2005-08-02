@@ -27,6 +27,8 @@ import org.mortbay.http.HttpListener;
 import org.mortbay.http.HttpServer;
 import org.mortbay.jetty.servlet.ServletHttpContext;
 import org.smartfrog.services.jetty.contexts.JettyServletContextIntf;
+import org.smartfrog.services.www.JavaWebApplicationServer;
+import org.smartfrog.services.www.ApplicationServerContext;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
@@ -73,6 +75,11 @@ public class JettyHelper extends ComponentHelper {
      */
 
     private static final int MAX_PARENT_DEPTH = 99999;
+
+    /**
+     * Error if we cannot locate an app server.
+     * {@value}
+     */
     public static final String ERROR_NO_APP_SERVER = "No Web Server found";
 
     public JettyHelper(Prim owner) {
@@ -101,7 +108,7 @@ public class JettyHelper extends ComponentHelper {
         assert serverComponent != null;
         HttpServer server = null;
         server =
-                (HttpServer) serverComponent.sfResolve(JettyIntf.JETTY_SERVER,
+                (HttpServer) serverComponent.sfResolve(JettyIntf.ATTR_JETTY_SERVER,
                         server,
                         true);
         return server;
@@ -120,20 +127,12 @@ public class JettyHelper extends ComponentHelper {
         if (serverComponent == null) {
             //look for an attribute first
             serverComponent =
-                    getOwner().sfResolve(JettyIntf.SERVER,
+                    getOwner().sfResolve(ApplicationServerContext.ATTR_SERVER,
                             serverComponent,
-                            false);
-            if (serverComponent == null) {
-                serverComponent = findAncestorImplementing(
-                        JETTY_INTERFACE_NAME,
-                        -1);
-                if (serverComponent == null) {
-                    throw new SmartFrogResolutionException(
-                            ERROR_NO_APP_SERVER);
-                }
-            }
-
+                            true);
+            //throw new SmartFrogResolutionException(ERROR_NO_APP_SERVER);
         }
+
     }
 
     /**
@@ -145,7 +144,7 @@ public class JettyHelper extends ComponentHelper {
      */
     public void cacheJettyServer(HttpServer server)
             throws SmartFrogException, RemoteException {
-        getOwner().sfReplaceAttribute(JettyIntf.JETTY_SERVER, server);
+        getOwner().sfReplaceAttribute(JettyIntf.ATTR_JETTY_SERVER, server);
 
     }
 
@@ -161,7 +160,7 @@ public class JettyHelper extends ComponentHelper {
         assert serverComponent != null;
         String jettyhome = null;
         jettyhome =
-                serverComponent.sfResolve(JettyIntf.JETTY_HOME,
+                serverComponent.sfResolve(JettyIntf.ATTR_JETTY_HOME,
                         jettyhome,
                         false);
         return jettyhome;
@@ -176,7 +175,7 @@ public class JettyHelper extends ComponentHelper {
      */
     public void cacheJettyHome(String jettyhome)
             throws SmartFrogRuntimeException, RemoteException {
-        getOwner().sfReplaceAttribute(JettyIntf.JETTY_HOME, jettyhome);
+        getOwner().sfReplaceAttribute(JettyIntf.ATTR_JETTY_HOME, jettyhome);
     }
 
     /**

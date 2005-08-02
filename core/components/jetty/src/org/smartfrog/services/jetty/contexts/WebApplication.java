@@ -125,7 +125,7 @@ public class WebApplication extends PrimImpl
         }
         //request ID
         requestId = sfResolve(requestIdRef, requestId, false);
-        addcontext(contextPath, webApp, requestId);
+        addWarContext(contextPath, webApp, requestId);
         server.addContext(context);
         try {
             context.start();
@@ -147,7 +147,7 @@ public class WebApplication extends PrimImpl
      *
      * @throws RemoteException In case of network/rmi error
      */
-    public void addcontext(String contextpath,
+    public void addWarContext(String contextpath,
             String webApp,
             boolean requestId)
             throws RemoteException {

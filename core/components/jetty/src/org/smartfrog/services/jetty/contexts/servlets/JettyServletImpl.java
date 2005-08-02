@@ -35,6 +35,7 @@ import org.mortbay.jetty.servlet.ServletHolder;
 import org.mortbay.jetty.servlet.ServletHttpContext;
 import org.smartfrog.services.jetty.JettyHelper;
 import org.smartfrog.services.www.ServletContextIntf;
+import org.smartfrog.services.www.ServletComponent;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.prim.PrimImpl;
@@ -53,7 +54,7 @@ import java.util.Vector;
  */
 
 
-public class JettyServletImpl extends PrimImpl implements JettyServlet {
+public class JettyServletImpl extends PrimImpl implements ServletComponent {
 
     Reference nameRef = new Reference(ATTR_NAME);
     Reference pathSpecRef = new Reference(ATTR_PATH_SPEC);
