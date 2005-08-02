@@ -20,6 +20,7 @@
 package org.smartfrog.services.www;
 
 import java.rmi.Remote;
+import java.rmi.RemoteException;
 
 /**
  * Generic servlet context
@@ -62,7 +63,7 @@ public interface ServletContextIntf extends Remote {
      * @param extension extension to map (no '.')
      * @param mimeType mimetype to generate
      */
-    public void addMimeMapping(String extension, String mimeType);
+    public void addMimeMapping(String extension, String mimeType) throws RemoteException;
 
 
     /**
@@ -70,6 +71,6 @@ public interface ServletContextIntf extends Remote {
      * @param extension extension to unmap
      * @return true if the unmapping was successful
      */
-    public boolean removeMimeMapping(String extension);
+    public boolean removeMimeMapping(String extension) throws RemoteException;
 
 }
