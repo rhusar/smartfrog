@@ -91,31 +91,31 @@ public class LivenessPageComponent extends PrimImpl implements LivenessPage {
         super.sfDeploy();
         livenessPage = new LivenessPageChecker(this);
 
-        String url = sfResolve(URL, (String) null, false);
+        String url = sfResolve(ATTR_URL, (String) null, false);
 
         if (url != null) {
             livenessPage.bindToURL(url);
         } else {
-            livenessPage.setHost(sfResolve(HOST, livenessPage.getHost(), false));
-            livenessPage.setPort(sfResolve(PORT, livenessPage.getPort(), false));
-            livenessPage.setProtocol(sfResolve(PROTOCOL,
+            livenessPage.setHost(sfResolve(ATTR_HOST, livenessPage.getHost(), false));
+            livenessPage.setPort(sfResolve(ATTR_PORT, livenessPage.getPort(), false));
+            livenessPage.setProtocol(sfResolve(ATTR_PROTOCOL,
                     livenessPage.getProtocol(), false));
-            livenessPage.setPage(sfResolve(PAGE, livenessPage.getPage(), false));
-            Vector queries = (Vector) sfResolve(LivenessPage.QUERIES, (Vector) null, false);
+            livenessPage.setPage(sfResolve(ATTR_PAGE, livenessPage.getPage(), false));
+            Vector queries = (Vector) sfResolve(LivenessPage.ATTR_QUERIES, (Vector) null, false);
             livenessPage.buildQueryString(queries);
         }
 
-        livenessPage.setFollowRedirects(sfResolve(PROTOCOL,
+        livenessPage.setFollowRedirects(sfResolve(ATTR_PROTOCOL,
                 livenessPage.getFollowRedirects(), false));
-        livenessPage.setMinimumResponseCode(sfResolve(MINIMUM_RESPONSE_CODE,
+        livenessPage.setMinimumResponseCode(sfResolve(ATTR_MINIMUM_RESPONSE_CODE,
                 livenessPage.getMinimumResponseCode(), false));
-        livenessPage.setMaximumResponseCode(sfResolve(MAXIMUM_RESPONSE_CODE,
+        livenessPage.setMaximumResponseCode(sfResolve(ATTR_MAXIMUM_RESPONSE_CODE,
                 livenessPage.getMaximumResponseCode(), false));
-        livenessPage.setFollowRedirects(sfResolve(FOLLOW_REDIRECTS,
+        livenessPage.setFollowRedirects(sfResolve(ATTR_FOLLOW_REDIRECTS,
                 livenessPage.getFollowRedirects(), false));
-        livenessPage.setFetchErrorText(sfResolve(FETCH_ERROR_TEXT,
+        livenessPage.setFetchErrorText(sfResolve(ATTR_ERROR_TEXT,
                 livenessPage.getFetchErrorText(), false));
-        checkFrequency = sfResolve(CHECK_FREQUENCY, checkFrequency, false);
+        checkFrequency = sfResolve(ATTR_CHECK_FREQUENCY, checkFrequency, false);
 
 
         updateEnabledState();
@@ -127,7 +127,7 @@ public class LivenessPageComponent extends PrimImpl implements LivenessPage {
     }
 
     private void updateEnabledState() throws SmartFrogResolutionException, RemoteException {
-        enabled = sfResolve(ENABLED,enabled,false);
+        enabled = sfResolve(ATTR_ENABLED,enabled,false);
         livenessPage.setEnabled(enabled);
     }
 
