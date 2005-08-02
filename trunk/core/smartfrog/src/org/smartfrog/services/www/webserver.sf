@@ -35,7 +35,7 @@ WebServerSchema extends Schema {
     port extends OptionalInteger;
 }
 
-WebServer extends Prim {
+WebServer extends Compound {
     webServerSchema extends WebServerSchema;
     port 8080;
 };

@@ -36,7 +36,6 @@ For more information: www.smartfrog.org
  * application server
  */
 
-ApplicationServer extends WebServer {
 
 ApplicationServerSchema extends Schema {
 
@@ -49,6 +48,8 @@ ApplicationServerSchema extends Schema {
 
     }
 
+ApplicationServer extends WebServer {
+    applicationServerSchema extends ApplicationServerSchema;
 }
 
 /**
@@ -64,10 +65,10 @@ ApplicationServerContextSchema extends Schema {
 }
 
 /**
- * Base application server context. This is not instantiable
+ * Base application server context. This is not instantiable.
  */
-ApplicationServerContext extends Prim {
-    applicationServerContextSchema extends applicationServerContextSchema;
+ApplicationServerContext extends Compound {
+    applicationServerContextSchema extends ApplicationServerContextSchema;
 }
 
 
@@ -87,7 +88,7 @@ WebApplicationSchema extends Schema {
 /**
  * This is a generic java web application, as defined by a WAR File
  */
-WebApplication extends applicationServerContext {
+WebApplication extends ApplicationServerContext {
     webApplicationSchema extends WebApplicationSchema;
 }
 
@@ -109,6 +110,18 @@ ServletContext extends ApplicationServerContext {
 
 }
 
+/**
+ * A servlet context component is something that is deployed in a servlet
+ * context
+ */
+
+ServletContextComponent extends Prim {
+
+    servletContextComponentSchema extends Schema {
+        context extends OptionalCD;
+    }
+
+}
 
 
 /**
@@ -125,12 +138,14 @@ ServletSchema extends Schema {
     //Holders with order<0, are initialized on use.
     //Those with order>=0 are initialized in increasing order when the handler is started
     initOrder extends OptionalInteger;
+    //absolute path is declared at runtime
+    absolutePath extends OptionalString;
 }
 
 /**
  * declare an abstract servlet
  */
-Servlet extends Prim {
+Servlet extends ServletContextComponent {
     servletSchema extends ServletSchema;
 
     //initialise on use
@@ -140,13 +155,12 @@ Servlet extends Prim {
 
 
 
-
 /**
  A mime is a tuple of name,value. that is bound to a servlet context
  It does not get cleaned up after; you need to terminate the servlet
  */
 
-MimeType extends Prim {
+MimeType extends ServletContextComponent {
     sfClass "org.smartfrog.services.www.MimeTypeImpl";
 
     mimeTypeSchema extends Schema {

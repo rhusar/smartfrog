@@ -50,7 +50,7 @@ public class MimeTypeImpl extends PrimImpl implements MimeType {
         super.sfStart();
         extension = sfResolve(ATTR_EXTENSION, extension, true);
         type = sfResolve(ATTR_TYPE, type, true);
-        servletContext = (ServletContextIntf) sfResolve(ATTR_CONTEXT,
+        servletContext = (ServletContextIntf) sfResolve(ATTR_SERVLET_CONTEXT,
                 servletContext,
                 true);
         servletContext.addMimeMapping(extension,type);

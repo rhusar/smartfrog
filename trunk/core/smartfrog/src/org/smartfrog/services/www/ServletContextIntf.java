@@ -28,30 +28,17 @@ import java.rmi.RemoteException;
  */
 
 
-public interface ServletContextIntf extends Remote {
-    /**
-     * {@value}
-     */
-    public static final String ATTR_CONTEXT_PATH = "contextPath";
+public interface ServletContextIntf extends ApplicationServerContext {
     /**
      * {@value}
      */
     public static final String ATTR_RESOURCE_BASE = "resourceBase";
-    /**
-     * {@value}
-     */
-    public static final String SERVER = "server";
-    
-    /**
-     * absolute path is the path up to the first *
-     * {@value}
-     */ 
-    public static final String ATTR_ABSOLUTE_PATH = "absolutePath";
 
     /**
      * {@value}
      */
     public static final String ATTR_CLASSPATH = "classpath";
+    
     /**
      * host ip address. The IPAddr is returned for ease of use on networks where
      * DNS is not there

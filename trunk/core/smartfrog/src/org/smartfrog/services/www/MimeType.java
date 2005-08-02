@@ -19,14 +19,14 @@
  */
 package org.smartfrog.services.www;
 
-import java.rmi.Remote;
 
 /**
+ * This is a mime type within a servlet context
  * created 28-Jul-2005 16:27:35
  */
 
 
-public interface MimeType extends Remote {
+public interface MimeType extends ServletContextComponent {
 
 
     /**
@@ -39,8 +39,4 @@ public interface MimeType extends Remote {
      */
     public static final String ATTR_TYPE = "type";
 
-    /**
-     * context to declare for {@value}
-     */
-    public static final String ATTR_CONTEXT = "context";
 }
