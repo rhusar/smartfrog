@@ -25,5 +25,6 @@ Version extends {
   build "@build@"; // odd numbers are development versions
   status "@status@"; //alpha, beta, (stable), rc (release candidate)
   copyright "(C) Copyright 1998-2005 Hewlett-Packard Development Company, LP";
+  buildDate "@buildDate@";
 }
 

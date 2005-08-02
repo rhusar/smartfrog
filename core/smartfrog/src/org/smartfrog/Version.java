@@ -43,6 +43,9 @@ public class Version {
     final static String ATR_STATUS = "status";
     /** SmartFrog attribute name. Value = {@value} */
     final static String COPYRIGHT = "copyright";
+    /** SmartFrog attribute name. Value = {@value} */
+    final static String ATR_BUILD_DATE = "buildDate";
+
     /** SmartFrog attribute name. Value = {@value}
      * Used to determine the minimun core version compatible with this instance*/
     final static String ATR_MIN_CORE_VERSION = "majorRelease";
@@ -61,6 +64,8 @@ public class Version {
     private static String minCoreVersion = null;
 
     private static String maxCoreVersion = null;
+
+    private static String buildDate= "buildDate";
 
     // Dont' change this. MODIFY version.sf in same package!!!!!!!!!!!!!!!!!!!
     /** The copyright String for the SmartFrog system. */
@@ -87,13 +92,12 @@ public class Version {
             copyright = classComponentDescription.sfResolve(COPYRIGHT, copyright , false);
             minCoreVersion = classComponentDescription.sfResolve(ATR_MIN_CORE_VERSION, minCoreVersion , false);
             maxCoreVersion = classComponentDescription.sfResolve(ATR_MAX_CORE_VERSION, maxCoreVersion , false);
+            buildDate = classComponentDescription.sfResolve(ATR_BUILD_DATE, buildDate , false);
             initialized=true;
 
         } catch (Exception ex) {
             if (sfGetProcessLog().isWarnEnabled())
-                sfGetProcessLog().warn(
-                "Error during init of "+ this.getClass().toString()+"",
-                ex);
+                sfGetProcessLog().warn("Error during init of "+ this.getClass().toString()+"", ex);
         }
     }
 
@@ -146,6 +150,14 @@ public class Version {
     public static String build(){
         if (!initialized) new Version();
         return build;
+    }
+
+    /**
+     * Build number.
+     */
+    public static String buildDate(){
+        if (!initialized) new Version();
+        return buildDate;
     }
 
     /**
