@@ -22,21 +22,11 @@ package org.smartfrog.services.www;
 import java.rmi.Remote;
 
 /**
- * Interface de
- * created 18-Jul-2005 15:55:13
+ * Anything that can be deployed within a servlet context
  */
-
-
-public interface ServletComponent extends ServletContextComponent {
-    final static String ATTR_NAME = "name";
-    final static String ATTR_PATH_SPEC = "pathSpec";
-    final static String ATTR_CLASSNAME = "className";
-    final static String ATTR_INIT_PARAMS = "initParams";
-    final static String ATTR_ABSOLUTE_PATH = ApplicationServerContext.ATTR_ABSOLUTE_PATH;
+public interface ServletContextComponent extends Remote {
     /**
-     * Initialisation order.
-     * {@value}
+     * context to declare for {@value}
      */
-
-    String ATTR_INIT_ORDER="initOrder";
+    final static String ATTR_SERVLET_CONTEXT = "context";
 }

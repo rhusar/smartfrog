@@ -22,21 +22,21 @@ package org.smartfrog.services.www;
 import java.rmi.Remote;
 
 /**
- * Interface de
- * created 18-Jul-2005 15:55:13
+ * An application server context is anything that can be deployed inside an app
+ * server.
  */
-
-
-public interface ServletComponent extends ServletContextComponent {
-    final static String ATTR_NAME = "name";
-    final static String ATTR_PATH_SPEC = "pathSpec";
-    final static String ATTR_CLASSNAME = "className";
-    final static String ATTR_INIT_PARAMS = "initParams";
-    final static String ATTR_ABSOLUTE_PATH = ApplicationServerContext.ATTR_ABSOLUTE_PATH;
+public interface ApplicationServerContext extends Remote {
     /**
-     * Initialisation order.
      * {@value}
      */
-
-    String ATTR_INIT_ORDER="initOrder";
+    final static String ATTR_CONTEXT_PATH = "contextPath";
+    /**
+     * {@value}
+     */
+    final static String ATTR_SERVER = "server";
+    /**
+     * absolute path is the path up to the first "*"
+     * {@value}
+     */
+    final static String ATTR_ABSOLUTE_PATH = "absolutePath";
 }

@@ -129,8 +129,8 @@ public class LivenessPageChecker implements LivenessPage {
     /**
      * Creates a new LivenessPageChecker object.
      *
-     * @param url DOCUMENT ME!
-     * @throws MalformedURLException DOCUMENT ME!
+     * @param url A URL to check
+     * @throws MalformedURLException if the URL is invalid
      */
     public LivenessPageChecker(Prim owner, String url) throws MalformedURLException, SmartFrogLogException {
         bind(owner);
@@ -140,7 +140,7 @@ public class LivenessPageChecker implements LivenessPage {
     /**
      * Creates a new LivenessPageChecker object.
      *
-     * @param url DOCUMENT ME!
+     * @param url A URL to check
      */
     public LivenessPageChecker(Prim owner, URL url) throws SmartFrogLogException {
         bind(owner);
