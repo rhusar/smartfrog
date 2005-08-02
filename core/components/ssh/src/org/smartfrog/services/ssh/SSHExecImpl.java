@@ -61,6 +61,7 @@ public class SSHExecImpl extends PrimImpl implements SSHExec{
     private String password;
     private int port = SSH_PORT;
     private String logFile = null;
+    private FileOutputStream fout = null;
     private boolean failOnError = true;
     private UserInfoImpl userInfo;
     private Vector commandsList;
@@ -117,7 +118,8 @@ public class SSHExecImpl extends PrimImpl implements SSHExec{
             session = openSession();
             session.setTimeout((int) timeout);
 
-            FileOutputStream tee = new FileOutputStream(logFile);
+	    if (logFile != null) 
+            	fout = new FileOutputStream(logFile, false);
             // Execute commands
 	    
 	    StringBuffer buffer = new StringBuffer();	
@@ -131,8 +133,8 @@ public class SSHExecImpl extends PrimImpl implements SSHExec{
 	    ByteArrayInputStream bais = new ByteArrayInputStream(bytes); 
 	    
 	    final ChannelShell channel = (ChannelShell) session.openChannel("shell");
-            channel.setOutputStream(tee);
-            channel.setExtOutputStream(tee);	
+            channel.setOutputStream(fout);
+            channel.setExtOutputStream(fout);	
 	    channel.setInputStream(bais);	
             channel.connect(); 
 	    
