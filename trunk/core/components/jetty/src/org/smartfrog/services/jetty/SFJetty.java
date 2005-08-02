@@ -53,7 +53,7 @@ import java.rmi.RemoteException;
 
 public class SFJetty extends CompoundImpl implements Compound,JettyIntf {
 
-    protected Reference jettyhomeRef = new Reference(JETTY_HOME);
+    protected Reference jettyhomeRef = new Reference(ATTR_JETTY_HOME);
 
     /**
      * Jetty home path
@@ -78,6 +78,12 @@ public class SFJetty extends CompoundImpl implements Compound,JettyIntf {
     public static final String LOG_PATTERN = "yyyy_mm_dd.request.log";
     public static final String LOG_SUBDIR = "/logs/";
 
+    /**
+     * Error string raised in liveness checks.
+     * {@value}
+     */
+    public static final String LIVENESS_ERROR_SERVER_NOT_STARTED = "Server is not started";
+
 
     /**
      * Standard RMI constructor
@@ -98,7 +104,7 @@ public class SFJetty extends CompoundImpl implements Compound,JettyIntf {
         jettyHelper.cacheJettyServer(server);
         jettyhome = sfResolve(jettyhomeRef, jettyhome, true);
         jettyHelper.cacheJettyHome(jettyhome);
-        enableLogging=sfResolve(ENABLE_LOGGING,enableLogging,true);
+        enableLogging=sfResolve(ATTR_ENABLE_LOGGING,enableLogging,true);
 
         if(enableLogging) {
             logDir=FileSystem.lookupAbsolutePath(this,JettyIntf.ATTR_LOGDIR,jettyhome,null,true,null);
@@ -137,7 +143,8 @@ public class SFJetty extends CompoundImpl implements Compound,JettyIntf {
           if(enableLogging) {
               NCSARequestLog requestlog = new NCSARequestLog();
               requestlog.setFilename(logDir+File.separatorChar+logPattern);
-              requestlog.setBuffered(false);
+              //commented out as this is deprecated/ignored.
+              //requestlog.setBuffered(false);
               requestlog.setRetainDays(90);
               requestlog.setAppend(true);
               requestlog.setExtended(true);
@@ -177,7 +184,7 @@ public class SFJetty extends CompoundImpl implements Compound,JettyIntf {
     public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
         if(server==null || !server.isStarted()) {
-            throw new SmartFrogLivenessException("Server is not started");
+            throw new SmartFrogLivenessException(LIVENESS_ERROR_SERVER_NOT_STARTED);
         }
     }
 
