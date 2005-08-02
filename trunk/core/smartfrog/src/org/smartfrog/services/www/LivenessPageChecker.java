@@ -31,6 +31,7 @@ import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.Iterator;
 import java.util.Vector;
+import java.util.HashMap;
 /*
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -106,6 +107,8 @@ public class LivenessPageChecker implements LivenessPage {
      * our log
      */
     protected Log log;
+
+    protected HashMap mimeTypes;
 
     /**
      * create a new liveness page
@@ -262,6 +265,7 @@ public class LivenessPageChecker implements LivenessPage {
                         + maybeGetErrorText(connection));
             }
 
+            String mimeType=connection.getContentType();
             //now fetch the file
             String body=getInputOrErrorText(connection);
             postProcess(responseCode,response,body);
