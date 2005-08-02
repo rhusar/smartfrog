@@ -63,7 +63,12 @@ public class MimeTypeImpl extends PrimImpl implements MimeType {
     public synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
         if(servletContext!=null) {
-            servletContext.removeMimeMapping(extension);
+            try {
+                servletContext.removeMimeMapping(extension);
+            } catch (RemoteException e) {
+                //swallowed
+
+            }
         }
     }
 }
