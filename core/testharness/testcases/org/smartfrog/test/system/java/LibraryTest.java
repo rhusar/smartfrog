@@ -74,7 +74,7 @@ public class LibraryTest extends SmartFrogTestBase {
                 "testRepositoryBadType",
                 EXCEPTION_DEPLOYMENT,
                 null,
-                EXCEPTION_COMPILE_RESOLUTION,
+                EXCEPTION_RESOLUTION,
                 null);
     }
 
