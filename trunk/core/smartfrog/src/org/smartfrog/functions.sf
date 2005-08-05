@@ -133,6 +133,10 @@ userinput extends {
 
 
 
+ref extends {
+    phase.function "org.smartfrog.sfcore.languages.sf.functions.Ref";
+}
+
 Ref extends {
     phase.function "org.smartfrog.sfcore.languages.sf.functions.Ref";
 }
