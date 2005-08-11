@@ -350,6 +350,8 @@ public class SFSystem implements MessageKeys {
 
         OptionSet opts = new OptionSet(args);
 
+        showDiagnostics(opts);
+
         if (opts.errorString != null) {
             sfLog().out(opts.errorString);
             exitWithError();
@@ -418,6 +420,19 @@ public class SFSystem implements MessageKeys {
                 sfLog().out(MessageUtil.formatMessage(MSG_SF_READY, ""));
             }
         }
+    }
+
+    /**
+     * Shows diagnostics report
+     * @param opts OptionSet
+     */
+    private void showDiagnostics(OptionSet opts) {
+      if (opts.diagnostics){
+        //org.smartfrog.sfcore.common.Diagnostics.doReport(System.out);
+        StringBuffer report = new StringBuffer();
+        org.smartfrog.sfcore.common.Diagnostics.doReport(report);
+        sfLog().out(report.toString());
+      }
     }
 
     /**

@@ -44,7 +44,7 @@ public class OptionSet {
 
     /** Usage string for SFSystem. */
     public String usage = "\n" +
-        " Usage: java -D... org.smartfrog.SFSystem [-a SFACT] [-f SFREF] [-e]\n" +
+        " Usage: java -D... org.smartfrog.SFSystem [-a SFACT] [-f SFREF] [-e] [-d]\n" +
         "    or: java -D... org.smartfrog.SFSystem -?";
 
     /** Help string for SFSystem. */
@@ -87,6 +87,7 @@ public class OptionSet {
         "    -f SFREF: file with a set of SmartFrog Action Descriptors (SFACT)" +
         "\n" +
         "    -e: The daemon will terminate after finishing the deployment." + "\n" +
+        "    -d (diagnostics): print information that might be helpful to diagnose or report problems." + "\n" +
         " ";
 
 
@@ -105,6 +106,9 @@ public class OptionSet {
 
     /** Flag indicating the exit status of the application. */
     public boolean exit = false;
+
+    /** Flag indicating if diagnostics was requested. */
+    public boolean diagnostics = false;
 
     /**
      * Creates an OptionSet from an array of arguments.
@@ -149,6 +153,10 @@ public class OptionSet {
 
                     case 'e':
                         exit = true;
+                        break;
+
+                    case 'd':
+                        diagnostics = true;
                         break;
 
                     default:
