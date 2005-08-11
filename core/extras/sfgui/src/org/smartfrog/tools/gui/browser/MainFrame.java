@@ -79,7 +79,7 @@ public class MainFrame extends JFrame implements ActionListener {
    /**
     *  Description of the Field
     */
-   public final static String version = "v0.7 r20";
+   public final static String version = "v0.7 r24";
    // This has to  be done properly !!!!!!!!!!!!!!! no static. Because of crap log.
    static PrintStream msg = System.out;
    static JLabel statusBar = new JLabel();
@@ -186,6 +186,7 @@ public class MainFrame extends JFrame implements ActionListener {
    ImageIcon imageSFDaemon;
    ImageIcon imageSFStopDaemon;
    ImageIcon imageExit;
+   ImageIcon imageMngConsole;
 
    BorderLayout borderLayout1 = new BorderLayout();
    JSplitPane jSplitPane1 = new JSplitPane();
@@ -1647,6 +1648,60 @@ public class MainFrame extends JFrame implements ActionListener {
 
 
    /**
+       *  Description of the Method
+       */
+      void runMngConsole() {
+         try {
+            //End option dialog
+            int port = 3800;
+            String hostName = "localhost";
+            //New option dialgog
+             hostName = modalOptionDialog("Management Console for ..." , "HostName: ", hostName);
+             try {
+               port = Integer.parseInt( (modalOptionDialog("Management Console for ...",
+                                               "Port: ", ""+port)));
+             } catch (Exception ex1) {//ignore
+             }
+            if (hostName == null) return;
+
+            String fileSep = System.getProperty("file.separator");
+            String cmd = "."+fileSep+"bin"+fileSep+"sfManagementConsole";
+            cmd = cmd + " -h " + hostName;
+            cmd = cmd + " -p " + port;
+            this.runBatchFile( cmd, ".");
+            log("Management Console running: " + "" + cmd, "RunMngConsole", 3);
+         } catch (Exception ex) {
+            log(ex.getMessage(), "RunMngConsole", 5);
+            ex.printStackTrace();
+         }
+   }
+
+   /**
+    * Prepares option dialog box
+    *
+    *@param  title    title displayed on the dialog box
+    *@param  message  message to be displayed
+    *@param defaultValue default value
+    *@return formatted string
+    */
+   private String modalOptionDialog(String title, String message, String defaultValue) {
+     String s = (String) JOptionPane.showInputDialog(
+         this,
+         message,
+         title,
+         JOptionPane.PLAIN_MESSAGE,
+         null,
+         null,
+         defaultValue);
+     if (s==null) return s; //User cancelled!
+     if ( (s != null) && (s.length() > 0)) {
+       return s;
+     }
+     else
+       return defaultValue;
+   }
+
+   /**
     *  Description of the Method
     *
     *@param  e  Description of Parameter
@@ -2299,7 +2354,7 @@ public class MainFrame extends JFrame implements ActionListener {
     *@exception  Exception  Description of Exception
     */
    private void customInit() throws Exception {
-      imageApp = Toolkit.getDefaultToolkit().getImage(org.smartfrog.tools.gui.browser.MainFrame.class.getResource("Frog.gif"));
+      imageApp = Toolkit.getDefaultToolkit().getImage(org.smartfrog.tools.gui.browser.MainFrame.class.getResource("frogred.gif"));
       this.setIconImage((Image)imageApp);
       // Set diferences for dif OSs
       customOS();
@@ -2486,6 +2541,8 @@ public class MainFrame extends JFrame implements ActionListener {
                                    getResource("World.gif"));
      imageExit = new ImageIcon(org.smartfrog.tools.gui.browser.MainFrame.class.
                                getResource("Door.gif"));
+     imageMngConsole = new ImageIcon(org.smartfrog.tools.gui.browser.MainFrame.class.
+                               getResource("frogbluesmall.gif"));
  //setIconImage(Toolkit.getDefaultToolkit().createImage(MainFrame.class.getResource("[Your Icon]")));
 
  // needs a reference to this frame!
@@ -2780,7 +2837,16 @@ public class MainFrame extends JFrame implements ActionListener {
          0, false)); //F3
      jMenuItemSearchNext.addActionListener(new
          MainFrame_jMenuItemSearchNext_actionAdapter(this));
-     buttonGroupLanguages.add(jRadioButtonMenuItemSF);
+    jButtonMngConsole.setBorder(null);
+    jButtonMngConsole.setToolTipText("Management Console");
+    jButtonMngConsole.setIcon(imageMngConsole);
+    jButtonMngConsole.setRolloverEnabled(true);
+    jButtonMngConsole.addActionListener(new
+        MainFrame_jButtonMngConsole_actionAdapter(this));
+    jMenuItemMngConsole.setText("Mng. Console");
+    jMenuItemMngConsole.addActionListener(new
+        MainFrame_jMenuItemMngConsole_actionAdapter(this));
+    buttonGroupLanguages.add(jRadioButtonMenuItemSF);
      buttonGroupLanguages.add(jRadioButtonMenuItemSF2);
      buttonGroupLanguages.add(jRadioButtonMenuItemSFXML);
      jMenuFile.add(jMenuItemNew);
@@ -2813,7 +2879,8 @@ public class MainFrame extends JFrame implements ActionListener {
      jToolBar.addSeparator();
      jToolBar.add(jButtonSFDaemon, null);
      jToolBar.add(jButtonSFStopDaemon, null);
-     jToolBar.addSeparator();
+    jToolBar.add(jButtonMngConsole);
+    jToolBar.addSeparator();
      jToolBar.add(jButtonBrowser, null);
  //jToolBar.add(jButtonPreferences, null); // Disabled at this time!!!
      jToolBar.addSeparator();
@@ -2875,7 +2942,8 @@ public class MainFrame extends JFrame implements ActionListener {
      jMenuSF.add(jMenuItemStopSfDaemon);
      jMenuSF.addSeparator();
      jMenuSF.add(jMenuItemBrowseSF);
-     jMenuEdit.add(jMenuItemUndo);
+    jMenuSF.add(jMenuItemMngConsole);
+    jMenuEdit.add(jMenuItemUndo);
      jMenuEdit.add(jMenuItemRedo);
      jMenuEdit.addSeparator();
      jMenuEdit.add(jMenuItemCopy);
@@ -2893,7 +2961,7 @@ public class MainFrame extends JFrame implements ActionListener {
      jMenuTools.add(jRadioButtonMenuItemSF);
      jMenuTools.add(jRadioButtonMenuItemSF2);
      jMenuTools.add(jRadioButtonMenuItemSFXML);
-     javax.swing.filechooser.FileFilter sfFilter = new SFFileFilter();
+    javax.swing.filechooser.FileFilter sfFilter = new SFFileFilter();
      jFileChooser.addChoosableFileFilter(sfFilter);
      jFileChooser.addChoosableFileFilter(new SF2FileFilter());
      jFileChooser.addChoosableFileFilter(new SFXMLFileFilter());
@@ -3490,8 +3558,10 @@ public class MainFrame extends JFrame implements ActionListener {
   private JMenuItem jMenuItemStopSfDaemon = new JMenuItem();
     JMenuItem jMenuItemSearch = new JMenuItem();
     JMenuItem jMenuItemSearchNext = new JMenuItem();
+  JButton jButtonMngConsole = new JButton();
+  JMenuItem jMenuItemMngConsole = new JMenuItem();
 
-    public void loadHistoryIniFile() {
+  public void loadHistoryIniFile() {
       //this.iniFile.setDebug(true);
       // Read Config File
 //      iniFile = new IniFile(iniFileName, false);
@@ -3546,11 +3616,43 @@ public class MainFrame extends JFrame implements ActionListener {
 
     }
 
+  public void jButtonMngConsole_actionPerformed(java.awt.event.ActionEvent e) {
+    this.runMngConsole();
+  }
+
+  public void jMenuItemMngConsole_actionPerformed(java.awt.event.ActionEvent e) {
+    this.runMngConsole();
+  }
 
   //-------------------------------------------
 
 
 }
+
+class MainFrame_jMenuItemMngConsole_actionAdapter
+    implements java.awt.event.ActionListener {
+  private MainFrame adaptee;
+  MainFrame_jMenuItemMngConsole_actionAdapter(MainFrame adaptee) {
+    this.adaptee = adaptee;
+  }
+
+  public void actionPerformed(java.awt.event.ActionEvent e) {
+    adaptee.jMenuItemMngConsole_actionPerformed(e);
+  }
+}
+
+class MainFrame_jButtonMngConsole_actionAdapter
+    implements java.awt.event.ActionListener {
+  private MainFrame adaptee;
+  MainFrame_jButtonMngConsole_actionAdapter(MainFrame adaptee) {
+    this.adaptee = adaptee;
+  }
+
+  public void actionPerformed(java.awt.event.ActionEvent e) {
+    adaptee.jButtonMngConsole_actionPerformed(e);
+  }
+}
+
 // End Main Class
 
 /**
