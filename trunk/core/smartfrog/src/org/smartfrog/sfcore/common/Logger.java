@@ -24,8 +24,7 @@ package org.smartfrog.sfcore.common;
 import org.smartfrog.SFSystem;
 
 /**
- * Class used to log all the messages in SmartFrog system. Logger provides
- * static methods to log the messages.
+ * Class used to store some flags used for log reporting.
  */
 public class Logger implements MessageKeys {
 
