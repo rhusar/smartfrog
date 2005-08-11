@@ -24,7 +24,11 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.*;
+import java.util.Vector;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.Stack;
+import java.util.Properties;
 
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.PrettyPrinting;
@@ -45,6 +49,7 @@ import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.reference.ReferenceResolverHelperImpl;
 
 import org.smartfrog.sfcore.common.SFMarshalledObject;
+import org.smartfrog.sfcore.common.*;
 
 
 /**
@@ -802,33 +807,17 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
                     Object value = props.get(key);
                     value = value.toString();
                     try {
-                        value = parser.sfParsePrimitiveValue(value.toString());
+                       value = parser.sfParsePrimitiveValue(value.toString());
+                    } catch (SmartFrogParseException ex) {
+                       // ignore, value is not a PrimValue it is a String
+                    } catch (SecurityException se) {
+                      if ((sfLog!=null)&&(sfLog.isErrorEnabled())){
+                          sfLog.error("Reading system property '"+ key +"' with string value '"+value+"', but access to this property blocked by a security manager");
+                      }
                     } catch (Throwable thr) {
                         // ignore, value is not a PrimValue it is a String
                     }
-//                try {
-//                    String res = value.toString();
-//                    if (res.toUpperCase().charAt(res.length() - 1) == 'D') {
-//                        value = Double.valueOf(res.substring(0, res.length()-1));
-//                    } else if (res.toUpperCase().charAt(res.length() - 1) == 'F') {
-//                        value = Float.valueOf(res.substring(0, res.length()-1));
-//                    } else if (res.toUpperCase().charAt(res.length() - 1) == 'L') {
-//                        value = Long.valueOf(res.substring(0, res.length()-1));
-//                    } else {
-//                        value = Integer.valueOf((String)value);
-//                    }
-//                } catch (Exception ex) {
-//                    // ignore, value is not a number
-//                }
-//                if ((value.toString().equals("true"))||
-//                    (value.toString().equals("false"))){
-//                  try {
-//                    // convert to boolean
-//                    value = Boolean.valueOf( (String) value);
-//                  } catch (Exception ex) {
-//                  // ignore, value is not a number
-//                  }
-//                }
+
                     String cxtKey = key.substring(startWith.length());
                     try {
                         compDesc.sfReplaceAttribute(cxtKey, value);
