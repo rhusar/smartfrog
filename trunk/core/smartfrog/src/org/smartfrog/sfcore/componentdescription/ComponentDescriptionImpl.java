@@ -796,8 +796,15 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
     public static ComponentDescription addSystemProperties(String startWith,
         ComponentDescription compDesc, String language) {
         SFParser parser = null;
+        Properties props = null;
         try {
-            Properties props = System.getProperties();
+            try {
+              props = System.getProperties();
+            } catch (SecurityException e) {
+              throw SmartFrogException.forward(
+                  "Access to System.getProperties() blocked " +
+                  "by a security manager", e);
+            }
             parser = new SFParser(language);
             for (Enumeration e = props.keys(); e.hasMoreElements(); ) {
                 String key = e.nextElement().toString();
@@ -829,7 +836,8 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
                     }
                 }
             }
-        } catch (SmartFrogException ex2) {
+//        } catch (SmartFrogException ex2) {
+        } catch (Exception ex2) {
           if (sfLog != null) {
             if (sfLog.isErrorEnabled()) {
               sfLog.err("Error adding system properties to ComponentDescription", ex2);
