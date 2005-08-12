@@ -41,6 +41,10 @@ public class Logger implements MessageKeys {
      */
     public static boolean logLiveness = false;
 
+    /** Property to create a sfDiagnosticsReport in every ProcessCompound
+     */
+    public static boolean processCompoundDiagReport = false;
+
     private static boolean initialized = false;
 
     private Logger(){
@@ -72,6 +76,17 @@ public class Logger implements MessageKeys {
               SFSystem.sfLog().warn(MessageUtil.
                     formatMessage(MSG_WARNING_LIVENESS_ENABLED));
             }
+        }
+
+        /**
+         * Reads System property "org.smartfrog.logger.processCompoundDiagnosticsReport" and
+         * updates Logger with the value to create diagnostics report in
+         * every ProcessCompound.
+         */
+        source="false";
+        source = System.getProperty(SmartFrogCoreProperty.processCompoundDiagnosticsReport);
+        if ("true".equals(source)) {
+            Logger.processCompoundDiagReport = true;
         }
 
         initialized = true;
