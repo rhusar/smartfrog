@@ -337,11 +337,17 @@ public class ConfigurationDescriptor implements MessageKeys{
                                                        host.toString(),
                                                        this.getResultMessage().toString());
                     }
-                 break;
+                    break;
                  case ConfigurationDescriptor.Action.PARSE: {
-                        result = "Parsed :"+this.getUrl() +"\n"+ this.getContextAttribute("parseReport").toString();
-                        }
-                 break;
+                      result = "Parsed :"+this.getUrl() +"\n"+ this.getContextAttribute("parseReport").toString();
+                      }
+                     break;
+
+                 case ConfigurationDescriptor.Action.DIAGNOSTICS: {
+                    result = "Diagnostics report for "+this.getName()+"\n"+ this.getContextAttribute("diagnosticsReport").toString();
+                    }
+                     break;
+
 
                 default:
                     // Unknown action.
