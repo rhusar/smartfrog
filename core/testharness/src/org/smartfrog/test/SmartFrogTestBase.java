@@ -188,7 +188,7 @@ public abstract class SmartFrogTestBase extends TestCase {
      * exception; does not have to be the full name; a fraction will suffice.
      * @param containedExceptionText optional text in the contained fault.
      * @throws RemoteException in the event of remote trouble.
-     * @returns the exception that was returned
+     * @return the exception that was returned
      */
     protected Throwable deployExpectingException(String testURL,
                                             String appName,
