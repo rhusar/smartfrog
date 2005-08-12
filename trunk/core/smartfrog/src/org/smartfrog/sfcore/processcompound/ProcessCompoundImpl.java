@@ -1169,7 +1169,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
      * entry for each of these. It modifies the sfProcessName property to be
      * that required. If security is on you also pass some security related
      * properties.
-     * Any property prefixed by 'org.smartfrog.sfcore.processcompound.jvm.'+NAME+property=value
+     * Any property prefixed by 'org.smartfrog.sfcore.processcompound.jvm.'+NAME+.property=value
      * will be added  only to the subprocess named 'NAME' as a parameter
      * for the JVM. The parameter will be "property+value".
      * To change the class path in a SubProcess use:
@@ -1200,7 +1200,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
                   //Add special parameters to named subprocesses
                   //@todo add Junit test for this feature
                   //@todo test what happens with special caracters
-                  // prefixed by 'org.smartfrog.sfcore.processcompound.jvm.'+NAME+property=value
+                  // prefixed by 'org.smartfrog.sfcore.processcompound.jvm'+NAME+.property=value
                   String specialParameters = SmartFrogCoreProperty.propBaseSFProcess + "jvm." + name + ".";
 
                   if (key.startsWith(specialParameters)) {
