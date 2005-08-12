@@ -450,7 +450,7 @@ public class ConfigurationDescriptor implements MessageKeys{
 
       StringBuffer messageError = new StringBuffer();
       messageError.append(lineSeparator);
-      thr.fillInStackTrace();
+      //thr.fillInStackTrace();
       thr.printStackTrace(out);
 
       LineNumberReader in = new LineNumberReader( new StringReader(sw.toString()));

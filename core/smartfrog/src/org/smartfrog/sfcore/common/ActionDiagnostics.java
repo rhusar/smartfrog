@@ -61,7 +61,8 @@ public class ActionDiagnostics extends ConfigurationAction {
         } catch (Exception ex) {
             throw SmartFrogException.forward(ex);
         }
-        ComponentDescription cd = prim.sfDiagnosticsReport();
+        ComponentDescription cd = null;
+        if (prim !=null) cd = prim.sfDiagnosticsReport();
         return cd;
      }
 
@@ -89,28 +90,23 @@ public class ActionDiagnostics extends ConfigurationAction {
                        MessageUtil.formatMessage(MessageKeys.MSG_ILLEGAL_REFERENCE)
                        +" when parsing '"+name+"'");
                }
-
-               if (ref.size()>1) {
-                   ReferencePart refPart = ref.lastElement();
-                   name = refPart.toString();
-                   name = name.substring(
-                       name.lastIndexOf(HereReferencePart.HERE+" ")+
-                       HereReferencePart.HERE.length()+1);
-                   ref.removeElement(refPart);
-                   prim = (Prim)targetP.sfResolve(ref);
-               }
+               prim = (Prim)targetP.sfResolve(ref);
+               report  = Diagnostics(prim);
+           } else {
+               throw new SmartFrogException("No valid target name provided for diagnostics");
            }
-
-           report  = Diagnostics(prim);
-
-       } catch (SmartFrogException sex){
+       } catch (SmartFrogException sex){;
             configuration.setResult(ConfigurationDescriptor.Result.FAILED,null,sex);
             throw sex;
         } catch (RemoteException rex){
             configuration.setResult(ConfigurationDescriptor.Result.FAILED,null,rex);
             throw rex;
        }
-        configuration.setContextAttribute("diagnosticsReport",report);
+        if (report!=null) {
+            configuration.setContextAttribute("diagnosticsReport",report);
+        } else{
+            configuration.setContextAttribute("diagnosticsReport"," - Report empty -");
+        }
         configuration.setSuccessfulResult();
         return report;
     }
