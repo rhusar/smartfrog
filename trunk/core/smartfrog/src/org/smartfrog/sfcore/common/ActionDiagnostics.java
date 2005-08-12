@@ -102,7 +102,6 @@ public class ActionDiagnostics extends ConfigurationAction {
            }
 
            report  = Diagnostics(prim);
-           System.out.println(report);
 
        } catch (SmartFrogException sex){
             configuration.setResult(ConfigurationDescriptor.Result.FAILED,null,sex);
@@ -111,6 +110,7 @@ public class ActionDiagnostics extends ConfigurationAction {
             configuration.setResult(ConfigurationDescriptor.Result.FAILED,null,rex);
             throw rex;
        }
+        configuration.setContextAttribute("diagnosticsReport",report);
         configuration.setSuccessfulResult();
         return report;
     }
