@@ -86,6 +86,14 @@ public class SmartFrogCoreProperty {
     public static final String propLogLiveness = propBase +
         "logger.logLiveness";
 
+    /** Property name for process compound diagnostics report.
+         *
+         *  Value {@value}
+         *  @see org.smartfrog.SFSystem
+         *  */
+        public static final String processCompoundDiagnosticsReport = propBase +
+        "logger.processCompoundDiagnosticsReport";
+
 
     // Reference
 

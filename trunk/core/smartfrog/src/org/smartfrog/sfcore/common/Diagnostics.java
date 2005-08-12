@@ -151,7 +151,7 @@ public final class Diagnostics {
     }
 
     //  Stolen from ANT Diagnostics class
-    private static void header(StringBuffer out, String section) {
+    public static void header(StringBuffer out, String section) {
         out.append("\n");
         out.append("-------------------------------------------");out.append("\n");
         out.append(" ");
@@ -177,7 +177,7 @@ public final class Diagnostics {
           keysVector.add((String) keys.nextElement());
         }
         // Order keys
-        keysVector= sort(keysVector);
+        keysVector= JarUtil.sort(keysVector);
 
         //for (Enumeration keys = sysprops.propertyNames();keys.hasMoreElements();) {
         for (Enumeration keys = keysVector.elements(); keys.hasMoreElements();) {
@@ -191,32 +191,6 @@ public final class Diagnostics {
             out.append(key + " : " + value);out.append("\n");
         }
     }
-
-    /**
-     *  Sort a Vector
-     *
-     *@param  vect  Description of Parameter
-     *@return       Description of the Returned Value
-     */
-    public static Vector sort(Vector vect) {
-       Object[] array = vect.toArray();
-//       if (debugOn) {
-//        System.out.append("Vector.size:" + vect.size());
-//       }
-       //System.out.append("Array:" + array.toString());
-       Arrays.sort(array, new StringComparator());
-       //System.out.append("ArraySorted:" + array.toString());
-       //vect = new Vector(array);
-       vect = new Vector();
-       //for (int i =0 ; i < array.length; i++) {
-       for (int i = array.length-1 ; i >= 0; i--) {
-          vect.add(array[i]);
-       }
-//       if (debugOn) {
-//          System.out.append("Vector.size(After):" + vect.size());
-//       }
-       return vect;
-   }
 
 
     /**
@@ -390,29 +364,29 @@ public final class Diagnostics {
 }
 
 
-  /**
-   * Comparator for String objects
-   */
-  class StringComparator implements Comparator, Serializable {
-
-     /**
-      *  Compares two String objects
-      *
-      *@param  o1  Description of Parameter
-      *@param  o2  Description of Parameter
-      *@return     Description of the Returned Value
-      */
-     public int compare(Object o1, Object o2) {
-        if (!(o1 instanceof String)) {
-           throw new ClassCastException();
-        }
-        if (!(o2 instanceof String)) {
-           throw new ClassCastException();
-        }
-
-        int result = ((String)o1).compareTo(((String)o2));
-        return result * (-1);
-   }
-     //end compare()
-  }
-//end class TheComparator
+//  /**
+//   * Comparator for String objects
+//   */
+//  class StringComparator implements Comparator, Serializable {
+//
+//     /**
+//      *  Compares two String objects
+//      *
+//      *@param  o1  Description of Parameter
+//      *@param  o2  Description of Parameter
+//      *@return     Description of the Returned Value
+//      */
+//     public int compare(Object o1, Object o2) {
+//        if (!(o1 instanceof String)) {
+//           throw new ClassCastException();
+//        }
+//        if (!(o2 instanceof String)) {
+//           throw new ClassCastException();
+//        }
+//
+//        int result = ((String)o1).compareTo(((String)o2));
+//        return result * (-1);
+//   }
+//     //end compare()
+//  }
+////end class TheComparator

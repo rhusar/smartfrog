@@ -59,6 +59,8 @@ public class ConfigurationDescriptor implements MessageKeys{
         final static public int PING = 5;
         final static public String ACT_PARSE = "PARSE";
         final static public int PARSE = 6;
+        final static public String ACT_DIAGNOSTICS = "DIAGNOSTICS";
+        final static public int DIAGNOSTICS = 7;
 
         static public String[] type= {
                       ACT_DEPLOY,
@@ -67,7 +69,8 @@ public class ConfigurationDescriptor implements MessageKeys{
                       ACT_DETACH,
                       ACT_DETaTERM,
                       ACT_PING,
-                      ACT_PARSE};
+                      ACT_PARSE,
+                      ACT_DIAGNOSTICS};
     }
 
 
@@ -481,7 +484,7 @@ public class ConfigurationDescriptor implements MessageKeys{
      *      - name: name where to apply ACTION
      *            ex. foo
      *            ex. "HOST localhost:foo"
-     *      - ACTION: possible actions: DEPLOY, TERMINATE, DETACH, DETaTERM, PING, PARSE
+     *      - ACTION: possible actions: DEPLOY, TERMINATE, DETACH, DETaTERM, PING, PARSE, DIAGNOSTICS
      *      - url: description used by ACTION
      *            ex. /home/sf/foo.sf
      *            ex. "c:\sf\foo.sf"
@@ -764,6 +767,9 @@ public class ConfigurationDescriptor implements MessageKeys{
                 break;
             case Action.PARSE:
                 action = new ActionParse();
+                break;
+            case Action.DIAGNOSTICS:
+                action = new ActionDiagnostics();
                 break;
             default:
                 throw new SmartFrogInitException("Action type unknown");

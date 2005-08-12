@@ -292,4 +292,12 @@ public interface SmartFrogCoreKeys {
      */
     public final static String SF_APP_LOG_NAME = "sfLog";
 
+    /**
+     * Attribute name to get the name of the diagnostics report in ProcessCompound.
+     *
+     * Value {@value}
+     */
+    public final static String SF_DIAGNOSTICS_REPORT = "sfDiagnosticsReport";
+
+
 }

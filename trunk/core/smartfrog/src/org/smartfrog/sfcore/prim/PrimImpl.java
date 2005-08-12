@@ -54,6 +54,9 @@ import org.smartfrog.sfcore.reference.RemoteReferenceResolverHelperImpl;
 import java.rmi.NoSuchObjectException;
 import java.net.UnknownHostException;
 import org.smartfrog.sfcore.common.SFMarshalledObject;
+import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
+import org.smartfrog.sfcore.common.ContextImpl;
+import org.smartfrog.sfcore.common.Diagnostics;
 
 /**
  * Defines the base class for all deployed components. A deployed component
@@ -1298,6 +1301,22 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
     /** Returns value of flag indicating if this component has been started. */
     public boolean sfIsStarted() {
         return sfIsStarted;
+    }
+
+    /** Createds diagnostics report */
+    public ComponentDescription sfDiagnosticsReport() {
+      ComponentDescription cd = null;
+      try {
+        cd = new ComponentDescriptionImpl(null,(Context)new ContextImpl(), false);
+        cd.setPrimParent(this);
+        StringBuffer report = new StringBuffer();
+        Diagnostics.doReport(report);
+        cd.sfAddAttribute(SmartFrogCoreKeys.SF_DIAGNOSTICS_REPORT, report );
+      } catch (Throwable thr){
+        //ignore
+        if (sfLog().isWarnEnabled()){ sfLog().warn(thr);}
+      }
+      return cd;
     }
 
 }

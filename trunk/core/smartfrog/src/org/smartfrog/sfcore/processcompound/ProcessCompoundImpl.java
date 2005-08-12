@@ -31,6 +31,7 @@ import java.util.Set;
 import java.util.Iterator;
 
 import org.smartfrog.SFSystem;
+import org.smartfrog.sfcore.common.Logger;
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.ContextImpl;
 import org.smartfrog.sfcore.common.TerminatorThread;
@@ -333,10 +334,15 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
         // @TODO fix after refactoring ProcessCompound.
         deployDefaultProcessDescriptions(this);
 
+        // Add diagnostics report
+        if (Logger.processCompoundDiagReport){
+          sfAddAttribute(SmartFrogCoreKeys.SF_DIAGNOSTICS_REPORT,sfDiagnosticsReport());
+        }
+        if (sfLog().isTraceEnabled()) sfLog().trace(sfDiagnosticsReport());
         // Add boot time only in rootProcess
-        if (sfIsRoot)
-        sfAddAttribute(SmartFrogCoreKeys.SF_BOOT_DATE, new Date(System.currentTimeMillis()));
-
+        if (sfIsRoot) {
+          sfAddAttribute(SmartFrogCoreKeys.SF_BOOT_DATE,new Date(System.currentTimeMillis()));
+        }
         // the last act is to inform the root process compound that the
         // subprocess is now ready for action - only done if not the root
         try {
@@ -349,6 +355,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
         } catch (RemoteException rex) {
             throw new SmartFrogRuntimeException(MSG_FAILED_TO_CONTACT_PARENT, rex, this);
         }
+
         if (sfLog().isTraceEnabled()) sfLog().trace("Started ProcessCompound '"+sfProcessName+"'");
     }
 
