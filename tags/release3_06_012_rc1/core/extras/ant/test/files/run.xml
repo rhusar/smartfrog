@@ -1,0 +1,153 @@
+<?xml version="1.0"?>
+<project name="run" default="teardown">
+
+<description>
+ Tests for the run. 
+ 
+ command line invocation
+ ant -lib ..\..\build\dist\lib\smartfrog-tasks.jar -lib ..\..\..\..\smartfrog\dist\lib\smartfrog.jar -f  run.xml testNoParams
+
+ant -lib ../../build/dist/lib/smartfrog-tasks.jar -lib ../../../../smartfrog/dist/lib/smartfrog.jar -f run.xml testNoParams
+
+ant -lib ../../build/dist/lib/smartfrog-tasks.jar -lib ../../../../smartfrog/dist/lib/smartfrog.jar -lib ../../../../smartfrog/dist/lib/sfExamples.jar -f run.xml testResource
+
+ant -lib ../../build/dist/lib/smartfrog-tasks.jar -lib ../../../../smartfrog/dist/lib/smartfrog.jar -lib ../../../../smartfrog/dist/lib/sfServices.jar -f run.xml testMissingOptionalPropertyFile
+</description>
+
+    <import file="test-common.xml" />
+  
+    <target name="testNoParams">
+      <sf-run />
+    </target>
+    
+    <target name="testNoFailure">
+      <sf-run failonerror="false"/>
+    </target>
+    
+    <target name="testEmptyApplication">
+      <sf-run >
+        <application />
+      </sf-run>
+    </target>    
+
+    <target name="testAnonApplication">
+      <sf-run >
+        <application descriptor="${resource.sf}" />
+      </sf-run>
+    </target>    
+
+    <target name="testDatalessApplication">
+      <sf-run >
+        <application name="app" />
+      </sf-run>
+    </target> 
+
+    
+    <target name="testBadFile">
+      <sf-run >
+        <application name="app" file="missing-file.sf"/>
+      </sf-run>
+    </target>  
+
+    
+    <target name="testBadHost">
+      <sf-run host="no-such-hostname"/>
+    </target>
+
+    
+    <target name="testResource">
+      <sf-run >
+        <application name="app" descriptor="${resource.sf}"/>
+      </sf-run>
+    </target> 
+
+    <target name="testStackTrace">
+      <sf-run logStackTraces="true">
+        <application name="app" file="invalid.sf"/>
+      </sf-run>
+    </target> 
+    
+    <target name="testRunFile">
+      <sf-run >
+        <application name="app" file="valid.sf"/>
+      </sf-run>
+    </target>
+    
+    
+    <target name="testSubdir">
+      <sf-run >
+        <application name="app" file="subdir/subfile.sf"/>
+      </sf-run>
+    </target>
+    
+    <target name="testAssertions">
+      <sf-run >
+        <application name="app" descriptor="${resource.sf}"/>
+        <assertions enableSystemAssertions="true">
+          <enable/>
+        </assertions>
+      </sf-run>
+    </target> 
+    
+    <target name="testInline">
+    <property name="port" value="8080"/>
+      <sf-run >
+        <application name="app">
+#include "org/smartfrog/components.sf"
+
+Server extends Prim {
+	port ${port};
+}
+
+sfConfig extends Server{
+}        
+        </application>
+      </sf-run>
+    </target>
+
+  <target name="testEmptyPropertyFile">
+    <sf-run timeout="${timeout}">
+      <propertyFile/>
+    </sf-run>
+  </target>
+
+  <target name="testMissingNonOptionalPropertyFile">
+    <sf-run timeout="${timeout}">
+      <propertyFile file="missing" optional="false"/>
+      <application name="app" file="valid.sf"/>
+    </sf-run>
+  </target>
+
+  <target name="testMissingOptionalPropertyFile">
+    <sf-run timeout="${timeout}">
+      <propertyFile file="missing" optional="true"/>
+      <application name="testMissingOptionalPropertyFile">
+#include "/org/smartfrog/services/assertions/components.sf"
+
+sfConfig extends Assert {
+        equalsString1 "test";
+        equalsString2 "test";
+}
+      </application>
+    </sf-run>
+  </target>
+
+  <!--
+  we test two things here. First, that properties get loaded
+  secondly, that inline files are expanded and executed
+  -->
+  <target name="testValidPropertyFile">
+    <sf-run timeout="${timeout}">
+      <propertyFile file="loaded.properties"/>
+      <application name="EqualsTest">
+#include "/org/smartfrog/services/assertions/components.sf"
+
+sfConfig extends Assert {
+        equalsString1 "test";
+        equalsString2 PROPERTY test.text;
+}
+      </application>
+    </sf-run>
+  </target>
+
+</project>

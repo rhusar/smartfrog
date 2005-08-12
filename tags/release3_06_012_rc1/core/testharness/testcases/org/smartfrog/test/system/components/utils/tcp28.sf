@@ -1,0 +1,66 @@
+/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+#include "org/smartfrog/components.sf"
+#include "org/smartfrog/services/net/ftp.sf"
+#include "org/smartfrog/services/net/telnet.sf"
+#include "org/smartfrog/services/email/emailer.sf"
+#include "org/smartfrog/services/installer/sfinstaller.sf"
+#include "org/smartfrog/services/installer/sleep.sf"
+
+/**
+ * This example installs SmartFrog in two linux nodes and starts sfDaemon
+ * as well. Also generates on email with the installtion status and sends
+ * telnet session log as an attachment with the email.
+ * Since sfDaemon runs as simple java application it terminates if 
+ * installer component is terminated.
+ */
+sfConfig extends Compound {
+           Installer1 extends SFInstaller {
+                host "ebnt171.india.hp.com"; 
+                user "ritu";
+                passwordFile "D:\\cvs\\forge\\passwd.txt";
+                localLibLocation "D:\\cvs\\forge\\oct_06\\core\\smartfrog\\dist\\lib\\";
+		remotLibLocation "/tmp/";
+                ftpLocalFiles ["D:\\cvs\\releases\\SmartFrog.3.02.002.beta.20040429_ALL.tar.gz", (ATTRIB localLibLocation ++ "sfExamples.jar"), (ATTRIB localLibLocation ++ "smartfrog.jar"), (ATTRIB localLibLocation ++ "utils-components.jar"), (ATTRIB localLibLocation ++ "sfServices.jar")];
+                ftpRemoteFiles ["cvs/SmartFrog.3.02.002.beta.20040429_ALL.tar.gz", (ATTRIB remotLibLocation ++ "sfExamples.jar"), (ATTRIB remotLibLocation ++ "smartfrog.jar"), (ATTRIB remotLibLocation ++ "utils-components.jar"), (ATTRIB  remotLibLocation ++ "sfServices.jar")];
+
+                telnetLogfile "SFNode1.log";
+                telnetCommands ["cd cvs",
+                                 "mkdir test",
+                                 "cp SmartFrog.3.02.002.beta.20040429_ALL.tar.gz ./test",
+                                 "cd test",
+                                 "gunzip SmartFrog.3.02.002.beta.20040429_ALL.tar.gz",
+                                 "tar -xf SmartFrog.3.02.002.beta.20040429_ALL.tar",
+                                  "cp /tmp/*.jar ./SmartFrog.3.02.002.beta/dist/lib",
+                                 "cd SmartFrog.3.02.002.beta",
+                                 "export SFHOME=/home/ritu/cvs/test/SmartFrog.3.02.002.beta/dist",
+                                 "export PATH=$SFHOME/bin:$PATH",
+                                 "nohup sfDaemon &"
+                               ];
+                emailTo "ritu@india.hp.com";
+                emailFrom "smartfrog@india.hp.com";
+                emailHost "stash.india.hp.com"; 
+                emailAttachments ["SFNode1.log"];
+                emailMessage ("SmartFrog installation status  on node:" 
+                                        ++ ATTRIB host ++ 
+                              " :Successful.\n Please see attached telnet log file for details.");
+           }
+}
