@@ -1310,8 +1310,8 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
         cd = new ComponentDescriptionImpl(null,(Context)new ContextImpl(), false);
         cd.setPrimParent(this);
         StringBuffer report = new StringBuffer();
-        Diagnostics.doReport(report);
-        cd.sfAddAttribute(SmartFrogCoreKeys.SF_DIAGNOSTICS_REPORT, report );
+        Diagnostics.doReport(report,this);
+        cd.sfReplaceAttribute(SmartFrogCoreKeys.SF_DIAGNOSTICS_REPORT, report );
       } catch (Throwable thr){
         //ignore
         if (sfLog().isWarnEnabled()){ sfLog().warn(thr);}
