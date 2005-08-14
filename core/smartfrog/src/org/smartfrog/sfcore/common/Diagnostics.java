@@ -35,6 +35,11 @@ import java.util.Vector;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.io.Serializable;
+import org.smartfrog.sfcore.prim.Prim;
+import java.rmi.*;
+import org.smartfrog.sfcore.compound.Compound;
+import org.smartfrog.sfcore.processcompound.ProcessCompound;
+import org.smartfrog.sfcore.processcompound.SFProcess;
 
 
 /**
@@ -101,7 +106,7 @@ public final class Diagnostics {
      * '?.?' for JDK 1.0 or 1.1.
      * Stolen from ANT Diagnostics class
      */
-    private static String getImplementationVersion(Class clazz) {
+    public static String getImplementationVersion(Class clazz) {
         Package pkg = clazz.getPackage();
         return pkg.getImplementationVersion();
     }
@@ -119,15 +124,16 @@ public final class Diagnostics {
     /**
      * Print a report to the given stream.
      * @param out the StringBuffer to print the report to.
+     * @param prim the SmartFrog component where to extract info from.
      */
-    public static void doReport(StringBuffer out) {
+    public static void doReport(StringBuffer out, Prim prim) {
 
-        out.append("------- SF diagnostics report -------");
+        out.append("\n------- SF diagnostics report -------");
 
         header(out, "Implementation Version");
-        out.append(org.smartfrog.Version.versionString());
-        out.append(org.smartfrog.Version.copyright());
-        out.append("Build date: "+ org.smartfrog.Version.buildDate());
+        out.append(org.smartfrog.Version.versionString());out.append("\n");
+        out.append(org.smartfrog.Version.copyright());out.append("\n");
+        out.append("Build date: "+ org.smartfrog.Version.buildDate());out.append("\n");
 
         header(out, "System properties");
         doReportSystemProperties(out);
@@ -146,8 +152,104 @@ public final class Diagnostics {
 
         header(out, "Locale information");
         doReportLocale(out);
+
+        doReportPrim(out, prim);
+
         header(out, org.smartfrog.Version.versionString() + " - "+org.smartfrog.Version.buildDate());
         out.append("\n");
+
+    }
+
+    private static void doReportPrim(StringBuffer out, Prim prim) {
+        if (prim!=null) {
+          try {
+            Diagnostics.header(out, "sfCompleteName");
+            out.append(prim.sfCompleteName()); out.append("\n");
+          } catch (RemoteException ex1) {
+            out.append(" Error:" + ex1.getMessage()); out.append("\n");
+          }
+          Diagnostics.header(out, "sfParent");
+          try {
+            Prim parent = prim.sfParent();
+            out.append("Parent: " + parent.sfCompleteName()); out.append("\n");
+            out.append("        [");
+            out.append(parent.getClass().toString());
+            out.append(", ");
+            out.append(parent.sfDeployedHost());
+            out.append("] ");out.append("\n");
+          } catch (Exception ex) {
+            out.append("No parent: " + ex.getMessage());out.append("\n");
+          }
+          header(out, "class");
+          out.append(prim.getClass().getName());out.append("\n");
+          try {
+            Diagnostics.header(out, "sfContext");
+            out.append(prim.sfContext().toString());//out.append("\n");
+          } catch (RemoteException ex2) {
+            out.append(" Error:" + ex2.getMessage());out.append("\n");
+          }
+
+          if (prim instanceof Compound) {
+            doReportCompound(out, (Compound)prim);
+          }
+
+          if (!(prim instanceof ProcessCompound)){
+            doReportProcessCompound(out);
+          }
+      }
+    }
+
+    private static void doReportProcessCompound(StringBuffer out) {
+      try {
+        ProcessCompound pc = SFProcess.getProcessCompound();
+        StringBuffer reportPC = new StringBuffer();
+        Diagnostics.header(out, "sfContext host ProcessCompound");
+        out.append("+++++++++++++++++++++++++++++++++++++++++++");
+        doReportPrim (reportPC,(Prim)pc);
+        out.append(reportPC.toString().replaceAll("\n","\n    "));
+        out.append("\n+++++++++++++++++++++++++++++++++++++++++++\n");
+      } catch (Exception ex2) {
+        out.append(" Error:" + ex2.getMessage() + "\n");
+      }
+    }
+
+    private static void doReportCompound(StringBuffer out, Compound prim) {
+      Enumeration enu = null;
+      StringBuffer childrenInfo = new StringBuffer();
+      Prim child = null;
+      try {
+        Diagnostics.header(out, "sfChildren");
+        for (enu = ( (Compound) prim).sfChildren(); enu.hasMoreElements(); ) {
+          try {
+            child = (Prim) enu.nextElement();
+            childrenInfo.append("- ");
+            childrenInfo.append(child.sfCompleteName());
+            childrenInfo.append("\n");
+            childrenInfo.append("      [");
+            childrenInfo.append(child.getClass().toString());
+            childrenInfo.append(", ");
+            childrenInfo.append(child.sfDeployedHost());
+            childrenInfo.append("] \n");
+          } catch (Throwable ex) {
+            childrenInfo.append("  Error: ");
+            childrenInfo.append(ex.getMessage());
+            childrenInfo.append(" \n");
+          }
+        }
+        out.append(childrenInfo.toString());
+      } catch (RemoteException ex) {
+        out.append(childrenInfo.toString());
+        out.append("\n Error: ");
+        out.append(ex.toString());
+      }
+    }
+
+    /**
+     * Print a report to the given stream.
+     * @param out the StringBuffer to print the report to.
+     */
+    public static void doReport(StringBuffer out) {
+      doReport ( out, null);
     }
 
     //  Stolen from ANT Diagnostics class
@@ -199,26 +301,26 @@ public final class Diagnostics {
      */
     private static void doReportSummary(StringBuffer out) {
 
-      out.append("* Java Version:   " + System.getProperty("java.version"));out.append("\n");
-      out.append("* Java Home:      " + System.getProperty("java.home"));out.append("\n");
-      out.append("* Java Ext Dir:   " + System.getProperty("java.ext.dirs"));out.append("\n");
+      out.append("* Java Version:   ");out.append( System.getProperty("java.version"));out.append("\n");
+      out.append("* Java Home:      ");out.append(System.getProperty("java.home"));out.append("\n");
+      out.append("* Java Ext Dir:   ");out.append(System.getProperty("java.ext.dirs"));out.append("\n");
 
       //out.append("* Java ClassPath: " + System.getProperty("java.class.path")out.append("\n");
       //);
-      out.append("* OS Name:        " + System.getProperty("os.name"));out.append("\n");
-      out.append("* OS Version:     " + System.getProperty("os.version"));out.append("\n");
-      out.append("* User Name:      " + System.getProperty("user.name"));out.append("\n");
-      out.append("* User Home:      " + System.getProperty("user.home"));out.append("\n");
-      out.append("* User Work Dir:  " + System.getProperty("user.dir"));out.append("\n");
+      out.append("* OS Name:        ");out.append(System.getProperty("os.name"));out.append("\n");
+      out.append("* OS Version:     ");out.append(System.getProperty("os.version"));out.append("\n");
+      out.append("* User Name:      ");out.append(System.getProperty("user.name"));out.append("\n");
+      out.append("* User Home:      ");out.append(System.getProperty("user.home"));out.append("\n");
+      out.append("* User Work Dir:  ");out.append(System.getProperty("user.dir"));out.append("\n");
 
       try {
         java.net.InetAddress localhost = java.net.InetAddress.getLocalHost();
-        out.append("* LocalHost Name: " + localhost.getCanonicalHostName());out.append("\n");
-        out.append("* LocalHost Add:  " + localhost.getHostAddress());out.append("\n");
+        out.append("* LocalHost Name: ");out.append(localhost.getCanonicalHostName());out.append("\n");
+        out.append("* LocalHost Add:  ");out.append(localhost.getHostAddress());out.append("\n");
 
         //out.append("* isMulticast?    " + localhost.isMulticastAddress());
       } catch (Exception ex) {
-        out.append("Exception Info:" + ex.toString());out.append("\n");
+        out.append("Exception Info:");out.append(ex.toString());out.append("\n");
       }
 
     }
@@ -228,7 +330,7 @@ public final class Diagnostics {
      * @param out the stream to print the properties to.
      */
     private static void doReportClassPath(StringBuffer out) {
-      out.append(""+(System.getProperty("java.class.path")).replace(
+      out.append((System.getProperty("java.class.path")).replace(
                       System.getProperty("path.separator").charAt(0), '\n'));
     }
 
@@ -251,16 +353,8 @@ public final class Diagnostics {
     }
 
 
-//    /**
-//     * Report the content of ANT_HOME/lib directory
-//     * @param out the stream to print the content to
-//     */
-//    private static void doReportLibraries(PrintStream out) {
-//        out.append("ant.home: " + System.getProperty("ant.home"));
 //        File[] libs = listLibraries();
 //        printLibraries(libs, out);
-//    }
-
 
     /**
      * list the libraries
@@ -362,31 +456,3 @@ public final class Diagnostics {
                          + cal.get(Calendar.MILLISECOND)));out.append("\n");
     }
 }
-
-
-//  /**
-//   * Comparator for String objects
-//   */
-//  class StringComparator implements Comparator, Serializable {
-//
-//     /**
-//      *  Compares two String objects
-//      *
-//      *@param  o1  Description of Parameter
-//      *@param  o2  Description of Parameter
-//      *@return     Description of the Returned Value
-//      */
-//     public int compare(Object o1, Object o2) {
-//        if (!(o1 instanceof String)) {
-//           throw new ClassCastException();
-//        }
-//        if (!(o2 instanceof String)) {
-//           throw new ClassCastException();
-//        }
-//
-//        int result = ((String)o1).compareTo(((String)o2));
-//        return result * (-1);
-//   }
-//     //end compare()
-//  }
-////end class TheComparator
