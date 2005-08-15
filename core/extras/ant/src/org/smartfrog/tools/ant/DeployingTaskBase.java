@@ -107,7 +107,7 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
             Application application = (Application) it.next();
             application.validate();
             addArg("-a");
-            String path= makePath(application);
+            String path= makePath2(application);
             String subprocess=getSubprocess();
 
             addArg(application.getName() + ":" //NAME
@@ -127,6 +127,10 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
      */
     private String makePath(Application application) {
         return "\"" + application.getDescriptor() + "\":";
+    }
+
+    private String makePath2(Application application) {
+        return "\\\"\"" + application.getDescriptor() + "\\\"\":";
     }
 
     private String makePathWindows(Application application) {
@@ -275,7 +279,7 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
                 owner.log("Application temporary files is "+tempfile);
                 owner.log("This is not deleted in debug mode");
             } else {
-                //no debugging, kill the file after we exit ant. 
+                //no debugging, kill the file after we exit ant.
                 tempfile.deleteOnExit();
             }
             owner.log("Saving to temporary file "+tempfile,Project.MSG_VERBOSE);
