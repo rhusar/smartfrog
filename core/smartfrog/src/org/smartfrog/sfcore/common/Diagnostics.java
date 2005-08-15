@@ -19,27 +19,44 @@
  */
 
 // Some methods taken from ANT 1.5 Diagnostics class.
+/*
+ * Copyright  2000-2005 The Apache Software Foundation
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ */
+
+
 
 package org.smartfrog.sfcore.common;
 
-import java.io.File;
-import java.io.FilenameFilter;
-import java.io.PrintStream;
-import java.util.Properties;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.Calendar;
-import java.util.TimeZone;
-import java.util.Enumeration;
-import java.util.Vector;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.io.Serializable;
-import org.smartfrog.sfcore.prim.Prim;
-import java.rmi.*;
 import org.smartfrog.sfcore.compound.Compound;
+import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.sfcore.processcompound.SFProcess;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.rmi.RemoteException;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Enumeration;
+import java.util.Properties;
+import java.util.TimeZone;
+import java.util.Vector;
 
 
 /**
@@ -59,7 +76,7 @@ public final class Diagnostics {
      * @return the list of jar files existing in "dir" or
      * <tt>null</tt> if an error occurs.
      *
-     * Stolen from ANT Diagnostics class
+     * Derived from Ant Diagnostics class
      */
     public static File[] listLibraries(String dir) {
         if (dir == null) {
@@ -73,7 +90,7 @@ public final class Diagnostics {
     /**
      * get a list of all JAR files in a directory
      *
-     * Stolen from ANT Diagnostics class
+     * Derived from Ant Diagnostics class
      *
      * @param libDir directory
      * @return array of files (or null for no such directory)
@@ -104,7 +121,7 @@ public final class Diagnostics {
      * @param clazz the class to get the information from.
      * @return null if there is no package or implementation version.
      * '?.?' for JDK 1.0 or 1.1.
-     * Stolen from ANT Diagnostics class
+     * Derived from Ant Diagnostics class
      */
     public static String getImplementationVersion(Class clazz) {
         Package pkg = clazz.getPackage();
@@ -113,7 +130,7 @@ public final class Diagnostics {
 
     /**
      * Print a report to the given stream.
-     * @param out the stream to print the report to.
+     * @param outPS the stream to print the report to.
      */
     public static void doReport(PrintStream outPS) {
       StringBuffer out = new StringBuffer();
@@ -131,9 +148,13 @@ public final class Diagnostics {
         out.append("\n------- SF diagnostics report -------");
 
         header(out, "Implementation Version");
-        out.append(org.smartfrog.Version.versionString());out.append("\n");
-        out.append(org.smartfrog.Version.copyright());out.append("\n");
-        out.append("Build date: "+ org.smartfrog.Version.buildDate());out.append("\n");
+        out.append(org.smartfrog.Version.versionString());
+        out.append("\n");
+        out.append(org.smartfrog.Version.copyright());
+        out.append("\n");
+        out.append("Build date: ");
+        out.append(org.smartfrog.Version.buildDate());
+        out.append("\n");
 
         header(out, "System properties");
         doReportSystemProperties(out);
@@ -166,12 +187,12 @@ public final class Diagnostics {
             Diagnostics.header(out, "sfCompleteName");
             out.append(prim.sfCompleteName()); out.append("\n");
           } catch (RemoteException ex1) {
-            out.append(" Error:" + ex1.getMessage()); out.append("\n");
+              out.append(" Error:").append(ex1.getMessage()).append("\n");
           }
           Diagnostics.header(out, "sfParent");
           try {
             Prim parent = prim.sfParent();
-            out.append("Parent: " + parent.sfCompleteName()); out.append("\n");
+              out.append("Parent: ").append(parent.sfCompleteName()).append("\n");
             out.append("        [");
             out.append(parent.getClass().toString());
             out.append(", ");
@@ -252,7 +273,7 @@ public final class Diagnostics {
       doReport ( out, null);
     }
 
-    //  Stolen from ANT Diagnostics class
+    //  Derived from Ant Diagnostics class
     public static void header(StringBuffer out, String section) {
         out.append("\n");
         out.append("-------------------------------------------");out.append("\n");
@@ -358,7 +379,7 @@ public final class Diagnostics {
 
     /**
      * list the libraries
-     * Stolen from ANT Diagnostics class     *
+     * Derived from Ant Diagnostics class     *
      * @param libs array of libraries (can be null)
      * @param out output stream
      */
@@ -378,7 +399,7 @@ public final class Diagnostics {
      * checks that it has space and access.
      * We also do some clock reporting.
      *
-     * Stolen from ANT Diagnostics class
+     * Derived from Ant Diagnostics class
      *
      * @param out
      */
@@ -437,7 +458,7 @@ public final class Diagnostics {
 
     /**
      * Report locale information
-     * Stolen from ANT Diagnostics class
+     * Derived from Ant Diagnostics class
      * @param out
      */
     private static void doReportLocale(StringBuffer out) {
