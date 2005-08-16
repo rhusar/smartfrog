@@ -145,7 +145,9 @@ public class PersistantCounterImpl extends CounterImpl implements Prim, Counter,
 
             //end while
         } catch (InterruptedException ie) {
-            exception("run", ie);
+            if (sfLog().isErrorEnabled()){
+                sfLog().error("", ie);
+            }
         }
     }
 
