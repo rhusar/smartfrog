@@ -17,22 +17,22 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.www;
+package org.smartfrog.services.www.context;
 
+import org.smartfrog.services.www.MimeType;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 
 import java.rmi.RemoteException;
 
 /**
+ * A mime type can be deployed within a servlet context
  * created 28-Jul-2005 16:29:47
  */
 
-public class MimeTypeImpl extends PrimImpl implements MimeType {
+public class MimeTypeImpl extends ServletContextComponentImpl implements MimeType {
     private String extension;
     private String type;
-    ServletContextIntf servletContext = null;
 
 
     public MimeTypeImpl() throws RemoteException {
@@ -50,10 +50,7 @@ public class MimeTypeImpl extends PrimImpl implements MimeType {
         super.sfStart();
         extension = sfResolve(ATTR_EXTENSION, extension, true);
         type = sfResolve(ATTR_TYPE, type, true);
-        servletContext = (ServletContextIntf) sfResolve(ATTR_SERVLET_CONTEXT,
-                servletContext,
-                true);
-        servletContext.addMimeMapping(extension,type);
+        getServletContext().addMimeMapping(extension,type);
     }
 
     /**
@@ -62,12 +59,14 @@ public class MimeTypeImpl extends PrimImpl implements MimeType {
      */
     public synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
-        if(servletContext!=null) {
+        if(getServletContext()!=null) {
             try {
-                servletContext.removeMimeMapping(extension);
+                getServletContext().removeMimeMapping(extension);
             } catch (RemoteException e) {
                 //swallowed
 
+            } catch (SmartFrogException e) {
+                //swallowed
             }
         }
     }
