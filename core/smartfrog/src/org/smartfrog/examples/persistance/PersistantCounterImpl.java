@@ -67,33 +67,33 @@ public class PersistantCounterImpl extends CounterImpl implements Prim, Counter,
     }
 
     public void sfDeploy() throws SmartFrogException, RemoteException {
-	super.sfDeploy();
+        super.sfDeploy();
 
         // construct filename for state checkpoint
-	// if not restarting
+        // if not restarting
         //   checkpoint intial state
         // if restarting
         //   read state and if fail leave as is...
 
-	try {
+        try {
             // windows does not like ":" in the file name
-	    String name = sfCompleteNameSafe().toString().replaceAll(":", "#");
+            String name = sfCompleteNameSafe().toString().replaceAll(":", "#");
 
-	    checkpointDir = sfResolve("sfCheckpointDirectory", checkpointDir, false);
-	    checkpointFileRoot = sfResolve("sfCheckpointFileRoot", checkpointFileRoot, false);
+            checkpointDir = sfResolve("sfCheckpointDirectory", checkpointDir, false);
+            checkpointFileRoot = sfResolve("sfCheckpointFileRoot", checkpointFileRoot, false);
 
-	    checkpointFile = new File(checkpointDir, checkpointFileRoot + "_" + name + ".chkpt" );
+            checkpointFile = new File(checkpointDir, checkpointFileRoot+"_"+name+".chkpt");
 
-	    if (checkpointFile.canRead()) {
-		ObjectInputStream reader = new ObjectInputStream(new FileInputStream(checkpointFile));
-		counter = reader.readInt();
-		reader.close();
-	    }
+            if (checkpointFile.canRead()) {
+                ObjectInputStream reader = new ObjectInputStream(new FileInputStream(checkpointFile));
+                counter = reader.readInt();
+                reader.close();
+            }
 
-	    checkpointState();
-	} catch (Exception e) {
-	    SmartFrogException.forward("Error reading checkpointed state", e);
-	}
+            checkpointState();
+        } catch (Exception e) {
+            SmartFrogException.forward("Error reading checkpointed state", e);
+        }
     }
 
 
@@ -105,8 +105,9 @@ public class PersistantCounterImpl extends CounterImpl implements Prim, Counter,
      * @param  t TerminationRecord object
      */
     public synchronized void sfTerminateWith(TerminationRecord t) {
-        log("sfTerminateWith", " Terminating for reason: " + t.toString());
-
+        if (sfLog().isInfoEnabled()){
+            sfLog().info(" Terminating for reason: "+t.toString());
+        }
         if (action != null) {
             action.interrupt();
         }
@@ -118,29 +119,29 @@ public class PersistantCounterImpl extends CounterImpl implements Prim, Counter,
 
     protected synchronized void checkpointState() throws FileNotFoundException, IOException {
 	    ObjectOutputStream writer = new ObjectOutputStream(new FileOutputStream(checkpointFile));
-            writer.writeInt(counter);
+        writer.writeInt(counter);
 	    writer.close();
     }
 
 
     public void run() {
         try {
-            while (limit >= counter++) {
-                String messageSt = ("COUNTER: " + message + " " + counter);
-                System.out.println(messageSt);
-		try {
-		    checkpointState();
-		} catch (Exception e) {
-		    String messageE = ("COUNTER: " + message + " error in checkpointing state: " + e);
-		    System.out.println(messageE);
-		}
+            while (limit>=counter++) {
+                String messageSt = ("COUNTER: "+message+" "+counter);
+                sfLog().out(messageSt);
+                try {
+                    checkpointState();
+                } catch (Exception e) {
+                    String messageE = ("COUNTER: "+message+ " error in checkpointing state: "+e);
+                    sfLog().out(messageE);
+                }
 
-                if(sleeptime>0) {
+                if (sleeptime>0) {
                     Thread.sleep(sleeptime);
                 }
             }
 
-            if (terminate) sfTerminate(TerminationRecord.normal(this.sfCompleteNameSafe()));
+            if (terminate)sfTerminate(TerminationRecord.normal(this.sfCompleteNameSafe()));
 
             //end while
         } catch (InterruptedException ie) {
