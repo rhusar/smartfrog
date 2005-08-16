@@ -49,7 +49,7 @@ import java.rmi.RemoteException;
 public class AJPlistener extends PrimImpl implements Listener {
     protected Reference listenerPortRef = new Reference(LISTENER_PORT);
     protected Reference serverHostRef = new Reference(SERVER_HOST);
-    protected Reference serverNameRef = new Reference(SERVER);
+    protected Reference serverNameRef = new Reference(SERVER_NAME);
 
     protected int listenerPort = 8009;
 

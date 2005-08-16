@@ -116,8 +116,8 @@ JettyServletContextSchema extends Schema {
 }
 
 JettyServletContext extends ServletContext {
-    sfClass "org.smartfrog.services.jetty.contexts.JettyServletContext";
-    jettyServletContextSchema extends JettyServletContextSchema;
+    //sfClass "org.smartfrog.services.jetty.contexts.JettyServletContext";
+    //jettyServletContextSchema extends JettyServletContextSchema;
 }
 
 
@@ -127,7 +127,7 @@ JettyServletContext extends ServletContext {
  */
 
 JettyWebApplication extends WebApplication {
-  sfClass "org.smartfrog.services.jetty.contexts.WebApplication";
+  //sfClass "org.smartfrog.services.jetty.contexts.WebApplication";
 }
 
 /**
@@ -145,7 +145,7 @@ JettyHandler extends ApplicationServerContext {
 JettyListenerSchema extends Schema {
     listenerPort extends Integer;
     serverHost extends OptionalString;
-    server extends OptionalString;
+    serverName extends OptionalString;
 }
 
 JettyListener extends ApplicationServerContext {
@@ -159,6 +159,6 @@ JettyListener extends ApplicationServerContext {
  * jetty
  */
 JettyServlet extends Servlet {
-    sfClass "org.smartfrog.services.jetty.contexts.servlets.JettyServletImpl";
+    //sfClass "org.smartfrog.services.jetty.contexts.servlets.JettyServletImpl";
 }
 

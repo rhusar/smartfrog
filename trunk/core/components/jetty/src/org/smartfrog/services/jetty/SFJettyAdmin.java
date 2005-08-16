@@ -53,33 +53,34 @@ import java.rmi.RemoteException;
  */
 
 public class SFJettyAdmin extends PrimImpl implements JettyAdminIntf {
-    Reference listenerPortRef = new Reference(LISTENER_PORT);
-    Reference httpserverHostRef = new Reference(HTTP_SERVER_HOST);
-    Reference contextPathRef = new Reference(CONTEXT_PATH);
+    private Reference listenerPortRef = new Reference(LISTENER_PORT);
+    private Reference httpserverHostRef = new Reference(HTTP_SERVER_HOST);
+    private Reference contextPathRef = new Reference(CONTEXT_PATH);
 
-    int listenerPort = 8081;
-    String httpserverHost=null;
-    String contextPath;
+    private int listenerPort = 8081;
+    private String httpserverHost=null;
+    private String contextPath;
 
     /**
      * The server
      */
-    HttpServer server;
+    private HttpServer server;
 
     /**
      * The Socket listener
      */
-    SocketListener listener = new SocketListener();
+    private SocketListener listener = new SocketListener();
 
     /**
      * Realm context
      */
-    ServletHttpContext realmcontext = new ServletHttpContext();
+    private ServletHttpContext realmcontext = new ServletHttpContext();
 
     /**
      * User realm
      */
-    HashUserRealm admin_realm = new HashUserRealm("Admin Realm");
+    private HashUserRealm admin_realm = new HashUserRealm(ADMIN_REALM_NAME);
+    private static final String ADMIN_REALM_NAME = "Admin Realm";
 
     /**
      * Standard RMI constructor
@@ -136,7 +137,7 @@ public class SFJettyAdmin extends PrimImpl implements JettyAdminIntf {
             admin_realm.addUserToRole("admin", "server-administrator");
             server.addRealm(admin_realm);
             realmcontext.setContextPath(contextPath);
-            realmcontext.setRealmName("Admin Realm");
+            realmcontext.setRealmName(ADMIN_REALM_NAME);
             realmcontext.setAuthenticator(new BasicAuthenticator());
             realmcontext.addHandler(new SecurityHandler());
             realmcontext.addSecurityConstraint("/",

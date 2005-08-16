@@ -106,6 +106,7 @@ public class WebApplication extends PrimImpl
                 webApp = webAppFile.getAbsolutePath();
             }
         }
+
         //no webapp? look for the warfile
         if (webApp == null) {
             webApp =

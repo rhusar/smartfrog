@@ -38,65 +38,104 @@
 
 /**
  * This component is a jetty http server, with
- * the standard listeners and contexts
+ * the http listener
  */
 
-HttpServer extends CoreJettyServer {
-   sfClass "org.smartfrog.services.jetty.SFJetty";
-   listeners extends Listeners; //optional
-   contexts extends Contexts;   //optional
+JettyHttpServer extends CoreJettyServer {
+
    //if logging is enabled, then it logs to jettyhome/logs.
-   enableLogging true;
+   enableLogging false;
    port 8080;
+
+  /**
+   * this listens on a direct port
+   */
+  directPortListener extends JettyListener {
+    server LAZY PARENT;
+    listenerPort PARENT:port;
+  }
+
 }
 
+/**
+ * add all the example contexts
+ */
+FullJettyServer extends JettyHttpServer {
+   contexts extends JettySampleContexts {
+    server LAZY PARENT;
+   }
+}
 
 /*==========================================
   declare jetty contexts
 ===========================================*/
 
-Contexts extends Compound {
-  Context1 ATTRIB rootWAR;
-  Context2 ATTRIB jettyDemo;
-  Context3 ATTRIB jettyExamples;
-  Context4 ATTRIB jettyJavadoc;
-  Context5 ATTRIB context5;
-  Context6 ATTRIB context6;
+/**
+ * assume we always get deployed into a parent that is an app server
+ */
+JettySampleContexts extends Compound {
+  server TBD;
+  //rootWar extends RootWAR;
+
+/*
+  jettyDemo extends JettyDemo;
+
+  jettyExamples extends JettyExamples;
+
+  jettyJavadoc extends JettyJavadoc{
+   server LAZY PARENT:server;
+  }
+  jettyCGIBIN extends JettyCGIBIN{
+   server LAZY PARENT:server;
+  }
+  */
 }
 
-rootWAR extends JettyWebApplication {
+JettyExampleWar extends WebApplication {
+ server LAZY PARENT:server;
+}
+
+RootWAR extends JettyExampleWar {
  contextPath "/";
  warFile "/demo/webapps/root";
 }
 
-jettyDemo extends JettyWebApplication {
+JettyDemo extends JettyExampleWar {
  contextPath "/jetty";
  warFile "/demo/webapps/jetty";
 }
 
-jettyExamples extends JettyWebApplication {
+JettyExamples extends JettyExampleWar {
  contextPath "/examples";
  warFile "/demo/webapps/examples";
  requestId true; //optional
 }
 
-context4 extends JettyServletContext {
+JettyServletContexts extends JettyServletContext {
  contextPath "/demo";
  resourceBase "/demo/docroot";
  classpath "/demo/servlets";
- handlers extends Handlers; //optional
- servlets extends Servlets; //optional
+ handlers extends Handlers {
+  server LAZY PARENT:server;
+  }
+ servlets extends Servlets {
+  context LAZY PARENT;
+  }
+ server LAZY PARENT:server;
 }
 
-jettyJavadoc extends JettyServletContext {
+JettyJavadoc extends JettyServletContext {
  contextPath "/javadoc";
  resourceBase "/javadoc";
 }
 
-context6 extends JettyServletContext {
+JettyCGIBIN extends JettyServletContext {
  contextPath "/cgi-bin";
  resourceBase "/cgi-bin";
+
  servlets extends CGIservlet {
+   //server LAZY PARENT:server;
+   context LAZY PARENT;
  }
 }
 
@@ -106,9 +145,17 @@ context6 extends JettyServletContext {
 ===========================================*/
 
 Handlers extends Compound {
- Handler1 extends JettyForwardHandler {}
- Handler2 extends JettyHTAccessHandler {}
- Handler3 extends JettyDumpHandler {};
+ server TBD;
+
+ Handler1 extends JettyForwardHandler {
+  server LAZY PARENT:server;
+ }
+ Handler2 extends JettyHTAccessHandler {
+  server LAZY PARENT:server;
+ }
+ Handler3 extends JettyDumpHandler {
+  server LAZY PARENT:server;
+ }
 }
 
 
@@ -132,15 +179,27 @@ JettyForwardHandler extends JettyHandler {
 ===========================================*/
 
 Servlets extends Compound {
- Servlet1 ATTRIB InvokerServlet;
- Servlet2 ATTRIB DumpServlet;
- Servlet3 ATTRIB Sessionservlet;
- Servlet4 ATTRIB DispatchServlet;
- Servlet5 ATTRIB JSPServlet;
- Servlet6 ATTRIB SrcDefaultServlet;
+ context TBD;
+
+ Servlet1 extends InvokerServlet {
+  context LAZY PARENT:context;
+ }
+ Servlet2 extends DumpServlet{
+  context LAZY PARENT:context;
+ }
+ Servlet3 extends SessionServlet{
+  context LAZY PARENT:context;
+ }
+ Servlet4 extends DispatchServlet{
+  context LAZY PARENT:context;
+ }
+ Servlet5 extends JSPServlet{
+  context LAZY PARENT:context;
+ }
+ Servlet6 extends SrcDefaultServlet{
+  context LAZY PARENT:context;
+ }
 }
-
-
 
 InvokerServlet extends JettyServlet {
  name "Invoker";
@@ -177,14 +236,14 @@ SrcDefaultServlet extends JettyServlet {
  name "SrcDefault";
  pathSpec "/src/*";
  className "org.mortbay.jetty.servlet.Default";
- initParams [["dirAllowed","true"], ["resourceBase", (jettyhome ++ "/src")]];
+ initParams [["dirAllowed","true"]];
 }
 
 CGIservlet extends JettyServlet {
  name "Common Gateway Interface";
  pathSpec "/";
  className "org.mortbay.servlet.CGI";
- initParams [["Path","/bin:/usr/bin:/usr/local/bin"], ["ENV_TEST", ("Jetty home is " ++ jettyhome)]];
+ initParams [["Path","/bin:/usr/bin:/usr/local/bin"]];
 }
 
 /*==========================================
@@ -192,24 +251,28 @@ CGIservlet extends JettyServlet {
 ===========================================*/
 
 Listeners extends Compound {
-   Listener1 ATTRIB listener1;
-   Listener2 ATTRIB listener2;
+  server TBD;
+
+  directListener extends DirectPortListener {
+    server LAZY PARENT:server;
+  }
+  apacheListener extends ApacheHttpdListener {
+    server LAZY PARENT:server;
+  }
 }
 
 /**
  * this listens on a direct port
  */
-listener1 extends JettyListener {
- listenerPort PARENT:PARENT:port;
- serverHost PARENT:PARENT:serverHost;
+DirectPortListener extends JettyListener {
+  listenerPort LAZY server:port;
 }
 
 /**
  * this fields requests handed off from Apache HTTPD
  * this is not a secure protocol, and the port must not be externally visible.
  */
-listener2 extends JettyListener {
+ApacheHttpdListener extends JettyListener {
  sfClass "org.smartfrog.services.jetty.listeners.AJPlistener";
  listenerPort 8009;
- serverHost PARENT:PARENT:serverHost;
 }

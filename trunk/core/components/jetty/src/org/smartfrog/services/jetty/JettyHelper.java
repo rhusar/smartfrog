@@ -27,7 +27,6 @@ import org.mortbay.http.HttpListener;
 import org.mortbay.http.HttpServer;
 import org.mortbay.jetty.servlet.ServletHttpContext;
 import org.smartfrog.services.jetty.contexts.JettyServletContextIntf;
-import org.smartfrog.services.www.JavaWebApplicationServer;
 import org.smartfrog.services.www.ApplicationServerContext;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
@@ -94,6 +93,10 @@ public class JettyHelper extends ComponentHelper {
         findJettyComponent();
         httpServer = findJettyServer();
         return httpServer;
+    }
+
+    public void setServerComponent(Prim serverComponent) {
+        this.serverComponent = serverComponent;
     }
 
     /**
@@ -183,7 +186,6 @@ public class JettyHelper extends ComponentHelper {
      *
      * @param mandatory set this to true if you want an exception if there is no
      *                  context
-     * @param mandatory
      * @return context, or null if there is not one found
      * @throws SmartFrogException
      * @throws RemoteException
@@ -212,9 +214,12 @@ public class JettyHelper extends ComponentHelper {
     /**
      * find whatever ancestor is a servlet context
      */
-    public Prim findServletContextAncestor() throws RemoteException {
+    public Prim findServletContextAncestor() throws RemoteException, SmartFrogResolutionException {
+        return getOwner().sfResolve(ApplicationServerContext.ATTR_SERVER,(Prim)null,false);
+/*
         return findAncestorImplementing(JETTY_SERVLET_INTERFACE,
                 MAX_PARENT_DEPTH);
+*/
     }
 
     /**
@@ -315,9 +320,9 @@ public class JettyHelper extends ComponentHelper {
      * began.
      *
      * @param path
-     * @return
+     * @return the stripped path
      */
-    public String deregexpPath(String path) {
+    public static String deregexpPath(String path) {
         String result;
         int star = path.indexOf('*');
         if (star < 0) {
@@ -336,9 +341,9 @@ public class JettyHelper extends ComponentHelper {
      *
      * @param path1
      * @param path2
-     * @return
+     * @return concatenated paths
      */
-    public String concatPaths(String path1, String path2) {
+    public static String concatPaths(String path1, String path2) {
         StringBuffer buffer = new StringBuffer(path1.length() +
                 path2.length() +
                 1);

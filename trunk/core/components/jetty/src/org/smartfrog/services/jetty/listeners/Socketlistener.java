@@ -50,7 +50,7 @@ import java.rmi.RemoteException;
 public class Socketlistener extends PrimImpl implements SocketListenerIntf {
     Reference listenerPortRef = new Reference(LISTENER_PORT);
     Reference serverHostRef = new Reference(SERVER_HOST);
-    Reference serverNameRef = new Reference(SERVER);
+    Reference serverNameRef = new Reference(SERVER_NAME);
 
     int listenerPort = 8080;
 
