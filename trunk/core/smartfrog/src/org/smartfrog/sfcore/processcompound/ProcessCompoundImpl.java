@@ -458,10 +458,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
             try {
                 SFProcess.getRootLocator().unbindRootProcessCompound();
             } catch (Exception ex) {
-                //Logger.logQuietly(ex);
-                if (sfLog().isIgnoreEnabled()){
-                  sfLog().ignore(ex);
-                }
+                if (sfLog().isIgnoreEnabled()){sfLog().ignore(ex);}
             }
         }
         //System.out.println("terminating with " + rec.toString());
@@ -469,11 +466,6 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
             try {
                 String name = SmartFrogCoreKeys.SF_PROCESS_NAME;
                 name = sfResolve(SmartFrogCoreKeys.SF_PROCESS_NAME, name, false);
-//                if (Logger.logStackTrace) {
-//                    Logger.log(MessageUtil.formatMessage(MSG_SF_DEAD, name)+" "+ new Date(System.currentTimeMillis()));
-//                } else {
-//                    Logger.log(MessageUtil.formatMessage(MSG_SF_DEAD, name));
-//                }
                 sfLog().out(MessageUtil.formatMessage(MSG_SF_DEAD, name)+" "+ new Date(System.currentTimeMillis()));
             } catch (Throwable thr){
             }
@@ -496,16 +488,11 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
             Prim child = (Prim) sfChildren.elementAt(i);
             if ((!(child instanceof ProcessCompound))
                 &&(child.sfParent()== null)) {
-              //Logger.log("SynchTerminate sent to legitimate: "+ child.sfCompleteName());
+              if (sfLog().isTraceEnabled()) sfLog().trace("SynchTerminate sent to legitimate: "+ child.sfCompleteName());
               (child).sfTerminateQuietlyWith(status);
             }
           } catch (Exception ex) {
-            //@TODO: Log
-            //Logger.logQuietly(ex);
-            if (sfLog().isIgnoreEnabled()){
-              sfLog().ignore(ex);
-            }
-            // ignore
+            if (sfLog().isIgnoreEnabled()){ sfLog().ignore(ex); }
           }
         }
         // Terminate illegitimate children except subProc
@@ -513,32 +500,22 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
           try {
             Prim child = (Prim) sfChildren.elementAt(i);
             if ((! (child instanceof ProcessCompound))){
-              //Logger.log("SynchTerminate sent to illegitimate: "+ child.sfCompleteName());
+              if (sfLog().isTraceEnabled()) sfLog().trace("SynchTerminate sent to illegitimate: "+ child.sfCompleteName());
               //Full termination notifiying its parent
               (child).sfTerminate(status);
             }
           } catch (Exception ex) {
-            //@TODO: Log
-            //Logger.logQuietly(ex);
-            if (sfLog().isIgnoreEnabled()){
-              sfLog().ignore(ex);
-            }
-            // ignore
+            if (sfLog().isIgnoreEnabled()){ sfLog().ignore(ex); }
           }
         }
         // Terminate subprocesses
         for (int i = sfChildren.size()-1; i>=0; i--) {
           try {
             Prim child = (Prim) sfChildren.elementAt(i);
-            //Logger.log("SynchTerminate sent to : "+ child.sfCompleteName());
+            if (sfLog().isTraceEnabled()) sfLog().trace("SynchTerminate sent to : "+ child.sfCompleteName());
             (child).sfTerminateQuietlyWith(status);
           } catch (Exception ex) {
-            //@TODO: Log
-            //Logger.logQuietly(ex);
-            if (sfLog().isIgnoreEnabled()){
-              sfLog().ignore(ex);
-            }
-            // ignore
+            if (sfLog().isIgnoreEnabled()){ sfLog().ignore(ex); }
           }
         }
     }
@@ -555,17 +532,12 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
           try {
             Prim child = (Prim) sfChildren.elementAt(i);
             if ((! (child instanceof ProcessCompound))&&(child.sfParent()==null)) {
-              //Logger.log("ASynchTerminate sent to legitimate: "+ child.sfCompleteName());
+              if (sfLog().isTraceEnabled()) sfLog().trace("ASynchTerminate sent to legitimate: "+ child.sfCompleteName());
               //Deprecated: new TerminateCall( child, status,true);
               (new TerminatorThread(child,status).quietly()).start();
             }
           } catch (Exception ex) {
-            //@TODO: Log
-            //Logger.logQuietly(ex);
-            if (sfLog().isIgnoreEnabled()){
-              sfLog().ignore(ex);
-            }
-            // ignore
+            if (sfLog().isIgnoreEnabled()){ sfLog().ignore(ex);}
           }
         }
         // Terminate illegitimate children except subProc
@@ -574,16 +546,12 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
             Prim child = (Prim) sfChildren.elementAt(i);
             if ((! (child instanceof ProcessCompound))){
               //Full termination notifiying its parent
-              //Logger.log("ASynchTerminate sent to (illegitimate): "+ child.sfCompleteName());
+              if (sfLog().isTraceEnabled()) sfLog().trace("ASynchTerminate sent to (illegitimate): "+ child.sfCompleteName());
               //Deprecated: new TerminateCall( child, status,false);
               (new TerminatorThread(child,status)).start();
             }
           } catch (Exception ex) {
-            //@TODO: Log
-            //Logger.logQuietly(ex);
-            if (sfLog().isIgnoreEnabled()){
-              sfLog().ignore(ex);
-            }
+            if (sfLog().isIgnoreEnabled()){ sfLog().ignore(ex); }
             // ignore
           }
         }
@@ -591,16 +559,11 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
         for (int i = sfChildren.size()-1; i>=0; i--) {
           try {
             Prim child = (Prim) sfChildren.elementAt(i);
-            //Logger.log("ASynchTerminate sent to: "+ child.sfCompleteName());
+            if (sfLog().isTraceEnabled()) sfLog().trace("ASynchTerminate sent to: "+ child.sfCompleteName());
             //Deprecated: new TerminateCall( child, status,true);
             (new TerminatorThread(child,status).quietly()).start();
           } catch (Exception ex) {
-            //@TODO: Log
-            //Logger.logQuietly(ex);
-            if (sfLog().isIgnoreEnabled()){
-              sfLog().ignore(ex);
-            }
-            // ignore
+            if (sfLog().isIgnoreEnabled()){ sfLog().ignore(ex); }
           }
         }
 
@@ -654,23 +617,22 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
             } catch (SmartFrogResolutionException r) {
                 gcTimeout = 0;
             }
-
-            //System.out.println("SPGC being initialised - " + gcTimeout);
+            if (sfLog().isTraceEnabled()) sfLog().trace("SPGC being initialised - " + gcTimeout);
             countdown = gcTimeout;
         }
 
         if (gcTimeout > 0) {
-            //System.out.println("SPGC lease being checked " + countdown);
+            if (sfLog().isTraceEnabled()) sfLog().trace("SPGC lease being checked " + countdown);
             if ((countdown-- < 0) && (sfChildren.size() == 0) &&
                     (sfParent != null)) {
-                //System.out.println("SPGC being activated");
+                if (sfLog().isTraceEnabled()) sfLog().trace("SPGC being activated");
                 sfTerminate(TerminationRecord.normal(null));
             } else {
-                //System.out.println("SPGC lease being reset");
+                if (sfLog().isTraceEnabled()) sfLog().trace("SPGC lease being reset");
                 countdown = gcTimeout;
             }
         } else {
-            //System.out.println("SPGC not enabled");
+            if (sfLog().isTraceEnabled()) sfLog().trace("SPGC not enabled");
         }
     }
 
@@ -709,9 +671,10 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
                 canonicalHostName = ((java.net.InetAddress)sfResolveHere(
                     canonicalHostName,false)).getCanonicalHostName();
             } catch (SmartFrogResolutionException srex){
-              //@todo log ignore.
+                if (sfLog().isIgnoreEnabled()){ sfLog().ignore(srex); }
             } catch (NullPointerException exSfHost) {
                 //Problem hre a null exc trown.
+                if (sfLog().isIgnoreEnabled()){ sfLog().ignore(exSfHost); }
                 canonicalHostName = this.sfDeployedHost().getCanonicalHostName();
             }
 
@@ -726,8 +689,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
                     r.addElement(ReferencePart.here(this.sfProcessName()));
                 }
             } else {
-                //r = sfParent.sfCompleteName(); // Only if you had a hierarchy
-                //of processes.
+                //r = sfParent.sfCompleteName(); // Only if you had a hierarchy of processes.
                 r.addElement(ReferencePart.host((canonicalHostName)));
 
                 Object key = sfParent.sfAttributeKeyFor(this);
