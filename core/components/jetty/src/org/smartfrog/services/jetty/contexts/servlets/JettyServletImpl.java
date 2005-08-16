@@ -34,13 +34,13 @@ package org.smartfrog.services.jetty.contexts.servlets;
 import org.mortbay.jetty.servlet.ServletHolder;
 import org.mortbay.jetty.servlet.ServletHttpContext;
 import org.smartfrog.services.jetty.JettyHelper;
-import org.smartfrog.services.www.ServletContextIntf;
 import org.smartfrog.services.www.ServletComponent;
+import org.smartfrog.services.www.ServletContextIntf;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
+import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
 
 import java.rmi.RemoteException;
@@ -56,19 +56,19 @@ import java.util.Vector;
 
 public class JettyServletImpl extends PrimImpl implements ServletComponent {
 
-    Reference nameRef = new Reference(ATTR_NAME);
-    Reference pathSpecRef = new Reference(ATTR_PATH_SPEC);
-    Reference classNameRef = new Reference(ATTR_CLASSNAME);
-    Reference initParamsRef = new Reference(ATTR_INIT_PARAMS);
+    private Reference nameRef = new Reference(ATTR_NAME);
+    private Reference pathSpecRef = new Reference(ATTR_PATH_SPEC);
+    private Reference classNameRef = new Reference(ATTR_CLASSNAME);
+    private Reference initParamsRef = new Reference(ATTR_INIT_PARAMS);
 
-    String name = null;
-    String pathSpec = null;
-    String className = null;
-    Vector initParams = null;
+    private String name = null;
+    private String pathSpec = null;
+    private String className = null;
+    private Vector initParams = null;
 
-    ServletHolder holder = null;
+    private ServletHolder holder = null;
 
-    JettyHelper jettyHelper = new JettyHelper(this);
+    private JettyHelper jettyHelper = new JettyHelper(this);
     /**
      * default inititialisaion order {@value}
      */

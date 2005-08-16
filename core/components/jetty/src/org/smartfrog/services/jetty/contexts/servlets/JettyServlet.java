@@ -30,10 +30,4 @@ import org.smartfrog.services.www.ServletComponent;
 public interface JettyServlet extends ServletComponent {
 
 
-    /**
-     * absolute path is the path up to the first "*"
-     *  {@value}
-     */
-    public static final String ATTR_ABSOLUTE_PATH = "absolutePath";
-
 }

@@ -36,8 +36,11 @@ import org.mortbay.http.HttpServer;
 import org.mortbay.http.handler.ResourceHandler;
 import org.mortbay.jetty.servlet.ServletHttpContext;
 import org.smartfrog.services.jetty.JettyHelper;
+import org.smartfrog.services.www.ServletComponent;
+import org.smartfrog.services.www.ServletContextComponentDelegate;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLifecycleException;
+import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.compound.CompoundImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
@@ -52,6 +55,7 @@ import java.util.Map;
  * A ServletHttp context class for a Jetty http server.
  *
  * @author Ritu Sabharwal
+ * @deprecated replaced by the server-independent stuff
  */
 
 public class JettyServletContext extends CompoundImpl implements JettyServletContextIntf {
@@ -169,7 +173,7 @@ public class JettyServletContext extends CompoundImpl implements JettyServletCon
      * @param extension extension to map (no '.')
      * @param mimeType  mimetype to generate
      */
-    public void addMimeMapping(String extension, String mimeType) {
+    public void addMimeMapping(String extension, String mimeType) throws RemoteException {
         context.setMimeMapping(extension, mimeType);
 
     }
@@ -179,8 +183,45 @@ public class JettyServletContext extends CompoundImpl implements JettyServletCon
      *
      * @param extension extension to unmap
      */
-    public boolean removeMimeMapping(String extension) {
+    public boolean removeMimeMapping(String extension) throws RemoteException {
         Map mimeMap = context.getMimeMap();
         return (mimeMap.remove(extension)!=null);
+    }
+
+    /**
+     * this method is here for server-specific implementation classes,
+     *
+     * @throws java.rmi.RemoteException
+     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     *
+     */
+    public void undeploy() throws RemoteException, SmartFrogException {
+
+    }
+
+    public void start() throws SmartFrogException, RemoteException {
+
+    }
+
+    /**
+     * add a servlet
+     *
+     * @param servletDeclaration component declaring the servlet
+     * @return the delegate that implements the servlet binding
+     * @throws RemoteException
+     * @throws SmartFrogException
+     */
+    public ServletContextComponentDelegate addServlet(ServletComponent servletDeclaration) throws RemoteException, SmartFrogException {
+        return null;
+    }
+
+    /**
+     * liveness check
+     *
+     * @throws SmartFrogLivenessException
+     * @throws RemoteException
+     */
+    public void ping() throws SmartFrogLivenessException, RemoteException {
+
     }
 }

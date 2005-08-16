@@ -41,9 +41,9 @@ import java.rmi.RemoteException;
  */
 
 public interface Listener extends Remote {
-    String LISTENER_PORT = "listenerPort";
-    String SERVER_HOST = "serverHost";
-    String SERVER = "server";
+    public static final String LISTENER_PORT = "listenerPort";
+    public static final String SERVER_HOST = "serverHost";
+    public static final String SERVER_NAME = "serverName";
 
     /**
 	 * Add the listener to the http server

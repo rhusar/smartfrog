@@ -34,6 +34,10 @@ package org.smartfrog.services.jetty;
 import org.mortbay.http.HttpServer;
 import org.mortbay.http.NCSARequestLog;
 import org.smartfrog.services.filesystem.FileSystem;
+import org.smartfrog.services.jetty.contexts.delegates.DelegateServletContext;
+import org.smartfrog.services.www.ServletContextIntf;
+import org.smartfrog.services.www.context.ApplicationServerContextEntry;
+import org.smartfrog.services.www.context.ApplicationServerContextHolder;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
@@ -60,6 +64,10 @@ public class SFJetty extends CompoundImpl implements Compound,JettyIntf {
      */
     protected String jettyhome;
 
+    /**
+     * any contexts that we have deployed
+     */
+    protected ApplicationServerContextHolder contexts=new ApplicationServerContextHolder();
 
     protected JettyHelper jettyHelper = new JettyHelper(this);
 
@@ -75,7 +83,16 @@ public class SFJetty extends CompoundImpl implements Compound,JettyIntf {
 
     protected String logDir;
     protected String logPattern;
+
+    /**
+     * log pattern.
+     * {@value}
+     */
     public static final String LOG_PATTERN = "yyyy_mm_dd.request.log";
+    /**
+     * log subdirectory.
+     * {@value}
+     */
     public static final String LOG_SUBDIR = "/logs/";
 
     /**
@@ -92,7 +109,15 @@ public class SFJetty extends CompoundImpl implements Compound,JettyIntf {
         super();
     }
 
-  /**
+    /**
+     * Get the server.
+     * @return the server or null if not currently deployed.
+     */
+    public HttpServer getServer() {
+        return server;
+    }
+
+    /**
    * Deploy the SFJetty component and publish the information
    * @exception  SmartFrogException In case of error while deploying
    * @exception  RemoteException In case of network/rmi error
@@ -127,12 +152,12 @@ public class SFJetty extends CompoundImpl implements Compound,JettyIntf {
    */
    public synchronized void sfStart() throws SmartFrogException,
    RemoteException {
-	   super.sfStart();
-	   try {
-		   server.start();
-	   } catch (Exception mexp) {
-		   throw SmartFrogException.forward(mexp);
-	   }
+       super.sfStart();
+       try {
+           server.start();
+       } catch (Exception mexp) {
+           throw SmartFrogException.forward(mexp);
+       }
    }
 
   /**
@@ -148,6 +173,7 @@ public class SFJetty extends CompoundImpl implements Compound,JettyIntf {
               requestlog.setRetainDays(90);
               requestlog.setAppend(true);
               requestlog.setExtended(true);
+              //todo: make options
               requestlog.setLogTimeZone("GMT");
               String[] paths = {"/jetty/images/*",
                                 "/demo/images/*", "*.css"};
@@ -163,16 +189,16 @@ public class SFJetty extends CompoundImpl implements Compound,JettyIntf {
    * Termination phase
    */
   public void sfTerminateWith(TerminationRecord status) {
-	  try {
+      try {
           if(server!=null) {
-		    server.stop();
+            server.stop();
           }
-	  } catch (InterruptedException ie) {
+      } catch (InterruptedException ie) {
             if (sfLog().isErrorEnabled()){
               sfLog().error(" Interrupted on server termination " , ie);
             }
-	  }
-	  super.sfTerminateWith(status);
+      }
+      super.sfTerminateWith(status);
   }
 
     /**
@@ -191,37 +217,91 @@ public class SFJetty extends CompoundImpl implements Compound,JettyIntf {
     /**
      * deploy a web application.
      * Deploys a web application identified by the component passed as a parameter; a component of arbitrary
-     * type but which must have the mandatory attributes identified in {@link org.smartfrog.services.www.JavaWebApplication};
+     * type but which must have the mandatory attributes identified in
+     * {@link org.smartfrog.services.www.JavaWebApplication};
      * possibly even extra types required by the particular application server.
      *
      * @param webApplication the web application. this must be a component whose attributes include the
      *                       mandatory set of attributes defined for a JavaWebApplication component. Application-server specific attributes
      *                       (both mandatory and optional) are also permitted
-     * @return the context path deployed to.
+     * @return an opaque token by which the application can be referred
      * @throws java.rmi.RemoteException on network trouble
      * @throws org.smartfrog.sfcore.common.SmartFrogException
      *                                  on any other problem
      * @todo implement
      */
-    public String DeployWebApplication(Prim webApplication)
+    public String deployWebApplication(Prim webApplication)
             throws RemoteException, SmartFrogException {
 
         throw new SmartFrogException("not implemented : DeployWebApplication");
     }
 
+
     /**
-     * undeploy a web application
-     * @todo implement
+     * Deploy a servlet context. This can be initiated with other things
      *
-     * @param webApplication the web application itself;
+     * @param servlet
+     * @return a token referring to the application
      * @throws java.rmi.RemoteException on network trouble
      * @throws org.smartfrog.sfcore.common.SmartFrogException
      *                                  on any other problem
      */
-    public void UndeployWebApplication(Prim webApplication)
-            throws RemoteException, SmartFrogException {
-        throw new SmartFrogException("not implemented : UndeployWebApplication");
+    public ApplicationServerContextEntry deployServletContext(Prim servlet) throws RemoteException, SmartFrogException {
+
+        DelegateServletContext delegate = new DelegateServletContext(this,null);
+        delegate.deploy(servlet);
+        ApplicationServerContextEntry entry;
+        entry=contexts.createServletEntry(delegate);
+        return entry;
+    }
+
+    /**
+     * undeploy a web application
+     *
+     * @param context the context reference supplied when a context was created
+     * @throws java.rmi.RemoteException on network trouble
+     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     *                                  on any other problem
+     */
+    public void undeployApplicationServerContext(String context) throws RemoteException, SmartFrogException {
+        ApplicationServerContextEntry entry=lookupContext(context);
+        if(entry!=null && entry.getImplementation()!=null) {
+            entry.getImplementation().undeploy();
+        }
     }
 
 
+    /**
+     * lookup a context, get the context information back
+     * @param context
+     * @return the
+     * @throws java.rmi.RemoteException
+     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     *
+     */
+    public ApplicationServerContextEntry lookupContext(String context) throws RemoteException, SmartFrogException {
+        return contexts.lookup(context);
+    }
+
+    /**
+     * lookup a servlet context, get the servlet interface back.
+     * This servlet interface is one bound tightly to the implementation.
+     *
+     * @param context
+     * @return the
+     * @throws java.rmi.RemoteException
+     * @throws org.smartfrog.sfcore.common.SmartFrogException
+     *
+     */
+    public ServletContextIntf lookupServletContext(String context) throws RemoteException, SmartFrogException {
+        ApplicationServerContextEntry entry = contexts.lookup(context);
+        if(entry!=null) {
+            if(entry.getType()==ApplicationServerContextEntry.TYPE_SERVLET_CONTEXT) {
+                return (ServletContextIntf) entry.getImplementation();
+            } else {
+                throw new SmartFrogException(ApplicationServerContextEntry.ERROR_WRONG_TYPE +context);
+            }
+        }
+        return null;
+    }
 }
