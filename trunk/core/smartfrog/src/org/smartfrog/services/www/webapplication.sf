@@ -94,9 +94,9 @@ WebApplication extends ApplicationServerContext {
 
 
 /**
- * a jetty servlet context is a compound
- * with a resource base
- * It defines something to be deployed on a jetty server
+ * a servlet context is where servlets can be deployed.
+ * Any derivative of ServletContextComponent can be bound
+ to this
  */
 
 ServletContext extends ApplicationServerContext {
@@ -108,6 +108,9 @@ ServletContext extends ApplicationServerContext {
         contextPath extends String;
     }
 
+    //implementation class
+    sfClass "org.smartfrog.services.www.context.ServletContextImpl";
+
 }
 
 /**
@@ -118,7 +121,8 @@ ServletContext extends ApplicationServerContext {
 ServletContextComponent extends Prim {
 
     servletContextComponentSchema extends Schema {
-        context extends OptionalCD;
+        //this is the (LAZY) reference to the component
+        context extends CD;
     }
 
 }
@@ -129,10 +133,15 @@ ServletContextComponent extends Prim {
  * the servlet information
  */
 ServletSchema extends Schema {
+    //name
     name extends String;
+    //path
     pathSpec extends String;
+    //the class that implements the servlet
     className extends String;
+    //mappings.
     mappings extends OptionalVector;
+    //initialisation parameters
     initParams extends OptionalVector;
     //init order for the servlet;
     //Holders with order<0, are initialized on use.
@@ -147,12 +156,12 @@ ServletSchema extends Schema {
  */
 Servlet extends ServletContextComponent {
     servletSchema extends ServletSchema;
-
-    //initialise on use
+    //implementation class
+    sfClass "org.smartfrog.services.www.context.ServletComponentImpl";
+    //order of initialisation; -1 means on demand.
     initOrder -1;
 
 }
-
 
 
 /**
@@ -161,10 +170,12 @@ Servlet extends ServletContextComponent {
  */
 
 MimeType extends ServletContextComponent {
-    sfClass "org.smartfrog.services.www.MimeTypeImpl";
+    sfClass "org.smartfrog.services.www.context.MimeTypeImpl";
 
     mimeTypeSchema extends Schema {
+        //extension, e.g. "xsl"
         extension extends String;
+        //mime type such "as application/xml"
         type extends String;
     }
 }

@@ -19,23 +19,11 @@
  */
 package org.smartfrog.services.www;
 
-
 /**
- * Interface defining a servlet
- * created 18-Jul-2005 15:55:13
+ * This is not a remotable interface; it is for local classes that
+ * provide a validation service
  */
+public interface LivenessPageValidator {
 
 
-public interface ServletComponent extends ServletContextComponent {
-    final static String ATTR_NAME = "name";
-    final static String ATTR_PATH_SPEC = "pathSpec";
-    final static String ATTR_CLASSNAME = "className";
-    final static String ATTR_INIT_PARAMS = "initParams";
-    final static String ATTR_ABSOLUTE_PATH = ApplicationServerContext.ATTR_ABSOLUTE_PATH;
-    /**
-     * Initialisation order.
-     * {@value}
-     */
-
-    String ATTR_INIT_ORDER="initOrder";
 }

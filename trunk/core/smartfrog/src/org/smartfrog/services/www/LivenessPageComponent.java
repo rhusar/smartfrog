@@ -25,9 +25,8 @@ import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.utils.ComponentHelper;
-import org.smartfrog.services.www.LivenessPage;
-import org.smartfrog.services.www.LivenessPageChecker;
 
+import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.Vector;
 
@@ -44,9 +43,9 @@ public class LivenessPageComponent extends PrimImpl implements LivenessPage {
 
     /**
      * enabled flag
-     */ 
+     */
     private boolean enabled=true;
-    
+
     /**
      * the class that contains all the checking code. This is on the side
      * for reuse in other components.
@@ -67,7 +66,7 @@ public class LivenessPageComponent extends PrimImpl implements LivenessPage {
      * a log
      */
     private Log log;
-    
+
     /**
      * empty constructor
      *
@@ -101,10 +100,12 @@ public class LivenessPageComponent extends PrimImpl implements LivenessPage {
             livenessPage.setProtocol(sfResolve(ATTR_PROTOCOL,
                     livenessPage.getProtocol(), false));
             livenessPage.setPage(sfResolve(ATTR_PAGE, livenessPage.getPage(), false));
-            Vector queries = (Vector) sfResolve(LivenessPage.ATTR_QUERIES, (Vector) null, false);
+            Vector queries = (Vector) sfResolve(ATTR_QUERIES, (Vector) null, false);
             livenessPage.buildQueryString(queries);
         }
 
+        Vector mimeTypes = (Vector) sfResolve(ATTR_MIME_TYPES, (Vector) null, false);
+        livenessPage.setMimeTypes(mimeTypes);
         livenessPage.setFollowRedirects(sfResolve(ATTR_PROTOCOL,
                 livenessPage.getFollowRedirects(), false));
         livenessPage.setMinimumResponseCode(sfResolve(ATTR_MINIMUM_RESPONSE_CODE,
@@ -121,6 +122,11 @@ public class LivenessPageComponent extends PrimImpl implements LivenessPage {
         updateEnabledState();
         //now tell the liveness page it is deployed
         livenessPage.onDeploy();
+        if(url==null) {
+            //set the URL if it was not already set
+            URL targetURL = livenessPage.getTargetURL();
+            sfReplaceAttribute(ATTR_URL,targetURL.toString());
+        }
 
         log = new ComponentHelper(this).getLogger();
         log.info("Checking " + toString());

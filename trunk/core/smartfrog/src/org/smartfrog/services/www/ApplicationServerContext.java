@@ -19,7 +19,11 @@
  */
 package org.smartfrog.services.www;
 
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogLivenessException;
+
 import java.rmi.Remote;
+import java.rmi.RemoteException;
 
 /**
  * An application server context is anything that can be deployed inside an app
@@ -39,4 +43,27 @@ public interface ApplicationServerContext extends Remote {
      * {@value}
      */
     final static String ATTR_ABSOLUTE_PATH = "absolutePath";
+
+    /**
+     * start the component
+     *
+     * @throws SmartFrogException
+     * @throws RemoteException
+     */
+    void start() throws SmartFrogException, RemoteException;
+
+    /**
+     * this method is here for server-specific implementation classes,
+     * @throws RemoteException
+     * @throws SmartFrogException
+     */
+    public void undeploy() throws RemoteException, SmartFrogException;
+
+
+    /**
+     * liveness check
+     * @throws SmartFrogLivenessException
+     * @throws RemoteException
+     */
+    void ping() throws SmartFrogLivenessException, RemoteException;
 }

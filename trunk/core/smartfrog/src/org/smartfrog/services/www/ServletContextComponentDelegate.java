@@ -17,25 +17,15 @@
  For more information: www.smartfrog.org
 
  */
+
 package org.smartfrog.services.www;
 
-
 /**
- * Interface defining a servlet
- * created 18-Jul-2005 15:55:13
+ * This represents a delegate that implements the servlet context component in a particular platform
+ * IT inherits the {@link ApplicationServerContext} interface for the start/undeploy/ping operations
  */
+public interface ServletContextComponentDelegate  
+        extends ApplicationServerContext, ServletContextComponent {
 
 
-public interface ServletComponent extends ServletContextComponent {
-    final static String ATTR_NAME = "name";
-    final static String ATTR_PATH_SPEC = "pathSpec";
-    final static String ATTR_CLASSNAME = "className";
-    final static String ATTR_INIT_PARAMS = "initParams";
-    final static String ATTR_ABSOLUTE_PATH = ApplicationServerContext.ATTR_ABSOLUTE_PATH;
-    /**
-     * Initialisation order.
-     * {@value}
-     */
-
-    String ATTR_INIT_ORDER="initOrder";
 }

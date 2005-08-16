@@ -19,7 +19,8 @@
  */
 package org.smartfrog.services.www;
 
-import java.rmi.Remote;
+import org.smartfrog.sfcore.common.SmartFrogException;
+
 import java.rmi.RemoteException;
 
 /**
@@ -49,15 +50,29 @@ public interface ServletContextIntf extends ApplicationServerContext {
      * Add a mime mapping
      * @param extension extension to map (no '.')
      * @param mimeType mimetype to generate
+     * @throws RemoteException
+     * @throws SmartFrogException
      */
-    public void addMimeMapping(String extension, String mimeType) throws RemoteException;
+    public void addMimeMapping(String extension, String mimeType) throws RemoteException, SmartFrogException ;
 
 
     /**
      * Remove a mime mapping for an extension
      * @param extension extension to unmap
      * @return true if the unmapping was successful
+     * @throws RemoteException
+     * @throws SmartFrogException
      */
-    public boolean removeMimeMapping(String extension) throws RemoteException;
+    public boolean removeMimeMapping(String extension) throws RemoteException, SmartFrogException;
+
+    /**
+     * add a servlet
+     * @param servletDeclaration component declaring the servlet
+     * @throws RemoteException
+     * @throws SmartFrogException
+     * @return the delegate that implements the servlet binding
+     */
+    public ServletContextComponentDelegate addServlet(ServletComponent servletDeclaration) throws RemoteException, SmartFrogException;
+
 
 }
