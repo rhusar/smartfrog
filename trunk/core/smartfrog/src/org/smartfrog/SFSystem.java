@@ -142,8 +142,12 @@ public class SFSystem implements MessageKeys {
             }
         } catch (Throwable ex) {
             //This should not prevent SF start.
-            if (sfLog().isErrorEnabled()) {
-                sfLog().error("Could not use 'org.smartfrog.iniFile'", ex);
+            if (sflog!=null) { // This method can be called before LogSystem was initialized
+                if (sfLog().isErrorEnabled()) {
+                    sfLog().error("Could not use 'org.smartfrog.iniFile'", ex);
+                }
+            } else {
+                System.err.println("ERROR: Could not use 'org.smartfrog.iniFile' "+ ex.getMessage());
             }
         }
     }
@@ -167,9 +171,10 @@ public class SFSystem implements MessageKeys {
         }
 
         System.setProperties(sysProps);
-
-        if (sfLog().isTraceEnabled()){
-            sfLog().trace("New system properties: \n" +sysProps.toString().replace(',','\n'));
+        if (sflog!=null) { // This method can be called before LogSystem was initialized
+            if (sfLog().isTraceEnabled()) {
+                sfLog().trace("New system properties: \n"+ sysProps.toString().replace(',', '\n'));
+            }
         }
     }
 
