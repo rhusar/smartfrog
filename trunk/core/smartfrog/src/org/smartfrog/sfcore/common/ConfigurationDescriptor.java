@@ -490,14 +490,17 @@ public class ConfigurationDescriptor implements MessageKeys{
      *      - name: name where to apply ACTION
      *            ex. foo
      *            ex. "HOST localhost:foo"
+     *            ex. 'HOST localhost:foo'
      *      - ACTION: possible actions: DEPLOY, TERMINATE, DETACH, DETaTERM, PING, PARSE, DIAGNOSTICS
      *      - url: description used by ACTION
      *            ex. /home/sf/foo.sf
      *            ex. "c:\sf\foo.sf"
      *            ex. "c:\My documents\foo.sf"
+     *            ex. 'c:\My documents\foo.sf'
      *      - target: component description name to use with action. It can be empty
      *            ex: foo
-     *            ex: "fist:foo"
+     *            ex: "first:foo"
+     *            ex: 'first:foo'
      *            note: sfConfig cannot be use with DEPLOY!
      *      - HOST: host name or IP where to apply ACTION. When empty it assumes localhost.
      *            ex: localhost
@@ -579,7 +582,7 @@ public class ConfigurationDescriptor implements MessageKeys{
             // :TER:::localhost:subprocess; ->Unnamed component
             try {
                 String field ="";
-                if (tempURL.trim().endsWith("\"")) {
+                if (tempURL.trim().endsWith("\"")||tempURL.trim().endsWith("'")) {
                     field = tempURL.substring(1,tempURL.length()-1);
                 } else {
                     field = tempURL;
@@ -599,16 +602,18 @@ public class ConfigurationDescriptor implements MessageKeys{
 
     /**
      * Returns and cuts the last field from TempURL. Token marks the beginning
-     * of the field.
+     * of the field. It previously removes " or '
      * @param token
      * @return last field from TempURL marked by token
      * @throws java.lang.Exception
      */
     private String getAndCutLastFieldTempURL( String token) throws Exception{
         String field = null;
-        if (tempURL.trim().endsWith("\"")) {
+        if (tempURL.trim().endsWith("\"")||tempURL.trim().endsWith("'")) {
+            String tag ="\"";
+            if (tempURL.trim().endsWith("'")) tag="'";
             String newURL = tempURL.substring(0, tempURL.length()-1);
-            int indexFirstQuote = newURL.lastIndexOf("\"");
+            int indexFirstQuote = newURL.lastIndexOf(tag);
             field = tempURL.substring(indexFirstQuote+1,tempURL.length()-1);
             if (SFSystem.sfLog().isTraceEnabled()) {SFSystem.sfLog().trace("  Extracted ["+field+"] from ["+tempURL+"]"); }
             if (indexFirstQuote==-1) {
