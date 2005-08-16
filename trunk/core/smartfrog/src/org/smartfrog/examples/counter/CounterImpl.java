@@ -107,8 +107,6 @@ public class CounterImpl extends PrimImpl implements Prim, Counter, Runnable {
     public synchronized void sfDeploy() throws SmartFrogException,
     RemoteException {
             super.sfDeploy();
-            logCore = sfGetCoreLog();
-            logApp = this.sfGetApplicationLog();
             /**
              *  Returns the complete name for Counter component from the root
              *  of application.If an exception is thrown it returns null
@@ -117,12 +115,12 @@ public class CounterImpl extends PrimImpl implements Prim, Counter, Runnable {
             myName = this.sfCompleteNameSafe().toString();
             readSFAttributes();
             if (pause) {
-                this.log("sleepDeploy","sleeping");
+                if (sfLog().isInfoEnabled()) sfLog().info("sleeping sfDeploy");
                 try {
                     this.wait(limit*sleeptime);
                 } catch (InterruptedException ex) {
                 }
-                this.log("sleepDeploy","end-sleeping");
+                if (sfLog().isInfoEnabled()) sfLog().info("end-sleeping sfDeploy");
             }
     }
 
@@ -138,64 +136,15 @@ public class CounterImpl extends PrimImpl implements Prim, Counter, Runnable {
     public synchronized void sfStart() throws SmartFrogException,
     RemoteException {
         super.sfStart();
-        log("sfStart", "Starting with msg-" + message);
-        System.out.println("********Temporal test for logging*************");
-        try {
-            if (logApp.isTraceEnabled()) {
-                System.out.println("TRACE:"+message);
-                logApp.trace(message);
-                System.out.println();
-            }
-            if (logApp.isDebugEnabled()) {
-                System.out.println("DEBUG:"+message);
-                logApp.debug(message);
-                System.out.println();
-            }
-            if (logApp.isInfoEnabled()) {
-                System.out.println("INFO:"+message);
-                logApp.info(message);
-                System.out.println();
-            }
-
-            if (logApp.isWarnEnabled()) {
-                System.out.println("WARN:"+message);
-                logApp.warn(message);
-                System.out.println();
-            }
-
-            if (logApp.isErrorEnabled()) {
-                System.out.println("ERROR:"+message);
-                logApp.error(message);
-                System.out.println();
-            }
-            if (logApp.isFatalEnabled()) {
-                System.out.println("FATAL:"+message);
-                logApp.fatal(message);
-                System.out.println();
-            }
-
-            if (logApp.isInfoEnabled()) {
-                System.out.println(".out:"+message);
-                logApp.out(message);
-                System.out.println();
-                System.out.println(".err:"+message);
-                logApp.err(message);
-                logApp.err(message+1, null);
-                System.out.println();
-            }
-        } catch (Throwable ex) {
-            ex.printStackTrace();
-        }
-
-        System.out.println("******************************");
+        if (sfLog().isInfoEnabled()) sfLog().info("Starting with msg-" + message);
 
         if (pause) {
-            this.log("sleepStart", "sleeping");
+            if (sfLog().isInfoEnabled()) sfLog().info("sleeping sfStart");
             try {
                 this.wait(limit*sleeptime);
             } catch (InterruptedException ex) {
             }
-            this.log("sleepStart", "end-sleeping");
+            if (sfLog().isInfoEnabled()) sfLog().info("end-sleeping sfStart");
         }
         action = new Thread(this);
         action.setName("Counter");
@@ -210,7 +159,7 @@ public class CounterImpl extends PrimImpl implements Prim, Counter, Runnable {
      * @param  t TerminationRecord object
      */
     public synchronized void sfTerminateWith(TerminationRecord t) {
-        log("sfTerminateWith", " Terminating for reason: " + t.toString());
+        if (sfLog().isInfoEnabled()) sfLog().info(" Terminating for reason: " + t.toString());
 
         if (action != null) {
             action.interrupt();
@@ -245,7 +194,8 @@ public class CounterImpl extends PrimImpl implements Prim, Counter, Runnable {
             limit = sfResolve(ATR_LIMIT, limit, true);
             //True to Get exception thown!
         } catch (SmartFrogResolutionException e) {
-            error("readSFAttributes","Failed to read mandatory attribute: "+
+          if (sfLog().isErrorEnabled())
+            sfLog().error("Failed to read mandatory attribute: "+
                     limit +"Error:"+ e.toString());
             throw e;
         }
@@ -312,34 +262,7 @@ public class CounterImpl extends PrimImpl implements Prim, Counter, Runnable {
             while (limit >= counter) {
                 //System.out.println("COUNTER: " + message + " " + counter);
                 String messageSt = ("COUNTER: " + message + " " + counter);
-                System.out.println(messageSt.toString());
-                logApp.out(messageSt);
-                logCore.info(messageSt);
-                sfLog().info("--->"+messageSt);
-
-//                if (logApp.isTraceEnabled()){
-//                  logApp.trace(messageSt);
-//                }
-//                if (logApp.isDebugEnabled()){
-//                  System.out.print("DEBUG: messageSt");
-//                  logApp.debug(messageSt);
-//                }
-//                if (logApp.isInfoEnabled()){
-//                  logApp.info(messageSt);
-//                }
-//
-//                if (logApp.isWarnEnabled()){
-//                  logApp.warn(messageSt);
-//                }
-//
-//
-//                if (logApp.isErrorEnabled()){
-//                  logApp.fatal(messageSt);
-//                }
-//                if (logApp.isFatalEnabled()){
-//                  logApp.fatal(messageSt);
-//                }
-
+                sfLog().out(messageSt);
 
                 if(sleeptime>0) {
                     Thread.sleep(sleeptime);
@@ -352,77 +275,8 @@ public class CounterImpl extends PrimImpl implements Prim, Counter, Runnable {
             }
             //end while
         } catch (InterruptedException ie) {
-            exception("run", ie);
+            if (sfLog().isErrorEnabled()) sfLog().error("",ie);
         }
 
-    }
-
-    // Utility methods
-
-    /**
-     * Utility method for printing error message.
-     * @param method error method
-     * @param message error message
-     */
-    protected void error(String method, String message) {
-        if (debug) {
-            StringBuffer msg = new StringBuffer();
-            msg.append (myName);
-            msg.append (".");
-            msg.append (method);
-            msg.append ( " [" );
-            msg.append ((new SimpleDateFormat("HH:mm:ss.SSS z, yyyy/MM/dd").
-                    format(new Date())));
-            msg.append ("]> ");
-            msg.append (message);
-            if (logCore.isErrorEnabled()) logCore.error(msg.toString()+"\n");
-            System.err.println(msg.toString());
-        }
-    }
-
-    /**
-     * Utility method for logging error message.
-     * @param method error method
-     * @param message error message
-     */
-    protected void log(String method, String message) {
-        if (debug) {
-            StringBuffer msg = new StringBuffer();
-            msg.append (myName);
-            msg.append (".");
-            msg.append (method);
-            msg.append ( " [" );
-            msg.append ((new SimpleDateFormat("HH:mm:ss.SSS z, yyyy/MM/dd").
-                    format(new Date())));
-            msg.append ("]> ");
-            msg.append (message);
-            System.out.println(msg.toString());
-            if (logCore.isInfoEnabled()) logCore.info(msg.toString()+"\n");
-        }
-    }
-
-    /**
-     * Utility method for printing exception message.
-     * @param method error method
-     * @param exception exception
-     */
-    protected void exception(String method, Throwable exception) {
-        if (debug) {
-            StringBuffer msg = new StringBuffer();
-            msg.append (myName);
-            msg.append (".");
-            msg.append ( "Exception");
-            msg.append ( " [" );
-            msg.append ((new SimpleDateFormat("HH:mm:ss.SSS z, yyyy/MM/dd").
-                    format(new Date())));
-            msg.append ("]> ");
-            msg.append (message);
-//            msg.append("\n StackTrace: ");
-//            msg.append(exception.getStackTrace().toString());
-             if (logCore.isErrorEnabled())  logCore.error(msg.toString()+"\n",exception);
-            msg.append("\n StackTrace: ");
-            msg.append(exception.getStackTrace().toString());
-            System.err.println(msg.toString());
-        }
     }
 }
