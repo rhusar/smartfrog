@@ -21,22 +21,29 @@ For more information: www.smartfrog.org
 #include "org/smartfrog/components.sf"
 #include "org/smartfrog/services/jetty/components.sf";
 
+//get the jetty home at the destination, not locally, as we are doing a remote deploy
 jetty_home LAZY PROPERTY jetty.home;
 
+//hard coded hostname,
+hostname "ebnt171.india.hp.com"
+
+resourcebase "/home/ritu/tmp";
+
 sfConfig extends Compound {
-   sfProcessHost "ebnt171.india.hp.com";
+   sfProcessHost ROOT:hostname;
    adminServer extends HttpServerAdmin {
-         httpserverHost "ebnt171.india.hp.com"; // optional
+         httpserverHost ROOT:hostname; // optional
          listenerPort 8081; // mandatory
    }
    server extends HttpServer {
       jettyhome ROOT:jetty_home; // mandatory
-      serverHost "ebnt171.india.hp.com"; //mandatory
-      contexts extends Contexts;
+      serverHost ROOT:hostname; //mandatory
+      contexts extends JettySampleContexts;
+
       context extends JettyServletContext {
          contextPath "/test";
-         resourceBase ("/home/ritu/tmp");
-         server LAZY server1;
+         resourceBase (ROOT:resourcebase);
+         server LAZY PARENT;
      }
   }
 }
