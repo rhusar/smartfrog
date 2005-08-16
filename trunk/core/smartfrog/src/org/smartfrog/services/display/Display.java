@@ -989,22 +989,24 @@ public class Display extends JFrame implements ActionListener, KeyListener {
     */
    void infoProcessCompound() {
       try {
-         Context context = SFProcess.getProcessCompound().sfContext();
+
          out.println(
                "\n*****************************************************");
-         out.println("*   Info Process Compound: ");
+         out.println("*   Diagnostics Process Compound: ");
          out.println("*  ------------------------ ");
+         out.println(SFProcess.getProcessCompound().sfDiagnosticsReport());
 
-         // to standard output a more complete info ;-)
-         //out.println("");
-         java.util.Enumeration keys = context.keys();
-         Object key = "";
-
-         while (keys.hasMoreElements()) {
-            key = keys.nextElement();
-            out.println("* " + key + ": " +
-                  (context.get((String) key)).toString());
-         }
+//         Context context = SFProcess.getProcessCompound().sfContext();
+//         // to standard output a more complete info ;-)
+//         //out.println("");
+//         java.util.Enumeration keys = context.keys();
+//         Object key = "";
+//
+//         while (keys.hasMoreElements()) {
+//            key = keys.nextElement();
+//            out.println("* " + key + ": " +
+//                  (context.get((String) key)).toString());
+//         }
 
          out.println(
                "*****************************************************\n");
@@ -1321,8 +1323,8 @@ public class Display extends JFrame implements ActionListener, KeyListener {
           (new Display_documentScreen_documentAdapter(this));
       jMenuItemInfoProp.addActionListener
           (new Display_jMenuItemInfoProp_actionAdapter(this));
-      jMenuItemInfoProp.setText("Info Prop");
-      jMenuItemProcessComp.setText("Proc Comp");
+      jMenuItemInfoProp.setText("Info Sys Prop");
+      jMenuItemProcessComp.setText("Diag. Proc Comp");
       jMenuItemProcessComp.addActionListener
           (new Display_jMenuItemProcessComp_actionAdapter(this));
       jCheckBoxMenuItemPause.setToolTipText("Pause AutoScroll (Alt+P)");

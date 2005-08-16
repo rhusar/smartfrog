@@ -189,6 +189,10 @@ public final class Diagnostics {
           } catch (RemoteException ex1) {
               out.append(" Error:").append(ex1.getMessage()).append("\n");
           }
+
+          header(out, "class");
+          out.append(prim.getClass().getName());out.append("\n");
+
           Diagnostics.header(out, "sfParent");
           try {
             Prim parent = prim.sfParent();
@@ -201,13 +205,13 @@ public final class Diagnostics {
           } catch (Exception ex) {
             out.append("No parent: " + ex.getMessage());out.append("\n");
           }
-          header(out, "class");
-          out.append(prim.getClass().getName());out.append("\n");
+
           try {
             Diagnostics.header(out, "sfContext");
-            out.append(prim.sfContext().toString());//out.append("\n");
+            out.append(prim.sfContext().toString()); //out.append("\n");
           } catch (RemoteException ex2) {
-            out.append(" Error:" + ex2.getMessage());out.append("\n");
+            out.append(" Error:" + ex2.getMessage());
+            out.append("\n");
           }
 
           if (prim instanceof Compound) {
