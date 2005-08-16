@@ -100,7 +100,7 @@ public class PopUpTree extends JComponent implements ActionListener {
         menuItemTerminateNormal.setText("Terminate Component - NORMAL");
         menuItemTerminateAbnormal.setText("Terminate Component - ABNORMAL");
         menuItemDTerminate.setText("Detach and Terminate Comp");
-        menuItemDumpContext.setText("Dump Component Context");
+        menuItemDumpContext.setText("Component Diag. Report");
         menuItemParentageChanged.setText("sfParentageChanged()");
 
         // Tree: options
@@ -206,48 +206,10 @@ public class PopUpTree extends JComponent implements ActionListener {
             StringBuffer message=new StringBuffer();
             String primName="error";
             try {
-                //@Todo show this info in a more elegant way!
-                Prim objPrim = ((Prim)(((DeployEntry)(tpath.getLastPathComponent())).getEntry()));
-                try {
-                    message.append( "Parent: "+objPrim.sfParent().sfCompleteName());
-                } catch (Exception ex) {
-                   message.append( "No parent: "+ ex.getMessage());
-                }
-                message.append("\n\n*Context:\n");
-                message.append(objPrim.sfContext().toString().replace(',','\n'));
-                primName =objPrim.sfCompleteName().toString();
-                if (objPrim instanceof Compound){
-                     Enumeration enu = null;
-                     StringBuffer childrenInfo = new StringBuffer();
-                     try {
-                         childrenInfo.append("\n\n* sfChildren: \n");
-                         for (enu = ((Compound)objPrim).sfChildren();
-                              enu.hasMoreElements(); ) {
-                             try {
-                                 Prim prim = (Prim)enu.nextElement();
-                                 childrenInfo.append("  - ");
-                                 childrenInfo.append(prim.sfCompleteName());
-                                 childrenInfo.append(" [");
-                                 childrenInfo.append(prim.getClass().toString());
-                                 childrenInfo.append(", ");
-                                 childrenInfo.append(prim.sfDeployedHost());
-                                 childrenInfo.append("] \n");
-                             } catch (RemoteException ex) {
-                                 childrenInfo.append("  - Error: ");
-                                 childrenInfo.append(ex.getMessage());
-                                 childrenInfo.append(" \n");
-                             }
-                         }
-                         message.append(childrenInfo.toString());
-                     } catch (RemoteException ex) {
-                         message.append( childrenInfo.toString());
-                         message.append("\n Error: ");
-                         message.append(ex.toString());
-                     }
-                }
+              Prim objPrim = ((Prim)(((DeployEntry)(tpath.getLastPathComponent())).getEntry()));
+              message.append(objPrim.sfDiagnosticsReport());
 
-
-            } catch (RemoteException ex) {
+            } catch (Exception ex) {
                 message.append("\n Error: "+ex.toString());
             }
             modalDialog("Context info for "+ primName ,  message.toString(), "", source);
