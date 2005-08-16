@@ -20,16 +20,17 @@
 #include "org/smartfrog/test/system/jetty/components.sf";
 
 
+
+
+/** 
+ * jetty server with nothing inside
+ */
+
 sfConfig extends Compound {
 
-   server extends CoreJettyServer {
-      jettyhome LAZY PROPERTY java.io.tmpdir; 
+    
+   server1 extends CoreJettyServer {
+      jettyhome LAZY PROPERTY java.io.tmpdir;
    }
-
-    list1 extends JettyListener {
-       // listenerPort 8012;
-       // serverHost "localhost";
-        server LAZY PARENT:server;
-    }
 }
 
