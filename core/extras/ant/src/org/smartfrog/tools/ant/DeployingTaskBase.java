@@ -107,15 +107,21 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
             Application application = (Application) it.next();
             application.validate();
             addArg("-a");
-            String path= makePath2(application);
+            String path= makePath(application);
             String subprocess=getSubprocess();
+
+            //Temp fix.
+            if (System.getProperty("os.name").startsWith("Windows")){
+              path= makePath2(application);
+            }
+
 
             addArg(application.getName() + ":" //NAME
                     + ACTION_DEPLOY + ":"      //Action: DEPLOY,TERMINATE,DETACH,DETaTERM
                     + path                     //URL
                     + "" + ":"                 // sfConfig or empty
                     + getHost() + ":"          // host
-                    + subprocess);                     // subprocess
+                    + subprocess);             // subprocess
 
         }
     }
