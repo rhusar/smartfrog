@@ -129,15 +129,21 @@ public class SFSystem implements MessageKeys {
      * ini file
      */
     public static void readPropertiesFromIniFile() throws SmartFrogException {
-        String source = System.getProperty(SmartFrogCoreProperty.iniFile);
+        try {
+            String source = System.getProperty(SmartFrogCoreProperty.iniFile);
 
-        if (source != null) {
-            InputStream iniFileStream = getInputStreamForResource(source);
-            try {
-                readPropertiesFrom(iniFileStream);
+            if (source!=null) {
+                InputStream iniFileStream = getInputStreamForResource(source);
+                try {
+                    readPropertiesFrom(iniFileStream);
+                } catch (IOException ioEx) {
+                    throw new SmartFrogException(ioEx);
+                }
             }
-            catch (IOException ioEx) {
-                throw new SmartFrogException(ioEx);
+        } catch (Throwable ex) {
+            //This should not prevent SF start.
+            if (sfLog().isErrorEnabled()) {
+                sfLog().error("Could not use 'org.smartfrog.iniFile'", ex);
             }
         }
     }
@@ -149,8 +155,7 @@ public class SFSystem implements MessageKeys {
      *
      * @exception IOException failed to read properties
      */
-    public static void readPropertiesFrom(InputStream is)
-        throws IOException {
+    public static void readPropertiesFrom(InputStream is) throws IOException {
         Properties props = new Properties();
         props.load(is);
 
@@ -160,6 +165,7 @@ public class SFSystem implements MessageKeys {
             Object key = e.nextElement();
             sysProps.put(key, props.get(key));
         }
+
         System.setProperties(sysProps);
 
         if (sfLog().isTraceEnabled()){
@@ -181,13 +187,11 @@ public class SFSystem implements MessageKeys {
 
         try {
             if (errClass != null) {
-                System.setErr((PrintStream) SFClassLoader.forName(errClass)
-                                                         .newInstance());
+                System.setErr((PrintStream) SFClassLoader.forName(errClass).newInstance());
             }
 
             if (outClass != null) {
-                System.setOut((PrintStream) SFClassLoader.forName(outClass)
-                                                         .newInstance());
+                System.setOut((PrintStream) SFClassLoader.forName(outClass).newInstance());
             }
         } catch (InstantiationException e) {
             throw SmartFrogException.forward(e);
@@ -271,10 +275,7 @@ public class SFSystem implements MessageKeys {
         try {
             return runConfigurationDescriptor(cfgDesc, false);
         } catch (SmartFrogException ex) {
-            if (sfLog().isIgnoreEnabled()){
-              sfLog().ignore(ex);
-            }
-            //Logger.logQuietly(ex);
+            if (sfLog().isIgnoreEnabled()){ sfLog().ignore(ex); }
         }
         return null;
     }
@@ -297,13 +298,9 @@ public class SFSystem implements MessageKeys {
 
         } catch (Throwable thrown) {
             if (configuration.resultException == null) {
-                configuration.setResult(ConfigurationDescriptor.Result.FAILED, null,
-                        thrown);
+                configuration.setResult(ConfigurationDescriptor.Result.FAILED, null,thrown);
             } else {
-                //Logger.logQuietly(thrown);
-                if (sfLog().isIgnoreEnabled()){
-                  sfLog().ignore(thrown);
-                }
+                if (sfLog().isIgnoreEnabled()){ sfLog().ignore(thrown);}
             }
             if (throwException) {
                 throw SmartFrogException.forward(thrown);
