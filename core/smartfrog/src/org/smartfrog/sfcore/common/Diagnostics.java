@@ -107,13 +107,13 @@ public final class Diagnostics {
         return files;
     }
 
-    /**
-     * main entry point for command line
-     * @param args command line arguments.
-     */
-    public static void main(String[] args) {
-        doReport(System.out);
-    }
+//    /**
+//     * main entry point for command line
+//     * @param args command line arguments.
+//     */
+//    public static void main(String[] args) {
+//        doReport(System.out);
+//    }
 
 
     /**
@@ -139,9 +139,10 @@ public final class Diagnostics {
     }
 
     /**
-     * Print a report to the given stream.
+     * Print a report to the given StringBuffer.
      * @param out the StringBuffer to print the report to.
      * @param prim the SmartFrog component where to extract info from.
+     * Derived from Ant Diagnostics class
      */
     public static void doReport(StringBuffer out, Prim prim) {
 
@@ -181,6 +182,11 @@ public final class Diagnostics {
 
     }
 
+    /**
+      * Report specific Prim information.
+     * @param out StringBuffer
+     * @param prim Compound
+     */
     private static void doReportPrim(StringBuffer out, Prim prim) {
         if (prim!=null) {
           try {
@@ -224,6 +230,11 @@ public final class Diagnostics {
       }
     }
 
+    /**
+      * Report specific information to local process compound.
+     * @param out StringBuffer
+     * @param prim Compound
+     */
     private static void doReportProcessCompound(StringBuffer out) {
       try {
         ProcessCompound pc = SFProcess.getProcessCompound();
@@ -238,6 +249,11 @@ public final class Diagnostics {
       }
     }
 
+    /**
+      * Report specific Compound information.
+     * @param out StringBuffer
+     * @param prim Compound
+     */
     private static void doReportCompound(StringBuffer out, Compound prim) {
       Enumeration enu = null;
       StringBuffer childrenInfo = new StringBuffer();
@@ -270,7 +286,7 @@ public final class Diagnostics {
     }
 
     /**
-     * Print a report to the given stream.
+     * Print a report to the given StringBuffer.
      * @param out the StringBuffer to print the report to.
      */
     public static void doReport(StringBuffer out) {
@@ -306,7 +322,6 @@ public final class Diagnostics {
         // Order keys
         keysVector= JarUtil.sort(keysVector);
 
-        //for (Enumeration keys = sysprops.propertyNames();keys.hasMoreElements();) {
         for (Enumeration keys = keysVector.elements(); keys.hasMoreElements();) {
             String key = (String) keys.nextElement();
             String value;
@@ -321,7 +336,7 @@ public final class Diagnostics {
 
 
     /**
-     * Report a listing of some system properties existing in the current vm.
+     * Report a summary of system properties.
      * @param out the stream to print the properties to.
      */
     private static void doReportSummary(StringBuffer out) {
@@ -341,7 +356,7 @@ public final class Diagnostics {
       try {
         java.net.InetAddress localhost = java.net.InetAddress.getLocalHost();
         out.append("* LocalHost Name: ");out.append(localhost.getCanonicalHostName());out.append("\n");
-        out.append("* LocalHost Add:  ");out.append(localhost.getHostAddress());out.append("\n");
+        out.append("* LocalHost Addr: ");out.append(localhost.getHostAddress());out.append("\n");
 
         //out.append("* isMulticast?    " + localhost.isMulticastAddress());
       } catch (Exception ex) {
@@ -369,6 +384,11 @@ public final class Diagnostics {
           System.getProperty("path.separator").charAt(0), '\n'));
     }
 
+    /**
+     * Splits a multipath in several lines using "part.separator" property
+     * @param multiPath String
+     * @param out StringBuffer
+     */
     private static void multiPathReport(String multiPath,StringBuffer out) {
       String[] array = System.getProperty(multiPath).split(System.getProperty("path.separator"));
       Arrays.sort(array, new StringComparator());
@@ -382,10 +402,10 @@ public final class Diagnostics {
 //        printLibraries(libs, out);
 
     /**
-     * list the libraries
+     * List the libraries
      * Derived from Ant Diagnostics class     *
      * @param libs array of libraries (can be null)
-     * @param out output stream
+     * @param out String Buffer
      */
     private static void printLibraries(File[] libs, StringBuffer out) {
         if (libs == null) {
@@ -399,13 +419,12 @@ public final class Diagnostics {
 
 
     /**
-     * try and create a temp file in our temp dir; this
+     * Tries and creates a temp file in our temp dir; this
      * checks that it has space and access.
-     * We also do some clock reporting.
+     * It also does some clock reporting.
      *
      * Derived from Ant Diagnostics class
-     *
-     * @param out
+     * @param out String Buffer
      */
     private static void doReportTempDir(StringBuffer out) {
         String tempdir=System.getProperty("java.io.tmpdir");
