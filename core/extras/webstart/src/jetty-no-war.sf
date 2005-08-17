@@ -53,43 +53,51 @@ WebStartServlet extends Servlet {
  * this is the jetty binding.
  */
 WebStartServletOnJetty extends WebStartServlet  {
-    sfClass JettyServlet:sfClass;
+    //sfClass JettyServlet:sfClass;
 }
 
 
-ServerOnJetty extends CoreJettyServer {
-
-
-    serverHost "localhost";
+ServerOnJetty extends Compound {
 
     port TBD;
+    jettyhome LAZY PROPERTY java.io.tmpdir;
 
-    server "webstart";
+    server extends CoreJettyServer {
+        serverHost "localhost";
 
+        port PARENT:port;
+        jettyhome PARENT:jettyhome;
 
-    listeners extends Compound {
-        jetty extends JettyListener {
-            listenerPort port;
-            //serverHost host;
-            server LAZY jettyServer;
-        }
+        server "webstart";
     }
 
-    servlets extends JettyServletContext {
+    httpListener extends JettyListener {
+        listenerPort port;
+        //serverHost host;
+        server LAZY PARENT:server;
+    }
+
+    servlets extends ServletContext {
+
+        server LAZY PARENT:server;
 
         contextPath "/";
         resourceBase dist.dir;
 
-        jnlp extends WebStartServletOnJetty {
-            pathSpec "*.jnlp";
-        }
+    }
 
-        jnlp2 extends WebStartServletOnJetty {
-            pathSpec "/downloads/";
-        }
-     }
+    jnlp extends WebStartServletOnJetty {
+        pathSpec "*.jnlp";
+        context LAZY servlets;
+    }
 
-     /* mime types */
+    jnlp2 extends WebStartServletOnJetty {
+        pathSpec "/downloads/";
+        context LAZY servlets;
+    }
+
+
+     // mime types
      mime_jnlp extends MimeType {
         context LAZY servlets;
         extension "jnlp";
@@ -108,7 +116,6 @@ ServerOnJetty extends CoreJettyServer {
         type "application/x-java-archive-diff";
      }
 
-
 }
 
 
@@ -125,19 +132,22 @@ server extends ServerOnJetty {
         enabled PARENT:liveness;
         host LAZY PARENT:servlets:ipaddr;
         port PARENT:port;
-        page LAZY PARENT:servlets:jnlp2:absolutePath;
+        page LAZY PARENT:jnlp2:absolutePath;
         checkFrequency 1;
+        mimetypes ["text/html"];
     }
 
     liveness true;
+
+    host "localhost";
+
+    port 5050;
+
 }
 
 
 sfConfig extends server {
 
-    host "localhost";
-
-    port 5050;
 
     liveness false;
 }

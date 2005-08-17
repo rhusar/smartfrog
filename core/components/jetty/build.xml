@@ -64,7 +64,7 @@ For more information: www.smartfrog.org
     <property name="manifestName"
        value="${smartfrog.home}/private/sealManifest.mf"/>
 	   <tstamp/>
-    <property name="Name.Company" value="(C) Copyright 1998-2004 Hewlett-Packard Development Company, LP"/>
+    <property name="Name.Company" value="(C) Copyright 1998-2005 Hewlett-Packard Development Company, LP"/>
     <property name="version" value="smartfrog components"/>
     <!--property name="Version" value="1.00.000_beta"/-->
     <property name="year" value="2005"/>
@@ -139,16 +139,6 @@ For more information: www.smartfrog.org
 	 <copy tofile="${dist.dir}/build.example.properties" file="build.example.properties"/>
 	</target>
 
-  <!-- ========================================================== -->
-  <!-- this is an override -->
-  <!-- install the jar -->
-  <!-- ========================================================== -->  
-<!--   <target name="install" depends="common.install"
-    description="copy the jar files to the SmartFrog distribution directory">
-    <copy-useful-files src="${dist.lib.dir}" 
-        pattern="*.jar" dest="${smartfrog.dist.lib.dir}" />    
-  </target>   -->
-  
 <!-- ========================================================== -->
   <!-- clean -->
   <!-- ========================================================== -->
