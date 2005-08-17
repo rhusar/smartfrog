@@ -107,13 +107,13 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
             Application application = (Application) it.next();
             application.validate();
             addArg("-a");
-            String path= makePath(application);
+            String path= makePath2(application);
             String subprocess=getSubprocess();
 
-            //Temp fix.
-            if (System.getProperty("os.name").startsWith("Windows")){
-              path= makePath2(application);
-            }
+//            //Temp fix.
+//            if (System.getProperty("os.name").startsWith("Windows")){
+//              path= makePathWindows(application);
+//            }
 
 
             addArg(application.getName() + ":" //NAME
@@ -136,7 +136,7 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
     }
 
     private String makePath2(Application application) {
-        return "\\\"\"" + application.getDescriptor() + "\\\"\":";
+        return "'\"" + application.getDescriptor() + "\"':";
     }
 
     private String makePathWindows(Application application) {
