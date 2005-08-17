@@ -48,7 +48,7 @@ For more information: www.smartfrog.org
    <!-- override point -->
   <property file="build.properties" />
   <property name="root.dir" location="../../"  />
- <property name="Name.System" value="Jetty"/>
+  <property name="Name.System" value="Jetty"/>
  <!-- Import common stuff -->
   <!--available file="../../common.xml" property="root.dir" value="../.."/--> 
   <import file="${root.dir}/common.xml"/>
@@ -56,19 +56,18 @@ For more information: www.smartfrog.org
    <property name="is.component" value="true"  />
   <!-- ========================================================== -->
   <!-- ========================================================== -->
+
   <target name="init" depends="init-standard-output-dirs,use-smartfrog-tasks">
-          
-    <!-- <property name="target.jar" location="${dist.lib.dir}/jetty.jar" /> -->
-    <property name="deploy.sf" value="org/smartfrog/services/jetty/example.sf"/>
-    <property name="manifestName" 
+
+    <property name="example.path" value="/org/smartfrog/services/jetty/examples"/>
+    <property name="deploy.sf" value="${example.path}/example1.sf"/>
+    <property name="manifestName"
        value="${smartfrog.home}/private/sealManifest.mf"/>
-
-
 	   <tstamp/>
     <property name="Name.Company" value="(C) Copyright 1998-2004 Hewlett-Packard Development Company, LP"/>
     <property name="version" value="smartfrog components"/>
     <!--property name="Version" value="1.00.000_beta"/-->
-    <property name="year" value="2004"/>
+    <property name="year" value="2005"/>
 
     <echo message=""/>
     <echo message="==================================================================="/>
@@ -90,44 +89,52 @@ For more information: www.smartfrog.org
        -->
   <!-- ========================================================== -->
   <target name="verify-prerequisites" depends="pre-verify-prerequisites">
-        <available property="verified.ok"
-            classname="org.mortbay.http.HttpServer"
-            classpathref="compile.classpath"
-            ignoresystemclasses="false"/>
-        <property name="verify.fail.message"
-          value="No Jetty found"/>    
+    <available property="verified.ok"
+               classname="org.mortbay.http.HttpServer"
+               classpathref="compile.classpath"
+               ignoresystemclasses="false"/>
+    <property name="verify.fail.message"
+              value="No Jetty found"/>
   </target>
   
     <!-- ========================================================== -->
     <!-- parse the file -->
     <!-- ========================================================== -->
-    <target name="parse" depends="init,dist"
+    <target name="parse" depends="init,package"
         description="parse the deployment descriptor">
 
-        <sf-parse quiet="true" file="${src.dir}/${deploy.sf}">
-            <classpath path="${target.jar}"/>
-        </sf-parse>
-
+      <sf-parse quiet="true" file="${src.dir}/${deploy.sf}">
+        <classpath path="${target.jar}"/>
+      </sf-parse>
+      <sf-parse quiet="true" file="${src.dir}/${example.path}/example2.sf">
+        <classpath path="${target.jar}"/>
+      </sf-parse>
+      <sf-parse quiet="true" file="${src.dir}/${example.path}/example3.sf">
+        <classpath path="${target.jar}"/>
+      </sf-parse>
+      <sf-parse quiet="true" file="${src.dir}/${example.path}/dynamicexample.sf">
+        <classpath path="${target.jar}"/>
+      </sf-parse>
     </target>
     
   <!-- ========================================================== -->
   <!-- this is an override, as we add a manifest -->
   <!-- create the jar -->
   <!-- ========================================================== -->
- 	<target name="dist" depends="common.dist,jdocs" description="create the jar files">
-	 <copy todir = "${dist.lib.dir}">
-        <fileset dir ="${lib.dir}" />
-    </copy>
-	
-	<copy todir = "${dist.doc.dir}">
-        <fileset dir ="${doc.dir}" />
-    </copy>   
+ 	<target name="dist" depends="common.dist,jdocs,parse" description="create a full distribution">
+     <copy todir="${dist.lib.dir}">
+       <fileset dir="${lib.dir}"/>
+     </copy>
 
-		 <copy todir = "${dist.src.dir}">
-		    <fileset dir ="${src.dir}">
-		        <include name="**/examples/**"/>
-		    </fileset>
-	         </copy>
+     <copy todir="${dist.doc.dir}">
+       <fileset dir="${doc.dir}"/>
+     </copy>
+
+     <copy todir="${dist.src.dir}">
+       <fileset dir="${src.dir}">
+         <include name="**/examples/**"/>
+       </fileset>
+     </copy>
 	 <copy tofile="${dist.dir}/build.xml" file="releaseBuild.xml"/>	
 	 <copy tofile="${dist.dir}/build.example.properties" file="build.example.properties"/>
 	</target>

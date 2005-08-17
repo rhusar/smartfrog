@@ -77,7 +77,6 @@ JettySampleContexts extends Compound {
   server TBD;
   //rootWar extends RootWAR;
 
-/*
   jettyDemo extends JettyDemo;
 
   jettyExamples extends JettyExamples;
@@ -88,7 +87,6 @@ JettySampleContexts extends Compound {
   jettyCGIBIN extends JettyCGIBIN{
    server LAZY PARENT:server;
   }
-  */
 }
 
 JettyExampleWar extends WebApplication {
