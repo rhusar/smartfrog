@@ -168,7 +168,7 @@
     <fileset id="smartfrog.lib.fileset"
       dir="${smartfrog.dist.lib.dir}">
       <include name="**/*.jar"/>
-      <!-- we DO NOT want smarfrog tasks -->
+      <!-- we DO NOT want smartfrog tasks -->
       <exclude name="${smartfrog.tasks.prefix}*.jar"/>
     </fileset>
     
@@ -952,11 +952,7 @@
   <!-- ========================================================== -->
   <target name="package" depends="compile,rmi,generateversion,createjar"
     description="create the JAR files">
-    <!-- TODO: this is broken here, because the version wont propagate back-->
-  <!--   <antcall target="generateversion"/>
-    <antcall target="createjar"/>
-   -->
-   </target>  
+   </target>
 
   <!-- ========================================================== -->
   <!-- this is an override point -->
@@ -983,7 +979,7 @@
   <!-- this is an override point -->
   <!-- install the jar, if we know where to put it -->
   <!-- ========================================================== -->
-  <target name="install" depends="dist"
+  <target name="install" depends="package"
       if="smartfrog.dist.lib.dir"
       description="copy the jar file to the SmartFrog distribution directory">
     <copy file="${target.jar}" todir="${smartfrog.dist.lib.dir}"/>
