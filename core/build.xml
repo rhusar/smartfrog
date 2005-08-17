@@ -227,6 +227,13 @@ For more information: www.smartfrog.org
         description="cruise control full build, with checkout"/>
 
   <!-- =================================================================== -->
+  <!-- full clean Cruise Control build without Checkout                    -->
+  <!-- =================================================================== -->
+    <target name="cc"
+        depends="clean,dist, tasks ,cc-test, mavenReportNoCVSUpdate" 
+        description="cruise control full build, with NO checkout"/>
+
+  <!-- =================================================================== -->
   <!-- Start cruise control from inside ant  -->
   <!-- Currently we fork and use whichever version of ant is in CC, not -->
   <!-- the version of Ant that is currently running. This is ugly, but -->
@@ -269,7 +276,12 @@ For more information: www.smartfrog.org
         </exec>
     </target>
 
-
+  <target name="mavenReportNoCVSUpdate"  
+    description="run 'maven site:generate'" if="maven.present">
+        <exec executable="maven" dir="${cruise.base.dir}">
+            <arg line="site:generate" />
+        </exec>
+    </target>
 
 <!-- =================================================================== -->
 <!-- Gump target for distribution -->
