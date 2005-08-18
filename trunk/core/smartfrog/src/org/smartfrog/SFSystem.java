@@ -434,7 +434,11 @@ public class SFSystem implements MessageKeys {
         StringBuffer report = new StringBuffer();
         org.smartfrog.sfcore.common.Diagnostics.doReport(report);
         sfLog().out(report.toString());
-        if (sfLog().isDebugEnabled()) sfLog().debug(report.toString());
+      }
+      if (sfLog().isDebugEnabled()) {
+        StringBuffer report = new StringBuffer();
+        org.smartfrog.sfcore.common.Diagnostics.doReport(report);
+        sfLog().debug(report.toString());
       }
     }
 
