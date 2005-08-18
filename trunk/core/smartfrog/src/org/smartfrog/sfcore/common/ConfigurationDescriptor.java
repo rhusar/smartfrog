@@ -599,7 +599,7 @@ public class ConfigurationDescriptor implements MessageKeys{
                 ex.printStackTrace();
                 throw new SmartFrogInitException("Error parsing NAME in: "+ deploymentURL+"("+ex.getMessage()+")", ex);
             }
-            if (SFSystem.sfLog().isDebugEnabled()){SFSystem.sfLog().debug("Parsing SFACT produced: ["+this.toString()+"]");}
+            if (SFSystem.sfLog().isDebugEnabled()){SFSystem.sfLog().debug("Parsing SFACT results: ["+this.toString()+"]");}
         } catch (Throwable thr){
            this.resultException = thr;
            throw (SmartFrogInitException)SmartFrogInitException.forward(thr);
