@@ -435,11 +435,6 @@ public class SFSystem implements MessageKeys {
         org.smartfrog.sfcore.common.Diagnostics.doReport(report);
         sfLog().out(report.toString());
       }
-      if (sfLog().isDebugEnabled()) {
-        StringBuffer report = new StringBuffer();
-        org.smartfrog.sfcore.common.Diagnostics.doReport(report);
-        sfLog().debug(report.toString());
-      }
     }
 
     /**
@@ -623,6 +618,15 @@ public class SFSystem implements MessageKeys {
      */
     public void setRootProcess(ProcessCompound rootProcess) {
         this.rootProcess = rootProcess;
+        if (sfLog().isDebugEnabled()&& (rootProcess!=null)) {
+           StringBuffer report = new StringBuffer();
+          try {
+            report.append(rootProcess.sfDiagnosticsReport().toString());
+            sfLog().debug(report.toString());
+          } catch (Exception ex) {
+            sfLog().debug("Error generation diagnostics report for rootProcess",ex);
+          }
+        }
     }
 
 
