@@ -88,17 +88,13 @@ public class ActionTerminate extends ConfigurationAction{
         Prim targetC=null;
         try {
             if (targetP==null)
-                targetP =
-                    SFProcess.sfSelectTargetProcess(configuration.getHost(),
-                    configuration.getSubProcess());
+                targetP = SFProcess.sfSelectTargetProcess(configuration.getHost(), configuration.getSubProcess());
             targetC = sfTerminate(configuration.getName(), targetP);
         } catch (SmartFrogException sex) {
-            configuration.setResult(ConfigurationDescriptor.Result.FAILED, null,
-                                    sex);
+            configuration.setResult(ConfigurationDescriptor.Result.FAILED, null, sex);
             throw sex;
         } catch (RemoteException rex) {
-            configuration.setResult(ConfigurationDescriptor.Result.FAILED, null,
-                                    rex);
+            configuration.setResult(ConfigurationDescriptor.Result.FAILED, null, rex);
             throw rex;
         }
         configuration.setSuccessfulResult();
