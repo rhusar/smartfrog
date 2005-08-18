@@ -1024,7 +1024,10 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
     protected Process startProcess(Object name, ComponentDescription cd) throws Exception {
         Vector runCmd = new Vector();
         addProcessJava(runCmd, cd);
+
         addProcessClassPath(runCmd, name, cd);
+        addProcessSFCodeBase(runCmd,name,cd);
+
         addProcessDefines(runCmd, name);
         addProcessEnvVars(runCmd,cd);
         addProcessAttributes(runCmd, name, cd);
@@ -1098,25 +1101,79 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
     protected void addProcessClassPath(Vector cmd, Object name, ComponentDescription cd) throws Exception {
         String res = null;
         Boolean replaceClasspath=null;
+        String replaceBoolKey =  SmartFrogCoreKeys.SF_PROCESS_REPLACE_CLASSPATH;
+        String attributeKey = SmartFrogCoreKeys.SF_PROCESS_CLASSPATH;
+        String sysPropertyKey =  "java.class.path";
 
-        replaceClasspath = ((Boolean)cd.sfResolveHere(SmartFrogCoreKeys.SF_PROCESS_REPLACE_CLASSPATH,false));
+
+        res = addProcessSpecialSystemVar(cd, res, replaceClasspath, replaceBoolKey, attributeKey, sysPropertyKey);
+
+        if (res != null) {
+            cmd.addElement("-classpath");
+            cmd.addElement(res);
+        }
+    }
+
+    /**
+     * Gets the current org.smartfrog.codebase out of the system properties and returns it
+     * as a command line parameter for the subprocess.
+     * The class path is created reading one of the following in order selection:
+     *
+     *  1.- from a property named sfcore.processcompound.PROCESS_NAME.'org.smartfrog.codebase'.
+     *  2.- attribute 'org.smartfrog.codebase' inside sfProcessAttribute componentDescription
+     *
+     * The result if any is added (default) to the system property:  System property 'org.smartfrog.codebase'
+     * or replaced if  sfProcessReplaceCodeBase=true
+     *
+     *
+     * @param cmd command to append ro
+     * @param name process name
+     * @param cd component description with extra process configuration
+     *
+     * @exception Exception failed to construct classpath
+     */
+    //@todo document how new classpath works for subProcesses.
+    protected void addProcessSFCodeBase(Vector cmd, Object name, ComponentDescription cd) throws Exception {
+        String res = null;
+        Boolean replaceClasspath=null;
+        String replaceBoolKey =  SmartFrogCoreKeys.SF_PROCESS_REPLACE_SF_CODEBASE;
+        String attributeKey = SmartFrogCoreKeys.SF_PROCESS_SF_CODEBASE;
+        String sysPropertyKey =  SmartFrogCoreKeys.SF_PROCESS_SF_CODEBASE;
+
+        res = addProcessSpecialSystemVar(cd, res, replaceClasspath, replaceBoolKey, attributeKey, sysPropertyKey);
+
+        if (res != null) {
+            cmd.addElement("-D"+sysPropertyKey);
+            cmd.addElement(res);
+        }
+    }
+
+
+    private String addProcessSpecialSystemVar(ComponentDescription cd,
+                                              String res,
+                                              Boolean replaceClasspath,
+                                              String replaceBoolKey,
+                                              String attributeKey,
+                                              String sysPropertyKey) throws
+        SmartFrogResolutionException {
+        replaceClasspath = ((Boolean)cd.sfResolveHere(replaceBoolKey, false));
         if (replaceClasspath==null) {
-          replaceClasspath = ( (Boolean) sfResolveHere(SmartFrogCoreKeys.SF_PROCESS_REPLACE_CLASSPATH, false));
+          replaceClasspath = ( (Boolean) sfResolveHere(replaceBoolKey, false));
         }
         //by default add, not replace
         if (replaceClasspath == null) replaceClasspath = Boolean.valueOf(false);
 
         //Deployed description. This only happens during the first deployment of a SubProcess.
-        String  cdClasspath = (String) cd.sfResolveHere(SmartFrogCoreKeys.SF_PROCESS_CLASSPATH,false);
+        String  cdClasspath = (String) cd.sfResolveHere(attributeKey,false);
 
         //This will read the system property for org.smartfrog.sfcore.processcompound.NAME.sfProcessClassPath;
         String  envPcClasspath = SFSystem.getProperty(SmartFrogCoreProperty.propBaseSFProcess
                                                     + SmartFrogCoreKeys.SF_PROCESS_NAME
-                                                    +SmartFrogCoreKeys.SF_PROCESS_CLASSPATH, null);
+                                                    + attributeKey, null);
         //General description for process compound
-        String  pcClasspath = (String) sfResolveHere(SmartFrogCoreKeys.SF_PROCESS_REPLACE_CLASSPATH,false);
+        String  pcClasspath = (String) sfResolveHere(replaceBoolKey,false);
         //Takes previous process classpath (rootProcessClassPath)
-        String  sysClasspath = SFSystem.getProperty("java.class.path", null);
+        String  sysClasspath = SFSystem.getProperty(sysPropertyKey, null);
 
         if ( replaceClasspath.booleanValue()) {
           if (cdClasspath!=null){
@@ -1156,10 +1213,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
             }
           }
         }
-        if (res != null) {
-            cmd.addElement("-classpath");
-            cmd.addElement(res);
-        }
+        return res;
     }
 
     /**
