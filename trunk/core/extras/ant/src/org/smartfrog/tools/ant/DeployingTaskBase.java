@@ -107,14 +107,8 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
             Application application = (Application) it.next();
             application.validate();
             addArg("-a");
-            String path= makePath2(application);
+            String path= makePath(application);
             String subprocess=getSubprocess();
-
-//            //Temp fix.
-//            if (System.getProperty("os.name").startsWith("Windows")){
-//              path= makePathWindows(application);
-//            }
-
 
             addArg(application.getName() + ":" //NAME
                     + ACTION_DEPLOY + ":"      //Action: DEPLOY,TERMINATE,DETACH,DETaTERM
@@ -132,16 +126,15 @@ public abstract class DeployingTaskBase extends SmartFrogTask {
      * @return
      */
     private String makePath(Application application) {
-        return "\"" + application.getDescriptor() + "\":";
-    }
-
-    private String makePath2(Application application) {
         return "'\"" + application.getDescriptor() + "\"':";
     }
 
-    private String makePathWindows(Application application) {
-        return "\\\"" + application.getDescriptor() + "\\\":";
-    }
+//    private String makePath2(Application application) {
+//        return "\"" + application.getDescriptor() + "\":";
+//    }
+//    private String makePathWindows(Application application) {
+//        return "\\\"" + application.getDescriptor() + "\\\":";
+//    }
 
     /**
      * Get the subprocess we are deploying to.
