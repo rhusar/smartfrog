@@ -578,12 +578,19 @@ public class ConfigurationDescriptor implements MessageKeys{
             // Valid examples:
             // "HOST guijarro.hpl.hp.com":rootProcess:sfDefault:display":TER:::localhost:subprocess;
             // "HOST "127.0.0.1":rootProcess:sfDefault:display":TER:::localhost:subprocess;
+            // 'HOST "127.0.0.1":rootProcess:sfDefault:display':TER:::localhost:subprocess;
             // display:TER:::localhost:subprocess;
             // :TER:::localhost:subprocess; ->Unnamed component
             try {
                 String field ="";
                 if (tempURL.trim().endsWith("\"")||tempURL.trim().endsWith("'")) {
-                    field = tempURL.substring(1,tempURL.length()-1);
+                   field = tempURL.substring(1,tempURL.length()-1);
+                   // shell like input will take away the " but if using -f
+                   // then the " will be there
+                   if (field.trim().endsWith("\"")||field.trim().endsWith("'")) {
+                      field = field.substring(1,field.length()-1);
+                   }
+
                 } else {
                     field = tempURL;
                 }
@@ -615,6 +622,12 @@ public class ConfigurationDescriptor implements MessageKeys{
             String newURL = tempURL.substring(0, tempURL.length()-1);
             int indexFirstQuote = newURL.lastIndexOf(tag);
             field = tempURL.substring(indexFirstQuote+1,tempURL.length()-1);
+            // shell like input will take away the " but if using -f
+            // then the " will be there
+            if (field.trim().endsWith("\"")||field.trim().endsWith("'")) {
+               field = field.substring(1,field.length()-1);
+            }
+
             if (SFSystem.sfLog().isTraceEnabled()) {SFSystem.sfLog().trace("  Extracted ["+field+"] from ["+tempURL+"]"); }
             if (indexFirstQuote==-1) {
                 indexFirstQuote = 1;
