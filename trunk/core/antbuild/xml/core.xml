@@ -1,0 +1,99 @@
+<project name="core" >
+
+  <description>
+    This is the core import library.
+    
+    It contains the minimum number of targets
+    -something to name the output dirs
+    -something to create the output dirs
+    -a definition of the xml dir itself
+    -a loading 
+  </description>
+
+
+  <dirname property="antbuild.xml.dir" file="${ant.file.core}"/>
+  
+  <target name="init-core">
+     <!-- load in the local override -->
+    <property file="build.properties"/>  
+    <dirname property="antbuild.xml.dir" file="${ant.file.core}"/>
+    <property name="antbuild.dir" location="${antbuild.xml.dir}/.."/>
+    <!-- this is the root dir for everything -->
+    <property name="core.dir" location="${antbuild.dir}/.."/>
+    <!-- the common.properties file lets you provide a single declaration of
+    overrides (like the compiler settings) that apply across
+    all projects that use this common file-->
+    <property file="${core.dir}/common.properties"/>
+
+    <!-- now read in environment settings -->
+    <property environment="env" />
+    <!-- read these after the env settings -->
+    <property file="${core.dir}/build.properties"/>
+
+    <property name="smartfrog.home" location="${core.dir}/smartfrog"/>
+    <property name="smartfrog.dist.dir" location="${smartfrog.home}/dist" />
+    <property name="smartfrog.dist.lib.dir"
+      location="${smartfrog.dist.dir}/lib"/>
+    <property name="smartfrog.components.dir"
+      location="${core.dir}/components"/>
+    
+    <property name="extras.dir"
+      location="${core.dir}/extras"/>
+    <property name="maven.lib.dir"
+      location="${core.dir}/lib"/>
+    <property name="maven.url"
+      value="http://ibiblio.org/maven2/"/>
+      
+      <!-- common directories are relative to the build file loaded-->
+    <property name="src.dir" location="src"/>
+    <property name="bin.dir" location="bin"/>
+    <property name="doc.dir" location="doc"/>
+    <property name="lib.dir" location="lib" />
+    <property name="test.src.dir" location="test" />
+    
+    
+    <!--generated stuff --> 
+    <property name="build.dir" location="build"/>
+    <property name="build.classes.dir" location="${build.dir}/classes"/>
+    <property name="build.test.dir" location="${build.dir}/test"/>
+    <property name="test.dir" location="${build.dir}/test"/>
+    <property name="test.classes.dir" location="${build.test.dir}/classes"/>
+    <property name="test.data.dir" location="${build.test.dir}/data"/>
+    <property name="test.datafiles.dir" location="test/files"/>
+    <property name="test.reports.dir" location="${build.test.dir}/reports"/>
+  
+    <property name="dist.dir" location="dist"/>
+    <property name="dist.lib.dir" location="${dist.dir}/lib"/>
+    <property name="dist.doc.dir" location="${dist.dir}/docs"/>
+    <property name="dist.jdocs.dir" location="${dist.doc.dir}/jdocs"/>
+    <property name="dist.bin.dir" location="${dist.dir}/bin"/>
+    <property name="dist.src.dir" location="${dist.dir}/src"/>      
+      
+  </target>
+
+ <!-- ========================================================== -->
+  <!-- 
+    This target is used to set up the standard output for builds and tests and things
+   --> 
+  <!-- ========================================================== -->
+  <target name="init-standard-output-dirs" depends="core.init-core">
+
+    <mkdir dir="${build.dir}" />    
+    <mkdir dir="${build.classes.dir}" />    
+    
+    
+    <mkdir dir="${test.dir}" />
+    <mkdir dir="${test.classes.dir}" />
+    <mkdir dir="${test.data.dir}" />
+    <mkdir dir="${test.datafiles.dir}" />
+    <mkdir dir="${test.reports.dir}" />
+    
+    <mkdir dir="${dist.dir}"/>
+    <mkdir dir="${dist.lib.dir}"/>
+    <mkdir dir="${dist.doc.dir}"/>
+    <mkdir dir="${dist.bin.dir}"/>
+    <mkdir dir="${dist.src.dir}"/>
+    <mkdir dir="${dist.jdocs.dir}"/>
+  </target>  
+  
+</project>  
