@@ -248,7 +248,6 @@ public class ConfigurationDescriptor implements MessageKeys{
                try {
                  if (getName()!=null) {
                      //This will happen when a component is terminated.
-                     message.append("'");
                      message.append(getName().toString());
                      message.append("'");
                  }
@@ -263,7 +262,7 @@ public class ConfigurationDescriptor implements MessageKeys{
               message.append("'");
           }
 
-          if (getUrl()!=null) {
+          if ((getUrl()!=null)&& !(getUrl().trim().equals(""))) {
               message.append(separator);
               message.append(" ["); message.append(getUrl().toString()+"]");
           }
