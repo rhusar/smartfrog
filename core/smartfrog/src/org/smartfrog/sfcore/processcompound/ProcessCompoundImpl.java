@@ -58,7 +58,7 @@ import org.smartfrog.sfcore.security.SFSecurityProperties;
 
 
 /**
- * Implements deploymeent behaviour for a process. There is a single process
+ * Implements deployment behaviour for a process. There is a single process
  * compound allowed per process. SFSystem asks SFProcess to make the
  * processcompound on startup. SFProcess also holds the logic for making a
  * process compound a root for a host. A single root process compound (defined
