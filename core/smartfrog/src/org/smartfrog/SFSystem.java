@@ -618,15 +618,6 @@ public class SFSystem implements MessageKeys {
      */
     public void setRootProcess(ProcessCompound rootProcess) {
         this.rootProcess = rootProcess;
-        if (sfLog().isDebugEnabled()&& (rootProcess!=null)) {
-           StringBuffer report = new StringBuffer();
-          try {
-            report.append(rootProcess.sfDiagnosticsReport().toString());
-            sfLog().debug(report.toString());
-          } catch (Exception ex) {
-            sfLog().debug("Error generation diagnostics report for rootProcess",ex);
-          }
-        }
     }
 
 
