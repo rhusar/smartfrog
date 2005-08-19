@@ -570,46 +570,5 @@ For more information: www.smartfrog.org
   <target name="default" depends="dist"
     description="default target creates a distribution" />
 
-  <!-- =================================================================== -->
-  <!--  Library update                                                     -->
-  <!-- =================================================================== -->
-
-
-  <target name="fetch-libraries" depends="init,init-common,setproxy" >
-    <property file="libraries.properties" />
-      <libraries destdir="${maven.lib.dir}">
-      <mavenrepository url="${maven.url}"/>
-      <library project="xerces"
-        archive="xercesImpl"
-        version="${xerces.version}" />
-      <library project="xerces"
-        archive="xmlParserAPIs"
-        version="${xerces.version}" />
-<!--       <library project="xom"
-        version="${xom.version}" />
-        -->
-      <library project="jaxen"
-        version="${jaxen.version}" />
-      <library project="commons-net"
-        version="${commons-net.version}" />
-      <library project="junit"
-        version="${junit.version}" />
-      <library project="log4j"
-        version="${log4j.version}" />
-      <library project="bsh"
-        version="${bsh.version}" />
-      <library project="rhino"
-        version="${rhino.version}" />
-      <library project="velocity"
-        version="${velocity.version}" />
-<!--       <library project="ant" archive="ant-testutil"
-        version="${ant-testutil.version}" /> -->
-<!--
-      <library project=""
-        version="${.version}" archive=""/>
-       -->
-    </libraries>
-  </target>
-
 
 </project>
