@@ -63,6 +63,7 @@ ServerOnJetty extends Compound {
     jettyhome LAZY PROPERTY java.io.tmpdir;
 
     server extends CoreJettyServer {
+        serverHost "localhost";
 
         port PARENT:port;
         jettyhome PARENT:jettyhome;

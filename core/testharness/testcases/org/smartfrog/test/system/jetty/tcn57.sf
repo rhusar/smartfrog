@@ -22,13 +22,25 @@
 
 
 sfConfig extends Compound {
-
+   adminServer extends HttpServerAdmin {
+         httpserverHost "localhost"; // mandatory
+         listenerPort 8081; // mandatory
+   } 
   server1 extends CoreJettyServer {
       jettyhome ROOT:jetty_home; // mandatory
+      //contexts extends JettySampleContexts;
 
       list1 extends JettyListener {
             listenerPort 8014;
-            server LAZY PARENT:PARENT;
+            server LAZY PARENT;
+      }
+   }
+   server2 extends CoreJettyServer {
+      jettyhome ROOT:jetty_home; // mandatory
+      //contexts extends JettySampleContexts;
+      list2 extends JettyListener {
+            listenerPort 8015;
+            server LAZY PARENT;
       }
    }
 }

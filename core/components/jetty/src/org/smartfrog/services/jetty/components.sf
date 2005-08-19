@@ -27,5 +27,3 @@
 #include "/org/smartfrog/services/jetty/jetty-core.sf"
 //complete jetty definition
 #include "/org/smartfrog/services/jetty/jetty-complete.sf"
-//legacy types
-#include "/org/smartfrog/services/jetty/jetty-legacy-components.sf"

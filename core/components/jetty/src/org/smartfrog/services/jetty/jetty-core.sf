@@ -96,12 +96,46 @@ HttpServerAdmin extends Prim {
 }
 
 
+/**
+ * a jetty servlet context is a compound
+ * with a resource base
+ * It defines something to be deployed on a jetty server
+ */
+
+JettyServletContextSchema extends Schema {
+    //location of resources
+    resourceBase extends String;
+    //url path on server
+    contextPath extends String;
+
+    //classpath. Not tested yet.
+    classpath extends OptionalString;
+
+     //runtime only
+    ipaddr extends OptionalString;
+}
+
+JettyServletContext extends ServletContext {
+    //sfClass "org.smartfrog.services.jetty.contexts.JettyServletContext";
+    //jettyServletContextSchema extends JettyServletContextSchema;
+}
+
 
 /**
- * jetty handlers handle requests within a servlet.
- * as such, a context attribute is mandatory
+ * a jetty web application is bound
+ * to the jetty implementation
  */
-JettyHandler extends ServletContextComponent {
+
+JettyWebApplication extends WebApplication {
+  //sfClass "org.smartfrog.services.jetty.contexts.WebApplication";
+}
+
+/**
+ * jetty handlers handle requests.
+ * there is no schema, or other information, but we declare
+ * an extra template for clarity
+ */
+JettyHandler extends ApplicationServerContext {
 }
 
 
@@ -120,4 +154,11 @@ JettyListener extends ApplicationServerContext {
 }
 
 
+/**
+ * and this implementing class binds the servlet to
+ * jetty
+ */
+JettyServlet extends Servlet {
+    //sfClass "org.smartfrog.services.jetty.contexts.servlets.JettyServletImpl";
+}
 

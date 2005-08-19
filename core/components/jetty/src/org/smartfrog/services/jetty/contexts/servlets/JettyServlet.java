@@ -1,4 +1,4 @@
-/** (C) Copyright 2005 Hewlett-Packard Development Company, LP
+/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
 
  This library is free software; you can redistribute it and/or
  modify it under the terms of the GNU Lesser General Public
@@ -17,24 +17,17 @@
  For more information: www.smartfrog.org
 
  */
-#include "org/smartfrog/test/system/jetty/components.sf";
+package org.smartfrog.services.jetty.contexts.servlets;
+
+import org.smartfrog.services.www.ServletComponent;
+
+/**
+ * TODO: delete
+ * created 17-Jun-2004 11:57:47
+ */
 
 
+public interface JettyServlet extends ServletComponent {
 
-sfConfig extends Compound {
-   adminServer extends HttpServerAdmin {
-         httpserverHost "localhost"; // mandatory
-         listenerPort 8088; // mandatory
-   } 
-  server1 extends CoreJettyServer {
-      jettyhome ROOT:jetty_home; // mandatory
-      contexts extends JettySampleContexts;
 
-      list1 extends JettyListener {
-            listenerPort 8017;
-            //serverHost "localhost";
-            server LAZY PARENT;
-      }
-   }
-   
 }

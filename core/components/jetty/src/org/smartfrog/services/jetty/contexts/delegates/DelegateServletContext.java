@@ -20,7 +20,6 @@
 package org.smartfrog.services.jetty.contexts.delegates;
 
 import org.mortbay.http.HttpContext;
-import org.mortbay.http.HttpHandler;
 import org.mortbay.http.handler.ResourceHandler;
 import org.mortbay.jetty.servlet.ServletHttpContext;
 import org.smartfrog.services.jetty.JettyHelper;
@@ -153,40 +152,4 @@ public class DelegateServletContext extends DelegateApplicationContext implement
         JettyServletDelegate servletDelegate=new JettyServletDelegate(this,(Prim)servletDeclaration);
         return servletDelegate;
     }
-
-
-    /**
-     * add a handler to the server
-     *
-     * @param handler handler
-     * @throws SmartFrogException
-     * @throws RemoteException
-     */
-    public void addHandler(HttpHandler handler) throws SmartFrogException,
-            RemoteException {
-        ServletHttpContext context = getServletContext();
-        context.addHandler(handler);
-    }
-
-    /**
-     * remove a handler. The handler should be stopped first, though we do try
-     * and do it ourselves
-     * @param handler
-     * @throws SmartFrogException
-     * @throws RemoteException
-     */
-    public void removeHandler(HttpHandler handler) throws SmartFrogException, RemoteException {
-        ServletHttpContext context = getServletContext();
-        try {
-            if(handler.isStarted()) {
-                handler.stop();
-            }
-        } catch (InterruptedException e) {
-            //ignore
-        }
-        context.removeHandler(handler);
-
-    }
-
-
 }

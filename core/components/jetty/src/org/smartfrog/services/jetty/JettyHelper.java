@@ -118,7 +118,9 @@ public class JettyHelper extends ComponentHelper {
     }
 
     /**
-     * look for the jetty component by -looking for a server attribute
+     * look for the jetty component by -looking for a server component that
+     * implements it -probing for a parent
+     *
      * @throws SmartFrogResolutionException
      * @throws RemoteException
      */
@@ -126,11 +128,12 @@ public class JettyHelper extends ComponentHelper {
             RemoteException {
 
         if (serverComponent == null) {
-            //look for an attribute
+            //look for an attribute first
             serverComponent =
                     getOwner().sfResolve(ApplicationServerContext.ATTR_SERVER,
                             serverComponent,
                             true);
+            //throw new SmartFrogResolutionException(ERROR_NO_APP_SERVER);
         }
 
     }
@@ -191,29 +194,46 @@ public class JettyHelper extends ComponentHelper {
             throws SmartFrogException, RemoteException {
 
 
-        ServletHttpContext jettyContext = null;
+        ServletHttpContext context = null;
 
-        Prim contextImpl = findServletContext();
-        if (contextImpl != null) {
-            jettyContext = (ServletHttpContext) contextImpl.
+        Prim ancestor = findServletContextAncestor();
+        if (ancestor != null) {
+            context = (ServletHttpContext) ancestor.
                     sfResolve(JettyServletContextIntf.ATTR_CONTEXT);
         }
-        if (mandatory && jettyContext == null) {
+        if (mandatory && context == null) {
             throw new SmartFrogException(
                     "Could not locate "
                     +
-                    JettyServletContextIntf.ATTR_CONTEXT);
+                    JettyServletContextIntf.ATTR_CONTEXT +
+                    " in the hierarchy");
         }
-        return jettyContext;
+        return context;
     }
 
     /**
      * find whatever ancestor is a servlet context
      */
-    public Prim findServletContext() throws RemoteException, SmartFrogResolutionException {
+    public Prim findServletContextAncestor() throws RemoteException, SmartFrogResolutionException {
         return getOwner().sfResolve(ApplicationServerContext.ATTR_SERVER,(Prim)null,false);
+/*
+        return findAncestorImplementing(JETTY_SERVLET_INTERFACE,
+                MAX_PARENT_DEPTH);
+*/
     }
 
+    /**
+     * add a handler to the server
+     *
+     * @param handler
+     * @throws SmartFrogException
+     * @throws RemoteException
+     */
+    public void addHandler(HttpHandler handler) throws SmartFrogException,
+            RemoteException {
+        ServletHttpContext context = getServletContext(true);
+        context.addHandler(handler);
+    }
 
     /**
      * add a listener to the server
@@ -240,10 +260,6 @@ public class JettyHelper extends ComponentHelper {
         }
     }
 
-    /**
-     * remove a listener
-     * @param listener
-     */
     public void removeListener(HttpListener listener) {
         if (httpServer != null) {
             httpServer.removeListener(listener);
@@ -355,6 +371,4 @@ public class JettyHelper extends ComponentHelper {
         String hostAddress = deployedHost.getHostAddress();
         return hostAddress;
     }
-
-
 }

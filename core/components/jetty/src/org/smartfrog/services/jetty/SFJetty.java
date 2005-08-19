@@ -122,25 +122,26 @@ public class SFJetty extends CompoundImpl implements Compound,JettyIntf {
    * @exception  SmartFrogException In case of error while deploying
    * @exception  RemoteException In case of network/rmi error
    */
-    public void sfDeploy() throws SmartFrogException, RemoteException {
-        try {
-            super.sfDeploy();
-            server = new HttpServer();
-            jettyHelper.cacheJettyServer(server);
-            jettyhome = sfResolve(jettyhomeRef, jettyhome, true);
-            jettyHelper.cacheJettyHome(jettyhome);
-            enableLogging = sfResolve(ATTR_ENABLE_LOGGING, enableLogging, true);
+  public void sfDeploy() throws SmartFrogException, RemoteException {
+    try {
 
-            if (enableLogging) {
-                logDir = FileSystem.lookupAbsolutePath(this, JettyIntf.ATTR_LOGDIR, jettyhome, null, true, null);
-                logPattern = sfResolve(JettyIntf.ATTR_LOGPATTERN, "", false);
-                configureLogging();
-            }
+        server = new HttpServer();
+        jettyHelper.cacheJettyServer(server);
+        jettyhome = sfResolve(jettyhomeRef, jettyhome, true);
+        jettyHelper.cacheJettyHome(jettyhome);
+        enableLogging=sfResolve(ATTR_ENABLE_LOGGING,enableLogging,true);
 
-        } catch (Exception ex) {
-            throw SmartFrogDeploymentException.forward(ex);
+        if(enableLogging) {
+            logDir=FileSystem.lookupAbsolutePath(this,JettyIntf.ATTR_LOGDIR,jettyhome,null,true,null);
+            logPattern=sfResolve(JettyIntf.ATTR_LOGPATTERN,"",false);
+            configureLogging();
         }
+        super.sfDeploy();
+
+    } catch (Exception ex){
+       throw SmartFrogDeploymentException.forward(ex);
     }
+  }
 
 
   /**
@@ -149,15 +150,15 @@ public class SFJetty extends CompoundImpl implements Compound,JettyIntf {
    * @exception  SmartFrogException In case of error while starting
    * @exception  RemoteException In case of network/rmi error
    */
-  public synchronized void sfStart() throws SmartFrogException,
-          RemoteException {
-      super.sfStart();
-      try {
-          server.start();
-      } catch (Exception mexp) {
-          throw SmartFrogException.forward(mexp);
-      }
-  }
+   public synchronized void sfStart() throws SmartFrogException,
+   RemoteException {
+       super.sfStart();
+       try {
+           server.start();
+       } catch (Exception mexp) {
+           throw SmartFrogException.forward(mexp);
+       }
+   }
 
   /**
    * Configure the http server

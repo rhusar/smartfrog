@@ -28,8 +28,6 @@ import org.smartfrog.test.SmartFrogTestBase;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
-import java.io.IOException;
-import java.io.FileNotFoundException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
@@ -126,7 +124,7 @@ public class JettyTest
                                  EXCEPTION_DEPLOYMENT,
                                  "unnamed component",
                                  EXCEPTION_RESOLUTION,
-                                 "non-optional attribute 'jettyhome' is missing");
+                                 "Unresolved Reference, data: [jettyhome");
     }
 
     public void testCaseTCN56() throws Exception {
@@ -141,13 +139,10 @@ public class JettyTest
     public void testCaseTCN57() throws Exception {
         deployExpectingException(FILES+"tcn57.sf",
                                  "tcn57",
-                                 EXCEPTION_LIFECYCLE,
-                                 "unnamed component");
-
-/*
+                                 EXCEPTION_DEPLOYMENT,
+                                 "unnamed component",
                                  EXCEPTION_RESOLUTION,
                                  "error in schema: wrong class found for attribute 'server', expected: java.lang.String");
-*/
     }
 
     public void testCaseTCP19() throws Throwable {
@@ -157,18 +152,22 @@ public class JettyTest
         String hostname = application.sfResolve("serverHost", (String)null, true);
         port = application.sfResolve("port", port, true);
         URL url = new URL("http", hostname, port, ROOT_DOC);
-        HttpURLConnection connection = null;
-        connection = (HttpURLConnection) url.openConnection();
-        int errorcode=0;
+        URLConnection urlConnection = url.openConnection();
+
+        BufferedReader in=null;
         try {
-            connection.connect();
-            errorcode= connection.getResponseCode();
-        } catch (FileNotFoundException e) {
-            //if this is a 404 error, we have succeeded.
-            errorcode = connection.getResponseCode();
+            in = new BufferedReader(
+                new InputStreamReader(
+                urlConnection.getInputStream()));
+            String inputLine;
+
+            while ((inputLine = in.readLine())!=null) {
+                assertNotNull(inputLine);
+            }
+        } finally {
+            FileSystem.close(in);
+
         }
-        assertEquals("Expected a 404 response from "+url+" but got "+ errorcode,
-                HttpURLConnection.HTTP_NOT_FOUND,errorcode);
     }
 
     public void testCaseTCP20() throws Throwable {

@@ -80,7 +80,7 @@ sfConfig extends Compound {
            server LAZY server1;
     }
 
-    context extends ServletContext {
+    context extends JettyServletContext {
          contextPath "/test2";
          resourceBase LAZY PROPERTY java.io.tmpdir;
          server LAZY server2;

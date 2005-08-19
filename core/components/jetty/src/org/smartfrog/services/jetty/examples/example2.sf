@@ -43,7 +43,7 @@ sfConfig extends Compound {
            listenerPort 8085;
            server LAZY server1;
     }
-    context extends ServletContext {
+    context extends JettyServletContext {
          contextPath "/test2";
          resourceBase ("C:\\");
          server LAZY server2;

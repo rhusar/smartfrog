@@ -109,12 +109,12 @@ JettyExamples extends JettyExampleWar {
  requestId true; //optional
 }
 
-JettyServletContexts extends ServletContext {
+JettyServletContexts extends JettyServletContext {
  contextPath "/demo";
  resourceBase "/demo/docroot";
  classpath "/demo/servlets";
  handlers extends Handlers {
-  context LAZY PARENT;
+  server LAZY PARENT:server;
   }
  servlets extends Servlets {
   context LAZY PARENT;
@@ -122,12 +122,12 @@ JettyServletContexts extends ServletContext {
  server LAZY PARENT:server;
 }
 
-JettyJavadoc extends ServletContext {
+JettyJavadoc extends JettyServletContext {
  contextPath "/javadoc";
  resourceBase "/javadoc";
 }
 
-JettyCGIBIN extends ServletContext {
+JettyCGIBIN extends JettyServletContext {
  contextPath "/cgi-bin";
  resourceBase "/cgi-bin";
 
@@ -143,16 +143,16 @@ JettyCGIBIN extends ServletContext {
 ===========================================*/
 
 Handlers extends Compound {
- context TBD;
+ server TBD;
 
  Handler1 extends JettyForwardHandler {
-  context LAZY PARENT:context;
+  server LAZY PARENT:server;
  }
  Handler2 extends JettyHTAccessHandler {
-  context LAZY PARENT:context;
+  server LAZY PARENT:server;
  }
  Handler3 extends JettyDumpHandler {
-  context LAZY PARENT:context;
+  server LAZY PARENT:server;
  }
 }
 
@@ -199,45 +199,45 @@ Servlets extends Compound {
  }
 }
 
-InvokerServlet extends Servlet {
+InvokerServlet extends JettyServlet {
  name "Invoker";
  pathSpec "/servlet/*";
  className "org.mortbay.jetty.servlet.Invoker";
 }
 
-DumpServlet extends Servlet {
+DumpServlet extends JettyServlet {
  name "Dump";
  pathSpec "/dump/*:*.DUMP";
  className "org.mortbay.servlet.Dump";
  initParams [["InitParam","Value"]];
 }
 
-SessionServlet extends Servlet {
+SessionServlet extends JettyServlet {
  name "Session";
  pathSpec "/session/*";
  className "org.mortbay.servlet.SessionDump";
 }
 
-DispatchServlet extends Servlet {
+DispatchServlet extends JettyServlet {
  name "Dispatch";
  pathSpec "/dispatch/*";
  className "org.mortbay.servlet.RequestDispatchTest";
 }
 
-JSPServlet extends Servlet {
+JSPServlet extends JettyServlet {
  name "JSP";
  pathSpec "*.jsp";
  className "org.apache.jasper.servlet.JspServlet";
 }
 
-SrcDefaultServlet extends Servlet {
+SrcDefaultServlet extends JettyServlet {
  name "SrcDefault";
  pathSpec "/src/*";
  className "org.mortbay.jetty.servlet.Default";
  initParams [["dirAllowed","true"]];
 }
 
-CGIservlet extends Servlet {
+CGIservlet extends JettyServlet {
  name "Common Gateway Interface";
  pathSpec "/";
  className "org.mortbay.servlet.CGI";
