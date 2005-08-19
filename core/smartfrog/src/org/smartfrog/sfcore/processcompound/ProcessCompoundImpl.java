@@ -355,8 +355,16 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
         } catch (RemoteException rex) {
             throw new SmartFrogRuntimeException(MSG_FAILED_TO_CONTACT_PARENT, rex, this);
         }
-
-        if (sfLog().isTraceEnabled()) sfLog().trace("Started ProcessCompound '"+sfProcessName+"'");
+        if (sfLog().isDebugEnabled()) sfLog().trace("Started ProcessCompound '"+sfProcessName+"'");
+        if (sfLog().isDebugEnabled()) {
+           StringBuffer report = new StringBuffer();
+          try {
+            report.append(sfDiagnosticsReport().toString());
+            sfLog().debug(report.toString());
+          } catch (Exception ex) {
+            sfLog().debug("Error generation diagnostics report for rootProcess",ex);
+          }
+        }
     }
 
     /**
@@ -1022,10 +1030,11 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
         addProcessJava(runCmd, cd);
         //addProcessClassName(runCmd,cd);
 
+        addProcessDefines(runCmd, name);
+
         addProcessClassPath(runCmd, name, cd);
         addProcessSFCodeBase(runCmd,name,cd);
 
-        addProcessDefines(runCmd, name);
         addProcessEnvVars(runCmd,cd);
         addProcessAttributes(runCmd, name, cd);
         addProcessClassName(runCmd,cd);
@@ -1033,8 +1042,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
         String[] runCmdArray = new String[runCmd.size()];
         runCmd.copyInto(runCmdArray);
         if (sfLog().isTraceEnabled()) sfLog().trace("startProcess["+name.toString()+"].runCmd: "+runCmd.toString());
-//	System.out.println("EXECUTEING   " + runCmd.toString());
-	return Runtime.getRuntime().exec(runCmdArray);
+        return Runtime.getRuntime().exec(runCmdArray);
     }
 
 
