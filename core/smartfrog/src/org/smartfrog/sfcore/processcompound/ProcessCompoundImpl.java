@@ -503,11 +503,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
               (child).sfTerminateQuietlyWith(status);
             }
           } catch (Exception ex) {
-            //@TODO: Log
-            //Logger.logQuietly(ex);
-            if (sfLog().isIgnoreEnabled()){
-              sfLog().ignore(ex);
-            }
+            if (sfLog().isIgnoreEnabled()){ sfLog().ignore(ex);  }
             // ignore
           }
         }
@@ -521,11 +517,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
               (child).sfTerminate(status);
             }
           } catch (Exception ex) {
-            //@TODO: Log
-            //Logger.logQuietly(ex);
-            if (sfLog().isIgnoreEnabled()){
-              sfLog().ignore(ex);
-            }
+            if (sfLog().isIgnoreEnabled()){  sfLog().ignore(ex);  }
             // ignore
           }
         }
@@ -536,11 +528,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
             //Logger.log("SynchTerminate sent to : "+ child.sfCompleteName());
             (child).sfTerminateQuietlyWith(status);
           } catch (Exception ex) {
-            //@TODO: Log
-            //Logger.logQuietly(ex);
-            if (sfLog().isIgnoreEnabled()){
-              sfLog().ignore(ex);
-            }
+            if (sfLog().isIgnoreEnabled()){ sfLog().ignore(ex); }
             // ignore
           }
         }
@@ -582,11 +570,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
               (new TerminatorThread(child,status)).start();
             }
           } catch (Exception ex) {
-            //@TODO: Log
-            //Logger.logQuietly(ex);
-            if (sfLog().isIgnoreEnabled()){
-              sfLog().ignore(ex);
-            }
+            if (sfLog().isIgnoreEnabled()){ sfLog().ignore(ex);  }
             // ignore
           }
         }
@@ -598,11 +582,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
             //Deprecated: new TerminateCall( child, status,true);
             (new TerminatorThread(child,status).quietly()).start();
           } catch (Exception ex) {
-            //@TODO: Log
-            //Logger.logQuietly(ex);
-            if (sfLog().isIgnoreEnabled()){
-              sfLog().ignore(ex);
-            }
+            if (sfLog().isIgnoreEnabled()){ sfLog().ignore(ex); }
             // ignore
           }
         }
@@ -1042,8 +1022,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
         String[] runCmdArray = new String[runCmd.size()];
         runCmd.copyInto(runCmdArray);
         if (sfLog().isTraceEnabled()) sfLog().trace("startProcess["+name.toString()+"].runCmd: "+runCmd.toString());
-       // System.out.println("EXECUTING   " + runCmd.toString());
-	return Runtime.getRuntime().exec(runCmdArray);
+        return Runtime.getRuntime().exec(runCmdArray);
     }
 
 
@@ -1144,16 +1123,13 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
         String res = null;
         String replaceBoolKey =  SmartFrogCoreKeys.SF_PROCESS_REPLACE_SF_CODEBASE;
         String attributeKey = SmartFrogCoreKeys.SF_PROCESS_SF_CODEBASE;
-        //String sysPropertyKey =  SmartFrogCoreKeys.SF_PROCESS_SF_CODEBASE;
         String sysPropertyKey =  "org.smartfrog.codebase";
 	    String pathSeparator = " ";
+
         res = addProcessSpecialSystemVar(cd, res, replaceBoolKey, attributeKey, sysPropertyKey, pathSeparator);
 
         if (res != null) {
-            //cmd.addElement("-D"+ sysPropertyKey + "=\"" + res+"\"");
             cmd.addElement("-D"+ sysPropertyKey + "=" + res);
-         //   cmd.addElement("-Dorg.smartfrog.codebase="+ res);
-            //cmd.addElement(res);
         }
     }
 
