@@ -30,61 +30,30 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 
 */
 
-#include "org/smartfrog/components.sf";
-#include "org/smartfrog/services/jetty/components.sf";
 
-/** 
- * This is an example of jetty components
- */
-
+#include "/org/smartfrog/services/jetty/jetty-core.sf"
 
 /**
- * Specify the jetty home path as the property jetty.home *at the destination*
+ * This file declares 'legacy' jetty types, which have all now
+ * been replaced by their platform independent equivalents
  */
-jetty_home LAZY PROPERTY jetty.home;
 
 
-sfConfig extends Compound {
-   adminServer extends HttpServerAdmin {
-         httpserverHost "localhost"; // mandatory
-         listenerPort 8081; // mandatory
-   }
-   server1 extends CoreJettyServer {
-      jettyhome ROOT:jetty_home;
-      contexts extends JettySampleContexts {
-        server LAZY PARENT;
-      }
-      list1 extends ApacheHttpdListener {
-            listenerPort 8011;
-            server LAZY PARENT;
-      }
-   } 
-   server2 extends CoreJettyServer {
-      jettyhome ROOT:jetty_home;
-      contexts extends JettySampleContexts {
-        server LAZY PARENT;
-      }
-      list2 extends ApacheHttpdListener {
-            listenerPort 8012;
-            server LAZY PARENT;
-      }
-   }
-    //out of band instance
-    list1 extends JettyListener {
-           listenerPort 8083;
-           server LAZY server2;
-    }
-
-    list3 extends JettyListener {
-           listenerPort 8085;
-           server LAZY server1;
-    }
-
-    context extends ServletContext {
-         contextPath "/test2";
-         resourceBase LAZY PROPERTY java.io.tmpdir;
-         server LAZY server2;
-    }
+JettyServletContext extends ServletContext {
 }
 
 
+/**
+ * a jetty web application is bound
+ * to the jetty implementation
+ */
+
+JettyWebApplication extends WebApplication {
+}
+
+/**
+ * and this implementing class binds the servlet to
+ * jetty
+ */
+JettyServlet extends Servlet {
+}

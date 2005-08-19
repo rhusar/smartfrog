@@ -39,7 +39,7 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
  * running jetty server
  */ 
 
-context extends JettyServletContext {
+context extends ServletContext {
  contextPath "/test3";
  resourceBase LAZY PROPERTY java.io.tmpdir;
 }
