@@ -1110,7 +1110,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
         String replaceBoolKey =  SmartFrogCoreKeys.SF_PROCESS_REPLACE_CLASSPATH;
         String attributeKey = SmartFrogCoreKeys.SF_PROCESS_CLASSPATH;
         String sysPropertyKey =  "java.class.path";
-	String pathSeparator = SFSystem.getProperty("path.separator",";");
+	    String pathSeparator = SFSystem.getProperty("path.separator",";");
 
         res = addProcessSpecialSystemVar(cd, res, replaceBoolKey, attributeKey, sysPropertyKey, pathSeparator);
 
@@ -1145,11 +1145,11 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
         String attributeKey = SmartFrogCoreKeys.SF_PROCESS_SF_CODEBASE;
         //String sysPropertyKey =  SmartFrogCoreKeys.SF_PROCESS_SF_CODEBASE;
         String sysPropertyKey =  "org.smartfrog.codebase";
-	String pathSeparator = " ";
+	    String pathSeparator = " ";
         res = addProcessSpecialSystemVar(cd, res, replaceBoolKey, attributeKey, sysPropertyKey, pathSeparator);
 
         if (res != null) {
-            cmd.addElement("-D"+ sysPropertyKey + "=" + res);
+            cmd.addElement("-D"+ sysPropertyKey + "=\"" + res+"\"");
          //   cmd.addElement("-Dorg.smartfrog.codebase="+ res);
             //cmd.addElement(res);
         }
