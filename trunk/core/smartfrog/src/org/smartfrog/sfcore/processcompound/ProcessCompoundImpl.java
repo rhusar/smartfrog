@@ -1042,7 +1042,8 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
         String[] runCmdArray = new String[runCmd.size()];
         runCmd.copyInto(runCmdArray);
         if (sfLog().isTraceEnabled()) sfLog().trace("startProcess["+name.toString()+"].runCmd: "+runCmd.toString());
-        return Runtime.getRuntime().exec(runCmdArray);
+       // System.out.println("EXECUTING   " + runCmd.toString());
+	return Runtime.getRuntime().exec(runCmdArray);
     }
 
 
@@ -1149,7 +1150,8 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
         res = addProcessSpecialSystemVar(cd, res, replaceBoolKey, attributeKey, sysPropertyKey, pathSeparator);
 
         if (res != null) {
-            cmd.addElement("-D"+ sysPropertyKey + "=\"" + res+"\"");
+            //cmd.addElement("-D"+ sysPropertyKey + "=\"" + res+"\"");
+            cmd.addElement("-D"+ sysPropertyKey + "=" + res);
          //   cmd.addElement("-Dorg.smartfrog.codebase="+ res);
             //cmd.addElement(res);
         }
@@ -1275,7 +1277,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
                     //Logger.log("Added to"+name+": "+"-D"+keyS+"="+value.toString());
                   } else {
                     //Properties to overwrite processcompound.sf attributes
-                    Object value = props.get(key);
+		    Object value = props.get(key);
                     cmd.addElement("-D" + key.toString() + "=" + value.toString());
                   }
                 } else {
