@@ -41,6 +41,10 @@ import java.net.URLConnection;
  *   <li>setting the system property jetty.home</li>
  *   <li>setting the system property runtime.jetty.home</li>
  * </ol>
+ * Command to run this test only:
+ * <pre>
+ *  ant test -Dtestcase=org.smartfrog.test.system.jetty.JettyTest
+ * </pre>
  */
 public class JettyTest
     extends SmartFrogTestBase {
