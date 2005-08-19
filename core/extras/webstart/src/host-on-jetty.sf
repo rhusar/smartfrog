@@ -31,8 +31,6 @@ sfConfig extends Compound {
 
     filename "sf-webstart.war";
 
-    host "localhost";
-
     port 8081;
 
     //so they terminate one after the other
@@ -55,14 +53,12 @@ sfConfig extends Compound {
 
         jettyhome  dist.dir;
         
-        serverHost host;
 
         //jettyhome axishome;
 
         listeners extends Compound {
             jetty extends JettyListener {
                 listenerPort port;
-                serverHost host;
                 server LAZY jettyServer;
             }
         }
@@ -72,6 +68,7 @@ sfConfig extends Compound {
         WebStart extends JettyWebApplication {
             warFile filename;
             contextPath "/";
+            server LAZY PARENT;
         }
     }
 
