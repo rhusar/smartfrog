@@ -136,7 +136,7 @@ public class JettyServletDelegate implements ServletContextComponentDelegate, Se
         if (holder == null || !holder.isStarted()) {
             throw new SmartFrogLivenessException("Servlet " +
                     name +
-                    " is not running");
+                    " is not running under"+getAbsolutePath());
         }
     }
 }

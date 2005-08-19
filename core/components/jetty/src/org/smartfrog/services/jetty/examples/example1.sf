@@ -34,7 +34,8 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 #include "org/smartfrog/services/jetty/components.sf";
 
 /**
- * This is an example of jetty component
+ * This is an example of jetty component.
+ * Nothing is visible, but the root page will generate a 404 error.
  */
 
 
