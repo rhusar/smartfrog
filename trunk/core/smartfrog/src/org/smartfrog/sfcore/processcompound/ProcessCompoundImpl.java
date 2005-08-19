@@ -1020,7 +1020,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
         Vector runCmd = new Vector();
 
         addProcessJava(runCmd, cd);
-        addProcessClassName(runCmd,cd);
+        //addProcessClassName(runCmd,cd);
 
         addProcessClassPath(runCmd, name, cd);
         addProcessSFCodeBase(runCmd,name,cd);
@@ -1028,11 +1028,13 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
         addProcessDefines(runCmd, name);
         addProcessEnvVars(runCmd,cd);
         addProcessAttributes(runCmd, name, cd);
+        addProcessClassName(runCmd,cd);
 
         String[] runCmdArray = new String[runCmd.size()];
         runCmd.copyInto(runCmdArray);
         if (sfLog().isTraceEnabled()) sfLog().trace("startProcess["+name.toString()+"].runCmd: "+runCmd.toString());
-        return Runtime.getRuntime().exec(runCmdArray);
+//	System.out.println("EXECUTEING   " + runCmd.toString());
+	return Runtime.getRuntime().exec(runCmdArray);
     }
 
 
@@ -1100,9 +1102,9 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
         String replaceBoolKey =  SmartFrogCoreKeys.SF_PROCESS_REPLACE_CLASSPATH;
         String attributeKey = SmartFrogCoreKeys.SF_PROCESS_CLASSPATH;
         String sysPropertyKey =  "java.class.path";
+	String pathSeparator = SFSystem.getProperty("path.separator",";");
 
-
-        res = addProcessSpecialSystemVar(cd, res, replaceBoolKey, attributeKey, sysPropertyKey);
+        res = addProcessSpecialSystemVar(cd, res, replaceBoolKey, attributeKey, sysPropertyKey, pathSeparator);
 
         if (res != null) {
             cmd.addElement("-classpath");
@@ -1133,13 +1135,15 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
         String res = null;
         String replaceBoolKey =  SmartFrogCoreKeys.SF_PROCESS_REPLACE_SF_CODEBASE;
         String attributeKey = SmartFrogCoreKeys.SF_PROCESS_SF_CODEBASE;
-        String sysPropertyKey =  SmartFrogCoreKeys.SF_PROCESS_SF_CODEBASE;
-
-        res = addProcessSpecialSystemVar(cd, res, replaceBoolKey, attributeKey, sysPropertyKey);
+        //String sysPropertyKey =  SmartFrogCoreKeys.SF_PROCESS_SF_CODEBASE;
+        String sysPropertyKey =  "org.smartfrog.codebase";
+	String pathSeparator = " ";
+        res = addProcessSpecialSystemVar(cd, res, replaceBoolKey, attributeKey, sysPropertyKey, pathSeparator);
 
         if (res != null) {
-            cmd.addElement("-D"+sysPropertyKey);
-            cmd.addElement(res);
+            cmd.addElement("-D"+ sysPropertyKey + "=" + res);
+         //   cmd.addElement("-Dorg.smartfrog.codebase="+ res);
+            //cmd.addElement(res);
         }
     }
 
@@ -1148,7 +1152,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
                                               String res,
                                               String replaceBoolKey,
                                               String attributeKey,
-                                              String sysPropertyKey) throws
+                                              String sysPropertyKey, String pathSeparator) throws
         SmartFrogResolutionException {
         Boolean replace=null;
         // Should we replace or overwrite?
@@ -1161,7 +1165,6 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
 
         //Deployed description. This only happens during the first deployment of a SubProcess.
         String  cdClasspath = (String) cd.sfResolveHere(attributeKey,false);
-
         //This will read the system property for org.smartfrog.sfcore.processcompound.NAME.sfProcessClassPath;
         String  envPcClasspath = SFSystem.getProperty(SmartFrogCoreProperty.propBaseSFProcess
                                                     + SmartFrogCoreKeys.SF_PROCESS_NAME
@@ -1183,7 +1186,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
             res = sysClasspath;
           }
         } else {
-          String pathSeparator = SFSystem.getProperty("path.separator",";");
+       //   String pathSeparator = SFSystem.getProperty("path.separator",";");
           res ="";
           if (cdClasspath!=null){
             res = res + cdClasspath;
