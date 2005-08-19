@@ -355,16 +355,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
         } catch (RemoteException rex) {
             throw new SmartFrogRuntimeException(MSG_FAILED_TO_CONTACT_PARENT, rex, this);
         }
-        if (sfLog().isDebugEnabled()) sfLog().trace("Started ProcessCompound '"+sfProcessName+"'");
-        if (sfLog().isDebugEnabled()) {
-           StringBuffer report = new StringBuffer();
-          try {
-            report.append(sfDiagnosticsReport().toString());
-            sfLog().debug(report.toString());
-          } catch (Exception ex) {
-            sfLog().debug("Error generation diagnostics report for rootProcess",ex);
-          }
-        }
+        if (sfLog().isDebugEnabled()) sfLog().trace("ProcessCompound '"+sfProcessName+"' started.");
     }
 
     /**
