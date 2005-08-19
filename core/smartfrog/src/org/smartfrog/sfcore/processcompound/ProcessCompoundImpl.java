@@ -469,11 +469,6 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
             try {
                 String name = SmartFrogCoreKeys.SF_PROCESS_NAME;
                 name = sfResolve(SmartFrogCoreKeys.SF_PROCESS_NAME, name, false);
-//                if (Logger.logStackTrace) {
-//                    Logger.log(MessageUtil.formatMessage(MSG_SF_DEAD, name)+" "+ new Date(System.currentTimeMillis()));
-//                } else {
-//                    Logger.log(MessageUtil.formatMessage(MSG_SF_DEAD, name));
-//                }
                 sfLog().out(MessageUtil.formatMessage(MSG_SF_DEAD, name)+" "+ new Date(System.currentTimeMillis()));
             } catch (Throwable thr){
             }
@@ -1023,7 +1018,9 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
      */
     protected Process startProcess(Object name, ComponentDescription cd) throws Exception {
         Vector runCmd = new Vector();
+
         addProcessJava(runCmd, cd);
+        addProcessClassName(runCmd,cd);
 
         addProcessClassPath(runCmd, name, cd);
         addProcessSFCodeBase(runCmd,name,cd);
@@ -1031,7 +1028,6 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
         addProcessDefines(runCmd, name);
         addProcessEnvVars(runCmd,cd);
         addProcessAttributes(runCmd, name, cd);
-        addProcessClassName(runCmd,cd);
 
         String[] runCmdArray = new String[runCmd.size()];
         runCmd.copyInto(runCmdArray);
@@ -1106,7 +1102,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
         String sysPropertyKey =  "java.class.path";
 
 
-        res = addProcessSpecialSystemVar(cd, res, replaceClasspath, replaceBoolKey, attributeKey, sysPropertyKey);
+        res = addProcessSpecialSystemVar(cd, res, replaceBoolKey, attributeKey, sysPropertyKey);
 
         if (res != null) {
             cmd.addElement("-classpath");
@@ -1135,12 +1131,11 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
     //@todo document how new classpath works for subProcesses.
     protected void addProcessSFCodeBase(Vector cmd, Object name, ComponentDescription cd) throws Exception {
         String res = null;
-        Boolean replaceClasspath=null;
         String replaceBoolKey =  SmartFrogCoreKeys.SF_PROCESS_REPLACE_SF_CODEBASE;
         String attributeKey = SmartFrogCoreKeys.SF_PROCESS_SF_CODEBASE;
         String sysPropertyKey =  SmartFrogCoreKeys.SF_PROCESS_SF_CODEBASE;
 
-        res = addProcessSpecialSystemVar(cd, res, replaceClasspath, replaceBoolKey, attributeKey, sysPropertyKey);
+        res = addProcessSpecialSystemVar(cd, res, replaceBoolKey, attributeKey, sysPropertyKey);
 
         if (res != null) {
             cmd.addElement("-D"+sysPropertyKey);
@@ -1151,17 +1146,18 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
 
     private String addProcessSpecialSystemVar(ComponentDescription cd,
                                               String res,
-                                              Boolean replaceClasspath,
                                               String replaceBoolKey,
                                               String attributeKey,
                                               String sysPropertyKey) throws
         SmartFrogResolutionException {
-        replaceClasspath = ((Boolean)cd.sfResolveHere(replaceBoolKey, false));
-        if (replaceClasspath==null) {
-          replaceClasspath = ( (Boolean) sfResolveHere(replaceBoolKey, false));
+        Boolean replace=null;
+        // Should we replace or overwrite?
+        replace = ((Boolean)cd.sfResolveHere(replaceBoolKey, false));
+        if (replace==null) {
+          replace = ( (Boolean) sfResolveHere(replaceBoolKey, false));
         }
         //by default add, not replace
-        if (replaceClasspath == null) replaceClasspath = Boolean.valueOf(false);
+        if (replace == null) replace = Boolean.valueOf(false);
 
         //Deployed description. This only happens during the first deployment of a SubProcess.
         String  cdClasspath = (String) cd.sfResolveHere(attributeKey,false);
@@ -1170,12 +1166,13 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
         String  envPcClasspath = SFSystem.getProperty(SmartFrogCoreProperty.propBaseSFProcess
                                                     + SmartFrogCoreKeys.SF_PROCESS_NAME
                                                     + attributeKey, null);
+
         //General description for process compound
-        String  pcClasspath = (String) sfResolveHere(replaceBoolKey,false);
+        String  pcClasspath = (String) sfResolveHere(attributeKey,false);
         //Takes previous process classpath (rootProcessClassPath)
         String  sysClasspath = SFSystem.getProperty(sysPropertyKey, null);
 
-        if ( replaceClasspath.booleanValue()) {
+        if ( replace.booleanValue()) {
           if (cdClasspath!=null){
             res = cdClasspath;
           } else if (envPcClasspath!=null){
