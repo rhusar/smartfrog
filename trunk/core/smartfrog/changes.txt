@@ -1,3 +1,59 @@
+release 3_06_016_rc2
+---------------------
+2005-Aug-22 Release date
+2005-Aug-19 Mod: Improved PC env creation
+2005-Aug-19 Add: sfLog().debug(diagReport) for rootProcess in SFSystem
+2005-Aug-18 Mod: Improvement in ' parsing in ConfigurationDescriptor
+2005-Aug-18 Add: Code to propagate org.smartfrog.codebase to subProcesses. sfProcessCodeBase attribute and sfProcessReplaceCodeBase.
+2005-Aug-16 Mod: New 'app server independent' stuff in services/www
+2005-Aug-16 Add: System property in default.ini to use system proxy by default. Only works for Java 1.5
+2005-Aug16 Mod: SFSystem, SF should not stop if ini file cannot be used
+2005-Aug-16 Add: ' as an alternative to " to separate fields in SFACT syntax
+2005-Aug-12 Add: New action DIAGNOSTICS; examples: smartfrog -a "ROOT:sfDefault:display":DIAGNOSTICS:::localhost: -e, smartfrog -a "ROOT:sfDefault":DIAGNOSTICS:::localhost: -e, smartfrog -a sfDefault:DIAGNOSTICS:::localhost: -e, smartfrog -a rootProcess:DIAGNOSTICS:::localhost: -e, smartfrog -a ROOT:DIAGNOSTICS:::localhost: -e, smartfrog -a "HOST localhost:rootProcess":DIAGNOSTICS:::: -e, smartfrog -a "HOST localhost:rootProcess":DIAGNOSTICS:::localhost: -e
+2005-Aug-11 Add: New sfManagement console button
+2005-Aug-11 Add: New option: -d (diagnostics): print information that might be helpful to diagnose or report problems
+2005-Aug-11 Mod: addSystemProperties method in ComponentDescriptionImpl reviewed2005-Aug-05 Add: ref (as well as leaving Ref for backward compatability) in functions.sf
+2005-Aug-02 Fix: Setting codebase with multiple jar files 
+2005-Aug-01 Mod: Protected CD from failing when not able to read System.properties
+2005-Aug-01 Add: A new schema type for files
+2005-Aug-01 Mod: SFDynamicClassloadingProperties.bat/.sh files for alternate quoting of SFCODEBASE argument and uncommenting the bits that are traditionally uncommented
+2005-July-29 Add: parser.AnyPrimitiveValue() to ComponentDescriptionUImpl.java
+2005-July-29 Add: parser.AnyValue() to services/management/NewAttributeDialog.java
+2005-July-29 Add: New entry points for value parsing in SFParser
+2005-July-29 Mod: Renamed SFBinaryArray to SFByteArray
+2005-July-29 Add: Added binary data in the form of #HEX#...# to smartfrog parser
+2005-July-25 Mod: Added includes of predicates and functions to smartfrog/components.sf
+2005-July-25 Mod: Improved checking in the SFAsComponentDescription method to check for illegal data in vectors which will cause problems in canonicalization
+2005-July-21 Add: New attribute for parallel deploy/start of children in parallel workflow
+2005-July-21 Mod: Updated docs: sfUserManual, sfWorkflow, sfDynamicWebServerExample 
+2005-July-18 Add: New interface for servlets in services/www component
+2005-July-15 Mod: Shellscripts for adding " to Process_Name and URL in SFACT
+2005-July-15 Add: New sfProcessEnvVars attribute to define env variables in a new subProcess
+2005-July-15 Fix: sfProcessAttributes is called now sfProcessConfig in processcompounf.sf
+2005-July-15 Fix: commandline syntax for ConfigurationDescriptor
+2005=July-13 Mod: Removed ":" from file auto generated filename in persistance class
+2005-July-12 Mod: SFGUIBrowserr with some bug fixes for Linux
+2005-July-11 Add: New example to ser5vices/filesystem
+2005-July-07 Mod: Improved robustness of LogImpl
+2005-July-06 Mod: shellscript component in services
+2005-July-05 Mod: TempFile in services/filesystem can now take text attribute
+2005-July-04 Add: verbose attribute to SFScript
+2005-July-04 Mod: CD visitor interface - adding a stack attribute giving the path of the visitor. This supports non-tree attribute sets
+2005-June-30 Add: sf-build-version.properties now contains the SF version used by ant to create version.sf and tag all jar files. ONLY sf-build-version.properties has to be modified to change SF version info.
+2005-June-30 Mod: BaseUnaryOperator in functions made constant
+2005-June-28 Mod: SFClassLoader to forward the exception properly
+2005-June-28 Add: First versions of the logging document
+2005-June-24 Mod: Enable multilanguage support in smartfrog in SFParser
+2005-June-24 Mod: SFSystem.sflog() is renamed to SFSystem.sfLog() to be consistent with PrimImpl
+2005-June-21 Mod: default.init, ilog to err replaced by log to streams
+2005-June-21 Add: Added new stream classes for core logger
+2005-June-20 Mod: SFSystem, moved stream.close() to finally{} 
+2005-June-17 Fix: sfProcessClass was not read from CD
+2005-June-07 Mod: Simplified example in services/os/java
+2005-June-02 Mod: SFParse to ensure the termniation of the command by adding exit(0) when complete
+2005-May-31 Mod: SFMarshalledObject to deal with not marshlling unecessarily so that local objects can have local interfaces. Only marshals the wrapped object if the SFMarshalled object is itself serialized. Doesn't solve all problem cases, but should do most.
+2005-May-27 Mod: Run smartfrog made static in SFSystem
+
 release 3_06_000_rc1
 ----------------------
 2005-May-27 Release date
