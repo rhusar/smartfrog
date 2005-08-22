@@ -155,7 +155,7 @@ public abstract class TaskTestBase extends BuildFileTest {
      * @param contains what to search for in the string
      */
     protected void assertPropertyContains(String property,String contains) {
-        String result = getProperty(property);
+        String result = project.getProperty(property);
 
         assertTrue("expected "+contains+" in "+result,
                 result!=null && result.indexOf(contains)>=0);
