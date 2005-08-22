@@ -1,6 +1,6 @@
 release 3_06_016_rc2
 ---------------------
-2005-Aug-22 Release date
+2005-Aug-23 Release date
 2005-Aug-19 Mod: Improved PC env creation
 2005-Aug-19 Add: sfLog().debug(diagReport) for rootProcess in SFSystem
 2005-Aug-18 Mod: Improvement in ' parsing in ConfigurationDescriptor
