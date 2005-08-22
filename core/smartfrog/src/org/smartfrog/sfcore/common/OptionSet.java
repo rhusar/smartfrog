@@ -171,7 +171,8 @@ public class OptionSet {
             } catch (Exception e) {
                 //protects from dodgy shell scripts
                 if (!(e instanceof java.lang.ArrayIndexOutOfBoundsException)){
-                   errorString = "illegal format for options ";
+                   errorString = "illegal format for options \n";
+            	   errorString += e.getMessage() + "\n";
                 }
                 //Logger.logQuietly(e);
                 if (SFSystem.sfLog().isIgnoreEnabled()) {
