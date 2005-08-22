@@ -53,9 +53,9 @@ done
 if test "$SFCODEBASE" && ! test "$SFSECURITY"; then
         java $JVMARGS "$SFDEFAULTINI" "$SFDEFAULTSF" "$SFCODEBASE" -Dorg.smartfrog.sfcore.processcompound.sfProcessName=rootProcess org.smartfrog.SFSystem $CLASSARGS
 elif test "$SFSECURITY" && ! test "$SFCODEBASE"; then
-        java $JVMARGS "$SFDEFAULTINI" "$SFDEFAULTSF" "$SFSECURITY" -Dorg.smartfrog.sfcore.processcompound.sfProcessName=rootProcess org.smartfrog.SFSystem $CLASSARGS
+        java $JVMARGS "$SFDEFAULTINI" "$SFDEFAULTSF" $SFSECURITY -Dorg.smartfrog.sfcore.processcompound.sfProcessName=rootProcess org.smartfrog.SFSystem $CLASSARGS
 elif test "$SFCODEBASE" && test "$SFSECURITY"; then
-        java $JVMARGS "$SFDEFAULTINI" "$SFDEFAULTSF" "$SFCODEBASE" "$SFSECURITY" -Dorg.smartfrog.sfcore.processcompound.sfProcessName=rootProcess org.smartfrog.SFSystem $CLASSARGS
+        java $JVMARGS "$SFDEFAULTINI" "$SFDEFAULTSF" "$SFCODEBASE" $SFSECURITY -Dorg.smartfrog.sfcore.processcompound.sfProcessName=rootProcess org.smartfrog.SFSystem $CLASSARGS
 else
 	java $JVMARGS "$SFDEFAULTINI" "$SFDEFAULTSF" -Dorg.smartfrog.sfcore.processcompound.sfProcessName=rootProcess org.smartfrog.SFSystem $CLASSARGS
 fi
