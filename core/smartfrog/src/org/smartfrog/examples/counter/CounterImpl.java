@@ -21,8 +21,6 @@ For more information: www.smartfrog.org
 package org.smartfrog.examples.counter;
 
 import java.rmi.RemoteException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
 
