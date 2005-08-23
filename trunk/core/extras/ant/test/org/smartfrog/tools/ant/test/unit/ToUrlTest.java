@@ -106,7 +106,7 @@ public class ToUrlTest extends TaskTestBase {
 
     public void testPath() {
         executeTarget("testPath");
-        assertPropertyContains("testPath", "makeurl.xml");
+        assertPropertyContains("testPath", "to-url.xml");
     }
 
     /**
