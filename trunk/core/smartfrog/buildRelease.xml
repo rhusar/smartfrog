@@ -270,6 +270,7 @@ To Be Written
         <include name="LICENSE.txt"/>
         <include name="changes.txt"/>
         <include name="readme.txt"/>
+        <include name="sf-build-version.properties"/>
         <exclude name="**/CVS" />
         <exclude name="**/*.dfPackage" />
         <exclude name="**/Cvs" />
@@ -380,6 +381,7 @@ To Be Written
         <include name="LICENSE.txt"/>
         <include name="changes.txt"/>
         <include name="readme.txt"/>
+        <include name="sf-build-version.properties"/>
         <exclude name="**/CVS" />
         <exclude name="**/*.dfPackage" />
         <exclude name="**/Cvs" />
