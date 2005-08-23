@@ -156,8 +156,15 @@ public class EventPrimImpl extends PrimImpl implements EventRegistration,
         for (Enumeration e = scxt.keys(); e.hasMoreElements();) {
             Object k = e.nextElement();
             Reference l = (Reference) scxt.get(k);
-            EventSink s = (EventSink) sfResolve(l);
-            sendTo.addElement(s);
+            //Protection against wrong descriptions
+            Object s =  sfResolve(l);
+            if (s instanceof EventSink){
+                sendTo.addElement((EventSink)s);
+            } else {
+               if (sfLog().isErrorEnabled()){
+                   sfLog().error("'"+ l + "' in '"+sendRef+"' does not implement EventSink and cannot be registered.");
+               }
+            }
         }
 
         /* find own registrations, and register remotely */
@@ -167,9 +174,16 @@ public class EventPrimImpl extends PrimImpl implements EventRegistration,
         for (Enumeration e = rcxt.keys(); e.hasMoreElements();) {
             Object k = e.nextElement();
             Reference l = (Reference) rcxt.get(k);
-            EventRegistration s = (EventRegistration) sfResolve(l);
-            receiveFrom.addElement(s);
-            s.register((EventSink) this);
+            //Protection against wrong descriptions
+            Object s = sfResolve(l);
+            if (s instanceof EventRegistration){
+                receiveFrom.addElement(s);
+                ((EventRegistration)s).register((EventSink) this);
+            } else {
+               if (sfLog().isErrorEnabled()){
+                   sfLog().error("'"+ l + "' in '"+receiveRef+"' does not implement EventRegistration and I cannot be register with it.");
+               }
+            }
         }
     }
 
