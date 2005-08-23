@@ -106,13 +106,13 @@ public class ToUrlTest extends TaskTestBase {
 
     public void testPath() {
         executeTarget("testPath");
-        assertPropertyContains("testPath", "makeurl.xml");
+        assertPropertyContains("testPath", "to-url.xml");
     }
 
     /**
-     * assert that a property ends with a value
-     * @param property property name
-     * @param ending ending
+     * assert that a property ends with
+     * @param property
+     * @param ending
      */
     private void assertPropertyEndsWith(String property, String ending) {
         String result = getProperty(property);

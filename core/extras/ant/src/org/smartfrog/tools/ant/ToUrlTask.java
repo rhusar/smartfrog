@@ -184,7 +184,7 @@ public class ToUrlTask extends Task {
 
     /**
      * convert all paths to URLs
-     * @return the paths as a separated list of URLs
+     * @return
      */
     private String pathsToURL() {
         if(paths.isEmpty()) {
@@ -271,19 +271,27 @@ public class ToUrlTask extends Task {
     /**
      * convert a file to a URL;
      * @throws BuildException if the file would not convert
-     * @param fileToConvert
-     * @return the file converted to a URL
+     * @param file
+     * @return
      */
-    private String toURL(File fileToConvert) {
+    private String toURL(File file) {
         String url;
         try {
             //create the URL
-            url = fileToConvert.toURI().toURL().toExternalForm();
+            url = file.toURI().toURL().toExternalForm();
             //set the property
         } catch (MalformedURLException e) {
-            throw new BuildException("Could not convert " + fileToConvert, e);
+            throw new BuildException("Could not convert " + file, e);
         }
         return url;
     }
 
+    /**
+     * convert a string representation of a filename to a URL
+     * @param filename
+     * @return
+     */
+    private String toURL(String filename) {
+        return toURL(new File(filename));
+    }
 }
