@@ -23,8 +23,7 @@ package org.smartfrog.examples.persistence;
 import java.rmi.RemoteException;
 
 import java.io.File;
-import java.io.FileWriter;
-import java.io.Writer;
+
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
@@ -35,7 +34,6 @@ import java.io.IOException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 
 import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 
 import org.smartfrog.examples.counter.Counter;
@@ -105,13 +103,12 @@ public class PersistentCounterImpl extends CounterImpl implements Prim, Counter,
      * @param  t TerminationRecord object
      */
     public synchronized void sfTerminateWith(TerminationRecord t) {
-        log("sfTerminateWith", " Terminating for reason: " + t.toString());
-
+        if (sfLog().isInfoEnabled()) sfLog().info("sfTerminateWith is terminating for reason: " + t.toString());
         if (action != null) {
             action.interrupt();
         }
 
-	if (checkpointFile != null) checkpointFile.delete();
+	    if (checkpointFile != null) checkpointFile.delete();
         super.sfTerminateWith(t);
     }
 
@@ -127,12 +124,12 @@ public class PersistentCounterImpl extends CounterImpl implements Prim, Counter,
         try {
             while (limit >= counter++) {
                 String messageSt = ("COUNTER: " + message + " " + counter);
-                System.out.println(messageSt);
+                sfLog().out(messageSt);
 		try {
 		    checkpointState();
 		} catch (Exception e) {
 		    String messageE = ("COUNTER: " + message + " error in checkpointing state: " + e);
-		    System.out.println(messageE);
+		    sfLog().out(messageE);
 		}
 
                 if(sleeptime>0) {
@@ -144,7 +141,7 @@ public class PersistentCounterImpl extends CounterImpl implements Prim, Counter,
 
             //end while
         } catch (InterruptedException ie) {
-            exception("run", ie);
+            if (sfLog().isErrorEnabled()) sfLog().error("peristent counter thread failed with exception ", ie);
         }
     }
 
