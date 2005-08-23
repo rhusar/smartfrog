@@ -119,9 +119,9 @@ public class DefaultParser {
   }
 
 
-  protected Vector parseInclude(String fName) throws ParseException {
+  protected Vector parseInclude(String fName, String codebase) throws ParseException {
     try {
-      return includeHandler.parseInclude(fName);
+      return includeHandler.parseInclude(fName, codebase);
     } catch (TokenMgrError tex) {
       throw new TokenMgrError("In include file " + fName + " : " +
                               tex.getMessage(),
@@ -207,6 +207,7 @@ TOKEN : /* reserved words */
  | <HOST: "HOST">
  | <PROCESS: "PROCESS">
  | <INCLUDE: "#include">
+ | <CODEBASE: "#codebase">
  | <TRUE: "true">
  | <FALSE: "false">
 
@@ -421,14 +422,22 @@ Vector AttributeListNoEOF() :
 }
 {
     ( c = Attribute() {res.addElement(c);}
-    | ( <INCLUDE> fName = String()
-         { Vector tmp = parseInclude(fName);
-           for(Enumeration e = tmp.elements(); e.hasMoreElements(); )
-             res.addElement(e.nextElement());
-       } )
+    | Includes(res)
     | <SEMICOLON>
     )*
     { return res; }
+}
+
+void Includes(Vector res) :
+{
+     String codebase = null;
+}
+{
+( [<CODEBASE> codebase = String() ] <INCLUDE> fName = String()
+         { Vector tmp = parseInclude(fName, codebase);
+           for(Enumeration e = tmp.elements(); e.hasMoreElements(); )
+             res.addElement(e.nextElement());
+       } )
 }
 
 Object[] Attribute() :

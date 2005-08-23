@@ -49,14 +49,15 @@ public class DefaultIncludeHandler implements IncludeHandler {
      * on the result of openInclude and uses the AttributeList methods to
      * construct the vector of attributes
      *
-     * @param include include to parse
+     * @param include include file to parse
+     * @param codebase an optional codebase where hte include may be found. If null, use the default code base
      *
      * @return vector of attribute name X value pairs
      *
      * @exception Exception error while locating or parsing include
      */
-    public Vector parseInclude(String include) throws Exception {
-        return (new DefaultParser(openInclude(include), this)).AttributeList();
+    public Vector parseInclude(String include, String codebase) throws Exception {
+        return (new DefaultParser(openInclude(include, codebase), this)).AttributeList();
     }
 
     /**
@@ -67,14 +68,15 @@ public class DefaultIncludeHandler implements IncludeHandler {
      * of locating includes.
      *
      * @param include include to locate
+     * @param codebase an optional codebase where hte include may be found. If null, use the default code base
      *
      * @return input stream on located include
      *
      * @exception Exception failed to locate or open include
      */
-    protected InputStream openInclude(String include) throws Exception {
+    protected InputStream openInclude(String include, String codebase) throws Exception {
         InputStream is = null;
-        is = SFClassLoader.getResourceAsStream(include);
+        is = SFClassLoader.getResourceAsStream(include, codebase, true);
 
         if (is == null) {
             throw new Exception("Include file: " + include + " not found");

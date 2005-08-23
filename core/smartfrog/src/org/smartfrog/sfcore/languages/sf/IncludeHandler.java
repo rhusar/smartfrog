@@ -31,11 +31,12 @@ public interface IncludeHandler {
      * on the result of openInclude and uses the AttributeList methods to
      * construct the vector of attributes
      *
-     * @param include include to parse
+     * @param include include file to parse
+     * @param codebase an optional codebase where hte include may be found. If null, use the default code base
      *
      * @return vector of attribute name X value pairs
      *
      * @exception Exception error while locating or parsing include
      */
-    public Vector parseInclude(String include) throws Exception;
+    public Vector parseInclude(String include, String codebase) throws Exception;
 }
