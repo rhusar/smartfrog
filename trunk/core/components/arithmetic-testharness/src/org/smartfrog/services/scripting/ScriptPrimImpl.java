@@ -85,8 +85,8 @@ public class ScriptPrimImpl
       return interpreter.eval(script);
     }
     catch (Exception e) {
-      interpreter.println(" Received : " + script);
-      return null;
+      //interpreter.println(" Received : " + script);
+      throw new SmartFrogException ("Exception when evaluating BeanShell script:\n"+script,e);
     }
   }
 
@@ -124,16 +124,15 @@ public class ScriptPrimImpl
       boolean attAsVar = this.sfResolve("attributesAsVariables", false, false);
 
       if (attAsVar) {
-// go through all the attributes and bind them in the interpreter.
+        // go through all the attributes and bind them in the interpreter.
         for (Enumeration e = this.sfContext().keys(); e.hasMoreElements(); ) {
           String attName = (String) e.nextElement();
           interpreter.set(attName, this.sfContext().get(attName));
         }
       }
       try {
-        sfScriptCodeBase = (String)this.sfResolve("sfScriptCodeBase");
-      }
-      catch (SmartFrogResolutionException rex) {}
+        sfScriptCodeBase = (String)this.sfResolve("sfScriptCodeBase", false);
+      } catch (SmartFrogResolutionException rex) {}
 
       try {
         String portS = ( (Integer)this.sfResolve("port")).toString();
@@ -145,28 +144,26 @@ public class ScriptPrimImpl
                           +
                           "/remote/jconsole.html' to use remote console \n";
         interpreter.print(messageHttp);
-      }
-      catch (SmartFrogResolutionException rex) {}
+      } catch (SmartFrogResolutionException rex) {}
 
       try {
-        String sfDeployCodeSource = sfScriptCodeBase +
-            (String)this.sfResolve("sfDeployCode");
+        String sfDeployCodeSource = sfScriptCodeBase + (String)this.sfResolve("sfDeployCode");
         interpreter.eval(getScript(sfDeployCodeSource));
         // exception handling could be lighter. For script debugging purpose, we'll keep it explicit & heavy
+      }  catch (SmartFrogResolutionException rex) {
+      } catch (TargetError te) {
+        if (sfLog().isErrorEnabled()){
+            sfLog().error("The script, or the code called by the script, threw an exception during deploy phase: "+
+                               te.getTarget(),te);
+        }
+        throw SmartFrogException.forward(e);
+      } catch (EvalError e2) {
+        if (sfLog().isErrorEnabled()){
+            sfLog().error("There was an error in evaluating the script:"+ e2,e2);
+        }
+        throw SmartFrogException.forward(e2);
       }
-      catch (SmartFrogResolutionException rex) {
-      }
-      catch (TargetError e) {
-        System.out.println(
-            "The script, or the code called by the script, threw an exception during deploy phase: "
-            + e.getTarget());
-      }
-      catch (EvalError e2) {
-        System.out.println(
-            "There was an error in evaluating the script:" + e2);
-      }
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       throw SmartFrogException.forward(e);
     }
 
@@ -179,20 +176,20 @@ public class ScriptPrimImpl
   public void sfStart() throws SmartFrogException, RemoteException {
     super.sfStart();
     try {
-      String sfStartCodeSource = sfScriptCodeBase +
-          (String)this.sfResolve("sfStartCode");
+      String sfStartCodeSource = sfScriptCodeBase + (String)this.sfResolve("sfStartCode");
       interpreter.eval(getScript(sfStartCodeSource));
-    }
-    catch (SmartFrogResolutionException rex) {
-    }
-    catch (TargetError e) {
-      System.out.println(
-          "The script, or the code called by the script, threw an exception during start phase: "
-          + e.getTarget());
-    }
-    catch (EvalError e2) {
-      System.out.println(
-          "There was an error in evaluating the script:" + e2);
+    } catch (SmartFrogResolutionException rex) {
+    } catch (TargetError e) {
+        if (sfLog().isErrorEnabled()){
+            sfLog().error("The script, or the code called by the script, threw an exception during start phase: "
+                          +e.getTarget(), e);
+        }
+        throw SmartFrogException.forward(e);
+    } catch (EvalError e2) {
+        if (sfLog().isErrorEnabled()){
+            sfLog().error("There was an error in evaluating the script:"+e2, e2);
+        }
+        throw SmartFrogException.forward(e2);
     }
   }
 
@@ -203,15 +200,14 @@ public class ScriptPrimImpl
    */
   public void sfTerminateWith(TerminationRecord status) {
     try {
-      String sfTerminateWithCodeSource = sfScriptCodeBase +
-          (String)this.sfResolve("sfTerminateWithCode");
+      String sfTerminateWithCodeSource = sfScriptCodeBase + (String)this.sfResolve("sfTerminateWithCode");
       interpreter.set("status", status);
       interpreter.eval(getScript(sfTerminateWithCodeSource));
-    }
-    catch (SmartFrogResolutionException rex) {
-    }
-    catch (Exception e) {
-      e.printStackTrace();
+    }catch (SmartFrogResolutionException rex) {
+    }catch (Exception e) {
+        if (sfLog().isErrorEnabled()){
+            sfLog().error("",e);
+        }
     }
     super.sfTerminateWith(status);
   }
