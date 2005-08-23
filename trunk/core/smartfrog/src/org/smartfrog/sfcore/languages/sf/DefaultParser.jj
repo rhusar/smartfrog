@@ -418,7 +418,6 @@ Vector AttributeListNoEOF() :
 {
     Vector res = new Vector(10, 5);
     Object[] c;
-    String fName;
 }
 {
     ( c = Attribute() {res.addElement(c);}
@@ -431,6 +430,7 @@ Vector AttributeListNoEOF() :
 void Includes(Vector res) :
 {
      String codebase = null;
+     String fName;
 }
 {
 ( [<CODEBASE> codebase = String() ] <INCLUDE> fName = String()
