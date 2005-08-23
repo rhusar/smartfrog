@@ -27,6 +27,7 @@ import org.smartfrog.sfcore.parser.*;
 import bsh.Interpreter;
 import bsh.EvalError;
 import java.util.*;
+import org.smartfrog.sfcore.common.MessageUtil;
 
 /**
  * A function to evaluate an arbitrary arithmetic expression.
@@ -42,20 +43,23 @@ public class Expression extends BaseFunction implements PhaseAction {
     // bind all attributes in the beanshell interpreter
     for (Enumeration e = context.keys(); e.hasMoreElements();){
       String attName = (String) e.nextElement();
+      Object value = null;
       try {
-        Object value = context.get(attName);
+        value = context.get(attName);
         // if the value is a string & not the final expression , try to evaluate
         if ((expString.compareToIgnoreCase(attName) !=0 ) && (value instanceof String) ) {
           try {
             if (interpreter.eval((String) value)!=null)
               value =(interpreter.eval((String) value));
           } catch (EvalError ee) {
-          // on failure do nothing : remains as is...
+            // on failure do nothing : remains as is...
           }
         }
         interpreter.set(attName,value);
       } catch (EvalError ee){
-        System.out.println( "Error setting " + attName + " in beanshell interpreter: "+ee);
+          throw new SmartFrogCompileResolutionException("Error setting "+ attName + " in beanshell interpreter" ,
+							  ee, name, "function", "value: "+ value.getClass().toString() + " (" + value + ")");
+        //System.out.println( "Error setting " + attName + " in beanshell interpreter: "+ee);
       }
     }
 
@@ -64,10 +68,15 @@ public class Expression extends BaseFunction implements PhaseAction {
       return interpreter.eval((String)interpreter.get(expString));
     } catch (Exception e) {
       if (context.get(expString) == null)
-        System.out.println( "Parsing Error : specify an expression in Expression function " );
+          throw new SmartFrogCompileResolutionException("Missing expression in '"+ expString + "' for beanshell interpreter" ,
+							  e, name, "function",null);
+          //System.out.println( "Parsing Error : specify an expression in Expression function " );
       else {
-        System.out.println( "Parsing Error in function Expression" );
-        e.printStackTrace();
+        //System.out.println( "Parsing Error in function Expression: "+context.get(expString) );
+        throw new SmartFrogCompileResolutionException("Error evaluating '"+ context.get(expString) + "' in beanshell interpreter" ,
+                            e, name, "function", "In interpreter: "+(String)interpreter.get(expString));
+
+        //e.printStackTrace();
       }
     }
     return null;
