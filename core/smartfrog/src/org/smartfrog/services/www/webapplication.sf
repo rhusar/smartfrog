@@ -45,11 +45,16 @@ ApplicationServerSchema extends Schema {
     supportsServletContext extends Boolean;
     //attribute true iff EAR deployment is supported
     supportsEAR extends Boolean;
-
+    //attribute true iff SAR deployment is supported
+    supportsSAR extends Boolean;
     }
 
 ApplicationServer extends WebServer {
     applicationServerSchema extends ApplicationServerSchema;
+    supportsWAR false;
+    supportsServletContext false;
+    supportsEAR false;
+    supportsSAR false;
 }
 
 /**
