@@ -132,7 +132,7 @@ public class NewAttributeDialog extends JDialog {
 
                 if (attribute[1] != null) {
                     this.ValuejTextArea.setText(attribute[1].toString());
-                    selectComboIndex(attribute[1]);
+//                    selectComboIndex(attribute[1]);
                 }
             }
         } catch (Exception ex) {
