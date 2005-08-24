@@ -71,7 +71,7 @@ public class DefaultIncludeHandler implements IncludeHandler {
      * @exception Exception error while locating or parsing include
      */
     public Vector parseInclude(String include, String codebase) throws Exception {
-        return (new DefaultParser(openInclude(include, codebase), new DefaultIncludeHandler(codebase))).AttributeList();
+        return (new DefaultParser(openInclude(include, codebase), new DefaultIncludeHandler(actualCodebase(codebase)))).AttributeList();
     }
 
     /**
@@ -90,17 +90,26 @@ public class DefaultIncludeHandler implements IncludeHandler {
      */
     protected InputStream openInclude(String include, String codebase) throws Exception {
         InputStream is = null;
-        String actualCodebase = null;
-        if ((baseCodebase != null) && (codebase != null)) actualCodebase = baseCodebase + " " + codebase;
-        else if (baseCodebase != null) actualCodebase = baseCodebase;
-        else if (codebase != null) actualCodebase = codebase;
 
-        is = SFClassLoader.getResourceAsStream(include, actualCodebase, true);
+        is = SFClassLoader.getResourceAsStream(include, actualCodebase(codebase), true);
 
         if (is == null) {
             throw new Exception("Include file: " + include + " not found");
         }
 
         return is;
+    }
+
+    /**
+     * build a concatenated codebase from the base codebase and the codebase passed as a parameter
+     *
+     *  @param codebase the codeebase to concatenate to the base. May be null.
+     */
+    protected String actualCodebase(String codebase) {
+        String actualCodebase = null;
+        if ((baseCodebase != null) && (codebase != null)) actualCodebase = baseCodebase + " " + codebase;
+        else if (baseCodebase != null) actualCodebase = baseCodebase;
+        else if (codebase != null) actualCodebase = codebase;
+        return actualCodebase;
     }
 }
