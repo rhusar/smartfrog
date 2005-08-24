@@ -545,7 +545,7 @@ public class SFProcess implements MessageKeys {
                 try {
                   Object targetObj = null;
                   try {
-                    targetObj = target.sfResolveHere(subProcess); //target.sfResolveHere(subProcess);
+                    targetObj = target.sfResolve(subProcess); //target.sfResolveHere(subProcess);
                     target = (ProcessCompound) targetObj;
                   } catch (java.lang.ClassCastException thr) {
                     throw SmartFrogResolutionException.illegalClassType(
