@@ -38,10 +38,24 @@ import org.smartfrog.sfcore.security.SFClassLoader;
  *
  */
 public class DefaultIncludeHandler implements IncludeHandler {
+
+    String baseCodebase;
+
     /**
      * Constructor.
      */
     public DefaultIncludeHandler() {
+        baseCodebase = null;
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param baseCodebase the codebase for this include handler to which will be appended the codebase passed in the
+     * parseIncldue method.
+     */
+    public DefaultIncludeHandler(String baseCodebase) {
+        this.baseCodebase = baseCodebase;
     }
 
     /**
@@ -50,14 +64,14 @@ public class DefaultIncludeHandler implements IncludeHandler {
      * construct the vector of attributes
      *
      * @param include include file to parse
-     * @param codebase an optional codebase where hte include may be found. If null, use the default code base
+     * @param codebase an optional codebase where the include may be found. If null, use the default codebase
      *
      * @return vector of attribute name X value pairs
      *
      * @exception Exception error while locating or parsing include
      */
     public Vector parseInclude(String include, String codebase) throws Exception {
-        return (new DefaultParser(openInclude(include, codebase), this)).AttributeList();
+        return (new DefaultParser(openInclude(include, codebase), new DefaultIncludeHandler(codebase))).AttributeList();
     }
 
     /**
@@ -76,7 +90,12 @@ public class DefaultIncludeHandler implements IncludeHandler {
      */
     protected InputStream openInclude(String include, String codebase) throws Exception {
         InputStream is = null;
-        is = SFClassLoader.getResourceAsStream(include, codebase, true);
+        String actualCodebase = null;
+        if ((baseCodebase != null) && (codebase != null)) actualCodebase = baseCodebase + " " + codebase;
+        else if (baseCodebase != null) actualCodebase = baseCodebase;
+        else if (codebase != null) actualCodebase = codebase;
+
+        is = SFClassLoader.getResourceAsStream(include, actualCodebase, true);
 
         if (is == null) {
             throw new Exception("Include file: " + include + " not found");
