@@ -75,10 +75,15 @@ public class NewAttributeDialog extends JDialog {
     /** Set of attributes. */
     private Object[] attribute = null;
     /** Component types. */
-    private String[] componentTypes = {"AnyValue",
-        "Integer", "Boolean", "ComponentDescription", "Reference",
-        "Long", "Float", "Double", "String"
-    };
+//    private String[] componentTypes = {"AnyValue",
+//        "Integer", "Boolean", "ComponentDescription", "Reference",
+//        "Long", "Float", "Double", "String"
+//    };
+    private String[] componentTypes = {"AnyValue"};
+//        "Integer", "Boolean", "ComponentDescription", "Reference",
+//        "Long", "Float", "Double", "String"
+//    };
+
 
     /** Integer value for string. */
     static final int STRING = 8;
@@ -158,19 +163,19 @@ public class NewAttributeDialog extends JDialog {
                     jButtonCancel_actionPerformed(e);
                 }
             });
-        jLabelType.setText("Type");
+        jLabelType.setText("Value");
         jLabelName.setText("Name");
         NamejTextField.setNextFocusableComponent(TypejComboBox);
         NamejTextField.setText("");
-        jLabelValue.setText("Value");
+        jLabelValue.setText("(use SF syntax)");
         ValuejTextArea.setNextFocusableComponent(jButtonSave);
         panel.setMinimumSize(new Dimension(550, 300));
         panel.setPreferredSize(new Dimension(550, 300));
         getContentPane().add(panel);
-        panel.add(TypejComboBox,
-            new GridBagConstraints(1, 1, 2, 1, 1.0, 0.0,
-                GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
-                new Insets(15, 13, 0, 23), 151, 0));
+//        panel.add(TypejComboBox,
+//            new GridBagConstraints(1, 1, 2, 1, 1.0, 0.0,
+//                GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
+//                new Insets(15, 13, 0, 23), 151, 0));
         panel.add(NamejTextField,
             new GridBagConstraints(1, 0, 2, 1, 1.0, 0.0,
                 GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,
