@@ -341,30 +341,42 @@ public final class Diagnostics {
      */
     private static void doReportSummary(StringBuffer out) {
 
-      out.append("* Java Version:   ");out.append( System.getProperty("java.version"));out.append("\n");
-      out.append("* Java Home:      ");out.append(System.getProperty("java.home"));out.append("\n");
-      out.append("* Java Ext Dir:   ");out.append(System.getProperty("java.ext.dirs"));out.append("\n");
+      out.append("* Java Version:    ");out.append( System.getProperty("java.version"));out.append("\n");
+      out.append("* Java Home:       ");out.append(System.getProperty("java.home"));out.append("\n");
+      out.append("* Java Ext Dir:    ");out.append(System.getProperty("java.ext.dirs"));out.append("\n");
 
       //out.append("* Java ClassPath: " + System.getProperty("java.class.path")out.append("\n");
       //);
-      out.append("* OS Name:        ");out.append(System.getProperty("os.name"));out.append("\n");
-      out.append("* OS Version:     ");out.append(System.getProperty("os.version"));out.append("\n");
-      out.append("* User Name:      ");out.append(System.getProperty("user.name"));out.append("\n");
-      out.append("* User Home:      ");out.append(System.getProperty("user.home"));out.append("\n");
-      out.append("* User Work Dir:  ");out.append(System.getProperty("user.dir"));out.append("\n");
+      out.append("* OS Name:         ");out.append(System.getProperty("os.name"));out.append("\n");
+      out.append("* OS Version:      ");out.append(System.getProperty("os.version"));out.append("\n");
+      out.append("* User Name:       ");out.append(System.getProperty("user.name"));out.append("\n");
+      out.append("* User Home:       ");out.append(System.getProperty("user.home"));out.append("\n");
+      out.append("* User Work Dir:   ");out.append(System.getProperty("user.dir"));out.append("\n");
 
       try {
         java.net.InetAddress localhost = java.net.InetAddress.getLocalHost();
-        out.append("* LocalHost Name: ");out.append(localhost.getCanonicalHostName());out.append("\n");
-        out.append("* LocalHost Addr: ");out.append(localhost.getHostAddress());out.append("\n");
+        out.append("* LocalHost Name:  ");out.append(localhost.getCanonicalHostName());out.append("\n");
+        out.append("* LocalHost Addr:  ");out.append(localhost.getHostAddress());out.append("\n");
 
         //out.append("* isMulticast?    " + localhost.isMulticastAddress());
       } catch (Exception ex) {
         out.append("Exception Info:");out.append(ex.toString());out.append("\n");
       }
+      String nameP =System.getProperty("org.smartfrog.iniFile");
+      if ( nameP!=null){
+        out.append("* SF ini file:     ");out.append(nameP);out.append("\n");
+      }
+      //@TODO improve this, there can be many. Prefix:  org.smartfrog.sfcore.processcompound.sfDefault.x
+      nameP =System.getProperty("org.smartfrog.sfcore.processcompound.sfDefault.sfDefault");
+      if ( nameP!=null){
+        out.append("* SF default desc: ");out.append(nameP);out.append("\n");
+      }
+      nameP =System.getProperty("org.smartfrog.sfcore.processcompound.sfProcessName");
+      if ( nameP!=null){
+        out.append("* SF process name: ");out.append(nameP);out.append("\n");
+      }
 
     }
-
     /**
      * Report a listing of classpath used in the current vm.
      * @param out the stream to print the properties to.
