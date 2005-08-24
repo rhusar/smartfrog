@@ -45,11 +45,11 @@ public class OptionSet {
     /** Usage string for SFSystem. */
     public String usage = "\n" +
         " Usage: java -D... org.smartfrog.SFSystem [-a SFACT] [-f SFREF] [-e] [-d]\n" +
-        "    or: java -D... org.smartfrog.SFSystem -?";
+        "    or: java -D... org.smartfrog.SFSystem -?\n";
 
     /** Help string for SFSystem. */
     public String help = "\n" + Version.copyright() + " - v." +
-        Version.versionString() + "\n" + " Parameters: " + "\n" +
+        Version.versionString()+" - build: "+ Version.buildDate()+ "\n" + " Parameters: " + "\n" +
         "    -a SFACT: SmartFrog Action Descriptor (SFACT),\n"+
         "              which is used to indicate to SmartFrog an action to take.\n" +
         "       ex. Deploy a description - " +  "\n" +
@@ -61,34 +61,40 @@ public class OptionSet {
         "           - NAME: name used by the ACTION to be taken\n" +
         "              ex. foo\n" +
         "              ex. \"HOST localhost:foo\"\n" +
+         "             ex. 'HOST localhost:foo'\n" +
         "          - ACTION: defines the action to be taken on the named component\n"+
-        "                    possible actions: DEPLOY, TERMINATE, DETACH, DETaTERM\n" +
+        "                    possible actions: DEPLOY, TERMINATE, DETACH, DETaTERM, PING, PARSE, DIAGNOSTICS\n" +
         "          - SFREF: SmartFrog description (if needed) to be used by ACTION\n" +
         "                   Currently only required by DEPLOY\n"+
         "              ex. /home/sf/foo.sf\n" +
         "              ex. \"c:\\sf\\foo.sf\"\n" +
+        "              ex. 'c:\\sf\\foo.sf'\n" +
         "          - SUBREF: component description name to use by ACTION. It can be empty\n" +
         "                   Currently only required by DEPLOY\n"+
         "              ex: foo\n" +
         "              ex: \"fist:foo\"\n" +
+        "              ex: 'fist:foo'\n" +
         "              note: sfConfig cannot be use with DEPLOY!\n" +
         "          - HOST: host name or IP from where to resolve NAME. It can be empty.\n" +
         "              ex: localhost\n" +
         "              ex: 127.0.0.1\n" +
         "          - PROCESS: process name from where to resolve NAME. When empty it assumes rootProcess.\n" +
         "          \n" +
+        "          SFACT Examples:\n" +
         "              ex1: Deploy a description in local daemon\n" +
         "                   counterEx:DEPLOY:org/smartfrog/examples/counter/example.sf::localhost:\n" +
         "              ex2. Terminate local sfDaemon\n" +
         "                   rootProcess:TERMINATE:::localhost:\n" +
         "              ex3: Deploy \"counterToSucceed\" from counter/example2.sf\n" +
         "                   counterEx3:DEPLOY:org/smartfrog/examples/counter/example2.sf:\"testLevel1:counterToSucceed\":localhost:\n" +
+        "              ex4: Get diagnostics report for \"sfDefault\" component running in remote daemon\n" +
+        "                   'rootProcess:sfDefault':DIAGNOSTICS:::remoteHostName:\n" +
         "\n" +
         "    -f SFREF: file with a set of SmartFrog Action Descriptors (SFACT)" +
         "\n" +
-        "    -e: The daemon will terminate after finishing the deployment." + "\n" +
+        "    -e (exit): The daemon will terminate after finishing the deployment." + "\n" +
         "    -d (diagnostics): print information that might be helpful to diagnose or report problems." + "\n" +
-        " ";
+        "";
 
 
     /** Error string for SFSystem. */
