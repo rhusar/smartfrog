@@ -1,0 +1,268 @@
+<?xml version="1.0"?>
+<project name="deployapi" default="default"
+  xmlns:ac="antlib:net.sf.antcontrib"
+  xmlns:sf="antlib:org.smartfrog.tools.ant"
+  xmlns:m2="antlib:org.apache.maven.artifact.ant"
+  xmlns:core="http://smartfrog.org/build/core"
+  >
+
+  <!--
+  /** (C) Copyright 2005 Hewlett-Packard Development Company, LP
+
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 2.1 of the License, or (at your option) any later version.
+
+  This library is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  You should have received a copy of the GNU Lesser General Public
+  License along with this library; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+  For more information: www.smartfrog.org
+
+  */
+  -->
+
+  <description>
+     Build file for deployment API
+  </description>
+
+  
+  <!-- override point -->
+  <property file="build.properties"/>
+  <property name="javac.java.version" value="1.5"/>
+
+  <property name="root.dir" location="../.."/>
+  <property name="antbuild.dir" location="${root.dir}/antbuild"/>
+  <property name="xml.dir" location="${antbuild.dir}/xml"/>
+  
+  
+  <!-- Import common stuff -->
+  <import file="${xml.dir}/core.xml"/>
+  <import file="${xml.dir}/sftasks.xml"/>
+  <import file="${xml.dir}/m2.xml"/>
+
+
+  <!-- ========================================================== -->
+  <!-- ========================================================== -->
+  <target name="init" depends="core.init-standard-output-dirs,sftasks.smartfrog-tasks">
+  </target>
+  
+  <target name="declare-compile.classpath" depends="m2.m2-tasks">
+    <m2-libraries pathID="compile.classpath">
+      <dependency groupID="org.ggf"
+        artifactID="cddlm"
+        version="${cddlm.version}"/>
+      <dependency groupID="commons-lang"
+        artifactID="commons-lang"
+        version="${commons-lang.version}"/>
+      <dependency groupID="commons-logging"
+        artifactID="commons-logging-api"
+        version="${commons-logging.version}"/>
+      <dependency groupID="log4j"
+        artifactID="log4j"
+        version="${log4j.version}"/>
+      <dependency groupID="org.smartfrog"
+        artifactID="sf-xml"
+        version="${smartfrog-version}"/>
+      <dependency groupID="xom"
+        artifactID="xom"
+        version="${xom.version}"/>
+      <dependency groupID="xalan"
+        artifactID="xalan"
+        version="${xalan.version}"/>
+      <dependency groupID="stax"
+        artifactID="stax-api"
+        version="${stax.version}"/>
+      <dependency groupID="activesoap"
+        artifactID="activesoap"
+        version="${activesoap.version}"/>
+      <dependency
+        groupId="woodstox"
+        artifactId="wstx-asl"
+        version="${wstx-asl.version}" />
+    </m2-libraries>
+  </target>
+
+  
+   <target name="declare-exec.classpath" depends="declare-compile.classpath" >  
+    <path id="exec.classpath">
+      <path refid="compile.classpath"/>
+      <pathelement location="${build.classes.dir}"/>
+    </path>    
+    <property name="exec.classpath.value" refid="exec.classpath"/>
+    <echo level="verbose">exec.classpath=${exec.classpath.value}</echo>
+  </target>
+
+  <!-- declares the testharness and junit path -->
+  <target name="use-smartfrog-testharness" 
+      depends="m2.m2-tasks" > 
+    <m2-libraries pathID="testharness.path">
+      <dependency groupID="org.smartfrog"
+        artifactID="sf-testharness"
+        version="${smartfrog-version}"/>
+      <dependency groupID="junit"
+        artifactID="junit"
+        version="${junit.version}"/>
+    </m2-libraries>
+  </target>
+
+  <target name="declare-tests.compile.classpath" 
+      depends="declare-exec.classpath,use-smartfrog-testharness" > 
+    
+    <path id="tests.compile.classpath">
+      <path refid="exec.classpath"/>
+      <path refid="testharness.path"/>
+    </path>
+    <property name="tests.compile.classpath.value" refid="tests.compile.classpath"/>
+    <echo level="verbose">tests.compile.classpath=${tests.compile.classpath.value}</echo>
+  </target>
+  
+  <target name="declare-tests.run.classpath" depends="declare-tests.compile.classpath" >  
+    <path id="tests.run.classpath">
+      <path refid="tests.compile.classpath"/>
+      <pathelement location="${test.classes.dir}"/>
+    </path>
+    <property name="tests.run.classpath.value" refid="tests.run.classpath"/>
+    <echo level="verbose">tests.run.classpath=${tests.run.classpath.value}</echo>
+  </target>  
+
+  <!-- This target explicitly lists all dependencies so that if anyone starts overriding
+    declarations, it doesnt matter if they omit dependencies. After this target, all classpaths
+    are defined-->  
+  <target name="declare-classpaths" 
+    depends=
+     "declare-compile.classpath,declare-exec.classpath,declare-tests.compile.classpath,declare-tests.run.classpath,declare-tests.run.classpath"/>
+    
+
+  <!-- ========================================================== -->
+  <!-- this is an override point -->
+  <!-- it does nothing but declare all the dependencies for compilation -->
+  <!-- anything that overrides compile can declare a dependency on this -->
+  <!-- target to get its dependencies right -->
+  <!-- ========================================================== -->
+  <target name="pre-compile"
+      depends="init,declare-classpaths">
+  </target>
+ 
+ 
+  <!-- ========================================================== -->
+  <!-- this is an override point -->
+  <!-- compile everything, copy useful files over-->
+  <!-- ========================================================== -->
+  <target name="compile"
+      depends="pre-compile">
+      <depend srcdir="${src.dir}"
+          destdir="${build.classes.dir}"
+          cache="${build.dir}/depends"
+          closure="yes"/>
+      <core:javac
+          classpathref="compile.classpath"
+          srcdir="${src.dir}"
+          destdir="${build.classes.dir}"
+          />
+      <core:copy-useful-files src="${src.dir}" dest="${build.classes.dir}"/>
+  </target>
+  
+  <!-- ========================================================== -->
+  <!-- this is an override point -->
+  <!-- RMI compile by looking for all remote classes in the
+       compiled project-->
+  <!-- ========================================================== -->
+  <target name="rmi" depends="compile"
+      description="create the RMI classes">
+      <core:rmic
+          base="${build.classes.dir}"
+          verify="true"
+          compiler="${rmic.compiler}"
+          includes="**/*.class">
+          <classpath refid="compile.classpath"/>
+      </core:rmic>
+  </target>  
+  
+  
+  <target name="createjar" depends="init" if="is.component.not.enabled">
+    <jar destfile="${target.jar}" 
+             basedir="${build.classes.dir}" 
+             includes="**/*"/>
+     <echo level="verbose">created package ${target.jar}</echo>
+  </target>
+  
+  
+ <!-- ========================================================== -->
+  <!-- this is an override point -->
+  <!-- create the JAR ${target.jar}-->
+  <!-- ========================================================== -->
+  <target name="package" depends="createjar"
+    description="create the JAR files">
+   </target>
+   
+  <!-- ========================================================== -->
+  <!-- this is an override point -->
+  <!-- compile everything, copy useful files over-->
+  <!-- ========================================================== -->
+  <target name="compile-tests"
+      depends="package,declare-tests.compile.classpath">
+      <depend 
+          srcdir="${test.src.dir}"
+          destdir="${test.classes.dir}"
+          cache="${build.test.dir}/depends"
+          closure="yes"/>
+      <core:javac
+          srcdir="${test.src.dir}"
+          destdir="${test.classes.dir}"
+          classpathref="tests.compile.classpath"
+          />
+      <core:copy-useful-files src="${test.src.dir}" dest="${test.classes.dir}"/>
+  </target>  
+  
+  <!-- ========================================================== -->
+  <!-- this is an override point -->
+  <!-- create the test jar ${test.jar}-->
+  <!-- ========================================================== -->
+  <target name="package-tests" depends="compile-tests"
+      description="create the JAR file for the tests">
+      <jar destfile="${test.jar}" 
+        basedir="${test.classes.dir}" 
+        includes="**/*"/>
+      <echo level="verbose">created package ${test.jar}</echo>
+  </target>
+
+  
+  
+<!--   <target name="default" depends="dist"
+    description="make the distribution"/> -->
+
+    
+  <!-- ========================================================== -->
+  <!-- this is an override point -->
+  <!-- unit tests : anything which does not need deployment to run-->
+  <!-- ========================================================== -->
+<!--   <target name="unit-tests" depends="compile-tests" if="unit.tests.enabled"
+    description="run the unit tests">
+    <sf-junit
+      errorProperty="test.failed"
+      failureProperty="test.failed"
+      includeAntRuntime="true"
+      >
+      <sysproperty key="test.classes.dir"
+        value="${test.classes.dir}"/>
+      <classpath>
+        <path refid="tests.run.classpath"/>
+      </classpath>
+      <batchtest todir="${test.data.dir}" if="unit.tests.enabled">
+        <fileset dir="${test.classes.dir}">
+          <include name="org/smartfrog/test/unit/sfcore/languages/cdl/**/*Test.class"/>
+        </fileset>
+      </batchtest>
+    </sf-junit>
+  </target> -->
+  
+ 
+  
+</project>
