@@ -1,0 +1,98 @@
+<project name="daemon"
+  xmlns:ac="antlib:net.sf.antcontrib"
+  xmlns:sf="antlib:org.smartfrog.tools.ant"
+  xmlns:m2="antlib:org.apache.maven.artifact.ant">
+
+  
+  <description>
+  This import library contains helper targets to start and stop daemons.
+  </description>
+  
+ <import file="sftasks.xml"/>
+
+  <!-- ========================================================== -->
+  <!--  look for a local daemon. Sets the property  local.daemon.running if
+    one is listening on port 3800-->
+  <!-- ========================================================== -->
+  <target name="probe-local-daemon" depends="sftasks.extended-smartfrog-tasks">
+    <sf:daemonfound property="local.daemon.running" />
+  </target>
+
+  <!-- ========================================================== -->
+  <!-- conditionally start the daemon if one was not found already-->
+  <!-- ========================================================== -->
+  <target name="start-daemon-if-needed" 
+    depends="daemon.probe-local-daemon"
+    unless="local.daemon.running">
+      <sf:startdaemon-debug  />
+  </target>
+
+  <!-- ========================================================== -->
+  <!-- start the daemon in the foreground                         -->
+  <!-- ========================================================== -->
+  <target name="start-daemon-fg"
+    description="start a daemon in the foreground"
+    depends="sftasks.extended-smartfrog-tasks"
+    >
+      <sf:startdaemon-debug  spawn="false" timeout="-1"/>
+  </target>
+  
+  <!-- ========================================================== -->
+  <!-- conditionally start the daemon if one was not found already-->
+  <!-- ========================================================== -->
+  <target name="start-gui" 
+    depends="sftasks.extended-smartfrog-tasks" >
+      <sf:gui-debug  />
+  </target>
+
+  
+  <!-- ========================================================== -->
+  <!-- Start the console -->
+  <!-- ========================================================== -->
+  <target name="start-console"
+    description="start a console"
+    depends="sftasks.extended-smartfrog-tasks" >
+      <sf:console-debug  timeout="-1"/>
+  </target>
+
+  <!-- ========================================================== -->
+  <!-- conditionally start the daemon if one was not found already-->
+  <!-- and do not complain if it could not start (or execution timed out) -->
+  <!-- ========================================================== -->
+  <target name="start-daemon-if-needed-no-failonerror" 
+    depends="daemon.probe-local-daemon"
+    unless="local.daemon.running">
+      <sf:startdaemon-debug failonerror="false"/>
+  </target>
+
+  
+  <!-- ========================================================== -->
+  <!-- this is the counterpoint to start-daemon-if-needed 
+    if the probe did not find a daemon, then we shut down any daemon
+    that we created.-->
+  <!-- ========================================================== -->
+  <target name="stop-daemon-if-started"
+    depends="sftasks.extended-smartfrog-tasks"
+    unless="local.daemon.running" >
+    <sf:stopdaemon failonerror="false" />
+  </target>  
+
+  <!-- ========================================================== -->
+  <!-- public startup operation -->
+  <!-- ========================================================== -->
+  <target name="startup"
+    depends="daemon.start-daemon-if-needed"
+    description="start a local daemon">
+  </target>
+  
+  <!-- ========================================================== -->
+  <!-- always shutdown a local daemon. keep going if one is not running -->
+  <!-- ========================================================== -->
+  <target name="shutdown"
+    depends="sftasks.extended-smartfrog-tasks"
+    description="shut down a local smartfrog daemon">
+    <sf:stopdaemon timeout="60000" failonerror="false" />
+  </target> 
+
+  
+</project>

@@ -1,0 +1,134 @@
+<project name="m2" basedir="." default="checkstyle"
+  xmlns:sf="antlib:org.smartfrog.tools.ant"
+  xmlns:m2="antlib:org.apache.maven.artifact.ant"
+  >
+
+  <description>
+    This is an import library that runs
+    checkstyle.
+  </description>
+
+  <!-- import the core -->
+  <import file="core.xml"/>
+
+  
+  <!-- ========================================================== -->
+  <!-- init all the maven2 support   -->
+  <!-- ========================================================== -->
+   <target name="init-m2" 
+    depends="core.init-core,core.set-names">
+ 
+
+    <!-- Maven2 stuff
+      All components build into the org.smartfrog group, unless otherwise stated, but
+      are their own artifacts. 
+      -->
+    <property name="m2.repository" location="${user.home}/.m2/repository" />
+    
+        
+    <!-- make the root path of an artifact -->
+    <macrodef name="m2-makepath">
+      <attribute name="property"/>
+      <attribute name="groupIDpath"/>
+      <attribute name="artifactID" default="@{groupIDpath}"/>
+      <attribute name="version"/>
+      <sequential>
+        <property name="@{property}" 
+          location="${m2.repository}/@{groupIDpath}/@{artifactID}/@{component.version}" />
+      </sequential>
+    </macrodef>
+    
+    <property name="m2.artifact.name" value="project.name" />
+    <property name="m2.groupID" value="org.smartfrog" />
+    <property name="m2.groupID.path" value="org/smartfrog" />
+    <m2-makepath property="m2.subdir"
+      groupIDpath="${m2.groupID.path}"
+      artifactID="${m2.artifact.name}"
+      version="${component.version}" />
+<!--     <property name="m2.subdir" 
+      location="${m2.repository}/${m2.groupID.path}/${artifact.name}/${Version}" />
+ -->
+    <!-- pom setup -->
+    <property name="target.pom" location="${dist.lib.dir}/${jarfile.stub}.pom" />
+    <property name="project.pom" location="project-template.pom" />
+    <available property="project.haspom" file="${project.pom}" />
+    <property name="m2.tasks.uri" value= "antlib:org.apache.maven.artifact.ant" />
+    <available property="m2.tasks.available"
+      resource="org/apache/maven/artifact/ant/antlib.xml" />
+      <!-- location of the bit of the repository we keep under SCM -->
+    <property name="m2.smartfrog.scm.repository"
+      location="${antbuild.dir}/repository" />
+    <makeurl file="${m2.smartfrog.scm.repository}"
+        property="m2.smartfrog.scm.repository.url" />
+        
+    <property name="m2.ibiblio.repository"
+      value="http://ibiblio.org/maven2"/>    
+   </target>
+   
+   
+   <target name="m2-tasks" depends="m2.init-m2">
+     <fail unless="m2.tasks.available">
+     you need the maven2 tasks from http://maven.apache.org/maven2/ant-tasks.html
+     </fail>
+    <presetdef name="m2-libraries">
+      <m2:dependencies>
+        <localRepository location="${m2.repository}" />
+        <!-- look in SCM first -->
+        <remoteRepository url="${m2.smartfrog.scm.repository.url}" checksumPolicy="warn"/>
+        <!-- then hit ibiblio -->
+        <remoteRepository url="${m2.ibiblio.repository}" />
+        <!-- apache repository -->
+        <remoteRepository url="http://cvs.apache.org/repository/" layout="legacy"/>        
+      </m2:dependencies>
+    </presetdef>
+
+   </target>
+   
+
+  <!-- ========================================================== -->
+  <!-- POM creation/copy, depending on whether it exists or not   -->
+  <!-- ========================================================== -->
+  
+   <target name="m2-copy-pom" depends="m2.init-m2" if="project.haspom">
+     <copy file="${project.pom}" tofile="${target.pom}" > 
+      <!-- we expand ant properties here.  -->
+       <filterchain>
+        <expandproperties/>
+       </filterchain>
+     </copy>
+   </target>
+
+   <!-- inline creation of a very minimal (zero dependency) pom -->
+   <target name="m2-make-pom" depends="m2.init-m2" unless="project.haspom">
+   <echo message="Creating Pom ${target.pom}" level="verbose"/>
+   <echoxml file="${target.pom}">
+      <project>
+        <modelVersion>4.0.0</modelVersion>
+        <groupId>${m2.groupID}</groupId>
+        <artifactId>${artifact.name}</artifactId>
+        <packaging>jar</packaging>
+        <version>${component.version}</version>
+      </project>
+    </echoxml>
+   
+   </target>
+   
+   <target name="m2-pom" depends="m2-copy-pom,m2-make-pom" />
+  
+  <!-- ========================================================== -->
+  <!-- this is not  normally for overriding -->
+  <!-- install the jar, to the local maven2 repository -->
+  <!-- ========================================================== -->
+<!--   
+  <target name="m2-install" depends="checksum-target-jar,m2-pom"
+      description="copy the JAR file local maven repository">
+      
+    <mkdir dir="${m2.subdir}"/>    
+    <copy file="${target.jar}" todir="${m2.subdir}"/>
+    <copy file="${target.pom}" todir="${m2.subdir}" failonerror="false"/>
+    <copy file="${target.jar}.md5" todir="${m2.subdir}" failonerror="false"/>
+
+  </target>
+   -->
+   
+ </project>

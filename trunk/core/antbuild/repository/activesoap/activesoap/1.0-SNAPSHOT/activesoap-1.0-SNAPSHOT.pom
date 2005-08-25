@@ -1,188 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
-  <pomVersion>3</pomVersion>
-  <name>ActiveSOAP</name>
-  <id>activesoap</id>
-  <currentVersion>1.0-SNAPSHOT</currentVersion>
-
-  <organization>
-    <name>LogicBlaze, Inc.</name>
-    <url>http://logicblaze.com</url>
-    <logo>http://logicblaze.com/images/logo.jpg</logo>
-  </organization>
-  <logo></logo>
-
-  <inceptionYear>2004</inceptionYear>
-
-  <package>org.codehaus.activesoap</package>
-  <packageGroups>
-    <packageGroup>
-      <title>Core ActiveSOAP API</title>
-      <packages>org.codehaus.activesoap</packages>
-    </packageGroup>
-    <packageGroup>
-      <title>WS-Addressing API and implementation</title>
-      <packages>org.codehaus.activesoap.policy.addressing:org.codehaus.activesoap.policy.addressing.*</packages>
-    </packageGroup>
-    <packageGroup>
-      <title>Transport connectors for HTTP and JMS</title>
-      <packages>org.codehaus.activesoap.transport.*</packages>
-    </packageGroup>
-    <packageGroup>
-      <title>WSIF provider</title>
-      <packages>org.codehaus.activesoap.wsif.*</packages>
-    </packageGroup>
-    <packageGroup>
-      <title>XML Handlers for different XML APIs and data binding tools</title>
-      <packages>org.codehaus.activesoap.handler:org.codehaus.activesoap.handler.*</packages>
-    </packageGroup>
-    <packageGroup>
-      <title>SOAP version details</title>
-      <packages>org.codehaus.activesoap.soap</packages>
-    </packageGroup>
-    <packageGroup>
-      <title>Utility classes</title>
-      <packages>org.codehaus.activesoap.util</packages>
-    </packageGroup>
-  </packageGroups>
-
-  <shortDescription>
-  	 ActiveSOAP is a high performance, ightweight and easily embeddable, document centric SOAP stack
-  </shortDescription>
-
-  <gumpRepositoryId>activesoap</gumpRepositoryId>
-
-  <description>
-  	 ActiveSOAP is a high performance, ightweight and easily embeddable, document centric SOAP stack
-  </description>
-
-  <url>http://activesoap.codehaus.org/</url>
-  <issueTrackingUrl>http://jira.codehaus.org/browse/AWS</issueTrackingUrl>
-
-  <!-- to help DC use beaver
-  <siteAddress>beaver.codehaus.org</siteAddress>
-  -->
-  <siteAddress>activesoap.codehaus.org</siteAddress>
-  <siteDirectory>/home/projects/activesoap/public_html/maven</siteDirectory>
-  <distributionDirectory>/home/projects/activesoap/dist</distributionDirectory>
-
-  <repository>
-    <connection>scm:cvs:pserver:anonymous@cvs.activesoap.codehaus.org:/home/projects/activesoap/scm:activesoap</connection>
-    <developerConnection>scm:cvs:ext:${maven.username}@cvs.activesoap.codehaus.org:/home/projects/activesoap/scm:activesoap</developerConnection>
-    <url>http://cvs.activesoap.codehaus.org/activesoap/</url>
-  </repository>
-
-  <mailingLists>
-    <mailingList>
-      <name>ActiveSOAP Developer List</name>
-      <subscribe>dev-subscribe@activesoap.codehaus.org</subscribe>
-      <unsubscribe>dev-unsubscribe@activesoap.codehaus.org</unsubscribe>
-      <archive>http://archive.activesoap.codehaus.org/dev/</archive>
-    </mailingList>
-    <mailingList>
-      <name>ActiveSOAP User List</name>
-      <subscribe>user-subscribe@activesoap.codehaus.org</subscribe>
-      <unsubscribe>user-unsubscribe@activesoap.codehaus.org</unsubscribe>
-      <archive>http://archive.activesoap.codehaus.org/user/</archive>
-    </mailingList>
-    <mailingList>
-      <name>ActiveSOAP SCM List</name>
-      <subscribe>scm-subscribe@activesoap.codehaus.org</subscribe>
-      <unsubscribe>scm-unsubscribe@activesoap.codehaus.org</unsubscribe>
-      <archive>http://archive.activesoap.codehaus.org/scm/</archive>
-    </mailingList>
-  </mailingLists>
-
-  <versions>
-    <version>
-      <id>1.0-beta-1</id>
-      <name>1.0-beta-1</name>
-      <tag>1.0-beta-1</tag>
-    </version>
-  </versions>
-  <branches></branches>
-
-  <developers>
-    <developer>
-      <name>James Strachan</name>
-      <id>jstrachan</id>
-      <email>jstrachan@protique.com</email>
-      <organization>Protique</organization>
-    </developer>
-    <developer>
-      <name>Hiram Chirino</name>
-      <id>chirino</id>
-      <email>hiram@protique.com</email>
-      <organization>Protique</organization>
-    </developer>
-    <developer>
-      <name>Joe Walnes</name>
-      <id>joe</id>
-      <email></email>
-      <organization></organization>
-    </developer>
-  </developers>
-
-
-  <contributors>
-
-  </contributors>
-
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>activesoap</groupId>
+  <artifactId>activesoap</artifactId>
+  <version>1.0-SNAPSHOT</version>  
   <dependencies>
-
-    <!-- StAX API -->
-    <dependency>
-      <id>stax+api</id>
+<!--     <dependency>
+      <groupId>stax</groupId>
+      <artifactId>stax-api</artifactId>
       <version>1.0</version>
     </dependency>
-
-    <!-- possible StAX implementations: START -->
-
-    <!-- fast implementation of StAX -->
     <dependency>
       <groupId>woodstox</groupId>
       <artifactId>wstx-asl</artifactId>
       <version>1.9</version>
     </dependency>
-
-    <!-- reference implementation -->
-    <!--
-    <dependency>
-      <id>stax</id>
-      <version>1.1.1-dev</version>
-    </dependency>
-    -->
-    <!-- possible StAX implementations: END -->
-
-
-    <dependency>
-      <groupId>commons-logging</groupId>
-      <artifactId>commons-logging</artifactId>
-      <version>1.0.3</version>
-      <url>http://jakarta.apache.org/commons/logging/</url>
-      <properties>
-        <war.bundle>true</war.bundle>
-      </properties>
-    </dependency>
-    <dependency>
-      <id>concurrent</id>
-      <version>1.3.4</version>
-      <properties>
-        <rar.bundle>true</rar.bundle>
-      </properties>
-      <properties>
-        <war.bundle>true</war.bundle>
-      </properties>
-    </dependency>
-
-    <!-- utility library for adapting StAX to SAX and JAXP Source -->
-    <dependency>
-      <id>stax-utils</id>
+ -->    <!-- utility library for adapting StAX to SAX and JAXP Source -->
+<!--     <dependency>
+      <groupId>stax-utils</groupId>
+      <artifactId>stax-utils</artifactId>
       <version>snapshot-20040917</version>
     </dependency>
-
+ -->
     <!-- default marshalling layer of XMLBeans -->
-    <dependency>
+<!--     <dependency>
       <groupId>xmlbeans</groupId>
       <artifactId>xbean</artifactId>
       <version>2.0.0-beta1</version>
@@ -197,190 +38,24 @@
       <artifactId>xbean_xpath</artifactId>
       <version>2.0.0-beta1</version>
     </dependency>
-
-    <!-- optional jars for XStream marshalling -->
-<!--     <dependency>
-      <id>xstream</id>
-      <version>1.1.1</version>
-    </dependency>
- -->
-    <!-- for Spring support -->
-<!--     <dependency>
-      <id>springframework</id>
-      <artifactId>spring</artifactId>
-      <version>1.1</version>
-      <url>http://www.springframework.org</url>
-      <properties>
-        <war.bundle>true</war.bundle>
-      </properties>
-    </dependency> -->
-
-    <!-- JAXB 1.0 based XML marshalling -->
-<!--     <dependency>
-      <groupId>activesoap</groupId>
-      <artifactId>jaxb-api</artifactId>
-      <version>1.5</version>
-    </dependency>
-    <dependency>
-      <groupId>activesoap</groupId>
-      <artifactId>jaxb-impl</artifactId>
-      <version>1.5</version>
-    </dependency>
-    <dependency>
-      <groupId>activesoap</groupId>
-      <artifactId>jaxb-libs</artifactId>
-      <version>1.5</version>
-    </dependency>
-    <dependency>
-      <groupId>activesoap</groupId>
-      <artifactId>jaxb-xjc</artifactId>
-      <version>1.5</version>
-    </dependency>
-    <dependency>
-      <groupId>activesoap</groupId>
-      <artifactId>xsdlib</artifactId>
-      <version>1.5</version>
-    </dependency>
-    <dependency>
-      <groupId>activesoap</groupId>
-      <artifactId>relaxngDatatype</artifactId>
-      <version>1.5</version>
-    </dependency>
-    <dependency>
-      <groupId>activesoap</groupId>
-      <artifactId>jaxb-xercesImpl</artifactId>
-      <version>1.5</version>
-    </dependency>
-    <dependency>
-      <groupId>activesoap</groupId>
-      <artifactId>jaxb-xalan</artifactId>
-      <version>1.5</version>
-    </dependency>
- -->
-    <!-- WSIF provider support -->
-<!--     <dependency>
-      <groupId>servicemix</groupId>
-      <artifactId>wsif</artifactId>
-      <version>2.0</version>
-    </dependency>
-    <dependency>
-      <id>wsdl4j</id>
-      <version>1.4</version>
-    </dependency> -->
-
-    <!-- optional Axis connectors -->
-<!--     <dependency>
-      <id>axis</id>
-      <version>1.2-beta-2</version>
-    </dependency>
- -->
+ -->    
     <!-- optional web connectors -->
-    <dependency>
-      <id>servletapi</id>
-      <version>2.3</version>
+<!--     <dependency>
+      <groupId>servletapi</groupId>
+      <artifactId>servletapi</artifactId>
+      <version>2.4</version>
     </dependency>
-
+ -->
     <!-- lets use freely distributable J2EE jar for JMS APIs -->
-    <dependency>
+<!--     <dependency>
       <groupId>geronimo-spec</groupId>
       <artifactId>geronimo-spec-j2ee</artifactId>
       <version>1.4-rc2</version>
       <properties>
         <war.bundle>true</war.bundle>
       </properties>
-    </dependency>
-
-    <!-- optional used for in-web container testing -->
-<!--     <dependency>
-      <id>jetty</id>
-      <jar>org.mortbay.jetty-4.2.20RC0.jar</jar>
-    </dependency>
-    <dependency>
-      <id>jetty+jasper-compiler</id>
-      <jar>jasper-compiler-4.2.20RC0.jar</jar>
-    </dependency>
-    <dependency>
-      <id>jetty+jasper-runtime</id>
-      <jar>jasper-runtime-4.2.20RC0.jar</jar>
-    </dependency>
+    </dependency>    
  -->
-    <!-- for unit test cases -->
-    <dependency>
-      <id>junit</id>
-      <version>3.8.1</version>
-    </dependency>
+ </dependencies>
 
-  </dependencies>
-
-  <build>
-    <nagEmailAddress>dev@activesoap.codehaus.org</nagEmailAddress>
-    <sourceDirectory>src/java</sourceDirectory>
-    <unitTestSourceDirectory>src/test</unitTestSourceDirectory>
-
-    <integrationUnitTestSourceDirectory/>
-    <aspectSourceDirectory/>
-
-    <unitTest>
-      <resources>
-        <resource>
-          <directory>src/test</directory>
-          <includes>
-            <include>**/*.properties</include>
-            <include>**/*.xml</include>
-            <include>**/*.wsdl</include>
-          </includes>
-        </resource>
-      </resources>
-      <includes>
-        <include>**/*Test.*</include>
-      </includes>
-      <excludes>
-        <!-- this test case fails as the namespace declarations tend to move upwards -->
-        <exclude>**/Soap12ConformanceWithRepairNamespaceTest.*</exclude>
-      </excludes>
-    </unitTest>
-
-    <resources>
-      <resource>
-        <directory>src/conf</directory>
-        <includes>
-          <include>**/*</include>
-        </includes>
-      </resource>
-    </resources>
-  </build>
-
-  <reports>
-    <!--
-     |
-     | These should all be completely self contained. You should be able
-     | to generate each of them individually without needing the final
-     | xdoc transformation.
-     |
-     | Each report plugin with it's POM and plugin.jelly logic should
-     | contain everything needed to produced the report.
-     |
-    -->
-
-    <report>maven-jdepend-plugin</report>
-    <!-- no license yet
-    <report>maven-clover-plugin</report>
-    -->
-    
-    <!-- re-enable when we can get the warnings down to less than a few Mb!
-    <report>maven-checkstyle-plugin</report>
-    <report>maven-simian-plugin</report>
-    <report>maven-faq-plugin</report>
-    -->
-    <report>maven-changes-plugin</report>
-    <report>maven-changelog-plugin</report>
-    <report>maven-file-activity-plugin</report>
-    <report>maven-developer-activity-plugin</report>
-    <report>maven-javadoc-plugin</report>
-    <report>maven-jxr-plugin</report>
-    <report>maven-junit-report-plugin</report>
-    <report>maven-tasklist-plugin</report>
-    <report>maven-pmd-plugin</report>
-
-  </reports>
 </project>
