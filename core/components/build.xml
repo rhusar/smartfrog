@@ -178,7 +178,7 @@ For more information: www.smartfrog.org
 
   <target name="m2-install" depends="init"
     description="install all projects">
-    <delegate target="maybe-install"/>
+    <delegate target="m2-install"/>
   </target>
 
   <target name="diagnostics" depends="init"
