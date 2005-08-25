@@ -897,6 +897,8 @@
   <!--
   component only logic to create a versioned jar name
   -->
+  <target name="generateversion" depends="generate-versioned-jar"/>
+  
   <target name="generate-versioned-jar" if="is.component.enabled" depends="compile">
     <presetdef name="get-version">
       <java classname="org.smartfrog.Version" failonerror="true" fork="true" >
