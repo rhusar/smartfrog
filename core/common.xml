@@ -185,7 +185,7 @@
     <!-- name the resource -->
     <property name="smartfrog.version.property.resource"
       value="org/smartfrog/smartfrog-version.properties"
-      classpathref="smartfrog.classpath"/>
+      />
       
     <!-- check for its presence; break the build if missing -->
     <fail >
@@ -894,7 +894,10 @@
   </target>  
 
 
-  <target name="generateversion" if="is.component.enabled">
+  <!--
+  component only logic to create a versioned jar name
+  -->
+  <target name="generate-versioned-jar" if="is.component.enabled" depends="compile">
     <presetdef name="get-version">
       <java classname="org.smartfrog.Version" failonerror="true" fork="true" >
       <classpath>
@@ -939,7 +942,10 @@
     
   </target>
 
-  <target name="createjar" depends="init" if="is.component.not.enabled">
+  <!--
+    bypass all the self-referential stuff here.
+  -->
+  <target name="createjar" depends="generate-versioned-jar" if="is.component.not.enabled">
     <jar destfile="${target.jar}" 
              basedir="${build.classes.dir}" 
              includes="**/*"/>
@@ -950,7 +956,7 @@
   <!-- this is an override point -->
   <!-- create the JAR ${target.jar}-->
   <!-- ========================================================== -->
-  <target name="package" depends="compile,rmi,generateversion,createjar"
+  <target name="package" depends="createjar"
     description="create the JAR files">
    </target>
 
@@ -1132,20 +1138,6 @@
     <antcall target="release"/>
   </target>
 
-  <!-- configure an HTTP proxy -->
-  <target name="setproxy" unless="setproxy.disabled" depends="init-common">
-    <!-- put your proxy settings here -->
-    <property file="${user.home}/.ant/proxy.properties" />
-    <property name="proxy.host" value="" />
-    <property name="proxy.port" value="80" />
-    <property name="proxy.user" value="" />
-    <property name="proxy.pass" value="" />
-    <echo level="verbose">
-      proxy: ${proxy.host}:${proxy.port} [${proxy.user}/${proxy.pass}]
-    </echo>
-      <setproxy proxyhost="${proxy.host}" proxyport="${proxy.port}"
-        proxyuser="${proxy.user}" proxypassword="${proxy.pass}" />
-  </target>
   
   <!-- ========================================================== -->
   <!-- Security corner -->
@@ -1223,7 +1215,7 @@
    </target>
    
    
-   <target name="m2-tasks" depends="m2-init,setproxy">
+   <target name="m2-tasks" depends="m2-init">
      <fail unless="m2.tasks.available">
      you need the maven2 tasks from http://maven.apache.org/maven2/ant-tasks.html
      </fail>
