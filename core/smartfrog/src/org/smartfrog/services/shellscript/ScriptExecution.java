@@ -51,7 +51,7 @@ public interface ScriptExecution {
      *    0 is don't wait,
      *    -1 is wait forever
      *
-     * @returns lock object that must be used in follow-up execute and
+     * @return lock object that must be used in follow-up execute and
      * lock release operations
      *
      * @throws SmartFrogException if the lock is not obtained in the requisite
@@ -62,10 +62,10 @@ public interface ScriptExecution {
     /**
      * submit  a list of commands to the shell
      *
-     * @parameter commands the list of commands
-     * @parameter lock the lock object receieved from the lockShell
+     * @param commands the list of commands
+     * @param lock the lock object receieved from the lockShell
      *
-     * @returns the "future" ScriptResult implementation that allows the code to
+     * @return the "future" ScriptResult implementation that allows the code to
      * obtain the results of executnig the script
      *
      * @throws SmartFrogException if the lock object is not valid, i.e. if it is
@@ -76,11 +76,11 @@ public interface ScriptExecution {
     /**
      * submit  a list of commands to the shell
      *
-     * @parameter commands the list of commands
-     * @parameter lock the lock object receieved from the lockShell
-     * @param determines if results output will be shown using out/err streams.
+     * @param commands the list of commands
+     * @param lock the lock object receieved from the lockShell
+     * @param verbose determines if results output will be shown using out/err streams.
      *
-     * @returns the "future" ScriptResult implementation that allows the code to
+     * @return the "future" ScriptResult implementation that allows the code to
      * obtain the results of executnig the script
      *
      * @throws SmartFrogException if the lock object is not valid, i.e. if it is
@@ -91,10 +91,10 @@ public interface ScriptExecution {
     /**
      * submit  a command to the shell
      *
-     * @parameter command the command to execute
-     * @parameter lock the lock object receieved from the lockShell
+     * @param command the command to execute
+     * @param lock the lock object receieved from the lockShell
      *
-     * @returns the "future" ScriptResult implementation that allows the code to
+     * @return the "future" ScriptResult implementation that allows the code to
      * obtain the results of executnig the script
      *
      * @throws SmartFrogException if the lock object is not valid, i.e. if it is
@@ -105,11 +105,11 @@ public interface ScriptExecution {
     /**
      * submit  a command to the shell
      *
-     * @parameter command the command to execute
-     * @parameter lock the lock object receieved from the lockShell
-     * @param determines if results output will be shown using out/err streams.
+     * @param command the command to execute
+     * @param lock the lock object receieved from the lockShell
+     * @param verbose determines if results output will be shown using out/err streams.
      *
-     * @returns the "future" ScriptResult implementation that allows the code to
+     * @return the "future" ScriptResult implementation that allows the code to
      * obtain the results of executnig the script
      *
      * @throws SmartFrogException if the lock object is not valid, i.e. if it is
@@ -136,7 +136,7 @@ public interface ScriptExecution {
      *    0 is don't wait,
      *    -1 is wait forever
      *
-     * @returns the "future" ScriptResult implementation that allows the code to
+     * @return the "future" ScriptResult implementation that allows the code to
      * obtain the results of executnig the script
      *
      * @throws SmartFrogException  if the lock is not obtained in the requisite
@@ -151,9 +151,9 @@ public interface ScriptExecution {
      * @param timeout max number of miliseconds to obtain the lock:
      *    0 is don't wait,
      *    -1 is wait forever
-     * @param determines if the shell output will be shown using out/err streams.
+     * @param verbose determines if the shell output will be shown using out/err streams.
      *
-     * @returns the "future" ScriptResult implementation that allows the code to
+     * @return the "future" ScriptResult implementation that allows the code to
      * obtain the results of executnig the script
      *
      * @throws SmartFrogException  if the lock is not obtained in the requisite
@@ -169,7 +169,7 @@ public interface ScriptExecution {
      *    0 is don't wait,
      *    -1 is wait forever
      *
-     * @returns the "future" ScriptResult implementation that allows the code to
+     * @return the "future" ScriptResult implementation that allows the code to
      * obtain the results of executnig the script
      *
      * @throws SmartFrogException  if the lock is not obtained in the requisite
@@ -184,9 +184,9 @@ public interface ScriptExecution {
      * @param timeout max number of miliseconds to obtain the lock:
      *    0 is don't wait,
      *    -1 is wait forever
-     * @param determines if the shell output will be shown using out/err streams.
+     * @param verbose determines if the shell output will be shown using out/err streams.
      *
-     * @returns the "future" ScriptResult implementation that allows the code to
+     * @return the "future" ScriptResult implementation that allows the code to
      * obtain the results of executnig the script
      *
      * @throws SmartFrogException  if the lock is not obtained in the requisite

@@ -146,7 +146,7 @@ public class SFScriptExecutionImpl  extends PrimImpl implements Prim, SFScriptEx
    *   not currently holding the lock
    * @param command String
    * @param lock ScriptLock
-   * @param determines if results output will be shown using out/err streams.
+   * @param verbose determines if results output will be shown using out/err streams.
    * @return ScriptResults
    * @todo Implement this org.smartfrog.services.shellscript.ScriptExecution
    *   method
@@ -161,7 +161,7 @@ public class SFScriptExecutionImpl  extends PrimImpl implements Prim, SFScriptEx
     * @param commands the list of commands
     * @param timeout max number of miliseconds to obtain the lock: 0 is don't
     *   wait, -1 is wait forever
-   * @param determines if the shell output will be shown using out/err streams.
+   * @param verbose determines if the shell output will be shown using out/err streams.
     * @throws SmartFrogException if the lock is not obtained in the requisite
     *   time
     * @return ScriptResults
@@ -211,7 +211,7 @@ public class SFScriptExecutionImpl  extends PrimImpl implements Prim, SFScriptEx
    * @param command the command
    * @param timeout max number of miliseconds to obtain the lock: 0 is don't
    *   wait, -1 is wait forever
-   * @param determines if the shell output will be shown using out/err streams.
+   * @param verbose determines if the shell output will be shown using out/err streams.
    * @throws SmartFrogException if the lock is not obtained in the requisite
    *   time
    * @return ScriptResults
@@ -246,7 +246,7 @@ public class SFScriptExecutionImpl  extends PrimImpl implements Prim, SFScriptEx
    *   not currently holding the lock
    * @param commands List
    * @param lock ScriptLock
-   * @param determines if results output will be shown using out/err streams.
+   * @param verbose determines if results output will be shown using out/err streams.
    * @return ScriptResults
    * @todo Implement this org.smartfrog.services.shellscript.ScriptExecution
    *   method

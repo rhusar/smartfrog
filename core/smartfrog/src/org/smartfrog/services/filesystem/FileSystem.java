@@ -133,7 +133,7 @@ public class FileSystem {
      *                  when things go wrong
      * @param platform  a platform to use for converting filetypes. Set to null
      *                  to use the default helper for this platform.
-     * @return
+     * @return the absolute path 
      * @throws SmartFrogResolutionException
      * @throws RemoteException
      */
@@ -218,7 +218,7 @@ public class FileSystem {
      *                  when things go wrong
      * @param platform  a platform to use for converting filetypes. Set to null
      *                  to use the default helper for this platform.
-     * @return
+     * @return the resolved absolute path
      * @throws SmartFrogResolutionException
      * @throws RemoteException
      */

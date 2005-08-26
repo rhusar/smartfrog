@@ -81,7 +81,7 @@ public class ProgressBarsImpl extends SFDisplay implements Prim, ProgressBars,
     /**
      * Print the receipt of any event for debugging
      *
-     * @param event event
+     * @param eventObj event
      */
     public void handleEvent(Object eventObj) {
         String event = "";

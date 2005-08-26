@@ -255,7 +255,7 @@ public class JavaPackageImpl extends PrimImpl implements JavaPackage {
     /**
      * get the vector of uris
      *
-     * @return
+     * @return the classpath as a vector
      */
     public Vector getUriClasspathList() {
         return uriClasspathList;

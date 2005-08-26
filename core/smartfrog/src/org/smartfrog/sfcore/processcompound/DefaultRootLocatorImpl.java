@@ -220,7 +220,6 @@ public class DefaultRootLocatorImpl implements RootLocator, MessageKeys {
     /**
      * Unbinds root process compound from local registry.
      *
-     * @param c process compound to set as root
      *
      * @throws RemoteException if there is any network/rmi error
      * @throws SmartFrogRuntimeException if failed to unbind

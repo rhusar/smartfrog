@@ -191,7 +191,6 @@ public class EventPrimImpl extends PrimImpl implements EventRegistration,
      * Deregisters from all current registrations.
      *
      * @param status Record having termination details of the component
-     * @param comp The terminated component
      */
     public synchronized void sfTerminateWith(TerminationRecord status) {
         /* unregister from all remote registrations */

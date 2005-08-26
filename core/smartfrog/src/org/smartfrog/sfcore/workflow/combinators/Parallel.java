@@ -195,7 +195,6 @@ public class Parallel extends EventCompoundImpl implements Compound {
      * Cancels all remaining createChild threads
      *
      * @param status Termination  Record
-     * @param comp Component which caused the termination
      */
     public synchronized void sfTerminateWith(TerminationRecord status) {
 

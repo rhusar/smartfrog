@@ -67,7 +67,7 @@ public class PlatformHelper {
 
     /**
      * create a platform helper which is bound to this system
-     * @return
+     * @return the local platform helper
      */
     public static PlatformHelper getLocalPlatform() {
         return localPlatform;
@@ -75,7 +75,7 @@ public class PlatformHelper {
 
     /**
      * get the DOS settings
-     * @return
+     * @return the DOS platform helper
      */
     public static PlatformHelper getDosPlatform() {
         return dosPlatform;
@@ -83,7 +83,7 @@ public class PlatformHelper {
 
     /**
      * get the unix settings
-     * @return
+     * @return the unix platform helper
      */
     public static PlatformHelper getUnixPlatform() {
         return unixPlatform;

@@ -205,7 +205,7 @@ public class LivenessPageChecker implements LivenessPage {
     /**
      * call this after configuring the class; does any preparation and turns
      * any {@link java.net.MalformedURLException} into a {@link
-     * SmartFrogException}. If the target URL is already defined, does
+     * SmartFrogDeploymentException}. If the target URL is already defined, does
      * nothing.
      *
      * @throws SmartFrogDeploymentException

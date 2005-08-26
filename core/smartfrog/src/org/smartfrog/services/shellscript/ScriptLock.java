@@ -31,7 +31,7 @@ public interface ScriptLock {
 
     /**
      *  Obtain the ScriptExecution implementation component for which this is a lock
-     *  @returns the ScriptExecution
+     *  @return the ScriptExecution
      */
     ScriptExecution getScriptExecution();
 

@@ -80,7 +80,6 @@ public abstract class ConfigurationAction {
      * are often the symptom of success.
      * @param ex
      * @param rootProcess
-     * @param configuration
      * @return boolean indiacating if action was successful or not.
      * @throws RemoteException
      *

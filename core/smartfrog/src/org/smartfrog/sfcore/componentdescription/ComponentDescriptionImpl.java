@@ -790,7 +790,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      *
      * @param startWith system property label (ex. org.smartfrog)
      * @param compDesc configuration description where to add system properties.
-     * @language language extension to use.
+     * @param language language extension to use.
      * @return this configuration description with system properties added.
      */
     public static ComponentDescription addSystemProperties(String startWith,
@@ -860,7 +860,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
          * @param obj which class Component description has to be read
          * @param addSystemProperties to select if to add system properties
          * @param newPhases parser phases to apply to component description
-         * @ languageExtension provide extenstion for the language used (ex. sf by default)
+         * languageExtension provide extenstion for the language used (ex. sf by default)
          *  Takes default when vector is null. Default: type, link, function, predicate.
          * @return Component Description
          * @throws SmartFrogException

@@ -251,7 +251,6 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
      * Deregisters from all current registrations.
      *
      * @param status Termination  Record
-     * @param comp Component which caused the termination
      */
     public synchronized void sfTerminateWith(TerminationRecord status) {
         /* unregister from all remote registrations */

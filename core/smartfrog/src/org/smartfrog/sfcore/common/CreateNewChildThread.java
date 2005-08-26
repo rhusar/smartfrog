@@ -52,7 +52,6 @@ public class CreateNewChildThread extends Thread {
   * Creates a <tt>CreateNewChildThread</tt> that will upon running, execute the
   * given <tt>CreateNewChild</tt>.
   *
-  * @param  callable the callable task
   * @throws NullPointerException if callable is null
   */
  public CreateNewChildThread(Object name, Prim parent, ComponentDescription cmp, Context parms) throws SmartFrogException{
