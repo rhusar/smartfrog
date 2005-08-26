@@ -85,17 +85,70 @@
     </path>      
   </target>
 
-  <!-- 
-        <dependency groupID="activesoap"
+    <target name="activesoap-libraries" depends="m2.m2-tasks">
+    <m2-libraries pathID="activesoap.classpath">
+      <dependency groupID="activesoap"
         artifactID="activesoap"
         version="${activesoap.version}"/>
       <dependency
         groupId="woodstox"
         artifactId="wstx-asl"
         version="${wstx-asl.version}" />
-  -->
+    </m2-libraries>
+    </target>
+        
   
 
+  <target name="axis2-libraries" depends="m2.m2-tasks">
+    <m2-libraries pathID="axis2.classpath">
+    
+      <dependency groupID="axis2"
+        artifactID="axis2"
+        version="${axis2.version}"/>
+
+<!--       <dependency groupID="axis2"
+        artifactID="axis2-common"
+        version="${axis2.version}"/>
+      <dependency groupID="axis2"
+        artifactID="axis2-core"
+        version="${axis2.version}"/>
+      <dependency groupID="axis2"
+        artifactID="axis2-xml"
+        version="${axis2.version}"/>
+      <dependency groupID="axis2"
+        artifactID="axis2-addressing"
+        version="${axis2.version}"/>
+      <dependency groupID="axis2"
+        artifactID="axis2-wsdl"
+        version="${axis2.version}"/>
+ -->        
+        
+      <dependency groupID="commons-codec"
+        artifactID="commons-codec"
+        version="${commons-codec.version}"/>
+      <dependency groupID="commons-logging"
+        artifactID="commons-logging"
+        version="${commons-logging.version}"/>
+<!--       <dependency groupID="geronimo-spec"
+        artifactID="geronimo-spec-javamail"
+        version="${geronimo-spec-javamail.version}"/>
+      <dependency groupID="geronimo-spec"
+        artifactID="geronimo-spec-activation"
+        version="${geronimo-spec-activation.version}"/> -->
+      <dependency groupID="stax"
+        artifactID="stax"
+        version="${stax.version}"/>
+      <dependency groupID="stax"
+        artifactID="stax-api"
+        version="${stax-api.version}"/>
+      <dependency groupID="jaxen"
+        artifactID="jaxen"
+        version="${jaxen.version}"/>
+      <dependency groupID="commons-fileupload"
+        artifactID="commons-fileupload"
+        version="${commons-fileupload.version}"/>
+      </m2-libraries>
+    </target>
 
   
   <target name="muse-libraries" depends="m2.m2-tasks">
@@ -128,14 +181,14 @@
    
     
     <!-- http://ws.apache.org/ws-fx/addressing/ -->
-<!--       <dependency groupID="addressing"
+      <dependency groupID="addressing"
         artifactID="addressing"
-        version="${addressing.version}"/> -->
+        version="${addressing.version}"/>
         
         <!-- http://dev2dev.bea.com/technologies/commonj/twm/ -->
-      <dependency groupID="commonj-twm"
+      <dependency groupID="wsrf"
         artifactID="commonj-twm-api"
-        version="${commonj-twm.version}"/>
+        version="${commonj-twm-api.version}"/>
         
         <!-- http://ws.apache.org/ws-fx/wsrf/ -->
       <dependency groupID="wsrf"
@@ -144,9 +197,9 @@
       <dependency groupID="wsrf"
         artifactID="wsa-xbeans"
         version="${wsa-xbeans.version}"/>
-<!--       <dependency groupID="wsrf"
+      <dependency groupID="wsrf"
         artifactID="wsrf-xbeans"
-        version="${wsrf-xbeans.version}"/> -->
+        version="${wsrf-xbeans.version}"/>
         
         
       <dependency groupID="pubscribe"
@@ -161,18 +214,18 @@
         
       <dependency groupID="servletapi"
         artifactID="servletapi"
-        version="${xbean.version}"/>
+        version="${servletapi.version}"/>
         
-      <dependency groupID="directory-naming"
+<!--       <dependency groupID="directory-naming"
         artifactID="naming-core"
-        version="${naming-core.version}"/>
-      <dependency groupID="directory-naming"
+        version="${naming-core.version}"/> -->
+<!--       <dependency groupID="directory-naming"
         artifactID="naming-factory"
-        version="${naming-factory.version}"/>
-      <dependency groupID="directory-naming"
+        version="${naming-factory.version}"/> -->
+<!--       <dependency groupID="directory-naming"
         artifactID="naming-java"
         version="${naming-java.version}"/>
-
+ -->
       <dependency groupID="xmlbeans"
         artifactID="xbean"
         version="${xbean.version}"/>
