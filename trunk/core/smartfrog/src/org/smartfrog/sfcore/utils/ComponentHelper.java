@@ -178,7 +178,7 @@ public class ComponentHelper {
      * find an ancestor of a given type
      * @param node node to look for
      * @param interfaceName full name of interface to look for
-     * @param depth: 0 means dont look upwards, -1 means indefinite.
+     * @param depth 0 means dont look upwards, -1 means indefinite.
      * @return a parent or null for no match
      * @throws java.rmi.RemoteException
      */
@@ -201,7 +201,7 @@ public class ComponentHelper {
      * find an ancestor of the owner that implements this class.
      *
      * @param interfaceName full name of interface to look for
-     * @param depth: 0 means dont look upwards, -1 means indefinite.
+     * @param depth 0 means dont look upwards, -1 means indefinite.
      * @return a parent or null for no match
      * @throws RemoteException
      */

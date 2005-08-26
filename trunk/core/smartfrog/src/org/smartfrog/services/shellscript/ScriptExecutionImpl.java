@@ -83,9 +83,9 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
       /**
        * wait for the results to be ready for the timeout, and return them when they are
        *
-       * @oaram timeout the maximum time to wait for the results: 0 don't wait, -1 wait forever
+       * @param timeout the maximum time to wait for the results: 0 don't wait, -1 wait forever
        *
-       * @returns a component description containing aspects of the result:
+       * @return a component description containing aspects of the result:
        * The resut contains three attributes as follows:
        *   "code" the int result code of the final command in the vector - 0 if not supported in shell,
        *   "stdout" a list of lines on stdout - empty if not supported in shell,
@@ -299,7 +299,7 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
    * @param commands the list of commands
    * @param timeout max number of miliseconds to obtain the lock: 0 is don't
    *   wait, -1 is wait forever
-   * @param determines if results output will be shown using out/err streams.
+   * @param verbose determines if results output will be shown using out/err streams.
    *
    * @throws SmartFrogException if the lock is not obtained in the requisite
    *   time
@@ -319,7 +319,7 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
    * @param command the command
    * @param timeout max number of miliseconds to obtain the lock: 0 is don't
    *   wait, -1 is wait forever
-   * @param determines if the shell output will be shown using out/err streams.
+   * @param verbose determines if the shell output will be shown using out/err streams.
    *
    * @throws SmartFrogException if the lock is not obtained in the requisite
    *   time

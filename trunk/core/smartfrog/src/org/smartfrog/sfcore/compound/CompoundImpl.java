@@ -100,12 +100,12 @@ public class CompoundImpl extends PrimImpl implements Compound {
      * if the component registers. Note that the remaining lifecycle methods must
      * still be invoked on the created component - namely sfDeploy() and sfStart().
      * This is primarily an internal method - the prefered method for end users is
-     * @sfCreateNewChild.
+     * #sfCreateNewChild.
      *
      * Note that the remaining lifecycle methods must
      * still be invoked on the created component - namely sfDeploy() and sfStart().
-     * This is primarily an internal method - the prefered method for end users is
-     * @sfCreateNewChild.
+     * This is primarily an internal method - the preferred method for end users is
+     * #sfCreateNewChild.
      *
      * @param name name to name deployed component under in context
      * @param parent of deployer component

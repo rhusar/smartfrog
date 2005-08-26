@@ -54,7 +54,6 @@ public class ParserVar extends Thread {
    /**
     *  Constructor for the RunProcess object
     *
-    *@param  command  Command to exec
     */
    public ParserVar(Prim sfObj,DataParser dataParser) {
       this.sfObj = sfObj;

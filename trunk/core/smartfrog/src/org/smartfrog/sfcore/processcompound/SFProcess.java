@@ -416,7 +416,7 @@ public class SFProcess implements MessageKeys {
      *
      * @throws SmartFrogException if failed to deploy process compound, the root process compound didn't exist or ir the local process compound is not a root process compound
      *
-     *  @ TODO: test it!
+     *  @todo test it!
      */
     public static synchronized ProcessCompound resetRootProcessCompound(Reference terminatorCompleteName)
         throws SmartFrogException,RemoteException {

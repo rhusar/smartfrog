@@ -1309,7 +1309,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
      * iterating over the sfProcessConfig ComponentDescription.
      *
      * @param cmd command to append to
-     * @param sfProcessAttributes component description with extra process configuration (ex. sfProcessConfig)
+     * @param cd component description with extra process configuration (ex. sfProcessConfig)
      *
      * @exception Exception failed to construct defines
      */
@@ -1333,7 +1333,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
      * iterating over the sfProcessEnvVars ComponentDescription
      *
      * @param cmd command to append to
-     * @param sfProcessAttributes component description with extra process configuration (ex. sfProcessConfig)
+     * @param cd component description with extra process configuration (ex. sfProcessConfig)
      *
      * @exception Exception failed to construct defines
      */

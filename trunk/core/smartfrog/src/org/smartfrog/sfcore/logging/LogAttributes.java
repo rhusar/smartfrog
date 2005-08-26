@@ -86,7 +86,7 @@ public interface LogAttributes {
     /**
      * <p> To change a property in all registered loggers </p>
      *
-     * @param status new status value
+     * @param value new status value
      * @return if it was sucessfull applaying this attribute to any of the registered loggers
      */
     public boolean setAttribute (Object name, Object value);

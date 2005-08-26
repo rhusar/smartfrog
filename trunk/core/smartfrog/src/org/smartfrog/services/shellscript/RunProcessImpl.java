@@ -492,7 +492,7 @@ public class RunProcessImpl  extends Thread implements RunProcess {
     /**
       *  Executes the given command.
       *
-      * @param  cmd  command to be exceuted
+      * @param  command  command to be exceuted
       */
      public void execCommand(String command) {
          if ((command==null)|| killRequested || state!=STATE_PROCESSING ){

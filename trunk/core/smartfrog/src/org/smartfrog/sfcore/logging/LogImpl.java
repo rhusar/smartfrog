@@ -109,7 +109,8 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
     /**
      * <p> Invokes method in localLog and registered logs. </p>
      *
-     * @param message log this message
+     * @param method method to call
+     * @param args args to invoke
      */
     public void  invoke (Method method, Object[] args) {
         try {
@@ -224,7 +225,7 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
    /**
     * <p> Get log name. </p>
     *
-    * @param log name
+    * @return log name
     */
     public String getLogName(){
         return this.logName;
@@ -685,7 +686,6 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
      * <p> Same as info messages but without Labels.</p>
      *
      * @param message log this message
-     * @param t log this cause
      */
     public void err(Object message){
         Throwable thrNull = null;

@@ -288,7 +288,7 @@ public class SmartFrogResolutionException extends SmartFrogRuntimeException
      *
      * @param ref ref causing the illegal reference
      * @param source The source that was trying to resolve the reference
-     * @param foundValue Object found by sfResolve
+     * @param resolvedValue Object found by sfResolve
      * @param referenceValueType The reference value type
      * @param defaultValueType The default value type
      *

@@ -46,7 +46,7 @@ public interface PrettyPrinting {
      * memory can become a problem given the LONG strings created
      *
      * @param ps writer to write on
-     * @param indent the indent to use for printing offset
+     * @param Indent the indent to use for printing offset
      *
      * @throws IOException failure while writing
      */

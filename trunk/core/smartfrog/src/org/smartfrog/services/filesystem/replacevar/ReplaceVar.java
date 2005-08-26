@@ -158,7 +158,7 @@ public class ReplaceVar {
    * Returns true if the file is cached in memory or false if it
    * is read each time the object is called.
    *
-   * @param cached    true if the entire file is kept in memory;
+   * @return true if the entire file is kept in memory;
    *                  false if the file is not kept in memory
 
    */
@@ -235,7 +235,6 @@ public class ReplaceVar {
    * <code>flush()</code> method is called. If the file is not cached,
    * then writes happen immediately.
    *
-   * @param section   the section in the file
    * @param key       the name of the key to change
    * @param value     the String value to change the key to
 
@@ -265,9 +264,7 @@ public class ReplaceVar {
    * <code>flush()</code> method is called. If the file is not cached,
    * then writes happen immediately.
    *
-   * @param section   the section in the file
-   * @param key       the name of the key to change
-   * @param value     the String value to change the key to
+   * @param data  the hashmap
 
    */
   public void setSetting(HashMap data) {
@@ -293,9 +290,7 @@ public class ReplaceVar {
    * <code>flush()</code> method is called. If the file is not cached,
    * then writes happen immediately.
    *
-   * @param section   the section in the file
-   * @param key       the name of the key to change
-   * @param value     the String value to change the key to
+   * @param data   hashmap to write
 
    */
   public void setSettingCached(HashMap data) {

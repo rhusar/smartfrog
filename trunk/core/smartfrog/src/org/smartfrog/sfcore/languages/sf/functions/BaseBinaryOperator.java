@@ -47,20 +47,20 @@ public abstract class BaseBinaryOperator extends BaseFunction implements PhaseAc
      *  it expects to find two attributes: left and right
      * if these are not present it will throw an exception
      *
-     * @returns the result of the operation
+     * @return the result of the operation
      * @throws SmartFrogCompileResolutionException if either of the required attributes are not present or the operation throws an exception
      */
     protected Object doFunction() throws SmartFrogCompileResolutionException {
-	Object left = context.get("left");
-	Object right = context.get("right");
+    Object left = context.get("left");
+    Object right = context.get("right");
 
-	if (left == null)
-	    throw new SmartFrogCompileResolutionException(MessageUtil.formatMessage(MISSING_PARAMETER, "left"),
-							  null, name, "function", null);
-	if (right == null)
-	    throw new SmartFrogCompileResolutionException(MessageUtil.formatMessage(MISSING_PARAMETER, "right"),
-							  null, name, "function", null);
+    if (left == null)
+        throw new SmartFrogCompileResolutionException(MessageUtil.formatMessage(MISSING_PARAMETER, "left"),
+                              null, name, "function", null);
+    if (right == null)
+        throw new SmartFrogCompileResolutionException(MessageUtil.formatMessage(MISSING_PARAMETER, "right"),
+                              null, name, "function", null);
 
-	return doOperator(left, right);
+    return doOperator(left, right);
     }
 }

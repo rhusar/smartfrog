@@ -45,15 +45,15 @@ public interface LogSF extends Log, LogMessage, LogLevel {
     public void setLevel(int currentLogLevel);
 
     /**
-     * <p> Get logging level. </p>
+     * Get logging level.
+     @return the logging level
      */
     public int getLevel();
 
 
     /**
-     * <p> Get log name. </p>
-     *
-     * @param log name
+     * Get log name.
+     * @return the log name
      */
     public String getLogName();
 

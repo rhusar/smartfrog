@@ -105,7 +105,6 @@ public class FileUsingCompoundImpl extends CompoundImpl implements
      * attributes. It also saves the file to the {@link #file} attribute.
      *
      * @param newfile file to bind to to
-     * @param newfile
      * @throws SmartFrogRuntimeException
      * @throws RemoteException
      */

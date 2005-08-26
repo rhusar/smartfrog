@@ -53,7 +53,6 @@ public interface RootLocator {
     /**
      * Unbinds root process compound from local registry.
      *
-     * @param c process compound to set as root
      *
      * @throws RemoteException if there is any network/rmi error
      * @throws SmartFrogException if failed to unbind
