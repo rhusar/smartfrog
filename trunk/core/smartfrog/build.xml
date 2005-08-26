@@ -43,7 +43,6 @@
     <property name="Name.System" value="SmartFrog "/>
     <property name="Name.Company" value="(C) Copyright 1998-2005 Hewlett-Packard Development Company, LP"/>
     <property name="version" value="CORE"/>
-    <!--property name="Version" value="3.04.019.beta"/-->
     <property name="year" value="2005"/>
     <echo level="verbose">
       ===================================================================
@@ -90,19 +89,22 @@
   <!-- Initialization path (Libs needed for compiling)                     -->
   <!-- =================================================================== -->
   <path id="smartfrog.class.path">
-    <pathelement path="${classpath};lib/log4j-1.2.8.jar"/>
-    <pathelement path="${classpath};lib/jmxri.jar"/>
-    <pathelement path="${classpath};lib/mx4j-tools.jar"/>
-    <pathelement path="${classpath};lib/sf-scripting.jar"/>
-    <pathelement path="${classpath};lib/bsh-1.3.0.jar"/>
+    <pathelement path="${classpath}"/>
+    <pathelement location="lib/log4j-1.2.8.jar"/>
+    <pathelement location="lib/jmxri.jar"/>
+    <pathelement location="lib/mx4j-tools.jar"/>
+    <pathelement location="lib/sf-scripting.jar"/>
+    <pathelement location="lib/bsh-1.3.0.jar"/>
   </path>
   <!-- =================================================================== -->
   <!-- Global properties                                                   -->
   <!-- =================================================================== -->
+  <!-- local and one level up settings are read in before anything else -->
+  <property file="build.properties"/>
+  <property file="../build.properties"/>
   <!-- properties file to modify version.sf -->
   <property file="sf-build-version.properties"/>
-  <!-- override point -->
-  <property file="build.properties"/>
+  
   <property environment="env"/>
   <!-- Release Directories -->
   <property name="src" value="src"/>
@@ -177,7 +179,8 @@
     </java>
     -->
     <!-- save everything to a file -->
-    <property name="Version" value="${sf.majorRelease}.${sf.minorRelease}.${sf.build}${sf.status}"/>
+    <property name="smartfrog.version" value="${sf.majorRelease}.${sf.minorRelease}.${sf.build}${sf.status}"/>
+    <property name="Version" value="${smartfrog.version}"/>
 
     <!-- save everything to a file -->
     <!-- keep this in sync w/ common.xml's declaration -->
@@ -265,7 +268,10 @@
     -->
     <!-- Compile the java code -->
     <echo>${javac.java.version} build.compiler=${build.compiler} javac.compiler=${javac.compiler}</echo>
-    <javac compiler="${javac.compiler}" srcdir="${src.dir}" includes="**/*.java" destdir="${build.classes.dir}" debug="${javac.debug.mode}" debuglevel="${javac.debug.level}" includeAntRuntime="false" source="${javac.java.version}" target="${javac.java.version}">
+    <javac compiler="${javac.compiler}" srcdir="${src.dir}" 
+      includes="**/*.java" destdir="${build.classes.dir}" 
+      debug="${javac.debug.mode}" debuglevel="${javac.debug.level}" 
+      includeAntRuntime="false" source="${javac.java.version}" target="${javac.java.version}">
       <classpath refid="smartfrog.class.path"/>
     </javac>
   </target>
@@ -277,10 +283,12 @@
       CPUs, but as the SunRmic adapter runs rmic in-VM, that is too dangerous.
       We'd need to fork rmic to get decent isolation.
     -->
-    <rmic includesfile="${rmitargets}" compiler="${rmic.compiler}" stubversion="1.2" base="${build.classes.dir}">
+    <rmic includesfile="${rmitargets}" compiler="${rmic.compiler}" 
+      stubversion="1.2" base="${build.classes.dir}">
       <classpath refid="smartfrog.class.path"/>
     </rmic>
-    <rmic includesfile="${rmitargets}Examples" compiler="${rmic.compiler}" stubversion="1.2" base="${build.classes.dir}">
+    <rmic includesfile="${rmitargets}Examples" compiler="${rmic.compiler}" 
+      stubversion="1.2" base="${build.classes.dir}">
       <classpath refid="smartfrog.class.path"/>
     </rmic>
   </target>
@@ -445,12 +453,13 @@
       <classpath refid="smartfrog.class.path"/>
     </javadoc>
     <!--  Java doc for the grammars -->
-    <exec executable="java">
-      <arg line="-cp ${javacc.dir}/javacc.jar"/>
-      <arg line="jjdoc"/>
+     <java classname="jjdoc" failonerror="true">
       <arg line="-OUTPUT_FILE=${docs}/DefaultParser.html"/>
       <arg line="${src}/org/smartfrog/sfcore/languages/sf/DefaultParser.jj"/>
-    </exec>
+      <classpath>
+         <pathelement location="${javacc.dir}/javacc.jar"/>
+       </classpath>
+     </java>    
   </target>
   <!-- =================================================================== -->
   <!--  BUILD                                                              -->
@@ -486,12 +495,14 @@
 
   <!--  SmartFrog Jar                                                     -->
   <target name="sfJar" depends="build,target-names">
-    <jar jarfile="${smartfrog.jar}" basedir="${build.classes.dir}" includes="**/smartfrog/**" excludes="**/services/**,**/examples/**" manifest="${manifestName}"/>
+    <jar jarfile="${smartfrog.jar}" basedir="${build.classes.dir}" 
+      includes="**/smartfrog/**" excludes="**/services/**,**/examples/**" manifest="${manifestName}"/>
   </target>
   <!--  sfServices.jar                                               -->
 
   <target name="sfServicesJar" depends="build,target-names">
-    <jar jarfile="${sf-services.jar}" basedir="${build.classes.dir}" includes="**/services/**" manifest="${manifestName}"/>
+    <jar jarfile="${sf-services.jar}" basedir="${build.classes.dir}" 
+      includes="**/services/**" manifest="${manifestName}"/>
   </target>
 
   <!--  sfExamples.jar                                               -->
@@ -503,20 +514,12 @@
 
   <target name="jars" depends="initdist,sfJar,sfServicesJar,sfExamplesJar">
   </target>
-  <!-- =================================================================== -->
-  <!-- Initialization path for SF Libs                                     -->
-  <!-- =================================================================== -->
-  <!--
-    path id="smartfrog.run.class.path">
-    <pathelement location="${dist.lib.dir}/smartfrog.jar"/>
-    <pathelement location="${dist.lib.dir}/sfServices.jar"/>
-    <pathelement location="${dist.lib.dir}/sfExamples.jar"/>
-    </path
-  -->
+
   <!-- =================================================================== -->
   <!--  build, create jars and signs them.                                 -->
   <!-- =================================================================== -->
   <target name="secureBuild" depends="build,jars,signJars"/>
+  
   <!-- =================================================================== -->
   <!--  create security buld file                                          -->
   <!-- =================================================================== -->
@@ -564,16 +567,16 @@
   <!-- a clean distribution                                               -->
   <!-- =================================================================== -->
   <target name="fromclean" depends="clean,sfParseTest,dist"/>
+  
   <!-- =================================================================== -->
   <!-- sfParse parsertargets                                                -->
   <!-- =================================================================== -->
   <target name="sfParseTest" depends="build,jars">
     <java classname="org.smartfrog.SFParse" failonerror="true" fork="true">
-      <!--classpathref="smartfrog.run.class.path"-->
       <classpath>
-        <pathelement location="${dist.lib.dir}/smartfrog-${Version}.jar"/>
-        <pathelement location="${dist.lib.dir}/sfServices-${Version}.jar"/>
-        <pathelement location="${dist.lib.dir}/sfExamples-${Version}.jar"/>
+        <pathelement location="${smartfrog.jar}"/>
+        <pathelement location="${sf-services.jar}"/>
+        <pathelement location="${sf-examples.jar}"/>
         <pathelement location="${dist.lib.dir}/sf-scripting.jar"/>
       </classpath>
       <arg value="-R"/>
