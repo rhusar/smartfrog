@@ -24,20 +24,46 @@ import org.smartfrog.sfcore.languages.sf.PhaseAction;
 import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferencePart;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.common.Context;
+
+import java.util.Stack;
 
 /**
  * Defines the basic schema implementation.
  */
-public class TBD extends BasePredicate implements PhaseAction {
+public class TBD implements PhaseAction {
+    /** Flag indicating to keep predicate or not.
+      */
+     public static boolean keepPredicates = false;
+
+     /** The component description. */
+     protected ComponentDescription component;
+
+     /** The context of the component. */
+     protected Context context;
+     protected String phaseName;
+     protected Stack stack;
 
     /**
      * Applies predicates - by definition this is an error...!
      * @throws SmartFrogCompileResolutionException Executing this is an error...
      */
-    protected void doPredicate() throws SmartFrogCompileResolutionException {
+    public void doit() throws SmartFrogCompileResolutionException {
        Reference ref = component.sfCompleteName();
        throw new SmartFrogCompileResolutionException (
                                  "attribute is still TBD (to be defined)", null, ref, "predicate", null
                                  );
+    }
+
+    /**
+     * Sets the component.
+     * @param cd component description
+     */
+    public void forComponent(ComponentDescription cd, String phasename, Stack p) {
+        stack = p;
+        component = cd;
+        phaseName = phasename;
+        context = cd.sfContext();
     }
 }
