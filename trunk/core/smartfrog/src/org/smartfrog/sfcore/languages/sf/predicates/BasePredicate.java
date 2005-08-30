@@ -27,6 +27,7 @@ import org.smartfrog.sfcore.common.MessageKeys;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import org.smartfrog.sfcore.languages.sf.PhaseAction;
 import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
+import org.smartfrog.sfcore.reference.Reference;
 
 import java.util.Stack;
 
@@ -59,10 +60,14 @@ public abstract class BasePredicate implements PhaseAction {
      * Default implementation of doit method.
      */
     public void doit() throws SmartFrogCompileResolutionException {
+        ComponentDescription comeFrom = (ComponentDescription)stack.peek();
+        Reference ref = comeFrom.sfCompleteName();
+
         // check that the predicate is being applied to a component which is the parent, and not merely linked
         if (stack.peek() != component.sfParent())
             throw new SmartFrogCompileResolutionException( MessageUtil.formatMessage(MessageKeys.CANNOT_LINK_TO_PREDICATE,
-                                                          ((ComponentDescription) stack.peek()).sfCompleteName()));
+                                                          ref,
+                                                          comeFrom.sfAttributeKeyFor(this)));
 
 
         doPredicate();
