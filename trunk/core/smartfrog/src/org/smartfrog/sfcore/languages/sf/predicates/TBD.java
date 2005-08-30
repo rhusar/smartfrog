@@ -50,9 +50,11 @@ public class TBD implements PhaseAction {
      * @throws SmartFrogCompileResolutionException Executing this is an error...
      */
     public void doit() throws SmartFrogCompileResolutionException {
-       Reference ref = component.sfCompleteName();
+       ComponentDescription comeFrom = (ComponentDescription)stack.peek();
+       Reference ref = comeFrom.sfCompleteName();
+       Object name = comeFrom.sfAttributeKeyFor(component);
        throw new SmartFrogCompileResolutionException (
-                                 "attribute is still TBD (to be defined)", null, ref, "predicate", null
+                                 "attribute is still TBD (to be defined) in attribute " + name , null, ref, "predicate", null
                                  );
     }
 
