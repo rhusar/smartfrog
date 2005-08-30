@@ -112,8 +112,7 @@ public class ErrorMessageBundle extends ListResourceBundle
         { WARN_NO_SECURITY, "SmartFrog security is NOT active"},
         { ERROR_NO_SECURITY_BUT_REQUIRED, "Smartfrog Security was not active, but was marked as required"},
         { ROOT_COMPONENT_IS_FUNCTION, "The sfConfig component of a SmartFrog description cannot be defined as a function"},
-        { CANNOT_LINK_TO_PREDICATE,
-             "cannot apply predicate to non-parent component: extends, don't link to, but rather extend predicate: in component {0}"}
+        { CANNOT_LINK_TO_PREDICATE, "Predicates should be extended and not linked to: in component {0}"}
     };
 
     /**
