@@ -12,8 +12,6 @@ if defined SFHOME goto continue1
 
 CALL "%SFHOME%\bin\SFGuiCFG.bat"
 
-
-
 if defined JAVA_HOME set path=%JAVA_HOME%\bin
 
 if not defined srcDir set srcDir=%SFHOME%\examples\clasess
@@ -27,9 +25,7 @@ if defined srcDir set CLASSPATH=%srcDir%;%classpath%
 
 cd "%SFHOME%"
 
-if exist "%SFHOME%\jre\bin\java.exe" set path="%SFHOME%\jre\bin"
-
-java -cp "%CLASSPATH%" org.smartfrog.tools.gui.browser.SFGui %1 %2
+%SFJVM% -cp "%CLASSPATH%" org.smartfrog.tools.gui.browser.SFGui %1 %2
 
 cd %originalDir%
 set CLASSPATH=%originalClassPath%

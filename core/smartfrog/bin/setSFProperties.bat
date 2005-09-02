@@ -13,8 +13,15 @@ rem  set SFSECURITY_ON=ENABLED
 rem To define a user classpath, use variable SFUSERCLASSPATH
 rem set SFUSERCLASSPATH=.
 
+rem To define the jvm executable 
+if defined SFJVM goto jvmnext 
+rem set SFJVM=javaw.exe
+set SFJVM=java.exe
+:jvmnext
+
 rem -------------------End user properties-------------------------
 
+if exist "%SFHOME%\jvm\bin\%SFJVM%" set path="%SFHOME%\jre\bin";%path%
 
 call "%SFHOME%\bin\setSFDefaultProperties"
 if defined SFDYNAMICCLASSLOADING_ON call "%SFHOME%\bin\setSFDynamicClassLoadingProperties"
