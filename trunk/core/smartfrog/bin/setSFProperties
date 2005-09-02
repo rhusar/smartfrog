@@ -13,7 +13,17 @@
 # To define a user classpath, use variable SFUSERCLASSPATH
 # export SFUSERCLASSPATH=.
 
+# To define the java executable 
+if test "$SFJVM"; then
+#   export SFJVM=javaw
+    export SFJVM=java
+fi
+
 # -------------------End user properties-------------------------
+
+if test -f "$SFHOME/jvm/bin/$SFJVM"; then 
+   export PATH="$SFHOME/jvm/bin":$PATH
+fi
 
 . "$SFHOME/bin/setSFDefaultProperties"
 

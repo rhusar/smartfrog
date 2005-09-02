@@ -7,9 +7,7 @@ if defined SFHOME goto homeset
 
 if (%1) == () goto usage
 if (%1) == (-?) goto help
-if exist "%SFHOME%\jre\bin\java.exe" set path=%SFHOME%\jre\bin
 
-rem call %SFHOME%\bin\setClassPath
 call "%SFHOME%\bin\setSFProperties"
 
 if (%2) == () goto next2
@@ -26,7 +24,7 @@ set PROCESS=rootProcess
 
 :execute
 echo Creating diagnostics report (%1) for %COMPONENT% in %PROCESS%
-java %SFCMDPARAMETERS% org.smartfrog.SFSystem -a \"%COMPONENT%\":DIAGNOSTICS:::%1:%PROCESS% -e
+%SFJVM% %SFCMDPARAMETERS% org.smartfrog.SFSystem -a \"%COMPONENT%\":DIAGNOSTICS:::%1:%PROCESS% -e
 
 GOTO end
 :usage

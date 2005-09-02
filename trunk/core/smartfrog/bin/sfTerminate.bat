@@ -9,13 +9,11 @@ if defined SFHOME goto continue1
 if (%1) == () goto usage
 if (%1) == (-?) goto help
 if (%2) == () goto usage
-if exist "%SFHOME%\jre\bin\java.exe" set path=%SFHOME%\jre\bin
 
-rem call %SFHOME%\bin\setClassPath
 call "%SFHOME%\bin\setSFProperties"
 
 echo "Terminating %1"
-java %SFCMDPARAMETERS% org.smartfrog.SFSystem -a \"%2\":TERMINATE:::%1: -e
+%SFJVM% %SFCMDPARAMETERS% org.smartfrog.SFSystem -a \"%2\":TERMINATE:::%1: -e
 
 GOTO end
 :usage
