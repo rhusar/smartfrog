@@ -35,6 +35,7 @@ import org.mortbay.http.HttpServer;
 import org.mortbay.http.NCSARequestLog;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.jetty.contexts.delegates.DelegateServletContext;
+import org.smartfrog.services.jetty.contexts.delegates.DelegateWebApplicationContext;
 import org.smartfrog.services.www.ServletContextIntf;
 import org.smartfrog.services.www.context.ApplicationServerContextEntry;
 import org.smartfrog.services.www.context.ApplicationServerContextHolder;
@@ -223,18 +224,33 @@ public class SFJetty extends CompoundImpl implements Compound,JettyIntf {
      * @param webApplication the web application. this must be a component whose attributes include the
      *                       mandatory set of attributes defined for a JavaWebApplication component. Application-server specific attributes
      *                       (both mandatory and optional) are also permitted
-     * @return an opaque token by which the application can be referred
+     * @return an entry
      * @throws java.rmi.RemoteException on network trouble
      * @throws org.smartfrog.sfcore.common.SmartFrogException
      *                                  on any other problem
      * @todo implement
      */
-    public String deployWebApplication(Prim webApplication)
+    public ApplicationServerContextEntry deployWebApplication(Prim webApplication)
             throws RemoteException, SmartFrogException {
 
-        throw new SmartFrogException("not implemented : DeployWebApplication");
+        DelegateWebApplicationContext delegate=new DelegateWebApplicationContext(this,webApplication);
+        delegate.deploy(webApplication);
+        ApplicationServerContextEntry entry;
+        entry = contexts.createEntry(ApplicationServerContextEntry.TYPE_WAR,delegate);
+        return entry;
     }
 
+    /**
+     * Deploy an EAR file
+     *
+     * @param enterpriseApplication
+     * @return an entry referring to the application
+     * @throws RemoteException
+     * @throws SmartFrogException
+     */
+    public ApplicationServerContextEntry deployEnterpriseApplication(Prim enterpriseApplication) throws RemoteException, SmartFrogException {
+        throw new SmartFrogException("not implemented : deployEnterpriseApplication");
+    }
 
     /**
      * Deploy a servlet context. This can be initiated with other things

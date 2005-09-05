@@ -38,7 +38,7 @@ import java.io.File;
 import java.rmi.RemoteException;
 
 /**
- *
+ * This represents a web application that has been deployed on a jetty system
  */
 public class DelegateWebApplicationContext extends DelegateApplicationContext implements JettyWebApplicationContext {
 
