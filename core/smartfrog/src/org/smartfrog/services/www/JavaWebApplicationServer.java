@@ -61,12 +61,22 @@ public interface JavaWebApplicationServer extends Remote {
      * @param webApplication the web application. this must be a component whose attributes include the
      * mandatory set of attributes defined for a JavaWebApplication component. Application-server specific attributes
      * (both mandatory and optional) are also permitted
-     * @return a token referring to the application
+     * @return an entry referring to the application
      * @throws RemoteException  on network trouble
      * @throws SmartFrogException on any other problem
      */
-    public String deployWebApplication(Prim webApplication)
+    public ApplicationServerContextEntry deployWebApplication(Prim webApplication)
         throws RemoteException, SmartFrogException;
+
+    /**
+     * Deploy an EAR file
+     * @param enterpriseApplication
+     * @return an entry referring to the application
+     * @throws RemoteException
+     * @throws SmartFrogException
+     */
+    public ApplicationServerContextEntry deployEnterpriseApplication(Prim enterpriseApplication)
+            throws RemoteException, SmartFrogException;
 
     /**
      * Deploy a servlet context. This can be initiated with other things.
