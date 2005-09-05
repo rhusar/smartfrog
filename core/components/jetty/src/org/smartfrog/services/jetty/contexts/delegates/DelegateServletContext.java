@@ -39,7 +39,7 @@ import java.util.Map;
 /**
  * This is a helper servlet context; it gets stuff delegated to it.
  * It is remotable, but not a Prim-derived class.
- * Destroying this interface does not destroy the servlet.
+ * Destroying this class does not destroy the servlet.
  */
 public class DelegateServletContext extends DelegateApplicationContext implements ServletContextIntf {
 
