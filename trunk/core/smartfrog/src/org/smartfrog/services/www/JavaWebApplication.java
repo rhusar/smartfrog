@@ -26,7 +26,7 @@ import java.rmi.Remote;
  */
 
 
-public interface JavaWebApplication extends Remote {
+public interface JavaWebApplication extends ApplicationServerContext {
 
 
     /**
