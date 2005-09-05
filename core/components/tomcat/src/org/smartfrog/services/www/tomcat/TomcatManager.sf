@@ -1,0 +1,6 @@
+TomcatManager extends Compound {
+    sfClass "org.smartfrog.services.ia.tomcat.TomcatManagerImpl";
+    //optional string attribute "name" as the id of the command line defaulting
+    //to the sfCompleteName
+    // Control LAZY ...;
+}

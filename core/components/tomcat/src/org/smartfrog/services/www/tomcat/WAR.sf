@@ -1,0 +1,6 @@
+WAR extends Prim {
+    sfClass "org.smartfrog.services.ia.tomcat.WARImpl";
+    //optional string attribute "name" as the id of the command line defaulting
+    //to the sfCompleteName
+    // Control LAZY ...;
+}

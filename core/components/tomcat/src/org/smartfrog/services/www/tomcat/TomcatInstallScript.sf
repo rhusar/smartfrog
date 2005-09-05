@@ -1,0 +1,54 @@
+#include "org/smartfrog/functions.sf";
+#include "org/smartfrog/services/ia/genericInstallScript.sf";
+
+TomcatInstallScript extends GenericInstallScript {
+    //----------------------------------
+    // Webserver parameters    
+    //----------------------------------
+    webServerHost;
+    webServerPort;
+    tarLocation "/demoDownload/tomcat.tar";
+
+    //-------------------------------------
+    // parameters defining download to location
+    //-------------------------------------
+    installLocation "/";
+    file "tomcat.tar";
+
+    //-------------------------------------
+    // parameter defining location of install
+    // typically, top level directory created by the tar file
+    // when expanded in install location
+    //-------------------------------------
+    home "jakarta-tomcat-4.0.4";
+
+    //-------------------------------------
+    // parameter defining prefix for event notification
+    //-------------------------------------    
+    name "tomcat";
+    
+    //-------------------------------------
+    // the install script to be run
+    //-------------------------------------
+    installScript extends vector {
+	-- ATTRIB chmodStartup;
+	-- ATTRIB chmodShutdown;
+    }
+    
+    //-------------------------------------
+    // constructions of the scripts lines
+    //-------------------------------------
+    chmodTomcat extends concat {
+	-- "chmod 755 ";
+	-- ATTRIB installLocation;
+	-- ATTRIB home;
+    }
+    chmodStartup extends chmodTomcat {
+	-- "/bin/startup.sh";
+    }
+    chmodShutdown extends chmodTomcat {
+	-- "/bin/shutdown.sh";
+    }   
+}
+
+sfConfig extends TomcatInstallScript ;
