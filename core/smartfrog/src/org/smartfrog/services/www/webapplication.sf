@@ -95,6 +95,7 @@ WebApplicationSchema extends Schema {
  */
 WebApplication extends ApplicationServerContext {
     webApplicationSchema extends WebApplicationSchema;
+    sfClass "org.smartfrog.services.www.context.WebApplicationImpl";
 }
 
 
