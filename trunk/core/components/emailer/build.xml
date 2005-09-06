@@ -63,7 +63,7 @@ For more information: www.smartfrog.org
            >
       <group title="SmartFrog Packages" packages="org.smartfrog.*"/>
       <classpath>
-	  <fileset dir="${dist.lib.dir}">
+    <fileset dir="${dist.lib.dir}">
               <include name="**/*.jar"/>
           </fileset>
       </classpath>
@@ -83,7 +83,7 @@ For more information: www.smartfrog.org
     <property name="version" value="smartfrog components"/>
     <!--property name="Version" value="1.00.000_beta"/-->
     <property name="year" value="2004"/>
-	
+  
     <echo message=""/>
     <echo message="==================================================================="/>
     <echo message="= ${Name.System} ${version}"/>
@@ -91,7 +91,7 @@ For more information: www.smartfrog.org
     <echo message="==================================================================="/>
     <echo message=""/>
     <echo message="(${ant.version})"/>
-	</target>
+  </target>
 
 
   <!-- ========================================================== -->
@@ -108,19 +108,19 @@ For more information: www.smartfrog.org
   <!-- ========================================================== -->
   <!-- create the jar -->
   <!-- ========================================================== -->
-	<target name="dist" depends="common.dist,jdocs" description="create the jar files">
-	 <copy todir = "${dist.lib.dir}">
+  <target name="dist" depends="common.dist,jdocs" description="create the jar files">
+   <copy todir = "${dist.lib.dir}">
         <fileset dir ="${lib.dir}" />
     </copy>  
-		 <copy todir = "${dist.doc.dir}">
+     <copy todir = "${dist.doc.dir}">
         <fileset dir ="${doc.dir}" />
     </copy>   
-		 <copy todir = "${dist.src.dir}">
-		    <fileset dir ="${src.dir}">
-		        <include name="**/examples/**"/>
-		    </fileset>
-	         </copy>
-     <copy tofile="${dist.dir}/build.xml" file="releaseBuild.xml"/>	
-	 <copy tofile="${dist.dir}/build.example.properties" file="build.example.properties"/>
-	</target>
+     <copy todir = "${dist.src.dir}">
+        <fileset dir ="${src.dir}">
+            <include name="**/examples/**"/>
+        </fileset>
+           </copy>
+     <copy tofile="${dist.dir}/build.xml" file="releaseBuild.xml"/> 
+   <copy tofile="${dist.dir}/build.example.properties" file="build.example.properties"/>
+  </target>
 </project>
