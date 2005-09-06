@@ -62,8 +62,6 @@ CoreJettyServer extends ApplicationServer {
    sfClass "org.smartfrog.services.jetty.SFJetty";
    coreJettySchema extends CoreJettySchema;
    serverHost "localhost";
-   //synchronous deploy/undeploy policy
-   sfSyncTerminate true;
    port 8080;
 
    //deployment information

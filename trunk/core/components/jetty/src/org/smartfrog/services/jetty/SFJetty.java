@@ -101,6 +101,7 @@ public class SFJetty extends CompoundImpl implements Compound,JettyIntf {
      * {@value}
      */
     public static final String LIVENESS_ERROR_SERVER_NOT_STARTED = "Server is not started";
+    public static final String ERROR_EAR_UNSUPPORTED = "Jetty does not support EAR files";
 
 
     /**
@@ -249,7 +250,7 @@ public class SFJetty extends CompoundImpl implements Compound,JettyIntf {
      * @throws SmartFrogException
      */
     public ApplicationServerContextEntry deployEnterpriseApplication(Prim enterpriseApplication) throws RemoteException, SmartFrogException {
-        throw new SmartFrogException("not implemented : deployEnterpriseApplication");
+        throw new SmartFrogException(ERROR_EAR_UNSUPPORTED);
     }
 
     /**
