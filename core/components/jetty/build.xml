@@ -63,7 +63,7 @@ For more information: www.smartfrog.org
     <property name="deploy.sf" value="${example.path}/example1.sf"/>
     <property name="manifestName"
        value="${smartfrog.home}/private/sealManifest.mf"/>
-	   <tstamp/>
+    <tstamp/>
     <property name="Name.Company" value="(C) Copyright 1998-2005 Hewlett-Packard Development Company, LP"/>
     <property name="version" value="smartfrog components"/>
     <property name="year" value="2005"/>
@@ -71,6 +71,25 @@ For more information: www.smartfrog.org
 
   </target>
     
+  <target name="m2-files" depends="m2-tasks">
+    <m2-libraries pathID="m2.classpath">
+      <dependency groupID="org.smartfrog"
+        artifactID="sf-www"
+        version="${Version}"/>
+    </m2-libraries>
+  </target>  
+  
+ <target name="declare-compile.classpath-lib-dir"
+    depends="declare-base.compile.classpath,probe-lib-dir,m2-files"
+    if="lib.dir.found">
+    <path id="compile.classpath">
+      <path refid="base.compile.classpath"/>
+      <path refid="m2.classpath"/>
+      <fileset dir="${lib.dir}">
+        <include name="**/*.jar"/>
+      </fileset>
+    </path>
+  </target>
   
   <!-- ========================================================== -->
   <!-- this is an override point -->
@@ -113,7 +132,7 @@ For more information: www.smartfrog.org
   <!-- this is an override, as we add a manifest -->
   <!-- create the jar -->
   <!-- ========================================================== -->
- 	<target name="dist" depends="common.dist,jdocs,parse" description="create a full distribution">
+  <target name="dist" depends="common.dist,jdocs,parse" description="create a full distribution">
      <copy todir="${dist.lib.dir}">
        <fileset dir="${lib.dir}"/>
      </copy>
@@ -127,9 +146,9 @@ For more information: www.smartfrog.org
          <include name="**/examples/**"/>
        </fileset>
      </copy>
-	 <copy tofile="${dist.dir}/build.xml" file="releaseBuild.xml"/>	
-	 <copy tofile="${dist.dir}/build.example.properties" file="build.example.properties"/>
-	</target>
+   <copy tofile="${dist.dir}/build.xml" file="releaseBuild.xml"/> 
+   <copy tofile="${dist.dir}/build.example.properties" file="build.example.properties"/>
+  </target>
 
 <!-- ========================================================== -->
   <!-- clean -->

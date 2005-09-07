@@ -26,6 +26,7 @@ import org.mortbay.jetty.servlet.ServletHandler;
 import org.mortbay.jetty.servlet.WebApplicationContext;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.jetty.SFJetty;
+import org.smartfrog.services.jetty.JettyHelper;
 import org.smartfrog.services.jetty.contexts.JettyWebApplicationContext;
 import org.smartfrog.services.www.JavaWebApplication;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
@@ -41,17 +42,17 @@ import java.rmi.RemoteException;
  */
 public class DelegateWebApplicationContext extends DelegateApplicationContext implements JettyWebApplicationContext {
 
-    private Reference contextPathRef = new Reference(JavaWebApplication.ATTR_CONTEXT_PATH);
+    private Reference contextPathRef = new Reference(ATTR_CONTEXT_PATH);
     private Reference requestIdRef = new Reference(ATTR_REQUEST_ID);
 
-    private String contextPath = "/";
+    private String contextPath = null;
     private String webApp = null;
     private boolean requestId = false;
 
     private HttpServer server = null;
 
     private WebApplicationContext application = new WebApplicationContext();
-    public static final String ERROR_WARFILE_NOT_FOUND = "Web application not found:";
+
 
     public DelegateWebApplicationContext(SFJetty server, Prim declaration) {
         super(server, null);
@@ -76,6 +77,10 @@ public class DelegateWebApplicationContext extends DelegateApplicationContext im
         }
         //request ID
         requestId = declaration.sfResolve(requestIdRef, requestId, false);
+
+        contextPath = declaration.sfResolve(contextPathRef, (String) null, true);
+        String absolutePath = contextPath;
+        declaration.sfReplaceAttribute(ATTR_ABSOLUTE_PATH, absolutePath);
         application.setContextPath(contextPath);
         application.setWAR(webApp);
         ServletHandler servlethandler = application.getServletHandler();
