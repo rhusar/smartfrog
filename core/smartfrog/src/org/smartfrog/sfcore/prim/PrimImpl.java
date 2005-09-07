@@ -496,6 +496,12 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
 
             if (key!=null) {
                 sfCompleteName.addElement(ReferencePart.here(key));
+            } else {
+                // shouldn't happen... but
+                sfCompleteName = null;
+                if (sfLog().isErrorEnabled()){
+                    sfLog().error("Internal error generating complete name - child not named in parent: " + r);
+                }
             }
         }
         return sfCompleteName;
