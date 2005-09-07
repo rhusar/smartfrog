@@ -234,41 +234,6 @@ Reference URL:http://ant.apache.org
   </target>
 
 
-
-  <!-- =================================================================== -->
-  <!--   JDocs                                                             -->
-  <!-- =================================================================== -->
-  <target name="jdocs" depends="init, generateversion" description="Generates the API documentation">
-    <!--  Java Docs for all                                                -->
-    <echo message=""/>
-    <echo message="------------------------------------------------------------------------"/>
-    <echo message="  Creating Java Docs for ${Name.System} ${version} [${dist.jdocs.dir}]"/>
-    <echo message="------------------------------------------------------------------------"/>
-    <mkdir dir="${dist.jdocs.dir}"/>
-    <javadoc packagenames="org.smartfrog.*"
-           sourcepath="${src.dir}"
-           destdir="${dist.jdocs.dir}"
-           author="true"
-           version="true"
-           use="true"
-           windowtitle="${Name.System}"
-           Header="${Name.System} ${CVersion}"
-           Footer="${Name.System} ${version} ${CVersion}"
-           doctitle="${Name.System}"
-           bottom="${Name.Company}"
-           source="1.4"
-           >
-      <group title="SmartFrog Packages" packages="org.smartfrog.*"/>
-      <classpath>
-	  <fileset dir="${dist.lib.dir}">
-              <include name="**/*.jar"/>
-          </fileset>
-      </classpath>
-    </javadoc>
-
-  </target>
-
-
   <!-- =================================================================== -->
   <!--  BUILD                                                              -->
   <!-- =================================================================== -->
