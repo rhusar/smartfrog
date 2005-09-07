@@ -28,12 +28,6 @@ public interface JavaWebApplication extends ApplicationServerContext {
 
 
     /**
-     * path on the application server
-     * {@value}
-     */
-    public static final String ATTR_CONTEXT_PATH = "contextPath";
-
-    /**
      * name or File reference of a war file
      * {@value}
      */
@@ -50,4 +44,8 @@ public interface JavaWebApplication extends ApplicationServerContext {
      * {@value}
      */
     public static final String ATTR_APPLICATION_URL = "applicationURL";
+    /**
+     * Error string for missing WAR file
+     */
+    String ERROR_WARFILE_NOT_FOUND = "Web application not found:";
 }
