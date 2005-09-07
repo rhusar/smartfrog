@@ -371,6 +371,47 @@
     
   </target>
 
+
+  <!-- =================================================================== -->
+  <!--   Javadocs. uses the compile classpath to set up the javadoc task   -->
+  <!-- =================================================================== -->
+  <target name="javadoc"
+          depends="init, generateversion,declare-classpaths"
+          description="Generates the API documentation">
+    <!--  Java Docs for all                                                -->
+    <echo message=""/>
+    <echo message="------------------------------------------------------------------------"/>
+    <echo message="  Creating Java Docs for ${Name.System} ${version} [${dist.jdocs.dir}]"/>
+    <echo message="------------------------------------------------------------------------"/>
+    <mkdir dir="${dist.jdocs.dir}"/>
+    <property name="javadoc.access" value="protected" />
+    <property name="javadoc.author" value="false"/>
+    <property name="javadoc.version" value="true"/>
+    <property name="javadoc.use" value="true"/>
+    <property name="javadoc.windowtitle" value="${Name.System}"/>
+    <property name="javadoc.windowtitle" value="${Name.System}"/>
+    <property name="javadoc.packagenames" value="org.smartfrog.*" />
+    <property name="javadoc.header" value="${Name.System} ${CVersion}" />
+    <property name="javadoc.footer" value="${Name.System} ${version} ${CVersion}" />
+
+    <javadoc packagenames="${javadoc.packagenames}"
+             sourcepath="${src.dir}"
+             destdir="${dist.jdocs.dir}"
+             author="${javadoc.author}"
+             version="${javadoc.version}"
+             use="${javadoc.use}"
+             windowtitle="${avadoc.windowtitle}"
+             header="${javadoc.header}"
+             footer="${javadoc.footer}"
+             doctitle="${Name.System}"
+             bottom="${Name.Company}"
+             source="${javac.java.version}"
+             classpathref="compile.classpath"
+        >
+      <group title="SmartFrog Packages" packages="org.smartfrog.*"/>
+    </javadoc>
+  </target>  
+  
   <!-- ========================================================== -->
   <!-- 
     This target is used to set up the standard output for builds and tests and things
