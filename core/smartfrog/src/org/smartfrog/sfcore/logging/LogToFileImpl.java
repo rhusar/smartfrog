@@ -30,6 +30,8 @@ import java.net.UnknownHostException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
+import org.smartfrog.sfcore.common.SmartFrogCoreProperty;
 
 /**
  *
@@ -64,6 +66,9 @@ public class LogToFileImpl extends LogToStreamsImpl implements LogToFile {
 
     /** Use HostName in file name */
     boolean useHostNameInFileName = true;
+
+    /** Use ProcessName in file name */
+    boolean useProcessNameInFileName = true;
 
     /** Redirect system.out and system.err */
     boolean redirectSystemOutputs = false;
@@ -139,8 +144,9 @@ public class LogToFileImpl extends LogToStreamsImpl implements LogToFile {
           fileNamePrefix = classComponentDescription.sfResolve(ATR_FILE_NAME_PREFIX,fileNamePrefix, false);
           useLogNameInFileName = classComponentDescription.sfResolve(ATR_USE_LOG_NAME_IN_FILE_NAME,useLogNameInFileName, false);
           useHostNameInFileName = classComponentDescription.sfResolve(ATR_USE_HOST_NAME_IN_FILE_NAME,useHostNameInFileName, false);
-        } catch (Exception sex){
-           this.warn("",sex);;
+          useProcessNameInFileName = classComponentDescription.sfResolve(ATR_USE_PROCESS_NAME_IN_FILE_NAME,useProcessNameInFileName, false);
+        } catch (Exception ex){
+           this.warn("",ex);;
         }
     }
 
@@ -159,35 +165,56 @@ public class LogToFileImpl extends LogToStreamsImpl implements LogToFile {
         }
 
         fullLogFileName.append(path);
+        StringBuffer newfileName=new StringBuffer();
+
+        if ((fileNamePrefix!=null)){
+            if ((newfileName.toString().length()>0)&&!(newfileName.toString().endsWith("_"))) {
+                            newfileName.append("_");
+            }
+          newfileName.append(correctFilename(fileNamePrefix));
+        }
 
         if (useHostNameInFileName) {
             try {
                 String hostname = java.net.InetAddress.getLocalHost().getCanonicalHostName();
-                fullLogFileName.append(correctFilename(hostname));
-                if ((fileNamePrefix!=null)||useLogNameInFileName) {
-                    fullLogFileName.append("_");
+                if ((newfileName.toString().length()>0)&&!(newfileName.toString().endsWith("_"))) {
+                                newfileName.append("_");
                 }
+                newfileName.append(correctFilename(hostname));
             } catch (UnknownHostException ex) {
                 if (isErrorEnabled()) error("",ex);
             }
         }
 
-        if ((fileNamePrefix!=null)){
-          fullLogFileName.append(correctFilename(fileNamePrefix));
-          if (useLogNameInFileName) fullLogFileName.append("_");
+        if (useProcessNameInFileName) {
+            String processName = System.getProperty(SmartFrogCoreProperty.propBaseSFProcess +SmartFrogCoreKeys.SF_PROCESS_NAME);
+            if (processName!=null) {
+                if ((newfileName.toString().length()>0) && !(newfileName.toString().endsWith("_"))) {
+                    newfileName.append("_");
+                }
+                newfileName.append(correctFilename(processName));
+            }
         }
 
         if (useLogNameInFileName) {
-           fullLogFileName.append(correctFilename(logName));
+            if ((newfileName.toString().length()>0)&&!(newfileName.toString().endsWith("_"))) {
+                            newfileName.append("_");
+            }
+           newfileName.append(correctFilename(logName));
         }
 
         if (datedName){
             /** Used to format times in filename */
             DateFormat dateFileNameFormatter = null;
-            dateFileNameFormatter = new SimpleDateFormat("_yyyyMMdd-HHmmss_SSSzzz");
+            dateFileNameFormatter = new SimpleDateFormat("yyyyMMdd-HHmmss_SSSzzz");
+            if ((newfileName.toString().length()>0)&&!(newfileName.toString().endsWith("_"))) {
+                            newfileName.append("_");
+            }
             // add the extension
-            fullLogFileName.append(dateFileNameFormatter.format(new Date()));
+            newfileName.append(dateFileNameFormatter.format(new Date()));
         }
+
+        fullLogFileName.append (newfileName);
         // add the extension
         //System.out.println("**********LogToFileImpl::createFile : "+fullLogFileName.toString()+"."+fileExtension);
         return new File( fullLogFileName.toString()+"."+fileExtension);
@@ -253,7 +280,7 @@ public class LogToFileImpl extends LogToStreamsImpl implements LogToFile {
                    System.setErr(newErr);
             } catch (Exception e) {
                 System.setOut(originalOut);
-                System.setErr(originalErr);            
+                System.setErr(originalErr);
             }
         }
     }

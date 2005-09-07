@@ -26,6 +26,7 @@ LogToFileImpl extends  LogToStreamsImpl {
   useDatedFileName true;
   useLogNameInFileName true;
   useHostNameInFileName true;
+  useProcessNameInFileName true;
   //fileNamePrefix //"prefix"; //or PROPERTY java.io.tmpdir;
   redirectSystemOutputs false;
 }
