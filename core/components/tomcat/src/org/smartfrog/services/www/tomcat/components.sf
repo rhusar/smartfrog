@@ -53,9 +53,3 @@ TomcatServer extends ApplicationServer {
 
 
 }
-
-
- TomcatManager extends Prim {
-     sfClass "org.smartfrog.services.www.tomcat.TomcatManagerImpl";
-     server TBD;
- }
