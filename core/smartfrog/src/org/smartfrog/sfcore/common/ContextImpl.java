@@ -29,6 +29,7 @@ import java.io.Writer;
 import java.io.IOException;
 
 import org.smartfrog.sfcore.common.SmartFrogContextException;
+import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
 
 
 /**
@@ -310,7 +311,7 @@ public class ContextImpl extends OrderedHashtable implements Context,
     public void writeOn(Writer ps, int indent) throws IOException {
         writeContextOn(ps, indent, this.keys());
     }
- 
+
     /**
      * Writes the context on a writer.
      *
@@ -361,13 +362,21 @@ public class ContextImpl extends OrderedHashtable implements Context,
     protected void writeValueOn(Writer ps, int indent, Object value)
         throws IOException {
         if (value instanceof PrettyPrinting) {
-	    ((PrettyPrinting)value).writeOn(ps, indent);
-	} else {
+            try {
+                ((PrettyPrinting)value).writeOn(ps, indent);
+            } catch (IOException ex) {
+                throw ex;
+            } catch (java.lang.StackOverflowError thr) {
+                   StringBuffer msg = new StringBuffer("Failed to pretty print value. Possible cause: cyclic reference.");
+                   msg.append("Cause: ");
+                   msg.append(thr.getCause().toString());
+                   throw new java.io.IOException(msg.toString());
+            }
+        } else {
             writeBasicValueOn(ps, indent, value);
             ps.write(';');
         }
     }
-
     /**
      * Writes a given value on a writer. Recognizes descriptions, strings and
      * vectors of basic values and turns them into string representation.
