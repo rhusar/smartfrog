@@ -66,17 +66,9 @@ For more information: www.smartfrog.org
 	   <tstamp/>
     <property name="Name.Company" value="(C) Copyright 1998-2005 Hewlett-Packard Development Company, LP"/>
     <property name="version" value="smartfrog components"/>
-    <!--property name="Version" value="1.00.000_beta"/-->
     <property name="year" value="2005"/>
 
-    <echo message=""/>
-    <echo message="==================================================================="/>
-    <echo message="= ${Name.System} ${version}"/>
-    <echo message="= ${Name.Company} "/>
-    <echo message="==================================================================="/>
-    <echo message=""/>
-    <echo message="(${ant.version})"/>
-        
+
   </target>
     
   
@@ -152,35 +144,6 @@ For more information: www.smartfrog.org
   <!-- =================================================================== -->
   <!--   JDocs                                                             -->
   <!-- =================================================================== -->
-  <target name="jdocs" depends="init, generateversion" description="Generates the API documentation">
-    <!--  Java Docs for all                                                -->
-    <echo message=""/>
-    <echo message="------------------------------------------------------------------------"/>
-    <echo message="  Creating Java Docs for ${Name.System} ${version} [${dist.jdocs.dir}]"/>
-    <echo message="------------------------------------------------------------------------"/>
-    <mkdir dir="${dist.jdocs.dir}"/>
-    <javadoc packagenames="org.smartfrog.*"
-           sourcepath="${src.dir}"
-           destdir="${dist.jdocs.dir}"
-           author="true"
-           version="true"
-           use="true"
-           windowtitle="${Name.System}"
-           Header="${Name.System} ${CVersion}"
-           Footer="${Name.System} ${version} ${CVersion}"
-           doctitle="${Name.System}"
-           bottom="${Name.Company}"
-           source="1.4"
-           >
-      <group title="SmartFrog Packages" packages="org.smartfrog.*"/>
-      <classpath>
-	<fileset dir="${dist.lib.dir}">
-              <include name="**/*.jar"/>
-          </fileset>
-      </classpath>
-    </javadoc>
-
-  </target>
-
+  <target name="jdocs" depends="javadoc" description="Generates the API documentation"/>
 
 </project>
