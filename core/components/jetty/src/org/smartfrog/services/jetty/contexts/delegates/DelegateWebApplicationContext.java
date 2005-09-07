@@ -25,7 +25,6 @@ import org.mortbay.jetty.servlet.AbstractSessionManager;
 import org.mortbay.jetty.servlet.ServletHandler;
 import org.mortbay.jetty.servlet.WebApplicationContext;
 import org.smartfrog.services.filesystem.FileSystem;
-import org.smartfrog.services.jetty.JettyHelper;
 import org.smartfrog.services.jetty.SFJetty;
 import org.smartfrog.services.jetty.contexts.JettyWebApplicationContext;
 import org.smartfrog.services.www.JavaWebApplication;
@@ -62,7 +61,6 @@ public class DelegateWebApplicationContext extends DelegateApplicationContext im
     }
 
     public void deploy(Prim declaration) throws SmartFrogException, RemoteException {
-        JettyHelper jettyHelper = new JettyHelper(declaration);
         webApp =
                 FileSystem.lookupAbsolutePath(declaration,
                         ATTR_WARFILE,

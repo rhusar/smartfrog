@@ -49,13 +49,6 @@ WebStartServlet extends Servlet {
     initParams [["logLevel","DEBUG"]];
 }
 
-/**
- * this is the jetty binding.
- */
-WebStartServletOnJetty extends WebStartServlet  {
-    //sfClass JettyServlet:sfClass;
-}
-
 
 ServerOnJetty extends Compound {
 
@@ -85,12 +78,12 @@ ServerOnJetty extends Compound {
 
     }
 
-    jnlp extends WebStartServletOnJetty {
+    jnlp extends WebStartServlet {
         pathSpec "*.jnlp";
         context LAZY servlets;
     }
 
-    jnlp2 extends WebStartServletOnJetty {
+    jnlp2 extends WebStartServlet {
         pathSpec "/downloads/";
         context LAZY servlets;
     }

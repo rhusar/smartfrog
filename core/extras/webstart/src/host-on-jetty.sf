@@ -18,7 +18,7 @@ For more information: www.smartfrog.org
 
 */
 
-//jetty
+#include "org/smartfrog/services/www/components.sf";
 #include "org/smartfrog/services/jetty/components.sf";
 #include "/org/smartfrog/services/filesystem/components.sf"
 #include "/org/smartfrog/services/assertions/components.sf"
@@ -52,24 +52,19 @@ sfConfig extends Compound {
         server "webstart";
 
         jettyhome  dist.dir;
-        
 
-        //jettyhome axishome;
+        }
 
-        listeners extends Compound {
-            jetty extends JettyListener {
-                listenerPort port;
-                server LAZY jettyServer;
-            }
+     httpd extends JettyListener {
+            listenerPort port;
+            server LAZY jettyServer;
         }
 
 
-
-        WebStart extends JettyWebApplication {
-            warFile filename;
-            contextPath "/";
-            server LAZY PARENT;
-        }
+    WebStart extends WebApplication {
+        warFile filename;
+        contextPath "/";
+        server LAZY jettyServer;
     }
 
 }

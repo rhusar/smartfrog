@@ -1,24 +1,23 @@
 package org.smartfrog.services.www.tomcat;
 
+import org.smartfrog.services.filesystem.FileSystem;
+import org.smartfrog.services.www.JavaWebApplication;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
-import org.smartfrog.sfcore.common.SmartFrogResolutionException;
-import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferencePart;
-import org.smartfrog.services.filesystem.FileSystem;
-import org.smartfrog.services.www.JavaWebApplication;
 
-import java.rmi.RemoteException;
-import java.net.Authenticator;
-import java.net.URL;
-import java.net.MalformedURLException;
-import java.io.File;
-import java.io.InputStream;
 import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.Authenticator;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.rmi.RemoteException;
 
 /**
  */
@@ -78,7 +77,9 @@ public class TomcatWebApplication extends TomcatDelegateApplicationContext imple
 
 
     private String createCommand(String action) {
-        String commandStr = "http://" + host + ":" + port + "/manager/stop?path=/" + warPath;
+        //TODO
+        // String commandStr = "http://" + host + ":" + port + "/manager/stop?path=/" + warPath;
+        return "";
     }
 
     /**

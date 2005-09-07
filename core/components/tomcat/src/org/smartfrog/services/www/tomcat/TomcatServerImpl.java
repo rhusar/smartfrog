@@ -19,23 +19,18 @@
  */
 package org.smartfrog.services.www.tomcat;
 
-import org.smartfrog.sfcore.prim.PrimImpl;
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.services.www.JavaEnterpriseApplication;
 import org.smartfrog.services.www.JavaWebApplication;
 import org.smartfrog.services.www.ServletContextIntf;
-import org.smartfrog.services.www.context.ApplicationServerContextEntry;
-import org.smartfrog.services.www.context.ApplicationServerContextHolder;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.PrimImpl;
 
 import java.rmi.RemoteException;
 
 /**
  */
 public class TomcatServerImpl extends PrimImpl implements TomcatServer {
-    /**
-     * any contexts that we have deployed
-     */
-    protected ApplicationServerContextHolder contexts = new ApplicationServerContextHolder();
 
 
     public TomcatServerImpl() throws RemoteException {
@@ -54,12 +49,10 @@ public class TomcatServerImpl extends PrimImpl implements TomcatServer {
      * @throws RemoteException    on network trouble
      * @throws SmartFrogException on any other problem
      */
-    public ApplicationServerContextEntry deployWebApplication(Prim webApplication) throws RemoteException, SmartFrogException {
+    public JavaWebApplication deployWebApplication(Prim webApplication) throws RemoteException, SmartFrogException {
         TomcatWebApplication delegate = new TomcatWebApplication(this, webApplication);
         delegate.deploy();
-        ApplicationServerContextEntry entry;
-        entry = contexts.createEntry(ApplicationServerContextEntry.TYPE_WAR, delegate);
-        return entry;
+        return delegate;
     }
 
     /**
@@ -70,7 +63,7 @@ public class TomcatServerImpl extends PrimImpl implements TomcatServer {
      * @throws RemoteException
      * @throws SmartFrogException
      */
-    public ApplicationServerContextEntry deployEnterpriseApplication(Prim enterpriseApplication) throws RemoteException, SmartFrogException {
+    public JavaEnterpriseApplication deployEnterpriseApplication(Prim enterpriseApplication) throws RemoteException, SmartFrogException {
         throw new SmartFrogException("not implemented : DeployWebApplication");
     }
 
@@ -84,55 +77,9 @@ public class TomcatServerImpl extends PrimImpl implements TomcatServer {
      * @throws RemoteException    on network trouble
      * @throws SmartFrogException on any other problem
      */
-    public ApplicationServerContextEntry deployServletContext(Prim servlet) throws RemoteException, SmartFrogException {
+    public ServletContextIntf deployServletContext(Prim servlet) throws RemoteException, SmartFrogException {
         throw new SmartFrogException("not implemented : deployServletContext");
     }
 
-    /**
-     * lookup a context, get the context information back
-     *
-     * @param context
-     * @return the
-     * @throws RemoteException
-     * @throws SmartFrogException
-     *
-     */
-    public ApplicationServerContextEntry lookupContext(String context) throws RemoteException, SmartFrogException {
-        return contexts.lookup(context);
-    }
 
-    /**
-     * undeploy a web application
-     *
-     * @param context the context reference supplied when a context was created
-     * @throws RemoteException    on network trouble
-     * @throws SmartFrogException on any other problem
-     */
-    public void undeployApplicationServerContext(String context) throws RemoteException, SmartFrogException {
-        ApplicationServerContextEntry entry = lookupContext(context);
-        if (entry != null && entry.getImplementation() != null) {
-            entry.getImplementation().undeploy();
-        }
-    }
-
-    /**
-     * lookup a servlet context, get the servlet interface back.
-     * This servlet interface is one bound tightly to the implementation.
-     *
-     * @param context
-     * @return
-     * @throws RemoteException
-     * @throws SmartFrogException
-     */
-    public ServletContextIntf lookupServletContext(String context) throws RemoteException, SmartFrogException {
-        ApplicationServerContextEntry entry = contexts.lookup(context);
-        if (entry != null) {
-            if (entry.getType() == ApplicationServerContextEntry.TYPE_SERVLET_CONTEXT) {
-                return (ServletContextIntf) entry.getImplementation();
-            } else {
-                throw new SmartFrogException(ApplicationServerContextEntry.ERROR_WRONG_TYPE + context);
-            }
-        }
-        return null;
-    }
 }

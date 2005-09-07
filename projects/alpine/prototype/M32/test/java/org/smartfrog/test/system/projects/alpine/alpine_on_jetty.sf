@@ -33,46 +33,55 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/projects/alpine/config/smartfrog/components.sf";
 
 
-AlpineServerOnJetty extends CoreJettyServer {
-
-
-    serverHost "localhost";
+AlpineServerOnJetty extends Compound {
 
     port TBD;
-    
-    server "alpine";
+    home TBD;
 
 
-    listeners extends Compound {
-        jetty extends JettyListener {
-            listenerPort port;
-            //serverHost host;
-            server LAZY jettyServer;
-        }
+   jettyServer extends CoreJettyServer {
+
+      jettyhome LAZY PARENT:home;
+
+      port PARENT:port;
+
+      server "alpine";
+
     }
 
-    servlets extends JettyServletContext {
+
+    listener extends JettyListener {
+        listenerPort port;
+        //serverHost host;
+        server LAZY jettyServer;
+    }
+
+    servlets extends ServletContext {
         
         resourceBase "./tmp";
         contextPath "/servlets/";
+        server LAZY jettyServer;
 
-        alpineServlet extends AlpineServletOnJetty {
-            pathSpec "/alpine/*";
-            initOrder 5;
-        }
      }
+
+      alpineServlet extends AlpineServletOnJetty {
+         pathSpec "/alpine/*";
+         initOrder 5;
+         context LAZY servlets;
+      }
+
 }
 
 
 server extends AlpineServerOnJetty {
 
-    jettyhome LAZY PROPERTY java.io.tmpdir;
+    home LAZY PROPERTY java.io.tmpdir;
 
     //this is our endpoint
     endpoint extends EchoEndpoint {
         name "echoEndpoint";
         path "/echo/";
-        servlet LAZY servlets:alpineServlet;
+        servlet LAZY alpineServlet;
     }
 
     
@@ -93,7 +102,6 @@ server extends AlpineServerOnJetty {
 
 sfConfig extends server {
 
-    host "localhost";
 
     port 5050;
 

@@ -16,7 +16,7 @@ public class TomcatManagerAuthenticator extends Authenticator {
      * Constructor is simply passed the username and password
      */
     public TomcatManagerAuthenticator(String u, String p) {
-	username = u;
+        username = u;
         password = p;
     }
 
@@ -24,7 +24,7 @@ public class TomcatManagerAuthenticator extends Authenticator {
      * This returns the PasswordAuthentication object.
      */
     protected PasswordAuthentication getPasswordAuthentication() {
-        return new PasswordAuthentication (username, password.toCharArray());
+        return new PasswordAuthentication(username, password.toCharArray());
     }
-    
+
 }

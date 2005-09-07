@@ -24,7 +24,7 @@ package org.smartfrog.services.www;
  * This represents a delegate that implements the servlet context component in a particular platform
  * IT inherits the {@link ApplicationServerContext} interface for the start/undeploy/ping operations
  */
-public interface ServletContextComponentDelegate  
+public interface ServletContextComponentDelegate
         extends ApplicationServerContext, ServletContextComponent {
 
 

@@ -19,13 +19,11 @@
  */
 package org.smartfrog.services.www.context;
 
+import org.smartfrog.services.www.ApplicationServerContext;
 import org.smartfrog.services.www.ServletComponent;
 import org.smartfrog.services.www.ServletContextComponentDelegate;
 import org.smartfrog.services.www.ServletContextIntf;
 import org.smartfrog.sfcore.common.SmartFrogException;
-import org.smartfrog.sfcore.common.SmartFrogLivenessException;
-import org.smartfrog.sfcore.prim.Liveness;
-import org.smartfrog.sfcore.prim.TerminationRecord;
 
 import java.rmi.RemoteException;
 
@@ -33,8 +31,6 @@ import java.rmi.RemoteException;
  * This implements our servlet component
  */
 public class ServletContextImpl extends ApplicationServerContextImpl implements ServletContextIntf {
-
-
 
 
     protected ServletContextIntf getContext() {
@@ -45,7 +41,15 @@ public class ServletContextImpl extends ApplicationServerContextImpl implements 
     }
 
 
-    protected ApplicationServerContextEntry deployThisComponent() throws RemoteException, SmartFrogException {
+    /**
+     * subclasses must implement this to deploy their component.
+     * It is called during sfDeploy, after we have bound to a server
+     *
+     * @return a component
+     * @throws RemoteException
+     * @throws SmartFrogException
+     */
+    protected ApplicationServerContext deployThisComponent() throws RemoteException, SmartFrogException {
         return getServer().deployServletContext(this);
     }
 

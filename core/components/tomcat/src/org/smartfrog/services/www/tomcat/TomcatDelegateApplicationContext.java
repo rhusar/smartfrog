@@ -20,8 +20,8 @@
 package org.smartfrog.services.www.tomcat;
 
 import org.smartfrog.services.www.ApplicationServerContext;
-import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.prim.Prim;
 
 import java.rmi.RemoteException;
 
@@ -53,6 +53,7 @@ public abstract class TomcatDelegateApplicationContext implements ApplicationSer
 
     /**
      * deploy this thing
+     *
      * @throws SmartFrogException
      * @throws RemoteException
      */

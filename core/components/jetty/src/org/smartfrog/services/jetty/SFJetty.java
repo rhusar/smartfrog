@@ -36,9 +36,9 @@ import org.mortbay.http.NCSARequestLog;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.jetty.contexts.delegates.DelegateServletContext;
 import org.smartfrog.services.jetty.contexts.delegates.DelegateWebApplicationContext;
+import org.smartfrog.services.www.JavaEnterpriseApplication;
+import org.smartfrog.services.www.JavaWebApplication;
 import org.smartfrog.services.www.ServletContextIntf;
-import org.smartfrog.services.www.context.ApplicationServerContextEntry;
-import org.smartfrog.services.www.context.ApplicationServerContextHolder;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
@@ -53,10 +53,11 @@ import java.rmi.RemoteException;
 
 /**
  * A wrapper for a Jetty http server.
+ *
  * @author Ritu Sabharwal
  */
 
-public class SFJetty extends CompoundImpl implements Compound,JettyIntf {
+public class SFJetty extends CompoundImpl implements Compound, JettyIntf {
 
     protected Reference jettyhomeRef = new Reference(ATTR_JETTY_HOME);
 
@@ -65,11 +66,10 @@ public class SFJetty extends CompoundImpl implements Compound,JettyIntf {
      */
     protected String jettyhome;
 
-    /**
-     * any contexts that we have deployed
-     */
-    protected ApplicationServerContextHolder contexts=new ApplicationServerContextHolder();
 
+    /**
+     * A jetty helper
+     */
     protected JettyHelper jettyHelper = new JettyHelper(this);
 
     /**
@@ -80,7 +80,7 @@ public class SFJetty extends CompoundImpl implements Compound,JettyIntf {
     /**
      * flag to turn logging on.
      */
-    protected boolean enableLogging=false;
+    protected boolean enableLogging = false;
 
     protected String logDir;
     protected String logPattern;
@@ -113,6 +113,7 @@ public class SFJetty extends CompoundImpl implements Compound,JettyIntf {
 
     /**
      * Get the server.
+     *
      * @return the server or null if not currently deployed.
      */
     public HttpServer getServer() {
@@ -120,10 +121,11 @@ public class SFJetty extends CompoundImpl implements Compound,JettyIntf {
     }
 
     /**
-   * Deploy the SFJetty component and publish the information
-   * @exception  SmartFrogException In case of error while deploying
-   * @exception  RemoteException In case of network/rmi error
-   */
+     * Deploy the SFJetty component and publish the information
+     *
+     * @throws SmartFrogException In case of error while deploying
+     * @throws RemoteException    In case of network/rmi error
+     */
     public void sfDeploy() throws SmartFrogException, RemoteException {
         try {
             super.sfDeploy();
@@ -145,72 +147,73 @@ public class SFJetty extends CompoundImpl implements Compound,JettyIntf {
     }
 
 
-  /**
-   * sfStart: starts Jetty Http server.
-   *
-   * @exception  SmartFrogException In case of error while starting
-   * @exception  RemoteException In case of network/rmi error
-   */
-  public synchronized void sfStart() throws SmartFrogException,
-          RemoteException {
-      super.sfStart();
-      try {
-          server.start();
-      } catch (Exception mexp) {
-          throw SmartFrogException.forward(mexp);
-      }
-  }
+    /**
+     * sfStart: starts Jetty Http server.
+     *
+     * @throws SmartFrogException In case of error while starting
+     * @throws RemoteException    In case of network/rmi error
+     */
+    public synchronized void sfStart() throws SmartFrogException,
+            RemoteException {
+        super.sfStart();
+        try {
+            server.start();
+        } catch (Exception mexp) {
+            throw SmartFrogException.forward(mexp);
+        }
+    }
 
-  /**
-   * Configure the http server
-   */
-  public void configureLogging() throws SmartFrogException {
-      try {
-          if(enableLogging) {
-              NCSARequestLog requestlog = new NCSARequestLog();
-              requestlog.setFilename(logDir+File.separatorChar+logPattern);
-              //commented out as this is deprecated/ignored.
-              //requestlog.setBuffered(false);
-              requestlog.setRetainDays(90);
-              requestlog.setAppend(true);
-              requestlog.setExtended(true);
-              //todo: make options
-              requestlog.setLogTimeZone("GMT");
-              String[] paths = {"/jetty/images/*",
-                                "/demo/images/*", "*.css"};
-              requestlog.setIgnorePaths(paths);
-              server.setRequestLog(requestlog);
-          }
-      } catch (Exception ex) {
-          throw SmartFrogException.forward(ex);
-      }
-  }
-
-  /**
-   * Termination phase
-   */
-  public void sfTerminateWith(TerminationRecord status) {
-      try {
-          if(server!=null) {
-            server.stop();
-          }
-      } catch (InterruptedException ie) {
-            if (sfLog().isErrorEnabled()){
-              sfLog().error(" Interrupted on server termination " , ie);
+    /**
+     * Configure the http server
+     */
+    public void configureLogging() throws SmartFrogException {
+        try {
+            if (enableLogging) {
+                NCSARequestLog requestlog = new NCSARequestLog();
+                requestlog.setFilename(logDir + File.separatorChar + logPattern);
+                //commented out as this is deprecated/ignored.
+                //requestlog.setBuffered(false);
+                requestlog.setRetainDays(90);
+                requestlog.setAppend(true);
+                requestlog.setExtended(true);
+                //todo: make options
+                requestlog.setLogTimeZone("GMT");
+                String[] paths = {"/jetty/images/*",
+                        "/demo/images/*", "*.css"};
+                requestlog.setIgnorePaths(paths);
+                server.setRequestLog(requestlog);
             }
-      }
-      super.sfTerminateWith(status);
-  }
+        } catch (Exception ex) {
+            throw SmartFrogException.forward(ex);
+        }
+    }
+
+    /**
+     * Termination phase
+     */
+    public void sfTerminateWith(TerminationRecord status) {
+        try {
+            if (server != null) {
+                server.stop();
+            }
+        } catch (InterruptedException ie) {
+            if (sfLog().isErrorEnabled()) {
+                sfLog().error(" Interrupted on server termination ", ie);
+            }
+        }
+        super.sfTerminateWith(status);
+    }
 
     /**
      * liveness test verifies the server is started
+     *
      * @param source
      * @throws SmartFrogLivenessException
      * @throws RemoteException
      */
     public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
-        if(server==null || !server.isStarted()) {
+        if (server == null || !server.isStarted()) {
             throw new SmartFrogLivenessException(LIVENESS_ERROR_SERVER_NOT_STARTED);
         }
     }
@@ -231,14 +234,12 @@ public class SFJetty extends CompoundImpl implements Compound,JettyIntf {
      *                                  on any other problem
      * @todo implement
      */
-    public ApplicationServerContextEntry deployWebApplication(Prim webApplication)
+    public JavaWebApplication deployWebApplication(Prim webApplication)
             throws RemoteException, SmartFrogException {
 
-        DelegateWebApplicationContext delegate=new DelegateWebApplicationContext(this,webApplication);
+        DelegateWebApplicationContext delegate = new DelegateWebApplicationContext(this, webApplication);
         delegate.deploy(webApplication);
-        ApplicationServerContextEntry entry;
-        entry = contexts.createEntry(ApplicationServerContextEntry.TYPE_WAR,delegate);
-        return entry;
+        return delegate;
     }
 
     /**
@@ -249,7 +250,7 @@ public class SFJetty extends CompoundImpl implements Compound,JettyIntf {
      * @throws RemoteException
      * @throws SmartFrogException
      */
-    public ApplicationServerContextEntry deployEnterpriseApplication(Prim enterpriseApplication) throws RemoteException, SmartFrogException {
+    public JavaEnterpriseApplication deployEnterpriseApplication(Prim enterpriseApplication) throws RemoteException, SmartFrogException {
         throw new SmartFrogException(ERROR_EAR_UNSUPPORTED);
     }
 
@@ -262,62 +263,11 @@ public class SFJetty extends CompoundImpl implements Compound,JettyIntf {
      * @throws org.smartfrog.sfcore.common.SmartFrogException
      *                                  on any other problem
      */
-    public ApplicationServerContextEntry deployServletContext(Prim servlet) throws RemoteException, SmartFrogException {
+    public ServletContextIntf deployServletContext(Prim servlet) throws RemoteException, SmartFrogException {
 
-        DelegateServletContext delegate = new DelegateServletContext(this,null);
+        DelegateServletContext delegate = new DelegateServletContext(this, null);
         delegate.deploy(servlet);
-        ApplicationServerContextEntry entry;
-        entry=contexts.createServletEntry(delegate);
-        return entry;
+        return delegate;
     }
 
-    /**
-     * undeploy a web application
-     *
-     * @param context the context reference supplied when a context was created
-     * @throws java.rmi.RemoteException on network trouble
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
-     *                                  on any other problem
-     */
-    public void undeployApplicationServerContext(String context) throws RemoteException, SmartFrogException {
-        ApplicationServerContextEntry entry=lookupContext(context);
-        if(entry!=null && entry.getImplementation()!=null) {
-            entry.getImplementation().undeploy();
-        }
-    }
-
-
-    /**
-     * lookup a context, get the context information back
-     * @param context
-     * @return the
-     * @throws java.rmi.RemoteException
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
-     *
-     */
-    public ApplicationServerContextEntry lookupContext(String context) throws RemoteException, SmartFrogException {
-        return contexts.lookup(context);
-    }
-
-    /**
-     * lookup a servlet context, get the servlet interface back.
-     * This servlet interface is one bound tightly to the implementation.
-     *
-     * @param context
-     * @return the
-     * @throws java.rmi.RemoteException
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
-     *
-     */
-    public ServletContextIntf lookupServletContext(String context) throws RemoteException, SmartFrogException {
-        ApplicationServerContextEntry entry = contexts.lookup(context);
-        if(entry!=null) {
-            if(entry.getType()==ApplicationServerContextEntry.TYPE_SERVLET_CONTEXT) {
-                return (ServletContextIntf) entry.getImplementation();
-            } else {
-                throw new SmartFrogException(ApplicationServerContextEntry.ERROR_WRONG_TYPE +context);
-            }
-        }
-        return null;
-    }
 }

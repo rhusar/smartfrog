@@ -54,6 +54,7 @@ public interface ApplicationServerContext extends Remote {
 
     /**
      * this method is here for server-specific implementation classes,
+     *
      * @throws RemoteException
      * @throws SmartFrogException
      */
@@ -62,6 +63,7 @@ public interface ApplicationServerContext extends Remote {
 
     /**
      * liveness check
+     *
      * @throws SmartFrogLivenessException
      * @throws RemoteException
      */

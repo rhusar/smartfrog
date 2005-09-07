@@ -39,7 +39,7 @@ public interface ServletContextIntf extends ApplicationServerContext {
      * {@value}
      */
     public static final String ATTR_CLASSPATH = "classpath";
-    
+
     /**
      * host ip address. The IPAddr is returned for ease of use on networks where
      * DNS is not there
@@ -48,16 +48,18 @@ public interface ServletContextIntf extends ApplicationServerContext {
 
     /**
      * Add a mime mapping
+     *
      * @param extension extension to map (no '.')
-     * @param mimeType mimetype to generate
+     * @param mimeType  mimetype to generate
      * @throws RemoteException
      * @throws SmartFrogException
      */
-    public void addMimeMapping(String extension, String mimeType) throws RemoteException, SmartFrogException ;
+    public void addMimeMapping(String extension, String mimeType) throws RemoteException, SmartFrogException;
 
 
     /**
      * Remove a mime mapping for an extension
+     *
      * @param extension extension to unmap
      * @return true if the unmapping was successful
      * @throws RemoteException
@@ -67,10 +69,11 @@ public interface ServletContextIntf extends ApplicationServerContext {
 
     /**
      * add a servlet
+     *
      * @param servletDeclaration component declaring the servlet
+     * @return the delegate that implements the servlet binding
      * @throws RemoteException
      * @throws SmartFrogException
-     * @return the delegate that implements the servlet binding
      */
     public ServletContextComponentDelegate addServlet(ServletComponent servletDeclaration) throws RemoteException, SmartFrogException;
 
