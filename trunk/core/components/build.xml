@@ -83,17 +83,21 @@ For more information: www.smartfrog.org
       not where dependency logic is imposed -->
     <property name="arithmetic-testharness.project" location="arithmetic-testharness" />
     <property name="cddlm.project" location="cddlm" />
+    <property name="deployapi.project" location="deployapi" />
     <property name="emailer.project" location="emailer" />
     <property name="jetty.project" location="jetty" />
     <property name="junit.project" location="junit" />
     <!--property name="logger.project" location="logger" /-->
     <property name="net.project" location="net" />
-    <property name="scripting.project" location="scripting" />
-    <property name="sfLoggingServicess.project" location="loggingservices" />
-    <property name="ssh.project" location="ssh" />
-    <property name="slp.project" location="slp" />
-    <property name="utils.project" location="utils" />
     <property name="releasetest.project" location="releasetest" />
+    <property name="scripting.project" location="scripting" />
+    <property name="sfLoggingServices.project" location="loggingservices" />
+    <property name="slp.project" location="slp" />
+    <property name="ssh.project" location="ssh" />
+    <property name="tomcat.project" location="tomcat" />
+    <property name="utils.project" location="utils" />
+    <property name="xml.project" location="xml" />
+    <property name="www.project" location="www" />
 
     <!--where the files for release will go-->
     <property name="bin" value="bin"/>
@@ -122,10 +126,12 @@ For more information: www.smartfrog.org
       <pathelement location="${ssh.project}"/>
       <pathelement location="${net.project}"/>
       <pathelement location="${emailer.project}"/>
-       <pathelement location="${jetty.project}"/>
+      <pathelement location="${www.project}"/>
+      <pathelement location="${jetty.project}"/>
+      <pathelement location="${tomcat.project}"/>
       <pathelement location="${slp.project}"/>
       <pathelement location="${scripting.project}"/>
-      <pathelement location="${sfLoggingServicess.project}"/>
+      <pathelement location="${sfLoggingServices.project}"/>
     <!--pathelement location="${arithmetic-testharness.project}"/-->
       <!--pathelement location="${junit.project}"/-->
       <!--pathelement location="${cddlm.project}"/-->
@@ -243,16 +249,17 @@ For more information: www.smartfrog.org
              source="${javac.java.version}"
        >
      <sourcepath>
-       <!--pathelement path="${cddlm.project}/${src}"/-->
        <pathelement path="${emailer.project}/${src}"/>
        <pathelement path="${jetty.project}/${src}"/>
        <!--pathelement path="${logger.project}/${src}"/-->
        <pathelement path="${net.project}/${src}"/>
        <pathelement path="${scripting.project}/${src}"/>
-       <pathelement path="${sfLoggingServicess.project}/${src}"/>
+       <pathelement path="${sfLoggingServices.project}/${src}"/>
        <pathelement path="${slp.project}/${src}"/>
        <pathelement path="${ssh.project}/${src}"/>
+       <pathelement path="${tomcat.project}/${src}"/>
        <pathelement path="${utils.project}/${src}"/>
+       <pathelement path="${www.project}/${src}"/>
       </sourcepath>
       <group title="SmartFrog Component Packages" packages="org.smartfrog.*"/>
     </javadoc>
@@ -294,10 +301,12 @@ For more information: www.smartfrog.org
     <!--copybuild project="${logger.project}" /-->
     <copybuild project="${net.project}" />
     <copybuild project="${scripting.project}" />
-    <copybuild project="${sfLoggingServicess.project}" />
+    <copybuild project="${sfLoggingServices.project}" />
     <copybuild project="${slp.project}"  />
     <copybuild project="${ssh.project}" />
+    <copybuild project="${tomcat.project}" />
     <copybuild project="${utils.project}" />
+    <copybuild project="${www.project}" />
 
   </target>
 
@@ -323,10 +332,12 @@ For more information: www.smartfrog.org
     <!--copybins project="${logger.project}" /!-->
     <copybins project="${net.project}" />
     <copybins project="${scripting.project}" />
-    <copybins project="${sfLoggingServicess.project}"/>
+    <copybins project="${sfLoggingServices.project}"/>
     <copybins project="${slp.project}"  />
     <copybins project="${ssh.project}" />
+    <copybins project="${tomcat.project}" />
     <copybins project="${utils.project}" />
+    <copybins project="${www.project}" />
 
   </target>
 
@@ -352,10 +363,12 @@ For more information: www.smartfrog.org
     <!--copylibs project="${logger.project}" /-->
     <copylibs project="${net.project}" />
     <copylibs project="${scripting.project}" />
-    <copylibs project="${sfLoggingServicess.project}" />
+    <copylibs project="${sfLoggingServices.project}" />
     <copylibs project="${slp.project}"  />
     <copylibs project="${ssh.project}" />
+    <copylibs project="${tomcat.project}" />
     <copylibs project="${utils.project}" />
+    <copylibs project="${www.project}" />
 
   </target>
 
@@ -383,11 +396,13 @@ For more information: www.smartfrog.org
     <!--copycomponents project="${logger.project}" /-->
     <copycomponents project="${net.project}"  />
     <copycomponents project="${scripting.project}" />
-    <copycomponents project="${sfLoggingServicess.project}" />
+    <copycomponents project="${sfLoggingServices.project}" />
     <copycomponents project="${net.project}"  />
     <copycomponents project="${slp.project}"  />
     <copycomponents project="${ssh.project}" />
+    <copycomponents project="${tomcat.project}" />
     <copycomponents project="${utils.project}" />
+    <copycomponents project="${www.project}" />
   </target>
 
   <!-- =================================================================== -->
@@ -412,10 +427,12 @@ For more information: www.smartfrog.org
     <!--copydocs project="${logger.project}" /-->
     <copydocs project="${net.project}" />
     <copydocs project="${scripting.project}" />
-    <copydocs project="${sfLoggingServicess.project}" />
+    <copydocs project="${sfLoggingServices.project}" />
     <copydocs project="${slp.project}" />
     <copydocs project="${ssh.project}" />
+    <copydocs project="${tomcat.project}" />
     <copydocs project="${utils.project}" />
+    <copydocs project="${www.project}" />
   </target>
 
   <!-- =================================================================== -->
@@ -423,47 +440,19 @@ For more information: www.smartfrog.org
   <!-- =================================================================== -->
   <target name="srczip" depends="initdist"  description="Creates src.zip with Components sources">
 
+    <!-- whatever a .dfPackage is, we do not want it  -->
+    <defaultexcludes echo="false" add="**/*.dfPackage"/>
     <zip destfile="${comp.dist.dir}/src.zip" >
-      <!--zipfileset dir="${cddlm.project}/${src}">
-        <include name="**/**"/>
-        <exclude name="**/*.dfPackage"/>
-      </zipfileset-->
-      <zipfileset dir="${emailer.project}/${dist.src.dir}">
-        <include name="**/**"/>
-        <exclude name="**/*.dfPackage"/>
-      </zipfileset>
-      <zipfileset dir="${jetty.project}/${dist.src.dir}">
-        <include name="**/**"/>
-        <exclude name="**/*.dfPackage"/>
-      </zipfileset>
-      <!--zipfileset dir="${logger.project}/${dist.src.dir}">
-        <include name="**/**"/>
-        <exclude name="**/*.dfPackage"/>
-      </zipfileset-->
-      <zipfileset dir="${net.project}/${dist.src.dir}">
-        <include name="**/**"/>
-        <exclude name="**/*.dfPackage"/>
-      </zipfileset>
-      <zipfileset dir="${scripting.project}/${dist.src.dir}">
-        <include name="**/**"/>
-        <exclude name="**/*.dfPackage"/>
-      </zipfileset>
-     <zipfileset dir="${sfLoggingServicess.project}/${dist.src.dir}">
-        <include name="**/**"/>
-        <exclude name="**/*.dfPackage"/>
-      </zipfileset>
-      <zipfileset dir="${slp.project}/${dist.src.dir}">
-        <include name="**/**"/>
-        <exclude name="**/*.dfPackage"/>
-      </zipfileset>
-      <zipfileset dir="${ssh.project}/${dist.src.dir}">
-        <include name="**/**"/>
-        <exclude name="**/*.dfPackage"/>
-      </zipfileset>
-      <zipfileset dir="${utils.project}/${dist.src.dir}">
-        <include name="**/**"/>
-        <exclude name="**/*.dfPackage"/>
-      </zipfileset>
+      <zipfileset dir="${emailer.project}/${dist.src.dir}" />
+      <zipfileset dir="${jetty.project}/${dist.src.dir}" />
+      <zipfileset dir="${net.project}/${dist.src.dir}" />
+      <zipfileset dir="${scripting.project}/${dist.src.dir}" />
+      <zipfileset dir="${sfLoggingServices.project}/${dist.src.dir}" />
+      <zipfileset dir="${slp.project}/${dist.src.dir}" />
+      <zipfileset dir="${ssh.project}/${dist.src.dir}" />
+      <zipfileset dir="${tomcat.project}/${dist.src.dir}" />
+      <zipfileset dir="${utils.project}/${dist.src.dir}" />
+      <zipfileset dir="${www.project}/${dist.src.dir}" />
     </zip>
   </target>
 
@@ -521,7 +510,7 @@ For more information: www.smartfrog.org
 
   <!--replace
         file="@{project}/releaseBuild.xml"
-	propertyFile="@{project}/version.properties">
+        propertyFile="@{project}/version.properties">
       <replacefilter
         token="@version"
         property="sf.build.version"/>
@@ -531,7 +520,7 @@ For more information: www.smartfrog.org
 
   <replace
         file="${skin.dir}/SFComponents.xml"
-	propertyFile="@{project}/version.properties">
+        propertyFile="@{project}/version.properties">
       <replacefilter
         token="@{compname}-ver"
         property="sf.build.version"/>
@@ -552,10 +541,12 @@ For more information: www.smartfrog.org
     <!--updateversion project="${logger.project}" compname="logger" /-->
     <updateversion project="${net.project}" compname="net"/>
     <updateversion project="${scripting.project}" compname="scripting"/>
-    <updateversion project="${sfLoggingServicess.project}" compname="sfLoggingServicess"/>
+    <updateversion project="${sfLoggingServices.project}" compname="sfLoggingServices"/>
     <updateversion project="${slp.project}" compname="slp"/>
     <updateversion project="${ssh.project}" compname="ssh"/>
+    <updateversion project="${tomcat.project}" compname="utils"/>
     <updateversion project="${utils.project}" compname="utils"/>
+    <updateversion project="${www.project}" compname="utils"/>
   </target>
 
   <!-- =================================================================== -->

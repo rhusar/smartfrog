@@ -114,17 +114,17 @@ For more information: www.smartfrog.org
     <target name="parse" depends="init,package"
         description="parse the deployment descriptor">
 
-      <sf-parse quiet="true" file="${src.dir}/${deploy.sf}">
-        <classpath path="${target.jar}"/>
+      <sf-parse quiet="true" file="${src.dir}/${deploy.sf}"
+        classpathref="exec.classpath">
       </sf-parse>
-      <sf-parse quiet="true" file="${src.dir}/${example.path}/example2.sf">
-        <classpath path="${target.jar}"/>
+      <sf-parse quiet="true" file="${src.dir}/${example.path}/example2.sf"
+        classpathref="exec.classpath">
       </sf-parse>
-      <sf-parse quiet="true" file="${src.dir}/${example.path}/example3.sf">
-        <classpath path="${target.jar}"/>
+      <sf-parse quiet="true" file="${src.dir}/${example.path}/example3.sf"
+        classpathref="exec.classpath">
       </sf-parse>
-      <sf-parse quiet="true" file="${src.dir}/${example.path}/dynamicexample.sf">
-        <classpath path="${target.jar}"/>
+      <sf-parse quiet="true" file="${src.dir}/${example.path}/dynamicexample.sf"
+        classpathref="exec.classpath">
       </sf-parse>
     </target>
     

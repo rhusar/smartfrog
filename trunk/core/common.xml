@@ -371,13 +371,14 @@
     
   </target>
 
-
+  <target name="jdocs" depends="javadoc" description="Generates the API documentation"/>
+  
   <!-- =================================================================== -->
   <!--   Javadocs. uses the compile classpath to set up the javadoc task   -->
   <!-- =================================================================== -->
   <target name="javadoc"
           depends="init, generateversion,declare-classpaths"
-          description="Generates the API documentation">
+          >
     <!--  Java Docs for all                                                -->
     <echo message=""/>
     <echo message="------------------------------------------------------------------------"/>

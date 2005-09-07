@@ -33,6 +33,7 @@ public abstract class TomcatDelegateApplicationContext implements ApplicationSer
 
     private TomcatServer server;
     private Prim declaration;
+
     protected TomcatDelegateApplicationContext(TomcatServer server, Prim declaration) {
         this.server = server;
         this.declaration = declaration;
