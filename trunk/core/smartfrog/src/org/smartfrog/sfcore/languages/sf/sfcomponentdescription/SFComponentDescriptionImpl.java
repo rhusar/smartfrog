@@ -460,58 +460,67 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
     *
     * @throws  SmartFrogCompileResolutionException failed to deploy resolve
     */
-   public void doLinkResolve(ResolutionState resState) throws SmartFrogCompileResolutionException {
-      Object key = null;
-      Object value = null;
-      Object result = null;
+   public void doLinkResolve(ResolutionState resState) throws
+       SmartFrogCompileResolutionException {
+       Object key = null;
+       Object value = null;
+       Object result = null;
 
-      for (Enumeration e = context.keys(); e.hasMoreElements(); ) {
-         // Get next attribute key and value
-         key = e.nextElement();
-         value = context.get(key);
+       for (Enumeration e = context.keys(); e.hasMoreElements(); ) {
+           // Get next attribute key and value
+           key = e.nextElement();
+           value = context.get(key);
 
-         // If value is reference resolve and place result in its place
-         if (value instanceof ComponentResolver) {
-            // value is deploy resolvable
-            ((ComponentResolver) value).doLinkResolve(resState);
-         } else if ((value instanceof Reference) &&
-               (((Reference) value).getEager())) {
-            try {
-               result = sfResolve((Reference) value);
-               context.put(key, result);
-               if (result instanceof SFComponentDescription) {
-                   // need to do this as it may link to the file root!
-                   ((SFComponentDescription)result).doLinkResolve(resState);
+           // If value is reference resolve and place result in its place
+           if (value instanceof ComponentResolver) {
+                   // value is deploy resolvable
+                try {
+                    ((ComponentResolver)value).doLinkResolve(resState);
+                } catch (SmartFrogCompileResolutionException ex) {
+                    throw ex;
+                } catch (Throwable thr) {
+                   StringBuffer msg = new StringBuffer("Failed to resolve '");
+                   msg.append(key);
+                   msg.append(" ");
+                   try {
+                       msg.append(value);
+                   } catch (java.lang.StackOverflowError thrx) {
+                       msg.append("[unprintable cyclic value]");
+                   }
+                   msg.append("'");
+                   if (thr instanceof java.lang.StackOverflowError) {
+                       msg.append(". Possible cause: cyclic reference.");
+                   }
+                   throw new SmartFrogCompileResolutionException(msg.toString(),
+                       thr, sfCompleteName(), null, resState.unresolved());
                }
-/*
-               if (result instanceof Copying) {
-                  result = ((Copying) result).copy();
 
-                  if (result instanceof SFComponentDescription) {
-                     ((ComponentDescription) result).setParent(this);
-                     resState.haveResolved(true);
-                     resState.addUnresolved(((SFComponentDescription) result).sfCompleteName());
-                  }
+           } else if ((value instanceof Reference)&&(((Reference)value).getEager())) {
+               try {
+                   result = sfResolve((Reference)value);
+                   context.put(key, result);
+                   if (result instanceof SFComponentDescription) {
+                       // need to do this as it may link to the file root!
+                       ((SFComponentDescription)result).doLinkResolve(resState);
+                   }
+               } catch (Exception resex) {
+                   resState.addUnresolved(value, sfCompleteName());
+               } catch (Throwable thr) {
+                   StringBuffer msg = new StringBuffer("Failed to resolve '");
+                   msg.append(key);
+                   msg.append(" ");
+                   msg.append(value);
+                   msg.append("'");
+                   if (thr instanceof java.lang.StackOverflowError) {
+                       msg.append(". Possible cause: cyclic reference.");
+                   }
+                   throw new SmartFrogCompileResolutionException(msg.toString(),
+                       thr, sfCompleteName(), null, resState.unresolved());
                }
- */
 
-            } catch (Exception resex) {
-               resState.addUnresolved(value, sfCompleteName());
-            } catch (Throwable thr){
-              StringBuffer msg = new StringBuffer("Failed to resolve '");
-              msg.append(key.toString());
-              msg.append(" ");
-              msg.append(value.toString());
-              msg.append(";'");
-              if (thr instanceof java.lang.StackOverflowError) {
-                msg.append(". Possible cause: cyclic reference.");
-              }
-              throw new SmartFrogCompileResolutionException(msg.toString(), thr,
-                  sfCompleteName(), null, resState.unresolved());
+           }
+       }
 
-            }
-         }
-      }
    }
 
 
@@ -548,16 +557,15 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
      * @throws IOException failure while writing
      */
     public void writeOn(Writer ps, int indent) throws IOException {
-	ps.write("extends " + (getEager() ? "" : "LAZY ") +
-               ((getType() == null) ? "" : getType().toString()));
+        ps.write("extends "+(getEager()?"":"LAZY ")+((getType()==null)?"":getType().toString()));
 
-	if (context.size() > 0) {
-	    ps.write(" {\n");
-	    context.writeOn(ps, indent+1);
-	    tabPad(ps, indent); ps.write('}');
-	} else {
-	    ps.write(';');
-	}
+        if (context.size()>0) {
+            ps.write(" {\n");
+            context.writeOn(ps, indent+1);
+            tabPad(ps, indent); ps.write('}');
+        } else {
+            ps.write(';');
+        }
     }
 
    /**
