@@ -40,6 +40,8 @@ public interface LogToFile extends LogToStreams {
     final static String ATR_USE_LOG_NAME_IN_FILE_NAME = "useLogNameInFileName";
     /** String name for optional attribute "useHostNameInFileName". */
     final static String ATR_USE_HOST_NAME_IN_FILE_NAME = "useHostNameInFileName";
+    /** String name for optional attribute "useProcessNameInFileName". */
+    final static String ATR_USE_PROCESS_NAME_IN_FILE_NAME = "useProcessNameInFileName";
     /** String name for optional attribute "fileNamePrefix". */
     final static String ATR_FILE_NAME_PREFIX = "fileNamePrefix";
     /** String name for optional attribute "useDatedFileName". */
