@@ -37,7 +37,6 @@ import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
-import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 import org.smartfrog.sfcore.deployer.SFDeployer;
 import org.smartfrog.sfcore.prim.Dump;
 import org.smartfrog.sfcore.prim.Liveness;
@@ -157,9 +156,15 @@ public class CompoundImpl extends PrimImpl implements Compound {
             // try to deploy
             Prim result = SFDeployer.deploy(cmp, null, parent, parms);
 
+            /**
+             *
+             * @TODO don't like this, we need to make the attribute over-write atomic with child registration (Patrick).
+             *
+             */
             if (parent != null){
                 if (name != null) {
                   parent.sfReplaceAttribute(name, result);
+                  result.sfParentageChanged(); // yuk.... see todo above!
                 } else {
                     //@TODO - Review after refactoring ProcessCompound
                     //This should throw an excetion when a
