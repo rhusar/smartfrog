@@ -50,16 +50,17 @@ public class MimeTypeImpl extends ServletContextComponentImpl implements MimeTyp
         super.sfStart();
         extension = sfResolve(ATTR_EXTENSION, extension, true);
         type = sfResolve(ATTR_TYPE, type, true);
-        getServletContext().addMimeMapping(extension,type);
+        getServletContext().addMimeMapping(extension, type);
     }
 
     /**
      * remove the servlet context if it is absent.
+     *
      * @param status termination status
      */
     public synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
-        if(getServletContext()!=null) {
+        if (getServletContext() != null) {
             try {
                 getServletContext().removeMimeMapping(extension);
             } catch (RemoteException e) {

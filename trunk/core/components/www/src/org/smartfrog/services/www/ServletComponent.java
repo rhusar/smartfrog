@@ -37,5 +37,5 @@ public interface ServletComponent extends ServletContextComponent {
      * {@value}
      */
 
-    String ATTR_INIT_ORDER="initOrder";
+    String ATTR_INIT_ORDER = "initOrder";
 }

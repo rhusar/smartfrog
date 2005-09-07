@@ -50,31 +50,31 @@ public class LivenessPageChecker implements LivenessPage {
      */
     protected static final int BLOCKSIZE = 8192;
 
-    /** 
+    /**
      */
     protected String page = "/";
 
-    /** 
+    /**
      */
     protected String protocol = "http";
 
-    /** 
+    /**
      */
     protected String host = "127.0.0.1";
 
-    /** 
+    /**
      */
     protected int port = 80;
 
-    /** 
+    /**
      */
     protected URL targetURL = null;
 
-    /** 
+    /**
      */
     protected boolean followRedirects = true;
 
-    /** 
+    /**
      */
     protected boolean enabled = true;
 
@@ -97,7 +97,7 @@ public class LivenessPageChecker implements LivenessPage {
     /**
      * string of queries at the end of the url
      */
-    protected String queries=null;
+    protected String queries = null;
 
     /**
      * our log
@@ -185,18 +185,18 @@ public class LivenessPageChecker implements LivenessPage {
      * @throws SmartFrogDeploymentException DOCUMENT ME!
      */
     protected void makeURL() throws SmartFrogDeploymentException {
-        StringBuffer target=new StringBuffer();
+        StringBuffer target = new StringBuffer();
         target.append(protocol);
-        target.append("://" );
+        target.append("://");
         target.append(host);
         target.append(':');
         target.append(port);
-        if(!page.startsWith("/")) {
+        if (!page.startsWith("/")) {
             target.append('/');
         }
         target.append(page);
-                                
-        if(queries!=null) {
+
+        if (queries != null) {
             target.append(queries);
         }
         bindToURL(target.toString());
@@ -263,21 +263,21 @@ public class LivenessPageChecker implements LivenessPage {
             }
 
             //now fetch the file
-            String body=getInputOrErrorText(connection);
+            String body = getInputOrErrorText(connection);
 
-            if(mimeTypeMap!=null) {
+            if (mimeTypeMap != null) {
                 String mimeType = connection.getContentType();
-                if(null== mimeTypeMap.get(mimeType)) {
-                    throw new SmartFrogLivenessException("Unexpected mimetype: "+mimeType);
+                if (null == mimeTypeMap.get(mimeType)) {
+                    throw new SmartFrogLivenessException("Unexpected mimetype: " + mimeType);
                 }
 
             }
 
-            postProcess(responseCode,response,body);
+            postProcess(responseCode, response, body);
 
         } catch (IOException exception) {
             String message = "Failed to read " + targetURL.toString() + "\n"
-                    + maybeGetErrorText(connection)+"\n"+exception.getMessage();
+                    + maybeGetErrorText(connection) + "\n" + exception.getMessage();
             log.error(message);
             throw new SmartFrogLivenessException(message, exception);
         }
@@ -285,6 +285,7 @@ public class LivenessPageChecker implements LivenessPage {
 
     /**
      * just a little something for subclassers out there
+     *
      * @param responseCode
      * @param response
      * @param body
@@ -302,7 +303,7 @@ public class LivenessPageChecker implements LivenessPage {
      * @return "" or remote error text
      */
     protected String maybeGetErrorText(HttpURLConnection connection) {
-        if(connection==null) {
+        if (connection == null) {
             return "unable to connect to URL";
         }
         if (fetchErrorText) {
@@ -384,7 +385,7 @@ public class LivenessPageChecker implements LivenessPage {
     /**
      * get the follow redirects flag
      *
-     * @return true iff redirects should be followed 
+     * @return true iff redirects should be followed
      */
     public boolean getFollowRedirects() {
         return followRedirects;
@@ -545,53 +546,55 @@ public class LivenessPageChecker implements LivenessPage {
 
     /**
      * extract a query string from the parameters
+     *
      * @param params
      */
     public void buildQueryString(Vector params) {
 
-        StringBuffer query=null;
-        if(params!=null) {
-            Iterator it=params.iterator();
-            while ( it.hasNext() ) {
-                if ( query != null ) {
+        StringBuffer query = null;
+        if (params != null) {
+            Iterator it = params.iterator();
+            while (it.hasNext()) {
+                if (query != null) {
                     query.append('&');
                 } else {
                     query = new StringBuffer();
                 }
                 Object o = (Object) it.next();
-                if(o instanceof Vector && ((Vector)o).size()>1) {
-                    Vector nested=(Vector) o;
-                    String name=nested.elementAt(0).toString();
-                    String value=nested.elementAt(1).toString();
+                if (o instanceof Vector && ((Vector) o).size() > 1) {
+                    Vector nested = (Vector) o;
+                    String name = nested.elementAt(0).toString();
+                    String value = nested.elementAt(1).toString();
                     query.append(name);
                     query.append('=');
                     query.append(value);
                 } else {
-                    String term=o.toString();
+                    String term = o.toString();
                     query.append(term);
                 }
             }
         }
-        if(query==null) {
-            queries=null;
+        if (query == null) {
+            queries = null;
         } else {
-            queries="?"+query;
+            queries = "?" + query;
         }
 
     }
 
     /**
      * set the mime types of this component
+     *
      * @param mimeTypes
      */
     public void setMimeTypes(Vector mimeTypes) {
-        if(mimeTypes==null || mimeTypes.size()==0) {
-            mimeTypeMap=null;
+        if (mimeTypes == null || mimeTypes.size() == 0) {
+            mimeTypeMap = null;
         } else {
-            Iterator it=mimeTypes.iterator();
+            Iterator it = mimeTypes.iterator();
             while (it.hasNext()) {
                 String type = (it.next().toString()).intern();
-                mimeTypeMap.put(type,type);
+                mimeTypeMap.put(type, type);
             }
         }
     }

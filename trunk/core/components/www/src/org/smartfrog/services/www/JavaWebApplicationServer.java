@@ -19,7 +19,6 @@
  */
 package org.smartfrog.services.www;
 
-import org.smartfrog.services.www.context.ApplicationServerContextEntry;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
 
@@ -59,54 +58,36 @@ public interface JavaWebApplicationServer extends Remote {
      * possibly even extra types required by the particular application server.
      *
      * @param webApplication the web application. this must be a component whose attributes include the
-     * mandatory set of attributes defined for a JavaWebApplication component. Application-server specific attributes
-     * (both mandatory and optional) are also permitted
+     *                       mandatory set of attributes defined for a JavaWebApplication component. Application-server specific attributes
+     *                       (both mandatory and optional) are also permitted
      * @return an entry referring to the application
-     * @throws RemoteException  on network trouble
+     * @throws RemoteException    on network trouble
      * @throws SmartFrogException on any other problem
      */
-    public ApplicationServerContextEntry deployWebApplication(Prim webApplication)
-        throws RemoteException, SmartFrogException;
+    public JavaWebApplication deployWebApplication(Prim webApplication)
+            throws RemoteException, SmartFrogException;
 
     /**
      * Deploy an EAR file
+     *
      * @param enterpriseApplication
      * @return an entry referring to the application
      * @throws RemoteException
      * @throws SmartFrogException
      */
-    public ApplicationServerContextEntry deployEnterpriseApplication(Prim enterpriseApplication)
+    public JavaEnterpriseApplication deployEnterpriseApplication(Prim enterpriseApplication)
             throws RemoteException, SmartFrogException;
 
     /**
      * Deploy a servlet context. This can be initiated with other things.
-     *
+     * <p/>
      * This should be called from sfDeploy. The servlet is not deployed
-     *
      *
      * @param servlet
      * @return a token referring to the application
-     * @throws RemoteException  on network trouble
+     * @throws RemoteException    on network trouble
      * @throws SmartFrogException on any other problem
      */
-    public ApplicationServerContextEntry deployServletContext(Prim servlet) throws RemoteException, SmartFrogException;
+    public ServletContextIntf deployServletContext(Prim servlet) throws RemoteException, SmartFrogException;
 
-    /**
-     * undeploy a web application
-     * @param context the context reference supplied when a context was created
-     * @throws RemoteException  on network trouble
-     * @throws SmartFrogException on any other problem
-     */
-    public void undeployApplicationServerContext(String context)
-            throws RemoteException, SmartFrogException;
-
-    /**
-     * lookup a servlet context, get the servlet interface back.
-     * This servlet interface is one bound tightly to the implementation.
-     * @param context
-     * @return
-     * @throws RemoteException
-     * @throws SmartFrogException
-     */
-    public ServletContextIntf lookupServletContext(String context) throws RemoteException, SmartFrogException;
 }

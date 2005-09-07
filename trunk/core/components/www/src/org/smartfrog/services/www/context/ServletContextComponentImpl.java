@@ -50,6 +50,7 @@ public abstract class ServletContextComponentImpl extends PrimImpl implements Se
 
     /**
      * get the servlet context
+     *
      * @return the servlet context, which is not null after deployment
      */
     public ServletContextIntf getServletContext() {
@@ -78,6 +79,6 @@ public abstract class ServletContextComponentImpl extends PrimImpl implements Se
      */
     public synchronized void sfTerminateWith(TerminationRecord status) {
         super.sfTerminateWith(status);
-        servletContext=null;
+        servletContext = null;
     }
 }

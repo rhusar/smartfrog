@@ -20,17 +20,17 @@
 
 package org.smartfrog.projects.alpine.config.smartfrog;
 
-import org.smartfrog.sfcore.prim.PrimImpl;
-import org.smartfrog.sfcore.prim.TerminationRecord;
-import org.smartfrog.sfcore.prim.Liveness;
-import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.projects.alpine.core.AlpineContext;
+import org.smartfrog.projects.alpine.core.ContextConstants;
+import org.smartfrog.projects.alpine.core.EndpointContext;
+import org.smartfrog.services.jetty.JettyHelper;
+import org.smartfrog.services.www.ApplicationServerContext;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
-import org.smartfrog.projects.alpine.core.AlpineContext;
-import org.smartfrog.projects.alpine.core.EndpointContext;
-import org.smartfrog.projects.alpine.core.ContextConstants;
-import org.smartfrog.services.jetty.contexts.servlets.JettyServlet;
-import org.smartfrog.services.jetty.JettyHelper;
+import org.smartfrog.sfcore.prim.Liveness;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.prim.TerminationRecord;
 
 import java.rmi.RemoteException;
 
@@ -67,11 +67,11 @@ public class AlpineEndpointImpl extends PrimImpl implements AlpineEndpoint {
         getContentType = sfResolve(ATTR_CONTENT_TYPE, "", false);
         getMessage = sfResolve(ATTR_GET_MESSAGE, "", false);
         getResponseCode = sfResolve(ATTR_GET_RESPONSECODE, 200, false);
-        Prim servlet=sfResolve(ATTR_SERVLET,(Prim)null,true);
-        String servletPath=servlet.sfResolve(JettyServlet.ATTR_ABSOLUTE_PATH,"",true);
-        JettyHelper jettyHelper=new JettyHelper(this);
-        String absolutePath= jettyHelper.concatPaths(servletPath,path);
-        sfReplaceAttribute(JettyServlet.ATTR_ABSOLUTE_PATH,absolutePath);
+        Prim servlet = sfResolve(ATTR_SERVLET, (Prim) null, true);
+        String servletPath = servlet.sfResolve(ApplicationServerContext.ATTR_ABSOLUTE_PATH, "", true);
+        JettyHelper jettyHelper = new JettyHelper(this);
+        String absolutePath = jettyHelper.concatPaths(servletPath, path);
+        sfReplaceAttribute(ApplicationServerContext.ATTR_ABSOLUTE_PATH, absolutePath);
     }
 
     /**
@@ -84,24 +84,24 @@ public class AlpineEndpointImpl extends PrimImpl implements AlpineEndpoint {
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
 
-        AlpineContext context=AlpineContext.getAlpineContext();
+        AlpineContext context = AlpineContext.getAlpineContext();
         epx = new EndpointContext();
         putIfSet(epx, ContextConstants.ATTR_GET_MESSAGE, getMessage);
         putIfSet(epx, ContextConstants.ATTR_WSDL, wsdlResource);
-        putIfSet(epx, ContextConstants.ATTR_HANDLER_CLASS,handlerClass);
+        putIfSet(epx, ContextConstants.ATTR_HANDLER_CLASS, handlerClass);
         putIfSet(epx, ContextConstants.ATTR_NAME, name);
         putIfSet(epx, ContextConstants.ATTR_CONTENT_TYPE, getContentType);
         epx.put(ContextConstants.ATTR_GET_RESPONSECODE, getResponseCode);
-        context.getEndpoints().register(path,epx);
+        context.getEndpoints().register(path, epx);
     }
 
     private void putIfSet(EndpointContext epx, String key, String value) {
-        if(value.length()>0) {
-            epx.put(key,value);
+        if (value.length() > 0) {
+            epx.put(key, value);
         }
     }
 
-    
+
     /**
      * Provides hook for subclasses to implement useful termination behavior. Deregisters component from local process
      * compound (if ever registered)
@@ -142,7 +142,7 @@ public class AlpineEndpointImpl extends PrimImpl implements AlpineEndpoint {
      */
     public void sfPing(Object source) throws SmartFrogLivenessException, RemoteException {
         super.sfPing(source);
-        if(epx==null) {
+        if (epx == null) {
             throw new SmartFrogLivenessException("Not started");
         }
     }

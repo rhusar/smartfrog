@@ -44,7 +44,7 @@ public class LivenessPageComponent extends PrimImpl implements LivenessPage {
     /**
      * enabled flag
      */
-    private boolean enabled=true;
+    private boolean enabled = true;
 
     /**
      * the class that contains all the checking code. This is on the side
@@ -122,10 +122,10 @@ public class LivenessPageComponent extends PrimImpl implements LivenessPage {
         updateEnabledState();
         //now tell the liveness page it is deployed
         livenessPage.onDeploy();
-        if(url==null) {
+        if (url == null) {
             //set the URL if it was not already set
             URL targetURL = livenessPage.getTargetURL();
-            sfReplaceAttribute(ATTR_URL,targetURL.toString());
+            sfReplaceAttribute(ATTR_URL, targetURL.toString());
         }
 
         log = new ComponentHelper(this).getLogger();
@@ -133,7 +133,7 @@ public class LivenessPageComponent extends PrimImpl implements LivenessPage {
     }
 
     private void updateEnabledState() throws SmartFrogResolutionException, RemoteException {
-        enabled = sfResolve(ATTR_ENABLED,enabled,false);
+        enabled = sfResolve(ATTR_ENABLED, enabled, false);
         livenessPage.setEnabled(enabled);
     }
 

@@ -19,8 +19,6 @@
  */
 package org.smartfrog.services.www;
 
-import java.rmi.Remote;
-
 /**
  * EAR file
  */

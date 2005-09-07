@@ -27,5 +27,5 @@ public interface TomcatServer extends JavaWebApplicationServer {
     String ATTR_USERNAME = "username";
     String ATTR_PASSWORD = "password";
     String ATTR_PORT = "port";
-    String ATTR_MANAGER ="manager";
+    String ATTR_MANAGER = "manager";
 }

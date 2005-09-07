@@ -19,8 +19,6 @@
  */
 package org.smartfrog.services.www;
 
-import java.rmi.Remote;
-
 /**
  * created 23-Jun-2004 13:42:09
  */
@@ -45,11 +43,11 @@ public interface JavaWebApplication extends ApplicationServerContext {
      * reference to the server to deploy on
      * {@value}
      */
-    public static final String  ATTR_SERVER = "server";
+    public static final String ATTR_SERVER = "server";
 
     /**
      * run time attribute: the full URL to the component
      * {@value}
      */
-    public static final String ATTR_APPLICATION_URL ="applicationURL";
+    public static final String ATTR_APPLICATION_URL = "applicationURL";
 }

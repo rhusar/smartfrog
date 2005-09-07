@@ -5,22 +5,17 @@ import org.smartfrog.services.www.JavaWebApplicationServer;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
+import org.smartfrog.sfcore.prim.Liveness;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
-import org.smartfrog.sfcore.prim.Liveness;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 
 import java.rmi.RemoteException;
 
 /**
  * a non-instantiable abstract server component
- *
  */
 public abstract class ApplicationServerContextImpl extends PrimImpl implements ApplicationServerContext {
-    /**
-     * entry created during deployment
-     */
-    private ApplicationServerContextEntry entry;
     /**
      * delegate class itself
      */
@@ -49,6 +44,7 @@ public abstract class ApplicationServerContextImpl extends PrimImpl implements A
 
     /**
      * Get the server. Only valid after {@link #bindToServer()} has been successful
+     *
      * @return the server
      */
     public JavaWebApplicationServer getServer() {
@@ -58,11 +54,12 @@ public abstract class ApplicationServerContextImpl extends PrimImpl implements A
     /**
      * Bind to the server, by extracting the value of {@link #ATTR_SERVER} and saving
      * it somewhere that {@link #getContextHandle()} can retrieve it.
+     *
      * @throws SmartFrogResolutionException
      * @throws RemoteException
      */
     protected void bindToServer() throws SmartFrogResolutionException, RemoteException {
-        server=(JavaWebApplicationServer) sfResolve(ATTR_SERVER,(Prim)null,true);
+        server = (JavaWebApplicationServer) sfResolve(ATTR_SERVER, (Prim) null, true);
     }
 
     /**
@@ -77,13 +74,13 @@ public abstract class ApplicationServerContextImpl extends PrimImpl implements A
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
         bindToServer();
-        entry = deployThisComponent();
-        delegate = entry.getImplementation();
+        delegate = deployThisComponent();
     }
 
     /**
      * undeploy us if bound, do nothing if not. the context handle is reset,
      * so we no longer consider ourselves bound
+     *
      * @throws SmartFrogException
      * @throws RemoteException
      */
@@ -93,22 +90,19 @@ public abstract class ApplicationServerContextImpl extends PrimImpl implements A
                 delegate.undeploy();
             }
         } finally {
-            delegate=null;
+            delegate = null;
         }
     }
 
     /**
      * subclasses must implement this to deploy their component.
      * It is called during sfDeploy, after we have bound to a server
+     *
      * @return
      * @throws RemoteException
      * @throws SmartFrogException
      */
-    protected abstract ApplicationServerContextEntry deployThisComponent() throws RemoteException, SmartFrogException;
-
-    public ApplicationServerContextEntry getEntry() {
-        return entry;
-    }
+    protected abstract ApplicationServerContext deployThisComponent() throws RemoteException, SmartFrogException;
 
     public ApplicationServerContext getDelegate() {
         return delegate;
@@ -147,15 +141,13 @@ public abstract class ApplicationServerContextImpl extends PrimImpl implements A
      * Can be called to start components. Subclasses should override to provide
      * functionality Do not block in this call, but spawn off any main loops!
      *
-     * @throws SmartFrogException
-     *                                  failure while starting
-     * @throws RemoteException In case of network/rmi error
+     * @throws SmartFrogException failure while starting
+     * @throws RemoteException    In case of network/rmi error
      */
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         start();
     }
-
 
 
     public void start() throws SmartFrogException, RemoteException {
@@ -171,7 +163,7 @@ public abstract class ApplicationServerContextImpl extends PrimImpl implements A
      * @throws RemoteException
      */
     public void ping() throws SmartFrogLivenessException, RemoteException {
-        if(delegate==null) {
+        if (delegate == null) {
             throw new SmartFrogLivenessException("No active delegate");
         }
         delegate.ping();
