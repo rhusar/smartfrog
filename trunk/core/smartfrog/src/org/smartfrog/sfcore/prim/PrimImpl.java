@@ -51,6 +51,8 @@ import org.smartfrog.sfcore.logging.LogSF;
 import org.smartfrog.sfcore.utils.ComponentHelper;
 
 import org.smartfrog.sfcore.reference.RemoteReferenceResolverHelperImpl;
+import org.smartfrog.sfcore.reference.HereReferencePart;
+
 import java.rmi.NoSuchObjectException;
 import java.net.UnknownHostException;
 import org.smartfrog.sfcore.common.SFMarshalledObject;
@@ -498,11 +500,10 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
                 sfCompleteName.addElement(ReferencePart.here(key));
             } else {
                 // shouldn't happen... but
-                sfCompleteName = null;
+                sfCompleteName.addElement(new HereReferencePart("*unknown*"));
                 if (sfLog().isTraceEnabled()){
-                    sfLog().trace("Internal error generating complete name - child not named in parent: " + r);
+                    sfLog().trace("Internal error generating complete name - child not named in parent: " + sfCompleteName);
                 }
-                return new Reference();
             }
         }
         return sfCompleteName;
