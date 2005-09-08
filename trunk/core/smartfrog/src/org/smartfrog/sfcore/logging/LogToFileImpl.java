@@ -146,7 +146,7 @@ public class LogToFileImpl extends LogToStreamsImpl implements LogToFile {
           useHostNameInFileName = classComponentDescription.sfResolve(ATR_USE_HOST_NAME_IN_FILE_NAME,useHostNameInFileName, false);
           useProcessNameInFileName = classComponentDescription.sfResolve(ATR_USE_PROCESS_NAME_IN_FILE_NAME,useProcessNameInFileName, false);
         } catch (Exception ex){
-           this.warn("",ex);;
+           this.warn("",ex);
         }
     }
 
