@@ -164,7 +164,7 @@ public class CompoundImpl extends PrimImpl implements Compound {
             if (parent != null){
                 if (name != null) {
                   parent.sfReplaceAttribute(name, result);
-                  result.sfParentageChanged(); // yuk.... see todo above!
+                  //result.sfParentageChanged(); // yuk.... see todo above!
                 } else {
                     //@TODO - Review after refactoring ProcessCompound
                     //This should throw an excetion when a
