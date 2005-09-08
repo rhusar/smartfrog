@@ -401,7 +401,7 @@
              author="${javadoc.author}"
              version="${javadoc.version}"
              use="${javadoc.use}"
-             windowtitle="${avadoc.windowtitle}"
+             windowtitle="${javadoc.windowtitle}"
              header="${javadoc.header}"
              footer="${javadoc.footer}"
              doctitle="${Name.System}"
