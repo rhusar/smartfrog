@@ -111,6 +111,7 @@
     <property name="smartfrog.tasks.prefix" value="sf-tasks"/>
     
   </target>
+  
 
  <!-- ========================================================== -->
   <!-- 
@@ -136,6 +137,13 @@
     <mkdir dir="${dist.src.dir}"/>
     <mkdir dir="${dist.jdocs.dir}"/>
   </target>
+ 
+  <!--
+    Override point: an init target that initially depends only 
+    on init-core and init-standard-output-dirs
+  -->
+  <target name="init" depends="core.init-core,core.init-standard-output-dirs"/>
+  
   
   <!-- ========================================================== -->
   <!-- cleanup target -->
@@ -180,12 +188,13 @@
     <property name="smartfrog.version.property.resource.name"
       value="sf-build-version.properties" />
     <loadproperties srcFile="${smartfrog.home}/${smartfrog.version.property.resource.name}" />
-    <property name="smartfrog-version"
+    <property name="smartfrog.version"
       value="${sf.majorRelease}.${sf.minorRelease}.${sf.build}${sf.status}" />
+    <echo level="verbose">smartfrog.version =${smartfrog.version}</echo>
   </target>
   
   <target name="set-names" depends="core.load-version-info">
-    <property name="component.version" value="${smartfrog-version}" />
+    <property name="component.version" value="${smartfrog.version}" />
     <property name="jarfile.stub" value="${project.name}-${component.version}" />
   </target>
   
