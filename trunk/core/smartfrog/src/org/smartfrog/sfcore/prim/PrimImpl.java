@@ -499,9 +499,10 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
             } else {
                 // shouldn't happen... but
                 sfCompleteName = null;
-                if (sfLog().isErrorEnabled()){
-                    sfLog().error("Internal error generating complete name - child not named in parent: " + r);
+                if (sfLog().isTraceEnabled()){
+                    sfLog().trace("Internal error generating complete name - child not named in parent: " + r);
                 }
+                return new Reference();
             }
         }
         return sfCompleteName;
