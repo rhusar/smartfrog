@@ -499,10 +499,12 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
             if (key!=null) {
                 sfCompleteName.addElement(ReferencePart.here(key));
             } else {
-                // shouldn't happen... but
+                // This will happen when sfCompleteName is called before Prim is registered with its parent
+                // A call to sfParentageChanged after the registration happens will clean up the cache.
+                //@todo we will replace unknown with its name once we modify the interface so that the component registers itself with its parent
                 sfCompleteName.addElement(new HereReferencePart("*unknown*"));
                 if (sfLog().isTraceEnabled()){
-                    sfLog().trace("Internal error generating complete name - child not named in parent: " + sfCompleteName);
+                    sfLog().trace("Internal error generating complete name - child not named in parent yet");
                 }
             }
         }
