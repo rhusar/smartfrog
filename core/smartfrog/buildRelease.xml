@@ -231,6 +231,7 @@ To Be Written
         <include name="${dist}/docs/SmartFrogTutorial.pdf"/>
         <include name="${dist}/docs/ant_tasks_for_smartfrog.pdf"/>
         <include name="${dist}/docs/IDE_development.pdf"/>
+        <include name="${dist}/docs/components/filesystem.pdf"/>                
         <include name="${dist}/docs/jdocs/**"/>
        </zipfileset>
        <!--zipfileset dir="." prefix="${Name.System}.${version}">
@@ -254,6 +255,7 @@ To Be Written
         <include name="docs/SmartFrogTutorial.pdf"/>
         <include name="docs/ant_tasks_for_smartfrog.pdf"/>
         <include name="${dist}/docs/IDE_development.pdf"/>
+        <include name="${dist}/docs/components/filesystem.pdf"/>        
 	<include name="lib/**"/>
 	<!--include name="lib/**/*-${version}.jar"/>
 	<include name="lib/readme.txt"/-->
@@ -299,6 +301,7 @@ To Be Written
         <include name="${dist}/docs/SmartFrogTutorial.pdf"/>
         <include name="${dist}/docs/ant_tasks_for_smartfrog.pdf"/>
         <include name="${dist}/docs/IDE_development.pdf"/>
+        <include name="${dist}/docs/components/filesystem.pdf"/>       
         <include name="${dist}/docs/jdocs/**"/>
        </zipfileset>
        <!--zipfileset dir="." prefix="${Name.System}.${version}">
@@ -332,6 +335,7 @@ To Be Written
         <include name="${dist}/docs/SmartFrogTutorial.pdf"/>
         <include name="${dist}/docs/ant_tasks_for_smartfrog.pdf"/>
         <include name="${dist}/docs/IDE_development.pdf"/>
+        <include name="${dist}/docs/components/filesystem.pdf"/>        
         <include name="${dist}/docs/jdocs/**"/>
        </tarfileset>
        <!--tarfileset dir="." prefix="${Name.System}.${version}">
@@ -365,6 +369,7 @@ To Be Written
         <include name="docs/SmartFrogTutorial.pdf"/>
         <include name="docs/ant_tasks_for_smartfrog.pdf"/>
         <include name="${dist}/docs/IDE_development.pdf"/>
+        <include name="${dist}/docs/components/filesystem.pdf"/>        
 	<include name="lib/**"/>
 	<!--include name="lib/*-${version}.jar"/>
 	<include name="lib/readme.txt"/-->
@@ -425,6 +430,7 @@ To Be Written
         <include name="${dist}/docs/SmartFrogTutorial.pdf"/>
         <include name="${dist}/docs/ant_tasks_for_smartfrog.pdf"/>
         <include name="${dist}/docs/IDE_development.pdf"/>
+        <include name="${dist}/docs/components/filesystem.pdf"/>        
         <include name="${dist}/docs/jdocs/**"/>
        </tarfileset>
        <!--tarfileset dir="." prefix="${Name.System}.${version}">
