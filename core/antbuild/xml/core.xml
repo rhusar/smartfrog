@@ -193,18 +193,54 @@
     <echo level="verbose">smartfrog.version =${smartfrog.version}</echo>
   </target>
   
-  <target name="set-names" depends="core.load-version-info">
-    <property name="component.version" value="${smartfrog.version}" />
-    <property name="jarfile.stub" value="${project.name}-${component.version}" />
+ 
+  
+  <!--
+  logic to create a versioned jar name
+  -->
+  <target name="artifact-names" depends="core.load-version-info">
+    
+    <!-- build the name of our JAR file from the name of the project.
+      override any of this stuff for alternate naming -->
+    <property name="artifact.prefix" value="sf-" />
+    <property name="artifact.extension" value="jar"/>
+    <property name="artifact.name" value="${project.name}" />
+    <property name="artifact.version" value="${smartfrog.version}" />
+    <property name="artifact.suffix" value=""/>    
+    <property name="artifact.stub" 
+      value="${artifact.name}${artifact.suffix}-${artifact.version}" />
+    <property name="artifact.filename" value="${artifact.stub}.${artifact.extension}"/>
+<!--     name JAR files that tests go into. this is for signing all
+    test code (inc deployment descriptors) for deployment onto secure
+    boxes
+ -->
+    <property name="test.jar.name" value="${artifact.name}-${artifact.version}-test.jar"/>
+    <property name="target.jar"
+      location="${dist.lib.dir}/${artifact.filename}"/>    
+    <property name="test.jar" 
+        location="${dist.lib.dir}/${test.jar.name}" />
+    <echo level="verbose">
+      target.jar=${target.jar}
+      test.jar=${test.jar}
+    </echo>
   </target>
+    
   
   
   <!-- ========================================================== -->
-  <!-- these are not smartfrog tasks, just tasks we use to help build things -->
+  <!-- tasks we use to help build things -->
   <!-- ========================================================== -->
   <target name="core-tasks" depends="core.init-core">
     
     <property name="core.uri" value="http://smartfrog.org/build/core" />  
+    <!-- Compile options for Smartfrog Release -->
+    <property name="javac.debug.mode" value="true"/> 
+    <property name="javac.deprecation.mode" value="true"/> 
+    <property name="javac.debug.level" value="lines,vars,source" />
+    <!-- assume the sun compiler -->
+    <property name="rmic.compiler" value="sun" />
+    <property name="rmic.stub.version" value="1.2" />
+    
     
     <!-- define a new javac task with new default options -->  
     <presetdef name="javac" 
@@ -303,7 +339,10 @@
     <presetdef name="rmic" uri="${core.uri}">
       <rmic 
         verify="true"
-        stubversion="1.2" />
+        stubversion="${rmic.stub.version}" 
+        compiler="${rmic.compiler}"
+        includes="**/*.class"        
+        />
     </presetdef>
   </target>  
   

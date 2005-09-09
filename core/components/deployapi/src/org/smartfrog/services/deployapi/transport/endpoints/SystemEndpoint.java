@@ -19,7 +19,41 @@
  */
 package org.smartfrog.services.deployapi.transport.endpoints;
 
-/**
+import org.apache.axis2.om.OMElement;
+import org.apache.axis2.AxisFault;
+
+/*
+* System EPR
  */
 public class SystemEndpoint extends WsrfEndpoint {
+
+
+    OMElement AddFile(OMElement request) throws AxisFault {
+        return null;
+    }
+
+    OMElement Initialize(OMElement request) throws AxisFault {
+        return null;
+    }
+
+    OMElement Resolve(OMElement request) throws AxisFault {
+        return null;
+    }
+
+    OMElement Run(OMElement request) throws AxisFault {
+        return null;
+    }
+
+    OMElement Terminate(OMElement request) throws AxisFault {
+        return null;
+    }
+
+    OMElement Ping(OMElement request) throws AxisFault {
+        return null;
+    }
+
+    OMElement Destroy(OMElement request) throws AxisFault {
+        return null;
+    }
+
 }

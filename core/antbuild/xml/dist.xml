@@ -149,8 +149,9 @@
   <target name="post-compile" depends="rmi" />
   
   
+
   <!--
-  component only logic to create a versioned jar name
+  logic to create a versioned jar name
   -->
   <target name="generate-version" depends="init">
 
@@ -167,12 +168,18 @@
 
     <copy file="${sf.version.file}" todir="${dist.dir}" />
     
+    <!-- build the name of our JAR file from the name of the project.
+      override any of this stuff for alternate naming -->
+    <property name="jar.prefix" value="sf-" />
+    <!-- this is the name of the outer project, not common.xml's name -->
+    <property name="project.name" value="${jar.prefix}${ant.project.name}" />
+    
   </target>
   
   <!--
     bypass all the self-referential stuff here.
   -->
-  <target name="jar" depends="post-compile" >
+  <target name="jar" depends="post-compile,artifact-names" >
     <jar destfile="${target.jar}" 
              basedir="${build.classes.dir}" 
              includes="**/*"/>
@@ -187,6 +194,14 @@
     description="create the JAR files">
   </target>
    
+  
+ <!-- ========================================================== -->
+  <!-- this is an override point -->
+  <!-- everything for distribution -->
+  <!-- ========================================================== -->
+  <target name="dist" depends="package"
+    description="create a distribution">
+  </target>   
   
   <!-- ========================================================== -->
   <!-- this is an override point -->

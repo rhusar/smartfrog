@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<service name="Portal">
+  <description>
+    This is the portal endpoint
+  </description>
+  <parameter name="ServiceClass" locked="xsd:false">
+    org.smartfrog.services.deployapi.transport.endpoints.PortalEndpoint</parameter>
+  <operation name="Create">
+    <module ref="addressing"/>
+    <messageReceiver class="org.apache.axis2.receivers.RawXMLINOutMessageReceiver"/>
+  </operation>
+  <operation name="Resolve">
+    <module ref="addressing"/>
+    <messageReceiver class="org.apache.axis2.receivers.RawXMLINOutMessageReceiver"/>
+  </operation>
+  <operation name="LookupSystem">
+    <module ref="addressing"/>
+    <messageReceiver class="org.apache.axis2.receivers.RawXMLINOutMessageReceiver"/>
+  </operation>
+  <operation name="GetResourceProperty">
+    <module ref="addressing"/>
+    <messageReceiver class="org.apache.axis2.receivers.RawXMLINOutMessageReceiver"/>
+  </operation>
+  <operation name="GetMultipleResourceProperties">
+    <module ref="addressing"/>
+    <messageReceiver class="org.apache.axis2.receivers.RawXMLINOutMessageReceiver"/>
+  </operation>
+  <operation name="Subscribe">
+    <module ref="addressing"/>
+    <messageReceiver class="org.apache.axis2.receivers.RawXMLINOutMessageReceiver"/>
+  </operation>
+  <operation name="GetCurrentMessage">
+    <module ref="addressing"/>
+    <messageReceiver class="org.apache.axis2.receivers.RawXMLINOutMessageReceiver"/>
+  </operation>
+</service>

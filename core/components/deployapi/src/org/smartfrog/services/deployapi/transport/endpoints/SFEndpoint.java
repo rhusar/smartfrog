@@ -17,32 +17,10 @@
  For more information: www.smartfrog.org
 
  */
+package org.smartfrog.services.deployapi.transport.endpoints;
 
-#include "org/smartfrog/components.sf"
-#include "org/smartfrog/sfcore/workflow/components.sf"
-#include "org/smartfrog/functions.sf"
-#include "org/smartfrog/predicates.sf"
-#include "org/smartfrog/services/utils/concat/components.sf"
-#include "org/smartfrog/services/filesystem/components.sf"
-#include "org/smartfrog/services/www/components.sf"
-
-
-Axis2Server extends Prim {
-
-  
-
+/**
+ * An endpoint that is deployed under Smartfrog. 
+ */
+public class SFEndpoint {
 }
-
-
-XmlResource extends Prim {
-  resourceName TBD;
-}
-
-Axis2Module extends XmlResource {
-
-}
-
-Axis2Service extends XmlResource {
-
-}
-

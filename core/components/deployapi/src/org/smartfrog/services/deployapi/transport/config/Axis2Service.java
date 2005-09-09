@@ -24,10 +24,8 @@ import java.rmi.Remote;
 
 /**
  */
-public interface Axis2Service  extends Remote {
+public interface Axis2Service  extends XmlResource {
 
     String ATTR_NAME="name";
-
-    String ATTR_XMLRESOURCE="xmlresource";
 
 }
