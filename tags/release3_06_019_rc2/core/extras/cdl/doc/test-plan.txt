@@ -1,0 +1,25 @@
+Test plan
+
+new documents
+
+
+RefRoot
+
+-cdl refroot with missing prefix
+-cdl refroot with a prefix that doesnt match.
+-refroot qname with no localname
+
+Expression
+
+ -no variables
+ -one
+ -many
+ -duplicate names
+ 
+Lazy
+ -empty value
+ -true
+ -false
+ -0
+ -1
+ -"TRUE" //error
