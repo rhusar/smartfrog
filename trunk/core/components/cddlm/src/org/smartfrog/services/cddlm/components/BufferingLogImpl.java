@@ -39,21 +39,7 @@ public class BufferingLogImpl extends LogToStreamsImpl implements BufferingLog {
      */
     LinkedList logList;
 
-    /**
-     * Reads optional and mandatory attributes.
-     *
-     * @throws org.smartfrog.sfcore.common.SmartFrogException
-     *          error while reading attributes
-     */
-    protected void readSFAttributes() throws SmartFrogException {
-        super.readSFAttributes();
-        /*
-        if ( classComponentDescription == null ) {
-            return;
-        }
-        limit= classComponentDescription.sfResolve(ATTR_LIMIT, limit, true);
-        */
-    }
+
 
 
 }
