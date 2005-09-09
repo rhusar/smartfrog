@@ -23,43 +23,32 @@ package org.smartfrog.services.deployapi.transport.endpoints;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.axis2.AxisFault;
+import org.apache.axis2.om.OMElement;
 import org.apache.axis2.context.MessageContext;
 
 import javax.xml.namespace.QName;
 
 
 /**
+ * Implement WSRP
  */
-public class WsrfEndpoint  {
+public class WsrfEndpoint extends SFEndpoint {
 
-    /**
-     * Handle an incoming request
-     * @param inMessage
-     * @param outMessage
-     * @throws AxisFault
-     */
-    public void invokeBusinessLogic(MessageContext inMessage, MessageContext outMessage) throws AxisFault {
 
+    OMElement GetResourceProperty(OMElement request) throws AxisFault {
+        return null;
     }
 
-    private Log log = LogFactory.getLog(getClass());
-    private QName name;
-
-    public QName getName() {
-        return name;
+    OMElement GetMultipleResourceProperties(OMElement request) throws AxisFault {
+        return null;
     }
 
-    public void invoke(MessageContext msgContext) throws AxisFault {
-        log.info(msgContext.getEnvelope().toString());
+    OMElement Subscribe(OMElement request) throws AxisFault {
+        return null;
     }
 
-    public void revoke(MessageContext msgContext) {
-        log.info(msgContext.getEnvelope().toString());
+    OMElement GetCurrentMessage(OMElement request) throws AxisFault {
+        return null;
     }
-
-    public void setName(QName name) {
-        this.name = name;
-    }
-
 
 }

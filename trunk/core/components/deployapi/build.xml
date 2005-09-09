@@ -53,6 +53,9 @@
   <!-- ========================================================== -->
   <target name="init" depends="core.init-standard-output-dirs,sftasks.smartfrog-tasks">
       <property name="smartfrog-version" value="${smartfrog.version}" />
+      <property name="war.dir" location="war" />
+      <property name="webinf.dir" location="${war.dir}/WEB-INF" />
+      <property name="services.dir" location="${webinf.dir}/services" />
   </target>
   
   <target name="declare-compile.classpath" depends="core-libraries,axis2-libraries">
@@ -206,8 +209,6 @@
   </target>
  
 
-  
-
    
   <!-- ========================================================== -->
   <!-- this is an override point -->
@@ -241,11 +242,35 @@
   </target>
 
   
-  <target name="stubs">
-    
+  <target name="archives" depends="init"
+    description="create the .aar files">
+  
+    <property name="build.archives.dir" location="${build.dir}/archives" />
+    <mkdir dir="${build.archives.dir}" /> 
+    <property name="portal.aar" location="${build.archives.dir}/portal.aar" />
+    <property name="system.aar" location="${build.archives.dir}/system.aar" />
+    <property name="archives.dir" location="archives" />
+    <jar destFile="${portal.aar}">
+      <fileset dir="${archives.dir}/portal" includes="**/*" />
+    </jar>
+    <jar destFile="${system.aar}">
+      <fileset dir="${archives.dir}/system" includes="**/*" />
+    </jar>
   </target>  
 
+  <target name="copy-archives" depends="archives">
+    <copy todir="${services.dir}">
+      <fileset dir="${build.archives.dir}" includes="*.aar" /> 
+    </copy>
+  </target>
   
  
+  <target name="axis2-tasks" depends="axis2-libraries" >
+    <taskdef name="codegen"
+        uri="http://ws.apache.org/axis2"
+        onerror="failall"
+        classname="org.apache.axis2.tool.ant.AntCodegenTask"
+        classpath="axis2.classpath"/>
+  </target>
   
 </project>

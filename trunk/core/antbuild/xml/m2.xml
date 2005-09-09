@@ -16,7 +16,7 @@
   <!-- init all the maven2 support   -->
   <!-- ========================================================== -->
    <target name="init-m2" 
-    depends="core.init-core,core.set-names">
+    depends="core.init-core,core.artifact-names">
  
 
     <!-- Maven2 stuff
