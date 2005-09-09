@@ -388,11 +388,16 @@ public class SFProcess implements MessageKeys {
         }
 
         ComponentDescription descr = (ComponentDescription) getProcessCompoundDescription().copy();
+        ComponentDescription descrCache = (ComponentDescription)descr.copy();
 
         try {
             // A process compound sets processcompound in SFProcess at the end of its
             // sfStart lifecycle method! Setting it twice will result in a exception!
             startComponent(deployComponent(descr));
+
+            //cache process component description
+           processCompoundDescription = descrCache;
+
         } catch (Exception e) {
             throw SmartFrogDeploymentException.forward(e);
         }
@@ -428,6 +433,8 @@ public class SFProcess implements MessageKeys {
                     processCompound.sfCompleteName(), terminatorCompleteName);
                 processCompound.sfAddAttribute("sfSyncTerminate",Boolean.TRUE);
                 processCompound.sfTerminate(termR);
+                // reset cached processCompoundDescription
+                processCompoundDescription = null;
                 return deployProcessCompound(true);
         }
         if (processCompound == null) {
@@ -455,11 +462,13 @@ public class SFProcess implements MessageKeys {
      */
     public static ComponentDescription getProcessCompoundDescription()
         throws SmartFrogException, RemoteException {
+
         if (processCompoundDescription != null) {
+            //return cache
             return processCompoundDescription;
         }
 
-        processCompoundDescription = getCoreProcessCompoundDescription();
+        ComponentDescription newProcessCompoundDescription = getCoreProcessCompoundDescription();
 
         // Cannot be used yet because ProcessCompound acts also as deployer
         // This will be used once we refactor ProcessCompound.
@@ -469,11 +478,11 @@ public class SFProcess implements MessageKeys {
 
 
         // Add system properties
-        processCompoundDescription = ComponentDescriptionImpl.addSystemProperties(
+        newProcessCompoundDescription = ComponentDescriptionImpl.addSystemProperties(
                                          SmartFrogCoreProperty.propBaseSFProcess
-                                        ,processCompoundDescription);
+                                        ,newProcessCompoundDescription);
 
-        return processCompoundDescription;
+        return newProcessCompoundDescription;
     }
 
     /**
