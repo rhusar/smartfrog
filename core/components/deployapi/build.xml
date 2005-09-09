@@ -46,24 +46,14 @@
   <import file="${xml.dir}/core.xml"/>
   <import file="${xml.dir}/sftasks.xml"/>
   <import file="${xml.dir}/m2.xml"/>
-  <import file="${xml.dir}/dist.xml"/>
 
 
   <!-- ========================================================== -->
   <!-- ========================================================== -->
   <target name="init" depends="core.init-standard-output-dirs,sftasks.smartfrog-tasks">
-      <property name="smartfrog-version" value="${smartfrog.version}" />
   </target>
   
-  <target name="declare-compile.classpath" depends="core-libraries,axis2-libraries">
-    <path id="compile.classpath">
-      <path refid="core.classpath"/>
-      <path refid="axis2.classpath"/>
-    </path>      
-  </target>
-  
-    
-  <target name="core-libraries" depends="m2.m2-tasks">
+  <target name="declare-compile.classpath" depends="m2.m2-tasks,muse-libraries">
     <m2-libraries pathID="core.classpath">
       <dependency groupID="org.ggf"
         artifactID="cddlm"
@@ -79,7 +69,7 @@
         version="${log4j.version}"/>
       <dependency groupID="org.smartfrog"
         artifactID="sf-xml"
-        version="${smartfrog.version}"/>
+        version="${smartfrog-version}"/>
       <dependency groupID="xom"
         artifactID="xom"
         version="${xom.version}"/>
@@ -87,12 +77,15 @@
         artifactID="xalan"
         version="${xalan.version}"/>
     </m2-libraries>
+    
+      
+    <path id="compile.classpath">
+      <path refid="core.classpath"/>
+      <path refid="muse.path"/>
+    </path>      
   </target>
 
-  
-
-  
-  <target name="activesoap-libraries" depends="m2.m2-tasks">
+    <target name="activesoap-libraries" depends="m2.m2-tasks">
     <m2-libraries pathID="activesoap.classpath">
       <dependency groupID="activesoap"
         artifactID="activesoap"
@@ -102,45 +95,16 @@
         artifactId="wstx-asl"
         version="${wstx-asl.version}" />
     </m2-libraries>
-  </target>
+    </target>
+        
   
 
   <target name="axis2-libraries" depends="m2.m2-tasks">
     <m2-libraries pathID="axis2.classpath">
-      <dependency groupID="axis"
-        artifactID="axis-wsdl4j"
-        version="${axis-wsdl4j.version}"/>
-      <dependency groupID="commons-codec"
-        artifactID="commons-codec"
-        version="${commons-codec.version}"/>
-      <dependency groupID="commons-logging"
-        artifactID="commons-logging"
-        version="${commons-logging.version}"/>
-     <dependency groupID="geronimo-spec"
-        artifactID="geronimo-spec-javamail"
-        version="${geronimo-spec-javamail.version}"/>
-      <dependency groupID="geronimo-spec"
-        artifactID="geronimo-spec-activation"
-        version="${geronimo-spec-activation.version}"/>
-      <dependency groupID="stax"
-        artifactID="stax"
-        version="${stax.version}"/>
-      <dependency groupID="stax"
-        artifactID="stax-api"
-        version="${stax-api.version}"/>
-      <dependency groupID="jaxen"
-        artifactID="jaxen"
-        version="${jaxen.version}"/>
-      <dependency groupID="commons-fileupload"
-        artifactID="commons-fileupload"
-        version="${commons-fileupload.version}"/>
-      </m2-libraries>
-    </target>
-
-      
-<!--       <dependency groupID="axis2"
+    
+      <dependency groupID="axis2"
         artifactID="axis2"
-        version="${axis2.version}"/> -->
+        version="${axis2.version}"/>
 
 <!--       <dependency groupID="axis2"
         artifactID="axis2-common"
@@ -158,10 +122,142 @@
         artifactID="axis2-wsdl"
         version="${axis2.version}"/>
  -->        
+        
+      <dependency groupID="commons-codec"
+        artifactID="commons-codec"
+        version="${commons-codec.version}"/>
+      <dependency groupID="commons-logging"
+        artifactID="commons-logging"
+        version="${commons-logging.version}"/>
+<!--       <dependency groupID="geronimo-spec"
+        artifactID="geronimo-spec-javamail"
+        version="${geronimo-spec-javamail.version}"/>
+      <dependency groupID="geronimo-spec"
+        artifactID="geronimo-spec-activation"
+        version="${geronimo-spec-activation.version}"/> -->
+      <dependency groupID="stax"
+        artifactID="stax"
+        version="${stax.version}"/>
+      <dependency groupID="stax"
+        artifactID="stax-api"
+        version="${stax-api.version}"/>
+      <dependency groupID="jaxen"
+        artifactID="jaxen"
+        version="${jaxen.version}"/>
+      <dependency groupID="commons-fileupload"
+        artifactID="commons-fileupload"
+        version="${commons-fileupload.version}"/>
+      </m2-libraries>
+    </target>
 
-       
   
-  <target name="declare-exec.classpath" depends="declare-compile.classpath" >  
+  <target name="muse-libraries" depends="m2.m2-tasks">
+    <m2-libraries pathID="muse.classpath">
+    
+      <dependency groupID="commons-cli"
+        artifactID="commons-cli"
+        version="${commons-cli.version}"/>        
+      <dependency groupID="commons-collections"
+        artifactID="commons-collections"
+        version="${commons-collections.version}"/>        
+      <dependency groupID="commons-discovery"
+        artifactID="commons-discovery"
+        version="${commons-discovery.version}"/>        
+      <dependency groupID="commons-digester"
+        artifactID="commons-digester"
+        version="${commons-digester.version}"/>        
+      <dependency groupID="commons-id"
+        artifactID="commons-id"
+        version="${commons-id.version}"/>        
+      <dependency groupID="commons-io"
+        artifactID="commons-io"
+        version="${commons-io.version}"/>        
+      <dependency groupID="commons-lang"
+        artifactID="commons-lang"
+        version="${commons-lang.version}"/>        
+      <dependency groupID="commons-logging"
+        artifactID="commons-logging"
+        version="${commons-logging.version}"/>         
+   
+    
+    <!-- http://ws.apache.org/ws-fx/addressing/ -->
+      <dependency groupID="addressing"
+        artifactID="addressing"
+        version="${addressing.version}"/>
+        
+        <!-- http://dev2dev.bea.com/technologies/commonj/twm/ -->
+      <dependency groupID="wsrf"
+        artifactID="commonj-twm-api"
+        version="${commonj-twm-api.version}"/>
+        
+        <!-- http://ws.apache.org/ws-fx/wsrf/ -->
+      <dependency groupID="wsrf"
+        artifactID="wsrf"
+        version="${wsrf.version}"/>
+      <dependency groupID="wsrf"
+        artifactID="wsa-xbeans"
+        version="${wsa-xbeans.version}"/>
+      <dependency groupID="wsrf"
+        artifactID="wsrf-xbeans"
+        version="${wsrf-xbeans.version}"/>
+
+      <dependency groupID="muse"
+        artifactID="muse"
+        version="${muse.version}"/>        
+        
+      <dependency groupID="pubscribe"
+        artifactID="pubscribe"
+        version="${pubscribe.version}"/>
+      <dependency groupID="pubscribe"
+        artifactID="wsn-xbeans"
+        version="${wsn-xbeans.version}"/> 
+      <dependency groupID="jaxen"
+        artifactID="jaxen"
+        version="${jaxen.version}"/>
+        
+      <dependency groupID="servletapi"
+        artifactID="servletapi"
+        version="${servletapi.version}"/>
+        
+<!--       <dependency groupID="directory-naming"
+        artifactID="naming-core"
+        version="${naming-core.version}"/> -->
+<!--       <dependency groupID="directory-naming"
+        artifactID="naming-factory"
+        version="${naming-factory.version}"/> -->
+<!--       <dependency groupID="directory-naming"
+        artifactID="naming-java"
+        version="${naming-java.version}"/>
+ -->
+      <dependency groupID="xmlbeans"
+        artifactID="xbean"
+        version="${xbean.version}"/>
+      <dependency groupID="xmlbeans"
+        artifactID="xmlbeans-jsr173-api"
+        version="${xmlbeans-jsr173-api.version}"/>
+    </m2-libraries>
+  </target>
+  
+  <target name="wsd2java-libraries">
+    <m2-libraries pathID="wsdl2java.classpath">
+    
+      <dependency groupID="velocity"
+        artifactID="velocity"
+        version="${velocity.version}"/>
+        
+        <!-- http://www-124.ibm.com/developerworks/projects/wsdl4j/-->
+      <dependency groupID="wsdl4j"
+        artifactID="wsdl4j"
+        version="${wsdl4j.version}"/>
+        
+        <!-- http://ws.apache.org/ws-fx/wsrf/ -->
+      <dependency groupID="wsrf"
+        artifactID="wsrf"
+        version="${wsrf.version}"/>
+    </m2-libraries>
+  </target>
+  
+   <target name="declare-exec.classpath" depends="declare-compile.classpath" >  
     <path id="exec.classpath">
       <path refid="compile.classpath"/>
       <pathelement location="${build.classes.dir}"/>
@@ -171,29 +267,45 @@
   </target>
 
   <!-- declares the testharness and junit path -->
-  
-  <target name="test-libraries" depends="m2.m2-tasks">
-    <m2-libraries pathID="test-libraries.classpath">
-      <dependency groupID="org.smartfrog"
-        artifactID="sf-www"
-        version="${smartfrog.version}"/>
-      <dependency groupID="org.smartfrog"
-        artifactID="sf-jetty"
-        version="${smartfrog.version}"/>
-      <dependency groupID="org.smartfrog"
-        artifactID="sf-junit"
-        version="${smartfrog.version}"/>
+  <target name="use-smartfrog-testharness" 
+      depends="m2.m2-tasks" > 
+    <m2-libraries pathID="testharness.path">
       <dependency groupID="org.smartfrog"
         artifactID="sf-testharness"
-        version="${smartfrog.version}"/>
+        version="${smartfrog-version}"/>
       <dependency groupID="junit"
         artifactID="junit"
         version="${junit.version}"/>
     </m2-libraries>
   </target>
+
+  <target name="declare-tests.compile.classpath" 
+      depends="declare-exec.classpath,use-smartfrog-testharness" > 
+    
+    <path id="tests.compile.classpath">
+      <path refid="exec.classpath"/>
+      <path refid="testharness.path"/>
+    </path>
+    <property name="tests.compile.classpath.value" refid="tests.compile.classpath"/>
+    <echo level="verbose">tests.compile.classpath=${tests.compile.classpath.value}</echo>
+  </target>
   
+  <target name="declare-tests.run.classpath" depends="declare-tests.compile.classpath" >  
+    <path id="tests.run.classpath">
+      <path refid="tests.compile.classpath"/>
+      <pathelement location="${test.classes.dir}"/>
+    </path>
+    <property name="tests.run.classpath.value" refid="tests.run.classpath"/>
+    <echo level="verbose">tests.run.classpath=${tests.run.classpath.value}</echo>
+  </target>  
 
-
+  <!-- This target explicitly lists all dependencies so that if anyone starts overriding
+    declarations, it doesnt matter if they omit dependencies. After this target, all classpaths
+    are defined-->  
+  <target name="declare-classpaths" 
+    depends=
+     "declare-compile.classpath,declare-exec.classpath,declare-tests.compile.classpath,declare-tests.run.classpath,declare-tests.run.classpath"/>
+    
 
   <!-- ========================================================== -->
   <!-- this is an override point -->
@@ -202,12 +314,60 @@
   <!-- target to get its dependencies right -->
   <!-- ========================================================== -->
   <target name="pre-compile"
-      depends="init,declare-classpaths,core.core-tasks">
+      depends="init,declare-classpaths">
   </target>
  
-
+ 
+  <!-- ========================================================== -->
+  <!-- this is an override point -->
+  <!-- compile everything, copy useful files over-->
+  <!-- ========================================================== -->
+  <target name="compile"
+      depends="pre-compile">
+      <depend srcdir="${src.dir}"
+          destdir="${build.classes.dir}"
+          cache="${build.dir}/depends"
+          closure="yes"/>
+      <core:javac
+          classpathref="compile.classpath"
+          srcdir="${src.dir}"
+          destdir="${build.classes.dir}"
+          />
+      <core:copy-useful-files src="${src.dir}" dest="${build.classes.dir}"/>
+  </target>
   
-
+  <!-- ========================================================== -->
+  <!-- this is an override point -->
+  <!-- RMI compile by looking for all remote classes in the
+       compiled project-->
+  <!-- ========================================================== -->
+  <target name="rmi" depends="compile"
+      description="create the RMI classes">
+      <core:rmic
+          base="${build.classes.dir}"
+          verify="true"
+          compiler="${rmic.compiler}"
+          includes="**/*.class">
+          <classpath refid="compile.classpath"/>
+      </core:rmic>
+  </target>  
+  
+  
+  <target name="createjar" depends="init" if="is.component.not.enabled">
+    <jar destfile="${target.jar}" 
+             basedir="${build.classes.dir}" 
+             includes="**/*"/>
+     <echo level="verbose">created package ${target.jar}</echo>
+  </target>
+  
+  
+ <!-- ========================================================== -->
+  <!-- this is an override point -->
+  <!-- create the JAR ${target.jar}-->
+  <!-- ========================================================== -->
+  <target name="package" depends="createjar"
+    description="create the JAR files">
+   </target>
    
   <!-- ========================================================== -->
   <!-- this is an override point -->

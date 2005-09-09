@@ -13,44 +13,22 @@
     <m2:dependencies pathID="smartfrog.tasks.classpath">
       <dependency groupID="org.smartfrog"
         artifactID="smartfrog"
-        version="${smartfrog.version}"
+        version="${smartfrog-version}"
         scope="compile"
         />  
       <dependency groupID="org.smartfrog"
         artifactID="sfServices"
-        version="${smartfrog.version}"
+        version="${smartfrog-version}"
         scope="compile"
         /> 
       <dependency groupID="org.smartfrog"
         artifactID="sf-tasks"
-        version="${smartfrog.version}"
+        version="${smartfrog-version}"
         scope="compile"
         />
     </m2:dependencies>
   </target>
 
-  <target name="smartfrog-testharness-classpath" 
-    depends="core.load-version-info">
-    <m2:dependencies pathID="smartfrog.testharness-only.classpath">
-      <dependency groupID="org.smartfrog"
-        artifactID="sf-testharness"
-        version="${smartfrog.version}"
-        scope="test"
-        />  
-    </m2:dependencies>
-    <m2-libraries pathID="smartfrog.testharness-junit.classpath">
-      <dependency groupID="org.smartfrog"
-        artifactID="sf-testharness"
-        version="${smartfrog.version}"/>
-      <dependency groupID="junit"
-        artifactID="junit"
-        version="${junit.version}"/>
-    </m2-libraries>    
-    <path id="smartfrog.testharness.classpath">
-      <path refid="smartfrog.tasks.classpath"/>
-      <path refid="smartfrog.testharness-junit.classpath"/>
-    </path>
-  </target>  
   
   <!-- ========================================================== -->
   <!-- probe for tasks and use them if they are not loaded already -->

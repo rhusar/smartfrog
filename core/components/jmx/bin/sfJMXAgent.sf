@@ -1,8 +1,0 @@
-#include "org/smartfrog/services/jmx/agent/SFJMXAgent.sf"
-
-/**
- * Default description of this JMX Agent is in the file SFJMXAgent.
- * To get a different behaviour o properties, overwrite the values or extends the description here.
- */
-
-sfConfig extends SFJMXAgent;

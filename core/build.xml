@@ -118,10 +118,7 @@ For more information: www.smartfrog.org
 
   <target name="m2-install" depends="main-dist,tasks" 
     description="components installation into the m2 cache">
-    <forward2 dir="${main.project}" target="m2-install"  />
-    <forward2 dir="${ant.project}" target="m2-install"  />
     <forward2 dir="${components.project}" target="m2-install"  />
-    <forward2 dir="${test.project}" target="m2-install"  />
   </target>  
   
   <!-- =================================================================== -->
