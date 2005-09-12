@@ -21,18 +21,16 @@ package org.smartfrog.services.deployapi.transport.endpoints;
 
 import nu.xom.Builder;
 import nu.xom.Document;
-import org.apache.axis.AxisFault;
-import org.apache.axis.message.MessageElement;
-import org.apache.axis.types.URI;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.smartfrog.services.axis.SmartFrogHostedEndpoint;
-import org.smartfrog.services.cddlm.engine.JobRepository;
-import org.smartfrog.services.cddlm.engine.JobState;
-import org.smartfrog.services.cddlm.engine.ServerInstance;
+import org.apache.axis2.engine.AxisFault;
+import org.smartfrog.services.deployapi.engine.JobState;
+import org.smartfrog.services.deployapi.engine.JobRepository;
 
 import java.io.Reader;
 import java.io.StringReader;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  * created Aug 4, 2004 3:59:42 PM
@@ -41,27 +39,27 @@ import java.io.StringReader;
 public class Processor extends FaultRaiser {
     private static final Log log = LogFactory.getLog(EndpointHelper.class);
 
-    public Processor(SmartFrogHostedEndpoint owner) {
+    public Processor(SFEndpoint owner) {
         this.owner = owner;
     }
 
     /**
      * our owner
      */
-    private SmartFrogHostedEndpoint owner;
+    private SFEndpoint owner;
 
 
-    public SmartFrogHostedEndpoint getOwner() {
+    public SFEndpoint getOwner() {
         return owner;
     }
 
-    public void setOwner(SmartFrogHostedEndpoint owner) {
+    public void setOwner(SFEndpoint owner) {
         this.owner = owner;
     }
 
 
     private static URI makeRuntimeException(String url,
-            URI.MalformedURIException e) {
+                                            Exception e) {
         log.error("url", e);
         throw new RuntimeException(url, e);
     }
@@ -76,8 +74,8 @@ public class Processor extends FaultRaiser {
     public static URI makeURIFromApplication(String application) {
         try {
             assert application != null;
-            return new URI("http", "localhost/" + application);
-        } catch (URI.MalformedURIException e) {
+            return new URI("http://localhost/" + application);
+        } catch (URISyntaxException e) {
             return makeRuntimeException(application, e);
         }
     }
@@ -118,10 +116,9 @@ public class Processor extends FaultRaiser {
      * @param element
      * @param message
      * @return
-     * @throws org.apache.axis.AxisFault
      */
     protected Document parseMessageFragment(MessageElement element,
-            final String message)
+                                            final String message)
             throws AxisFault {
         Document doc;
         try {

@@ -17,21 +17,12 @@
  For more information: www.smartfrog.org
 
  */
-
-package org.smartfrog.services.deployapi.transport.endpoints;
-
-import org.apache.axis2.receivers.AbstractInOutSyncMessageReceiver;
-import org.apache.axis2.engine.MessageReceiver;
-import org.apache.axis2.engine.AxisFault;
-import org.apache.axis2.context.MessageContext;
+package org.smartfrog.services.deployapi.system;
 
 /**
+ * Any constants
+ * created 12-Sep-2005 17:54:04
  */
-public class WsrfReceiver extends AbstractInOutSyncMessageReceiver
-        implements MessageReceiver {
 
-    public void invokeBusinessLogic(MessageContext inMessage, MessageContext outMessage) throws AxisFault {
-
-    }
-
+public class Constants {
 }
