@@ -30,7 +30,7 @@ public interface SSHExec extends Prim {
     public static String HOST = "host";
     public static String PORT = "port";
     public static String USER = "username";
-    public static String PASSWORD = "password";
+    public static String KEYFILE = "keyfile";
     public static String COMMANDS = "commands";
     public static String TIMEOUT = "timeout";
     public static String FAIL_ON_ERROR = "failOnError";

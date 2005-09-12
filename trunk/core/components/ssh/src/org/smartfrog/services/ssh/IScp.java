@@ -31,6 +31,7 @@ public interface IScp extends Prim {
     public static String HOST = "host";
     public static String PORT = "port";
     public static String USER = "username";
+    public static String KEYFILE = "keyfile";
     public static String PASSWORD = "password";
     public static String TIMEOUT = "timeout";
     public static String TERMINATE = "shouldTerminate";
