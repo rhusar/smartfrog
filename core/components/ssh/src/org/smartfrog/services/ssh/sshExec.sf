@@ -32,7 +32,11 @@ For more information: www.smartfrog.org
 	logFile extends OptionalString;
   }
 
-SSHSession extends Compound {
+ SSHSchemaAuthPubKey extends SSHSchema {
+	  keyfile extends String;  	
+  }
+
+ SSHSessionAuthPass extends Compound {
     /*----------------------------Mandatory Parameters --------------------*/
   //  host "localhost";
   //  userId "someuser";
@@ -51,8 +55,54 @@ SSHSession extends Compound {
         //passwordFile PARENT:ATTRIB passwordFile;
     }
     SSHCmdExec extends Prim{
-        sfClass "org.smartfrog.services.ssh.SSHExecImpl";
+        sfClass "org.smartfrog.services.ssh.SSHExecAuthPassImpl";
         sshSchema extends SSHSchema;
+        /* ========================================================
+         * Mandatory attributes 
+         *=========================================================
+         */
+        // reference to password provider
+        passwordProvider LAZY PARENT:PasswordProvider;
+
+        // cmdsFailureMsgs [];
+
+        
+        /* ========================================================
+         * Optional attributes 
+         *=========================================================
+         */
+        // timeout for command execution
+        timeout PARENT:ATTRIB timeout;
+        port PARENT:ATTRIB port;
+        // Required if used in workflows like Sequence etc
+        shouldTerminate PARENT:ATTRIB shouldTerminate;
+        // terminate if any command fails
+        failOnError PARENT:ATTRIB failOnError;
+   }
+}
+
+
+SSHSessionAuthPubKey extends Compound {
+    /*----------------------------Mandatory Parameters --------------------*/
+  //  host "localhost";
+  //  userId "someuser";
+  //  passwordFile "pwdFile";
+  //  commands ["cmd1", "cmd2"];
+
+    /*---------------------------Optional Parameters -----------------------*/
+    // Recommendation: Please keep the default values
+    port 22;
+    timeout 0;
+    shouldTerminate true;
+    failOnError true;
+
+    /*---------------------Component's Definition --------------------------*/  
+    PasswordProvider extends Password {
+        //passwordFile PARENT:ATTRIB passwordFile;
+    }
+    SSHCmdExec extends Prim{
+        sfClass "org.smartfrog.services.ssh.SSHExecAuthPubKeyImpl";
+        sshSchema extends SSHSchemaAuthPubKey;
         /* ========================================================
          * Mandatory attributes 
          *=========================================================
