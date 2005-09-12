@@ -21,7 +21,7 @@
 package org.smartfrog.services.deployapi.transport.endpoints;
 
 import org.apache.axis2.om.OMElement;
-import org.apache.axis2.AxisFault;
+import org.apache.axis2.engine.AxisFault;
 
 /**
  */
