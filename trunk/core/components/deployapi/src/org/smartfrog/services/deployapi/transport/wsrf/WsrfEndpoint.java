@@ -17,43 +17,51 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.deployapi.transport.endpoints;
 
+package org.smartfrog.services.deployapi.transport.wsrf;
+
+import org.apache.axis2.AxisFault;
+import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.om.OMElement;
+import org.smartfrog.services.deployapi.transport.endpoints.XmlBeansEndpoint;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
-import org.smartfrog.services.deployapi.transport.wsrf.WsrfEndpoint;
 
-/*
-* System EPR
+import javax.xml.namespace.QName;
+
+
+/**
+ * Implement WSRP
  */
-public class SystemEndpoint extends WsrfEndpoint {
+public class WsrfEndpoint extends XmlBeansEndpoint {
 
-
-    OMElement AddFile(OMElement request) throws BaseException {
+    /**
+     * deliver a message
+     *
+     * @param operation
+     * @param inMessage
+     * @return the body of the response
+     * @throws AxisFault
+     * @throws BaseException unchecked basefault
+     */
+    public OMElement dispatch(QName operation, MessageContext inMessage) throws AxisFault {
+        //TODO
         return null;
     }
 
-    OMElement Initialize(OMElement request) throws BaseException {
+
+    public OMElement GetResourceProperty(OMElement request) throws AxisFault {
         return null;
     }
 
-    OMElement Resolve(OMElement request) throws BaseException {
+    public OMElement GetMultipleResourceProperties(OMElement request) throws AxisFault {
         return null;
     }
 
-    OMElement Run(OMElement request) throws BaseException {
+    public OMElement Subscribe(OMElement request) throws AxisFault {
         return null;
     }
 
-    OMElement Terminate(OMElement request) throws BaseException {
-        return null;
-    }
-
-    OMElement Ping(OMElement request) throws BaseException {
-        return null;
-    }
-
-    OMElement Destroy(OMElement request) throws BaseException {
+    public OMElement GetCurrentMessage(OMElement request) throws AxisFault {
         return null;
     }
 

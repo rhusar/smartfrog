@@ -17,38 +17,31 @@
  For more information: www.smartfrog.org
 
  */
+package org.smartfrog.services.deployapi.binding;
 
-package org.smartfrog.services.deployapi.transport.endpoints;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.axis2.engine.AxisFault;
+import org.apache.xmlbeans.XmlObject;
+import org.apache.xmlbeans.XmlException;
 import org.apache.axis2.om.OMElement;
-import org.apache.axis2.context.MessageContext;
+import org.ggf.xbeans.cddlm.api.CreateRequestDocument;
 
-import javax.xml.namespace.QName;
-
+import javax.xml.stream.XMLStreamReader;
 
 /**
- * Implement WSRP
+ * Convert axis2 stuff into a an XMLBean
+ *
  */
-public class WsrfEndpoint extends SFEndpoint {
+public class Axis2Beans<T extends XmlObject>  {
 
-
-    OMElement GetResourceProperty(OMElement request) throws AxisFault {
-        return null;
+    public T convert(OMElement element) throws XmlException {
+        XMLStreamReader reader = element.getXMLStreamReaderWithoutCaching();
+        return (T)T.Factory.parse(reader);
     }
 
-    OMElement GetMultipleResourceProperties(OMElement request) throws AxisFault {
-        return null;
+/*
+    OMElement convert(T document) throws XmlException {
+        T.
     }
+*/
 
-    OMElement Subscribe(OMElement request) throws AxisFault {
-        return null;
-    }
-
-    OMElement GetCurrentMessage(OMElement request) throws AxisFault {
-        return null;
-    }
 
 }

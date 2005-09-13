@@ -19,10 +19,15 @@
  */
 package org.smartfrog.services.deployapi.system;
 
+import org.ggf.cddlm.generated.api.CddlmConstants;
+
 /**
  * Any constants
  * created 12-Sep-2005 17:54:04
  */
 
-public class Constants {
+public class Constants extends CddlmConstants {
+    public static final String LOCALHOST = "localhost";
+    public static final String ERROR_CREATE_UNSUPPORTED_HOST = "Unsupported Host";
+    public static final String ERROR_NOT_DOCLIT = "only doc/lit SOAP supported";
 }

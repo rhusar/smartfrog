@@ -267,7 +267,6 @@
     the ant runtime by default, and fails on any error -->
     <presetdef name="java" uri="${core.uri}">
       <java 
-        includeantruntime="false"
         fork="true"
         failonerror="true"
         >

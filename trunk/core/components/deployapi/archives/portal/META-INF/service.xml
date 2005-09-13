@@ -7,30 +7,30 @@
     org.smartfrog.services.deployapi.transport.endpoints.PortalEndpoint</parameter>
   <operation name="Create">
     <module ref="addressing"/>
-    <messageReceiver class="org.apache.axis2.receivers.RawXMLINOutMessageReceiver"/>
+    <messageReceiver class="org.smartfrog.services.deployapi.transport.endpoints.WsrfReceiver"/>
   </operation>
   <operation name="Resolve">
     <module ref="addressing"/>
-    <messageReceiver class="org.apache.axis2.receivers.RawXMLINOutMessageReceiver"/>
+    <messageReceiver class="org.smartfrog.services.deployapi.transport.endpoints.WsrfReceiver"/>
   </operation>
   <operation name="LookupSystem">
     <module ref="addressing"/>
-    <messageReceiver class="org.apache.axis2.receivers.RawXMLINOutMessageReceiver"/>
+    <messageReceiver class="org.smartfrog.services.deployapi.transport.endpoints.WsrfReceiver"/>
   </operation>
   <operation name="GetResourceProperty">
     <module ref="addressing"/>
-    <messageReceiver class="org.apache.axis2.receivers.RawXMLINOutMessageReceiver"/>
+    <messageReceiver class="org.smartfrog.services.deployapi.transport.endpoints.WsrfReceiver"/>
   </operation>
   <operation name="GetMultipleResourceProperties">
     <module ref="addressing"/>
-    <messageReceiver class="org.apache.axis2.receivers.RawXMLINOutMessageReceiver"/>
+    <messageReceiver class="org.smartfrog.services.deployapi.transport.endpoints.WsrfReceiver"/>
   </operation>
   <operation name="Subscribe">
     <module ref="addressing"/>
-    <messageReceiver class="org.apache.axis2.receivers.RawXMLINOutMessageReceiver"/>
+    <messageReceiver class="org.smartfrog.services.deployapi.transport.endpoints.WsrfReceiver"/>
   </operation>
   <operation name="GetCurrentMessage">
     <module ref="addressing"/>
-    <messageReceiver class="org.apache.axis2.receivers.RawXMLINOutMessageReceiver"/>
+    <messageReceiver class="org.smartfrog.services.deployapi.transport.endpoints.WsrfReceiver"/>
   </operation>
 </service>

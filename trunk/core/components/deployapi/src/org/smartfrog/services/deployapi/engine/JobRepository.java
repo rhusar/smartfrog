@@ -19,13 +19,14 @@
  */
 package org.smartfrog.services.deployapi.engine;
 
-import org.apache.axis.types.URI;
 
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  * This class remembers what got deployed by whom. It retains weak references to
@@ -174,7 +175,12 @@ public class JobRepository /* implements Map */ {
         if (job.getName() == null) {
             job.setName(appPrefix + counter);
         }
-        job.setUri(URIHelper.toAxisUri(uri));
+        try {
+            URI uriv = new URI(uri);
+            job.setUri(uriv);
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

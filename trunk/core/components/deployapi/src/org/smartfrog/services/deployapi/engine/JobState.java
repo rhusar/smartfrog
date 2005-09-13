@@ -69,10 +69,10 @@ public class JobState {
      *
      * @param request
      */
-    public JobState(CreateRequest request, OptionProcessor options)
+/*    public JobState(CreateRequest request, OptionProcessor options)
             throws AxisFault {
         bind(request, options);
-    }
+    }*/
 
     /**
      * app uri
