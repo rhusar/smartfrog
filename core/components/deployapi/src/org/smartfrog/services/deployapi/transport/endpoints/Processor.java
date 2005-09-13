@@ -19,41 +19,34 @@
  */
 package org.smartfrog.services.deployapi.transport.endpoints;
 
-import nu.xom.Builder;
-import nu.xom.Document;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.axis2.engine.AxisFault;
-import org.smartfrog.services.deployapi.engine.JobState;
-import org.smartfrog.services.deployapi.engine.JobRepository;
+import org.smartfrog.services.deployapi.transport.faults.BaseException;
 
-import java.io.Reader;
-import java.io.StringReader;
 import java.net.URI;
-import java.net.URISyntaxException;
 
 /**
  * created Aug 4, 2004 3:59:42 PM
  */
 
-public class Processor extends FaultRaiser {
-    private static final Log log = LogFactory.getLog(EndpointHelper.class);
+public class Processor  {
+    private static final Log log = LogFactory.getLog(Processor.class);
 
-    public Processor(SFEndpoint owner) {
+    public Processor(XmlBeansEndpoint owner) {
         this.owner = owner;
     }
 
     /**
      * our owner
      */
-    private SFEndpoint owner;
+    private XmlBeansEndpoint owner;
 
 
-    public SFEndpoint getOwner() {
+    public XmlBeansEndpoint getOwner() {
         return owner;
     }
 
-    public void setOwner(SFEndpoint owner) {
+    public void setOwner(XmlBeansEndpoint owner) {
         this.owner = owner;
     }
 
@@ -71,14 +64,14 @@ public class Processor extends FaultRaiser {
      * @return a URI that can be used as a reference
      * @throws RuntimeException if the URL was malformed
      */
-    public static URI makeURIFromApplication(String application) {
+/*    public static URI makeURIFromApplication(String application) {
         try {
             assert application != null;
             return new URI("http://localhost/" + application);
         } catch (URISyntaxException e) {
             return makeRuntimeException(application, e);
         }
-    }
+    }*/
 
 
     /**
@@ -86,16 +79,16 @@ public class Processor extends FaultRaiser {
      *
      * @param jobURI
      * @return the jobstate reference
-     * @throws AxisFault if there is no such job
+     * @throws BaseException if there is no such job
      */
-    public JobState lookupJob(URI jobURI) throws AxisFault {
+/*    public JobState lookupJob(URI jobURI) throws BaseFault {
         JobState jobState = lookupJobNonFaulting(jobURI);
         if (jobState == null) {
             throw raiseNoSuchApplicationFault(
                     ERROR_APP_URI_NOT_FOUND + jobURI.toString());
         }
         return jobState;
-    }
+    }*/
 
     /**
      * map from URI to job
@@ -103,11 +96,13 @@ public class Processor extends FaultRaiser {
      * @param jobURI seach uri
      * @return job or null for no match
      */
+/*
     public JobState lookupJobNonFaulting(URI jobURI) {
         JobRepository jobs = ServerInstance.currentInstance().getJobs();
         JobState jobState = jobs.lookup(jobURI);
         return jobState;
     }
+*/
 
 
     /**
@@ -117,9 +112,9 @@ public class Processor extends FaultRaiser {
      * @param message
      * @return
      */
-    protected Document parseMessageFragment(MessageElement element,
+/*    protected Document parseMessageFragment(MessageElement element,
                                             final String message)
-            throws AxisFault {
+            throws BaseFault {
         Document doc;
         try {
             String subdoc = element.getAsString();
@@ -131,7 +126,7 @@ public class Processor extends FaultRaiser {
         } catch (Exception e) {
             throw raiseNestedFault(e, message);
         }
-    }
+    }*/
 
     /**
      * go from URI to language enum
@@ -139,6 +134,7 @@ public class Processor extends FaultRaiser {
      * @param uri of language
      * @return
      */
+/*
     public static int determineLanguage(String uri) {
         int l = Constants.LANGUAGE_UNKNOWN;
         for (int i = 0; i < Constants.LANGUAGE_NAMESPACES.length; i++) {
@@ -149,6 +145,7 @@ public class Processor extends FaultRaiser {
         }
         return l;
     }
+*/
 
 
 }

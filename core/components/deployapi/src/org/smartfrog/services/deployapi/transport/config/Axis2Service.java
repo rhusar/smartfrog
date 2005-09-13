@@ -20,8 +20,6 @@
 
 package org.smartfrog.services.deployapi.transport.config;
 
-import java.rmi.Remote;
-
 /**
  */
 public interface Axis2Service  extends XmlResource {
