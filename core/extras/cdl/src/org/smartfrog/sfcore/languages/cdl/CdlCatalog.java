@@ -19,26 +19,16 @@
  */
 package org.smartfrog.sfcore.languages.cdl;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.ggf.cddlm.generated.api.CddlmConstants;
 import org.smartfrog.services.xml.utils.ResourceLoader;
 import org.smartfrog.services.xml.utils.XmlConstants;
-import org.xml.sax.EntityResolver;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
+import org.smartfrog.services.xml.utils.XmlCatalogResolver;
 import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.XMLReader;
 
-import javax.xml.transform.Source;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.URIResolver;
-import javax.xml.transform.stream.StreamSource;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.HashMap;
 
 /**
  * This class handles entity resolution problems. When used with XSD, file paths
@@ -52,15 +42,9 @@ import java.util.HashMap;
  * created Jul 15, 2004 3:58:11 PM
  */
 
-public class CdlCatalog implements URIResolver, EntityResolver {
+public class CdlCatalog extends XmlCatalogResolver {
 
-    /**
-     * how we load resources
-     */
-    private ResourceLoader loader;
-
-    private static final Log log = LogFactory.getLog(CdlCatalog.class);
-    private static final String PACKAGE_BASE = "org/ggf/cddlm/";
+    protected static final String PACKAGE_BASE = "org/ggf/cddlm/";
     /**
      * where all the WSRF files really live {@value}
      */
@@ -79,7 +63,7 @@ public class CdlCatalog implements URIResolver, EntityResolver {
      */
     private static final String CDDLM_MAPPINGS[] = {
         CddlmConstants.XML_CDL_NAMESPACE, API_PACKAGE +
-            Constants.CDL_XSD_FILENAME,
+            CddlmConstants.CDL_FILENAME_XML_CDL,
         CddlmConstants.CDL_API_TYPES_NAMESPACE, API_PACKAGE +
             Constants.DEPLOY_API_SCHEMA_FILENAME,
         CddlmConstants.WS_ADDRESSING_NAMESPACE, WSRF_PACKAGE +
@@ -87,23 +71,10 @@ public class CdlCatalog implements URIResolver, EntityResolver {
     };
 
 
-    /**
-     * map table
-     */
-    private HashMap<String, String> mappings;
 
     public CdlCatalog(ResourceLoader loader) {
-        assert loader != null:"null ResourceLoader";
-        this.loader = loader;
-        resetMap();
+        super(loader);
         loadCDDLMMappings();
-    }
-
-    /**
-     * reset the resolution table
-     */
-    public void resetMap() {
-        mappings = new HashMap<String, String>();
     }
 
 
@@ -114,162 +85,6 @@ public class CdlCatalog implements URIResolver, EntityResolver {
         loadMappings(CDDLM_MAPPINGS);
     }
 
-    /**
-     * load a set of mappings in.
-     *
-     * @param map array of name,value pairs to load
-     */
-    public void loadMappings(String map[]) {
-        assert map.length % 2 == 0;
-        for (int i = 0; i < map.length; i += 2) {
-            String schema = map[i];
-            String filename = map[i + 1];
-            //schema to filename mapping
-            mappings.put(schema, filename);
-            //filename to filename
-            mappings.put(filename, filename);
-            //and file in path to filename mapping.
-            mappings.put(extractLastPathElement(filename), filename);
-        }
-    }
-
-    /**
-     * look up a mapping
-     *
-     * @param uri
-     * @return
-     */
-    public String lookup(String uri) {
-        String value = mappings.get(uri);
-        return value;
-/*
-        if (value != null) {
-            return PACKAGE_BASE + (String) value;
-        } else {
-            return null;
-        }
-*/
-    }
-
-    /**
-     * Called by the processor when it encounters an xsl:include, xsl:import, or
-     * document() function.
-     *
-     * @param href An href attribute, which may be relative or absolute.
-     * @param base The base URI in effect when the href attribute was
-     *             encountered.
-     * @return A Source object, or null if the href cannot be resolved, and the
-     *         processor should try to resolve the URI itself.
-     * @throws TransformerException if an error occurs when trying to resolve
-     *                              the URI.
-     */
-    public Source resolve(String href, String base)
-            throws TransformerException {
-        String resource = lookup(href);
-        if (resource == null) {
-            return null;
-        }
-        try {
-            return loadStreamSource(resource, href);
-        } catch (IOException e) {
-            throw new TransformerException(e);
-        }
-    }
-
-    /**
-     * Create a new stream source from a resource in the classloader
-     *
-     * @param resource resource to load
-     * @param href     href for relative URI resolution
-     * @return source
-     * @throws IOException on trouble
-     */
-    private Source loadStreamSource(String resource, String href)
-            throws IOException {
-        InputStream in = loader.loadResource(resource);
-        StreamSource source = new StreamSource(in, href);
-        return source;
-    }
-
-
-    /**
-     * Allow the application to resolve external entities.
-     * <p/>
-     * <p>The Parser will call this method before opening any external entity
-     * except the top-level document entity (including the external DTD subset,
-     * external entities referenced within the DTD, and external entities
-     * referenced within the document element): the application may request that
-     * the parser resolve the entity itself, that it use an alternative URI, or
-     * that it use an entirely different input source.</p>
-     * <p/>
-     * <p>Application writers can use this method to redirect external system
-     * identifiers to secure and/or local URIs, to look up public identifiers in
-     * a catalogue, or to read an entity from a database or other input source
-     * (including, for example, a dialog box).</p>
-     * <p/>
-     * <p>If the system identifier is a URL, the SAX parser must resolve it
-     * fully before reporting it to the application.</p>
-     *
-     * @param publicId The public identifier of the external entity being
-     *                 referenced, or null if none was supplied.
-     * @param systemId The system identifier of the external entity being
-     *                 referenced.
-     * @return An InputSource object describing the new input source, or null to
-     *         request that the parser open a regular URI connection to the
-     *         system identifier.
-     * @throws SAXException Any SAX exception, possibly wrapping another
-     *                      exception.
-     * @throws IOException  A Java-specific IO exception, possibly the result of
-     *                      creating a new InputStream or Reader for the
-     *                      InputSource.
-     * @see InputSource
-     */
-    public InputSource resolveEntity(String publicId, String systemId)
-            throws SAXException, IOException {
-        if (log.isDebugEnabled()) {
-            log.debug("resolving " + systemId);
-        }
-        String resource = lookup(systemId);
-        if (resource == null) {
-            String filename = getFilenameFromSystemID(systemId);
-            if (filename != null) {
-                return resolveEntity(publicId, filename);
-            }
-            log.debug("no match");
-            return null;
-        } else {
-            if (log.isDebugEnabled()) {
-                log.debug("resolved to " + resource);
-            }
-            return new InputSource(loader.loadResource(resource));
-        }
-    }
-
-    /**
-     * extract any filename from this file.
-     *
-     * @param systemId
-     * @return
-     */
-    String getFilenameFromSystemID(String systemId) {
-        if (!systemId.startsWith("file://")) {
-            return null;
-        }
-        return extractLastPathElement(systemId);
-    }
-
-    private String extractLastPathElement(String systemId) {
-        int lastSlash = systemId.lastIndexOf('/');
-        if (lastSlash == -1) {
-            return null;
-        }
-        String endString = systemId.substring(lastSlash + 1);
-        if (endString.length() > 0) {
-            return endString;
-        } else {
-            return null;
-        }
-    }
 
     /**
      * parser.setProperty( "http://apache.org/xml/properties/schema/external-schemaLocation",
@@ -289,7 +104,6 @@ public class CdlCatalog implements URIResolver, EntityResolver {
             buffer.append(filename);
             buffer.append(' ');
         }
-        log.debug(buffer);
         String s = new String(buffer);
         parser.setProperty(XmlConstants.PROPERTY_XERCES_SCHEMA_LOCATION, s);
     }
@@ -305,7 +119,6 @@ public class CdlCatalog implements URIResolver, EntityResolver {
         for (int i = 0; i < map.length; i += 2) {
             String schema = map[i];
             String filename = map[i + 1];
-            log.debug(schema + " -> " + filename);
             try {
                 loadStreamSource(filename, schema);
             } catch (IOException e) {
@@ -327,28 +140,7 @@ public class CdlCatalog implements URIResolver, EntityResolver {
         parser.setEntityResolver(this);
     }
 
-    /**
-     * parser.setProperty( "http://apache.org/xml/properties/schema/external-schemaLocation",
-     * "http: //domain.com/mynamespace mySchema.xsd");
-     *
-     * @param parser
-     */
-/*
-    public void setImportPaths(SAXBuilder parser) {
-        String[] map = CDDLM_MAPPINGS;
-        StringBuffer buffer = new StringBuffer();
-        for (int i = 0; i < map.length; i += 2) {
-            String schema = map[i];
-            String filename = map[i + 1];
-            buffer.append(schema);
-            buffer.append(' ');
-            buffer.append(filename);
-            buffer.append(' ');
-        }
-        String s = new String(buffer);
-        parser.setProperty(SCHEMA_LOCATION, s);
-    }
-*/
+
 
 
 }

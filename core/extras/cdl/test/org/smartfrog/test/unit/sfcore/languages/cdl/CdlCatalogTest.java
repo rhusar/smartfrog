@@ -23,6 +23,7 @@ import org.smartfrog.sfcore.languages.cdl.CdlCatalog;
 import org.smartfrog.sfcore.languages.cdl.Constants;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.ggf.cddlm.generated.api.CddlmConstants;
 
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerException;
@@ -52,7 +53,7 @@ public class CdlCatalogTest extends XmlTestBase {
 
     public void testCdlLookup() {
         String cddlm = catalog.lookup(Constants.XML_CDL_NAMESPACE);
-        assertTrue(cddlm != null && cddlm.endsWith(Constants.CDL_XSD_FILENAME));
+        assertTrue(cddlm != null && cddlm.endsWith(CddlmConstants.CDL_FILENAME_XML_CDL));
     }
 
 
