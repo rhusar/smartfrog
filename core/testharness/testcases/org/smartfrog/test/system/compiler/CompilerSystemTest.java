@@ -24,7 +24,8 @@ package org.smartfrog.test.system.compiler;
 import org.smartfrog.test.SmartFrogTestBase;
 import org.smartfrog.sfcore.common.MessageKeys;
 import org.smartfrog.sfcore.common.MessageUtil;
-
+import org.smartfrog.sfcore.parser.Phases;
+import org.smartfrog.sfcore.common.SmartFrogException;
 
 
 /**
@@ -150,4 +151,14 @@ public class CompilerSystemTest extends SmartFrogTestBase {
                 EXCEPTION_RESOLUTION,
                 "Unresolved Reference: HERE sfClass");
     }
+
+     public void testCaseTCN95() throws Exception {
+       deployExpectingException(FILES + "tcn95.sf",
+                "tcn95",
+                EXCEPTION_DEPLOYMENT,
+                null,
+                EXCEPTION_RESOLUTION,
+                "Parsing include file test.sf : Include file: test.sf not found"); 
+    }
+
 }
