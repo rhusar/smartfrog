@@ -60,6 +60,10 @@
       location="${antbuild.dir}/repository" />
     <makeurl file="${m2.smartfrog.scm.repository}"
         property="m2.smartfrog.scm.repository.url" />
+    <property name="m2.smartfrog.scm.old.repository"
+      location="${smartfrog.components.dir}/lib" />
+    <makeurl file="${m2.smartfrog.scm.old.repository}"
+        property="m2.smartfrog.scm.old.repository.url" />
         
     <property name="m2.ibiblio.repository"
       value="http://ibiblio.org/maven2"/>    
@@ -75,6 +79,7 @@
         <localRepository location="${m2.repository}" />
         <!-- look in SCM first -->
         <remoteRepository url="${m2.smartfrog.scm.repository.url}" checksumPolicy="warn"/>
+        <remoteRepository url="${m2.smartfrog.scm.old.repository.url}" checksumPolicy="warn"/>
         <!-- then hit ibiblio -->
         <remoteRepository url="${m2.ibiblio.repository}" />
         <!-- apache repository -->

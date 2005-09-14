@@ -302,7 +302,7 @@
     <macrodef name="test-report" uri="${core.uri}">
       <attribute name="data"/>
       <attribute name="reports"/>
-      <attribute name="failed"/>
+      <attribute name="failed" default="a.property.that.had.better.never.be.set"/>
       <sequential>
         <junitreport todir="@{data}">
           <fileset dir="@{data}">
