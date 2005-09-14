@@ -21,10 +21,17 @@ package org.smartfrog.services.deployapi.binding;
 
 import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.XmlException;
+import org.apache.xmlbeans.XmlOptions;
 import org.apache.axis2.om.OMElement;
-import org.ggf.xbeans.cddlm.api.CreateRequestDocument;
+import org.apache.axis2.om.OMXMLParserWrapper;
+import org.apache.axis2.om.OMAbstractFactory;
+import org.apache.axis2.om.OMFactory;
+import org.apache.axis2.om.impl.llom.factory.OMXMLBuilderFactory;
+import org.smartfrog.services.deployapi.transport.faults.BaseException;
 
 import javax.xml.stream.XMLStreamReader;
+import java.io.InputStream;
+import java.io.IOException;
 
 /**
  * Convert axis2 stuff into a an XMLBean
@@ -32,16 +39,79 @@ import javax.xml.stream.XMLStreamReader;
  */
 public class Axis2Beans<T extends XmlObject>  {
 
-    public T convert(OMElement element) throws XmlException {
-        XMLStreamReader reader = element.getXMLStreamReaderWithoutCaching();
-        return (T)T.Factory.parse(reader);
+    /**
+     * generation-time options
+     */
+    private XmlOptions options;
+
+    /**
+     * Error when things are of the wrong type
+     */
+    public static final String ERROR_WRONG_TYPE = "Cannot convert XML because it is of the incompatible type ";
+
+    public Axis2Beans() {
     }
 
-/*
-    OMElement convert(T document) throws XmlException {
-        T.
+    public Axis2Beans(XmlOptions options) {
+        this.options = options;
     }
-*/
 
 
+    public T convert(OMElement element) {
+        XMLStreamReader reader = element.getXMLStreamReader();
+        try {
+            XmlObject xmlObject = T.Factory.parse(reader);
+            T t;
+            try {
+                t=(T)xmlObject;
+            } catch (ClassCastException e) {
+                throw new BaseException(ERROR_WRONG_TYPE +xmlObject);
+
+            }
+
+            return (T) xmlObject;
+
+        } catch (XmlException e) {
+            throw new BaseException(e);
+        }
+    }
+
+
+
+    /**
+     * Convert a message to the body of the response.
+     * This does not create a SOAP document
+     * @param document
+     * @return
+     */
+    public OMElement convert(T document) {
+        XMLStreamReader reader = document.newXMLStreamReader(options);
+        //here?
+        OMXMLParserWrapper builder = createBuilder(reader);
+        //get the root element (in this case the envelope)
+        return builder.getDocumentElement();
+    }
+
+    private OMXMLParserWrapper createBuilder(XMLStreamReader reader) {
+        OMXMLParserWrapper builder =
+                OMXMLBuilderFactory.createStAXOMBuilder(getOMFactory(), reader);
+        return builder;
+    }
+
+    private OMFactory getOMFactory() {
+        return OMAbstractFactory.getOMFactory();
+    }
+
+    public T loadBeansFromResource(String resource) throws XmlException, IOException {
+        InputStream stream = loadResource(resource);
+        return (T) T.Factory.parse(stream);
+    }
+
+    private InputStream loadResource(String resource) {
+        InputStream stream = this.getClass().getClassLoader().getResourceAsStream(resource);
+        if (stream == null) {
+            throw new BaseException("Resource missing: " + resource);
+        }
+        return stream;
+    }
 }

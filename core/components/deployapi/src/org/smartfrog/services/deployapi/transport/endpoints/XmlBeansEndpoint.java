@@ -76,7 +76,7 @@ public abstract class XmlBeansEndpoint {
         ArrayList validationErrors = new ArrayList();
         XmlOptions validationOptions = new XmlOptions();
         validationOptions.setErrorListener(validationErrors);
-        if(!message.validate()) {
+        if(!message.validate(validationOptions)) {
             DeploymentException exception=new DeploymentException();
             DeploymentFaultType baseFault = exception.getBaseFault();
             DeploymentFaultType fault=DeploymentFaultType.Factory.newInstance();

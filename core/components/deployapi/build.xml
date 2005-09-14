@@ -47,12 +47,11 @@
   <import file="${xml.dir}/sftasks.xml"/>
   <import file="${xml.dir}/m2.xml"/>
   <import file="${xml.dir}/dist.xml"/>
-
+  <import file="${xml.dir}/unittest.xml"/>
 
   <!-- ========================================================== -->
   <!-- ========================================================== -->
   <target name="init" depends="core.init-standard-output-dirs,sftasks.smartfrog-tasks,core.core-tasks">
-    <property name="smartfrog-version" value="${smartfrog.version}" />
     <property name="war.dir" location="war" />
     <property name="webinf.dir" location="${war.dir}/WEB-INF" />
     <property name="services.dir" location="${webinf.dir}/services" />
@@ -108,13 +107,14 @@
       <dependency groupID="commons-logging"
         artifactID="commons-logging"
         version="${commons-logging.version}"/>
-     <dependency groupID="geronimo-spec"
+<!--      <dependency groupID="geronimo-spec"
         artifactID="geronimo-spec-javamail"
-        version="${geronimo-spec-javamail.version}"/>
-      <dependency groupID="geronimo-spec"
+        version="${geronimo-spec-javamail.version}"/> -->
+<!--       <dependency groupID="geronimo-spec"
         artifactID="geronimo-spec-activation"
         version="${geronimo-spec-activation.version}"/>
-      <dependency groupID="stax"
+ -->
+ <dependency groupID="stax"
         artifactID="stax"
         version="${stax.version}"/>
       <dependency groupID="stax"
@@ -141,6 +141,9 @@
       <dependency groupID="xmlbeans"
         artifactID="xmlpublic"
         version="${xmlbeans.version}"/>        
+      <dependency groupID="saxon"
+        artifactID="saxon"
+        version="${saxon.version}"/>        
       </m2-libraries>
     </target>
 
@@ -211,36 +214,7 @@
  
 
    
-  <!-- ========================================================== -->
-  <!-- this is an override point -->
-  <!-- compile everything, copy useful files over-->
-  <!-- ========================================================== -->
-  <target name="compile-tests"
-      depends="package,declare-tests.compile.classpath">
-      <depend 
-          srcdir="${test.src.dir}"
-          destdir="${test.classes.dir}"
-          cache="${build.test.dir}/depends"
-          closure="yes"/>
-      <core:javac
-          srcdir="${test.src.dir}"
-          destdir="${test.classes.dir}"
-          classpathref="tests.compile.classpath"
-          />
-      <core:copy-useful-files src="${test.src.dir}" dest="${test.classes.dir}"/>
-  </target>  
-  
-  <!-- ========================================================== -->
-  <!-- this is an override point -->
-  <!-- create the test jar ${test.jar}-->
-  <!-- ========================================================== -->
-  <target name="package-tests" depends="compile-tests"
-      description="create the JAR file for the tests">
-      <jar destfile="${test.jar}" 
-        basedir="${test.classes.dir}" 
-        includes="**/*"/>
-      <echo level="verbose">created package ${test.jar}</echo>
-  </target>
+
 
   
   <target name="archives" depends="init"
