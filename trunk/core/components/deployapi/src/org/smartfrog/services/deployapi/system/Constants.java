@@ -30,4 +30,43 @@ public class Constants extends CddlmConstants {
     public static final String LOCALHOST = "localhost";
     public static final String ERROR_CREATE_UNSUPPORTED_HOST = "Unsupported Host";
     public static final String ERROR_NOT_DOCLIT = "only doc/lit SOAP supported";
+
+    protected static final String PACKAGE_BASE = "org/ggf/cddlm/";
+    /**
+     * where all the WSRF files really live {@value}
+     */
+    private static final String WSRF_PACKAGE = PACKAGE_BASE
+            + XML_FILENAME_WSRF_DIRECTORY;
+
+    /**
+     * where the API files really live {@value}
+     */
+    private static final String API_PACKAGE = PACKAGE_BASE
+            + CDL_FILENAME_XML_DIRECTORY;
+
+
+    /**
+     * This maps from namespaces to resources in our classpath {@value}
+     */
+    public static final String WSRF_MAPPINGS[] = {
+            WS_ADDRESSING_NAMESPACE,
+            WSRF_PACKAGE + XML_FILENAME_WS_ADDRESSING,
+            WS_ADDRESSING_NAMESPACE,
+            WSRF_PACKAGE + XML_FILENAME_WS_ADDRESSING,
+    };
+
+    /**
+     * This maps from namespaces to resources in our classpath {@value}
+     */
+    public static final String CDDLM_MAPPINGS[] = {
+            XML_CDL_NAMESPACE,
+                API_PACKAGE + CDL_FILENAME_XML_CDL,
+            CDL_API_TYPES_NAMESPACE,
+                API_PACKAGE +CDL_FILENAME_DEPLOYMENT_API,
+            WS_ADDRESSING_NAMESPACE,
+                WSRF_PACKAGE + XML_FILENAME_WS_ADDRESSING,
+            WS_ADDRESSING_NAMESPACE,
+                WSRF_PACKAGE + XML_FILENAME_WS_ADDRESSING,
+    };
+
 }

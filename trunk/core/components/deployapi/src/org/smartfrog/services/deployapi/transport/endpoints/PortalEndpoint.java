@@ -64,21 +64,17 @@ public class PortalEndpoint extends WsrfEndpoint {
 
     public OMElement Create(OMElement request) throws AxisFault {
         Axis2Beans<CreateRequestDocument> create=new Axis2Beans<CreateRequestDocument>();
-        try {
-            CreateRequestDocument doc=create.convert(request);
-            CreateRequestDocument.CreateRequest createRequest = doc.getCreateRequest();
-            createRequest.validate();
+        CreateRequestDocument doc=create.convert(request);
+        CreateRequestDocument.CreateRequest createRequest = doc.getCreateRequest();
+        validate(createRequest);
 
-            //hostname processing
-            String hostname=org.smartfrog.services.deployapi.system.Constants.LOCALHOST;
-            if(createRequest.isSetHostname()) {
-                hostname=createRequest.getHostname();
-            }
-            if(hostname!=null) {
-                throw new BaseException(Constants.ERROR_CREATE_UNSUPPORTED_HOST);
-            }
-        } catch (XmlException e) {
-            throw new BaseException(e);
+        //hostname processing
+        String hostname=org.smartfrog.services.deployapi.system.Constants.LOCALHOST;
+        if(createRequest.isSetHostname()) {
+            hostname=createRequest.getHostname();
+        }
+        if(hostname!=null) {
+            throw new BaseException(Constants.ERROR_CREATE_UNSUPPORTED_HOST);
         }
         //TODO: create a new endpoint
         String endpoint="http://localhost:8080/services/System";
