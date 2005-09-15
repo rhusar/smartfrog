@@ -51,22 +51,49 @@
 
   <!-- ========================================================== -->
   <!-- ========================================================== -->
-  <target name="init" depends="core.init-standard-output-dirs,sftasks.smartfrog-tasks,core.core-tasks">
+  <target name="init" depends="core.init-standard-output-dirs,sftasks.smartfrog-tasks,core.core-tasks,core.artifact-names">
     <property name="war.dir" location="war" />
     <property name="webinf.dir" location="${war.dir}/WEB-INF" />
     <property name="services.dir" location="${webinf.dir}/services" />
     <property name="build.axis2.dir" location="${build.dir}/axis2" />
     <property name="build.axis2.src.dir" location="${build.axis2.dir}/src" />
+    <property name="target.war.name"  
+      value="${artifact.name}-war-${artifact.version}.war" />
+    <property name="target.war"  
+      location="${dist.dir}/${target.war.name}" />
+    
   </target>
   
-  <target name="declare-compile.classpath" depends="core-libraries,axis2-libraries,sftasks.smartfrog-tasks-classpath">
+  <target name="declare-compile.classpath" depends="core-libraries,axis2-libraries,smartfrog-modules-classpath">
     <path id="compile.classpath">
       <path refid="core.classpath"/>
-      <path refid="smartfrog.tasks.classpath"/>
+      <path refid="smartfrog.modules.classpath"/>
       <path refid="axis2.classpath"/>
     </path>
     <property name="compile.classpath.value" refid="compile.classpath"/>
     <echo level="verbose">compile.classpath=${compile.classpath.value}</echo>    
+  </target>
+
+  <target name="smartfrog-modules-classpath" 
+    depends="core.load-version-info,m2.m2-tasks">
+    <m2:dependencies pathID="smartfrog.modules.classpath">
+      <dependency groupID="org.smartfrog"
+        artifactID="smartfrog"
+        version="${smartfrog.version}"
+        scope="compile"
+        />  
+      <dependency groupID="org.smartfrog"
+        artifactID="sfServices"
+        version="${smartfrog.version}"
+        scope="compile"
+        /> 
+      <dependency groupID="org.smartfrog"
+        artifactID="sf-xml"
+        version="${smartfrog.version}"/>
+      <dependency groupID="org.smartfrog"
+        artifactID="sf-www"
+        version="${smartfrog.version}"/>        
+    </m2:dependencies>
   </target>
   
     
@@ -84,9 +111,9 @@
       <dependency groupID="log4j"
         artifactID="log4j"
         version="${log4j.version}"/>
-      <dependency groupID="org.smartfrog"
-        artifactID="sf-xml"
-        version="${smartfrog.version}"/>
+      <dependency groupID="junit"
+        artifactID="junit"
+        version="${junit.version}"/>
       <dependency groupID="xom"
         artifactID="xom"
         version="${xom.version}"/>
@@ -98,6 +125,12 @@
 
   <target name="axis2-libraries" depends="m2.m2-tasks">
     <m2-libraries pathID="axis2.classpath">
+      <dependency groupID="log4j"
+        artifactID="log4j"
+        version="${log4j.version}"/>    
+      <dependency groupID="junit"
+        artifactID="junit"
+        version="${junit.version}"/>
       <dependency groupID="axis"
         artifactID="axis-wsdl4j"
         version="${axis-wsdl4j.version}"/>
@@ -107,6 +140,10 @@
       <dependency groupID="commons-logging"
         artifactID="commons-logging"
         version="${commons-logging.version}"/>
+      <dependency groupID="javax.activation"
+        artifactID="activation"
+        version="${activation.version}"/>
+        
 <!--      <dependency groupID="geronimo-spec"
         artifactID="geronimo-spec-javamail"
         version="${geronimo-spec-javamail.version}"/> -->
@@ -181,9 +218,7 @@
   
   <target name="test-libraries" depends="m2.m2-tasks">
     <m2-libraries pathID="test-libraries.classpath">
-      <dependency groupID="org.smartfrog"
-        artifactID="sf-www"
-        version="${smartfrog.version}"/>
+
       <dependency groupID="org.smartfrog"
         artifactID="sf-jetty"
         version="${smartfrog.version}"/>
@@ -247,7 +282,6 @@
   <target name="default" depends="dist" />
   
   
-  <target name="war" depends="rmi" />
 
     
   
@@ -358,6 +392,35 @@
     </core:java>
   </target>
   
+  <!-- make the WAR file -->
+  <target name="war" depends="rmi" >
+    <property name="target.war.name"  
+      value="${artifact.name}-war-${artifact.version}.war" />
+    <property name="target.war"  
+      location="${dist.dir}/${target.war.name}" />
+    <property name="build.temp.lib.dir" location="${build.dir}/temp/lib" />
+    <copypath destDir="${build.temp.lib.dir}" pathref="axis2.classpath">
+      <flattenmapper/>
+    </copypath>
+    <copypath destDir="${build.temp.lib.dir}" pathref="axis2.classpath">
+      <flattenmapper/>
+    </copypath>
+    <copypath destDir="${build.temp.lib.dir}" pathref="core.classpath">
+      <flattenmapper/>
+    </copypath>
+      
+    <jar destFile="${target.war}" 
+      compress="false" 
+      duplicate="fail">
+      <!--  WAR file, includes WEB-INF stuff-->
+      <fileset dir="${war.dir}" includes="**/*" />
+      <zipfileset prefix="WEB-INF/lib" dir="${build.temp.lib.dir}" 
+        includes="*.jar" />
+      <zipfileset prefix="WEB-INF/lib" file="${target.jar}" /> 
+      
+    </jar>
+  </target>
+
   
   
 </project>

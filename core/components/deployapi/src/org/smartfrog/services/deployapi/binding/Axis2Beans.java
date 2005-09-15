@@ -96,27 +96,19 @@ public class Axis2Beans<T extends XmlObject>  {
     }
 
     private OMElement convertIntermediateDoc(T document) {
-        StringWriter writer=new StringWriter();
-        XmlOptions writeOptions=new XmlOptions();
-        writeOptions.setSaveOuter();
-        writeOptions.setSavePrettyPrint();
-        writeOptions.setSaveUseOpenFrag();
-        //writeOptions.setSaveNoXmlDecl();
         try {
+            StringWriter writer = new StringWriter();
+            XmlOptions writeOptions = new XmlOptions();
+            writeOptions.setSaveOuter();
+            writeOptions.setSaveUseOpenFrag();
             document.save(writer,options);
             writer.close();
             String textForm=writer.toString();
-            XMLStreamReader parser = XMLInputFactory.newInstance().createXMLStreamReader(new StringReader(textForm));
-
-        //create the builder
-            StAXOMBuilder builder =
-                    new StAXOMBuilder(parser);
-/*            OMXMLParserWrapper builder = OMXMLBuilderFactory
-                    .createStAXSOAPModelBuilder(OMAbstractFactory.getDefaultSOAPFactory(), parser);*/
+            StringReader stringReader = new StringReader(textForm);
+            XMLInputFactory inputFactory = XMLInputFactory.newInstance();
+            XMLStreamReader parser = inputFactory.createXMLStreamReader(stringReader);
+            StAXOMBuilder builder = new StAXOMBuilder(parser);
             return builder.getDocumentElement();
-        //get the root element (in this case the envelope)
-
-            //SOAPEnvelope envelope = (SOAPEnvelope) builder.getDocumentElement();
         } catch (IOException e) {
             throw new BaseException(e);
         } catch (XMLStreamException e) {
