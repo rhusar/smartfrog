@@ -1,0 +1,12 @@
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>javax.activation</groupId>
+  <artifactId>activation</artifactId>
+  <name>activation</name>
+  <version>1.0.2</version>
+  <description>A lib that should ship in J2SE</description>
+  <url>http://java.sun.com/products/javabeans/glasgow/jaf.html</url>
+  <inceptionYear>1996</inceptionYear>
+  <dependencies>
+  </dependencies>
+</project>
