@@ -9,7 +9,7 @@
 
   <!-- Declare our maven2-driven libraries to smartfrog core and tasks (nothing else) -->
   <target name="smartfrog-tasks-classpath" 
-    depends="core.load-version-info">
+    depends="core.load-version-info,m2.m2-tasks">
     <m2:dependencies pathID="smartfrog.tasks.classpath">
       <dependency groupID="org.smartfrog"
         artifactID="smartfrog"
@@ -30,7 +30,7 @@
   </target>
 
   <target name="smartfrog-testharness-classpath" 
-    depends="core.load-version-info">
+    depends="core.load-version-info,m2.m2-tasks">
     <m2:dependencies pathID="smartfrog.testharness-only.classpath">
       <dependency groupID="org.smartfrog"
         artifactID="sf-testharness"

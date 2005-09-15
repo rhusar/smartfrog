@@ -87,7 +87,7 @@
   <!-- ========================================================== -->
   <target name="unit-tests" depends="init,dist,package-tests" if="unit.tests.enabled"
     description="run the unit tests if unit.tests.enabled is set">
-    <sf-junit
+    <core:junit
       errorProperty="test.failed"
       failureProperty="test.failed"
       includeAntRuntime="true"
@@ -100,10 +100,10 @@
       <batchtest todir="${test.data.dir}" if="unit.tests.enabled">
         <!-- bulk test case -->
         <fileset dir="${test.classes.dir}">
-          <include name="org/smartfrog/test/unit/**/*Test.class"/>
+          <include name="org/smartfrog/**/unit/**/*Test.class"/>
         </fileset>
       </batchtest>
-    </sf-junit>
+    </core:junit>
   </target> 
   
   <!-- ========================================================== -->
