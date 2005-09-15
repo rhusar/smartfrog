@@ -1,0 +1,26 @@
+#include "org/smartfrog/components.sf"
+#include "org/smartfrog/examples/persistence/components.sf"
+
+
+sfConfig extends Compound {
+    sfPersist true;
+    counter extends PersistentCounter {
+	pause false;
+	limit 10000;
+	sleep 1000;
+	message "counter 1";
+
+	checkpointDirectory LAZY sfPersistedDirectory;
+	checkpointFileRoot LAZY sfPersisted;
+	
+    }
+    counter2 extends PersistentCounter {
+	pause false;
+        limit 10000;
+        sleep 5000;
+	message "counter 2";
+	
+	checkpointDirectory LAZY sfPersistedDirectory;
+	checkpointFileRoot LAZY sfPersisted;
+    }
+}

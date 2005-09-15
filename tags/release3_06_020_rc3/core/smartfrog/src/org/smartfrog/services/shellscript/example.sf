@@ -1,0 +1,85 @@
+/** (C) Copyright 1998-2005 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+//RunCommand Component
+#include "org/smartfrog/services/shellscript/components.sf"
+
+// --- EXAMPLE
+sfConfig extends Compound {
+  //sfProcessHost "localhost";
+  //sfProcessName "SHELL_VM";
+
+  process extends WinXPProcess {
+    exec:dir ".";
+  }
+
+  shell extends WinXPShell {
+    exec:dir ".";
+  }
+
+  script extends Script {
+    sfLog LAZY THIS;
+
+    verbose true;
+
+    shell LAZY PARENT:shell;
+    // deploy, start and terminate scripts are blocking
+    deployScript ["cd","dir","echo user_name: %USERNAME%"];
+
+    startScript extends LAZY {
+     -- "cd \\";
+     -- ["cd","dir","cdd"]; //Error in cdd, it will report error code
+     -- 123L; //--> Wrong type, terminates component.
+     -- "cd %JAVA_HOME%";
+     -- ["cd","dic","dir"]; // Error in dic, only last in set reported as error code, but it shows in stdErr messages.
+     -- extends LAZY {
+           -- ["cd","echo user_name: %USERNAME%"];
+           -- "echo user_name: %USERNAME%";
+     }
+     -- ["cd"];
+    }
+    terminateScript "exit";
+
+    autoTerminate false;
+
+  }
+
+  script2 extends script {
+    startScript extends LAZY {
+     -- "cd \\";
+     -- ["cd","dir","cdd"]; //Error in cdd, it will report error code
+     -- ["cd"];
+    }
+    autoTerminate false;
+  }
+
+  script3 extends script {
+    startScript extends LAZY {
+     -- "cd \\";
+     -- ["cd","dir","cdd"]; //Error in cdd, it will report error code
+     -- ["cd"];
+    }
+    autoTerminate true;
+  }
+
+
+  reference_Process LAZY process;
+  reference_Shell LAZY shell;
+}

@@ -1,0 +1,12 @@
+#include "org/smartfrog/components.sf"
+#include "org/smartfrog/services/net/telnet.sf"
+
+sfConfig extends TelnetSession {
+        Telnet:username "ritu";
+        Telnet:commands ["cd /home/smartfrog",
+                  "mkdir test"
+                 ];
+	PasswordProvider:passwordFile "passwd.txt";
+        Telnet:logFile "spy.log";
+	Telnet:ostype "linux";
+}

@@ -1,0 +1,366 @@
+<?xml version="1.0"?>
+<project name="deployapi" default="default"
+  xmlns:ac="antlib:net.sf.antcontrib"
+  xmlns:sf="antlib:org.smartfrog.tools.ant"
+  xmlns:m2="antlib:org.apache.maven.artifact.ant"
+  xmlns:core="http://smartfrog.org/build/core"
+  >
+
+  <!--
+  /** (C) Copyright 2005 Hewlett-Packard Development Company, LP
+
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 2.1 of the License, or (at your option) any later version.
+
+  This library is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  You should have received a copy of the GNU Lesser General Public
+  License along with this library; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+  For more information: www.smartfrog.org
+
+  */
+  -->
+
+  <description>
+     Build file for deployment API
+  </description>
+
+  
+  <!-- override point -->
+  <property file="build.properties"/>
+  <property name="javac.java.version" value="1.5"/>
+
+  <property name="root.dir" location="../.."/>
+  <property name="antbuild.dir" location="${root.dir}/antbuild"/>
+  <property name="xml.dir" location="${antbuild.dir}/xml"/>
+  
+  
+  <!-- Import common stuff -->
+  <import file="${xml.dir}/core.xml"/>
+  <import file="${xml.dir}/sftasks.xml"/>
+  <import file="${xml.dir}/m2.xml"/>
+  <import file="${xml.dir}/dist.xml"/>
+  <import file="${xml.dir}/unittest.xml"/>
+
+  <!-- ========================================================== -->
+  <!-- ========================================================== -->
+  <target name="init" depends="core.init-standard-output-dirs,sftasks.smartfrog-tasks,core.core-tasks">
+    <property name="war.dir" location="war" />
+    <property name="webinf.dir" location="${war.dir}/WEB-INF" />
+    <property name="services.dir" location="${webinf.dir}/services" />
+    <property name="build.axis2.dir" location="${build.dir}/axis2" />
+    <property name="build.axis2.src.dir" location="${build.axis2.dir}/src" />
+  </target>
+  
+  <target name="declare-compile.classpath" depends="core-libraries,axis2-libraries,sftasks.smartfrog-tasks-classpath">
+    <path id="compile.classpath">
+      <path refid="core.classpath"/>
+      <path refid="smartfrog.tasks.classpath"/>
+      <path refid="axis2.classpath"/>
+    </path>
+    <property name="compile.classpath.value" refid="compile.classpath"/>
+    <echo level="verbose">compile.classpath=${compile.classpath.value}</echo>    
+  </target>
+  
+    
+  <target name="core-libraries" depends="m2.m2-tasks">
+    <m2-libraries pathID="core.classpath">
+      <dependency groupID="org.ggf"
+        artifactID="cddlm"
+        version="${cddlm.version}"/>
+      <dependency groupID="commons-lang"
+        artifactID="commons-lang"
+        version="${commons-lang.version}"/>
+      <dependency groupID="commons-logging"
+        artifactID="commons-logging-api"
+        version="${commons-logging.version}"/>
+      <dependency groupID="log4j"
+        artifactID="log4j"
+        version="${log4j.version}"/>
+      <dependency groupID="org.smartfrog"
+        artifactID="sf-xml"
+        version="${smartfrog.version}"/>
+      <dependency groupID="xom"
+        artifactID="xom"
+        version="${xom.version}"/>
+      <dependency groupID="xalan"
+        artifactID="xalan"
+        version="${xalan.version}"/>
+    </m2-libraries>
+  </target>
+
+  <target name="axis2-libraries" depends="m2.m2-tasks">
+    <m2-libraries pathID="axis2.classpath">
+      <dependency groupID="axis"
+        artifactID="axis-wsdl4j"
+        version="${axis-wsdl4j.version}"/>
+      <dependency groupID="commons-codec"
+        artifactID="commons-codec"
+        version="${commons-codec.version}"/>
+      <dependency groupID="commons-logging"
+        artifactID="commons-logging"
+        version="${commons-logging.version}"/>
+<!--      <dependency groupID="geronimo-spec"
+        artifactID="geronimo-spec-javamail"
+        version="${geronimo-spec-javamail.version}"/> -->
+<!--       <dependency groupID="geronimo-spec"
+        artifactID="geronimo-spec-activation"
+        version="${geronimo-spec-activation.version}"/>
+ -->
+ <dependency groupID="stax"
+        artifactID="stax"
+        version="${stax.version}"/>
+      <dependency groupID="stax"
+        artifactID="stax-api"
+        version="${stax-api.version}"/>
+      <dependency groupID="jaxen"
+        artifactID="jaxen"
+        version="${jaxen.version}"/>
+      <dependency groupID="commons-fileupload"
+        artifactID="commons-fileupload"
+        version="${commons-fileupload.version}"/>
+     <dependency groupID="axis2"
+        artifactID="axis2"
+        version="${axis2.version}"/>
+      <dependency groupID="xmlbeans"
+        artifactID="xbean"
+        version="${xmlbeans.version}"/>
+      <dependency groupID="xmlbeans"
+        artifactID="xbean_xpath"
+        version="${xmlbeans.version}"/>
+      <dependency groupID="xmlbeans"
+        artifactID="xbean_xpath"
+        version="${xmlbeans.version}"/>
+      <dependency groupID="xmlbeans"
+        artifactID="xmlpublic"
+        version="${xmlbeans.version}"/>        
+      <dependency groupID="saxon"
+        artifactID="saxon"
+        version="${saxon.version}"/>        
+      </m2-libraries>
+    </target>
+
+      
+
+<!--       <dependency groupID="axis2"
+        artifactID="axis2-common"
+        version="${axis2.version}"/>
+      <dependency groupID="axis2"
+        artifactID="axis2-core"
+        version="${axis2.version}"/>
+      <dependency groupID="axis2"
+        artifactID="axis2-xml"
+        version="${axis2.version}"/>
+      <dependency groupID="axis2"
+        artifactID="axis2-addressing"
+        version="${axis2.version}"/>
+      <dependency groupID="axis2"
+        artifactID="axis2-wsdl"
+        version="${axis2.version}"/>
+ -->        
+
+       
+  
+  <target name="declare-exec.classpath" depends="declare-compile.classpath" >  
+    <path id="exec.classpath">
+      <path refid="compile.classpath"/>
+      <pathelement location="${build.classes.dir}"/>
+    </path>    
+    <property name="exec.classpath.value" refid="exec.classpath"/>
+    <echo level="verbose">exec.classpath=${exec.classpath.value}</echo>
+  </target>
+
+  <!-- declares the testharness and junit path -->
+  
+  <target name="test-libraries" depends="m2.m2-tasks">
+    <m2-libraries pathID="test-libraries.classpath">
+      <dependency groupID="org.smartfrog"
+        artifactID="sf-www"
+        version="${smartfrog.version}"/>
+      <dependency groupID="org.smartfrog"
+        artifactID="sf-jetty"
+        version="${smartfrog.version}"/>
+      <dependency groupID="org.smartfrog"
+        artifactID="sf-junit"
+        version="${smartfrog.version}"/>
+      <dependency groupID="org.smartfrog"
+        artifactID="sf-testharness"
+        version="${smartfrog.version}"/>
+      <dependency groupID="junit"
+        artifactID="junit"
+        version="${junit.version}"/>
+    </m2-libraries>
+  </target>
+  
+
+
+
+  <!-- ========================================================== -->
+  <!-- this is an override point -->
+  <!-- it does nothing but declare all the dependencies for compilation -->
+  <!-- anything that overrides compile can declare a dependency on this -->
+  <!-- target to get its dependencies right -->
+  <!-- ========================================================== -->
+  <target name="pre-compile"
+      depends="init,declare-classpaths,core.core-tasks">
+  </target>
+ 
+
+   
+
+
+  
+  <target name="archives" depends="init"
+    description="create the .aar files">
+  
+    <property name="build.archives.dir" location="${build.dir}/archives" />
+    <mkdir dir="${build.archives.dir}" /> 
+    <property name="portal.aar" location="${build.archives.dir}/portal.aar" />
+    <property name="system.aar" location="${build.archives.dir}/system.aar" />
+    <property name="archives.dir" location="archives" />
+    <jar destFile="${portal.aar}">
+      <fileset dir="${archives.dir}/portal" includes="**/*" />
+    </jar>
+    <jar destFile="${system.aar}">
+      <fileset dir="${archives.dir}/system" includes="**/*" />
+    </jar>
+  </target>  
+
+  <target name="copy-archives" depends="archives">
+    <copy todir="${services.dir}">
+      <fileset dir="${build.archives.dir}" includes="*.aar" /> 
+    </copy>
+  </target>
+  
+ 
+  <target name="axis2-tasks" depends="axis2-libraries" >
+    <taskdef name="codegen"
+        uri="http://ws.apache.org/axis2"
+        onerror="failall"
+        classname="org.apache.axis2.tool.ant.AntCodegenTask"
+        classpath="axis2.classpath"/>
+  </target>
+  
+  <target name="default" depends="dist" />
+  
+  
+  <target name="war" depends="rmi" />
+
+    
+  
+  <target name="specifications" depends="init" >
+  
+    <fail unless="deployment.project.dir" >
+     Need to specify the location of the sourceforge deploy project
+    </fail>
+    <property name="deployment.xml.dir"
+      location="${deployment.project.dir}/xml"/>
+    <property name="cddlm.dir"
+      location="${deployment.xml.dir}/api"/>
+    <property name="cdl.dir"
+      location="${deployment.xml.dir}/cdl"/>
+    <property name="constants.xml.dir"
+      location="${cddlm.dir}"/>
+    <property name="wsrf.dir"
+      location="${deployment.xml.dir}/wsrf"/>
+    <property name="soap.dir"
+      location="${deployment.xml.dir}/wsrf"/>
+      
+    <!--XML Schemas -->
+    <property name="xml-cdl.xsd"
+      location="${cddlm.dir}/xml-cdl.xsd"/>
+
+    <property name="component-model.xsd"
+      location="${cddlm.dir}/component-model.xsd"/>
+    <property name="component-model-events.xml"
+      location="${cddlm.dir}/component-model-events.xml"/>
+
+    <property name="deployment-api.xsd"
+      location="${cddlm.dir}/deployment-api.xsd"/>
+
+    <!-- ws-topics -->
+    <property name="deployment-api-portal-events.xml"
+      location="${cddlm.dir}/deployment-api-portal-events.xml"/>
+    <property name="deployment-api-system-events.xml"
+      location="${cddlm.dir}/deployment-api-system-events.xml"/>
+
+
+    <!-- WSDL -->
+    <property name="deployment-api.wsdl"
+      location="${cddlm.dir}/deployment-api.wsdl"/>
+
+    <!-- generic XML -->
+    <property name="constants.xml"
+      location="${constants.xml.dir}/constants.xml"/>
+    <property name="transform.xsl"
+      location="${transforms.dir}/createJavaConstants.xsl"/>
+
+    <!-- incoming specs -->
+    <property name="soap12.xsd"
+      location="${soap.dir}/soap12.xsd"/>
+    <property name="ws-addressing.xsd"
+      location="${soap.dir}/ws-addressing.xsd"/>
+    <property name="wsrf-rp.xsd"
+      location="${wsrf.dir}/wsrf-WS-ResourceProperties-1.2-draft-01.xsd"/>
+    <property name="wsrf-rp.wsdl"
+      location="${wsrf.dir}/wsrf-WS-ResourceProperties-1.2-draft-01.wsdl"/>
+    <property name="wsrf-rl.xsd"
+      location="${wsrf.dir}/wsrf-WS-ResourceLifetime-1.2-draft-01.xsd"/>
+    <property name="wsrf-rl.wsdl"
+      location="${wsrf.dir}/wsrf-WS-ResourceLifetime-1.2-draft-01.wsdl"/>
+
+    <property name="wsrf-n.xsd"
+      location="${wsrf.dir}/wsn-WS-BaseNotification-1.2-draft-01.xsd"/>
+    <property name="wsrf-n.wsdl"
+      location="${wsrf.dir}/wsn-WS-BaseNotification-1.2-draft-01.wsdl"/>
+    <property name="wsrf-bf.xsd"
+      location="${wsrf.dir}/wsrf-WS-BaseFaults-1.2-draft-01.xsd"/>
+    <property name="wstop.xsd"
+      location="${wsrf.dir}/wsn-WS-Topics-1.2-draft-01.xsd"/>
+
+    <property name="muws-p1.xsd"
+      location="${wsrf.dir}/wsdm-muws-part1.xsd"/>
+    <property name="muws-p2.xsd"
+      location="${wsrf.dir}/wsdm-muws-part2.xsd"/>
+    <property name="wsdm-mows.xsd"
+      location="${wsrf.dir}/wsdm-mows.xsd"/>
+
+    <property name="test-helper.xsd"
+      location="${cddlm.dir}/test-helper.xsd"/>
+    <property name="smartfrog.xsd"
+      location="${cddlm.dir}/smartfrog.xsd"/>
+  </target>
+  
+  
+  <target name="wsdl2java" depends="init,declare-classpaths,specifications" >
+    <mkdir dir="${build.axis2.src.dir}"  />
+
+    <core:java
+      classname="org.apache.axis2.wsdl.WSDL2Java"
+      classpathref="compile.classpath">
+        <arg value="-o" />
+        <arg file="${build.axis2.src.dir}" />
+        <arg value="-p" />
+        <arg value="org.ggf.cddlm.generated.axis2" />
+        <arg value="-l" />
+        <arg value="java" />
+<!--         <arg value="-a" /> -->
+<!--         <arg value="-t" /> -->
+<!--         <arg value="-ss" /> -->
+<!--         <arg value="-sd" /> -->
+       <arg value="-uri" />
+       <arg file="test/files/deployapi.wsdl" />
+<!--        <arg file="${deployment-api.wsdl}" /> -->
+    </core:java>
+  </target>
+  
+  
+  
+</project>
