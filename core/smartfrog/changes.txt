@@ -1,3 +1,22 @@
+release 3_06_020_rc3
+---------------------
+2005-Sep-15 Release date
+2005-Sep-09 Fix: Changed the way getProcessCompoundDescription was caching the description. This method is also call when finding rootLocator class. Now the description is cached after the daemon is started and reseted when the daemon is reseted
+2005-Sep-08 Fix: sfCompleteName cache when the component is not yet registered with its real parent
+2005-Sep-07 Add: New org.smartfrog.sfcore.logging.LogToFileImpl.useProcessNameInFileName=true attribute to add process name to file name.
+2005-Sep-07 Add: Detection for cyclic link resolution
+2005-Sep-02 Add: setSFProperties will use a local JVM (JRE/JDK/...) if installed in dist/jvm. The java executable can be changed with SFJVM env property. Defined in setSFProperties in not present.
+2005-Aug-30 Mod: Improved error message for predicates and TBD
+2005-Aug-30 Mod: Corrected TBD to work with new "link-sharing" model
+2005-Aug-30 Mod: Use Java proxy disabled by default in default.ini
+2005-Aug-24 Mod: Updated UserManual, QuickRef Manual
+2005-Aug-24 Add: New diagnostics shell scripts
+2005-Aug-24 Mod: Improved diagnostics info
+2005-Aug-24 Fix: sfSelectTargetProcess was not resolving rootProcess
+2005-Aug-23 Add: Added codebase feature equivalent to sfCodeBase attribute for #include 
+2005-Aug-23 Mod: Improved exception handling in scripting component
+2005-Aug-23 Mod: Added protection code against wrong sendTo and registerWith descriptions in EventPrimImpl
+
 release 3_06_016_rc2
 ---------------------
 2005-Aug-23 Release date
