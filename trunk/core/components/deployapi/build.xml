@@ -211,10 +211,6 @@
   <target name="pre-compile"
       depends="init,declare-classpaths,core.core-tasks">
   </target>
- 
-
-   
-
 
   
   <target name="archives" depends="init"
@@ -259,6 +255,7 @@
   
     <fail unless="deployment.project.dir" >
      Need to specify the location of the sourceforge deploy project
+     deployment.project.dir
     </fail>
     <property name="deployment.xml.dir"
       location="${deployment.project.dir}/xml"/>

@@ -21,6 +21,7 @@ package org.smartfrog.services.deployapi.test.unit;
 
 import junit.framework.TestCase;
 import org.smartfrog.services.deployapi.transport.endpoints.PortalEndpoint;
+import org.smartfrog.services.deployapi.transport.faults.BaseException;
 import org.smartfrog.services.deployapi.binding.Axis2Beans;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.xml.utils.XmlCatalogResolver;
@@ -35,22 +36,42 @@ import org.apache.xmlbeans.XmlError;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlCursor;
 import org.apache.axis2.om.OMElement;
+import org.apache.axis2.om.OMAttribute;
+import org.apache.axis2.om.impl.llom.builder.StAXOMBuilder;
+import org.w3c.dom.Node;
 
 import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.io.IOException;
+import java.io.StringReader;
+import java.io.FileReader;
+import java.io.InputStream;
 
 /**
  * created 14-Sep-2005 11:53:51
  */
 
 public class PortalUnitTest extends TestCase {
+
+    /**
+     * Constructs a test case with the given name.
+     */
+    public PortalUnitTest(String name) {
+        super(name);
+    }
+
     private PortalEndpoint portal;
     public static final String TEST_FILES_API_VALID = "test/api/valid/";
     public static final String DOC_CREATE = TEST_FILES_API_VALID +"api-create.xml";
     public static final String DECLARE_TEST_NAMESPACE= "declare namespace t='"+ Constants.TEST_HELPER_NAMESPACE+"'; ";
     XmlOptions options;
     public static final QName TEST_ELEMENT=new QName(Constants.TEST_HELPER_NAMESPACE,"test");
+    public static final QName TEST_NAME = new QName(Constants.TEST_HELPER_NAMESPACE, "name");
+    public static final QName TEST_NAME_LOCAL = new QName("name");
 
     /**
      * Sets up the fixture, for example, open a network connection.
@@ -86,35 +107,97 @@ public class PortalUnitTest extends TestCase {
             fail(errors.toString());
         }
     }
+
+    public void assertName(XmlObject bean,String namespace,String localname) {
+        if (namespace== null) {
+            namespace = "";
+        }
+        QName match = new QName(namespace, localname);
+        assertName(bean, match);
+    }
+
+    public void assertName(XmlObject bean, QName match) {
+        assertNotNull("XmlObject is null", bean);
+        Node node = bean.getDomNode();
+        String namespaceURI = node.getNamespaceURI();
+        QName name = new QName(namespaceURI,node.getLocalName());
+        assertEquals(match,name);
+    }
+
+    protected InputStream loadResource(String resource) {
+        InputStream stream = this.getClass().getClassLoader().getResourceAsStream(resource);
+        if (stream == null) {
+            throw new BaseException("Resource missing: " + resource);
+        }
+        return stream;
+    }
+
+
     public XmlObject loadTestElement(String resource,String name) throws IOException, XmlException {
         Axis2Beans<TestsDocument> binder = new Axis2Beans<TestsDocument>(options);
         TestsDocument doc = binder.loadBeansFromResource(resource);
+        //doc.selectChildren(Constants.TEST_HELPER_NAMESPACE,"tests"
 
-        XmlObject[] xmlObjects = doc.selectPath(DECLARE_TEST_NAMESPACE+"//t:tests/t:test[@name='" + name + "']");
+        XmlObject[] xmlObjects = doc.selectPath(DECLARE_TEST_NAMESPACE
+                +"//t:tests/t:test[@name='" + name + "']/child::*[position()=1]");
         if(xmlObjects.length==0) {
-            return null;
+            throw new XmlException("No node of name "+name+" found in resource "+resource);
         } else {
-            TestType test = (TestType) xmlObjects[0];
-            XmlCursor cursor = test.newCursor();
-            cursor.toChild(0);
-            return cursor.getObject();
+            return xmlObjects[0];
         }
     }
 
-    public void testCreateValid() throws Exception {
+
+    public OMElement loadTestOMElement(String resource, String name) throws IOException, XmlException,
+            XMLStreamException {
+        InputStream in=loadResource(resource);
+        XMLStreamReader parser = XMLInputFactory.newInstance().createXMLStreamReader(in);
+        //create the builder
+        StAXOMBuilder builder =
+                new StAXOMBuilder(parser);
+        OMElement doc = builder.getDocumentElement();
+        doc.build();
+        //now we need to locate the child with attribute "name=name";
+        Iterator childElements = doc.getChildrenWithName(TEST_ELEMENT);
+        while (childElements.hasNext()) {
+            OMElement element = (OMElement) childElements.next();
+            OMAttribute attribute = element.getAttribute(TEST_NAME);
+            if (attribute == null) {
+                attribute = element.getAttribute(TEST_NAME_LOCAL);
+            }
+            if(attribute!=null && name.equals(attribute.getValue())) {
+                return element.getFirstElement();
+            }
+        }
+        throw new XmlException("No node of name " + name + " found in resource " + resource);
+    }
+
+
+    public void testRoundTrip() throws Exception {
         Axis2Beans<CreateRequestDocument.CreateRequest> requestBinder = new Axis2Beans<CreateRequestDocument.CreateRequest>();
         CreateRequestDocument.CreateRequest doc= (CreateRequestDocument.CreateRequest)
                 loadTestElement(DOC_CREATE,"createRequestHostname");
+        QName requestQname=new QName(Constants.CDL_API_TYPES_NAMESPACE, Constants.API_ELEMENT_CREATE_REQUEST);
+        assertName(doc,requestQname);
         assertValid(doc);
         //test round tripping
         OMElement request = requestBinder.convert(doc);
-        CreateRequestDocument.CreateRequest r2=requestBinder.convert(request);
+        assertEquals(requestQname, request.getQName());
+        Axis2Beans<CreateRequestDocument> docBinder = new Axis2Beans<CreateRequestDocument>();
+        CreateRequestDocument doc2 = docBinder.convert(request);
+        CreateRequestDocument.CreateRequest createRequest = doc2.getCreateRequest();
+        assertName(createRequest, requestQname);
+        assertValid(createRequest);
+        assertEquals(doc, createRequest);
+
+    }
+
+    public void testDispatch() throws Exception {
+        OMElement request=loadTestOMElement(DOC_CREATE, "createRequestHostname");
         OMElement response=portal.Create(request);
         Axis2Beans<CreateResponseDocument> responseBinder = new Axis2Beans<CreateResponseDocument>();
         CreateResponseDocument responseDoc=responseBinder.convert(response);
         assertValid(responseDoc);
     }
-
-
 
 }

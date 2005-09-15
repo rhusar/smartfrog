@@ -27,11 +27,17 @@ import org.apache.axis2.om.OMXMLParserWrapper;
 import org.apache.axis2.om.OMAbstractFactory;
 import org.apache.axis2.om.OMFactory;
 import org.apache.axis2.om.impl.llom.factory.OMXMLBuilderFactory;
+import org.apache.axis2.om.impl.llom.builder.StAXOMBuilder;
+import org.apache.axis2.clientapi.StreamWrapper;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
 
 import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
 import java.io.InputStream;
 import java.io.IOException;
+import java.io.StringWriter;
+import java.io.StringReader;
 
 /**
  * Convert axis2 stuff into a an XMLBean
@@ -69,7 +75,7 @@ public class Axis2Beans<T extends XmlObject>  {
 
             }
 
-            return (T) xmlObject;
+            return t;
 
         } catch (XmlException e) {
             throw new BaseException(e);
@@ -78,18 +84,63 @@ public class Axis2Beans<T extends XmlObject>  {
 
 
 
+
     /**
      * Convert a message to the body of the response.
-     * This does not create a SOAP document
      * @param document
-     * @return
+     * @return a converted file
      */
-    public OMElement convert(T document) {
-        XMLStreamReader reader = document.newXMLStreamReader(options);
-        //here?
-        OMXMLParserWrapper builder = createBuilder(reader);
+    public OMElement convert(T document)  {
+        return convertIntermediateDoc(document);
+        //return convertDirect(document);
+    }
+
+    private OMElement convertIntermediateDoc(T document) {
+        StringWriter writer=new StringWriter();
+        XmlOptions writeOptions=new XmlOptions();
+        writeOptions.setSaveOuter();
+        writeOptions.setSavePrettyPrint();
+        writeOptions.setSaveUseOpenFrag();
+        //writeOptions.setSaveNoXmlDecl();
+        try {
+            document.save(writer,options);
+            writer.close();
+            String textForm=writer.toString();
+            XMLStreamReader parser = XMLInputFactory.newInstance().createXMLStreamReader(new StringReader(textForm));
+
+        //create the builder
+            StAXOMBuilder builder =
+                    new StAXOMBuilder(parser);
+/*            OMXMLParserWrapper builder = OMXMLBuilderFactory
+                    .createStAXSOAPModelBuilder(OMAbstractFactory.getDefaultSOAPFactory(), parser);*/
+            return builder.getDocumentElement();
         //get the root element (in this case the envelope)
-        return builder.getDocumentElement();
+
+            //SOAPEnvelope envelope = (SOAPEnvelope) builder.getDocumentElement();
+        } catch (IOException e) {
+            throw new BaseException(e);
+        } catch (XMLStreamException e) {
+            throw new BaseException(e);
+        }
+    }
+
+    /**
+     * Convert a message to the body of the response.
+     * @param document
+     * @return a converted file
+     */
+    protected OMElement convertDirect(T document) {
+        XmlOptions writeOptions = new XmlOptions();
+        //writeOptions.setSaveOuter();
+        writeOptions.setSaveUseOpenFrag();
+        XMLStreamReader reader = document.newXMLStreamReader(writeOptions);
+        StreamWrapper streamWrapper = new StreamWrapper(reader);
+        OMXMLParserWrapper builder =
+                OMXMLBuilderFactory.createStAXOMBuilder(getOMFactory(), streamWrapper);
+        //get the root element (in this case the envelope)
+        OMElement elt = builder.getDocumentElement();
+        elt.build();
+        return elt;
     }
 
     private OMXMLParserWrapper createBuilder(XMLStreamReader reader) {
