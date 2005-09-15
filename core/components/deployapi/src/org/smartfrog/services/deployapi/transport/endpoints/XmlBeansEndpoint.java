@@ -71,17 +71,17 @@ public abstract class XmlBeansEndpoint {
      * We are invalid.
      * @throws DeploymentException
      * @param message
+     * @returns true for use in conditional code
      */
-    protected void validate(XmlObject message) {
+    protected boolean validate(XmlObject message) {
         ArrayList validationErrors = new ArrayList();
         XmlOptions validationOptions = new XmlOptions();
         validationOptions.setErrorListener(validationErrors);
         if(!message.validate(validationOptions)) {
-            DeploymentException exception=new DeploymentException();
-            DeploymentFaultType baseFault = exception.getBaseFault();
             DeploymentFaultType fault=DeploymentFaultType.Factory.newInstance();
-
-
+            //TODO
+            throw new BaseException(Constants.BAD_ARGUMENT_ERROR_MESSAGE);
         }
+        return true;
     }
 }

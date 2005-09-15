@@ -23,21 +23,22 @@ package org.smartfrog.services.deployapi.transport.endpoints;
 import org.apache.axis2.om.OMElement;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.MessageContext;
-import org.apache.xmlbeans.XmlException;
+import org.apache.xmlbeans.XmlObject;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
-import org.smartfrog.services.deployapi.transport.faults.DeploymentException;
 import org.smartfrog.services.deployapi.transport.wsrf.WsrfEndpoint;
 import org.smartfrog.services.deployapi.binding.Axis2Beans;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.ggf.xbeans.cddlm.api.CreateRequestDocument;
+import org.ggf.xbeans.cddlm.api.CreateResponseDocument;
 import org.ggf.xbeans.cddlm.wsrf.wsa2003.EndpointReferenceType;
-import org.ggf.xbeans.cddlm.wsrf.wsa2003.AttributedURI;
 
 import javax.xml.namespace.QName;
 
 /**
  */
 public class PortalEndpoint extends WsrfEndpoint {
+
+    static int counter;
 
     /**
      * deliver a message
@@ -66,23 +67,39 @@ public class PortalEndpoint extends WsrfEndpoint {
         Axis2Beans<CreateRequestDocument> create=new Axis2Beans<CreateRequestDocument>();
         CreateRequestDocument doc=create.convert(request);
         CreateRequestDocument.CreateRequest createRequest = doc.getCreateRequest();
-        validate(createRequest);
+        maybeValidate(createRequest);
 
         //hostname processing
-        String hostname=org.smartfrog.services.deployapi.system.Constants.LOCALHOST;
+        String hostname=Constants.LOCALHOST;
         if(createRequest.isSetHostname()) {
             hostname=createRequest.getHostname();
         }
-        if(hostname!=null) {
+        if(!Constants.LOCALHOST.equals(hostname)) {
             throw new BaseException(Constants.ERROR_CREATE_UNSUPPORTED_HOST);
         }
-        //TODO: create a new endpoint
-        String endpoint="http://localhost:8080/services/System";
+        //create a new endpoint
+        counter++;
+        String counterName=Integer.toString(counter);
+        String endpoint="http://localhost:8080/services/System?counter="+counterName;
         EndpointReferenceType epr=EndpointReferenceType.Factory.newInstance();
-        AttributedURI uri=AttributedURI.Factory.newInstance();
+        //AttributedURI uri=AttributedURI.Factory.newInstance();
         epr.addNewAddress().setStringValue(endpoint);
-        //XmlOptions options=new XmlOptions();
-        return null;
+        CreateResponseDocument responseDoc = CreateResponseDocument.Factory.newInstance();
+        CreateResponseDocument.CreateResponse createResponse = responseDoc.addNewCreateResponse();
+        createResponse.setSystemReference(epr);
+        createResponse.setResourceId(counterName);
+        maybeValidate(responseDoc);
+        Axis2Beans<CreateResponseDocument> eprBinding = new Axis2Beans<CreateResponseDocument>();
+        OMElement responseOM = eprBinding.convert(responseDoc);
+        return responseOM;
+    }
+
+    /**
+     * validate documents iff assertions are enabled
+     * @param message
+     */
+    private void maybeValidate(XmlObject message) {
+        assert validate(message);
     }
 
     public OMElement Resolve(OMElement request) throws AxisFault {
