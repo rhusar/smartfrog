@@ -48,7 +48,7 @@ public abstract class HandlerImpl extends PrimImpl implements ServletComponent {
 
     private JettyHelper jettyHelper;
 
-    HttpHandler handler;
+    private HttpHandler handler;
     public static final String ERROR_HANDLER_STOPPED = "Handler is stopped";
     public static final String ERROR_HANDER_UNDEFINED = "No handler";
 
