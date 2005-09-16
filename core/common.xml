@@ -282,6 +282,18 @@
        </java>
     </presetdef>
     
+   <!--
+    JAR files are uncompressed, with duplicate classes preserved, meaning
+    whatever was there first wins.
+    -->
+    <presetdef name="sf-jar">
+      <jar
+        compress="false"
+        duplicate="preserve"
+        >
+       </jar>
+    </presetdef>
+    
     <!-- junit wrapper;
       enables forking, turns assertions on in the code, 
       and enables XML output.
@@ -962,7 +974,7 @@
     <property name="jar.name" value="${artifact.name}${jarfile.suffix}-${CVersion}.${jarfile.extension}"/>
     <property name="target.jar" 
       location="${dist.lib.dir}/${jar.name}"/>  
-    <jar destfile="${target.jar}" 
+    <sf-jar destfile="${target.jar}" 
         basedir="${build.classes.dir}" 
         includes="**/*"/>
    <echo level="verbose">created package ${target.jar}</echo>
@@ -990,7 +1002,7 @@
     bypass all the self-referential stuff here.
   -->
   <target name="createjar" depends="generate-versioned-jar" if="is.component.not.enabled">
-    <jar destfile="${target.jar}" 
+    <sf-jar destfile="${target.jar}" 
              basedir="${build.classes.dir}" 
              includes="**/*"/>
      <echo level="verbose">created package ${target.jar}</echo>
@@ -1010,7 +1022,7 @@
   <!-- ========================================================== -->
   <target name="package-tests" depends="compile-tests"
       description="create the JAR file for the tests">
-      <jar destfile="${test.jar}" 
+      <sf-jar destfile="${test.jar}" 
         basedir="${test.classes.dir}" 
         includes="**/*"/>
       <echo level="verbose">created package ${test.jar}</echo>

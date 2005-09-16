@@ -13,36 +13,7 @@
   <!-- import the core -->
   <import file="dist.xml"/>
 
-  <!-- ========================================================== -->
-  <!-- this is an override point -->
-  <!-- compile everything, copy useful files over-->
-  <!-- ========================================================== -->
-  <target name="compile-tests"
-      depends="package,declare-tests.compile.classpath">
-      <depend 
-          srcdir="${test.src.dir}"
-          destdir="${test.classes.dir}"
-          cache="${build.test.dir}/depends"
-          closure="yes"/>
-      <core:javac
-          srcdir="${test.src.dir}"
-          destdir="${test.classes.dir}"
-          classpathref="tests.compile.classpath"
-          />
-      <core:copy-useful-files src="${test.src.dir}" dest="${test.classes.dir}"/>
-  </target>  
-  
-  <!-- ========================================================== -->
-  <!-- this is an override point -->
-  <!-- create the test jar ${test.jar}-->
-  <!-- ========================================================== -->
-  <target name="package-tests" depends="compile-tests"
-      description="create the JAR file for the tests">
-      <jar destfile="${test.jar}" 
-        basedir="${test.classes.dir}" 
-        includes="**/*"/>
-      <echo level="verbose">created package ${test.jar}</echo>
-  </target>  
+ 
 
   <!-- ========================================================== -->
   <!-- this is an override point -->
