@@ -38,7 +38,7 @@ import javax.xml.namespace.QName;
  */
 public class PortalEndpoint extends WsrfEndpoint {
 
-    static int counter;
+    private static int counter;
 
     /**
      * deliver a message
