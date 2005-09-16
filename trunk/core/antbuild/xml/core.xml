@@ -20,7 +20,8 @@
 
   <target name="init-core">
      <!-- load in the local override -->
-    <property file="build.properties"/>  
+    <property file="build.properties"/>
+    <property file="libraries.properties"/>
     
     <dirname property="antbuild.xml.dir" file="${ant.file.core}"/>
     <property name="antbuild.dir" location="${antbuild.xml.dir}/.."/>
@@ -193,8 +194,6 @@
     <echo level="verbose">smartfrog.version =${smartfrog.version}</echo>
   </target>
   
- 
-  
   <!--
   logic to create a versioned jar name
   -->
@@ -343,6 +342,20 @@
         includes="**/*.class"        
         />
     </presetdef>
+    
+       <!--
+    JAR files are uncompressed, with duplicate classes preserved, meaning
+    whatever was there first wins.
+    -->
+    <presetdef name="jar" uri="${core.uri}">
+      <jar
+        compress="false"
+        duplicate="preserve"
+        >
+       </jar>
+    </presetdef>
+
+    
   </target>  
   
 </project>  

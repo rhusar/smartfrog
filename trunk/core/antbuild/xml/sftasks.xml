@@ -10,7 +10,7 @@
   <!-- Declare our maven2-driven libraries to smartfrog core and tasks (nothing else) -->
   <target name="smartfrog-tasks-classpath" 
     depends="core.load-version-info,m2.m2-tasks">
-    <m2:dependencies pathID="smartfrog.tasks.classpath">
+    <m2:libraries pathID="smartfrog.tasks.classpath">
       <dependency groupID="org.smartfrog"
         artifactID="smartfrog"
         version="${smartfrog.version}"
@@ -26,26 +26,26 @@
         version="${smartfrog.version}"
         scope="compile"
         />
-    </m2:dependencies>
+    </m2:libraries>
   </target>
 
   <target name="smartfrog-testharness-classpath" 
     depends="core.load-version-info,m2.m2-tasks">
-    <m2:dependencies pathID="smartfrog.testharness-only.classpath">
+    <m2:libraries pathID="smartfrog.testharness-only.classpath">
       <dependency groupID="org.smartfrog"
         artifactID="sf-testharness"
         version="${smartfrog.version}"
         scope="test"
         />  
-    </m2:dependencies>
-    <m2-libraries pathID="smartfrog.testharness-junit.classpath">
+    </m2:libraries>
+    <m2:libraries pathID="smartfrog.testharness-junit.classpath">
       <dependency groupID="org.smartfrog"
         artifactID="sf-testharness"
         version="${smartfrog.version}"/>
       <dependency groupID="junit"
         artifactID="junit"
         version="${junit.version}"/>
-    </m2-libraries>    
+    </m2:libraries>    
     <path id="smartfrog.testharness.classpath">
       <path refid="smartfrog.tasks.classpath"/>
       <path refid="smartfrog.testharness-junit.classpath"/>
@@ -100,8 +100,8 @@
         </waitfor>
     </presetdef>
       
-    <presetdef name="startdaemon-debug" uri="${sf.antlib.uri}">
-      <sf:startdaemon classpathref="run.classpath"
+    <presetdef name="daemon-debug" uri="${sf.antlib.uri}">
+      <sf:startdaemon 
         logStackTraces="true" spawn="true">
           <!-- assertions are enabled -->
         <assertions enableSystemAssertions="true">
@@ -113,19 +113,21 @@
     </presetdef>
     
     <presetdef name="gui-debug" uri="${sf.antlib.uri}">
-      <sf:gui classpathref="run.classpath"
+      <sf:gui 
         logStackTraces="true" spawn="true">
           <!-- assertions are enabled -->
         <assertions enableSystemAssertions="true">
           <enable/>
         </assertions>
+         <sysproperty 
+          key="com.sun.management.jmxremote" value="true" />         
           <!-- load in a property file if it is present --> 
         <propertyfile file="${runtime.properties}" optional="true"/>
       </sf:gui>
     </presetdef>
     
     <presetdef name="console-debug" uri="${sf.antlib.uri}">
-      <sf:management-console classpathref="run.classpath"
+      <sf:management-console 
         logStackTraces="true" >
           <!-- assertions are enabled -->
         <assertions enableSystemAssertions="true">
@@ -138,6 +140,42 @@
 
   </target>
   
+  <!-- ========================================================== -->
+  <!-- start the daemon in the foreground                         -->
+  <!-- ========================================================== -->
+  <target name="daemon"
+    description="start a daemon in the foreground"
+    depends="sftasks.extended-smartfrog-tasks"
+    >
+      <sf:daemon-debug  spawn="false" timeout="-1"/>
+  </target>
+  
+  <!-- ========================================================== -->
+  <!-- conditionally start the daemon if one was not found already-->
+  <!-- ========================================================== -->
+  <target name="start-gui" 
+    depends="sftasks.extended-smartfrog-tasks" >
+      <sf:gui-debug  />
+  </target>
 
-    
+  
+  <!-- ========================================================== -->
+  <!-- Start the console -->
+  <!-- ========================================================== -->
+  <target name="start-console"
+    description="start a console"
+    depends="sftasks.extended-smartfrog-tasks" >
+      <sf:console-debug  timeout="-1"/>
+  </target>
+
+  
+  <!-- ========================================================== -->
+  <!-- always shutdown a local daemon. keep going if one is not running -->
+  <!-- ========================================================== -->
+  <target name="shutdown"
+    depends="sftasks.extended-smartfrog-tasks"
+    description="shut down a local smartfrog daemon">
+    <sf:stopdaemon timeout="60000" failonerror="false" />
+  </target>   
+  
 </project>

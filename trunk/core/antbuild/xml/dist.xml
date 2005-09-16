@@ -21,7 +21,7 @@
         smartfrog and our lib dir -->
   <!-- ========================================================== -->
         
-  <target name="declare-base.compile.classpath" depends="init" >  
+  <target name="declare-base.compile.classpath" depends="init,core.artifact-names" >  
     <path id="base.compile.classpath">
       <path refid="smartfrog.classpath"/>
     </path>
@@ -59,8 +59,8 @@
   
   <target name="declare-exec.classpath" depends="declare-compile.classpath" >  
     <path id="exec.classpath">
+      <pathelement location="${target.jar}"/>
       <path refid="compile.classpath"/>
-      <pathelement location="${build.classes.dir}"/>
     </path>    
     <property name="exec.classpath.value" refid="exec.classpath"/>
     <echo level="verbose">exec.classpath=${exec.classpath.value}</echo>
@@ -78,8 +78,8 @@
    
   <target name="declare-tests.run.classpath" depends="declare-tests.compile.classpath" >  
     <path id="tests.run.classpath">
+      <pathelement location="${test.jar}"/>
       <path refid="tests.compile.classpath"/>
-      <pathelement location="${test.classes.dir}"/>
     </path>
     <property name="tests.run.classpath.value" refid="tests.run.classpath"/>
     <echo level="verbose">tests.run.classpath=${tests.run.classpath.value}</echo>
@@ -179,8 +179,8 @@
   <!--
     bypass all the self-referential stuff here.
   -->
-  <target name="jar" depends="post-compile,artifact-names" >
-    <jar destfile="${target.jar}" 
+  <target name="jar" depends="post-compile" >
+    <core:jar destfile="${target.jar}" 
              basedir="${build.classes.dir}" 
              includes="**/*"/>
      <echo level="verbose">created package ${target.jar}</echo>
@@ -207,8 +207,12 @@
   <!-- this is an override point -->
   <!-- compile everything, copy useful files over-->
   <!-- ========================================================== -->
+  
+  <target name="pre-compile-tests" 
+    depends="jar,declare-tests.compile.classpath" />
+  
   <target name="compile-tests"
-      depends="jar,declare-tests.compile.classpath">
+      depends="pre-compile-tests">
       <depend 
           srcdir="${test.src.dir}"
           destdir="${test.classes.dir}"
@@ -222,6 +226,21 @@
       <core:copy-useful-files src="${test.src.dir}" dest="${test.classes.dir}"/>
   </target>  
 
+  <target name="post-compile-tests" depends="compile-tests"/>
+  
+
+  
+  <!-- ========================================================== -->
+  <!-- this is an override point -->
+  <!-- create the test jar ${test.jar}-->
+  <!-- ========================================================== -->
+  <target name="package-tests" depends="compile-tests"
+      description="create the JAR file for the tests">
+    <core:jar destfile="${test.jar}" 
+      basedir="${test.classes.dir}" 
+      includes="**/*"/>
+    <echo level="verbose">created package ${test.jar}</echo>
+  </target>  
   
   
   
