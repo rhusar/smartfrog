@@ -27,24 +27,32 @@ import java.util.Map;
 import java.util.Set;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.MalformedURLException;
 
 /**
  * This class remembers what got deployed by whom. It retains weak references to
- * running apps, for easy purging. This class *must* be thread safe created Aug
- * 5, 2004 2:59:38 PM
+ * running apps, for easy purging.
+ *
+ * This class *must* be thread safe
+ *
+ * created Aug 5, 2004 2:59:38 PM
  */
 
-public class JobRepository /* implements Map */ {
+public class JobRepository implements Iterable<JobState>{
 
-    private Hashtable jobs = new Hashtable();
-    private final String uriPrefix;
-    private final String appPrefix;
+    private Hashtable<String,JobState> jobs = new Hashtable<String, JobState>();
+    private URL systemsURL;
+
+    {
+        try {
+            systemsURL = new URL("http://127.0.0.1:5050/services/System/");
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public JobRepository() {
-        uriPrefix = "http://localhost/cddlm/" +
-                System.currentTimeMillis() +
-                "/job";
-        appPrefix = "job";
     }
 
     public void clear() {
@@ -83,7 +91,7 @@ public class JobRepository /* implements Map */ {
         return jobs.keySet();
     }
 
-    public Object put(Object key, Object value) {
+    public Object put(String key, JobState value) {
         return jobs.put(key, value);
     }
 
@@ -91,7 +99,7 @@ public class JobRepository /* implements Map */ {
         jobs.putAll(t);
     }
 
-    private Object remove(Object key) {
+    private Object remove(String key) {
         return jobs.remove(key);
     }
 
@@ -104,7 +112,7 @@ public class JobRepository /* implements Map */ {
     }
 
     public void add(JobState job) {
-        put(job.getUri().toString(), job);
+        put(job.getId().toString(), job);
     }
 
     /**
@@ -132,7 +140,7 @@ public class JobRepository /* implements Map */ {
      *
      * @return
      */
-    public Iterator iterator() {
+    public Iterator<JobState> iterator() {
         return values().iterator();
     }
 
@@ -141,17 +149,24 @@ public class JobRepository /* implements Map */ {
      *
      * @return
      */
-    public URI[] listJobs() {
-        URI[] uriList = new URI[size()];
-        Iterator it = iterator();
+    public URL[] listJobs() {
+        URL[] uriList = new URL[size()];
         int count = 0;
-        while (it.hasNext()) {
-            JobState jobState = (JobState) it.next();
-            uriList[count++] = jobState.getUri();
+        for(JobState job:this) {
+            String id = job.getId();
+            uriList[count++] = getJobAddress(id);
         }
         return uriList;
     }
 
+
+    public URL getJobAddress(String jobID) {
+        try {
+            return new URL(systemsURL,"?job="+jobID);
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     /**
      * job counter
@@ -171,16 +186,7 @@ public class JobRepository /* implements Map */ {
      */
     public void assignNameAndUri(JobState job) {
         int value = getNewCounterValue();
-        String uri = uriPrefix + counter;
-        if (job.getName() == null) {
-            job.setName(appPrefix + counter);
-        }
-        try {
-            URI uriv = new URI(uri);
-            job.setUri(uriv);
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
+        job.setId(Integer.toString(value));
     }
 
 }

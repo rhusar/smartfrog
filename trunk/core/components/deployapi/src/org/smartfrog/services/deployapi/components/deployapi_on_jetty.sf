@@ -45,14 +45,12 @@ DeployServerOnJetty extends Compound {
 
 
     }
-
     JSPServlet extends Servlet {
        name "JSP";
        pathSpec "*.jsp";
        className "org.apache.jasper.servlet.JspServlet";
        context LAZY deployServer:servletContext;
      }
-
     listener extends JettyListener {
         listenerPort port;
         server LAZY jettyServer;

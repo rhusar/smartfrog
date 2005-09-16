@@ -6,31 +6,31 @@
   <parameter name="ServiceClass" locked="xsd:false">
     org.smartfrog.services.deployapi.transport.endpoints.PortalEndpoint</parameter>
   <operation name="Create">
-    <module ref="addressing"/>
+    <!-- <module ref="addressing"/> -->
     <messageReceiver class="org.smartfrog.services.deployapi.transport.endpoints.WsrfReceiver"/>
   </operation>
   <operation name="Resolve">
-    <module ref="addressing"/>
+    <!-- <module ref="addressing"/> -->
     <messageReceiver class="org.smartfrog.services.deployapi.transport.endpoints.WsrfReceiver"/>
   </operation>
   <operation name="LookupSystem">
-    <module ref="addressing"/>
+    <!-- <module ref="addressing"/> -->
     <messageReceiver class="org.smartfrog.services.deployapi.transport.endpoints.WsrfReceiver"/>
   </operation>
   <operation name="GetResourceProperty">
-    <module ref="addressing"/>
+    <!-- <module ref="addressing"/> -->
     <messageReceiver class="org.smartfrog.services.deployapi.transport.endpoints.WsrfReceiver"/>
   </operation>
   <operation name="GetMultipleResourceProperties">
-    <module ref="addressing"/>
+    <!-- <module ref="addressing"/> -->
     <messageReceiver class="org.smartfrog.services.deployapi.transport.endpoints.WsrfReceiver"/>
   </operation>
   <operation name="Subscribe">
-    <module ref="addressing"/>
+    <!-- <module ref="addressing"/> -->
     <messageReceiver class="org.smartfrog.services.deployapi.transport.endpoints.WsrfReceiver"/>
   </operation>
   <operation name="GetCurrentMessage">
-    <module ref="addressing"/>
+    <!-- <module ref="addressing"/> -->
     <messageReceiver class="org.smartfrog.services.deployapi.transport.endpoints.WsrfReceiver"/>
   </operation>
 </service>
