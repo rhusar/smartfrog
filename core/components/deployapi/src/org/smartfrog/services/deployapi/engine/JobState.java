@@ -44,14 +44,12 @@ import org.smartfrog.services.cddlm.generated.api.types.UnboundedXMLAnyNamespace
 */
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.services.deployapi.transport.faults.BaseException;
+import org.ggf.xbeans.cddlm.api.CreateRequestDocument;
 
-import javax.xml.namespace.QName;
 import java.lang.ref.WeakReference;
-import java.math.BigInteger;
 import java.net.URL;
 import java.net.URI;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * created Aug 5, 2004 3:00:26 PM
@@ -77,7 +75,7 @@ public class JobState {
     /**
      * app uri
      */
-    private URI uri;
+    private String id;
 
     /**
      * name of app
@@ -93,7 +91,7 @@ public class JobState {
     /**
      * what are we bonded to
      */
-    private WeakReference primReference;
+    private WeakReference<Prim> primReference;
 
     /**
      * what handles callbacks
@@ -104,7 +102,7 @@ public class JobState {
      * job info
      */
 
- //   private CreateRequest request;
+    private CreateRequestDocument.CreateRequest request;
 
     /**
      * any fault
@@ -159,7 +157,7 @@ public class JobState {
      */
     private URL callbackURL;
 
-//    private NotificationInformationType callbackInformation;
+//   private NotificationInformationType callbackInformation;
 
     /**
      * callback sequence counter
@@ -320,12 +318,12 @@ public class JobState {
     }
 */
 
-    public URI getUri() {
-        return uri;
+    public String getId() {
+        return id;
     }
 
-    public void setUri(URI uri) {
-        this.uri = uri;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -345,7 +343,7 @@ public class JobState {
     }
 
     public void bindToPrim(Prim prim) {
-        primReference = new WeakReference(prim);
+        primReference = new WeakReference<Prim>(prim);
     }
 
     /**
@@ -354,22 +352,20 @@ public class JobState {
      * @return
      * @throws AxisFault
      */
-    /*
-    public Prim resolvePrimFromJob() throws AxisFault {
+
+    public Prim resolvePrimFromJob() {
         if (primReference == null) {
-            throw Processor.raiseNoSuchApplicationFault(
-                    "job exists but reference is undefined");
+            throw new BaseException("job exists but reference is undefined");
         }
-        Object weakRef = primReference.get();
+        Prim weakRef = primReference.get();
         if (weakRef == null) {
+            throw new BaseException("application has already terminated");
             //TODO return a terminated reference
-            throw Processor.raiseNoSuchApplicationFault(
-                    "application is no longer active");
         }
-        Prim prim = (Prim) weakRef;
+        Prim prim = weakRef;
         return prim;
     }
-*/
+
     /**
      * get the prim
      *
@@ -377,7 +373,7 @@ public class JobState {
      */
     public Prim resolvePrimNonFaulting() {
         if (primReference != null) {
-            return (Prim) primReference.get();
+            return primReference.get();
         }
         return null;
     }
@@ -398,11 +394,8 @@ public class JobState {
 
         final JobState jobState = (JobState) o;
 
-        if (uri != null ? !uri.equals(jobState.uri) : jobState.uri != null) {
-            return false;
-        }
+        return !(id != null ? !id.equals(jobState.id) : jobState.id != null);
 
-        return true;
     }
 
     /**
@@ -411,7 +404,7 @@ public class JobState {
      * @return
      */
     public int hashCode() {
-        return (uri != null ? uri.hashCode() : 0);
+        return (id != null ? id.hashCode() : 0);
     }
 //
 //    public ApplicationStatusType createApplicationStatus() {
