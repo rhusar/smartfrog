@@ -64,9 +64,11 @@
     
   </target>
   
-  <target name="declare-compile.classpath" depends="core-libraries,axis2-libraries,smartfrog-modules-classpath">
+  <target name="declare-compile.classpath" 
+    depends="core-libraries,axis2-libraries,smartfrog-modules-classpath,smartfrog-core-classpath,jetty-classpath">
     <path id="compile.classpath">
       <path refid="core.classpath"/>
+      <path refid="smartfrog.core.classpath"/>
       <path refid="smartfrog.modules.classpath"/>
       <path refid="axis2.classpath"/>
     </path>
@@ -74,31 +76,8 @@
     <echo level="verbose">compile.classpath=${compile.classpath.value}</echo>    
   </target>
 
-  <target name="smartfrog-modules-classpath" 
-    depends="core.load-version-info,m2.m2-tasks">
-    <m2:dependencies pathID="smartfrog.modules.classpath">
-      <dependency groupID="org.smartfrog"
-        artifactID="smartfrog"
-        version="${smartfrog.version}"
-        scope="compile"
-        />  
-      <dependency groupID="org.smartfrog"
-        artifactID="sfServices"
-        version="${smartfrog.version}"
-        scope="compile"
-        /> 
-      <dependency groupID="org.smartfrog"
-        artifactID="sf-xml"
-        version="${smartfrog.version}"/>
-      <dependency groupID="org.smartfrog"
-        artifactID="sf-www"
-        version="${smartfrog.version}"/>        
-    </m2:dependencies>
-  </target>
-  
-    
-  <target name="core-libraries" depends="m2.m2-tasks">
-    <m2-libraries pathID="core.classpath">
+    <target name="core-libraries" depends="m2.m2-tasks">
+    <m2:libraries pathID="core.classpath">
       <dependency groupID="org.ggf"
         artifactID="cddlm"
         version="${cddlm.version}"/>
@@ -120,11 +99,64 @@
       <dependency groupID="xalan"
         artifactID="xalan"
         version="${xalan.version}"/>
-    </m2-libraries>
+    </m2:libraries>
+  </target>
+  
+  <target name="smartfrog-core-classpath" 
+    depends="core.load-version-info,m2.m2-tasks">
+    <m2:libraries pathID="smartfrog.core.classpath">
+      <dependency groupID="org.smartfrog"
+        artifactID="smartfrog"
+        version="${smartfrog.version}"
+        scope="compile"
+        />  
+      <dependency groupID="org.smartfrog"
+        artifactID="sfServices"
+        version="${smartfrog.version}"
+        scope="compile"
+        /> 
+    </m2:libraries>
+  </target>
+  
+  <target name="smartfrog-modules-classpath" 
+    depends="core.load-version-info,m2.m2-tasks">
+    <m2:libraries pathID="smartfrog.modules.classpath">
+      <dependency groupID="org.smartfrog"
+        artifactID="sf-xml"
+        version="${smartfrog.version}"/>
+      <dependency groupID="org.smartfrog"
+        artifactID="sf-www"
+        version="${smartfrog.version}"/>        
+      <dependency groupID="org.smartfrog"
+        artifactID="sf-jetty"
+        version="${smartfrog.version}"/>        
+    </m2:libraries>
   </target>
 
+  <!-- jetty classes -->
+  <target name="jetty-classpath" 
+    depends="core.load-version-info,m2.m2-tasks">
+    <m2:libraries  pathID="jetty.classpath">
+      <dependency groupID="jetty"
+        artifactID="jetty"
+        version="${jetty.version}"/>
+      <dependency groupID="jetty"
+        artifactID="jasper-compiler"
+        version="${jetty.version}"/>
+      <dependency groupID="jetty"
+        artifactID="jasper-runtime"
+        version="${jetty.version}"/>
+      <dependency groupID="servletapi"
+        artifactID="servletapi"
+        version="${servletapi.version}"/>
+    </m2:libraries >
+  </target>
+  
+    
+
+
   <target name="axis2-libraries" depends="m2.m2-tasks">
-    <m2-libraries pathID="axis2.classpath">
+    <m2:libraries  pathID="axis2.classpath">
       <dependency groupID="log4j"
         artifactID="log4j"
         version="${log4j.version}"/>    
@@ -181,7 +213,7 @@
       <dependency groupID="saxon"
         artifactID="saxon"
         version="${saxon.version}"/>        
-      </m2-libraries>
+    </m2:libraries >
     </target>
 
       
@@ -207,8 +239,8 @@
   
   <target name="declare-exec.classpath" depends="declare-compile.classpath" >  
     <path id="exec.classpath">
+      <pathelement location="${target.jar}"/>
       <path refid="compile.classpath"/>
-      <pathelement location="${build.classes.dir}"/>
     </path>    
     <property name="exec.classpath.value" refid="exec.classpath"/>
     <echo level="verbose">exec.classpath=${exec.classpath.value}</echo>
@@ -279,10 +311,7 @@
         classpath="axis2.classpath"/>
   </target>
   
-  <target name="default" depends="dist" />
-  
-  
-
+  <target name="default" depends="war" />
     
   
   <target name="specifications" depends="init" >
@@ -392,22 +421,56 @@
     </core:java>
   </target>
   
-  <!-- make the WAR file -->
-  <target name="war" depends="rmi" >
-    <property name="target.war.name"  
-      value="${artifact.name}-war-${artifact.version}.war" />
-    <property name="target.war"  
-      location="${dist.dir}/${target.war.name}" />
+  <target name="prepare-libraries" depends="declare-classpaths" >
     <property name="build.temp.lib.dir" location="${build.dir}/temp/lib" />
-    <copypath destDir="${build.temp.lib.dir}" pathref="axis2.classpath">
-      <flattenmapper/>
-    </copypath>
+    <mkdir dir="${build.temp.lib.dir}" />
     <copypath destDir="${build.temp.lib.dir}" pathref="axis2.classpath">
       <flattenmapper/>
     </copypath>
     <copypath destDir="${build.temp.lib.dir}" pathref="core.classpath">
       <flattenmapper/>
     </copypath>
+  </target>
+  
+  <!-- here to verify that all the downloaded jars are valid
+    because javac was bailing out with some error about unzipping -->
+  <target name="validate-libraries" depends="prepare-libraries" >
+    <property name="build.temp.unzip.dir" location="${build.temp.lib.dir}/unzip" />
+    <mkdir dir="${build.temp.unzip.dir}" />
+        <copypath destDir="${build.temp.lib.dir}" pathref="compile.classpath">
+      <flattenmapper/>
+    </copypath>
+    <copypath destDir="${build.temp.lib.dir}" pathref="tests.compile.classpath">
+      <flattenmapper/>
+    </copypath>
+
+    <ac:for param="name">
+       <path> 
+        <fileset dir="${build.temp.lib.dir}" includes="*.jar" />
+       </path>
+       <sequential>
+        <echo>@{name}</echo>
+        <exec executable="jar" dir="${build.temp.unzip.dir}" failonerror="true">
+          <arg value="-xf"/>
+          <arg value="@{name}"/>
+        </exec>
+        <!-- <unzip src="@{name}" dest="${build.temp.unzip.dir}"/> -->
+       </sequential>
+      </ac:for>
+  </target>
+  
+  <!--
+    add extra actions after compilation, before making the JAR
+  -->
+   <target name="post-compile" depends="dist.post-compile,prepare-libraries" />
+  
+  <!-- make the WAR file -->
+  <target name="war" depends="post-compile" >
+    <property name="target.war.name"  
+      value="${artifact.name}-war-${artifact.version}.war" />
+    <property name="target.war"  
+      location="${dist.dir}/${target.war.name}" />
+
       
     <jar destFile="${target.war}" 
       compress="false" 
@@ -421,6 +484,131 @@
     </jar>
   </target>
 
+  
+    
+
+
+  <!-- ========================================================== -->
+  <!-- set up any properties for deployment -->
+  <!-- ========================================================== -->
+  
+  <target name="init-deploy-properties" depends="init">
+    <property name="deploy.host" value="localhost"/>
+    <property name="application.name" value="${project.name}"/>
+    <property name="deploy.sf" value="files/deployserver.sf" />
+    <property name="deployapi.war.dir" value="${war.dir}" />
+    <property name="parse.quiet" value="true"/>
+  </target>
+
+
+  <!-- we copy the files so as to
+    -eliminate duplicates and the complications that causes on a secure system
+    -put everything in one place for when we need to sign it
+    -see at a glance what is in there
+    -->
+  <target name="prepare-codebase" depends="declare-classpaths" >
+    <property name="build.codebase.dir" location="${build.dir}/codebase" />
+    <mkdir dir="${build.codebase.dir}" />
+    <copypath destDir="${build.codebase.dir}" pathref="axis2.classpath">
+      <flattenmapper/>
+    </copypath>
+    <copypath destDir="${build.codebase.dir}" pathref="core.classpath">
+      <flattenmapper/>
+    </copypath>
+    <copypath destDir="${build.codebase.dir}" pathref="jetty.classpath">
+      <flattenmapper/>
+    </copypath>
+    <copypath destDir="${build.codebase.dir}" pathref="smartfrog.modules.classpath">
+      <flattenmapper/>
+    </copypath>
+  </target>
+  
+  <!-- ========================================================== -->
+  <!-- set-->
+  <!-- ========================================================== -->
+  
+  <target name="init-codebase" depends="init-deploy-properties,prepare-codebase"
+    description="deploy">
+    <sf:tourl property="codebase">
+      <fileset file="${target.jar}"/>
+      <fileset file="${test.jar}"/>
+      <fileset dir="${build.codebase.dir}" includes="*.jar" />
+    </sf:tourl>
+    <echo level="verbose">
+        deploying to ${deploy.host}
+        codebase=${codebase}</echo>
+  </target>
+   
+  <!-- ========================================================== -->
+  <!-- parse the file -->
+  <!-- ========================================================== -->
+  <target name="parse" depends="package-tests,war,init-codebase"
+    description="parse the deployment descriptor">
+    <property name="warfile.timestamp"
+      location="${build.dir}/warfile.timestamp"/>
+    <ac:if>
+      <or>
+        <isset property="parse.needed" />
+        <not>
+          <uptodate 
+            srcfile="${target.war}" 
+            targetfile="${warfile.timestamp}"/>
+        </not>
+      </or>
+      <ac:then>
+        <sf:parse quiet="${parse.quiet}">
+          <classpath path="${target.jar}:${test.jar}"/>
+          <sysproperty key="deployapi.war.dir"
+            value="${deployapi.war.dir}"/>      
+          <sysproperty key="org.smartfrog.codebase"
+            value="${codebase}"/>
+          <!-- source files -->
+          <source file="${test.src.dir}/${deploy.sf}" />
+        </sf:parse>
+        <!-- on success, we touch a property file to note we got it out -->
+        <touch file="${warfile.timestamp}" />
+      </ac:then>
+    </ac:if>
+  </target>
+  
+  
+
+  <!-- ========================================================== -->
+  <!-- deploy; requires a host -->
+  <!-- ========================================================== -->
+  <target name="deploy" depends="parse,init-codebase,init-deploy-properties"
+    description="deploy">
+
+    <sf:deploy classpathref="run.classpath"
+      logStackTraces="true"
+      host="${deploy.host}"
+      timeout="30000"
+      >
+      <codebase url="${codebase}"/>
+      <sysproperty key="deployapi.war.dir"
+        value="${deployapi.war.dir}"/>
+      <application name="${application.name}">
+              #include "/${deploy.sf}"
+              sfCodeBase PROPERTY org.smartfrog.codebase;
+              sfConfig extends Application {
+                sfProcessHost "deployapi-subprocess";
+              }
+
+      </application>
+    </sf:deploy>
+  </target>
+
+  <target name="undeploy" depends="init-deploy-properties"
+    description="deploy">
+
+    <sf:undeploy classpathref="run.classpath"
+      logStackTraces="true"
+      host="${deploy.host}"
+      timeout="30000"
+      application="${application.name}"/>
+  </target>
+    
+  
   
   
 </project>

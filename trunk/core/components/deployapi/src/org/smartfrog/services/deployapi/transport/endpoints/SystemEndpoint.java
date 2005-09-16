@@ -29,31 +29,31 @@ import org.smartfrog.services.deployapi.transport.wsrf.WsrfEndpoint;
 public class SystemEndpoint extends WsrfEndpoint {
 
 
-    OMElement AddFile(OMElement request) throws BaseException {
+    public OMElement AddFile(OMElement request) throws BaseException {
         return null;
     }
 
-    OMElement Initialize(OMElement request) throws BaseException {
+    public OMElement Initialize(OMElement request) throws BaseException {
         return null;
     }
 
-    OMElement Resolve(OMElement request) throws BaseException {
+    public OMElement Resolve(OMElement request) throws BaseException {
         return null;
     }
 
-    OMElement Run(OMElement request) throws BaseException {
+    public OMElement Run(OMElement request) throws BaseException {
         return null;
     }
 
-    OMElement Terminate(OMElement request) throws BaseException {
+    public OMElement Terminate(OMElement request) throws BaseException {
         return null;
     }
 
-    OMElement Ping(OMElement request) throws BaseException {
+    public OMElement Ping(OMElement request) throws BaseException {
         return null;
     }
 
-    OMElement Destroy(OMElement request) throws BaseException {
+    public OMElement Destroy(OMElement request) throws BaseException {
         return null;
     }
 
