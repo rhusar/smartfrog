@@ -10,6 +10,8 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.logging.Log;
+import org.smartfrog.sfcore.logging.LogFactory;
 
 import java.rmi.RemoteException;
 import java.util.Enumeration;
@@ -42,7 +44,10 @@ public class JettyServletDelegate implements ServletContextComponentDelegate, Se
 
     private ServletHolder holder = null;
     private String absolutePath;
-
+    /**
+     * a log
+     */
+    private Log log;
 
     /**
      * Create the delegate and configure the {@link ServletHttpContext} of Jetty that
@@ -56,6 +61,7 @@ public class JettyServletDelegate implements ServletContextComponentDelegate, Se
         this.context = context;
         this.owner = owner;
         try {
+            log=LogFactory.getOwnerLog(owner);
             name = owner.sfResolve(nameRef, name, true);
             pathSpec = owner.sfResolve(pathSpecRef, pathSpec, true);
             className = owner.sfResolve(classNameRef, className, true);
@@ -100,6 +106,19 @@ public class JettyServletDelegate implements ServletContextComponentDelegate, Se
     }
 
     /**
+     * Returns a string representation of the object.
+     * @return a string representation of the object.
+     */
+    public String toString() {
+        return "name="+name
+                +"; className="+ className
+                +"; pathSpec="+ pathSpec
+                +"; absolutePath="+ absolutePath;
+    }
+
+
+
+    /**
      * start the component
      *
      * @throws SmartFrogException
@@ -107,6 +126,8 @@ public class JettyServletDelegate implements ServletContextComponentDelegate, Se
      */
     public void start() throws SmartFrogException, RemoteException {
         try {
+            log.info("Starting servlet on jetty; "
+                    + toString());
             holder.start();
         } catch (Exception e) {
             throw new SmartFrogException(e);

@@ -31,6 +31,8 @@ import org.smartfrog.services.www.ServletContextIntf;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.logging.Log;
+import org.smartfrog.sfcore.logging.LogFactory;
 
 import java.io.File;
 import java.rmi.RemoteException;
@@ -49,7 +51,10 @@ public class DelegateServletContext extends DelegateApplicationContext implement
     private String contextPath;
     private String resourceBase;
     private String absolutePath;
-
+    /**
+     * a log
+     */
+    private Log log;
 
     /**
      * Get the context cast to a servlet context
@@ -73,6 +78,7 @@ public class DelegateServletContext extends DelegateApplicationContext implement
      * @throws RemoteException
      */
     public void deploy(Prim declaration) throws SmartFrogException, RemoteException {
+        log = LogFactory.getOwnerLog(declaration);
         JettyHelper jettyHelper = new JettyHelper(declaration);
         ServletHttpContext context = new ServletHttpContext();
         setContext(context);
@@ -125,6 +131,7 @@ public class DelegateServletContext extends DelegateApplicationContext implement
      */
     public void addMimeMapping(String extension, String mimeType) throws RemoteException, SmartFrogException {
         getServletContext().setMimeMapping(extension, mimeType);
+        log.info("Adding mime mapping "+extension+" maps to "+mimeType);
     }
 
     /**
@@ -138,6 +145,7 @@ public class DelegateServletContext extends DelegateApplicationContext implement
      */
     public boolean removeMimeMapping(String extension) throws RemoteException, SmartFrogException {
         Map mimeMap = getServletContext().getMimeMap();
+        log.info("removing mime mapping " + extension);
         return (mimeMap.remove(extension) != null);
     }
 
