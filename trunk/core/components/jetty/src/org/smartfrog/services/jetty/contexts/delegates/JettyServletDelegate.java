@@ -16,6 +16,8 @@ import org.smartfrog.sfcore.logging.LogFactory;
 import java.rmi.RemoteException;
 import java.util.Enumeration;
 import java.util.Vector;
+import java.util.List;
+import java.util.Iterator;
 
 /**
  */
@@ -93,6 +95,18 @@ public class JettyServletDelegate implements ServletContextComponentDelegate, Se
             String ancestorPath = context.getAbsolutePath();
             absolutePath = JettyHelper.deregexpPath(JettyHelper.concatPaths(ancestorPath, pathSpec));
             owner.sfReplaceAttribute(ServletContextIntf.ATTR_ABSOLUTE_PATH, absolutePath);
+
+
+            //extract mappings
+            Vector mappings=null;
+            mappings=(Vector) owner.sfResolve(ATTR_MAPPINGS,mappings,false);
+            if(mappings!=null) {
+                Iterator it=mappings.iterator();
+                while (it.hasNext()) {
+                    String mapping = it.next().toString();
+                    servletContext.getServletHandler().mapPathToServlet(mapping, name);
+                }
+            }
 
         } catch (RemoteException ex) {
             throw ex;
