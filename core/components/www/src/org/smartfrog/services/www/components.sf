@@ -21,3 +21,4 @@ For more information: www.smartfrog.org
 #include "/org/smartfrog/services/www/webserver.sf"
 #include "/org/smartfrog/services/www/webapplication.sf"
 #include "/org/smartfrog/services/www/livenessPage.sf"
+#include "/org/smartfrog/services/www/jasper.sf"
