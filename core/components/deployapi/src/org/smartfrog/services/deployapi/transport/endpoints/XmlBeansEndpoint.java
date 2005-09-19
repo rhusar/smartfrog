@@ -19,27 +19,27 @@
  */
 package org.smartfrog.services.deployapi.transport.endpoints;
 
-import org.apache.axis2.om.OMElement;
-import org.apache.axis2.description.OperationDescription;
-import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.AxisFault;
+import org.apache.axis2.context.MessageContext;
+import org.apache.axis2.om.OMElement;
 import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.XmlOptions;
+import org.ggf.xbeans.cddlm.cmp.DeploymentFaultType;
+import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
 import org.smartfrog.services.deployapi.transport.faults.DeploymentException;
-import org.smartfrog.services.deployapi.system.Constants;
-import org.ggf.xbeans.cddlm.cmp.DeploymentFaultType;
 
 import javax.xml.namespace.QName;
 import java.util.ArrayList;
 
 /**
- * An endpoint that is deployed under Smartfrog. 
+ * An endpoint that is deployed under Smartfrog.
  */
 public abstract class XmlBeansEndpoint {
 
     /**
      * deliver a message
+     *
      * @param operation
      * @param inMessage
      * @return the body of the response
@@ -50,16 +50,17 @@ public abstract class XmlBeansEndpoint {
 
     /**
      * check that the namespace is ok
+     *
      * @param operation
      * @param expectedURI
      * @throws DeploymentException if things are bad
      */
     public void verifyNamespace(QName operation, String expectedURI) {
         String requestURI = operation.getNamespaceURI();
-        if(!expectedURI.equals(requestURI)) {
+        if (!expectedURI.equals(requestURI)) {
             throw new DeploymentException(String.format(
-                    "Wrong request namespace: expected "+ expectedURI +
-                            " - got "+requestURI));
+                    "Wrong request namespace: expected " + expectedURI +
+                            " - got " + requestURI));
         }
     }
 
@@ -69,16 +70,17 @@ public abstract class XmlBeansEndpoint {
 
     /**
      * We are invalid.
-     * @throws DeploymentException
+     *
      * @param message
+     * @throws DeploymentException
      * @returns true for use in conditional code
      */
     protected boolean validate(XmlObject message) {
         ArrayList validationErrors = new ArrayList();
         XmlOptions validationOptions = new XmlOptions();
         validationOptions.setErrorListener(validationErrors);
-        if(!message.validate(validationOptions)) {
-            DeploymentFaultType fault=DeploymentFaultType.Factory.newInstance();
+        if (!message.validate(validationOptions)) {
+            DeploymentFaultType fault = DeploymentFaultType.Factory.newInstance();
             //TODO
             throw new BaseException(Constants.BAD_ARGUMENT_ERROR_MESSAGE);
         }

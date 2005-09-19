@@ -23,6 +23,7 @@ package org.smartfrog.services.deployapi.transport.wsrf;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.om.OMElement;
+import org.apache.xmlbeans.XmlObject;
 import org.smartfrog.services.deployapi.transport.endpoints.XmlBeansEndpoint;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
 
@@ -65,4 +66,12 @@ public class WsrfEndpoint extends XmlBeansEndpoint {
         return null;
     }
 
+    /**
+     * validate documents iff assertions are enabled
+     *
+     * @param message
+     */
+    protected void maybeValidate(XmlObject message) {
+        assert validate(message);
+    }
 }

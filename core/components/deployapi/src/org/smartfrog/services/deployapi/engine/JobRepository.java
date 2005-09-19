@@ -20,13 +20,15 @@
 package org.smartfrog.services.deployapi.engine;
 
 
+import org.smartfrog.services.deployapi.system.Constants;
+
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.MalformedURLException;
 
@@ -39,10 +41,12 @@ import java.net.MalformedURLException;
  * created Aug 5, 2004 2:59:38 PM
  */
 
-public class JobRepository implements Iterable<JobState>{
+public class JobRepository implements Iterable<Job>{
 
-    private Hashtable<String,JobState> jobs = new Hashtable<String, JobState>();
+    private Hashtable<String,Job> jobs = new Hashtable<String, Job>();
     private URL systemsURL;
+
+
 
     {
         try {
@@ -91,7 +95,7 @@ public class JobRepository implements Iterable<JobState>{
         return jobs.keySet();
     }
 
-    public Object put(String key, JobState value) {
+    public Object put(String key, Job value) {
         return jobs.put(key, value);
     }
 
@@ -111,7 +115,7 @@ public class JobRepository implements Iterable<JobState>{
         return jobs.values();
     }
 
-    public void add(JobState job) {
+    public void add(Job job) {
         put(job.getId().toString(), job);
     }
 
@@ -121,9 +125,9 @@ public class JobRepository implements Iterable<JobState>{
      * @param uri job uri
      * @return
      */
-    public JobState lookup(URI uri) {
+    public Job lookup(URI uri) {
         assert uri != null;
-        return (JobState) get(uri.toString());
+        return (Job) get(uri.toString());
     }
 
     /**
@@ -140,7 +144,7 @@ public class JobRepository implements Iterable<JobState>{
      *
      * @return
      */
-    public Iterator<JobState> iterator() {
+    public Iterator<Job> iterator() {
         return values().iterator();
     }
 
@@ -149,34 +153,29 @@ public class JobRepository implements Iterable<JobState>{
      *
      * @return
      */
-    public URL[] listJobs() {
-        URL[] uriList = new URL[size()];
+    public String[] listJobs() {
+        String[] uriList = new String[size()];
         int count = 0;
-        for(JobState job:this) {
+        for(Job job:this) {
             String id = job.getId();
-            uriList[count++] = getJobAddress(id);
+            uriList[count++] = createJobAddress(id);
         }
         return uriList;
     }
 
 
-    public URL getJobAddress(String jobID) {
-        try {
-            return new URL(systemsURL,"?job="+jobID);
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        }
+    public String createJobAddress(String jobID) {
+        return systemsURL+"?job="+jobID;
     }
 
-    /**
-     * job counter
-     */
-    private int counter = 0;
-
-
-    private synchronized int getNewCounterValue() {
-        return ++counter;
+    private String createNewJobID() {
+        UUID uuid = UUID.randomUUID();
+        String s = uuid.toString();
+        s.replace("-","_");
+        return "uuid"+s;
     }
+
+
 
     /**
      * if the job has no name, we give it one. If it has a name or no, a new URI
@@ -184,9 +183,20 @@ public class JobRepository implements Iterable<JobState>{
      *
      * @param job
      */
-    public void assignNameAndUri(JobState job) {
-        int value = getNewCounterValue();
-        job.setId(Integer.toString(value));
+    public void assignID(Job job) {
+        String id=createNewJobID();
+        job.setId(id);
     }
 
+    public Job createNewJob(String hostname) {
+        Job job=new Job();
+        job.setHostname(hostname);
+        job.setState(Constants.LifecycleStateEnum.initialized);
+        String id = job.getId();
+        job.setName(id);
+        job.setAddress(createJobAddress(id));
+        add(job);
+        return job;
+
+    }
 }

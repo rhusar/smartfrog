@@ -169,6 +169,9 @@
       <dependency groupID="commons-codec"
         artifactID="commons-codec"
         version="${commons-codec.version}"/>
+      <dependency groupID="commons-httpclient"
+        artifactID="commons-httpclient"
+        version="${commons-httpclient.version}"/>
       <dependency groupID="commons-logging"
         artifactID="commons-logging"
         version="${commons-logging.version}"/>
@@ -302,15 +305,7 @@
     </copy>
   </target>
   
- 
-  <target name="axis2-tasks" depends="axis2-libraries" >
-    <taskdef name="codegen"
-        uri="http://ws.apache.org/axis2"
-        onerror="failall"
-        classname="org.apache.axis2.tool.ant.AntCodegenTask"
-        classpath="axis2.classpath"/>
-  </target>
-  
+
   <target name="default" depends="war" />
     
   
@@ -397,6 +392,14 @@
     <property name="smartfrog.xsd"
       location="${cddlm.dir}/smartfrog.xsd"/>
   </target>
+   
+  <target name="axis2-tasks" depends="axis2-libraries" >
+    <taskdef name="codegen"
+        uri="http://ws.apache.org/axis2"
+        onerror="failall"
+        classname="org.apache.axis2.tool.ant.AntCodegenTask"
+        classpath="axis2.classpath"/>
+  </target>
   
   
   <target name="wsdl2java" depends="init,declare-classpaths,specifications" >
@@ -465,7 +468,7 @@
    <target name="post-compile" depends="dist.post-compile,prepare-libraries" />
   
   <!-- make the WAR file -->
-  <target name="war" depends="post-compile" >
+  <target name="war" depends="post-compile,copy-archives" >
     <property name="target.war.name"  
       value="${artifact.name}-war-${artifact.version}.war" />
     <property name="target.war"  
@@ -593,7 +596,9 @@
               sfConfig extends Application {
                 sfProcessName "deployapi-subprocess";
               }
-
+              _sfConfig extends Compound {
+                sfProcessName "deployapi-subprocess";
+              }
       </application>
     </sf:deploy>
   </target>

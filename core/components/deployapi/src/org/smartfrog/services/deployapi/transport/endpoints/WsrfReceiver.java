@@ -22,13 +22,13 @@ package org.smartfrog.services.deployapi.transport.endpoints;
 
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.addressing.MessageInformationHeaders;
-import org.apache.axis2.soap.SOAPEnvelope;
-import org.apache.axis2.om.OMElement;
-import org.apache.axis2.description.OperationDescription;
 import org.apache.axis2.context.MessageContext;
-import org.apache.axis2.engine.MessageReceiver;
+import org.apache.axis2.description.OperationDescription;
 import org.apache.axis2.engine.DependencyManager;
+import org.apache.axis2.engine.MessageReceiver;
+import org.apache.axis2.om.OMElement;
 import org.apache.axis2.receivers.AbstractInOutSyncMessageReceiver;
+import org.apache.axis2.soap.SOAPEnvelope;
 import org.apache.wsdl.WSDLService;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
 
@@ -36,13 +36,13 @@ import javax.xml.namespace.QName;
 
 /**
  */
-public class  WsrfReceiver extends AbstractInOutSyncMessageReceiver
+public class WsrfReceiver extends AbstractInOutSyncMessageReceiver
         implements MessageReceiver {
 
     /**
      * flag which indicates that an address is mandatory
      */
-    private static boolean addressingMandatory=false;
+    private static boolean addressingMandatory = false;
 
     public static boolean isAddressingMandatory() {
         return addressingMandatory;
@@ -56,19 +56,18 @@ public class  WsrfReceiver extends AbstractInOutSyncMessageReceiver
         // get the implementation class for the Web Service
         Object destObject = getTheImplementationObject(inMessage);
 
-
         //Inject the Message Context if it is asked for
         DependencyManager.configureBusinussLogicProvider(destObject, inMessage);
 
         MessageInformationHeaders addressInfo = inMessage.getMessageInformationHeaders();
-        if(isAddressingMandatory() && addressInfo!=null) {
+        if (isAddressingMandatory() && addressInfo != null) {
             throw new BaseException("WS-Addressing is mandatory on WSRF resources");
         }
 
         //get the operation
         OperationDescription opDesc = inMessage.getOperationContext()
                 .getAxisOperation();
-        QName operation=opDesc.getName();
+        QName operation = opDesc.getName();
         String style = inMessage.getOperationContext()
                 .getAxisOperation()
                 .getStyle();
@@ -79,8 +78,8 @@ public class  WsrfReceiver extends AbstractInOutSyncMessageReceiver
         SOAPEnvelope envelope = null;
         try {
             OMElement result = null;
-            XmlBeansEndpoint endpoint=(XmlBeansEndpoint) destObject;
-            result=endpoint.dispatch(operation, inMessage);
+            XmlBeansEndpoint endpoint = (XmlBeansEndpoint) destObject;
+            result = endpoint.dispatch(operation, inMessage);
             envelope = getSOAPFactory().getDefaultEnvelope();
             if (result != null) {
                 envelope.getBody().addChild(result);
