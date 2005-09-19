@@ -68,5 +68,71 @@ public class Constants extends CddlmConstants {
             WS_ADDRESSING_NAMESPACE,
                 WSRF_PACKAGE + XML_FILENAME_WS_ADDRESSING,
     };
+    public static final String SMARTFROG_XML_VERSION = "1.0";
 
+    /**
+     * enum of lifecycle
+     */
+    public enum LifecycleStateEnum {
+        undefined ,
+        instantiated ,
+        initialized,
+        running ,
+        failed ,
+        terminated
+    }
+
+    public enum DeploymentLanguage {
+        unknown("",""),
+        smartfrog(SMARTFROG_NAMESPACE,".sf"),
+        cdl(XML_CDL_NAMESPACE,".cdl");
+
+        private String namespace;
+        private String extension;
+
+        DeploymentLanguage(String namespace,String extension) {
+           this.namespace = namespace;
+           this.extension = extension;
+        }
+
+        public String getNamespace() {
+            return namespace;
+        }
+
+        public String getExtension() {
+            return extension;
+        }
+
+        public boolean namespaceEquals(String ns) {
+            return namespace.equals(ns);
+        }
+
+        /**
+         * map from a namespace to a language
+         * @param ns
+         * @return the language, or #unknown if not known
+         */
+        public static DeploymentLanguage eval(String ns) {
+            if(smartfrog.namespaceEquals(ns)) {
+                return smartfrog;
+            }
+            if(cdl.namespaceEquals(ns)) {
+                return cdl;
+            }
+            else return unknown;
+        }
+
+
+        /**
+         * Returns the name of this enum constant, as contained in the
+         * declaration.  This method may be overridden, though it typically
+         * isn't necessary or desirable.  An enum type should override this
+         * method when a more "programmer-friendly" string form exists.
+         *
+         * @return the name of this enum constant
+         */
+        public String toString() {
+            return getNamespace();
+        }
+    }
 }

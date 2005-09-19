@@ -2,6 +2,7 @@ package org.smartfrog.services.deployapi.transport.faults;
 
 import org.apache.axis2.AxisFault;
 import org.ggf.xbeans.cddlm.wsrf.wsbf.BaseFaultType;
+import org.ggf.cddlm.utils.QualifiedName;
 
 import javax.xml.namespace.QName;
 import java.util.GregorianCalendar;
@@ -11,6 +12,12 @@ import java.util.GregorianCalendar;
 public class BaseException extends RuntimeException {
 
     private BaseFaultType baseFault;
+
+    private QName faultCode;
+
+    private String faultReason;
+
+    private String faultActor;
 
     /**
      * Constructs a new runtime exception with <code>null</code> as its
@@ -23,6 +30,10 @@ public class BaseException extends RuntimeException {
     public BaseException(Throwable arg1) {
         super(arg1);
         createAndConfigureInnerFault();
+    }
+
+    public static BaseException makeFault(Throwable thrown) {
+        return new BaseException(thrown);
     }
 
     /**
@@ -87,6 +98,35 @@ public class BaseException extends RuntimeException {
         this.baseFault = baseFault;
     }
 
+    public QName getFaultCode() {
+        return faultCode;
+    }
+
+    public void setFaultCode(QName faultCode) {
+        this.faultCode = faultCode;
+    }
+
+    public void setFaultCode(QualifiedName faultCode) {
+        setFaultCode(
+                faultCode==null?null:
+                    new QName(faultCode.getNamespaceURI(),faultCode.getNamespaceURI()));
+    }
+
+    public String getFaultReason() {
+        return faultReason;
+    }
+
+    public void setFaultReason(String faultReason) {
+        this.faultReason = faultReason;
+    }
+
+    public String getFaultActor() {
+        return faultActor;
+    }
+
+    public void setFaultActor(String faultActor) {
+        this.faultActor = faultActor;
+    }
 
 
     /**
@@ -95,5 +135,9 @@ public class BaseException extends RuntimeException {
      */
     public AxisFault makeAxisFault() {
         return new AxisFault(this);
+    }
+
+    public void addFaultDetail(QName name, String detail) {
+        //TODO
     }
 }

@@ -21,7 +21,11 @@ package org.smartfrog.services.deployapi.transport.endpoints;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.smartfrog.services.deployapi.engine.Job;
+import org.smartfrog.services.deployapi.engine.JobRepository;
+import org.smartfrog.services.deployapi.engine.ServerInstance;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
+import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
 
 import java.net.URI;
 
@@ -29,7 +33,7 @@ import java.net.URI;
  * created Aug 4, 2004 3:59:42 PM
  */
 
-public class Processor  {
+public class Processor extends FaultRaiser {
     private static final Log log = LogFactory.getLog(Processor.class);
 
     public Processor(XmlBeansEndpoint owner) {
@@ -81,14 +85,14 @@ public class Processor  {
      * @return the jobstate reference
      * @throws BaseException if there is no such job
      */
-/*    public JobState lookupJob(URI jobURI) throws BaseFault {
-        JobState jobState = lookupJobNonFaulting(jobURI);
-        if (jobState == null) {
+    public Job lookupJob(URI jobURI) throws BaseException {
+        Job job = lookupJobNonFaulting(jobURI);
+        if (job == null) {
             throw raiseNoSuchApplicationFault(
                     ERROR_APP_URI_NOT_FOUND + jobURI.toString());
         }
-        return jobState;
-    }*/
+        return job;
+    }
 
     /**
      * map from URI to job
@@ -96,14 +100,12 @@ public class Processor  {
      * @param jobURI seach uri
      * @return job or null for no match
      */
-/*
-    public JobState lookupJobNonFaulting(URI jobURI) {
-        JobRepository jobs = ServerInstance.currentInstance().getJobs();
-        JobState jobState = jobs.lookup(jobURI);
-        return jobState;
-    }
-*/
 
+    public Job lookupJobNonFaulting(URI jobURI) {
+        JobRepository jobs = ServerInstance.currentInstance().getJobs();
+        Job job = jobs.lookup(jobURI);
+        return job;
+    }
 
     /**
      * parse a message fragment and turn it into a Xom document
