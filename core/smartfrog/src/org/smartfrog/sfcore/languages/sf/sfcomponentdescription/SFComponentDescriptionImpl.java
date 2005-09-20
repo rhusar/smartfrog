@@ -48,12 +48,12 @@ public class SFComponentDescriptionImpl extends ComponentDescriptionImpl
     *  cache the resoltion phases for this component - obtained by calls to
     *  sfGetPhases().
     */
-   Vector phases = null;
+   protected Vector phases = null;
 
    /**
     * Reference to sfConfig attribute
     */
-   Reference sfConfigRef = new Reference(SmartFrogCoreKeys.SF_CONFIG);
+   protected Reference sfConfigRef = new Reference(SmartFrogCoreKeys.SF_CONFIG);
 
    /**
     *  type of description. The type field is used as a prototype for this
