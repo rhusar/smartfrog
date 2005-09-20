@@ -20,6 +20,7 @@ For more information: www.smartfrog.org
 
 #include "org/smartfrog/services/deployapi/components/deployapi.sf";
 #include "org/smartfrog/services/jetty/components.sf";
+#include "org/smartfrog/services/os/java/components.sf";
 
 DeployServerOnJetty extends Compound {
 
@@ -28,7 +29,29 @@ DeployServerOnJetty extends Compound {
     wardir TBD;
     liveness false;
 
+    /**
+     * force load our servlets
+     */
+    loadServlets extends LoadClass {
+      create false;
+      classes [
+        Axis2Servlet:className,
+        ApacheJasperServlet:className,
+        "org.mortbay.util.OutputStreamLogSink"
+        ];
+    }
 
+    /**
+     * these we actually force to exist because they have simple constructors
+     */
+    loadDeployApi extends LoadClass {
+      create true;
+      classes [
+        "org.smartfrog.services.deployapi.transport.endpoints.WsrfReceiver",
+        "org.smartfrog.services.deployapi.transport.endpoints.PortalEndpoint",
+        "org.smartfrog.services.deployapi.transport.endpoints.SystemEndpoint"
+        ];
+    }
 
    jettyServer extends CoreJettyServer {
 

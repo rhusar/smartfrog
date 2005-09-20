@@ -68,7 +68,32 @@ public class Constants extends CddlmConstants {
             WS_ADDRESSING_NAMESPACE,
                 WSRF_PACKAGE + XML_FILENAME_WS_ADDRESSING,
     };
+
+    /**
+     *  @value
+     */
     public static final String SMARTFROG_XML_VERSION = "1.0";
+
+    /**
+     *  @value
+     */
+    public static final String DEFAULT_HOST = "127.0.0.1";
+
+    /**
+     *  @value
+     */
+    public static final String DEFAULT_PATH = "/services/Portal";
+
+    /**
+     *  @value
+     */
+    public static final int DEFAULT_SERVICE_PORT = 5050;
+
+
+    /**
+     *  @value
+     */
+    public static final String DEFAULT_PROTOCOL = "http";
 
     /**
      * enum of lifecycle

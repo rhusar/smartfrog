@@ -49,7 +49,8 @@ public abstract class XmlBeansEndpoint {
     public abstract OMElement dispatch(QName operation, MessageContext inMessage) throws AxisFault;
 
     /**
-     * check that the namespace is ok
+     * check that the namespace is ok.
+     * Special: Null namespaces are allowed on a get
      *
      * @param operation
      * @param expectedURI

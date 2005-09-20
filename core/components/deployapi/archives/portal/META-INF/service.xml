@@ -3,8 +3,7 @@
   <description>
     This is the portal endpoint
   </description>
-  <parameter name="ServiceClass" locked="xsd:false">
-    org.smartfrog.services.deployapi.transport.endpoints.PortalEndpoint</parameter>
+  <parameter name="ServiceClass" locked="xsd:false">org.smartfrog.services.deployapi.transport.endpoints.PortalEndpoint</parameter>
   <operation name="Create">
     <!-- <module ref="addressing"/> -->
     <messageReceiver class="org.smartfrog.services.deployapi.transport.endpoints.WsrfReceiver"/>

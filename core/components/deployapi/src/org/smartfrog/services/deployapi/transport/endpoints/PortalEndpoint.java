@@ -23,7 +23,6 @@ package org.smartfrog.services.deployapi.transport.endpoints;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.om.OMElement;
-import org.apache.xmlbeans.XmlObject;
 import org.ggf.xbeans.cddlm.api.CreateRequestDocument;
 import org.ggf.xbeans.cddlm.api.CreateResponseDocument;
 import org.smartfrog.services.deployapi.binding.Axis2Beans;
@@ -31,6 +30,7 @@ import org.smartfrog.services.deployapi.transport.endpoints.portal.CreateProcess
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
 import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
 import org.smartfrog.services.deployapi.transport.wsrf.WsrfEndpoint;
+import org.smartfrog.services.deployapi.system.Constants;
 
 import javax.xml.namespace.QName;
 
@@ -53,13 +53,22 @@ public class PortalEndpoint extends WsrfEndpoint {
         if (result != null) {
             return result;
         }
+
         verifyDeployApiNamespace(operation);
         String action = operation.getLocalPart();
+
         OMElement request = inMessage.getEnvelope().getBody().getFirstElement();
-        if ("createRequest".equals(action)) {
+        if (Constants.API_ELEMENT_CREATE_REQUEST.equals(action)) {
             return Create(request);
         }
-        return null;
+        if (Constants.API_ELEMENT_RESOLVE_REQUEST.equals(action)) {
+            return Resolve(request);
+        }
+        if (Constants.API_ELEMENT_LOOKUPSYSTEM_REQUEST.equals(action)) {
+            return LookupSystem(request);
+        }
+        //if we get here: error
+        throw new AxisFault("Unknown message: "+operation);
     }
 
     public OMElement Create(OMElement request) throws AxisFault {

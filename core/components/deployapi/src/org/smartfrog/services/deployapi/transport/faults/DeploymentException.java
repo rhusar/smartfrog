@@ -52,13 +52,15 @@ public class DeploymentException extends BaseException {
      * @param baseFaultType
      */
     public void configureInnerFault(BaseFaultType baseFaultType) {
-        DeploymentFaultType fault=(DeploymentFaultType) baseFaultType;
         super.configureInnerFault(baseFaultType);
-        if(!fault.isSetStack()) {
-            StackTraceElement[] stackTrace = getStackTrace();
-            copyStackTrace(fault, stackTrace);
+        if (baseFaultType instanceof DeploymentFaultType) {
+            DeploymentFaultType fault = (DeploymentFaultType) baseFaultType;
+            if(!fault.isSetStack()) {
+                StackTraceElement[] stackTrace = getStackTrace();
+                copyStackTrace(fault, stackTrace);
+            }
+            //TODO: extract
         }
-        //TODO: extract
     }
 
     public void copyStackTrace(DeploymentFaultType fault, StackTraceElement[] stackTrace) {
