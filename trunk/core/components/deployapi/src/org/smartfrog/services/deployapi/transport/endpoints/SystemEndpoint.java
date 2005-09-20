@@ -62,6 +62,21 @@ public class SystemEndpoint extends WsrfEndpoint {
         if (Constants.API_ELEMENT_INITALIZE_REQUEST.equals(action)) {
             return Initialize(job,request);
         }
+        if (Constants.API_ELEMENT_RESOLVE_REQUEST.equals(action)) {
+            return Resolve(request);
+        }
+        if (Constants.API_ELEMENT_ADDFILE_REQUEST.equals(action)) {
+            return AddFile(request);
+        }
+        if (Constants.API_ELEMENT_RUN_REQUEST.equals(action)) {
+            return Run(request);
+        }
+        if (Constants.API_ELEMENT_TERMINATE_REQUEST.equals(action)) {
+            return Terminate(request);
+        }
+        if (Constants.API_ELEMENT_PING_REQUEST.equals(action)) {
+            return Ping(request);
+        }
         return null;
     }
 

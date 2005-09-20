@@ -83,6 +83,13 @@ public class Axis2Beans<T extends XmlObject>  {
     }
 
 
+    /**
+     * Create an instance of this document
+     * @return
+     */
+    public T createInstance() {
+        return (T)T.Factory.newInstance();
+    }
 
 
     /**

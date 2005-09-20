@@ -3,8 +3,7 @@
   <description>
     This is the system endpoint
   </description>
-  <parameter name="ServiceClass" locked="xsd:false">
-    org.smartfrog.services.deployapi.transport.endpoints.SystemEndpoint</parameter>
+  <parameter name="ServiceClass" locked="xsd:false">org.smartfrog.services.deployapi.transport.endpoints.SystemEndpoint</parameter>
 
   <operation name="AddFile">
    <!--  <module ref="addressing"/> -->
