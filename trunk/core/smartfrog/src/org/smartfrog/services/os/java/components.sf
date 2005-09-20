@@ -79,3 +79,17 @@ Java extends ExecuteProgram {
     //bind the shell command to the jvm command
     shellCmd ATTRIB jvm;
 }
+
+
+LoadClassSchema extends Schema {
+    classes extends Vector;
+    create extends Boolean;
+    retain extends Boolean;
+}
+
+LoadClass extends Prim {
+    schema extends LoadClassSchema;
+    sfClass "org.smartfrog.services.os.java.LoadClassImpl";
+    create false;
+    retain true;
+}

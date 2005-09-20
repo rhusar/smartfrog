@@ -57,5 +57,6 @@ org/smartfrog/services/os/java/LibraryImpl.class
 org/smartfrog/services/os/java/Maven1Policy.class
 org/smartfrog/services/os/java/Maven2Policy.class
 org/smartfrog/services/os/java/FlattenLocalFilesPolicy.class
+org/smartfrog/services/os/java/LoadClassImpl.class
 
 
