@@ -21,11 +21,13 @@ package org.smartfrog.services.deployapi.transport.endpoints;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.xmlbeans.XmlObject;
 import org.smartfrog.services.deployapi.engine.Job;
 import org.smartfrog.services.deployapi.engine.JobRepository;
 import org.smartfrog.services.deployapi.engine.ServerInstance;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
 import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
+import org.smartfrog.services.deployapi.system.Utils;
 
 import java.net.URI;
 
@@ -150,4 +152,7 @@ public class Processor extends FaultRaiser {
 */
 
 
+    protected void maybeValidate(XmlObject bean) {
+        Utils.maybeValidate(bean);
+    }
 }

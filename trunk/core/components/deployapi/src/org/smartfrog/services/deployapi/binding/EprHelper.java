@@ -38,7 +38,7 @@ public class EprHelper {
         AttributedURI addrURI = source.getAddress();
         EndpointReference dest=new EndpointReference(addrURI.getStringValue());
         ReferencePropertiesType props = source.getReferenceProperties();
-        //TODO: reference types
+        //TODO: reference properties are not currently suppoirted
         return dest;
     }
 
@@ -46,14 +46,14 @@ public class EprHelper {
         org.ggf.xbeans.cddlm.wsrf.wsa2004.AttributedURI addrURI = source.getAddress();
         EndpointReference dest = new EndpointReference(addrURI.getStringValue());
         org.ggf.xbeans.cddlm.wsrf.wsa2004.ReferencePropertiesType props = source.getReferenceProperties();
-        //TODO: reference types
+        //TODO: reference properties are not currently suppoirted
         return dest;
     }
 
     public static EndpointReferenceType EPRToWsa2003(EndpointReference source) {
         EndpointReferenceType dest= EndpointReferenceType.Factory.newInstance();
         dest.addNewAddress().setStringValue(source.getAddress());
-        //TODO: reference types
+        //TODO: reference properties are not currently suppoirted
         return dest;
     }
 
@@ -61,7 +61,7 @@ public class EprHelper {
         org.ggf.xbeans.cddlm.wsrf.wsa2004.EndpointReferenceType dest =
                 org.ggf.xbeans.cddlm.wsrf.wsa2004.EndpointReferenceType.Factory.newInstance();
         dest.addNewAddress().setStringValue(source.getAddress());
-        //TODO: reference types
+        //TODO: reference properties are not currently suppoirted
         return dest;
     }
 

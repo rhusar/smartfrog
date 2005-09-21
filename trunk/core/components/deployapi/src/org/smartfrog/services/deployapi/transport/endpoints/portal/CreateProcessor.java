@@ -21,6 +21,9 @@ package org.smartfrog.services.deployapi.transport.endpoints.portal;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.axis2.om.OMElement;
+import org.apache.axis2.AxisFault;
+import org.apache.xmlbeans.XmlObject;
 import org.ggf.xbeans.cddlm.api.CreateRequestDocument;
 import org.ggf.xbeans.cddlm.api.CreateResponseDocument;
 import org.ggf.xbeans.cddlm.api.CreateResponseDocument.CreateResponse;
@@ -28,17 +31,20 @@ import org.smartfrog.services.deployapi.engine.Job;
 import org.smartfrog.services.deployapi.engine.JobRepository;
 import org.smartfrog.services.deployapi.engine.ServerInstance;
 import org.smartfrog.services.deployapi.system.Constants;
+import org.smartfrog.services.deployapi.system.Utils;
 import org.smartfrog.services.deployapi.transport.endpoints.Processor;
 import org.smartfrog.services.deployapi.transport.endpoints.XmlBeansEndpoint;
 import org.smartfrog.services.deployapi.transport.endpoints.system.OptionProcessor;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
+import org.smartfrog.services.deployapi.binding.Axis2Beans;
+import org.smartfrog.services.deployapi.binding.bindings.CreateBinding;
 
 /**
  * This class is *NOT* re-entrant. Create one for each deployment. created Aug
  * 4, 2004 3:58:37 PM
  */
 
-public class CreateProcessor extends Processor {
+public class CreateProcessor extends PortalProcessor {
     /**
      * log
      */
@@ -59,6 +65,22 @@ public class CreateProcessor extends Processor {
 
     public OptionProcessor getOptions() {
         return options;
+    }
+
+
+    public OMElement process(OMElement request) throws AxisFault {
+        CreateBinding binding=new CreateBinding();
+        CreateRequestDocument doc = binding.convertRequest(request);
+        CreateRequestDocument.CreateRequest createRequest = doc.getCreateRequest();
+        maybeValidate(createRequest);
+
+        CreateResponseDocument.CreateResponse createResponse = create(createRequest);
+        CreateResponseDocument responseDoc;
+        responseDoc = CreateResponseDocument.Factory.newInstance();
+        responseDoc.setCreateResponse(createResponse);
+        Utils.maybeValidate(responseDoc);
+        OMElement responseOM = binding.convertResponse(responseDoc);
+        return responseOM;
     }
 
     /**

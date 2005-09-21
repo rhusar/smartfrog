@@ -25,7 +25,6 @@ import org.smartfrog.services.deployapi.system.Constants;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.net.URI;
@@ -63,29 +62,6 @@ public class JobRepository implements Iterable<Job>{
         jobs.clear();
     }
 
-    public boolean containsKey(Object key) {
-        return jobs.containsKey(key);
-    }
-
-    public boolean containsValue(Object value) {
-        return jobs.containsValue(value);
-    }
-
-    public Set entrySet() {
-        return jobs.entrySet();
-    }
-
-    public boolean equals(Object o) {
-        return jobs.equals(o);
-    }
-
-    public Object get(Object key) {
-        return jobs.get(key);
-    }
-
-    public int hashCode() {
-        return jobs.hashCode();
-    }
 
     public boolean isEmpty() {
         return jobs.isEmpty();
@@ -99,13 +75,6 @@ public class JobRepository implements Iterable<Job>{
         return jobs.put(key, value);
     }
 
-    public void putAll(Map t) {
-        jobs.putAll(t);
-    }
-
-    private Object remove(String key) {
-        return jobs.remove(key);
-    }
 
     public int size() {
         return jobs.size();
@@ -127,7 +96,11 @@ public class JobRepository implements Iterable<Job>{
      */
     public Job lookup(URI uri) {
         assert uri != null;
-        return (Job) get(uri.toString());
+        return lookup(uri.toString());
+    }
+
+    public Job lookup(String id) {
+        return jobs.get(id);
     }
 
     /**
@@ -136,7 +109,7 @@ public class JobRepository implements Iterable<Job>{
      * @param uri
      */
     public void remove(URI uri) {
-        remove(uri.toString());
+        jobs.remove(uri.toString());
     }
 
     /**
@@ -171,8 +144,8 @@ public class JobRepository implements Iterable<Job>{
     private String createNewJobID() {
         UUID uuid = UUID.randomUUID();
         String s = uuid.toString();
-        s.replace("-","_");
-        return "uuid"+s;
+        s=s.replace("-","_");
+        return "uuid_"+s;
     }
 
 
@@ -190,6 +163,7 @@ public class JobRepository implements Iterable<Job>{
 
     public Job createNewJob(String hostname) {
         Job job=new Job();
+        job.setId(createNewJobID());
         job.setHostname(hostname);
         job.setState(Constants.LifecycleStateEnum.initialized);
         String id = job.getId();

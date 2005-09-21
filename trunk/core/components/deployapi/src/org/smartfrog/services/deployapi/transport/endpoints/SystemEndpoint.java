@@ -27,6 +27,7 @@ import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
 import org.smartfrog.services.deployapi.transport.wsrf.WsrfEndpoint;
 import org.smartfrog.services.deployapi.transport.endpoints.system.InitializeProcessor;
 import org.smartfrog.services.deployapi.system.Constants;
+import org.smartfrog.services.deployapi.system.Utils;
 import org.smartfrog.services.deployapi.binding.Axis2Beans;
 import org.smartfrog.services.deployapi.engine.Job;
 import org.ggf.xbeans.cddlm.api.InitializeRequestDocument;
@@ -93,7 +94,7 @@ public class SystemEndpoint extends WsrfEndpoint {
     public OMElement Initialize(Job job, OMElement request) throws BaseException {
         Axis2Beans<InitializeRequestDocument> inBinding = new Axis2Beans<InitializeRequestDocument>();
         InitializeRequestDocument doc = inBinding.convert(request);
-        maybeValidate(doc);
+        Utils.maybeValidate(doc);
         InitializeProcessor processor=new InitializeProcessor(this);
         InitializeResponseDocument responseDoc;
         responseDoc = processor.initialize(job, doc.getInitializeRequest());

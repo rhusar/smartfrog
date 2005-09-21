@@ -21,6 +21,7 @@ package org.smartfrog.services.deployapi.test.unit;
 
 import junit.framework.TestCase;
 import org.smartfrog.services.deployapi.transport.endpoints.PortalEndpoint;
+import org.smartfrog.services.deployapi.transport.endpoints.portal.CreateProcessor;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
 import org.smartfrog.services.deployapi.binding.Axis2Beans;
 import org.smartfrog.services.deployapi.system.Constants;
@@ -194,7 +195,8 @@ public class PortalUnitTest extends TestCase {
 
     public void testDispatch() throws Exception {
         OMElement request=loadTestOMElement(DOC_CREATE, "createRequestHostname");
-        OMElement response=portal.Create(request);
+        CreateProcessor createProcessor = new CreateProcessor(portal);
+        OMElement response = createProcessor.process(request);
         Axis2Beans<CreateResponseDocument> responseBinder = new Axis2Beans<CreateResponseDocument>();
         CreateResponseDocument responseDoc=responseBinder.convert(response);
         assertValid(responseDoc);
