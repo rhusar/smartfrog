@@ -41,7 +41,7 @@ public class Endpointer implements Serializable {
     private String password;
     private EndpointReference endpointer;
     private String listenerTransport=null;
-    private boolean separateListenerTransport=false;
+    private boolean separateListenerTransport=true;
 
     public Endpointer() {
     }
@@ -52,6 +52,11 @@ public class Endpointer implements Serializable {
 
     public Endpointer(EndpointReference endpointer) {
         this.endpointer = endpointer;
+    }
+
+
+    public Endpointer(String url) {
+        bindToURL(url);
     }
 
     public URL getURL() {
@@ -114,7 +119,7 @@ public class Endpointer implements Serializable {
         Call call = new Call();
         call.setExceptionToBeThrownOnSOAPFault(true);
         call.setTo(getEndpointer());
-        call.setTransportInfo(getSenderTransport(),getListenerTransport(),isSeparateListenerTransport());
+//        call.setTransportInfo(getSenderTransport(),getListenerTransport(),isSeparateListenerTransport());
         //turn on addressing
         call.engageModule(new QName(org.apache.axis2.Constants.MODULE_ADDRESSING));
 

@@ -46,6 +46,10 @@ public class PortalEndpointer extends Endpointer {
         setURL(url);
     }
 
+    public PortalEndpointer(String url) {
+        super(url);
+    }
+
 
     public static PortalEndpointer createDefaultBinding() throws IOException {
         PortalEndpointer endpointer = new PortalEndpointer();

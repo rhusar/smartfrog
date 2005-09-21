@@ -29,13 +29,15 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URL;
-import java.net.URI;
 import java.rmi.RemoteException;
 
 import org.smartfrog.services.deployapi.system.Constants;
+import org.smartfrog.services.deployapi.system.Utils;
 import org.smartfrog.services.deployapi.client.PortalEndpointer;
 import org.smartfrog.services.deployapi.client.ConsoleOperation;
+import org.smartfrog.services.deployapi.client.SystemEndpointer;
 import org.apache.axis2.AxisFault;
+import org.ggf.cddlm.utils.FaultTemplate;
 
 /**
  * base class for tests Date: 01-Sep-2004 Time: 10:52:46
@@ -189,20 +191,21 @@ public abstract class ConsoleTestBase extends TestCase {
      * assert that a fault has the relevant properties
      *
      * @param fault     fault received
-     * @param faultCode fault code of the fault
+     * @param expectedCode fault code of the fault
      * @param text      optional text to look for in the reason
      */
     public static void assertFaultMatches(AxisFault fault,
-                                          final QName faultCode,
+                                          final QName expectedCode,
                                           final String text) {
         String faultAsString = fault.getMessage();
+        final String actualCode = fault.getFaultCode();
         assertEquals("expected [" +
-                faultCode +
-                "] \nbut got\n[" +
-                fault.getFaultCode() +
+                expectedCode +
+                "] \nbut got\nfault code:[" +
+                actualCode +
                 "]\n" +
                 faultAsString,
-                faultCode.toString(), fault.getFaultCode());
+                expectedCode.toString(), actualCode);
         if (text != null) {
             String message = fault.getMessage();
             assertNotNull("fault reason is null in " + faultAsString, message);
@@ -216,6 +219,12 @@ public abstract class ConsoleTestBase extends TestCase {
         }
     }
 
+    public static void assertFaultMatches(AxisFault fault, FaultTemplate template) {
+        assertFaultMatches(fault,
+                Utils.convert(template.getQualifiedName()),
+                template.getWireMessage());
+    }
+
 
     /**
      * assert that an application doesnt exist
@@ -224,17 +233,13 @@ public abstract class ConsoleTestBase extends TestCase {
      * @param errorText optional error text
      * @throws java.rmi.RemoteException
      */
-    public void assertNoSuchApplication(URI uri, String errorText)
+    public void assertNoSuchApplication(String id)
             throws RemoteException {
-/*
         try {
-            SystemStatus status = getOperation()
-                    .lookupApplicationStatus(uri);
+            SystemEndpointer systemEndpointer = getOperation().lookupApplication(id);
+            fail("Expected not to find application "+id);
         } catch (AxisFault fault) {
-            assertFaultMatches(fault,
-                    DeployApiConstants.FAULT_NO_SUCH_APPLICATION,
-                    errorText);
+            assertFaultMatches(fault,Constants.F_NO_SUCH_APPLICATION);
         }
-*/
     }
 }

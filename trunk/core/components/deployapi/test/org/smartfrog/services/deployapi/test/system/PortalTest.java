@@ -17,34 +17,15 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.deployapi.binding.bindings;
-
-import org.smartfrog.services.deployapi.binding.EndpointBinding;
-import org.ggf.xbeans.cddlm.api.CreateResponseDocument;
-import org.ggf.xbeans.cddlm.api.CreateRequestDocument;
-import org.apache.xmlbeans.XmlOptions;
+package org.smartfrog.services.deployapi.test.system;
 
 /**
- * created 21-Sep-2005 11:48:58
+ * created 21-Sep-2005 14:24:11
  */
 
-public class CreateBinding extends EndpointBinding<CreateRequestDocument, CreateResponseDocument> {
+public class PortalTest extends ApiTestBase {
 
-    /**
-     * create a request object
-     *
-     * @return
-     */
-    public CreateRequestDocument createRequest() {
-        return CreateRequestDocument.Factory.newInstance(getInOptions());
-    }
-
-    /**
-     * create a request object
-     *
-     * @return
-     */
-    public CreateResponseDocument createResponse() {
-        return CreateResponseDocument.Factory.newInstance(getOutOptions());
+    public void testUnknownApp() throws Exception {
+        assertNoSuchApplication("Unknown");
     }
 }

@@ -33,10 +33,12 @@ import java.rmi.RemoteException;
  * created 20-Sep-2005 17:09:45
  */
 
-public class EndpointBinding<Tin extends XmlObject,Tout extends XmlObject> {
+public abstract class EndpointBinding<Tin extends XmlObject,Tout extends XmlObject> {
 
     private Axis2Beans<Tin> in;
     private Axis2Beans<Tout> out;
+
+
 
     public EndpointBinding(XmlOptions inOptions, XmlOptions outOptions) {
         in=new Axis2Beans<Tin>(inOptions);
@@ -75,41 +77,47 @@ public class EndpointBinding<Tin extends XmlObject,Tout extends XmlObject> {
      * create a request object
      * @return
      */
-    public Tin createRequest() {
-        return in.createInstance();
-    }
+    public abstract Tin createRequest() ;
 
     /**
      * create a request object
      * @return
      */
-    public Tout createResponse() {
-        return out.createInstance();
-    }
+    public abstract Tout createResponse() ;
 
     /**
      * Invoke the call in a blocking operation with our payload
      * @param call
+     * @param operation
      * @param data
      * @return the response
      * @throws AxisFault
      */
-    public Tout invokeBlocking(Call call,Tin data) throws AxisFault {
-        OMElement omElement = call.invokeBlocking("", convertRequest(data));
+    public Tout invokeBlocking(Call call, String operation, Tin data) throws AxisFault {
+        OMElement omElement = call.invokeBlocking(operation, convertRequest(data));
         return convertResponse(omElement);
     }
 
     /**
      * Invoke the call in a blocking operation with our payload
      *
-     * @param call
+     * @param endpointer
      * @param data
      * @return the response
      * @throws AxisFault
      */
     public Tout invokeBlocking(Endpointer endpointer, Tin data) throws RemoteException {
         Call call=endpointer.createStub();
-        OMElement omElement = call.invokeBlocking("", convertRequest(data));
+        OMElement omElement = call.invokeBlocking("method", convertRequest(data));
         return convertResponse(omElement);
     }
+
+    public XmlOptions getInOptions() {
+        return in.getOptions();
+    }
+
+    public XmlOptions getOutOptions() {
+        return out.getOptions();
+    }
+
 }

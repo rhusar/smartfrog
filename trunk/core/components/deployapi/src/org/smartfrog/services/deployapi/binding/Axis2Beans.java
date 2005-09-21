@@ -62,6 +62,9 @@ public class Axis2Beans<T extends XmlObject>  {
         this.options = options;
     }
 
+    public XmlOptions getOptions() {
+        return options;
+    }
 
     public T convert(OMElement element) {
         XMLStreamReader reader = element.getXMLStreamReader();
@@ -82,14 +85,6 @@ public class Axis2Beans<T extends XmlObject>  {
         }
     }
 
-
-    /**
-     * Create an instance of this document
-     * @return
-     */
-    public T createInstance() {
-        return (T)T.Factory.newInstance();
-    }
 
 
     /**

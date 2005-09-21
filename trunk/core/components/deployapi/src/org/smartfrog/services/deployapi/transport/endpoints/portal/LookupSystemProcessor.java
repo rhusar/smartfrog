@@ -44,7 +44,8 @@ public class LookupSystemProcessor extends PortalProcessor {
 
     public OMElement process(OMElement request) throws AxisFault {
         LookupSystemBinding binding = new LookupSystemBinding();
-        LookupSystemRequestDocument.LookupSystemRequest lookupSystemRequest = binding.convertRequest(request);
+        LookupSystemRequestDocument lookupSystemRequestDocument = binding.convertRequest(request);
+        LookupSystemRequestDocument.LookupSystemRequest lookupSystemRequest = lookupSystemRequestDocument.getLookupSystemRequest();
         ServerInstance server = ServerInstance.currentInstance();
         String resourceId = lookupSystemRequest.getResourceId();
         Job job = server.getJobs().lookup(resourceId);

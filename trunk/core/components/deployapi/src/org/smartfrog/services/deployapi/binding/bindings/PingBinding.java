@@ -28,4 +28,21 @@ import org.smartfrog.services.deployapi.binding.EndpointBinding;
  */
 
 public class PingBinding extends EndpointBinding<PingRequestDocument, PingResponseDocument> {
+    /**
+     * create a request object
+     *
+     * @return
+     */
+    public PingRequestDocument createRequest() {
+        return PingRequestDocument.Factory.newInstance(getInOptions());
+    }
+
+    /**
+     * create a request object
+     *
+     * @return
+     */
+    public PingResponseDocument createResponse() {
+        return PingResponseDocument.Factory.newInstance(getOutOptions());
+    }
 }

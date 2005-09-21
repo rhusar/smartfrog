@@ -231,7 +231,7 @@ public abstract class ConsoleOperation {
             request.setHostname(hostname);
         }
         CreateResponseDocument response =
-             binding.invokeBlocking(getCall(), requestDoc);
+             binding.invokeBlocking(getCall(), "", requestDoc);
         SystemEndpointer createdSystem =new SystemEndpointer(response.getCreateResponse());
         return createdSystem;
     }
@@ -262,7 +262,7 @@ public abstract class ConsoleOperation {
             InitializeRequestDocument.InitializeRequest request = requestDoc.addNewInitializeRequest();
             request.setDescriptor(descriptor);
             request.setOptions(options);
-            InitializeResponseDocument responseDoc = binding.invokeBlocking(system.createStub(), requestDoc);
+            InitializeResponseDocument responseDoc = binding.invokeBlocking(system.createStub(), "", requestDoc);
         }
 
     /**
@@ -502,11 +502,11 @@ public abstract class ConsoleOperation {
 
     public SystemEndpointer lookupApplication(String id) throws RemoteException {
         LookupSystemBinding binding=new LookupSystemBinding();
-        LookupSystemRequestDocument.LookupSystemRequest request=binding.createRequest();
+        LookupSystemRequestDocument requestDoc = binding.createRequest();
+        LookupSystemRequestDocument.LookupSystemRequest request=requestDoc.addNewLookupSystemRequest();
         request.setResourceId(id);
-        OMElement response=getCall().invokeBlocking("",binding.convertRequest(request));
-        LookupSystemResponseDocument responseDoc = binding.convertResponse(response);
-        EndpointReferenceType epr = responseDoc.getLookupSystemResponse();
+        LookupSystemResponseDocument response=binding.invokeBlocking(getCall(),"LookupSystem",requestDoc);
+        EndpointReferenceType epr = response.getLookupSystemResponse();
         EndpointReference epr2 = EprHelper.Wsa2003ToEPR(epr);
         SystemEndpointer endpointer=new SystemEndpointer(epr2,id);
         return endpointer;
