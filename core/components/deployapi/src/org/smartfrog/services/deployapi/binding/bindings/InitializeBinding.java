@@ -37,4 +37,22 @@ public class InitializeBinding extends EndpointBinding<InitializeRequestDocument
 
     public InitializeBinding() {
     }
+
+    /**
+     * create a request object
+     *
+     * @return
+     */
+    public InitializeRequestDocument createRequest() {
+        return InitializeRequestDocument.Factory.newInstance(getInOptions());
+    }
+
+    /**
+     * create a request object
+     *
+     * @return
+     */
+    public InitializeResponseDocument createResponse() {
+        return InitializeResponseDocument.Factory.newInstance(getOutOptions());
+    }
 }

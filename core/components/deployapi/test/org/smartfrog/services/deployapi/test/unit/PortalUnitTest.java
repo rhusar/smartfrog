@@ -56,7 +56,7 @@ import java.io.InputStream;
  * created 14-Sep-2005 11:53:51
  */
 
-public class PortalUnitTest extends TestCase {
+public class PortalUnitTest extends UnitTestBase {
 
     /**
      * Constructs a test case with the given name.
@@ -66,13 +66,7 @@ public class PortalUnitTest extends TestCase {
     }
 
     private PortalEndpoint portal;
-    public static final String TEST_FILES_API_VALID = "test/api/valid/";
     public static final String DOC_CREATE = TEST_FILES_API_VALID +"api-create.xml";
-    public static final String DECLARE_TEST_NAMESPACE= "declare namespace t='"+ Constants.TEST_HELPER_NAMESPACE+"'; ";
-    XmlOptions options;
-    public static final QName TEST_ELEMENT=new QName(Constants.TEST_HELPER_NAMESPACE,"test");
-    public static final QName TEST_NAME = new QName(Constants.TEST_HELPER_NAMESPACE, "name");
-    public static final QName TEST_NAME_LOCAL = new QName("name");
 
     /**
      * Sets up the fixture, for example, open a network connection.
@@ -81,96 +75,6 @@ public class PortalUnitTest extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
         portal = new PortalEndpoint();
-        XmlCatalogResolver resolver=new XmlCatalogResolver(new ResourceLoader());
-        options=new XmlOptions();
-        options.setEntityResolver(resolver);
-
-    }
-
-    /**
-     * Assert that a doc is valid
-     *
-     * @param bean bean to check
-     * @throws junit.framework.AssertionFailedError
-     *          with all the error messages inside
-     */
-    public void assertValid(XmlObject bean) {
-        assertNotNull("XmlObject is null", bean);
-        ArrayList<XmlError> validationErrors = new ArrayList<XmlError>();
-        XmlOptions validationOptions = new XmlOptions();
-        validationOptions.setErrorListener(validationErrors);
-        if (!bean.validate(validationOptions)) {
-            StringBuffer errors = new StringBuffer();
-            for (XmlError error : validationErrors) {
-                errors.append(error.getMessage());
-                errors.append("\n");
-            }
-            fail(errors.toString());
-        }
-    }
-
-    public void assertName(XmlObject bean,String namespace,String localname) {
-        if (namespace== null) {
-            namespace = "";
-        }
-        QName match = new QName(namespace, localname);
-        assertName(bean, match);
-    }
-
-    public void assertName(XmlObject bean, QName match) {
-        assertNotNull("XmlObject is null", bean);
-        Node node = bean.getDomNode();
-        String namespaceURI = node.getNamespaceURI();
-        QName name = new QName(namespaceURI,node.getLocalName());
-        assertEquals(match,name);
-    }
-
-    protected InputStream loadResource(String resource) {
-        InputStream stream = this.getClass().getClassLoader().getResourceAsStream(resource);
-        if (stream == null) {
-            throw new BaseException("Resource missing: " + resource);
-        }
-        return stream;
-    }
-
-
-    public XmlObject loadTestElement(String resource,String name) throws IOException, XmlException {
-        Axis2Beans<TestsDocument> binder = new Axis2Beans<TestsDocument>(options);
-        TestsDocument doc = binder.loadBeansFromResource(resource);
-        //doc.selectChildren(Constants.TEST_HELPER_NAMESPACE,"tests"
-
-        XmlObject[] xmlObjects = doc.selectPath(DECLARE_TEST_NAMESPACE
-                +"//t:tests/t:test[@name='" + name + "']/child::*[position()=1]");
-        if(xmlObjects.length==0) {
-            throw new XmlException("No node of name "+name+" found in resource "+resource);
-        } else {
-            return xmlObjects[0];
-        }
-    }
-
-
-    public OMElement loadTestOMElement(String resource, String name) throws IOException, XmlException,
-            XMLStreamException {
-        InputStream in=loadResource(resource);
-        XMLStreamReader parser = XMLInputFactory.newInstance().createXMLStreamReader(in);
-        //create the builder
-        StAXOMBuilder builder =
-                new StAXOMBuilder(parser);
-        OMElement doc = builder.getDocumentElement();
-        doc.build();
-        //now we need to locate the child with attribute "name=name";
-        Iterator childElements = doc.getChildrenWithName(TEST_ELEMENT);
-        while (childElements.hasNext()) {
-            OMElement element = (OMElement) childElements.next();
-            OMAttribute attribute = element.getAttribute(TEST_NAME);
-            if (attribute == null) {
-                attribute = element.getAttribute(TEST_NAME_LOCAL);
-            }
-            if(attribute!=null && name.equals(attribute.getValue())) {
-                return element.getFirstElement();
-            }
-        }
-        throw new XmlException("No node of name " + name + " found in resource " + resource);
     }
 
 

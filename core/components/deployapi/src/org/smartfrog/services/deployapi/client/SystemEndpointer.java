@@ -53,6 +53,9 @@ public class SystemEndpointer extends Endpointer{
         bindToEndpointer(EprHelper.Wsa2003ToEPR(response.getSystemReference()));
     }
 
+    public SystemEndpointer(String url) {
+        super(url);
+    }
 
     public String getResourceID() {
         return resourceID;

@@ -30,5 +30,21 @@ import org.smartfrog.services.deployapi.binding.EndpointBinding;
 public class TerminateBinding extends EndpointBinding<TerminateRequestDocument, TerminateResponseDocument> {
 
 
+    /**
+     * create a request object
+     *
+     * @return
+     */
+    public TerminateRequestDocument createRequest() {
+        return TerminateRequestDocument.Factory.newInstance(getInOptions());
+    }
 
+    /**
+     * create a request object
+     *
+     * @return
+     */
+    public TerminateResponseDocument createResponse() {
+        return TerminateResponseDocument.Factory.newInstance(getOutOptions());
+    }
 }

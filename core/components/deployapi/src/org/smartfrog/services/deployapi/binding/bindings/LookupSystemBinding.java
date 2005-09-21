@@ -28,7 +28,7 @@ import org.apache.xmlbeans.XmlOptions;
  * created 20-Sep-2005 17:35:44
  */
 
-public class LookupSystemBinding extends EndpointBinding<LookupSystemRequestDocument.LookupSystemRequest,
+public class LookupSystemBinding extends EndpointBinding<LookupSystemRequestDocument,
            LookupSystemResponseDocument> {
 
     public LookupSystemBinding(XmlOptions inOptions, XmlOptions outOptions) {
@@ -36,5 +36,23 @@ public class LookupSystemBinding extends EndpointBinding<LookupSystemRequestDocu
     }
 
     public LookupSystemBinding() {
+    }
+
+    /**
+     * create a request object
+     *
+     * @return
+     */
+    public LookupSystemRequestDocument createRequest() {
+        return LookupSystemRequestDocument.Factory.newInstance(getOutOptions());
+    }
+
+    /**
+     * create a request object
+     *
+     * @return
+     */
+    public LookupSystemResponseDocument createResponse() {
+        return LookupSystemResponseDocument.Factory.newInstance(getOutOptions());
     }
 }
