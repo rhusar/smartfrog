@@ -19,21 +19,25 @@
  */
 package org.smartfrog.services.deployapi.client;
 
-import nu.xom.ParsingException;
-
-import org.w3c.dom.DOMImplementation;
-import org.xml.sax.SAXException;
 import org.apache.axis2.clientapi.Call;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.om.OMElement;
 import org.ggf.xbeans.cddlm.api.LookupSystemRequestDocument;
 import org.ggf.xbeans.cddlm.api.LookupSystemResponseDocument;
+import org.ggf.xbeans.cddlm.api.OptionMapType;
+import org.ggf.xbeans.cddlm.api.CreateRequestDocument;
+import org.ggf.xbeans.cddlm.api.CreateResponseDocument;
+import org.ggf.xbeans.cddlm.api.DescriptorType;
 import org.ggf.xbeans.cddlm.wsrf.wsa2003.EndpointReferenceType;
-import org.smartfrog.services.deployapi.binding.EndpointBinding;
+import org.ggf.xbeans.cddlm.api.InitializeRequestDocument;
+import org.ggf.xbeans.cddlm.api.TerminateRequestDocument;
+import org.ggf.xbeans.cddlm.cmp.InitializeResponseDocument;
 import org.smartfrog.services.deployapi.binding.EprHelper;
 import org.smartfrog.services.deployapi.binding.bindings.LookupSystemBinding;
+import org.smartfrog.services.deployapi.binding.bindings.CreateBinding;
+import org.smartfrog.services.deployapi.binding.bindings.InitializeBinding;
+import org.smartfrog.services.deployapi.binding.bindings.TerminateBinding;
 
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -60,7 +64,7 @@ public abstract class ConsoleOperation {
     /**
      * our server binding
      */
-    protected PortalBinding binding;
+    protected PortalEndpointer portal;
 
 
     /**
@@ -80,15 +84,15 @@ public abstract class ConsoleOperation {
      */
     public Call getCall() throws RemoteException {
         if (call == null) {
-            out.println("Connecting to " + binding.toString());
-            call = binding.createStub();
+            out.println("Connecting to " + portal.toString());
+            call = portal.createStub();
         }
         return call;
     }
 
-    public ConsoleOperation(PortalBinding binding, PrintWriter out) {
+    public ConsoleOperation(PortalEndpointer endpointer, PrintWriter out) {
         this.out = out;
-        this.binding = binding;
+        this.portal = endpointer;
     }
 
     /**
@@ -129,22 +133,21 @@ public abstract class ConsoleOperation {
      * @param args command line arguments; look for -url url
      * @return
      */
-    public static PortalBinding extractBindingFromCommandLine(String[] args)
+    public static PortalEndpointer extractBindingFromCommandLine(String[] args)
             throws IOException {
-        PortalBinding extractedBinding = PortalBinding.fromCommandLine(args);
-        if (extractedBinding == null) {
-            extractedBinding = PortalBinding.createDefaultBinding();
+        PortalEndpointer extractedEndpointer = PortalEndpointer.fromCommandLine(args);
+        if (extractedEndpointer == null) {
+            extractedEndpointer = PortalEndpointer.createDefaultBinding();
         }
-        return extractedBinding;
+        return extractedEndpointer;
     }
 
-
     /**
-     * list all applications
-     *
-     * @return
-     * @throws java.rmi.RemoteException
-     */
+    * list all applications
+    *
+    * @return
+    * @throws java.rmi.RemoteException
+    */
 /*    public URI[] listApplications() throws RemoteException {
         EmptyElementType empty = new EmptyElementType();
         ApplicationReferenceListType list = getCall().listApplications(empty);
@@ -214,40 +217,68 @@ public abstract class ConsoleOperation {
 
 
     /**
-     * deploy a named application, or return an exception
+     * create an application
      *
-     * @param name
-     * @param descriptor
-     * @param options
-     * @param callbackInfo
-     * @return
+     * @return info about a destination
      * @throws java.rmi.RemoteException
      */
-/*    public URI deploy(String name,
-                      DeploymentDescriptorType descriptor,
-                      Options options,
-                      NotificationInformationType callbackInfo)
+    public SystemEndpointer create(String hostname)
             throws RemoteException {
-        JsdlType jsdl = new JsdlType();
-        if (name != null) {
-            //name processing
-            if (options == null) {
-                options = new Options();
-            }
-            addNameOption(options, name);
+        CreateBinding binding = new CreateBinding();
+        CreateRequestDocument requestDoc = binding.createRequest();
+        CreateRequestDocument.CreateRequest request = requestDoc.addNewCreateRequest();
+        if (hostname != null) {
+            request.setHostname(hostname);
         }
-        OptionMapType map = null;
-        if (options != null) {
-            map = options.toOptionMap();
-        }
-        CreateRequest request = new CreateRequest(jsdl,
-                descriptor,
-                callbackInfo,
-                map);
-        CreateResponse response = getCall().create(request);
-        return response.getApplicationReference();
+        CreateResponseDocument response =
+             binding.invokeBlocking(getCall(), requestDoc);
+        SystemEndpointer createdSystem =new SystemEndpointer(response.getCreateResponse());
+        return createdSystem;
+    }
 
-    }*/
+        /**
+        * deploy a named application, or return an exception
+        *
+        * @param descriptor
+        * @param options
+        * @return
+        */
+        public void initialize(SystemEndpointer system,
+                           DescriptorType descriptor,
+                          OptionMapType options )
+                throws RemoteException {
+            InitializeBinding binding = new InitializeBinding();
+            if (options == null) {
+                options = OptionMapType.Factory.newInstance();
+            }
+/*
+            if (name != null) {
+                //name processing
+                //addNameOption(options, name);
+            }
+*/
+
+            InitializeRequestDocument requestDoc = binding.createRequest();
+            InitializeRequestDocument.InitializeRequest request = requestDoc.addNewInitializeRequest();
+            request.setDescriptor(descriptor);
+            request.setOptions(options);
+            InitializeResponseDocument responseDoc = binding.invokeBlocking(system.createStub(), requestDoc);
+        }
+
+    /**
+     * Combine create and initialize into one operation
+     * @param hostname
+     * @param descriptor
+     * @param options
+     * @return
+     * @throws RemoteException
+     */
+    public SystemEndpointer deploy(String hostname, DescriptorType descriptor,
+                            OptionMapType options) throws RemoteException {
+        SystemEndpointer systemEndpointer = create(hostname);
+        initialize(systemEndpointer, descriptor, options);
+        return systemEndpointer;
+    }
 
     /**
      * add a name option to our options
@@ -258,7 +289,7 @@ public abstract class ConsoleOperation {
      *                          into a URI
      */
 /*
-    public static void addNameOption(Options options, String name) {
+    public static void addNameOption(OptionType options, String name) {
         try {
             OptionType o = options.createNamedOption(
                     new URI(DeployApiConstants.OPTION_NAME), true);
@@ -469,28 +500,18 @@ public abstract class ConsoleOperation {
      * @param id id of app
      */
 
-    public EndpointReference lookupApplication(String id) throws RemoteException {
+    public SystemEndpointer lookupApplication(String id) throws RemoteException {
         LookupSystemBinding binding=new LookupSystemBinding();
         LookupSystemRequestDocument.LookupSystemRequest request=binding.createRequest();
         request.setResourceId(id);
-        OMElement response=getCall().invokeBlocking("",binding.convertIn(request));
-        LookupSystemResponseDocument responseDoc = binding.convertOut(response);
+        OMElement response=getCall().invokeBlocking("",binding.convertRequest(request));
+        LookupSystemResponseDocument responseDoc = binding.convertResponse(response);
         EndpointReferenceType epr = responseDoc.getLookupSystemResponse();
-        return EprHelper.Wsa2003ToEPR(epr);
+        EndpointReference epr2 = EprHelper.Wsa2003ToEPR(epr);
+        SystemEndpointer endpointer=new SystemEndpointer(epr2,id);
+        return endpointer;
     }
 
-
-    /**
-     * look up an application against the server
-     *
-     * @param name name of app
-     * @return URI of the app
-     */
-/*
-    public URI lookupApplication(String name) throws RemoteException {
-        return lookupApplication(makeName(name));
-    }
-*/
 
     /**
      * initiate an undeployment
@@ -500,14 +521,18 @@ public abstract class ConsoleOperation {
      * @return true if the process has commenced. Undeployment is asynchronous
      * @throws java.rmi.RemoteException
      */
-/*
-    public boolean terminate(URI application, String reason)
+    public void terminate(SystemEndpointer application, String reason)
             throws RemoteException {
-        TerminateRequest undeploy = new TerminateRequest(application,
-                reason);
-        return getCall().terminate(undeploy);
+        TerminateBinding binding=new TerminateBinding();
+        TerminateRequestDocument request = binding.createRequest();
+        TerminateRequestDocument.TerminateRequest terminateRequest = request.addNewTerminateRequest();
+        if(reason!=null) {
+            terminateRequest.setReason(reason);
+        }
+        binding.invokeBlocking(application,request);
     }
-*/
+
+
 
     /**
      * test for a language being supported

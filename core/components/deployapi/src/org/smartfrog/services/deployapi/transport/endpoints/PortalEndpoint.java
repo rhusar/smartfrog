@@ -25,12 +25,18 @@ import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.om.OMElement;
 import org.ggf.xbeans.cddlm.api.CreateRequestDocument;
 import org.ggf.xbeans.cddlm.api.CreateResponseDocument;
+import org.ggf.xbeans.cddlm.api.LookupSystemRequestDocument;
 import org.smartfrog.services.deployapi.binding.Axis2Beans;
+import org.smartfrog.services.deployapi.binding.bindings.LookupSystemBinding;
 import org.smartfrog.services.deployapi.transport.endpoints.portal.CreateProcessor;
+import org.smartfrog.services.deployapi.transport.endpoints.portal.PortalProcessor;
+import org.smartfrog.services.deployapi.transport.endpoints.portal.ResolveProcessor;
+import org.smartfrog.services.deployapi.transport.endpoints.portal.LookupSystemProcessor;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
 import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
 import org.smartfrog.services.deployapi.transport.wsrf.WsrfEndpoint;
 import org.smartfrog.services.deployapi.system.Constants;
+import org.smartfrog.services.deployapi.system.Utils;
 
 import javax.xml.namespace.QName;
 
@@ -56,45 +62,24 @@ public class PortalEndpoint extends WsrfEndpoint {
 
         verifyDeployApiNamespace(operation);
         String action = operation.getLocalPart();
+        PortalProcessor processor=null;
 
         OMElement request = inMessage.getEnvelope().getBody().getFirstElement();
         if (Constants.API_ELEMENT_CREATE_REQUEST.equals(action)) {
-            return Create(request);
+            processor=new CreateProcessor(this);
         }
         if (Constants.API_ELEMENT_RESOLVE_REQUEST.equals(action)) {
-            return Resolve(request);
+            processor = new ResolveProcessor(this);
         }
         if (Constants.API_ELEMENT_LOOKUPSYSTEM_REQUEST.equals(action)) {
-            return LookupSystem(request);
+            processor = new LookupSystemProcessor(this);
         }
-        //if we get here: error
-        throw new AxisFault("Unknown message: "+operation);
+        if(processor==null) {
+            //if we get here: error
+            throw new AxisFault("Unknown message: "+ action);
+        } else {
+            return processor.process(request);
+        }
     }
 
-    public OMElement Create(OMElement request) throws AxisFault {
-        Axis2Beans<CreateRequestDocument> create = new Axis2Beans<CreateRequestDocument>();
-        CreateRequestDocument doc = create.convert(request);
-        CreateRequestDocument.CreateRequest createRequest = doc.getCreateRequest();
-        maybeValidate(createRequest);
-
-        CreateProcessor processor = new CreateProcessor(this);
-        CreateResponseDocument.CreateResponse createResponse = processor.create(createRequest);
-        CreateResponseDocument responseDoc;
-        responseDoc= CreateResponseDocument.Factory.newInstance();
-        responseDoc.setCreateResponse(createResponse);
-        maybeValidate(responseDoc);
-        Axis2Beans<CreateResponseDocument> eprBinding = new Axis2Beans<CreateResponseDocument>();
-        OMElement responseOM = eprBinding.convert(responseDoc);
-        return responseOM;
-    }
-
-    public OMElement Resolve(OMElement request) throws AxisFault {
-        FaultRaiser.throwNotImplemented();
-        return null;
-    }
-
-    public OMElement LookupSystem(OMElement request) throws AxisFault {
-        FaultRaiser.throwNotImplemented();
-        return null;
-    }
 }

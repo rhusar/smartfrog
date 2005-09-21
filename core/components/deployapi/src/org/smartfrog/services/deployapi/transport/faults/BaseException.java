@@ -3,6 +3,8 @@ package org.smartfrog.services.deployapi.transport.faults;
 import org.apache.axis2.AxisFault;
 import org.ggf.xbeans.cddlm.wsrf.wsbf.BaseFaultType;
 import org.ggf.cddlm.utils.QualifiedName;
+import org.ggf.cddlm.utils.FaultTemplate;
+import org.smartfrog.services.deployapi.system.Utils;
 
 import javax.xml.namespace.QName;
 import java.util.GregorianCalendar;
@@ -32,15 +34,22 @@ public class BaseException extends RuntimeException {
         createAndConfigureInnerFault();
     }
 
+
+    public BaseException(FaultTemplate template) {
+        super(template.getErrorMessage());
+        faultCode= Utils.convert(template.getQualifiedName());
+        faultReason=template.getWireMessage();
+    }
+
     public static BaseException makeFault(Throwable thrown) {
         return new BaseException(thrown);
     }
 
     /**
-     * @param arg0
+     * @param message
      */
-    public BaseException(String arg0) {
-        super(arg0);
+    public BaseException(String message) {
+        super(message);
         createAndConfigureInnerFault();
     }
 

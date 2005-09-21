@@ -20,8 +20,13 @@
 package org.smartfrog.services.deployapi.system;
 
 import org.ggf.cddlm.utils.QualifiedName;
+import org.ggf.xbeans.cddlm.cmp.DeploymentFaultType;
+import org.apache.xmlbeans.XmlObject;
+import org.apache.xmlbeans.XmlOptions;
+import org.smartfrog.services.deployapi.transport.faults.BaseException;
 
 import javax.xml.namespace.QName;
+import java.util.ArrayList;
 
 /**
  * created 20-Sep-2005 17:07:38
@@ -29,12 +34,15 @@ import javax.xml.namespace.QName;
 
 public class Utils {
 
+    protected Utils() {
+    }
+
     /**
-     * Turn a ggf qualifiedname into a proper java one
-     * @param in
-     * @return a converted qname
-     */
-    QName convert(QualifiedName in) {
+    * Turn a ggf qualifiedname into a proper java one
+    * @param in
+    * @return a converted qname
+    */
+    public static QName convert(QualifiedName in) {
         return new QName(in.getNamespaceURI(),in.getLocalPart());
     }
 
@@ -43,8 +51,35 @@ public class Utils {
      * @param in
      * @return a converted qname
      */
-    QualifiedName convert(QName in) {
+    public static QualifiedName convert(QName in) {
         return new QualifiedName(in.getNamespaceURI(), in.getLocalPart());
     }
 
+    /**
+     * We are invalid.
+     *
+     * @param message
+     * @throws org.smartfrog.services.deployapi.transport.faults.DeploymentException
+     * @returns true for use in conditional code
+     */
+    public static boolean validate(XmlObject message) {
+        ArrayList validationErrors = new ArrayList();
+        XmlOptions validationOptions = new XmlOptions();
+        validationOptions.setErrorListener(validationErrors);
+        if (!message.validate(validationOptions)) {
+            DeploymentFaultType fault = DeploymentFaultType.Factory.newInstance();
+            //TODO
+            throw new BaseException(Constants.BAD_ARGUMENT_ERROR_MESSAGE);
+        }
+        return true;
+    }
+
+    /**
+     * validate documents iff assertions are enabled
+     *
+     * @param message
+     */
+    public static void maybeValidate(XmlObject message) {
+        assert validate(message);
+    }
 }

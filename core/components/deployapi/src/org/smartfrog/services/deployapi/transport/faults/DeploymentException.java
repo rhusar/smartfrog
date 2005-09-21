@@ -2,8 +2,8 @@ package org.smartfrog.services.deployapi.transport.faults;
 
 import org.ggf.xbeans.cddlm.wsrf.wsbf.BaseFaultType;
 import org.ggf.xbeans.cddlm.cmp.DeploymentFaultType;
-import org.ggf.xbeans.cddlm.cmp.UnboundedXMLAnyNamespace;
 import org.ggf.xbeans.cddlm.cmp.StringListType;
+import org.ggf.cddlm.utils.FaultTemplate;
 
 import javax.xml.namespace.QName;
 
@@ -19,10 +19,10 @@ public class DeploymentException extends BaseException {
     }
 
     /**
-     * @param arg0
+     * @param message
      */
-    public DeploymentException(String arg0) {
-        super(arg0);
+    public DeploymentException(String message) {
+        super(message);
     }
 
     /**
@@ -35,11 +35,15 @@ public class DeploymentException extends BaseException {
     }
 
     /**
-     * @param arg0
+     * @param message
      * @param arg1
      */
-    public DeploymentException(String arg0, Throwable arg1) {
-        super(arg0, arg1);
+    public DeploymentException(String message, Throwable arg1) {
+        super(message, arg1);
+    }
+
+    public DeploymentException(FaultTemplate template) {
+        super(template);
     }
 
     protected BaseFaultType createInnerFault() {

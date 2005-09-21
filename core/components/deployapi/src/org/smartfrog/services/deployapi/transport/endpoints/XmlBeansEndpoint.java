@@ -69,22 +69,4 @@ public abstract class XmlBeansEndpoint {
         verifyNamespace(operation, Constants.CDL_API_TYPES_NAMESPACE);
     }
 
-    /**
-     * We are invalid.
-     *
-     * @param message
-     * @throws DeploymentException
-     * @returns true for use in conditional code
-     */
-    protected boolean validate(XmlObject message) {
-        ArrayList validationErrors = new ArrayList();
-        XmlOptions validationOptions = new XmlOptions();
-        validationOptions.setErrorListener(validationErrors);
-        if (!message.validate(validationOptions)) {
-            DeploymentFaultType fault = DeploymentFaultType.Factory.newInstance();
-            //TODO
-            throw new BaseException(Constants.BAD_ARGUMENT_ERROR_MESSAGE);
-        }
-        return true;
-    }
 }
