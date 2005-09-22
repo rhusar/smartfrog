@@ -19,15 +19,18 @@
  */
 package org.smartfrog.services.deployapi.transport.endpoints;
 
+import org.apache.axis2.AxisFault;
+import org.apache.axis2.context.MessageContext;
+import org.apache.axis2.om.OMElement;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.xmlbeans.XmlObject;
 import org.smartfrog.services.deployapi.engine.Job;
 import org.smartfrog.services.deployapi.engine.JobRepository;
 import org.smartfrog.services.deployapi.engine.ServerInstance;
+import org.smartfrog.services.deployapi.system.Utils;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
 import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
-import org.smartfrog.services.deployapi.system.Utils;
 
 import java.net.URI;
 
@@ -47,15 +50,20 @@ public class Processor extends FaultRaiser {
      */
     private XmlBeansEndpoint owner;
 
+    private MessageContext messageContext;
 
     public XmlBeansEndpoint getOwner() {
         return owner;
     }
 
-    public void setOwner(XmlBeansEndpoint owner) {
-        this.owner = owner;
+
+    public MessageContext getMessageContext() {
+        return messageContext;
     }
 
+    public void setMessageContext(MessageContext messageContext) {
+        this.messageContext = messageContext;
+    }
 
     private static URI makeRuntimeException(String url,
                                             Exception e) {
@@ -150,9 +158,12 @@ public class Processor extends FaultRaiser {
         return l;
     }
 */
-
-
     protected void maybeValidate(XmlObject bean) {
         Utils.maybeValidate(bean);
+    }
+
+    public OMElement process(OMElement request) throws AxisFault {
+        throwNotImplemented();
+        return null;
     }
 }

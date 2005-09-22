@@ -19,6 +19,8 @@
  */
 package org.smartfrog.services.deployapi.transport.faults;
 
+import org.ggf.cddlm.utils.QualifiedName;
+import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.SmartFrogCompilationException;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
@@ -29,14 +31,12 @@ import org.smartfrog.sfcore.common.SmartFrogParseException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.languages.sf.SmartFrogCompileResolutionException;
-import org.smartfrog.services.deployapi.system.Constants;
-import org.ggf.cddlm.utils.QualifiedName;
 
 import javax.xml.namespace.QName;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Enumeration;
 
 /**
@@ -71,15 +71,15 @@ public class FaultRaiser {
 
     public static BaseException raiseFault(QualifiedName code, String message) {
         QName qcode = convert(code);
-        return raiseFault(qcode,message);
+        return raiseFault(qcode, message);
     }
 
     private static QName convert(QualifiedName code) {
         QName qcode;
-        if(code!=null) {
-            qcode = new QName(code.getNamespaceURI(),code.getLocalPart());
+        if (code != null) {
+            qcode = new QName(code.getNamespaceURI(), code.getLocalPart());
         } else {
-            qcode=null;
+            qcode = null;
         }
         return qcode;
     }
@@ -105,7 +105,7 @@ public class FaultRaiser {
 
     public static BaseException raiseFault(QualifiedName code, String message,
                                            Throwable thrown) {
-        return raiseFault(convert(code),message, thrown);
+        return raiseFault(convert(code), message, thrown);
 
     }
 
@@ -219,6 +219,7 @@ public class FaultRaiser {
         return fault;
     }
 */
+
     /**
      * turn a smartfrog exception into an axis fault
      *

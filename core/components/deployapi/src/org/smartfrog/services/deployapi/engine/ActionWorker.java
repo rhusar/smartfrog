@@ -85,7 +85,7 @@ public class ActionWorker extends Thread {
     }
 
     private void processException(Exception ex) {
-        log.error("Received when invoking endpoint",ex);
+        log.error("Received when invoking endpoint", ex);
     }
 
     /**

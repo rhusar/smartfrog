@@ -20,8 +20,8 @@
 package org.smartfrog.services.deployapi.binding;
 
 import org.apache.axis2.addressing.EndpointReference;
-import org.ggf.xbeans.cddlm.wsrf.wsa2003.EndpointReferenceType;
 import org.ggf.xbeans.cddlm.wsrf.wsa2003.AttributedURI;
+import org.ggf.xbeans.cddlm.wsrf.wsa2003.EndpointReferenceType;
 import org.ggf.xbeans.cddlm.wsrf.wsa2003.ReferencePropertiesType;
 
 /**
@@ -36,7 +36,7 @@ public class EprHelper {
 
     public static EndpointReference Wsa2003ToEPR(EndpointReferenceType source) {
         AttributedURI addrURI = source.getAddress();
-        EndpointReference dest=new EndpointReference(addrURI.getStringValue());
+        EndpointReference dest = new EndpointReference(addrURI.getStringValue());
         ReferencePropertiesType props = source.getReferenceProperties();
         //TODO: reference properties are not currently suppoirted
         return dest;
@@ -51,7 +51,7 @@ public class EprHelper {
     }
 
     public static EndpointReferenceType EPRToWsa2003(EndpointReference source) {
-        EndpointReferenceType dest= EndpointReferenceType.Factory.newInstance();
+        EndpointReferenceType dest = EndpointReferenceType.Factory.newInstance();
         dest.addNewAddress().setStringValue(source.getAddress());
         //TODO: reference properties are not currently suppoirted
         return dest;

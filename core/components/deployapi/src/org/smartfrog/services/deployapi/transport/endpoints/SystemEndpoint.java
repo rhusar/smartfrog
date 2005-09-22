@@ -19,19 +19,19 @@
  */
 package org.smartfrog.services.deployapi.transport.endpoints;
 
-import org.apache.axis2.om.OMElement;
-import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.AxisFault;
+import org.apache.axis2.context.MessageContext;
+import org.apache.axis2.om.OMElement;
+import org.ggf.xbeans.cddlm.api.InitializeRequestDocument;
+import org.ggf.xbeans.cddlm.api.InitializeResponseDocument;
+import org.smartfrog.services.deployapi.binding.Axis2Beans;
+import org.smartfrog.services.deployapi.engine.Job;
+import org.smartfrog.services.deployapi.system.Constants;
+import org.smartfrog.services.deployapi.system.Utils;
+import org.smartfrog.services.deployapi.transport.endpoints.system.InitializeProcessor;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
 import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
 import org.smartfrog.services.deployapi.transport.wsrf.WsrfEndpoint;
-import org.smartfrog.services.deployapi.transport.endpoints.system.InitializeProcessor;
-import org.smartfrog.services.deployapi.system.Constants;
-import org.smartfrog.services.deployapi.system.Utils;
-import org.smartfrog.services.deployapi.binding.Axis2Beans;
-import org.smartfrog.services.deployapi.engine.Job;
-import org.ggf.xbeans.cddlm.api.InitializeRequestDocument;
-import org.ggf.xbeans.cddlm.api.InitializeResponseDocument;
 
 import javax.xml.namespace.QName;
 
@@ -56,12 +56,16 @@ public class SystemEndpoint extends WsrfEndpoint {
         if (result != null) {
             return result;
         }
-        verifyDeployApiNamespace(operation);
-        Job job=lookupJob(inMessage);
         String action = operation.getLocalPart();
+        Processor processor = null;
+
         OMElement request = inMessage.getEnvelope().getBody().getFirstElement();
+        String requestName = request.getLocalName();
+        verifyDeployApiNamespace(request.getQName());
+
+        Job job = lookupJob(inMessage);
         if (Constants.API_ELEMENT_INITALIZE_REQUEST.equals(action)) {
-            return Initialize(job,request);
+            return Initialize(job, request);
         }
         if (Constants.API_ELEMENT_RESOLVE_REQUEST.equals(action)) {
             return Resolve(request);
@@ -95,7 +99,7 @@ public class SystemEndpoint extends WsrfEndpoint {
         Axis2Beans<InitializeRequestDocument> inBinding = new Axis2Beans<InitializeRequestDocument>();
         InitializeRequestDocument doc = inBinding.convert(request);
         Utils.maybeValidate(doc);
-        InitializeProcessor processor=new InitializeProcessor(this);
+        InitializeProcessor processor = new InitializeProcessor(this);
         InitializeResponseDocument responseDoc;
         responseDoc = processor.initialize(job, doc.getInitializeRequest());
         Axis2Beans<InitializeResponseDocument> outBinding = new Axis2Beans<InitializeResponseDocument>();

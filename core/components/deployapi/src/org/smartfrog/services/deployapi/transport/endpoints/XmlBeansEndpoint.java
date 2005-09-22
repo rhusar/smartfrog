@@ -22,15 +22,11 @@ package org.smartfrog.services.deployapi.transport.endpoints;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.om.OMElement;
-import org.apache.xmlbeans.XmlObject;
-import org.apache.xmlbeans.XmlOptions;
-import org.ggf.xbeans.cddlm.cmp.DeploymentFaultType;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
 import org.smartfrog.services.deployapi.transport.faults.DeploymentException;
 
 import javax.xml.namespace.QName;
-import java.util.ArrayList;
 
 /**
  * An endpoint that is deployed under Smartfrog.

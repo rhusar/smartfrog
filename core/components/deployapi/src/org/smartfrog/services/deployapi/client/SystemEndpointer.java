@@ -20,8 +20,8 @@
 package org.smartfrog.services.deployapi.client;
 
 import org.apache.axis2.addressing.EndpointReference;
-import org.apache.axis2.description.ServiceDescription;
 import org.apache.axis2.description.OperationDescription;
+import org.apache.axis2.description.ServiceDescription;
 import org.ggf.xbeans.cddlm.api.CreateResponseDocument;
 import org.smartfrog.services.deployapi.binding.EprHelper;
 import org.smartfrog.services.deployapi.system.Constants;
@@ -173,5 +173,14 @@ public class SystemEndpointer extends Endpointer {
      */
     public int hashCode() {
         return (resourceID != null ? resourceID.hashCode() : 0);
+    }
+
+    /**
+     * String info
+     *
+     * @return
+     */
+    public String toString() {
+        return "System ID=" + resourceID + " URL=" + url.toString();
     }
 }

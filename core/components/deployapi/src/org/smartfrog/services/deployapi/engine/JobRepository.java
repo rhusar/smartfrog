@@ -22,29 +22,28 @@ package org.smartfrog.services.deployapi.engine;
 
 import org.smartfrog.services.deployapi.system.Constants;
 
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.UUID;
-import java.net.URI;
-import java.net.URL;
-import java.net.MalformedURLException;
 
 /**
  * This class remembers what got deployed by whom. It retains weak references to
  * running apps, for easy purging.
- *
+ * <p/>
  * This class *must* be thread safe
- *
+ * <p/>
  * created Aug 5, 2004 2:59:38 PM
  */
 
-public class JobRepository implements Iterable<Job>{
+public class JobRepository implements Iterable<Job> {
 
-    private Hashtable<String,Job> jobs = new Hashtable<String, Job>();
+    private Hashtable<String, Job> jobs = new Hashtable<String, Job>();
     private URL systemsURL;
-
 
 
     {
@@ -129,7 +128,7 @@ public class JobRepository implements Iterable<Job>{
     public String[] listJobs() {
         String[] uriList = new String[size()];
         int count = 0;
-        for(Job job:this) {
+        for (Job job : this) {
             String id = job.getId();
             uriList[count++] = createJobAddress(id);
         }
@@ -138,16 +137,15 @@ public class JobRepository implements Iterable<Job>{
 
 
     public String createJobAddress(String jobID) {
-        return systemsURL+"?job="+jobID;
+        return systemsURL + "?job=" + jobID;
     }
 
     private String createNewJobID() {
         UUID uuid = UUID.randomUUID();
         String s = uuid.toString();
-        s=s.replace("-","_");
-        return "uuid_"+s;
+        s = s.replace("-", "_");
+        return "uuid_" + s;
     }
-
 
 
     /**
@@ -157,12 +155,12 @@ public class JobRepository implements Iterable<Job>{
      * @param job
      */
     public void assignID(Job job) {
-        String id=createNewJobID();
+        String id = createNewJobID();
         job.setId(id);
     }
 
     public Job createNewJob(String hostname) {
-        Job job=new Job();
+        Job job = new Job();
         job.setId(createNewJobID());
         job.setHostname(hostname);
         job.setState(Constants.LifecycleStateEnum.initialized);

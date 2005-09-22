@@ -17,26 +17,18 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.deployapi.transport.endpoints.portal;
+package org.smartfrog.services.deployapi.transport.endpoints.system;
 
-import org.apache.axis2.om.OMElement;
-import org.apache.axis2.AxisFault;
 import org.smartfrog.services.deployapi.transport.endpoints.Processor;
 import org.smartfrog.services.deployapi.transport.endpoints.XmlBeansEndpoint;
 
 /**
- * created 21-Sep-2005 11:45:20
+ * created 22-Sep-2005 15:41:33
  */
 
+public class DestroyProcessor extends Processor {
 
-public class PortalProcessor extends Processor {
-
-    protected PortalProcessor(XmlBeansEndpoint owner) {
+    public DestroyProcessor(XmlBeansEndpoint owner) {
         super(owner);
-    }
-
-    public OMElement process(OMElement request) throws AxisFault {
-        throwNotImplemented();
-        return null;
     }
 }
