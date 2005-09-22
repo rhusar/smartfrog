@@ -23,20 +23,13 @@ package org.smartfrog.services.deployapi.transport.endpoints;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.om.OMElement;
-import org.ggf.xbeans.cddlm.api.CreateRequestDocument;
-import org.ggf.xbeans.cddlm.api.CreateResponseDocument;
-import org.ggf.xbeans.cddlm.api.LookupSystemRequestDocument;
-import org.smartfrog.services.deployapi.binding.Axis2Beans;
-import org.smartfrog.services.deployapi.binding.bindings.LookupSystemBinding;
 import org.smartfrog.services.deployapi.transport.endpoints.portal.CreateProcessor;
 import org.smartfrog.services.deployapi.transport.endpoints.portal.PortalProcessor;
 import org.smartfrog.services.deployapi.transport.endpoints.portal.ResolveProcessor;
 import org.smartfrog.services.deployapi.transport.endpoints.portal.LookupSystemProcessor;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
-import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
 import org.smartfrog.services.deployapi.transport.wsrf.WsrfEndpoint;
 import org.smartfrog.services.deployapi.system.Constants;
-import org.smartfrog.services.deployapi.system.Utils;
 
 import javax.xml.namespace.QName;
 
@@ -60,18 +53,20 @@ public class PortalEndpoint extends WsrfEndpoint {
             return result;
         }
 
-        verifyDeployApiNamespace(operation);
+//        verifyDeployApiNamespace(operation);
         String action = operation.getLocalPart();
         PortalProcessor processor=null;
 
         OMElement request = inMessage.getEnvelope().getBody().getFirstElement();
-        if (Constants.API_ELEMENT_CREATE_REQUEST.equals(action)) {
+        String requestName = request.getLocalName();
+        verifyDeployApiNamespace(request.getQName());
+        if (Constants.API_ELEMENT_CREATE_REQUEST.equals(requestName)) {
             processor=new CreateProcessor(this);
         }
-        if (Constants.API_ELEMENT_RESOLVE_REQUEST.equals(action)) {
+        if (Constants.API_ELEMENT_RESOLVE_REQUEST.equals(requestName)) {
             processor = new ResolveProcessor(this);
         }
-        if (Constants.API_ELEMENT_LOOKUPSYSTEM_REQUEST.equals(action)) {
+        if (Constants.API_ELEMENT_LOOKUPSYSTEM_REQUEST.equals(requestName)) {
             processor = new LookupSystemProcessor(this);
         }
         if(processor==null) {

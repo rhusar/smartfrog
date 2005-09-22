@@ -99,7 +99,7 @@
         <wsdl:port binding="tns:PortalEPRBinding"
             name="PortalEPRBinding">
             <wsdlsoap:address
-                location="http://localhost:8080/services/portal"/>
+                location="http://localhost:5050/services/Portal"/>
         </wsdl:port>
     </wsdl:service>
     

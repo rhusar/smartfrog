@@ -19,10 +19,14 @@
  */
 package org.smartfrog.services.deployapi.client;
 
+import org.apache.axis2.addressing.EndpointReference;
+import org.apache.axis2.description.ServiceDescription;
+import org.apache.axis2.description.OperationDescription;
 import org.ggf.xbeans.cddlm.api.CreateResponseDocument;
 import org.smartfrog.services.deployapi.binding.EprHelper;
-import org.apache.axis2.addressing.EndpointReference;
+import org.smartfrog.services.deployapi.system.Constants;
 
+import javax.xml.namespace.QName;
 import java.net.URL;
 
 /**
@@ -31,10 +35,89 @@ import java.net.URL;
  * created 21-Sep-2005 12:55:10
  */
 
-public class SystemEndpointer extends Endpointer{
+public class SystemEndpointer extends Endpointer {
 
     private String resourceID;
 
+
+    //From Axis2 generated SystemEPRStub
+    static {
+
+        //creating the Service
+        serviceDescription = new ServiceDescription(
+                new QName(Constants.CDL_API_WSDL_NAMESPACE, "SystemEPR"));
+
+        //creating the operations
+        OperationDescription __operation;
+        operations = new OperationDescription[11];
+
+        __operation = new OperationDescription();
+        __operation.setName(new QName(Constants.CDL_API_WSDL_NAMESPACE,
+                "GetMultipleResourceProperties"));
+        operations[0] = __operation;
+        serviceDescription.addOperation(__operation);
+
+        __operation = new OperationDescription();
+        __operation.setName(
+                new QName(Constants.CDL_API_WSDL_NAMESPACE, "AddFile"));
+        operations[1] = __operation;
+        serviceDescription.addOperation(__operation);
+
+        __operation = new OperationDescription();
+        __operation.setName(
+                new QName(Constants.CDL_API_WSDL_NAMESPACE, "Ping"));
+        operations[2] = __operation;
+        serviceDescription.addOperation(__operation);
+
+        __operation = new OperationDescription();
+        __operation.setName(new QName(Constants.CDL_API_WSDL_NAMESPACE,
+                "GetCurrentMessage"));
+        operations[3] = __operation;
+        serviceDescription.addOperation(__operation);
+
+        __operation = new OperationDescription();
+        __operation.setName(
+                new QName(Constants.CDL_API_WSDL_NAMESPACE, "Resolve"));
+        operations[4] = __operation;
+        serviceDescription.addOperation(__operation);
+
+        __operation = new OperationDescription();
+        __operation.setName(
+                new QName(Constants.CDL_API_WSDL_NAMESPACE, "Subscribe"));
+        operations[5] = __operation;
+        serviceDescription.addOperation(__operation);
+
+        __operation = new OperationDescription();
+        __operation
+                .setName(new QName(Constants.CDL_API_WSDL_NAMESPACE, "Run"));
+        operations[6] = __operation;
+        serviceDescription.addOperation(__operation);
+
+        __operation = new OperationDescription();
+        __operation.setName(
+                new QName(Constants.CDL_API_WSDL_NAMESPACE, "Destroy"));
+        operations[7] = __operation;
+        serviceDescription.addOperation(__operation);
+
+        __operation = new OperationDescription();
+        __operation.setName(new QName(Constants.CDL_API_WSDL_NAMESPACE,
+                "GetResourceProperty"));
+        operations[8] = __operation;
+        serviceDescription.addOperation(__operation);
+
+        __operation = new OperationDescription();
+        __operation.setName(
+                new QName(Constants.CDL_API_WSDL_NAMESPACE, "Terminate"));
+        operations[9] = __operation;
+        serviceDescription.addOperation(__operation);
+
+        __operation = new OperationDescription();
+        __operation.setName(
+                new QName(Constants.CDL_API_WSDL_NAMESPACE, "Initialize"));
+        operations[10] = __operation;
+        serviceDescription.addOperation(__operation);
+
+    }
 
     public SystemEndpointer() {
     }
@@ -49,7 +132,7 @@ public class SystemEndpointer extends Endpointer{
     }
 
     public SystemEndpointer(CreateResponseDocument.CreateResponse response) {
-        resourceID=response.getResourceId();
+        resourceID = response.getResourceId();
         bindToEndpointer(EprHelper.Wsa2003ToEPR(response.getSystemReference()));
     }
 
@@ -68,6 +151,7 @@ public class SystemEndpointer extends Endpointer{
 
     /**
      * we use resourceID for equality, not the url itself
+     *
      * @param o
      * @return
      */
@@ -84,6 +168,7 @@ public class SystemEndpointer extends Endpointer{
 
     /**
      * hash is based on resourceID
+     *
      * @return
      */
     public int hashCode() {
