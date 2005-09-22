@@ -19,14 +19,14 @@
  */
 package org.smartfrog.services.deployapi.transport.endpoints.portal;
 
+import org.apache.axis2.AxisFault;
+import org.apache.axis2.om.OMElement;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.axis2.om.OMElement;
-import org.apache.axis2.AxisFault;
-import org.apache.xmlbeans.XmlObject;
 import org.ggf.xbeans.cddlm.api.CreateRequestDocument;
 import org.ggf.xbeans.cddlm.api.CreateResponseDocument;
 import org.ggf.xbeans.cddlm.api.CreateResponseDocument.CreateResponse;
+import org.smartfrog.services.deployapi.binding.bindings.CreateBinding;
 import org.smartfrog.services.deployapi.engine.Job;
 import org.smartfrog.services.deployapi.engine.JobRepository;
 import org.smartfrog.services.deployapi.engine.ServerInstance;
@@ -36,15 +36,15 @@ import org.smartfrog.services.deployapi.transport.endpoints.Processor;
 import org.smartfrog.services.deployapi.transport.endpoints.XmlBeansEndpoint;
 import org.smartfrog.services.deployapi.transport.endpoints.system.OptionProcessor;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
-import org.smartfrog.services.deployapi.binding.Axis2Beans;
-import org.smartfrog.services.deployapi.binding.bindings.CreateBinding;
+
+import java.util.Locale;
 
 /**
  * This class is *NOT* re-entrant. Create one for each deployment. created Aug
  * 4, 2004 3:58:37 PM
  */
 
-public class CreateProcessor extends PortalProcessor {
+public class CreateProcessor extends Processor {
     /**
      * log
      */
@@ -69,7 +69,7 @@ public class CreateProcessor extends PortalProcessor {
 
 
     public OMElement process(OMElement request) throws AxisFault {
-        CreateBinding binding=new CreateBinding();
+        CreateBinding binding = new CreateBinding();
         CreateRequestDocument doc = binding.convertRequest(request);
         CreateRequestDocument.CreateRequest createRequest = doc.getCreateRequest();
         maybeValidate(createRequest);
@@ -97,22 +97,24 @@ public class CreateProcessor extends PortalProcessor {
         //hostname processing
         String hostname = Constants.LOCALHOST;
         if (createRequest.isSetHostname()) {
-            hostname = createRequest.getHostname();
+            hostname = createRequest.getHostname().trim().toLowerCase(Locale.ENGLISH);
+        }
+
+        if (!Constants.LOCALHOST.equals(hostname)
+                && !Constants.LOCALHOST_IPV4.equals(hostname)) {
+            throw new BaseException(Constants.F_UNSUPPORTED_CREATION_HOST);
         }
 
         job = repository.createNewJob(hostname);
 
         //create a new jobstate
         request = createRequest;
-
-        if (!Constants.LOCALHOST.equals(hostname)) {
-            throw new BaseException(Constants.ERROR_CREATE_UNSUPPORTED_HOST);
-        }
         //create a new response
         CreateResponseDocument responseDoc = CreateResponseDocument.Factory.newInstance();
         CreateResponseDocument.CreateResponse response = responseDoc.addNewCreateResponse();
         response.setSystemReference(job.getEndpoint());
         response.setResourceId(job.getId());
+        log.info("Created " + job.toString());
 
 
         return response;

@@ -22,14 +22,10 @@ package org.smartfrog.services.deployapi.transport.endpoints.system;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.xmlbeans.XmlException;
-import org.ggf.xbeans.cddlm.api.CreateRequestDocument;
-import org.ggf.xbeans.cddlm.api.DescriptorType;
 import org.ggf.xbeans.cddlm.api.InitializeRequestDocument;
 import org.ggf.xbeans.cddlm.api.InitializeResponseDocument;
 import org.ggf.xbeans.cddlm.smartfrog.SmartFrogDeploymentDescriptorType;
 import org.smartfrog.services.deployapi.engine.Job;
-import org.smartfrog.services.deployapi.engine.JobRepository;
-import org.smartfrog.services.deployapi.engine.ServerInstance;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.transport.endpoints.Processor;
 import org.smartfrog.services.deployapi.transport.endpoints.XmlBeansEndpoint;
@@ -75,7 +71,6 @@ public class InitializeProcessor extends Processor {
     public InitializeResponseDocument initialize(
             Job activeJob,
             InitializeRequestDocument.InitializeRequest request) {
-
 
         //get the options out the way
         options = new OptionProcessor(getOwner());
@@ -165,10 +160,10 @@ public class InitializeProcessor extends Processor {
      */
     private boolean deploySmartFrog() throws IOException, XmlException {
         descriptorFile = job.getDescriptorFile();
-        SmartFrogDeploymentDescriptorType sfxml=SmartFrogDeploymentDescriptorType.Factory.parse(descriptorFile);
+        SmartFrogDeploymentDescriptorType sfxml = SmartFrogDeploymentDescriptorType.Factory.parse(descriptorFile);
 
         String applicationName = job.getName();
-        String version =sfxml.getVersion();
+        String version = sfxml.getVersion();
         if (!Constants.SMARTFROG_XML_VERSION.equals(version)) {
             raiseUnsupportedLanguageFault("Unsupported SmartFrog version");
         }

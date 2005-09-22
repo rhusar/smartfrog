@@ -19,12 +19,10 @@
  */
 package org.smartfrog.services.deployapi.binding.bindings;
 
-import org.ggf.xbeans.cddlm.api.LookupSystemRequestDocument;
-import org.ggf.xbeans.cddlm.api.LookupSystemResponseDocument;
+import org.apache.xmlbeans.XmlOptions;
 import org.ggf.xbeans.cddlm.api.InitializeRequestDocument;
 import org.ggf.xbeans.cddlm.cmp.InitializeResponseDocument;
 import org.smartfrog.services.deployapi.binding.EndpointBinding;
-import org.apache.xmlbeans.XmlOptions;
 
 /**
  * created 21-Sep-2005 13:08:40

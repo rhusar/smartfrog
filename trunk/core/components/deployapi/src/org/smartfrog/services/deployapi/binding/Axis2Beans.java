@@ -19,31 +19,30 @@
  */
 package org.smartfrog.services.deployapi.binding;
 
-import org.apache.xmlbeans.XmlObject;
-import org.apache.xmlbeans.XmlException;
-import org.apache.xmlbeans.XmlOptions;
-import org.apache.axis2.om.OMElement;
-import org.apache.axis2.om.OMXMLParserWrapper;
-import org.apache.axis2.om.OMAbstractFactory;
-import org.apache.axis2.om.OMFactory;
-import org.apache.axis2.om.impl.llom.factory.OMXMLBuilderFactory;
-import org.apache.axis2.om.impl.llom.builder.StAXOMBuilder;
 import org.apache.axis2.clientapi.StreamWrapper;
+import org.apache.axis2.om.OMAbstractFactory;
+import org.apache.axis2.om.OMElement;
+import org.apache.axis2.om.OMFactory;
+import org.apache.axis2.om.OMXMLParserWrapper;
+import org.apache.axis2.om.impl.llom.builder.StAXOMBuilder;
+import org.apache.axis2.om.impl.llom.factory.OMXMLBuilderFactory;
+import org.apache.xmlbeans.XmlException;
+import org.apache.xmlbeans.XmlObject;
+import org.apache.xmlbeans.XmlOptions;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
 
-import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
-import java.io.InputStream;
+import javax.xml.stream.XMLStreamReader;
 import java.io.IOException;
-import java.io.StringWriter;
+import java.io.InputStream;
 import java.io.StringReader;
+import java.io.StringWriter;
 
 /**
  * Convert axis2 stuff into a an XMLBean
- *
  */
-public class Axis2Beans<T extends XmlObject>  {
+public class Axis2Beans<T extends XmlObject> {
 
     /**
      * generation-time options
@@ -72,9 +71,9 @@ public class Axis2Beans<T extends XmlObject>  {
             XmlObject xmlObject = T.Factory.parse(reader);
             T t;
             try {
-                t=(T)xmlObject;
+                t = (T) xmlObject;
             } catch (ClassCastException e) {
-                throw new BaseException(ERROR_WRONG_TYPE +xmlObject);
+                throw new BaseException(ERROR_WRONG_TYPE + xmlObject);
 
             }
 
@@ -86,26 +85,45 @@ public class Axis2Beans<T extends XmlObject>  {
     }
 
 
-
     /**
      * Convert a message to the body of the response.
+     *
      * @param document
      * @return a converted file
+     * @throws BaseException if there is trouble
      */
-    public OMElement convert(T document)  {
+    public OMElement convert(T document) {
         return convertIntermediateDoc(document);
         //return convertDirect(document);
     }
 
-    private OMElement convertIntermediateDoc(T document) {
+    /**
+     * convert a doc
+     *
+     * @param document
+     * @return the converted doc
+     * @throws BaseException if there is trouble
+     */
+    public static OMElement convertDocument(XmlObject document) {
+        return convertIntermediateDoc(document);
+    }
+
+    /**
+     * convert a doc
+     *
+     * @param document
+     * @return the converted doc
+     * @throws BaseException if there is trouble
+     */
+    private static OMElement convertIntermediateDoc(XmlObject document) {
         try {
             StringWriter writer = new StringWriter();
             XmlOptions writeOptions = new XmlOptions();
             writeOptions.setSaveOuter();
             writeOptions.setSaveUseOpenFrag();
-            document.save(writer,options);
+            document.save(writer, writeOptions);
             writer.close();
-            String textForm=writer.toString();
+            String textForm = writer.toString();
             StringReader stringReader = new StringReader(textForm);
             XMLInputFactory inputFactory = XMLInputFactory.newInstance();
             XMLStreamReader parser = inputFactory.createXMLStreamReader(stringReader);
@@ -120,6 +138,7 @@ public class Axis2Beans<T extends XmlObject>  {
 
     /**
      * Convert a message to the body of the response.
+     *
      * @param document
      * @return a converted file
      */

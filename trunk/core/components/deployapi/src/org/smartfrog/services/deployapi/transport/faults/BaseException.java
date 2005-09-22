@@ -1,11 +1,10 @@
 package org.smartfrog.services.deployapi.transport.faults;
 
 import org.apache.axis2.AxisFault;
-import org.ggf.xbeans.cddlm.wsrf.wsbf.BaseFaultType;
-import org.ggf.cddlm.utils.QualifiedName;
+import org.apache.xmlbeans.XmlObject;
 import org.ggf.cddlm.utils.FaultTemplate;
-import org.smartfrog.services.deployapi.system.Utils;
-import org.smartfrog.services.deployapi.system.Constants;
+import org.ggf.cddlm.utils.QualifiedName;
+import org.ggf.xbeans.cddlm.wsrf.wsbf.BaseFaultType;
 
 import javax.xml.namespace.QName;
 import java.util.GregorianCalendar;
@@ -21,6 +20,12 @@ public class BaseException extends RuntimeException {
     private String faultReason;
 
     private String faultActor;
+
+    /**
+     * This is here because WS-BaseFaults persists in having some world view of declared faults, forcing
+     * the recipient to expect to handle everything that went wrong.
+     */
+    private XmlObject underlyingFaultData;
 
     /**
      * Constructs a new runtime exception with <code>null</code> as its
@@ -40,10 +45,23 @@ public class BaseException extends RuntimeException {
         super(template.getErrorMessage());
         QualifiedName qualifiedName = template.getQualifiedName();
         setFaultCode(qualifiedName);
-        faultReason=template.getWireMessage();
+        faultReason = template.getWireMessage();
     }
 
+
+    /**
+     * convert a throwable into a BaseException.
+     *
+     * @param thrown
+     * @return
+     */
     public static BaseException makeFault(Throwable thrown) {
+        if (thrown instanceof BaseException) {
+            return (BaseException) thrown;
+        }
+        if (thrown instanceof AxisFault) {
+            return new DeploymentException((AxisFault) thrown);
+        }
         return new BaseException(thrown);
     }
 
@@ -76,6 +94,7 @@ public class BaseException extends RuntimeException {
 
     /**
      * Override point: get the default faultcode
+     *
      * @return the qname of the default fault code for this type of fault
      */
     protected QName getDefaultFaultCode() {
@@ -84,8 +103,8 @@ public class BaseException extends RuntimeException {
     }
 
     protected void initFaultCode() {
-        if(faultCode==null) {
-            faultCode=getDefaultFaultCode();
+        if (faultCode == null) {
+            faultCode = getDefaultFaultCode();
         }
     }
 
@@ -107,10 +126,11 @@ public class BaseException extends RuntimeException {
 
     /**
      * overriders beware: this is called in the ctor
+     *
      * @param baseFaultType
      */
     public void configureInnerFault(BaseFaultType baseFaultType) {
-        if(baseFaultType.getTimestamp()!=null) {
+        if (baseFaultType.getTimestamp() != null) {
             baseFaultType.setTimestamp(new GregorianCalendar());
         }
     }
@@ -134,8 +154,8 @@ public class BaseException extends RuntimeException {
 
     public void setFaultCode(QualifiedName faultCode) {
         setFaultCode(
-                faultCode==null?null:
-                    new QName(faultCode.getNamespaceURI(),faultCode.getNamespaceURI()));
+                faultCode == null ? null :
+                        new QName(faultCode.getNamespaceURI(), faultCode.getNamespaceURI()));
     }
 
     public String getFaultReason() {
@@ -157,6 +177,7 @@ public class BaseException extends RuntimeException {
 
     /**
      * Turn into an Axis Fault or otherwise serialize
+     *
      * @return
      */
     public AxisFault makeAxisFault() {

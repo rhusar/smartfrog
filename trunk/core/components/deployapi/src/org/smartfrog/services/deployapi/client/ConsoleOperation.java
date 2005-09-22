@@ -20,7 +20,6 @@
 package org.smartfrog.services.deployapi.client;
 
 import org.apache.axis2.addressing.EndpointReference;
-import org.apache.axis2.clientapi.Call;
 import org.ggf.xbeans.cddlm.api.CreateRequestDocument;
 import org.ggf.xbeans.cddlm.api.CreateResponseDocument;
 import org.ggf.xbeans.cddlm.api.DescriptorType;
@@ -73,16 +72,6 @@ public abstract class ConsoleOperation {
     public static final String NO_URI_FOUND = "No application URI";
     public static final String INVALID_URI = "Invalid URI:";
 
-    /**
-     * demand create our stub. retain it afterwards for reuse.
-     *
-     * @return
-     * @throws java.rmi.RemoteException
-     */
-    public Call createCall(String name) throws RemoteException {
-        Call call = portal.createStub(name);
-        return call;
-    }
 
     public ConsoleOperation(PortalEndpointer endpointer, PrintWriter out) {
         this.out = out;
@@ -225,7 +214,7 @@ public abstract class ConsoleOperation {
             request.setHostname(hostname);
         }
         CreateResponseDocument response =
-                binding.invokeBlocking(portal,Constants.API_ELEMENT_CREATE_REQUEST, requestDoc);
+                binding.invokeBlocking(portal, Constants.API_PORTAL_OPERATION_CREATE, requestDoc);
         SystemEndpointer createdSystem = new SystemEndpointer(response.getCreateResponse());
         return createdSystem;
     }
@@ -256,7 +245,8 @@ public abstract class ConsoleOperation {
         InitializeRequestDocument.InitializeRequest request = requestDoc.addNewInitializeRequest();
         request.setDescriptor(descriptor);
         request.setOptions(options);
-        InitializeResponseDocument responseDoc = binding.invokeBlocking(system, Constants.API_ELEMENT_INITALIZE_REQUEST, requestDoc);
+        InitializeResponseDocument responseDoc = binding
+                .invokeBlocking(system, Constants.API_ELEMENT_INITALIZE_REQUEST, requestDoc);
     }
 
     /**

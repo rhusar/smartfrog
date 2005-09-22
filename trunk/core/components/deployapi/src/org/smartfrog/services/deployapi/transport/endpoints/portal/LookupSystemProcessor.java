@@ -19,23 +19,23 @@
  */
 package org.smartfrog.services.deployapi.transport.endpoints.portal;
 
+import org.apache.axis2.AxisFault;
+import org.apache.axis2.om.OMElement;
+import org.ggf.xbeans.cddlm.api.LookupSystemRequestDocument;
+import org.ggf.xbeans.cddlm.api.LookupSystemResponseDocument;
+import org.smartfrog.services.deployapi.binding.bindings.LookupSystemBinding;
+import org.smartfrog.services.deployapi.engine.Job;
+import org.smartfrog.services.deployapi.engine.ServerInstance;
+import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.transport.endpoints.Processor;
 import org.smartfrog.services.deployapi.transport.endpoints.XmlBeansEndpoint;
 import org.smartfrog.services.deployapi.transport.faults.DeploymentException;
-import org.smartfrog.services.deployapi.engine.ServerInstance;
-import org.smartfrog.services.deployapi.engine.Job;
-import org.smartfrog.services.deployapi.system.Constants;
-import org.smartfrog.services.deployapi.binding.bindings.LookupSystemBinding;
-import org.ggf.xbeans.cddlm.api.LookupSystemRequestDocument;
-import org.ggf.xbeans.cddlm.api.LookupSystemResponseDocument;
-import org.apache.axis2.om.OMElement;
-import org.apache.axis2.AxisFault;
 
 /**
  * created 21-Sep-2005 10:37:53
  */
 
-public class LookupSystemProcessor extends PortalProcessor {
+public class LookupSystemProcessor extends Processor {
 
     public LookupSystemProcessor(XmlBeansEndpoint owner) {
         super(owner);
@@ -45,11 +45,12 @@ public class LookupSystemProcessor extends PortalProcessor {
     public OMElement process(OMElement request) throws AxisFault {
         LookupSystemBinding binding = new LookupSystemBinding();
         LookupSystemRequestDocument lookupSystemRequestDocument = binding.convertRequest(request);
-        LookupSystemRequestDocument.LookupSystemRequest lookupSystemRequest = lookupSystemRequestDocument.getLookupSystemRequest();
+        LookupSystemRequestDocument.LookupSystemRequest lookupSystemRequest = lookupSystemRequestDocument
+                .getLookupSystemRequest();
         ServerInstance server = ServerInstance.currentInstance();
         String resourceId = lookupSystemRequest.getResourceId();
         Job job = server.getJobs().lookup(resourceId);
-        if(job==null) {
+        if (job == null) {
             throw new DeploymentException(Constants.F_NO_SUCH_APPLICATION);
         }
         LookupSystemResponseDocument response = binding.createResponse();

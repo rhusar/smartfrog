@@ -156,4 +156,15 @@ public abstract class ApiTestBase extends ConsoleTestBase {
                 DeploySmartFrogTest.SIMPLE_DESCRIPTOR);
         return dt;
     }*/
+
+    protected SystemEndpointer createSystem() throws RemoteException {
+        SystemEndpointer systemEndpointer = createSystem(null);
+        return systemEndpointer;
+    }
+
+    protected SystemEndpointer createSystem(String hostname) throws RemoteException {
+        SystemEndpointer systemEndpointer = getOperation().create(hostname);
+        log.info("Created system "+systemEndpointer);
+        return systemEndpointer;
+    }
 }

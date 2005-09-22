@@ -21,20 +21,20 @@
 package org.smartfrog.services.deployapi.transport.endpoints;
 
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.i18n.Messages;
 import org.apache.axis2.addressing.MessageInformationHeaders;
 import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.description.OperationDescription;
-import org.apache.axis2.description.ServiceDescription;
 import org.apache.axis2.description.Parameter;
+import org.apache.axis2.description.ServiceDescription;
 import org.apache.axis2.engine.DependencyManager;
 import org.apache.axis2.engine.MessageReceiver;
-import org.apache.axis2.om.OMElement;
+import org.apache.axis2.i18n.Messages;
 import org.apache.axis2.om.OMAbstractFactory;
+import org.apache.axis2.om.OMElement;
 import org.apache.axis2.receivers.AbstractInOutSyncMessageReceiver;
-import org.apache.axis2.soap.SOAPEnvelope;
-import org.apache.axis2.soap.SOAP12Constants;
 import org.apache.axis2.soap.SOAP11Constants;
+import org.apache.axis2.soap.SOAP12Constants;
+import org.apache.axis2.soap.SOAPEnvelope;
 import org.apache.wsdl.WSDLService;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
 import org.smartfrog.sfcore.security.SFClassLoader;
@@ -176,6 +176,7 @@ public class WsrfReceiver extends AbstractInOutSyncMessageReceiver
 
     /**
      * Load an impl class via smartfrog
+     *
      * @param msgContext
      * @return
      * @throws AxisFault
@@ -197,7 +198,7 @@ public class WsrfReceiver extends AbstractInOutSyncMessageReceiver
                                 "SERVICE_CLASS"));
             }
             String classname = (String) implInfoParam.getValue();
-            classname=classname.trim();
+            classname = classname.trim();
             Class implClass =
                     SFClassLoader.forName(classname, null, true);
             return implClass.newInstance();

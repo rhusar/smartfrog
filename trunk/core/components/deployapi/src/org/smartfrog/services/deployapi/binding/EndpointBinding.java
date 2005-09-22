@@ -19,11 +19,11 @@
  */
 package org.smartfrog.services.deployapi.binding;
 
+import org.apache.axis2.AxisFault;
+import org.apache.axis2.clientapi.Call;
+import org.apache.axis2.om.OMElement;
 import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.XmlOptions;
-import org.apache.axis2.om.OMElement;
-import org.apache.axis2.clientapi.Call;
-import org.apache.axis2.AxisFault;
 import org.smartfrog.services.deployapi.client.Endpointer;
 
 import javax.xml.namespace.QName;
@@ -42,14 +42,13 @@ public abstract class EndpointBinding<Tin extends XmlObject,Tout extends XmlObje
     private QName operation;
 
 
-
     public EndpointBinding(XmlOptions inOptions, XmlOptions outOptions) {
-        in=new Axis2Beans<Tin>(inOptions);
-        out=new Axis2Beans<Tout>(outOptions);
+        in = new Axis2Beans<Tin>(inOptions);
+        out = new Axis2Beans<Tout>(outOptions);
     }
 
     public EndpointBinding() {
-        this(null,null);
+        this(null, null);
     }
 
     public QName getOperation() {
@@ -60,8 +59,8 @@ public abstract class EndpointBinding<Tin extends XmlObject,Tout extends XmlObje
         this.operation = operation;
     }
 
-    public void setOperation(String namespace,String localpart) {
-        this.operation = new QName(namespace,localpart);
+    public void setOperation(String namespace, String localpart) {
+        this.operation = new QName(namespace, localpart);
     }
 
     public Axis2Beans<Tin> getRequestBinding() {
@@ -90,18 +89,21 @@ public abstract class EndpointBinding<Tin extends XmlObject,Tout extends XmlObje
 
     /**
      * create a request object
+     *
      * @return
      */
-    public abstract Tin createRequest() ;
+    public abstract Tin createRequest();
 
     /**
      * create a request object
+     *
      * @return
      */
-    public abstract Tout createResponse() ;
+    public abstract Tout createResponse();
 
     /**
      * Invoke the call in a blocking operation with our payload
+     *
      * @param call
      * @param operation
      * @param data
@@ -122,10 +124,10 @@ public abstract class EndpointBinding<Tin extends XmlObject,Tout extends XmlObje
      * @return the response
      * @throws AxisFault
      */
-    public Tout invokeBlocking(Endpointer endpointer,String operation,Tin data) throws RemoteException {
+    public Tout invokeBlocking(Endpointer endpointer, String operation, Tin data) throws RemoteException {
         Call call = endpointer.createStub(operation);
 
-        return invokeBlocking(call, operation,data);
+        return invokeBlocking(call, operation, data);
     }
 
     public XmlOptions getInOptions() {

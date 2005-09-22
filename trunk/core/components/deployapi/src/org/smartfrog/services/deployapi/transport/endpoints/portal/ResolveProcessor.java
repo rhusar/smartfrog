@@ -19,13 +19,14 @@
  */
 package org.smartfrog.services.deployapi.transport.endpoints.portal;
 
+import org.smartfrog.services.deployapi.transport.endpoints.Processor;
 import org.smartfrog.services.deployapi.transport.endpoints.XmlBeansEndpoint;
 
 /**
  * created 21-Sep-2005 11:51:42
  */
 
-public class ResolveProcessor extends PortalProcessor {
+public class ResolveProcessor extends Processor {
 
     public ResolveProcessor(XmlBeansEndpoint owner) {
         super(owner);

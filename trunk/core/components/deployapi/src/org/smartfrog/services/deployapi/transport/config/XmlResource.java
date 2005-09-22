@@ -5,5 +5,5 @@ import java.rmi.Remote;
 /**
  */
 public interface XmlResource extends Remote {
-    String ATTR_RESOURCENAME ="resourceName";
+    String ATTR_RESOURCENAME = "resourceName";
 }

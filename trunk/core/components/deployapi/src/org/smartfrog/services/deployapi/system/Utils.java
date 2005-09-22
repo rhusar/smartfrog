@@ -19,10 +19,10 @@
  */
 package org.smartfrog.services.deployapi.system;
 
-import org.ggf.cddlm.utils.QualifiedName;
-import org.ggf.xbeans.cddlm.cmp.DeploymentFaultType;
 import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.XmlOptions;
+import org.ggf.cddlm.utils.QualifiedName;
+import org.ggf.xbeans.cddlm.cmp.DeploymentFaultType;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
 
 import javax.xml.namespace.QName;
@@ -38,16 +38,18 @@ public class Utils {
     }
 
     /**
-    * Turn a ggf qualifiedname into a proper java one
-    * @param in
-    * @return a converted qname
-    */
+     * Turn a ggf qualifiedname into a proper java one
+     *
+     * @param in
+     * @return a converted qname
+     */
     public static QName convert(QualifiedName in) {
-        return new QName(in.getNamespaceURI(),in.getLocalPart());
+        return new QName(in.getNamespaceURI(), in.getLocalPart());
     }
 
     /**
      * Turn a java qname into a ggf qualifiedname
+     *
      * @param in
      * @return a converted qname
      */
@@ -60,6 +62,7 @@ public class Utils {
      *
      * @param message
      * @throws org.smartfrog.services.deployapi.transport.faults.DeploymentException
+     *
      * @returns true for use in conditional code
      */
     public static boolean validate(XmlObject message) {
@@ -82,5 +85,5 @@ public class Utils {
     public static void maybeValidate(XmlObject message) {
         assert validate(message);
     }
-    
+
 }

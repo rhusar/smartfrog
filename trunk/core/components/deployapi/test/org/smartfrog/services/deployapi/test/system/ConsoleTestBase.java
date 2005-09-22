@@ -37,6 +37,8 @@ import org.smartfrog.services.deployapi.client.PortalEndpointer;
 import org.smartfrog.services.deployapi.client.ConsoleOperation;
 import org.smartfrog.services.deployapi.client.SystemEndpointer;
 import org.apache.axis2.AxisFault;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.ggf.cddlm.utils.FaultTemplate;
 
 /**
@@ -59,11 +61,13 @@ public abstract class ConsoleTestBase extends TestCase {
     private PrintWriter out = new PrintWriter(outputWriter, true);
     public static final String INVALID_URI = "http://invalid.example.org/undeploy/1";
 
+    protected static Log log= LogFactory.getLog(ConsoleTestBase.class);
+
     /**
-     * get the operation of this test base
-     *
-     * @return
-     */
+    * get the operation of this test base
+    *
+    * @return
+    */
     protected abstract ConsoleOperation getOperation();
 
     /**

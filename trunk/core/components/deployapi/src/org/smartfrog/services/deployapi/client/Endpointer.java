@@ -19,16 +19,15 @@
  */
 package org.smartfrog.services.deployapi.client;
 
+import org.apache.axis2.AxisFault;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.clientapi.Call;
-import org.apache.axis2.description.ServiceDescription;
-import org.apache.axis2.description.OperationDescription;
-import org.apache.axis2.AxisFault;
-import org.apache.axis2.soap.SOAP11Constants;
-import org.apache.axis2.soap.SOAP12Constants;
-import org.apache.axis2.context.ConfigurationContextFactory;
 import org.apache.axis2.context.ConfigurationContext;
+import org.apache.axis2.context.ConfigurationContextFactory;
 import org.apache.axis2.context.ServiceContext;
+import org.apache.axis2.description.OperationDescription;
+import org.apache.axis2.description.ServiceDescription;
+import org.apache.axis2.soap.SOAP12Constants;
 
 import javax.xml.namespace.QName;
 import java.io.Serializable;
@@ -132,7 +131,7 @@ public class Endpointer implements Serializable {
         call.setExceptionToBeThrownOnSOAPFault(true);
         call.setTo(getEndpointer());
         call.setSoapVersionURI(SOAP12Constants.SOAP_ENVELOPE_NAMESPACE_URI);
-        if(operationName!=null) {
+        if (operationName != null) {
             call.setSoapAction(operationName);
             call.setWsaAction(operationName);
 /*
@@ -143,7 +142,7 @@ public class Endpointer implements Serializable {
         }
 //        call.setTransportInfo(getSenderTransport(),getListenerTransport(),isSeparateListenerTransport());
         //turn on addressing
-        //call.engageModule(new QName(org.apache.axis2.Constants.MODULE_ADDRESSING));
+        call.engageModule(new QName(org.apache.axis2.Constants.MODULE_ADDRESSING));
 
         return call;
     }
@@ -191,6 +190,7 @@ public class Endpointer implements Serializable {
 
     /**
      * get our axis2 home. currently null, meaning "read config data off the classpath, not the filesys"
+     *
      * @return a string representing the home dir, in a platform-specific location.
      */
     protected String getAxis2Home() {
@@ -199,6 +199,7 @@ public class Endpointer implements Serializable {
 
     /**
      * this does any late initialisation of the EPR, primarily setting up axis
+     *
      * @throws org.apache.axis2.AxisFault
      */
     protected void init() throws AxisFault {

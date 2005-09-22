@@ -22,8 +22,8 @@ package org.smartfrog.services.deployapi.transport.config;
 
 /**
  */
-public interface Axis2Service  extends XmlResource {
+public interface Axis2Service extends XmlResource {
 
-    String ATTR_NAME="name";
+    String ATTR_NAME = "name";
 
 }

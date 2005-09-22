@@ -35,6 +35,6 @@ public abstract class CallbackRaiser {
      * @param sfe
      */
     public abstract void raiseLifecycleEvent(Job job, Prim object,
-            SmartFrogException sfe) ;
+                                             SmartFrogException sfe);
 
 }

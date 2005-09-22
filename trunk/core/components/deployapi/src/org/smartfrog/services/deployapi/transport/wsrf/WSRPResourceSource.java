@@ -17,33 +17,27 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.deployapi.binding.bindings;
+package org.smartfrog.services.deployapi.transport.wsrf;
 
-import org.ggf.xbeans.cddlm.api.CreateRequestDocument;
-import org.ggf.xbeans.cddlm.api.CreateResponseDocument;
-import org.smartfrog.services.deployapi.binding.EndpointBinding;
+import org.apache.xmlbeans.XmlObject;
+import org.smartfrog.services.deployapi.transport.faults.BaseException;
+
+import javax.xml.namespace.QName;
 
 /**
- * created 21-Sep-2005 11:48:58
+ * Interface for anything that provides WSRP resource information.
+ * created 22-Sep-2005 15:57:46
  */
 
-public class CreateBinding extends EndpointBinding<CreateRequestDocument, CreateResponseDocument> {
+
+public interface WSRPResourceSource {
 
     /**
-     * create a request object
+     * Get a resource
      *
-     * @return
+     * @param resource
+     * @return null for no match;
+     * @throws BaseException if they feel like it
      */
-    public CreateRequestDocument createRequest() {
-        return CreateRequestDocument.Factory.newInstance(getInOptions());
-    }
-
-    /**
-     * create a request object
-     *
-     * @return
-     */
-    public CreateResponseDocument createResponse() {
-        return CreateResponseDocument.Factory.newInstance(getOutOptions());
-    }
+    XmlObject getResource(QName resource);
 }

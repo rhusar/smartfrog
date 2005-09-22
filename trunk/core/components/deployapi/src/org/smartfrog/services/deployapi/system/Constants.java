@@ -28,6 +28,7 @@ import org.ggf.cddlm.generated.api.CddlmConstants;
 
 public class Constants extends CddlmConstants {
     public static final String LOCALHOST = "localhost";
+    public static final String LOCALHOST_IPV4 = "127.0.0.1";
     public static final String ERROR_CREATE_UNSUPPORTED_HOST = "Unsupported Host";
     public static final String ERROR_NOT_DOCLIT = "only doc/lit SOAP supported";
 
@@ -60,38 +61,38 @@ public class Constants extends CddlmConstants {
      */
     public static final String CDDLM_MAPPINGS[] = {
             XML_CDL_NAMESPACE,
-                API_PACKAGE + CDL_FILENAME_XML_CDL,
+            API_PACKAGE + CDL_FILENAME_XML_CDL,
             CDL_API_TYPES_NAMESPACE,
-                API_PACKAGE +CDL_FILENAME_DEPLOYMENT_API,
+            API_PACKAGE + CDL_FILENAME_DEPLOYMENT_API,
             WS_ADDRESSING_NAMESPACE,
-                WSRF_PACKAGE + XML_FILENAME_WS_ADDRESSING,
+            WSRF_PACKAGE + XML_FILENAME_WS_ADDRESSING,
             WS_ADDRESSING_NAMESPACE,
-                WSRF_PACKAGE + XML_FILENAME_WS_ADDRESSING,
+            WSRF_PACKAGE + XML_FILENAME_WS_ADDRESSING,
     };
 
     /**
-     *  @value
+     * @value
      */
     public static final String SMARTFROG_XML_VERSION = "1.0";
 
     /**
-     *  @value
+     * @value
      */
     public static final String DEFAULT_HOST = "127.0.0.1";
 
     /**
-     *  @value
+     * @value
      */
     public static final String DEFAULT_PATH = "/services/Portal";
 
     /**
-     *  @value
+     * @value
      */
     public static final int DEFAULT_SERVICE_PORT = 5050;
 
 
     /**
-     *  @value
+     * @value
      */
     public static final String DEFAULT_PROTOCOL = "http";
 
@@ -99,25 +100,25 @@ public class Constants extends CddlmConstants {
      * enum of lifecycle
      */
     public enum LifecycleStateEnum {
-        undefined ,
-        instantiated ,
+        undefined,
+        instantiated,
         initialized,
-        running ,
-        failed ,
+        running,
+        failed,
         terminated
     }
 
     public enum DeploymentLanguage {
-        unknown("",""),
-        smartfrog(SMARTFROG_NAMESPACE,".sf"),
-        cdl(XML_CDL_NAMESPACE,".cdl");
+        unknown("", ""),
+        smartfrog(SMARTFROG_NAMESPACE, ".sf"),
+        cdl(XML_CDL_NAMESPACE, ".cdl");
 
         private String namespace;
         private String extension;
 
-        DeploymentLanguage(String namespace,String extension) {
-           this.namespace = namespace;
-           this.extension = extension;
+        DeploymentLanguage(String namespace, String extension) {
+            this.namespace = namespace;
+            this.extension = extension;
         }
 
         public String getNamespace() {
@@ -134,17 +135,17 @@ public class Constants extends CddlmConstants {
 
         /**
          * map from a namespace to a language
+         *
          * @param ns
          * @return the language, or #unknown if not known
          */
         public static DeploymentLanguage eval(String ns) {
-            if(smartfrog.namespaceEquals(ns)) {
+            if (smartfrog.namespaceEquals(ns)) {
                 return smartfrog;
             }
-            if(cdl.namespaceEquals(ns)) {
+            if (cdl.namespaceEquals(ns)) {
                 return cdl;
-            }
-            else return unknown;
+            } else return unknown;
         }
 
 

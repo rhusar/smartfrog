@@ -1,9 +1,10 @@
 package org.smartfrog.services.deployapi.transport.faults;
 
-import org.ggf.xbeans.cddlm.wsrf.wsbf.BaseFaultType;
+import org.apache.axis2.AxisFault;
+import org.ggf.cddlm.utils.FaultTemplate;
 import org.ggf.xbeans.cddlm.cmp.DeploymentFaultType;
 import org.ggf.xbeans.cddlm.cmp.StringListType;
-import org.ggf.cddlm.utils.FaultTemplate;
+import org.ggf.xbeans.cddlm.wsrf.wsbf.BaseFaultType;
 
 import javax.xml.namespace.QName;
 
@@ -47,6 +48,16 @@ public class DeploymentException extends BaseException {
         super(template);
     }
 
+    /**
+     * nest an axisFault inside. Maybe we have special treatment here
+     *
+     * @param axisFault
+     * @TODO: special treatment here :)
+     */
+    public DeploymentException(AxisFault axisFault) {
+        super(axisFault);
+    }
+
     protected BaseFaultType createInnerFault() {
         return super.createInnerFault();
     }
@@ -60,7 +71,7 @@ public class DeploymentException extends BaseException {
         super.configureInnerFault(baseFaultType);
         if (baseFaultType instanceof DeploymentFaultType) {
             DeploymentFaultType fault = (DeploymentFaultType) baseFaultType;
-            if(!fault.isSetStack()) {
+            if (!fault.isSetStack()) {
                 StackTraceElement[] stackTrace = getStackTrace();
                 copyStackTrace(fault, stackTrace);
             }
@@ -70,7 +81,7 @@ public class DeploymentException extends BaseException {
 
     public void copyStackTrace(DeploymentFaultType fault, StackTraceElement[] stackTrace) {
         StringListType stackList = fault.addNewStack();
-        for(StackTraceElement element:stackTrace) {
+        for (StackTraceElement element : stackTrace) {
             stackList.addItem(element.toString());
         }
     }
