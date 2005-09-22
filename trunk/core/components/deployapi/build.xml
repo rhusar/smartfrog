@@ -419,8 +419,8 @@
 <!--         <arg value="-ss" /> -->
 <!--         <arg value="-sd" /> -->
        <arg value="-uri" />
-       <arg file="test/files/deployapi.wsdl" />
-<!--        <arg file="${deployment-api.wsdl}" /> -->
+      <!--  <arg file="test/files/deployapi.wsdl" /> -->
+       <arg file="${deployment-api.wsdl}" /> 
     </core:java>
   </target>
   

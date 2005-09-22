@@ -199,13 +199,15 @@ public abstract class ConsoleTestBase extends TestCase {
                                           final String text) {
         String faultAsString = fault.getMessage();
         final String actualCode = fault.getFaultCode();
-        assertEquals("expected [" +
+        boolean localpartFound=actualCode!=null
+                && actualCode.indexOf(expectedCode.getLocalPart())>=0;
+        assertTrue("expected [" +
                 expectedCode +
                 "] \nbut got\nfault code:[" +
                 actualCode +
                 "]\n" +
                 faultAsString,
-                expectedCode.toString(), actualCode);
+                localpartFound);
         if (text != null) {
             String message = fault.getMessage();
             assertNotNull("fault reason is null in " + faultAsString, message);
@@ -236,7 +238,7 @@ public abstract class ConsoleTestBase extends TestCase {
     public void assertNoSuchApplication(String id)
             throws RemoteException {
         try {
-            SystemEndpointer systemEndpointer = getOperation().lookupApplication(id);
+            SystemEndpointer systemEndpointer = getOperation().lookupSystem(id);
             fail("Expected not to find application "+id);
         } catch (AxisFault fault) {
             assertFaultMatches(fault,Constants.F_NO_SUCH_APPLICATION);

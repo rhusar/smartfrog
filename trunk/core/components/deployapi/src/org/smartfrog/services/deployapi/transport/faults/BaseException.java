@@ -5,6 +5,7 @@ import org.ggf.xbeans.cddlm.wsrf.wsbf.BaseFaultType;
 import org.ggf.cddlm.utils.QualifiedName;
 import org.ggf.cddlm.utils.FaultTemplate;
 import org.smartfrog.services.deployapi.system.Utils;
+import org.smartfrog.services.deployapi.system.Constants;
 
 import javax.xml.namespace.QName;
 import java.util.GregorianCalendar;
@@ -37,7 +38,8 @@ public class BaseException extends RuntimeException {
 
     public BaseException(FaultTemplate template) {
         super(template.getErrorMessage());
-        faultCode= Utils.convert(template.getQualifiedName());
+        QualifiedName qualifiedName = template.getQualifiedName();
+        setFaultCode(qualifiedName);
         faultReason=template.getWireMessage();
     }
 
@@ -70,6 +72,21 @@ public class BaseException extends RuntimeException {
     public BaseException(String arg0, Throwable arg1) {
         super(arg0, arg1);
         createInnerFault();
+    }
+
+    /**
+     * Override point: get the default faultcode
+     * @return the qname of the default fault code for this type of fault
+     */
+    protected QName getDefaultFaultCode() {
+        //TODO
+        return null;
+    }
+
+    protected void initFaultCode() {
+        if(faultCode==null) {
+            faultCode=getDefaultFaultCode();
+        }
     }
 
     protected void createAndConfigureInnerFault() {
@@ -143,7 +160,9 @@ public class BaseException extends RuntimeException {
      * @return
      */
     public AxisFault makeAxisFault() {
-        return new AxisFault(this);
+        AxisFault fault = new AxisFault(this);
+        fault.setFaultCode(faultCode.toString());
+        return fault;
     }
 
     public void addFaultDetail(QName name, String detail) {

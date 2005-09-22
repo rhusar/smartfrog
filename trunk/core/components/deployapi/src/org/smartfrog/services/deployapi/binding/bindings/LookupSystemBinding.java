@@ -22,6 +22,7 @@ package org.smartfrog.services.deployapi.binding.bindings;
 import org.ggf.xbeans.cddlm.api.LookupSystemRequestDocument;
 import org.ggf.xbeans.cddlm.api.LookupSystemResponseDocument;
 import org.smartfrog.services.deployapi.binding.EndpointBinding;
+import org.smartfrog.services.deployapi.system.Constants;
 import org.apache.xmlbeans.XmlOptions;
 
 /**
@@ -33,9 +34,11 @@ public class LookupSystemBinding extends EndpointBinding<LookupSystemRequestDocu
 
     public LookupSystemBinding(XmlOptions inOptions, XmlOptions outOptions) {
         super(inOptions, outOptions);
+        setOperation(Constants.CDL_API_WSDL_NAMESPACE,Constants.API_ELEMENT_LOOKUPSYSTEM_REQUEST);
     }
 
     public LookupSystemBinding() {
+        this(null,null);
     }
 
     /**

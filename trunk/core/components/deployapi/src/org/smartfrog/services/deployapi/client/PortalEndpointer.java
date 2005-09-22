@@ -20,17 +20,77 @@
 package org.smartfrog.services.deployapi.client;
 
 
+import org.smartfrog.services.deployapi.system.Constants;
+import org.apache.axis2.description.OperationDescription;
+import org.apache.axis2.AxisFault;
+
+import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-
-import org.smartfrog.services.deployapi.system.Constants;
 
 /**
  * created Aug 31, 2004 4:27:08 PM represents a server binding.
  */
 
 public class PortalEndpointer extends Endpointer {
+
+    /**
+     * This is pasted in from generated axis code
+     */
+    static {
+
+        //creating the Service
+        serviceDescription = new org.apache.axis2.description.ServiceDescription(
+                new QName(Constants.CDL_API_WSDL_NAMESPACE, "PortalEPR"));
+
+        //creating the operations
+        OperationDescription __operation;
+        operations = new OperationDescription[7];
+
+        __operation = new OperationDescription();
+        __operation.setName(new QName(Constants.CDL_API_WSDL_NAMESPACE,
+                "GetMultipleResourceProperties"));
+        operations[0] = __operation;
+        serviceDescription.addOperation(__operation);
+
+        __operation = new OperationDescription();
+        __operation.setName(
+                new QName(Constants.CDL_API_WSDL_NAMESPACE, "Create"));
+        operations[1] = __operation;
+        serviceDescription.addOperation(__operation);
+
+        __operation = new OperationDescription();
+        __operation.setName(
+                new QName(Constants.CDL_API_WSDL_NAMESPACE, "LookupSystem"));
+        operations[2] = __operation;
+        serviceDescription.addOperation(__operation);
+
+        __operation = new OperationDescription();
+        __operation.setName(new QName(Constants.CDL_API_WSDL_NAMESPACE,
+                "GetCurrentMessage"));
+        operations[3] = __operation;
+        serviceDescription.addOperation(__operation);
+
+        __operation = new OperationDescription();
+        __operation.setName(
+                new QName(Constants.CDL_API_WSDL_NAMESPACE, "Resolve"));
+        operations[4] = __operation;
+        serviceDescription.addOperation(__operation);
+
+        __operation = new OperationDescription();
+        __operation.setName(
+                new QName(Constants.CDL_API_WSDL_NAMESPACE, "Subscribe"));
+        operations[5] = __operation;
+        serviceDescription.addOperation(__operation);
+
+        __operation = new OperationDescription();
+        __operation.setName(new QName(Constants.CDL_API_WSDL_NAMESPACE,
+                "GetResourceProperty"));
+        operations[6] = __operation;
+        serviceDescription.addOperation(__operation);
+
+    }
 
 
     /**
@@ -39,17 +99,19 @@ public class PortalEndpointer extends Endpointer {
     public static final String URL_COMMAND = "-url:";
 
 
-    public PortalEndpointer() {
+    public PortalEndpointer() throws AxisFault {
+        init();
     }
 
-    public PortalEndpointer(URL url) {
+    public PortalEndpointer(URL url) throws AxisFault {
         setURL(url);
+        init();
     }
 
-    public PortalEndpointer(String url) {
+    public PortalEndpointer(String url) throws AxisFault {
         super(url);
+        init();
     }
-
 
     public static PortalEndpointer createDefaultBinding() throws IOException {
         PortalEndpointer endpointer = new PortalEndpointer();
@@ -88,9 +150,8 @@ public class PortalEndpointer extends Endpointer {
      */
     public static PortalEndpointer fromCommandLineElement(
             String commandLineElement)
-            throws MalformedURLException {
+            throws MalformedURLException, AxisFault {
         boolean isOption = commandLineElement.indexOf(URL_COMMAND) == 0;
-        //isOption |= commandLineElement.indexOf(URL_COMMAND2) == 0;
         if (isOption) {
             String urlBody = commandLineElement.substring(URL_COMMAND.length());
             if ("".equals(urlBody)) {
@@ -113,7 +174,7 @@ public class PortalEndpointer extends Endpointer {
      * @throws java.net.MalformedURLException if there was anything wrong with the URL
      */
     public static PortalEndpointer fromCommandLine(String[] commandLine)
-            throws MalformedURLException {
+            throws MalformedURLException, AxisFault {
         PortalEndpointer endpointer = null;
         for (int i = 0; i < commandLine.length; i++) {
             endpointer = fromCommandLineElement(commandLine[i]);
@@ -125,7 +186,6 @@ public class PortalEndpointer extends Endpointer {
         }
         return endpointer;
     }
-
 
 
 }

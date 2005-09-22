@@ -26,6 +26,7 @@ import org.apache.axis2.clientapi.Call;
 import org.apache.axis2.AxisFault;
 import org.smartfrog.services.deployapi.client.Endpointer;
 
+import javax.xml.namespace.QName;
 import java.rmi.RemoteException;
 
 /**
@@ -38,6 +39,8 @@ public abstract class EndpointBinding<Tin extends XmlObject,Tout extends XmlObje
     private Axis2Beans<Tin> in;
     private Axis2Beans<Tout> out;
 
+    private QName operation;
+
 
 
     public EndpointBinding(XmlOptions inOptions, XmlOptions outOptions) {
@@ -47,6 +50,18 @@ public abstract class EndpointBinding<Tin extends XmlObject,Tout extends XmlObje
 
     public EndpointBinding() {
         this(null,null);
+    }
+
+    public QName getOperation() {
+        return operation;
+    }
+
+    public void setOperation(QName operation) {
+        this.operation = operation;
+    }
+
+    public void setOperation(String namespace,String localpart) {
+        this.operation = new QName(namespace,localpart);
     }
 
     public Axis2Beans<Tin> getRequestBinding() {
@@ -93,8 +108,9 @@ public abstract class EndpointBinding<Tin extends XmlObject,Tout extends XmlObje
      * @return the response
      * @throws AxisFault
      */
-    public Tout invokeBlocking(Call call, String operation, Tin data) throws AxisFault {
-        OMElement omElement = call.invokeBlocking(operation, convertRequest(data));
+    protected Tout invokeBlocking(Call call, String operation, Tin data) throws AxisFault {
+        final OMElement toSend = convertRequest(data);
+        OMElement omElement = call.invokeBlocking(operation, toSend);
         return convertResponse(omElement);
     }
 
@@ -106,10 +122,10 @@ public abstract class EndpointBinding<Tin extends XmlObject,Tout extends XmlObje
      * @return the response
      * @throws AxisFault
      */
-    public Tout invokeBlocking(Endpointer endpointer, Tin data) throws RemoteException {
-        Call call=endpointer.createStub();
-        OMElement omElement = call.invokeBlocking("method", convertRequest(data));
-        return convertResponse(omElement);
+    public Tout invokeBlocking(Endpointer endpointer,String operation,Tin data) throws RemoteException {
+        Call call = endpointer.createStub(operation);
+
+        return invokeBlocking(call, operation,data);
     }
 
     public XmlOptions getInOptions() {

@@ -11,6 +11,7 @@ import javax.xml.namespace.QName;
  */
 public class DeploymentException extends BaseException {
 
+
     public DeploymentException() {
     }
 
