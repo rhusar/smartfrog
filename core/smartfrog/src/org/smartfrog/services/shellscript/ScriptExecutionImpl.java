@@ -41,6 +41,7 @@ import org.smartfrog.sfcore.logging.LogFactory;
 
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
+import java.util.*;
 
 public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
 
@@ -50,7 +51,7 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
 
       protected boolean resultReady = false;
 
-      protected ComponentDescription result = new ComponentDescriptionImpl(null,  new ContextImpl(), false);
+      private Integer code = null;
 
       protected InvocationTargetException exception = null;
 
@@ -60,16 +61,51 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
       List stdOut = null;
       List stdErr = null;
 
+      public List getStderr() throws SmartFrogException {
+        if (!resultReady) throw new SmartFrogException("Accessor should not be called before results are ready.");
+        return stdErr;
+      }
+
+      public List getStdout()  throws SmartFrogException {
+        if (!resultReady) throw new SmartFrogException("Accessor should not be called before results are ready.");
+        return stdOut;
+      }
+
+      public Integer getExitCode()  throws SmartFrogException {
+        if (!resultReady) throw new SmartFrogException("Accessor should not be called before results are ready.");
+        return code;
+      }
+
+      public InvocationTargetException getException()  throws SmartFrogException {
+        if (!resultReady) throw new SmartFrogException("Accessor should not be called before results are ready.");
+        return exception;
+      }
+
+      public String tailStderr(int num)  throws SmartFrogException {
+        if (!resultReady) throw new SmartFrogException("Accessor should not be called before results are ready.");
+        return tail(stdErr, num);
+      }
+
+      public String tailStdout(int num)  throws SmartFrogException {
+        if (!resultReady) throw new SmartFrogException("Accessor should not be called before results are ready.");
+        return tail(stdOut, num);
+      }
+
+      private String tail(List list, int num) {
+        String res = "";
+        List copy = new Vector(list);
+        int end = copy.size();
+        int start = copy.size() - num;
+        if (start < 0) start = 0;
+        for (int i = start ; i < end ; i++) {
+          res=res+copy.get(i)+"\n";
+        }
+        return res;
+      }
+
       public ScriptResultsImpl() {
         stdOut = Collections.synchronizedList(new ArrayList());
         stdErr = Collections.synchronizedList(new ArrayList());
-        try {
-          result.sfAddAttribute("stdOut", stdOut);
-          result.sfAddAttribute("stdErr", stdErr);
-        } catch (SmartFrogRuntimeException ex) {
-          //@Todo add log
-          ex.printStackTrace();
-        }
       }
 
       public boolean resultsReady() {
@@ -83,69 +119,82 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
       /**
        * wait for the results to be ready for the timeout, and return them when they are
        *
-       * @param timeout the maximum time to wait for the results: 0 don't wait, -1 wait forever
+       * @param timeout the maximum time to wait in milliseconds for the results: 0 don't wait, -1 wait forever
        *
        * @return a component description containing aspects of the result:
        * The resut contains three attributes as follows:
        *   "code" the int result code of the final command in the vector - 0 if not supported in shell,
-       *   "stdout" a list of lines on stdout - empty if not supported in shell,
-       *   "stderr" a list of lines on stderr - empty if not supported in shell.
+       *   "stdOut" a list of lines on stdout - empty if not supported in shell,
+       *   "stdErr" a list of lines on stderr - empty if not supported in shell.
        *
        * @throws SmartFrogException if the results are not ready in time
      */
      public synchronized ComponentDescription waitForResults(long timeout) throws SmartFrogException {
-        try {
-
-          if (resultReady) return result;
-
-          if (timeout==0){
-                  return null;
-          }
-          if (timeout==-1){
-              //Wait forever
-              timeout = 0;
-          }
-
-          wait(timeout);
-
-          if (exception != null)
-            // Will throw , InterruptedException, InvocationTargetException
-            throw exception;
-          else
-            if (resultReady) return result;
-            else return null;
-
-        } catch (Exception ex) {
-            // Will throw , InterruptedException, InvocationTargetException
-            throw SmartFrogException.forward(exception);
-        }
+       waitFor(timeout);
+       return this.asComponentDescription();
     }
 
-    public synchronized void ready(Integer code) {
+  /**
+  * wait for the results to be ready for the timeout
+  * @param timeout the maximum time to wait in milliseconds for the results: 0 don't wait, -1 wait forever
+  *
+  * @throws SmartFrogException if the results are not ready in time
+  */
+
+public synchronized void waitFor(long timeout) throws SmartFrogException {
         try {
-          result.sfAddAttribute("code", code);
-        } catch (SmartFrogRuntimeException ex) {
-          sfLog().err("",ex);
+          if (resultReady)return;
+
+          if (timeout != 0) {
+            if (timeout == -1) {
+              //Wait forever
+              timeout = 0;
+            }
+
+            wait(timeout);
+
+            if (exception != null)
+              // Will throw , InterruptedException, InvocationTargetException
+              throw exception;
+          }
         }
+        catch (Exception ex) {
+          // Will throw , InterruptedException, InvocationTargetException
+          throw SmartFrogException.forward(exception);
+        }
+        if (!resultReady) throw new SmartFrogException("Time out reached before results ready.");
+    }
+
+
+    public synchronized void ready(final Integer code) {
+      this.code = code;
         resultReady = true;
         notifyAll();
       }
 
       synchronized void setException(Throwable e) {
        exception = new InvocationTargetException(e);
-       try {
-         result.sfAddAttribute("code", new Integer(-1));
-         result.sfAddAttribute("exception", exception);
-       } catch (SmartFrogRuntimeException ex) {
-         //@Todo add log
-         ex.printStackTrace();
-       }
+       code = new Integer(-1);
        resultReady = true;
        notifyAll();
       }
 
       public String toString(){
-        return result.toString();
+        return asComponentDescription().toString();
+      }
+
+      private ComponentDescription asComponentDescription() {
+        ComponentDescription cd = new ComponentDescriptionImpl(null, new ContextImpl(), false);
+        try {
+          cd.sfAddAttribute("stdErr", stdErr);
+          cd.sfAddAttribute("stdOut", stdOut);
+          cd.sfAddAttribute("code", code);
+          if (exception != null) cd.sfAddAttribute("exception", exception);
+        }
+        catch (SmartFrogRuntimeException ex) {
+          ex.printStackTrace();
+        }
+        return cd;
       }
   }
 
@@ -238,7 +287,7 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
     ScriptResults res= this.results;
     //Get new resultSet
     runEcho(TYPE_DONE,text);
-    if (block) res.waitForResults(timeout);
+    if (block) res.waitFor(timeout);
     return res;
   }
 
@@ -498,8 +547,6 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
       if (line.indexOf(cmd.getEchoCommand()+" "+"ScriptExecEcho - "+TYPE_DONE+" "+name)!=-1) return; // This is the echo command itself, ignore
 
       //What do we do if err continues producing output?, should we wait forever?
-      ((ScriptResultsImpl)results).stdOut.add("-finished-");
-      ((ScriptResultsImpl)results).stdErr.add("-finished-");
        Integer exitCode = new Integer(-999999);
        int index = line.indexOf("Exit code#:"); // 11 chars
        if (index!=-1){
@@ -509,16 +556,18 @@ public class ScriptExecutionImpl  implements ScriptExecution, FilterListener {
           if (sfLog().isWarnEnabled()) { sfLog().warn(ex);}
         }
        }
-       //System.out.println("\n -- Finished -- "+line);
+       //remove the ScriptExecEcho output from stdout...
+       int last = ((ScriptResultsImpl)results).stdOut.lastIndexOf(line);
+       ((ScriptResultsImpl)results).stdOut.remove(last);
        createNewScriptResults(exitCode);
     } else if (filterIndex==1){
       //Next command will follow
        if (line.indexOf(cmd.getEchoCommand()+" "+"ScriptExecEcho - "+TYPE_NEXT_CMD+" "+name)!=-1) return; // This is the echo command itself, ignore
-      ((ScriptResultsImpl)results).stdOut.add("--- NEXT Command ---");
-      ((ScriptResultsImpl)results).stdErr.add("--- NEXT Command ---");
+      //((ScriptResultsImpl)results).stdOut.add("--- NEXT Command ---");
+      //((ScriptResultsImpl)results).stdErr.add("--- NEXT Command ---");
        //System.out.println("\n -- GO NEXT Command -- "+line);
     } else {
-      System.out.println("\nFOUND ???? LINE " + line + ", " + filterIndex + ", " + filterName);
+      if (sfLog().isWarnEnabled()) sfLog().warn("\nFOUND ???? LINE " + line + ", " + filterIndex + ", " + filterName);
     }
   }
 
