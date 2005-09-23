@@ -126,7 +126,6 @@ public abstract class EndpointBinding<Tin extends XmlObject,Tout extends XmlObje
      */
     public Tout invokeBlocking(Endpointer endpointer, String operation, Tin data) throws RemoteException {
         Call call = endpointer.createStub(operation);
-
         return invokeBlocking(call, operation, data);
     }
 

@@ -21,6 +21,8 @@ package org.smartfrog.services.deployapi.system;
 
 import org.ggf.cddlm.generated.api.CddlmConstants;
 
+import javax.xml.namespace.QName;
+
 /**
  * Any constants
  * created 12-Sep-2005 17:54:04
@@ -107,6 +109,8 @@ public class Constants extends CddlmConstants {
         failed,
         terminated
     }
+
+
 
     public enum DeploymentLanguage {
         unknown("", ""),

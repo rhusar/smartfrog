@@ -29,6 +29,9 @@ import org.smartfrog.services.deployapi.transport.endpoints.portal.LookupSystemP
 import org.smartfrog.services.deployapi.transport.endpoints.portal.ResolveProcessor;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
 import org.smartfrog.services.deployapi.transport.wsrf.WsrfEndpoint;
+import org.smartfrog.services.deployapi.transport.wsrf.WSRPResourceSource;
+import org.smartfrog.services.deployapi.engine.JobRepository;
+import org.smartfrog.services.deployapi.engine.ServerInstance;
 
 import javax.xml.namespace.QName;
 
@@ -87,4 +90,15 @@ public class PortalEndpoint extends WsrfEndpoint {
         return processor;
     }
 
+
+    /**
+     * Return a resource source for this message.
+     * we hand all this off to the server instance, it knowing these things
+     * @param message
+     * @return the source of resources. Return null for no match in that context
+     * @throws BaseException
+     */
+    public WSRPResourceSource retrieveResourceSource(MessageContext message) {
+        return ServerInstance.currentInstance();
+    }
 }
