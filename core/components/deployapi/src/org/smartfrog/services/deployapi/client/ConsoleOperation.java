@@ -519,7 +519,7 @@ public abstract class ConsoleOperation {
     public String  getResourcePropertyText(QName property)
             throws RemoteException {
         GetResourcePropertyResponseDocument doc = getPropertyResponse(property);
-        GetResourcePropertyResponseDocument.GetResourcePropertyResponse resp
+        GetResourcePropertyResponseDocument.GetResourcePropertyResponse resp;
         resp = doc.getGetResourcePropertyResponse();
         return resp.xmlText();
     }

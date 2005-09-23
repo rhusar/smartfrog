@@ -579,7 +579,7 @@
   <!-- ========================================================== -->
   <!-- deploy; requires a host -->
   <!-- ========================================================== -->
-  <target name="deploy" depends="parse,init-codebase,init-deploy-properties"
+  <target name="deploy" depends="parse,init-codebase,init-deploy-properties,war"
     description="deploy">
 
     <sf:deploy classpathref="run.classpath"
