@@ -51,22 +51,45 @@ public class PortalTest extends ApiTestBase {
 
     public void testCreateBadIPaddr() throws Exception {
         try {
-            createSystem("0.0.0.0");
+            SystemEndpointer system = createSystem("0.0.0.0");
+            logSystemCreated(system);
             fail("Expected to fail");
         } catch (AxisFault fault) {
             assertFaultMatches(fault, Constants.F_UNSUPPORTED_CREATION_HOST);
         }
     }
 
-    public void testCreate() throws Exception {
-        SystemEndpointer system = createSystem();
-        terminateSystem(system);
-    }
 
     public void testCreateLocalhost() throws Exception {
-        SystemEndpointer system = createSystem("localhost");
-        terminateSystem(system);
+        SystemEndpointer system=null;
+        try {
+            system = createSystem("localhost");
+            logSystemCreated(system);
+            String id=system.getResourceID();
+            String idProperty=getSystemResourceID(system);
+            assertEquals(id,idProperty);
+        } finally {
+            terminateSystem(system);
+        }
     }
+
+    private void logSystemCreated(SystemEndpointer system) {
+        log.info("Created system "+system.getResourceID()+" @ "+system.getEndpointer().getAddress());
+    }
+
+    public void testCreate() throws Exception {
+        SystemEndpointer system = null;
+        try {
+            system = createSystem();
+            logSystemCreated(system);
+            String id = system.getResourceID();
+            String idProperty = getSystemResourceID(system);
+            assertEquals(id, idProperty);
+        } finally {
+            terminateSystem(system);
+        }
+    }
+
 
     public void testPortalResourceID() throws Exception {
         GetResourcePropertyResponseDocument resourceProperty = getPortalResourceProperty(Constants.PROPERTY_MUWS_RESOURCEID);

@@ -44,17 +44,10 @@ public class JobRepository implements Iterable<Job> {
 
     private Hashtable<String, Job> jobs = new Hashtable<String, Job>();
     private URL systemsURL;
+    public static final String JOB_ID_PARAM = "job";
 
-
-    {
-        try {
-            systemsURL = new URL("http://127.0.0.1:5050/services/System/");
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public JobRepository() {
+    public JobRepository(URL systemsURL) {
+        this.systemsURL = systemsURL;
     }
 
     public void clear() {
@@ -136,8 +129,14 @@ public class JobRepository implements Iterable<Job> {
     }
 
 
+    /**
+     * get an address for job requests.
+     * @param jobID
+     * @return
+     */
     public String createJobAddress(String jobID) {
-        return systemsURL + "?job=" + jobID;
+        //return systemsURL + "?"+JOB_ID_PARAM +"=" + jobID;
+        return systemsURL.toString() + "#" + jobID;
     }
 
 
@@ -162,6 +161,5 @@ public class JobRepository implements Iterable<Job> {
         job.setAddress(createJobAddress(id));
         add(job);
         return job;
-
     }
 }

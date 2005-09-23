@@ -34,6 +34,8 @@ import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
 import org.smartfrog.services.deployapi.transport.wsrf.WsrfEndpoint;
 
 import javax.xml.namespace.QName;
+import java.net.URL;
+import java.net.MalformedURLException;
 
 /*
 * System EPR
@@ -68,24 +70,31 @@ public class SystemEndpoint extends WsrfEndpoint {
             return Initialize(job, request);
         }
         if (Constants.API_ELEMENT_RESOLVE_REQUEST.equals(action)) {
-            return Resolve(request);
         }
         if (Constants.API_ELEMENT_ADDFILE_REQUEST.equals(action)) {
-            return AddFile(request);
         }
         if (Constants.API_ELEMENT_RUN_REQUEST.equals(action)) {
-            return Run(request);
         }
         if (Constants.API_ELEMENT_TERMINATE_REQUEST.equals(action)) {
-            return Terminate(request);
         }
         if (Constants.API_ELEMENT_PING_REQUEST.equals(action)) {
-            return Ping(request);
         }
         return null;
     }
 
     protected Job lookupJob(MessageContext inMessage) {
+        String address = inMessage.getTo().getAddress();
+        URL url=null;
+        try {
+            url = new URL(address);
+        } catch (MalformedURLException e) {
+            throw new RuntimeException("Couldnt turn an addr into a URL "+address,e);
+        }
+        String query = url.getRef();
+        if(query==null) {
+            throw FaultRaiser.raiseNoSuchApplicationFault("No app at "+address);
+        }
+
         FaultRaiser.throwNotImplemented();
         return null;
     }
@@ -105,31 +114,6 @@ public class SystemEndpoint extends WsrfEndpoint {
         Axis2Beans<InitializeResponseDocument> outBinding = new Axis2Beans<InitializeResponseDocument>();
         OMElement responseOM = outBinding.convert(responseDoc);
         return responseOM;
-    }
-
-    public OMElement Resolve(OMElement request) throws BaseException {
-        FaultRaiser.throwNotImplemented();
-        return null;
-    }
-
-    public OMElement Run(OMElement request) throws BaseException {
-        FaultRaiser.throwNotImplemented();
-        return null;
-    }
-
-    public OMElement Terminate(OMElement request) throws BaseException {
-        FaultRaiser.throwNotImplemented();
-        return null;
-    }
-
-    public OMElement Ping(OMElement request) throws BaseException {
-        FaultRaiser.throwNotImplemented();
-        return null;
-    }
-
-    public OMElement Destroy(OMElement request) throws BaseException {
-        FaultRaiser.throwNotImplemented();
-        return null;
     }
 
 }
