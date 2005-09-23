@@ -47,7 +47,7 @@ public class LookupSystemBinding extends EndpointBinding<LookupSystemRequestDocu
      * @return
      */
     public LookupSystemRequestDocument createRequest() {
-        return LookupSystemRequestDocument.Factory.newInstance(getOutOptions());
+        return LookupSystemRequestDocument.Factory.newInstance(getInOptions());
     }
 
     /**

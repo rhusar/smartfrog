@@ -22,17 +22,34 @@
 package org.smartfrog.services.deployapi.engine;
 
 import org.ggf.xbeans.cddlm.api.StaticPortalStatusType;
+import org.ggf.xbeans.cddlm.api.PortalInformationType;
+import org.ggf.xbeans.cddlm.api.NameUriListType;
+import org.ggf.xbeans.cddlm.api.UriListType;
+import org.ggf.cddlm.utils.QualifiedName;
+import org.smartfrog.services.deployapi.transport.wsrf.WSRPResourceSource;
+import org.smartfrog.services.deployapi.transport.faults.BaseException;
+import org.smartfrog.services.deployapi.system.Utils;
+import org.smartfrog.services.deployapi.system.Constants;
+import org.apache.xmlbeans.XmlObject;
+import org.apache.xmlbeans.XmlAnyURI;
+import org.apache.xmlbeans.XmlString;
+
+import javax.xml.namespace.QName;
+import java.math.BigInteger;
+import java.util.Date;
 
 
 /**
  * This is a server instance Date: 10-Aug-2004 Time: 22:13:26
  */
-public class ServerInstance {
+public class ServerInstance implements WSRPResourceSource {
 
     /**
      * a private instance
      */
     private static ServerInstance instance;
+
+    private String resourceID = Utils.createNewID();
 
     private StaticPortalStatusType staticStatus;
 
@@ -85,53 +102,27 @@ public class ServerInstance {
 
 
     private StaticPortalStatusType createStaticStatusInfo() {
-        return StaticPortalStatusType.Factory.newInstance();
-        /*
-        ServerInformationType serverInfo = new ServerInformationType();
-        serverInfo.setName(Constants.PRODUCT_NAME);
-        try {
-            serverInfo.setHome(Processor.makeURI(Constants.SMARTFROG_HOMEPAGE));
-        } catch (AxisFault axisFault) {
-            throw new RuntimeException(axisFault);
-        }
-        serverInfo.setDiagnostics(null);
-        serverInfo.setBuild(Constants.CVS_INFO);
-        serverInfo.setLocation("unknown");
-        serverInfo.setTimezoneUTCOffset(new BigInteger("0"));
+        StaticPortalStatusType status = StaticPortalStatusType.Factory.newInstance();
+        PortalInformationType portalInfo = status.addNewPortal();
+        portalInfo.setName("SmartFrog CDDLM Implementation");
+        portalInfo.setBuild("$Date$");
+        portalInfo.setLocation("unknown");
+        portalInfo.setHome("http://smartfrog.org/");
+        Date now=new Date();
+        BigInteger tzoffset=BigInteger.valueOf(now.getTimezoneOffset());
+        portalInfo.setTimezoneUTCOffset(tzoffset);
+        NameUriListType jobLanguages = status.addNewJoblanguages();
+        NameUriListType.Item item = jobLanguages.addNewItem();
+        item.setName("CDL");
+        item.setUri(Constants.XML_CDL_NAMESPACE);
+        item = jobLanguages.addNewItem();
+        item.setName("SmartFrog");
+        item.setUri(Constants.SMARTFROG_NAMESPACE);
+        UriListType notifications = status.addNewNotifications();
+        notifications.addNewItem().setStringValue(Constants.WSRF_WSNT_NAMESPACE);
+        UriListType options = status.addNewOptions();
 
-        //languages
-        //creating the array before sending
-        LanguageListTypeLanguage[] list = new LanguageListTypeLanguage[Constants.LANGUAGES.length /
-                3];
-        int counter = 0;
-        for (int i = 0; i + 2 < Constants.LANGUAGES.length; i += 3) {
-            String name = Constants.LANGUAGES[i];
-            String version = Constants.LANGUAGES[i + 1];
-            URI namespace = null;
-            try {
-                namespace = Processor.makeURI(Constants.LANGUAGES[i + 2]);
-            } catch (AxisFault axisFault) {
-                throw new RuntimeException(axisFault);
-
-            }
-            list[counter++] = new LanguageListTypeLanguage(name,
-                    version,
-                    namespace);
-        }
-        LanguageListType languages = new LanguageListType(list);
-
-        //callbacks are easy
-        StringListType callbacks = new StringListType(Constants.CALLBACKS);
-        StringListType options = new StringListType(
-                Constants.SUPPORTED_OPTIONS);
-
-        StaticServerStatusType status;
-        status = new StaticServerStatusType(serverInfo,
-                languages,
-                callbacks,
-                options);
         return status;
-        */
     }
 
     public JobRepository getJobs() {
@@ -160,4 +151,21 @@ public class ServerInstance {
         queue.push(action);
     }
 
+    /**
+     * Get a resource
+     *
+     * @param resource
+     * @return null for no match;
+     * @throws BaseException if they feel like it
+     */
+    public XmlObject getResource(QName resource) {
+        QualifiedName query= Utils.convert(resource);
+        if(Constants.PROPERTY_PORTAL_STATIC_PORTAL_STATUS.equals(query)) {
+            return staticStatus;
+        }
+        if (Constants.PROPERTY_MUWS_RESOURCEID.equals(query)) {
+            return XmlString.Factory.newValue(resourceID);
+        }
+        return null;
+    }
 }

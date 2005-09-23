@@ -21,6 +21,7 @@ package org.smartfrog.services.deployapi.engine;
 
 
 import org.smartfrog.services.deployapi.system.Constants;
+import org.smartfrog.services.deployapi.system.Utils;
 
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -29,7 +30,6 @@ import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.UUID;
 
 /**
  * This class remembers what got deployed by whom. It retains weak references to
@@ -140,13 +140,6 @@ public class JobRepository implements Iterable<Job> {
         return systemsURL + "?job=" + jobID;
     }
 
-    private String createNewJobID() {
-        UUID uuid = UUID.randomUUID();
-        String s = uuid.toString();
-        s = s.replace("-", "_");
-        return "uuid_" + s;
-    }
-
 
     /**
      * if the job has no name, we give it one. If it has a name or no, a new URI
@@ -155,13 +148,13 @@ public class JobRepository implements Iterable<Job> {
      * @param job
      */
     public void assignID(Job job) {
-        String id = createNewJobID();
+        String id = Utils.createNewID();
         job.setId(id);
     }
 
     public Job createNewJob(String hostname) {
         Job job = new Job();
-        job.setId(createNewJobID());
+        job.setId(Utils.createNewID());
         job.setHostname(hostname);
         job.setState(Constants.LifecycleStateEnum.initialized);
         String id = job.getId();

@@ -167,4 +167,15 @@ public abstract class ApiTestBase extends ConsoleTestBase {
         log.info("Created system "+systemEndpointer);
         return systemEndpointer;
     }
+
+    /**
+     * Terminate a system if it is not null
+     * @param system
+     * @throws RemoteException
+     */
+    public void terminateSystem(SystemEndpointer system) throws RemoteException {
+        if(system!=null) {
+            getOperation().terminate(system,"end of test");
+        }
+    }
 }

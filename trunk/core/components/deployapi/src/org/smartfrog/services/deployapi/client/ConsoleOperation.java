@@ -30,13 +30,19 @@ import org.ggf.xbeans.cddlm.api.OptionMapType;
 import org.ggf.xbeans.cddlm.api.TerminateRequestDocument;
 import org.ggf.xbeans.cddlm.cmp.InitializeResponseDocument;
 import org.ggf.xbeans.cddlm.wsrf.wsa2003.EndpointReferenceType;
+import org.ggf.xbeans.cddlm.wsrf.wsrp.GetResourcePropertyDocument;
+import org.ggf.xbeans.cddlm.wsrf.wsrp.GetResourcePropertyResponseDocument;
+import org.ggf.cddlm.utils.QualifiedName;
 import org.smartfrog.services.deployapi.binding.EprHelper;
 import org.smartfrog.services.deployapi.binding.bindings.CreateBinding;
 import org.smartfrog.services.deployapi.binding.bindings.InitializeBinding;
 import org.smartfrog.services.deployapi.binding.bindings.LookupSystemBinding;
 import org.smartfrog.services.deployapi.binding.bindings.TerminateBinding;
+import org.smartfrog.services.deployapi.binding.bindings.GetResourcePropertyBinding;
 import org.smartfrog.services.deployapi.system.Constants;
+import org.smartfrog.services.deployapi.system.Utils;
 
+import javax.xml.namespace.QName;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -48,6 +54,8 @@ import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.rmi.RemoteException;
+
+import nu.xom.Element;
 
 
 /**
@@ -224,7 +232,6 @@ public abstract class ConsoleOperation {
      *
      * @param descriptor
      * @param options
-     * @return
      */
     public void initialize(SystemEndpointer system,
                            DescriptorType descriptor,
@@ -451,15 +458,16 @@ public abstract class ConsoleOperation {
      * @throws java.io.IOException
      */
     public static String readIntoString(File file) throws IOException {
-        InputStream in = new BufferedInputStream(new FileInputStream(file));
+        InputStream in =null;
         try {
+            in= new BufferedInputStream(new FileInputStream(file));
             String source = readIntoString(in);
             return source;
         } finally {
             try {
-                in.close();
+                if(in!=null) { in.close(); }
             } catch (IOException e) {
-
+                ///ignore
             }
         }
     }
@@ -496,11 +504,62 @@ public abstract class ConsoleOperation {
 
 
     /**
+     * Get a property from the destination
+     * @return a Xom graph of the result
+     * @throws RemoteException
+     */
+    public Element getResourcePropertyXom(QName property)
+            throws RemoteException {
+        GetResourcePropertyResponseDocument responseDoc = getPropertyResponse(property);
+        GetResourcePropertyResponseDocument.GetResourcePropertyResponse resp;
+        resp = responseDoc.getGetResourcePropertyResponse();
+        return Utils.BeanToXom(resp);
+    }
+
+    public String  getResourcePropertyText(QName property)
+            throws RemoteException {
+        GetResourcePropertyResponseDocument doc = getPropertyResponse(property);
+        GetResourcePropertyResponseDocument.GetResourcePropertyResponse resp
+        resp = doc.getGetResourcePropertyResponse();
+        return resp.xmlText();
+    }
+
+
+
+    public GetResourcePropertyResponseDocument getPropertyResponse(QName property) throws RemoteException {
+        GetResourcePropertyBinding binding=new GetResourcePropertyBinding();
+        GetResourcePropertyDocument request = binding.createRequest();
+        request.setGetResourceProperty(property);
+        GetResourcePropertyResponseDocument response;
+        response = binding.invokeBlocking(portal, Constants.WSRF_OPERATION_GETRESOURCEPROPERTY, request);
+        return response;
+    }
+
+    /**
+     * Get a property from the destination
+     * @return a Xom graph of the result
+     * @throws RemoteException
+     */
+    public Element getResourcePropertyXom(QualifiedName property)
+            throws RemoteException {
+        return getResourcePropertyXom(Utils.convert(property));
+    }
+
+    public String getResourcePropertyText(QualifiedName property)
+            throws RemoteException {
+        return getResourcePropertyText(Utils.convert(property));
+    }
+
+    public GetResourcePropertyResponseDocument getPropertyResponse(QualifiedName property)
+            throws RemoteException {
+        return getPropertyResponse(Utils.convert(property));
+    }
+
+    /**
      * initiate an undeployment
      *
      * @param application
      * @param reason
-     * @return true if the process has commenced. Undeployment is asynchronous
      * @throws java.rmi.RemoteException
      */
     public void terminate(SystemEndpointer application, String reason)

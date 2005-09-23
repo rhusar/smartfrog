@@ -22,8 +22,11 @@ package org.smartfrog.services.deployapi.test.system;
 import org.smartfrog.services.deployapi.client.SystemEndpointer;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.apache.axis2.AxisFault;
+import org.ggf.xbeans.cddlm.api.StaticPortalStatusType;
+import org.ggf.xbeans.cddlm.api.PortalInformationType;
+import org.ggf.xbeans.cddlm.wsrf.wsrp.GetResourcePropertyResponseDocument;
 
-import java.rmi.RemoteException;
+import nu.xom.Element;
 
 /**
  * created 21-Sep-2005 14:24:11
@@ -63,15 +66,24 @@ public class PortalTest extends ApiTestBase {
         terminateSystem(system);
     }
 
-    /**
-     * Terminate a system if it is not null
-     * @param system
-     * @throws RemoteException
-     */
-    public void terminateSystem(SystemEndpointer system) throws RemoteException {
-        if(system!=null) {
-            getOperation().terminate(system,"end of test");
-        }
+    public void testPortalResourceID() throws Exception {
+        String id =getOperation().getResourcePropertyText(Constants.PROPERTY_MUWS_RESOURCEID);
+        log.info("Portal resource ID="+id);
+        String id2= getOperation().getResourcePropertyText(Constants.PROPERTY_MUWS_RESOURCEID);
+        assertEquals(id,id2);
     }
+
+    public void testStaticPortalStatus() throws Exception {
+        Element graph= getOperation().getResourcePropertyXom(Constants.PROPERTY_PORTAL_STATIC_PORTAL_STATUS);
+        GetResourcePropertyResponseDocument responseDoc;
+        responseDoc = getOperation().getPropertyResponse(Constants.PROPERTY_PORTAL_STATIC_PORTAL_STATUS);
+        GetResourcePropertyResponseDocument.GetResourcePropertyResponse response;
+        response = responseDoc.getGetResourcePropertyResponse();
+        StaticPortalStatusType status;
+        status =StaticPortalStatusType.Factory.parse(response.getDomNode());
+        PortalInformationType portal = status.getPortal();
+        portal.getName();
+    }
+
 
 }

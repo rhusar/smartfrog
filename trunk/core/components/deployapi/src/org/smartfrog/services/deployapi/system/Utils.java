@@ -24,9 +24,14 @@ import org.apache.xmlbeans.XmlOptions;
 import org.ggf.cddlm.utils.QualifiedName;
 import org.ggf.xbeans.cddlm.cmp.DeploymentFaultType;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
+import org.w3c.dom.Node;
 
 import javax.xml.namespace.QName;
 import java.util.ArrayList;
+import java.util.UUID;
+
+import nu.xom.Element;
+import nu.xom.converters.DOMConverter;
 
 /**
  * created 20-Sep-2005 17:07:38
@@ -86,4 +91,26 @@ public class Utils {
         assert validate(message);
     }
 
+    /**
+     * Turn a bean (which must map to an element, unless you like runtime exceptions
+     * @param bean to convert
+     * @return the converted doc
+     */
+    public static Element BeanToXom(XmlObject bean) {
+        Node dom = bean.getDomNode();
+        org.w3c.dom.Element elt=(org.w3c.dom.Element)dom;
+        return DOMConverter.convert(elt);
+    }
+
+
+    /**
+     * create a new uuid-style id
+     * @return
+     */
+    public static String createNewID() {
+        UUID uuid = UUID.randomUUID();
+        String s = uuid.toString();
+        s = s.replace("-", "_");
+        return "uuid_" + s;
+    }
 }
