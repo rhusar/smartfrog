@@ -508,30 +508,25 @@ public abstract class ConsoleOperation {
      * @return a Xom graph of the result
      * @throws RemoteException
      */
-    public Element getResourcePropertyXom(QName property)
+    public Element getPortalPropertyXom(QName property)
             throws RemoteException {
-        GetResourcePropertyResponseDocument responseDoc = getPropertyResponse(property);
+        GetResourcePropertyResponseDocument responseDoc = getPortalProperty(property);
         GetResourcePropertyResponseDocument.GetResourcePropertyResponse resp;
         resp = responseDoc.getGetResourcePropertyResponse();
         return Utils.BeanToXom(resp);
     }
 
-    public String  getResourcePropertyText(QName property)
-            throws RemoteException {
-        GetResourcePropertyResponseDocument doc = getPropertyResponse(property);
-        GetResourcePropertyResponseDocument.GetResourcePropertyResponse resp;
-        resp = doc.getGetResourcePropertyResponse();
-        return resp.xmlText();
+    public GetResourcePropertyResponseDocument getPortalProperty(QName property) throws RemoteException {
+        Endpointer endpoint = portal;
+        return getPropertyResponse(endpoint, property);
     }
 
-
-
-    public GetResourcePropertyResponseDocument getPropertyResponse(QName property) throws RemoteException {
+    public GetResourcePropertyResponseDocument getPropertyResponse(Endpointer endpoint, QName property) throws RemoteException {
         GetResourcePropertyBinding binding=new GetResourcePropertyBinding();
         GetResourcePropertyDocument request = binding.createRequest();
         request.setGetResourceProperty(property);
         GetResourcePropertyResponseDocument response;
-        response = binding.invokeBlocking(portal, Constants.WSRF_OPERATION_GETRESOURCEPROPERTY, request);
+        response = binding.invokeBlocking(endpoint, Constants.WSRF_OPERATION_GETRESOURCEPROPERTY, request);
         return response;
     }
 
@@ -540,21 +535,20 @@ public abstract class ConsoleOperation {
      * @return a Xom graph of the result
      * @throws RemoteException
      */
-    public Element getResourcePropertyXom(QualifiedName property)
+    public Element getPortalPropertyXom(QualifiedName property)
             throws RemoteException {
-        return getResourcePropertyXom(Utils.convert(property));
+        return getPortalPropertyXom(Utils.convert(property));
     }
 
-    public String getResourcePropertyText(QualifiedName property)
+    public GetResourcePropertyResponseDocument getPortalProperty(QualifiedName property)
             throws RemoteException {
-        return getResourcePropertyText(Utils.convert(property));
+        return getPortalProperty(Utils.convert(property));
     }
 
-    public GetResourcePropertyResponseDocument getPropertyResponse(QualifiedName property)
+    public GetResourcePropertyResponseDocument getResourceProperty(Endpointer endpoint,QualifiedName property)
             throws RemoteException {
-        return getPropertyResponse(Utils.convert(property));
+        return getPropertyResponse(endpoint,Utils.convert(property));
     }
-
     /**
      * initiate an undeployment
      *
@@ -573,44 +567,6 @@ public abstract class ConsoleOperation {
         binding.invokeBlocking(application, Constants.API_SYSTEM_OPERATION_TERMINATE, request);
     }
 
-    /**
-     * test for a language being supported
-     *
-     * @param languageURI
-     * @return true if the URI is in the list of known languages
-     */
-/*
-    public boolean supportsLanguage(String languageURI) throws RemoteException {
-        ServerStatusType status = getStatus();
-        return supportsLanguage(status, languageURI);
-    }
-*/
-
-    /**
-     * test for a language being supported
-     *
-     * @param status      server status
-     * @param languageURI
-     * @return true if the URI is in the list of known languages
-     */
-/*
-    public boolean supportsLanguage(ServerStatusType status,
-                                    String languageURI) {
-        StaticServerStatusType staticStatus = status.get_static();
-        LanguageListTypeLanguage[] languages = staticStatus.getLanguages()
-                .getLanguage();
-        for (int i = 0; i < languages.length; i++) {
-            LanguageListTypeLanguage l = languages[i];
-            org.apache.axis.types.URI nsURI = l.getUri();
-            if (languageURI.equals(nsURI.toString())) {
-                //positive match
-                return true;
-            }
-        }
-        //if we get here, no match
-        return false;
-    }
-*/
 
     /**
      * exit, use success flag to choose the return time. This method does not

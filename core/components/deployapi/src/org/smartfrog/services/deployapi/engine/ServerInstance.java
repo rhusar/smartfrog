@@ -25,6 +25,7 @@ import org.ggf.xbeans.cddlm.api.StaticPortalStatusType;
 import org.ggf.xbeans.cddlm.api.PortalInformationType;
 import org.ggf.xbeans.cddlm.api.NameUriListType;
 import org.ggf.xbeans.cddlm.api.UriListType;
+import org.ggf.xbeans.cddlm.wsrf.muws.p1.IdentityPropertiesType;
 import org.ggf.cddlm.utils.QualifiedName;
 import org.smartfrog.services.deployapi.transport.wsrf.WSRPResourceSource;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
@@ -164,7 +165,9 @@ public class ServerInstance implements WSRPResourceSource {
             return staticStatus;
         }
         if (Constants.PROPERTY_MUWS_RESOURCEID.equals(query)) {
-            return XmlString.Factory.newValue(resourceID);
+            IdentityPropertiesType identity=IdentityPropertiesType.Factory.newInstance();
+            identity.setResourceId(resourceID);
+            return identity;
         }
         return null;
     }
