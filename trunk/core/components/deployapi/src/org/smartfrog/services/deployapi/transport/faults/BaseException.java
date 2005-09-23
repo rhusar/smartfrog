@@ -182,7 +182,8 @@ public class BaseException extends RuntimeException {
      */
     public AxisFault makeAxisFault() {
         AxisFault fault = new AxisFault(this);
-        fault.setFaultCode(faultCode.toString());
+
+        fault.setFaultCode(faultCode!=null?faultCode.toString():"no-fault-code");
         return fault;
     }
 

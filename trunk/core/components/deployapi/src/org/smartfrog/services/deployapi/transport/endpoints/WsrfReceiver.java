@@ -36,6 +36,8 @@ import org.apache.axis2.soap.SOAP11Constants;
 import org.apache.axis2.soap.SOAP12Constants;
 import org.apache.axis2.soap.SOAPEnvelope;
 import org.apache.wsdl.WSDLService;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
 import org.smartfrog.sfcore.security.SFClassLoader;
 
@@ -45,6 +47,8 @@ import javax.xml.namespace.QName;
  */
 public class WsrfReceiver extends AbstractInOutSyncMessageReceiver
         implements MessageReceiver {
+
+    protected static Log faultLog = LogFactory.getLog("DISPATCH-FAULTS");
 
     /**
      * flag which indicates that an address is mandatory
@@ -60,30 +64,31 @@ public class WsrfReceiver extends AbstractInOutSyncMessageReceiver
     }
 
     public void invokeBusinessLogic(MessageContext inMessage, MessageContext outMessage) throws AxisFault {
-        // get the implementation class for the Web Service
-        Object destObject = getTheImplementationObject(inMessage);
 
-        //Inject the Message Context if it is asked for
-        DependencyManager.configureBusinussLogicProvider(destObject, inMessage);
-
-        MessageInformationHeaders addressInfo = inMessage.getMessageInformationHeaders();
-        if (isAddressingMandatory() && addressInfo != null) {
-            throw new BaseException("WS-Addressing is mandatory on WSRF resources");
-        }
-
-        //get the operation
-        OperationDescription opDesc = inMessage.getOperationContext()
-                .getAxisOperation();
-        QName operation = opDesc.getName();
-        String style = inMessage.getOperationContext()
-                .getAxisOperation()
-                .getStyle();
-        if (!WSDLService.STYLE_DOC.equals(style)) {
-            throw new AxisFault(org.smartfrog.services.deployapi.system.Constants.ERROR_NOT_DOCLIT);
-        }
-
-        SOAPEnvelope envelope = null;
         try {
+            // get the implementation class for the Web Service
+            Object destObject = getTheImplementationObject(inMessage);
+
+            //Inject the Message Context if it is asked for
+            DependencyManager.configureBusinussLogicProvider(destObject, inMessage);
+
+            MessageInformationHeaders addressInfo = inMessage.getMessageInformationHeaders();
+            if (isAddressingMandatory() && addressInfo != null) {
+                throw new BaseException("WS-Addressing is mandatory on WSRF resources");
+            }
+
+            //get the operation
+            OperationDescription opDesc = inMessage.getOperationContext()
+                    .getAxisOperation();
+            QName operation = opDesc.getName();
+            String style = inMessage.getOperationContext()
+                    .getAxisOperation()
+                    .getStyle();
+            if (!WSDLService.STYLE_DOC.equals(style)) {
+                throw new AxisFault(org.smartfrog.services.deployapi.system.Constants.ERROR_NOT_DOCLIT);
+            }
+
+            SOAPEnvelope envelope = null;
             OMElement result = null;
             XmlBeansEndpoint endpoint = (XmlBeansEndpoint) destObject;
             result = endpoint.dispatch(operation, inMessage);
@@ -91,12 +96,17 @@ public class WsrfReceiver extends AbstractInOutSyncMessageReceiver
             if (result != null) {
                 envelope.getBody().addChild(result);
             }
+            outMessage.setEnvelope(envelope);
         } catch (BaseException e) {
+            faultLog.error("BaseException ",e);
             throw e.makeAxisFault();
-
+        } catch (AxisFault e) {
+            faultLog.error("AxisFault", e);
+            throw e;
+        } catch (Exception e) {
+            faultLog.error("Exception", e);
+            throw AxisFault.makeFault(e);
         }
-        outMessage.setEnvelope(envelope);
-
     }
 
     /**

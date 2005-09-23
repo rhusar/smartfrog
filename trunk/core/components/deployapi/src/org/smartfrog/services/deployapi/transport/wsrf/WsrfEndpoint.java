@@ -27,10 +27,13 @@ import org.apache.axis2.om.OMNamespace;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.xmlbeans.XmlObject;
-import org.smartfrog.services.deployapi.binding.Axis2Beans;
+import org.apache.xmlbeans.XmlCursor;
+import org.smartfrog.services.deployapi.binding.bindings.GetResourcePropertyBinding;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.transport.endpoints.XmlBeansEndpoint;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
+import org.ggf.xbeans.cddlm.wsrf.wsrp.GetResourcePropertyDocument;
+import org.ggf.xbeans.cddlm.wsrf.wsrp.GetResourcePropertyResponseDocument;
 
 import javax.xml.namespace.QName;
 import java.util.Iterator;
@@ -57,7 +60,7 @@ public abstract class WsrfEndpoint extends XmlBeansEndpoint {
         String requestName = request.getLocalName();
         QName qName = request.getQName();
         log.info("received " + qName);
-        verifyDeployApiNamespace(qName);
+        //verifyDeployApiNamespace(qName);
         if (Constants.WSRF_OPERATION_GETRESOURCEPROPERTY.equals(requestName)) {
             return GetResourceProperty(inMessage, request);
         }
@@ -102,13 +105,25 @@ public abstract class WsrfEndpoint extends XmlBeansEndpoint {
         if (source == null) {
             throw new BaseException(Constants.F_WSRF_WSRP_UNKNOWN_RESOURCE);
         }
-        String text = request.getText();
-        QName qName = textToQName(text, request);
+        GetResourcePropertyBinding binding = new GetResourcePropertyBinding();
+        GetResourcePropertyDocument requestDoc = binding.convertRequest(request);
+        QName qName = requestDoc.getGetResourceProperty();
         XmlObject result = source.getResource(qName);
         if (result == null) {
             throw invalidQNameException(qName.toString());
         }
-        return Axis2Beans.convertDocument(result);
+        GetResourcePropertyResponseDocument response = binding.createResponse();
+        GetResourcePropertyResponseDocument.GetResourcePropertyResponse resp = response.addNewGetResourcePropertyResponse();
+        //ugly dom stuff
+        //resp.getDomNode().appendChild(result.getDomNode());
+        XmlCursor destCursor = resp.newCursor();
+        destCursor.toNextToken();
+        XmlCursor resultCursor=result.newCursor();
+        resultCursor.toFirstContentToken();
+
+        resultCursor.moveXml(destCursor);
+        resultCursor.dispose();
+        return binding.convertResponse(response);
     }
 
     /**

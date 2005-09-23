@@ -22,17 +22,20 @@
 package org.smartfrog.services.deployapi.test.system;
 
 import org.apache.axis2.AxisFault;
+import org.apache.xmlbeans.XmlException;
 import org.smartfrog.services.deployapi.client.ConsoleOperation;
 import org.smartfrog.services.deployapi.client.Deploy;
 import org.smartfrog.services.deployapi.client.SystemEndpointer;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.ggf.xbeans.cddlm.api.DescriptorType;
 import org.ggf.xbeans.cddlm.api.OptionMapType;
+import org.ggf.xbeans.cddlm.wsrf.wsrp.GetResourcePropertyResponseDocument;
+import org.ggf.xbeans.cddlm.wsrf.muws.p1.IdentityPropertiesType;
+import org.ggf.cddlm.utils.QualifiedName;
+import org.w3c.dom.Node;
 
 import javax.xml.namespace.QName;
-import java.io.IOException;
 import java.rmi.RemoteException;
-import java.net.URI;
 
 /**
  * Date: 06-Sep-2004 Time: 22:27:16
@@ -84,8 +87,8 @@ public abstract class ApiTestBase extends ConsoleTestBase {
     }
 
     protected SystemEndpointer deploy(String name,
-                                  DescriptorType descriptor,
-                                  OptionMapType options)
+                                      DescriptorType descriptor,
+                                      OptionMapType options)
             throws RemoteException {
         SystemEndpointer systemEndpointer = operation.deploy(null,descriptor, options);
         return systemEndpointer;
@@ -178,4 +181,28 @@ public abstract class ApiTestBase extends ConsoleTestBase {
             getOperation().terminate(system,"end of test");
         }
     }
+
+    /**
+     * get the resource ID from a get resource response
+     * @param resourceProperty
+     * @return
+     * @throws XmlException
+     */
+    protected String extractResourceID(GetResourcePropertyResponseDocument resourceProperty) throws XmlException {
+        Node domNode = resourceProperty.getDomNode();
+        IdentityPropertiesType identity=IdentityPropertiesType.Factory.parse(domNode);
+        String id = identity.getResourceId();
+        return id;
+    }
+
+    protected GetResourcePropertyResponseDocument getPortalResourceProperty(QualifiedName portalProperty) throws RemoteException {
+        return getOperation().getPortalProperty(portalProperty);
+    }
+
+    protected GetResourcePropertyResponseDocument getSystemProperty(SystemEndpointer system,
+                                                                    QualifiedName portalProperty) throws RemoteException {
+        return getOperation().getPortalProperty(portalProperty);
+
+    }
+
 }

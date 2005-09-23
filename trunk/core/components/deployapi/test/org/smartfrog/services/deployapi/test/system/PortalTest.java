@@ -24,6 +24,8 @@ import org.smartfrog.services.deployapi.system.Constants;
 import org.apache.axis2.AxisFault;
 import org.ggf.xbeans.cddlm.api.StaticPortalStatusType;
 import org.ggf.xbeans.cddlm.api.PortalInformationType;
+import org.ggf.xbeans.cddlm.api.NameUriListType;
+import org.ggf.xbeans.cddlm.api.UriListType;
 import org.ggf.xbeans.cddlm.wsrf.wsrp.GetResourcePropertyResponseDocument;
 
 import nu.xom.Element;
@@ -67,22 +69,38 @@ public class PortalTest extends ApiTestBase {
     }
 
     public void testPortalResourceID() throws Exception {
-        String id =getOperation().getResourcePropertyText(Constants.PROPERTY_MUWS_RESOURCEID);
+        GetResourcePropertyResponseDocument resourceProperty = getPortalResourceProperty(Constants.PROPERTY_MUWS_RESOURCEID);
+        String id = extractResourceID(resourceProperty);
         log.info("Portal resource ID="+id);
-        String id2= getOperation().getResourcePropertyText(Constants.PROPERTY_MUWS_RESOURCEID);
+        resourceProperty = getPortalResourceProperty(Constants.PROPERTY_MUWS_RESOURCEID);
+        String id2 = extractResourceID(resourceProperty);
         assertEquals(id,id2);
     }
 
+    //public String extractResourceID(GetResourcePropertyResponseDocument response)
+
     public void testStaticPortalStatus() throws Exception {
-        Element graph= getOperation().getResourcePropertyXom(Constants.PROPERTY_PORTAL_STATIC_PORTAL_STATUS);
+        Element graph= getOperation().getPortalPropertyXom(Constants.PROPERTY_PORTAL_STATIC_PORTAL_STATUS);
         GetResourcePropertyResponseDocument responseDoc;
-        responseDoc = getOperation().getPropertyResponse(Constants.PROPERTY_PORTAL_STATIC_PORTAL_STATUS);
+        responseDoc = getPortalResourceProperty(Constants.PROPERTY_PORTAL_STATIC_PORTAL_STATUS);
         GetResourcePropertyResponseDocument.GetResourcePropertyResponse response;
         response = responseDoc.getGetResourcePropertyResponse();
         StaticPortalStatusType status;
         status =StaticPortalStatusType.Factory.parse(response.getDomNode());
         PortalInformationType portal = status.getPortal();
-        portal.getName();
+        log.info(portal.getName());
+        log.info(portal.getBuild());
+        log.info("TZ offset"+portal.getTimezoneUTCOffset());
+        NameUriListType languages = status.getLanguages();
+        assertTrue("Languages are supported",languages.sizeOfItemArray()>0);
+        UriListType notifications = status.getNotifications();
+        boolean found=false;
+        for(String language: notifications.getItemList()) {
+            if(Constants.WSRF_WSNT_NAMESPACE.equals(language)) {
+                found=true;
+            }
+        }
+        assertTrue("WSNT is supported", found);
     }
 
 
