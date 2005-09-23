@@ -20,9 +20,12 @@
 package org.smartfrog.services.deployapi.binding;
 
 import org.apache.axis2.addressing.EndpointReference;
+import org.apache.axis2.addressing.ServiceName;
+import org.apache.axis2.addressing.AnyContentType;
 import org.ggf.xbeans.cddlm.wsrf.wsa2003.AttributedURI;
 import org.ggf.xbeans.cddlm.wsrf.wsa2003.EndpointReferenceType;
 import org.ggf.xbeans.cddlm.wsrf.wsa2003.ReferencePropertiesType;
+import org.ggf.xbeans.cddlm.wsrf.wsa2003.ServiceNameType;
 
 /**
  * Helps conver EPRs
@@ -37,8 +40,34 @@ public class EprHelper {
     public static EndpointReference Wsa2003ToEPR(EndpointReferenceType source) {
         AttributedURI addrURI = source.getAddress();
         EndpointReference dest = new EndpointReference(addrURI.getStringValue());
-        ReferencePropertiesType props = source.getReferenceProperties();
-        //TODO: reference properties are not currently suppoirted
+        if(source.isSetServiceName()) {
+            ServiceNameType sourceServiceName = source.getServiceName();
+            ServiceName destServiceName=new ServiceName(sourceServiceName.getQNameValue(),
+                    sourceServiceName.getPortName());
+            dest.setServiceName(destServiceName);
+        }
+        if(source.isSetReferenceProperties()) {
+            ReferencePropertiesType props = source.getReferenceProperties();
+            props.newCursor();
+            dest.getReferenceParameters();
+            AnyContentType content=new AnyContentType();
+
+            //TODO: reference properties are not currently supported
+
+        }
+        return dest;
+    }
+
+    public static EndpointReferenceType EPRToWsa2003(EndpointReference source) {
+        EndpointReferenceType dest = EndpointReferenceType.Factory.newInstance();
+        dest.addNewAddress().setStringValue(source.getAddress());
+        ServiceName serviceName = source.getServiceName();
+        if(serviceName!=null) {
+            ServiceNameType destServiceName = dest.addNewServiceName();
+            destServiceName.setPortName(serviceName.getEndpointName());
+            destServiceName.setQNameValue(serviceName.getName());
+        }
+        //TODO: reference properties are not currently supported
         return dest;
     }
 
@@ -46,14 +75,7 @@ public class EprHelper {
         org.ggf.xbeans.cddlm.wsrf.wsa2004.AttributedURI addrURI = source.getAddress();
         EndpointReference dest = new EndpointReference(addrURI.getStringValue());
         org.ggf.xbeans.cddlm.wsrf.wsa2004.ReferencePropertiesType props = source.getReferenceProperties();
-        //TODO: reference properties are not currently suppoirted
-        return dest;
-    }
-
-    public static EndpointReferenceType EPRToWsa2003(EndpointReference source) {
-        EndpointReferenceType dest = EndpointReferenceType.Factory.newInstance();
-        dest.addNewAddress().setStringValue(source.getAddress());
-        //TODO: reference properties are not currently suppoirted
+        //TODO: reference properties are not currently supported
         return dest;
     }
 
@@ -61,7 +83,7 @@ public class EprHelper {
         org.ggf.xbeans.cddlm.wsrf.wsa2004.EndpointReferenceType dest =
                 org.ggf.xbeans.cddlm.wsrf.wsa2004.EndpointReferenceType.Factory.newInstance();
         dest.addNewAddress().setStringValue(source.getAddress());
-        //TODO: reference properties are not currently suppoirted
+        //TODO: reference properties are not currently supported
         return dest;
     }
 

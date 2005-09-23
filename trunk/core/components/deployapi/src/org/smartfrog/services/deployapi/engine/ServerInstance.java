@@ -38,6 +38,8 @@ import org.apache.xmlbeans.XmlString;
 import javax.xml.namespace.QName;
 import java.math.BigInteger;
 import java.util.Date;
+import java.net.URL;
+import java.net.MalformedURLException;
 
 
 /**
@@ -70,7 +72,13 @@ public class ServerInstance implements WSRPResourceSource {
      */
     public ServerInstance() {
         staticStatus = createStaticStatusInfo();
-        jobs = new JobRepository();
+
+        try {
+            URL systemsURL = new URL("http://127.0.0.1:5050/services/System/");
+            jobs = new JobRepository(systemsURL);
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
         workers = new ActionWorker[WORKERS];
         for (int i = 0; i < workers.length; i++) {
             workers[i] = new ActionWorker(queue, TIMEOUT);

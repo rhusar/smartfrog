@@ -202,7 +202,11 @@ public abstract class ApiTestBase extends ConsoleTestBase {
     protected GetResourcePropertyResponseDocument getSystemProperty(SystemEndpointer system,
                                                                     QualifiedName portalProperty) throws RemoteException {
         return getOperation().getPortalProperty(portalProperty);
+    }
 
+    protected String getSystemResourceID(SystemEndpointer system) throws RemoteException, XmlException {
+        GetResourcePropertyResponseDocument systemProperty = getSystemProperty(system, Constants.PROPERTY_MUWS_RESOURCEID);
+        return extractResourceID(systemProperty);
     }
 
 }
