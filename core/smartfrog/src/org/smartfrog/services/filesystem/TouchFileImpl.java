@@ -24,6 +24,7 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 import java.io.File;
 import java.io.IOException;
 import java.rmi.RemoteException;
+import org.smartfrog.sfcore.utils.ComponentHelper;
 
 /**
  * This is a minimal component whose aim in life is to touch files.
@@ -54,6 +55,7 @@ public class TouchFileImpl extends FileUsingComponentImpl implements TouchFileIn
             RemoteException {
         super.sfStart();
         touch();
+        new ComponentHelper(this).sfSelfDetachAndOrTerminate("normal","TouchFile "+getFile().getAbsolutePath()+", "+age,this.sfCompleteNameSafe(),null);
     }
 
     /**
