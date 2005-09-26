@@ -142,7 +142,7 @@ public class Endpointer implements Serializable {
         }
 //        call.setTransportInfo(getSenderTransport(),getListenerTransport(),isSeparateListenerTransport());
         //turn on addressing
-        call.engageModule(new QName(org.apache.axis2.Constants.MODULE_ADDRESSING));
+//        call.engageModule(new QName(org.apache.axis2.Constants.MODULE_ADDRESSING));
 
         return call;
     }

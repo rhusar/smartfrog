@@ -110,13 +110,20 @@ public class PortalTest extends ApiTestBase {
         response = responseDoc.getGetResourcePropertyResponse();
         StaticPortalStatusType status;
         status =StaticPortalStatusType.Factory.parse(response.getDomNode());
+        assertNotNull("status is null",status);
         PortalInformationType portal = status.getPortal();
-        log.info(portal.getName());
+        assertNotNull("portal is null", portal);
+        String name = portal.getName();
+        log.info(name);
+        assertNotNull(name);
         log.info(portal.getBuild());
         log.info("TZ offset"+portal.getTimezoneUTCOffset());
         NameUriListType languages = status.getLanguages();
+        assertNotNull("languages are null",status);
         assertTrue("Languages are supported",languages.sizeOfItemArray()>0);
         UriListType notifications = status.getNotifications();
+        assertNotNull("notifications are null", notifications);
+
         boolean found=false;
         for(String language: notifications.getItemList()) {
             if(Constants.WSRF_WSNT_NAMESPACE.equals(language)) {
@@ -124,6 +131,8 @@ public class PortalTest extends ApiTestBase {
             }
         }
         assertTrue("WSNT is supported", found);
+
+
     }
 
 
