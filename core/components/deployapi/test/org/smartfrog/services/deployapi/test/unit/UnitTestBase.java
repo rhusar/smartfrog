@@ -24,6 +24,7 @@ import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.XmlError;
 import org.apache.xmlbeans.XmlOptions;
 import org.apache.xmlbeans.XmlException;
+import org.apache.xmlbeans.XmlCursor;
 import org.apache.axis2.om.OMElement;
 import org.apache.axis2.om.OMAttribute;
 import org.apache.axis2.om.impl.llom.builder.StAXOMBuilder;
@@ -35,6 +36,8 @@ import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.xml.utils.XmlCatalogResolver;
 import org.smartfrog.services.xml.utils.ResourceLoader;
 import org.ggf.xbeans.cddlm.testhelper.TestsDocument;
+import org.ggf.xbeans.cddlm.testhelper.TestsType;
+import org.ggf.xbeans.cddlm.testhelper.TestType;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
@@ -123,7 +126,28 @@ public abstract class UnitTestBase extends TestCase {
     public XmlObject loadTestElement(String resource,String name) throws IOException, XmlException {
         Axis2Beans<TestsDocument> binder = new Axis2Beans<TestsDocument>(options);
         TestsDocument doc = binder.loadBeansFromResource(resource);
-        //doc.selectChildren(Constants.TEST_HELPER_NAMESPACE,"tests"
+        XmlObject[] children = doc.selectChildren(Constants.TEST_HELPER_NAMESPACE,
+                "tests");
+        TestsType tests = doc.getTests();
+        tests.dump();
+        for(TestType test:tests.getTestList()) {
+            test.dump();
+            if("name".equals(test.getName())) {
+                XmlCursor cursor=test.newCursor();
+                if (cursor.toFirstChild()) {
+                    return cursor.getObject();    
+                } else {
+                    throw new XmlException("Element "+test+" has no children");
+                }
+            }
+        }
+
+        throw new XmlException("No node of name " +
+                name +
+                " found in resource " +
+                resource);
+/*
+
 
         XmlObject[] xmlObjects = doc.selectPath(DECLARE_TEST_NAMESPACE
                 +"//t:tests/t:test[@name='" + name + "']/child::*[position()=1]");
@@ -132,6 +156,7 @@ public abstract class UnitTestBase extends TestCase {
         } else {
             return xmlObjects[0];
         }
+*/
     }
 
     public OMElement loadTestOMElement(String resource, String name) throws IOException, XmlException,
@@ -147,6 +172,10 @@ public abstract class UnitTestBase extends TestCase {
         Iterator childElements = doc.getChildrenWithName(TEST_ELEMENT);
         while (childElements.hasNext()) {
             OMElement element = (OMElement) childElements.next();
+            if(element==null) {
+                //bad things here
+                break;
+            }
             OMAttribute attribute = element.getAttribute(TEST_NAME);
             if (attribute == null) {
                 attribute = element.getAttribute(TEST_NAME_LOCAL);
