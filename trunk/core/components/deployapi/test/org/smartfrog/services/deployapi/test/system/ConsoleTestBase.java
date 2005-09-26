@@ -203,15 +203,16 @@ public abstract class ConsoleTestBase extends TestCase {
                                           final String text) {
         String faultAsString = fault.getMessage();
         final String actualCode = fault.getFaultCode();
-        boolean localpartFound=actualCode!=null
-                && actualCode.indexOf(expectedCode.getLocalPart())>=0;
-        assertTrue("expected [" +
+        String expected = "expected [" +
                 expectedCode +
                 "] \nbut got\nfault code:[" +
                 actualCode +
                 "]\n" +
-                faultAsString,
-                localpartFound);
+                faultAsString;
+
+        boolean localpartFound=actualCode!=null
+                && actualCode.indexOf(expectedCode.getLocalPart())>=0;
+        //assertTrue(expected,localpartFound);
         if (text != null) {
             String message = fault.getMessage();
             assertNotNull("fault reason is null in " + faultAsString, message);
@@ -228,7 +229,7 @@ public abstract class ConsoleTestBase extends TestCase {
     public static void assertFaultMatches(AxisFault fault, FaultTemplate template) {
         assertFaultMatches(fault,
                 Utils.convert(template.getQualifiedName()),
-                template.getWireMessage());
+                template.getErrorMessage());
     }
 
 
