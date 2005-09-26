@@ -145,6 +145,87 @@ public class ComponentHelper {
     }
 
     /**
+     * Method that can be invoked in any PrimImpl to trigger the detach and/or termination of a component
+     * according to the values of the boolean attributes 'sfShouldDetach', 'sfShouldTerminate'
+     * and 'sfShouldTerminateQuietly'
+     * @param terminationType - termination type, system recognized types are "normal", "abnormal" and "externalReferenceDead".
+     * @param terminationMessage - description of termination
+     * @param refId Reference - id of terminating component
+     */
+    public void sfSelfDetachAndOrTerminate(String terminationType,
+                                            String terminationMessage,
+                                            Reference refId, Throwable thr) {
+        /** Flag indicating detachment. */
+        boolean shouldDetach = false;
+        /** Flag indicating if the sfShouldDetach attribute was read. */
+        boolean shouldDetachRead = false;
+        /**
+         * flag indicating termination.
+         * whenever execution ends
+         */
+        boolean shouldTerminate = true;
+        /** Flag indicating if the sfShouldTerminate attribute was read. */
+        boolean shouldTerminateRead = false;
+
+        /**
+         * flag indicating termination.
+         * whenever execution ends
+         */
+        boolean shouldTerminateQuietly = false;
+        /** Flag indicating if the sfShouldTerminate attribute was read. */
+        boolean shouldTerminateQuietlyRead = false;
+
+        try {
+            shouldTerminate = owner.sfResolve("sfShouldTerminate", shouldTerminate, true);
+            shouldTerminateRead = true;
+        } catch (RemoteException ex) {
+        } catch (SmartFrogResolutionException ex) {
+        }
+
+        try {
+            shouldTerminateQuietly = owner.sfResolve("sfShouldTerminateQuietly", shouldTerminateQuietly, true);
+            shouldTerminateQuietlyRead = true;
+        } catch (RemoteException ex) {
+        } catch (SmartFrogResolutionException ex) {
+        }
+
+        try {
+            shouldDetach = owner.sfResolve("sfShouldDetach", shouldDetach, true);
+            shouldDetachRead = true;
+        } catch (RemoteException ex) {
+        } catch (SmartFrogResolutionException ex) {
+        }
+
+        if (shouldTerminateRead) {
+            if (terminationMessage==null) {
+                terminationMessage = "Self Detatch and\\or Termination: ";
+            }
+
+            TerminationRecord termR = (new TerminationRecord(terminationType,
+                terminationMessage, this.completeNameSafe(), thr));
+            TerminatorThread terminator = new TerminatorThread(owner, termR);
+
+            if (shouldDetachRead&&shouldDetach) {
+                terminator.detach();
+            }
+
+            if ((shouldTerminateQuietlyRead)&&(!shouldTerminateQuietly)) {
+                terminator.quietly();
+            }
+
+            if ((shouldTerminateRead)&&(!shouldTerminate)) {
+                terminator.dontTerminate();
+            }
+
+            terminator.start();
+        } else {
+            if (shouldDetachRead) {
+                new TerminatorThread(owner, null).dontTerminate().detach().start();
+            }
+        }
+    }
+
+    /**
      * load a resource using the classpath of the component
      * at question.
      *

@@ -24,6 +24,7 @@ import org.smartfrog.sfcore.common.SmartFrogException;
 
 import java.io.File;
 import java.rmi.RemoteException;
+import org.smartfrog.sfcore.utils.ComponentHelper;
 
 /**
  * created 21-Jun-2004 16:52:40
@@ -77,6 +78,6 @@ public class MkdirImpl extends FileUsingComponentImpl implements Mkdir {
             throw new SmartFrogDeploymentException("Failed to create directory " +
                     directory.getAbsolutePath());
         }
-
+        new ComponentHelper(this).sfSelfDetachAndOrTerminate("normal","Mkdir "+getFile().getAbsolutePath(),this.sfCompleteNameSafe(),null);
     }
 }
