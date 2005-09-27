@@ -27,9 +27,11 @@ import org.ggf.xbeans.cddlm.wsrf.wsa2003.EndpointReferenceType;
 import org.ggf.xbeans.cddlm.wsrf.wsa2003.ReferencePropertiesType;
 import org.ggf.xbeans.cddlm.wsrf.wsa2003.ServiceNameType;
 import org.ggf.xbeans.cddlm.wsrf.wsa2004.AttributedQName;
-import org.ggf.xbeans.cddlm.wsrf.wsa2004.ReferenceParametersType;
+import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
 
-import javax.xml.namespace.QName;
+import nu.xom.Element;
+import org.smartfrog.services.deployapi.system.Constants;
+
 
 /**
  * Helps conver EPRs
@@ -37,8 +39,51 @@ import javax.xml.namespace.QName;
  */
 
 public class EprHelper {
+    public static final String WSA = Constants.WS_ADDRESSING_NAMESPACE;
+    public static final String WSA2004 = Constants.WS_ADDRESSING_2004_NAMESPACE;
 
     protected EprHelper() {
+    }
+
+    /**
+     * Convert Xom to a new EPR
+     *
+     * @param addr
+     * @return
+     */
+    public static EndpointReference XomWsa2003ToEpr(Element addr) {
+        String wsa = WSA;
+        String uri=addr.getFirstChildElement(Constants.WSA_ELEMENT_ADDRESS,wsa
+                ).getValue();
+        EndpointReference dest = new EndpointReference(uri);
+/*
+        Element serviceName = addr.getFirstChildElement(
+                wsa,"ServiceName");
+        if(serviceName!=null) {
+            String portType=serviceName.getAttributeValue(WSA_ATTR_PORTNAME,wsa);
+            QName qname=new QName(serviceName.getValue();
+            dest.setServiceName(new ServiceName());
+
+        }
+*/
+        return dest;
+    }
+
+    public static EndpointReference XomWsa2004ToEpr(Element element) {
+        throw FaultRaiser.raiseNotImplementedFault("wsa2004");
+    }
+
+    public static EndpointReference XomWsaToEpr(Element addr) {
+        String ns = addr.getNamespaceURI();
+        if (WSA.equals(ns)) {
+            return XomWsa2003ToEpr(addr);
+        } else {
+            if (WSA2004
+                    .equals(ns)) {
+                return XomWsa2004ToEpr(addr);
+            }
+        }
+        throw FaultRaiser.raiseBadArgumentFault("Unknown namespace "+ns);
     }
 
     public static EndpointReference Wsa2003ToEPR(EndpointReferenceType source) {
@@ -75,6 +120,8 @@ public class EprHelper {
         return dest;
     }
 
+
+
     public static EndpointReference Wsa2004ToEPR(org.ggf.xbeans.cddlm.wsrf.wsa2004.EndpointReferenceType source) {
         org.ggf.xbeans.cddlm.wsrf.wsa2004.AttributedURI addrURI = source.getAddress();
         EndpointReference dest = new EndpointReference(addrURI.getStringValue());
@@ -110,4 +157,25 @@ public class EprHelper {
         ReferencePropertiesType destProperties = dest.addNewReferenceProperties();
         //TODO
     }
+
+    /**
+     * Turn an endpointer into a readable string
+     * @param epr
+     * @return printable description
+     */
+    public static String stringify(EndpointReference epr) {
+        return epr.getAddress();
+    }
+
+    /**
+     * compare two endpoints for equality
+     * @param e1
+     * @param e2
+     * @return
+     */
+    public static boolean compareEndpoints(EndpointReference e1, EndpointReference e2) {
+        return e1.getAddress().equals(e2.getAddress()); 
+    }
 }
+
+

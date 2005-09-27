@@ -22,14 +22,21 @@ package org.smartfrog.services.deployapi.transport.endpoints.system;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.xmlbeans.XmlException;
+import org.apache.axis2.om.OMElement;
+import org.apache.axis2.AxisFault;
 import org.ggf.xbeans.cddlm.api.InitializeRequestDocument;
 import org.ggf.xbeans.cddlm.api.InitializeResponseDocument;
+import org.ggf.xbeans.cddlm.api.TerminateResponseDocument;
+import org.ggf.xbeans.cddlm.api.TerminateRequestDocument;
 import org.ggf.xbeans.cddlm.smartfrog.SmartFrogDeploymentDescriptorType;
 import org.smartfrog.services.deployapi.engine.Job;
 import org.smartfrog.services.deployapi.system.Constants;
+import org.smartfrog.services.deployapi.system.Utils;
 import org.smartfrog.services.deployapi.transport.endpoints.Processor;
 import org.smartfrog.services.deployapi.transport.endpoints.XmlBeansEndpoint;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
+import org.smartfrog.services.deployapi.binding.bindings.InitializeBinding;
+import org.smartfrog.services.deployapi.binding.bindings.TerminateBinding;
 import org.smartfrog.sfcore.common.ConfigurationDescriptor;
 import org.smartfrog.sfcore.prim.Prim;
 
@@ -45,20 +52,29 @@ import java.io.PrintWriter;
  * 4, 2004 3:58:37 PM
  */
 
-public class InitializeProcessor extends Processor {
+public class InitializeProcessor extends SystemProcessor {
     /**
      * log
      */
     private static final Log log = LogFactory.getLog(InitializeProcessor.class);
 
-    private InitializeRequestDocument.InitializeRequest request;
     private OptionProcessor options;
-    private Job job;
     public static final String ERROR_NO_DESCRIPTOR = "No descriptor element";
     private File descriptorFile;
 
     public InitializeProcessor(XmlBeansEndpoint owner) {
         super(owner);
+    }
+
+    public OMElement process(OMElement request) throws AxisFault {
+        jobMustExist();
+        InitializeBinding binding = new InitializeBinding();
+        InitializeRequestDocument doc = binding.convertRequest(request);
+        Utils.maybeValidate(doc);
+        InitializeResponseDocument responseDoc;
+        responseDoc = initialize(doc.getInitializeRequest());
+        OMElement responseOM = binding.convertResponse(responseDoc);
+        return responseOM;
     }
 
     public OptionProcessor getOptions() {
@@ -68,15 +84,11 @@ public class InitializeProcessor extends Processor {
     /**
      * deployment
      */
-    public InitializeResponseDocument initialize(
-            Job activeJob,
-            InitializeRequestDocument.InitializeRequest request) {
+    public InitializeResponseDocument initialize(InitializeRequestDocument.InitializeRequest request) {
 
         //get the options out the way
         options = new OptionProcessor(getOwner());
 
-        this.request = request;
-        this.job = activeJob;
         job.bind(request, options);
         options.process(request.getOptions());
 
@@ -85,7 +97,7 @@ public class InitializeProcessor extends Processor {
 
         //here we deploy inline
         try {
-            deployed = determineLanguageAndDeploy(activeJob);
+            deployed = determineLanguageAndDeploy();
         } catch (Exception e) {
             job.enterFailedState(e.toString());
             throw translateException(e);
@@ -101,10 +113,8 @@ public class InitializeProcessor extends Processor {
     /**
      * process a smartfrog deployment
      *
-     * @param job
-     * @
      */
-    public boolean determineLanguageAndDeploy(Job job) throws IOException, XmlException {
+    public boolean determineLanguageAndDeploy() throws IOException, XmlException {
         Constants.DeploymentLanguage language = job.getLanguage();
         boolean deployed = false;
         switch (language) {

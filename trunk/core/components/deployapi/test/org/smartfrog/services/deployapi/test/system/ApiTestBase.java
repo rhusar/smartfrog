@@ -23,6 +23,7 @@ package org.smartfrog.services.deployapi.test.system;
 
 import org.apache.axis2.AxisFault;
 import org.apache.xmlbeans.XmlException;
+import org.apache.xmlbeans.XmlObject;
 import org.smartfrog.services.deployapi.client.ConsoleOperation;
 import org.smartfrog.services.deployapi.client.Deploy;
 import org.smartfrog.services.deployapi.client.SystemEndpointer;
@@ -165,7 +166,8 @@ public abstract class ApiTestBase extends ConsoleTestBase {
     }*/
 
     protected SystemEndpointer createSystem() throws RemoteException {
-        SystemEndpointer systemEndpointer = createSystem(null);
+        SystemEndpointer systemEndpointer;
+        systemEndpointer = createSystem(null);
         return systemEndpointer;
     }
 
@@ -182,6 +184,7 @@ public abstract class ApiTestBase extends ConsoleTestBase {
      */
     public void terminateSystem(SystemEndpointer system) throws RemoteException {
         if(system!=null) {
+            log.info("terminating "+system.toString());
             getOperation().terminate(system,"end of test");
         }
     }

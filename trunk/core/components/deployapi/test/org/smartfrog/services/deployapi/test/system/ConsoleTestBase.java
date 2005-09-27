@@ -40,6 +40,7 @@ import org.smartfrog.services.deployapi.test.unit.UnitTestBase;
 import org.apache.axis2.AxisFault;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.xmlbeans.XmlObject;
 import org.ggf.cddlm.utils.FaultTemplate;
 import nu.xom.XPathContext;
 
@@ -260,4 +261,5 @@ public abstract class ConsoleTestBase extends UnitTestBase {
             assertFaultMatches(fault,Constants.F_NO_SUCH_APPLICATION);
         }
     }
+
 }

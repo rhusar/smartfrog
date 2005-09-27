@@ -96,12 +96,26 @@ public class JobRepository implements Iterable<Job> {
     }
 
     /**
+     * Predicate for testing if a job is in the repository
+     * @param job
+     * @return
+     */
+    public boolean inRepository(Job job) {
+        Job job2 = lookup(job.getId());
+        return job2!=null;
+    }
+
+    /**
      * remove an item identified by a URI
      *
      * @param uri
      */
     public void remove(URI uri) {
         jobs.remove(uri.toString());
+    }
+    
+    public void remove(Job job) {
+        jobs.remove(job.getId());
     }
 
     /**
@@ -135,8 +149,8 @@ public class JobRepository implements Iterable<Job> {
      * @return
      */
     public String createJobAddress(String jobID) {
-        //return systemsURL + "?"+JOB_ID_PARAM +"=" + jobID;
-        return systemsURL.toString() + "#" + jobID;
+        return systemsURL + "?"+JOB_ID_PARAM +"=" + jobID;
+        //return systemsURL.toString() + "#" + jobID;
     }
 
 

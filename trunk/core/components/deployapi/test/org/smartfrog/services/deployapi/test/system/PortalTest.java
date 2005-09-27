@@ -21,7 +21,9 @@ package org.smartfrog.services.deployapi.test.system;
 
 import org.smartfrog.services.deployapi.client.SystemEndpointer;
 import org.smartfrog.services.deployapi.system.Constants;
+import org.smartfrog.services.deployapi.binding.EprHelper;
 import org.apache.axis2.AxisFault;
+import org.apache.axis2.addressing.EndpointReference;
 import org.apache.xmlbeans.XmlObject;
 import org.ggf.xbeans.cddlm.api.StaticPortalStatusType;
 import org.ggf.xbeans.cddlm.api.PortalInformationType;
@@ -38,7 +40,7 @@ import nu.xom.Node;
  */
 
 public class PortalTest extends ApiTestBase {
-    public static final String XPATH_STATUS = "wsrf-rp:GetResourcePropertyResponse/api:StaticPortalStatus";
+    public static final String XPATH_STATUS = "api:StaticPortalStatus";
 
 
     public PortalTest(String name) {
@@ -109,13 +111,6 @@ public class PortalTest extends ApiTestBase {
         assertEquals(id,id2);
     }
 
-    private static boolean dump=true;
-    private void maybedump(XmlObject object) {
-        if(dump) {
-            object.dump();
-        }
-    }
-
 
     /**
      * Here to take some confusion out of the loop
@@ -167,10 +162,13 @@ public class PortalTest extends ApiTestBase {
     }
 
     public void testActiveApplications() throws Exception {
-        GetResourcePropertyResponseDocument responseDoc;
-        responseDoc = getPortalResourceProperty(Constants.PROPERTY_PORTAL_STATIC_PORTAL_STATUS);
-
-
+        Element graph = getOperation().getPortalPropertyXom(Constants.PROPERTY_PORTAL_ACTIVE_SYSTEMS);
+        Nodes systems=graph.query("api:ActiveSystems/api:system",Constants.XOM_CONTEXT);
+        for(int i=0;i<systems.size();i++) {
+            Element job=(Element) systems.get(i);
+            EndpointReference epr= EprHelper.XomWsa2003ToEpr(job);
+            log.info(EprHelper.stringify(epr));
+        }
     }
 
 }

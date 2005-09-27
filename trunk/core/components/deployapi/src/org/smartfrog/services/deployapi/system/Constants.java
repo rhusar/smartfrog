@@ -20,6 +20,7 @@
 package org.smartfrog.services.deployapi.system;
 
 import org.ggf.cddlm.generated.api.CddlmConstants;
+import org.ggf.cddlm.utils.QualifiedName;
 
 import nu.xom.XPathContext;
 
@@ -116,6 +117,16 @@ public class Constants extends CddlmConstants {
         XOM_CONTEXT.addNamespace("sf", Constants.SMARTFROG_NAMESPACE);
         XOM_CONTEXT.addNamespace("xpath", Constants.XPATH_NAMESPACE);
     }
+
+
+    /**
+     * Internal errors
+     */
+    public static final QualifiedName QNAME_SMARTFROG_INTERNAL_FAULT
+            =new QualifiedName(SMARTFROG_NAMESPACE,"internalError");
+    public static final String WSA_ELEMENT_ADDRESS = "Address";
+    public static final String WSA_ATTR_PORTNAME = "PortName";
+    public static final String WSA_ELT_SERVICENAME= "ServiceName";
 
     /**
      * enum of lifecycle

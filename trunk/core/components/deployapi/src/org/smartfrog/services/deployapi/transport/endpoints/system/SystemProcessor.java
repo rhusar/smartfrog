@@ -17,18 +17,43 @@
  For more information: www.smartfrog.org
 
  */
+
 package org.smartfrog.services.deployapi.transport.endpoints.system;
 
 import org.smartfrog.services.deployapi.transport.endpoints.Processor;
 import org.smartfrog.services.deployapi.transport.endpoints.XmlBeansEndpoint;
+import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
+import org.smartfrog.services.deployapi.engine.Job;
 
 /**
- * created 22-Sep-2005 15:41:33
+
  */
+public abstract class SystemProcessor extends Processor {
 
-public class DestroyProcessor extends SystemProcessor {
-
-    public DestroyProcessor(XmlBeansEndpoint owner) {
+    public SystemProcessor(XmlBeansEndpoint owner) {
         super(owner);
     }
+
+
+    public Job getJob() {
+        return job;
+    }
+
+    public void setJob(Job job) {
+        this.job = job;
+    }
+
+    protected Job job;
+
+    /**
+     * fail if there is no job
+     * @throws org.smartfrog.services.deployapi.transport.faults.BaseException
+     */
+    protected void jobMustExist() {
+        if(job==null) {
+            throw FaultRaiser.raiseNoSuchApplicationFault("No system found"); 
+        }
+    }
+    
+    
 }

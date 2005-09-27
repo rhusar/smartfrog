@@ -28,7 +28,7 @@ import org.ggf.xbeans.cddlm.api.LookupSystemRequestDocument;
 import org.ggf.xbeans.cddlm.api.LookupSystemResponseDocument;
 import org.ggf.xbeans.cddlm.api.OptionMapType;
 import org.ggf.xbeans.cddlm.api.TerminateRequestDocument;
-import org.ggf.xbeans.cddlm.cmp.InitializeResponseDocument;
+import org.ggf.xbeans.cddlm.api.InitializeResponseDocument;
 import org.ggf.xbeans.cddlm.wsrf.wsa2003.EndpointReferenceType;
 import org.ggf.xbeans.cddlm.wsrf.wsrp.GetResourcePropertyDocument;
 import org.ggf.xbeans.cddlm.wsrf.wsrp.GetResourcePropertyResponseDocument;
@@ -118,6 +118,10 @@ public abstract class ConsoleOperation {
             processThrowableInMain(e, out);
             return false;
         }
+    }
+
+    public PortalEndpointer getPortal() {
+        return portal;
     }
 
     /**

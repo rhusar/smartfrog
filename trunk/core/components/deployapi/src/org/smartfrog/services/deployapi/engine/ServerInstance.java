@@ -172,7 +172,7 @@ public class ServerInstance implements WSRPResourceSource {
         QualifiedName query= Utils.convert(resource);
         if(Constants.PROPERTY_PORTAL_STATIC_PORTAL_STATUS.equals(query)) {
             StaticPortalStatusDocument status = createStaticStatusInfo();
-            return status.getStaticPortalStatus();
+            return status;
         }
         if (Constants.PROPERTY_MUWS_RESOURCEID.equals(query)) {
             IdentityPropertiesType identity=IdentityPropertiesType.Factory.newInstance();

@@ -19,21 +19,24 @@
  */
 package org.smartfrog.services.deployapi.binding.bindings;
 
-import org.apache.xmlbeans.XmlOptions;
-import org.ggf.xbeans.cddlm.api.InitializeRequestDocument;
-import org.ggf.xbeans.cddlm.api.InitializeResponseDocument;
+import org.ggf.xbeans.cddlm.api.PingRequestDocument;
+import org.ggf.xbeans.cddlm.api.PingResponseDocument;
+import org.ggf.xbeans.cddlm.api.RunRequestDocument;
+import org.ggf.xbeans.cddlm.api.RunResponseDocument;
 import org.smartfrog.services.deployapi.binding.EndpointBinding;
 
 /**
- * created 21-Sep-2005 13:08:40
+ * created 21-Sep-2005 13:53:31
  */
 
-public class InitializeBinding extends EndpointBinding<InitializeRequestDocument, InitializeResponseDocument> {
-    public InitializeBinding(XmlOptions inOptions, XmlOptions outOptions) {
-        super(inOptions, outOptions);
-    }
-
-    public InitializeBinding() {
+public class RunBinding extends EndpointBinding<RunRequestDocument, RunResponseDocument> {
+    /**
+     * create a request object
+     *
+     * @return
+     */
+    public RunRequestDocument createRequest() {
+        return RunRequestDocument.Factory.newInstance(getInOptions());
     }
 
     /**
@@ -41,16 +44,7 @@ public class InitializeBinding extends EndpointBinding<InitializeRequestDocument
      *
      * @return
      */
-    public InitializeRequestDocument createRequest() {
-        return InitializeRequestDocument.Factory.newInstance(getInOptions());
-    }
-
-    /**
-     * create a request object
-     *
-     * @return
-     */
-    public InitializeResponseDocument createResponse() {
-        return InitializeResponseDocument.Factory.newInstance(getOutOptions());
+    public RunResponseDocument createResponse() {
+        return RunResponseDocument.Factory.newInstance(getOutOptions());
     }
 }

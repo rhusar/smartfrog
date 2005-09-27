@@ -36,7 +36,7 @@ import java.util.Properties;
  * 1:53:05 PM
  */
 
-public class OptionProcessor extends Processor {
+public class OptionProcessor extends SystemProcessor {
 
     private Properties propertyMap = new Properties();
     private boolean validateOnly = false;
@@ -45,7 +45,7 @@ public class OptionProcessor extends Processor {
     /**
      * log
      */
-    private static final Log log = LogFactory.getLog(InitializeProcessor.class);
+    private static final Log log = LogFactory.getLog(OptionProcessor.class);
 
     public OptionProcessor(XmlBeansEndpoint owner) {
         super(owner);
