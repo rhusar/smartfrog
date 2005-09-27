@@ -48,6 +48,8 @@ import java.util.Iterator;
 import java.io.InputStream;
 import java.io.IOException;
 
+import nu.xom.XPathContext;
+
 /**
  * created 21-Sep-2005 14:57:51
  */
@@ -59,23 +61,26 @@ public abstract class UnitTestBase extends TestCase {
     public static final QName TEST_ELEMENT=new QName(Constants.TEST_HELPER_NAMESPACE,"test");
     public static final QName TEST_NAME = new QName(Constants.TEST_HELPER_NAMESPACE, "name");
     public static final QName TEST_NAME_LOCAL = new QName("name");
+    private XmlCatalogResolver resolver;
+
 
     public UnitTestBase(String name) {
         super(name);
     }
 
-
+    public XmlCatalogResolver getResolver() {
+        return resolver;
+    }
     /**
      * Sets up the fixture, for example, open a network connection.
      * This method is called before a test is executed.
      */
     protected void setUp() throws Exception {
         super.setUp();
-        XmlCatalogResolver resolver = new XmlCatalogResolver(new ResourceLoader());
+        resolver = new XmlCatalogResolver(new ResourceLoader());
         options = new XmlOptions();
         options.setEntityResolver(resolver);
     }
-
 
     /**
      * Assert that a doc is valid

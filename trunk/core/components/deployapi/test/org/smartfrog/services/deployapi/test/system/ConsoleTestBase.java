@@ -36,15 +36,22 @@ import org.smartfrog.services.deployapi.system.Utils;
 import org.smartfrog.services.deployapi.client.PortalEndpointer;
 import org.smartfrog.services.deployapi.client.ConsoleOperation;
 import org.smartfrog.services.deployapi.client.SystemEndpointer;
+import org.smartfrog.services.deployapi.test.unit.UnitTestBase;
 import org.apache.axis2.AxisFault;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.ggf.cddlm.utils.FaultTemplate;
+import nu.xom.XPathContext;
 
 /**
  * base class for tests Date: 01-Sep-2004 Time: 10:52:46
  */
-public abstract class ConsoleTestBase extends TestCase {
+public abstract class ConsoleTestBase extends UnitTestBase {
+
+
+    protected ConsoleTestBase(String name) {
+        super(name);
+    }
 
     public static final String PREFIX = "target.";
 
@@ -62,6 +69,10 @@ public abstract class ConsoleTestBase extends TestCase {
     public static final String INVALID_URI = "http://invalid.example.org/undeploy/1";
 
     protected static Log log= LogFactory.getLog(ConsoleTestBase.class);
+
+    //public String extractResourceID(GetResourcePropertyResponseDocument response)
+
+
 
     /**
     * get the operation of this test base

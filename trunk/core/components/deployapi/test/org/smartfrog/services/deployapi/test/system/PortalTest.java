@@ -22,6 +22,7 @@ package org.smartfrog.services.deployapi.test.system;
 import org.smartfrog.services.deployapi.client.SystemEndpointer;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.apache.axis2.AxisFault;
+import org.apache.xmlbeans.XmlObject;
 import org.ggf.xbeans.cddlm.api.StaticPortalStatusType;
 import org.ggf.xbeans.cddlm.api.PortalInformationType;
 import org.ggf.xbeans.cddlm.api.NameUriListType;
@@ -29,12 +30,20 @@ import org.ggf.xbeans.cddlm.api.UriListType;
 import org.ggf.xbeans.cddlm.wsrf.wsrp.GetResourcePropertyResponseDocument;
 
 import nu.xom.Element;
+import nu.xom.Nodes;
+import nu.xom.Node;
 
 /**
  * created 21-Sep-2005 14:24:11
  */
 
 public class PortalTest extends ApiTestBase {
+    public static final String XPATH_STATUS = "wsrf-rp:GetResourcePropertyResponse/api:StaticPortalStatus";
+
+
+    public PortalTest(String name) {
+        super(name);
+    }
 
     public void testUnknownApp() throws Exception {
         assertNoSuchApplication("Unknown");
@@ -100,16 +109,40 @@ public class PortalTest extends ApiTestBase {
         assertEquals(id,id2);
     }
 
-    //public String extractResourceID(GetResourcePropertyResponseDocument response)
+    private static boolean dump=true;
+    private void maybedump(XmlObject object) {
+        if(dump) {
+            object.dump();
+        }
+    }
+
+
+    /**
+     * Here to take some confusion out of the loop
+     * @throws Exception
+     */
+    public void testStaticPortalStatusXom() throws Exception {
+        Element graph = getOperation().getPortalPropertyXom(Constants.PROPERTY_PORTAL_STATIC_PORTAL_STATUS);
+        Nodes nodes = graph.query(XPATH_STATUS, Constants.XOM_CONTEXT);
+        assertEquals(XPATH_STATUS+" resolved",1,nodes.size());
+        Node n1=nodes.get(0);
+        assertTrue(XPATH_STATUS+" resolved to an element",n1 instanceof Element);
+        Element status=(Element)n1;
+        nodes = status.query("api:portal", Constants.XOM_CONTEXT);
+        assertEquals("portal resolved", 1, nodes.size());
+        Element portal=(Element)nodes.get(0);
+    }
 
     public void testStaticPortalStatus() throws Exception {
-        Element graph= getOperation().getPortalPropertyXom(Constants.PROPERTY_PORTAL_STATIC_PORTAL_STATUS);
+
         GetResourcePropertyResponseDocument responseDoc;
         responseDoc = getPortalResourceProperty(Constants.PROPERTY_PORTAL_STATIC_PORTAL_STATUS);
+        maybedump(responseDoc);
         GetResourcePropertyResponseDocument.GetResourcePropertyResponse response;
         response = responseDoc.getGetResourcePropertyResponse();
         StaticPortalStatusType status;
         status =StaticPortalStatusType.Factory.parse(response.getDomNode());
+        maybedump(status);
         assertNotNull("status is null",status);
         PortalInformationType portal = status.getPortal();
         assertNotNull("portal is null", portal);
@@ -131,9 +164,13 @@ public class PortalTest extends ApiTestBase {
             }
         }
         assertTrue("WSNT is supported", found);
+    }
+
+    public void testActiveApplications() throws Exception {
+        GetResourcePropertyResponseDocument responseDoc;
+        responseDoc = getPortalResourceProperty(Constants.PROPERTY_PORTAL_STATIC_PORTAL_STATUS);
 
 
     }
-
 
 }
