@@ -206,7 +206,9 @@ public class Endpointer implements Serializable {
         configurationContext = new ConfigurationContextFactory()
                 .buildClientConfigurationContext(getAxis2Home());
         configurationContext.getAxisConfiguration().addService(serviceDescription);
-        serviceContext = configurationContext.createServiceContext(serviceDescription.getName());
+        serviceContext = serviceDescription.getParent()
+                .getServiceGroupContext(configurationContext)
+                .getServiceContext(serviceDescription.getName().getLocalPart());        
     }
 
     public URL getUrl() {

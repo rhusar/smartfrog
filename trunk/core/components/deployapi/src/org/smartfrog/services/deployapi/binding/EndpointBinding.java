@@ -90,14 +90,14 @@ public abstract class EndpointBinding<Tin extends XmlObject,Tout extends XmlObje
     /**
      * create a request object
      *
-     * @return
+     * @return a request
      */
     public abstract Tin createRequest();
 
     /**
      * create a request object
      *
-     * @return
+     * @return a response
      */
     public abstract Tout createResponse();
 
