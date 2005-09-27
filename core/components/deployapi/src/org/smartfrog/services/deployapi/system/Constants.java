@@ -21,7 +21,7 @@ package org.smartfrog.services.deployapi.system;
 
 import org.ggf.cddlm.generated.api.CddlmConstants;
 
-import javax.xml.namespace.QName;
+import nu.xom.XPathContext;
 
 /**
  * Any constants
@@ -97,6 +97,25 @@ public class Constants extends CddlmConstants {
      * @value
      */
     public static final String DEFAULT_PROTOCOL = "http";
+
+
+
+    public static final XPathContext XOM_CONTEXT;
+
+    static {
+        XOM_CONTEXT = new XPathContext();
+        XOM_CONTEXT.addNamespace("test", Constants.TEST_HELPER_NAMESPACE);
+        XOM_CONTEXT.addNamespace("api", Constants.CDL_API_TYPES_NAMESPACE);
+        XOM_CONTEXT.addNamespace("wsa2004", Constants.WS_ADDRESSING_2004_NAMESPACE);
+        XOM_CONTEXT.addNamespace("wsa", Constants.WS_ADDRESSING_NAMESPACE);
+        XOM_CONTEXT.addNamespace("wsnt", Constants.WSRF_WSNT_NAMESPACE);
+        XOM_CONTEXT.addNamespace("cmp", Constants.CDL_CMP_TYPES_NAMESPACE);
+        XOM_CONTEXT.addNamespace("cdl", Constants.XML_CDL_NAMESPACE);
+        XOM_CONTEXT.addNamespace("wsrf-rp", Constants.WSRF_WSRP_NAMESPACE);
+        XOM_CONTEXT.addNamespace("muws-p1-xs", Constants.MUWS_P1_NAMESPACE);
+        XOM_CONTEXT.addNamespace("sf", Constants.SMARTFROG_NAMESPACE);
+        XOM_CONTEXT.addNamespace("xpath", Constants.XPATH_NAMESPACE);
+    }
 
     /**
      * enum of lifecycle

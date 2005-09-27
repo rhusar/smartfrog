@@ -391,6 +391,8 @@
       location="${cddlm.dir}/test-helper.xsd"/>
     <property name="smartfrog.xsd"
       location="${cddlm.dir}/smartfrog.xsd"/>
+    <property name="system-binding.wsdl"
+      location="${cddlm.dir}/system-binding.wsdl"/>      
   </target>
    
   <target name="axis2-tasks" depends="axis2-libraries" >
@@ -420,6 +422,7 @@
 <!--         <arg value="-sd" /> -->
        <arg value="-uri" />
       <!--  <arg file="test/files/deployapi.wsdl" /> -->
+             <!-- <arg file="${system-binding.wsdl}" />  -->
        <arg file="${deployment-api.wsdl}" /> 
     </core:java>
   </target>

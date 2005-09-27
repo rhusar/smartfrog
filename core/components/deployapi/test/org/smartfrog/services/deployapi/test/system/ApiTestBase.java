@@ -55,6 +55,10 @@ public abstract class ApiTestBase extends ConsoleTestBase {
         return operation;
     }
 
+    protected ApiTestBase(String name) {
+        super(name);
+    }
+
     /**
      * Sets up the fixture, for example, open a network connection. This method
      * is called before a test is executed.

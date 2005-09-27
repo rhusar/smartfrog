@@ -24,16 +24,18 @@ import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.om.OMElement;
 import org.apache.axis2.om.OMNamespace;
+import org.apache.axis2.om.OMFactory;
+import org.apache.axis2.om.OMAbstractFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.xmlbeans.XmlObject;
-import org.apache.xmlbeans.XmlCursor;
 import org.smartfrog.services.deployapi.binding.bindings.GetResourcePropertyBinding;
+import org.smartfrog.services.deployapi.binding.Axis2Beans;
 import org.smartfrog.services.deployapi.system.Constants;
+import org.smartfrog.services.deployapi.system.Utils;
 import org.smartfrog.services.deployapi.transport.endpoints.XmlBeansEndpoint;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
 import org.ggf.xbeans.cddlm.wsrf.wsrp.GetResourcePropertyDocument;
-import org.ggf.xbeans.cddlm.wsrf.wsrp.GetResourcePropertyResponseDocument;
 
 import javax.xml.namespace.QName;
 import java.util.Iterator;
@@ -112,18 +114,16 @@ public abstract class WsrfEndpoint extends XmlBeansEndpoint {
         if (result == null) {
             throw invalidQNameException(qName.toString());
         }
-        GetResourcePropertyResponseDocument response = binding.createResponse();
-        GetResourcePropertyResponseDocument.GetResourcePropertyResponse resp = response.addNewGetResourcePropertyResponse();
-        //ugly dom stuff
-        //resp.getDomNode().appendChild(result.getDomNode());
-        XmlCursor destCursor = resp.newCursor();
-        destCursor.toNextToken();
-        XmlCursor resultCursor=result.newCursor();
-        resultCursor.toFirstContentToken();
+        //conver to Axiom
+        OMElement resultElement= Axis2Beans.convertDocument(result);
+        //add a wrapper
 
-        resultCursor.moveXml(destCursor);
-        resultCursor.dispose();
-        return binding.convertResponse(response);
+        OMElement response = Utils.createOmElement(
+                Constants.WSRF_WSRP_NAMESPACE,
+                Constants.WSRF_RP_ELEMENT_GETRESOURCEPROPERTY_RESPONSE,
+                "wsrf-rp");
+        response.addChild(resultElement);
+        return response;
     }
 
     /**
@@ -159,7 +159,9 @@ public abstract class WsrfEndpoint extends XmlBeansEndpoint {
 
     private BaseException invalidQNameException(String qname) {
         log.error("Invalid Qname : [" + qname + "]");
-        return new BaseException(Constants.F_WSRF_WSRP_INVALID_RESOURCE_PROPERTY_QNAME);
+        BaseException baseException = new BaseException(Constants.F_WSRF_WSRP_INVALID_RESOURCE_PROPERTY_QNAME);
+        baseException.setFaultReason(qname);
+        return baseException;
     }
 
     public OMElement GetMultipleResourceProperties(MessageContext message, OMElement request) throws AxisFault {

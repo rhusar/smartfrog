@@ -27,6 +27,7 @@ import org.ggf.xbeans.cddlm.api.NameUriListType;
 import org.ggf.xbeans.cddlm.api.UriListType;
 import org.ggf.xbeans.cddlm.api.ActiveSystemsDocument;
 import org.ggf.xbeans.cddlm.api.SystemReferenceListType;
+import org.ggf.xbeans.cddlm.api.StaticPortalStatusDocument;
 import org.ggf.xbeans.cddlm.wsrf.muws.p1.IdentityPropertiesType;
 import org.ggf.xbeans.cddlm.wsrf.wsa2003.EndpointReferenceType;
 import org.ggf.cddlm.utils.QualifiedName;
@@ -57,7 +58,7 @@ public class ServerInstance implements WSRPResourceSource {
 
     private String resourceID = Utils.createNewID();
 
-    private StaticPortalStatusType staticStatus;
+    private StaticPortalStatusDocument staticStatus;
 
     private JobRepository jobs;
 
@@ -108,13 +109,10 @@ public class ServerInstance implements WSRPResourceSource {
         }
     }
 
-    public StaticPortalStatusType getStaticServerStatus() {
-        return staticStatus;
-    }
 
-
-    private StaticPortalStatusType createStaticStatusInfo() {
-        StaticPortalStatusType status = StaticPortalStatusType.Factory.newInstance();
+    private StaticPortalStatusDocument createStaticStatusInfo() {
+        StaticPortalStatusDocument doc= StaticPortalStatusDocument.Factory.newInstance();
+        StaticPortalStatusType status = doc.addNewStaticPortalStatus();
         PortalInformationType portalInfo = status.addNewPortal();
         portalInfo.setName("SmartFrog CDDLM Implementation");
         portalInfo.setBuild("$Date$");
@@ -134,7 +132,7 @@ public class ServerInstance implements WSRPResourceSource {
         notifications.addNewItem().setStringValue(Constants.WSRF_WSNT_NAMESPACE);
         UriListType options = status.addNewOptions();
 
-        return status;
+        return doc;
     }
 
     public JobRepository getJobs() {
@@ -173,7 +171,8 @@ public class ServerInstance implements WSRPResourceSource {
     public XmlObject getResource(QName resource) {
         QualifiedName query= Utils.convert(resource);
         if(Constants.PROPERTY_PORTAL_STATIC_PORTAL_STATUS.equals(query)) {
-            return staticStatus;
+            StaticPortalStatusDocument status = createStaticStatusInfo();
+            return status.getStaticPortalStatus();
         }
         if (Constants.PROPERTY_MUWS_RESOURCEID.equals(query)) {
             IdentityPropertiesType identity=IdentityPropertiesType.Factory.newInstance();

@@ -21,6 +21,9 @@ package org.smartfrog.services.deployapi.system;
 
 import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.XmlOptions;
+import org.apache.axis2.om.OMElement;
+import org.apache.axis2.om.OMFactory;
+import org.apache.axis2.om.OMAbstractFactory;
 import org.ggf.cddlm.utils.QualifiedName;
 import org.ggf.xbeans.cddlm.cmp.DeploymentFaultType;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
@@ -112,5 +115,18 @@ public class Utils {
         String s = uuid.toString();
         s = s.replace("-", "_");
         return "uuid_" + s;
+    }
+
+    public static OMElement createOmElement(QualifiedName qname) {
+        OMFactory factory = OMAbstractFactory.getOMFactory();
+        OMElement element = factory.createOMElement(qname.getLocalPart(),
+            qname.getNamespaceURI(), qname.getPrefix());
+        return element;
+    }
+
+    public static OMElement createOmElement(String namespace,String local,String prefix) {
+        OMFactory factory = OMAbstractFactory.getOMFactory();
+        OMElement element = factory.createOMElement(local,namespace,null);
+        return element;
     }
 }
