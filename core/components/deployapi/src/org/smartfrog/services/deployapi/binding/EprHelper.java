@@ -26,6 +26,10 @@ import org.ggf.xbeans.cddlm.wsrf.wsa2003.AttributedURI;
 import org.ggf.xbeans.cddlm.wsrf.wsa2003.EndpointReferenceType;
 import org.ggf.xbeans.cddlm.wsrf.wsa2003.ReferencePropertiesType;
 import org.ggf.xbeans.cddlm.wsrf.wsa2003.ServiceNameType;
+import org.ggf.xbeans.cddlm.wsrf.wsa2004.AttributedQName;
+import org.ggf.xbeans.cddlm.wsrf.wsa2004.ReferenceParametersType;
+
+import javax.xml.namespace.QName;
 
 /**
  * Helps conver EPRs
@@ -87,4 +91,23 @@ public class EprHelper {
         return dest;
     }
 
+
+    /**
+     * copy a source to a dest
+     * @param source
+     */
+    public static void copyInto(org.ggf.xbeans.cddlm.wsrf.wsa2004.EndpointReferenceType source,
+                                EndpointReferenceType dest) {
+        org.ggf.xbeans.cddlm.wsrf.wsa2004.AttributedURI address = source.getAddress();
+
+        dest.addNewAddress().setStringValue(address.getStringValue());
+
+        AttributedQName portType = source.getPortType();
+        dest.addNewPortType().setQNameValue(portType.getQNameValue());
+        org.ggf.xbeans.cddlm.wsrf.wsa2004.ServiceNameType serviceName = source.getServiceName();
+        dest.addNewServiceName().setPortName(serviceName.getPortName());
+        org.ggf.xbeans.cddlm.wsrf.wsa2004.ReferencePropertiesType sourceProperties = source.getReferenceProperties();
+        ReferencePropertiesType destProperties = dest.addNewReferenceProperties();
+        //TODO
+    }
 }

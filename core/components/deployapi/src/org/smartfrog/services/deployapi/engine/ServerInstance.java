@@ -25,7 +25,10 @@ import org.ggf.xbeans.cddlm.api.StaticPortalStatusType;
 import org.ggf.xbeans.cddlm.api.PortalInformationType;
 import org.ggf.xbeans.cddlm.api.NameUriListType;
 import org.ggf.xbeans.cddlm.api.UriListType;
+import org.ggf.xbeans.cddlm.api.ActiveSystemsDocument;
+import org.ggf.xbeans.cddlm.api.SystemReferenceListType;
 import org.ggf.xbeans.cddlm.wsrf.muws.p1.IdentityPropertiesType;
+import org.ggf.xbeans.cddlm.wsrf.wsa2003.EndpointReferenceType;
 import org.ggf.cddlm.utils.QualifiedName;
 import org.smartfrog.services.deployapi.transport.wsrf.WSRPResourceSource;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
@@ -177,6 +180,22 @@ public class ServerInstance implements WSRPResourceSource {
             identity.setResourceId(resourceID);
             return identity;
         }
+        if(Constants.PROPERTY_PORTAL_ACTIVE_SYSTEMS.equals(query)) {
+            return getJobList().getActiveSystems();
+        }
         return null;
+    }
+
+    private ActiveSystemsDocument getJobList() {
+        ActiveSystemsDocument doc=ActiveSystemsDocument.Factory.newInstance();
+        SystemReferenceListType systems = doc.addNewActiveSystems();
+        int size=jobs.size();
+        EndpointReferenceType apps[]=new EndpointReferenceType[size];
+        int counter=0;
+        for(Job job:jobs) {
+            apps[counter++]=(EndpointReferenceType)job.getEndpoint().copy();
+        }
+        systems.setSystemArray(apps);
+        return doc;
     }
 }
