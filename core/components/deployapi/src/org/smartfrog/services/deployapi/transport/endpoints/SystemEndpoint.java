@@ -20,15 +20,25 @@
 package org.smartfrog.services.deployapi.transport.endpoints;
 
 import org.apache.axis2.AxisFault;
+import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.om.OMElement;
 import org.ggf.xbeans.cddlm.api.InitializeRequestDocument;
 import org.ggf.xbeans.cddlm.api.InitializeResponseDocument;
 import org.smartfrog.services.deployapi.binding.Axis2Beans;
+import org.smartfrog.services.deployapi.binding.bindings.TerminateBinding;
+import org.smartfrog.services.deployapi.binding.bindings.InitializeBinding;
 import org.smartfrog.services.deployapi.engine.Job;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.system.Utils;
 import org.smartfrog.services.deployapi.transport.endpoints.system.InitializeProcessor;
+import org.smartfrog.services.deployapi.transport.endpoints.system.TerminateProcessor;
+import org.smartfrog.services.deployapi.transport.endpoints.system.SystemProcessor;
+import org.smartfrog.services.deployapi.transport.endpoints.system.PingProcessor;
+import org.smartfrog.services.deployapi.transport.endpoints.system.RunProcessor;
+import org.smartfrog.services.deployapi.transport.endpoints.portal.CreateProcessor;
+import org.smartfrog.services.deployapi.transport.endpoints.portal.ResolveProcessor;
+import org.smartfrog.services.deployapi.transport.endpoints.portal.LookupSystemProcessor;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
 import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
 import org.smartfrog.services.deployapi.transport.wsrf.WsrfEndpoint;
@@ -36,6 +46,7 @@ import org.smartfrog.services.deployapi.transport.wsrf.WsrfEndpoint;
 import javax.xml.namespace.QName;
 import java.net.URL;
 import java.net.MalformedURLException;
+import java.rmi.RemoteException;
 
 /*
 * System EPR
@@ -53,67 +64,77 @@ public class SystemEndpoint extends WsrfEndpoint {
      * @throws org.apache.axis2.AxisFault
      * @throws BaseException              unchecked basefault
      */
-    public OMElement dispatch(QName operation, MessageContext inMessage) throws AxisFault {
+    public OMElement dispatch(QName operation, MessageContext inMessage)
+            throws RemoteException {
         OMElement result = super.dispatch(operation, inMessage);
         if (result != null) {
             return result;
         }
-        String action = operation.getLocalPart();
-        Processor processor = null;
-
-        OMElement request = inMessage.getEnvelope().getBody().getFirstElement();
+        OMElement request = getRequestBody(inMessage);
         String requestName = request.getLocalName();
         verifyDeployApiNamespace(request.getQName());
+        SystemProcessor processor = createProcessor(requestName);
+        verifyProcessorSet(processor, operation);
 
+        processor.setMessageContext(inMessage);
         Job job = lookupJob(inMessage);
-        if (Constants.API_ELEMENT_INITALIZE_REQUEST.equals(action)) {
-            return Initialize(job, request);
-        }
-        if (Constants.API_ELEMENT_RESOLVE_REQUEST.equals(action)) {
-        }
-        if (Constants.API_ELEMENT_ADDFILE_REQUEST.equals(action)) {
-        }
-        if (Constants.API_ELEMENT_RUN_REQUEST.equals(action)) {
-        }
-        if (Constants.API_ELEMENT_TERMINATE_REQUEST.equals(action)) {
-        }
-        if (Constants.API_ELEMENT_PING_REQUEST.equals(action)) {
-        }
-        return null;
+        processor.setJob(job);
+        return processor.process(request);
     }
 
+    /**
+     * Look up a job
+     * @param inMessage
+     * @return
+     */
     protected Job lookupJob(MessageContext inMessage) {
-        String address = inMessage.getTo().getAddress();
+        EndpointReference to = inMessage.getTo();
+        String address = to.getAddress();
         URL url=null;
         try {
             url = new URL(address);
         } catch (MalformedURLException e) {
-            throw new RuntimeException("Couldnt turn an addr into a URL "+address,e);
+            throw new RuntimeException("Couldn't turn an addr into a URL "+address,e);
         }
         String query = url.getRef();
         if(query==null) {
-            throw FaultRaiser.raiseNoSuchApplicationFault("No app at "+address);
+            return null;
         }
 
         FaultRaiser.throwNotImplemented();
         return null;
     }
 
-    public OMElement AddFile(OMElement request) throws BaseException {
-        FaultRaiser.throwNotImplemented();
-        return null;
+    /**
+     * Create the relevant processor for this operation.
+     *
+     * @param requestName
+     * @return a processor
+     */
+    protected SystemProcessor createProcessor(String requestName) {
+        SystemProcessor processor = null;
+        if (Constants.API_ELEMENT_INITALIZE_REQUEST.equals(requestName)) {
+            processor = new InitializeProcessor(this);
+        }
+        if (Constants.API_ELEMENT_TERMINATE_REQUEST.equals(requestName)) {
+            processor = new TerminateProcessor(this);
+        }
+        if (Constants.API_ELEMENT_ADDFILE_REQUEST.equals(requestName)) {
+            //processor = new LookupSystemProcessor(this);
+        }
+        if (Constants.API_ELEMENT_RUN_REQUEST.equals(requestName)) {
+            processor = new RunProcessor(this);
+        }
+        if (Constants.API_ELEMENT_PING_REQUEST.equals(requestName)) {
+            processor = new PingProcessor(this);
+        }
+        if (Constants.API_ELEMENT_RESOLVE_REQUEST.equals(requestName)) {
+            //processor = new LookupSystemProcessor(this);
+        }
+        return processor;
     }
 
-    public OMElement Initialize(Job job, OMElement request) throws BaseException {
-        Axis2Beans<InitializeRequestDocument> inBinding = new Axis2Beans<InitializeRequestDocument>();
-        InitializeRequestDocument doc = inBinding.convert(request);
-        Utils.maybeValidate(doc);
-        InitializeProcessor processor = new InitializeProcessor(this);
-        InitializeResponseDocument responseDoc;
-        responseDoc = processor.initialize(job, doc.getInitializeRequest());
-        Axis2Beans<InitializeResponseDocument> outBinding = new Axis2Beans<InitializeResponseDocument>();
-        OMElement responseOM = outBinding.convert(responseDoc);
-        return responseOM;
-    }
+
+    
 
 }

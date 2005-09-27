@@ -22,6 +22,7 @@ package org.smartfrog.services.deployapi.client;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.description.OperationDescription;
 import org.apache.axis2.description.ServiceDescription;
+import org.apache.axis2.AxisFault;
 import org.ggf.xbeans.cddlm.api.CreateResponseDocument;
 import org.smartfrog.services.deployapi.binding.EprHelper;
 import org.smartfrog.services.deployapi.system.Constants;
@@ -38,6 +39,8 @@ import java.net.URL;
 public class SystemEndpointer extends Endpointer {
 
     private String resourceID;
+    protected static org.apache.axis2.description.OperationDescription[] operations;
+    protected static ServiceDescription serviceDescription;
 
 
     //From Axis2 generated SystemEPRStub
@@ -122,22 +125,28 @@ public class SystemEndpointer extends Endpointer {
     public SystemEndpointer() {
     }
 
-    public SystemEndpointer(URL url) {
+    public SystemEndpointer(URL url) throws AxisFault {
         super(url);
+        init();
     }
 
-    public SystemEndpointer(EndpointReference endpointer, String resourceID) {
+    public SystemEndpointer(EndpointReference endpointer, String resourceID)
+            throws AxisFault {
         super(endpointer);
         this.resourceID = resourceID;
+        init();
     }
 
-    public SystemEndpointer(CreateResponseDocument.CreateResponse response) {
+    public SystemEndpointer(CreateResponseDocument.CreateResponse response)
+            throws AxisFault {
         resourceID = response.getResourceId();
+        init();
         bindToEndpointer(EprHelper.Wsa2003ToEPR(response.getSystemReference()));
     }
 
-    public SystemEndpointer(String url) {
+    public SystemEndpointer(String url) throws AxisFault {
         super(url);
+        init();
     }
 
     public String getResourceID() {
@@ -148,6 +157,9 @@ public class SystemEndpointer extends Endpointer {
         this.resourceID = resourceID;
     }
 
+    public ServiceDescription getServiceDescription() {
+        return serviceDescription;
+    }
 
     /**
      * we use resourceID for equality, not the url itself

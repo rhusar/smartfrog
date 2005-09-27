@@ -94,7 +94,7 @@ public class FaultRaiser {
      */
     public static BaseException raiseFault(QName code, String message,
                                            Throwable thrown) {
-        BaseException fault = new BaseException();
+        BaseException fault = new BaseException(message);
         fault.setFaultCode(code);
         fault.setFaultReason(message);
         if (thrown != null) {
@@ -120,7 +120,9 @@ public class FaultRaiser {
     }
 
     public static BaseException raiseBadArgumentFault(String message) {
-        return raiseFault(Constants.FAULT_BAD_ARGUMENT, message);
+        BaseException baseException = raiseFault(Constants.FAULT_BAD_ARGUMENT, message);
+        
+        return baseException;
     }
 
     public static BaseException raiseNoSuchApplicationFault(String message) {
@@ -128,12 +130,23 @@ public class FaultRaiser {
                 message);
     }
 
-    public BaseException raiseNestedFault(Exception e, String message) {
+    public static BaseException raiseNestedFault(Exception e, String message) {
         BaseException fault = BaseException.makeFault(e);
         fault.setFaultReason(message);
         fault.setFaultCode(Constants.FAULT_NESTED_EXCEPTION);
         return fault;
     }
+    
+    
+    public static BaseException raiseNotImplementedFault(String feature) {
+        String message = "not implemented:" + feature;
+        BaseException fault = new BaseException(message);
+        fault.setFaultCode(Constants.QNAME_SMARTFROG_INTERNAL_FAULT);
+        fault.setFaultReason(message);
+        return fault;
+    }
+    
+
 
     /**
      * make a URI.

@@ -77,6 +77,10 @@ public class PortalUnitTest extends UnitTestBase {
         portal = new PortalEndpoint();
     }
 
+    public void testOMLookup() throws Exception {
+        OMElement ome = loadTestOMElement(DOC_CREATE, "createRequestHostname");
+        assertNotNull(ome);
+    }
 
     public void testRoundTrip() throws Exception {
         Axis2Beans<CreateRequestDocument.CreateRequest> requestBinder = new Axis2Beans<CreateRequestDocument.CreateRequest>();

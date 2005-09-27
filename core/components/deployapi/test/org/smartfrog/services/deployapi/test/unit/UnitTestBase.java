@@ -28,6 +28,7 @@ import org.apache.xmlbeans.XmlCursor;
 import org.apache.axis2.om.OMElement;
 import org.apache.axis2.om.OMAttribute;
 import org.apache.axis2.om.impl.llom.builder.StAXOMBuilder;
+import org.apache.axis2.addressing.EndpointReference;
 import org.w3c.dom.Node;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
 import org.smartfrog.services.deployapi.transport.endpoints.PortalEndpoint;
@@ -62,6 +63,11 @@ public abstract class UnitTestBase extends TestCase {
     public static final QName TEST_NAME = new QName(Constants.TEST_HELPER_NAMESPACE, "name");
     public static final QName TEST_NAME_LOCAL = new QName("name");
     private XmlCatalogResolver resolver;
+    private static boolean dump=false;
+    public final static EndpointReference EPR_LOCAL_PORTAL
+            = new EndpointReference("http://localhost:5050/services/Portal/");
+    public final static EndpointReference EPR_SAMPLE_JOB
+            = new EndpointReference("http://localhost:5050/services/System/#uuid_1235678_0045");
 
 
     public UnitTestBase(String name) {
@@ -134,10 +140,8 @@ public abstract class UnitTestBase extends TestCase {
         XmlObject[] children = doc.selectChildren(Constants.TEST_HELPER_NAMESPACE,
                 "tests");
         TestsType tests = doc.getTests();
-        tests.dump();
         for(TestType test:tests.getTestList()) {
-            test.dump();
-            if("name".equals(test.getName())) {
+            if(name.equals(test.getName())) {
                 XmlCursor cursor=test.newCursor();
                 if (cursor.toFirstChild()) {
                     return cursor.getObject();    
@@ -190,5 +194,11 @@ public abstract class UnitTestBase extends TestCase {
             }
         }
         throw new XmlException("No node of name " + name + " found in resource " + resource);
+    }
+
+    protected void maybedump(XmlObject object) {
+        if(dump) {
+            object.dump();
+        }
     }
 }

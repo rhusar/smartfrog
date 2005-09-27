@@ -33,6 +33,7 @@ import org.smartfrog.services.deployapi.transport.faults.BaseException;
 import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
 
 import java.net.URI;
+import java.rmi.RemoteException;
 
 /**
  * created Aug 4, 2004 3:59:42 PM
@@ -162,7 +163,7 @@ public class Processor extends FaultRaiser {
         Utils.maybeValidate(bean);
     }
 
-    public OMElement process(OMElement request) throws AxisFault {
+    public OMElement process(OMElement request) throws RemoteException {
         throwNotImplemented();
         return null;
     }

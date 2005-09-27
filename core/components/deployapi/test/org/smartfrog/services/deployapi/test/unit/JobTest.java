@@ -17,18 +17,43 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.deployapi.transport.endpoints.system;
 
-import org.smartfrog.services.deployapi.transport.endpoints.Processor;
-import org.smartfrog.services.deployapi.transport.endpoints.XmlBeansEndpoint;
+package org.smartfrog.services.deployapi.test.unit;
+
+import org.smartfrog.services.deployapi.engine.Job;
+import org.smartfrog.services.deployapi.engine.JobRepository;
+
+import java.net.URL;
 
 /**
- * created 22-Sep-2005 15:41:33
+
  */
+public class JobTest extends UnitTestBase {
 
-public class DestroyProcessor extends SystemProcessor {
+    public JobTest(String name) {
+        super(name);
+    }
 
-    public DestroyProcessor(XmlBeansEndpoint owner) {
-        super(owner);
+    Job job;
+
+    JobRepository repository;
+
+
+    protected void setUp() throws Exception {
+        super.setUp();
+        repository=new JobRepository(new URL("http://localhost:5050"));
+        
+    }
+    
+    Job createJob() {
+        return repository.createNewJob("localhost");
+    }
+
+    public void testDelete() throws Exception {
+        Job job=createJob();
+        assertTrue("job found",repository.inRepository(job));
+        repository.remove(job);
+        assertTrue("job deleted", !repository.inRepository(job));
+        
     }
 }

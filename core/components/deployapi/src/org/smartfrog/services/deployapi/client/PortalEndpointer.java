@@ -22,6 +22,7 @@ package org.smartfrog.services.deployapi.client;
 
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.description.OperationDescription;
+import org.apache.axis2.description.ServiceDescription;
 import org.smartfrog.services.deployapi.system.Constants;
 
 import javax.xml.namespace.QName;
@@ -35,6 +36,13 @@ import java.net.URL;
 
 public class PortalEndpointer extends Endpointer {
 
+
+
+    protected static org.apache.axis2.description.OperationDescription[] operations;
+    protected static ServiceDescription serviceDescription;
+
+    
+    
     /**
      * This is pasted in from generated axis code
      */
@@ -111,6 +119,10 @@ public class PortalEndpointer extends Endpointer {
     public PortalEndpointer(String url) throws AxisFault {
         super(url);
         init();
+    }
+
+    public ServiceDescription getServiceDescription() {
+        return serviceDescription;
     }
 
     public static PortalEndpointer createDefaultBinding() throws IOException {

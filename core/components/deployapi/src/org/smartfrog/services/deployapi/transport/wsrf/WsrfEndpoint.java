@@ -34,11 +34,13 @@ import org.smartfrog.services.deployapi.binding.Axis2Beans;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.system.Utils;
 import org.smartfrog.services.deployapi.transport.endpoints.XmlBeansEndpoint;
+import org.smartfrog.services.deployapi.transport.endpoints.Processor;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
 import org.ggf.xbeans.cddlm.wsrf.wsrp.GetResourcePropertyDocument;
 
 import javax.xml.namespace.QName;
 import java.util.Iterator;
+import java.rmi.RemoteException;
 
 
 /**
@@ -57,7 +59,8 @@ public abstract class WsrfEndpoint extends XmlBeansEndpoint {
      * @throws AxisFault
      * @throws BaseException unchecked basefault
      */
-    public OMElement dispatch(QName operation, MessageContext inMessage) throws AxisFault {
+    public OMElement dispatch(QName operation, MessageContext inMessage)
+            throws RemoteException {
         OMElement request = inMessage.getEnvelope().getBody().getFirstElement();
         String requestName = request.getLocalName();
         QName qName = request.getQName();
@@ -176,4 +179,27 @@ public abstract class WsrfEndpoint extends XmlBeansEndpoint {
         return null;
     }
 
+    /**
+     * get the bit of a request that matters
+     * @param inMessage
+     * @return the first element in the body
+     */
+    protected OMElement getRequestBody(MessageContext inMessage) {
+        return inMessage.getEnvelope().getBody().getFirstElement();
+    }
+
+    /**
+     * if processor==null, raise an appropriate exception
+     * @param processor
+     * @param operation
+     * @throws org.apache.axis2.AxisFault
+     */
+    protected void verifyProcessorSet(Processor processor, QName operation) throws
+            AxisFault {
+        if (processor == null) {
+            //if we get here: error
+            String action = operation.getLocalPart();
+            throw new AxisFault("Unknown message: " + action);
+        }
+    }
 }

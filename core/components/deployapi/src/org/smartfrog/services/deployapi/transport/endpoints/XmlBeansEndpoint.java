@@ -27,6 +27,7 @@ import org.smartfrog.services.deployapi.transport.faults.BaseException;
 import org.smartfrog.services.deployapi.transport.faults.DeploymentException;
 
 import javax.xml.namespace.QName;
+import java.rmi.RemoteException;
 
 /**
  * An endpoint that is deployed under Smartfrog.
@@ -42,7 +43,8 @@ public abstract class XmlBeansEndpoint {
      * @throws AxisFault
      * @throws BaseException unchecked basefault
      */
-    public abstract OMElement dispatch(QName operation, MessageContext inMessage) throws AxisFault;
+    public abstract OMElement dispatch(QName operation, MessageContext inMessage)
+            throws RemoteException;
 
     /**
      * check that the namespace is ok.

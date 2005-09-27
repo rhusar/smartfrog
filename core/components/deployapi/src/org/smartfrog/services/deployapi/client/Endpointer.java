@@ -39,7 +39,7 @@ import java.rmi.RemoteException;
  * created 21-Sep-2005 13:20:35
  */
 
-public class Endpointer implements Serializable {
+public abstract class Endpointer implements Serializable {
     /**
      * url
      */
@@ -49,10 +49,11 @@ public class Endpointer implements Serializable {
     private EndpointReference endpointer;
     private String listenerTransport = null;
     private boolean separateListenerTransport = true;
-    protected static org.apache.axis2.description.OperationDescription[] operations;
-    protected static ServiceDescription serviceDescription;
+//    protected static org.apache.axis2.description.OperationDescription[] operations;
+//    protected static ServiceDescription serviceDescription;
     private ConfigurationContext configurationContext;
     private ServiceContext serviceContext;
+    public static final QName QNAME_MODULE_ADDRESSING = new QName(org.apache.axis2.Constants.MODULE_ADDRESSING);
 
     public Endpointer() {
     }
@@ -62,7 +63,7 @@ public class Endpointer implements Serializable {
     }
 
     public Endpointer(EndpointReference endpointer) {
-        this.endpointer = endpointer;
+        bindToEndpointer(endpointer);
     }
 
 
@@ -123,11 +124,12 @@ public class Endpointer implements Serializable {
      *
      * @return
      */
-    public Call createStub(String operationName) throws RemoteException {
+    public ApiCall createStub(String operationName) throws RemoteException {
         assert url != null;
 
         //create a new bound stub
-        Call call = new Call(getServiceContext());
+        ServiceContext serviceContext = getServiceContext();
+        ApiCall call = new ApiCall(serviceContext);
         call.setExceptionToBeThrownOnSOAPFault(true);
         call.setTo(getEndpointer());
         call.setSoapVersionURI(SOAP12Constants.SOAP_ENVELOPE_NAMESPACE_URI);
@@ -142,7 +144,7 @@ public class Endpointer implements Serializable {
         }
 //        call.setTransportInfo(getSenderTransport(),getListenerTransport(),isSeparateListenerTransport());
         //turn on addressing
-//        call.engageModule(new QName(org.apache.axis2.Constants.MODULE_ADDRESSING));
+       //call.engageModule(QNAME_MODULE_ADDRESSING);
 
         return call;
     }
@@ -205,23 +207,18 @@ public class Endpointer implements Serializable {
     protected void init() throws AxisFault {
         configurationContext = new ConfigurationContextFactory()
                 .buildClientConfigurationContext(getAxis2Home());
+        ServiceDescription serviceDescription = getServiceDescription();
         configurationContext.getAxisConfiguration().addService(serviceDescription);
-        serviceContext = serviceDescription.getParent()
-                .getServiceGroupContext(configurationContext)
-                .getServiceContext(serviceDescription.getName().getLocalPart());        
+        serviceContext = configurationContext.createServiceContext(
+                serviceDescription.getName());
     }
 
     public URL getUrl() {
         return url;
     }
 
-    public static OperationDescription[] getOperations() {
-        return operations;
-    }
 
-    public static ServiceDescription getServiceDescription() {
-        return serviceDescription;
-    }
+    public abstract ServiceDescription getServiceDescription();
 
     public ConfigurationContext getConfigurationContext() {
         return configurationContext;

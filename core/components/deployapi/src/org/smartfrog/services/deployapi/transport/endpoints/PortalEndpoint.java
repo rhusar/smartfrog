@@ -34,6 +34,7 @@ import org.smartfrog.services.deployapi.engine.JobRepository;
 import org.smartfrog.services.deployapi.engine.ServerInstance;
 
 import javax.xml.namespace.QName;
+import java.rmi.RemoteException;
 
 /**
  */
@@ -49,25 +50,22 @@ public class PortalEndpoint extends WsrfEndpoint {
      * @throws AxisFault
      * @throws BaseException unchecked basefault
      */
-    public OMElement dispatch(QName operation, MessageContext inMessage) throws AxisFault {
+    public OMElement dispatch(QName operation, MessageContext inMessage)
+            throws RemoteException {
         OMElement result = super.dispatch(operation, inMessage);
         if (result != null) {
             return result;
         }
 
-        String action = operation.getLocalPart();
 
-        OMElement request = inMessage.getEnvelope().getBody().getFirstElement();
+        OMElement request = getRequestBody(inMessage);
         String requestName = request.getLocalName();
         verifyDeployApiNamespace(request.getQName());
         Processor processor = createProcessor(requestName);
-        if (processor == null) {
-            //if we get here: error
-            throw new AxisFault("Unknown message: " + action);
-        } else {
-            processor.setMessageContext(inMessage);
-            return processor.process(request);
-        }
+        verifyProcessorSet(processor, operation);
+
+        processor.setMessageContext(inMessage);
+        return processor.process(request);
     }
 
     /**
@@ -81,7 +79,7 @@ public class PortalEndpoint extends WsrfEndpoint {
         if (Constants.API_ELEMENT_CREATE_REQUEST.equals(requestName)) {
             processor = new CreateProcessor(this);
         }
-        if (Constants.API_ELEMENT_RESOLVE_REQUEST.equals(requestName)) {
+        if (Constants.API_ELEMENT_PORTALRESOLVE_REQUEST.equals(requestName)) {
             processor = new ResolveProcessor(this);
         }
         if (Constants.API_ELEMENT_LOOKUPSYSTEM_REQUEST.equals(requestName)) {

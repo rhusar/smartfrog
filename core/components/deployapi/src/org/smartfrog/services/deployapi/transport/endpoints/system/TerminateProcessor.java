@@ -24,13 +24,12 @@ import org.apache.axis2.om.OMElement;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.ggf.xbeans.cddlm.api.TerminateRequestDocument;
+import org.ggf.xbeans.cddlm.api.TerminateResponseDocument;
 import org.smartfrog.services.deployapi.engine.Job;
 import org.smartfrog.services.deployapi.engine.JobRepository;
 import org.smartfrog.services.deployapi.engine.ServerInstance;
-import org.smartfrog.services.deployapi.transport.endpoints.Processor;
 import org.smartfrog.services.deployapi.transport.endpoints.XmlBeansEndpoint;
-import org.smartfrog.sfcore.prim.Prim;
-import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.services.deployapi.binding.bindings.TerminateBinding;
 
 import java.net.URI;
 import java.rmi.RemoteException;
@@ -39,7 +38,7 @@ import java.rmi.RemoteException;
  * process undeploy operation created Aug 4, 2004 4:04:20 PM
  */
 
-public class TerminateProcessor extends Processor {
+public class TerminateProcessor extends SystemProcessor {
     /**
      * log
      */
@@ -49,60 +48,40 @@ public class TerminateProcessor extends Processor {
         super(owner);
     }
 
-    public OMElement process(OMElement request) throws AxisFault {
-        return super.process(request);
+    public OMElement process(OMElement request) throws RemoteException {
+        TerminateBinding binding = new TerminateBinding();
+        TerminateResponseDocument response = TerminateResponseDocument.Factory
+                .newInstance();
+        if(job!=null) {
+            TerminateRequestDocument inDoc = binding.convertRequest(request);
+            terminate(inDoc);
+        }
+        return binding.convertResponse(response);
     }
 
-    public boolean terminate(TerminateRequestDocument.TerminateRequest undeploy)
-            throws RemoteException {
-        //TODO
-        final URI appURI = null;
-        if (appURI == null) {
-            throw raiseBadArgumentFault(ERROR_NO_APPLICATION);
-        }
 
-        String reason;
-        reason = undeploy.getReason();
+    public TerminateResponseDocument terminate(TerminateRequestDocument terminate)
+            throws RemoteException {
+        TerminateRequestDocument.TerminateRequest terminateRequest;
+        terminateRequest = terminate.getTerminateRequest();
+        String reason = terminateRequest.getReason();
         if (reason == null) {
             reason = "";
         }
-        Job job = lookupJobNonFaulting(appURI);
-        if (job == null) {
-            //job was not found, this is not an error.
-            return true;
-        }
-        log.info("terminating " + job.getName() + " for " + reason);
-        if (terminate(job, reason)) {
+
+        log.info("Terminating " + job.getId() + " with reason:" + reason);
+        if (job.terminate(reason)) {
             //purge the store
             JobRepository jobs = ServerInstance.currentInstance().getJobs();
-            jobs.remove(appURI);
-            return true;
+            jobs.remove(job);
         }
-        return false;
+
+        TerminateResponseDocument response = TerminateResponseDocument.Factory
+                .newInstance();
+        return response;
     }
 
-    /**
-     * Terminate a job
-     *
-     * @param job    job to kill
-     * @param reason why
-     * @return
-     * @throws java.rmi.RemoteException
-     */
-    private boolean terminate(Job job, String reason)
-            throws RemoteException {
-        Prim target = job.resolvePrimNonFaulting();
-        if (target == null) {
-            log.info("job already terminated");
-            return true;
-        }
-        TerminationRecord termination;
-        termination =
-                new TerminationRecord(TerminationRecord.NORMAL, reason, null);
-        target.sfTerminate(termination);
-        job.enterTerminatedStateNotifying(termination);
-        return true;
-    }
+
 
 
 }
