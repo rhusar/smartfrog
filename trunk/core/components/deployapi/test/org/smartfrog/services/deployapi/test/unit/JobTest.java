@@ -22,8 +22,14 @@ package org.smartfrog.services.deployapi.test.unit;
 
 import org.smartfrog.services.deployapi.engine.Job;
 import org.smartfrog.services.deployapi.engine.JobRepository;
+import org.smartfrog.services.deployapi.binding.EprHelper;
+import org.smartfrog.services.deployapi.transport.faults.BaseException;
+import org.smartfrog.services.deployapi.system.Constants;
+import org.ggf.xbeans.cddlm.wsrf.wsa2003.EndpointReferenceType;
+import org.apache.axis2.addressing.EndpointReference;
 
 import java.net.URL;
+import java.net.MalformedURLException;
 
 /**
 
@@ -42,18 +48,98 @@ public class JobTest extends UnitTestBase {
     protected void setUp() throws Exception {
         super.setUp();
         repository=new JobRepository(new URL("http://localhost:5050"));
-        
+        job = createJob();
     }
-    
+
     Job createJob() {
         return repository.createNewJob("localhost");
     }
 
     public void testDelete() throws Exception {
-        Job job=createJob();
+
         assertTrue("job found",repository.inRepository(job));
         repository.remove(job);
         assertTrue("job deleted", !repository.inRepository(job));
-        
+
+    }
+
+    public void testTerminate() throws Exception {
+        repository.terminate(job,"testing");
+        assertTrue("job deleted", !repository.inRepository(job));
+    }
+
+    public void testMappingWorks() throws Exception {
+        EndpointReference epr = getJobEndpointer();
+        Job job2=repository.lookupJobFromEndpointer(epr);
+        assertSame(job,job2);
+    }
+
+    private EndpointReference getJobEndpointer() {
+        EndpointReferenceType endpoint = job.getEndpoint();
+        EndpointReference epr= EprHelper.Wsa2003ToEPR(endpoint);
+        return epr;
+    }
+
+    public void testQueryWithSpacesWorks() throws Exception {
+        String query=getJobQuery();
+        assertQueryResolvesToJob(query + "   ");
+    }
+
+    public void testQueryWithTrailingParam() throws Exception {
+        String query = getJobQuery();
+        assertQueryResolvesToJob(query + "&arg3=bar ");
+    }
+    
+    public void testQueryWithLeadingParam() throws Exception {
+        String query1 = getJobQuery();
+        String query = query1;
+        assertQueryResolvesToJob("arg1=foo&"+query);
+    }
+
+    public void testQueryWithLeadingAndTrailingParam() throws Exception {
+        String query1 = getJobQuery();
+        String query = query1;
+        assertQueryResolvesToJob("arg1=foo&" + query+"&arg3=bar ");
+    }
+
+    private void assertQueryResolvesToJob(String query) {
+        Job job2 = repository.lookupJobFromQuery(query);
+        assertSame(job, job2);
+    }
+
+    private String getJobQuery() throws MalformedURLException {
+        EndpointReference epr = getJobEndpointer();
+        URL url=new URL(epr.getAddress());
+        return url.getQuery();
+    }
+
+    public void testNoQuery() throws Exception {
+        assertLookupFaults(null);
+    }
+
+    public void testWrongCase() throws Exception {
+        assertLookupFaults("JOB=12344");
+    }
+
+    public void testMissingParam() throws Exception {
+        assertLookupFaults("arg1=foo&arg3=bar ");        
+    }
+
+    public void testEmptyArg() throws Exception {
+        assertLookupFaults("job=");
+    }
+    
+    public void testUnknownJob() throws Exception {
+        Job job = repository.lookupJobFromQuery("job=1234");
+        assertNull(job);
+    }
+    
+    private void assertLookupFaults(String query) {
+        try {
+            Job job=repository.lookupJobFromQuery(query);
+            fail("expected to fail on "+query+" but got "+job);
+        } catch (BaseException e) {
+            //success
+        }
     }
 }

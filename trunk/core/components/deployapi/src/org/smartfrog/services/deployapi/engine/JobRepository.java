@@ -22,6 +22,11 @@ package org.smartfrog.services.deployapi.engine;
 
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.system.Utils;
+import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
+import org.smartfrog.services.deployapi.transport.faults.BaseException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.axis2.addressing.EndpointReference;
 
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -30,6 +35,7 @@ import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Set;
+import java.rmi.RemoteException;
 
 /**
  * This class remembers what got deployed by whom. It retains weak references to
@@ -45,6 +51,9 @@ public class JobRepository implements Iterable<Job> {
     private Hashtable<String, Job> jobs = new Hashtable<String, Job>();
     private URL systemsURL;
     public static final String JOB_ID_PARAM = "job";
+    public static final String SEARCH_STRING = JOB_ID_PARAM + "=";
+    Log log= LogFactory.getLog(JobRepository.class);
+
 
     public JobRepository(URL systemsURL) {
         this.systemsURL = systemsURL;
@@ -113,7 +122,7 @@ public class JobRepository implements Iterable<Job> {
     public void remove(URI uri) {
         jobs.remove(uri.toString());
     }
-    
+
     public void remove(Job job) {
         jobs.remove(job.getId());
     }
@@ -125,6 +134,20 @@ public class JobRepository implements Iterable<Job> {
      */
     public Iterator<Job> iterator() {
         return values().iterator();
+    }
+
+    /**
+     * Thread safe termination of job and removal from the stack
+     * @param job
+     * @param reason
+     */
+    public synchronized boolean terminate(Job job,String reason) throws
+            RemoteException {
+        log.info("Terminating " + job.getId() + " with reason:" + reason);
+        
+        boolean result=job.terminate(reason);
+        remove(job);
+        return result;
     }
 
     /**
@@ -174,6 +197,67 @@ public class JobRepository implements Iterable<Job> {
         job.setName(id);
         job.setAddress(createJobAddress(id));
         add(job);
+        return job;
+    }
+
+    
+    
+    public String extractJobIDFromQuery(String query) {
+        if (query == null) {
+            throw FaultRaiser.raiseNoSuchApplicationFault("No job in address");
+        }
+        int index = query.indexOf(SEARCH_STRING);
+        if (index == -1) {
+            String message = "Didn't find query (" +
+                    SEARCH_STRING +
+                    ") in " +
+                    query;
+            log.debug(message);
+            throw FaultRaiser.raiseNoSuchApplicationFault(message);
+        }
+        int start = index + SEARCH_STRING.length();
+        int end = query.indexOf("&", start);
+        if (end == -1) {
+            end = query.length();
+        }
+        String substrate = query.substring(start, end).trim();
+        if(substrate.length()==0) {
+            throw FaultRaiser.raiseNoSuchApplicationFault("Empty job in "+query);
+        }
+            
+        return substrate;
+    }
+
+    /**
+     * Look up the job ID in a query
+     * @param query
+     * @return the job if it is present, null if not
+     * @throws org.smartfrog.services.deployapi.transport.faults.BaseException on bad data
+     */
+    public Job lookupJobFromQuery(String query) {
+        String jobID=extractJobIDFromQuery(query);
+        log.debug("job is [" + jobID + "]");
+        Job job=lookup(jobID);
+        return job;
+    }
+
+    /**
+     * Go from an EPR to a job
+     * @param epr
+     * @return the job if it is present, null if not
+     * @throws org.smartfrog.services.deployapi.transport.faults.BaseException on bad data
+     */
+    public Job lookupJobFromEndpointer(EndpointReference epr) {
+        String address = epr.getAddress();
+        URL url = null;
+        try {
+            url = new URL(address);
+        } catch (MalformedURLException e) {
+            throw new BaseException("Couldn't turn an addr into a URL " +
+                    address, e);
+        }
+        String query = url.getQuery();
+        Job job = lookupJobFromQuery(query);
         return job;
     }
 }

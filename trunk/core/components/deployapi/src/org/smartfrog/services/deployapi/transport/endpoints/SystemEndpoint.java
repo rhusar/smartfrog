@@ -23,12 +23,16 @@ import org.apache.axis2.AxisFault;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.om.OMElement;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.ggf.xbeans.cddlm.api.InitializeRequestDocument;
 import org.ggf.xbeans.cddlm.api.InitializeResponseDocument;
 import org.smartfrog.services.deployapi.binding.Axis2Beans;
 import org.smartfrog.services.deployapi.binding.bindings.TerminateBinding;
 import org.smartfrog.services.deployapi.binding.bindings.InitializeBinding;
 import org.smartfrog.services.deployapi.engine.Job;
+import org.smartfrog.services.deployapi.engine.JobRepository;
+import org.smartfrog.services.deployapi.engine.ServerInstance;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.system.Utils;
 import org.smartfrog.services.deployapi.transport.endpoints.system.InitializeProcessor;
@@ -50,11 +54,12 @@ import java.rmi.RemoteException;
 
 /*
 * System EPR
- */
+ */;
 
 public class SystemEndpoint extends WsrfEndpoint {
 
-
+    Log log= LogFactory.getLog(SystemEndpoint.class);
+    
     /**
      * deliver a message
      *
@@ -82,27 +87,18 @@ public class SystemEndpoint extends WsrfEndpoint {
         return processor.process(request);
     }
 
+    
     /**
      * Look up a job
      * @param inMessage
-     * @return
+     * @return a job or null for no job matching that query found
+     * @throws BaseException if the args are bad
      */
     protected Job lookupJob(MessageContext inMessage) {
+        JobRepository jobs = ServerInstance.currentInstance().getJobs();
         EndpointReference to = inMessage.getTo();
-        String address = to.getAddress();
-        URL url=null;
-        try {
-            url = new URL(address);
-        } catch (MalformedURLException e) {
-            throw new RuntimeException("Couldn't turn an addr into a URL "+address,e);
-        }
-        String query = url.getRef();
-        if(query==null) {
-            return null;
-        }
-
-        FaultRaiser.throwNotImplemented();
-        return null;
+        Job job=jobs.lookupJobFromEndpointer(to);
+        return job;
     }
 
     /**

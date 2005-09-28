@@ -68,14 +68,8 @@ public class TerminateProcessor extends SystemProcessor {
         if (reason == null) {
             reason = "";
         }
-
-        log.info("Terminating " + job.getId() + " with reason:" + reason);
-        if (job.terminate(reason)) {
-            //purge the store
-            JobRepository jobs = ServerInstance.currentInstance().getJobs();
-            jobs.remove(job);
-        }
-
+        JobRepository jobs = ServerInstance.currentInstance().getJobs();
+        jobs.terminate(job, reason);
         TerminateResponseDocument response = TerminateResponseDocument.Factory
                 .newInstance();
         return response;
