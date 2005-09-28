@@ -135,7 +135,7 @@ public abstract class Endpointer implements Serializable {
         call.setSoapVersionURI(SOAP12Constants.SOAP_ENVELOPE_NAMESPACE_URI);
         if (operationName != null) {
             call.setSoapAction(operationName);
-            call.setWsaAction(operationName);
+            //call.setWsaAction(operationName);
 /*
             OperationDescription operation = serviceDescription.getOperation(operationName);
             if(operation!=null) {
@@ -144,7 +144,7 @@ public abstract class Endpointer implements Serializable {
         }
 //        call.setTransportInfo(getSenderTransport(),getListenerTransport(),isSeparateListenerTransport());
         //turn on addressing
-       //call.engageModule(QNAME_MODULE_ADDRESSING);
+       call.engageModule(QNAME_MODULE_ADDRESSING);
 
         return call;
     }
