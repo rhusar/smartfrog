@@ -1,0 +1,62 @@
+
+#include "org/smartfrog/components.sf"
+
+RComponent extends Compound{
+	sfClass "org.smartfrog.services.persistence.recoverablecomponent.RComponentImpl";
+	sfExport true;
+	wfStorageClass "bdbwoodfrog.StorageImpl";
+	wfStorageRepository "c:/tstdb/";
+}
+
+Myprim extends RComponent{
+    sfClass "org.smartfrog.services.persistence.example.RMIServer";
+    name TBD;
+    neighbor TBD;
+    token    0;
+    sent     false;
+} 
+
+StorageAgent extends Compound{
+	sfClass "org.smartfrog.services.persistence.storage.StorageAgentImpl";
+	sfExport true;
+}
+
+sfConfig extends Compound {
+
+relay extends RComponent{
+
+    monitor extends RComponent{
+		sfClass "org.smartfrog.services.persistence.example.Monitor";
+		jill LAZY PARENT:server1;
+		john LAZY PARENT:server2;
+		paterson LAZY PARENT:server3;
+		marie LAZY PARENT:server4;
+    }
+    server1 extends Myprim {
+		sfProcessName "Jill";
+       	name "Jill";
+   	    neighbor LAZY PARENT:server2;
+        token    1;
+   	}
+    server2 extends Myprim {
+		sfProcessName "John";
+       	name "John";
+   	    neighbor LAZY PARENT:server3;
+    }
+   	server3 extends Myprim{
+		sfProcessName "Paterson";
+        name "Paterson";
+       	neighbor LAZY PARENT:server4;
+    }
+    server4 extends Myprim{
+		sfProcessName "Marie";
+       	name "Marie";
+   	    neighbor LAZY PARENT:server1;
+    }
+//    sagent extends StorageAgent{
+//    	sfProcessName "WoodFrogStorageAgent";
+//    	sfProcessComponentName "WoodFrogStorageAgent";
+//    }
+
+}
+}

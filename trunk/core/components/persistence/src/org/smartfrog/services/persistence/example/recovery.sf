@@ -1,0 +1,24 @@
+
+#include "org/smartfrog/components.sf"
+
+RecoveryAgent extends Compound {
+    sfClass "org.smartfrog.services.persistence.recovery.RecoveryAgent";
+	wfStorageClass "bdbwoodfrog.StorageImpl";
+    wfStorageRepository "c:/tstdb/";
+}
+
+StorageAgent extends Compound{
+	sfClass "org.smartfrog.services.persistence.storage.StorageAgentImpl";
+	sfExport true;
+}
+
+sfConfig extends Compound {
+    ragent extends RecoveryAgent {
+     	sfProcessName "RecoveryAgent";
+    }
+
+    sagent extends StorageAgent{
+    	sfProcessName "WoodFrogStorageAgent";
+    	sfProcessComponentName "WoodFrogStorageAgent";
+    }
+}
