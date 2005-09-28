@@ -1,4 +1,5 @@
 package org.smartfrog.services.persistence.example;
+
 import java.io.*;
 import java.rmi.*;
 import java.rmi.server.*;
@@ -10,7 +11,6 @@ import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.TerminationRecord;
-
 
 import java.awt.*;
 import java.awt.event.*;
