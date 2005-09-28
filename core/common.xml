@@ -953,7 +953,7 @@
   -->
   <target name="generateversion" depends="generate-versioned-jar"/>
   
-  <target name="generate-versioned-jar" if="is.component.enabled" depends="compile">
+  <target name="generate-versioned-jar" if="is.component.enabled" depends="rmi">
     <presetdef name="get-version">
       <java classname="org.smartfrog.Version" failonerror="true" fork="true" >
       <classpath>
