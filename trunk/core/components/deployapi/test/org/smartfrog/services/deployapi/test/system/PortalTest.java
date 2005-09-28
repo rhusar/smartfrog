@@ -77,7 +77,7 @@ public class PortalTest extends ApiTestBase {
             system = createSystem("localhost");
             logSystemCreated(system);
             String id=system.getResourceID();
-            String idProperty=getSystemResourceID(system);
+            String idProperty= getResourceID(system);
             assertEquals(id,idProperty);
         } finally {
             terminateSystem(system);
@@ -94,7 +94,7 @@ public class PortalTest extends ApiTestBase {
             system = createSystem();
             logSystemCreated(system);
             String id = system.getResourceID();
-            String idProperty = getSystemResourceID(system);
+            String idProperty = getResourceID(system);
             assertEquals(id, idProperty);
         } finally {
             terminateSystem(system);
@@ -109,6 +109,9 @@ public class PortalTest extends ApiTestBase {
         resourceProperty = getPortalResourceProperty(Constants.PROPERTY_MUWS_RESOURCEID);
         String id2 = extractResourceID(resourceProperty);
         assertEquals(id,id2);
+        
+        String id3=getResourceID(getOperation().getPortal());
+        assertEquals(id, id3);
     }
 
 

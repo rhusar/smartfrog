@@ -46,6 +46,7 @@ import org.smartfrog.services.deployapi.transport.endpoints.portal.LookupSystemP
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
 import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
 import org.smartfrog.services.deployapi.transport.wsrf.WsrfEndpoint;
+import org.smartfrog.services.deployapi.transport.wsrf.WSRPResourceSource;
 
 import javax.xml.namespace.QName;
 import java.net.URL;
@@ -131,6 +132,12 @@ public class SystemEndpoint extends WsrfEndpoint {
     }
 
 
-    
+    public WSRPResourceSource retrieveResourceSource(MessageContext message) {
+        Job job = lookupJob(message);
+        if(job==null) {
+            throw FaultRaiser.raiseNoSuchApplicationFault("Unknown application");
+        }
+        return job;
+    }
 
 }

@@ -25,7 +25,13 @@ import org.smartfrog.services.deployapi.client.ConsoleOperation;
 import org.smartfrog.services.deployapi.client.Deploy;
 import org.smartfrog.services.deployapi.binding.bindings.LookupSystemBinding;
 import org.smartfrog.services.deployapi.binding.Axis2Beans;
+import org.smartfrog.services.deployapi.system.Utils;
+import org.smartfrog.services.deployapi.system.Constants;
 import org.ggf.xbeans.cddlm.api.LookupSystemRequestDocument;
+import org.apache.axis2.om.OMElement;
+import nu.xom.Document;
+import nu.xom.Nodes;
+import nu.xom.Element;
 
 
 /**
@@ -34,6 +40,7 @@ import org.ggf.xbeans.cddlm.api.LookupSystemRequestDocument;
  */
 
 public class BindingsTest extends UnitTestBase {
+    public static final String RESOURCE_ID = "12345";
 
     public BindingsTest(String name) {
         super(name);
@@ -48,5 +55,18 @@ public class BindingsTest extends UnitTestBase {
         LookupSystemRequestDocument doc=binding.createRequest();
     }
 
+    public void testAxiomToXom() throws Exception {
+        LookupSystemBinding binding = new LookupSystemBinding();
+        LookupSystemRequestDocument request = binding.createRequest();
+        LookupSystemRequestDocument.LookupSystemRequest lookupSystemRequest = request.addNewLookupSystemRequest();
+        lookupSystemRequest.setResourceId(RESOURCE_ID);
+        OMElement om = binding.convertRequest(request);
+        Document doc= Utils.AxiomToXom(om);
+        Nodes nodes = doc.query("api:lookupSystemRequest/api:ResourceId",
+                Constants.XOM_CONTEXT);
+        assertEquals("query returned one node",1,nodes.size());
+        Element elt=(Element) nodes.get(0);
+        assertEquals(RESOURCE_ID,elt.getValue());
+    }
 
 }

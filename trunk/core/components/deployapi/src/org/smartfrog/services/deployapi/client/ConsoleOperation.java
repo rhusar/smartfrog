@@ -58,20 +58,14 @@ import java.rmi.RemoteException;
 import nu.xom.Element;
 
 
-/**
- * base class for console operations created Aug 31, 2004 4:44:30 PM
- */
+/** base class for console operations created Aug 31, 2004 4:44:30 PM */
 
 public abstract class ConsoleOperation {
 
-    /**
-     * our output stream
-     */
+    /** our output stream */
     protected PrintWriter out;
 
-    /**
-     * our server binding
-     */
+    /** our server binding */
     protected PortalEndpointer portal;
 
 
@@ -130,7 +124,8 @@ public abstract class ConsoleOperation {
      */
     public static PortalEndpointer extractBindingFromCommandLine(String[] args)
             throws IOException {
-        PortalEndpointer extractedEndpointer = PortalEndpointer.fromCommandLine(args);
+        PortalEndpointer extractedEndpointer = PortalEndpointer.fromCommandLine(
+                args);
         if (extractedEndpointer == null) {
             extractedEndpointer = PortalEndpointer.createDefaultBinding();
         }
@@ -226,7 +221,9 @@ public abstract class ConsoleOperation {
             request.setHostname(hostname);
         }
         CreateResponseDocument response =
-                binding.invokeBlocking(portal, Constants.API_PORTAL_OPERATION_CREATE, requestDoc);
+                binding.invokeBlocking(portal,
+                        Constants.API_PORTAL_OPERATION_CREATE,
+                        requestDoc);
         SystemEndpointer createdSystem = new SystemEndpointer(response.getCreateResponse());
         return createdSystem;
     }
@@ -257,7 +254,9 @@ public abstract class ConsoleOperation {
         request.setDescriptor(descriptor);
         request.setOptions(options);
         InitializeResponseDocument responseDoc = binding
-                .invokeBlocking(system, Constants.API_ELEMENT_INITALIZE_REQUEST, requestDoc);
+                .invokeBlocking(system,
+                        Constants.API_ELEMENT_INITALIZE_REQUEST,
+                        requestDoc);
     }
 
     /**
@@ -270,7 +269,8 @@ public abstract class ConsoleOperation {
      * @throws RemoteException
      */
     public SystemEndpointer deploy(String hostname, DescriptorType descriptor,
-                                   OptionMapType options) throws RemoteException {
+                                   OptionMapType options)
+            throws RemoteException {
         SystemEndpointer systemEndpointer = create(hostname);
         initialize(systemEndpointer, descriptor, options);
         return systemEndpointer;
@@ -462,14 +462,16 @@ public abstract class ConsoleOperation {
      * @throws java.io.IOException
      */
     public static String readIntoString(File file) throws IOException {
-        InputStream in =null;
+        InputStream in = null;
         try {
-            in= new BufferedInputStream(new FileInputStream(file));
+            in = new BufferedInputStream(new FileInputStream(file));
             String source = readIntoString(in);
             return source;
         } finally {
             try {
-                if(in!=null) { in.close(); }
+                if (in != null) {
+                    in.close();
+                }
             } catch (IOException e) {
                 ///ignore
             }
@@ -509,33 +511,59 @@ public abstract class ConsoleOperation {
 
     /**
      * Get a property from the destination
+     *
      * @return a Xom graph of the result
      * @throws RemoteException
      */
     public Element getPortalPropertyXom(QName property)
             throws RemoteException {
-        GetResourcePropertyResponseDocument responseDoc = getPortalProperty(property);
+        return getPropertyXom(getPortal(), property);
+    }
+
+    /**
+     * Get a property from the destination
+     *
+     * @return a Xom graph of the result
+     * @throws RemoteException
+     */
+    public Element getPropertyXom(Endpointer endpoint, QName property)
+            throws RemoteException {
+        GetResourcePropertyResponseDocument responseDoc = getPropertyResponse(
+                endpoint,
+                property);
         GetResourcePropertyResponseDocument.GetResourcePropertyResponse resp;
         resp = responseDoc.getGetResourcePropertyResponse();
+        
         return Utils.BeanToXom(resp);
     }
 
-    public GetResourcePropertyResponseDocument getPortalProperty(QName property) throws RemoteException {
+    public Element getPropertyXom(Endpointer endpoint, QualifiedName property)
+            throws RemoteException {
+        return getPropertyXom(endpoint, Utils.convert(property));
+    }
+
+    public GetResourcePropertyResponseDocument getPortalProperty(QName property)
+            throws RemoteException {
         Endpointer endpoint = portal;
         return getPropertyResponse(endpoint, property);
     }
 
-    public GetResourcePropertyResponseDocument getPropertyResponse(Endpointer endpoint, QName property) throws RemoteException {
-        GetResourcePropertyBinding binding=new GetResourcePropertyBinding();
+    public GetResourcePropertyResponseDocument getPropertyResponse(Endpointer endpoint,
+                                                                   QName property)
+            throws RemoteException {
+        GetResourcePropertyBinding binding = new GetResourcePropertyBinding();
         GetResourcePropertyDocument request = binding.createRequest();
         request.setGetResourceProperty(property);
         GetResourcePropertyResponseDocument response;
-        response = binding.invokeBlocking(endpoint, Constants.WSRF_OPERATION_GETRESOURCEPROPERTY, request);
+        response = binding.invokeBlocking(endpoint,
+                Constants.WSRF_OPERATION_GETRESOURCEPROPERTY,
+                request);
         return response;
     }
 
     /**
      * Get a property from the destination
+     *
      * @return a Xom graph of the result
      * @throws RemoteException
      */
@@ -549,10 +577,18 @@ public abstract class ConsoleOperation {
         return getPortalProperty(Utils.convert(property));
     }
 
-    public GetResourcePropertyResponseDocument getResourceProperty(Endpointer endpoint,QualifiedName property)
+    public GetResourcePropertyResponseDocument getResourceProperty(Endpointer endpoint,
+                                                                   QualifiedName property)
             throws RemoteException {
-        return getPropertyResponse(endpoint,Utils.convert(property));
+        return getPropertyResponse(endpoint, Utils.convert(property));
     }
+
+    public String getResourceId(Endpointer endpoint) throws RemoteException {
+        Element elt = getPropertyXom(endpoint,
+                Constants.PROPERTY_MUWS_RESOURCEID);
+        return elt.getValue();
+    }
+    
     /**
      * initiate an undeployment
      *
@@ -568,7 +604,9 @@ public abstract class ConsoleOperation {
         if (reason != null) {
             terminateRequest.setReason(reason);
         }
-        binding.invokeBlocking(application, Constants.API_SYSTEM_OPERATION_TERMINATE, request);
+        binding.invokeBlocking(application,
+                Constants.API_SYSTEM_OPERATION_TERMINATE,
+                request);
     }
 
 
