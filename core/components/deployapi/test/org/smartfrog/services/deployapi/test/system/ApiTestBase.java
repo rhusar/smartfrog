@@ -23,11 +23,12 @@ package org.smartfrog.services.deployapi.test.system;
 
 import org.apache.axis2.AxisFault;
 import org.apache.xmlbeans.XmlException;
-import org.apache.xmlbeans.XmlObject;
 import org.smartfrog.services.deployapi.client.ConsoleOperation;
 import org.smartfrog.services.deployapi.client.Deploy;
 import org.smartfrog.services.deployapi.client.SystemEndpointer;
+import org.smartfrog.services.deployapi.client.Endpointer;
 import org.smartfrog.services.deployapi.system.Constants;
+import org.smartfrog.services.deployapi.system.Utils;
 import org.ggf.xbeans.cddlm.api.DescriptorType;
 import org.ggf.xbeans.cddlm.api.OptionMapType;
 import org.ggf.xbeans.cddlm.wsrf.wsrp.GetResourcePropertyResponseDocument;
@@ -37,6 +38,8 @@ import org.w3c.dom.Node;
 
 import javax.xml.namespace.QName;
 import java.rmi.RemoteException;
+
+import nu.xom.Element;
 
 /**
  * Date: 06-Sep-2004 Time: 22:27:16
@@ -206,14 +209,15 @@ public abstract class ApiTestBase extends ConsoleTestBase {
         return getOperation().getPortalProperty(portalProperty);
     }
 
-    protected GetResourcePropertyResponseDocument getSystemProperty(SystemEndpointer system,
-                                                                    QualifiedName portalProperty) throws RemoteException {
-        return getOperation().getPortalProperty(portalProperty);
+    protected GetResourcePropertyResponseDocument getResourceProperty(Endpointer system,
+                                                                      QualifiedName property) throws RemoteException {
+        QName qname= Utils.convert(property);
+        return getOperation().getPropertyResponse(system, qname);
     }
 
-    protected String getSystemResourceID(SystemEndpointer system) throws RemoteException, XmlException {
-        GetResourcePropertyResponseDocument systemProperty = getSystemProperty(system, Constants.PROPERTY_MUWS_RESOURCEID);
-        return extractResourceID(systemProperty);
+
+    protected String getResourceID(Endpointer system) throws RemoteException {
+        return getOperation().getResourceId(system);
     }
 
 }

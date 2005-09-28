@@ -27,13 +27,17 @@ import org.apache.axis2.om.OMAbstractFactory;
 import org.ggf.cddlm.utils.QualifiedName;
 import org.ggf.xbeans.cddlm.cmp.DeploymentFaultType;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
+import org.smartfrog.services.deployapi.binding.StaxBuilder;
 import org.w3c.dom.Node;
 
 import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamException;
 import java.util.ArrayList;
 import java.util.UUID;
 
 import nu.xom.Element;
+import nu.xom.Document;
 import nu.xom.converters.DOMConverter;
 
 /**
@@ -79,7 +83,6 @@ public class Utils {
         validationOptions.setErrorListener(validationErrors);
         if (!message.validate(validationOptions)) {
             DeploymentFaultType fault = DeploymentFaultType.Factory.newInstance();
-            //TODO
             throw new BaseException(Constants.BAD_ARGUMENT_ERROR_MESSAGE);
         }
         return true;
@@ -105,6 +108,7 @@ public class Utils {
         return DOMConverter.convert(elt);
     }
 
+     
 
     /**
      * create a new uuid-style id
@@ -126,7 +130,14 @@ public class Utils {
 
     public static OMElement createOmElement(String namespace,String local,String prefix) {
         OMFactory factory = OMAbstractFactory.getOMFactory();
-        OMElement element = factory.createOMElement(local,namespace,null);
+        OMElement element = factory.createOMElement(local,namespace, prefix);
         return element;
+    }
+
+    public static Document AxiomToXom(OMElement em) throws XMLStreamException {
+        XMLStreamReader reader = em.getXMLStreamReader();
+        StaxBuilder builder=new StaxBuilder();
+        Document document = builder.build(reader);
+        return document;
     }
 }
