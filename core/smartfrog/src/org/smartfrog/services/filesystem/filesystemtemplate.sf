@@ -26,6 +26,13 @@ DeletableFileSchema extends Schema {
 }
 
 /**
+ * declare schema types for these two types, just for ease of reading
+ */
+OptionalFilenameType extends Optional;
+FilenameType extends Compulsory;
+
+
+/**
  * something which takes filenames
  */
 FileUsingComponentSchema extends Schema {
@@ -33,7 +40,7 @@ FileUsingComponentSchema extends Schema {
         Can be either a string, or a reference to a component
         that implements FileIntf.
     */
-    filename extends Optional;
+    filename extends OptionalFilenameType;
 
     /* added at deploy time
     absolutePath: String
@@ -48,9 +55,4 @@ FileUsingComponent extends Prim {
     fileUsingComponentSchema extends FileUsingComponentSchema;
 }
 
-/**
- * declare schema types for these two types, just for ease of reading
- */
-OptionalFilenameType extends Optional;
-FilenameType extends Compulsory;
 

@@ -45,7 +45,7 @@ public class FileUsingComponentImpl extends PrimImpl implements FileUsingCompone
     /**
      * get the absolute path of this file
      *
-     * @return
+     * @return path of the file
      */
     public String getAbsolutePath()  {
         return file.getAbsolutePath();
@@ -54,7 +54,7 @@ public class FileUsingComponentImpl extends PrimImpl implements FileUsingCompone
     /**
      * get the URI of this file
      *
-     * @return
+     * @return URI of the file
      */
     public URI getURI()  {
         return file.toURI();
@@ -62,7 +62,7 @@ public class FileUsingComponentImpl extends PrimImpl implements FileUsingCompone
 
     /**
      * get the file we are using
-     * @return
+     * @return the file
      */
     public File getFile() {
         return file;
