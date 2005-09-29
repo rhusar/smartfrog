@@ -26,6 +26,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.xmlbeans.XmlException;
 import org.ggf.xbeans.cddlm.api.InitializeRequestDocument;
 import org.ggf.xbeans.cddlm.api.InitializeResponseDocument;
+import org.ggf.xbeans.cddlm.api.DescriptorType;
 import org.ggf.xbeans.cddlm.smartfrog.SmartFrogDeploymentDescriptorType;
 import org.smartfrog.services.deployapi.binding.bindings.InitializeBinding;
 import org.smartfrog.services.deployapi.system.Constants;
@@ -42,6 +43,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 
+import nu.xom.Element;
+
 /**
  * This class is *NOT* re-entrant. Create one for each deployment. created Aug
  * 4, 2004 3:58:37 PM
@@ -56,6 +59,8 @@ public class InitializeProcessor extends SystemProcessor {
     private OptionProcessor options;
     public static final String ERROR_NO_DESCRIPTOR = "No descriptor element";
     private File descriptorFile;
+    private InitializeRequestDocument.InitializeRequest request;
+
 
     public InitializeProcessor(XmlBeansEndpoint owner) {
         super(owner);
@@ -79,13 +84,13 @@ public class InitializeProcessor extends SystemProcessor {
     /**
      * deployment
      */
-    public InitializeResponseDocument initialize(InitializeRequestDocument.InitializeRequest request) {
-
+    public InitializeResponseDocument initialize(InitializeRequestDocument.InitializeRequest requestIn) {
+        this.request=requestIn;
         //get the options out the way
         options = new OptionProcessor(getOwner());
 
-        job.bind(request, options);
-        options.process(request.getOptions());
+        job.bind(requestIn, options);
+        options.process(requestIn.getOptions());
 
 
         boolean deployed = false;
@@ -157,13 +162,29 @@ public class InitializeProcessor extends SystemProcessor {
         return true;
     }*/
 
-
     /**
-     * process a smartfrog deployment of type <smartfrog></smartfrog>
+     * process a smartfrog deployment of type smartfrog XML
      *
-     * @
      */
     private boolean deploySmartFrog() throws IOException, XmlException {
+        DescriptorType descriptorNode = request.getDescriptor();
+        if(descriptorNode.isSetReference()) {
+
+        } else {
+            if(descriptorNode.isSetBody()) {
+                DescriptorType.Body body=descriptorNode.getBody();
+                Element bodyDoc=Utils.beanToXom(body);
+            }
+        }
+        //TODO
+        return false;
+    }
+
+    /**
+     * process a smartfrog deployment of type smartfrog XML
+     *
+     */
+    private boolean deploySmartFrog2() throws IOException, XmlException {
         descriptorFile = job.getDescriptorFile();
         SmartFrogDeploymentDescriptorType sfxml = SmartFrogDeploymentDescriptorType.Factory.parse(descriptorFile);
 

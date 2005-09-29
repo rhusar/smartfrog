@@ -36,6 +36,9 @@ import nu.xom.Element;
 import nu.xom.Nodes;
 import nu.xom.Node;
 
+import java.util.List;
+import java.util.ArrayList;
+
 /**
  * created 21-Sep-2005 14:24:11
  */
@@ -77,7 +80,7 @@ public class PortalTest extends ApiTestBase {
         try {
             system = createSystem("localhost");
             logSystemCreated(system);
-            String id=system.getResourceID();
+            String id=system.getCachedResourceId();
             String idProperty= system.getResourceId();
             assertEquals(id,idProperty);
         } finally {
@@ -86,7 +89,7 @@ public class PortalTest extends ApiTestBase {
     }
 
     private void logSystemCreated(SystemEndpointer system) {
-        log.info("Created system "+system.getResourceID()+" @ "+system.getEndpointer().getAddress());
+        log.info("Created system "+system.getCachedResourceId()+" @ "+system.getEndpointer().getAddress());
     }
 
     public void testCreate() throws Exception {
@@ -94,7 +97,7 @@ public class PortalTest extends ApiTestBase {
         try {
             system = createSystem();
             logSystemCreated(system);
-            String id = system.getResourceID();
+            String id = system.getCachedResourceId();
             String idProperty = system.getResourceId();
             assertEquals(id, idProperty);
         } finally {
@@ -186,11 +189,21 @@ public class PortalTest extends ApiTestBase {
     public void testActiveApplications() throws Exception {
         Element graph = getOperation().getPortalPropertyXom(Constants.PROPERTY_PORTAL_ACTIVE_SYSTEMS);
         Nodes systems=graph.query("api:ActiveSystems/api:system",Constants.XOM_CONTEXT);
-        for(int i=0;i<systems.size();i++) {
+        int systemCount = systems.size();
+        List<EndpointReference> systemsList2=new ArrayList<EndpointReference>(systemCount);
+        for(int i=0;i< systemCount;i++) {
             Element job=(Element) systems.get(i);
             EndpointReference epr= EprHelper.XomWsa2003ToEpr(job);
+            systemsList2.add(epr);
             log.info(EprHelper.stringify(epr));
         }
+        List<EndpointReference> systemsList = getOperation().listSystems();
+        assertEquals(systemCount,systemsList.size());
+        int count=0;
+        for (EndpointReference epr : systemsList) {
+            assertTrue(EprHelper.compareEndpoints(epr, systemsList2.get(count++)));
+        }
     }
+
 
 }

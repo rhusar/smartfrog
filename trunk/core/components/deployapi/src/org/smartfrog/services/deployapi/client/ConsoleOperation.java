@@ -20,13 +20,12 @@
 package org.smartfrog.services.deployapi.client;
 
 import nu.xom.Element;
+import nu.xom.Nodes;
 import org.apache.axis2.addressing.EndpointReference;
 import org.ggf.cddlm.utils.QualifiedName;
 import org.ggf.xbeans.cddlm.api.CreateRequestDocument;
 import org.ggf.xbeans.cddlm.api.CreateResponseDocument;
 import org.ggf.xbeans.cddlm.api.DescriptorType;
-import org.ggf.xbeans.cddlm.api.InitializeRequestDocument;
-import org.ggf.xbeans.cddlm.api.InitializeResponseDocument;
 import org.ggf.xbeans.cddlm.api.LookupSystemRequestDocument;
 import org.ggf.xbeans.cddlm.api.LookupSystemResponseDocument;
 import org.ggf.xbeans.cddlm.api.OptionMapType;
@@ -35,7 +34,6 @@ import org.ggf.xbeans.cddlm.wsrf.wsa2003.EndpointReferenceType;
 import org.ggf.xbeans.cddlm.wsrf.wsrp.GetResourcePropertyResponseDocument;
 import org.smartfrog.services.deployapi.binding.EprHelper;
 import org.smartfrog.services.deployapi.binding.bindings.CreateBinding;
-import org.smartfrog.services.deployapi.binding.bindings.InitializeBinding;
 import org.smartfrog.services.deployapi.binding.bindings.LookupSystemBinding;
 import org.smartfrog.services.deployapi.binding.bindings.TerminateBinding;
 import org.smartfrog.services.deployapi.system.Constants;
@@ -53,6 +51,8 @@ import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.rmi.RemoteException;
+import java.util.List;
+import java.util.ArrayList;
 
 
 /** base class for console operations created Aug 31, 2004 4:44:30 PM */
@@ -135,72 +135,20 @@ public abstract class ConsoleOperation {
      * @return
      * @throws java.rmi.RemoteException
      */
-/*    public URI[] listApplications() throws RemoteException {
-        EmptyElementType empty = new EmptyElementType();
-        ApplicationReferenceListType list = getCall().listApplications(empty);
-        URI apps[] = list.getApplication();
-        if (apps == null) {
-            apps = new URI[0];
+    public List<EndpointReference> listSystems() throws RemoteException {
+        Element graph = getPortalPropertyXom(Constants.PROPERTY_PORTAL_ACTIVE_SYSTEMS);
+        Nodes systems = graph.query("api:ActiveSystems/api:system",
+                Constants.XOM_CONTEXT);
+        List<EndpointReference> apps = new ArrayList<EndpointReference>(systems.size());
+        for (int i = 0; i < systems.size(); i++) {
+            Element job = (Element) systems.get(i);
+            EndpointReference epr = EprHelper.XomWsa2003ToEpr(job);
+            apps.add(epr);
         }
         return apps;
-    }*/
-
-    /**
-     * get the status of an application
-     *
-     * @param app application identifier
-     * @return
-     * @throws java.rmi.RemoteException
-     */
-/*
-    public ApplicationStatusType lookupApplicationStatus(URI app)
-            throws RemoteException {
-        ApplicationStatusRequest request = new ApplicationStatusRequest();
-        request.setApplication(app);
-        ApplicationStatusType status = getCall().applicationStatus(request);
-        return status;
     }
-*/
 
-    /**
-     * get the status of an application
-     *
-     * @param app application identifier
-     * @return
-     * @throws java.rmi.RemoteException
-     */
-/*    public ApplicationStatusType lookupApplicationStatus(String app)
-            throws RemoteException {
-        return lookupApplicationStatus(lookupApplication(app));
-    }*/
 
-    /**
-     * get the status of an application
-     *
-     * @param app application identifier
-     * @return
-     * @throws java.rmi.RemoteException
-     */
-/*
-    public ApplicationStatusType lookupApplicationStatus(NCName app)
-            throws RemoteException {
-        return lookupApplicationStatus(lookupApplication(app));
-    }
-*/
-
-    /**
-     * get the status
-     *
-     * @return
-     * @throws java.rmi.RemoteException
-     */
-/*
-    public ServerStatusType getStatus() throws RemoteException {
-        ServerStatusRequest request = new ServerStatusRequest();
-        ServerStatusType status = getCall().serverStatus(request);
-        return status;
-    }
-*/
 
 
     /**
@@ -226,37 +174,6 @@ public abstract class ConsoleOperation {
     }
 
     /**
-     * deploy a named application, or return an exception
-     *
-     * @param descriptor
-     * @param options
-     */
-    public void initialize(SystemEndpointer system,
-                           DescriptorType descriptor,
-                           OptionMapType options)
-            throws RemoteException {
-        InitializeBinding binding = new InitializeBinding();
-        if (options == null) {
-            options = OptionMapType.Factory.newInstance();
-        }
-/*
-            if (name != null) {
-                //name processing
-                //addNameOption(options, name);
-            }
-*/
-
-        InitializeRequestDocument requestDoc = binding.createRequest();
-        InitializeRequestDocument.InitializeRequest request = requestDoc.addNewInitializeRequest();
-        request.setDescriptor(descriptor);
-        request.setOptions(options);
-        InitializeResponseDocument responseDoc = binding
-                .invokeBlocking(system,
-                        Constants.API_ELEMENT_INITALIZE_REQUEST,
-                        requestDoc);
-    }
-
-    /**
      * Combine create and initialize into one operation
      *
      * @param hostname
@@ -269,7 +186,7 @@ public abstract class ConsoleOperation {
                                    OptionMapType options)
             throws RemoteException {
         SystemEndpointer systemEndpointer = create(hostname);
-        initialize(systemEndpointer, descriptor, options);
+        systemEndpointer.initialize(descriptor, options);
         return systemEndpointer;
     }
 
@@ -293,145 +210,6 @@ public abstract class ConsoleOperation {
     }
 */
 
-    /**
-     * wrap a string with a smartfrog deploy descriptor
-     *
-     * @param source
-     * @return
-     * @throws java.io.IOException
-     */
-/*
-
-    public Element createSmartFrogDescriptor(String source)
-            throws IOException {
-        Element element = createSmartfrogMessageElement(source);
-        DeploymentDescriptorType descriptor = createDescriptorWithXML(element,
-                new URI(Constants.SMARTFROG_NAMESPACE),
-                null);
-        return descriptor;
-    }
-*/
-
-    /**
-     * wrap the element parameter in a MessageElement[] array and then hand off
-     * to #createDescriptorWithXML(MessageElement[], URI, String)
-     *
-     * @param element
-     * @return a deployment descriptor for use in a request
-     */
-/*    public DeploymentDescriptorType createDescriptorWithXML(
-            MessageElement element,
-            URI language,
-            String version) {
-        MessageElement any[] = new MessageElement[1];
-        any[0] = element;
-        DeploymentDescriptorType descriptor = createDescriptorWithXML(any,
-                language,
-                version);
-        return descriptor;
-    }*/
-
-    /**
-     * fill the descriptor element with some attached XML
-     *
-     * @param any an array of data. The size of the array should be 1 for
-     *            correct operation.
-     * @return a deployment descriptor for use in a request
-     */
-/*
-    public DeploymentDescriptorType createDescriptorWithXML(
-            MessageElement[] any,
-            URI language,
-            String version) {
-        DeploymentDescriptorType descriptor = new DeploymentDescriptorType();
-        DeploymentDescriptorTypeBody data = new DeploymentDescriptorTypeBody();
-        data.set_any(any);
-        descriptor.setBody(data);
-        descriptor.setLanguage(language);
-        descriptor.setVersion(version);
-        return descriptor;
-    }
-*/
-
-    /**
-     * jump through hoops to turn a Xom document into a descriptor Caller is
-     * left to set the language and version attributes
-     *
-     * @param xom
-     * @return
-     * @throws javax.xml.parsers.ParserConfigurationException
-     */
-/*    public DeploymentDescriptorType createDescriptorWithXom(
-            nu.xom.Document xom)
-            throws ParserConfigurationException {
-        DOMImplementation impl = XomAxisHelper.loadDomImplementation();
-        MessageElement messageElement = XomAxisHelper.convert(xom, impl);
-        return createDescriptorWithXML(messageElement, null, null);
-    }*/
-
-    /**
-     * wrap a smartfrog text file into a message element and process it
-     *
-     * @param source
-     * @return
-     */
-/*    public MessageElement createSmartfrogMessageElement(String source) {
-        MessageElement element = new MessageElement(
-                Constants.SMARTFROG_NAMESPACE,
-                Constants.SMARTFROG_ELEMENT_NAME);
-        element.addAttribute(Constants.SMARTFROG_NAMESPACE,
-                Constants.SMARTFROG_ELEMENT_VERSION_ATTR,
-                SMARTFROG_VERSION);
-        Text text = new Text(source);
-        element.appendChild(text);
-        return element;
-    }*/
-
-    /**
-     * load a resource, make a CDL descriptor from it. The file can be validated
-     * before sending
-     *
-     * @param resource
-     * @return
-     */
-/*    public DeploymentDescriptorType createDescriptorFromCdlResource(
-            String resource,
-            boolean validate) throws SAXException, IOException,
-            ParsingException, ParserConfigurationException {
-        ResourceLoader loader = new ResourceLoader(this.getClass());
-        CdlParser parser = new CdlParser(loader, validate);
-        CdlDocument cdlDoc = parser.parseResource(resource);
-        if (validate) {
-            cdlDoc.validate();
-        }
-        return createDescriptorWithXom(cdlDoc.getDocument());
-    }*/
-
-    /**
-     * wrap a string with a smartfrog deploy descriptor
-     *
-     * @param in input stream
-     * @return a deployment descriptor for smartfrog
-     * @throws java.io.IOException
-     */
-/*    public DeploymentDescriptorType createSmartFrogDescriptor(InputStream in)
-            throws IOException {
-        String source = readIntoString(in);
-        return createSmartFrogDescriptor(source);
-    }*/
-
-    /**
-     * wrap a string with a smartfrog deploy descriptor
-     *
-     * @param file file to load into the descriptor
-     * @return a deployment descriptor for smartfrog
-     * @throws java.io.IOException
-     */
-/*    public DeploymentDescriptorType createSmartFrogDescriptor(File file)
-            throws IOException {
-        String source = readIntoString(file);
-        return createSmartFrogDescriptor(source);
-    }*/
 
     /**
      * helper to read into a string
@@ -476,7 +254,7 @@ public abstract class ConsoleOperation {
         }
     }
 
- 
+
 
     /**
      * look up an application against the server
@@ -541,7 +319,7 @@ public abstract class ConsoleOperation {
     }
 
 
-    
+
     /**
      * initiate an undeployment
      *
@@ -640,6 +418,6 @@ public abstract class ConsoleOperation {
     public void addFileToDescriptorAsReference(DescriptorType descriptor,
                                                File file,
                                                String language) {
-        
+
     }
 }

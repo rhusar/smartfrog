@@ -68,6 +68,7 @@ public abstract class UnitTestBase extends TestCase {
             = new EndpointReference("http://localhost:5050/services/Portal/");
     public final static EndpointReference EPR_SAMPLE_JOB
             = new EndpointReference("http://localhost:5050/services/System/#uuid_1235678_0045");
+    public static final String DOC_CREATE = TEST_FILES_API_VALID +"api-create.xml";
 
 
     public UnitTestBase(String name) {
