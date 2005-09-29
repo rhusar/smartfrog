@@ -20,11 +20,12 @@
 package org.smartfrog.services.deployapi.test.system;
 
 import org.smartfrog.services.deployapi.client.SystemEndpointer;
+import org.smartfrog.services.deployapi.client.PortalEndpointer;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.binding.EprHelper;
+import org.smartfrog.sfcore.languages.cdl.utils.ElementsIterator;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.addressing.EndpointReference;
-import org.apache.xmlbeans.XmlObject;
 import org.ggf.xbeans.cddlm.api.StaticPortalStatusType;
 import org.ggf.xbeans.cddlm.api.PortalInformationType;
 import org.ggf.xbeans.cddlm.api.NameUriListType;
@@ -77,7 +78,7 @@ public class PortalTest extends ApiTestBase {
             system = createSystem("localhost");
             logSystemCreated(system);
             String id=system.getResourceID();
-            String idProperty= getResourceID(system);
+            String idProperty= system.getResourceId();
             assertEquals(id,idProperty);
         } finally {
             terminateSystem(system);
@@ -94,7 +95,7 @@ public class PortalTest extends ApiTestBase {
             system = createSystem();
             logSystemCreated(system);
             String id = system.getResourceID();
-            String idProperty = getResourceID(system);
+            String idProperty = system.getResourceId();
             assertEquals(id, idProperty);
         } finally {
             terminateSystem(system);
@@ -103,15 +104,19 @@ public class PortalTest extends ApiTestBase {
 
 
     public void testPortalResourceID() throws Exception {
-        GetResourcePropertyResponseDocument resourceProperty = getPortalResourceProperty(Constants.PROPERTY_MUWS_RESOURCEID);
-        String id = extractResourceID(resourceProperty);
-        log.info("Portal resource ID="+id);
-        resourceProperty = getPortalResourceProperty(Constants.PROPERTY_MUWS_RESOURCEID);
-        String id2 = extractResourceID(resourceProperty);
-        assertEquals(id,id2);
-        
-        String id3=getResourceID(getOperation().getPortal());
-        assertEquals(id, id3);
+        PortalEndpointer portal = getPortal();
+        Element elt=portal.getPropertyXom(Constants.PROPERTY_MUWS_RESOURCEID);
+        String id1 = elt.getValue();
+        assertNotNull(id1);
+        assertTrue(id1.length()>0);
+        assertTrue(id1.indexOf("uuid_")==0);
+        assertEquals(id1,id1.trim());
+        String id2=portal.getResourceId();
+        assertEquals(id1,id2);
+    }
+
+    private PortalEndpointer getPortal() {
+        return getOperation().getPortal();
     }
 
 
@@ -120,15 +125,29 @@ public class PortalTest extends ApiTestBase {
      * @throws Exception
      */
     public void testStaticPortalStatusXom() throws Exception {
-        Element graph = getOperation().getPortalPropertyXom(Constants.PROPERTY_PORTAL_STATIC_PORTAL_STATUS);
-        Nodes nodes = graph.query(XPATH_STATUS, Constants.XOM_CONTEXT);
+        Element status = getOperation().getPortalPropertyXom(Constants.PROPERTY_PORTAL_STATIC_PORTAL_STATUS);
+        Nodes nodes = status.query(XPATH_STATUS, Constants.XOM_CONTEXT);
         assertEquals(XPATH_STATUS+" resolved",1,nodes.size());
         Node n1=nodes.get(0);
         assertTrue(XPATH_STATUS+" resolved to an element",n1 instanceof Element);
-        Element status=(Element)n1;
-        nodes = status.query("api:portal", Constants.XOM_CONTEXT);
+        Element staticstatus =(Element)n1;
+        nodes = staticstatus.query("api:portal", Constants.XOM_CONTEXT);
         assertEquals("portal resolved", 1, nodes.size());
         Element portal=(Element)nodes.get(0);
+        Nodes languages=staticstatus.query("api:languages", Constants.XOM_CONTEXT);
+        assertTrue(languages.size()>=1);
+        nodes= staticstatus.query("api:notifications", Constants.XOM_CONTEXT);
+        assertTrue(nodes.size() >= 1);
+        Element notifications=(Element) nodes.get(0);
+        ElementsIterator it=new ElementsIterator(notifications);
+        boolean found=false;
+        for(Element n:it) {
+            if (Constants.WSRF_WSNT_NAMESPACE.equals(n.getValue().trim())) {
+                found=true;
+                break;
+            }
+        }
+        assertTrue("WSNT is NOT supported", found);
     }
 
     public void NotestStaticPortalStatus() throws Exception {
@@ -161,7 +180,7 @@ public class PortalTest extends ApiTestBase {
                 found=true;
             }
         }
-        assertTrue("WSNT is supported", found);
+        assertTrue("WSNT is NOT supported", found);
     }
 
     public void testActiveApplications() throws Exception {

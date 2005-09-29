@@ -19,10 +19,9 @@
  */
 package org.smartfrog.services.deployapi.system;
 
+import nu.xom.XPathContext;
 import org.ggf.cddlm.generated.api.CddlmConstants;
 import org.ggf.cddlm.utils.QualifiedName;
-
-import nu.xom.XPathContext;
 
 /**
  * Any constants
@@ -127,6 +126,10 @@ public class Constants extends CddlmConstants {
     public static final String WSA_ELEMENT_ADDRESS = "Address";
     public static final String WSA_ATTR_PORTNAME = "PortName";
     public static final String WSA_ELT_SERVICENAME= "ServiceName";
+    public static final String BUILD_INFO_IMPLEMENTATION_NAME = "SmartFrog CDDLM Implementation";
+    public static final String BUILD_INFO_HOMEPAGE = "http://smartfrog.org/";
+    public static final String BUILD_INFO_CDL_LANGUAGE = "CDL";
+    public static final String BUILD_INFO_SF_LANGUAGE = "SmartFrog";
 
     /**
      * enum of lifecycle

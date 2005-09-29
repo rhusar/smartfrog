@@ -22,3 +22,4 @@
  * pull in subsidiary components
  */
 #include "org/smartfrog/services/deployapi/components/deployapi_on_jetty.sf";
+#include "org/smartfrog/services/deployapi/components/filestore.sf";

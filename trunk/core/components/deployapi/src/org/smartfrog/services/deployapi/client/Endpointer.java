@@ -19,15 +19,20 @@
  */
 package org.smartfrog.services.deployapi.client;
 
+import nu.xom.Element;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.addressing.EndpointReference;
-import org.apache.axis2.clientapi.Call;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.context.ConfigurationContextFactory;
 import org.apache.axis2.context.ServiceContext;
-import org.apache.axis2.description.OperationDescription;
 import org.apache.axis2.description.ServiceDescription;
 import org.apache.axis2.soap.SOAP12Constants;
+import org.ggf.cddlm.utils.QualifiedName;
+import org.ggf.xbeans.cddlm.wsrf.wsrp.GetResourcePropertyDocument;
+import org.ggf.xbeans.cddlm.wsrf.wsrp.GetResourcePropertyResponseDocument;
+import org.smartfrog.services.deployapi.binding.bindings.GetResourcePropertyBinding;
+import org.smartfrog.services.deployapi.system.Constants;
+import org.smartfrog.services.deployapi.system.Utils;
 
 import javax.xml.namespace.QName;
 import java.io.Serializable;
@@ -227,4 +232,43 @@ public abstract class Endpointer implements Serializable {
     public ServiceContext getServiceContext() {
         return serviceContext;
     }
+
+
+    public GetResourcePropertyResponseDocument getPropertyResponse( QName property)
+            throws RemoteException {
+        GetResourcePropertyBinding binding = new GetResourcePropertyBinding();
+        GetResourcePropertyDocument request = binding.createRequest();
+        request.setGetResourceProperty(property);
+        GetResourcePropertyResponseDocument response;
+        response = binding.invokeBlocking(this,
+                Constants.WSRF_OPERATION_GETRESOURCEPROPERTY,
+                request);
+        return response;
+    }
+
+    public Element getPropertyXom(QualifiedName property)
+            throws RemoteException {
+        return getPropertyXom(Utils.convert(property));
+    }
+
+    /**
+     * Get a property from the destination
+     *
+     * @return a Xom graph of the result
+     * @throws RemoteException
+     */
+    public Element getPropertyXom(QName property)
+            throws RemoteException {
+        GetResourcePropertyResponseDocument responseDoc = getPropertyResponse(
+                property);
+        GetResourcePropertyResponseDocument.GetResourcePropertyResponse resp;
+        resp = responseDoc.getGetResourcePropertyResponse();
+
+        return Utils.beanToXom(resp);
+    }
+
+    public String getResourceId() throws RemoteException {
+        Element elt = getPropertyXom(Constants.PROPERTY_MUWS_RESOURCEID);
+        return elt.getValue().trim();
+    }    
 }

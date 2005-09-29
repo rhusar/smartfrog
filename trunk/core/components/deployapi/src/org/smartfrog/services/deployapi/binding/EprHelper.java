@@ -19,18 +19,17 @@
  */
 package org.smartfrog.services.deployapi.binding;
 
+import nu.xom.Element;
+import org.apache.axis2.addressing.AnyContentType;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.addressing.ServiceName;
-import org.apache.axis2.addressing.AnyContentType;
 import org.ggf.xbeans.cddlm.wsrf.wsa2003.AttributedURI;
 import org.ggf.xbeans.cddlm.wsrf.wsa2003.EndpointReferenceType;
 import org.ggf.xbeans.cddlm.wsrf.wsa2003.ReferencePropertiesType;
 import org.ggf.xbeans.cddlm.wsrf.wsa2003.ServiceNameType;
 import org.ggf.xbeans.cddlm.wsrf.wsa2004.AttributedQName;
-import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
-
-import nu.xom.Element;
 import org.smartfrog.services.deployapi.system.Constants;
+import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
 
 
 /**

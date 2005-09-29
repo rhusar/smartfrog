@@ -21,29 +21,31 @@
 
 package org.smartfrog.services.deployapi.engine;
 
-import org.ggf.xbeans.cddlm.api.StaticPortalStatusType;
-import org.ggf.xbeans.cddlm.api.PortalInformationType;
-import org.ggf.xbeans.cddlm.api.NameUriListType;
-import org.ggf.xbeans.cddlm.api.UriListType;
+import org.apache.xmlbeans.XmlObject;
+import org.ggf.cddlm.utils.QualifiedName;
 import org.ggf.xbeans.cddlm.api.ActiveSystemsDocument;
-import org.ggf.xbeans.cddlm.api.SystemReferenceListType;
+import org.ggf.xbeans.cddlm.api.NameUriListType;
+import org.ggf.xbeans.cddlm.api.PortalInformationType;
 import org.ggf.xbeans.cddlm.api.StaticPortalStatusDocument;
+import org.ggf.xbeans.cddlm.api.StaticPortalStatusType;
+import org.ggf.xbeans.cddlm.api.SystemReferenceListType;
+import org.ggf.xbeans.cddlm.api.UriListType;
 import org.ggf.xbeans.cddlm.wsrf.muws.p1.IdentityPropertiesType;
 import org.ggf.xbeans.cddlm.wsrf.wsa2003.EndpointReferenceType;
-import org.ggf.cddlm.utils.QualifiedName;
-import org.smartfrog.services.deployapi.transport.wsrf.WSRPResourceSource;
-import org.smartfrog.services.deployapi.transport.faults.BaseException;
-import org.smartfrog.services.deployapi.system.Utils;
+import org.smartfrog.services.deployapi.components.AddedFilestore;
 import org.smartfrog.services.deployapi.system.Constants;
-import org.apache.xmlbeans.XmlObject;
-import org.apache.xmlbeans.XmlAnyURI;
-import org.apache.xmlbeans.XmlString;
+import org.smartfrog.services.deployapi.system.Utils;
+import org.smartfrog.services.deployapi.transport.faults.BaseException;
+import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
+import org.smartfrog.services.deployapi.transport.wsrf.WSRPResourceSource;
 
 import javax.xml.namespace.QName;
+import java.io.File;
+import java.io.IOException;
 import java.math.BigInteger;
-import java.util.Date;
-import java.net.URL;
 import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Date;
 
 
 /**
@@ -65,6 +67,8 @@ public class ServerInstance implements WSRPResourceSource {
     private ActionQueue queue = new ActionQueue();
 
     private ActionWorker workers[];
+
+    private AddedFilestore filestore;
 
     //private CdlParser cdlParser;
 
@@ -88,15 +92,13 @@ public class ServerInstance implements WSRPResourceSource {
             workers[i] = new ActionWorker(queue, TIMEOUT);
             workers[i].start();
         }
-        /*
-        //TODO: use the smartfrog resource loader & sfCodebase;
-        ResourceLoader loader = new ResourceLoader(this.getClass());
         try {
-            cdlParser = new CdlParser(loader, true);
-        } catch (SAXException e) {
-            throw new RuntimeException(e);
+            File tempdir=File.createTempFile("temp","dir");
+            AddedFilestore filestore=new AddedFilestore(tempdir);
+        } catch (IOException e) {
+            throw FaultRaiser.raiseNestedFault(e,"creating a temp directory");
         }
-        */
+
     }
 
     /**
@@ -114,19 +116,19 @@ public class ServerInstance implements WSRPResourceSource {
         StaticPortalStatusDocument doc= StaticPortalStatusDocument.Factory.newInstance();
         StaticPortalStatusType status = doc.addNewStaticPortalStatus();
         PortalInformationType portalInfo = status.addNewPortal();
-        portalInfo.setName("SmartFrog CDDLM Implementation");
+        portalInfo.setName(Constants.BUILD_INFO_IMPLEMENTATION_NAME);
         portalInfo.setBuild("$Date$");
         portalInfo.setLocation("unknown");
-        portalInfo.setHome("http://smartfrog.org/");
+        portalInfo.setHome(Constants.BUILD_INFO_HOMEPAGE);
         Date now=new Date();
         BigInteger tzoffset=BigInteger.valueOf(now.getTimezoneOffset());
         portalInfo.setTimezoneUTCOffset(tzoffset);
-        NameUriListType jobLanguages = status.addNewJoblanguages();
-        NameUriListType.Item item = jobLanguages.addNewItem();
-        item.setName("CDL");
+        NameUriListType languages = status.addNewLanguages();
+        NameUriListType.Item item = languages.addNewItem();
+        item.setName(Constants.BUILD_INFO_CDL_LANGUAGE);
         item.setUri(Constants.XML_CDL_NAMESPACE);
-        item = jobLanguages.addNewItem();
-        item.setName("SmartFrog");
+        item = languages.addNewItem();
+        item.setName(Constants.BUILD_INFO_SF_LANGUAGE);
         item.setUri(Constants.SMARTFROG_NAMESPACE);
         UriListType notifications = status.addNewNotifications();
         notifications.addNewItem().setStringValue(Constants.WSRF_WSNT_NAMESPACE);
@@ -151,6 +153,13 @@ public class ServerInstance implements WSRPResourceSource {
         return instance;
     }
 
+    public AddedFilestore getFilestore() {
+        return filestore;
+    }
+
+    public String getResourceID() {
+        return resourceID;
+    }
 
     /**
      * queue an action for execution
@@ -171,8 +180,7 @@ public class ServerInstance implements WSRPResourceSource {
     public XmlObject getResource(QName resource) {
         QualifiedName query= Utils.convert(resource);
         if(Constants.PROPERTY_PORTAL_STATIC_PORTAL_STATUS.equals(query)) {
-            StaticPortalStatusDocument status = createStaticStatusInfo();
-            return status;
+            return staticStatus;
         }
         if (Constants.PROPERTY_MUWS_RESOURCEID.equals(query)) {
             IdentityPropertiesType identity=IdentityPropertiesType.Factory.newInstance();
@@ -185,6 +193,10 @@ public class ServerInstance implements WSRPResourceSource {
         return null;
     }
 
+    /**
+     * Get the job list
+     * @return
+     */
     private ActiveSystemsDocument getJobList() {
         ActiveSystemsDocument doc=ActiveSystemsDocument.Factory.newInstance();
         SystemReferenceListType systems = doc.addNewActiveSystems();

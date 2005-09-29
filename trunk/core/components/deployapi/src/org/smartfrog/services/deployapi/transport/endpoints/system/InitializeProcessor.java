@@ -19,24 +19,19 @@
  */
 package org.smartfrog.services.deployapi.transport.endpoints.system;
 
+import org.apache.axis2.AxisFault;
+import org.apache.axis2.om.OMElement;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.xmlbeans.XmlException;
-import org.apache.axis2.om.OMElement;
-import org.apache.axis2.AxisFault;
 import org.ggf.xbeans.cddlm.api.InitializeRequestDocument;
 import org.ggf.xbeans.cddlm.api.InitializeResponseDocument;
-import org.ggf.xbeans.cddlm.api.TerminateResponseDocument;
-import org.ggf.xbeans.cddlm.api.TerminateRequestDocument;
 import org.ggf.xbeans.cddlm.smartfrog.SmartFrogDeploymentDescriptorType;
-import org.smartfrog.services.deployapi.engine.Job;
+import org.smartfrog.services.deployapi.binding.bindings.InitializeBinding;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.system.Utils;
-import org.smartfrog.services.deployapi.transport.endpoints.Processor;
 import org.smartfrog.services.deployapi.transport.endpoints.XmlBeansEndpoint;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
-import org.smartfrog.services.deployapi.binding.bindings.InitializeBinding;
-import org.smartfrog.services.deployapi.binding.bindings.TerminateBinding;
 import org.smartfrog.sfcore.common.ConfigurationDescriptor;
 import org.smartfrog.sfcore.prim.Prim;
 

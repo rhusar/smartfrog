@@ -24,23 +24,21 @@ import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.om.OMElement;
 import org.apache.axis2.om.OMNamespace;
-import org.apache.axis2.om.OMFactory;
-import org.apache.axis2.om.OMAbstractFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.xmlbeans.XmlObject;
-import org.smartfrog.services.deployapi.binding.bindings.GetResourcePropertyBinding;
+import org.ggf.xbeans.cddlm.wsrf.wsrp.GetResourcePropertyDocument;
 import org.smartfrog.services.deployapi.binding.Axis2Beans;
+import org.smartfrog.services.deployapi.binding.bindings.GetResourcePropertyBinding;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.system.Utils;
-import org.smartfrog.services.deployapi.transport.endpoints.XmlBeansEndpoint;
 import org.smartfrog.services.deployapi.transport.endpoints.Processor;
+import org.smartfrog.services.deployapi.transport.endpoints.XmlBeansEndpoint;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
-import org.ggf.xbeans.cddlm.wsrf.wsrp.GetResourcePropertyDocument;
 
 import javax.xml.namespace.QName;
-import java.util.Iterator;
 import java.rmi.RemoteException;
+import java.util.Iterator;
 
 
 /**

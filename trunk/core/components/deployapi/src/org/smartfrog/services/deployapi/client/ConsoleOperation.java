@@ -19,26 +19,25 @@
  */
 package org.smartfrog.services.deployapi.client;
 
+import nu.xom.Element;
 import org.apache.axis2.addressing.EndpointReference;
+import org.ggf.cddlm.utils.QualifiedName;
 import org.ggf.xbeans.cddlm.api.CreateRequestDocument;
 import org.ggf.xbeans.cddlm.api.CreateResponseDocument;
 import org.ggf.xbeans.cddlm.api.DescriptorType;
 import org.ggf.xbeans.cddlm.api.InitializeRequestDocument;
+import org.ggf.xbeans.cddlm.api.InitializeResponseDocument;
 import org.ggf.xbeans.cddlm.api.LookupSystemRequestDocument;
 import org.ggf.xbeans.cddlm.api.LookupSystemResponseDocument;
 import org.ggf.xbeans.cddlm.api.OptionMapType;
 import org.ggf.xbeans.cddlm.api.TerminateRequestDocument;
-import org.ggf.xbeans.cddlm.api.InitializeResponseDocument;
 import org.ggf.xbeans.cddlm.wsrf.wsa2003.EndpointReferenceType;
-import org.ggf.xbeans.cddlm.wsrf.wsrp.GetResourcePropertyDocument;
 import org.ggf.xbeans.cddlm.wsrf.wsrp.GetResourcePropertyResponseDocument;
-import org.ggf.cddlm.utils.QualifiedName;
 import org.smartfrog.services.deployapi.binding.EprHelper;
 import org.smartfrog.services.deployapi.binding.bindings.CreateBinding;
 import org.smartfrog.services.deployapi.binding.bindings.InitializeBinding;
 import org.smartfrog.services.deployapi.binding.bindings.LookupSystemBinding;
 import org.smartfrog.services.deployapi.binding.bindings.TerminateBinding;
-import org.smartfrog.services.deployapi.binding.bindings.GetResourcePropertyBinding;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.system.Utils;
 
@@ -54,8 +53,6 @@ import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.rmi.RemoteException;
-
-import nu.xom.Element;
 
 
 /** base class for console operations created Aug 31, 2004 4:44:30 PM */
@@ -517,48 +514,14 @@ public abstract class ConsoleOperation {
      */
     public Element getPortalPropertyXom(QName property)
             throws RemoteException {
-        return getPropertyXom(getPortal(), property);
-    }
-
-    /**
-     * Get a property from the destination
-     *
-     * @return a Xom graph of the result
-     * @throws RemoteException
-     */
-    public Element getPropertyXom(Endpointer endpoint, QName property)
-            throws RemoteException {
-        GetResourcePropertyResponseDocument responseDoc = getPropertyResponse(
-                endpoint,
-                property);
-        GetResourcePropertyResponseDocument.GetResourcePropertyResponse resp;
-        resp = responseDoc.getGetResourcePropertyResponse();
-        
-        return Utils.BeanToXom(resp);
-    }
-
-    public Element getPropertyXom(Endpointer endpoint, QualifiedName property)
-            throws RemoteException {
-        return getPropertyXom(endpoint, Utils.convert(property));
+        return getPortal().getPropertyXom(property);
     }
 
     public GetResourcePropertyResponseDocument getPortalProperty(QName property)
             throws RemoteException {
         Endpointer endpoint = portal;
-        return getPropertyResponse(endpoint, property);
-    }
-
-    public GetResourcePropertyResponseDocument getPropertyResponse(Endpointer endpoint,
-                                                                   QName property)
-            throws RemoteException {
-        GetResourcePropertyBinding binding = new GetResourcePropertyBinding();
-        GetResourcePropertyDocument request = binding.createRequest();
-        request.setGetResourceProperty(property);
-        GetResourcePropertyResponseDocument response;
-        response = binding.invokeBlocking(endpoint,
-                Constants.WSRF_OPERATION_GETRESOURCEPROPERTY,
-                request);
-        return response;
+        return endpoint.getPropertyResponse(
+                property);
     }
 
     /**
@@ -580,14 +543,11 @@ public abstract class ConsoleOperation {
     public GetResourcePropertyResponseDocument getResourceProperty(Endpointer endpoint,
                                                                    QualifiedName property)
             throws RemoteException {
-        return getPropertyResponse(endpoint, Utils.convert(property));
+        return endpoint.getPropertyResponse(Utils.convert(
+                property));
     }
 
-    public String getResourceId(Endpointer endpoint) throws RemoteException {
-        Element elt = getPropertyXom(endpoint,
-                Constants.PROPERTY_MUWS_RESOURCEID);
-        return elt.getValue();
-    }
+
     
     /**
      * initiate an undeployment

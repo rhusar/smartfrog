@@ -17,32 +17,37 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.deployapi.binding.bindings;
 
-import org.ggf.xbeans.cddlm.api.RunRequestDocument;
-import org.ggf.xbeans.cddlm.api.RunResponseDocument;
-import org.smartfrog.services.deployapi.binding.EndpointBinding;
+package org.smartfrog.services.deployapi.components;
 
-/**
- * created 21-Sep-2005 13:53:31
- */
+import java.io.File;
+import java.io.Serializable;
+import java.net.URI;
 
-public class RunBinding extends EndpointBinding<RunRequestDocument, RunResponseDocument> {
-    /**
-     * create a request object
-     *
-     * @return
-     */
-    public RunRequestDocument createRequest() {
-        return RunRequestDocument.Factory.newInstance(getInOptions());
+/** What is stored in our table of files */
+public class FileEntry implements Serializable {
+    private File file;
+    private URI uri;
+
+    private FileEntry() {
     }
 
-    /**
-     * create a request object
-     *
-     * @return
-     */
-    public RunResponseDocument createResponse() {
-        return RunResponseDocument.Factory.newInstance(getOutOptions());
+    public FileEntry(File file) {
+        this.file = file;
+        this.uri = file.toURI();
     }
+
+    public File getFile() {
+        return file;
+    }
+
+    public URI getUri() {
+        return uri;
+    }
+
+    /** @return a string representation of the object. */
+    public String toString() {
+        return file.getAbsolutePath();
+    }
+
 }

@@ -19,26 +19,25 @@
  */
 package org.smartfrog.services.deployapi.system;
 
-import org.apache.xmlbeans.XmlObject;
-import org.apache.xmlbeans.XmlOptions;
+import nu.xom.Document;
+import nu.xom.Element;
+import nu.xom.converters.DOMConverter;
+import org.apache.axis2.om.OMAbstractFactory;
 import org.apache.axis2.om.OMElement;
 import org.apache.axis2.om.OMFactory;
-import org.apache.axis2.om.OMAbstractFactory;
+import org.apache.xmlbeans.XmlObject;
+import org.apache.xmlbeans.XmlOptions;
 import org.ggf.cddlm.utils.QualifiedName;
 import org.ggf.xbeans.cddlm.cmp.DeploymentFaultType;
+import org.smartfrog.services.deployapi.binding.NuxStaxBuilder;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
-import org.smartfrog.services.deployapi.binding.StaxBuilder;
 import org.w3c.dom.Node;
 
 import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 import java.util.ArrayList;
 import java.util.UUID;
-
-import nu.xom.Element;
-import nu.xom.Document;
-import nu.xom.converters.DOMConverter;
 
 /**
  * created 20-Sep-2005 17:07:38
@@ -102,7 +101,7 @@ public class Utils {
      * @param bean to convert
      * @return the converted doc
      */
-    public static Element BeanToXom(XmlObject bean) {
+    public static Element beanToXom(XmlObject bean) {
         Node dom = bean.getDomNode();
         org.w3c.dom.Element elt=(org.w3c.dom.Element)dom;
         return DOMConverter.convert(elt);
@@ -136,7 +135,7 @@ public class Utils {
 
     public static Document AxiomToXom(OMElement em) throws XMLStreamException {
         XMLStreamReader reader = em.getXMLStreamReader();
-        StaxBuilder builder=new StaxBuilder();
+        NuxStaxBuilder builder=new NuxStaxBuilder();
         Document document = builder.build(reader);
         return document;
     }

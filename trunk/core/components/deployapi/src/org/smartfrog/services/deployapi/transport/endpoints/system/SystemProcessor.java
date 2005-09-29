@@ -20,10 +20,10 @@
 
 package org.smartfrog.services.deployapi.transport.endpoints.system;
 
+import org.smartfrog.services.deployapi.engine.Job;
 import org.smartfrog.services.deployapi.transport.endpoints.Processor;
 import org.smartfrog.services.deployapi.transport.endpoints.XmlBeansEndpoint;
 import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
-import org.smartfrog.services.deployapi.engine.Job;
 
 /**
 
