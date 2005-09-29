@@ -22,39 +22,60 @@
 
 
 #include "org/smartfrog/services/deployapi/components/axis2servletcontext.sf";
+#include "org/smartfrog/services/deployapi/components/deploymentserver.sf";
 
 /**
  * Any extra deployapi configuration stuff goes in here
  *
  */
 
+ /**
+  * core deployment engine is minimal
+  */
+ DeploymentEngine extends Compound {
+     //name of the directory containing any WAR files
+    wardir TBD;
+    
+    //port to run against
+    port 8080;
+    
+    server TBD;
+    
+    location TBD;
+    
+    urlhost TBD;
+    
+    deploymentServer extends DeploymentServer {
+         port PARENT:port;
+         location PARENT:location;
+         host PARENT:urlhost;
+     }
+ }
 
- DeployServer extends Compound {
 
-   //name of the directory containing any WAR files
-   wardir TBD;
+ /**
+  * this adds the SOAP stack
+  */
+ DeployRuntime extends DeploymentEngine {
 
-   //port to run against
-   port 8080;
 
-   server TBD;
-
-   servletContext extends Axis2ServletContext {
-      resourceBase  PARENT:wardir;
-      contextPath "/";
-      server PARENT:server;
-   }
-
-   /*
-   **
+    
+    servletContext extends Axis2ServletContext {
+        resourceBase  PARENT:wardir;
+        contextPath "/";
+        server PARENT:server;
+    }
+    
+    /*
+    **
     * Base servlet for alpine
     */
-   axis2Servlet extends Axis2Servlet {
-      context LAZY PARENT:servletContext;
-   }
-
+    axis2Servlet extends Axis2Servlet {
+        context LAZY PARENT:servletContext;
+    }
 
  }
+ 
 
 
 
