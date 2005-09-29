@@ -200,7 +200,7 @@ public interface Prim extends Liveness, RemoteReferenceResolver, RemoteReference
 
     /**
      * Start the component's main processing thread. Implementations should
-     * <em>not</em> block in this call, but spwan of another thread.
+     * <em>not</em> block in this call, but spawn off another thread.
      *
      * @throws SmartFrogException sfStart failure
      * @throws RemoteException In case of Remote/nework error
