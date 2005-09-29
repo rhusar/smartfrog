@@ -23,15 +23,14 @@ package org.smartfrog.services.deployapi.transport.endpoints;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.om.OMElement;
+import org.smartfrog.services.deployapi.engine.ServerInstance;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.transport.endpoints.portal.CreateProcessor;
 import org.smartfrog.services.deployapi.transport.endpoints.portal.LookupSystemProcessor;
 import org.smartfrog.services.deployapi.transport.endpoints.portal.ResolveProcessor;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
-import org.smartfrog.services.deployapi.transport.wsrf.WsrfEndpoint;
 import org.smartfrog.services.deployapi.transport.wsrf.WSRPResourceSource;
-import org.smartfrog.services.deployapi.engine.JobRepository;
-import org.smartfrog.services.deployapi.engine.ServerInstance;
+import org.smartfrog.services.deployapi.transport.wsrf.WsrfEndpoint;
 
 import javax.xml.namespace.QName;
 import java.rmi.RemoteException;

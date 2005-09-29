@@ -94,7 +94,7 @@ public class FaultRaiser {
      */
     public static BaseException raiseFault(QName code, String message,
                                            Throwable thrown) {
-        BaseException fault = new BaseException(message);
+        BaseException fault = new DeploymentException(message);
         fault.setFaultCode(code);
         fault.setFaultReason(message);
         if (thrown != null) {
@@ -140,10 +140,15 @@ public class FaultRaiser {
     
     public static BaseException raiseNotImplementedFault(String feature) {
         String message = "not implemented:" + feature;
-        BaseException fault = new BaseException(message);
+        return raiseInternalError(message);
+    }
+    
+    public static BaseException raiseInternalError(String message) {
+        DeploymentException fault=new DeploymentException(message);
         fault.setFaultCode(Constants.QNAME_SMARTFROG_INTERNAL_FAULT);
         fault.setFaultReason(message);
         return fault;
+
     }
     
 

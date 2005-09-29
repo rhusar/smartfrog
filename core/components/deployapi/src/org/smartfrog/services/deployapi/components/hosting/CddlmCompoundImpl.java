@@ -22,8 +22,8 @@ package org.smartfrog.services.deployapi.components.hosting;
 
 import org.smartfrog.services.deployapi.engine.Job;
 import org.smartfrog.services.deployapi.engine.ServerInstance;
-import static org.smartfrog.services.deployapi.system.Constants.*;
 import org.smartfrog.services.deployapi.system.Constants;
+import org.smartfrog.services.deployapi.system.Constants.LifecycleStateEnum;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.compound.CompoundImpl;
@@ -31,9 +31,9 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimHook;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 
-import java.rmi.RemoteException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.rmi.RemoteException;
 
 /**
  * created Sep 8, 2004 2:33:27 PM

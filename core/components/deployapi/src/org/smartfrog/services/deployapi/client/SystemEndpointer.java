@@ -19,10 +19,10 @@
  */
 package org.smartfrog.services.deployapi.client;
 
+import org.apache.axis2.AxisFault;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.description.OperationDescription;
 import org.apache.axis2.description.ServiceDescription;
-import org.apache.axis2.AxisFault;
 import org.ggf.xbeans.cddlm.api.CreateResponseDocument;
 import org.smartfrog.services.deployapi.binding.EprHelper;
 import org.smartfrog.services.deployapi.system.Constants;

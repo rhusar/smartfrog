@@ -24,7 +24,6 @@ import org.apache.commons.logging.LogFactory;
 import org.ggf.xbeans.cddlm.api.OptionMapType;
 import org.ggf.xbeans.cddlm.api.OptionType;
 import org.smartfrog.services.deployapi.system.DeployApiConstants;
-import org.smartfrog.services.deployapi.transport.endpoints.Processor;
 import org.smartfrog.services.deployapi.transport.endpoints.XmlBeansEndpoint;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
 

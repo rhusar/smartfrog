@@ -19,43 +19,27 @@
  */
 package org.smartfrog.services.deployapi.transport.endpoints;
 
-import org.apache.axis2.AxisFault;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.om.OMElement;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.ggf.xbeans.cddlm.api.InitializeRequestDocument;
-import org.ggf.xbeans.cddlm.api.InitializeResponseDocument;
-import org.smartfrog.services.deployapi.binding.Axis2Beans;
-import org.smartfrog.services.deployapi.binding.bindings.TerminateBinding;
-import org.smartfrog.services.deployapi.binding.bindings.InitializeBinding;
 import org.smartfrog.services.deployapi.engine.Job;
 import org.smartfrog.services.deployapi.engine.JobRepository;
 import org.smartfrog.services.deployapi.engine.ServerInstance;
 import org.smartfrog.services.deployapi.system.Constants;
-import org.smartfrog.services.deployapi.system.Utils;
 import org.smartfrog.services.deployapi.transport.endpoints.system.InitializeProcessor;
-import org.smartfrog.services.deployapi.transport.endpoints.system.TerminateProcessor;
-import org.smartfrog.services.deployapi.transport.endpoints.system.SystemProcessor;
 import org.smartfrog.services.deployapi.transport.endpoints.system.PingProcessor;
 import org.smartfrog.services.deployapi.transport.endpoints.system.RunProcessor;
-import org.smartfrog.services.deployapi.transport.endpoints.portal.CreateProcessor;
-import org.smartfrog.services.deployapi.transport.endpoints.portal.ResolveProcessor;
-import org.smartfrog.services.deployapi.transport.endpoints.portal.LookupSystemProcessor;
+import org.smartfrog.services.deployapi.transport.endpoints.system.SystemProcessor;
+import org.smartfrog.services.deployapi.transport.endpoints.system.TerminateProcessor;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
 import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
-import org.smartfrog.services.deployapi.transport.wsrf.WsrfEndpoint;
 import org.smartfrog.services.deployapi.transport.wsrf.WSRPResourceSource;
+import org.smartfrog.services.deployapi.transport.wsrf.WsrfEndpoint;
 
 import javax.xml.namespace.QName;
-import java.net.URL;
-import java.net.MalformedURLException;
 import java.rmi.RemoteException;
-
-/*
-* System EPR
- */;
 
 public class SystemEndpoint extends WsrfEndpoint {
 

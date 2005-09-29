@@ -32,9 +32,7 @@ import org.smartfrog.services.deployapi.system.Utils;
 import org.ggf.xbeans.cddlm.api.DescriptorType;
 import org.ggf.xbeans.cddlm.api.OptionMapType;
 import org.ggf.xbeans.cddlm.wsrf.wsrp.GetResourcePropertyResponseDocument;
-import org.ggf.xbeans.cddlm.wsrf.muws.p1.IdentityPropertiesType;
 import org.ggf.cddlm.utils.QualifiedName;
-import org.w3c.dom.Node;
 
 import javax.xml.namespace.QName;
 import java.rmi.RemoteException;
@@ -192,18 +190,6 @@ public abstract class ApiTestBase extends ConsoleTestBase {
         }
     }
 
-    /**
-     * get the resource ID from a get resource response
-     * @param resourceProperty
-     * @return
-     * @throws XmlException
-     */
-    protected String extractResourceID(GetResourcePropertyResponseDocument resourceProperty) throws XmlException {
-        Node domNode = resourceProperty.getDomNode();
-        IdentityPropertiesType identity=IdentityPropertiesType.Factory.parse(domNode);
-        String id = identity.getResourceId();
-        return id;
-    }
 
     protected GetResourcePropertyResponseDocument getPortalResourceProperty(QualifiedName portalProperty) throws RemoteException {
         return getOperation().getPortalProperty(portalProperty);
@@ -212,12 +198,8 @@ public abstract class ApiTestBase extends ConsoleTestBase {
     protected GetResourcePropertyResponseDocument getResourceProperty(Endpointer system,
                                                                       QualifiedName property) throws RemoteException {
         QName qname= Utils.convert(property);
-        return getOperation().getPropertyResponse(system, qname);
+        return system.getPropertyResponse(qname);
     }
 
-
-    protected String getResourceID(Endpointer system) throws RemoteException {
-        return getOperation().getResourceId(system);
-    }
 
 }

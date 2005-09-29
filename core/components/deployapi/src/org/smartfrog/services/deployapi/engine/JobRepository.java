@@ -20,22 +20,22 @@
 package org.smartfrog.services.deployapi.engine;
 
 
-import org.smartfrog.services.deployapi.system.Constants;
-import org.smartfrog.services.deployapi.system.Utils;
-import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
-import org.smartfrog.services.deployapi.transport.faults.BaseException;
+import org.apache.axis2.addressing.EndpointReference;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.axis2.addressing.EndpointReference;
+import org.smartfrog.services.deployapi.system.Constants;
+import org.smartfrog.services.deployapi.system.Utils;
+import org.smartfrog.services.deployapi.transport.faults.BaseException;
+import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
 
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Set;
-import java.rmi.RemoteException;
 
 /**
  * This class remembers what got deployed by whom. It retains weak references to

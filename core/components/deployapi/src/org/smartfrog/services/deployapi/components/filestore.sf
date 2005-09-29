@@ -41,18 +41,14 @@ This represents a hosted app
  */
 #include "/org/smartfrog/components.sf"
 
+#include "/org/smartfrog/services/filesystem/filesystemtemplate.sf"
 
-CddlmApplicationSchema extends Schema {
 
-
-    application extends OptionalCD;
-
-    id extends String;
-    
+LocalFilestore extends Prim {
+    sfClass "org.smartforg.services.deployapi.components.LocalFilestoreImpl";
+    schema extends Schema {
+        filename extends FilenameType;
     }
-
-
-CddlmApplication extends Compound {
-
-
+    
 }
+

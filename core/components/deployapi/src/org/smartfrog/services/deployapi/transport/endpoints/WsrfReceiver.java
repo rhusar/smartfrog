@@ -35,9 +35,9 @@ import org.apache.axis2.receivers.AbstractInOutSyncMessageReceiver;
 import org.apache.axis2.soap.SOAP11Constants;
 import org.apache.axis2.soap.SOAP12Constants;
 import org.apache.axis2.soap.SOAPEnvelope;
-import org.apache.wsdl.WSDLService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.wsdl.WSDLService;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
 import org.smartfrog.sfcore.security.SFClassLoader;
 

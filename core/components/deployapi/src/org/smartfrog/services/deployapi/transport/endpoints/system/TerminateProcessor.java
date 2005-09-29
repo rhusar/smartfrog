@@ -19,19 +19,16 @@
  */
 package org.smartfrog.services.deployapi.transport.endpoints.system;
 
-import org.apache.axis2.AxisFault;
 import org.apache.axis2.om.OMElement;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.ggf.xbeans.cddlm.api.TerminateRequestDocument;
 import org.ggf.xbeans.cddlm.api.TerminateResponseDocument;
-import org.smartfrog.services.deployapi.engine.Job;
+import org.smartfrog.services.deployapi.binding.bindings.TerminateBinding;
 import org.smartfrog.services.deployapi.engine.JobRepository;
 import org.smartfrog.services.deployapi.engine.ServerInstance;
 import org.smartfrog.services.deployapi.transport.endpoints.XmlBeansEndpoint;
-import org.smartfrog.services.deployapi.binding.bindings.TerminateBinding;
 
-import java.net.URI;
 import java.rmi.RemoteException;
 
 /**

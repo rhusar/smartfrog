@@ -20,17 +20,17 @@
 
 package org.smartfrog.services.deployapi.client;
 
-import org.apache.axis2.clientapi.Call;
-import org.apache.axis2.clientapi.Callback;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.addressing.EndpointReference;
-import org.apache.axis2.om.OMElement;
+import org.apache.axis2.clientapi.Call;
+import org.apache.axis2.clientapi.Callback;
+import org.apache.axis2.context.ServiceContext;
 import org.apache.axis2.description.OperationDescription;
 import org.apache.axis2.description.ServiceDescription;
-import org.apache.axis2.context.ServiceContext;
-import org.apache.wsdl.WSDLInterface;
+import org.apache.axis2.om.OMElement;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.wsdl.WSDLInterface;
 import org.smartfrog.services.deployapi.binding.EprHelper;
 
 import javax.xml.namespace.QName;

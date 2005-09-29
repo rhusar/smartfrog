@@ -5,19 +5,18 @@
 
 package org.smartfrog.services.deployapi.binding;
 
-import java.io.InputStream;
-import java.io.Reader;
-
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamConstants;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-
 import nu.xom.Attribute;
 import nu.xom.Document;
 import nu.xom.Element;
 import nu.xom.NodeFactory;
 import nu.xom.Nodes;
+
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamConstants;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import java.io.InputStream;
+import java.io.Reader;
 
 public class StaxBuilder
 {
