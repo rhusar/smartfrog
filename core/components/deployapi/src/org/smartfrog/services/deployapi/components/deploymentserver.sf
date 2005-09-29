@@ -18,9 +18,29 @@
 
  */
 
-/**
- * pull in subsidiary components
- */
-#include "org/smartfrog/services/deployapi/components/filestore.sf"
-#include "org/smartfrog/services/deployapi/components/deploymentserver.sf"
-#include "org/smartfrog/services/deployapi/components/deployapi_on_jetty.sf"
+
+
+#include "/org/smartfrog/components.sf"
+#include "/org/smartfrog/predicates.sf"
+
+ DeploymentServer extends Prim {
+ 
+    schema extends Schema {
+        filestoreDirectory extends Optional;
+        port extends OptionalInteger;
+        hostname extends OptionalString;
+        protocol extends OptionalString;
+        location extends OptionalString;
+        contextPath extends OptionalString;
+        servicesPath extends OptionalString;
+    }
+    
+    sfClass "org.smartfrog.services.deployapi.components.DeploymentServerImpl";
+    protocol "http";
+    hostname "localhost";
+    port 5050;
+    location "unknown location";
+    contextPath "/";
+    servicesPath "services/";
+       
+ }

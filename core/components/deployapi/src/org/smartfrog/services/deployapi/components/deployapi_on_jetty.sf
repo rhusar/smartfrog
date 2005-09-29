@@ -18,16 +18,17 @@ For more information: www.smartfrog.org
 
 */
 
-#include "org/smartfrog/services/deployapi/components/deployapi.sf";
 #include "org/smartfrog/services/jetty/components.sf";
 #include "org/smartfrog/services/os/java/components.sf";
+#include "org/smartfrog/services/deployapi/components/deployapi.sf";
+
 
 DeployServerOnJetty extends Compound {
 
     port TBD;
     jettyhome LAZY PROPERTY java.io.tmpdir;
     wardir TBD;
-    liveness false;
+    urlhost LAZY engine:servletContext:ipaddr;
 
     /**
      * force load our servlets
@@ -52,7 +53,21 @@ DeployServerOnJetty extends Compound {
         "org.smartfrog.services.deployapi.transport.endpoints.SystemEndpoint"
         ];
     }
-
+    
+    /**
+     * the engine that does the work
+     */
+    engine extends DeployRuntime {
+      port LAZY PARENT:port;
+      wardir LAZY PARENT:wardir;
+      server LAZY  jettyServer;
+      location LAZY PARENT:location;
+      urlhost LAZY PARENT:urlhost;
+    }
+    
+   /*
+    this is the jetty server itself
+    */
    jettyServer extends CoreJettyServer {
 
       jettyhome PARENT:jettyhome;
@@ -61,15 +76,14 @@ DeployServerOnJetty extends Compound {
 
     }
 
-    deployServer extends DeployServer {
-      port PARENT:port;
-      wardir PARENT:wardir;
-      server LAZY  jettyServer;
-    }
 
+
+    /*
+     turned off because it does not work
     JSPServlet extends ApacheJasperServlet {
-       context LAZY deployServer:servletContext;
+       context LAZY deployServletContext:servletContext;
     }
+    */
 
     listener extends JettyListener {
         listenerPort port;
@@ -77,15 +91,20 @@ DeployServerOnJetty extends Compound {
     }
 
     //fetch the page every so often, just to see that we are happy
+    /*
+    liveness false;
+    
     ping extends LivenessPage {
         enabled PARENT:liveness;
-        host LAZY PARENT:DeployServer:servletContext:ipaddr;
+        host LAZY PARENT:engine:servletContext:ipaddr;
         port PARENT:port;
         // probably "services/Version/getVersion"
         //page LAZY PARENT:DeployServer:axis2Servlet:absolutePath ;
         page "services/Version/getVersion";
         checkFrequency 10;
     }
+    */
+    
 }
 
 
@@ -95,7 +114,7 @@ sfConfig extends DeployServerOnJetty {
 
     wardir PROPERTY deployapi.war.dir;
     port 5050;
-
+    location "hosted on jetty";
     liveness true;
 
 }

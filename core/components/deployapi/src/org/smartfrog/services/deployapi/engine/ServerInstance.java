@@ -22,6 +22,8 @@
 package org.smartfrog.services.deployapi.engine;
 
 import org.apache.xmlbeans.XmlObject;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.ggf.cddlm.utils.QualifiedName;
 import org.ggf.xbeans.cddlm.api.ActiveSystemsDocument;
 import org.ggf.xbeans.cddlm.api.NameUriListType;
@@ -33,11 +35,18 @@ import org.ggf.xbeans.cddlm.api.UriListType;
 import org.ggf.xbeans.cddlm.wsrf.muws.p1.IdentityPropertiesType;
 import org.ggf.xbeans.cddlm.wsrf.wsa2003.EndpointReferenceType;
 import org.smartfrog.services.deployapi.components.AddedFilestore;
+import org.smartfrog.services.deployapi.components.DeploymentServer;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.system.Utils;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
 import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
 import org.smartfrog.services.deployapi.transport.wsrf.WSRPResourceSource;
+import org.smartfrog.services.filesystem.FileUsingComponent;
+import org.smartfrog.services.filesystem.FileUsingComponentImpl;
+import org.smartfrog.services.filesystem.FileSystem;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.common.SmartFrogLivenessException;
 
 import javax.xml.namespace.QName;
 import java.io.File;
@@ -46,6 +55,7 @@ import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Date;
+import java.rmi.RemoteException;
 
 
 /**
@@ -70,45 +80,115 @@ public class ServerInstance implements WSRPResourceSource {
 
     private AddedFilestore filestore;
 
+    private File tempdir;
+    
+    private String protocol="http";
+    private String hostname=LOCALHOST;
+    private int port=5050;
+    private String path=CONTEXT_PATH+SERVICES_PATH+SYSTEM_PATH;
+    private String location="unknown";
+    
     //private CdlParser cdlParser;
 
     public static final int WORKERS = 1;
     public static final long TIMEOUT = 0;
 
-    /**
-     * construct the server. Workers get started too.
-     */
-    public ServerInstance() {
-        staticStatus = createStaticStatusInfo();
+    private static Log log= LogFactory.getLog(ServerInstance.class);
+    private static final String CONTEXT_PATH = "/";
+    private static final String SERVICES_PATH = "services/";
+    private static final String SYSTEM_PATH = "System/";
+    private URL systemsURL;
+    public static final String LOCALHOST = "localhost";
 
-        try {
-            URL systemsURL = new URL("http://127.0.0.1:5050/services/System/");
-            jobs = new JobRepository(systemsURL);
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
+    /**
+     * Create a new server instance, and bind it to be our current
+     * server
+     * @param owner owning prim
+     * @return the object
+     * @throws SmartFrogException
+     * @throws RemoteException
+     */
+    public static ServerInstance createServerInstance(Prim owner) throws
+            SmartFrogException, RemoteException {
+        ServerInstance serverInstance = new ServerInstance(owner);
+        instance=serverInstance;
+        return instance;
+    }
+    
+    private ServerInstance(Prim owner)
+            throws SmartFrogException, RemoteException {
+        location = owner.sfResolve(DeploymentServer.ATTR_LOCATION,
+                location, false);
+        protocol = owner.sfResolve(DeploymentServer.ATTR_PROTOCOL,
+                protocol,false);
+        hostname = owner.sfResolve(DeploymentServer.ATTR_HOSTNAME,
+                hostname, false);
+        if(hostname.length()==0) {
+            hostname=LOCALHOST;
         }
+        port = owner.sfResolve(DeploymentServer.ATTR_PORT,
+                port, false);
+        String ctx= owner.sfResolve(DeploymentServer.ATTR_CONTEXTPATH,
+                CONTEXT_PATH, false);
+        String servicespath = owner.sfResolve(DeploymentServer.ATTR_SERVICESPATH,
+                SERVICES_PATH, false);
+        path= ctx+servicespath+SYSTEM_PATH;
+        File javatmpdir=new File(System.getProperty("java.io.tmpdir"));
+        String absolutePath = FileSystem.lookupAbsolutePath(owner,
+                DeploymentServer.ATTR_FILESTORE_DIR, 
+                null,
+                javatmpdir,
+                false,
+                null);
+        if(absolutePath!=null) {
+            tempdir=new File(absolutePath);
+        }
+        try {
+            init();
+        } catch (IOException e) {
+            throw SmartFrogException.forward(e);
+        }
+    }
+    
+
+
+    private void init() throws IOException {
+        staticStatus = createStaticStatusInfo();
+        systemsURL = new URL(protocol,hostname, port,path);
+                //new URL("http://127.0.0.1:5050/services/System/");
+        jobs = new JobRepository(systemsURL);
         workers = new ActionWorker[WORKERS];
         for (int i = 0; i < workers.length; i++) {
             workers[i] = new ActionWorker(queue, TIMEOUT);
             workers[i].start();
         }
-        try {
-            File tempdir=File.createTempFile("temp","dir");
-            AddedFilestore filestore=new AddedFilestore(tempdir);
-        } catch (IOException e) {
-            throw FaultRaiser.raiseNestedFault(e,"creating a temp directory");
+        if(tempdir==null) {
+            tempdir = File.createTempFile("filestore", ".dir");
+            //little bit of a race condition here.
+            tempdir.delete();
         }
-
+        AddedFilestore filestore = new AddedFilestore(tempdir);
+        log.debug("Creating server instance "+toString());
     }
 
     /**
      * initiate a graceful shutdown of workers. we do this by pushing a shutdown
      * request for every worker
      */
-    public void stop() {
+    public void terminate() throws RemoteException {
         for (int i = 0; i < workers.length; i++) {
             queue.push(new EndWorkerAction());
         }
+        filestore.deleteAllEntries();
+        jobs.terminate();
+    }
+
+    /**
+     * liveness check
+     * @throws SmartFrogLivenessException
+     */
+    public void ping() throws SmartFrogLivenessException {
+        
     }
 
 
@@ -118,7 +198,7 @@ public class ServerInstance implements WSRPResourceSource {
         PortalInformationType portalInfo = status.addNewPortal();
         portalInfo.setName(Constants.BUILD_INFO_IMPLEMENTATION_NAME);
         portalInfo.setBuild("$Date$");
-        portalInfo.setLocation("unknown");
+        portalInfo.setLocation(location);
         portalInfo.setHome(Constants.BUILD_INFO_HOMEPAGE);
         Date now=new Date();
         BigInteger tzoffset=BigInteger.valueOf(now.getTimezoneOffset());
@@ -148,7 +228,7 @@ public class ServerInstance implements WSRPResourceSource {
      */
     public static ServerInstance currentInstance() {
         if (instance == null) {
-            instance = new ServerInstance();
+            throw new RuntimeException("No configured ServerInstance");
         }
         return instance;
     }
@@ -208,5 +288,14 @@ public class ServerInstance implements WSRPResourceSource {
         }
         systems.setSystemArray(apps);
         return doc;
+    }
+
+    /**
+     * Returns a string representation of the object. 
+     *
+     * @return a string representation of the object.
+     */
+    public String toString() {
+        return "Server @"+systemsURL+" filestore:"+tempdir; 
     }
 }

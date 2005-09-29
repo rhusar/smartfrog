@@ -24,17 +24,18 @@ For more information: www.smartfrog.org
 
 Application extends DeployServerOnJetty {
 
+
   //get this from the running system
     javahome LAZY PROPERTY java.io.tmpdir;
     wardir PROPERTY deployapi.war.dir;
     port 5050;
-
+    location "steve's laptop";
     liveness false;
+    urlhost "127.0.0.1";
 
 }
 
 
 
-sfConfig extends Application {
-
-}
+//sfConfig extends Engine;
+sfConfig extends Application;

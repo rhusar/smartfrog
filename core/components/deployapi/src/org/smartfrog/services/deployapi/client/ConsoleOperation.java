@@ -301,11 +301,12 @@ public abstract class ConsoleOperation {
      * @throws java.io.IOException
      */
 /*
-    public DeploymentDescriptorType createSmartFrogDescriptor(String source)
+
+    public Element createSmartFrogDescriptor(String source)
             throws IOException {
-        MessageElement element = createSmartfrogMessageElement(source);
+        Element element = createSmartfrogMessageElement(source);
         DeploymentDescriptorType descriptor = createDescriptorWithXML(element,
-                new URI(DeployApiConstants.SMARTFROG_NAMESPACE),
+                new URI(Constants.SMARTFROG_NAMESPACE),
                 null);
         return descriptor;
     }
@@ -475,15 +476,7 @@ public abstract class ConsoleOperation {
         }
     }
 
-    /**
-     * turn a string into an NC name
-     *
-     * @param name
-     * @return
-     */
-/*    public NCName makeName(String name) {
-        return new NCName(name);
-    }*/
+ 
 
     /**
      * look up an application against the server
@@ -636,5 +629,17 @@ public abstract class ConsoleOperation {
         } catch (URISyntaxException e) {
             throw new BadCommandLineException(INVALID_URI + appURI);
         }
+    }
+
+    /**
+     * Add a file to a descriptor
+     * @param descriptor
+     * @param file
+     * @param language
+     */
+    public void addFileToDescriptorAsReference(DescriptorType descriptor,
+                                               File file,
+                                               String language) {
+        
     }
 }

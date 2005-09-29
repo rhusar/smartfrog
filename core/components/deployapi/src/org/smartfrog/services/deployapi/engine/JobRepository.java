@@ -137,6 +137,14 @@ public class JobRepository implements Iterable<Job> {
     }
 
     /**
+     * Termination routine
+     * @throws RemoteException
+     */
+    public void terminate() throws RemoteException {
+    
+    }
+    
+    /**
      * Thread safe termination of job and removal from the stack
      * @param job
      * @param reason
