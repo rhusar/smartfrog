@@ -66,7 +66,6 @@ public class PortalUnitTest extends UnitTestBase {
     }
 
     private PortalEndpoint portal;
-    public static final String DOC_CREATE = TEST_FILES_API_VALID +"api-create.xml";
 
     /**
      * Sets up the fixture, for example, open a network connection.

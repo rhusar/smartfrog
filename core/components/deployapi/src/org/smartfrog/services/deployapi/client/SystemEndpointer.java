@@ -24,11 +24,17 @@ import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.description.OperationDescription;
 import org.apache.axis2.description.ServiceDescription;
 import org.ggf.xbeans.cddlm.api.CreateResponseDocument;
+import org.ggf.xbeans.cddlm.api.DescriptorType;
+import org.ggf.xbeans.cddlm.api.OptionMapType;
+import org.ggf.xbeans.cddlm.api.InitializeRequestDocument;
+import org.ggf.xbeans.cddlm.api.InitializeResponseDocument;
 import org.smartfrog.services.deployapi.binding.EprHelper;
+import org.smartfrog.services.deployapi.binding.bindings.InitializeBinding;
 import org.smartfrog.services.deployapi.system.Constants;
 
 import javax.xml.namespace.QName;
 import java.net.URL;
+import java.rmi.RemoteException;
 
 /**
  * Model for a remote system.
@@ -38,7 +44,7 @@ import java.net.URL;
 
 public class SystemEndpointer extends Endpointer {
 
-    private String resourceID;
+    private String cachedResourceId;
     protected static org.apache.axis2.description.OperationDescription[] operations;
     protected static ServiceDescription serviceDescription;
 
@@ -133,13 +139,13 @@ public class SystemEndpointer extends Endpointer {
     public SystemEndpointer(EndpointReference endpointer, String resourceID)
             throws AxisFault {
         super(endpointer);
-        this.resourceID = resourceID;
+        this.cachedResourceId = resourceID;
         init();
     }
 
     public SystemEndpointer(CreateResponseDocument.CreateResponse response)
             throws AxisFault {
-        resourceID = response.getResourceId();
+        cachedResourceId = response.getResourceId();
         init();
         bindToEndpointer(EprHelper.Wsa2003ToEPR(response.getSystemReference()));
     }
@@ -149,12 +155,12 @@ public class SystemEndpointer extends Endpointer {
         init();
     }
 
-    public String getResourceID() {
-        return resourceID;
+    public String getCachedResourceId() {
+        return cachedResourceId;
     }
 
-    public void setResourceID(String resourceID) {
-        this.resourceID = resourceID;
+    public void setCachedResourceId(String resourceID) {
+        this.cachedResourceId = resourceID;
     }
 
     public ServiceDescription getServiceDescription() {
@@ -173,7 +179,7 @@ public class SystemEndpointer extends Endpointer {
 
         final SystemEndpointer that = (SystemEndpointer) o;
 
-        if (resourceID != null ? !resourceID.equals(that.resourceID) : that.resourceID != null) return false;
+        if (cachedResourceId != null ? !cachedResourceId.equals(that.cachedResourceId) : that.cachedResourceId != null) return false;
 
         return true;
     }
@@ -184,7 +190,7 @@ public class SystemEndpointer extends Endpointer {
      * @return
      */
     public int hashCode() {
-        return (resourceID != null ? resourceID.hashCode() : 0);
+        return (cachedResourceId != null ? cachedResourceId.hashCode() : 0);
     }
 
     /**
@@ -193,6 +199,31 @@ public class SystemEndpointer extends Endpointer {
      * @return
      */
     public String toString() {
-        return "System ID=" + resourceID + " URL=" + url.toString();
+        return "System ID=" + cachedResourceId + " URL=" + url.toString();
+    }
+
+
+    /**
+     * deploy a named application, or return an exception
+     *
+     * @param descriptor
+     * @param options
+     */
+    public void initialize(DescriptorType descriptor,
+                           OptionMapType options)
+            throws RemoteException {
+        InitializeBinding binding = new InitializeBinding();
+        if (options == null) {
+            options = OptionMapType.Factory.newInstance();
+        }
+
+        InitializeRequestDocument requestDoc = binding.createRequest();
+        InitializeRequestDocument.InitializeRequest request = requestDoc.addNewInitializeRequest();
+        request.setDescriptor(descriptor);
+        request.setOptions(options);
+        InitializeResponseDocument responseDoc = binding
+                .invokeBlocking(this,
+                        Constants.API_ELEMENT_INITALIZE_REQUEST,
+                        requestDoc);
     }
 }
