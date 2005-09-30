@@ -24,19 +24,17 @@ import org.apache.axis2.om.OMAbstractFactory;
 import org.apache.axis2.om.OMElement;
 import org.apache.axis2.om.OMFactory;
 import org.apache.axis2.om.OMXMLParserWrapper;
-import org.apache.axis2.om.impl.llom.builder.StAXOMBuilder;
 import org.apache.axis2.om.impl.llom.factory.OMXMLBuilderFactory;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.XmlOptions;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
+import org.smartfrog.services.deployapi.system.Utils;
 
-import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringReader;
 import java.io.StringWriter;
 
 /**
@@ -124,11 +122,7 @@ public class Axis2Beans<T extends XmlObject> {
             document.save(writer, writeOptions);
             writer.close();
             String textForm = writer.toString();
-            StringReader stringReader = new StringReader(textForm);
-            XMLInputFactory inputFactory = XMLInputFactory.newInstance();
-            XMLStreamReader parser = inputFactory.createXMLStreamReader(stringReader);
-            StAXOMBuilder builder = new StAXOMBuilder(parser);
-            return builder.getDocumentElement();
+            return Utils.loadAxiomFromString(textForm);
         } catch (IOException e) {
             throw new BaseException(e);
         } catch (XMLStreamException e) {

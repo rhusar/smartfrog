@@ -19,12 +19,7 @@
  */
 package org.smartfrog.services.deployapi.test.unit;
 
-import junit.framework.TestCase;
-import org.smartfrog.services.deployapi.client.PortalEndpointer;
-import org.smartfrog.services.deployapi.client.ConsoleOperation;
-import org.smartfrog.services.deployapi.client.Deploy;
 import org.smartfrog.services.deployapi.binding.bindings.LookupSystemBinding;
-import org.smartfrog.services.deployapi.binding.Axis2Beans;
 import org.smartfrog.services.deployapi.system.Utils;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.ggf.xbeans.cddlm.api.LookupSystemRequestDocument;
@@ -61,7 +56,7 @@ public class BindingsTest extends UnitTestBase {
         LookupSystemRequestDocument.LookupSystemRequest lookupSystemRequest = request.addNewLookupSystemRequest();
         lookupSystemRequest.setResourceId(RESOURCE_ID);
         OMElement om = binding.convertRequest(request);
-        Document doc= Utils.AxiomToXom(om);
+        Document doc= Utils.axiomToXom(om);
         Nodes nodes = doc.query("api:lookupSystemRequest/api:ResourceId",
                 Constants.XOM_CONTEXT);
         assertEquals("query returned one node",1,nodes.size());

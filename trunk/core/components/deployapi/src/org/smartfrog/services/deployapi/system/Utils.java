@@ -21,10 +21,12 @@ package org.smartfrog.services.deployapi.system;
 
 import nu.xom.Document;
 import nu.xom.Element;
+import nu.xom.Serializer;
 import nu.xom.converters.DOMConverter;
 import org.apache.axis2.om.OMAbstractFactory;
 import org.apache.axis2.om.OMElement;
 import org.apache.axis2.om.OMFactory;
+import org.apache.axis2.om.impl.llom.builder.StAXOMBuilder;
 import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.XmlOptions;
 import org.ggf.cddlm.utils.QualifiedName;
@@ -36,8 +38,21 @@ import org.w3c.dom.Node;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLInputFactory;
 import java.util.ArrayList;
 import java.util.UUID;
+import java.io.StringReader;
+import java.io.IOException;
+import java.io.ByteArrayOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.Closeable;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.BufferedInputStream;
+import java.io.InputStreamReader;
+import java.io.StringWriter;
+import java.io.InputStream;
+import java.nio.charset.Charset;
 
 /**
  * created 20-Sep-2005 17:07:38
@@ -107,7 +122,7 @@ public class Utils {
         return DOMConverter.convert(elt);
     }
 
-     
+
 
     /**
      * create a new uuid-style id
@@ -133,10 +148,125 @@ public class Utils {
         return element;
     }
 
-    public static Document AxiomToXom(OMElement em) throws XMLStreamException {
+    /**
+     * convert from an axiom graph to Xom. 
+     * Very efficient as it uses the StAX stuff underneath
+     * @param em
+     * @return
+     * @throws XMLStreamException
+     */
+    public static Document axiomToXom(OMElement em) throws XMLStreamException {
         XMLStreamReader reader = em.getXMLStreamReader();
         NuxStaxBuilder builder=new NuxStaxBuilder();
         Document document = builder.build(reader);
         return document;
+    }
+
+    /**
+     * detatch the root element from the doc, so it
+     * can be used elsewhere. The doc is left with a dummy element
+     * to avoid it being malformed.
+     * @param document
+     * @return element that was the root
+     */
+    public static Element detachRootElement(Document document) {
+        Element rootElement = document.getRootElement();
+        document.setRootElement(new Element("dummy"));
+        return rootElement;
+    }
+
+
+    public static byte[] xomToBuffer(Document document) throws IOException {
+        ByteArrayOutputStream out=new ByteArrayOutputStream();
+        Serializer serializer=new Serializer(out);
+        serializer.write(document);
+        serializer.flush();
+        out.close();
+        return out.toByteArray();
+    }
+
+    public static OMElement xomToAxiom(Element element) throws IOException,
+            XMLStreamException {
+        element.detach();
+        Document document=new Document(element);
+        return xomToAxiom(document);
+    }
+
+        public static OMElement xomToAxiom(Document document) throws IOException,
+            XMLStreamException {
+        byte[] buffer=xomToBuffer(document);
+        return loadAxiomFromBuffer(buffer);
+    }
+
+    public static OMElement loadAxiomFromBuffer(byte[] buffer)
+            throws XMLStreamException {
+        ByteArrayInputStream in = new ByteArrayInputStream(buffer);
+        try {
+            XMLInputFactory inputFactory = XMLInputFactory.newInstance();
+            XMLStreamReader parser = inputFactory.createXMLStreamReader(in);
+            return parseAxiomDoc(parser);
+        } finally {
+            close(in);
+        }
+    }
+
+    public static void close(Closeable stream) {
+        try {
+            stream.close();
+        } catch (IOException e) {
+            //ignore
+        }
+    }
+
+    public static OMElement loadAxiomFromString(String textForm) throws
+            XMLStreamException {
+        StringReader stringReader = new StringReader(textForm);
+        XMLInputFactory inputFactory = XMLInputFactory.newInstance();
+        XMLStreamReader parser = inputFactory.createXMLStreamReader(stringReader);
+        return parseAxiomDoc(parser);
+    }
+
+    private static OMElement parseAxiomDoc(XMLStreamReader parser) {
+        StAXOMBuilder builder = new StAXOMBuilder(parser);
+        return builder.getDocumentElement();
+    }
+
+    /**
+     * Load a file with a given charset into a buffer
+     * @param file
+     * @param cs
+     * @return
+     * @throws IOException
+     */
+    public static String loadFile(File file, Charset cs) throws IOException {
+        InputStream in;
+        in = new FileInputStream(file);
+        return loadInputStream(in, cs);
+    }
+
+    
+    /**
+     * Load an input stream
+     * @param in
+     * @param cs
+     * @return
+     * @throws IOException
+     */
+    public static String loadInputStream(InputStream in, Charset cs) throws
+            IOException {
+        BufferedInputStream buffIn = null;
+        InputStreamReader reader = null;
+        try {
+            buffIn = new BufferedInputStream(in);
+            reader = new InputStreamReader(buffIn,cs);
+            StringWriter dest=new StringWriter();
+            int ch;
+            while((ch = reader.read())>=0) {
+                dest.write(ch);
+            }
+            return dest.toString();
+        } finally {
+            close(reader);
+        }
     }
 }
