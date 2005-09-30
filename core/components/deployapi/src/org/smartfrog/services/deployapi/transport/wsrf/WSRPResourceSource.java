@@ -20,6 +20,7 @@
 package org.smartfrog.services.deployapi.transport.wsrf;
 
 import org.apache.xmlbeans.XmlObject;
+import org.apache.axis2.om.OMElement;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
 
 import javax.xml.namespace.QName;
@@ -39,5 +40,5 @@ public interface WSRPResourceSource {
      * @return null for no match;
      * @throws BaseException if they feel like it
      */
-    XmlObject getResource(QName resource);
+    OMElement getResource(QName resource);
 }

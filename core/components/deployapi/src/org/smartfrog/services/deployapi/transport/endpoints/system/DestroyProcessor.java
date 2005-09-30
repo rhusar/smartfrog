@@ -19,15 +19,37 @@
  */
 package org.smartfrog.services.deployapi.transport.endpoints.system;
 
+import nu.xom.Element;
+import org.apache.axis2.om.OMElement;
+import org.smartfrog.services.deployapi.engine.JobRepository;
+import org.smartfrog.services.deployapi.engine.ServerInstance;
+import org.smartfrog.services.deployapi.system.Constants;
+import org.smartfrog.services.deployapi.system.Utils;
 import org.smartfrog.services.deployapi.transport.endpoints.XmlBeansEndpoint;
+import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
+
+import java.io.IOException;
 
 /**
  * created 22-Sep-2005 15:41:33
  */
 
 public class DestroyProcessor extends SystemProcessor {
+    public static final String ERROR_SYSTEM_NOT_FOUND_TO_DESTROY = "system may already have been destroyed";
 
     public DestroyProcessor(XmlBeansEndpoint owner) {
         super(owner);
+    }
+
+
+    public OMElement process(OMElement request) throws IOException {
+        if (job == null) {
+            throw FaultRaiser.raiseNoSuchApplicationFault(ERROR_SYSTEM_NOT_FOUND_TO_DESTROY);
+        }
+        JobRepository jobs = ServerInstance.currentInstance().getJobs();
+        jobs.terminate(job, "destroyed");
+        Element response = new Element(Constants.WSRF_ELEMENT_DESTROY_RESPONSE,
+                Constants.WSRF_WSRL_NAMESPACE);
+        return Utils.xomToAxiom(response);
     }
 }

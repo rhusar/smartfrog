@@ -33,6 +33,7 @@ import org.ggf.cddlm.utils.QualifiedName;
 import org.ggf.xbeans.cddlm.cmp.DeploymentFaultType;
 import org.smartfrog.services.deployapi.binding.NuxStaxBuilder;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
+import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
 import org.w3c.dom.Node;
 
 import javax.xml.namespace.QName;
@@ -101,8 +102,9 @@ public class Utils {
         XmlOptions validationOptions = new XmlOptions();
         validationOptions.setErrorListener(validationErrors);
         if (!message.validate(validationOptions)) {
+            message.dump();
             DeploymentFaultType fault = DeploymentFaultType.Factory.newInstance();
-            throw new BaseException(Constants.BAD_ARGUMENT_ERROR_MESSAGE);
+            throw FaultRaiser.raiseBadArgumentFault("XML did not validate against the schema");
         }
         return true;
     }
@@ -158,12 +160,17 @@ public class Utils {
      * Very efficient as it uses the StAX stuff underneath
      * @param em
      * @return
-     * @throws XMLStreamException
+     * @throws BaseException if needed 
      */
-    public static Document axiomToXom(OMElement em) throws XMLStreamException {
-        XMLStreamReader reader = em.getXMLStreamReader();
-        NuxStaxBuilder builder=new NuxStaxBuilder();
-        Document document = builder.build(reader);
+    public static Document axiomToXom(OMElement em)  {
+        Document document = null;
+        try {
+            XMLStreamReader reader = em.getXMLStreamReader();
+            NuxStaxBuilder builder=new NuxStaxBuilder();
+            document = builder.build(reader);
+        } catch (XMLStreamException e) {
+            throw FaultRaiser.raiseInternalError("converting object models",e);
+        }
         return document;
     }
 
@@ -190,26 +197,29 @@ public class Utils {
         return out.toByteArray();
     }
 
-    public static OMElement xomToAxiom(Element element) throws IOException,
-            XMLStreamException {
+    public static OMElement xomToAxiom(Element element)  {
         element.detach();
         Document document=new Document(element);
         return xomToAxiom(document);
     }
 
-        public static OMElement xomToAxiom(Document document) throws IOException,
-            XMLStreamException {
-        byte[] buffer=xomToBuffer(document);
-        return loadAxiomFromBuffer(buffer);
+    public static OMElement xomToAxiom(Document document) {
+        try {
+            byte[] buffer = xomToBuffer(document);
+            return loadAxiomFromBuffer(buffer);
+        } catch (IOException e) {
+            throw FaultRaiser.raiseInternalError("doc conversion error",e);
+        }
     }
 
-    public static OMElement loadAxiomFromBuffer(byte[] buffer)
-            throws XMLStreamException {
+    public static OMElement loadAxiomFromBuffer(byte[] buffer) {
         ByteArrayInputStream in = new ByteArrayInputStream(buffer);
         try {
             XMLInputFactory inputFactory = XMLInputFactory.newInstance();
             XMLStreamReader parser = inputFactory.createXMLStreamReader(in);
             return parseAxiomDoc(parser);
+        } catch (XMLStreamException e) {
+            throw FaultRaiser.raiseInternalError("Parse failure",e);
         } finally {
             close(in);
         }
@@ -223,12 +233,16 @@ public class Utils {
         }
     }
 
-    public static OMElement loadAxiomFromString(String textForm) throws
-            XMLStreamException {
-        StringReader stringReader = new StringReader(textForm);
-        XMLInputFactory inputFactory = XMLInputFactory.newInstance();
-        XMLStreamReader parser = inputFactory.createXMLStreamReader(stringReader);
-        return parseAxiomDoc(parser);
+    public static OMElement loadAxiomFromString(String textForm) {
+        try {
+            StringReader stringReader = new StringReader(textForm);
+            XMLInputFactory inputFactory = XMLInputFactory.newInstance();
+            XMLStreamReader parser = inputFactory.createXMLStreamReader(stringReader);
+            return parseAxiomDoc(parser);
+        } catch (XMLStreamException e) {
+            throw FaultRaiser.raiseInternalError("Parse failure:"+
+            textForm, e);
+        }
     }
 
     private static OMElement parseAxiomDoc(XMLStreamReader parser) {

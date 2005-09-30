@@ -35,10 +35,12 @@ import org.smartfrog.services.deployapi.system.Utils;
 import org.smartfrog.services.deployapi.transport.endpoints.Processor;
 import org.smartfrog.services.deployapi.transport.endpoints.XmlBeansEndpoint;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
+import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
 
 import javax.xml.namespace.QName;
 import java.rmi.RemoteException;
 import java.util.Iterator;
+import java.io.IOException;
 
 
 /**
@@ -58,14 +60,24 @@ public abstract class WsrfEndpoint extends XmlBeansEndpoint {
      * @throws BaseException unchecked basefault
      */
     public OMElement dispatch(QName operation, MessageContext inMessage)
-            throws RemoteException {
+            throws IOException {
         OMElement request = inMessage.getEnvelope().getBody().getFirstElement();
         String requestName = request.getLocalName();
         QName qName = request.getQName();
         log.info("received " + qName);
-        //verifyDeployApiNamespace(qName);
         if (Constants.WSRF_OPERATION_GETRESOURCEPROPERTY.equals(requestName)) {
             return GetResourceProperty(inMessage, request);
+        }
+        if (Constants.WSRF_OPERATION_GETMULTIPLERESOURCEPROPERTIES.equals(requestName)) {
+            throw FaultRaiser.raiseNotImplementedFault(qName.toString());
+        }
+        if (Constants.WSRF_OPERATION_GETCURRENTMESSAGE
+                .equals(requestName)) {
+            throw FaultRaiser.raiseNotImplementedFault(qName.toString());
+        }
+        if (Constants.WSRF_OPERATION_SUBSCRIBE
+                .equals(requestName)) {
+            throw FaultRaiser.raiseNotImplementedFault(qName.toString());
         }
         return null;
     }
@@ -111,19 +123,16 @@ public abstract class WsrfEndpoint extends XmlBeansEndpoint {
         GetResourcePropertyBinding binding = new GetResourcePropertyBinding();
         GetResourcePropertyDocument requestDoc = binding.convertRequest(request);
         QName qName = requestDoc.getGetResourceProperty();
-        XmlObject result = source.getResource(qName);
+        OMElement result = source.getResource(qName);
         if (result == null) {
             throw invalidQNameException(qName.toString());
         }
-        //conver to Axiom
-        OMElement resultElement= Axis2Beans.convertDocument(result);
-        //add a wrapper
 
         OMElement response = Utils.createOmElement(
                 Constants.WSRF_WSRP_NAMESPACE,
                 Constants.WSRF_RP_ELEMENT_GETRESOURCEPROPERTY_RESPONSE,
                 "wsrf-rp");
-        response.addChild(resultElement);
+        response.addChild(result);
         return response;
     }
 

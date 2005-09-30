@@ -29,6 +29,7 @@ DeployServerOnJetty extends Compound {
     jettyhome LAZY PROPERTY java.io.tmpdir;
     wardir TBD;
     urlhost LAZY engine:servletContext:ipaddr;
+    urlport port;
 
     /**
      * force load our servlets
@@ -58,11 +59,11 @@ DeployServerOnJetty extends Compound {
      * the engine that does the work
      */
     engine extends DeployRuntime {
-      port LAZY PARENT:port;
+      port PARENT:urlport;
       wardir LAZY PARENT:wardir;
       server LAZY  jettyServer;
       location LAZY PARENT:location;
-      urlhost LAZY PARENT:urlhost;
+      urlhost PARENT:urlhost;
     }
     
    /*

@@ -34,6 +34,7 @@ import org.smartfrog.services.deployapi.transport.wsrf.WsrfEndpoint;
 
 import javax.xml.namespace.QName;
 import java.rmi.RemoteException;
+import java.io.IOException;
 
 /**
  */
@@ -50,7 +51,7 @@ public class PortalEndpoint extends WsrfEndpoint {
      * @throws BaseException unchecked basefault
      */
     public OMElement dispatch(QName operation, MessageContext inMessage)
-            throws RemoteException {
+            throws IOException {
         OMElement result = super.dispatch(operation, inMessage);
         if (result != null) {
             return result;

@@ -33,18 +33,19 @@ import org.smartfrog.services.deployapi.transport.endpoints.system.PingProcessor
 import org.smartfrog.services.deployapi.transport.endpoints.system.RunProcessor;
 import org.smartfrog.services.deployapi.transport.endpoints.system.SystemProcessor;
 import org.smartfrog.services.deployapi.transport.endpoints.system.TerminateProcessor;
+import org.smartfrog.services.deployapi.transport.endpoints.system.DestroyProcessor;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
 import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
 import org.smartfrog.services.deployapi.transport.wsrf.WSRPResourceSource;
 import org.smartfrog.services.deployapi.transport.wsrf.WsrfEndpoint;
 
 import javax.xml.namespace.QName;
-import java.rmi.RemoteException;
+import java.io.IOException;
 
 public class SystemEndpoint extends WsrfEndpoint {
 
     Log log= LogFactory.getLog(SystemEndpoint.class);
-    
+
     /**
      * deliver a message
      *
@@ -55,15 +56,15 @@ public class SystemEndpoint extends WsrfEndpoint {
      * @throws BaseException              unchecked basefault
      */
     public OMElement dispatch(QName operation, MessageContext inMessage)
-            throws RemoteException {
+            throws IOException {
         OMElement result = super.dispatch(operation, inMessage);
         if (result != null) {
             return result;
         }
+
         OMElement request = getRequestBody(inMessage);
-        String requestName = request.getLocalName();
-        verifyDeployApiNamespace(request.getQName());
-        SystemProcessor processor = createProcessor(requestName);
+        QName qname = request.getQName();
+        SystemProcessor processor = createProcessor(qname);
         verifyProcessorSet(processor, operation);
 
         processor.setMessageContext(inMessage);
@@ -72,7 +73,7 @@ public class SystemEndpoint extends WsrfEndpoint {
         return processor.process(request);
     }
 
-    
+
     /**
      * Look up a job
      * @param inMessage
@@ -89,28 +90,43 @@ public class SystemEndpoint extends WsrfEndpoint {
     /**
      * Create the relevant processor for this operation.
      *
-     * @param requestName
+     * @param messageName name of the message
      * @return a processor
      */
-    protected SystemProcessor createProcessor(String requestName) {
+    protected SystemProcessor createProcessor(QName messageName) {
+        String requestName = messageName.getLocalPart();
         SystemProcessor processor = null;
         if (Constants.API_ELEMENT_INITALIZE_REQUEST.equals(requestName)) {
+            verifyDeployApiNamespace(messageName);
             processor = new InitializeProcessor(this);
         }
         if (Constants.API_ELEMENT_TERMINATE_REQUEST.equals(requestName)) {
+            verifyDeployApiNamespace(messageName);
             processor = new TerminateProcessor(this);
         }
         if (Constants.API_ELEMENT_ADDFILE_REQUEST.equals(requestName)) {
+            verifyDeployApiNamespace(messageName);
             //processor = new LookupSystemProcessor(this);
         }
         if (Constants.API_ELEMENT_RUN_REQUEST.equals(requestName)) {
+            verifyDeployApiNamespace(messageName);
             processor = new RunProcessor(this);
         }
         if (Constants.API_ELEMENT_PING_REQUEST.equals(requestName)) {
+            verifyDeployApiNamespace(messageName);
             processor = new PingProcessor(this);
         }
         if (Constants.API_ELEMENT_RESOLVE_REQUEST.equals(requestName)) {
+            verifyDeployApiNamespace(messageName);
             //processor = new LookupSystemProcessor(this);
+        }
+        if (Constants.API_ELEMENT_RESOLVE_REQUEST.equals(requestName)) {
+            verifyDeployApiNamespace(messageName);
+            //processor = new LookupSystemProcessor(this);
+        }
+        if (Constants.WSRF_ELEMENT_DESTROY_REQUEST.equals(requestName)) {
+            verifyNamespace(messageName,Constants.WSRF_WSRL_NAMESPACE);
+            processor = new DestroyProcessor(this);
         }
         return processor;
     }

@@ -25,6 +25,7 @@ import org.smartfrog.services.deployapi.engine.JobRepository;
 import org.smartfrog.services.deployapi.binding.EprHelper;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
 import org.smartfrog.services.deployapi.system.Constants;
+import static org.smartfrog.services.deployapi.system.Constants.LifecycleStateEnum;
 import org.ggf.xbeans.cddlm.wsrf.wsa2003.EndpointReferenceType;
 import org.apache.axis2.addressing.EndpointReference;
 
@@ -65,7 +66,7 @@ public class JobTest extends UnitTestBase {
 
     public void testTerminate() throws Exception {
         repository.terminate(job,"testing");
-        assertTrue("job deleted", !repository.inRepository(job));
+        assertTrue("job deleted", job.getState()== LifecycleStateEnum.terminated);
     }
 
     public void testMappingWorks() throws Exception {
@@ -142,4 +143,23 @@ public class JobTest extends UnitTestBase {
             //success
         }
     }
+
+    public void testTerminateRetains() throws Exception {
+        String id=job.getId();
+        repository.terminate(job,"");
+        //check it is still there
+        assertTrue(repository.lookup(id)!=null);
+        //try again
+        repository.terminate(job, "");
+        //and terminate
+        repository.destroy(job);
+        assertTrue(repository.lookup(id) == null);
+    }
+
+    public void testDestroy() throws Exception {
+        String id = job.getId();
+        repository.destroy(job);
+        assertTrue(repository.lookup(id) == null);
+
+    } 
 }

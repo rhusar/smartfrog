@@ -124,7 +124,8 @@ public class DescriptorHelperTest extends UnitTestBase {
             Element d = helper.createReferenceXomDescriptor(f.toURI().toString(),
                     LANGUAGE);
             initRequest.appendChild(d);
-            File f2 = helper.extractBodyToFile(initRequest);
+            helper.validateRequest(initRequest);
+            File f2 = helper.extractBodyToFile(initRequest, "xml");
             assertEquals(f.getAbsolutePath(), f2.getAbsolutePath());
         } finally {
             f.delete();
@@ -134,7 +135,7 @@ public class DescriptorHelperTest extends UnitTestBase {
 
     public void testLoadFromResource() throws Exception {
         Element request =loadInlineDescriptorFromResource(DOC_CREATE,"test");
-        File f=helper.extractBodyToFile(request);
+        File f=helper.extractBodyToFile(request, "xml");
         
     }
     
@@ -150,10 +151,11 @@ public class DescriptorHelperTest extends UnitTestBase {
     public void testLoadSmartFrogFileinline() throws Exception {
         final String body = "wibble";
         Element request = createSFrequest(body);
-        File file = helper.extractBodyToFile(request);
+        helper.validateRequest(request);
+        File file = helper.extractBodyToFile(request, "xml");
         String contents = Utils.loadFile(file,Constants.CHARSET_UTF8);
         assertTrue("search string not found in "+contents, 
-                contents.indexOf(body)>0);
+                contents.indexOf(body)>=0);
     }
 
     private Element createSFrequest(String body) {
@@ -165,10 +167,15 @@ public class DescriptorHelperTest extends UnitTestBase {
     public void testSaveToSmartfrogFile() throws Exception {
         final String body = "wibble";
         Element request = createSFrequest(body);
+        helper.validateRequest(request);
         Element descriptor = helper.extractDescriptorAsXML(request);
         Nodes n=descriptor.query("api:body/sf:smartfrog",Constants.XOM_CONTEXT);
         Element sfnode=(Element)n.get(0);
         String value = sfnode.getValue();
         assertEquals(body,value);
+        File file=helper.saveInlineSmartFrog(request);
+        String contents = Utils.loadFile(file, Constants.CHARSET_UTF8);
+        assertTrue("search string not found in " + contents,
+                contents.indexOf(body) == 0); 
     }
 }

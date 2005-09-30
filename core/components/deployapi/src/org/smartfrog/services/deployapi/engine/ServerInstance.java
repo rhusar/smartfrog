@@ -21,9 +21,10 @@
 
 package org.smartfrog.services.deployapi.engine;
 
-import org.apache.xmlbeans.XmlObject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.axis2.om.OMElement;
+import org.apache.xmlbeans.XmlObject;
 import org.ggf.cddlm.utils.QualifiedName;
 import org.ggf.xbeans.cddlm.api.ActiveSystemsDocument;
 import org.ggf.xbeans.cddlm.api.NameUriListType;
@@ -39,10 +40,10 @@ import org.smartfrog.services.deployapi.components.DeploymentServer;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.system.Utils;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
-import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
 import org.smartfrog.services.deployapi.transport.wsrf.WSRPResourceSource;
-import org.smartfrog.services.filesystem.FileUsingComponent;
-import org.smartfrog.services.filesystem.FileUsingComponentImpl;
+import org.smartfrog.services.deployapi.binding.DescriptorHelper;
+import org.smartfrog.services.deployapi.binding.Axis2Beans;
+import org.smartfrog.services.deployapi.binding.XomHelper;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.common.SmartFrogException;
@@ -52,10 +53,11 @@ import javax.xml.namespace.QName;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Date;
 import java.rmi.RemoteException;
+
+import nu.xom.Element;
 
 
 /**
@@ -81,13 +83,15 @@ public class ServerInstance implements WSRPResourceSource {
     private AddedFilestore filestore;
 
     private File tempdir;
-    
+
+    private DescriptorHelper descriptorHelper;
+
     private String protocol="http";
     private String hostname=LOCALHOST;
     private int port=5050;
     private String path=CONTEXT_PATH+SERVICES_PATH+SYSTEM_PATH;
     private String location="unknown";
-    
+
     //private CdlParser cdlParser;
 
     public static final int WORKERS = 1;
@@ -114,7 +118,7 @@ public class ServerInstance implements WSRPResourceSource {
         instance=serverInstance;
         return instance;
     }
-    
+
     private ServerInstance(Prim owner)
             throws SmartFrogException, RemoteException {
         location = owner.sfResolve(DeploymentServer.ATTR_LOCATION,
@@ -135,7 +139,7 @@ public class ServerInstance implements WSRPResourceSource {
         path= ctx+servicespath+SYSTEM_PATH;
         File javatmpdir=new File(System.getProperty("java.io.tmpdir"));
         String absolutePath = FileSystem.lookupAbsolutePath(owner,
-                DeploymentServer.ATTR_FILESTORE_DIR, 
+                DeploymentServer.ATTR_FILESTORE_DIR,
                 null,
                 javatmpdir,
                 false,
@@ -149,7 +153,7 @@ public class ServerInstance implements WSRPResourceSource {
             throw SmartFrogException.forward(e);
         }
     }
-    
+
 
 
     private void init() throws IOException {
@@ -167,6 +171,7 @@ public class ServerInstance implements WSRPResourceSource {
             //little bit of a race condition here.
             tempdir.delete();
         }
+        descriptorHelper=new DescriptorHelper(tempdir);
         AddedFilestore filestore = new AddedFilestore(tempdir);
         log.debug("Creating server instance "+toString());
     }
@@ -188,7 +193,7 @@ public class ServerInstance implements WSRPResourceSource {
      * @throws SmartFrogLivenessException
      */
     public void ping() throws SmartFrogLivenessException {
-        
+
     }
 
 
@@ -233,6 +238,10 @@ public class ServerInstance implements WSRPResourceSource {
         return instance;
     }
 
+    public DescriptorHelper getDescriptorHelper() {
+        return descriptorHelper;
+    }
+
     public AddedFilestore getFilestore() {
         return filestore;
     }
@@ -257,20 +266,29 @@ public class ServerInstance implements WSRPResourceSource {
      * @return null for no match;
      * @throws BaseException if they feel like it
      */
-    public XmlObject getResource(QName resource) {
+    public OMElement getResource(QName resource) {
         QualifiedName query= Utils.convert(resource);
+        XmlObject result=null;
+        Element xom=null;
+        OMElement resultElement = null;
         if(Constants.PROPERTY_PORTAL_STATIC_PORTAL_STATUS.equals(query)) {
-            return staticStatus;
+            result= staticStatus;
         }
         if (Constants.PROPERTY_MUWS_RESOURCEID.equals(query)) {
-            IdentityPropertiesType identity=IdentityPropertiesType.Factory.newInstance();
-            identity.setResourceId(resourceID);
-            return identity;
+            xom = XomHelper.makeResourceId(resourceID);
         }
         if(Constants.PROPERTY_PORTAL_ACTIVE_SYSTEMS.equals(query)) {
-            return getJobList().getActiveSystems();
+            result= getJobList().getActiveSystems();
         }
-        return null;
+        //conver to Axiom
+        if(result!=null) {
+            resultElement = Axis2Beans.convertDocument(result);
+            return resultElement;
+        }
+        if(xom!=null) {
+            resultElement=Utils.xomToAxiom(xom);
+        }
+        return resultElement;
     }
 
     /**
@@ -296,6 +314,6 @@ public class ServerInstance implements WSRPResourceSource {
      * @return a string representation of the object.
      */
     public String toString() {
-        return "Server @"+systemsURL+" filestore:"+tempdir; 
+        return "Server @"+systemsURL+" filestore:"+tempdir;
     }
 }

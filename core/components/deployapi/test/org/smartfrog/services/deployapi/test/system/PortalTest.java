@@ -84,7 +84,7 @@ public class PortalTest extends ApiTestBase {
             String idProperty= system.getResourceId();
             assertEquals(id,idProperty);
         } finally {
-            terminateSystem(system);
+            destroySystem(system);
         }
     }
 
@@ -101,7 +101,7 @@ public class PortalTest extends ApiTestBase {
             String idProperty = system.getResourceId();
             assertEquals(id, idProperty);
         } finally {
-            terminateSystem(system);
+            destroySystem(system);
         }
     }
 
