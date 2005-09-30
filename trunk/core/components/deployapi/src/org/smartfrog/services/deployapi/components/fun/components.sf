@@ -17,28 +17,26 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-#include "org/smartfrog/services/deployapi/components/components.sf";
 
-
-
-
-Application extends DeployServerOnJetty {
-
-
-  //get this from the running system
-    javahome LAZY PROPERTY java.io.tmpdir;
-    wardir PROPERTY deployapi.war.dir;
-    port 5050;
-    location "steve's laptop";
-    liveness false;
-    urlhost "127.0.0.1";
-    
-    //for tcp tracing, we patch the port used to return devices
-    urlport 8081;
-
+#include "org/smartfrog/components.sf"
+//#include "org/smartfrog/services/deployapi/components/fun/components.sf"
+/**
+ * echoes out stuff in response to events
+ */
+Echo extends Prim {
+    sfClass "org.smartfrog.services.deployapi.components.fun.EchoImpl";
+    init "";
+    run ""; 
+    terminate "";
+    ping "";
 }
 
-
-
-//sfConfig extends Engine;
-sfConfig extends Application;
+/**
+ * echoes stuff in more detail
+ */
+EchoLifecycle extends Echo {
+    init "initialize";
+    run "run";
+    terminate "terminate";
+    ping "ping";
+}

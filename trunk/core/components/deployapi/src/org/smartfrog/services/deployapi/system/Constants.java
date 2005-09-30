@@ -100,8 +100,11 @@ public class Constants extends CddlmConstants {
      */
     public static final String DEFAULT_PROTOCOL = "http";
 
-
-
+    public static final String FILE_EXTENSION_CDL = "cdl"; 
+    
+    /**
+     * Context for queries
+     */
     public static final XPathContext XOM_CONTEXT;
 
     static {

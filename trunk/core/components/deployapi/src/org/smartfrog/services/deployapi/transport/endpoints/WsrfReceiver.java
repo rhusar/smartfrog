@@ -42,6 +42,8 @@ import org.smartfrog.services.deployapi.transport.faults.BaseException;
 import org.smartfrog.sfcore.security.SFClassLoader;
 
 import javax.xml.namespace.QName;
+import java.rmi.RemoteException;
+import java.io.IOException;
 
 /**
  */
@@ -103,6 +105,12 @@ public class WsrfReceiver extends AbstractInOutSyncMessageReceiver
         } catch (AxisFault e) {
             faultLog.error("AxisFault", e);
             throw e;
+        } catch (RemoteException e) {
+            faultLog.error("RemoteException", e);
+            throw AxisFault.makeFault(e);
+        } catch (IOException e) {
+            faultLog.error("IOException", e);
+            throw AxisFault.makeFault(e);
         } catch (Exception e) {
             faultLog.error("Exception", e);
             throw AxisFault.makeFault(e);

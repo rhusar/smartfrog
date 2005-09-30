@@ -35,7 +35,9 @@ import org.ggf.xbeans.cddlm.wsrf.wsrp.GetResourcePropertyResponseDocument;
 import org.ggf.cddlm.utils.QualifiedName;
 
 import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
 import java.rmi.RemoteException;
+import java.io.IOException;
 
 import nu.xom.Element;
 
@@ -70,27 +72,6 @@ public abstract class ApiTestBase extends ConsoleTestBase {
         operation = new Deploy(getBinding(), getOut());
     }
 
-    /**
-     * assert a descriptor contains the text
-     *
-     * @param dt
-     * @param search
-     * @throws Exception
-     */
-    protected void assertInDescriptor(DescriptorType dt,
-                                      String search)
-            throws Exception {
-        DescriptorType.Body body = dt.getBody();
-        assertNotNull("data null", body);
-        //tODO/
-/*
-        final org.apache.axis.message.MessageElement[] any = body.get_any();
-        assertNotNull("data/any null", any);
-        assertTrue("any empty", any.length == 1);
-        String output = any[0].getAsString();
-        assertInText(output, search);
-*/
-    }
 
     protected SystemEndpointer deploy(String name,
                                       DescriptorType descriptor,
@@ -139,32 +120,10 @@ public abstract class ApiTestBase extends ConsoleTestBase {
         */
     }
 
-    /**
-     * undeploy something
-     *
-     * @param system
-     * @return
-     * @throws java.rmi.RemoteException
-     */
-    public void undeploy(SystemEndpointer system) throws RemoteException {
-        operation.terminate(system, UNDEPLOY_REASON);
-    }
 
     public void assertDeployed(SystemEndpointer system) throws RemoteException {
         assertInState(system, Constants.STATE_RUNNING);
     }
-
-    protected SystemEndpointer deploy(DescriptorType dt) throws RemoteException {
-        SystemEndpointer systemEndpointer = deploy(null, dt, null);
-        return systemEndpointer;
-    }
-/*
-    protected DescriptorType createSimpleDescriptor()
-            throws IOException {
-        DescriptorType dt = operation.createSmartFrogDescriptor(
-                DeploySmartFrogTest.SIMPLE_DESCRIPTOR);
-        return dt;
-    }*/
 
     protected SystemEndpointer createSystem() throws RemoteException {
         SystemEndpointer systemEndpointer;
@@ -183,13 +142,25 @@ public abstract class ApiTestBase extends ConsoleTestBase {
      * @param system
      * @throws RemoteException
      */
-    public void terminateSystem(SystemEndpointer system) throws RemoteException {
-        if(system!=null) {
-            log.info("terminating "+system.toString());
-            getOperation().terminate(system,"end of test");
+    public void terminateSystem(SystemEndpointer system) throws IOException {
+        if (system != null) {
+            log.info("terminating " + system.toString());
+            system.terminate("end of test");
         }
     }
 
+    /**
+     * Destroy a system if it is not null
+     *
+     * @param system
+     * @throws RemoteException
+     */
+    public void destroySystem(SystemEndpointer system) throws IOException {
+        if (system != null) {
+            log.info("destroying" + system.toString());
+            system.destroy();
+        }
+    }
 
     protected GetResourcePropertyResponseDocument getPortalResourceProperty(QualifiedName portalProperty) throws RemoteException {
         return getOperation().getPortalProperty(portalProperty);

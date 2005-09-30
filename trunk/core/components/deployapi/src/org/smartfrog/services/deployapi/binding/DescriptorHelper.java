@@ -21,11 +21,10 @@
 package org.smartfrog.services.deployapi.binding;
 
 import static org.smartfrog.services.deployapi.system.Constants.*;
-import org.ggf.xbeans.cddlm.api.DescriptorType;
-import org.ggf.xbeans.cddlm.api.InitializeRequestDocument;
 import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
 import org.smartfrog.services.deployapi.system.Utils;
-
+import org.smartfrog.services.deployapi.system.Constants;
+import static org.smartfrog.services.deployapi.transport.faults.FaultRaiser.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -40,11 +39,13 @@ import nu.xom.Serializer;
 import nu.xom.Document;
 import nu.xom.Builder;
 import nu.xom.ParsingException;
+import nu.xom.Nodes;
+import nu.xom.Elements;
 
 /**
 
  */
-public class DescriptorHelper extends FaultRaiser {
+public class DescriptorHelper extends XomHelper {
 
     File tempDir = null;
     public static final String ERROR_NO_DESCRIPTOR = "No deployment descriptor";
@@ -53,9 +54,7 @@ public class DescriptorHelper extends FaultRaiser {
     public static final String BODY = "body";
     public static final String LANGUAGE = "language";
     public static final String REFERENCE = "reference";
-    public static final String API = "api:";
     public static final String ERROR_NO_FILE = "Missing/unreachable file ";
-    private static final String TNS = CDL_API_TYPES_NAMESPACE;
     private static final String ERROR_NO_LANGUAGE_ATTR = "No language specified";
     private static final String ERROR_BOTH_OPTIONS = "Both reference and body elements supplied -only one is allowed";
 
@@ -76,52 +75,21 @@ public class DescriptorHelper extends FaultRaiser {
      * @throws IOException
      */
     public File createTempFile(String type) throws IOException {
-        return File.createTempFile("deploy", "." + type, tempDir);
-    }
-
-    /**
-     * @deprecated 
-     * @param request
-     * @return
-     * @throws IOException
-     */
-    public File extractBodyToFile(InitializeRequestDocument.InitializeRequest request)
-            throws IOException {
-        DescriptorType descriptorNode = request.getDescriptor();
-        if (descriptorNode.isSetReference()) {
-            return retrieveRemoteReference(descriptorNode.getReference());
-        } else {
-            return saveBodyToTempFile(descriptorNode);
+        if(type.charAt(0)!='.') {
+            type= "." + type;
         }
+        return File.createTempFile("deploy", type, tempDir);
     }
 
-
-    /**
-     * @deprecated
-     * @param descriptorNode
-     * @return
-     * @throws IOException
-     */
-    private File saveBodyToTempFile(DescriptorType descriptorNode) throws
-            IOException {
-        if (descriptorNode.isSetBody()) {
-            File tempfile = createTempFile("xml");
-            DescriptorType.Body body = descriptorNode.getBody();
-
-            body.save(tempfile);
-            return tempfile;
-        } else {
-            throw FaultRaiser.raiseBadArgumentFault(ERROR_NO_DESCRIPTOR);
-        }
-    }
 
     /**
      * Extract the body to a file
      * @param request
+     * @param extension
      * @return
      * @throws IOException
      */
-    public File extractBodyToFile(Element request)
+    public File extractBodyToFile(Element request, String extension)
             throws IOException {
         Element descriptor = request.getFirstChildElement(DESCRIPTOR, TNS);
         Attribute language = descriptor.getAttribute(LANGUAGE, TNS);
@@ -136,7 +104,9 @@ public class DescriptorHelper extends FaultRaiser {
             }
             return retrieveRemoteReference(reference.getValue());
         } else {
-            return saveBodyToTempFile(body, false);
+            File file = saveBodyToTempFile(body, false, extension);
+            file.deleteOnExit();
+            return file;
         }
     }
 
@@ -176,13 +146,16 @@ public class DescriptorHelper extends FaultRaiser {
      * The body is detached in the process
      * @param body
      * @param savecopy
+     * @param extension
      * @return
      * @throws IOException
      */
 
-    public File saveBodyToTempFile(Element body, boolean savecopy) throws
+    public File saveBodyToTempFile(Element body,
+                                   boolean savecopy,
+                                   String extension) throws
             IOException {
-        File tempfile = createTempFile("xml");
+        File tempfile = createTempFile(extension);
         FileOutputStream fileout = new FileOutputStream(tempfile);
         OutputStream out;
         out = new BufferedOutputStream(fileout);
@@ -321,23 +294,11 @@ public class DescriptorHelper extends FaultRaiser {
         return descriptor;
     }
 
-    private static Element apiElement(String name) {
-        return new Element(API + name,
-                TNS);
-    }
-
     private Element createDescriptorElement(String language) {
         Element descriptor = apiElement(DESCRIPTOR);
         String name = LANGUAGE;
         addApiAttr(descriptor, name, language);
         return descriptor;
-    }
-
-    private void addApiAttr(Element element, String name, String value) {
-        Attribute attribute = new Attribute(API + name,
-                TNS,
-                value);
-        element.addAttribute(attribute);
     }
 
     public Element createSmartFrogReferenceDescriptor(String url) {
@@ -358,7 +319,7 @@ public class DescriptorHelper extends FaultRaiser {
         Attribute version= new Attribute(
                 "sf:" +SMARTFROG_ELEMENT_VERSION_ATTR,
                 SMARTFROG_NAMESPACE,
-                SMARTFROG_VERSION);
+                SMARTFROG_XML_VERSION);
         element.addAttribute(version);
         element.appendChild(contents);
         return createInlineDescriptor(element, SMARTFROG_NAMESPACE);
@@ -369,7 +330,7 @@ public class DescriptorHelper extends FaultRaiser {
         String contents=Utils.loadFile(file, CHARSET_SF_FILE);
         return contents;
     }
-    
+
     public Element createCDLReferenceDescriptor(String url) {
         return createReferenceXomDescriptor(url, XML_CDL_NAMESPACE);
     }
@@ -380,107 +341,38 @@ public class DescriptorHelper extends FaultRaiser {
     }
 
 
-}
+    public void validateRequest(Element request) {
+        checkArg(API_ELEMENT_INITALIZE_REQUEST.equals(request.getLocalName()),
+                "wrong root element");
 
-/**
- * wrap a string with a smartfrog deploy descriptor
- *
- * @param source
- * @return
- * @throws java.io.IOException
- */
-/*
+        Elements sprogs = request.getChildElements(DESCRIPTOR, TNS);
+        checkArg(sprogs.size()==1,"wrong number of descriptor elements:"+sprogs.size());
 
-    public Element createSmartFrogDescriptor(String source)
-            throws IOException {
-        Element element = createSmartfrogMessageElement(source);
-        DeploymentDescriptorType descriptor = createDescriptorWithXML(element,
-                new URI(Constants.SMARTFROG_NAMESPACE),
-                null);
-        return descriptor;
     }
-*/
 
 
-
-/**
- * jump through hoops to turn a Xom document into a descriptor Caller is
- * left to set the language and version attributes
- *
- * @param xom
- * @return
- * @throws javax.xml.parsers.ParserConfigurationException
- */
-/*    public DeploymentDescriptorType createDescriptorWithXom(
-            nu.xom.Document xom)
-            throws ParserConfigurationException {
-        DOMImplementation impl = XomAxisHelper.loadDomImplementation();
-        MessageElement messageElement = XomAxisHelper.convert(xom, impl);
-        return createDescriptorWithXML(messageElement, null, null);
-    }*/
-
-/**
- * wrap a smartfrog text file into a message element and process it
- *
- * @param source
- * @return
- */
-/*    public MessageElement createSmartfrogMessageElement(String source) {
-        MessageElement element = new MessageElement(
-                Constants.SMARTFROG_NAMESPACE,
-                Constants.SMARTFROG_ELEMENT_NAME);
-        element.addAttribute(Constants.SMARTFROG_NAMESPACE,
-                Constants.SMARTFROG_ELEMENT_VERSION_ATTR,
-                SMARTFROG_VERSION);
-        Text text = new Text(source);
-        element.appendChild(text);
-        return element;
-    }*/
-
-/**
- * load a resource, make a CDL descriptor from it. The file can be validated
- * before sending
- *
- * @param resource
- * @return
- */
-/*    public DeploymentDescriptorType createDescriptorFromCdlResource(
-            String resource,
-            boolean validate) throws SAXException, IOException,
-            ParsingException, ParserConfigurationException {
-        ResourceLoader loader = new ResourceLoader(this.getClass());
-        CdlParser parser = new CdlParser(loader, validate);
-        CdlDocument cdlDoc = parser.parseResource(resource);
-        if (validate) {
-            cdlDoc.validate();
+    /** process a smartfrog deployment of type smartfrog XML */
+    public File saveInlineSmartFrog(Element request) throws IOException {
+        Nodes n = request.query("api:descriptor/api:body/sf:smartfrog",
+                Constants.XOM_CONTEXT);
+        if (n.size() == 0) {
+            throw raiseBadArgumentFault("no sf:smartfrog element");
         }
-        return createDescriptorWithXom(cdlDoc.getDocument());
-    }*/
+        if (n.size() > 1) {
+            throw raiseBadArgumentFault("too many sf:smartfrog elements");
+        }
+        Element sfnode = (Element) n.get(0);
+        String version=sfnode.getAttributeValue(SMARTFROG_ELEMENT_VERSION_ATTR,
+                SMARTFROG_NAMESPACE);
+        if (!Constants.SMARTFROG_XML_VERSION.equals(version)) {
+            raiseUnsupportedLanguageFault("Unsupported SmartFrog version:"+version);
+        }
 
-/**
- * wrap a string with a smartfrog deploy descriptor
- *
- * @param in input stream
- * @return a deployment descriptor for smartfrog
- * @throws java.io.IOException
- */
-/*    public DeploymentDescriptorType createSmartFrogDescriptor(InputStream in)
-            throws IOException {
-        String source = readIntoString(in);
-        return createSmartFrogDescriptor(source);
-    }*/
+        String text = sfnode.getValue();
+        File descriptorFile = createTempFile(Constants.DeploymentLanguage.smartfrog.getExtension());
+        Utils.saveToFile(descriptorFile, text, Constants.CHARSET_SF_FILE);
+        return descriptorFile;
+    }    
 
-/**
- * wrap a string with a smartfrog deploy descriptor
- *
- * @param file file to load into the descriptor
- * @return a deployment descriptor for smartfrog
- * @throws java.io.IOException
- */
-/*    public DeploymentDescriptorType createSmartFrogDescriptor(File file)
-            throws IOException {
-        String source = readIntoString(file);
-        return createSmartFrogDescriptor(source);
-    }*/
-
+}
 

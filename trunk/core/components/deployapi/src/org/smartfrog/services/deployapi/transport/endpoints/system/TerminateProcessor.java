@@ -19,16 +19,19 @@
  */
 package org.smartfrog.services.deployapi.transport.endpoints.system;
 
+import nu.xom.Element;
 import org.apache.axis2.om.OMElement;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.ggf.xbeans.cddlm.api.TerminateRequestDocument;
-import org.ggf.xbeans.cddlm.api.TerminateResponseDocument;
+import org.smartfrog.services.deployapi.binding.XomHelper;
 import org.smartfrog.services.deployapi.binding.bindings.TerminateBinding;
 import org.smartfrog.services.deployapi.engine.JobRepository;
 import org.smartfrog.services.deployapi.engine.ServerInstance;
+import org.smartfrog.services.deployapi.system.Utils;
 import org.smartfrog.services.deployapi.transport.endpoints.XmlBeansEndpoint;
 
+import java.io.IOException;
 import java.rmi.RemoteException;
 
 /**
@@ -45,19 +48,18 @@ public class TerminateProcessor extends SystemProcessor {
         super(owner);
     }
 
-    public OMElement process(OMElement request) throws RemoteException {
+    public OMElement process(OMElement request) throws IOException {
         TerminateBinding binding = new TerminateBinding();
-        TerminateResponseDocument response = TerminateResponseDocument.Factory
-                .newInstance();
         if(job!=null) {
             TerminateRequestDocument inDoc = binding.convertRequest(request);
             terminate(inDoc);
         }
-        return binding.convertResponse(response);
+        Element response = XomHelper.apiElement("terminateResponse");
+        return Utils.xomToAxiom(response);
     }
 
 
-    public TerminateResponseDocument terminate(TerminateRequestDocument terminate)
+    public void  terminate(TerminateRequestDocument terminate)
             throws RemoteException {
         TerminateRequestDocument.TerminateRequest terminateRequest;
         terminateRequest = terminate.getTerminateRequest();
@@ -67,9 +69,6 @@ public class TerminateProcessor extends SystemProcessor {
         }
         JobRepository jobs = ServerInstance.currentInstance().getJobs();
         jobs.terminate(job, reason);
-        TerminateResponseDocument response = TerminateResponseDocument.Factory
-                .newInstance();
-        return response;
     }
 
 

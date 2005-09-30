@@ -19,16 +19,17 @@
  */
 package org.smartfrog.services.deployapi.transport.endpoints.system;
 
+import nu.xom.Element;
 import org.apache.axis2.om.OMElement;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.ggf.xbeans.cddlm.api.RunRequestDocument;
-import org.ggf.xbeans.cddlm.api.RunResponseDocument;
+import org.smartfrog.services.deployapi.binding.XomHelper;
 import org.smartfrog.services.deployapi.binding.bindings.RunBinding;
 import org.smartfrog.services.deployapi.system.Utils;
 import org.smartfrog.services.deployapi.transport.endpoints.XmlBeansEndpoint;
 
-import java.rmi.RemoteException;
+import java.io.IOException;
 
 /**
  * This class is *NOT* re-entrant. Create one for each deployment. created Aug
@@ -46,18 +47,16 @@ public class RunProcessor extends SystemProcessor {
         super(owner);
     }
 
-    public OMElement process(OMElement request) throws RemoteException {
+    public OMElement process(OMElement request) throws IOException {
         jobMustExist();
 
         RunBinding binding = new RunBinding();
         RunRequestDocument doc = binding.convertRequest(request);
         Utils.maybeValidate(doc);
 
+        Element response = XomHelper.apiElement("runResponse");
+        return Utils.xomToAxiom(response);
 
-        RunResponseDocument responseDoc;
-        responseDoc=job.run();
-        OMElement responseOM = binding.convertResponse(responseDoc);
-        return responseOM;
     }
 
 

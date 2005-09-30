@@ -145,7 +145,7 @@ public class JobRepository implements Iterable<Job> {
     }
     
     /**
-     * Thread safe termination of job and removal from the stack
+     * Thread safe termination of job 
      * @param job
      * @param reason
      */
@@ -154,9 +154,20 @@ public class JobRepository implements Iterable<Job> {
         log.info("Terminating " + job.getId() + " with reason:" + reason);
         
         boolean result=job.terminate(reason);
-        remove(job);
         return result;
     }
+
+    /**
+     * Thread safe termination of job and removal from the stack
+     *
+     * @param job
+     */
+    public synchronized void destroy(Job job) throws
+            RemoteException {
+        terminate(job, "destroy");
+        remove(job);
+    }
+
 
     /**
      * list all the jobs
@@ -181,7 +192,6 @@ public class JobRepository implements Iterable<Job> {
      */
     public String createJobAddress(String jobID) {
         return systemsURL + "?"+JOB_ID_PARAM +"=" + jobID;
-        //return systemsURL.toString() + "#" + jobID;
     }
 
 

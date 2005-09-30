@@ -19,27 +19,32 @@
  */
 package org.smartfrog.services.deployapi.client;
 
+import nu.xom.Document;
+import nu.xom.Element;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.description.OperationDescription;
 import org.apache.axis2.description.ServiceDescription;
 import org.ggf.xbeans.cddlm.api.CreateResponseDocument;
 import org.ggf.xbeans.cddlm.api.DescriptorType;
-import org.ggf.xbeans.cddlm.api.OptionMapType;
 import org.ggf.xbeans.cddlm.api.InitializeRequestDocument;
 import org.ggf.xbeans.cddlm.api.InitializeResponseDocument;
+import org.ggf.xbeans.cddlm.api.OptionMapType;
 import org.smartfrog.services.deployapi.binding.EprHelper;
+import static org.smartfrog.services.deployapi.binding.XomHelper.apiElement;
 import org.smartfrog.services.deployapi.binding.bindings.InitializeBinding;
 import org.smartfrog.services.deployapi.system.Constants;
 
 import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
+import java.io.IOException;
 import java.net.URL;
 import java.rmi.RemoteException;
 
 /**
- * Model for a remote system.
- * Needs a resourceID for hashCode and equals to work, so cannot be inserted into collections until then.
- * created 21-Sep-2005 12:55:10
+ * Model for a remote system. Needs a resourceID for hashCode and equals to
+ * work, so cannot be inserted into collections until then. created 21-Sep-2005
+ * 12:55:10
  */
 
 public class SystemEndpointer extends Endpointer {
@@ -174,12 +179,21 @@ public class SystemEndpointer extends Endpointer {
      * @return
      */
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         final SystemEndpointer that = (SystemEndpointer) o;
 
-        if (cachedResourceId != null ? !cachedResourceId.equals(that.cachedResourceId) : that.cachedResourceId != null) return false;
+        if (cachedResourceId !=
+                null ? !cachedResourceId.equals(that.cachedResourceId) : that
+                .cachedResourceId !=
+                null) {
+            return false;
+        }
 
         return true;
     }
@@ -208,6 +222,7 @@ public class SystemEndpointer extends Endpointer {
      *
      * @param descriptor
      * @param options
+     * @deprecated
      */
     public void initialize(DescriptorType descriptor,
                            OptionMapType options)
@@ -226,4 +241,65 @@ public class SystemEndpointer extends Endpointer {
                         Constants.API_ELEMENT_INITALIZE_REQUEST,
                         requestDoc);
     }
+
+    /**
+     * make an init request
+     *
+     * @param request
+     * @return
+     * @throws java.io.IOException
+     */
+    public Document initialize(Element request) throws IOException {
+        return invokeBlocking(Constants.API_SYSTEM_OPERATION_INITIALIZE,
+                request);
+    }
+
+    /**
+     * make an run request
+     *
+     * @return
+     * @throws IOException
+     */
+    public Document run() throws IOException {
+        Element request;
+        request = apiElement(Constants.API_ELEMENT_RUN_REQUEST);
+
+        Document document = invokeBlocking(Constants.API_SYSTEM_OPERATION_RUN,
+                request);
+        return document;
+    }
+
+    /**
+     * terminate the app; it will still exist
+     *
+     * @param reason
+     * @return
+     * @throws IOException
+     */
+    public Document terminate(String reason) throws IOException {
+        Element request;
+        request = apiElement(Constants.API_ELEMENT_TERMINATE_REQUEST);
+        if (reason != null) {
+            Element er = apiElement("reason");
+            er.appendChild(reason);
+            request.appendChild(er);
+        }
+        return invokeBlocking(Constants.API_SYSTEM_OPERATION_TERMINATE,
+                request);
+    }
+
+    /**
+     * destroy the app, will remove all trace of it
+     *
+     * @return
+     * @throws IOException
+     */
+    public Document destroy() throws IOException {
+        Element request;
+        request = new Element(Constants.WSRF_ELEMENT_DESTROY_REQUEST,
+                Constants.WSRF_WSRL_NAMESPACE);
+        return invokeBlocking(Constants.WSRF_OPERATION_DESTROY,
+                request);
+    }
+
 }

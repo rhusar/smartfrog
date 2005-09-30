@@ -109,7 +109,7 @@ public class FaultRaiser {
 
     }
 
-    protected static BaseException raiseUnsupportedLanguageFault(String message) {
+    public static BaseException raiseUnsupportedLanguageFault(String message) {
         return raiseFault(Constants.FAULT_UNSUPPORTED_LANGUAGE,
                 message);
     }
@@ -148,9 +148,14 @@ public class FaultRaiser {
         fault.setFaultCode(Constants.QNAME_SMARTFROG_INTERNAL_FAULT);
         fault.setFaultReason(message);
         return fault;
-
     }
-    
+
+    public static BaseException raiseInternalError(String message,Throwable t) {
+        DeploymentException fault = new DeploymentException(message,t);
+        fault.setFaultCode(Constants.QNAME_SMARTFROG_INTERNAL_FAULT);
+        fault.setFaultReason(message);
+        return fault;
+    }
 
 
     /**
@@ -295,5 +300,18 @@ public class FaultRaiser {
 
         fault.setFaultCode(faultCode);
         return fault;
+    }
+
+    /**
+     * check that a test is valid, throw an exception with the error 
+     * text if not
+     * @param fact
+     * @param errorText
+     * @throws BaseException if not
+     */
+    public static void checkArg(boolean fact,String errorText) {
+        if(!fact) {
+            raiseBadArgumentFault(errorText);
+        }
     }
 }

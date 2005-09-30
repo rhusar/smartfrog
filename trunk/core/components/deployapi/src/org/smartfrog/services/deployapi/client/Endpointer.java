@@ -45,14 +45,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.rmi.RemoteException;
 
-/**
- * created 21-Sep-2005 13:20:35
- */
+/** created 21-Sep-2005 13:20:35 */
 
 public abstract class Endpointer implements Serializable {
-    /**
-     * url
-     */
+    /** url */
     protected URL url;
     private String username;
     private String password;
@@ -154,7 +150,7 @@ public abstract class Endpointer implements Serializable {
         }
 //        call.setTransportInfo(getSenderTransport(),getListenerTransport(),isSeparateListenerTransport());
         //turn on addressing
-       call.engageModule(QNAME_MODULE_ADDRESSING);
+        call.engageModule(QNAME_MODULE_ADDRESSING);
 
         return call;
     }
@@ -177,7 +173,8 @@ public abstract class Endpointer implements Serializable {
 
     public String getSenderTransport() {
         String protocol = url.getProtocol();
-        if ("http".equalsIgnoreCase(protocol) || "https".equalsIgnoreCase(protocol)) {
+        if ("http".equalsIgnoreCase(protocol) ||
+                "https".equalsIgnoreCase(protocol)) {
             return "http";
         } else {
             return protocol;
@@ -186,12 +183,20 @@ public abstract class Endpointer implements Serializable {
 
 
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
 
         final Endpointer that = (Endpointer) o;
 
-        if (url != null ? !url.equals(that.url) : that.url != null) return false;
+        if (url != null ? !url.equals(that.url) : that
+                .url !=
+                null) {
+            return false;
+        }
 
         return true;
     }
@@ -201,9 +206,11 @@ public abstract class Endpointer implements Serializable {
     }
 
     /**
-     * get our axis2 home. currently null, meaning "read config data off the classpath, not the filesys"
+     * get our axis2 home. currently null, meaning "read config data off the
+     * classpath, not the filesys"
      *
-     * @return a string representing the home dir, in a platform-specific location.
+     * @return a string representing the home dir, in a platform-specific
+     *         location.
      */
     protected String getAxis2Home() {
         return null;
@@ -218,7 +225,8 @@ public abstract class Endpointer implements Serializable {
         configurationContext = new ConfigurationContextFactory()
                 .buildClientConfigurationContext(getAxis2Home());
         ServiceDescription serviceDescription = getServiceDescription();
-        configurationContext.getAxisConfiguration().addService(serviceDescription);
+        configurationContext.getAxisConfiguration()
+                .addService(serviceDescription);
         serviceContext = configurationContext.createServiceContext(
                 serviceDescription.getName());
     }
@@ -239,7 +247,7 @@ public abstract class Endpointer implements Serializable {
     }
 
 
-    public GetResourcePropertyResponseDocument getPropertyResponse( QName property)
+    public GetResourcePropertyResponseDocument getPropertyResponse(QName property)
             throws RemoteException {
         GetResourcePropertyBinding binding = new GetResourcePropertyBinding();
         GetResourcePropertyDocument request = binding.createRequest();
@@ -280,12 +288,11 @@ public abstract class Endpointer implements Serializable {
     /**
      * Invoke the call in a blocking operation with our payload
      *
-     * @param data
+     * @param request
      * @return the response
      */
     public Document invokeBlocking(String operation,
-                               Element data) throws IOException,
-            XMLStreamException {
+                                   Element request) throws IOException  {
         ApiCall call = createStub(operation);
         if (call.lookupOperation(operation) == null) {
             throw new BaseException("No operation " +
@@ -293,8 +300,10 @@ public abstract class Endpointer implements Serializable {
                     " on endpointer " +
                     this);
         }
-        OMElement toSend = Utils.xomToAxiom(data);
+        OMElement toSend = Utils.xomToAxiom(request);
         OMElement omElement = call.invokeBlocking(operation, toSend);
         return Utils.axiomToXom(omElement);
     }
+
+
 }

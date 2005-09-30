@@ -125,8 +125,6 @@ public class Axis2Beans<T extends XmlObject> {
             return Utils.loadAxiomFromString(textForm);
         } catch (IOException e) {
             throw new BaseException(e);
-        } catch (XMLStreamException e) {
-            throw new BaseException(e);
         }
     }
 
