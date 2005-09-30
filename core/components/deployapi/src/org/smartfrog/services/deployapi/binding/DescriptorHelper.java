@@ -183,8 +183,9 @@ public class DescriptorHelper extends FaultRaiser {
     public File saveBodyToTempFile(Element body, boolean savecopy) throws
             IOException {
         File tempfile = createTempFile("xml");
+        FileOutputStream fileout = new FileOutputStream(tempfile);
         OutputStream out;
-        out = new BufferedOutputStream(new FileOutputStream(tempfile));
+        out = new BufferedOutputStream(fileout);
         try {
             Serializer serializer = new Serializer(out);
             if(savecopy) {
@@ -207,9 +208,21 @@ public class DescriptorHelper extends FaultRaiser {
      * @return
      */
     public Element createInitRequest() {
-        Element elt = apiElement(API_ELEMENT_INITALIZE_REQUEST);
-        return elt;
+        Element request = apiElement(API_ELEMENT_INITALIZE_REQUEST);
+        return request;
     }
+
+    /**
+     * Create an init request with a given descriptor
+     * @param descriptor
+     * @return
+     */
+    public Element createInitRequest(Element descriptor) {
+        Element request = createInitRequest();
+        request.appendChild(descriptor);
+        return request;
+    }
+
 
     public File retrieveRemoteReference(String reference) throws IOException {
         URL url = new URL(reference);

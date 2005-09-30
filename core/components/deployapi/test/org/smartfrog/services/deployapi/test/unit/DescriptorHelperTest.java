@@ -22,6 +22,7 @@ package org.smartfrog.services.deployapi.test.unit;
 
 import org.smartfrog.services.deployapi.binding.DescriptorHelper;
 import org.smartfrog.services.deployapi.system.Constants;
+import org.smartfrog.services.deployapi.system.Utils;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
 import nu.xom.Element;
 import nu.xom.Nodes;
@@ -147,10 +148,27 @@ public class DescriptorHelperTest extends UnitTestBase {
     
 
     public void testLoadSmartFrogFileinline() throws Exception {
-        fail("no implemented");
+        final String body = "wibble";
+        Element request = createSFrequest(body);
+        File file = helper.extractBodyToFile(request);
+        String contents = Utils.loadFile(file,Constants.CHARSET_UTF8);
+        assertTrue("search string not found in "+contents, 
+                contents.indexOf(body)>0);
+    }
+
+    private Element createSFrequest(String body) {
+        Element descriptor=helper.createSmartFrogInlineDescriptor(body);
+        Element request=helper.createInitRequest(descriptor);
+        return request;
     }
 
     public void testSaveToSmartfrogFile() throws Exception {
-        fail("no implemented");
+        final String body = "wibble";
+        Element request = createSFrequest(body);
+        Element descriptor = helper.extractDescriptorAsXML(request);
+        Nodes n=descriptor.query("api:body/sf:smartfrog",Constants.XOM_CONTEXT);
+        Element sfnode=(Element)n.get(0);
+        String value = sfnode.getValue();
+        assertEquals(body,value);
     }
 }
