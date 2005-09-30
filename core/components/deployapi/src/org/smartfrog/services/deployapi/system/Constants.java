@@ -23,6 +23,8 @@ import nu.xom.XPathContext;
 import org.ggf.cddlm.generated.api.CddlmConstants;
 import org.ggf.cddlm.utils.QualifiedName;
 
+import java.nio.charset.Charset;
+
 /**
  * Any constants
  * created 12-Sep-2005 17:54:04
@@ -104,17 +106,17 @@ public class Constants extends CddlmConstants {
 
     static {
         XOM_CONTEXT = new XPathContext();
-        XOM_CONTEXT.addNamespace("test", Constants.TEST_HELPER_NAMESPACE);
-        XOM_CONTEXT.addNamespace("api", Constants.CDL_API_TYPES_NAMESPACE);
-        XOM_CONTEXT.addNamespace("wsa2004", Constants.WS_ADDRESSING_2004_NAMESPACE);
-        XOM_CONTEXT.addNamespace("wsa", Constants.WS_ADDRESSING_NAMESPACE);
-        XOM_CONTEXT.addNamespace("wsnt", Constants.WSRF_WSNT_NAMESPACE);
-        XOM_CONTEXT.addNamespace("cmp", Constants.CDL_CMP_TYPES_NAMESPACE);
-        XOM_CONTEXT.addNamespace("cdl", Constants.XML_CDL_NAMESPACE);
-        XOM_CONTEXT.addNamespace("wsrf-rp", Constants.WSRF_WSRP_NAMESPACE);
-        XOM_CONTEXT.addNamespace("muws-p1-xs", Constants.MUWS_P1_NAMESPACE);
-        XOM_CONTEXT.addNamespace("sf", Constants.SMARTFROG_NAMESPACE);
-        XOM_CONTEXT.addNamespace("xpath", Constants.XPATH_NAMESPACE);
+        XOM_CONTEXT.addNamespace("test", TEST_HELPER_NAMESPACE);
+        XOM_CONTEXT.addNamespace("api", CDL_API_TYPES_NAMESPACE);
+        XOM_CONTEXT.addNamespace("wsa2004", WS_ADDRESSING_2004_NAMESPACE);
+        XOM_CONTEXT.addNamespace("wsa", WS_ADDRESSING_NAMESPACE);
+        XOM_CONTEXT.addNamespace("wsnt", WSRF_WSNT_NAMESPACE);
+        XOM_CONTEXT.addNamespace("cmp", CDL_CMP_TYPES_NAMESPACE);
+        XOM_CONTEXT.addNamespace("cdl", XML_CDL_NAMESPACE);
+        XOM_CONTEXT.addNamespace("wsrf-rp", WSRF_WSRP_NAMESPACE);
+        XOM_CONTEXT.addNamespace("muws-p1-xs", MUWS_P1_NAMESPACE);
+        XOM_CONTEXT.addNamespace("sf", SMARTFROG_NAMESPACE);
+        XOM_CONTEXT.addNamespace("xpath", XPATH_NAMESPACE);
     }
 
 
@@ -130,6 +132,9 @@ public class Constants extends CddlmConstants {
     public static final String BUILD_INFO_HOMEPAGE = "http://smartfrog.org/";
     public static final String BUILD_INFO_CDL_LANGUAGE = "CDL";
     public static final String BUILD_INFO_SF_LANGUAGE = "SmartFrog";
+    public static final String SMARTFROG_VERSION = "1.0";
+    public static final Charset CHARSET_SF_FILE = Charset.forName("ISO-8859-1");
+    public static final Charset CHARSET_UTF8 = Charset.forName("UTF-8");
 
     /**
      * enum of lifecycle

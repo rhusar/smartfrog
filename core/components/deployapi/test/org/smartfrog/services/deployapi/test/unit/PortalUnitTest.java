@@ -77,14 +77,14 @@ public class PortalUnitTest extends UnitTestBase {
     }
 
     public void testOMLookup() throws Exception {
-        OMElement ome = loadTestOMElement(DOC_CREATE, "createRequestHostname");
+        OMElement ome = loadTestOMElement(DOC_CREATE, TEST_CREATE_REQUEST_HOSTNAME);
         assertNotNull(ome);
     }
 
     public void BrokentestRoundTrip() throws Exception {
         Axis2Beans<CreateRequestDocument.CreateRequest> requestBinder = new Axis2Beans<CreateRequestDocument.CreateRequest>();
         CreateRequestDocument.CreateRequest doc= (CreateRequestDocument.CreateRequest)
-                loadTestElement(DOC_CREATE,"createRequestHostname");
+                loadTestElement(DOC_CREATE,TEST_CREATE_REQUEST_HOSTNAME);
         QName requestQname=new QName(Constants.CDL_API_TYPES_NAMESPACE, Constants.API_ELEMENT_CREATE_REQUEST);
         assertName(doc,requestQname);
         assertValid(doc);
@@ -101,7 +101,7 @@ public class PortalUnitTest extends UnitTestBase {
     }
 
     public void NotestDispatch() throws Exception {
-        OMElement request=loadTestOMElement(DOC_CREATE, "createRequestHostname");
+        OMElement request=loadTestOMElement(DOC_CREATE, TEST_CREATE_REQUEST_HOSTNAME);
         CreateProcessor createProcessor = new CreateProcessor(portal);
         OMElement response = createProcessor.process(request);
         Axis2Beans<CreateResponseDocument> responseBinder = new Axis2Beans<CreateResponseDocument>();

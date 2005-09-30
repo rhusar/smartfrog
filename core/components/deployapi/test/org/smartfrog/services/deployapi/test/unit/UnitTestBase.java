@@ -69,6 +69,8 @@ public abstract class UnitTestBase extends TestCase {
     public final static EndpointReference EPR_SAMPLE_JOB
             = new EndpointReference("http://localhost:5050/services/System/#uuid_1235678_0045");
     public static final String DOC_CREATE = TEST_FILES_API_VALID +"api-create.xml";
+    protected static final String TESTS = "tests";
+    public static final String TEST_CREATE_REQUEST_HOSTNAME = "createRequestHostname";
 
 
     public UnitTestBase(String name) {
@@ -139,7 +141,7 @@ public abstract class UnitTestBase extends TestCase {
         Axis2Beans<TestsDocument> binder = new Axis2Beans<TestsDocument>(options);
         TestsDocument doc = binder.loadBeansFromResource(resource);
         XmlObject[] children = doc.selectChildren(Constants.TEST_HELPER_NAMESPACE,
-                "tests");
+                TESTS);
         TestsType tests = doc.getTests();
         for(TestType test:tests.getTestList()) {
             if(name.equals(test.getName())) {
@@ -156,17 +158,6 @@ public abstract class UnitTestBase extends TestCase {
                 name +
                 " found in resource " +
                 resource);
-/*
-
-
-        XmlObject[] xmlObjects = doc.selectPath(DECLARE_TEST_NAMESPACE
-                +"//t:tests/t:test[@name='" + name + "']/child::*[position()=1]");
-        if(xmlObjects.length==0) {
-            throw new XmlException("No node of name "+name+" found in resource "+resource);
-        } else {
-            return xmlObjects[0];
-        }
-*/
     }
 
     public OMElement loadTestOMElement(String resource, String name) throws IOException, XmlException,

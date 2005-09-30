@@ -20,10 +20,11 @@
 
 package org.smartfrog.services.deployapi.binding;
 
+import static org.smartfrog.services.deployapi.system.Constants.*;
 import org.ggf.xbeans.cddlm.api.DescriptorType;
 import org.ggf.xbeans.cddlm.api.InitializeRequestDocument;
 import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
-import org.smartfrog.services.deployapi.system.Constants;
+import org.smartfrog.services.deployapi.system.Utils;
 
 import java.io.File;
 import java.io.IOException;
@@ -54,7 +55,7 @@ public class DescriptorHelper extends FaultRaiser {
     public static final String REFERENCE = "reference";
     public static final String API = "api:";
     public static final String ERROR_NO_FILE = "Missing/unreachable file ";
-    private static final String TNS = Constants.CDL_API_TYPES_NAMESPACE;
+    private static final String TNS = CDL_API_TYPES_NAMESPACE;
     private static final String ERROR_NO_LANGUAGE_ATTR = "No language specified";
     private static final String ERROR_BOTH_OPTIONS = "Both reference and body elements supplied -only one is allowed";
 
@@ -206,7 +207,7 @@ public class DescriptorHelper extends FaultRaiser {
      * @return
      */
     public Element createInitRequest() {
-        Element elt = apiElement(Constants.API_ELEMENT_INITALIZE_REQUEST);
+        Element elt = apiElement(API_ELEMENT_INITALIZE_REQUEST);
         return elt;
     }
 
@@ -254,15 +255,20 @@ public class DescriptorHelper extends FaultRaiser {
     public Element loadInlineDescriptor(File file,
                                         String language) throws
             ParsingException, IOException {
+        Document document = loadDocument(file);
+        return inlineDescriptorFromDocument(document, language);
+    }
+
+    private Document loadDocument(File file) throws ParsingException,
+            IOException {
         Builder builder=new Builder(false);
         Document document = builder.build(file);
-        return inlineDescriptorFromDocument(document, language);
+        return document;
     }
 
     private Element inlineDescriptorFromDocument(Document document,
                                                  String language) {
-        Element rootElement = document.getRootElement();
-        document.setRootElement(apiElement("dummy"));
+        Element rootElement = Utils.detachRootElement(document);
         return createInlineDescriptor(rootElement, language);
     }
 
@@ -302,7 +308,7 @@ public class DescriptorHelper extends FaultRaiser {
         return descriptor;
     }
 
-    private Element apiElement(String name) {
+    private static Element apiElement(String name) {
         return new Element(API + name,
                 TNS);
     }
@@ -319,6 +325,45 @@ public class DescriptorHelper extends FaultRaiser {
                 TNS,
                 value);
         element.addAttribute(attribute);
+    }
+
+    public Element createSmartFrogReferenceDescriptor(String url) {
+        return createReferenceXomDescriptor(url, SMARTFROG_NAMESPACE);
+    }
+
+    public Element createSmartFrogInlineDescriptor(File file)
+            throws IOException,
+            ParsingException {
+        String contents = loadSmartFrogFile(file);
+        return createSmartFrogInlineDescriptor(contents);
+    }
+
+    public Element createSmartFrogInlineDescriptor(String contents) {
+        Element element = new Element(
+                "sf:"+ SMARTFROG_ELEMENT_NAME,
+                SMARTFROG_NAMESPACE);
+        Attribute version= new Attribute(
+                "sf:" +SMARTFROG_ELEMENT_VERSION_ATTR,
+                SMARTFROG_NAMESPACE,
+                SMARTFROG_VERSION);
+        element.addAttribute(version);
+        element.appendChild(contents);
+        return createInlineDescriptor(element, SMARTFROG_NAMESPACE);
+    }
+
+
+    private String loadSmartFrogFile(File file) throws IOException {
+        String contents=Utils.loadFile(file, CHARSET_SF_FILE);
+        return contents;
+    }
+    
+    public Element createCDLReferenceDescriptor(String url) {
+        return createReferenceXomDescriptor(url, XML_CDL_NAMESPACE);
+    }
+
+    public Element createCDLInlineDescriptor(File file) throws IOException,
+            ParsingException {
+        return loadInlineDescriptor(file, XML_CDL_NAMESPACE);
     }
 
 
@@ -343,46 +388,7 @@ public class DescriptorHelper extends FaultRaiser {
     }
 */
 
-/**
- * wrap the element parameter in a MessageElement[] array and then hand off
- * to #createDescriptorWithXML(MessageElement[], URI, String)
- *
- * @param element
- * @return a deployment descriptor for use in a request
- */
-/*    public DeploymentDescriptorType createDescriptorWithXML(
-            MessageElement element,
-            URI language,
-            String version) {
-        MessageElement any[] = new MessageElement[1];
-        any[0] = element;
-        DeploymentDescriptorType descriptor = createDescriptorWithXML(any,
-                language,
-                version);
-        return descriptor;
-    }*/
 
-/**
- * fill the descriptor element with some attached XML
- *
- * @param any an array of data. The size of the array should be 1 for
- *            correct operation.
- * @return a deployment descriptor for use in a request
- */
-/*
-    public DeploymentDescriptorType createDescriptorWithXML(
-            MessageElement[] any,
-            URI language,
-            String version) {
-        DeploymentDescriptorType descriptor = new DeploymentDescriptorType();
-        DeploymentDescriptorTypeBody data = new DeploymentDescriptorTypeBody();
-        data.set_any(any);
-        descriptor.setBody(data);
-        descriptor.setLanguage(language);
-        descriptor.setVersion(version);
-        return descriptor;
-    }
-*/
 
 /**
  * jump through hoops to turn a Xom document into a descriptor Caller is

@@ -144,5 +144,13 @@ public class DescriptorHelperTest extends UnitTestBase {
                 Constants.XOM_CONTEXT);
         assertTrue(nodes.size()>0);
     }
+    
 
+    public void testLoadSmartFrogFileinline() throws Exception {
+        fail("no implemented");
+    }
+
+    public void testSaveToSmartfrogFile() throws Exception {
+        fail("no implemented");
+    }
 }

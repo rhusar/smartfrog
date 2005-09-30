@@ -20,7 +20,9 @@
 package org.smartfrog.services.deployapi.client;
 
 import nu.xom.Element;
+import nu.xom.Document;
 import org.apache.axis2.AxisFault;
+import org.apache.axis2.om.OMElement;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.context.ConfigurationContextFactory;
@@ -33,9 +35,12 @@ import org.ggf.xbeans.cddlm.wsrf.wsrp.GetResourcePropertyResponseDocument;
 import org.smartfrog.services.deployapi.binding.bindings.GetResourcePropertyBinding;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.system.Utils;
+import org.smartfrog.services.deployapi.transport.faults.BaseException;
 
 import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
 import java.io.Serializable;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.rmi.RemoteException;
@@ -270,5 +275,26 @@ public abstract class Endpointer implements Serializable {
     public String getResourceId() throws RemoteException {
         Element elt = getPropertyXom(Constants.PROPERTY_MUWS_RESOURCEID);
         return elt.getValue().trim();
-    }    
+    }
+
+    /**
+     * Invoke the call in a blocking operation with our payload
+     *
+     * @param data
+     * @return the response
+     */
+    public Document invokeBlocking(String operation,
+                               Element data) throws IOException,
+            XMLStreamException {
+        ApiCall call = createStub(operation);
+        if (call.lookupOperation(operation) == null) {
+            throw new BaseException("No operation " +
+                    operation +
+                    " on endpointer " +
+                    this);
+        }
+        OMElement toSend = Utils.xomToAxiom(data);
+        OMElement omElement = call.invokeBlocking(operation, toSend);
+        return Utils.axiomToXom(omElement);
+    }
 }
