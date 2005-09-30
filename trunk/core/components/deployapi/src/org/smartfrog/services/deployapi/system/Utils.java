@@ -52,6 +52,11 @@ import java.io.BufferedInputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.FileOutputStream;
+import java.io.BufferedOutputStream;
+import java.io.Writer;
+import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
 
 /**
@@ -231,6 +236,23 @@ public class Utils {
         return builder.getDocumentElement();
     }
 
+    /**
+     * Save text to a file
+     * @param dest destination file
+     * @param contents text to save
+     * @param cs charset
+     * @throws IOException
+     */
+    public static void saveToFile(File dest, String contents,Charset cs) throws IOException {
+        OutputStream out=new BufferedOutputStream(new FileOutputStream(dest));
+        Writer writer=new OutputStreamWriter(out,cs);
+        try {
+            writer.write(contents);
+        } finally {
+            writer.close();
+        }
+    }
+    
     /**
      * Load a file with a given charset into a buffer
      * @param file

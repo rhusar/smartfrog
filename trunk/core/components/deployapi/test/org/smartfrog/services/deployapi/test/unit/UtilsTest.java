@@ -26,7 +26,6 @@ import org.apache.axis2.om.OMElement;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.system.Utils;
 
-import javax.xml.stream.XMLStreamException;
 import java.io.InputStream;
 
 
@@ -50,8 +49,7 @@ public class UtilsTest extends UnitTestBase {
         assertDocHasCreateTest(document);
     }
 
-    private Document assertDocHasCreateTest(Document document) throws
-            XMLStreamException {
+    private Document assertDocHasCreateTest(Document document)  {
         Nodes n = document.query(
                 "test:tests/test:test[@name='createRequestHostname']",Constants.XOM_CONTEXT);
         assertEquals(1, n.size());
