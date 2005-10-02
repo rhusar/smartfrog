@@ -17,27 +17,56 @@
  For more information: www.smartfrog.org
 
  */
+
 package org.smartfrog.services.deployapi.transport.wsrf;
 
 import org.apache.axis2.om.OMElement;
-import org.smartfrog.services.deployapi.transport.faults.BaseException;
+import org.smartfrog.services.deployapi.system.Utils;
+import org.ggf.cddlm.utils.QualifiedName;
 
 import javax.xml.namespace.QName;
 
+import nu.xom.Element;
+
 /**
- * Interface for anything that provides WSRP resource information.
- * created 22-Sep-2005 15:57:46
+ * this class represents something that can provide a resource
  */
+public class StaticProperty implements Property {
+
+    private QName name;
+    private OMElement value;
+
+    public StaticProperty() {
+    }
+
+    public StaticProperty(QName name, OMElement value) {
+        this.name = name;
+        this.value = value;
+    }
+
+    public QName getName() {
+        return name;
+    }
+
+    public void setName(QName name) {
+        this.name = name;
+    }
+
+    public void setName(QualifiedName name) {
+        setName(Utils.convert(name));
+    }
+
+    public OMElement getValue() {
+        return value;
+    }
+
+    public void setValue(OMElement value) {
+        this.value = value;
+    }
+
+    public void setValue(Element element) {
+        setValue(Utils.xomToAxiom(element));
+    }
 
 
-public interface WSRPResourceSource {
-
-    /**
-     * Get a property value
-     *
-     * @param property
-     * @return null for no match;
-     * @throws BaseException if they feel like it
-     */
-    OMElement getProperty(QName property);
 }

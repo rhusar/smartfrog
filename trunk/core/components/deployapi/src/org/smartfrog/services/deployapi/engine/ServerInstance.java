@@ -33,7 +33,6 @@ import org.ggf.xbeans.cddlm.api.StaticPortalStatusDocument;
 import org.ggf.xbeans.cddlm.api.StaticPortalStatusType;
 import org.ggf.xbeans.cddlm.api.SystemReferenceListType;
 import org.ggf.xbeans.cddlm.api.UriListType;
-import org.ggf.xbeans.cddlm.wsrf.muws.p1.IdentityPropertiesType;
 import org.ggf.xbeans.cddlm.wsrf.wsa2003.EndpointReferenceType;
 import org.smartfrog.services.deployapi.components.AddedFilestore;
 import org.smartfrog.services.deployapi.components.DeploymentServer;
@@ -41,6 +40,7 @@ import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.system.Utils;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
 import org.smartfrog.services.deployapi.transport.wsrf.WSRPResourceSource;
+import org.smartfrog.services.deployapi.transport.wsrf.PropertyMap;
 import org.smartfrog.services.deployapi.binding.DescriptorHelper;
 import org.smartfrog.services.deployapi.binding.Axis2Beans;
 import org.smartfrog.services.deployapi.binding.XomHelper;
@@ -74,6 +74,8 @@ public class ServerInstance implements WSRPResourceSource {
 
     private StaticPortalStatusDocument staticStatus;
 
+    private PropertyMap properties=new PropertyMap();
+    
     private JobRepository jobs;
 
     private ActionQueue queue = new ActionQueue();
@@ -266,7 +268,7 @@ public class ServerInstance implements WSRPResourceSource {
      * @return null for no match;
      * @throws BaseException if they feel like it
      */
-    public OMElement getResource(QName resource) {
+    public OMElement getProperty(QName resource) {
         QualifiedName query= Utils.convert(resource);
         XmlObject result=null;
         Element xom=null;
