@@ -26,9 +26,7 @@ import org.apache.axis2.om.OMElement;
 import org.apache.axis2.om.OMNamespace;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.xmlbeans.XmlObject;
 import org.ggf.xbeans.cddlm.wsrf.wsrp.GetResourcePropertyDocument;
-import org.smartfrog.services.deployapi.binding.Axis2Beans;
 import org.smartfrog.services.deployapi.binding.bindings.GetResourcePropertyBinding;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.system.Utils;
@@ -38,7 +36,6 @@ import org.smartfrog.services.deployapi.transport.faults.BaseException;
 import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
 
 import javax.xml.namespace.QName;
-import java.rmi.RemoteException;
 import java.util.Iterator;
 import java.io.IOException;
 
@@ -123,7 +120,7 @@ public abstract class WsrfEndpoint extends XmlBeansEndpoint {
         GetResourcePropertyBinding binding = new GetResourcePropertyBinding();
         GetResourcePropertyDocument requestDoc = binding.convertRequest(request);
         QName qName = requestDoc.getGetResourceProperty();
-        OMElement result = source.getResource(qName);
+        OMElement result = source.getProperty(qName);
         if (result == null) {
             throw invalidQNameException(qName.toString());
         }

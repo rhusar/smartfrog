@@ -207,8 +207,8 @@ public class JobRepository implements Iterable<Job> {
     }
 
     public Job createNewJob(String hostname) {
-        Job job = new Job();
-        job.setId(Utils.createNewID());
+        Job job = new Job(Utils.createNewID());
+        job.setId();
         job.setHostname(hostname);
         job.setState(Constants.LifecycleStateEnum.initialized);
         String id = job.getId();

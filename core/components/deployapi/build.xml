@@ -478,16 +478,14 @@
       location="${dist.dir}/${target.war.name}" />
 
       
-    <jar destFile="${target.war}" 
-      compress="false" 
-      duplicate="fail">
+    <core:jar destFile="${target.war}" 
       <!--  WAR file, includes WEB-INF stuff-->
       <fileset dir="${war.dir}" includes="**/*" />
       <zipfileset prefix="WEB-INF/lib" dir="${build.temp.lib.dir}" 
         includes="*.jar" />
       <zipfileset prefix="WEB-INF/lib" file="${target.jar}" /> 
       
-    </jar>
+    </core:jar>
   </target>
 
   

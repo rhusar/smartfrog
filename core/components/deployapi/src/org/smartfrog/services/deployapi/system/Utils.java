@@ -42,6 +42,8 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLInputFactory;
 import java.util.ArrayList;
 import java.util.UUID;
+import java.util.Calendar;
+import java.util.Date;
 import java.io.StringReader;
 import java.io.IOException;
 import java.io.ByteArrayOutputStream;
@@ -59,6 +61,8 @@ import java.io.BufferedOutputStream;
 import java.io.Writer;
 import java.io.OutputStreamWriter;
 import java.nio.charset.Charset;
+import java.text.SimpleDateFormat;
+import java.text.DateFormat;
 
 /**
  * created 20-Sep-2005 17:07:38
@@ -266,7 +270,7 @@ public class Utils {
             writer.close();
         }
     }
-    
+
     /**
      * Load a file with a given charset into a buffer
      * @param file
@@ -280,7 +284,7 @@ public class Utils {
         return loadInputStream(in, cs);
     }
 
-    
+
     /**
      * Load an input stream
      * @param in
@@ -304,5 +308,16 @@ public class Utils {
         } finally {
             close(reader);
         }
+    }
+
+    public static String toIsoTime(Date timestamp) {
+        DateFormat format= makeIsoDateFormat();
+        return format.format(timestamp);
+
+    }
+
+    public static DateFormat makeIsoDateFormat() {
+        return new SimpleDateFormat(
+                "yyyy-MM-dd'T'HH:mm:ss.SSSZ");
     }
 }
