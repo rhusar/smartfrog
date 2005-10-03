@@ -77,19 +77,8 @@ public class EventCompoundImpl extends CompoundImpl implements EventBus,
           oldNotation=true;
           //Old WF notation using actions
           // Here follows normal CompoundImpl deployment
-          try { // if an exception is thrown in the super call - the termination is already handled
-              for (Enumeration e = sfContext().keys(); e.hasMoreElements(); ) {
-                  Object key = e.nextElement();
-                  Object elem = sfContext.get(key);
+          super.sfDeployWithChildren();
 
-                  if ((elem instanceof ComponentDescription)&&(((ComponentDescription)elem).getEager())) {
-                      lifecycleChildren.add(sfDeployComponentDescription(key, this, (ComponentDescription)elem, null));
-                  }
-              }
-          } catch (Exception sfex) {
-              new TerminatorThread(this, sfex, null).quietly().run();
-              throw (SmartFrogDeploymentException)SmartFrogDeploymentException.forward(sfex);
-          }
       } else {
           oldNotation=false;
           // New WF notation
