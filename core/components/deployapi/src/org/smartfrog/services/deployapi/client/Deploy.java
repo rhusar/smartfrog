@@ -20,10 +20,14 @@
 package org.smartfrog.services.deployapi.client;
 
 import org.ggf.xbeans.cddlm.api.DescriptorType;
+import org.smartfrog.services.deployapi.binding.DescriptorHelper;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+
+import nu.xom.ParsingException;
+import nu.xom.Element;
 
 /**
  * created Sep 1, 2004 5:34:02 PM
@@ -31,11 +35,9 @@ import java.io.PrintWriter;
 
 public class Deploy extends ConsoleOperation {
 
-    private String name;
 
     private File sourceFile;
-
-    private DescriptorType descriptor;
+    private DescriptorHelper helper = new DescriptorHelper(null);
 
     public static final String ERROR_NO_FILE_ARGUMENT = "No file specified";
     public static final String ERROR_NO_FILE_FOUND = "File not found: ";
@@ -47,18 +49,6 @@ public class Deploy extends ConsoleOperation {
     public Deploy(PortalEndpointer endpointer, PrintWriter out, String[] args) {
         super(endpointer, out);
         bindToCommandLine(args);
-    }
-
-    public DescriptorType getDescriptor() {
-        return descriptor;
-    }
-
-    public void setDescriptor(DescriptorType descriptor) {
-        this.descriptor = descriptor;
-    }
-
-    public void createDeploymentDescriptor() throws IOException {
-
     }
 
     /**
@@ -77,13 +67,7 @@ public class Deploy extends ConsoleOperation {
         }
     }
 
-    public String getName() {
-        return name;
-    }
 
-    public void setName(String name) {
-        this.name = name;
-    }
 
     public File getSourceFile() {
         return sourceFile;
@@ -95,8 +79,9 @@ public class Deploy extends ConsoleOperation {
 
 
     public void execute() throws IOException {
-        createDeploymentDescriptor();
-        SystemEndpointer systemEndpointer = deploy(null, descriptor, null);
+        Element request = helper.createSFrequest(sourceFile);
+        SystemEndpointer systemEndpointer = create(null);
+        systemEndpointer.initialize(request);
         out.print("Deployed to url: " + systemEndpointer.getURL());
     }
 

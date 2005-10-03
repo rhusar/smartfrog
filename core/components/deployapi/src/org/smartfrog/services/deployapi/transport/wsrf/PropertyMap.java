@@ -27,6 +27,7 @@ import org.apache.axis2.om.OMElement;
 import javax.xml.namespace.QName;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.Date;
 
 import nu.xom.Element;
 
@@ -47,8 +48,17 @@ public class PropertyMap {
     }
 
     public synchronized void remove(Property property) {
-        map.remove(property.getName());
+        remove(property.getName());
     }
+
+    public synchronized void remove(QName name) {
+        map.remove(name);
+    }
+
+    public synchronized void remove(QualifiedName name) {
+        map.remove(Utils.convert(name));
+    }
+
 
     /**
      * resolve a property or return null
@@ -83,6 +93,18 @@ public class PropertyMap {
         StaticProperty property=new StaticProperty();
         property.setName(name);
         property.setValue(value);
+        add(property);
+    }
+
+    /**
+     * Add a static property
+     *
+     * @param name  property name
+     * @param value property value
+     */
+    public void addStaticProperty(QName name, String value) {
+        StaticProperty property = new StaticProperty(name, value);
+        add(property);
     }
 
     /**
@@ -95,6 +117,12 @@ public class PropertyMap {
         StaticProperty property = new StaticProperty();
         property.setName(name);
         property.setValue(value);
+        add(property);
     }
+
+    public OMElement getPropertyValue(QualifiedName property) {
+        return getPropertyValue(Utils.convert(property));
+    }
+
 
 }

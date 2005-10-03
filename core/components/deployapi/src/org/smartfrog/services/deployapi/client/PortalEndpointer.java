@@ -101,12 +101,6 @@ public class PortalEndpointer extends Endpointer {
     }
 
 
-    /**
-     * this is the prefix we look for on the command line
-     */
-    public static final String URL_COMMAND = "-url:";
-
-
     public PortalEndpointer() throws AxisFault {
         init();
     }
@@ -153,50 +147,22 @@ public class PortalEndpointer extends Endpointer {
         return URL_COMMAND + url.toExternalForm();
     }
 
-    /**
-     * get the binding of this element, null for no match,
-     *
-     * @param commandLineElement
-     * @return
-     * @throws java.net.MalformedURLException if there was anything wrong with the URL
-     */
-    public static PortalEndpointer fromCommandLineElement(
-            String commandLineElement)
-            throws MalformedURLException, AxisFault {
-        boolean isOption = commandLineElement.indexOf(URL_COMMAND) == 0;
-        if (isOption) {
-            String urlBody = commandLineElement.substring(URL_COMMAND.length());
-            if ("".equals(urlBody)) {
-                throw new MalformedURLException(
-                        "no URL in " + commandLineElement);
-            }
-            URL newurl = new URL(urlBody);
-            PortalEndpointer endpointer = new PortalEndpointer(newurl);
-            return endpointer;
-        } else {
-            return null;
-        }
-    }
 
     /**
      * get the binding of this element, null for no match,
-     *
+     * will patch that entry in the cmd line to null as a side effect
      * @param commandLine full command line args
-     * @return
+     * @return a portal
      * @throws java.net.MalformedURLException if there was anything wrong with the URL
      */
     public static PortalEndpointer fromCommandLine(String[] commandLine)
             throws MalformedURLException, AxisFault {
-        PortalEndpointer endpointer = null;
-        for (int i = 0; i < commandLine.length; i++) {
-            endpointer = fromCommandLineElement(commandLine[i]);
-            if (endpointer != null) {
-                //mark that element as null
-                commandLine[i] = null;
-                break;
-            }
+        URL url = UrlFromCommandLine(commandLine);
+        if(url!=null) {
+            return new PortalEndpointer(url);
+        } else {
+            return null;
         }
-        return endpointer;
     }
 
 

@@ -23,21 +23,22 @@ package org.smartfrog.services.deployapi.test.system;
 import org.smartfrog.services.deployapi.binding.DescriptorHelper;
 import org.smartfrog.services.deployapi.client.SystemEndpointer;
 import org.smartfrog.services.deployapi.system.Constants;
+import org.smartfrog.services.deployapi.system.LifecycleStateEnum;
 import org.apache.axis2.AxisFault;
+import org.ggf.cddlm.utils.QualifiedName;
 import nu.xom.Element;
 
 import java.io.IOException;
+import java.rmi.RemoteException;
 
-/**
- * This test suite is only to run against a local system
- */
+/** This test suite is only to run against a local system */
 public class LocalSmartFrogSystemTest extends ApiTestBase {
 
-    public static final String INCLUDE_ECHO="#include \"org/smartfrog/services/deployapi/components/fun/components.sf\"\n";
+    public static final String INCLUDE_ECHO = "#include \"org/smartfrog/services/deployapi/components/fun/components.sf\"\n";
 
     private final static String ECHO_APP =
-        INCLUDE_ECHO+
-        "sfConfig extends EchoLifecycle;\n";
+            INCLUDE_ECHO +
+                    "sfConfig extends EchoLifecycle;\n";
 
     private DescriptorHelper helper = new DescriptorHelper(null);
 
@@ -51,16 +52,18 @@ public class LocalSmartFrogSystemTest extends ApiTestBase {
         helper.validateRequest(request);
         return request;
     }
+
     /**
      * create an app and initialise it then terminate
+     *
      * @throws Exception
      */
     public void testInitializeInline() throws Exception {
-        SystemEndpointer system=null;
+        SystemEndpointer system = null;
         try {
             system = deployEchoSystem();
 
-        } finally{
+        } finally {
             destroySystem(system);
         }
     }
@@ -76,6 +79,7 @@ public class LocalSmartFrogSystemTest extends ApiTestBase {
 
     public void testDoubleTerminate() throws Exception {
         SystemEndpointer system = deployEchoSystem();
+
         try {
             terminateSystem(system);
             //this must succeed, even though the system is already terminated
@@ -98,8 +102,52 @@ public class LocalSmartFrogSystemTest extends ApiTestBase {
         try {
             destroySystem(system);
         } catch (AxisFault e) {
-            assertFaultMatches(e,Constants.F_NO_SUCH_APPLICATION);
+            assertFaultMatches(e, Constants.F_NO_SUCH_APPLICATION);
         }
     }
 
+
+    public void testStateTimestamps() throws Exception {
+        SystemEndpointer system;
+        system = createSystem();
+        String timestamp;
+        timestamp = system.getStringProperty(Constants.PROPERTY_SYSTEM_CREATED_TIME);
+        assertIsoDate(timestamp);
+        Element request = createSFrequest(ECHO_APP);
+        system.invokeBlocking(Constants.API_SYSTEM_OPERATION_INITIALIZE,
+                request);
+        try {
+            terminateSystem(system);
+            timestamp = system.getStringProperty(Constants.PROPERTY_SYSTEM_STARTED_TIME);
+            assertIsoDate(timestamp);
+            timestamp = system.getStringProperty(Constants.PROPERTY_SYSTEM_TERMINATED_TIME);
+            assertIsoDate(timestamp);
+        } finally {
+            destroySystem(system);
+        }
+    }
+
+    public void testStateTransitions() throws Exception {
+        SystemEndpointer system;
+        system = createSystem();
+        try {
+            assertInState(system, LifecycleStateEnum.initialized);
+
+            Element request = createSFrequest(ECHO_APP);
+            system.invokeBlocking(Constants.API_SYSTEM_OPERATION_INITIALIZE,
+                    request);
+            assertInState(system, LifecycleStateEnum.running);
+            terminateSystem(system);
+            assertInState(system, LifecycleStateEnum.terminated);
+        } finally {
+            destroySystem(system);
+        }
+    }
+
+    private void assertInState(SystemEndpointer system,
+                               LifecycleStateEnum expected) throws
+            RemoteException {
+        LifecycleStateEnum state = system.getLifecycleState();
+        assertEquals(expected, state);
+    }
 }

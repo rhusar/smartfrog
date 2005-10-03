@@ -50,6 +50,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.List;
 import java.util.ArrayList;
@@ -111,6 +112,8 @@ public abstract class ConsoleOperation {
         }
     }
 
+    
+    
     public PortalEndpointer getPortal() {
         return portal;
     }
@@ -173,22 +176,6 @@ public abstract class ConsoleOperation {
         return createdSystem;
     }
 
-    /**
-     * Combine create and initialize into one operation
-     *
-     * @param hostname
-     * @param descriptor
-     * @param options
-     * @return
-     * @throws RemoteException
-     */
-    public SystemEndpointer deploy(String hostname, DescriptorType descriptor,
-                                   OptionMapType options)
-            throws RemoteException {
-        SystemEndpointer systemEndpointer = create(hostname);
-        systemEndpointer.initialize(descriptor, options);
-        return systemEndpointer;
-    }
 
     /**
      * add a name option to our options

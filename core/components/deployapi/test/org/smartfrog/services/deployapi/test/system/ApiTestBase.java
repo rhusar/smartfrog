@@ -29,6 +29,7 @@ import org.smartfrog.services.deployapi.client.SystemEndpointer;
 import org.smartfrog.services.deployapi.client.Endpointer;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.system.Utils;
+import org.smartfrog.services.xml.utils.ResourceLoader;
 import org.ggf.xbeans.cddlm.api.DescriptorType;
 import org.ggf.xbeans.cddlm.api.OptionMapType;
 import org.ggf.xbeans.cddlm.wsrf.wsrp.GetResourcePropertyResponseDocument;
@@ -38,6 +39,8 @@ import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import java.rmi.RemoteException;
 import java.io.IOException;
+import java.io.File;
+import java.util.List;
 
 import nu.xom.Element;
 
@@ -55,6 +58,10 @@ public abstract class ApiTestBase extends ConsoleTestBase {
             + " sfConfig extends Unknown {} ";
     public static final String UNDEPLOY_REASON = "end test";
 
+    public static final String RESOURCE_BASE="org/smartfrog/services/deployapi/test/system/";
+    public static final String RESOURCE_ECHO=RESOURCE_BASE+"echo.sf";
+    public static final String RESOURCE_FAILTODEPLOY = RESOURCE_BASE + "failToDeploy.sf";
+    
     protected ConsoleOperation getOperation() {
         return operation;
     }
@@ -72,14 +79,16 @@ public abstract class ApiTestBase extends ConsoleTestBase {
         operation = new Deploy(getBinding(), getOut());
     }
 
-
-    protected SystemEndpointer deploy(String name,
-                                      DescriptorType descriptor,
-                                      OptionMapType options)
-            throws RemoteException {
-        SystemEndpointer systemEndpointer = operation.deploy(null,descriptor, options);
-        return systemEndpointer;
+    
+    protected File resourceToTempFile(String resource) throws IOException {
+        ResourceLoader loader=new ResourceLoader(this.getClass());
+        String contents = loader.loadResourceAsString(resource);
+        File tempfile = File.createTempFile("res","tmp");
+        tempfile.deleteOnExit();
+        Utils.saveToFile(tempfile, contents, Constants.CHARSET_UTF8);
+        return tempfile;
     }
+
 
     /**
      * deploy, expecting some kind of fault
@@ -90,6 +99,7 @@ public abstract class ApiTestBase extends ConsoleTestBase {
      * @param text
      * @throws java.rmi.RemoteException
      */
+/*
     protected void deployExpectingFault(DescriptorType dd,
                                         final OptionMapType options,
                                         final QName fault,
@@ -101,6 +111,7 @@ public abstract class ApiTestBase extends ConsoleTestBase {
             assertFaultMatches(af, fault, text);
         }
     }
+*/
 
     /**
      * assert that an app exists and is in the named state
@@ -172,5 +183,13 @@ public abstract class ApiTestBase extends ConsoleTestBase {
         return system.getPropertyResponse(qname);
     }
 
+    public String[] toStringArray(List<String> list) {
+        String[] result=new String[list.size()];
+        int count=0;
+        for(String s:list) {
+            result[count++]=s;
+        }
+        return result;
+    }
 
 }

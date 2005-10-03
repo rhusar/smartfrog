@@ -30,13 +30,14 @@ import org.ggf.xbeans.cddlm.api.DescriptorType;
 import org.ggf.xbeans.cddlm.api.InitializeRequestDocument;
 import org.ggf.xbeans.cddlm.api.InitializeResponseDocument;
 import org.ggf.xbeans.cddlm.api.OptionMapType;
+import org.ggf.cddlm.utils.QualifiedName;
 import org.smartfrog.services.deployapi.binding.EprHelper;
 import static org.smartfrog.services.deployapi.binding.XomHelper.apiElement;
 import org.smartfrog.services.deployapi.binding.bindings.InitializeBinding;
-import org.smartfrog.services.deployapi.system.Constants;
+import static org.smartfrog.services.deployapi.system.Constants.*;
+import org.smartfrog.services.deployapi.system.LifecycleStateEnum;
 
 import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
 import java.net.URL;
 import java.rmi.RemoteException;
@@ -59,75 +60,75 @@ public class SystemEndpointer extends Endpointer {
 
         //creating the Service
         serviceDescription = new ServiceDescription(
-                new QName(Constants.CDL_API_WSDL_NAMESPACE, "SystemEPR"));
+                new QName(CDL_API_WSDL_NAMESPACE, "SystemEPR"));
 
         //creating the operations
         OperationDescription __operation;
         operations = new OperationDescription[11];
 
         __operation = new OperationDescription();
-        __operation.setName(new QName(Constants.CDL_API_WSDL_NAMESPACE,
+        __operation.setName(new QName(CDL_API_WSDL_NAMESPACE,
                 "GetMultipleResourceProperties"));
         operations[0] = __operation;
         serviceDescription.addOperation(__operation);
 
         __operation = new OperationDescription();
         __operation.setName(
-                new QName(Constants.CDL_API_WSDL_NAMESPACE, "AddFile"));
+                new QName(CDL_API_WSDL_NAMESPACE, "AddFile"));
         operations[1] = __operation;
         serviceDescription.addOperation(__operation);
 
         __operation = new OperationDescription();
         __operation.setName(
-                new QName(Constants.CDL_API_WSDL_NAMESPACE, "Ping"));
+                new QName(CDL_API_WSDL_NAMESPACE, "Ping"));
         operations[2] = __operation;
         serviceDescription.addOperation(__operation);
 
         __operation = new OperationDescription();
-        __operation.setName(new QName(Constants.CDL_API_WSDL_NAMESPACE,
+        __operation.setName(new QName(CDL_API_WSDL_NAMESPACE,
                 "GetCurrentMessage"));
         operations[3] = __operation;
         serviceDescription.addOperation(__operation);
 
         __operation = new OperationDescription();
         __operation.setName(
-                new QName(Constants.CDL_API_WSDL_NAMESPACE, "Resolve"));
+                new QName(CDL_API_WSDL_NAMESPACE, "Resolve"));
         operations[4] = __operation;
         serviceDescription.addOperation(__operation);
 
         __operation = new OperationDescription();
         __operation.setName(
-                new QName(Constants.CDL_API_WSDL_NAMESPACE, "Subscribe"));
+                new QName(CDL_API_WSDL_NAMESPACE, "Subscribe"));
         operations[5] = __operation;
         serviceDescription.addOperation(__operation);
 
         __operation = new OperationDescription();
         __operation
-                .setName(new QName(Constants.CDL_API_WSDL_NAMESPACE, "Run"));
+                .setName(new QName(CDL_API_WSDL_NAMESPACE, "Run"));
         operations[6] = __operation;
         serviceDescription.addOperation(__operation);
 
         __operation = new OperationDescription();
         __operation.setName(
-                new QName(Constants.CDL_API_WSDL_NAMESPACE, "Destroy"));
+                new QName(CDL_API_WSDL_NAMESPACE, "Destroy"));
         operations[7] = __operation;
         serviceDescription.addOperation(__operation);
 
         __operation = new OperationDescription();
-        __operation.setName(new QName(Constants.CDL_API_WSDL_NAMESPACE,
+        __operation.setName(new QName(CDL_API_WSDL_NAMESPACE,
                 "GetResourceProperty"));
         operations[8] = __operation;
         serviceDescription.addOperation(__operation);
 
         __operation = new OperationDescription();
         __operation.setName(
-                new QName(Constants.CDL_API_WSDL_NAMESPACE, "Terminate"));
+                new QName(CDL_API_WSDL_NAMESPACE, "Terminate"));
         operations[9] = __operation;
         serviceDescription.addOperation(__operation);
 
         __operation = new OperationDescription();
         __operation.setName(
-                new QName(Constants.CDL_API_WSDL_NAMESPACE, "Initialize"));
+                new QName(CDL_API_WSDL_NAMESPACE, "Initialize"));
         operations[10] = __operation;
         serviceDescription.addOperation(__operation);
 
@@ -238,7 +239,7 @@ public class SystemEndpointer extends Endpointer {
         request.setOptions(options);
         InitializeResponseDocument responseDoc = binding
                 .invokeBlocking(this,
-                        Constants.API_ELEMENT_INITALIZE_REQUEST,
+                        API_ELEMENT_INITALIZE_REQUEST,
                         requestDoc);
     }
 
@@ -250,7 +251,7 @@ public class SystemEndpointer extends Endpointer {
      * @throws java.io.IOException
      */
     public Document initialize(Element request) throws IOException {
-        return invokeBlocking(Constants.API_SYSTEM_OPERATION_INITIALIZE,
+        return invokeBlocking(API_SYSTEM_OPERATION_INITIALIZE,
                 request);
     }
 
@@ -262,9 +263,9 @@ public class SystemEndpointer extends Endpointer {
      */
     public Document run() throws IOException {
         Element request;
-        request = apiElement(Constants.API_ELEMENT_RUN_REQUEST);
+        request = apiElement(API_ELEMENT_RUN_REQUEST);
 
-        Document document = invokeBlocking(Constants.API_SYSTEM_OPERATION_RUN,
+        Document document = invokeBlocking(API_SYSTEM_OPERATION_RUN,
                 request);
         return document;
     }
@@ -278,13 +279,13 @@ public class SystemEndpointer extends Endpointer {
      */
     public Document terminate(String reason) throws IOException {
         Element request;
-        request = apiElement(Constants.API_ELEMENT_TERMINATE_REQUEST);
+        request = apiElement(API_ELEMENT_TERMINATE_REQUEST);
         if (reason != null) {
             Element er = apiElement("reason");
             er.appendChild(reason);
             request.appendChild(er);
         }
-        return invokeBlocking(Constants.API_SYSTEM_OPERATION_TERMINATE,
+        return invokeBlocking(API_SYSTEM_OPERATION_TERMINATE,
                 request);
     }
 
@@ -296,10 +297,32 @@ public class SystemEndpointer extends Endpointer {
      */
     public Document destroy() throws IOException {
         Element request;
-        request = new Element(Constants.WSRF_ELEMENT_DESTROY_REQUEST,
-                Constants.WSRF_WSRL_NAMESPACE);
-        return invokeBlocking(Constants.WSRF_OPERATION_DESTROY,
+        request = new Element(WSRF_ELEMENT_DESTROY_REQUEST,
+                WSRF_WSRL_NAMESPACE);
+        return invokeBlocking(WSRF_OPERATION_DESTROY,
                 request);
     }
 
+    public LifecycleStateEnum getLifecycleState() throws RemoteException {
+        //TODO; extract more bits
+        QualifiedName property = PROPERTY_SYSTEM_SYSTEM_STATE;
+        String value = getStringProperty(property);
+        LifecycleStateEnum state =
+                LifecycleStateEnum.extract(value);
+        return state;
+    }
+
+
+    /**
+     * Get a property whose value is a string
+     * @param property
+     * @return
+     * @throws RemoteException
+     */
+    public String getStringProperty(QualifiedName property) throws
+            RemoteException {
+        Element prop = getPropertyXom(property);
+        String value=prop.getValue();
+        return value;
+    }
 }

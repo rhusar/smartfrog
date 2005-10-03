@@ -193,4 +193,16 @@ public abstract class UnitTestBase extends TestCase {
             object.dump();
         }
     }
+
+    /**
+     * assert that text is an iso date
+     * @param text text to check
+     */
+    protected void assertIsoDate(String text) {
+        assertNotNull("No iso date",text);
+        assertEquals("text aint ISO:"+text,0,text.indexOf("20"));
+        assertEquals("text aint ISO :"+text, 4,text.indexOf('-') );
+        assertEquals("text aint ISO :"+text, 7,text.indexOf('-',5) );
+        assertEquals("text aint ISO :"+text, 10, text.indexOf('T', 5));
+    }
 }

@@ -60,6 +60,10 @@ public abstract class Endpointer implements Serializable {
     private ConfigurationContext configurationContext;
     private ServiceContext serviceContext;
     public static final QName QNAME_MODULE_ADDRESSING = new QName(org.apache.axis2.Constants.MODULE_ADDRESSING);
+    /**
+     * this is the prefix we look for on the command line
+     */
+    public static final String URL_COMMAND = "-url:";
 
     public Endpointer() {
     }
@@ -231,10 +235,6 @@ public abstract class Endpointer implements Serializable {
                 serviceDescription.getName());
     }
 
-    public URL getUrl() {
-        return url;
-    }
-
 
     public abstract ServiceDescription getServiceDescription();
 
@@ -306,4 +306,69 @@ public abstract class Endpointer implements Serializable {
     }
 
 
+    /**
+     * get the binding of this element, null for no match,
+     *
+     * @param commandLineElement
+     * @return
+     * @throws java.net.MalformedURLException if there was anything wrong with the URL
+     */
+/*   public static PortalEndpointer fromCommandLineElement(
+            String commandLineElement)
+            throws MalformedURLException, AxisFault {
+        URL newurl = UrlfromCommandLineElement(commandLineElement);
+        
+        boolean isOption = commandLineElement.indexOf(URL_COMMAND) == 0;
+        
+        if (isOption) {
+            String urlBody = commandLineElement.substring(URL_COMMAND.length());
+            if ("".equals(urlBody)) {
+                throw new MalformedURLException(
+                        "no URL in " + commandLineElement);
+            }
+            URL newurl = new URL(urlBody);
+            PortalEndpointer endpointer = new PortalEndpointer(newurl);
+            return endpointer;
+        } else {
+            return null;
+        }
+    }*/
+
+    public static URL UrlfromCommandLineElement(
+            String commandLineElement)
+            throws MalformedURLException {
+        boolean isOption = commandLineElement.indexOf(URL_COMMAND) == 0;
+        if (isOption) {
+            String urlBody = commandLineElement.substring(URL_COMMAND.length());
+            if ("".equals(urlBody)) {
+                throw new MalformedURLException(
+                        "no URL in " + commandLineElement);
+            }
+            URL newurl = new URL(urlBody);
+            return newurl;
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * get the binding of this element, null for no match,
+     * will patch that entry in the cmd line to null as a side effect
+     * @param commandLine full command line args
+     * @return a url or null
+     * @throws java.net.MalformedURLException if there was anything wrong with the URL
+     */
+    protected static URL UrlFromCommandLine(String[] commandLine) throws
+            MalformedURLException {
+        URL url=null;
+        for (int i = 0; i < commandLine.length; i++) {
+            url=UrlfromCommandLineElement(commandLine[i]);
+            if (url != null) {
+                //mark that element as null
+                commandLine[i] = null;
+                break;
+            }
+        }
+        return url;
+    }
 }

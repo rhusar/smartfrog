@@ -42,7 +42,6 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLInputFactory;
 import java.util.ArrayList;
 import java.util.UUID;
-import java.util.Calendar;
 import java.util.Date;
 import java.io.StringReader;
 import java.io.IOException;
@@ -310,13 +309,16 @@ public class Utils {
         }
     }
 
+    
+
+    
     public static String toIsoTime(Date timestamp) {
-        DateFormat format= makeIsoDateFormat();
+        DateFormat format= makeIsoDateFormatter();
         return format.format(timestamp);
 
     }
 
-    public static DateFormat makeIsoDateFormat() {
+    public static DateFormat makeIsoDateFormatter() {
         return new SimpleDateFormat(
                 "yyyy-MM-dd'T'HH:mm:ss.SSSZ");
     }

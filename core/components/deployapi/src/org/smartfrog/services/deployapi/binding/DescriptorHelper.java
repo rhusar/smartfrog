@@ -24,6 +24,7 @@ import static org.smartfrog.services.deployapi.system.Constants.*;
 import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
 import org.smartfrog.services.deployapi.system.Utils;
 import org.smartfrog.services.deployapi.system.Constants;
+import org.smartfrog.services.deployapi.system.DeploymentLanguage;
 import static org.smartfrog.services.deployapi.transport.faults.FaultRaiser.*;
 import java.io.File;
 import java.io.IOException;
@@ -306,8 +307,7 @@ public class DescriptorHelper extends XomHelper {
     }
 
     public Element createSmartFrogInlineDescriptor(File file)
-            throws IOException,
-            ParsingException {
+            throws IOException {
         String contents = loadSmartFrogFile(file);
         return createSmartFrogInlineDescriptor(contents);
     }
@@ -369,10 +369,35 @@ public class DescriptorHelper extends XomHelper {
         }
 
         String text = sfnode.getValue();
-        File descriptorFile = createTempFile(Constants.DeploymentLanguage.smartfrog.getExtension());
+        File descriptorFile = createTempFile(DeploymentLanguage.smartfrog.getExtension());
         Utils.saveToFile(descriptorFile, text, Constants.CHARSET_SF_FILE);
         return descriptorFile;
-    }    
+    }
 
+    /**
+     * Create a complete SF request
+     * @param body body of the request
+     * @return the request
+     */
+    public Element createSFrequest(String body) {
+        Element descriptor = createSmartFrogInlineDescriptor(body);
+        Element request = createInitRequest(descriptor);
+        validateRequest(request);
+        return request;
+    }
+
+
+    /**
+     * Create a complete SF request
+     *
+     * @param filename file to the request
+     * @return the request
+     */
+    public Element createSFrequest(File filename) throws IOException {
+        Element descriptor = createSmartFrogInlineDescriptor(filename);
+        Element request = createInitRequest(descriptor);
+        validateRequest(request);
+        return request;
+    }    
 }
 
