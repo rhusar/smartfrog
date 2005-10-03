@@ -107,8 +107,7 @@ public class NuxStaxBuilder {
         }
         this.factory = factory;
         this.staxFactory = staxFactory;
-        log.debug("stax factory=" +
-                            staxFactory.getClass().getName());
+//          log.debug("stax factory=" + staxFactory.getClass().getName());
     }
 
     private static XMLInputFactory createStaxFactory() {

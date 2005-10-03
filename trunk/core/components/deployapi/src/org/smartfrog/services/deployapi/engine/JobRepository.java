@@ -25,6 +25,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.system.Utils;
+import org.smartfrog.services.deployapi.system.LifecycleStateEnum;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
 import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
 
@@ -50,7 +51,7 @@ public class JobRepository implements Iterable<Job> {
 
     private Hashtable<String, Job> jobs = new Hashtable<String, Job>();
     private URL systemsURL;
-    public static final String JOB_ID_PARAM = "job";
+    public static final String JOB_ID_PARAM = "system";
     public static final String SEARCH_STRING = JOB_ID_PARAM + "=";
     Log log= LogFactory.getLog(JobRepository.class);
 
@@ -195,22 +196,9 @@ public class JobRepository implements Iterable<Job> {
     }
 
 
-    /**
-     * if the job has no name, we give it one. If it has a name or no, a new URI
-     * is assigned
-     *
-     * @param job
-     */
-    public void assignID(Job job) {
-        String id = Utils.createNewID();
-        job.setId(id);
-    }
-
     public Job createNewJob(String hostname) {
         Job job = new Job(Utils.createNewID());
-        job.setId();
         job.setHostname(hostname);
-        job.setState(Constants.LifecycleStateEnum.initialized);
         String id = job.getId();
         job.setName(id);
         job.setAddress(createJobAddress(id));

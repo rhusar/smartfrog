@@ -44,6 +44,15 @@ public class StaticProperty implements Property {
         this.value = value;
     }
 
+    public StaticProperty(QName name, String value) {
+        this.name = name;
+        OMElement elt=Utils.createOmElement(name.getNamespaceURI(), 
+                name.getLocalPart(), null);
+        elt.setText(value);
+        this.value = elt;
+    }
+
+    
     public QName getName() {
         return name;
     }
@@ -68,5 +77,6 @@ public class StaticProperty implements Property {
         setValue(Utils.xomToAxiom(element));
     }
 
+    
 
 }

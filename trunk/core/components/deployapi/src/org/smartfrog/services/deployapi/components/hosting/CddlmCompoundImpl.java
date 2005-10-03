@@ -22,8 +22,7 @@ package org.smartfrog.services.deployapi.components.hosting;
 
 import org.smartfrog.services.deployapi.engine.Job;
 import org.smartfrog.services.deployapi.engine.ServerInstance;
-import org.smartfrog.services.deployapi.system.Constants;
-import org.smartfrog.services.deployapi.system.Constants.LifecycleStateEnum;
+import org.smartfrog.services.deployapi.system.LifecycleStateEnum;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.compound.CompoundImpl;
@@ -105,9 +104,9 @@ public class CddlmCompoundImpl extends CompoundImpl
     public static class LifecycleEventHook implements PrimHook {
 
         Job job;
-        Constants.LifecycleStateEnum state;
+        LifecycleStateEnum state;
 
-        public LifecycleEventHook(Job job, Constants.LifecycleStateEnum state) {
+        public LifecycleEventHook(Job job, LifecycleStateEnum state) {
             this.job = job;
             this.state = state;
         }

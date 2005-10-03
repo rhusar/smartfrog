@@ -29,6 +29,8 @@ import org.smartfrog.services.deployapi.binding.XomHelper;
 import org.smartfrog.services.deployapi.engine.ServerInstance;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.system.Utils;
+import org.smartfrog.services.deployapi.system.DeploymentLanguage;
+import org.smartfrog.services.deployapi.system.LifecycleStateEnum;
 import org.smartfrog.services.deployapi.transport.endpoints.XmlBeansEndpoint;
 
 import java.io.File;
@@ -90,7 +92,7 @@ public class InitializeProcessor extends SystemProcessor {
         }
 
         if (deployed) {
-            job.enterStateNotifying(Constants.LifecycleStateEnum.running, null);
+            job.enterStateNotifying(LifecycleStateEnum.running, null);
         }
         Element response = XomHelper.apiElement("initializeResponse");
         return response;
@@ -99,7 +101,7 @@ public class InitializeProcessor extends SystemProcessor {
     /** process a smartfrog deployment */
     public boolean determineLanguageAndDeploy() throws IOException {
 
-        Constants.DeploymentLanguage language = job.getLanguage();
+        DeploymentLanguage language = job.getLanguage();
         File file=null;
         switch (language) {
             case smartfrog:
