@@ -30,6 +30,11 @@ import org.smartfrog.sfcore.parser.Phases;
 import org.smartfrog.sfcore.parser.StreamParser;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.security.SFClassLoader;
+import java.lang.reflect.Constructor;
+import org.smartfrog.sfcore.common.MessageUtil;
+import org.smartfrog.sfcore.common.MessageKeys;
+import org.smartfrog.sfcore.common.SmartFrogException;
+import java.lang.reflect.InvocationTargetException;
 
 
 /**
@@ -107,16 +112,43 @@ public class SFParser implements StreamParser {
     *  Constructs an includehandler using the includeHandlerClass (prepended by
     *  propBase) system property.
     *
+    * @param codebase an optional codebase where the include may be found. If null, use the default code base
+    *
     *@return                new include handler
     *@exception  Exception  failed to construct handler
     */
-   public static IncludeHandler getIncludeHandler() throws Exception {
-      if (includeHandlerClass == null) {
-         includeHandlerClass = SFClassLoader.forName(includeHandlerClassName);
-      }
-      return (IncludeHandler) includeHandlerClass.newInstance();
-   }
+   public static IncludeHandler getIncludeHandler(String codebase) throws Exception {
+      try {
+          if (includeHandlerClass == null) {
+             includeHandlerClass = SFClassLoader.forName(includeHandlerClassName);
+          }
+          Class[] includeHandlerConstArgsTypes = {java.lang.String.class};
 
+          Constructor includeHandlerConst = includeHandlerClass.getConstructor(includeHandlerConstArgsTypes);
+
+          Object[] deplConstArgs = {codebase};
+
+          return (IncludeHandler)includeHandlerConst.newInstance(deplConstArgs);
+
+      } catch (NoSuchMethodException nsmetexcp) {
+          throw new SmartFrogException(MessageUtil.formatMessage(
+              MessageKeys.MSG_METHOD_NOT_FOUND, includeHandlerClassName, "getConstructor()"), nsmetexcp);
+      } catch (ClassNotFoundException cnfexcp) {
+          throw new SmartFrogException(MessageUtil.formatMessage(
+              MessageKeys.MSG_CLASS_NOT_FOUND, includeHandlerClassName), cnfexcp);
+      } catch (InstantiationException instexcp) {
+          throw new SmartFrogException(MessageUtil.formatMessage(
+              MessageKeys.MSG_INSTANTIATION_ERROR, includeHandlerClassName), instexcp);
+      } catch (IllegalAccessException illaexcp) {
+          throw new SmartFrogException(MessageUtil.formatMessage(
+              MessageKeys.MSG_ILLEGAL_ACCESS, includeHandlerClassName, "newInstance()"), illaexcp);
+//      } catch (InvocationTargetException intarexcp) {
+//          throw new SmartFrogException(MessageUtil.formatMessage(
+//              MessageKeys.MSG_INVOCATION_TARGET, includeHandlerClassName), intarexcp);
+      } catch (Throwable ex) {
+          throw (SmartFrogException)SmartFrogException.forward(ex);
+      }
+  }
 
    /**
     *  Gets the factory attribute of the SFParser class.
@@ -161,11 +193,12 @@ public class SFParser implements StreamParser {
     *
     *@param  is                      input stream to parse
     *@param  handler                 include handler
+    *@param codebase an optional codebase where the include may be found. If null, use the default code base
+    *
     *@return                         root description with parsed attributes
     *@exception  SmartFrogParseException  failure while parsing
     */
-   public Phases sfParse(InputStream is, IncludeHandler handler)
-          throws SmartFrogParseException {
+   public Phases sfParse(InputStream is, IncludeHandler handler) throws SmartFrogParseException {
        try{
            SFComponentDescription root = componentFactory("root");
            (new DefaultParser(is, handler)).Attributes(root);
@@ -185,13 +218,26 @@ public class SFParser implements StreamParser {
     *@exception  SmartFrogParseException  failure while parsing
     */
    public Phases sfParse(InputStream is) throws SmartFrogParseException {
+      return sfParse(is, (String)null);
+   }
+
+   /**
+    *  Parse an input stream. Forwards to the expanded parse method with the
+    *  result of getIncludeHandler.
+    *
+    *@param  is                      input stream to parse
+    * @param codebase an optional codebase where the include may be found. If null, use the default code base
+    *
+    *@return                         root description with parsed attributes
+    *@exception  SmartFrogParseException  failure while parsing
+    */
+   public Phases sfParse(InputStream is, String codebase) throws SmartFrogParseException {
       try {
-         return sfParse(is, getIncludeHandler());
+         return sfParse(is, getIncludeHandler(codebase));
       } catch (Throwable thr) {
          throw (SmartFrogParseException)SmartFrogParseException.forward(thr);
       }
    }
-
 
    /**
     *  Parses a reference from given string. This is NOT a cheap method since a

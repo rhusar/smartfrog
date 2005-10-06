@@ -142,9 +142,24 @@ public class SFParser implements Parser, MessageKeys {
      * @exception SmartFrogParseException error parsing stream
      */
     public Phases sfParse(InputStream is) throws SmartFrogParseException {
-        return parser.sfParse(is);
+        return parser.sfParse(is,null);
     }
 
+    /**
+     * Parses component(s) from an input stream. Returns a root component which
+     * contains the parsed components. Includes should be handled by some
+     * default include handler.
+     *
+     * @param is input stream to parse and compile from
+     * @param codebase an optional codebase where the include may be found. If null, use the default code base
+     *
+     * @return root component containing parsed component(s)
+     *
+     * @exception SmartFrogParseException error parsing stream
+     */
+    public Phases sfParse(InputStream is, String codebase) throws SmartFrogParseException {
+        return parser.sfParse(is, codebase);
+    }
 
     /**
      * Parses component(s) from an resource url. Returns a root component which
