@@ -169,9 +169,15 @@ public class LogImpl implements LogSF, LogRegistration, Serializable {
         } catch (Exception ex ){
             String msg = "Error during initialization of localLog for LogImpl. Using Default (LogToFile)";
             System.err.println("[WARN] "+msg+", Reason: "+ex.getMessage());
-            localLog=new LogToFileImpl(name,new Integer(currentLogLevel));
-            if (localLog.isWarnEnabled()) localLog.warn(msg,ex);
-
+            try {
+                localLog=new LogToFileImpl(name,new Integer(currentLogLevel));
+                if (localLog.isWarnEnabled())localLog.warn(msg, ex);
+            } catch (java.lang.NullPointerException nex){
+                msg = "Error during initialization of localLog for LogImpl. No log available.";
+                System.err.println("[FATAL] "+msg+", Reason: "+nex.getMessage());
+                nex.printStackTrace();
+                throw nex;
+            }
         }
         if (localLog.isTraceEnabled()) {
             localLog.trace("Log '"+name+"' using ComponentDescription:\n"+classComponentDescription.toString());
