@@ -32,7 +32,7 @@ public interface IncludeHandler {
      * construct the vector of attributes
      *
      * @param include include file to parse
-     * @param codebase an optional codebase where hte include may be found. If null, use the default code base
+     * @param codebase an optional codebase where the include may be found. If null, use the default code base
      *
      * @return vector of attribute name X value pairs
      *
