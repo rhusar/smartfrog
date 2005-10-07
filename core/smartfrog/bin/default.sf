@@ -38,7 +38,7 @@ ITS MEDIA, AND YOU HEREBY WAIVE ANY CLAIM IN THIS REGARD.
 // Default sfDaemon Display
 DefaultDisplay extends  Display {
     nameDisplay "sfDaemon Display"; // Window Title
-    positionDisplay "SE";         // Window position: North-West
+    positionDisplay "NE";         // Window position: North-West
     redirectStd true;             // Redirect std output and error to this wind.
     showIP true;                  // Show IP address in window title
     showSfProcess true;           // Show sfProcess name in  window title
