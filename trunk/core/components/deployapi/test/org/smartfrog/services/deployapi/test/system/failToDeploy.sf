@@ -1,0 +1,4 @@
+#include "org/smartfrog/services/deployapi/components/fun/components.sf"
+
+sfConfig extends UnknownComponent;
+

@@ -10,7 +10,7 @@
   All the targets for unit tests
   </description>
   
-  <!-- import the core -->
+  <!-- import the distribution and all predecessors -->
   <import file="dist.xml"/>
 
  
@@ -81,7 +81,7 @@
   <!-- run tests, both unit and system  -->
   <!-- ========================================================== -->
   <target name="run-tests"
-    depends="unit-tests,system-tests" />
+    depends="system-tests" />
     
     
   <!-- ========================================================== -->

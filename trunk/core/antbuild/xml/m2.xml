@@ -29,8 +29,9 @@
     <!-- make the root path of an artifact -->
     <macrodef name="m2-makepath">
       <attribute name="property"/>
-      <attribute name="groupIDpath"/>
+      <attribute name="groupIDpath" />
       <attribute name="artifactID" default="@{groupIDpath}"/>
+      <attribute name="classifier" default=""/>
       <attribute name="version"/>
       <sequential>
         <property name="@{property}" 

@@ -25,12 +25,12 @@ import org.smartfrog.services.deployapi.system.Constants;
 import org.ggf.cddlm.generated.api.CddlmConstants;
 import nu.xom.Element;
 import nu.xom.Attribute;
+import nu.xom.Node;
+import nu.xom.Nodes;
 
 import javax.xml.namespace.QName;
 
-/**
- * generic xom stuff
- */
+/** generic xom stuff */
 public class XomHelper {
     public static final String API = "api:";
     public static final String WSRF_RL = "wsrf-rl:";
@@ -59,5 +59,59 @@ public class XomHelper {
 
     }
 
+    /**
+     * Get an element's value. Throws a BadArgument Deployment fault if it
+     * doesnt resolve.
+     *
+     * @param node  node to start
+     * @param query query to ask
+     * @return
+     */
+    public static String getElementValue(Node node, String query) {
+        return getElement(node, query).getValue();
+    }
+
+    /**
+     * Get an element. Throws a BadArgument Deployment fault if it doesnt
+     * resolve.
+     *
+     * @param node  node to start
+     * @param query query to ask
+     * @return the element
+     */
+    public static Element getElement(Node node, String query) {
+        return getElement(node, query, true);
+    }
+
+    /**
+     * Get an element. Throws a BadArgument Deployment fault if it doesnt
+     * resolve.
+     *
+     * @param node  node to start
+     * @param query query to ask
+     * @param required flag to indicate a node is required or not
+     * @return the element or null if not found && required==false.
+     */
+    public static Element getElement(Node node,
+                                     String query,
+                                     boolean required) {
+        Nodes nodes = node.query(query, Constants.XOM_CONTEXT);
+        if (nodes.size() == 0) {
+            if (required) {
+                throw FaultRaiser.raiseBadArgumentFault("Nothing at " + query);
+            } else {
+                return null;
+            }
+        }
+        Node n = nodes.get(0);
+        if (!(n instanceof Element)) {
+            throw FaultRaiser.raiseBadArgumentFault("Expected an element at " +
+                    query
+                    +
+                    " but got " +
+                    n);
+        }
+        return (Element) n;
+    }
 
 }

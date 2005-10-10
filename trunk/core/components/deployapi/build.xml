@@ -43,12 +43,12 @@
   
   
   <!-- Import common stuff -->
-  <import file="${xml.dir}/core.xml"/>
-  <import file="${xml.dir}/sftasks.xml"/>
-  <import file="${xml.dir}/m2.xml"/>
-  <import file="${xml.dir}/dist.xml"/>
-  <import file="${xml.dir}/unittest.xml"/>
-
+  <import file="${xml.dir}/systemtest.xml"/>
+  <import file="${xml.dir}/gui.xml"/>
+  
+  <!-- demo -->
+  <import file="demo.xml"/>
+  
   <!-- ========================================================== -->
   <!-- ========================================================== -->
   <target name="init" depends="core.init-standard-output-dirs,sftasks.smartfrog-tasks,core.core-tasks,core.artifact-names">
@@ -478,7 +478,7 @@
       location="${dist.dir}/${target.war.name}" />
 
       
-    <core:jar destFile="${target.war}" 
+    <core:jar destFile="${target.war}" > 
       <!--  WAR file, includes WEB-INF stuff-->
       <fileset dir="${war.dir}" includes="**/*" />
       <zipfileset prefix="WEB-INF/lib" dir="${build.temp.lib.dir}" 

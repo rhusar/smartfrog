@@ -153,7 +153,7 @@ public class PortalTest extends ApiTestBase {
         assertTrue("WSNT is NOT supported", found);
     }
 
-    public void NotestStaticPortalStatus() throws Exception {
+    public void testStaticPortalStatus() throws Exception {
 
         GetResourcePropertyResponseDocument responseDoc;
         responseDoc = getPortalResourceProperty(Constants.PROPERTY_PORTAL_STATIC_PORTAL_STATUS);
