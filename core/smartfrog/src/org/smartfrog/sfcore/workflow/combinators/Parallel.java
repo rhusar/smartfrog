@@ -24,7 +24,6 @@ import java.rmi.RemoteException;
 import java.util.Enumeration;
 import java.util.Vector;
 
-import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogRuntimeException;
 import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
@@ -107,7 +106,7 @@ public class Parallel extends EventCompoundImpl implements Compound {
 
 
 
-    private void asynchCreateChild() throws SmartFrogDeploymentException,
+    protected void asynchCreateChild() throws SmartFrogDeploymentException,
             RemoteException, SmartFrogRuntimeException, SmartFrogException {
             asynchChildren = new Vector();
             actionKeys = actions.keys();
@@ -127,14 +126,13 @@ public class Parallel extends EventCompoundImpl implements Compound {
 
 
 
-    private void synchCreateChild() throws SmartFrogDeploymentException,
+    protected void synchCreateChild() throws SmartFrogDeploymentException,
         RemoteException, SmartFrogRuntimeException, SmartFrogException {
         actionKeys = actions.keys();
         try {
             while (actionKeys.hasMoreElements()) {
                 Object key = actionKeys.nextElement();
-                ComponentDescription act = (ComponentDescription)
-                    actions.get(key);
+                ComponentDescription act = (ComponentDescription) actions.get(key);
                 Prim comp = sfDeployComponentDescription(key, this, act, null);
             }
         } catch (java.util.NoSuchElementException nex){
