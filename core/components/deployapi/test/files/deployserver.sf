@@ -29,7 +29,7 @@ Application extends DeployServerOnJetty {
     javahome LAZY PROPERTY java.io.tmpdir;
     wardir PROPERTY deployapi.war.dir;
     port 5050;
-    location "steve's laptop";
+    location "mezzanine";
     liveness false;
     urlhost "127.0.0.1";
     

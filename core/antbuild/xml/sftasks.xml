@@ -139,43 +139,4 @@
     </presetdef>      
 
   </target>
-  
-  <!-- ========================================================== -->
-  <!-- start the daemon in the foreground                         -->
-  <!-- ========================================================== -->
-  <target name="daemon"
-    description="start a daemon in the foreground"
-    depends="sftasks.extended-smartfrog-tasks"
-    >
-      <sf:daemon-debug  spawn="false" timeout="-1"/>
-  </target>
-  
-  <!-- ========================================================== -->
-  <!-- conditionally start the daemon if one was not found already-->
-  <!-- ========================================================== -->
-  <target name="start-gui" 
-    depends="sftasks.extended-smartfrog-tasks" >
-      <sf:gui-debug  />
-  </target>
-
-  
-  <!-- ========================================================== -->
-  <!-- Start the console -->
-  <!-- ========================================================== -->
-  <target name="start-console"
-    description="start a console"
-    depends="sftasks.extended-smartfrog-tasks" >
-      <sf:console-debug  timeout="-1"/>
-  </target>
-
-  
-  <!-- ========================================================== -->
-  <!-- always shutdown a local daemon. keep going if one is not running -->
-  <!-- ========================================================== -->
-  <target name="shutdown"
-    depends="sftasks.extended-smartfrog-tasks"
-    description="shut down a local smartfrog daemon">
-    <sf:stopdaemon timeout="60000" failonerror="false" />
-  </target>   
-  
 </project>

@@ -136,6 +136,7 @@ public class LocalSmartFrogSystemTest extends ApiTestBase {
             Element request = createSFrequest(ECHO_APP);
             system.invokeBlocking(Constants.API_SYSTEM_OPERATION_INITIALIZE,
                     request);
+            assertInState(system, LifecycleStateEnum.initialized);
             assertInState(system, LifecycleStateEnum.running);
             terminateSystem(system);
             assertInState(system, LifecycleStateEnum.terminated);

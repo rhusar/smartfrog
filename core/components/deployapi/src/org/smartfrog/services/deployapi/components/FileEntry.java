@@ -20,6 +20,8 @@
 
 package org.smartfrog.services.deployapi.components;
 
+import nu.xom.Element;
+
 import java.io.File;
 import java.io.Serializable;
 import java.net.URI;
@@ -28,6 +30,9 @@ import java.net.URI;
 public class FileEntry implements Serializable {
     private File file;
     private URI uri;
+    private String mimetype;
+    private Element metadata;
+    
 
     private FileEntry() {
     }
@@ -45,9 +50,45 @@ public class FileEntry implements Serializable {
         return uri;
     }
 
+    public String getMimetype() {
+        return mimetype;
+    }
+
+    public void setMimetype(String mimetype) {
+        this.mimetype = mimetype;
+    }
+
+    public Element getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(Element metadata) {
+        this.metadata = metadata;
+    }
+
     /** @return a string representation of the object. */
     public String toString() {
         return file.getAbsolutePath();
     }
 
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        final FileEntry fileEntry = (FileEntry) o;
+
+        if (!uri.equals(fileEntry.uri)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public int hashCode() {
+        return uri.hashCode();
+    }
 }
