@@ -160,8 +160,8 @@ public class Parallel extends EventCompoundImpl implements Compound {
 
     /**
      * Terminates the component. It is invoked by sub-components at
-     * termination. If normal termiantion, Parallel behaviour is to terminate
-     * that comopnent but leave the others running if it is the last -
+     * termination. If normal termination, Parallel behaviour is to terminate
+     * that component but leave the others running if it is the last -
      * terminate normally. if an erroneous termination -
      * terminate immediately passing on the error
      *

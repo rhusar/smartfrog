@@ -279,6 +279,7 @@ public class ContextImpl extends OrderedHashtable implements Context,
         try {
             writeOn(sw);
         } catch (IOException ioex) {
+            sw.write("[ERROR] ContextImpl "+ioex.toString());
             // ignore should not happen
         }
 
