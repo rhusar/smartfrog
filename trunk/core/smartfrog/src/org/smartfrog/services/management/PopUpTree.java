@@ -208,6 +208,7 @@ public class PopUpTree extends JComponent implements ActionListener {
             try {
               Prim objPrim = ((Prim)(((DeployEntry)(tpath.getLastPathComponent())).getEntry()));
               message.append(objPrim.sfDiagnosticsReport());
+              primName = ((Prim)objPrim).sfCompleteName().toString();
 
             } catch (Exception ex) {
                 message.append("\n Error: "+ex.toString());

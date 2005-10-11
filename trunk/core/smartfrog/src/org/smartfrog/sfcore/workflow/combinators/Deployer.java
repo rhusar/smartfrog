@@ -78,6 +78,16 @@ public class Deployer  extends Parallel implements Compound {
         newComponentCD = getComponentDescription();
     }
 
+    /**
+     * Deploys and manages the new subcomponents.
+     *
+     * @throws RemoteException The required remote exception.
+     * @throws RemoteException In case of network/rmi error
+     */
+    public synchronized void sfStart() throws SmartFrogException, RemoteException {
+        super.sfStart();
+    }
+
     protected void asynchCreateChild() throws SmartFrogDeploymentException,
             RemoteException, SmartFrogRuntimeException, SmartFrogException {
             //super.asynchCreateChild();
