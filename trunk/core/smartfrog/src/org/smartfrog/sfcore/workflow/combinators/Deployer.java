@@ -78,20 +78,10 @@ public class Deployer  extends Parallel implements Compound {
         newComponentCD = getComponentDescription();
     }
 
-    /**
-     * Deploys and manages the new subcomponents.
-     *
-     * @throws RemoteException The required remote exception.
-     * @throws RemoteException In case of network/rmi error
-     */
-    public synchronized void sfStart() throws SmartFrogException, RemoteException {
-        super.sfStart();
-    }
-
     protected void asynchCreateChild() throws SmartFrogDeploymentException,
             RemoteException, SmartFrogRuntimeException, SmartFrogException {
             //super.asynchCreateChild();
-            Thread thread = new CreateNewChildThread(newComponentName,newComponentParent,newComponentCD, null);
+            Thread thread = new CreateNewChildThread(newComponentName, newComponentParent, newComponentCD, null, this);
             thread.start();
             asynchChildren.add(thread);
     }
@@ -121,13 +111,13 @@ public class Deployer  extends Parallel implements Compound {
     private void addAttributesToCD(Vector attributes, Phases phases) throws SmartFrogResolutionException,
             SmartFrogRuntimeException {
         if (attributes != null) {
-            sfLog().info("Attribute Replacement Started\n");
+            if (sfLog().isTraceEnabled())  sfLog().trace("Attribute Replacement Started\n");
             for (Iterator e = attributes.iterator(); e.hasNext();) {
                 Vector attribute_value = (Vector)e.next();
                 String key = (String) attribute_value.elementAt(0);
                 Object value = attribute_value.elementAt(1);
                 Reference keyRef = Reference.fromString(key.toString());
-                sfLog().info("Attribute : KeyRef:" + keyRef.toString() + "  ; value:" + value.toString());
+                if (sfLog().isTraceEnabled())  sfLog().trace("Attribute : KeyRef:" + keyRef.toString() + "  ; value:" + value.toString());
                 phases.sfReplaceAttribute(keyRef, value);
             }
         }

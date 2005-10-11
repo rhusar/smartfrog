@@ -36,6 +36,10 @@ public class CreateNewChildThread extends Thread {
  Object name=null;
  /** parent of deployed component  */
  Compound parent=null;
+
+ /** component used to deploy component  */
+ Compound deployer=null;
+
  /**cmp compiled component to deploy and start*/
  ComponentDescription cmp=null;
  /**parms parameters for description*/
@@ -51,6 +55,7 @@ public class CreateNewChildThread extends Thread {
  /**
   * Creates a <tt>CreateNewChildThread</tt> that will upon running, execute the
   * given <tt>CreateNewChild</tt>.
+  * Parent cannot be null
   *
   * @throws NullPointerException if callable is null
   */
@@ -78,6 +83,48 @@ public class CreateNewChildThread extends Thread {
 
       this.parms=parms;
  }
+
+
+ /**
+  * Creates a <tt>CreateNewChildThread</tt> that will upon running, execute the
+  * given <tt>CreateNewChild</tt>.
+  * If parent null then it will create a independent application but a deployer needs to be provided
+  *
+  * @throws NullPointerException if callable is null
+  */
+ public CreateNewChildThread(Object name, Prim parent, ComponentDescription cmp, Context parms, Prim deployer) throws SmartFrogException{
+
+      if (deployer==null) {
+          if ((parent==null)||!(parent instanceof Compound)) {
+              throw new SmartFrogException("Wrong parentDeployer");
+          } else {
+              deployer = parent;
+          }
+      } else {
+          if (!(deployer instanceof Compound)) {
+              throw new SmartFrogException("Wrong deployer");
+          }
+      }
+
+      String deployerName = "parentDeployer";
+      try {
+          deployerName = deployer.sfCompleteName().toString();
+      } catch (RemoteException ex) {
+      }
+
+      this.setName("CreateNewChildThread-"+deployerName+"."+name);
+
+      this.name=name;
+
+      this.parent=(Compound)parent;
+
+      this.deployer=(Compound)deployer;
+
+      this.cmp=cmp;
+
+      this.parms=parms;
+ }
+
 
 
  public synchronized boolean isCancelled() {
@@ -170,7 +217,7 @@ public class CreateNewChildThread extends Thread {
          runner = Thread.currentThread();
      }
      try {
-         setCompleted(parent.sfCreateNewChild(name,parent,cmp,parms));
+         setCompleted(deployer.sfCreateNewChild(name,parent,cmp,parms));
      }
      catch (Throwable ex) {
          setFailed(ex);
