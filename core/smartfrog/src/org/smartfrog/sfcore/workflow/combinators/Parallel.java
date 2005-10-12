@@ -116,11 +116,12 @@ public class Parallel extends EventCompoundImpl implements Compound {
                     ComponentDescription act = (ComponentDescription) actions.get(key);
                     //asynchChildren.add();
                     Thread thread = new CreateNewChildThread(key,this,act, null);
-                    thread.start();
                     asynchChildren.add(thread);
+                    thread.start();
+                    if (sfLog().isDebugEnabled()) sfLog().debug("Creating "+key);
                 }
             } catch (java.util.NoSuchElementException nex){
-               throw new SmartFrogRuntimeException ("Empty actions",this);
+               throw new SmartFrogRuntimeException ("Found no children to deploy",this);
             }
     }
 
@@ -134,9 +135,10 @@ public class Parallel extends EventCompoundImpl implements Compound {
                 Object key = actionKeys.nextElement();
                 ComponentDescription act = (ComponentDescription) actions.get(key);
                 Prim comp = sfDeployComponentDescription(key, this, act, null);
+                if (sfLog().isDebugEnabled()) sfLog().debug("Creating "+key);
             }
         } catch (java.util.NoSuchElementException nex){
-           throw new SmartFrogRuntimeException ("Empty actions",this);
+           throw new SmartFrogRuntimeException ("Found no children to deploy",this);
         }
 
         //Actions are now children of parallel, they are deployed and

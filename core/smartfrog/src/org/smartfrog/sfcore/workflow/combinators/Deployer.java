@@ -22,11 +22,19 @@ import java.util.Map;
 /**
  *
  */
-public class Deployer  extends Parallel implements Compound {
+public class Deployer  extends Run implements Compound {
 
     /** Reference to myName for the new component.
-     String name for attribute. Value {@value}.*/
+     String name for attribute. Value {@value} or asName.*/
     final static String ATTR_NAME = "newComponentName";
+
+    /** Reference to parent for the new deployment.
+     String name for attribute. Value {@value} or parent.*/
+    final static String ATTR_PARENT = "newComponentParent";
+
+    /** Reference to compund component used to drive the new deployment.
+     String name for attribute. Value {@value} or parent.*/
+    final static String ATTR_DEPLOYER = "newComponentDeployer";
 
     /** Reference to #codebase.
      String name for attribute. Value {@value}.*/
@@ -36,22 +44,17 @@ public class Deployer  extends Parallel implements Compound {
      String name for attribute. Value {@value}.*/
     final static String ATTR_DESCRIPTION = "newComponentDescription";
 
-    /** Reference to myDescription (it could be a .sf file for the text itself).
+    /** Reference to extra attributes that will be added to the new component CD
      String name for attribute. Value {@value}.*/
     final static String ATTR_EXTRA_ATTRIBUTES = "newComponentExtraAtributes";
 
-    /** Reference to parent for the new deployment.
-     String name for attribute. Value {@value}.*/
-    final static String ATTR_PARENT = "newComponentParent";
-
-    String newComponentName = "newComponentByDeployer";
     String newComponentCodebase = null;
     String newComponentDescription = null;
-    ComponentDescription newComponentCD = null;
-    Prim newComponentParent = null;
     Vector newComponentExtraAtributes = null;
 
+    Compound newComponentDeployer = null;
 
+    ComponentDescription newComponentCD = null;
 
     /**
      * Constructs Deployer.
@@ -71,24 +74,35 @@ public class Deployer  extends Parallel implements Compound {
      */
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
-        newComponentDescription = sfResolve(ATTR_DESCRIPTION,newComponentDescription,true);
-        newComponentCodebase = sfResolve(ATTR_HCODEBASE,newComponentCodebase,false);
-        newComponentExtraAtributes = sfResolve(ATTR_EXTRA_ATTRIBUTES,newComponentExtraAtributes,false);
-        newComponentParent = sfResolve(ATTR_PARENT,newComponentParent,false);
         newComponentCD = getComponentDescription();
     }
 
-    protected void asynchCreateChild() throws SmartFrogDeploymentException,
-            RemoteException, SmartFrogRuntimeException, SmartFrogException {
-            //super.asynchCreateChild();
-            Thread thread = new CreateNewChildThread(newComponentName, newComponentParent, newComponentCD, null, this);
-            thread.start();
-            asynchChildren.add(thread);
+    protected void readSFAttributes() throws  RemoteException, SmartFrogResolutionException {
+        // It will by default use the same used in Run if available
+        super.readSFAttributes();
+        parent =  sfResolve(ATTR_PARENT, parent, false);
+        asName =  sfResolve(ATTR_NAME, asName, false);
+
+        newComponentDeployer =  sfResolve(ATTR_DEPLOYER, newComponentDeployer, false);
+
+        newComponentDescription = sfResolve(ATTR_DESCRIPTION,newComponentDescription,true);
+        newComponentCodebase = sfResolve(ATTR_HCODEBASE,newComponentCodebase,false);
+        newComponentExtraAtributes = sfResolve(ATTR_EXTRA_ATTRIBUTES,newComponentExtraAtributes,false);
     }
 
-    protected void synchCreateChild() throws SmartFrogDeploymentException,
-        RemoteException, SmartFrogRuntimeException, SmartFrogException {
-        Prim comp = sfCreateNewChild(newComponentName, newComponentParent, newComponentCD, null);
+    protected Prim createNewChild() throws SmartFrogDeploymentException, RemoteException {
+        Prim comp;
+        if (newComponentDeployer!=null) {
+            comp = newComponentDeployer.sfCreateNewChild(asName,parent,newComponentCD,null);
+        } else {
+            //Same semantics as RUN
+            if (parent!=null) {
+                comp = parent.sfCreateNewChild(asName, newComponentCD, null);
+            } else {
+                comp = sfCreateNewApp(asName, newComponentCD, null);
+            }
+        }
+        return comp;
     }
 
     protected ComponentDescription getComponentDescription() throws

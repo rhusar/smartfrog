@@ -60,28 +60,7 @@ public class CreateNewChildThread extends Thread {
   * @throws NullPointerException if callable is null
   */
  public CreateNewChildThread(Object name, Prim parent, ComponentDescription cmp, Context parms) throws SmartFrogException{
-
-
-      if ((parent==null)||!(parent instanceof Compound)){
-          //@todo: Replace by SF Exception
-          throw new SmartFrogException("Wrong parent");
-      }
-
-      String parentName = "parent";
-      try {
-          parentName = parent.sfCompleteName().toString();
-      } catch (RemoteException ex) {
-      }
-
-      this.setName("CreateNewChildThread-"+parentName+"."+name);
-
-      this.name=name;
-
-      this.parent=(Compound)parent;
-
-      this.cmp=cmp;
-
-      this.parms=parms;
+    this(name,parent,cmp,parms,null);
  }
 
 

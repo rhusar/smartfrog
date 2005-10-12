@@ -17,18 +17,18 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-#include "org/smartfrog/sfcore/workflow/eventbus/eventbus.sf"
 
-Deployer extends EventCompound {
+#include "org/smartfrog/sfcore/workflow/combinators/run.sf"
+
+Deployer extends Run {
     sfClass "org.smartfrog.sfcore.workflow.combinators.Deployer";
 
     //newComponentDescription ""; // MANDATORY!
     //newComponentCodebase = "foo.jar bar.jar";
 
-    //newComponentName = "newComponentByDeployer";
+    //newComponentName  (or asName) "newComponentByDeployer";
+    //newComponentParent (or parent) LAZY THIS; // if a parent is provided, then a name is mandatory
+    //newComponentDeployer LAZY THIS; // Compound used for deployment.
 
-    //newComponentParent  LAZY THIS;
-    //newComponentExtraAtributes ;
-
-    //asynchCreateChild false; // Deploy child in separate thread to return immediately
+    //newComponentExtraAtributes extends vector { -- ["sfConfig:julio", "hola"];}
 }

@@ -30,6 +30,7 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
+import org.smartfrog.sfcore.common.*;
 
 
 /**
@@ -48,10 +49,18 @@ import org.smartfrog.sfcore.workflow.eventbus.EventCompoundImpl;
  * </p>
  */
 public class Run extends EventCompoundImpl implements Compound {
+
+    /** Reference to parent for the new component
+     String name for attribute. Value {@value}.*/
     static Reference parentRef = new Reference("parent");
+
+    /** Reference to name for the new component
+     String name for attribute. Value {@value}.*/
     static Reference asNameRef = new Reference("asName");
+
     Compound parent=null;
-    String asName;
+
+    String asName=null;
 
     /**
      * Constructs Run.
@@ -68,7 +77,7 @@ public class Run extends EventCompoundImpl implements Compound {
      * attributes
      * @throws RemoteException In case of RMI or network failure.
      */
-    private void readSFAttributes() throws SmartFrogResolutionException, RemoteException {
+    protected void readSFAttributes() throws SmartFrogResolutionException, RemoteException {
         // Optional attributes
         parent =  sfResolve(parentRef, parent, false);
         asName =  sfResolve(asNameRef, asName, false);
@@ -100,35 +109,43 @@ public class Run extends EventCompoundImpl implements Compound {
 
         try {
             super.sfStart();
-
-            if (parent != null) {
-                comp = parent.sfCreateNewChild(asName, action, null);
-            } else {
-                comp = sfCreateNewApp(asName,action, null);
-	    }
+            if ((parent != null) && (asName==null)) {
+                throw new SmartFrogDeploymentException(
+                    "It needs to provide a name () when providing a parent ('parent' "+ parent+")", this, sfContext());
+            }
+            comp = createNewChild();
         } catch (Throwable e) {
-            if (comp != null) {
+            if (comp!=null) {
                 Reference compName = null;
                 try {
                     compName = comp.sfCompleteName();
-                }catch (Exception ex ) {
-                }
+                } catch (Exception ex) { }
                 try {
-                     String compNameStr ="";
-                     if (compName != null) compNameStr=compName.toString();
-                     comp.sfTerminate(TerminationRecord.
-                              abnormal("failed to deploy and start correctly " +
-                                   compNameStr, name));
-                 } catch (Exception ex) {}
+                    String compNameStr = "";
+                    if (compName!=null)compNameStr = compName.toString();
+                    comp.sfTerminate(TerminationRecord.abnormal(
+                        "failed to deploy and start correctly "+
+                        compNameStr, name));
+                } catch (Exception ex) {}
             }
-            throw ((SmartFrogException) SmartFrogException.forward(e));
+            throw ((SmartFrogException)SmartFrogException.forward(e));
         }
         Runnable terminator = new Runnable() {
-                public void run() {
-                    sfTerminate(TerminationRecord.normal(name));
-                }
+            public void run() { sfTerminate(TerminationRecord.normal(name)); }
         };
 
         new Thread(terminator).start();
+    }
+
+
+    protected Prim createNewChild() throws SmartFrogDeploymentException, RemoteException {
+        Prim comp;
+        if (parent != null) {
+            if (asName==null) throw new SmartFrogDeploymentException("You need to provide a name ('asName' value) when providing a Parent ('parent' "+parent+")",this,sfContext());
+            comp = parent.sfCreateNewChild(asName, action, null);
+        } else {
+            comp = sfCreateNewApp(asName,action, null);
+        }
+        return comp;
     }
 }
