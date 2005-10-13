@@ -115,7 +115,7 @@ public class Parallel extends EventCompoundImpl implements Compound {
                     Object key = actionKeys.nextElement();
                     ComponentDescription act = (ComponentDescription) actions.get(key);
                     //asynchChildren.add();
-                    Thread thread = new CreateNewChildThread(key,this,act, null);
+                    Thread thread = new CreateNewChildThread(key,this,act, null,this);
                     asynchChildren.add(thread);
                     thread.start();
                     if (sfLog().isDebugEnabled()) sfLog().debug("Creating "+key);
