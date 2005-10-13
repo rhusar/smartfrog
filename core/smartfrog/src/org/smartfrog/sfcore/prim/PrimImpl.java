@@ -1172,8 +1172,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
      */
     protected void terminateComponent(Prim targetComponent, Throwable excp,
         Reference componentId) {
-        TerminatorThread terminator = new TerminatorThread(targetComponent,
-                excp, componentId);//.quietly();
+        TerminatorThread terminator = new TerminatorThread(targetComponent, excp, componentId);//.quietly();
         // start the thead
         terminator.start();
     }
