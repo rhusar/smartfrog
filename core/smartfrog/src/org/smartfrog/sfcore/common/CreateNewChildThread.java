@@ -5,6 +5,8 @@ import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 import java.rmi.*;
+import org.smartfrog.sfcore.logging.LogSF;
+import org.smartfrog.sfcore.logging.LogFactory;
 
 
 /*
@@ -196,9 +198,23 @@ public class CreateNewChildThread extends Thread {
          runner = Thread.currentThread();
      }
      try {
+         if (sfLog().isDebugEnabled()){
+             String parentName = "no-parent";
+             String deployerName = "no-deployer";
+             if (parent!=null) parentName = parent.sfCompleteName().toString();
+             if (deployer!=null) deployerName = deployer.sfCompleteName().toString();
+             sfLog().debug("Creating child '"+name+"' with parent '"+parentName+"' using deployer '"+deployerName+"'");
+         }
          setCompleted(deployer.sfCreateNewChild(name,parent,cmp,parms));
+         if (sfLog().isDebugEnabled()){
+             String compName = name.toString();
+             try { compName = ((Prim)result).sfCompleteName().toString(); } catch (Exception ex) {  }
+             sfLog().debug("Child '"+compName+"' created");
+         }
+
      }
      catch (Throwable ex) {
+         if (sfLog().isErrorEnabled()){ sfLog().error("Failed to create child '"+name+"'",ex); }
          setFailed(ex);
      }
  }
@@ -291,4 +307,13 @@ public class CreateNewChildThread extends Thread {
      }
      return result;
  }
+
+ /**
+  *  To get the sfCore logger
+  * @return Logger implementing LogSF and Log
+  */
+ private LogSF sfLog() {
+   return LogFactory.sfGetProcessLog();
+    }
+
 }
