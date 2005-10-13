@@ -25,6 +25,7 @@ import java.rmi.RemoteException;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogResolutionException;
 import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.sfcore.compound.Compound;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
@@ -50,6 +51,7 @@ import org.smartfrog.sfcore.common.*;
  */
 public class Run extends EventCompoundImpl implements Compound {
 
+    // Old attributes
     /** Reference to parent for the new component
      String name for attribute. Value {@value}.*/
     static Reference parentRef = new Reference("parent");
@@ -58,9 +60,26 @@ public class Run extends EventCompoundImpl implements Compound {
      String name for attribute. Value {@value}.*/
     static Reference asNameRef = new Reference("asName");
 
+    // New attributes
+    /** Reference to myName for the new component.
+     String name for attribute. Value {@value} or asName.*/
+    final static String ATTR_NAME = "newComponentName";
+
+    /** Reference to parent for the new deployment.
+     String name for attribute. Value {@value} or parent.*/
+    final static String ATTR_PARENT = "newComponentParent";
+
+    /** Reference to compund component used to drive the new deployment.
+     String name for attribute. Value {@value} or parent.*/
+    final static String ATTR_DEPLOYER = "newComponentDeployer";
+
     Compound parent=null;
 
-    String asName=null;
+    String newComponentName=null;
+
+    Compound newComponentDeployer = null;
+
+    ComponentDescription newComponentCD = null;
 
     /**
      * Constructs Run.
@@ -79,9 +98,16 @@ public class Run extends EventCompoundImpl implements Compound {
      */
     protected void readSFAttributes() throws SmartFrogResolutionException, RemoteException {
         // Optional attributes
+        //old attributes
         parent =  sfResolve(parentRef, parent, false);
-        asName =  sfResolve(asNameRef, asName, false);
+        newComponentName =  sfResolve(asNameRef, newComponentName, false);
+        //new attributes
+        parent =  sfResolve(ATTR_PARENT, parent, false);
+        newComponentName =  sfResolve(ATTR_NAME, newComponentName, false);
+
+        newComponentDeployer =  sfResolve(ATTR_DEPLOYER, newComponentDeployer, false);
     }
+
     /**
      * Deploys and reads the basic configuration of the component.
      *
@@ -92,6 +118,7 @@ public class Run extends EventCompoundImpl implements Compound {
     public synchronized void sfDeploy() throws SmartFrogException, RemoteException {
         super.sfDeploy();
         this.readSFAttributes();
+        newComponentCD = getComponentDescription();
     }
 
     /**
@@ -109,9 +136,12 @@ public class Run extends EventCompoundImpl implements Compound {
 
         try {
             super.sfStart();
-            if ((parent != null) && (asName==null)) {
-                throw new SmartFrogDeploymentException(
-                    "It needs to provide a name () when providing a parent ('parent' "+ parent+")", this, sfContext());
+            if ((parent != null) && (newComponentName==null)) {
+                String parentName = "parentName";
+                try { parentName = parent.sfCompleteName().toString(); } catch (Throwable ex){}
+                String message = this.sfCompleteNameSafe()+ " needs to provide a name () when providing a parent ('parent' "+ parentName+")";
+                if (sfLog().isErrorEnabled()) sfLog().error(message);
+                throw new SmartFrogDeploymentException( message , this, sfContext());
             }
             comp = createNewChild();
         } catch (Throwable e) {
@@ -123,29 +153,43 @@ public class Run extends EventCompoundImpl implements Compound {
                 try {
                     String compNameStr = "";
                     if (compName!=null)compNameStr = compName.toString();
-                    comp.sfTerminate(TerminationRecord.abnormal(
-                        "failed to deploy and start correctly "+
-                        compNameStr, name));
+                    comp.sfTerminate(TerminationRecord.abnormal( "failed to deploy and start correctly "+ compNameStr, name));
                 } catch (Exception ex) {}
             }
+            //terminateComponent(this.parent,e,null);
+            //terminateComponent(this,e,null);
+            sfTerminate(TerminationRecord.abnormal( "failed to deploy child ", this.sfCompleteNameSafe(),e));
+
             throw ((SmartFrogException)SmartFrogException.forward(e));
         }
-        Runnable terminator = new Runnable() {
-            public void run() { sfTerminate(TerminationRecord.normal(name)); }
-        };
+        TerminatorThread terminator = new TerminatorThread(this,TerminationRecord.normal(name));
+        terminator.start();
 
-        new Thread(terminator).start();
+//        Runnable terminator = new Runnable() {
+//            public void run() { sfTerminate(TerminationRecord.normal(name)); }
+//        };
+//        new Thread(terminator).start();
     }
 
+    protected ComponentDescription getComponentDescription() throws SmartFrogException {
+        //Run reads the component description from the action attribute
+        return action;
+    }
 
     protected Prim createNewChild() throws SmartFrogDeploymentException, RemoteException {
         Prim comp;
-        if (parent != null) {
-            if (asName==null) throw new SmartFrogDeploymentException("You need to provide a name ('asName' value) when providing a Parent ('parent' "+parent+")",this,sfContext());
-            comp = parent.sfCreateNewChild(asName, action, null);
+        if (newComponentDeployer!=null) {
+            comp = newComponentDeployer.sfCreateNewChild(newComponentName,parent,newComponentCD,null);
         } else {
-            comp = sfCreateNewApp(asName,action, null);
+            //Same semantics as RUN
+            if (parent!=null) {
+                comp = parent.sfCreateNewChild(newComponentName, newComponentCD, null);
+            } else {
+                comp = sfCreateNewApp(newComponentName, newComponentCD, null);
+            }
         }
         return comp;
     }
+
+
 }
