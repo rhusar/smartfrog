@@ -20,7 +20,11 @@ For more information: www.smartfrog.org
 
 Run extends EventCompound {
     sfClass "org.smartfrog.sfcore.workflow.combinators.Run";
-    // action extends ...;
-    // parent ref to optional parent compound // if a parent is provided, then a name is mandatory
-    // asName  a string to be the name in the parent compound (optional)
+    // action extends ...; // ComponentDescription to deploy
+
+    //newComponentName  (or asName) "newComponentByDeployer"; //a string to be the name in the parent compound (optional)
+    //newComponentParent (or parent) LAZY THIS; //ref to optional parent compound, if a parent is provided, then a name is mandatory
+    //newComponentDeployer LAZY THIS; // Compound used for deployment.
+
+
 }

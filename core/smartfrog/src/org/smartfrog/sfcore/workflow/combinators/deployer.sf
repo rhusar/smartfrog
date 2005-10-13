@@ -23,12 +23,11 @@ For more information: www.smartfrog.org
 Deployer extends Run {
     sfClass "org.smartfrog.sfcore.workflow.combinators.Deployer";
 
-    //newComponentDescription ""; // MANDATORY!
-    //newComponentCodebase = "foo.jar bar.jar";
-
-    //newComponentName  (or asName) "newComponentByDeployer";
-    //newComponentParent (or parent) LAZY THIS; // if a parent is provided, then a name is mandatory
+    //newComponentName  (or asName) "newComponentByDeployer"; //a string to be the name in the parent compound (optional)
+    //newComponentParent (or parent) LAZY THIS; //ref to optional parent compound, if a parent is provided, then a name is mandatory
     //newComponentDeployer LAZY THIS; // Compound used for deployment.
 
+    //newComponentDescription ""; // MANDATORY!
+    //newComponentCodebase "foo.jar bar.jar";
     //newComponentExtraAtributes extends vector { -- ["sfConfig:julio", "hola"];}
 }
