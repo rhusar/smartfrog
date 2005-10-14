@@ -20,7 +20,6 @@ For more information: www.smartfrog.org
 
 #include "/org/smartfrog/components.sf"
 #include "/org/smartfrog/predicates.sf"
-#include "/org/smartfrog/services/filesystem/components.sf"
 
 
 /*
@@ -43,8 +42,9 @@ SystemPropertiesSchema extends Schema {
 }
 
 
-SystemPropertiesSchema extends Prim {
-    sfClass "org.smartfrog.services.os.java.SystemPropertiesImpl";
+SystemProperties extends Prim {
+    sfClass "org.smartfrog.services.utils.setproperty.SystemPropertiesImpl";
+    systemPropertiesSchema extends SystemPropertiesSchema;
     properties [];
     setOnStartup false;
     setOnDeploy true;

@@ -43,6 +43,7 @@ public class ComponentHelper {
 
     private Prim owner;
 
+
     /**
      * construct a component helper and bind to a prim class
      * @param owner
@@ -176,21 +177,22 @@ public class ComponentHelper {
         boolean shouldTerminateQuietlyRead = false;
 
         try {
-            shouldTerminate = owner.sfResolve("sfShouldTerminate", shouldTerminate, true);
+            shouldTerminate = owner.sfResolve(
+                    ShouldDetachOrTerminate.ATTR_SHOULD_TERMINATE, shouldTerminate, true);
             shouldTerminateRead = true;
         } catch (RemoteException ex) {
         } catch (SmartFrogResolutionException ex) {
         }
 
         try {
-            shouldTerminateQuietly = owner.sfResolve("sfShouldTerminateQuietly", shouldTerminateQuietly, true);
+            shouldTerminateQuietly = owner.sfResolve(ShouldDetachOrTerminate.ATTR_SHOULD_TERMINATE_QUIETLY, shouldTerminateQuietly, true);
             shouldTerminateQuietlyRead = true;
         } catch (RemoteException ex) {
         } catch (SmartFrogResolutionException ex) {
         }
 
         try {
-            shouldDetach = owner.sfResolve("sfShouldDetach", shouldDetach, true);
+            shouldDetach = owner.sfResolve(ShouldDetachOrTerminate.ATTR_SHOULD_DETACH, shouldDetach, true);
             shouldDetachRead = true;
         } catch (RemoteException ex) {
         } catch (SmartFrogResolutionException ex) {

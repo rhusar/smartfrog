@@ -31,7 +31,7 @@ For more information: www.smartfrog.org
 FileSchema extends FileUsingComponentSchema {
 
     //name of a file
-    //filename extends OptionalString;
+    filename extends Optional;
 
     //a directory
     dir extends Optional;

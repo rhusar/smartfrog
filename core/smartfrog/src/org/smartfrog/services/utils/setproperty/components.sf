@@ -19,6 +19,7 @@ For more information: www.smartfrog.org
 */
 #include "/org/smartfrog/components.sf"
 #include "/org/smartfrog/predicates.sf"
+#include "/org/smartfrog/services/utils/setproperty/sysprops.sf"
 
 
 SetPropertySchema extends Schema {

@@ -1,4 +1,4 @@
-package org.smartfrog.services.os.java;
+package org.smartfrog.services.utils.setproperty;
 
 import org.smartfrog.sfcore.common.SmartFrogException;
 

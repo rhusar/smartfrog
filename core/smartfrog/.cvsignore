@@ -9,3 +9,5 @@ common.properties
 *.iws
 .classpath
 .project
+parsertargets_report.html
+smartfrog-version.properties
