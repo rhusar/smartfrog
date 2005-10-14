@@ -194,7 +194,10 @@ For more information: www.smartfrog.org
           value="${test.smartfrog.classesdir}" />
       <syspropertyset >
         <propertyref prefix="runtime"/>
-      </syspropertyset>             
+      </syspropertyset>       
+      <syspropertyset >
+        <propertyref prefix="smartfrog"/>
+      </syspropertyset>  
       <classpath>
         <path refid="tests.run.classpath"/>
       </classpath>
