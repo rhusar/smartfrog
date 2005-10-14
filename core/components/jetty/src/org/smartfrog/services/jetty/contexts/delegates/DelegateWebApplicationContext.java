@@ -49,7 +49,6 @@ public class DelegateWebApplicationContext extends DelegateApplicationContext im
     private String webApp = null;
     private boolean requestId = false;
 
-    private HttpServer server = null;
 
     private WebApplicationContext application = new WebApplicationContext();
 
@@ -87,6 +86,7 @@ public class DelegateWebApplicationContext extends DelegateApplicationContext im
         AbstractSessionManager sessionmanager = (AbstractSessionManager)
                 servlethandler.getSessionManager();
         sessionmanager.setUseRequestedId(requestId);
+        HttpServer server = getServer().getServer();
         server.addContext(application);
         setContext(application);
     }

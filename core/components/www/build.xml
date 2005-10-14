@@ -42,9 +42,57 @@
   <!-- ========================================================== -->
   <target name="init"
     depends="init-standard-output-dirs,use-smartfrog-tasks,use-smartfrog-testharness">
+  </target>
 
 
+  <!-- make the WAR file -->
+  <target name="war.init" depends="init-standard-output-dirs">
+<!--
+    <property name="target.war.name"
+              value="testwar-${Version}.war"/>
+-->
+    <property name="target.war.name"
+              value="testwar.war"/>
+    <property name="target.war"
+              location="${dist.dir}/${target.war.name}"/>
+    <property name="testwar.dir"
+              location="testwar"/>
+    <property name="testwar.lib.dir"
+              location="${testwar.dir}/lib"/>
+    <property name="testwar.src.dir"
+              location="${testwar.dir}/src"/>
+    <property name="build.testwar.dir"
+              location="${build.dir}/testwar/classes"/>
+    <mkdir dir="${build.testwar.dir}" />
+    <property name="war.dir"
+              location="${testwar.dir}/resources"/>
+    <property name="web.xml"
+              location="${testwar.dir}/WEB-INF/web.xml"/>
+  </target>
 
+  <target name="war.classpath" depends="m2-tasks,war.init">
+    <m2-libraries pathID="war.classpath">
+      <dependency groupID="servletapi"
+                  artifactID="servletapi"
+                  version="${servletapi.version}"/>
+    </m2-libraries>
+  </target>
+  
+  <target name="war.javac" depends="war.classpath" >
+    <sf-javac srcdir="${testwar.src.dir}" destdir="${build.testwar.dir}"
+        classpathref="war.classpath"/> 
+  </target>
+  
+  
+  <!-- make the WAR file -->
+  <target name="war" depends="war.javac" description="make the test WAR file" >
+    <war destFile="${target.war}" webxml="${web.xml}" > 
+      <!--  WAR file, includes WEB-INF stuff-->
+      <classes dir="${build.testwar.dir}" />
+      <fileset dir="${war.dir}" includes="**/*" />
+      <lib dir="${testwar.lib.dir}"
+        includes="*.jar" />
+    </war>
   </target>
   
 

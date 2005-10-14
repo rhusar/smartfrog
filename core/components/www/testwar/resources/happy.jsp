@@ -8,7 +8,8 @@
 
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%!private String property(String propname) {
+<%!
+    private String property(String propname) {
     return System.getProperty(propname);
 }
 

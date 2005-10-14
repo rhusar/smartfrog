@@ -257,9 +257,12 @@ public class LivenessPageChecker implements LivenessPage {
 
             if ((responseCode < minimumResponseCode)
                     || (responseCode > maximumResponseCode)) {
-                throw new SmartFrogLivenessException("endpoint " + toString()
+                String text = maybeGetErrorText(connection);
+                String message = "endpoint " + toString()
                         + " returned error " + response
-                        + maybeGetErrorText(connection));
+                        + text;
+                log.error(message);
+                throw new SmartFrogLivenessException(message);
             }
 
             //now fetch the file
@@ -268,7 +271,9 @@ public class LivenessPageChecker implements LivenessPage {
             if (mimeTypeMap != null) {
                 String mimeType = connection.getContentType();
                 if (null == mimeTypeMap.get(mimeType)) {
-                    throw new SmartFrogLivenessException("Unexpected mimetype: " + mimeType);
+                    String message = "Unexpected mimetype: " + mimeType;
+                    log.error(message);
+                    throw new SmartFrogLivenessException(message);
                 }
 
             }
@@ -276,8 +281,9 @@ public class LivenessPageChecker implements LivenessPage {
             postProcess(responseCode, response, body);
 
         } catch (IOException exception) {
+            String text = maybeGetErrorText(connection);
             String message = "Failed to read " + targetURL.toString() + "\n"
-                    + maybeGetErrorText(connection) + "\n" + exception.getMessage();
+                    + text + "\n" + exception.getMessage();
             log.error(message);
             throw new SmartFrogLivenessException(message, exception);
         }
@@ -392,9 +398,9 @@ public class LivenessPageChecker implements LivenessPage {
     }
 
     /**
-     * DOCUMENT ME!
+     * Get the page attribute
      *
-     * @return DOCUMENT ME!
+     * @return the page to fetch
      */
     public String getPage() {
         return page;
