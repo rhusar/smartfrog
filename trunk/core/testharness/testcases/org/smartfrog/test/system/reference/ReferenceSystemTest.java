@@ -49,7 +49,7 @@ public class ReferenceSystemTest extends SmartFrogTestBase {
                 "SmartFrogDeploymentException",
                 "Failed to resolve 'attr ",
                 "SmartFrogResolutionException",
-                "java.lang.StackOverflowError");
+                "Possible cause: cyclic reference.");
     }
 
     public void testCaseTCN39() throws Exception {
@@ -178,4 +178,42 @@ public class ReferenceSystemTest extends SmartFrogTestBase {
 	assertNotNull(cd);
 	assertContains(actual,expected);
     }
+
+    public void testCaseTCN96() throws Exception {
+        deployExpectingException(FILES+"tcn96.sf",
+                "tcn96",
+                "SmartFrogDeploymentException",
+                "Failed to resolve 'link link'.",
+                "SmartFrogResolutionException",
+                "Possible cause: cyclic reference.");
+    }
+
+    public void testCaseTCN97() throws Exception {
+        deployExpectingException(FILES+"tcn97.sf",
+                "tcn97",
+                "SmartFrogDeploymentException",
+                "Failed to resolve 'link PARENT:sfConfig:link'.",
+                "SmartFrogResolutionException",
+                "Possible cause: cyclic reference.");
+    }
+
+    public void testCaseTCN98() throws Exception {
+        deployExpectingException(FILES+"tcn98.sf",
+                "tcn98",
+                "SmartFrogDeploymentException",
+                "Failed to resolve 'x [unprintable cyclic value]'.",
+                "SmartFrogResolutionException",
+                "Possible cause: cyclic reference.");
+    }
+
+    public void testCaseTCN99() throws Exception {
+        deployExpectingException(FILES+"tcn99.sf",
+                "tcn99",
+                "SmartFrogDeploymentException",
+                "Failed to resolve 'link extends link;;'.",
+                "SmartFrogResolutionException",
+                "Possible cause: cyclic reference.");
+    }
+
+    
 }
