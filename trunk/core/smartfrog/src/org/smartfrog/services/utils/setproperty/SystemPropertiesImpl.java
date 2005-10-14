@@ -18,11 +18,12 @@
 
  */
 
-package org.smartfrog.services.os.java;
+package org.smartfrog.services.utils.setproperty;
 
 import org.smartfrog.sfcore.prim.PrimImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.common.SmartFrogException;
+import org.smartfrog.sfcore.utils.ComponentHelper;
 
 import java.rmi.RemoteException;
 import java.util.Properties;
@@ -80,6 +81,11 @@ public class SystemPropertiesImpl extends PrimImpl implements SystemProperties {
             //this is so that we have the list for termination
             loadProperties();
         }
+        new ComponentHelper(this).sfSelfDetachAndOrTerminate("normal",
+                "SystemProperties",
+                this.sfCompleteNameSafe(),
+                null);
+
     }
 
     /**
