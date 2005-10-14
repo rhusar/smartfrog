@@ -47,6 +47,8 @@ public class StartTest extends TaskTestBase {
         expectBuildExceptionContaining("testIncompatiblePort", "Incompatible Value",
                 "failed to start the smartfrog daemon");
     }
+
+    /*
     public void testIncompatibleLivenessDelay() {
         expectBuildExceptionContaining("testIncompatibleLivenessDelay", "Incompatible Value",
                 "failed to start the smartfrog daemon");
@@ -69,5 +71,5 @@ public class StartTest extends TaskTestBase {
                       "failed to start the smartfrog daemon");
           }
 
-
+      */
 }
