@@ -181,7 +181,7 @@ public class SystemPropertiesImpl extends PrimImpl implements SystemProperties {
 
     /**
      * Unset a property in this JVM
-     *
+     * Not supported on java1.4
      * @param name
      * @throws org.smartfrog.sfcore.common.SmartFrogException
      *                                  -may wrap a security exception
@@ -189,9 +189,9 @@ public class SystemPropertiesImpl extends PrimImpl implements SystemProperties {
      */
     public void unsetProperty(String name)
             throws SmartFrogException, RemoteException {
-        System.clearProperty(name);
         try {
-            System.clearProperty(name);
+          // TODO: use introspection. 
+            //   System.clearProperty(name);
         } catch (SecurityException e) {
             throw SmartFrogException.forward("clearing " + name,
                     e);
