@@ -40,7 +40,8 @@ public class HappyServlet extends HttpServlet {
         return System.getProperty(propname);
     }
 
-    public static final String PROP_USER = "db.port";
+    public static final String PROP_PORT = "db.port";
+    public static final String PROP_USER = "db.user";
     public static final String PROP_PASS = "db.passwd";
     public static final String PROP_URL = "db.url";
     public static final String PROP_DRIVER = "db.driver";
@@ -95,6 +96,9 @@ public class HappyServlet extends HttpServlet {
         String url = property(PROP_URL);
         String user = property(PROP_USER);
         String pass = property(PROP_PASS);
+        if ("[empty]".equals(pass)) {
+            pass=null;
+        }
         String driver = property(PROP_DRIVER);
         Throwable t = null;
         try {
