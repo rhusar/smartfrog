@@ -256,8 +256,7 @@ public class SystemPropertiesImpl extends PrimImpl implements SystemProperties {
         try {
             System.setProperty(name, value);
         } catch (SecurityException e) {
-            throw SmartFrogException.forward("setting " + name + " to " + value,
-                    e);
+            throw SmartFrogException.forward("setting " + name + " to " + value, e);
         }
     }
 
@@ -275,8 +274,7 @@ public class SystemPropertiesImpl extends PrimImpl implements SystemProperties {
           // TODO: use introspection.
             //   System.clearProperty(name);
         } catch (SecurityException e) {
-            throw SmartFrogException.forward("clearing " + name,
-                    e);
+            throw SmartFrogException.forward("clearing " + name, e);
         }
     }
 }
