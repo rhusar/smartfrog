@@ -9,19 +9,22 @@
   */
    DatabaseProperties extends SystemProperties {
         
+        
         dbport TBD;
         dbpassword TBD;
         dburl TBD;
         dbdriver TBD;
+        dbuser TBD;
         setOnStartup true;
         setOnDeploy false;
         properties [
             ["db.port",dbport],
             ["db.passwd",dbpassword],
             ["db.url",dburl],
-            ["db.driver",dbdriver]
+            ["db.driver",dbdriver],
+            ["db.user",dbuser]
         ];
-    
+        
     }
     
     
@@ -71,7 +74,7 @@ TestWar extends Compound {
     
     ping extends LivenessPage {
         enabled PARENT:liveness;
-        host ""localhost"";
+        host "localhost";
         port PARENT:port;
         page LAZY PARENT:happyPath:concat;
         checkFrequency 10;
@@ -81,7 +84,7 @@ TestWar extends Compound {
 /*
   This is a binding to the mysql database
   */
-TestWarBoundToMySql extends DeployServerOnJetty {
+TestWarBoundToMySql extends TestWar {
 
 
     port 5050;
@@ -90,8 +93,13 @@ TestWarBoundToMySql extends DeployServerOnJetty {
     dbhost "localhost";
     dbdatabase "test";
     props:dbport 80;
-    props:dbuser "user";
-    props:dbpassword "secret";
+/*
+    props:dbuser "mysql";
+    props:dbpassword "[empty]";
+*/
+    props:dbuser "root";
+    props:dbpassword "password";
+
     props:dbdriver "com.mysql.jdbc.Driver";
     dburl extends LazyConcat {
        string extends LAZY {
