@@ -80,6 +80,7 @@
   
   <target name="war.javac" depends="war.classpath" >
     <sf-javac srcdir="${testwar.src.dir}" destdir="${build.testwar.dir}"
+        source="1.4" target="1.4"
         classpathref="war.classpath"/> 
   </target>
   

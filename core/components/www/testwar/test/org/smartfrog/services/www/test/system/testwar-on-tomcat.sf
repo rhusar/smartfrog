@@ -1,0 +1,18 @@
+
+#include "org/smartfrog/services/www/tests/system/testwar-base.sf";
+#include "org/smartfrog/services/tomcat/components.sf";
+
+sfConfig extends TestWarBoundToMySql {
+
+ 
+   server extends TomcatServer {
+
+      port PARENT:port;
+      username "admin";
+      password "password";
+
+    }
+
+   
+
+}
