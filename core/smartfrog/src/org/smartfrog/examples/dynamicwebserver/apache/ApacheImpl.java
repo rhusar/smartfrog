@@ -78,7 +78,7 @@ public class ApacheImpl extends CompoundImpl implements Compound, Apache,
         super.sfDeploy();
 
         if (logger != null) {
-            logger.log(name, "apache dploying");
+            logger.log(name, "apache deploying");
         }
 
         name = sfCompleteName().toString();
@@ -161,7 +161,7 @@ public class ApacheImpl extends CompoundImpl implements Compound, Apache,
     public void run() {
         boolean needRestart = false;
         Process p;
-        logger.log(name, "apache montior thread running");
+        logger.log(name, "apache monitor thread running");
 
         try {
             p = Runtime.getRuntime().exec(apachectlLocation + " start");
