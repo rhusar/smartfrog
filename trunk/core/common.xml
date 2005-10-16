@@ -1281,7 +1281,8 @@
       <artifact:dependencies>
         <localRepository location="${m2.repository}" />
         <!-- look in SCM first -->
-        <remoteRepository url="${m2.smartfrog.scm.repository.url}"  checksumPolicy="warn"/>
+        <!--checksumPolicy="warn"-->
+        <remoteRepository url="${m2.smartfrog.scm.repository.url}" />
         <!-- then hit ibiblio -->
         <remoteRepository url="http://ibiblio.org/maven2" />
       </artifact:dependencies>
