@@ -85,6 +85,9 @@ public class TomcatDelegateWebApplication extends TomcatDelegateApplicationConte
                     webappFile);
         }
         contextPath = getDeclaration().sfResolve(ATTR_CONTEXT_PATH, (String) null, true);
+        if(!contextPath.startsWith("/")) {
+            contextPath="/"+contextPath;
+        }
         absolutePath = contextPath;
         getDeclaration().sfReplaceAttribute(ATTR_ABSOLUTE_PATH, absolutePath);
         //Deploy a WAR File
@@ -114,10 +117,13 @@ public class TomcatDelegateWebApplication extends TomcatDelegateApplicationConte
     public void start() throws SmartFrogException, RemoteException {
         Authenticator.setDefault(authenticator);
         //Install and start the webapp
-        String commandStr = "install?path=/" + contextPath + "&war=jar:" + webApp + "!/";
-        executeManagerCommand(commandStr);
-        commandStr = "start?path=/" + contextPath;
-        executeManagerCommand(commandStr);
+        String warfile;
+        //warfile= "jar:" + webApp; + "!/";
+        warfile =  webApp; 
+        String commandStr = "install?path=" + contextPath + "&war=" +warfile; 
+        executeManagerCommand(commandStr, true);
+        commandStr = "start?path=" + contextPath;
+        executeManagerCommand(commandStr, true);
     }
 
     /**
@@ -128,8 +134,8 @@ public class TomcatDelegateWebApplication extends TomcatDelegateApplicationConte
      */
     public void undeploy() throws RemoteException, SmartFrogException {
         Authenticator.setDefault(authenticator);
-        String commandStr = "remove?path=/" + contextPath;
-        executeManagerCommand(commandStr);
+        String commandStr = "remove?path=" + contextPath;
+        executeManagerCommand(commandStr, false);
     }
 
     /**
@@ -147,26 +153,27 @@ public class TomcatDelegateWebApplication extends TomcatDelegateApplicationConte
      * should be updated to return the status of the command as oppossed
      * to assuming it worked.
      */
-    private void executeManagerCommand(String urlString) throws SmartFrogException {
+    private void executeManagerCommand(String urlString, boolean checkresponse) throws SmartFrogException {
         BufferedReader in = null;
+        String fullURL = managerURL + urlString;
         try {
-            URL url = new URL(managerURL + urlString);
+            URL url = new URL(fullURL);
             InputStream content = (InputStream) url.getContent();
             in = new BufferedReader(new InputStreamReader(content));
             String line;
+            StringBuffer response=new StringBuffer();
             while ((line = in.readLine()) != null) {
                 System.out.println(line);//Should really return this maybe check the text for an error
+                response.append(line);
+                response.append("\n");
+            }
+            if(checkresponse && response.indexOf("FAIL")>=0) {
+                throw new SmartFrogException("Command "+fullURL+" Failed\n"+response);
             }
         } catch (IOException e) {
             throw SmartFrogException.forward(e);
         } finally {
-            if (in != null) {
-                try {
-                    in.close();
-                } catch (IOException e) {
-                    //ignore
-                }
-            }
+            FileSystem.close(in);
         }
     }
 }
