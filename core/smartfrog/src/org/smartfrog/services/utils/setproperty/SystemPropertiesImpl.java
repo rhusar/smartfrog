@@ -29,6 +29,11 @@ import java.rmi.RemoteException;
 import java.util.Properties;
 import java.util.Vector;
 import java.util.Enumeration;
+import org.smartfrog.sfcore.common.Context;
+import org.smartfrog.sfcore.common.SmartFrogContextException;
+import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.common.SmartFrogDeploymentException;
+import org.smartfrog.sfcore.logging.Log;
 
 /** Implement our JVM manipulator */
 public class SystemPropertiesImpl extends PrimImpl implements SystemProperties {
@@ -36,10 +41,74 @@ public class SystemPropertiesImpl extends PrimImpl implements SystemProperties {
     private Properties proplist = new Properties();
     private boolean setOnStartup = false;
     private boolean setOnDeploy = false;
-    private boolean unsetOnTerminate = false;
+    private boolean unsetOnTerminate = true;
+    private Log log;
 
     public SystemPropertiesImpl() throws RemoteException {
     }
+
+
+//----------------
+
+    public synchronized void sfDeployWith(Prim parent, Context cxt) throws SmartFrogDeploymentException, RemoteException {
+        try {
+          sfContext = cxt;
+          log = this.sfGetApplicationLog();//.sfGetLog(sfResolve(SmartFrogCoreKeys.SF_APP_LOG_NAME, "", true));
+//          // Mandatory attributes.
+//            try {
+//                name = (String) cxt.sfResolveAttribute(ATR_NAME);
+//                value = cxt.sfResolveAttribute(ATR_VALUE);
+//            } catch (SmartFrogException e) {
+//                if (log.isErrorEnabled()) {
+//                    log.error("Failed to read mandatory attribute: " + e.toString(),e);
+//                }
+//                throw e;
+//            }
+            // optional
+            try {
+                setOnStartup =((Boolean) cxt.sfResolveAttribute(ATTR_SETONSTARTUP)).booleanValue();
+            } catch (SmartFrogContextException e) {
+                if (log.isErrorEnabled()) {
+                    log.error("Failed to read mandatory attribute: " + e.toString(),e);
+                }
+                throw e;
+            }
+
+            try {
+                setOnDeploy =((Boolean) cxt.sfResolveAttribute(ATTR_SETONDEPLOY)).booleanValue();
+            } catch (SmartFrogContextException e) {
+                if (log.isErrorEnabled()) {
+                    log.error("Failed to read mandatory attribute: " + e.toString(),e);
+                }
+                throw e;
+            }
+
+            try {
+                unsetOnTerminate =((Boolean) cxt.sfResolveAttribute(ATTR_UNSETONTERMINATE)).booleanValue();
+            } catch (SmartFrogContextException e) {
+                if (log.isErrorEnabled()) {
+                    log.error("Failed to read mandatory attribute: " + e.toString(),e);
+                }
+                throw e;
+            }
+
+            if (setOnDeploy) {
+                loadAndSetProperties();
+            }
+
+
+        } catch (Throwable t) {
+            if (log.isErrorEnabled()) {
+                log.error(t.getMessage(),t);
+            }
+            throw new SmartFrogDeploymentException(t, this);
+        }
+        //super.sfDeploy();
+        super.sfDeployWith(parent, cxt);
+    }
+
+//----------------
+
 
     /**
      * Called after instantiation for deployment purposes. Heart monitor is
@@ -54,14 +123,15 @@ public class SystemPropertiesImpl extends PrimImpl implements SystemProperties {
     public synchronized void sfDeploy()
             throws SmartFrogException, RemoteException {
         super.sfDeploy();
-        setOnStartup = sfResolve(ATTR_SETONSTARTUP, setOnStartup, true);
-        setOnDeploy = sfResolve(ATTR_SETONDEPLOY, setOnDeploy, true);
-        unsetOnTerminate = sfResolve(ATTR_UNSETONTERMINATE,
-                unsetOnTerminate,
-                true);
-        if (setOnDeploy) {
-            loadAndSetProperties();
-        }
+
+// Moved to sfDeployWith so that the properties are ready before anything is loaded.
+
+//        setOnStartup = sfResolve(ATTR_SETONSTARTUP, setOnStartup, true);
+//        setOnDeploy = sfResolve(ATTR_SETONDEPLOY, setOnDeploy, true);
+//        unsetOnTerminate = sfResolve(ATTR_UNSETONTERMINATE, unsetOnTerminate, true);
+//        if (setOnDeploy) {
+//            loadAndSetProperties();
+//        }
     }
 
     /**
@@ -118,7 +188,19 @@ public class SystemPropertiesImpl extends PrimImpl implements SystemProperties {
             throws SmartFrogException, RemoteException {
         Vector propVector = null;
         proplist = new Properties();
-        propVector = sfResolve(ATTR_PROPERTIES, propVector, true);
+
+//        propVector = sfResolve(ATTR_PROPERTIES, propVector, true);
+        try {
+            propVector =((Vector) sfContext.sfResolveAttribute(ATTR_PROPERTIES));
+        } catch (SmartFrogContextException e) {
+            if (log.isErrorEnabled()) {
+                log.error("Failed to read mandatory attribute: " + e.toString(),e);
+            }
+            throw e;
+        }
+
+
+
         if (propVector != null) {
             for (Enumeration en = propVector.elements();
                  en.hasMoreElements();) {
@@ -190,7 +272,7 @@ public class SystemPropertiesImpl extends PrimImpl implements SystemProperties {
     public void unsetProperty(String name)
             throws SmartFrogException, RemoteException {
         try {
-          // TODO: use introspection. 
+          // TODO: use introspection.
             //   System.clearProperty(name);
         } catch (SecurityException e) {
             throw SmartFrogException.forward("clearing " + name,
