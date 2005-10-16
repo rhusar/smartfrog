@@ -125,7 +125,7 @@ public class SmartFrogJVMProperties {
     /**
      * entry point to smartfrog
      * @value "org.smartfrog.SFSystem";
-     */ 
+     */
     public static final String SMARTFROG_ENTRY_POINT = "org.smartfrog.SFSystem";
     
     

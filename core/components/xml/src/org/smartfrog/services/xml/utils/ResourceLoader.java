@@ -140,7 +140,7 @@ public class ResourceLoader {
         char[] block=new char[1024];
         int read;
         while(((read = reader.read(block))>=0)) {
-            buffer.append(block);
+            buffer.append(block,0,read);
         }
         return buffer.toString();
     }
