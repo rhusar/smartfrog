@@ -64,8 +64,8 @@ TestWar extends Compound {
 
     
     happyPath extends LazyConcat {
-       string extends LAZY {
-          -- LAZY webapp:contextPath;
+       string extends  {
+          -- webapp:contextPath;
           -- happy.page;
        }
     }
@@ -102,7 +102,7 @@ TestWarBoundToMySql extends TestWar {
 
     props:dbdriver "com.mysql.jdbc.Driver";
     dburl extends LazyConcat {
-       string extends LAZY {
+       string extends  {
           -- "jdbc:mysql://";
           -- dbhost;
           -- "/";
