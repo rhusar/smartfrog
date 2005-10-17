@@ -12,18 +12,10 @@
  
  
  
-
-
-    
-
-DeployServerOnJetty extends Compound {
-
-    port TBD;
-    home LAZY PROPERTY java.io.tmpdir;
-    liveness false;
-    happy.page "/happy";
- 
-    props extends SystemProperties {
+ /*
+  * these are the properties of the database
+  */
+   DatabaseProperties extends SystemProperties {
         
         dbport TBD;
         dbpassword TBD;
@@ -40,6 +32,18 @@ DeployServerOnJetty extends Compound {
     
     }
 
+
+    
+
+DeployServerOnJetty extends Compound {
+
+    port TBD;
+    home LAZY PROPERTY java.io.tmpdir;
+    liveness false;
+    happy.page "/happy";
+
+    props extends DatabaseProperties;
+ 
    /*
     this is the jetty server itself
     */
