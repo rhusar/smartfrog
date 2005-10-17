@@ -34,7 +34,7 @@ import org.ggf.xbeans.cddlm.api.StaticPortalStatusType;
 import org.ggf.xbeans.cddlm.api.SystemReferenceListType;
 import org.ggf.xbeans.cddlm.api.UriListType;
 import org.ggf.xbeans.cddlm.wsrf.wsa2003.EndpointReferenceType;
-import org.smartfrog.services.deployapi.components.AddedFilestore;
+import org.smartfrog.services.filesystem.filestore.AddedFilestore;
 import org.smartfrog.services.deployapi.components.DeploymentServer;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.system.Utils;

@@ -23,16 +23,20 @@ package org.smartfrog.services.deployapi.transport.endpoints.system;
 import nu.xom.Element;
 import nu.xom.Document;
 import org.apache.axis2.om.OMElement;
-import org.smartfrog.services.deployapi.components.AddedFilestore;
+import org.smartfrog.services.filesystem.filestore.AddedFilestore;
+import org.smartfrog.services.filesystem.filestore.FileEntry;
 import org.smartfrog.services.deployapi.engine.ServerInstance;
 import org.smartfrog.services.deployapi.system.Utils;
 import org.smartfrog.services.deployapi.transport.endpoints.XmlBeansEndpoint;
+import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
 import org.smartfrog.services.deployapi.binding.XomHelper;
 
 import java.io.IOException;
 
 /** Implement addfile operation */
 public class AddFileProcessor extends SystemProcessor {
+    public static final String PREFIX = "file";
+    public static final String SUFFIX = "bin";
 
     public AddFileProcessor(XmlBeansEndpoint owner) {
         super(owner);
@@ -51,11 +55,15 @@ public class AddFileProcessor extends SystemProcessor {
         String name = XomHelper.getElementValue(body, "api:name");
         String schema = XomHelper.getElementValue(body,
                 "api:schema");
+        if (!(PREFIX.equals(schema))) {
+            throw FaultRaiser.raiseNotImplementedFault("Unsupported schema type");
+        }
         String mimetype = XomHelper.getElementValue(body,
                 "api:mimetype");
-        Element response = null;
-        Element metadata=XomHelper.getElement(body,"api:metadata",true);
-        //filestore.createNewFile(
+        Element response = XomHelper.apiElement("addFileResponse");
+        Element metadata = XomHelper.getElement(body, "api:metadata", true);
+        FileEntry newFile = filestore.createNewFile(PREFIX, SUFFIX);
+
         return Utils.xomToAxiom(response);
     }
 
