@@ -115,6 +115,7 @@ public class TomcatDelegateWebApplication extends TomcatDelegateApplicationConte
      * @throws RemoteException
      */
     public void start() throws SmartFrogException, RemoteException {
+        undeploy();
         Authenticator.setDefault(authenticator);
         //Install and start the webapp
         String warfile;
