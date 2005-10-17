@@ -36,8 +36,9 @@ import java.sql.DriverManager;
  */
 public class HappyServlet extends HttpServlet {
 
-    private String property(String propname) {
-        return System.getProperty(propname);
+    private String property(String propname,String defval) {
+        String property = System.getProperty(propname, defval);
+        return property;
     }
 
     public static final String PROP_PORT = "db.port";
@@ -47,7 +48,7 @@ public class HappyServlet extends HttpServlet {
     public static final String PROP_DRIVER = "db.driver";
 
     public boolean isSet(PrintWriter out, String propname) throws IOException {
-        String value = property(propname);
+        String value = property(propname,null);
         if (value == null) {
             para(out, "missing property:" + propname);
             return false;
@@ -93,13 +94,13 @@ public class HappyServlet extends HttpServlet {
 
 
     public boolean checkDatabaseConnection(PrintWriter out) throws IOException {
-        String url = property(PROP_URL);
-        String user = property(PROP_USER);
-        String pass = property(PROP_PASS);
+        String url = property(PROP_URL,"jdbc:mysql://sfdemo01//test");
+        String user = property(PROP_USER,"root");
+        String pass = property(PROP_PASS,null);
         if ("[empty]".equals(pass)) {
             pass=null;
         }
-        String driver = property(PROP_DRIVER);
+        String driver = property(PROP_DRIVER,"com.mysql.jdbc.Driver");
         Throwable t = null;
         try {
             Class.forName(driver).newInstance();
@@ -124,10 +125,10 @@ public class HappyServlet extends HttpServlet {
                          HttpServletResponse response)
             throws ServletException, IOException {
         PrintWriter out = response.getWriter();
-
+        out.println("<html><head><title>Happiness Page</title</head><body>");
         boolean happy = true;
         String message = "<i>The database is configured </i>";
-        happy = areDatabasePropsSet(out);
+        //happy = areDatabasePropsSet(out);
 
         if (happy) {
             happy = checkDatabaseConnection(out);
@@ -141,7 +142,6 @@ public class HappyServlet extends HttpServlet {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
         para(out,message);
-
-
+        out.println("</body></html>");
     }
 }
