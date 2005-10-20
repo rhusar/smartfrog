@@ -95,10 +95,9 @@
         includes="*.jar" />
     </war>
   </target>
+
   
-
-
-
+  <target name="dist" depends="common.dist,m2-install,war"/>
 
 
 </project>
