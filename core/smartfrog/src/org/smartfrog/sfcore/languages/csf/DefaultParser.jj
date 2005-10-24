@@ -710,7 +710,6 @@ void Constraints(CSFComponentDescription comp) :
 }
 {
     (
-     { where = ""; }
        t = <SUCHTHAT> { suchThat = fixEscapes(t.image.substring(10, t.image.length() - 1)); }
       {
        try {
