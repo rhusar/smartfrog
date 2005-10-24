@@ -252,8 +252,9 @@
   <!--                                                                     -->
   <!-- =================================================================== -->
   <target name="createParser" depends="init">
-    <!-- Javacc the parser file -->
+    <!-- Javacc the parser files - both sf and csf -->
     <javacc target="${src.dir}/org/smartfrog/sfcore/languages/sf/DefaultParser.jj" javacchome="${javacc.dir}"/>
+    <javacc target="${src.dir}/org/smartfrog/sfcore/languages/csf/DefaultParser.jj" javacchome="${javacc.dir}"/>
   </target>
   <!-- =================================================================== -->
   <!--   Compiles source directory                                         -->
@@ -312,6 +313,16 @@
     <copy todir="${build.classes.dir}">
       <fileset dir="${src.dir}">
         <include name="**/*.sf*"/>
+      </fileset>
+    </copy>
+  </target>
+  <!-- =================================================================== -->
+  <!--   Copy .prolog files to "build" directories                             -->
+  <!-- =================================================================== -->
+  <target name="copyProlog" depends="initbuild">
+    <copy todir="${build.classes.dir}">
+      <fileset dir="${src.dir}">
+        <include name="**/*.prolog*"/>
       </fileset>
     </copy>
   </target>
@@ -465,7 +476,7 @@
   <!--  BUILD                                                              -->
   <!-- =================================================================== -->
   <target name="prebuild"
-    depends="initbuild,generateversion,compile,copySF,copyGif,copyBAT,copyHTML,copyDefault,copySFCD" />
+    depends="initbuild,generateversion,compile,copySF,copyGif,copyBAT,copyHTML,copyDefault,copySFCD, copyProlog" />
 
   <target name="build"
     depends="prebuild"
