@@ -87,7 +87,7 @@ public class NullSolver extends CoreSolver implements Solver {
         unbounds = new Vector();
         top.visit(new NullSolver.BindingMapper(), false);
         if (unbounds.size() > 0) {
-            throw new SmartFrogCompileResolutionException("Unbound attributes " + unbounds);
+            throw new SmartFrogCompileResolutionException("Unbound variable(s) in attribute " + unbounds);
         }
     }
 

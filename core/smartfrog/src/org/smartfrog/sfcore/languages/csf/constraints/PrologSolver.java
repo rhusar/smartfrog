@@ -196,7 +196,7 @@ abstract public class PrologSolver extends CoreSolver {
         allVariables = new Vector();
         top.visit(new BindingMapper(), false);
         if (allVariables.size() > 0) {
-            throw new SmartFrogCompileResolutionException("Unbound attributes " + allVariables);
+            throw new SmartFrogCompileResolutionException("Unbound variable(s) in attribute(s) " + allVariables);
         }
     }
 
