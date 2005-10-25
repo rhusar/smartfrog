@@ -126,16 +126,17 @@ For more information: www.smartfrog.org
       <pathelement location="${ssh.project}"/>
       <pathelement location="${net.project}"/>
       <pathelement location="${emailer.project}"/>
-      <pathelement location="${www.project}"/>
-      <pathelement location="${jetty.project}"/>
-      <pathelement location="${tomcat.project}"/>
       <pathelement location="${slp.project}"/>
       <pathelement location="${scripting.project}"/>
       <pathelement location="${sfLoggingServices.project}"/>
     <!--pathelement location="${arithmetic-testharness.project}"/-->
       <!--pathelement location="${junit.project}"/-->
       <!--pathelement location="${cddlm.project}"/-->
-      <!--pathelement location="${releasetest.project}"/-->
+      <!--pathelement location="${releasetest.project}"
+      <pathelement location="${www.project}"/>
+      <pathelement location="${jetty.project}"/>
+      <pathelement location="${tomcat.project}"/>
+      /-->
     </path>
     <property name="component.path.asproperty"
       refid="component.path"/>
@@ -198,7 +199,8 @@ For more information: www.smartfrog.org
   </target>
 
 
-  <target name="buildrelease" depends ="init" description="buildRelease fopr all components" >
+  <target name="buildrelease" depends ="init" 
+          description="buildRelease for all components" >
     <delegateBuild target="maybe-buildrelease"/>
   </target>
 
