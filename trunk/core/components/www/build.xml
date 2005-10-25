@@ -47,12 +47,8 @@
 
   <!-- make the WAR file -->
   <target name="war.init" depends="init-standard-output-dirs">
-<!--
     <property name="target.war.name"
-              value="testwar-${Version}.war"/>
--->
-    <property name="target.war.name"
-              value="testwar.war"/>
+              value="sf-testwar-${Version}.war"/>
     <property name="target.war"
               location="${dist.dir}/${target.war.name}"/>
     <property name="testwar.dir"
