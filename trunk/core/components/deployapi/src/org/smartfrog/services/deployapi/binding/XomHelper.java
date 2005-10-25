@@ -20,15 +20,13 @@
 
 package org.smartfrog.services.deployapi.binding;
 
-import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
-import org.smartfrog.services.deployapi.system.Constants;
-import org.ggf.cddlm.generated.api.CddlmConstants;
-import nu.xom.Element;
 import nu.xom.Attribute;
+import nu.xom.Element;
 import nu.xom.Node;
 import nu.xom.Nodes;
-
-import javax.xml.namespace.QName;
+import org.ggf.cddlm.generated.api.CddlmConstants;
+import org.smartfrog.services.deployapi.system.Constants;
+import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
 
 /** generic xom stuff */
 public class XomHelper {

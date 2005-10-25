@@ -36,8 +36,8 @@ import org.smartfrog.services.deployapi.transport.faults.BaseException;
 import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
 
 import javax.xml.namespace.QName;
-import java.util.Iterator;
 import java.io.IOException;
+import java.util.Iterator;
 
 
 /**

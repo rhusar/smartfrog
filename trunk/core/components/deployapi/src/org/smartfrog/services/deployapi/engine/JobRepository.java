@@ -23,9 +23,7 @@ package org.smartfrog.services.deployapi.engine;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.system.Utils;
-import org.smartfrog.services.deployapi.system.LifecycleStateEnum;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
 import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
 

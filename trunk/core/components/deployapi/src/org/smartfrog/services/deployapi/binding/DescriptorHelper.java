@@ -20,28 +20,36 @@
 
 package org.smartfrog.services.deployapi.binding;
 
-import static org.smartfrog.services.deployapi.system.Constants.*;
-import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
-import org.smartfrog.services.deployapi.system.Utils;
-import org.smartfrog.services.deployapi.system.Constants;
-import org.smartfrog.services.deployapi.system.DeploymentLanguage;
-import static org.smartfrog.services.deployapi.transport.faults.FaultRaiser.*;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.BufferedOutputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.net.URL;
-
-import nu.xom.Element;
 import nu.xom.Attribute;
-import nu.xom.Serializer;
-import nu.xom.Document;
 import nu.xom.Builder;
-import nu.xom.ParsingException;
-import nu.xom.Nodes;
+import nu.xom.Document;
+import nu.xom.Element;
 import nu.xom.Elements;
+import nu.xom.Nodes;
+import nu.xom.ParsingException;
+import nu.xom.Serializer;
+import org.smartfrog.services.deployapi.system.Constants;
+import static org.smartfrog.services.deployapi.system.Constants.API_ELEMENT_INITALIZE_REQUEST;
+import static org.smartfrog.services.deployapi.system.Constants.CHARSET_SF_FILE;
+import static org.smartfrog.services.deployapi.system.Constants.SMARTFROG_ELEMENT_NAME;
+import static org.smartfrog.services.deployapi.system.Constants.SMARTFROG_ELEMENT_VERSION_ATTR;
+import static org.smartfrog.services.deployapi.system.Constants.SMARTFROG_NAMESPACE;
+import static org.smartfrog.services.deployapi.system.Constants.SMARTFROG_XML_VERSION;
+import static org.smartfrog.services.deployapi.system.Constants.XML_CDL_NAMESPACE;
+import org.smartfrog.services.deployapi.system.DeploymentLanguage;
+import org.smartfrog.services.deployapi.system.Utils;
+import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
+import static org.smartfrog.services.deployapi.transport.faults.FaultRaiser.checkArg;
+import static org.smartfrog.services.deployapi.transport.faults.FaultRaiser.raiseBadArgumentFault;
+import static org.smartfrog.services.deployapi.transport.faults.FaultRaiser.raiseUnsupportedLanguageFault;
+
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URL;
 
 /**
 

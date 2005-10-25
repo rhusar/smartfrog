@@ -33,7 +33,6 @@ import org.smartfrog.services.deployapi.transport.wsrf.WSRPResourceSource;
 import org.smartfrog.services.deployapi.transport.wsrf.WsrfEndpoint;
 
 import javax.xml.namespace.QName;
-import java.rmi.RemoteException;
 import java.io.IOException;
 
 /**

@@ -20,13 +20,7 @@
 
 package org.smartfrog.services.deployapi.test.system;
 
-import org.smartfrog.services.deployapi.client.Deploy;
 import org.smartfrog.services.deployapi.client.Status;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-import java.util.ArrayList;
 
 /**
 

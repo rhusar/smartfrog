@@ -20,11 +20,11 @@
 
 package org.smartfrog.services.deployapi.components;
 
-import org.smartfrog.sfcore.prim.PrimImpl;
-import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.services.deployapi.engine.ServerInstance;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
-import org.smartfrog.services.deployapi.engine.ServerInstance;
+import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.prim.TerminationRecord;
 
 import java.rmi.RemoteException;
 

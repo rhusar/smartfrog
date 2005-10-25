@@ -20,13 +20,13 @@
 
 package org.smartfrog.services.deployapi.test.system;
 
-import org.smartfrog.services.deployapi.client.SystemEndpointer;
 import org.smartfrog.services.deployapi.client.Endpointer;
+import org.smartfrog.services.deployapi.client.SystemEndpointer;
 import org.smartfrog.services.deployapi.client.Terminate;
 import org.smartfrog.services.deployapi.system.Constants;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
 

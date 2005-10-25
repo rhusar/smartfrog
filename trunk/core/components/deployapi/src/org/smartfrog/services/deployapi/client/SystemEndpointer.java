@@ -30,11 +30,20 @@ import org.ggf.xbeans.cddlm.api.DescriptorType;
 import org.ggf.xbeans.cddlm.api.InitializeRequestDocument;
 import org.ggf.xbeans.cddlm.api.InitializeResponseDocument;
 import org.ggf.xbeans.cddlm.api.OptionMapType;
-import org.ggf.cddlm.utils.QualifiedName;
 import org.smartfrog.services.deployapi.binding.EprHelper;
 import static org.smartfrog.services.deployapi.binding.XomHelper.apiElement;
 import org.smartfrog.services.deployapi.binding.bindings.InitializeBinding;
-import static org.smartfrog.services.deployapi.system.Constants.*;
+import static org.smartfrog.services.deployapi.system.Constants.API_ELEMENT_INITALIZE_REQUEST;
+import static org.smartfrog.services.deployapi.system.Constants.API_ELEMENT_RUN_REQUEST;
+import static org.smartfrog.services.deployapi.system.Constants.API_ELEMENT_TERMINATE_REQUEST;
+import static org.smartfrog.services.deployapi.system.Constants.API_SYSTEM_OPERATION_INITIALIZE;
+import static org.smartfrog.services.deployapi.system.Constants.API_SYSTEM_OPERATION_RUN;
+import static org.smartfrog.services.deployapi.system.Constants.API_SYSTEM_OPERATION_TERMINATE;
+import static org.smartfrog.services.deployapi.system.Constants.CDL_API_WSDL_NAMESPACE;
+import static org.smartfrog.services.deployapi.system.Constants.PROPERTY_SYSTEM_SYSTEM_STATE;
+import static org.smartfrog.services.deployapi.system.Constants.WSRF_ELEMENT_DESTROY_REQUEST;
+import static org.smartfrog.services.deployapi.system.Constants.WSRF_OPERATION_DESTROY;
+import static org.smartfrog.services.deployapi.system.Constants.WSRF_WSRL_NAMESPACE;
 import org.smartfrog.services.deployapi.system.LifecycleStateEnum;
 
 import javax.xml.namespace.QName;
@@ -305,7 +314,7 @@ public class SystemEndpointer extends Endpointer {
 
     public LifecycleStateEnum getLifecycleState() throws RemoteException {
         //TODO; extract more bits
-        QualifiedName property = PROPERTY_SYSTEM_SYSTEM_STATE;
+        QName property = PROPERTY_SYSTEM_SYSTEM_STATE;
         String value = getStringProperty(property);
         LifecycleStateEnum state =
                 LifecycleStateEnum.extract(value);
@@ -319,7 +328,7 @@ public class SystemEndpointer extends Endpointer {
      * @return
      * @throws RemoteException
      */
-    public String getStringProperty(QualifiedName property) throws
+    public String getStringProperty(QName property) throws
             RemoteException {
         Element prop = getPropertyXom(property);
         String value=prop.getValue();

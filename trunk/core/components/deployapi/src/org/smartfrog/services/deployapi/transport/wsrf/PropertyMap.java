@@ -20,16 +20,13 @@
 
 package org.smartfrog.services.deployapi.transport.wsrf;
 
-import org.ggf.cddlm.utils.QualifiedName;
-import org.smartfrog.services.deployapi.system.Utils;
+import nu.xom.Element;
 import org.apache.axis2.om.OMElement;
+import org.smartfrog.services.deployapi.system.Utils;
 
 import javax.xml.namespace.QName;
 import java.util.Hashtable;
 import java.util.Map;
-import java.util.Date;
-
-import nu.xom.Element;
 
 /**
 
@@ -54,11 +51,6 @@ public class PropertyMap {
     public synchronized void remove(QName name) {
         map.remove(name);
     }
-
-    public synchronized void remove(QualifiedName name) {
-        map.remove(Utils.convert(name));
-    }
-
 
     /**
      * resolve a property or return null
@@ -113,16 +105,11 @@ public class PropertyMap {
      * @param name  property name
      * @param value property value
      */
-    public void addStaticProperty(QualifiedName name, Element value) {
+    public void addStaticProperty(QName name, Element value) {
         StaticProperty property = new StaticProperty();
         property.setName(name);
         property.setValue(value);
         add(property);
     }
-
-    public OMElement getPropertyValue(QualifiedName property) {
-        return getPropertyValue(Utils.convert(property));
-    }
-
 
 }

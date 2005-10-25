@@ -19,17 +19,16 @@
  */
 package org.smartfrog.services.deployapi.client;
 
-import nu.xom.Element;
 import nu.xom.Document;
+import nu.xom.Element;
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.om.OMElement;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.context.ConfigurationContextFactory;
 import org.apache.axis2.context.ServiceContext;
 import org.apache.axis2.description.ServiceDescription;
+import org.apache.axis2.om.OMElement;
 import org.apache.axis2.soap.SOAP12Constants;
-import org.ggf.cddlm.utils.QualifiedName;
 import org.ggf.xbeans.cddlm.wsrf.wsrp.GetResourcePropertyDocument;
 import org.ggf.xbeans.cddlm.wsrf.wsrp.GetResourcePropertyResponseDocument;
 import org.smartfrog.services.deployapi.binding.bindings.GetResourcePropertyBinding;
@@ -38,9 +37,8 @@ import org.smartfrog.services.deployapi.system.Utils;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
 
 import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamException;
-import java.io.Serializable;
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.rmi.RemoteException;
@@ -259,10 +257,6 @@ public abstract class Endpointer implements Serializable {
         return response;
     }
 
-    public Element getPropertyXom(QualifiedName property)
-            throws RemoteException {
-        return getPropertyXom(Utils.convert(property));
-    }
 
     /**
      * Get a property from the destination

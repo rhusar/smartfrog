@@ -21,8 +21,15 @@
 
 package org.smartfrog.services.deployapi.test.system;
 
-import junit.framework.TestCase;
-
+import org.apache.axis2.AxisFault;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.ggf.cddlm.utils.FaultTemplate;
+import org.smartfrog.services.deployapi.client.ConsoleOperation;
+import org.smartfrog.services.deployapi.client.PortalEndpointer;
+import org.smartfrog.services.deployapi.client.SystemEndpointer;
+import org.smartfrog.services.deployapi.system.Constants;
+import org.smartfrog.services.deployapi.test.unit.UnitTestBase;
 
 import javax.xml.namespace.QName;
 import java.io.IOException;
@@ -30,19 +37,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URL;
 import java.rmi.RemoteException;
-
-import org.smartfrog.services.deployapi.system.Constants;
-import org.smartfrog.services.deployapi.system.Utils;
-import org.smartfrog.services.deployapi.client.PortalEndpointer;
-import org.smartfrog.services.deployapi.client.ConsoleOperation;
-import org.smartfrog.services.deployapi.client.SystemEndpointer;
-import org.smartfrog.services.deployapi.test.unit.UnitTestBase;
-import org.apache.axis2.AxisFault;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.xmlbeans.XmlObject;
-import org.ggf.cddlm.utils.FaultTemplate;
-import nu.xom.XPathContext;
 
 /**
  * base class for tests Date: 01-Sep-2004 Time: 10:52:46
@@ -240,7 +234,7 @@ public abstract class ConsoleTestBase extends UnitTestBase {
 
     public static void assertFaultMatches(AxisFault fault, FaultTemplate template) {
         assertFaultMatches(fault,
-                Utils.convert(template.getQualifiedName()),
+                template.getQualifiedName(),
                 template.getErrorMessage());
     }
 

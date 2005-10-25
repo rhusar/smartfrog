@@ -21,8 +21,13 @@
 package org.smartfrog.services.deployapi.test.unit;
 
 import org.apache.axis2.addressing.EndpointReference;
-import static org.smartfrog.services.deployapi.binding.EprHelper.*;
 import org.ggf.xbeans.cddlm.wsrf.wsa2003.EndpointReferenceType;
+import static org.smartfrog.services.deployapi.binding.EprHelper.EPRToWsa2003;
+import static org.smartfrog.services.deployapi.binding.EprHelper.EPRToWsa2004;
+import static org.smartfrog.services.deployapi.binding.EprHelper.Wsa2003ToEPR;
+import static org.smartfrog.services.deployapi.binding.EprHelper.Wsa2004ToEPR;
+import static org.smartfrog.services.deployapi.binding.EprHelper.compareEndpoints;
+import static org.smartfrog.services.deployapi.binding.EprHelper.stringify;
 
 /**
 

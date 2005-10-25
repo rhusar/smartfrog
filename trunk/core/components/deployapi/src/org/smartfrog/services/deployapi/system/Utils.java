@@ -29,7 +29,6 @@ import org.apache.axis2.om.OMFactory;
 import org.apache.axis2.om.impl.llom.builder.StAXOMBuilder;
 import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.XmlOptions;
-import org.ggf.cddlm.utils.QualifiedName;
 import org.ggf.xbeans.cddlm.cmp.DeploymentFaultType;
 import org.smartfrog.services.deployapi.binding.NuxStaxBuilder;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
@@ -37,31 +36,31 @@ import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
 import org.w3c.dom.Node;
 
 import javax.xml.namespace.QName;
+import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLInputFactory;
-import java.util.ArrayList;
-import java.util.UUID;
-import java.util.Date;
-import java.io.StringReader;
-import java.io.IOException;
-import java.io.ByteArrayOutputStream;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.BufferedInputStream;
-import java.io.InputStreamReader;
-import java.io.StringWriter;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.FileOutputStream;
-import java.io.BufferedOutputStream;
-import java.io.Writer;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.nio.charset.Charset;
-import java.text.SimpleDateFormat;
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.UUID;
 
 /**
  * created 20-Sep-2005 17:07:38
@@ -72,15 +71,6 @@ public class Utils {
     protected Utils() {
     }
 
-    /**
-     * Turn a ggf qualifiedname into a proper java one
-     *
-     * @param in
-     * @return a converted qname
-     */
-    public static QName convert(QualifiedName in) {
-        return new QName(in.getNamespaceURI(), in.getLocalPart());
-    }
 
     /**
      * Turn a java qname into a ggf qualifiedname
@@ -88,8 +78,8 @@ public class Utils {
      * @param in
      * @return a converted qname
      */
-    public static QualifiedName convert(QName in) {
-        return new QualifiedName(in.getNamespaceURI(), in.getLocalPart());
+    public static QName convert(QName in) {
+        return in;
     }
 
     /**
@@ -145,7 +135,7 @@ public class Utils {
         return "uuid_" + s;
     }
 
-    public static OMElement createOmElement(QualifiedName qname) {
+    public static OMElement createOmElement(QName qname) {
         OMFactory factory = OMAbstractFactory.getOMFactory();
         OMElement element = factory.createOMElement(qname.getLocalPart(),
             qname.getNamespaceURI(), qname.getPrefix());

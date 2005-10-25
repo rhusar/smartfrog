@@ -19,15 +19,12 @@
  */
 package org.smartfrog.services.deployapi.client;
 
-import org.ggf.xbeans.cddlm.api.DescriptorType;
+import nu.xom.Element;
 import org.smartfrog.services.deployapi.binding.DescriptorHelper;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-
-import nu.xom.ParsingException;
-import nu.xom.Element;
 
 /**
  * created Sep 1, 2004 5:34:02 PM

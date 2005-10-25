@@ -26,7 +26,6 @@ import org.smartfrog.services.deployapi.engine.ServerInstance;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.system.Utils;
 import org.smartfrog.services.deployapi.transport.endpoints.XmlBeansEndpoint;
-import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
 
 import java.io.IOException;
 
