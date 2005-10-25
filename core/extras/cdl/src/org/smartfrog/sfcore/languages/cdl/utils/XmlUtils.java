@@ -19,8 +19,6 @@
  */
 package org.smartfrog.sfcore.languages.cdl.utils;
 
-import org.ggf.cddlm.utils.QualifiedName;
-
 import javax.xml.namespace.QName;
 
 import nu.xom.Element;
@@ -32,18 +30,6 @@ import nu.xom.Element;
 public final class XmlUtils {
 
     private XmlUtils() {
-    }
-
-    /**
-     * Convert from the GGF QualifiedName to a Javax QName type.
-     *
-     * @param src
-     * @return a QName that matches the source QualifiedName.
-     */
-    public static QName makeQName(QualifiedName src) {
-        return makeQName(src.getNamespaceURI(),
-                src.getLocalPart(),
-                src.getPrefix());
     }
 
     /**
