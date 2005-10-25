@@ -57,7 +57,7 @@ TestWar extends Compound {
     
     
     webapp extends WebApplication {
-        contextPath "/";
+        contextPath "/ibm";
         warFile LAZY TestWarFile;
         server LAZY PARENT:server;
     }
