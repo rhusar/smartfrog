@@ -22,13 +22,11 @@ package org.smartfrog.services.deployapi.client;
 import nu.xom.Element;
 import nu.xom.Nodes;
 import org.apache.axis2.addressing.EndpointReference;
-import org.ggf.cddlm.utils.QualifiedName;
 import org.ggf.xbeans.cddlm.api.CreateRequestDocument;
 import org.ggf.xbeans.cddlm.api.CreateResponseDocument;
 import org.ggf.xbeans.cddlm.api.DescriptorType;
 import org.ggf.xbeans.cddlm.api.LookupSystemRequestDocument;
 import org.ggf.xbeans.cddlm.api.LookupSystemResponseDocument;
-import org.ggf.xbeans.cddlm.api.OptionMapType;
 import org.ggf.xbeans.cddlm.api.TerminateRequestDocument;
 import org.ggf.xbeans.cddlm.wsrf.wsa2003.EndpointReferenceType;
 import org.ggf.xbeans.cddlm.wsrf.wsrp.GetResourcePropertyResponseDocument;
@@ -37,7 +35,6 @@ import org.smartfrog.services.deployapi.binding.bindings.CreateBinding;
 import org.smartfrog.services.deployapi.binding.bindings.LookupSystemBinding;
 import org.smartfrog.services.deployapi.binding.bindings.TerminateBinding;
 import org.smartfrog.services.deployapi.system.Constants;
-import org.smartfrog.services.deployapi.system.Utils;
 
 import javax.xml.namespace.QName;
 import java.io.BufferedInputStream;
@@ -50,10 +47,9 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.rmi.RemoteException;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 
 /** base class for console operations created Aug 31, 2004 4:44:30 PM */
@@ -280,29 +276,6 @@ public abstract class ConsoleOperation {
         Endpointer endpoint = portal;
         return endpoint.getPropertyResponse(
                 property);
-    }
-
-    /**
-     * Get a property from the destination
-     *
-     * @return a Xom graph of the result
-     * @throws RemoteException
-     */
-    public Element getPortalPropertyXom(QualifiedName property)
-            throws RemoteException {
-        return getPortalPropertyXom(Utils.convert(property));
-    }
-
-    public GetResourcePropertyResponseDocument getPortalProperty(QualifiedName property)
-            throws RemoteException {
-        return getPortalProperty(Utils.convert(property));
-    }
-
-    public GetResourcePropertyResponseDocument getResourceProperty(Endpointer endpoint,
-                                                                   QualifiedName property)
-            throws RemoteException {
-        return endpoint.getPropertyResponse(Utils.convert(
-                property));
     }
 
 

@@ -22,9 +22,8 @@
 package org.smartfrog.services.deployapi.client;
 
 
-import java.io.PrintWriter;
 import java.io.IOException;
-import java.rmi.RemoteException;
+import java.io.PrintWriter;
 import java.net.URL;
 
 /**

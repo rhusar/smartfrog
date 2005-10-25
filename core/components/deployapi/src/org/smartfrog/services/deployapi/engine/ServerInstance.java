@@ -21,11 +21,11 @@
 
 package org.smartfrog.services.deployapi.engine;
 
+import nu.xom.Element;
+import org.apache.axis2.om.OMElement;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.axis2.om.OMElement;
 import org.apache.xmlbeans.XmlObject;
-import org.ggf.cddlm.utils.QualifiedName;
 import org.ggf.xbeans.cddlm.api.ActiveSystemsDocument;
 import org.ggf.xbeans.cddlm.api.NameUriListType;
 import org.ggf.xbeans.cddlm.api.PortalInformationType;
@@ -34,30 +34,28 @@ import org.ggf.xbeans.cddlm.api.StaticPortalStatusType;
 import org.ggf.xbeans.cddlm.api.SystemReferenceListType;
 import org.ggf.xbeans.cddlm.api.UriListType;
 import org.ggf.xbeans.cddlm.wsrf.wsa2003.EndpointReferenceType;
-import org.smartfrog.services.filesystem.filestore.AddedFilestore;
+import org.smartfrog.services.deployapi.binding.Axis2Beans;
+import org.smartfrog.services.deployapi.binding.DescriptorHelper;
+import org.smartfrog.services.deployapi.binding.XomHelper;
 import org.smartfrog.services.deployapi.components.DeploymentServer;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.system.Utils;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
-import org.smartfrog.services.deployapi.transport.wsrf.WSRPResourceSource;
 import org.smartfrog.services.deployapi.transport.wsrf.PropertyMap;
-import org.smartfrog.services.deployapi.binding.DescriptorHelper;
-import org.smartfrog.services.deployapi.binding.Axis2Beans;
-import org.smartfrog.services.deployapi.binding.XomHelper;
+import org.smartfrog.services.deployapi.transport.wsrf.WSRPResourceSource;
 import org.smartfrog.services.filesystem.FileSystem;
-import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.services.filesystem.filestore.AddedFilestore;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.common.SmartFrogLivenessException;
+import org.smartfrog.sfcore.prim.Prim;
 
 import javax.xml.namespace.QName;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.net.URL;
-import java.util.Date;
 import java.rmi.RemoteException;
-
-import nu.xom.Element;
+import java.util.Date;
 
 
 /**
@@ -269,17 +267,16 @@ public class ServerInstance implements WSRPResourceSource {
      * @throws BaseException if they feel like it
      */
     public OMElement getProperty(QName resource) {
-        QualifiedName query= Utils.convert(resource);
         XmlObject result=null;
         Element xom=null;
         OMElement resultElement = null;
-        if(Constants.PROPERTY_PORTAL_STATIC_PORTAL_STATUS.equals(query)) {
+        if(Constants.PROPERTY_PORTAL_STATIC_PORTAL_STATUS.equals(resource)) {
             result= staticStatus;
         }
-        if (Constants.PROPERTY_MUWS_RESOURCEID.equals(query)) {
+        if (Constants.PROPERTY_MUWS_RESOURCEID.equals(resource)) {
             xom = XomHelper.makeResourceId(resourceID);
         }
-        if(Constants.PROPERTY_PORTAL_ACTIVE_SYSTEMS.equals(query)) {
+        if(Constants.PROPERTY_PORTAL_ACTIVE_SYSTEMS.equals(resource)) {
             result= getJobList().getActiveSystems();
         }
         //conver to Axiom

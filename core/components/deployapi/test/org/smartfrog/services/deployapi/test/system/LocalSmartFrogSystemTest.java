@@ -20,13 +20,12 @@
 
 package org.smartfrog.services.deployapi.test.system;
 
+import nu.xom.Element;
+import org.apache.axis2.AxisFault;
 import org.smartfrog.services.deployapi.binding.DescriptorHelper;
 import org.smartfrog.services.deployapi.client.SystemEndpointer;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.system.LifecycleStateEnum;
-import org.apache.axis2.AxisFault;
-import org.ggf.cddlm.utils.QualifiedName;
-import nu.xom.Element;
 
 import java.io.IOException;
 import java.rmi.RemoteException;

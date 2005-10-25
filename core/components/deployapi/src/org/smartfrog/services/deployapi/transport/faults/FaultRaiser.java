@@ -19,7 +19,6 @@
  */
 package org.smartfrog.services.deployapi.transport.faults;
 
-import org.ggf.cddlm.utils.QualifiedName;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.sfcore.common.Context;
 import org.smartfrog.sfcore.common.SmartFrogCompilationException;
@@ -69,20 +68,6 @@ public class FaultRaiser {
         return raiseFault(code, message, null);
     }
 
-    public static BaseException raiseFault(QualifiedName code, String message) {
-        QName qcode = convert(code);
-        return raiseFault(qcode, message);
-    }
-
-    private static QName convert(QualifiedName code) {
-        QName qcode;
-        if (code != null) {
-            qcode = new QName(code.getNamespaceURI(), code.getLocalPart());
-        } else {
-            qcode = null;
-        }
-        return qcode;
-    }
 
     /**
      * construct a fault for throwing
@@ -101,12 +86,6 @@ public class FaultRaiser {
             fault.initCause(thrown);
         }
         return fault;
-    }
-
-    public static BaseException raiseFault(QualifiedName code, String message,
-                                           Throwable thrown) {
-        return raiseFault(convert(code), message, thrown);
-
     }
 
     public static BaseException raiseUnsupportedLanguageFault(String message) {
@@ -251,7 +230,7 @@ public class FaultRaiser {
      */
     public static BaseException translateSmartFrogException(SmartFrogException exception) {
         BaseException fault = BaseException.makeFault(exception);
-        QualifiedName faultCode = Constants.FAULT_NESTED_EXCEPTION;
+        QName faultCode = Constants.FAULT_NESTED_EXCEPTION;
         //compilation and subclasses
         if (exception instanceof SmartFrogCompilationException) {
             faultCode = Constants.FAULT_DESCRIPTOR_PARSE_ERROR;

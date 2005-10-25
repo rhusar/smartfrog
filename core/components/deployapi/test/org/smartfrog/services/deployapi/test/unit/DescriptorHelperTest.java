@@ -20,14 +20,14 @@
 
 package org.smartfrog.services.deployapi.test.unit;
 
+import nu.xom.Attribute;
+import nu.xom.Element;
+import nu.xom.Nodes;
+import nu.xom.ParsingException;
 import org.smartfrog.services.deployapi.binding.DescriptorHelper;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.system.Utils;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
-import nu.xom.Element;
-import nu.xom.Nodes;
-import nu.xom.Attribute;
-import nu.xom.ParsingException;
 
 import java.io.File;
 import java.io.IOException;

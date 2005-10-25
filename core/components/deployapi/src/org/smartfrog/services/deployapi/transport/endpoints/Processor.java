@@ -31,9 +31,8 @@ import org.smartfrog.services.deployapi.system.Utils;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
 import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
 
-import java.net.URI;
-import java.rmi.RemoteException;
 import java.io.IOException;
+import java.net.URI;
 
 /**
  * created Aug 4, 2004 3:59:42 PM

@@ -21,28 +21,20 @@
 
 package org.smartfrog.services.deployapi.test.system;
 
-import org.apache.axis2.AxisFault;
-import org.apache.xmlbeans.XmlException;
+import org.ggf.xbeans.cddlm.wsrf.wsrp.GetResourcePropertyResponseDocument;
 import org.smartfrog.services.deployapi.client.ConsoleOperation;
 import org.smartfrog.services.deployapi.client.Deploy;
-import org.smartfrog.services.deployapi.client.SystemEndpointer;
 import org.smartfrog.services.deployapi.client.Endpointer;
+import org.smartfrog.services.deployapi.client.SystemEndpointer;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.system.Utils;
 import org.smartfrog.services.xml.utils.ResourceLoader;
-import org.ggf.xbeans.cddlm.api.DescriptorType;
-import org.ggf.xbeans.cddlm.api.OptionMapType;
-import org.ggf.xbeans.cddlm.wsrf.wsrp.GetResourcePropertyResponseDocument;
-import org.ggf.cddlm.utils.QualifiedName;
 
 import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamException;
-import java.rmi.RemoteException;
-import java.io.IOException;
 import java.io.File;
+import java.io.IOException;
+import java.rmi.RemoteException;
 import java.util.List;
-
-import nu.xom.Element;
 
 /**
  * Date: 06-Sep-2004 Time: 22:27:16
@@ -173,14 +165,13 @@ public abstract class ApiTestBase extends ConsoleTestBase {
         }
     }
 
-    protected GetResourcePropertyResponseDocument getPortalResourceProperty(QualifiedName portalProperty) throws RemoteException {
+    protected GetResourcePropertyResponseDocument getPortalResourceProperty(QName portalProperty) throws RemoteException {
         return getOperation().getPortalProperty(portalProperty);
     }
 
     protected GetResourcePropertyResponseDocument getResourceProperty(Endpointer system,
-                                                                      QualifiedName property) throws RemoteException {
-        QName qname= Utils.convert(property);
-        return system.getPropertyResponse(qname);
+                                                                      QName property) throws RemoteException {
+        return system.getPropertyResponse(property);
     }
 
     public String[] toStringArray(List<String> list) {

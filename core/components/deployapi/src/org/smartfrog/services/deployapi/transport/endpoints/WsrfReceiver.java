@@ -42,8 +42,8 @@ import org.smartfrog.services.deployapi.transport.faults.BaseException;
 import org.smartfrog.sfcore.security.SFClassLoader;
 
 import javax.xml.namespace.QName;
-import java.rmi.RemoteException;
 import java.io.IOException;
+import java.rmi.RemoteException;
 
 /**
  */

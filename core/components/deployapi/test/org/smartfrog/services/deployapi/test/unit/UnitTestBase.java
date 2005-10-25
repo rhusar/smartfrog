@@ -20,36 +20,33 @@
 package org.smartfrog.services.deployapi.test.unit;
 
 import junit.framework.TestCase;
-import org.apache.xmlbeans.XmlObject;
-import org.apache.xmlbeans.XmlError;
-import org.apache.xmlbeans.XmlOptions;
-import org.apache.xmlbeans.XmlException;
-import org.apache.xmlbeans.XmlCursor;
-import org.apache.axis2.om.OMElement;
-import org.apache.axis2.om.OMAttribute;
-import org.apache.axis2.om.impl.llom.builder.StAXOMBuilder;
 import org.apache.axis2.addressing.EndpointReference;
-import org.w3c.dom.Node;
-import org.smartfrog.services.deployapi.transport.faults.BaseException;
-import org.smartfrog.services.deployapi.transport.endpoints.PortalEndpoint;
-import org.smartfrog.services.deployapi.binding.Axis2Beans;
-import org.smartfrog.services.deployapi.system.Constants;
-import org.smartfrog.services.xml.utils.XmlCatalogResolver;
-import org.smartfrog.services.xml.utils.ResourceLoader;
+import org.apache.axis2.om.OMAttribute;
+import org.apache.axis2.om.OMElement;
+import org.apache.axis2.om.impl.llom.builder.StAXOMBuilder;
+import org.apache.xmlbeans.XmlCursor;
+import org.apache.xmlbeans.XmlError;
+import org.apache.xmlbeans.XmlException;
+import org.apache.xmlbeans.XmlObject;
+import org.apache.xmlbeans.XmlOptions;
+import org.ggf.xbeans.cddlm.testhelper.TestType;
 import org.ggf.xbeans.cddlm.testhelper.TestsDocument;
 import org.ggf.xbeans.cddlm.testhelper.TestsType;
-import org.ggf.xbeans.cddlm.testhelper.TestType;
+import org.smartfrog.services.deployapi.binding.Axis2Beans;
+import org.smartfrog.services.deployapi.system.Constants;
+import org.smartfrog.services.deployapi.transport.faults.BaseException;
+import org.smartfrog.services.xml.utils.ResourceLoader;
+import org.smartfrog.services.xml.utils.XmlCatalogResolver;
+import org.w3c.dom.Node;
 
 import javax.xml.namespace.QName;
+import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLInputFactory;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.io.InputStream;
-import java.io.IOException;
-
-import nu.xom.XPathContext;
 
 /**
  * created 21-Sep-2005 14:57:51

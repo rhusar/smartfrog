@@ -20,16 +20,16 @@
 
 package org.smartfrog.services.deployapi.test.unit;
 
+import org.apache.axis2.addressing.EndpointReference;
+import org.ggf.xbeans.cddlm.wsrf.wsa2003.EndpointReferenceType;
+import org.smartfrog.services.deployapi.binding.EprHelper;
 import org.smartfrog.services.deployapi.engine.Job;
 import org.smartfrog.services.deployapi.engine.JobRepository;
-import org.smartfrog.services.deployapi.binding.EprHelper;
-import org.smartfrog.services.deployapi.transport.faults.BaseException;
 import org.smartfrog.services.deployapi.system.LifecycleStateEnum;
-import org.ggf.xbeans.cddlm.wsrf.wsa2003.EndpointReferenceType;
-import org.apache.axis2.addressing.EndpointReference;
+import org.smartfrog.services.deployapi.transport.faults.BaseException;
 
-import java.net.URL;
 import java.net.MalformedURLException;
+import java.net.URL;
 
 /**
 
@@ -130,7 +130,7 @@ public class JobTest extends UnitTestBase {
     }
     
     public void testUnknownJob() throws Exception {
-        Job job = repository.lookupJobFromQuery("job=1234");
+        Job job = repository.lookupJobFromQuery(JobRepository.JOB_ID_PARAM+"=1234");
         assertNull(job);
     }
     

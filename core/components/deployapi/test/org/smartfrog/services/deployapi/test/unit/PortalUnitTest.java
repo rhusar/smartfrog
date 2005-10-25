@@ -19,38 +19,15 @@
  */
 package org.smartfrog.services.deployapi.test.unit;
 
-import junit.framework.TestCase;
-import org.smartfrog.services.deployapi.transport.endpoints.PortalEndpoint;
-import org.smartfrog.services.deployapi.transport.endpoints.portal.CreateProcessor;
-import org.smartfrog.services.deployapi.transport.faults.BaseException;
-import org.smartfrog.services.deployapi.binding.Axis2Beans;
-import org.smartfrog.services.deployapi.system.Constants;
-import org.smartfrog.services.xml.utils.XmlCatalogResolver;
-import org.smartfrog.services.xml.utils.ResourceLoader;
+import org.apache.axis2.om.OMElement;
 import org.ggf.xbeans.cddlm.api.CreateRequestDocument;
 import org.ggf.xbeans.cddlm.api.CreateResponseDocument;
-import org.ggf.xbeans.cddlm.testhelper.TestsDocument;
-import org.ggf.xbeans.cddlm.testhelper.TestType;
-import org.apache.xmlbeans.XmlObject;
-import org.apache.xmlbeans.XmlOptions;
-import org.apache.xmlbeans.XmlError;
-import org.apache.xmlbeans.XmlException;
-import org.apache.xmlbeans.XmlCursor;
-import org.apache.axis2.om.OMElement;
-import org.apache.axis2.om.OMAttribute;
-import org.apache.axis2.om.impl.llom.builder.StAXOMBuilder;
-import org.w3c.dom.Node;
+import org.smartfrog.services.deployapi.binding.Axis2Beans;
+import org.smartfrog.services.deployapi.system.Constants;
+import org.smartfrog.services.deployapi.transport.endpoints.PortalEndpoint;
+import org.smartfrog.services.deployapi.transport.endpoints.portal.CreateProcessor;
 
 import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.io.IOException;
-import java.io.StringReader;
-import java.io.FileReader;
-import java.io.InputStream;
 
 /**
  * created 14-Sep-2005 11:53:51

@@ -20,14 +20,14 @@
 
 package org.smartfrog.services.deployapi.engine;
 
-import org.smartfrog.services.deployapi.transport.wsrf.Property;
-import org.smartfrog.services.deployapi.system.Utils;
-import org.smartfrog.services.deployapi.system.Constants;
-import org.apache.axis2.om.OMElement;
-import static org.smartfrog.services.deployapi.binding.XomHelper.*;
-import javax.xml.namespace.QName;
-
 import nu.xom.Element;
+import org.apache.axis2.om.OMElement;
+import static org.smartfrog.services.deployapi.binding.XomHelper.apiElement;
+import org.smartfrog.services.deployapi.system.Constants;
+import org.smartfrog.services.deployapi.system.Utils;
+import org.smartfrog.services.deployapi.transport.wsrf.Property;
+
+import javax.xml.namespace.QName;
 
 /**
 

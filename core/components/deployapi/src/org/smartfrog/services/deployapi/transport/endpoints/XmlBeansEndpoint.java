@@ -27,7 +27,6 @@ import org.smartfrog.services.deployapi.transport.faults.BaseException;
 import org.smartfrog.services.deployapi.transport.faults.DeploymentException;
 
 import javax.xml.namespace.QName;
-import java.rmi.RemoteException;
 import java.io.IOException;
 
 /**

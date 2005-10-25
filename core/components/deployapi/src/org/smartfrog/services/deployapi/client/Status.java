@@ -19,26 +19,16 @@
  */
 package org.smartfrog.services.deployapi.client;
 
-import org.ggf.xbeans.cddlm.api.DescriptorType;
-import org.smartfrog.services.deployapi.binding.DescriptorHelper;
+import nu.xom.Document;
+import nu.xom.Element;
+import nu.xom.Serializer;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.system.Utils;
-import org.smartfrog.sfcore.languages.cdl.utils.ElementsIterator;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.ByteArrayOutputStream;
-import java.io.FileOutputStream;
-
-import nu.xom.ParsingException;
-import nu.xom.Element;
-import nu.xom.Nodes;
-import nu.xom.Node;
-import nu.xom.Serializer;
-import nu.xom.Document;
 
 /**
  * created Sep 1, 2004 5:34:02 PM

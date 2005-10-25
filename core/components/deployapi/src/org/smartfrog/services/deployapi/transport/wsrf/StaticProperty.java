@@ -20,13 +20,11 @@
 
 package org.smartfrog.services.deployapi.transport.wsrf;
 
+import nu.xom.Element;
 import org.apache.axis2.om.OMElement;
 import org.smartfrog.services.deployapi.system.Utils;
-import org.ggf.cddlm.utils.QualifiedName;
 
 import javax.xml.namespace.QName;
-
-import nu.xom.Element;
 
 /**
  * this class represents something that can provide a resource
@@ -61,10 +59,6 @@ public class StaticProperty implements Property {
         this.name = name;
     }
 
-    public void setName(QualifiedName name) {
-        setName(Utils.convert(name));
-    }
-
     public OMElement getValue() {
         return value;
     }
@@ -76,7 +70,5 @@ public class StaticProperty implements Property {
     public void setValue(Element element) {
         setValue(Utils.xomToAxiom(element));
     }
-
-    
 
 }

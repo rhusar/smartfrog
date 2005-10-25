@@ -3,7 +3,6 @@ package org.smartfrog.services.deployapi.transport.faults;
 import org.apache.axis2.AxisFault;
 import org.apache.xmlbeans.XmlObject;
 import org.ggf.cddlm.utils.FaultTemplate;
-import org.ggf.cddlm.utils.QualifiedName;
 import org.ggf.xbeans.cddlm.wsrf.wsbf.BaseFaultType;
 
 import javax.xml.namespace.QName;
@@ -43,7 +42,7 @@ public class BaseException extends RuntimeException {
 
     public BaseException(FaultTemplate template) {
         super(template.getErrorMessage());
-        QualifiedName qualifiedName = template.getQualifiedName();
+        QName qualifiedName = template.getQualifiedName();
         setFaultCode(qualifiedName);
         faultReason = template.getWireMessage();
     }
@@ -150,12 +149,6 @@ public class BaseException extends RuntimeException {
 
     public void setFaultCode(QName faultCode) {
         this.faultCode = faultCode;
-    }
-
-    public void setFaultCode(QualifiedName faultCode) {
-        setFaultCode(
-                faultCode == null ? null :
-                        new QName(faultCode.getNamespaceURI(), faultCode.getNamespaceURI()));
     }
 
     public String getFaultReason() {
