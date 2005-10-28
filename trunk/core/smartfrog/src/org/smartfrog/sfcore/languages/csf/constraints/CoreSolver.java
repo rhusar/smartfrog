@@ -28,7 +28,7 @@ abstract public class CoreSolver implements Solver {
     public static Solver solver() throws SmartFrogCompileResolutionException {
         if (solver == null) {
             try {
-                String classname = System.getProperty("org.smartfrog.sfcore.languages.csf.consrtaints.SolverClassName");
+                String classname = System.getProperty("org.smartfrog.sfcore.languages.csf.constraints.SolverClassName");
                 if (classname != null) solverClassname = classname;
                 solverClass = SFClassLoader.forName(solverClassname);
                 solver = (Solver) solverClass.newInstance();
