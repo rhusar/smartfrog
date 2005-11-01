@@ -36,7 +36,6 @@ AlpineEndpoint extends Prim {
         factory extends OptionalString;
         handlerClass extends String;
         servlet extends CD;
-        
     }
     
     //information on a get
