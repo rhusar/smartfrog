@@ -178,7 +178,7 @@ public abstract class UnitTestBase extends TestCase {
             if (attribute == null) {
                 attribute = element.getAttribute(TEST_NAME_LOCAL);
             }
-            if(attribute!=null && name.equals(attribute.getValue())) {
+            if(attribute!=null && name.equals(attribute.getAttributeValue())) {
                 return element.getFirstElement();
             }
         }

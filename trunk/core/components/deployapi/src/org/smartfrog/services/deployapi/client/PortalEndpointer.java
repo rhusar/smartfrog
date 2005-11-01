@@ -21,8 +21,9 @@ package org.smartfrog.services.deployapi.client;
 
 
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.description.OperationDescription;
-import org.apache.axis2.description.ServiceDescription;
+import org.apache.axis2.description.AxisOperation;
+import org.apache.axis2.description.AxisService;
+import org.apache.axis2.description.InOutAxisOperation;
 import org.smartfrog.services.deployapi.system.Constants;
 
 import javax.xml.namespace.QName;
@@ -38,8 +39,8 @@ public class PortalEndpointer extends Endpointer {
 
 
 
-    protected static org.apache.axis2.description.OperationDescription[] operations;
-    protected static ServiceDescription serviceDescription;
+    protected static AxisOperation[] operations;
+    protected static AxisService serviceDescription;
 
     
     
@@ -49,50 +50,50 @@ public class PortalEndpointer extends Endpointer {
     static {
 
         //creating the Service
-        serviceDescription = new org.apache.axis2.description.ServiceDescription(
+        serviceDescription = new AxisService(
                 new QName(Constants.CDL_API_WSDL_NAMESPACE, "PortalEPR"));
 
         //creating the operations
-        OperationDescription __operation;
-        operations = new OperationDescription[7];
+        AxisOperation __operation;
+        operations = new AxisOperation[7];
 
-        __operation = new OperationDescription();
+        __operation = new InOutAxisOperation();
         __operation.setName(new QName(Constants.CDL_API_WSDL_NAMESPACE,
                 "GetMultipleResourceProperties"));
         operations[0] = __operation;
         serviceDescription.addOperation(__operation);
 
-        __operation = new OperationDescription();
+        __operation = new InOutAxisOperation();
         __operation.setName(
                 new QName(Constants.CDL_API_WSDL_NAMESPACE, "Create"));
         operations[1] = __operation;
         serviceDescription.addOperation(__operation);
 
-        __operation = new OperationDescription();
+        __operation = new InOutAxisOperation();
         __operation.setName(
                 new QName(Constants.CDL_API_WSDL_NAMESPACE, "LookupSystem"));
         operations[2] = __operation;
         serviceDescription.addOperation(__operation);
 
-        __operation = new OperationDescription();
+        __operation = new InOutAxisOperation();
         __operation.setName(new QName(Constants.CDL_API_WSDL_NAMESPACE,
                 "GetCurrentMessage"));
         operations[3] = __operation;
         serviceDescription.addOperation(__operation);
 
-        __operation = new OperationDescription();
+        __operation = new InOutAxisOperation();
         __operation.setName(
                 new QName(Constants.CDL_API_WSDL_NAMESPACE, "Resolve"));
         operations[4] = __operation;
         serviceDescription.addOperation(__operation);
 
-        __operation = new OperationDescription();
+        __operation = new InOutAxisOperation();
         __operation.setName(
                 new QName(Constants.CDL_API_WSDL_NAMESPACE, "Subscribe"));
         operations[5] = __operation;
         serviceDescription.addOperation(__operation);
 
-        __operation = new OperationDescription();
+        __operation = new InOutAxisOperation();
         __operation.setName(new QName(Constants.CDL_API_WSDL_NAMESPACE,
                 "GetResourceProperty"));
         operations[6] = __operation;
@@ -115,7 +116,7 @@ public class PortalEndpointer extends Endpointer {
         init();
     }
 
-    public ServiceDescription getServiceDescription() {
+    public AxisService getServiceDescription() {
         return serviceDescription;
     }
 

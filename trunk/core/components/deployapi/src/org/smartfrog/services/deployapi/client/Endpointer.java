@@ -26,7 +26,7 @@ import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.context.ConfigurationContextFactory;
 import org.apache.axis2.context.ServiceContext;
-import org.apache.axis2.description.ServiceDescription;
+import org.apache.axis2.description.AxisService;
 import org.apache.axis2.om.OMElement;
 import org.apache.axis2.soap.SOAP12Constants;
 import org.ggf.xbeans.cddlm.wsrf.wsrp.GetResourcePropertyDocument;
@@ -53,8 +53,6 @@ public abstract class Endpointer implements Serializable {
     private EndpointReference endpointer;
     private String listenerTransport = null;
     private boolean separateListenerTransport = true;
-//    protected static org.apache.axis2.description.OperationDescription[] operations;
-//    protected static ServiceDescription serviceDescription;
     private ConfigurationContext configurationContext;
     private ServiceContext serviceContext;
     public static final QName QNAME_MODULE_ADDRESSING = new QName(org.apache.axis2.Constants.MODULE_ADDRESSING);
@@ -226,15 +224,16 @@ public abstract class Endpointer implements Serializable {
     protected void init() throws AxisFault {
         configurationContext = new ConfigurationContextFactory()
                 .buildClientConfigurationContext(getAxis2Home());
-        ServiceDescription serviceDescription = getServiceDescription();
+        AxisService serviceDescription = getServiceDescription();
         configurationContext.getAxisConfiguration()
                 .addService(serviceDescription);
-        serviceContext = configurationContext.createServiceContext(
-                serviceDescription.getName());
+        //TODO: verify this patch works
+        serviceContext = configurationContext.getServiceContext(
+                serviceDescription.getName().toString());
     }
 
 
-    public abstract ServiceDescription getServiceDescription();
+    public abstract AxisService getServiceDescription();
 
     public ConfigurationContext getConfigurationContext() {
         return configurationContext;

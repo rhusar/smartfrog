@@ -20,7 +20,7 @@
 
 package org.smartfrog.services.deployapi.test.unit;
 
-import org.apache.axis2.description.OperationDescription;
+import org.apache.axis2.description.AxisOperation;
 import org.smartfrog.services.deployapi.client.ApiCall;
 import org.smartfrog.services.deployapi.client.ConsoleOperation;
 import org.smartfrog.services.deployapi.client.PortalEndpointer;
@@ -113,7 +113,7 @@ public class CallTest extends ApiTestBase {
     }
 
     public void assertHasOperation(ApiCall call, String name) {
-        OperationDescription description = call.lookupOperation(name);
+        AxisOperation description = call.lookupOperation(name);
         assertNotNull("No operation:"+name);
     }
 
