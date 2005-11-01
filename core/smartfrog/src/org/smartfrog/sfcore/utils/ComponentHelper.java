@@ -60,24 +60,7 @@ public class ComponentHelper {
         return owner;
     }
 
-    /**
-     * mark this task for termination by spawning a separate thread to do it.
-     * as {@link Prim#sfTerminate} and {@link Prim#sfStart()} are synchronized,
-     * the thread blocks until sfStart has finished.
-     * Note that we detach before terminating; this stops our timely end propagating.
-     */
-    public void targetForTermination() {
 
-        Reference name;
-        try {
-            name = owner.sfCompleteName();
-        } catch (RemoteException e) {
-            name = null;
-        }
-        TerminatorThread terminator;
-        terminator=new TerminatorThread(owner, TerminationRecord.normal(name));
-        terminator.start();
-    }
 
     /**
      * get the relevant logger for this component.
@@ -225,6 +208,45 @@ public class ComponentHelper {
                 new TerminatorThread(owner, null).dontTerminate().detach().start();
             }
         }
+    }
+
+
+    /**
+     * mark this task for termination by spawning a separate thread to do it.
+     * as {@link Prim#sfTerminate} and {@link Prim#sfStart()} are synchronized,
+     * the thread blocks until sfStart has finished.
+     * @param record record to terminate with
+     * @param detach detach first?
+     * @param quietly terminate quietly?
+     */
+    public void targetForTermination(TerminationRecord record, boolean detach, boolean quietly) {
+
+        TerminatorThread terminator = new TerminatorThread(owner, record);
+        if(detach) {
+            terminator.detach();
+        }
+        if(quietly) {
+            terminator.quietly();
+        }
+        terminator.start();
+    }
+
+    /**
+     * mark this task for termination by spawning a separate thread to do it.
+     * as {@link Prim#sfTerminate} and {@link Prim#sfStart()} are synchronized,
+     * the thread blocks until sfStart has finished.
+     * Note that we detach before terminating; this stops our timely end propagating.
+     */
+    public void targetForTermination() {
+
+        Reference name;
+        try {
+            name = owner.sfCompleteName();
+        } catch (RemoteException e) {
+            name = null;
+        }
+        TerminationRecord record = TerminationRecord.normal(name);
+        targetForTermination(record, true,false);
     }
 
     /**
