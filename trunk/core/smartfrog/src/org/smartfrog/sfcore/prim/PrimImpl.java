@@ -1242,7 +1242,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
 
     /**
      *  To get application logger using ROOT name.
-     *  The name used is cached in attritube @see SmartFrogCoreKeys.SF_APP_LOG_NAME
+     *  The name used is cached in attritube {@link SmartFrogCoreKeys.SF_APP_LOG_NAME}
      *  If this attribute has been pre-set then it is used to get the application logger,
      *  otherwise ROOT cannonical name is used.
      *
