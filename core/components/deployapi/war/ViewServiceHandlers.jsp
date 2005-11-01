@@ -1,6 +1,4 @@
 <%@ page import="org.apache.axis2.Constants,
-                 org.apache.axis2.description.OperationDescription,
-                 org.apache.axis2.description.ServiceDescription,
                  org.apache.axis2.engine.Handler,
                  org.apache.axis2.engine.Phase,
                  java.util.ArrayList,

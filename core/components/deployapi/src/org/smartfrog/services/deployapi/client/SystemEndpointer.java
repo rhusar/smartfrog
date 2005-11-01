@@ -23,8 +23,9 @@ import nu.xom.Document;
 import nu.xom.Element;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.addressing.EndpointReference;
-import org.apache.axis2.description.OperationDescription;
-import org.apache.axis2.description.ServiceDescription;
+import org.apache.axis2.description.AxisOperation;
+import org.apache.axis2.description.AxisService;
+import org.apache.axis2.description.InOutAxisOperation;
 import org.ggf.xbeans.cddlm.api.CreateResponseDocument;
 import org.ggf.xbeans.cddlm.api.DescriptorType;
 import org.ggf.xbeans.cddlm.api.InitializeRequestDocument;
@@ -60,82 +61,82 @@ import java.rmi.RemoteException;
 public class SystemEndpointer extends Endpointer {
 
     private String cachedResourceId;
-    protected static org.apache.axis2.description.OperationDescription[] operations;
-    protected static ServiceDescription serviceDescription;
+    protected static AxisOperation[] operations;
+    protected static AxisService serviceDescription;
 
 
     //From Axis2 generated SystemEPRStub
     static {
 
         //creating the Service
-        serviceDescription = new ServiceDescription(
+        serviceDescription = new AxisService(
                 new QName(CDL_API_WSDL_NAMESPACE, "SystemEPR"));
 
         //creating the operations
-        OperationDescription __operation;
-        operations = new OperationDescription[11];
+        AxisOperation __operation;
+        operations = new AxisOperation[11];
 
-        __operation = new OperationDescription();
+        __operation = new InOutAxisOperation();
         __operation.setName(new QName(CDL_API_WSDL_NAMESPACE,
                 "GetMultipleResourceProperties"));
         operations[0] = __operation;
         serviceDescription.addOperation(__operation);
 
-        __operation = new OperationDescription();
+        __operation = new InOutAxisOperation();
         __operation.setName(
                 new QName(CDL_API_WSDL_NAMESPACE, "AddFile"));
         operations[1] = __operation;
         serviceDescription.addOperation(__operation);
 
-        __operation = new OperationDescription();
+        __operation = new InOutAxisOperation();
         __operation.setName(
                 new QName(CDL_API_WSDL_NAMESPACE, "Ping"));
         operations[2] = __operation;
         serviceDescription.addOperation(__operation);
 
-        __operation = new OperationDescription();
+        __operation = new InOutAxisOperation();
         __operation.setName(new QName(CDL_API_WSDL_NAMESPACE,
                 "GetCurrentMessage"));
         operations[3] = __operation;
         serviceDescription.addOperation(__operation);
 
-        __operation = new OperationDescription();
+        __operation = new InOutAxisOperation();
         __operation.setName(
                 new QName(CDL_API_WSDL_NAMESPACE, "Resolve"));
         operations[4] = __operation;
         serviceDescription.addOperation(__operation);
 
-        __operation = new OperationDescription();
+        __operation = new InOutAxisOperation();
         __operation.setName(
                 new QName(CDL_API_WSDL_NAMESPACE, "Subscribe"));
         operations[5] = __operation;
         serviceDescription.addOperation(__operation);
 
-        __operation = new OperationDescription();
+        __operation = new InOutAxisOperation();
         __operation
                 .setName(new QName(CDL_API_WSDL_NAMESPACE, "Run"));
         operations[6] = __operation;
         serviceDescription.addOperation(__operation);
 
-        __operation = new OperationDescription();
+        __operation = new InOutAxisOperation();
         __operation.setName(
                 new QName(CDL_API_WSDL_NAMESPACE, "Destroy"));
         operations[7] = __operation;
         serviceDescription.addOperation(__operation);
 
-        __operation = new OperationDescription();
+        __operation = new InOutAxisOperation();
         __operation.setName(new QName(CDL_API_WSDL_NAMESPACE,
                 "GetResourceProperty"));
         operations[8] = __operation;
         serviceDescription.addOperation(__operation);
 
-        __operation = new OperationDescription();
+        __operation = new InOutAxisOperation();
         __operation.setName(
                 new QName(CDL_API_WSDL_NAMESPACE, "Terminate"));
         operations[9] = __operation;
         serviceDescription.addOperation(__operation);
 
-        __operation = new OperationDescription();
+        __operation = new InOutAxisOperation();
         __operation.setName(
                 new QName(CDL_API_WSDL_NAMESPACE, "Initialize"));
         operations[10] = __operation;
@@ -178,7 +179,7 @@ public class SystemEndpointer extends Endpointer {
         this.cachedResourceId = resourceID;
     }
 
-    public ServiceDescription getServiceDescription() {
+    public AxisService getServiceDescription() {
         return serviceDescription;
     }
 

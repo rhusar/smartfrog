@@ -1,6 +1,5 @@
 <%@ page contentType="text/html; charset=iso-8859-1" language="java" import="org.apache.axis2.Constants,
                                                                              org.apache.axis2.description.ModuleDescription,
-                                                                             org.apache.axis2.description.ServiceDescription,
                                                                              java.util.Collection,
                                                                              java.util.HashMap,
                                                                              java.util.Iterator" errorPage="" %>

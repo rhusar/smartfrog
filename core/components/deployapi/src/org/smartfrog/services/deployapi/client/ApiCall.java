@@ -25,8 +25,8 @@ import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.clientapi.Call;
 import org.apache.axis2.clientapi.Callback;
 import org.apache.axis2.context.ServiceContext;
-import org.apache.axis2.description.OperationDescription;
-import org.apache.axis2.description.ServiceDescription;
+import org.apache.axis2.description.AxisOperation;
+import org.apache.axis2.description.AxisService;
 import org.apache.axis2.om.OMElement;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -75,16 +75,16 @@ public class ApiCall extends Call {
     }
 
 
-    public OperationDescription lookupOperation(String operation) {
+    public AxisOperation lookupOperation(String operation) {
         QName operationName = new QName(operation);
         ServiceContext serviceContext = getServiceContext();
         assert serviceContext!=null:"service context is null";
-        ServiceDescription serviceConfig = serviceContext.getServiceConfig();
-        WSDLInterface serviceInterface = serviceConfig.getServiceInterface();
+        AxisService service = serviceContext.getAxisService();
+        WSDLInterface serviceInterface = service.getServiceInterface();
         HashMap allOperations = serviceInterface.getAllOperations();
-        OperationDescription description;
-        description= (OperationDescription) allOperations.get(operation);
-        description = serviceConfig.getOperation(operationName);
+        AxisOperation description;
+        description= (AxisOperation) allOperations.get(operation);
+        description = service.getOperation(operationName);
         return description;
     }
 

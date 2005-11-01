@@ -78,6 +78,7 @@
 
     <target name="core-libraries" depends="m2.m2-tasks">
     <m2:libraries pathID="core.classpath">
+
       <dependency groupID="org.ggf"
         artifactID="cddlm"
         version="${cddlm.version}"/>
@@ -421,9 +422,9 @@
 <!--         <arg value="-ss" /> -->
 <!--         <arg value="-sd" /> -->
        <arg value="-uri" />
-      <!--  <arg file="test/files/deployapi.wsdl" /> -->
+       <arg file="test/files/deployapi.wsdl" /> 
              <!-- <arg file="${system-binding.wsdl}" />  -->
-       <arg file="${deployment-api.wsdl}" /> 
+      <!--  <arg file="${deployment-api.wsdl}" /> --> 
     </core:java>
   </target>
   
@@ -471,7 +472,8 @@
    <target name="post-compile" depends="dist.post-compile,prepare-libraries" />
   
   <!-- make the WAR file -->
-  <target name="war" depends="post-compile,copy-archives" >
+  <target name="war" depends="post-compile,copy-archives"
+      description="Create the WAR file">
     <property name="target.war.name"  
       value="${artifact.name}-war-${artifact.version}.war" />
     <property name="target.war"  

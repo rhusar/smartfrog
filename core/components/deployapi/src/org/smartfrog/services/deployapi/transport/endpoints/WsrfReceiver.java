@@ -23,9 +23,9 @@ package org.smartfrog.services.deployapi.transport.endpoints;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.addressing.MessageInformationHeaders;
 import org.apache.axis2.context.MessageContext;
-import org.apache.axis2.description.OperationDescription;
+import org.apache.axis2.description.AxisOperation;
+import org.apache.axis2.description.AxisService;
 import org.apache.axis2.description.Parameter;
-import org.apache.axis2.description.ServiceDescription;
 import org.apache.axis2.engine.DependencyManager;
 import org.apache.axis2.engine.MessageReceiver;
 import org.apache.axis2.i18n.Messages;
@@ -72,7 +72,7 @@ public class WsrfReceiver extends AbstractInOutSyncMessageReceiver
             Object destObject = getTheImplementationObject(inMessage);
 
             //Inject the Message Context if it is asked for
-            DependencyManager.configureBusinussLogicProvider(destObject, inMessage);
+            DependencyManager.configureBusinessLogicProvider(destObject, inMessage,outMessage);
 
             MessageInformationHeaders addressInfo = inMessage.getMessageInformationHeaders();
             if (isAddressingMandatory() && addressInfo != null) {
@@ -80,7 +80,7 @@ public class WsrfReceiver extends AbstractInOutSyncMessageReceiver
             }
 
             //get the operation
-            OperationDescription opDesc = inMessage.getOperationContext()
+            AxisOperation opDesc = inMessage.getOperationContext()
                     .getAxisOperation();
             QName operation = opDesc.getName();
             String style = inMessage.getOperationContext()
@@ -163,11 +163,10 @@ public class WsrfReceiver extends AbstractInOutSyncMessageReceiver
     private Object loadImplementationClassViaClassloader(MessageContext msgContext) throws AxisFault {
         try {
 
-            ServiceDescription service =
+            AxisService service =
                     msgContext
                             .getOperationContext()
-                            .getServiceContext()
-                            .getServiceConfig();
+                            .getServiceContext().getAxisService();
             //this is the override: we use the same classloader that loads this receiver.
             ClassLoader classLoader;
             ClassLoader axis2classLoader = service.getClassLoader();
@@ -202,11 +201,10 @@ public class WsrfReceiver extends AbstractInOutSyncMessageReceiver
     private Object loadImplementationClassViaSmartFrog(MessageContext msgContext) throws AxisFault {
         try {
 
-            ServiceDescription service =
+            AxisService service =
                     msgContext
                             .getOperationContext()
-                            .getServiceContext()
-                            .getServiceConfig();
+                            .getServiceContext().getAxisService();
             Parameter implInfoParam = service.getParameter(SERVICE_CLASS);
 
             if (implInfoParam == null) {
