@@ -149,10 +149,19 @@ public final class Statistics implements Serializable {
     }
 
     /**
+     * get number of tests that did not succeed, the sum
+     * of failures+errors. Synchronised.
+     * @return
+     */
+    public synchronized int getUnsuccessfulTests() {
+        return getFailures()+getErrors();
+    }
+
+    /**
      * test for success, which means no errors or failures
      * @return
      */
-    public synchronized boolean isSuccessful() {
-        return errors==0 && failures==0;
+    public boolean isSuccessful() {
+        return getUnsuccessfulTests()==0;
     }
 }

@@ -132,6 +132,15 @@ BufferingListener extends TestListener {
     name "BufferingListener";
 }
 
+
+/**
+ * This component collects statistics about tests, but discards the values.
+ */
+StatisticsTestListener extends TestListener {
+    sfClass "org.smartfrog.services.junit.listeners.StatisticsTestListenerComponent";
+    name "StatisticsTestListener";
+}
+
 /**
  * and the test runner
  */

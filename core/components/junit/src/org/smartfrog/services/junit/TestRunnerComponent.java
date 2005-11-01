@@ -28,6 +28,8 @@ import org.smartfrog.sfcore.logging.Log;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.utils.ComponentHelper;
+import org.smartfrog.sfcore.utils.ShouldDetachOrTerminate;
+import org.smartfrog.sfcore.reference.Reference;
 
 import java.rmi.RemoteException;
 import java.util.Enumeration;
@@ -43,6 +45,8 @@ public class TestRunnerComponent extends CompoundImpl implements TestRunner,
 
     private Log log;
     private ComponentHelper helper;
+    Reference name;
+
     /**
      * a cached exception that is thrown on a liveness failure
      */
@@ -57,11 +61,24 @@ public class TestRunnerComponent extends CompoundImpl implements TestRunner,
      */
     private boolean failOnError = true;
 
+    /**
+     * thread priority
+     */
     private int threadPriority = Thread.NORM_PRIORITY;
 
     /**
-     * run tests on startup
+     * Should we terminate after running our tests?
+     * {@link ShouldDetachOrTerminate.ATTR_SHOULD_TERMINATE}
      */
+    boolean shouldTerminate=true;
+
+    /**
+     * if terminating, should we detach?
+     * Should we terminate after running our tests?
+     * {@link ShouldDetachOrTerminate.ATTR_SHOULD_DETACH}
+     */
+    boolean shouldDetach = false;
+
 
     /**
      * thread to run the tests
@@ -139,6 +156,7 @@ public class TestRunnerComponent extends CompoundImpl implements TestRunner,
             RemoteException {
         //this will deploy all our children, including the test suites
         super.sfStart();
+        name = sfCompleteName();
         Object o = sfResolve(ATTR_LISTENER,
                 configuration.getListenerFactory(),
                 true);
@@ -160,6 +178,10 @@ public class TestRunnerComponent extends CompoundImpl implements TestRunner,
         threadPriority = sfResolve(ATTR_THREAD_PRIORITY,
                 threadPriority,
                 false);
+        shouldTerminate = sfResolve(
+                ShouldDetachOrTerminate.ATTR_SHOULD_TERMINATE, shouldTerminate, false);
+        shouldDetach = sfResolve(
+                ShouldDetachOrTerminate.ATTR_SHOULD_DETACH, shouldDetach, false);
         validate();
         //execute the tests in all the suites attached to this class
         boolean runTests = sfResolve(ATTR_RUN_TESTS_ON_STARTUP, true, true);
@@ -247,6 +269,17 @@ public class TestRunnerComponent extends CompoundImpl implements TestRunner,
             setFinished(true);
             //unset the worker field
             setWorker(null);
+
+            //now look at our termination actions
+            if(shouldTerminate) {
+                TerminationRecord record;
+                if(getCachedException()==null) {
+                    record=TerminationRecord.normal(name);
+                } else {
+                    record= TerminationRecord.abnormal("Test failure",name,getCachedException());
+                }
+                helper.targetForTermination(record, shouldDetach, false);
+            }
         }
     }
 
