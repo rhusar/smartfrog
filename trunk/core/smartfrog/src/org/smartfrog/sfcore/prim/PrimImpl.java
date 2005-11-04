@@ -1312,7 +1312,7 @@ public class PrimImpl extends RemoteReferenceResolverHelperImpl implements Prim,
         return sfIsStarted;
     }
 
-    /** Createds diagnostics report */
+    /** Creates diagnostics report */
     public ComponentDescription sfDiagnosticsReport() {
       ComponentDescription cd = null;
       try {
