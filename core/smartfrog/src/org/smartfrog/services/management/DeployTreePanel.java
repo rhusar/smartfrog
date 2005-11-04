@@ -62,13 +62,14 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener {
     private BorderLayout borderLayout3 = new BorderLayout();
 
     private boolean inRootPanel = false;
+    private boolean showCDasChild = false;
 
     /**
      * Constructs the DeployTreePanel object
      */
     public DeployTreePanel() {
         try {
-            treeInit(null, false);
+            treeInit(null, false,false);
             jbInit();
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -80,10 +81,10 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener {
      *
      *@param  root  Root of the tree.
      */
-    public DeployTreePanel(Object root, boolean inRootPanel) {
+    public DeployTreePanel(Object root, boolean inRootPanel,boolean showCDasChild) {
         try {
             this.inRootPanel = inRootPanel;
-            treeInit(root, inRootPanel);
+            treeInit(root, inRootPanel,showCDasChild);
             jbInit();
             popupinit();
         } catch (Exception ex) {
@@ -159,9 +160,9 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener {
      *
      *@param  root  Root of the tree.
      */
-    private void treeInit(Object root, boolean inRootPanel) {
+    private void treeInit(Object root, boolean inRootPanel, boolean showCDasChild) {
         if (root != null) {
-            treeModel = new DeployTreeModelSF(root, inRootPanel);
+            treeModel = new DeployTreeModelSF(root, inRootPanel,showCDasChild);
         } else {
             treeModel = new DeployTreeModelSF();
         }
@@ -226,7 +227,7 @@ public class DeployTreePanel extends JPanel implements TreeSelectionListener {
      *@param  root  root of the tree
      */
     public void setModel(Object root) {
-        treeModel = new DeployTreeModelSF(root, inRootPanel);
+        treeModel = new DeployTreeModelSF(root, inRootPanel,showCDasChild);
         this.systemViewTree.setModel(treeModel);
     }
 

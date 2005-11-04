@@ -1060,6 +1060,7 @@ public class Display extends JFrame implements ActionListener, KeyListener {
          int height = 480;
          int width = 640;
          boolean showRootProcess = false;
+         boolean showCDasChild = false;
          String positionDisplay = "NE";
 
          try {
@@ -1071,7 +1072,7 @@ public class Display extends JFrame implements ActionListener, KeyListener {
          String nameDisplay = "sfManagementConsole ";
          mngConsole = org.smartfrog.services.management.SFDeployDisplay.
          startConsole(nameDisplay,
-               height, width, positionDisplay, showRootProcess, hostName,
+               height, width, positionDisplay, showRootProcess,showCDasChild, hostName,
                port, false);
       } catch (java.net.UnknownHostException uex) {
          if (mngConsole != null) {

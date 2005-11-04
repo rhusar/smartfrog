@@ -68,10 +68,10 @@ public class DeployTreeModelSF implements TreeModel {
      *
      *@param  entry  deploy entry
      */
-    public DeployTreeModelSF(Object entry, boolean showRootProcessName) {
+    public DeployTreeModelSF(Object entry, boolean showRootProcessName,boolean showCDasChild) {
         try {
            boolean newShowRootProcessName = (showRootProcessName&&(entry instanceof ProcessCompound));
-            this.entry = new DeployEntry(entry, newShowRootProcessName);
+            this.entry = new DeployEntry(entry, newShowRootProcessName,showCDasChild);
             this.listeners = new Vector();
 
             //System.out.println("DeployTreeModel created");

@@ -92,13 +92,14 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
       }
 
       final boolean showRootProcess = opts.showRootProcess;
+      final boolean showCDasChild = opts.showCDasChild;
       final String hostname = opts.host;
       final int port = opts.port;
       String positionDisplay = opts.windowPosition;
 
       try {
          startConsole(nameDisplay, height, width, positionDisplay,
-               showRootProcess, hostname, port, true);
+               showRootProcess,showCDasChild, hostname, port, true);
       } catch (java.net.UnknownHostException uex) {
          exitWith("Error: Unknown host.");
       } catch (java.rmi.ConnectException cex) {
@@ -120,6 +121,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
     *@param  width             width of the window
     *@param  positionDisplay   position  of display
     *@param  showRootProcess   boolean to enable display of root process
+    *@param  showRootProcess   boolean to enable display of CDs as children    *
     *@param  hostname          host name
     *@param  port              port
     *@param  shouldSystemExit  boolean to indicate exit at close of window
@@ -130,12 +132,13 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
 
 
    public static Display startConsole(String nameDisplay, int height,
-         int width, String positionDisplay, final boolean showRootProcess,
+         int width, String positionDisplay, final boolean showRootProcess, final boolean showCDasChild,
          final String hostname, final int port, boolean shouldSystemExit)
           throws Exception {
       final JButton refreshButton;
       JMenu jMenuMng = new JMenu();
       final JCheckBoxMenuItem jCheckBoxMenuItemShowRootProcessPanel = new JCheckBoxMenuItem();
+      final JCheckBoxMenuItem jCheckBoxMenuItemShowCDasChild = new JCheckBoxMenuItem();
       String infoConnection = ("sfManagementConsole connecting to " +
             hostname + ":" + port);
       //Logger.log(infoConnection);
@@ -175,7 +178,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
                      newDisplay.cleanAddedPanels();
                      try {
                         addProcessesPanels(newDisplay, jCheckBoxMenuItemShowRootProcessPanel.isSelected(), //showRootProcess,
-                              hostname, port);
+                              jCheckBoxMenuItemShowCDasChild.isSelected(),hostname, port);
                      } catch (Exception ex) {
                         if (LogFactory.getLog("SFManagamentConsole").isErrorEnabled()){
                           LogFactory.getLog("SFManagamentConsole").error(ex);
@@ -203,8 +206,18 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
          });
          jMenuMng.add(jCheckBoxMenuItemShowRootProcessPanel);
 
+         jCheckBoxMenuItemShowCDasChild.setSelected(showCDasChild);
+         jCheckBoxMenuItemShowCDasChild.setText("Show show CD as child");
+         jCheckBoxMenuItemShowCDasChild.addActionListener(new ActionListener() {
+               public void actionPerformed(ActionEvent e) {
+                            refreshButton.doClick();
+               }
+         });
+         jMenuMng.add(jCheckBoxMenuItemShowCDasChild);
+
+
          newDisplay.setVisible(true);
-         addProcessesPanels(newDisplay, showRootProcess, hostname, port);
+         addProcessesPanels(newDisplay, showRootProcess, showCDasChild, hostname, port);
 
          return newDisplay;
       }
@@ -250,7 +263,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
     *@throws  Exception        If any error
     */
    public static void addProcessesPanels(Display display,
-         boolean addRootProcessPanel, String hostname, int port)
+         boolean addRootProcessPanel,boolean showCDasChild, String hostname, int port)
           throws Exception {
       int indexPanel = 0;
 
@@ -260,7 +273,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
       if (addRootProcessPanel) {
          deployPanel = new DeployTreePanel(SFProcess.getRootLocator()
                .getRootProcessCompound(InetAddress.getByName(
-               hostname), port), true);
+               hostname), port), true,showCDasChild);
          deployPanel.setEnabled(true);
          display.tabPane.add(deployPanel, "rootProcess...", indexPanel++);
       }
@@ -281,7 +294,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
          //System.out.println("* " + key + ": " + value.toString());
          if (value instanceof Prim) {
             if (((Prim) value).sfParent() == null) {
-               deployPanel = new DeployTreePanel(value, false);
+               deployPanel = new DeployTreePanel(value, false, showCDasChild);
                deployPanel.setEnabled(true);
                display.tabPane.add(deployPanel, key, indexPanel++);
             }
@@ -306,7 +319,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
 
          //root= new CompoundImpl();
          //System.out.println("Root: "+root.toString());
-         this.panelTree = new DeployTreePanel(root, false);
+         this.panelTree = new DeployTreePanel(root, false,false);
          this.panelTree.setEnabled(true);
          addFrogIcon(display);
          display.tabPane.add(panelTree, "Deploy Deployed System ...", 0);
