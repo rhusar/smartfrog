@@ -43,6 +43,8 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 import java.util.Enumeration;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.componentdescription.ComponentDescriptionImpl;
 
 
 
@@ -152,8 +154,24 @@ public class PopUpTree extends JComponent implements ActionListener {
         tempComp = comp;
         tempX = x;
         tempY = y;
+        if ( getNode() instanceof Prim){
+            menuItemDetach.setVisible(true);
+            menuItemTerminateNormal.setVisible(true);
+            menuItemTerminateAbnormal.setVisible(true);
+            menuItemDTerminate.setVisible(true);
+            menuItemDumpContext.setVisible(true);
+            menuItemParentageChanged.setVisible(true);
+        }else if  (getNode()instanceof ComponentDescription){
+            menuItemDetach.setVisible(false);
+            menuItemTerminateNormal.setVisible(false);
+            menuItemTerminateAbnormal.setVisible(false);
+            menuItemDTerminate.setVisible(false);
+            menuItemDumpContext.setVisible(true);
+            menuItemParentageChanged.setVisible(false);
+        }
         popupTree.show(comp, x, y);
         this.parent = parent;
+
     }
 
     /**
@@ -166,36 +184,28 @@ public class PopUpTree extends JComponent implements ActionListener {
         Object source = e.getSource();
         TreePath tpath = ((JTree) tempComp).getPathForLocation(tempX, tempY);
 
-        //System.out.println(" Object:"+(((JTree)tempComp).
-    //getLastSelectedPathComponent()).toString());
-        //System.out.println(" Object2:"+(tpath.getLastPathComponent()).
-    //toString());
-        //System.out.println(" Object2.getEntry():"+(((DeployEntry)(
-    //tpath.getLastPathComponent())).getEntry()).toString());
+        Object node = getNode();
+
         path = treePath2Path(tpath);
 
         //System.out.println("Tree PopUp(source): "+e.getSource()+", Path:
-    //"+path);
+        //"+path);
         // Launch it
        if (source == menuItemAddAttribute) {
            addAttrib();
        } else if (source == menuItemTerminateNormal) {
-           terminate((((DeployEntry) (tpath.getLastPathComponent())).getEntry())
-                   , TerminationRecord.NORMAL , "Console Management Action");
+           terminate(node, TerminationRecord.NORMAL , "Console Management Action");
        } else if (source == menuItemTerminateAbnormal) {
-           terminate((((DeployEntry) (tpath.getLastPathComponent())).getEntry())
-                , TerminationRecord.ABNORMAL, "Console Management Action");
+           terminate(node, TerminationRecord.ABNORMAL, "Console Management Action");
             // Entry selected in the tree
         } else if (source == menuItemDTerminate) {
-            dTerminate((((DeployEntry) (tpath.getLastPathComponent())).getEntry())
-                       , TerminationRecord.NORMAL , "Console Management Action");
-
+            dTerminate(node, TerminationRecord.NORMAL , "Console Management Action");
             // Entry selected in the tree
         } else if (source == menuItemDetach) {
-            detach((((DeployEntry) (tpath.getLastPathComponent())).getEntry()));
+            detach(node);
             // Entry selected in the tree
         } else if (source == menuItemParentageChanged) {
-            Prim objPrim = ((Prim)(((DeployEntry)(tpath.getLastPathComponent())).getEntry()));
+            Prim objPrim = ((Prim)node);
             try {
               objPrim.sfParentageChanged();
             } catch (RemoteException ex1) {
@@ -204,18 +214,34 @@ public class PopUpTree extends JComponent implements ActionListener {
             // Entry selected in the tree
         } else if (source == menuItemDumpContext) {
             StringBuffer message=new StringBuffer();
-            String primName="error";
-            try {
-              Prim objPrim = ((Prim)(((DeployEntry)(tpath.getLastPathComponent())).getEntry()));
-              message.append(objPrim.sfDiagnosticsReport());
-              primName = ((Prim)objPrim).sfCompleteName().toString();
+            String name = "error";
+            if (node instanceof Prim) {
+                try {
+                    Prim objPrim = ((Prim)node);
+                    message.append(objPrim.sfDiagnosticsReport());
+                    name = ((Prim)objPrim).sfCompleteName().toString();
+                } catch (Exception ex) {
+                    message.append("\n Error: "+ex.toString());
+                }
+            } else {
+                try {
+                    ComponentDescription objCD = ((ComponentDescription)node);
+                    message.append(((ComponentDescriptionImpl)objCD).sfDiagnosticsReport());
+                    name = ((ComponentDescription)objCD).sfCompleteName().toString();
+                } catch (Exception ex) {
+                    message.append("\n Error: "+ex.toString());
+                }
 
-            } catch (Exception ex) {
-                message.append("\n Error: "+ex.toString());
             }
-            modalDialog("Context info for "+ primName ,  message.toString(), "", source);
+            modalDialog("Context info for "+ name ,  message.toString(), "", source);
         }
 
+    }
+
+    private Object getNode() {
+        TreePath tpath = ((JTree) tempComp).getPathForLocation(tempX, tempY);
+        Object node = (((DeployEntry) (tpath.getLastPathComponent())).getEntry());
+        return node;
     }
 
     /**

@@ -204,8 +204,10 @@ public class DeployEntry implements Entry {
         if (entry instanceof String) {
             return (String) entry;
         } else if (entry instanceof Prim) {
+            //System.out.println("EntryPrim: getting name");
             try {
                 name = ((Prim) entry).sfCompleteName().toString();
+                //System.out.println("EntryPrim: getting name - "+name);
             } catch (java.rmi.NoSuchObjectException nex){
                 //Ignore. component has terminated and RMI object has been
                 //unexported
@@ -215,8 +217,10 @@ public class DeployEntry implements Entry {
                 //@TODO Log
             }
         } else if (entry instanceof ComponentDescription) {
+            //System.out.println("EntryCD: getting name");
             try {
                 name = ((ComponentDescription) entry).sfCompleteName().toString();
+                System.out.println("EntryCD: getting name - "+name);
             } catch (Exception ex) {
                 System.out.println("sfManagementConsole (DeployEntry5): "+ex.getMessage());
                 //@TODO Log
@@ -390,13 +394,13 @@ public class DeployEntry implements Entry {
             String name = "";
             Object obj = null;
             Object[][] data = new Object[this.sizeChildren()][2];
-            Context c = ((Prim) entry).sfContext();
+
             int index = 0;
 
-            for (Enumeration e = c.keys(); e.hasMoreElements();) {
+            for (Enumeration e = context.keys(); e.hasMoreElements();) {
                 try {
                   name = e.nextElement().toString();
-                  obj = c.get(name);
+                  obj = context.get(name);
 
                   if ((isChild(obj))) {
                     //&& !name.toString().endsWith("URL"))
