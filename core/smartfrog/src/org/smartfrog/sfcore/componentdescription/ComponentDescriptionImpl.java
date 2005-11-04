@@ -50,6 +50,7 @@ import org.smartfrog.sfcore.reference.ReferenceResolverHelperImpl;
 
 import org.smartfrog.sfcore.common.SFMarshalledObject;
 import org.smartfrog.sfcore.common.*;
+import java.rmi.*;
 
 
 /**
@@ -116,12 +117,30 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * @return complete name for this component
      */
     public Reference sfCompleteName() {
-        if (parent == null) {
+        //System.out.println("getting CD sfCompleteName");
+        Object cdParent = sfResolveParent();
+        if (cdParent == null) {
+            //System.out.println("CD with NO parent");
             return new Reference();
         }
-
-        Reference r = parent.sfCompleteName();
-        Object name = parent.sfAttributeKeyFor(this);
+        Reference r = null;
+        Object name =null;
+        if (cdParent instanceof ComponentDescription){
+            r = ((ComponentDescription)cdParent).sfCompleteName();
+            name = ((ComponentDescription)cdParent).sfAttributeKeyFor(this);
+            //System.out.println("CD with CD parent: "+r.toString()+" : "+name);
+        } else if (cdParent instanceof ComponentDescription){
+            try {
+                r = ((Prim)cdParent).sfCompleteName();
+                name = ((Prim)cdParent).sfAttributeKeyFor(this);
+                //System.out.println("CD with PRIM parent: "+r.toString()+" : "+name);
+            } catch (RemoteException ex) {
+                if ((sfLog()!= null) && sfLog().isErrorEnabled()) sfLog().err(ex.getMessage(),ex);
+                else ex.printStackTrace();
+            }
+        } else {
+            return new Reference();
+        }
 
         if (name != null) {
             r.addElement(ReferencePart.here(name));
@@ -934,6 +953,19 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
        return sfLog;
     }
 
-
-
+    /** Creates diagnostics report */
+    public ComponentDescription sfDiagnosticsReport() {
+      ComponentDescription cd = null;
+      try {
+        cd = new ComponentDescriptionImpl(null,(Context)new ContextImpl(), false);
+        cd.setParent(this);
+        StringBuffer report = new StringBuffer();
+        Diagnostics.doReport(report,this);
+        cd.sfReplaceAttribute(SmartFrogCoreKeys.SF_DIAGNOSTICS_REPORT, report );
+      } catch (Throwable thr){
+        //ignore
+        if (sfLog().isWarnEnabled()){ sfLog().warn(thr);}
+      }
+      return cd;
+    }
 }
