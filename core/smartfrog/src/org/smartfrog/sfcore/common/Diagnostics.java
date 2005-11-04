@@ -57,6 +57,7 @@ import java.util.Enumeration;
 import java.util.Properties;
 import java.util.TimeZone;
 import java.util.Vector;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 
 
 /**
@@ -137,6 +138,108 @@ public final class Diagnostics {
       doReport(out);
       outPS.print(out);
     }
+
+    /**
+         * Print a report to the given StringBuffer.
+         * @param out the StringBuffer to print the report to.
+         * @param ComponentDescription the SmartFrog component description where to extract info from.
+         * Derived from Ant Diagnostics class
+         */
+        public static void doReport(StringBuffer out, ComponentDescription cd) {
+
+            out.append("\n------- SF CD diagnostics report -------");
+            header(out, "Implementation Version");
+            out.append(org.smartfrog.Version.versionString());
+            out.append("\n");
+            out.append(org.smartfrog.Version.copyright());
+            out.append("\n");
+            out.append("Build date: ");
+            out.append(org.smartfrog.Version.buildDate());
+            out.append("\n");
+
+            header(out, "System properties");
+            doReportSystemProperties(out);
+
+            header(out, "ClassPath");
+            doReportClassPath(out);
+
+            header(out, "CodeBase");
+            doReportClassPath(out);
+
+            header(out, "System properties summary");
+            doReportSummary(out);
+
+            header(out, "Temp dir");
+            doReportTempDir(out);
+
+            header(out, "Locale information");
+            doReportLocale(out);
+
+            doReportCD(out, cd);
+
+            header(out, org.smartfrog.Version.versionString() + " - "+org.smartfrog.Version.buildDate());
+            out.append("\n");
+
+        }
+
+        /**
+          * Report specific Prim information.
+         * @param out StringBuffer
+         * @param ComponentDescription  cd
+         *
+         */
+        private static void doReportCD(StringBuffer out, ComponentDescription cd) {
+            if (cd!=null) {
+              try {
+                Diagnostics.header(out, "sfCompleteName");
+                out.append(cd.sfCompleteName()); out.append("\n");
+              } catch (Exception ex1) {
+                  out.append(" Error:").append(ex1.getMessage()).append("\n");
+              }
+
+              header(out, "class");
+              out.append(cd.getClass().getName());out.append("\n");
+
+              Diagnostics.header(out, "sfParent");
+              try {
+                ComponentDescription parent = cd.sfParent();
+                out.append("CD Parent: ").append(parent.sfCompleteName()).append("\n");
+                out.append("        [");
+                out.append(parent.getClass().toString());
+                out.append("] ");out.append("\n");
+              } catch (Exception ex) {
+                out.append("No CD parent: " + ex.getMessage());out.append("\n");
+              }
+              Diagnostics.header(out, "sfPrimParent");
+              try {
+                Prim parent = cd.sfPrimParent();
+                out.append("Prim Parent: ").append(parent.sfCompleteName()).append("\n");
+                out.append("        [");
+                out.append(parent.getClass().toString());
+                out.append(", ");
+                out.append(parent.sfDeployedHost());
+                out.append("] ");out.append("\n");
+              } catch (Exception ex) {
+                out.append("No Prim parent: " + ex.getMessage());out.append("\n");
+              }
+
+              try {
+                Diagnostics.header(out, "sfContext");
+                out.append(cd.sfContext().toString()); //out.append("\n");
+              } catch (Exception ex2) {
+                out.append(" Error:" + ex2.getMessage());
+                out.append("\n");
+              }
+
+              if (cd.sfPrimParent()!=null){
+                  Diagnostics.header(out, "Diagnostics for sfPrim parent");
+                  out.append("###########################################");
+                  doReportPrim(out, cd.sfPrimParent());
+                  out.append(out.toString().replaceAll("\n", "\n    "));
+                  out.append("\n#########################################\n");
+              }
+          }
+        }
 
     /**
      * Print a report to the given StringBuffer.
@@ -290,7 +393,7 @@ public final class Diagnostics {
      * @param out the StringBuffer to print the report to.
      */
     public static void doReport(StringBuffer out) {
-      doReport ( out, null);
+       doReport ( out, (Prim)null);
     }
 
     //  Derived from Ant Diagnostics class
