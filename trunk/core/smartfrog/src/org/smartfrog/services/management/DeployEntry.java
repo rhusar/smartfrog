@@ -32,6 +32,7 @@ import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.processcompound.ProcessCompound;
 import org.smartfrog.sfcore.common.SmartFrogCoreKeys;
 import java.rmi.RemoteException;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 
 
 /**
@@ -41,6 +42,8 @@ import java.rmi.RemoteException;
  * @see Entry
  */
 public class DeployEntry implements Entry {
+
+    boolean showCDasChild = false;
     //private String name=null;
     //private String parentDN=null;
     private Object entry = null;
@@ -56,7 +59,7 @@ public class DeployEntry implements Entry {
      *
      *@param  entry  object entry.
      */
-    public DeployEntry(Object entry, boolean showRootProcessName) {
+    public DeployEntry(Object entry, boolean showRootProcessName, boolean showCDasChild) {
         try {
             //         if (entry instanceof Prim){
             //            this.entry=(Prim)entry;
@@ -65,6 +68,7 @@ public class DeployEntry implements Entry {
             //         }
             this.entry = (Object) entry;
             this.showRootProcessName = showRootProcessName;
+            this.showCDasChild=showCDasChild;
             //System.out.println("Entry created with "+this.toString());
         } catch (Exception ex) {
             System.out.println("sfManagementConsole (DeployEntry1): "+ex.toString());
@@ -104,18 +108,18 @@ public class DeployEntry implements Entry {
         }
     }
 
-    /**
-     * main Method
-     *
-     *@param  args  command line arguments
-     */
-    public static void main(String[] args) {
-        //Test
-        System.out.println("Starting...a new adventure.");
-
-        DeployEntry newEntry = new DeployEntry(SmartFrogCoreKeys.SF_ROOT);
-        System.out.println("...Finished");
-    }
+//    /**
+//     * main Method
+//     *
+//     *@param  args  command line arguments
+//     */
+//    public static void main(String[] args) {
+//        //Test
+//        System.out.println("Starting...a new adventure.");
+//
+//        DeployEntry newEntry = new DeployEntry(SmartFrogCoreKeys.SF_ROOT);
+//        System.out.println("...Finished");
+//    }
 
     /**
      *  Checks if the DeployEntry is the leaf
@@ -143,9 +147,9 @@ public class DeployEntry implements Entry {
         // Needs to the the real ROOT of the system
         try {
             if (entry instanceof Compound) {
-                return (new DeployEntry(((Compound) entry).sfResolveWithParser(SmartFrogCoreKeys.SF_ROOT), this.showRootProcessName));
+                return (new DeployEntry(((Compound) entry).sfResolveWithParser(SmartFrogCoreKeys.SF_ROOT), this.showRootProcessName,this.showCDasChild));
             } else {
-                return (new DeployEntry(((Prim) entry).sfResolveWithParser(SmartFrogCoreKeys.SF_ROOT),this.showRootProcessName));
+                return (new DeployEntry(((Prim) entry).sfResolveWithParser(SmartFrogCoreKeys.SF_ROOT),this.showRootProcessName,this.showCDasChild));
             }
 
             //return entry;
@@ -210,7 +214,15 @@ public class DeployEntry implements Entry {
                 System.out.println("sfManagementConsole (DeployEntry4): "+ex.getMessage());
                 //@TODO Log
             }
+        } else if (entry instanceof ComponentDescription) {
+            try {
+                name = ((ComponentDescription) entry).sfCompleteName().toString();
+            } catch (Exception ex) {
+                System.out.println("sfManagementConsole (DeployEntry5): "+ex.getMessage());
+                //@TODO Log
+            }
         }
+
 
 //        if (!(name.equals(""))) {
 //            name = "ROOT:" + name;
@@ -232,7 +244,7 @@ public class DeployEntry implements Entry {
      */
     public Object getChild(int index) {
         //System.out.println("getChildrenCount()");
-        if (entry instanceof Compound) {
+        if ((entry instanceof Compound)|| (entry instanceof ComponentDescription)) {
             //System.out.println("getChildCount():["+parent+"]"+"");
             try {
                 return ((getChildren())[index][1]);
@@ -252,7 +264,7 @@ public class DeployEntry implements Entry {
      */
     public int getChildrenCount() {
         //System.out.println(this.toString()+".getChildrenCount()");
-        if (entry instanceof Compound) {
+        if ((entry instanceof Compound) || (entry instanceof ComponentDescription)) {
             return sizeChildren();
         }
 
@@ -287,28 +299,32 @@ public class DeployEntry implements Entry {
         };
 
         try {
-            if (!(entry instanceof Prim)) {
-                return (empty);
-            }
 
-            Context context = ((Prim) entry).sfContext();
+            Context context = null;
+
+            if (entry instanceof Prim){
+                context = ((Prim) entry).sfContext();
+            } else if (entry instanceof ComponentDescription){
+                context = (( ComponentDescription) entry).sfContext();
+            } else {
+                return(empty);
+            }
             String name = "";
             Object value = null;
             String solvedValue = null;
             Object[][] data = new Object[this.sizeAttributes()][2];
             int index = 0;
-            Context c = ((Prim) entry).sfContext();
 
-            for (Enumeration e = c.keys(); e.hasMoreElements();) {
+            for (Enumeration e = context.keys(); e.hasMoreElements();) {
                 name="";
                 value=null;
                 solvedValue=null;
                 name = e.nextElement().toString();
-                value = c.get(name);
+                value = context.get(name);
 
                 if (!isChild(value)) {
                     try {
-                        //Special case to show special info about he reference
+                        //Special case to show special info about the reference
                         if (value instanceof Reference) {
                             String solvedValueClass="class not found";
                             try {
@@ -331,7 +347,6 @@ public class DeployEntry implements Entry {
                     } catch (Exception ex) {
                       System.err.println("sfManagementConsole.deployEntry.getAttributes: error reading "+ name + " >"+ex.getMessage());
                     }
-                    //&& !name.toString().endsWith("URL"))
                     data[index][0] = name;
                     index++;
                 }
@@ -357,8 +372,21 @@ public class DeployEntry implements Entry {
      *@return    The children value
      */
     public Object[][] getChildren() {
+        String[][] empty = {
+            { "", "" }
+        };
+
         try {
-            Context context = ((Prim) entry).sfContext();
+            Context context = null;
+            if (entry instanceof Prim){
+                context = ((Prim) entry).sfContext();
+            } else if (entry instanceof ComponentDescription){
+                context = (( ComponentDescription) entry).sfContext();
+            } else {
+                return(empty);
+            }
+
+
             String name = "";
             Object obj = null;
             Object[][] data = new Object[this.sizeChildren()][2];
@@ -530,12 +558,21 @@ public class DeployEntry implements Entry {
             int counter = 0;
             String name = "";
 
-            Context c = ((Prim) entry).sfContext();
+            Context context = null;
+
+            if (entry instanceof Prim){
+                context = ((Prim) entry).sfContext();
+            } else if (entry instanceof ComponentDescription){
+                context = (( ComponentDescription) entry).sfContext();
+            } else {
+                return(counter);
+            }
+
             Object obj = null;
 
-            for (Enumeration e = c.keys(); e.hasMoreElements();) {
+            for (Enumeration e = context.keys(); e.hasMoreElements();) {
                 name = e.nextElement().toString();
-                obj = c.get(name);
+                obj = context.get(name);
 
                 if (!isChild(obj)) {
                     //&& !name.toString().endsWith("URL"))
@@ -559,11 +596,19 @@ public class DeployEntry implements Entry {
             int counter = 0;
             String name = "";
             Object obj = null;
-            Context c = ((Prim) entry).sfContext();
-            for (Enumeration e = c.keys(); e.hasMoreElements();) {
+            Context context = null;
+
+            if (entry instanceof Prim){
+                context = ((Prim) entry).sfContext();
+            } else if (entry instanceof ComponentDescription){
+                context = (( ComponentDescription) entry).sfContext();
+            } else {
+                return(counter);
+            }
+            for (Enumeration e = context.keys(); e.hasMoreElements();) {
                 try {
                   name = e.nextElement().toString();
-                  obj = c.get(name);
+                  obj = context.get(name);
                   if ((isChild(obj))) {
                     //&& !name.toString().endsWith("URL"))
                     counter++;
@@ -584,7 +629,7 @@ public class DeployEntry implements Entry {
      */
     public void info() {
         System.out.println("Info: " + this.toString());
-        System.out.println("    - #Children:" + this.getChildrenCount());
+        System.out.println("    - #Children&CD:" + this.getChildrenCount());
         System.out.println("    - #Attributes:" + this.sizeAttributes());
         System.out.println("    - isLeaf():" + this.isLeaf());
         System.out.println("    - children:" + getChildren());
@@ -729,10 +774,16 @@ public class DeployEntry implements Entry {
 //
 //        return false;
         try {
+          // Component child
           if ( (obj instanceof Prim) &&
               ( (Compound) entry).sfContainsChild( (org.smartfrog.sfcore.prim. Liveness) obj)) {
             return true;
           }
+          //ComponentDescription child
+          if ( (obj instanceof ComponentDescription) && showCDasChild) {
+             return true;
+          }
+
         } catch (RemoteException ex) {
         }
         return false;
@@ -777,14 +828,16 @@ public class DeployEntry implements Entry {
         try {
             boolean newShowRootProcessName = (this.showRootProcessName&&(entry instanceof ProcessCompound));
             if (value instanceof Prim) {
-                return (new DeployEntry(value,newShowRootProcessName));
+                return (new DeployEntry(value,newShowRootProcessName,this.showCDasChild));
             } else if (value instanceof Reference) {
                 do {
                     ((Reference) value).setEager(true);
                     value = ((Prim) entry).sfResolve((Reference) value);
                 } while (value instanceof Reference);
 
-                return (new DeployEntry(value,newShowRootProcessName));
+                return (new DeployEntry(value,newShowRootProcessName,this.showCDasChild));
+            } else if (value instanceof ComponentDescription){
+                return (new DeployEntry(value,newShowRootProcessName,this.showCDasChild));
             }
         } catch (Exception ex) {
             System.out.println("Error building mgt info: " + ex);

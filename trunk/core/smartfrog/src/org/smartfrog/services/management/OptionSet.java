@@ -35,7 +35,7 @@ public class OptionSet {
     protected byte optionLength = 1;
     /** Usage. */
     public String usage = "\n" +
-        "Usage: sfManagementConsole  [-h hostname] [-p  portnumber] [-w  windowPosition(C,N,SE,..)] [-r] [-?]\n";
+        "Usage: sfManagementConsole  [-h hostname] [-p  portnumber] [-w  windowPosition(C,N,SE,..)] [-r] [-c] [-?]\n";
     /** Error string. */
     public String errorString = null;
     /** Flag indicating remote daemon. */
@@ -46,6 +46,9 @@ public class OptionSet {
     public boolean isWindowPosition = false;
     /** Flag indicating show root process. */
     public boolean showRootProcess = false;
+    /** Flag indicating show Cd as child. */
+    public boolean showCDasChild = false;
+
     /** Hostname. */
     public String host = "localhost";
     /** Port number. */
@@ -69,7 +72,7 @@ public class OptionSet {
                 if (args[i].charAt(0) == optionFlagIndicator) {
                     switch (args[i].charAt(1)) {
                     case '?':
-                        errorString = "SFSystem help";
+                        errorString = "SFManagementConsole help";
 
                         break;
 
@@ -110,6 +113,12 @@ public class OptionSet {
                         showRootProcess = true;
 
                         break;
+
+                    case 'c':
+                         showCDasChild = true;
+
+                         break;
+
 
                     default:
                         errorString = "unknown option " + args[i].charAt(1);
