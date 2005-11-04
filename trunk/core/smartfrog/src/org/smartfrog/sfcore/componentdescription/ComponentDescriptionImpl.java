@@ -51,6 +51,7 @@ import org.smartfrog.sfcore.reference.ReferenceResolverHelperImpl;
 import org.smartfrog.sfcore.common.SFMarshalledObject;
 import org.smartfrog.sfcore.common.*;
 import java.rmi.*;
+import org.smartfrog.sfcore.reference.HereReferencePart;
 
 
 /**
@@ -107,46 +108,62 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
        return sfCompleteName();
     }
 
-
+    /** Reference that caches cannonical name. */
+    protected Reference sfCompleteName = null;
 
     /**
-     * Gets the complete name for this description. This gives a reference from
-     * the root component to this description. If the parent does not know
-     * about this component, the parents complete name is returned.
+     * Returns the complete name for this component from the root of the
+     * application.
      *
-     * @return complete name for this component
+     * @return reference of attribute names to this component
+     *
+     * @throws RemoteException In case of network/rmi error
      */
     public Reference sfCompleteName() {
-        //System.out.println("getting CD sfCompleteName");
-        Object cdParent = sfResolveParent();
-        if (cdParent == null) {
-            //System.out.println("CD with NO parent");
-            return new Reference();
-        }
-        Reference r = null;
-        Object name =null;
-        if (cdParent instanceof ComponentDescription){
-            r = ((ComponentDescription)cdParent).sfCompleteName();
-            name = ((ComponentDescription)cdParent).sfAttributeKeyFor(this);
-            //System.out.println("CD with CD parent: "+r.toString()+" : "+name);
-        } else if (cdParent instanceof ComponentDescription){
-            try {
-                r = ((Prim)cdParent).sfCompleteName();
-                name = ((Prim)cdParent).sfAttributeKeyFor(this);
-                //System.out.println("CD with PRIM parent: "+r.toString()+" : "+name);
-            } catch (RemoteException ex) {
-                if ((sfLog()!= null) && sfLog().isErrorEnabled()) sfLog().err(ex.getMessage(),ex);
-                else ex.printStackTrace();
+        if (sfCompleteName==null) {
+
+            Object cdParent = sfResolveParent();
+            if (cdParent == null) {
+                return new Reference();
             }
-        } else {
-            return new Reference();
-        }
 
-        if (name != null) {
-            r.addElement(ReferencePart.here(name));
-        }
+            Reference r = null;
+            Object key = null;
+            if (cdParent instanceof ComponentDescription){
+                r = ((ComponentDescription)cdParent).sfCompleteName();
+                key = ((ComponentDescription)cdParent).sfAttributeKeyFor(this);
+            } else if (cdParent instanceof Prim){
+                try {
+                    r = ((Prim)cdParent).sfCompleteName();
+                    key = ((Prim)cdParent).sfAttributeKeyFor(this);
+                } catch (RemoteException ex) {
+                    if ((sfLog()!= null) && sfLog().isErrorEnabled()) sfLog().err(ex.getMessage(),ex);
+                    else ex.printStackTrace();
+                }
+            } else {
+                return new Reference();
+            }
 
-        return r;
+            sfCompleteName= (Reference)r.clone();
+
+            if (key!=null) {
+                sfCompleteName.addElement(ReferencePart.here(key));
+            } else {
+                sfCompleteName.addElement(new HereReferencePart("*unknown*"));
+                if (sfLog().isTraceEnabled()){
+                    sfLog().trace("Internal error generating CD complete name - child not named in parent yet");
+                }
+            }
+        }
+        return sfCompleteName;
+    }
+
+    /**
+     * Parentage changed in component hierachy.
+     * Actions: sfCompleteName cache is cleaned
+     */
+    public void sfParentageChanged() {
+       sfCompleteName=null;
     }
 
     /**
