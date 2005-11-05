@@ -32,6 +32,9 @@ import javax.swing.tree.TreePath;
 
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.reference.Reference;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
+import org.smartfrog.sfcore.common.*;
+import java.rmi.*;
 
 /**
  *  Popup table UI Component.
@@ -58,11 +61,6 @@ public class PopUpTable extends JComponent implements ActionListener {
    JMenuItem menuItemRemoveAttribute = new JMenuItem();
    /** Item for Tree popup menu - resolve attribute. */
    JMenuItem menuItemResolveAttribute = new JMenuItem();
-
-
-   //   JMenuItem menuItemTerminate = new JMenuItem();
-   //   JMenuItem menuItemDTerminate = new JMenuItem();
-   //   JMenuItem menuItemDetach = new JMenuItem();
 
    /**
     *  Constructs PopUpTable object
@@ -111,8 +109,7 @@ public class PopUpTable extends JComponent implements ActionListener {
     *@param  y          Y Coordinate
     *@param  parent     Reference to parent component
     */
-   public void show(JTree compTree, JTable compTable, int x, int y,
-         DeployTreePanel parent) {
+   public void show(JTree compTree, JTable compTable, int x, int y, DeployTreePanel parent) {
       tempTree = compTree;
       tempTable = compTable;
       tempX = x;
@@ -136,9 +133,6 @@ public class PopUpTable extends JComponent implements ActionListener {
 
       path = treePath2Path(tpath);
 
-      //System.out.println("Tree PopUp(source): "+e.getSource()+",
-      //Path: "+path);
-      // Launch it
       if (source == menuItemResolveAttribute) {
         Object name = null;
         Object value = null;
@@ -158,8 +152,6 @@ public class PopUpTable extends JComponent implements ActionListener {
             return;
          }
 
-         //System.out.println("Removing: "+
-     //((String)(tempTable.getValueAt(row,0))) +"from"+path);
          remove((((DeployEntry) (tpath.getLastPathComponent())).getEntry()),
                (String) (tempTable.getValueAt(row, 0)));
 
@@ -193,31 +185,24 @@ public class PopUpTable extends JComponent implements ActionListener {
       attribute[0] = name;
       attribute[1] = value;
 
-      NewAttributeDialog attrDialog = new NewAttributeDialog(null,
-            "Add/Modify attribute", true, attribute);
-      org.smartfrog.services.display.WindowUtilities.setPositionDisplay(
-              this.parent.treeScrollPane, attrDialog, "C");
+      NewAttributeDialog attrDialog = new NewAttributeDialog(null, "Add/Modify attribute", true, attribute);
+      org.smartfrog.services.display.WindowUtilities.setPositionDisplay( this.parent.treeScrollPane, attrDialog, "C");
       attrDialog.show();
 
       if (attribute != null) {
          if (attribute[0] == null) {
             return;
          }
-
          if (attribute[1] == null) {
-            System.out.println(" Wrong format for: " +
-                  attribute[0].toString());
-
+            System.out.println(" Wrong format for: " + attribute[0].toString());
             return;
          }
 
-         //System.out.println("REPLACING: Attribute: name->"+ attribute[0].
-     //toString()+", value->"+attribute[1].toString()+", class"+
-     //attribute[1].getClass().toString());
          try {
             TreePath tpath = (tempTree).getSelectionPath();
-            ((Prim) (((DeployEntry) (tpath.getLastPathComponent())).
-             getEntry())).sfReplaceAttribute(attribute[0],attribute[1]);
+            Object node = getNode();
+            modify(node,attribute[0],attribute[1]);
+            //((Prim) (((DeployEntry) (tpath.getLastPathComponent())).getEntry())).sfReplaceAttribute(attribute[0],attribute[1]);
          } catch (Exception ex) {
             ex.printStackTrace();
          }
@@ -279,17 +264,13 @@ public class PopUpTable extends JComponent implements ActionListener {
      Object value;
      StringBuffer solvedValue = new StringBuffer();
      try {
-       //Special case to show special info about he reference
-         Prim prim;
-         TreePath tpath = (tempTree).getSelectionPath();
-         prim = ( (Prim) ( ( (DeployEntry) (tpath.getLastPathComponent())).
-                          getEntry()));
-         value = prim.sfResolveHere(attribName);
+         Object node = getNode();
+         value = getValue(attribName, node);
          if (value instanceof Reference) {
            String solvedValueClass="class not found";
            try {
              ( (Reference) value).setEager(true);
-             Object objSolvedValue = prim.sfResolve( (Reference) value);
+             Object objSolvedValue = resolveValue((Reference) value, node);
              solvedValue.append(objSolvedValue.toString());
              solvedValueClass = objSolvedValue.getClass().toString();
            } catch (Exception ex){
@@ -300,8 +281,7 @@ public class PopUpTable extends JComponent implements ActionListener {
            text.append("\n * Value: ");
            text.append("\n"+value.toString());
            text.append("\n * Value resolved: \n" + solvedValue.toString());
-           text.append("\n\n" + "+ Value class:" +
-                       value.getClass().toString());
+           text.append("\n\n" + "+ Value class:" + value.getClass().toString());
            text.append("\n" + "+ Solved Value class:" + solvedValueClass);
 
            parent.jTextArea1.setText(text.toString());
@@ -319,6 +299,32 @@ public class PopUpTable extends JComponent implements ActionListener {
 
    }
 
+   private Object getNode() {
+       Object node;
+       TreePath tpath = (tempTree).getSelectionPath();
+       node = ((((DeployEntry) (tpath.getLastPathComponent())).getEntry()));
+       return node;
+   }
+
+   private Object getValue(Object attribName, Object node) throws  SmartFrogResolutionException, RemoteException {
+    Object value=null;
+    if (node instanceof Prim){
+        value = ((Prim)node).sfResolveHere(attribName);
+    } else if (node instanceof ComponentDescription){
+        value = ((ComponentDescription)node).sfResolveHere(attribName);
+    }
+    return value;
+   }
+
+   private Object resolveValue(Reference ref, Object node) throws  SmartFrogResolutionException, RemoteException {
+    Object value=null;
+    if (node instanceof Prim){
+        value = ((Prim)node).sfResolve(ref);
+    } else if (node instanceof ComponentDescription){
+        value = ((ComponentDescription)node).sfResolve(ref);
+    }
+    return value;
+   }
 
    /**
     * Removes the attribute from the SF component.
@@ -327,10 +333,9 @@ public class PopUpTable extends JComponent implements ActionListener {
     *@param  attribName  Attribute Name
     */
    void remove(Object obj, String attribName) {
-      if (obj instanceof Prim) {
+      if ((obj instanceof Prim)||(obj instanceof ComponentDescription)) {
          try {
-            org.smartfrog.services.management.DeployMgnt.
-            removeAttribute((Prim) obj,(String) attribName);
+            org.smartfrog.services.management.DeployMgnt.removeAttribute(obj,(String) attribName);
             parent.refreshTable();
          } catch (Exception ex) {
             ex.printStackTrace();
@@ -346,11 +351,10 @@ public class PopUpTable extends JComponent implements ActionListener {
     *@param  attribName  Attribute Name
     *@param  value       Attribute value
     */
-   void modify(Object obj, String attribName, Object value) {
-      if (obj instanceof Prim) {
+   void modify(Object obj, Object attribName, Object value) {
+      if ((obj instanceof Prim)||(obj instanceof ComponentDescription)) {
          try {
-            org.smartfrog.services.management.DeployMgnt.
-            modifyAttribute((Prim) obj, attribName, value);
+            org.smartfrog.services.management.DeployMgnt.modifyAttribute(obj, attribName, value);
             parent.refreshTable();
          } catch (Exception ex) {
             ex.printStackTrace();
