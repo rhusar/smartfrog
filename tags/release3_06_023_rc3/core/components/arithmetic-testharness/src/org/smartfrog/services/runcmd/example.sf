@@ -1,0 +1,31 @@
+//RunCommand Component
+#include "org/smartfrog/services/runcmd/components.sf"
+
+//Run SFDaemon Template
+#include "org/smartfrog/services/runcmd/runSFDaemon.sf"
+
+// --- EXAMPLE
+sfConfig extends Compound {
+
+   mngCmds extends MngRunCmds {
+      sfProcessName "management";
+      process1 LAZY ATTRIB testRunCmd;
+      process2 LAZY ATTRIB testBatch;
+   }
+
+   testRunCmd extends RunCommand {
+      sfProcessName "one";
+      processName "JavaVersion";
+      startCmd "java";
+      startAtt "-version";
+   }
+
+   testBatch extends RunBatch {
+      sfProcessName "two";
+      processName "TestDir";
+      startCmd "dir";
+      logLevel 5;
+   }
+
+
+}

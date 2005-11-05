@@ -1,0 +1,62 @@
+#include "org/smartfrog/components.sf"
+
+
+RunCommand extends Prim {
+   sfClass "org.smartfrog.services.runcmd.SFRunCommand";
+   //runDuringDeploy  false; //By default it runs the application during sfStart phace.
+   //processName ""; //Mandatory
+   //processId   "";
+     //---start
+   startCmd    "startCmd";
+     //startAttVector ->VECTOR that overWrites startAttxxx sequence
+   //startAtt    "startAtt";
+//   startAtt_01 "-cp";
+//   startAtt_02 ATTRIB classPath;
+//   startAtt_03a "-Dorg.smartfrog.sfcore.processcompound.sfRootLocatorPort=";
+//   startAtt_03b ATTRIB port;
+
+     //---stop
+   //stopCmd     "stopCmd";
+   //stopAttVector ->VECTOR that overWrites stopAttxxx sequence
+   //stopAtt	   "stopAtt";
+//   stopAtt_01 "-cp";
+//   stopAtt_02 ATTRIB classPath;
+//   stopAtt_03a "-Dorg.smartfrog.sfcore.processcompound.sfRootLocatorPort=";
+//   stopAtt_03b ATTRIB port;
+
+     //---restart
+   autoStart true;
+   //autoReStart false;
+   //delayReStart 2000; // 1000 = 1 Second
+
+     //---terminate when spanned process terminates?
+   //shouldTerminate false;
+
+     //---detach component from its parent when spanned process terminates?
+   //shouldDetach false;
+
+     //---processWorkingDirectory
+   //workDir      ".";
+   //envProperties ["SFHOME=.","JAVA_HOME=/"]; //Example
+
+     //---Level log
+   //logLevel -1; // 5 all errors, -1 none
+   //outputMsgTo obj      // Object that implements com.hp.sfServices.display.PrintMsgInt       //sfServices.sfDisplay uses it
+   //errorMsgTo  obj      // Object that implements com.hp.sfServices.display.PrintErrMsgInt    //sfServices.sfDisplay uses it
+   //outputStream       // Object that implements org.smartfrog.services.runcmd.OutputStreamInt
+   //errorStream        // Object that implements org.smartfrog.services.runcmd.InfoStreamInt
+}
+
+RunBatch extends RunCommand {
+   isBatch true;
+}
+
+MngRunCmds extends Compound {
+   sfClass "org.smartfrog.services.runcmd.SFMngRunCmds";
+   // Here we should add all the run Cmd that we want to manage!
+
+}
+
+
+
+
