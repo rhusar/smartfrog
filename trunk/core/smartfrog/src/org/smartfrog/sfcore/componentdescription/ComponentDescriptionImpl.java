@@ -158,13 +158,13 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
         return sfCompleteName;
     }
 
-//    /**
-//     * Parentage changed in component hierachy.
-//     * Actions: sfCompleteName cache is cleaned
-//     */
-//    public void sfParentageChanged() {
+    /**
+     * Parentage changed in component hierachy.
+     * Actions: sfCompleteName cache is cleaned
+     */
+    public void sfParentageChanged() {
 ////       sfCompleteName=null;
-//    }
+    }
 
     /**
      * Adds an attribute to this component description under given name.
