@@ -75,14 +75,7 @@ public class NewAttributeDialog extends JDialog {
     /** Set of attributes. */
     private Object[] attribute = null;
     /** Component types. */
-//    private String[] componentTypes = {"AnyValue",
-//        "Integer", "Boolean", "ComponentDescription", "Reference",
-//        "Long", "Float", "Double", "String"
-//    };
     private String[] componentTypes = {"AnyValue"};
-//        "Integer", "Boolean", "ComponentDescription", "Reference",
-//        "Long", "Float", "Double", "String"
-//    };
 
 
     /** Integer value for string. */
@@ -231,18 +224,6 @@ public class NewAttributeDialog extends JDialog {
     }
 
     /**
-     *     final int STRING = 0;
-       final int INTEGER = 1;
-       final int BOOLEAN = 2;
-       final int VECTOR = 3;
-       final int COMPONENT_DESCRIPTION = 4;
-       final int REFERENCE = 5;
-       final int LONG = 6;
-       final int FLOAT = 7;
-       final int DOUBLE = 8;
-     * static
-     */
-    /**
      * Creates object from type and string value.
      * @param type of the object
      * @param valueStr value in string
@@ -374,10 +355,6 @@ public class NewAttributeDialog extends JDialog {
                 //System.out.println("Phases: "+ auxphases.toString());
                 top = top.sfResolvePhases(auxphases);
 
-                //System.out.println("TOP after: "+ top.
-        //sfAsComponentDescription().toString());
-                //this.log("SFParse Done(" + (auxphases.lastElement()).
-        //toString() + ").", "Parse", 3);
                 return (top.sfAsComponentDescription());
             } else {
                 //this.log("SFParse Failed. No top.", "Parse", 5);

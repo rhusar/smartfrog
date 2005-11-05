@@ -44,15 +44,10 @@ import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 public class DeployEntry implements Entry {
 
     boolean showCDasChild = false;
-    //private String name=null;
-    //private String parentDN=null;
+
     private Object entry = null;
 
     private boolean showRootProcessName = false;
-
-    //Prim or Compound
-    //   private HashMap attributes=null;
-    //   private HashMap children=null;
 
     /**
      * Constructs the DeployEntry object
@@ -61,15 +56,9 @@ public class DeployEntry implements Entry {
      */
     public DeployEntry(Object entry, boolean showRootProcessName, boolean showCDasChild) {
         try {
-            //         if (entry instanceof Prim){
-            //            this.entry=(Prim)entry;
-            //         } else if (entry instanceof Compound) {
-            //            this.entry = (Compound) entry;
-            //         }
             this.entry = (Object) entry;
             this.showRootProcessName = showRootProcessName;
             this.showCDasChild=showCDasChild;
-            //System.out.println("Entry created with "+this.toString());
         } catch (Exception ex) {
             System.out.println("sfManagementConsole (DeployEntry1): "+ex.toString());
             //ex.printStackTrace();
@@ -99,7 +88,6 @@ public class DeployEntry implements Entry {
     public DeployEntry(String message) {
         try {
             this.entry = message;
-
             //System.out.println("Model created");
         } catch (Exception ex) {
             System.out.println("sfManagementConsole (DeployEntry3): "+ex.toString());
@@ -127,7 +115,7 @@ public class DeployEntry implements Entry {
      *@return boolean  true if it is leaf entry else false
      */
     public boolean isLeaf() {
-        if (entry instanceof Compound) {
+        if ((entry instanceof Compound)||(showCDasChild && (entry instanceof ComponentDescription))) {
             //System.out.println(this.toString()+": NO Leaf");
             return false;
         } else {
@@ -220,20 +208,12 @@ public class DeployEntry implements Entry {
             //System.out.println("EntryCD: getting name");
             try {
                 name = ((ComponentDescription) entry).sfCompleteName().toString();
-                System.out.println("EntryCD: getting name - "+name);
+            //    System.out.println("EntryCD: getting name - "+name);
             } catch (Exception ex) {
                 System.out.println("sfManagementConsole (DeployEntry5): "+ex.getMessage());
                 //@TODO Log
             }
         }
-
-
-//        if (!(name.equals(""))) {
-//            name = "ROOT:" + name;
-//        } else {
-//            name = "ROOT";
-//        }
-
         //System.out.println("getDN(): "+name);
         return (name);
     }
@@ -390,7 +370,6 @@ public class DeployEntry implements Entry {
                 return(empty);
             }
 
-
             String name = "";
             Object obj = null;
             Object[][] data = new Object[this.sizeChildren()][2];
@@ -403,13 +382,10 @@ public class DeployEntry implements Entry {
                   obj = context.get(name);
 
                   if ((isChild(obj))) {
-                    //&& !name.toString().endsWith("URL"))
                     data[index][0] = name;
 
-                    //data[index][1]=obj;
                     data[index][1] = obj2Entry(obj);
 
-                    //Deploy entries: What about References?, ComponentDescriptions?
                     index++;
                   }
                 } catch (Exception ex1) {
@@ -431,8 +407,6 @@ public class DeployEntry implements Entry {
      */
     public Object getEntry() {
         return entry;
-
-        // Prim or Compound
     }
 
     /**
@@ -446,8 +420,6 @@ public class DeployEntry implements Entry {
         // Search 1 or all levels bellow this object
         throw new java.lang.UnsupportedOperationException(
             "Method getEntry() not yet implemented.");
-
-        //return null;
     }
 
     // end Parsing msg
@@ -460,9 +432,6 @@ public class DeployEntry implements Entry {
     public boolean add(String msg) {
         throw new java.lang.UnsupportedOperationException(
             "Not implemented.  DeployEntry.add: " + "");
-
-        //return false;
-        //entry.add(node);
     }
 
     /**
@@ -487,8 +456,6 @@ public class DeployEntry implements Entry {
     public boolean remove(String DN) {
         throw new java.lang.UnsupportedOperationException(
             "Method remove(DN) not yet implemented.");
-
-        //return false;
     }
 
     /**
@@ -506,19 +473,7 @@ public class DeployEntry implements Entry {
      *@return    textual representation of the deploy entry
      */
     public String toStringAll() {
-        //return parentDN+":"+name+"/"+childrenString()+"/"+attributesString();
         return entry.toString();
-
-        //      StringBuffer txt = new StringBuffer(parentDN+":"+name);
-        //      String aux = attributesString();
-        //      if (!aux.equals("")){
-        //         txt.append("\n   " +aux);
-        //      }
-        //      aux = childrenString();
-        //      if (!aux.equals("")){
-        //         txt.append("\n   " +aux);
-        //      }
-        //      return new String(txt);
     }
 
     /**
@@ -527,13 +482,7 @@ public class DeployEntry implements Entry {
      *@return  children string
      */
     public String childrenString() {
-        //      if (children !=null){
-        //         //return children.keySet().toString();
-        //         return dumpHashMap(children);
-        //      } else{
         return "";
-
-        //      }
     }
 
     /**
@@ -542,14 +491,7 @@ public class DeployEntry implements Entry {
      *@return    attributes in sting form.
      */
     public String attributesString() {
-        //      if (attributes!=null){
-        //         //return (attributes.keySet().toString()+":"+attributes.values().toString());
-        //         return ("  attributes: "+dumpHashMap(attributes));
-        //
-        //      } else{
         return "";
-
-        //      }
     }
 
     /**
@@ -649,17 +591,6 @@ public class DeployEntry implements Entry {
      *@return   rdn attribute
      */
     private String getRDN(String DN) {
-        //Special case when Entry is Registered in ProcessCompound.
-        // Ex. Context context = SFProcess.getRootLocator()
-        //    .getRootProcessCompound(InetAddress.getByName(
-        //    hostname), port).sfContext();
-//        String RDN =  DN.substring(DN.lastIndexOf(':') + 1, DN.length());
-//        String nameInRPC = this.getRDNProcessCompound();
-//        if (nameInRPC.equals("")){
-//            return RDN;
-//        } else {
-//            return RDN+ "["+nameInRPC+"]";
-//        }
           String RDN ="";
           if (this.showRootProcessName) {
              RDN = this.getRDNProcessCompound();
@@ -706,14 +637,7 @@ public class DeployEntry implements Entry {
             //@Todo log this.
             ex.printStackTrace();
         }
-//        try {
-//          String pcEntryName="null";
-//          if (pcEntry !=null){
-//            pcEntryName=pcEntry.sfCompleteName().toString();
-//          }
-//          System.out.println("Entry name = " + entryName + ", " + ( (Prim) entry).sfCompleteName()+", PC: "+pcEntryName);
-//        } catch (RemoteException ex1) {
-//        }
+
         return entryName;
     }
 
@@ -771,16 +695,10 @@ public class DeployEntry implements Entry {
      *@return      true if it is an attribute else false
      */
     private boolean isChild(Object obj) {
-//        if (!(obj instanceof Prim)) {
-//            //&& !name.toString().endsWith("URL"))
-//            return true;
-//        }
-//
-//        return false;
         try {
           // Component child
-          if ( (obj instanceof Prim) &&
-              ( (Compound) entry).sfContainsChild( (org.smartfrog.sfcore.prim. Liveness) obj)) {
+          if ( (obj instanceof Prim) && (entry instanceof Prim) &&
+              ( (Compound) entry).sfContainsChild( (org.smartfrog.sfcore.prim.Liveness) obj)) {
             return true;
           }
           //ComponentDescription child
@@ -831,24 +749,19 @@ public class DeployEntry implements Entry {
     private DeployEntry obj2Entry(Object value) {
         try {
             boolean newShowRootProcessName = (this.showRootProcessName&&(entry instanceof ProcessCompound));
-            if (value instanceof Prim) {
+            if ((value instanceof Prim)||(value instanceof ComponentDescription)) {
                 return (new DeployEntry(value,newShowRootProcessName,this.showCDasChild));
             } else if (value instanceof Reference) {
                 do {
                     ((Reference) value).setEager(true);
                     value = ((Prim) entry).sfResolve((Reference) value);
                 } while (value instanceof Reference);
-
-                return (new DeployEntry(value,newShowRootProcessName,this.showCDasChild));
-            } else if (value instanceof ComponentDescription){
                 return (new DeployEntry(value,newShowRootProcessName,this.showCDasChild));
             }
         } catch (Exception ex) {
             System.out.println("Error building mgt info: " + ex);
-
             //return new DeployEntry((ex.getMessage()+(value.toString())));
         }
-
         return new DeployEntry();
     }
 }

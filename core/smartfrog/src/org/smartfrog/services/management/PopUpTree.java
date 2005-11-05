@@ -167,7 +167,7 @@ public class PopUpTree extends JComponent implements ActionListener {
             menuItemTerminateAbnormal.setVisible(false);
             menuItemDTerminate.setVisible(false);
             menuItemDumpContext.setVisible(true);
-            menuItemParentageChanged.setVisible(false);
+            menuItemParentageChanged.setVisible(true);
         }
         popupTree.show(comp, x, y);
         this.parent = parent;
@@ -205,11 +205,14 @@ public class PopUpTree extends JComponent implements ActionListener {
             detach(node);
             // Entry selected in the tree
         } else if (source == menuItemParentageChanged) {
-            Prim objPrim = ((Prim)node);
-            try {
-              objPrim.sfParentageChanged();
-            } catch (RemoteException ex1) {
-              //ex1.printStackTrace();
+            if (node instanceof Prim){
+                try {
+                    ((Prim)node).sfParentageChanged();
+                } catch (RemoteException ex1) {
+                    //ex1.printStackTrace();
+                }
+            } else if (node instanceof ComponentDescription){
+                ((ComponentDescriptionImpl)node).sfParentageChanged();
             }
             // Entry selected in the tree
         } else if (source == menuItemDumpContext) {

@@ -22,6 +22,7 @@ package org.smartfrog.services.management;
 
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
+import org.smartfrog.sfcore.componentdescription.ComponentDescription;
 
 
 /**
@@ -44,13 +45,13 @@ public class DeployMgnt {
      *@param  attribValue    Value of the attribute
      *@throws  Exception  If any error
      */
-    public static void addAttribute(Prim obj, Object attribName,
-        Object attribValue) throws Exception {
-        // Object oldValue = obj.sfContext().get(attribName);
-        // ComponentDescription cmp = SFParser.getParser().parse(attribName.
-    // toString() + " " + value.toString() + ";");
-        // obj.sfReplaceAttribute(attribName, cmp.getContext().get(attribName));
-        obj.sfReplaceAttribute(attribName, attribValue);
+    public static void addAttribute(Object obj, Object attribName, Object attribValue) throws Exception {
+        if (obj instanceof Prim) {
+            ((Prim)obj).sfReplaceAttribute(attribName, attribValue);
+        } else if (obj instanceof ComponentDescription){
+            ((ComponentDescription)obj).sfReplaceAttribute(attribName, attribValue);
+        }
+
     }
 
     /**
@@ -60,9 +61,12 @@ public class DeployMgnt {
      *@param  attribName     Name of the attribute
      *@throws  Exception  If any error
      */
-    public static void removeAttribute(Prim obj, Object attribName)
-        throws Exception {
-        obj.sfRemoveAttribute(attribName);
+    public static void removeAttribute(Object obj, Object attribName) throws Exception {
+        if (obj instanceof Prim) {
+            ((Prim)obj).sfRemoveAttribute(attribName);
+        } else if (obj instanceof ComponentDescription){
+            ((ComponentDescription)obj).sfRemoveAttribute(attribName);
+        }
     }
 
     /**
@@ -73,13 +77,12 @@ public class DeployMgnt {
      *@param  attribValue    Value of the attribute
      *@throws  Exception  If any error
      */
-    public static void modifyAttribute(Prim obj, Object attribName,
-        Object attribValue) throws Exception {
-        // Object oldValue = obj.sfContext().get(attribName);
-        // ComponentDescription cmp = SFParser.getParser().parse(attribName.
-    // toString() + " " + value.toString() + ";");
-        // obj.sfReplaceAttribute(attribName, cmp.getContext().get(attribName));
-        obj.sfReplaceAttribute(attribName, attribValue);
+    public static void modifyAttribute(Object obj, Object attribName, Object attribValue) throws Exception {
+        if (obj instanceof Prim) {
+            ((Prim)obj).sfReplaceAttribute(attribName, attribValue);
+        } else if (obj instanceof ComponentDescription){
+            ((ComponentDescription)obj).sfReplaceAttribute(attribName, attribValue);
+        }
     }
 
     /**
@@ -89,8 +92,7 @@ public class DeployMgnt {
      */
     public static void terminate(Prim obj, String type, String reason) {
         try {
-            TerminationRecord tr = new TerminationRecord(type,
-                    reason, null);
+            TerminationRecord tr = new TerminationRecord(type, reason, null);
             obj.sfTerminate(tr);
         } catch (Exception ex) {
             //@TODO: log exception message.
@@ -105,8 +107,7 @@ public class DeployMgnt {
      */
     public static void dTerminate(Prim obj, String type, String reason) {
         try {
-            TerminationRecord tr = new TerminationRecord(type,
-                    reason, null);
+            TerminationRecord tr = new TerminationRecord(type, reason, null);
             obj.sfDetachAndTerminate(tr);
         } catch (Exception ex) {
             ex.printStackTrace();
