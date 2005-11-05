@@ -274,7 +274,8 @@ public class PopUpTable extends JComponent implements ActionListener {
              solvedValue.append(objSolvedValue.toString());
              solvedValueClass = objSolvedValue.getClass().toString();
            } catch (Exception ex){
-            solvedValue.append(" Failed to relsove!: " + ex.toString());
+              solvedValue.append(" Failed to relsove!: " + ex.toString());
+              ex.printStackTrace();
            }
            StringBuffer text = new StringBuffer();
            text.append("* Attribute resolved (LAZY ref): "+attribName);
