@@ -201,7 +201,7 @@ public class ReferenceSystemTest extends SmartFrogTestBase {
         deployExpectingException(FILES+"tcn98.sf",
                 "tcn98",
                 "SmartFrogDeploymentException",
-                "Failed to resolve 'x [unprintable cyclic value]'.",
+                "[unprintable cyclic value]",
                 "SmartFrogResolutionException",
                 "Possible cause: cyclic reference.");
     }
@@ -215,5 +215,5 @@ public class ReferenceSystemTest extends SmartFrogTestBase {
                 "Possible cause: cyclic reference.");
     }
 
-    
+
 }
