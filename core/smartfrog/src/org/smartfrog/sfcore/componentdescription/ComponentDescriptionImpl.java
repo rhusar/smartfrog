@@ -109,7 +109,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
     }
 
     /** Reference that caches cannonical name. */
-    protected Reference sfCompleteName = null;
+//    protected Reference sfCompleteName = null; //No cache. Conflict with Schema error report
 
     /**
      * Returns the complete name for this component from the root of the
@@ -120,7 +120,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      * @throws RemoteException In case of network/rmi error
      */
     public Reference sfCompleteName() {
-        if (sfCompleteName==null) {
+//        if (sfCompleteName==null) { //No cache. Conflict with Schema error report
 
             Object cdParent = sfResolveParent();
             if (cdParent == null) {
@@ -144,7 +144,7 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
                 return new Reference();
             }
 
-            sfCompleteName= (Reference)r.clone();
+            Reference sfCompleteName= (Reference)r.clone();
 
             if (key!=null) {
                 sfCompleteName.addElement(ReferencePart.here(key));
@@ -154,17 +154,17 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
                     sfLog().trace("Internal error generating CD complete name - child not named in parent yet");
                 }
             }
-        }
+//        } //cache
         return sfCompleteName;
     }
 
-    /**
-     * Parentage changed in component hierachy.
-     * Actions: sfCompleteName cache is cleaned
-     */
-    public void sfParentageChanged() {
-       sfCompleteName=null;
-    }
+//    /**
+//     * Parentage changed in component hierachy.
+//     * Actions: sfCompleteName cache is cleaned
+//     */
+//    public void sfParentageChanged() {
+////       sfCompleteName=null;
+//    }
 
     /**
      * Adds an attribute to this component description under given name.
