@@ -20,12 +20,12 @@ CargoServer extends ApplicationServer {
 
  */
 
-CargoServerExtension extends TomcatCargoServer {
+CargoServerExtension extends CargoServer {
  port 8080;
  logging "low";
- directory LAZY PROPERTY java.io.tmpdir;
 }
 
-sfConfig extends CargoServerExtension {
+sfConfig extends Compound {
+    cse extends CargoServerExtension;
 
 }

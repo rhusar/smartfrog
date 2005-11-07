@@ -35,7 +35,7 @@ public abstract class CargoTestBase extends SmartFrogTestBase {
 
 
     /** location for files. {@value} */
-    public static final String FILE_BASE = "/org/smartfrog/services/cargo/test/system/";
+    public static final String FILE_BASE = "/org/smartfrog/services/www/cargo/test/system/";
 
     public static final String CODEBASE_PROPERTY = "org.smartfrog.codebase";
 
@@ -50,7 +50,7 @@ public abstract class CargoTestBase extends SmartFrogTestBase {
      */
     protected void setUp() throws Exception {
         super.setUp();
-        assertSystemPropertySet(CODEBASE_PROPERTY);
+        //assertSystemPropertySet(CODEBASE_PROPERTY);
     }
 
 
@@ -76,5 +76,6 @@ public abstract class CargoTestBase extends SmartFrogTestBase {
     public void setApplication(Prim application) {
         this.application = application;
     }
+
 
 }

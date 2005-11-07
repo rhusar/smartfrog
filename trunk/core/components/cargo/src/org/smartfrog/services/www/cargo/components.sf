@@ -50,7 +50,7 @@ CargoServer extends ApplicationServer {
     cargoServerSchema extends CargoServerSchema;
     serverHost "localhost";
     port 8080;
-    logging "medium;
+    logging "medium";
     //no servlet contexts; war ear and sar may be something of an implementaton
     supportsServletContext false;
 
