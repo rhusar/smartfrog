@@ -42,31 +42,27 @@
                   version="${Version}"/>
       <dependency groupID="cargo"
                   artifactID="cargo"
-                  version="0.6"/>
+                  version="${cargo.version}"/>
       <dependency groupID="ant"
                   artifactID="ant"
-                  version="1.6.5">
+                  version="${ant.m2.version}">
         <exclusion groupId="xml-apis" artifactId="xml-apis"/>
         <exclusion groupId="xerces" artifactId="xerces-impl"/>
       </dependency>
       <dependency groupID="xerces"
                   artifactID="xmlParserAPIs"
-                  version="2.6.2"/>
+                  version="${xerces.version}"/>
       <dependency groupID="xerces"
                   artifactID="xercesImpl"
-                  version="2.6.2"/>
+                  version="${xerces.version}"/>
     </m2-libraries>
   </target>
 
   <target name="declare-compile.classpath-lib-dir"
-          depends="declare-base.compile.classpath,probe-lib-dir,m2-files"
-          if="lib.dir.found">
+          depends="declare-base.compile.classpath,probe-lib-dir,m2-files">
     <path id="compile.classpath">
       <path refid="base.compile.classpath"/>
       <path refid="m2.classpath"/>
-      <fileset dir="${lib.dir}">
-        <include name="**/*.jar"/>
-      </fileset>
     </path>
   </target>
 
