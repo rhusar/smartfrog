@@ -34,8 +34,8 @@
  */
 CargoServerSchema extends Schema {
     //name of the implementation
-    name extends String;
-    cargoClass extends String;
+    configurationClass extends String;
+    containerClass extends String;
 
     logging extends String;
 
@@ -54,4 +54,12 @@ CargoServer extends ApplicationServer {
     //no servlet contexts; war ear and sar may be something of an implementaton
     supportsServletContext false;
 
+}
+
+/**
+ A tomcat server implemented using Cargo
+ */
+TomcatCargoServer extends CargoServer {
+  configurationClass "org.codehaus.cargo.container.tomcat.CatalinaStandaloneLocalConfiguration";
+  containerClass "org.codehaus.cargo.container.tomcat.Tomcat5xLocalContainer";
 }

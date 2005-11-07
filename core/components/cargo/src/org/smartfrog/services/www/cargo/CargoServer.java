@@ -26,7 +26,7 @@ import org.smartfrog.services.www.JavaWebApplicationServer;
  */
 public interface CargoServer extends JavaWebApplicationServer {
 
-    String ATTR_CONFIGURATION_NAME = "name";
+    String ATTR_CONFIGURATION_CLASS = "configurationClass";
 
     //String ATTR_HOSTNAME = "cargo.servlet.hostname";
 
@@ -35,7 +35,7 @@ public interface CargoServer extends JavaWebApplicationServer {
     /**
      * name of the class that is the implementation
      */
-    String ATTR_CARGO_CLASS = "cargoClass";
+    String ATTR_CONTAINER_CLASS = "containerClass";
 
     String ATTR_DIRECTORY = "directory";
 }

@@ -23,7 +23,6 @@ package org.smartfrog.services.www.cargo;
 import org.codehaus.cargo.container.Container;
 import org.codehaus.cargo.container.configuration.Configuration;
 import org.codehaus.cargo.generic.configuration.ConfigurationFactory;
-import org.codehaus.cargo.generic.configuration.ConfigurationType;
 import org.codehaus.cargo.generic.configuration.DefaultConfigurationFactory;
 import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.www.JavaEnterpriseApplication;
@@ -32,19 +31,23 @@ import org.smartfrog.services.www.ServletContextIntf;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
+import org.smartfrog.sfcore.security.SFClassLoader;
 
 import java.io.File;
 import java.rmi.RemoteException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
 
 /**
+ * Cargo component deploys using cargo
  */
 public class CargoServerImpl extends PrimImpl implements CargoServer {
 
     private Container container;
     private Configuration configuration;
     private File dir;
-    private String classname;
+    private String containerClassname;
 
 
     public CargoServerImpl() throws RemoteException {
@@ -76,7 +79,8 @@ public class CargoServerImpl extends PrimImpl implements CargoServer {
      * @throws RemoteException
      * @throws SmartFrogException
      */
-    public JavaEnterpriseApplication deployEnterpriseApplication(Prim enterpriseApplication) throws RemoteException, SmartFrogException {
+    public JavaEnterpriseApplication deployEnterpriseApplication(Prim enterpriseApplication)
+            throws RemoteException, SmartFrogException {
         throw new SmartFrogException("not implemented");
     }
 
@@ -109,12 +113,59 @@ public class CargoServerImpl extends PrimImpl implements CargoServer {
 
         String dirname = FileSystem.lookupAbsolutePath(this, ATTR_DIRECTORY, null, null, true, null);
         ConfigurationFactory factory = new DefaultConfigurationFactory();
-        String name = sfResolve(ATTR_CONFIGURATION_NAME, "", true);
+        String name = sfResolve(ATTR_CONFIGURATION_CLASS, "", true);
+        //TODO
+        //String codebase = sfResolve("sfcodebase");
+        configuration = (Configuration) createClassInstance(name);
         dir = new File(dirname);
-        configuration = factory.createConfiguration(name,
-                ConfigurationType.STANDALONE, dir);
-        classname = sfResolve(ATTR_CARGO_CLASS, "", true);
+        containerClassname = sfResolve(ATTR_CONTAINER_CLASS, "", true);
+        Class containerClass = loadClass(containerClassname);
+        Class signature[] = new Class[1];
+        signature[0] = Container.class;
+        Object args[] = new Object[1];
+        args[0] = configuration;
+        container = (Container) instantiate(containerClass, signature, args);
 
+        //at this point the container is instantiated
+    }
+
+    private Object createClassInstance(String name) throws SmartFrogException {
+        Object instance;
+        Class clazz = loadClass(name);
+        Class signature[] = null;
+        Object arguments[] = null;
+        instance = instantiate(clazz, signature, arguments);
+        return instance;
+    }
+
+    private Object instantiate(Class clazz, Class[] signature, Object[] arguments) throws SmartFrogException {
+        Object instance;
+        try {
+            Constructor constructor = clazz.getConstructor(signature);
+            instance = constructor.newInstance(arguments);
+        } catch (NoSuchMethodException e) {
+            throw SmartFrogException.forward(e);
+
+        } catch (InvocationTargetException e) {
+            throw SmartFrogException.forward(e);
+
+        } catch (InstantiationException e) {
+            throw SmartFrogException.forward(e);
+
+        } catch (IllegalAccessException e) {
+            throw SmartFrogException.forward(e);
+        }
+        return instance;
+    }
+
+    private Class loadClass(String name) throws SmartFrogException {
+        Class newclass = null;
+        try {
+            newclass = SFClassLoader.forName(name);
+        } catch (ClassNotFoundException e) {
+            throw SmartFrogException.forward(e);
+        }
+        return newclass;
     }
 
     /**
@@ -127,7 +178,7 @@ public class CargoServerImpl extends PrimImpl implements CargoServer {
     public synchronized void sfStart() throws SmartFrogException, RemoteException {
         super.sfStart();
         //dynamically load the class of 'classname' and instantiate
-
+        //TODO
         //then run container.start() in a new thread
     }
 }
