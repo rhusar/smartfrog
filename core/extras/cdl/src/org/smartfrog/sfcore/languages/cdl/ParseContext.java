@@ -167,6 +167,7 @@ public class ParseContext {
         return getImports().get(namespace);
     }
 
+
     /**
      * look up imports by path, not name
      *
@@ -201,11 +202,26 @@ public class ParseContext {
         }
     }
 
-    public CdlDocument importDocument(Import imp) throws IOException, CdlException,
+    private String resolveReference(URL base, String path) {
+        //todo
+        return path;
+    }
+
+    /**
+     * Import a document
+     * @param importer who is doing the import. This lets us do relative resolution
+     * @param declaration the import declaration from the doc
+     * @return the imported document
+     * @throws IOException IO errors
+     * @throws CdlException CDL errors
+     * @throws ParsingException parsing problems.
+     */
+    public CdlDocument importDocument(CdlDocument importer, Import declaration) throws IOException, CdlException,
             ParsingException {
-        assert imp != null;
-        String namespace = imp.getNamespace();
-        String path = imp.getLocation();
+        assert declaration != null;
+        String namespace = declaration.getNamespace();
+        String path = declaration.getLocation();
+
         if (namespace == null) {
             return importLocalDocument(path);
         } else {
@@ -217,7 +233,7 @@ public class ParseContext {
      * do the full document import, to the extent of including and parsing the
      * doc
      *
-     * @param path
+     * @param path the full path to the doc (not a relative path)
      * @return the imported document
      * @throws IOException
      * @throws CdlException
@@ -236,8 +252,11 @@ public class ParseContext {
             return null;
         }
 
+        //place a stub in to say it is being imported
         localImports.put(path, new ImportedDocument());
+        //import it
         ImportedDocument imported = doImport(path, null);
+        //then patch in the imported doc into our import list
         localImports.put(path, imported);
         return imported.getDocument();
     }
@@ -247,7 +266,7 @@ public class ParseContext {
      * doc
      *
      * @param namespace namespace
-     * @param path
+     * @param path the full path to the doc (not a relative path)
      * @return the imported document
      * @throws IOException
      * @throws CdlException
@@ -284,7 +303,7 @@ public class ParseContext {
     /**
      * do the actual import
      * @param path
-     * @param namespace
+     * @param namespace xmlnamespace, can be null
      * @return
      * @throws IOException
      * @throws ParsingException
@@ -292,7 +311,10 @@ public class ParseContext {
      */ 
     private ImportedDocument doImport(String path, String namespace)
             throws IOException, ParsingException, CdlException {
-        URL location = getImportResolver().resolveToURL(path);
+        if (log.isDebugEnabled()) {
+            log.debug("Importing " + path);
+        }
+        URL location = resolveImport(path);
         if (log.isDebugEnabled()) {
             log.debug("Importing " + namespace + " url " + location);
         }
@@ -311,6 +333,16 @@ public class ParseContext {
         imported.setNamespace(namespace);
         imported.setLocation(path);
         return imported;
+    }
+
+    /**
+     * This resolves an import.
+     * @param path
+     * @return
+     * @throws IOException
+     */
+    private URL resolveImport(String path) throws IOException {
+        return getImportResolver().resolveToURL(path);
     }
 
     /**

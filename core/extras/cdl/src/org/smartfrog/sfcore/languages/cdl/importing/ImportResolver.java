@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.net.URL;
 
 /**
- * This is our import resolving
+ * This what things that resolve imports implement
  */
 public interface ImportResolver {
 
