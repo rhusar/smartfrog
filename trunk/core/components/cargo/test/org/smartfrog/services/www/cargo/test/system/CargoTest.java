@@ -22,8 +22,18 @@ public class CargoTest extends CargoTestBase {
     }
 
     public void testTomcat() throws Throwable {
-        setApplication(deployExpectingSuccess(FILE_BASE+"testTomcat.sf",
+        deployApplication(FILE_BASE+"testTomcat.sf",
         "testTomcat"
-        ));
+        );
     }
+
+
+    public void testBadCargoClass() throws Throwable {
+        deployExpectingException(FILE_BASE + "testBadCargoClass.sf",
+                "testBadCargoClass",
+                EXCEPTION_LIFECYCLE,
+                "",
+                EXCEPTION_SMARTFROG,
+                "Cannot find org.codehaus.cargo.container.badConfigurationClass"); 
+    }    
 }
