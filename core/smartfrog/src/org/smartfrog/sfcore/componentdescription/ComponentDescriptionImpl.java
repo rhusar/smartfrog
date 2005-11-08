@@ -52,6 +52,7 @@ import org.smartfrog.sfcore.common.SFMarshalledObject;
 import org.smartfrog.sfcore.common.*;
 import java.rmi.*;
 import org.smartfrog.sfcore.reference.HereReferencePart;
+import java.io.InputStream;
 
 
 /**
@@ -716,9 +717,32 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
     public static ComponentDescription sfComponentDescription(String url,
                   String language, Vector phases, Reference ref)
         throws SmartFrogException {
+        return sfComponentDescription(url,language, phases, ref, null);
+    }
+
+    /**
+     * Utility method that gets Component Description for URL after applying
+     * some parser phases
+     *
+     * @param url URL to convert to ComponentDescription
+     * @param language language to select appropriate parser
+     * @param phases phases to apply. If the vector is null, then all
+     *    the default phases are applied
+     * @param ref reference to resolve in ComponentDescription.
+     *        If ref is null the whole result ComponentDescription is returned.
+     * @param codebase suggested codebase for the classloader
+     *
+     * @return process the selected ComponentDescription after compound
+     *         description 'phases' are resolved
+     *
+     * @throws SmartFrogRuntimeException In case of SmartFrog system error
+     */
+    public static ComponentDescription sfComponentDescription(String url,
+                  String language, Vector phases, Reference ref, String codebase)
+        throws SmartFrogException {
         Phases descr = null;
         try {
-            descr = (new SFParser(language)).sfParseResource(url);
+            descr = (new SFParser(language)).sfParseResource(url,codebase);
         } catch (Exception thr) {
             throw new SmartFrogResolutionException("Error creating parser for '"+url+"'. "
                 + MessageUtil.formatMessage(MSG_ERR_PARSE)
@@ -751,7 +775,65 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
         return (ComponentDescription) obj;
     }
 
+    /**
+      * Utility method that gets Component Description for a String after applying
+      * some parser phases
+      *
+      * @param description to parse into ComponentDescription
+      * @param language to select appropriate parser ('sf')
+      * @param phases phases to apply. If the vector is null, then all
+      *    the default phases are applied
+      * @param ref reference to resolve in ComponentDescription.
+      *        If ref is null the whole result ComponentDescription is returned.
+      *
+      * @return process the selected ComponentDescription after compound
+      *         description 'phases' are resolved
+      *
+      * @throws SmartFrogException In case of SmartFrog system error
+      */
+     public static ComponentDescription sfComponentDescriptionFromStr(InputStream description,
+                   String language, Vector phases, Reference ref)
+         throws SmartFrogException {
+         return sfComponentDescriptionFromStr(description, language, phases, ref, null);
+     }
+    /**
+      * Utility method that gets Component Description for a String after applying
+      * some parser phases
+      *
+      * @param description to parse into ComponentDescription
+      * @param language to select appropriate parser ('sf')
+      * @param phases phases to apply. If the vector is null, then all
+      *    the default phases are applied
+      * @param ref reference to resolve in ComponentDescription.
+      *        If ref is null the whole result ComponentDescription is returned.
+     * @param codebase suggested codebase for the classloader
+      *
+      * @return process the selected ComponentDescription after compound
+      *         description 'phases' are resolved
+      *
+      * @throws SmartFrogException In case of SmartFrog system error
+      */
+     public static ComponentDescription sfComponentDescriptionFromStr(InputStream description,
+                   String language, Vector phases, Reference ref, String codebase)
+         throws SmartFrogException {
+         Phases descr = null;
+         try {
+             descr = (new SFParser(language)).sfParse(description, codebase);
+         } catch (Throwable thr) {
+             throw SmartFrogResolutionException.forward(MessageUtil.formatMessage(MSG_ERR_PARSE), thr);
+         }
 
+         Object obj = resolveCDfromPhases(phases, ref, descr);
+
+         if (!(obj instanceof ComponentDescription)){
+            throw new SmartFrogResolutionException(null,null,"Error resolving '"
+                  +ref.toString()+"' in description \n"+ description + "\n"
+                  + ". The result is not a ComponentDescription, resolved to: "
+                  + obj.toString()
+                  +" ("+obj.getClass().getName()+")" );
+         }
+         return (ComponentDescription) obj;
+     }
 
     /**
       * Utility method that gets Component Description for a String after applying
@@ -772,28 +854,37 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
      public static ComponentDescription sfComponentDescriptionFromStr(String description,
                    String language, Vector phases, Reference ref)
          throws SmartFrogException {
+         return sfComponentDescriptionFromStr(description, language, phases, ref, null);
+     }
+    /**
+      * Utility method that gets Component Description for a String after applying
+      * some parser phases
+      *
+      * @param description to parse into ComponentDescription
+      * @param language to select appropriate parser ('sf')
+      * @param phases phases to apply. If the vector is null, then all
+      *    the default phases are applied
+      * @param ref reference to resolve in ComponentDescription.
+      *        If ref is null the whole result ComponentDescription is returned.
+     * @param codebase suggested codebase for the classloader
+      *
+      * @return process the selected ComponentDescription after compound
+      *         description 'phases' are resolved
+      *
+      * @throws SmartFrogException In case of SmartFrog system error
+      */
+     public static ComponentDescription sfComponentDescriptionFromStr(String description,
+                   String language, Vector phases, Reference ref, String codebase)
+         throws SmartFrogException {
          Phases descr = null;
          try {
-             descr = (new SFParser(language)).sfParse(description);
+             descr = (new SFParser(language)).sfParse(description, codebase);
          } catch (Throwable thr) {
              throw SmartFrogResolutionException.forward(MessageUtil.formatMessage(MSG_ERR_PARSE), thr);
          }
-         try {
-             if (phases==null) {
-                descr = descr.sfResolvePhases();
 
-             } else {
-                descr = descr.sfResolvePhases(phases);
-             }
-         } catch (Throwable thr) {
-             throw SmartFrogResolutionException.forward(MessageUtil.formatMessage(MSG_ERR_RESOLVE_PHASE), thr);
-         }
-         Object obj=null;
-         if (ref !=null) {
-             obj = descr.sfAsComponentDescription().sfResolve(ref);
-         } else {
-             obj = descr.sfAsComponentDescription();
-         }
+         Object obj = resolveCDfromPhases(phases, ref, descr);
+
          if (!(obj instanceof ComponentDescription)){
             throw new SmartFrogResolutionException(null,null,"Error resolving '"
                   +ref.toString()+"' in description \n"+ description + "\n"
@@ -803,6 +894,42 @@ public class ComponentDescriptionImpl extends ReferenceResolverHelperImpl implem
          }
          return (ComponentDescription) obj;
      }
+
+     /**
+       * Private Utility method that gets Component Description from the parser parser phases
+       * after resolving the "phases" set and extracting "ref"
+       * @param phases phases to apply. If the vector is null, then all
+       *    the default phases are applied
+       * @param ref reference to resolve in ComponentDescription.
+       *        If ref is null the whole result ComponentDescription is returned.
+       * @param description to parse into ComponentDescription
+       *
+       * @return process the selected ComponentDescription after compound
+       *         description 'phases' are resolved
+       *
+       * @throws SmartFrogException In case of SmartFrog system error
+       */
+
+    private static Object resolveCDfromPhases(Vector phases, Reference ref, Phases descr) throws
+        SmartFrogException {
+        try {
+            if (phases==null) {
+               descr = descr.sfResolvePhases();
+
+            } else {
+               descr = descr.sfResolvePhases(phases);
+            }
+        } catch (Throwable thr) {
+            throw SmartFrogResolutionException.forward(MessageUtil.formatMessage(MSG_ERR_RESOLVE_PHASE), thr);
+        }
+        Object obj=null;
+        if (ref !=null) {
+            obj = descr.sfAsComponentDescription().sfResolve(ref);
+        } else {
+            obj = descr.sfAsComponentDescription();
+        }
+        return obj;
+    }
 
 
      /**
