@@ -8,7 +8,7 @@ Application 2.3//EN" "http://java.sun.com/dtd/web-app_2_3.dtd">
 
   <servlet>
     <servlet-name>HappyServlet</servlet-name>
-    <display-name>Apache-Axis Servlet</display-name>
+    <display-name>Happy Servlet</display-name>
     <servlet-class>
       org.smartfrog.test.testwar.HappyServlet
     </servlet-class>

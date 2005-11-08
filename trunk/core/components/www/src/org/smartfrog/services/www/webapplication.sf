@@ -100,6 +100,31 @@ WebApplication extends ApplicationServerContext {
 
 
 /**
+ * a jetty web application has a context path
+ * and a a path to its home directory
+ */
+EarApplicationSchema extends Schema {
+    //where to deploy under the server
+    contextPath extends String;
+
+    //earFile can be a File or a string
+    earFile extends FilenameType;
+
+}
+
+/**
+ * This is a generic java web application, as defined by a WAR File
+ */
+EarApplication extends ApplicationServerContext {
+    earApplicationSchema extends WebApplicationSchema;
+    sfClass "org.smartfrog.services.www.context.EarApplicationImpl";
+}
+
+
+
+
+
+/**
  * a servlet context is where servlets can be deployed.
  * Any derivative of ServletContextComponent can be bound
  to this
