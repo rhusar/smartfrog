@@ -1270,7 +1270,13 @@
         property="m2.smartfrog.scm.repository.url" />
     <property name="m2.smartfrog.scm.new.repository"
       location="${core.dir}/antbuild/repository" />
-    </target>
+    <property name="m1.local.repository"
+             location="${user.home}/.maven/repository"/>
+     <!--if there is no m1 repository, create it-->
+    <mkdir dir="${m1.local.repository}" />
+    <sf-tourl file="${m1.local.repository}"
+             property="m1.local.repository.url"/>
+   </target>
    
    
    <target name="m2-tasks" depends="m2-init">
@@ -1285,6 +1291,9 @@
         <remoteRepository url="${m2.smartfrog.scm.repository.url}" />
         <!-- then hit ibiblio -->
         <remoteRepository url="http://ibiblio.org/maven2" />
+        <!--this comes in last so we abandon dependency checking reluctantly-->
+        <remoteRepository url="${m1.local.repository.url}"
+                          layout="legacy"/>
       </artifact:dependencies>
     </presetdef>
 
