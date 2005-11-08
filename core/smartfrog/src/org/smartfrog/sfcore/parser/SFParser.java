@@ -174,15 +174,33 @@ public class SFParser implements Parser, MessageKeys {
      */
 
      public Phases sfParseResource(String url) throws SmartFrogParseException {
+         return sfParseResource(url,null);
+     }
+
+
+
+    /**
+     * Parses component(s) from an resource url. Returns a root component which
+     * contains the parsed components. Includes should be handled by some
+     * default include handler.
+     *
+     * @param url to resource to parse and compile from
+     * @param codebase suggested codebase for the classloader
+     * @param useDefaultCodebase whether to try to find the class in the
+     *        default codebase before using codebase.
+     *
+     * @return Phases root component containing parsed component(s)
+     *
+     * @exception SmartFrogParseException error parsing stream
+     */
+
+     public Phases sfParseResource(String url, String codebase) throws SmartFrogParseException {
          InputStream is=null;
          try {
-             is = SFClassLoader.getResourceAsStream(url);
+             is = SFClassLoader.getResourceAsStream(url,codebase, true);
              if (is==null) {
                  throw new SmartFrogParseException(
                  MessageUtil.formatMessage(MSG_URL_TO_PARSE_NOT_FOUND,url));
-//                     MessageUtil.formatMessage(MSG_INPUTSTREAM_NULL)+
-//                     ". " +
-//                     MessageUtil.formatMessage(MSG_LOADING_URL,url));
              }
              return sfParse(is);
          } catch (SmartFrogParseException spex){
@@ -214,6 +232,23 @@ public class SFParser implements Parser, MessageKeys {
      */
     public Phases sfParse(String str) throws SmartFrogParseException {
         return sfParse(new ByteArrayInputStream(str.getBytes()));
+    }
+
+    /**
+     * Parses component(s) from a string. Returns the root component. This is a
+     * utility access method which currently does not support localization.
+     *
+     * @param str string to parse
+     * @param codebase suggested codebase for the classloader
+     * @param useDefaultCodebase whether to try to find the class in the
+     *        default codebase before using codebase.
+     *
+     * @return root component containing parsed component(s)
+     *
+     * @exception SmartFrogParseException error parsing string
+     */
+    public Phases sfParse(String str, String codebase) throws SmartFrogParseException {
+        return sfParse(new ByteArrayInputStream(str.getBytes()),codebase);
     }
 
     /**
