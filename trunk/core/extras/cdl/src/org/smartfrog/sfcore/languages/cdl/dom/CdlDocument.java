@@ -42,6 +42,7 @@ import org.smartfrog.sfcore.logging.Log;
 import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,6 +57,11 @@ public class CdlDocument implements Names, ToSmartFrog {
      * a log
      */
     private Log log = ClassLogger.getLog(this);
+
+    /**
+     * URL of the document; may be null
+     */
+    private URL documentURL;
 
     /**
      * Original Xom Document
@@ -219,6 +225,14 @@ public class CdlDocument implements Names, ToSmartFrog {
         return types;
     }
 
+
+    public URL getDocumentURL() {
+        return documentURL;
+    }
+
+    public void setDocumentURL(URL documentURL) {
+        this.documentURL = documentURL;
+    }
 
     /**
      * Iterate just over elements
@@ -395,7 +409,7 @@ public class CdlDocument implements Names, ToSmartFrog {
     public void parsePhaseProcessImports() throws CdlException, IOException,
             ParsingException {
         for (Import imp : getImports()) {
-            CdlDocument imported = getParseContext().importDocument(imp);
+            CdlDocument imported = getParseContext().importDocument(this, imp);
         }
 
 

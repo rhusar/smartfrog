@@ -7,8 +7,10 @@ import java.io.IOException;
 import java.net.URL;
 
 /**
+ * This is the base import resolver. It is abstract
+ * and must be implemented by something 
  */
-public class BaseImportResolver implements ImportResolver {
+public abstract class BaseImportResolver implements ImportResolver {
 
     private ParseContext context;
     public static final String ERROR_NO_RESOLUTION = "Unable to resolve :";

@@ -38,10 +38,20 @@ public class ClasspathResolver extends BaseImportResolver {
      * @throws java.io.IOException on failure to locate or other problems
      */
     public URL resolveToURL(String path) throws IOException {
-        URL resource = getClassLoader().getResource(path);
+        URL resource = resolve(path);
         if (resource == null) {
             throw createResolutionFailure(path);
         }
+        return resource;
+    }
+
+    /**
+     * resolve; throw no exceptions but instead return null on failure
+     * @param path
+     * @return a url or a path
+     */
+    protected URL resolve(String path) {
+        URL resource = getClassLoader().getResource(path);
         return resource;
     }
 
