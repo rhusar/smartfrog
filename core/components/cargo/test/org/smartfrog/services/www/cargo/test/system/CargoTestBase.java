@@ -78,4 +78,8 @@ public abstract class CargoTestBase extends SmartFrogTestBase {
     }
 
 
+    protected void deployApplication(String resource,String name) throws
+            Throwable {
+        setApplication(deployExpectingSuccess(resource, name));
+    }
 }
