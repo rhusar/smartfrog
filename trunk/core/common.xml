@@ -1082,7 +1082,8 @@
        not to be run on public machines for
        security reasons, unless security is active-->
   <!-- ========================================================== -->
-  <target name="system-tests" if="system.tests.enabled" depends="init"
+  <target name="system-tests" if="system.tests.enabled" 
+          depends="init,dist,package-tests"
     description="run the system tests">
     <echo message="No system tests"/>
   </target>  
@@ -1091,7 +1092,7 @@
   <!-- this is an override point -->
   <!-- unit tests : anything which does not need deployment to run-->
   <!-- ========================================================== -->
-  <target name="unit-tests" depends="init,dist" if="unit.tests.enabled"
+  <target name="unit-tests" depends="init,dist,package-tests" if="unit.tests.enabled"
     description="run the unit tests">
     <echo message="No unit tests"/>
   </target> 
