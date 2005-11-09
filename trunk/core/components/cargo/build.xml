@@ -66,6 +66,26 @@
     </path>
   </target>
 
+  <target name="declare-exec.classpath" depends="declare-compile.classpath">
+    <path id="exec.classpath">
+      <path refid="compile.classpath"/>
+      <pathelement location="${target.jar}"/>
+    </path>
+    <property name="exec.classpath.value" refid="exec.classpath"/>
+    <echo level="verbose">exec.classpath=${exec.classpath.value}</echo>
+  </target>  
+
+  <target name="declare-tests.run.classpath"
+          depends="declare-tests.compile.classpath">
+    <path id="tests.run.classpath">
+      <path refid="tests.compile.classpath"/>
+      <pathelement location="${test.jar}"/>
+    </path>
+    <property name="tests.run.classpath.value" refid="tests.run.classpath"/>
+    <echo level="verbose">
+      tests.run.classpath=${tests.run.classpath.value}</echo>
+  </target>
+  
   <!-- ========================================================== -->
   <!-- ========================================================== -->
   <target name="init"
