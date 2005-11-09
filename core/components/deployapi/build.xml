@@ -599,9 +599,6 @@
               sfConfig extends Application {
                 sfProcessName "deployapi-subprocess";
               }
-              _sfConfig extends Compound {
-                sfProcessName "deployapi-subprocess";
-              }
       </application>
     </sf:deploy>
   </target>

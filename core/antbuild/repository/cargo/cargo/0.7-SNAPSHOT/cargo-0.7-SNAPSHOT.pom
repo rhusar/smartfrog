@@ -1,0 +1,26 @@
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>cargo</groupId>
+  <artifactId>cargo</artifactId>
+  <name>Cargo</name>
+  <version>0.7-SNAPSHOT</version>
+  <description>API to start/stop/configure containers</description>
+  <scm>
+    <connection>scm:svn:svn://svn.cargo.codehaus.org/cargo/scm/cargo/trunk</connection>
+    <url>http://svn.cargo.codehaus.org/</url>
+  </scm>
+  <dependencies>
+    <dependency>
+      <groupId>ant</groupId>
+      <artifactId>ant</artifactId>
+      <version>1.6.5</version>
+    </dependency>
+  </dependencies>
+  <distributionManagement>
+    <repository>
+      <id>default</id>
+      <name>Default Repository</name>
+      <url>beaver.codehaus.org//dist</url>
+    </repository>
+  </distributionManagement>
+</project>

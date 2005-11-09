@@ -1271,7 +1271,13 @@
         property="m2.smartfrog.scm.repository.url" />
     <property name="m2.smartfrog.scm.new.repository"
       location="${core.dir}/antbuild/repository" />
-    <property name="m1.local.repository"
+     <makeurl file="${m2.smartfrog.scm.new.repository}"
+              property="m2.smartfrog.scm.new.repository.url"/>
+
+     <property name="m2.ibiblio.repository"
+               value="http://ibiblio.org/maven2"/>
+
+  <property name="m1.local.repository"
              location="${user.home}/.maven/repository"/>
      <!--if there is no m1 repository, create it-->
     <mkdir dir="${m1.local.repository}" />
@@ -1288,13 +1294,17 @@
       <artifact:dependencies>
         <localRepository location="${m2.repository}" />
         <!-- look in SCM first -->
-        <!--checksumPolicy="warn"-->
         <remoteRepository url="${m2.smartfrog.scm.repository.url}" />
+        <remoteRepository url="${m2.smartfrog.scm.new.repository.url}"/>
         <!-- then hit ibiblio -->
-        <remoteRepository url="http://ibiblio.org/maven2" />
+        <remoteRepository url="${m2.ibiblio.repository}" />
+        <!-- apache repository -->
+        <remoteRepository url="http://cvs.apache.org/repository/"
+                          layout="legacy"/>
         <!--this comes in last so we abandon dependency checking reluctantly-->
         <remoteRepository url="${m1.local.repository.url}"
                           layout="legacy"/>
+
       </artifact:dependencies>
     </presetdef>
 

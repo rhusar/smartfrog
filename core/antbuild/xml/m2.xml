@@ -79,15 +79,14 @@
       <m2:dependencies>
         <localRepository location="${m2.repository}" />
         <!-- look in SCM first -->
-        <remoteRepository url="${m2.smartfrog.scm.repository.url}" 
+        <remoteRepository url="${m2.smartfrog.scm.repository.url}"
+              snapshots="true" 
         />
-        <!-- checksumPolicy="warn" -->
         <remoteRepository url="${m2.smartfrog.scm.old.repository.url}" />
-        <!-- checksumPolicy="warn" -->
         <!-- then hit ibiblio -->
         <remoteRepository url="${m2.ibiblio.repository}" />
         <!-- apache repository -->
-        <remoteRepository url="http://cvs.apache.org/repository/" layout="legacy"/>        
+        <remoteRepository url="http://cvs.apache.org/repository/" layout="legacy"/>
       </m2:dependencies>
     </presetdef>
 
