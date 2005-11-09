@@ -80,7 +80,6 @@
         <localRepository location="${m2.repository}" />
         <!-- look in SCM first -->
         <remoteRepository url="${m2.smartfrog.scm.repository.url}"
-              snapshots="true" 
         />
         <remoteRepository url="${m2.smartfrog.scm.old.repository.url}" />
         <!-- then hit ibiblio -->
@@ -145,28 +144,29 @@
     search through the reposityr for <groupId>xom</groupId>
    -->
    <target name="m2-artifact-search"  depends="m2.init-m2">
-     <fail unless="search">Define property search to the group to look for</fail>
-     <fileset id="matching.files" 
-      dir="${m2.repository}"
-      includes="**/*.pom">
-        <containsregexp expression="&lt;groupId&gt;${search}&lt;/groupId&gt;"/>
-      </fileset>
-      <property name="matching.files.property" refid="matching.files" />
-      <echo> matches=${matching.files.property}</echo>
-     <fileset id="matching2.files" 
-      dir="${m2.smartfrog.scm.repository}"
-      includes="**/*.pom">
-        <containsregexp expression="&lt;groupId&gt;${search}&lt;/groupId&gt;"/>
-      </fileset>
-      <property name="matching2.files.property" refid="matching2.files" />
-      <echo> matches=${matching2.files.property}</echo>
-     <fileset id="matching3.files" 
-      dir="${m2.smartfrog.scm.old.repository}"
-      includes="**/*.pom">
-        <containsregexp expression="&lt;groupId&gt;${search}&lt;/groupId&gt;"/>
-      </fileset>
-      <property name="matching3.files.property" refid="matching3.files" />
-      <echo> matches=${matching3.files.property}</echo>
-    </target>
-   
- </project>
+     <fail unless="search">Define property search to the group to look
+       for</fail>
+     <fileset id="matching.files"
+              dir="${m2.repository}"
+              includes="**/*.pom">
+       <containsregexp expression="&lt;groupId&gt;${search}&lt;/groupId&gt;"/>
+     </fileset>
+     <property name="matching.files.property" refid="matching.files"/>
+     <echo>matches=${matching.files.property}</echo>
+     <fileset id="matching2.files"
+              dir="${m2.smartfrog.scm.repository}"
+              includes="**/*.pom">
+       <containsregexp expression="&lt;groupId&gt;${search}&lt;/groupId&gt;"/>
+     </fileset>
+     <property name="matching2.files.property" refid="matching2.files"/>
+     <echo>matches=${matching2.files.property}</echo>
+     <fileset id="matching3.files"
+              dir="${m2.smartfrog.scm.old.repository}"
+              includes="**/*.pom">
+       <containsregexp expression="&lt;groupId&gt;${search}&lt;/groupId&gt;"/>
+     </fileset>
+     <property name="matching3.files.property" refid="matching3.files"/>
+     <echo>matches=${matching3.files.property}</echo>
+   </target>
+
+</project>
