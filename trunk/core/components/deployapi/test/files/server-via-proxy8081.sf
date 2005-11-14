@@ -1,4 +1,4 @@
-/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+/** (C) Copyright 2005 Hewlett-Packard Development Company, LP
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -17,25 +17,13 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 For more information: www.smartfrog.org
 
 */
-#include "org/smartfrog/services/deployapi/components/components.sf";
-
-
-
-
-Application extends DeployServerOnJetty {
-
-
-  //get this from the running system
-    javahome LAZY PROPERTY java.io.tmpdir;
-    wardir PROPERTY deployapi.war.dir;
-    port 5050;
-    location "mezzanine";
-    liveness false;
-    urlhost "127.0.0.1";
-    
-}
-
+#include "files/deployserver.sf";
 
 
 //sfConfig extends Engine;
-sfConfig extends Application;
+sfConfig extends Application {
+    //for tcp tracing, we patch the port used to return devices
+    urlport 8081;
+    //for tcp tracing, we patch the port used to return devices
+
+}
