@@ -65,8 +65,7 @@ public class Constraint implements Copying {
 
 
     public String toString() {
-        return new StringBuffer().append(" #suchThat#").append(query).append("# #where#")
-                .append("#").toString();
+        return new StringBuffer().append(" #suchThat#").append(query).append("#").toString();
     }
 
     /**
