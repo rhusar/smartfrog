@@ -22,11 +22,14 @@ package org.smartfrog.services.deployapi.client;
 import nu.xom.Document;
 import nu.xom.Element;
 import org.apache.axis2.AxisFault;
+import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.context.ConfigurationContextFactory;
 import org.apache.axis2.context.ServiceContext;
+import org.apache.axis2.context.ServiceGroupContext;
 import org.apache.axis2.description.AxisService;
+import org.apache.axis2.description.AxisServiceGroup;
 import org.apache.axis2.om.OMElement;
 import org.apache.axis2.soap.SOAP12Constants;
 import org.ggf.xbeans.cddlm.wsrf.wsrp.GetResourcePropertyDocument;
@@ -135,13 +138,15 @@ public abstract class Endpointer implements Serializable {
 
         //create a new bound stub
         ServiceContext serviceContext = getServiceContext();
+        assert serviceContext != null;
         ApiCall call = new ApiCall(serviceContext);
         call.setExceptionToBeThrownOnSOAPFault(true);
         call.setTo(getEndpointer());
         call.setSoapVersionURI(SOAP12Constants.SOAP_ENVELOPE_NAMESPACE_URI);
         if (operationName != null) {
             call.setSoapAction(operationName);
-            //call.setWsaAction(operationName);
+            //REVISIT: turn this off if things misbehave w.r.t namespaces
+            call.setWsaAction(operationName);
 /*
             OperationDescription operation = serviceDescription.getOperation(operationName);
             if(operation!=null) {
@@ -225,11 +230,26 @@ public abstract class Endpointer implements Serializable {
         configurationContext = new ConfigurationContextFactory()
                 .buildClientConfigurationContext(getAxis2Home());
         AxisService serviceDescription = getServiceDescription();
-        configurationContext.getAxisConfiguration()
-                .addService(serviceDescription);
+        AxisConfiguration axisConfiguration = configurationContext.getAxisConfiguration();
+
+        //bind to everything. see AxisConfiguration.addService(serviceDescription);
+        AxisServiceGroup axisServiceGroup =new AxisServiceGroup();
+        String localPart = serviceDescription.getName().getLocalPart();
+        axisServiceGroup.setServiceGroupName(localPart);
+        axisServiceGroup.setParent(axisConfiguration);
+        axisServiceGroup.addService(serviceDescription);
+        axisConfiguration.addServiceGroup(axisServiceGroup);
+        ServiceGroupContext serviceGroupContext=new ServiceGroupContext(configurationContext,axisServiceGroup);
+
         //TODO: verify this patch works
+        String serviceInstanceID = localPart;
         serviceContext = configurationContext.getServiceContext(
-                serviceDescription.getName().toString());
+                serviceInstanceID);
+        if(serviceContext==null) {
+            serviceContext=new ServiceContext(serviceDescription,serviceGroupContext);
+            configurationContext.registerServiceContext(serviceInstanceID,getServiceContext());
+
+        }
     }
 
 
