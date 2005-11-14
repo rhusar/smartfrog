@@ -255,9 +255,9 @@ To Be Written
         <include name="docs/sfShellScript.pdf"/>
         <include name="docs/SmartFrogTutorial.pdf"/>
         <include name="docs/ant_tasks_for_smartfrog.pdf"/>
-        <include name="${dist}/docs/IDE_development.pdf"/>
-        <include name="${dist}/docs/components/filesystem.pdf"/>        
-        <include name="${dist}/docs/csfExtensions.pdf"/>
+        <include name="docs/IDE_development.pdf"/>
+        <include name="docs/components/filesystem.pdf"/>        
+        <include name="docs/csfExtensions.pdf"/>
 	<include name="lib/**"/>
 	<!--include name="lib/**/*-${version}.jar"/>
 	<include name="lib/readme.txt"/-->
@@ -372,9 +372,9 @@ To Be Written
         <include name="docs/sfShellScript.pdf"/>
         <include name="docs/SmartFrogTutorial.pdf"/>
         <include name="docs/ant_tasks_for_smartfrog.pdf"/>
-        <include name="${dist}/docs/IDE_development.pdf"/>
-        <include name="${dist}/docs/components/filesystem.pdf"/>        
-        <include name="${dist}/docs/csfExtensions.pdf"/>
+        <include name="docs/IDE_development.pdf"/>
+        <include name="docs/components/filesystem.pdf"/>        
+        <include name="docs/csfExtensions.pdf"/>
 	<include name="lib/**"/>
 	<!--include name="lib/*-${version}.jar"/>
 	<include name="lib/readme.txt"/-->
