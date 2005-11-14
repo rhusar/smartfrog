@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<service name="System">
+  <description>
+    This is the system endpoint
+  </description>
+  <parameter name="ServiceClass" locked="xsd:false">org.smartfrog.services.deployapi.transport.endpoints.SystemEndpoint</parameter>
+
+  <operation name="AddFile">
+   <!--  <module ref="addressing"/> -->
+    <messageReceiver class="org.smartfrog.services.deployapi.transport.endpoints.WsrfReceiver"/>
+  </operation>
+  <operation name="Initialize">
+   <!--  <module ref="addressing"/> -->
+    <messageReceiver class="org.smartfrog.services.deployapi.transport.endpoints.WsrfReceiver"/>
+  </operation>
+  <operation name="Resolve">
+   <!--  <module ref="addressing"/> -->
+    <messageReceiver class="org.smartfrog.services.deployapi.transport.endpoints.WsrfReceiver"/>
+  </operation>
+  <operation name="Run">
+   <!--  <module ref="addressing"/> -->
+    <messageReceiver class="org.smartfrog.services.deployapi.transport.endpoints.WsrfReceiver"/>
+  </operation>
+  <operation name="Terminate">
+   <!--  <module ref="addressing"/> -->
+    <messageReceiver class="org.smartfrog.services.deployapi.transport.endpoints.WsrfReceiver"/>
+  </operation>
+  <operation name="Ping">
+   <!--  <module ref="addressing"/> -->
+    <messageReceiver class="org.smartfrog.services.deployapi.transport.endpoints.WsrfReceiver"/>
+  </operation>
+
+  <operation name="Destroy">
+   <!--  <module ref="addressing"/> -->
+    <messageReceiver class="org.smartfrog.services.deployapi.transport.endpoints.WsrfReceiver"/>
+  </operation>
+
+  <operation name="GetResourceProperty">
+   <!--  <module ref="addressing"/> -->
+    <messageReceiver class="org.smartfrog.services.deployapi.transport.endpoints.WsrfReceiver"/>
+  </operation>
+  <operation name="GetMultipleResourceProperties">
+   <!--  <module ref="addressing"/> -->
+    <messageReceiver class="org.smartfrog.services.deployapi.transport.endpoints.WsrfReceiver"/>
+  </operation>
+  <operation name="Subscribe">
+   <!--  <module ref="addressing"/> -->
+    <messageReceiver class="org.smartfrog.services.deployapi.transport.endpoints.WsrfReceiver"/>
+  </operation>
+  <operation name="GetCurrentMessage">
+   <!--  <module ref="addressing"/> -->
+    <messageReceiver class="org.smartfrog.services.deployapi.transport.endpoints.WsrfReceiver"/>
+  </operation>
+</service>
