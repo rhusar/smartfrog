@@ -15,7 +15,7 @@ secureDynamicLoad extends NULL  {
 }
 
 allTests extends Sequence {
-  actions extends LAZY {
+//  actions extends LAZY {
     test1 extends Timeout {
       time ATTRIB maxTimePerTest;
       action extends  LAZY ATTRIB plain:TemplateSerrano {
@@ -46,7 +46,7 @@ allTests extends Sequence {
       }
     }*/
       
-  }
+ // }
 }
 Compound extends Prim {
   sfClass "org.smartfrog.sfcore.compound.CompoundImpl";
