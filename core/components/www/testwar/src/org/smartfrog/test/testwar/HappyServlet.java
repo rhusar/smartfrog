@@ -94,7 +94,7 @@ public class HappyServlet extends HttpServlet {
 
 
     public boolean checkDatabaseConnection(PrintWriter out) throws IOException {
-        String url = property(PROP_URL,"jdbc:mysql://sfdemo01//test");
+        String url = property(PROP_URL,"jdbc:mysql://sfdemo01/test");
         String user = property(PROP_USER,"root");
         String pass = property(PROP_PASS,null);
         if ("[empty]".equals(pass)) {
