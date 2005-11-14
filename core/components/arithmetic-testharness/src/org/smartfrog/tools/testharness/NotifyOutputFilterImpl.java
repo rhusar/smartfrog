@@ -12,6 +12,9 @@ import java.io.InputStreamReader;
 import org.smartfrog.services.display.PrintMsgInt;
 import org.smartfrog.services.display.PrintErrMsgInt;
 import java.util.Vector;
+import org.smartfrog.sfcore.compound.Compound;
+import org.smartfrog.sfcore.processcompound.SFProcess;
+import java.net.*;
 
 /** Implements a filter that scans the output of a process for
  * certain patterns, and notifies an scheduler of that event with a
@@ -55,7 +58,14 @@ public class NotifyOutputFilterImpl implements NotifyOutputFilter, Runnable , Pr
 
   /** A unique identifier of this filter for the scheduler. */
   String myId;
-
+ // int count =0;
+  static int count = 0;
+  String value;
+  String host;
+  int port;
+  static int i = 0;
+  static int startcounter = 0;
+  static int stopcounter = 0;
   /** A pipe that connects the daemon's output with pIn. */
   PipedOutputStream pOut;
 
@@ -87,12 +97,19 @@ public class NotifyOutputFilterImpl implements NotifyOutputFilter, Runnable , Pr
                                 String[] searchForcePatterns,
                                 String[] resultForceTags,
                                 String[] searchCustomPatterns,
-                                String[] resultCustomTags)
+                                String[] resultCustomTags,
+				int count, String host, int port, String  value)
     throws IOException {
     this.scheduler = scheduler;
     this.myId = myId;
+    this.count = count;
+    this.value = value;
+    this.host = host;
+    this.port = port;
     this.fileOutputName = fileOutputName;
 	System.out.println("fileOutputName in NotifyOutputFilterImpl =============> " +fileOutputName);
+	System.out.println("Count in NotifyOutputFilterImpl =============> " +this.count);
+	System.out.println("Value in NotifyOutputFilterImpl =============> " +this.value);
 
 
  /*  if (fileOutputName==null)
@@ -178,10 +195,11 @@ public class NotifyOutputFilterImpl implements NotifyOutputFilter, Runnable , Pr
    * @exception RemoteException An error contacting the scheduler.
    */
   void submitTag(String tag, boolean force, String line) throws RemoteException {
+     // System.out.println(":::::TAG TO SUBMIT "+ tag);
 //    if (debug) System.out.println("NotifyOutputFilter: submitTag!!:"+tag+", force:"+force);//DEBUG
     log (" TAG found. Message:" + line);
     if (scheduler != null){
-       scheduler.signalGoAhead(tag, myId,force);
+	scheduler.signalGoAhead(tag, myId,force);
 //       if (debug) System.out.println("NotifyOutputFilterID "+scheduler.toString());
 //       if (debug) System.out.println("NotifyOutputFilterSIGNAL: submitted Tag.signalGoAhead!!:"+tag+", force:"+force);//DEBUG
     }
@@ -201,10 +219,16 @@ public class NotifyOutputFilterImpl implements NotifyOutputFilter, Runnable , Pr
    */
   String scanTag(String line, String[] searchPatterns,
                  String[] resultTags) {
-
+ // System.out.println("LINE======" + line);
     for (int i=0;i<searchPatterns.length;i++) {
       if ((line.indexOf(searchPatterns[i])) != -1) {
-        return resultTags[i];
+/*	if (!resultTags[i].equals("waitForDaemons")) {
+        	String tag = resultTags[i].concat("_");
+        	 tag = tag.concat(Integer.toString(count));
+		return tag;
+	}
+	else*/
+	return resultTags[i];
       }
     }
 
@@ -254,7 +278,7 @@ public class NotifyOutputFilterImpl implements NotifyOutputFilter, Runnable , Pr
   public void run() {
 
     String line;
-
+   String resultTag = null;
 	System.out.println("In RUN");
 
     try {
@@ -285,10 +309,21 @@ public class NotifyOutputFilterImpl implements NotifyOutputFilter, Runnable , Pr
 
 
 
-		//dumpOut.flush();
+	//	dumpOut.flush();
 
-		//dumpOut.println(line);
-		String resultTag = exploreTag(line);
+	//	dumpOut.println(line);
+/*		if (this.count > 0 && this.host !=null) {
+		String attr = "app_".concat(Integer.toString(this.count));
+		Compound  cp = SFProcess.getRootLocator().getRootProcessCompound(InetAddress.getByName(this.host), this.port);
+		if (cp.sfContainsAttribute(attr)) {
+			System.out.println("Attribute in CP========="  + cp.sfResolve(attr).toString());
+			resultTag = exploreTag(line);
+		  }
+		}
+		else */
+	 	resultTag = exploreTag(line);
+
+		//System.out.println("RESULT TAG===============" + resultTag);
       }
       //if (debug) System.out.println("NotifyOutputFilter: Finishing!!");//DEBUG
 
@@ -310,13 +345,48 @@ private String exploreTag(String line) throws RemoteException {
           ex.printStackTrace();
        }
     }
-    String resultTag;
+    String resultTag= null;
+    count ++;
+  //try {
+  //  int k = 0;
+  //  String var[]=null;	
+  //  int i=0;
     if ((resultTag = scanTag(line,searchNormalPatterns,resultNormalTags)) != null)
+
       submitTag(resultTag,false, line);
     else if ((resultTag = scanTag(line,searchForcePatterns,resultForceTags)) != null)
     {
-         System.out.println(":::::::::::::::::::: searchForcePatterns"+ line);
-         submitTag(resultTag,true, line);
+	System.out.println(":::::::::::::::::::: ResultTag"+ resultTag);
+	System.out.println(":::::::::::::::::::: COUNT"+ this.count);
+        /*var[i] = resultTag;
+        i++;
+	if (this.count > 0 && this.host !=null) {
+		String attr = "app_".concat(Integer.toString(this.count));
+		Compound  cp = SFProcess.getRootLocator().getRootProcessCompound(InetAddress.getByName(this.host), this.port);
+		if (cp.sfContainsAttribute(attr) && i == this.count - 1) {
+		    for ( int j = 1; j < i ; j++) {
+			if (var[0].equals(var[j]))
+				k++;	 
+		    }
+                     if ( k == this.count - 1)
+                      submitTag(resultTag,true, line);
+		  }
+	}*/
+/*	if (resultTag.equals("startApps")) {
+		startcounter++;
+	//	System.out.println("START COUNTER============" + startcounter);
+        }
+	if (resultTag.equals("stopApps")) {
+		stopcounter++;
+		//System.out.println("STOP COUNTER============" + stopcounter);
+        }
+	if (startcounter == this.count && resultTag.equals("startApps")) {
+	//	System.out.println("CALLING SUBMITTAG");
+         	submitTag(resultTag,true, line);
+	} 
+	if (stopcounter == this.count && resultTag.equals("stopApps"))*/
+         	submitTag(resultTag,true, line);
+
          Vector tagVect=new Vector();
          //tagVect.add(PROCESS_ID);
          tagVect.add(line);
@@ -325,6 +395,9 @@ private String exploreTag(String line) throws RemoteException {
     }
     else if ((resultTag = scanCustomTag(line,searchCustomPatterns,resultCustomTags)) != null)
       submitTag(resultTag,false, line);
+//    } catch (Exception ex) {
+  //        ex.printStackTrace();
+  // }
     return resultTag;
 }
 

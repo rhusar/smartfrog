@@ -10,6 +10,8 @@ package org.smartfrog.services.runcmd;
 
 
 import org.smartfrog.sfcore.prim.*;
+import org.smartfrog.sfcore.compound.*;
+import org.smartfrog.sfcore.processcompound.*;
 import org.smartfrog.sfcore.parser.*;
 import org.smartfrog.sfcore.common.*;
 import org.smartfrog.sfcore.reference.*;
@@ -90,6 +92,10 @@ public class SFRunCommand extends PrimImpl implements Prim, RunCommandInt {
     *  Description of the Field
     */
    protected String processName = "defaultprocessName";
+   protected String name = "name";
+   protected String host = null;
+   protected int port = 0;
+   protected int repeat = 0;
 
    /**
     *  Description of the Field
@@ -182,6 +188,7 @@ public class SFRunCommand extends PrimImpl implements Prim, RunCommandInt {
    // 5- info log, 1 - Critical. Use -1 to avoid log
    boolean printStack = true;
 
+   static int counter = 1;
 
    /**
     *  Constructor for the SFRunCommand object
@@ -522,7 +529,7 @@ public class SFRunCommand extends PrimImpl implements Prim, RunCommandInt {
     *  Description of the Method
     */
    private void readSFAttributes() {
-
+	Object Obj;
       try {
          try {
             //outputStreamObj = (OutputStreamIntf)sfResolveHere(this.varOutputStream); //india team changes
@@ -596,6 +603,69 @@ public class SFRunCommand extends PrimImpl implements Prim, RunCommandInt {
          //processName = (String)sfResolve(varSFProcessName);
 		   processName = sfResolve(varSFProcessName, processName, false);
 		   System.out.println("Process Name   =======" + processName);
+		   
+		   name = sfResolve("name", name, false);
+		   host  = sfResolve("host", host , false);
+		   System.out.println("Host Name   =======" + host);
+		   port = sfResolve("cport", port, false);
+		   repeat = sfResolve("count", repeat, false);
+		   System.out.println("Port   =======" + port);
+		   System.out.println("Repeat   =======" + repeat);
+		   int sec = new Date(System.currentTimeMillis()).getSeconds();
+		   int min = new Date(System.currentTimeMillis()).getMinutes();
+		   int hour = new Date(System.currentTimeMillis()).getHours();
+		   //String time = new Date(System.currentTimeMillis()).toString();
+		   String time = Integer.toString(sec + min + hour);
+		   String var = Integer.toString(counter);
+		   name = name.concat("_");
+		   name=name.concat(var);	
+		   name = name.concat("_");
+		   name= name.concat(time);
+		   System.out.println("Time" + time);
+		   System.out.println("Name" + name);
+		   boolean flag = true;
+		   counter++;		     
+		   if (host !=null) {
+		   Compound cp = SFProcess.getRootLocator().getRootProcessCompound(InetAddress.getByName(host),port);
+		  /* String terminateTag = this.sfParent().sfResolve("terminateTag").toString();
+		   this.sfParent().sfReplaceAttribute("terminateTag",terminateTag.concat(time));
+		   System.out.println("Terminatetag" + this.sfParent().sfResolve("terminateTag").toString());*/
+		    /*for (int i = 1 ; i <= repeat ; i++) {
+			String attr = "app_".concat(Integer.toString(i));
+			if (processName.equals("stopApps")) {
+				if (cp.sfContainsAttribute(attr) && flag) {
+		           		this.sfReplaceAttribute("name",cp.sfResolve(attr).toString());
+			   		cp.sfRemoveAttribute(attr);
+					flag = false;
+                         	}
+		        System.out.println("Name attribute set to" + this.sfResolve("name").toString());
+			}
+			else if (processName.equals("startApps")) {
+		   	   	this.sfReplaceAttribute("name", name);
+				if (!cp.sfContainsAttribute(attr) && 
+					!cp.sfContainsValue(name)) {
+				  	cp.sfAddAttribute(attr,name);
+                   		  	System.out.println("Adding attribute " + attr + "with value" + name);
+                          	}
+			}
+ 	            }*/	
+		  /* if (host != null) {
+		   Compound cp = SFProcess.getRootLocator().getRootProcessCompound(InetAddress.getByName(host),port);
+		   for (int i = 1 ; i <= repeat ; i++) {
+			String attr = "app_".concat(Integer.toString(i));
+			if (!cp.sfContainsAttribute(attr) && 
+				!cp.sfContainsValue(name) && flag) {
+				  cp.sfAddAttribute(attr,name);
+                   		  System.out.println("Adding attribute " + attr + "with value" + name);
+                          }
+			}*/
+		  /* for (Enumeration e = cp.sfChildren();e.hasMoreElements();) {
+			Object elem = e.nextElement();
+			if (elem instanceof Prim) {
+			  System.out.println("======== Child" + elem.toString());	
+		   }
+                  }*/
+                 }
          //     // Not mandatory
 
          try {

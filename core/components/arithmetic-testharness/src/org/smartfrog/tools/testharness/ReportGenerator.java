@@ -39,10 +39,10 @@ public class ReportGenerator {
               newFile.write("<html/>"+"\n");
               newFile.flush();
               newFile.close();
-          //    SFSystem.sfLog().out("Report created: "+fileName+"_report.html");
+          //    SFSystem.sflog().out("Report created: "+fileName+"_report.html");
             } catch (IOException e) {
-              if (SFSystem.sfLog().isErrorEnabled()){
-         //       SFSystem.sfLog().error(e);
+              if (SFSystem.sflog().isErrorEnabled()){
+         //       SFSystem.sflog().error(e);
               }
            }
   }

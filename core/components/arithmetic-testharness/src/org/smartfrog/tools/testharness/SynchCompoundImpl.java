@@ -5,6 +5,7 @@ import java.rmi.RemoteException;
 import org.smartfrog.sfcore.compound.CompoundImpl;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.common.*;
+import java.util.*;
 
 
 
@@ -27,7 +28,7 @@ public class SynchCompoundImpl extends CompoundImpl
    * or not. */
   private String terminationTag;
 
-  
+  static int count =0;  
   /**
    * Class Constructor.
    *
@@ -42,7 +43,7 @@ public class SynchCompoundImpl extends CompoundImpl
    * 
    * @exception Exception failure deploying compound or sub-component */
   public void sfDeploy() throws SmartFrogException, RemoteException{
-
+   count++;
     try {      
       sched = (Scheduler) sfResolve(SCHEDULER);
     } catch (Exception e) {
@@ -50,7 +51,16 @@ public class SynchCompoundImpl extends CompoundImpl
     }
 
     try {
-      terminationTag = (String) sfResolve(TERMINATE_TAG);
+      terminationTag = (String) sfResolve(TERMINATE_TAG); 
+     /* if(!terminationTag.equals("waitForDaemons")) {
+     // int sec = new Date(System.currentTimeMillis()).getSeconds();
+     // String time = Integer.toString(sec);
+     // String pattern = "custom_";
+      terminationTag = terminationTag.concat("_");
+      terminationTag = terminationTag.concat(Integer.toString(count));
+      this.sfReplaceAttribute(TERMINATE_TAG, terminationTag);
+      System.out.println("TErminate Tag" + terminationTag);
+     }*/
     } catch (Exception e) {
       // Behave like a normal compound.     
     }
