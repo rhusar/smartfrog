@@ -48,7 +48,7 @@ MonitoredDaemon extends Compound {
 //    startAtt_47 "-Dorg.smartfrog.sfcore.security.debug=true";
 //    startAtt_48 "-Djava.security.debug=policy";
 //    startAtt_49 "-Djavax.net.debug=ssl";
-    startAtt_10a "-Dorg.smartfrog.sfcore.codebase=";
+    startAtt_10a "-Dorg.smartfrog.codebase=";
     startAtt_10b ATTRIB httpCodebase;
 //    startAtt_90a "-Djava.rmi.server.codebase=";
 //    startAtt_90b ATTRIB httpCodebase;
@@ -67,10 +67,10 @@ MonitoredDaemon extends Compound {
 PrincipalMonitoredDaemon extends MonitoredDaemon {
 //       doStartDaemon:startAtt_12a "-Dorg.smartfrog.iniSFFile=";
 //       doStartDaemon:startAtt_12b "org/smartfrog/SFDynaServer/dynadaemon.sf";    //tocheck 
-      doStartDaemon:startAtt_21 "-c";
-      doStartDaemon:startAtt_22 "org/smartfrog/services/codeserver/dynadaemon.sf";    //tocheck
-       doStartDaemon:startAtt_14a "-DDSHOMEBASE=";
-       doStartDaemon:startAtt_14b "/home/testharness/daemons/ebnt171/SmartFrog.3.04.014.beta/distsignedLib/";
+    //  doStartDaemon:startAtt_21 "-c"; // added
+//      doStartDaemon:startAtt_22 "org/smartfrog/services/codeserver/dynadaemon.sf";    //tocheck added
+//       doStartDaemon:startAtt_14a "-DDSHOMEBASE="; // added
+  //     doStartDaemon:startAtt_14b "/home/testharness/daemons/ebnt171signedLib/"; //added
 }
 
 
@@ -80,6 +80,7 @@ Scheduler extends SchedulerCompound {
   numberOfAcks ATTRIB numDaemons;
 
   globalOutput extends  NotifyOutputFilterPrim {
+    scheduler LAZY ATTRIB globalScheduler; // added
     processId ATTRIB globalProcess;
     fileNameOutput ATTRIB globalFileOutput;
   }
@@ -115,18 +116,17 @@ Scheduler extends SchedulerCompound {
           startAtt_06b ATTRIB secPropFile;
 //          startAtt_47 "-Dorg.smartfrog.sfcore.security.debug=true";
 //          startAtt_48 "-Djava.security.debug=policy";
-          startAtt_10a "-Dorg.smartfrog.sfcore.codebase=";
+          startAtt_10a "-Dorg.smartfrog.codebase=";
           startAtt_10b ATTRIB httpCodebase;
 //          startAtt_90a "-Djava.rmi.server.codebase=";
 //          startAtt_90b ATTRIB httpCodebase;
           startAtt_17 "org.smartfrog.SFSystem";
-          startAtt_18 "-h";
-          startAtt_19 "localhost";//ATTRIB sfProcessHost;
-          startAtt_20 "-n";
-          startAtt_21 "sfConfig";
-          startAtt_22 ATTRIB appName;
-          startAtt_23 "-e";
-          startAtt_24 "";
+          startAtt_18 "-a";
+          startAtt_19a "sfConfig:DEPLOY:";
+          startAtt_19b (ATTRIB appName ++ "::localhost:");
+//          startAtt_19b (ATTRIB appName ++ "::" ++ ATTRIB sfProcessHost ++ ":");
+	  startAtt_21 "-e";
+          startAtt_22 "";
         }                
       }
 
@@ -146,13 +146,24 @@ Scheduler extends SchedulerCompound {
           startAtt_05b ATTRIB secKeyStore;
           startAtt_06a "-Dorg.smartfrog.sfcore.security.propFile=";
           startAtt_06b ATTRIB secPropFile;  
+		 
+   	     /* startAtt_01 "-cp";
+          startAtt_02 ATTRIB classPath;
+          startAtt_03a "-Dorg.smartfrog.sfcore.processcompound.sfRootLocatorPort=";
+          startAtt_03b ATTRIB port;*/
           startAtt_07 "org.smartfrog.SFSystem";
+          startAtt_08 "-a";
+          startAtt_09 "sfConfig:TERMINATE:::localhost:";//ATTRIB sfProcessHost;
+          startAtt_12 "-e";
+          startAtt_13 "";
+		 
+		 /* startAtt_07 "org.smartfrog.SFSystem";
           startAtt_08 "-h";
           startAtt_09 "localhost";//ATTRIB sfProcessHost;
           startAtt_10 "-t";
           startAtt_11 "sfConfig";
           startAtt_12 "-e";
-          startAtt_13 "";
+          startAtt_13 "";*/
         }                
       }
     }
@@ -162,45 +173,45 @@ Scheduler extends SchedulerCompound {
 
       daemon1 extends PrincipalMonitoredDaemon {
         sfProcessHost "ebnt171.india.hp.com";
-        daemonFileOutput "/home/testharness/daemons/ebnt171/SmartFrog.3.04.014.beta/distdaemon.out";
+        daemonFileOutput "/home/testharness/daemons/ebnt171/daemon.out";
         daemonName "daemon1";
-        workingDirectory "/home/testharness/daemons/ebnt171/SmartFrog.3.04.014.beta/dist";
-        allEnvProperties ["SFHOME=/home/testharness/daemons/ebnt171/SmartFrog.3.04.014.beta/dist",
+        workingDirectory "/home/testharness/daemons/ebnt171";
+        allEnvProperties ["SFHOME=/home/testharness/daemons/ebnt171",
                          "JAVA_HOME=/usr/java/j2sdk1.4.1_05",
                          "PATH=/usr/java/j2sdk1.4.1_05/bin:/usr/local/bin:/usr/bin:/bin:."];
-        classPath "/home/testharness/daemons/ebnt171/SmartFrog.3.04.014.beta/dist/signedLib/smartfrog.jar"; 
+        classPath "/home/testharness/daemons/ebnt171/signedLib/smartfrog.jar"; 
 
-        secPolicy "/home/testharness/daemons/ebnt171/SmartFrog.3.04.014.beta/dist/private/sf.policy";
-        secKeyStore "/home/testharness/daemons/ebnt171/SmartFrog.3.04.014.beta/dist/private/local/mykeys.st";
-        secPropFile "/home/testharness/daemons/ebnt171/SmartFrog.3.04.014.beta/dist/private/local/SFsecurity.properties";
+        secPolicy "/home/testharness/daemons/ebnt171/private/sf.policy";
+        secKeyStore "/home/testharness/daemons/ebnt171/private/local/mykeys.st";
+        secPropFile "/home/testharness/daemons/ebnt171/private/local/SFsecurity.properties";
       }
       daemon2 extends MonitoredDaemon {
         sfProcessHost "bhargava.india.hp.com";
-        daemonFileOutput "/home/testharness/daemons/bhargava/SmartFrog.3.04.014.beta/distdaemon.out";
+        daemonFileOutput "/home/testharness/daemons/bhargava/daemon.out";
         daemonName "daemon2";
-        workingDirectory "/home/testharness/daemons/bhargava/SmartFrog.3.04.014.beta/dist";
-        allEnvProperties ["SFHOME=/home/testharness/daemons/bhargava/SmartFrog.3.04.014.beta/dist",
+        workingDirectory "/home/testharness/daemons/bhargava";
+        allEnvProperties ["SFHOME=/home/testharness/daemons/bhargava",
                          "JAVA_HOME=/usr/java/j2sdk1.4.1_05",
                          "PATH=/usr/java/j2sdk1.4.1_05/bin:/usr/local/bin:/usr/bin:/bin:."];
-        classPath "/home/testharness/daemons/bhargava/SmartFrog.3.04.014.beta/dist/signedLib/smartfrog.jar"; 
+        classPath "/home/testharness/daemons/bhargava/signedLib/smartfrog.jar"; 
 
-        secPolicy "/home/testharness/daemons/bhargava/SmartFrog.3.04.014.beta/dist/private/sf.policy";
-        secKeyStore "/home/testharness/daemons/bhargava/SmartFrog.3.04.014.beta/dist/private/local/mykeys.st";
-        secPropFile "/home/testharness/daemons/bhargava/SmartFrog.3.04.014.beta/dist/private/local/SFsecurity.properties";
+        secPolicy "/home/testharness/daemons/bhargava/private/sf.policy";
+        secKeyStore "/home/testharness/daemons/bhargava/private/local/mykeys.st";
+        secPropFile "/home/testharness/daemons/bhargava/private/local/SFsecurity.properties";
       }
       daemon3 extends MonitoredDaemon {
         sfProcessHost "eb96147.india.hp.com";
-        daemonFileOutput "/home/testharness/daemons/eb96147/SmartFrog.3.04.014.beta/distdaemon.out";
+        daemonFileOutput "/home/testharness/daemons/eb96147/daemon.out";
         daemonName "daemon3";
-        workingDirectory "/home/testharness/daemons/eb96147/SmartFrog.3.04.014.beta/dist";
-        allEnvProperties ["SFHOME=/home/testharness/daemons/eb96147/SmartFrog.3.04.014.beta/dist",
+        workingDirectory "/home/testharness/daemons/eb96147";
+        allEnvProperties ["SFHOME=/home/testharness/daemons/eb96147",
                          "JAVA_HOME=/usr/java/j2sdk1.4.1_05",
                          "PATH=/usr/java/j2sdk1.4.1_05/bin:/usr/local/bin:/usr/bin:/bin:."];
-        classPath "/home/testharness/daemons/eb96147/SmartFrog.3.04.014.beta/dist/signedLib/smartfrog.jar"; 
+        classPath "/home/testharness/daemons/eb96147/signedLib/smartfrog.jar"; 
 
-        secPolicy "/home/testharness/daemons/eb96147/SmartFrog.3.04.014.beta/dist/private/sf.policy";
-        secKeyStore "/home/testharness/daemons/eb96147/SmartFrog.3.04.014.beta/dist/private/local/mykeys.st";
-        secPropFile "/home/testharness/daemons/eb96147/SmartFrog.3.04.014.beta/dist/private/local/SFsecurity.properties";
+        secPolicy "/home/testharness/daemons/eb96147/private/sf.policy";
+        secKeyStore "/home/testharness/daemons/eb96147/private/local/mykeys.st";
+        secPropFile "/home/testharness/daemons/eb96147/private/local/SFsecurity.properties";
       }
     }
   }
@@ -209,23 +220,24 @@ Scheduler extends SchedulerCompound {
 TemplateSerrano extends Compound {
   // Default values for all the runCommand
   sfProcessHost "ebnt171.india.hp.com";
+  sfLivenessDelay 0;
   command "java";
-  workingDirectory  "/home/testharness/daemons/ebnt171/SmartFrog.3.04.014.beta/dist";
-  allEnvProperties ["SFHOME=/home/testharness/daemons/ebnt171/SmartFrog.3.04.014.beta/dist",
+  workingDirectory  "/home/testharness/daemons/ebnt171";
+  allEnvProperties ["SFHOME=/home/testharness/daemons/ebnt171",
                    "JAVA_HOME=/usr/java/j2sdk1.4.1_05",
                     "PATH=/usr/java/j2sdk1.4.1_05/bin:/usr/local/bin:/usr/bin:/bin:."];
-  classPath "/home/testharness/daemons/ebnt171/SmartFrog.3.04.014.beta/dist/signedLib/smartfrog.jar";
-  httpCodebase "http://ebnt171.india.hp.com:8080/sfRegTest.jar http://ebnt171.india.hp.com:8080/bsh-1.1a17.jar http://ebnt171.india.hp.com:8080/sfTools.jar http://ebnt171.india.hp.com:8080/sfServices.jar ";
-        secPolicy "/home/testharness/daemons/ebnt171/SmartFrog.3.04.014.beta/dist/private/sf.policy";
-        secKeyStore "/home/testharness/daemons/ebnt171/SmartFrog.3.04.014.beta/dist/private/local/mykeys.st";
-        secPropFile "/home/testharness/daemons/ebnt171/SmartFrog.3.04.014.beta/dist/private/local/SFsecurity.properties";
+  classPath "/home/testharness/daemons/ebnt171/signedLib/smartfrog.jar";
+  httpCodebase "http://ebnt171.india.hp.com:8080/velocity-1.1.jar http://ebnt171.india.hp.com:8080/bsh-1.3.0.jar http://ebnt171.india.hp.com:8080/sfServices.jar http://ebnt171.india.hp.com:8080/sf-arithmetic-testharness.jar ";
+        secPolicy "/home/testharness/daemons/ebnt171/private/sf.policy";
+        secKeyStore "/home/testharness/daemons/ebnt171/private/local/mykeys.st";
+        secPropFile "/home/testharness/daemons/ebnt171/private/local/SFsecurity.properties";
 
   port 3801;
   //iniSFFile "org/smartfrog/sfcore/default.sf";
   // Application that we are testing. this is set from outside.
   // appName "org/smartfrog/examples/example1TH.sf";
   globalProcess "Scheduler";
-  globalFileOutput "/home/testharness/daemons/ebnt171/SmartFrog.3.04.014.beta/distscheduler";
+  globalFileOutput "/home/testharness/daemons/ebnt171/scheduler";
   globalScheduler extends Scheduler;
   //  trace extends Trace;
   // Global definitions...

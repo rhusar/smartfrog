@@ -58,7 +58,11 @@ public class SchedulerImpl implements Scheduler {
      * is NOT synchronized.*/
     synchronized(this) {
       tagInfo = (TagInfo) tagsStatus.get(tag);
-      if (tagInfo == null) {
+	if (tagInfo !=null)
+      	 System.out.println("TAG " + tag + " in hash");
+	else 
+      	 System.out.println("TAG "  + tag + " not in hash");
+	if (tagInfo == null) {
         // Adding a new entry but with 0 acks.
         tagInfo = new TagInfo(numberOfAcks);
         tagsStatus.put(tag,tagInfo);
@@ -73,6 +77,10 @@ public class SchedulerImpl implements Scheduler {
           System.out.println("Scheduler:waitGoAhead blocking "+tag);//DEBUG
           tagInfo.wait();
           System.out.println("Scheduler:waitGoAhead releasing "+tag);//DEBUG
+	  if (!tag.equals("waitForDaemons")) {
+	     System.out.println("Removing " + tag);
+	     tagsStatus.remove(tag); // added
+           }
         } catch (Exception e) {
           
         }
@@ -100,14 +108,14 @@ public class SchedulerImpl implements Scheduler {
     TagInfo tagInfo;
     /* Protect hasmaps and make sure that only one entry per tag.*/
     synchronized(this) {
-      if (removeDuplicates) {
+     /* if (removeDuplicates) {
         Boolean temp = new Boolean(force);
         String key = tag+senderId+ temp;
         if (duplicates.containsKey(key))
           return;
         else
           duplicates.put(key,null);
-      }
+      }*/
 
       tagInfo = (TagInfo) tagsStatus.get(tag);
       if (tagInfo == null) {
@@ -118,6 +126,7 @@ public class SchedulerImpl implements Scheduler {
     }
 
     synchronized(tagInfo) {
+	System.out.println("INSIDE SYNCHRONIZED BLOCK");
       tagInfo.incAcks();
       if (force) 
         tagInfo.forceDone();    

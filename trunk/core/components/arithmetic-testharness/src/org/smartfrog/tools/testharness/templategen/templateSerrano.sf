@@ -20,39 +20,26 @@ TestRunCommand extends RunCommand {
 
 MonitoredDaemon extends Compound {
 
-
-/*CentralOutputDisplay extends Display {
-      textDisplay "";
-      nameDisplay "Central Message Display";
-      redirectStd false;
-      screenEditable false;
-      formatMsg     true;
-      positionDisplay "N";
-      widthDisplay 800;
-      heightDisplay 600;
-   }
-
-*/
-
   daemonOutput extends  NotifyOutputFilterPrim {
 
     scheduler LAZY ATTRIB globalScheduler;
     processId ATTRIB daemonName;
     fileNameOutput ATTRIB daemonFileOutput;
-//	externalPrinter LAZY ATTRIB CentralOutputDisplay;
+    count ATTRIB step;
   }
   
     doStartDaemon extends TestRunCommand { //RunCommand
     processName ATTRIB daemonName;
-    
-	startAtt_01 "-cp";
+    startAtt_01 "-cp";
     startAtt_02 ATTRIB classPath;
     startAtt_03a "-Dorg.smartfrog.sfcore.processcompound.sfRootLocatorPort=";
     startAtt_03b ATTRIB port;
+    startAtt_04 "-Xms32M";
+    startAtt_05 "-Xmx512M";
     startAtt_04a "";//    startAtt_04a "-Dorg.smartfrog.iniFile=";
     startAtt_04b ""; //startAtt_04b ATTRIB iniFile;
-    startAtt_05a ""; //-Dorg.smartfrog.sfcore.iniSFFile=";
-    startAtt_05b ""; // ATTRIB iniSFFile;
+    startAtt_05a "-Dorg.smartfrog.sfcore.processcompound.sfDefault.sfDefault=";
+    startAtt_05b ATTRIB iniSFFile;
     startAtt_06a "-Dorg.smartfrog.sfcore.processcompound.sfProcessName=";
     startAtt_06b "rootProcess";
     startAtt_12a "";
@@ -75,15 +62,20 @@ Scheduler extends SchedulerCompound {
   numberOfAcks ATTRIB numDaemons;
 
   globalOutput extends  NotifyOutputFilterPrim {
+    scheduler LAZY ATTRIB globalScheduler; // added
     processId ATTRIB globalProcess;
     fileNameOutput ATTRIB globalFileOutput;
-	
-	  }
+    value LAZY ATTRIB terminateTag;
+    host ATTRIB sfProcessHost;
+    cport ATTRIB port;
+    count ATTRIB step;
+  }
   //  mainOutput extends  NotifyOutputFilterPrim {
   //  fileNameOutput "main.out";
   //}    
 
-  main extends Sequence {
+ main extends Repeat {
+  action extends LAZY Sequence {
     actions extends LAZY {
       // Just wait until daemons ready
       waitForDaemons  extends SynchCompound {
@@ -97,35 +89,25 @@ Scheduler extends SchedulerCompound {
       startApps extends SynchCompound {
         terminateTag "startApps";
                 
-        /*doStartApps extends TestRunCommand { 
-          processName "startApps";
-          startAtt_01 "-cp";
-          startAtt_02 ATTRIB classPath;
-          startAtt_03a "-Dorg.smartfrog.sfcore.processcompound.sfRootLocatorPort=";
-          startAtt_03b ATTRIB port;
-          startAtt_17 "org.smartfrog.SFSystem";
-          startAtt_18 "-h";
-          startAtt_19 "localhost";//ATTRIB sfProcessHost;
-          startAtt_20 "-n";
-          startAtt_21 "sfConfig";
-          startAtt_22 ATTRIB appName;
-          startAtt_23 "-e";
-          startAtt_24 "";
-        } */  
-//india team changes
-	doStartApps extends TestRunCommand { 
-          processName "startApps";
-          startAtt_01 "-cp";
-          startAtt_02 ATTRIB classPath;
-          startAtt_03a "-Dorg.smartfrog.sfcore.processcompound.sfRootLocatorPort=";
-          startAtt_03b ATTRIB port;
-          startAtt_17 "org.smartfrog.SFSystem";
-          startAtt_18 "-a";
-          startAtt_19a "sfConfig:DEPLOY:";
-          startAtt_19b (ATTRIB appName ++ "::localhost:");
-          startAtt_21 "-e";
+        doStartApps extends TestRunCommand { 
+           processName "startApps";
+	   name "sfConfig"; 
+           host ATTRIB sfProcessHost;
+	   cport ATTRIB port;
+	   count ATTRIB repeat;
+           startAtt_01 "-cp";
+           startAtt_02 ATTRIB classPath;
+           startAtt_03a "-Dorg.smartfrog.sfcore.processcompound.sfRootLocatorPort=";
+           startAtt_03b ATTRIB port;
+           startAtt_17 "org.smartfrog.SFSystem";
+           startAtt_18 "-a";
+           startAtt_19a LAZY ATTRIB name;
+	   //startAtt_19b (ATTRIB appName ++ "::localhost:");
+           startAtt_19b (":DEPLOY:" ++ ATTRIB appName ++ "::localhost:");
+//          startAtt_19b (ATTRIB appName ++ "::" ++ ATTRIB sfProcessHost ++ ":");
+	  startAtt_21 "-e";
           startAtt_22 "";
-        }               
+         }
       }
 
       // Do the sfStops.
@@ -134,60 +116,63 @@ Scheduler extends SchedulerCompound {
         
         doStopApps extends TestRunCommand  { 
           processName "stopApps";
+	  name "sfConfig"; 
+          host ATTRIB sfProcessHost;
+	  cport ATTRIB port;
+	  count ATTRIB repeat;
           startAtt_01 "-cp";
           startAtt_02 ATTRIB classPath;
           startAtt_03a "-Dorg.smartfrog.sfcore.processcompound.sfRootLocatorPort=";
           startAtt_03b ATTRIB port;
+		 
           startAtt_07 "org.smartfrog.SFSystem";
-          startAtt_08 "-h";
-          startAtt_09 "localhost";//ATTRIB sfProcessHost;
-          startAtt_10 "-t";
-          startAtt_11 "sfConfig";
+          startAtt_08 "-a";
+          startAtt_09a LAZY ATTRIB name;
+          startAtt_09b ":TERMINATE:::localhost:"; 
           startAtt_12 "-e";
           startAtt_13 "";
         }                
       }
+      }
     }
+    repeat ATTRIB step;
   }
   allDaemons extends Parallel {
     actions extends LAZY {
 
       daemon1 extends MonitoredDaemon {
         sfProcessHost "ebnt171.india.hp.com";
-        daemonFileOutput "/home/testharness/daemons/ebnt171/SmartFrog.3.04.014.beta/distdaemon.out";
+        daemonFileOutput "/home/testharness/daemons/ebnt171/daemon.out";
         daemonName "daemon1";
-        workingDirectory "/home/testharness/daemons/ebnt171/SmartFrog.3.04.014.beta/dist";
-        allEnvProperties ["SFHOME=/home/testharness/daemons/ebnt171/SmartFrog.3.04.014.beta/dist",
-                         "JAVA_HOME=/usr/java/j2sdk1.4.1_05",
-                         "PATH=/usr/java/j2sdk1.4.1_05/bin:/usr/local/bin:/usr/bin:/bin:."];
-        classPath "/home/testharness/daemons/ebnt171/SmartFrog.3.04.014.beta/dist/lib/smartfrog.jar:/home/testharness/daemons/ebnt171/SmartFrog.3.04.014.beta/dist/lib/sfServices.jar:/home/testharness/daemons/ebnt171/SmartFrog.3.04.014.beta/dist/lib/sf-arithmetic-testharness.jar:/home/testharness/daemons/ebnt171/SmartFrog.3.04.014.beta/dist/lib/velocity-1.1.jar:/home/testharness/daemons/ebnt171/SmartFrog.3.04.014.beta/dist/lib/bsh-1.3.0.jar:/home/testharness/daemons/ebnt171/SmartFrog.3.04.014.beta/dist/lib/SFGuiTools.jar:/home/testharness/daemons/ebnt171/SmartFrog.3.04.014.beta/dist/lib/SFGuiBrowser.jar"; 
+        workingDirectory "/home/testharness/daemons/ebnt171";
+        allEnvProperties ["SFHOME=/home/testharness/daemons/ebnt171",
+                         "JAVA_HOME=/usr/java/j2sdk1.4.2_08",
+                         "PATH=/usr/java/j2sdk1.4.2_08/bin:/usr/local/bin:/usr/bin:/bin:."];
+        classPath "/home/testharness/daemons/ebnt171/lib/smartfrog.jar:/home/testharness/daemons/ebnt171/lib/sfServices.jar:/home/testharness/daemons/ebnt171/lib/velocity-1.1.jar:/home/testharness/daemons/ebnt171/lib/bsh-1.3.0.jar:/home/testharness/daemons/ebnt171/lib/SFGuiTools.jar:/home/testharness/daemons/ebnt171/lib/SFGuiBrowser.jar:/home/testharness/daemons/ebnt171/lib/sf-arithmetic-testharness.jar"; 
 
       }
-      daemon2 extends MonitoredDaemon {
+    /*  daemon2 extends MonitoredDaemon {
         sfProcessHost "bhargava.india.hp.com";
-        daemonFileOutput "/home/testharness/daemons/bhargava/SmartFrog.3.04.014.beta/distdaemon.out";
+        daemonFileOutput "/home/testharness/daemons/bhargava/daemon.out";
         daemonName "daemon2";
-        workingDirectory "/home/testharness/daemons/bhargava/SmartFrog.3.04.014.beta/dist";
-        allEnvProperties ["SFHOME=/home/testharness/daemons/bhargava/SmartFrog.3.04.014.beta/dist",
-                         "JAVA_HOME=/usr/java/j2sdk1.4.1_05",
-                         "PATH=/usr/java/j2sdk1.4.1_05/bin:/usr/local/bin:/usr/bin:/bin:."];
-        classPath "/home/testharness/daemons/bhargava/SmartFrog.3.04.014.beta/dist/lib/smartfrog.jar:/home/testharness/daemons/bhargava/SmartFrog.3.04.014.beta/dist/lib/sfServices.jar:/home/testharness/daemons/bhargava/SmartFrog.3.04.014.beta/dist/lib/velocity-1.1.jar:/home/testharness/daemons/bhargava/SmartFrog.3.04.014.beta/dist/lib/bsh-1.3.0.jar:/home/testharness/daemons/bhargava/SmartFrog.3.04.014.beta/dist/lib/SFGuiTools.jar:/home/testharness/daemons/bhargava/SmartFrog.3.04.014.beta/dist/lib/SFGuiBrowser.jar:/home/testharness/daemons/bhargava/SmartFrog.3.04.014.beta/dist/lib/sf-arithmetic-testharness.jar"; 
+        workingDirectory "/home/testharness/daemons/bhargava";
+        allEnvProperties ["SFHOME=/home/testharness/daemons/bhargava",
+                         "JAVA_HOME=/usr/java/j2sdk1.4.2_08",
+                         "PATH=/usr/java/j2sdk1.4.2_08/bin:/usr/local/bin:/usr/bin:/bin:."];
+        classPath "/home/testharness/daemons/bhargava/lib/smartfrog.jar:/home/testharness/daemons/bhargava/lib/sfServices.jar:/home/testharness/daemons/bhargava/lib/velocity-1.1.jar:/home/testharness/daemons/bhargava/lib/bsh-1.3.0.jar:/home/testharness/daemons/bhargava/lib/SFGuiTools.jar:/home/testharness/daemons/bhargava/lib/SFGuiBrowser.jar:/home/testharness/daemons/bhargava/lib/sf-arithmetic-testharness.jar"; 
 
-      }
+      }*/
       daemon3 extends MonitoredDaemon {
         sfProcessHost "eb96147.india.hp.com";
-        daemonFileOutput "/home/testharness/daemons/eb96147/SmartFrog.3.04.014.beta/distdaemon.out";
+        daemonFileOutput "/home/testharness/daemons/eb96147/daemon.out";
         daemonName "daemon3";
-        workingDirectory "/home/testharness/daemons/eb96147/SmartFrog.3.04.014.beta/dist";
-        allEnvProperties ["SFHOME=/home/testharness/daemons/eb96147/SmartFrog.3.04.014.beta/dist",
-                         "JAVA_HOME=/usr/java/j2sdk1.4.1_05",
-                         "PATH=/usr/java/j2sdk1.4.1_05/bin:/usr/local/bin:/usr/bin:/bin:."];
-        classPath "/home/testharness/daemons/eb96147/SmartFrog.3.04.014.beta/dist/lib/smartfrog.jar:/home/testharness/daemons/eb96147/SmartFrog.3.04.014.beta/dist/lib/sfServices.jar:/home/testharness/daemons/eb96147/SmartFrog.3.04.014.beta/dist/lib/velocity-1.1.jar:/home/testharness/daemons/eb96147/SmartFrog.3.04.014.beta/dist/lib/bsh-1.3.0.jar:/home/testharness/daemons/eb96147/SmartFrog.3.04.014.beta/dist/lib/SFGuiTools.jar:/home/testharness/daemons/eb96147/SmartFrog.3.04.014.beta/dist/lib/SFGuiBrowser.jar:/home/testharness/daemons/eb96147/SmartFrog.3.04.014.beta/dist/lib/sf-arithmetic-testharness.jar"; 
+        workingDirectory "/home/testharness/daemons/eb96147";
+        allEnvProperties ["SFHOME=/home/testharness/daemons/eb96147",
+                         "JAVA_HOME=/usr/java/j2sdk1.4.2_08",
+                         "PATH=/usr/java/j2sdk1.4.2_08/bin:/usr/local/bin:/usr/bin:/bin:."];
+        classPath "/home/testharness/daemons/eb96147/lib/smartfrog.jar:/home/testharness/daemons/eb96147/lib/sfServices.jar:/home/testharness/daemons/eb96147/lib/velocity-1.1.jar:/home/testharness/daemons/eb96147/lib/bsh-1.3.0.jar:/home/testharness/daemons/eb96147/lib/SFGuiTools.jar:/home/testharness/daemons/eb96147/lib/SFGuiBrowser.jar:/home/testharness/daemons/eb96147/lib/sf-arithmetic-testharness.jar"; 
 
       }
-
-
-
     }
   }
 }
@@ -195,21 +180,24 @@ Scheduler extends SchedulerCompound {
 TemplateSerrano extends Compound {
   // Default values for all the runCommand
   sfProcessHost "ebnt171.india.hp.com";
+  sfLivenessDelay 0;
   command "java";
-  workingDirectory  "/home/testharness/daemons/ebnt171/SmartFrog.3.04.014.beta/dist";
-  allEnvProperties ["SFHOME=/home/testharness/daemons/ebnt171/SmartFrog.3.04.014.beta/dist",
+  workingDirectory  "/home/testharness/daemons/ebnt171";
+  allEnvProperties ["SFHOME=/home/testharness/daemons/ebnt171",
                    "JAVA_HOME=/usr/java/j2sdk1.4.1_05",
                     "PATH=/usr/java/j2sdk1.4.1_05/bin:/usr/local/bin:/usr/bin:/bin:."];
-  classPath "/home/testharness/daemons/ebnt171/SmartFrog.3.04.014.beta/dist/lib/smartfrog.jar:/home/testharness/daemons/ebnt171/SmartFrog.3.04.014.beta/dist/lib/sfServices.jar:/home/testharness/daemons/ebnt171/SmartFrog.3.04.014.beta/dist/lib/velocity-1.1.jar:/home/testharness/daemons/ebnt171/SmartFrog.3.04.014.beta/dist/lib/bsh-1.3.0.jar:/home/testharness/daemons/ebnt171/SmartFrog.3.04.014.beta/dist/lib/SFGuiTools.jar:/home/testharness/daemons/ebnt171/SmartFrog.3.04.014.beta/dist/lib/SFGuiBrowser.jar:/home/testharness/daemons/ebnt171/SmartFrog.3.04.014.beta/dist/lib/sf-arithmetic-testharness.jar";
+  classPath "/home/testharness/daemons/ebnt171/lib/smartfrog.jar:/home/testharness/daemons/ebnt171/lib/sfServices.jar:/home/testharness/daemons/ebnt171/lib/velocity-1.1.jar:/home/testharness/daemons/ebnt171/lib/bsh-1.3.0.jar:/home/testharness/daemons/ebnt171/lib/SFGuiTools.jar:/home/testharness/daemons/ebnt171/lib/SFGuiBrowser.jar:/home/testharness/daemons/ebnt171/lib/sf-arithmetic-testharness.jar";
 
   port 3801;
-  //iniSFFile "org/smartfrog/sfcore/default.sf";
+  iniSFFile "/home/testharness/daemons/default.sf";
   // Application that we are testing. this is set from outside.
   // appName "org/smartfrog/examples/example1TH.sf";
   globalProcess "Scheduler";
-  globalFileOutput "/home/testharness/daemons/ebnt171/SmartFrog.3.04.014.beta/distscheduler";
+  globalFileOutput "/home/testharness/daemons/ebnt171/scheduler";
   globalScheduler extends Scheduler;
   //  trace extends Trace;
   // Global definitions...
-  numDaemons 3;
+  //numDaemons 3;
+  numDaemons 2;
+  step 1;
 }
