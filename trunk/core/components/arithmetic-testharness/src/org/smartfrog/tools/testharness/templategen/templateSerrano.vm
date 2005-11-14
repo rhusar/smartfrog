@@ -119,9 +119,10 @@ Scheduler extends SchedulerCompound {
   //  fileNameOutput "main.out";
   //}    
 
-  main extends Sequence {
-    actions extends LAZY {
-      // Just wait until daemons ready
+  main extends Repeat {
+    action extends LAZY Sequence {
+    //  actions extends LAZY {
+	// Just wait until daemons ready
       waitForDaemons  extends SynchCompound {
         terminateTag "waitForDaemons";
         reallyDoNothing extends DoNothing {
@@ -135,7 +136,7 @@ Scheduler extends SchedulerCompound {
                 
         doStartApps extends TestRunCommand { 
           processName "startApps";
-          startAtt_01 "-cp";
+	  startAtt_01 "-cp";
           startAtt_02 ATTRIB classPath;
           startAtt_03a "-Dorg.smartfrog.sfcore.processcompound.sfRootLocatorPort=";
           startAtt_03b ATTRIB port;
@@ -159,8 +160,8 @@ Scheduler extends SchedulerCompound {
 #end
           startAtt_17 "org.smartfrog.SFSystem";
           startAtt_18 "-a";
-          startAtt_19a "sfConfig:DEPLOY:";
-          startAtt_19b (ATTRIB appName ++ "::localhost:");
+          //startAtt_19a LAZY ATTRIB name;
+          startAtt_19 ("sfConfig:DEPLOY:" ++ ATTRIB appName ++ "::localhost:");
 //          startAtt_19b (ATTRIB appName ++ "::" ++ ATTRIB sfProcessHost ++ ":");
 	  startAtt_21 "-e";
           startAtt_22 "";
@@ -186,29 +187,21 @@ Scheduler extends SchedulerCompound {
           startAtt_06b ATTRIB secPropFile;  
 #end
 		 
-   	     /* startAtt_01 "-cp";
-          startAtt_02 ATTRIB classPath;
-          startAtt_03a "-Dorg.smartfrog.sfcore.processcompound.sfRootLocatorPort=";
-          startAtt_03b ATTRIB port;*/
           startAtt_07 "org.smartfrog.SFSystem";
           startAtt_08 "-a";
-          startAtt_09 "sfConfig:TERMINATE:::localhost:";//ATTRIB sfProcessHost;
+   //       startAtt_09 LAZY ATTRIB name;
+	  startAtt_09 "sfConfig:TERMINATE:::localhost:";//ATTRIB sfProcessHost;
           startAtt_12 "-e";
           startAtt_13 "";
-		 
-		 /* startAtt_07 "org.smartfrog.SFSystem";
-          startAtt_08 "-h";
-          startAtt_09 "localhost";//ATTRIB sfProcessHost;
-          startAtt_10 "-t";
-          startAtt_11 "sfConfig";
-          startAtt_12 "-e";
-          startAtt_13 "";*/
         }                
       }
-    }
+   // }
   }
-  allDaemons extends Parallel {
-    actions extends LAZY {
+  repeat ATTRIB step;
+}	
+ 
+ allDaemons extends Parallel {
+  //  actions extends LAZY {
 
 #foreach ($daemon in $allDaemons)
       $daemon.name extends $daemon.type {
@@ -218,8 +211,8 @@ Scheduler extends SchedulerCompound {
         workingDirectory "${daemon.sfHome}";
 #if ($daemon.isLinux())
         allEnvProperties ["SFHOME=${daemon.sfHome}",
-                         "JAVA_HOME=/usr/java/j2sdk1.4.1_05",
-                         "PATH=/usr/java/j2sdk1.4.1_05/bin:/usr/local/bin:/usr/bin:/bin:."];
+                         "JAVA_HOME=/usr/java/j2sdk1.4.2_08",
+                         "PATH=/usr/java/j2sdk1.4.2_08/bin:/usr/local/bin:/usr/bin:/bin:."];
         classPath "${daemon.sfHome}/${libSubdir}${mainJar}#foreach ($jar in $libJars):${daemon.sfHome}/${libSubdir}${jar}#end"; 
 #else
         command "java";
@@ -228,7 +221,7 @@ Scheduler extends SchedulerCompound {
                             "systemroot=C:\\WINNT",
                             "PATH=C:\\j2sdk1.4.2_03\\bin;.;"];
         classPath "${daemon.sfHome}${libSubdir}${mainJar}#foreach ($jar in $libJars);${daemon.sfHome}${libSubdir}${jar}#end"; 
-#end
+i#end
 
 #if ($securityOn)
         secPolicy "${daemon.sfHome}/private/sf.policy";
@@ -237,7 +230,7 @@ Scheduler extends SchedulerCompound {
 #end
       }
 #end
-    }
+   // }
   }
 }
 
@@ -248,8 +241,8 @@ TemplateSerrano extends Compound {
   command "java";
   workingDirectory  "${principalDaemon.sfHome}";
   allEnvProperties ["SFHOME=${principalDaemon.sfHome}",
-                   "JAVA_HOME=/usr/java/j2sdk1.4.1_05",
-                    "PATH=/usr/java/j2sdk1.4.1_05/bin:/usr/local/bin:/usr/bin:/bin:."];
+                   "JAVA_HOME=/usr/java/j2sdk1.4.2_08",
+                    "PATH=/usr/java/j2sdk1.4.2_08/bin:/usr/local/bin:/usr/bin:/bin:."];
   classPath "${principalDaemon.sfHome}/${libSubdir}${mainJar}#foreach ($jar in $libJars):${principalDaemon.sfHome}/${libSubdir}${jar}#end";
 #if ($dynamicLoadingOn)
   httpCodebase "#foreach ($jar in $httpJars)http://${principalDaemon.host}:8080/${jar} #end";
@@ -270,4 +263,5 @@ TemplateSerrano extends Compound {
   //  trace extends Trace;
   // Global definitions...
   numDaemons ${numberDaemons};
+  step 1;
 }

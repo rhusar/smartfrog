@@ -41,7 +41,7 @@ public class ReportGenerator {
               newFile.close();
           //    SFSystem.sflog().out("Report created: "+fileName+"_report.html");
             } catch (IOException e) {
-              if (SFSystem.sflog().isErrorEnabled()){
+              if (SFSystem.sfLog().isErrorEnabled()){
          //       SFSystem.sflog().error(e);
               }
            }
