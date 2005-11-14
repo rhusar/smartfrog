@@ -42,7 +42,7 @@ import java.util.HashMap;
 public class ApiCall extends Call {
 
     /**
-     * this is a convenience Class, here the Call will assume a Annoynmous
+     * this is a convenience Class, here the Call will assume a Anoynmous
      * Service.
      *
      * @throws org.apache.axis2.AxisFault
@@ -98,7 +98,7 @@ public class ApiCall extends Call {
     }
 
     private void logInvocation(String axisop) {
-        log.info("invoking "+axisop+" on "+ EprHelper.stringify(getTo()));
+        log.info(this.toString()+": "+axisop);
     }
 
 
@@ -108,11 +108,15 @@ public class ApiCall extends Call {
         return super.invokeBlocking(axisop, toSend);
     }
 
-    public EndpointReference getTo() {
-        return this.to;
+    /**
+     * Get the EPR that this call is addressed to
+     * @return the address or null
+     */
+    public EndpointReference getAddress() {
+        return this.messageInformationHeaders.getTo();
     }
     
     public String toString() {
-        return "call to "+ EprHelper.stringify(getTo());
+        return "Apicall ";// + EprHelper.stringify(getAddress());
     }
 }
