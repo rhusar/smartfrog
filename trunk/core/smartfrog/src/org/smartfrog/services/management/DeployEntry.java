@@ -115,7 +115,9 @@ public class DeployEntry implements Entry {
      *@return boolean  true if it is leaf entry else false
      */
     public boolean isLeaf() {
-        if ((entry instanceof Compound)||(showCDasChild && (entry instanceof ComponentDescription))) {
+        if ((entry instanceof Compound)
+            ||(showCDasChild && (entry instanceof Prim))
+            |(showCDasChild && (entry instanceof ComponentDescription))) {
             //System.out.println(this.toString()+": NO Leaf");
             return false;
         } else {
@@ -134,12 +136,9 @@ public class DeployEntry implements Entry {
         //return "ROOT";
         // Needs to the the real ROOT of the system
         try {
-            if (entry instanceof Compound) {
-                return (new DeployEntry(((Compound) entry).sfResolveWithParser(SmartFrogCoreKeys.SF_ROOT), this.showRootProcessName,this.showCDasChild));
-            } else {
-                return (new DeployEntry(((Prim) entry).sfResolveWithParser(SmartFrogCoreKeys.SF_ROOT),this.showRootProcessName,this.showCDasChild));
+            if (entry instanceof Prim) {
+               return (new DeployEntry(((Prim) entry).sfResolveWithParser(SmartFrogCoreKeys.SF_ROOT),this.showRootProcessName,this.showCDasChild));
             }
-
             //return entry;
         } catch (Exception ex) {
             //System.out.println(ex.toString());
@@ -201,7 +200,7 @@ public class DeployEntry implements Entry {
                 //unexported
                 //@TODO: Log
             } catch (Exception ex) {
-                System.out.println("sfManagementConsole (DeployEntry4): "+ex.getMessage());
+                System.out.println("sfManagementConsole (getDN.Prim): "+ex.getMessage());
                 //@TODO Log
             }
         } else if (entry instanceof ComponentDescription) {
@@ -210,7 +209,7 @@ public class DeployEntry implements Entry {
                 name = ((ComponentDescription) entry).sfCompleteName().toString();
             //    System.out.println("EntryCD: getting name - "+name);
             } catch (Exception ex) {
-                System.out.println("sfManagementConsole (DeployEntry5): "+ex.getMessage());
+                System.out.println("sfManagementConsole (getDN.ComponentDescription): "+ex.getMessage());
                 //@TODO Log
             }
         }
@@ -228,8 +227,8 @@ public class DeployEntry implements Entry {
      */
     public Object getChild(int index) {
         //System.out.println("getChildrenCount()");
-        if ((entry instanceof Compound)|| (entry instanceof ComponentDescription)) {
-            //System.out.println("getChildCount():["+parent+"]"+"");
+        if ((entry instanceof Compound)|| ((showCDasChild)&&(entry instanceof ComponentDescription)) || ((showCDasChild)&&(entry instanceof Prim))) {
+            //System.out.println("getChildCount():["+index+"]"+"");
             try {
                 return ((getChildren())[index][1]);
             } catch (Exception ex) {
@@ -248,7 +247,7 @@ public class DeployEntry implements Entry {
      */
     public int getChildrenCount() {
         //System.out.println(this.toString()+".getChildrenCount()");
-        if ((entry instanceof Compound) || (entry instanceof ComponentDescription)) {
+        if ((entry instanceof Compound) || ((showCDasChild)&&(entry instanceof ComponentDescription)) || ((showCDasChild)&&(entry instanceof Prim))) {
             return sizeChildren();
         }
 
