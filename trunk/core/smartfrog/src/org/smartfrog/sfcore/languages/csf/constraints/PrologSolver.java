@@ -50,6 +50,7 @@ abstract public class PrologSolver extends CoreSolver {
      */
     public void solve(CSFComponentDescription cd) throws SmartFrogCompileResolutionException {
         top = cd;
+        System.out.println("solving");
 
         // create the theory
         try {
@@ -100,7 +101,7 @@ abstract public class PrologSolver extends CoreSolver {
         while (index < length) {
             theChar = pString.charAt(index++);
             if (theChar == refDel) {
-                if (index >= length) throw new SmartFrogCompileResolutionException("reference not termianted" + fixed + "... on component " + cd.sfCompleteName());
+                if (index >= length) throw new SmartFrogCompileResolutionException("reference not terminated" + fixed + "... on component " + cd.sfCompleteName());
 
                 theChar = pString.charAt(index++);
                 if (theChar == refDel) { // we don't have a reference
@@ -113,7 +114,7 @@ abstract public class PrologSolver extends CoreSolver {
                         StringBuffer refString = new StringBuffer();
                         while (theChar != refDel) {
                             refString.append(theChar);
-                            if (index >= length) throw new SmartFrogCompileResolutionException("reference not termianted " + fixed + "... on component " + cd.sfCompleteName());
+                            if (index >= length) throw new SmartFrogCompileResolutionException("reference not terminated " + fixed + "... on component " + cd.sfCompleteName());
                             theChar = pString.charAt(index++);
                         }
                         ref = Reference.fromString(refString.toString());

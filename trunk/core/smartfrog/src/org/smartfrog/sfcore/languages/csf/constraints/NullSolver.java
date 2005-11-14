@@ -65,19 +65,17 @@ public class NullSolver extends CoreSolver implements Solver {
                 Object value = cd.sfResolveHere(key);
                 if (value instanceof FreeVar) {
                     unbounds.add(cd.sfCompleteName().toString() + ":" + key);
-                } else
-                    checkVarInVector((Vector)value, cd, key);
+                } else if (value instanceof Vector)
+                    checkVarInVector((Vector) value, cd, key);
             }
         }
 
         private void checkVarInVector(Vector value, ComponentDescription cd, Object key) {
-            if (value instanceof Vector) {
-                for (int el = 0; el < ((Vector) value).size(); el++) {
-                    if (value.elementAt(el) instanceof FreeVar) {
-                        unbounds.add(cd.sfCompleteName().toString() + ":" + key);
-                    } else if (value.elementAt(el) instanceof Vector) {
-                        checkVarInVector((Vector)value.elementAt(el), cd, key);
-                    }
+            for (int el = 0; el < value.size(); el++) {
+                if (value.elementAt(el) instanceof FreeVar) {
+                    unbounds.add(cd.sfCompleteName().toString() + ":" + key);
+                } else if (value.elementAt(el) instanceof Vector) {
+                    checkVarInVector((Vector) value.elementAt(el), cd, key);
                 }
             }
         }
