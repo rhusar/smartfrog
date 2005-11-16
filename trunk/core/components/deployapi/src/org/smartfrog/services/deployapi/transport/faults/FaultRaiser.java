@@ -264,19 +264,20 @@ public class FaultRaiser {
 
         //copy all context keys
         Context context = exception.getContext();
-        Enumeration keys = context.keys();
-        while (keys.hasMoreElements()) {
-            Object key = (Object) keys.nextElement();
-            Object value = context.get(key);
-            String stringVal = value.toString();
-            //TODO: escape local parts that are not valid.
-            final String localPart = key.toString();
-            fault.addFaultDetail(new QName(
-                    Constants.SMARTFROG_NAMESPACE,
-                    localPart)
-                    , value.toString());
+        if(context!=null) {
+            Enumeration keys = context.keys();
+            while (keys.hasMoreElements()) {
+                Object key = (Object) keys.nextElement();
+                Object value = context.get(key);
+                String stringVal = value.toString();
+                //TODO: escape local parts that are not valid.
+                final String localPart = key.toString();
+                fault.addFaultDetail(new QName(
+                        Constants.SMARTFROG_NAMESPACE,
+                        localPart)
+                        , value.toString());
+            }
         }
-
         fault.setFaultCode(faultCode);
         return fault;
     }

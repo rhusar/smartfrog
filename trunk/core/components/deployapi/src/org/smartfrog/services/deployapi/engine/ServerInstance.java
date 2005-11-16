@@ -87,22 +87,18 @@ public class ServerInstance implements WSRPResourceSource {
     private DescriptorHelper descriptorHelper;
 
     private String protocol="http";
-    private String hostname=LOCALHOST;
+    private String hostname=Constants.LOCALHOST;
     private int port=5050;
-    private String path=CONTEXT_PATH+SERVICES_PATH+SYSTEM_PATH;
+    private String path=Constants.CONTEXT_PATH +Constants.SERVICES_PATH +Constants.SYSTEM_PATH;
     private String location="unknown";
 
-    //private CdlParser cdlParser;
 
     public static final int WORKERS = 1;
     public static final long TIMEOUT = 0;
 
     private static Log log= LogFactory.getLog(ServerInstance.class);
-    private static final String CONTEXT_PATH = "/";
-    private static final String SERVICES_PATH = "services/";
-    private static final String SYSTEM_PATH = "System/";
+
     private URL systemsURL;
-    public static final String LOCALHOST = "localhost";
 
     /**
      * Create a new server instance, and bind it to be our current
@@ -128,15 +124,15 @@ public class ServerInstance implements WSRPResourceSource {
         hostname = owner.sfResolve(DeploymentServer.ATTR_HOSTNAME,
                 hostname, false);
         if(hostname.length()==0) {
-            hostname=LOCALHOST;
+            hostname=Constants.LOCALHOST;
         }
         port = owner.sfResolve(DeploymentServer.ATTR_PORT,
                 port, false);
         String ctx= owner.sfResolve(DeploymentServer.ATTR_CONTEXTPATH,
-                CONTEXT_PATH, false);
+                Constants.CONTEXT_PATH, false);
         String servicespath = owner.sfResolve(DeploymentServer.ATTR_SERVICESPATH,
-                SERVICES_PATH, false);
-        path= ctx+servicespath+SYSTEM_PATH;
+                Constants.SERVICES_PATH, false);
+        path= ctx+servicespath+Constants.SYSTEM_PATH;
         File javatmpdir=new File(System.getProperty("java.io.tmpdir"));
         String absolutePath = FileSystem.lookupAbsolutePath(owner,
                 DeploymentServer.ATTR_FILESTORE_DIR,
@@ -159,7 +155,6 @@ public class ServerInstance implements WSRPResourceSource {
     private void init() throws IOException {
         staticStatus = createStaticStatusInfo();
         systemsURL = new URL(protocol,hostname, port,path);
-                //new URL("http://127.0.0.1:5050/services/System/");
         jobs = new JobRepository(systemsURL);
         workers = new ActionWorker[WORKERS];
         for (int i = 0; i < workers.length; i++) {
@@ -292,7 +287,7 @@ public class ServerInstance implements WSRPResourceSource {
 
     /**
      * Get the job list
-     * @return
+     * @return a list of jobs
      */
     private ActiveSystemsDocument getJobList() {
         ActiveSystemsDocument doc=ActiveSystemsDocument.Factory.newInstance();

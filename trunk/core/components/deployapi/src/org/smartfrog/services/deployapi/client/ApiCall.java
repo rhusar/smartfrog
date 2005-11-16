@@ -21,10 +21,12 @@
 package org.smartfrog.services.deployapi.client;
 
 import org.apache.axis2.AxisFault;
+import org.apache.axis2.transport.http.HTTPConstants;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.clientapi.Call;
 import org.apache.axis2.clientapi.Callback;
 import org.apache.axis2.context.ServiceContext;
+import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.description.AxisOperation;
 import org.apache.axis2.description.AxisService;
 import org.apache.axis2.om.OMElement;
@@ -40,6 +42,12 @@ import java.util.HashMap;
 
  */
 public class ApiCall extends Call {
+    /**
+     * The default timeout is huge, because it makes stepping through in a debugger possible.
+     */
+    private static final int DEFAULT_TIMEOUT = 30*60*1000;
+
+    int timeout=DEFAULT_TIMEOUT;
 
     /**
      * this is a convenience Class, here the Call will assume a Anoynmous
@@ -48,6 +56,7 @@ public class ApiCall extends Call {
      * @throws org.apache.axis2.AxisFault
      */
     public ApiCall() throws AxisFault {
+        init();
     }
 
     /**
@@ -60,6 +69,7 @@ public class ApiCall extends Call {
      */
     public ApiCall(String clientHome) throws AxisFault {
         super(clientHome);
+        init();
     }
 
     /**
@@ -68,6 +78,11 @@ public class ApiCall extends Call {
      */
     public ApiCall(ServiceContext service) {
         super(service);
+        init();
+    }
+
+    private void init() {
+        setTimeOutInMilliSeconds(DEFAULT_TIMEOUT);
     }
 
     public ServiceContext getServiceContext() {
@@ -117,6 +132,15 @@ public class ApiCall extends Call {
     }
     
     public String toString() {
-        return "Apicall ";// + EprHelper.stringify(getAddress());
+        return "Apicall "+ EprHelper.stringify(getAddress());
+    }
+
+    /**
+     *  patch in decent timeouts
+     */
+    protected void prepareInvocation(AxisOperation axisop, MessageContext msgCtx) throws AxisFault {
+        super.prepareInvocation(axisop, msgCtx);
+        msgCtx.setProperty(HTTPConstants.SO_TIMEOUT, Integer.valueOf(timeout));
+        msgCtx.setProperty(HTTPConstants.CONNECTION_TIMEOUT, Integer.valueOf(timeout));
     }
 }

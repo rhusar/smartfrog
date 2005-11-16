@@ -25,5 +25,5 @@ package org.smartfrog.services.deployapi.system;
  * created 19-Sep-2005 14:52:05
  */
 
-public class DeployApiConstants extends Constants {
+public final class DeployApiConstants extends Constants {
 }

@@ -26,6 +26,7 @@ import org.smartfrog.services.deployapi.binding.EprHelper;
 import org.smartfrog.services.deployapi.engine.Job;
 import org.smartfrog.services.deployapi.engine.JobRepository;
 import org.smartfrog.services.deployapi.system.LifecycleStateEnum;
+import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
 
 import java.net.MalformedURLException;
@@ -130,7 +131,7 @@ public class JobTest extends UnitTestBase {
     }
     
     public void testUnknownJob() throws Exception {
-        Job job = repository.lookupJobFromQuery(JobRepository.JOB_ID_PARAM+"=1234");
+        Job job = repository.lookupJobFromQuery(Constants.JOB_ID_PARAM+"=1234");
         assertNull(job);
     }
     
