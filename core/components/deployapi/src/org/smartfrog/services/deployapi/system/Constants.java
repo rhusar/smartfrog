@@ -100,7 +100,10 @@ public class Constants extends CddlmConstants {
      */
     public static final String DEFAULT_PROTOCOL = "http";
 
-    public static final String FILE_EXTENSION_CDL = "cdl"; 
+    /**
+     * {@value}
+     */
+    public static final String FILE_EXTENSION_CDL = "cdl";
     
     /**
      * Context for queries
@@ -128,17 +131,63 @@ public class Constants extends CddlmConstants {
      */
     public static final QName QNAME_SMARTFROG_INTERNAL_FAULT
             =new QName(SMARTFROG_NAMESPACE,"internalError");
+    /**
+     * {@value}
+     */
     public static final String WSA_ELEMENT_ADDRESS = "Address";
+    /**
+     * {@value}
+     */
     public static final String WSA_ATTR_PORTNAME = "PortName";
+    /**
+     * {@value}
+     */
     public static final String WSA_ELT_SERVICENAME= "ServiceName";
+    /**
+     * {@value}
+     */
     public static final String BUILD_INFO_IMPLEMENTATION_NAME = "SmartFrog CDDLM Implementation";
+    /**
+     * {@value}
+     */
     public static final String BUILD_INFO_HOMEPAGE = "http://smartfrog.org/";
+    /**
+     * {@value}
+     */
     public static final String BUILD_INFO_CDL_LANGUAGE = "CDL";
+    /**
+     * {@value}
+     */
     public static final String BUILD_INFO_SF_LANGUAGE = "SmartFrog";
+    /**
+     * {@value}
+     */
     public static final String SMARTFROG_VERSION = "1.0";
+    /**
+     * {@value}
+     */
     public static final Charset CHARSET_SF_FILE = Charset.forName("ISO-8859-1");
+    /**
+     * {@value}
+     */
     public static final Charset CHARSET_UTF8 = Charset.forName("UTF-8");
 
 
+    /**
+     * name of the ? parameter for jobs
+     * {@value}
+     */
+    public static final String JOB_ID_PARAM = "system";
+    public static final String CONTEXT_PATH = "/";
+    /**
+     * Path under the webapp where services are deployed.
+     * {@value}
+     */
 
+    public static final String SERVICES_PATH = "services/";
+    /**
+     * Path under services where our systems are hosted.
+     * {@value}
+     */
+    public static final String SYSTEM_PATH = "system";
 }

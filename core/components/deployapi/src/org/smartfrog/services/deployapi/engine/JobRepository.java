@@ -24,6 +24,7 @@ import org.apache.axis2.addressing.EndpointReference;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.smartfrog.services.deployapi.system.Utils;
+import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
 import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
 
@@ -49,8 +50,7 @@ public class JobRepository implements Iterable<Job> {
 
     private Hashtable<String, Job> jobs = new Hashtable<String, Job>();
     private URL systemsURL;
-    public static final String JOB_ID_PARAM = "system";
-    public static final String SEARCH_STRING = JOB_ID_PARAM + "=";
+    public static final String SEARCH_STRING = Constants.JOB_ID_PARAM + "=";
     Log log= LogFactory.getLog(JobRepository.class);
 
 
@@ -190,7 +190,7 @@ public class JobRepository implements Iterable<Job> {
      * @return
      */
     public String createJobAddress(String jobID) {
-        return systemsURL + "?"+JOB_ID_PARAM +"=" + jobID;
+        return systemsURL + "?"+ Constants.JOB_ID_PARAM +"=" + jobID;
     }
 
 
