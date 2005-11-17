@@ -38,6 +38,7 @@ import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
  */
 
 public class EprHelper {
+
     public static final String WSA = Constants.WS_ADDRESSING_NAMESPACE;
     public static final String WSA2004 = Constants.WS_ADDRESSING_2004_NAMESPACE;
 
@@ -175,6 +176,49 @@ public class EprHelper {
     public static boolean compareEndpoints(EndpointReference e1, EndpointReference e2) {
         return e1.getAddress().equals(e2.getAddress()); 
     }
+
+
+    /**
+     * address-only mapper
+     * @param epr
+     * @param uri
+     * @return a WSA address in the 2004 namespace
+     */
+    public static Element makeAddress2004(EndpointReference epr, String uri) {
+        return makeAddress(epr, Constants.WS_ADDRESSING_2004_NAMESPACE);
+    }
+
+    /**
+     * address-only mapper
+     *
+     * @param epr
+     * @param uri
+     * @return a WSA address in the 2004 namespace
+     */
+    public static Element makeAddress2003(EndpointReference epr, String uri) {
+        return makeAddress(epr, Constants.WS_ADDRESSING_NAMESPACE);
+    }
+
+    /**
+        * address-only mapper
+        * @param epr
+        * @param uri
+        * @return a WSA address in the relevant namespace
+        */
+    public static Element makeAddress(EndpointReference epr,String uri) {
+        String url = epr.getAddress();
+        return makeAddress(url, uri);
+    }
+
+    public static Element makeAddress(String url, String namespace) {
+        Element endpoint =new Element("EndpointReference",namespace);
+        Element address =new Element(Constants.WSA_ELEMENT_ADDRESS,namespace);
+        address.appendChild(url);
+        endpoint.appendChild(address);
+        return endpoint;
+    }
+
+
 }
 
 

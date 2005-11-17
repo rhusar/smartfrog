@@ -24,12 +24,17 @@ import org.apache.axis2.om.OMElement;
 import org.ggf.xbeans.cddlm.api.LookupSystemRequestDocument;
 import org.ggf.xbeans.cddlm.api.LookupSystemResponseDocument;
 import org.smartfrog.services.deployapi.binding.bindings.LookupSystemBinding;
+import org.smartfrog.services.deployapi.binding.XomHelper;
 import org.smartfrog.services.deployapi.engine.Job;
 import org.smartfrog.services.deployapi.engine.ServerInstance;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.transport.endpoints.Processor;
 import org.smartfrog.services.deployapi.transport.endpoints.XmlBeansEndpoint;
 import org.smartfrog.services.deployapi.transport.faults.DeploymentException;
+import nu.xom.Element;
+import nu.xom.Document;
+
+import java.io.IOException;
 
 /**
  * created 21-Sep-2005 10:37:53
@@ -47,14 +52,27 @@ public class LookupSystemProcessor extends Processor {
         LookupSystemRequestDocument lookupSystemRequestDocument = binding.convertRequest(request);
         LookupSystemRequestDocument.LookupSystemRequest lookupSystemRequest = lookupSystemRequestDocument
                 .getLookupSystemRequest();
-        ServerInstance server = ServerInstance.currentInstance();
         String resourceId = lookupSystemRequest.getResourceId();
-        Job job = server.getJobs().lookup(resourceId);
-        if (job == null) {
-            throw new DeploymentException(Constants.F_NO_SUCH_APPLICATION);
-        }
+        Job job = lookupJob(resourceId);
         LookupSystemResponseDocument response = binding.createResponse();
         response.setLookupSystemResponse(job.getEndpoint());
         return binding.convertResponse(response);
+    }
+
+
+    /**
+     * override this for Xom-based processing
+     *
+     * @param request
+     * @return the response
+     * @throws java.io.IOException
+     */
+    public Element process(Document request) throws IOException {
+        Element rootElement = request.getRootElement();
+        String resourceId=XomHelper.getElementValue(rootElement, "api:ResourceId");
+        Job job = lookupJob(resourceId);
+        Element address = (Element) job.getEndpointer().copy();
+        XomHelper.adopt(address, "lookupSystemResponse");
+        return address;
     }
 }

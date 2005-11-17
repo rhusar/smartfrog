@@ -32,6 +32,7 @@ import org.ggf.xbeans.cddlm.api.InitializeRequestDocument;
 import org.ggf.xbeans.cddlm.api.InitializeResponseDocument;
 import org.ggf.xbeans.cddlm.api.OptionMapType;
 import org.smartfrog.services.deployapi.binding.EprHelper;
+import org.smartfrog.services.deployapi.binding.XomHelper;
 import static org.smartfrog.services.deployapi.binding.XomHelper.apiElement;
 import org.smartfrog.services.deployapi.binding.bindings.InitializeBinding;
 import static org.smartfrog.services.deployapi.system.Constants.API_ELEMENT_INITALIZE_REQUEST;
@@ -159,11 +160,21 @@ public class SystemEndpointer extends Endpointer {
         init();
     }
 
-    public SystemEndpointer(CreateResponseDocument.CreateResponse response)
+
+    /**
+     * construct from a createResponse
+     * @param response
+     * @throws AxisFault
+     */
+    public SystemEndpointer(Document response)
             throws AxisFault {
-        cachedResourceId = response.getResourceId();
+        final Element root = response.getRootElement();
+        cachedResourceId = XomHelper.getElementValue(root,
+                "api:ResourceId");
         init();
-        bindToEndpointer(EprHelper.Wsa2003ToEPR(response.getSystemReference()));
+        Element address= XomHelper.getElement(root,
+                "api:systemReference");
+        bindToEndpointer(EprHelper.XomWsa2003ToEpr(address));
     }
 
     public SystemEndpointer(String url) throws AxisFault {

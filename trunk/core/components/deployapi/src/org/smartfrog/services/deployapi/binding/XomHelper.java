@@ -58,6 +58,17 @@ public class XomHelper {
     }
 
     /**
+     * Move an element into the cdl namespace
+     * @param element
+     * @param name
+     */
+    public static void adopt(Element element,String name) {
+        element.setLocalName(name);
+        element.setNamespaceURI(Constants.CDL_API_TYPES_NAMESPACE);
+        element.setNamespacePrefix("api");
+    }
+    
+    /**
      * Get an element's value. Throws a BadArgument Deployment fault if it
      * doesnt resolve.
      *

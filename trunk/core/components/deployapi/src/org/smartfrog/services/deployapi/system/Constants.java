@@ -190,4 +190,6 @@ public class Constants extends CddlmConstants {
      * {@value}
      */
     public static final String SYSTEM_PATH = "system";
+    public static final String SYSTEM_REFERENCE = "systemReference";
+    public static final String RESOURCE_ID = "ResourceId";
 }
