@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<cdl:cdl xmlns:cdl="http://www.gridforum.org/namespaces/2005/02/cddlm/CDL-1.0"
+  xmlns:cmp="http://www.gridforum.org/cddlm/components/2005/02"
+  xmlns:sf="http://smartfrog.org/services/cdl/2005/06">
+
+  <cdl:import location="org/smartfrog/services/cddlm/cdl/sfcomponents.cdl"
+    namespace="http://smartfrog.org/services/cdl/2005/06"/>
+  <cdl:configuration>
+
+  <echo2 cdl:extends="sf:echo" sf:message="finished"/>
+
+  </cdl:configuration>
+  <cdl:system>
+    <!--<cmp:sequence cmp:lifecycle="initialization" />-->
+    <echo cdl:extends="sf:echo" sf:message="starting the program"/>
+    <run cdl:extends="sf:exec" 
+      sf:command="C:/Java/Apps/Tomcat/bin/tomcat5.exe"/>
+    <echo3 cdl:extends="echo2" />
+  </cdl:system>
+</cdl:cdl>

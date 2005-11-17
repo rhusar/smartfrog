@@ -1,0 +1,58 @@
+/** (C) Copyright 1998-2005 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+#include "org/smartfrog/sfcore/processcompound/processcompound.sf"
+#include "org/smartfrog/services/jmx/mbean/mbean.sf"
+#include "org/smartfrog/services/jmx/mbean/metadata.sf"
+
+Cascader extends MBean {
+  sfClass "org.smartfrog.services.jmx.cascading.Cascader";
+  sfExport false;
+
+  domain "Services";
+  description "Cascading agents enable implementation of hierarchies of master agents and subagents";
+  properties:name "Cascader";
+  properties:type "sf.jmx.srv.cascader";
+
+  // If we deploy this component as a SmartFrog component, we should use this section
+  protocol "rmi";
+  host "localhost";
+  port ATTRIB ProcessCompound:sfRootLocatorPort;
+  resource "RMIConnectorServer";
+  objectNamePattern "*:*";
+  // query extends QueryExp; // Specify here a query expression according to the grammar
+
+  // If we instantiate an MBean from this description, we should use this section
+  class ATTRIB sfClass;
+  constructor extends LAZY {
+    address extends Parameter {
+      class "org.smartfrog.services.jmx.communication.ServerAddress";
+      value ["rmi", "localhost", 3800, "RMIConnectorServer"];
+    }
+    pattern extends Parameter {
+      class "javax.management.ObjectName";
+      value ATTRIB objectNamePattern;
+    }
+  }
+
+  startMethod "start";    // Needs to be started by the Agent if it is not deployed as a Prim component
+  registerWithAgent true; // Needs to be register with the Agent in order to receive TerminatingNotification
+                          // so that it can be stopped before being unregister
+}
