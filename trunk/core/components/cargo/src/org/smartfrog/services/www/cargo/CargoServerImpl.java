@@ -28,6 +28,7 @@ import org.smartfrog.services.filesystem.FileSystem;
 import org.smartfrog.services.www.JavaEnterpriseApplication;
 import org.smartfrog.services.www.JavaWebApplication;
 import org.smartfrog.services.www.ServletContextIntf;
+import org.smartfrog.services.www.cargo.delegates.CargoServerDelegateWebapp;
 import org.smartfrog.sfcore.common.SmartFrogException;
 import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.PrimImpl;
@@ -68,7 +69,7 @@ public class CargoServerImpl extends PrimImpl implements CargoServer {
      * @throws SmartFrogException on any other problem
      */
     public JavaWebApplication deployWebApplication(Prim webApplication) throws RemoteException, SmartFrogException {
-        throw new SmartFrogException("not implemented");
+        return new CargoServerDelegateWebapp(webApplication);
     }
 
     /**

@@ -6,9 +6,9 @@ sfConfig extends TestWarBoundToMySql {
 
    port 80;
  
-   webapp:contextPath "testwar";
+   webapp:contextPath "demo27";
    
-   liveness false;
+   liveness true;
    
    server extends TomcatServer {
 
