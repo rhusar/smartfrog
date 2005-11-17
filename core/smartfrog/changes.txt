@@ -1,3 +1,30 @@
+relase 3_08_000
+---------------
+2005-Nov-17 Release date
+2005-Nov-14 Fix: Problem when browsing a CD with a Prim parent
+2005-Nov-08 Add: New example to prototype new components
+2005-Nov-08 Add: Extra utility methods to create a CD from a textual description
+2005-Nov-05 Fix: Removed CD caching from ComponentDescriptionImpl. Conflict with Schema error reports
+2005-Nov-04 Add: Report for ComponentDescription in diagnostics
+2005-Nov-04 Fix: Added Diagnostics and some fixes to sfCompleteName
+2005-Nov-04 Add: Show ComponentDescriptions in component tree in management console
+2005-Oct-28 Add: Constraint Language Extension documents
+2005-Oct-24 Add: First version of Contraint SmartFrog language
+2005-Oct-17 Add: Filestore for transient storae. Lets you upload files and gets you back URL to the remote entry that is valid only on te remote machine
+2005-Oct-14 Mod: SystemProperties class is moved to services.utils.setproperty, and adds the ability to e used in workflow. 
+2005-Oct-14 Add: New Component to set system properties on a running JVM
+2005-Oct-13 Fix: In parallel workflow
+2005-Oct-12 Mod: General improvements to workflow components
+2005-Oct-11 Mod: Features in CreateNewChlidThread
+2005-Oct-10 Add: New component, Deployer to deploy a description remotely synchronously or asynchronously
+2005-Oct-06 Mod: Improved error reporting
+2005-Oct-03 Mod: EventCompoundImpl to replaced code in sfDeployWithchildren() that duplicated the method that it overrides instead of calling super.sfDeployWithChildren()
+2005-Sep-29 Mod: Upadted filesystem.sxw to cover new attributes
+2005-Sep-26 Add: Attributes sfShouldTerminate and sfShouldDetach to Mkdir, File,TouchFile components
+2005-Sep-23 Mod: ShellScript component with methods to directly access results from ScriptResults object, avoiding use of ComponentDescription to encapsulate results
+2005-Sep-20 Add: loadClass component to force load classes into current classloader
+2005-Sep-19 Mod: Updated Reference Manual.
+
 release 3_06_020_rc3
 ---------------------
 2005-Sep-15 Release date
