@@ -37,7 +37,7 @@ TestWar extends Compound {
     server TBD;
     
     //flag to turn liveness checking on/off
-    liveness false;
+    liveness true;
     
     //page to check for happness
     happy.page "/happy";
@@ -57,7 +57,7 @@ TestWar extends Compound {
     
     
     webapp extends WebApplication {
-        contextPath "/ibm";
+        contextPath "/testwar";
         warFile LAZY TestWarFile;
         server LAZY PARENT:server;
     }
