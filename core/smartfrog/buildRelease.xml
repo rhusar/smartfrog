@@ -219,8 +219,7 @@ To Be Written
        </zipfileset>
        <zipfileset dir="." prefix="${Name.System}.${version}">
         <include name="${dist}/docs/sfUserManual.pdf"/>
-        <include name="${dist}/docs/build.html"/>
-        <include name="${dist}/docs/DefaultParser.html"/>
+        <include name="${dist}/docs/*.html"/>
         <include name="${dist}/docs/dir.JPG"/>
         <include name="${dist}/docs/sfReference.pdf"/>
         <include name="${dist}/docs/sfDynamicWebServerExample.pdf"/>
@@ -231,7 +230,10 @@ To Be Written
         <include name="${dist}/docs/SmartFrogTutorial.pdf"/>
         <include name="${dist}/docs/ant_tasks_for_smartfrog.pdf"/>
         <include name="${dist}/docs/IDE_development.pdf"/>
-        <include name="${dist}/docs/components/filesystem.pdf"/>                
+        <include name="${dist}/docs/components/**"/>                
+        <include name="${dist}/docs/antTasksManual/**"/>                
+        <include name="${dist}/docs/skin/**"/>                
+        <include name="${dist}/docs/images/**"/>                
         <include name="${dist}/docs/csfExtensions.pdf"/>
         <include name="${dist}/docs/jdocs/**"/>
        </zipfileset>
@@ -244,8 +246,7 @@ To Be Written
        <zipfileset dir="." prefix="${Name.System}.${version}">
         <include name="bin/**"/>
         <include name="docs/sfUserManual.pdf"/>
-        <include name="docs/build.html"/>
-        <include name="docs/DefaultParser.html"/>
+        <include name="docs/*.html"/>
         <include name="docs/dir.JPG"/>
         <include name="docs/sfReference.pdf"/>
         <include name="docs/sfDynamicWebServerExample.pdf"/>
@@ -258,6 +259,10 @@ To Be Written
         <include name="docs/IDE_development.pdf"/>
         <include name="docs/components/filesystem.pdf"/>        
         <include name="docs/csfExtensions.pdf"/>
+        <include name="docs/components/**"/>                
+        <include name="docs/antTasksManual/**"/>                
+        <include name="docs/skin/**"/>                
+        <include name="docs/images/**"/>                
 	<include name="lib/**"/>
 	<!--include name="lib/**/*-${version}.jar"/>
 	<include name="lib/readme.txt"/-->
@@ -291,8 +296,7 @@ To Be Written
        </zipfileset>
        <zipfileset dir="." prefix="${Name.System}.${version}">
         <include name="${dist}/docs/sfUserManual.pdf"/>
-        <include name="${dist}/docs/build.html"/>
-        <include name="${dist}/docs/DefaultParser.html"/>
+        <include name="${dist}/docs/*.html"/>
         <include name="${dist}/docs/dir.JPG"/>
         <include name="${dist}/docs/sfReference.pdf"/>
         <include name="${dist}/docs/sfDynamicWebServerExample.pdf"/>
@@ -305,6 +309,10 @@ To Be Written
         <include name="${dist}/docs/IDE_development.pdf"/>
         <include name="${dist}/docs/components/filesystem.pdf"/>       
         <include name="${dist}/docs/csfExtensions.pdf"/>
+        <include name="${dist}/docs/components/**"/>                
+        <include name="${dist}/docs/antTasksManual/**"/>                
+        <include name="${dist}/docs/skin/**"/>                
+        <include name="${dist}/docs/images/**"/>                
         <include name="${dist}/docs/jdocs/**"/>
        </zipfileset>
        <!--zipfileset dir="." prefix="${Name.System}.${version}">
@@ -326,8 +334,7 @@ To Be Written
         </tarfileset>
       <tarfileset dir="." prefix="${Name.System}.${version}">
         <include name="${dist}/docs/sfUserManual.pdf"/>
-        <include name="${dist}/docs/build.html"/>
-        <include name="${dist}/docs/DefaultParser.html"/>
+        <include name="${dist}/docs/*.html"/>
         <include name="${dist}/docs/dir.JPG"/>
         <include name="${dist}/docs/sfReference.pdf"/>
         <include name="${dist}/docs/sfDynamicWebServerExample.pdf"/>
@@ -340,6 +347,10 @@ To Be Written
         <include name="${dist}/docs/IDE_development.pdf"/>
         <include name="${dist}/docs/components/filesystem.pdf"/>        
         <include name="${dist}/docs/csfExtensions.pdf"/>
+        <include name="${dist}/docs/components/**"/>                
+        <include name="${dist}/docs/antTasksManual/**"/>                
+        <include name="${dist}/docs/skin/**"/>                
+        <include name="${dist}/docs/images/**"/>                
         <include name="${dist}/docs/jdocs/**"/>
        </tarfileset>
        <!--tarfileset dir="." prefix="${Name.System}.${version}">
@@ -361,8 +372,7 @@ To Be Written
         <include name="bin/**/*.bat"/>
         <include name="bin/**/*.ini"/>
         <include name="docs/sfUserManual.pdf"/>
-        <include name="docs/build.html"/>
-        <include name="docs/DefaultParser.html"/>
+	<include name="docs/*.html"/>
         <include name="docs/dir.JPG"/>
         <include name="docs/sfReference.pdf"/>
         <include name="docs/sfDynamicWebServerExample.pdf"/>
@@ -375,6 +385,10 @@ To Be Written
         <include name="docs/IDE_development.pdf"/>
         <include name="docs/components/filesystem.pdf"/>        
         <include name="docs/csfExtensions.pdf"/>
+        <include name="docs/components/**"/>                
+        <include name="docs/antTasksManual/**"/>                
+        <include name="docs/skin/**"/>                
+        <include name="docs/images/**"/>                
 	<include name="lib/**"/>
 	<!--include name="lib/*-${version}.jar"/>
 	<include name="lib/readme.txt"/-->
@@ -423,8 +437,7 @@ To Be Written
         </tarfileset>
       <tarfileset dir="." prefix="${Name.System}.${version}">
         <include name="${dist}/docs/sfUserManual.pdf"/>
-        <include name="${dist}/docs/build.html"/>
-        <include name="${dist}/docs/DefaultParser.html"/>
+        <include name="${dist}/docs/*.html"/>
         <include name="${dist}/docs/dir.JPG"/>
         <include name="${dist}/docs/sfReference.pdf"/>
         <include name="${dist}/docs/sfDynamicWebServerExample.pdf"/>
@@ -437,6 +450,10 @@ To Be Written
         <include name="${dist}/docs/IDE_development.pdf"/>
         <include name="${dist}/docs/components/filesystem.pdf"/>        
         <include name="${dist}/docs/csfExtensions.pdf"/>
+        <include name="${dist}/docs/components/**"/>                
+        <include name="${dist}/docs/antTasksManual/**"/>                
+        <include name="${dist}/docs/skin/**"/>                
+        <include name="${dist}/docs/images/**"/>                
         <include name="${dist}/docs/jdocs/**"/>
        </tarfileset>
        <!--tarfileset dir="." prefix="${Name.System}.${version}">
