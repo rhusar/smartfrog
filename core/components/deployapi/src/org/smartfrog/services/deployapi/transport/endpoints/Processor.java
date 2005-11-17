@@ -21,6 +21,7 @@ package org.smartfrog.services.deployapi.transport.endpoints;
 
 import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.om.OMElement;
+import org.apache.axis2.AxisFault;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.xmlbeans.XmlObject;
@@ -28,11 +29,16 @@ import org.smartfrog.services.deployapi.engine.Job;
 import org.smartfrog.services.deployapi.engine.JobRepository;
 import org.smartfrog.services.deployapi.engine.ServerInstance;
 import org.smartfrog.services.deployapi.system.Utils;
+import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
 import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
+import org.smartfrog.services.deployapi.transport.faults.DeploymentException;
 
 import java.io.IOException;
 import java.net.URI;
+
+import nu.xom.Document;
+import nu.xom.Element;
 
 /**
  * created Aug 4, 2004 3:59:42 PM
@@ -140,30 +146,42 @@ public class Processor extends FaultRaiser {
         }
     }*/
 
+
     /**
-     * go from URI to language enum
-     *
-     * @param uri of language
-     * @return
+     * override this for AXIOM-AXIOM processing.
+     * the default hands it off to {@link #process(Document)}
+     * @param request
+     * @return the response
+     * @throws IOException
      */
-/*
-    public static int determineLanguage(String uri) {
-        int l = Constants.LANGUAGE_UNKNOWN;
-        for (int i = 0; i < Constants.LANGUAGE_NAMESPACES.length; i++) {
-            if (Constants.LANGUAGE_NAMESPACES[i].equals(uri)) {
-                l = i;
-                break;
-            }
-        }
-        return l;
-    }
-*/
-    protected void maybeValidate(XmlObject bean) {
-        Utils.maybeValidate(bean);
+    public OMElement process(OMElement request) throws IOException {
+        Document document = Utils.axiomToXom(request);
+        return Utils.xomToAxiom(process(document));
     }
 
-    public OMElement process(OMElement request) throws IOException {
+    /**
+     * override this for Xom-based processing
+     * @param request
+     * @return the response
+     * @throws IOException
+     */
+    public Element process(Document request) throws IOException {
         throwNotImplemented();
         return null;
+    }
+
+    /**
+     * look up a job by resid
+     * @param resourceId
+     * @return
+     * @throws DeploymentException if there is no match
+     */
+    protected Job lookupJob(String resourceId) {
+        ServerInstance server = ServerInstance.currentInstance();
+        Job job = server.getJobs().lookup(resourceId);
+        if (job == null) {
+            throw new DeploymentException(Constants.F_NO_SUCH_APPLICATION);
+        }
+        return job;
     }
 }

@@ -128,13 +128,13 @@ public abstract class ApiTestBase extends ConsoleTestBase {
         assertInState(system, Constants.STATE_RUNNING);
     }
 
-    protected SystemEndpointer createSystem() throws RemoteException {
+    protected SystemEndpointer createSystem() throws IOException {
         SystemEndpointer systemEndpointer;
         systemEndpointer = createSystem(null);
         return systemEndpointer;
     }
 
-    protected SystemEndpointer createSystem(String hostname) throws RemoteException {
+    protected SystemEndpointer createSystem(String hostname) throws IOException {
         SystemEndpointer systemEndpointer = getOperation().create(hostname);
         log.info("Created system "+systemEndpointer);
         return systemEndpointer;

@@ -25,11 +25,22 @@ import org.apache.axis2.description.AxisOperation;
 import org.apache.axis2.description.AxisService;
 import org.apache.axis2.description.InOutAxisOperation;
 import org.smartfrog.services.deployapi.system.Constants;
+import org.smartfrog.services.deployapi.binding.bindings.CreateBinding;
+import org.smartfrog.services.deployapi.binding.XomHelper;
+import org.ggf.xbeans.cddlm.api.CreateRequestDocument;
+import org.ggf.xbeans.cddlm.api.CreateResponseDocument;
+import static org.ggf.cddlm.generated.api.CddlmConstants.WSRF_ELEMENT_DESTROY_REQUEST;
+import static org.ggf.cddlm.generated.api.CddlmConstants.WSRF_WSRL_NAMESPACE;
+import static org.ggf.cddlm.generated.api.CddlmConstants.WSRF_OPERATION_DESTROY;
 
 import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.rmi.RemoteException;
+
+import nu.xom.Element;
+import nu.xom.Document;
 
 /**
  * created Aug 31, 2004 4:27:08 PM represents a server binding.
@@ -42,8 +53,8 @@ public class PortalEndpointer extends Endpointer {
     protected static AxisOperation[] operations;
     protected static AxisService serviceDescription;
 
-    
-    
+
+
     /**
      * This is pasted in from generated axis code
      */
@@ -165,6 +176,32 @@ public class PortalEndpointer extends Endpointer {
             return null;
         }
     }
+
+
+
+    /**
+     * create an application
+     *
+     * @return info about a destination
+     * @throws java.rmi.RemoteException
+     */
+    public SystemEndpointer create(String hostname)
+            throws IOException {
+        Element request;
+        request = XomHelper.apiElement(Constants.API_ELEMENT_CREATE_REQUEST);
+        if (hostname != null) {
+            Element child = XomHelper.apiElement("hostname");
+            child.appendChild(hostname);
+            request.appendChild(child);
+        }
+
+        Document response = invokeBlocking(Constants.API_PORTAL_OPERATION_CREATE,
+                request);
+        SystemEndpointer createdSystem;
+        createdSystem=new SystemEndpointer(response);
+        return createdSystem;
+    }
+
 
 
 }

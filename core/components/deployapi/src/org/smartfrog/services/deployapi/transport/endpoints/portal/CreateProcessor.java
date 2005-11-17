@@ -23,10 +23,7 @@ import org.apache.axis2.AxisFault;
 import org.apache.axis2.om.OMElement;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.ggf.xbeans.cddlm.api.CreateRequestDocument;
-import org.ggf.xbeans.cddlm.api.CreateResponseDocument;
-import org.ggf.xbeans.cddlm.api.CreateResponseDocument.CreateResponse;
-import org.smartfrog.services.deployapi.binding.bindings.CreateBinding;
+import org.smartfrog.services.deployapi.binding.XomHelper;
 import org.smartfrog.services.deployapi.engine.Job;
 import org.smartfrog.services.deployapi.engine.JobRepository;
 import org.smartfrog.services.deployapi.engine.ServerInstance;
@@ -34,10 +31,12 @@ import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.system.Utils;
 import org.smartfrog.services.deployapi.transport.endpoints.Processor;
 import org.smartfrog.services.deployapi.transport.endpoints.XmlBeansEndpoint;
-import org.smartfrog.services.deployapi.transport.endpoints.system.OptionProcessor;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
 
 import java.util.Locale;
+
+import nu.xom.Document;
+import nu.xom.Element;
 
 /**
  * This class is *NOT* re-entrant. Create one for each deployment. created Aug
@@ -50,8 +49,6 @@ public class CreateProcessor extends Processor {
      */
     private static final Log log = LogFactory.getLog(CreateProcessor.class);
 
-    private CreateRequestDocument.CreateRequest request;
-    private OptionProcessor options;
     private Job job;
     public static final String ERROR_NO_DESCRIPTOR = "No descriptor element";
 
@@ -59,46 +56,27 @@ public class CreateProcessor extends Processor {
         super(owner);
     }
 
-    public CreateRequestDocument.CreateRequest getRequest() {
-        return request;
-    }
-
-    public OptionProcessor getOptions() {
-        return options;
-    }
-
-
-    public OMElement process(OMElement request) throws AxisFault {
-        CreateBinding binding = new CreateBinding();
-        CreateRequestDocument doc = binding.convertRequest(request);
-        CreateRequestDocument.CreateRequest createRequest = doc.getCreateRequest();
-        maybeValidate(createRequest);
-
-        CreateResponseDocument.CreateResponse createResponse = create(createRequest);
-        CreateResponseDocument responseDoc;
-        responseDoc = CreateResponseDocument.Factory.newInstance();
-        responseDoc.setCreateResponse(createResponse);
-        Utils.maybeValidate(responseDoc);
-        OMElement responseOM = binding.convertResponse(responseDoc);
-        return responseOM;
-    }
 
     /**
      * deployment
      *
-     * @param createRequest
+     * @param request
      * @return
      */
-    public CreateResponse create(CreateRequestDocument.CreateRequest createRequest) {
+    public Element process(Document request) {
 
         JobRepository repository;
         repository = ServerInstance.currentInstance().getJobs();
         //hostname processing
         String hostname = Constants.LOCALHOST;
-        if (createRequest.isSetHostname()) {
-            hostname = createRequest.getHostname().trim().toLowerCase(Locale.ENGLISH);
+        Element rootElement = request.getRootElement();
+        Element host =
+                XomHelper.getElement(rootElement, "api:hostname", false);
+        if(host!=null) {
+            hostname=host.getValue().trim()
+                    .toLowerCase(Locale.ENGLISH);
         }
-
+        
         if (!Constants.LOCALHOST.equals(hostname)
                 && !Constants.LOCALHOST_IPV4.equals(hostname)) {
             throw new BaseException(Constants.F_UNSUPPORTED_CREATION_HOST);
@@ -106,18 +84,13 @@ public class CreateProcessor extends Processor {
 
         job = repository.createNewJob(hostname);
 
-        //create a new jobstate
-        request = createRequest;
-        //create a new response
-        CreateResponseDocument responseDoc = CreateResponseDocument.Factory.newInstance();
-        CreateResponseDocument.CreateResponse response = responseDoc.addNewCreateResponse();
-        response.setSystemReference(job.getEndpoint());
-        response.setResourceId(job.getId());
-        log.info("Created " + job.toString());
-
-
+        Element response=XomHelper.apiElement("createResponse");
+        Element resID=XomHelper.apiElement(Constants.RESOURCE_ID);
+        resID.appendChild(job.getId());
+        Element address=(Element) job.getEndpointer().copy();
+        XomHelper.adopt(address, Constants.SYSTEM_REFERENCE);
+        response.appendChild(resID);
+        response.appendChild(address);
         return response;
     }
-
-
 }

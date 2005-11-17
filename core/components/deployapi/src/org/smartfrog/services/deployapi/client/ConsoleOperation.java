@@ -157,19 +157,8 @@ public abstract class ConsoleOperation {
      * @throws java.rmi.RemoteException
      */
     public SystemEndpointer create(String hostname)
-            throws RemoteException {
-        CreateBinding binding = new CreateBinding();
-        CreateRequestDocument requestDoc = binding.createRequest();
-        CreateRequestDocument.CreateRequest request = requestDoc.addNewCreateRequest();
-        if (hostname != null) {
-            request.setHostname(hostname);
-        }
-        CreateResponseDocument response =
-                binding.invokeBlocking(portal,
-                        Constants.API_PORTAL_OPERATION_CREATE,
-                        requestDoc);
-        SystemEndpointer createdSystem = new SystemEndpointer(response.getCreateResponse());
-        return createdSystem;
+            throws IOException {
+        return portal.create(hostname);
     }
 
 
