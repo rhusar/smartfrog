@@ -26,7 +26,6 @@ import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.description.AxisOperation;
 import org.apache.axis2.description.AxisService;
 import org.apache.axis2.description.InOutAxisOperation;
-import org.ggf.xbeans.cddlm.api.CreateResponseDocument;
 import org.ggf.xbeans.cddlm.api.DescriptorType;
 import org.ggf.xbeans.cddlm.api.InitializeRequestDocument;
 import org.ggf.xbeans.cddlm.api.InitializeResponseDocument;
@@ -35,17 +34,7 @@ import org.smartfrog.services.deployapi.binding.EprHelper;
 import org.smartfrog.services.deployapi.binding.XomHelper;
 import static org.smartfrog.services.deployapi.binding.XomHelper.apiElement;
 import org.smartfrog.services.deployapi.binding.bindings.InitializeBinding;
-import static org.smartfrog.services.deployapi.system.Constants.API_ELEMENT_INITALIZE_REQUEST;
-import static org.smartfrog.services.deployapi.system.Constants.API_ELEMENT_RUN_REQUEST;
-import static org.smartfrog.services.deployapi.system.Constants.API_ELEMENT_TERMINATE_REQUEST;
-import static org.smartfrog.services.deployapi.system.Constants.API_SYSTEM_OPERATION_INITIALIZE;
-import static org.smartfrog.services.deployapi.system.Constants.API_SYSTEM_OPERATION_RUN;
-import static org.smartfrog.services.deployapi.system.Constants.API_SYSTEM_OPERATION_TERMINATE;
-import static org.smartfrog.services.deployapi.system.Constants.CDL_API_WSDL_NAMESPACE;
-import static org.smartfrog.services.deployapi.system.Constants.PROPERTY_SYSTEM_SYSTEM_STATE;
-import static org.smartfrog.services.deployapi.system.Constants.WSRF_ELEMENT_DESTROY_REQUEST;
-import static org.smartfrog.services.deployapi.system.Constants.WSRF_OPERATION_DESTROY;
-import static org.smartfrog.services.deployapi.system.Constants.WSRF_WSRL_NAMESPACE;
+import static org.smartfrog.services.deployapi.system.Constants.*;
 import org.smartfrog.services.deployapi.system.LifecycleStateEnum;
 import org.smartfrog.services.deployapi.system.Constants;
 
@@ -81,67 +70,67 @@ public class SystemEndpointer extends Endpointer {
 
         __operation = new InOutAxisOperation();
         __operation.setName(new QName(CDL_API_WSDL_NAMESPACE,
-                "GetMultipleResourceProperties"));
+                WSRF_OPERATION_GETMULTIPLERESOURCEPROPERTIES));
         operations[0] = __operation;
         serviceDescription.addOperation(__operation);
 
         __operation = new InOutAxisOperation();
         __operation.setName(
-                new QName(CDL_API_WSDL_NAMESPACE, "AddFile"));
+                new QName(CDL_API_WSDL_NAMESPACE, API_SYSTEM_OPERATION_ADDFILE));
         operations[1] = __operation;
         serviceDescription.addOperation(__operation);
 
         __operation = new InOutAxisOperation();
         __operation.setName(
-                new QName(CDL_API_WSDL_NAMESPACE, "Ping"));
+                new QName(CDL_API_WSDL_NAMESPACE, API_SYSTEM_OPERATION_PING));
         operations[2] = __operation;
         serviceDescription.addOperation(__operation);
 
         __operation = new InOutAxisOperation();
         __operation.setName(new QName(CDL_API_WSDL_NAMESPACE,
-                "GetCurrentMessage"));
+                WSRF_OPERATION_GETCURRENTMESSAGE));
         operations[3] = __operation;
         serviceDescription.addOperation(__operation);
 
         __operation = new InOutAxisOperation();
         __operation.setName(
-                new QName(CDL_API_WSDL_NAMESPACE, "Resolve"));
+                new QName(CDL_API_WSDL_NAMESPACE, API_SYSTEM_OPERATION_RESOLVE));
         operations[4] = __operation;
         serviceDescription.addOperation(__operation);
 
         __operation = new InOutAxisOperation();
         __operation.setName(
-                new QName(CDL_API_WSDL_NAMESPACE, "Subscribe"));
+                new QName(CDL_API_WSDL_NAMESPACE, WSRF_OPERATION_SUBSCRIBE));
         operations[5] = __operation;
         serviceDescription.addOperation(__operation);
 
         __operation = new InOutAxisOperation();
         __operation
-                .setName(new QName(CDL_API_WSDL_NAMESPACE, "Run"));
+                .setName(new QName(CDL_API_WSDL_NAMESPACE, API_SYSTEM_OPERATION_RUN));
         operations[6] = __operation;
         serviceDescription.addOperation(__operation);
 
         __operation = new InOutAxisOperation();
         __operation.setName(
-                new QName(CDL_API_WSDL_NAMESPACE, "Destroy"));
+                new QName(CDL_API_WSDL_NAMESPACE, WSRF_OPERATION_DESTROY));
         operations[7] = __operation;
         serviceDescription.addOperation(__operation);
 
         __operation = new InOutAxisOperation();
         __operation.setName(new QName(CDL_API_WSDL_NAMESPACE,
-                "GetResourceProperty"));
+                WSRF_OPERATION_GETRESOURCEPROPERTY));
         operations[8] = __operation;
         serviceDescription.addOperation(__operation);
 
         __operation = new InOutAxisOperation();
         __operation.setName(
-                new QName(CDL_API_WSDL_NAMESPACE, "Terminate"));
+                new QName(CDL_API_WSDL_NAMESPACE, API_SYSTEM_OPERATION_TERMINATE));
         operations[9] = __operation;
         serviceDescription.addOperation(__operation);
 
         __operation = new InOutAxisOperation();
         __operation.setName(
-                new QName(CDL_API_WSDL_NAMESPACE, "Initialize"));
+                new QName(CDL_API_WSDL_NAMESPACE, API_SYSTEM_OPERATION_INITIALIZE));
         operations[10] = __operation;
         serviceDescription.addOperation(__operation);
 
@@ -350,20 +339,6 @@ public class SystemEndpointer extends Endpointer {
         LifecycleStateEnum state =
                 LifecycleStateEnum.extract(value);
         return state;
-    }
-
-
-    /**
-     * Get a property whose value is a string
-     * @param property
-     * @return
-     * @throws RemoteException
-     */
-    public String getStringProperty(QName property) throws
-            RemoteException {
-        Element prop = getPropertyXom(property);
-        String value=prop.getValue();
-        return value;
     }
 
 

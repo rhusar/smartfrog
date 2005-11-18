@@ -34,7 +34,9 @@ import org.apache.axis2.om.OMElement;
 import org.apache.axis2.soap.SOAP12Constants;
 import org.ggf.xbeans.cddlm.wsrf.wsrp.GetResourcePropertyDocument;
 import org.ggf.xbeans.cddlm.wsrf.wsrp.GetResourcePropertyResponseDocument;
+import static org.smartfrog.services.deployapi.system.Constants.*;
 import org.smartfrog.services.deployapi.binding.bindings.GetResourcePropertyBinding;
+import static org.smartfrog.services.deployapi.binding.XomHelper.apiElement;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.system.Utils;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
@@ -45,6 +47,7 @@ import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.rmi.RemoteException;
+import java.util.Random;
 
 /** created 21-Sep-2005 13:20:35 */
 
@@ -147,11 +150,6 @@ public abstract class Endpointer implements Serializable {
             call.setSoapAction(operationName);
             //REVISIT: turn this off if things misbehave w.r.t namespaces
             call.setWsaAction(operationName);
-/*
-            OperationDescription operation = serviceDescription.getOperation(operationName);
-            if(operation!=null) {
-            }
-*/
         }
 //        call.setTransportInfo(getSenderTransport(),getListenerTransport(),isSeparateListenerTransport());
         //turn on addressing
@@ -263,20 +261,6 @@ public abstract class Endpointer implements Serializable {
         return serviceContext;
     }
 
-
-    public GetResourcePropertyResponseDocument getPropertyResponse(QName property)
-            throws RemoteException {
-        GetResourcePropertyBinding binding = new GetResourcePropertyBinding();
-        GetResourcePropertyDocument request = binding.createRequest();
-        request.setGetResourceProperty(property);
-        GetResourcePropertyResponseDocument response;
-        response = binding.invokeBlocking(this,
-                Constants.WSRF_OPERATION_GETRESOURCEPROPERTY,
-                request);
-        return response;
-    }
-
-
     /**
      * Get a property from the destination
      *
@@ -285,12 +269,24 @@ public abstract class Endpointer implements Serializable {
      */
     public Element getPropertyXom(QName property)
             throws RemoteException {
-        GetResourcePropertyResponseDocument responseDoc = getPropertyResponse(
-                property);
-        GetResourcePropertyResponseDocument.GetResourcePropertyResponse resp;
-        resp = responseDoc.getGetResourcePropertyResponse();
+        Element request;
+        request =  new Element(
+                WSRF_RP_ELEMENT_GETRESOURCEPROPERTY_REQUEST,
+                WSRF_WSRP_NAMESPACE);
+        //add the namespace
 
-        return Utils.beanToXom(resp);
+        String prefix = property.getPrefix();
+        if(prefix.length()==0) {
+            //make up a new prefix
+            Random r=new Random();
+            prefix="p"+ r.nextLong();
+
+        }
+        request.addNamespaceDeclaration(prefix, property.getNamespaceURI());
+        //and the value
+        request.appendChild(prefix +":"+property.getLocalPart());
+        return invokeBlocking(WSRF_OPERATION_GETRESOURCEPROPERTY,
+                request).getRootElement();
     }
 
     public String getResourceId() throws RemoteException {
@@ -305,7 +301,7 @@ public abstract class Endpointer implements Serializable {
      * @return the response
      */
     public Document invokeBlocking(String operation,
-                                   Element request) throws IOException  {
+                                   Element request) throws RemoteException  {
         ApiCall call = createStub(operation);
         if (call.lookupOperation(operation) == null) {
             throw new BaseException("No operation " +
@@ -318,34 +314,6 @@ public abstract class Endpointer implements Serializable {
         return Utils.axiomToXom(omElement);
     }
 
-
-    /**
-     * get the binding of this element, null for no match,
-     *
-     * @param commandLineElement
-     * @return
-     * @throws java.net.MalformedURLException if there was anything wrong with the URL
-     */
-/*   public static PortalEndpointer fromCommandLineElement(
-            String commandLineElement)
-            throws MalformedURLException, AxisFault {
-        URL newurl = UrlfromCommandLineElement(commandLineElement);
-        
-        boolean isOption = commandLineElement.indexOf(URL_COMMAND) == 0;
-        
-        if (isOption) {
-            String urlBody = commandLineElement.substring(URL_COMMAND.length());
-            if ("".equals(urlBody)) {
-                throw new MalformedURLException(
-                        "no URL in " + commandLineElement);
-            }
-            URL newurl = new URL(urlBody);
-            PortalEndpointer endpointer = new PortalEndpointer(newurl);
-            return endpointer;
-        } else {
-            return null;
-        }
-    }*/
 
     public static URL UrlfromCommandLineElement(
             String commandLineElement)
@@ -383,5 +351,18 @@ public abstract class Endpointer implements Serializable {
             }
         }
         return url;
+    }
+
+    /**
+     * Get a property whose value is a string
+     * @param property
+     * @return
+     * @throws java.rmi.RemoteException
+     */
+    public String getStringProperty(QName property) throws
+            RemoteException {
+        Element prop = getPropertyXom(property);
+        String value=prop.getValue();
+        return value;
     }
 }

@@ -40,6 +40,18 @@ public class XomHelper {
                 CddlmConstants.CDL_API_TYPES_NAMESPACE);
     }
 
+    public static Element apiElement(String name,String value) {
+        Element e=apiElement(name);
+        e.appendChild(value);
+        return e;
+    }
+
+    public static Element apiElement(String name, Element child) {
+        Element e = apiElement(name);
+        e.appendChild(child);
+        return e;
+    }
+
 
     public static void addApiAttr(Element element, String name, String value) {
         Attribute attribute = new Attribute(API + name,

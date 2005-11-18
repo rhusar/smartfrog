@@ -236,16 +236,7 @@ public abstract class ConsoleOperation {
      */
 
     public SystemEndpointer lookupSystem(String id) throws RemoteException {
-        LookupSystemBinding binding = new LookupSystemBinding();
-        LookupSystemRequestDocument requestDoc = binding.createRequest();
-        LookupSystemRequestDocument.LookupSystemRequest request = requestDoc.addNewLookupSystemRequest();
-        request.setResourceId(id);
-        LookupSystemResponseDocument response = binding.invokeBlocking(portal,
-                Constants.API_PORTAL_OPERATION_LOOKUPSYSTEM, requestDoc);
-        EndpointReferenceType epr = response.getLookupSystemResponse();
-        EndpointReference epr2 = EprHelper.Wsa2003ToEPR(epr);
-        SystemEndpointer endpointer = new SystemEndpointer(epr2, id);
-        return endpointer;
+        return portal.lookupSystem(id);
     }
 
 
@@ -259,15 +250,6 @@ public abstract class ConsoleOperation {
             throws RemoteException {
         return getPortal().getPropertyXom(property);
     }
-
-    public GetResourcePropertyResponseDocument getPortalProperty(QName property)
-            throws RemoteException {
-        Endpointer endpoint = portal;
-        return endpoint.getPropertyResponse(
-                property);
-    }
-
-
 
     /**
      * initiate an undeployment

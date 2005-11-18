@@ -152,38 +152,6 @@ public class PortalTest extends ApiTestBase {
         assertTrue("WSNT is NOT supported", found);
     }
 
-    public void NotestStaticPortalStatus() throws Exception {
-
-        GetResourcePropertyResponseDocument responseDoc;
-        responseDoc = getPortalResourceProperty(Constants.PROPERTY_PORTAL_STATIC_PORTAL_STATUS);
-        maybedump(responseDoc);
-        GetResourcePropertyResponseDocument.GetResourcePropertyResponse response;
-        response = responseDoc.getGetResourcePropertyResponse();
-        StaticPortalStatusType status;
-        status =StaticPortalStatusType.Factory.parse(response.getDomNode());
-        maybedump(status);
-        assertNotNull("status is null",status);
-        PortalInformationType portal = status.getPortal();
-        assertNotNull("portal is null", portal);
-        String name = portal.getName();
-        log.info(name);
-        assertNotNull(name);
-        log.info(portal.getBuild());
-        log.info("TZ offset"+portal.getTimezoneUTCOffset());
-        NameUriListType languages = status.getLanguages();
-        assertNotNull("languages are null",status);
-        assertTrue("Languages are supported",languages.sizeOfItemArray()>0);
-        UriListType notifications = status.getNotifications();
-        assertNotNull("notifications are null", notifications);
-
-        boolean found=false;
-        for(String language: notifications.getItemList()) {
-            if(Constants.WSRF_WSNT_NAMESPACE.equals(language)) {
-                found=true;
-            }
-        }
-        assertTrue("WSNT is NOT supported", found);
-    }
 
     public void testActiveApplications() throws Exception {
         Element graph = getOperation().getPortalPropertyXom(Constants.PROPERTY_PORTAL_ACTIVE_SYSTEMS);

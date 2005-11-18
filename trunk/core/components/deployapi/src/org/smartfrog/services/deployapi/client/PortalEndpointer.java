@@ -21,17 +21,18 @@ package org.smartfrog.services.deployapi.client;
 
 
 import org.apache.axis2.AxisFault;
+import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.description.AxisOperation;
 import org.apache.axis2.description.AxisService;
 import org.apache.axis2.description.InOutAxisOperation;
 import org.smartfrog.services.deployapi.system.Constants;
-import org.smartfrog.services.deployapi.binding.bindings.CreateBinding;
 import org.smartfrog.services.deployapi.binding.XomHelper;
-import org.ggf.xbeans.cddlm.api.CreateRequestDocument;
-import org.ggf.xbeans.cddlm.api.CreateResponseDocument;
-import static org.ggf.cddlm.generated.api.CddlmConstants.WSRF_ELEMENT_DESTROY_REQUEST;
-import static org.ggf.cddlm.generated.api.CddlmConstants.WSRF_WSRL_NAMESPACE;
-import static org.ggf.cddlm.generated.api.CddlmConstants.WSRF_OPERATION_DESTROY;
+import org.smartfrog.services.deployapi.binding.EprHelper;
+import org.smartfrog.services.deployapi.binding.bindings.LookupSystemBinding;
+import static org.ggf.cddlm.generated.api.CddlmConstants.*;
+import org.ggf.xbeans.cddlm.api.LookupSystemRequestDocument;
+import org.ggf.xbeans.cddlm.api.LookupSystemResponseDocument;
+import org.ggf.xbeans.cddlm.wsrf.wsa2003.EndpointReferenceType;
 
 import javax.xml.namespace.QName;
 import java.io.IOException;
@@ -49,11 +50,8 @@ import nu.xom.Document;
 public class PortalEndpointer extends Endpointer {
 
 
-
     protected static AxisOperation[] operations;
     protected static AxisService serviceDescription;
-
-
 
     /**
      * This is pasted in from generated axis code
@@ -70,43 +68,43 @@ public class PortalEndpointer extends Endpointer {
 
         __operation = new InOutAxisOperation();
         __operation.setName(new QName(Constants.CDL_API_WSDL_NAMESPACE,
-                "GetMultipleResourceProperties"));
+                WSRF_OPERATION_GETMULTIPLERESOURCEPROPERTIES));
         operations[0] = __operation;
         serviceDescription.addOperation(__operation);
 
         __operation = new InOutAxisOperation();
         __operation.setName(
-                new QName(Constants.CDL_API_WSDL_NAMESPACE, "Create"));
+                new QName(Constants.CDL_API_WSDL_NAMESPACE, API_PORTAL_OPERATION_CREATE));
         operations[1] = __operation;
         serviceDescription.addOperation(__operation);
 
         __operation = new InOutAxisOperation();
         __operation.setName(
-                new QName(Constants.CDL_API_WSDL_NAMESPACE, "LookupSystem"));
+                new QName(Constants.CDL_API_WSDL_NAMESPACE, API_PORTAL_OPERATION_LOOKUPSYSTEM));
         operations[2] = __operation;
         serviceDescription.addOperation(__operation);
 
         __operation = new InOutAxisOperation();
         __operation.setName(new QName(Constants.CDL_API_WSDL_NAMESPACE,
-                "GetCurrentMessage"));
+                WSRF_OPERATION_GETCURRENTMESSAGE));
         operations[3] = __operation;
         serviceDescription.addOperation(__operation);
 
         __operation = new InOutAxisOperation();
         __operation.setName(
-                new QName(Constants.CDL_API_WSDL_NAMESPACE, "Resolve"));
+                new QName(Constants.CDL_API_WSDL_NAMESPACE, API_PORTAL_OPERATION_RESOLVE));
         operations[4] = __operation;
         serviceDescription.addOperation(__operation);
 
         __operation = new InOutAxisOperation();
         __operation.setName(
-                new QName(Constants.CDL_API_WSDL_NAMESPACE, "Subscribe"));
+                new QName(Constants.CDL_API_WSDL_NAMESPACE, WSRF_OPERATION_SUBSCRIBE));
         operations[5] = __operation;
         serviceDescription.addOperation(__operation);
 
         __operation = new InOutAxisOperation();
         __operation.setName(new QName(Constants.CDL_API_WSDL_NAMESPACE,
-                "GetResourceProperty"));
+                WSRF_OPERATION_GETRESOURCEPROPERTY));
         operations[6] = __operation;
         serviceDescription.addOperation(__operation);
 
@@ -203,5 +201,37 @@ public class PortalEndpointer extends Endpointer {
     }
 
 
+    /**
+     * look up an application against the server
+     *
+     * @param id id of app
+     * @return URI of the app
+     * @deprecated
+     */
+
+    public SystemEndpointer lookupSystem2(String id) throws RemoteException {
+        LookupSystemBinding binding = new LookupSystemBinding();
+        LookupSystemRequestDocument requestDoc = binding.createRequest();
+        LookupSystemRequestDocument.LookupSystemRequest request = requestDoc.addNewLookupSystemRequest();
+        request.setResourceId(id);
+        LookupSystemResponseDocument response = binding.invokeBlocking(this,
+                Constants.API_PORTAL_OPERATION_LOOKUPSYSTEM, requestDoc);
+        EndpointReferenceType epr = response.getLookupSystemResponse();
+        EndpointReference epr2 = EprHelper.Wsa2003ToEPR(epr);
+        SystemEndpointer endpointer = new SystemEndpointer(epr2, id);
+        return endpointer;
+    }
+
+
+    public SystemEndpointer lookupSystem(String id) throws RemoteException {
+        Element resid=XomHelper.apiElement("ResourceId",id);
+        Element request;
+        request = XomHelper.apiElement(API_ELEMENT_LOOKUPSYSTEM_REQUEST,resid);
+        Document response = invokeBlocking(Constants.API_PORTAL_OPERATION_LOOKUPSYSTEM,
+                request);
+        SystemEndpointer system;
+        system = new SystemEndpointer(response);
+        return system;
+    }
 
 }
