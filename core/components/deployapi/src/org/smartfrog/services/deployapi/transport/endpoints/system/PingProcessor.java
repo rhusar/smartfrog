@@ -25,10 +25,16 @@ import org.apache.commons.logging.LogFactory;
 import org.ggf.xbeans.cddlm.api.PingRequestDocument;
 import org.ggf.xbeans.cddlm.api.PingResponseDocument;
 import org.smartfrog.services.deployapi.binding.bindings.PingBinding;
+import org.smartfrog.services.deployapi.binding.XomHelper;
 import org.smartfrog.services.deployapi.system.Utils;
+import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.transport.endpoints.XmlBeansEndpoint;
+import org.smartfrog.services.filesystem.filestore.FileEntry;
 
 import java.rmi.RemoteException;
+
+import nu.xom.Document;
+import nu.xom.Element;
 
 /**
  * This class is *NOT* re-entrant. Create one for each deployment. created Aug
@@ -49,15 +55,12 @@ public class PingProcessor extends SystemProcessor {
     public OMElement process(OMElement request) throws RemoteException {
         jobMustExist();
 
-        PingBinding binding = new PingBinding();
-        PingRequestDocument doc = binding.convertRequest(request);
-        Utils.maybeValidate(doc);
-
-
-        PingResponseDocument responseDoc;
-        responseDoc=job.ping();
-        OMElement responseOM = binding.convertResponse(responseDoc);
-        return responseOM;
+        Document document = Utils.axiomToXom(request);
+        Element root = document.getRootElement();
+        Element body = XomHelper.getElement(document,
+                "api:"+ Constants.API_ELEMENT_PING_REQUEST);
+        Element response = XomHelper.apiElement(Constants.API_ELEMENT_PING_RESPONSE);
+        return Utils.xomToAxiom(response);
     }
 
 

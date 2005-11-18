@@ -183,4 +183,11 @@ public abstract class ApiTestBase extends ConsoleTestBase {
         return result;
     }
 
+    /**
+     * ping a remote system
+     * @param system
+     */
+    protected long pingSystem(SystemEndpointer system) throws IOException {
+        return system.ping();
+    }
 }

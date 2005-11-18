@@ -95,6 +95,19 @@ public class LocalSmartFrogSystemTest extends ApiTestBase {
         destroySystem(system);
     }
 
+    public void testPing() throws Exception {
+        SystemEndpointer system=null;
+        try {
+            system = deployEchoSystem();
+            long time=pingSystem(system);
+            assertTrue(time>=0);
+
+        } finally {
+            destroySystem(system);
+        }
+    }
+
+
     public void testDestroy() throws Exception {
         SystemEndpointer system = deployEchoSystem();
         destroySystem(system);
