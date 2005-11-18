@@ -165,15 +165,6 @@ public abstract class ApiTestBase extends ConsoleTestBase {
         }
     }
 
-    protected GetResourcePropertyResponseDocument getPortalResourceProperty(QName portalProperty) throws RemoteException {
-        return getOperation().getPortalProperty(portalProperty);
-    }
-
-    protected GetResourcePropertyResponseDocument getResourceProperty(Endpointer system,
-                                                                      QName property) throws RemoteException {
-        return system.getPropertyResponse(property);
-    }
-
     public String[] toStringArray(List<String> list) {
         String[] result=new String[list.size()];
         int count=0;

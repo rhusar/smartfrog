@@ -242,8 +242,7 @@ public abstract class ConsoleTestBase extends UnitTestBase {
     /**
      * assert that an application doesnt exist
      *
-     * @param uri       uri of app
-     * @param errorText optional error text
+     * @param id uri of app
      * @throws java.rmi.RemoteException
      */
     public void assertNoSuchApplication(String id)
