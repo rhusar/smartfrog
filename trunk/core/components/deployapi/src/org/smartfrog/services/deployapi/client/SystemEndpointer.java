@@ -47,11 +47,13 @@ import static org.smartfrog.services.deployapi.system.Constants.WSRF_ELEMENT_DES
 import static org.smartfrog.services.deployapi.system.Constants.WSRF_OPERATION_DESTROY;
 import static org.smartfrog.services.deployapi.system.Constants.WSRF_WSRL_NAMESPACE;
 import org.smartfrog.services.deployapi.system.LifecycleStateEnum;
+import org.smartfrog.services.deployapi.system.Constants;
 
 import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.net.URL;
 import java.rmi.RemoteException;
+import java.util.Date;
 
 /**
  * Model for a remote system. Needs a resourceID for hashCode and equals to
@@ -311,6 +313,23 @@ public class SystemEndpointer extends Endpointer {
     }
 
     /**
+     * Ping the node.
+     * @throws IOException
+     * @return round trip time.
+     */
+    public long ping() throws
+            IOException {
+        Element request;
+        request = apiElement(Constants.API_ELEMENT_PING_REQUEST);
+        Date start, finish;
+        start=new Date();
+        invokeBlocking(Constants.API_SYSTEM_OPERATION_PING,
+                request);
+        finish = new Date();
+        return finish.getTime()-start.getTime();
+    }
+
+    /**
      * destroy the app, will remove all trace of it
      *
      * @return
@@ -346,4 +365,6 @@ public class SystemEndpointer extends Endpointer {
         String value=prop.getValue();
         return value;
     }
+
+
 }
