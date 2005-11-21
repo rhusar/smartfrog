@@ -20,7 +20,7 @@
 package org.smartfrog.services.deployapi.transport.endpoints.portal;
 
 import org.smartfrog.services.deployapi.transport.endpoints.Processor;
-import org.smartfrog.services.deployapi.transport.endpoints.XmlBeansEndpoint;
+import org.smartfrog.services.deployapi.transport.endpoints.SmartFrogAxisEndpoint;
 
 /**
  * created 21-Sep-2005 11:51:42
@@ -28,7 +28,7 @@ import org.smartfrog.services.deployapi.transport.endpoints.XmlBeansEndpoint;
 
 public class ResolveProcessor extends Processor {
 
-    public ResolveProcessor(XmlBeansEndpoint owner) {
+    public ResolveProcessor(SmartFrogAxisEndpoint owner) {
         super(owner);
     }
 }

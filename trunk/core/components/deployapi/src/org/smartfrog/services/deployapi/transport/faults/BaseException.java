@@ -42,27 +42,16 @@ public class BaseException extends RuntimeException {
 
     public BaseException(FaultTemplate template) {
         super(template.getErrorMessage());
-        QName qualifiedName = template.getQualifiedName();
-        setFaultCode(qualifiedName);
-        faultReason = template.getWireMessage();
+        initFromTemplate(template);
     }
 
 
-    /**
-     * convert a throwable into a BaseException.
-     *
-     * @param thrown
-     * @return
-     */
-    public static BaseException makeFault(Throwable thrown) {
-        if (thrown instanceof BaseException) {
-            return (BaseException) thrown;
-        }
-        if (thrown instanceof AxisFault) {
-            return new DeploymentException((AxisFault) thrown);
-        }
-        return new BaseException(thrown);
+
+    public BaseException(FaultTemplate template,Throwable thrown) {
+        super(template.getErrorMessage(),thrown);
+        initFromTemplate(template);
     }
+
 
     /**
      * @param message
@@ -99,6 +88,28 @@ public class BaseException extends RuntimeException {
     protected QName getDefaultFaultCode() {
         //TODO
         return null;
+    }
+
+    private void initFromTemplate(FaultTemplate template) {
+        QName qualifiedName = template.getQualifiedName();
+        setFaultCode(qualifiedName);
+        faultReason = template.getWireMessage();
+    }
+
+    /**
+     * convert a throwable into a BaseException.
+     *
+     * @param thrown
+     * @return
+     */
+    public static BaseException makeFault(Throwable thrown) {
+        if (thrown instanceof BaseException) {
+            return (BaseException) thrown;
+        }
+        if (thrown instanceof AxisFault) {
+            return new DeploymentException((AxisFault) thrown);
+        }
+        return new BaseException(thrown);
     }
 
     protected void initFaultCode() {

@@ -92,7 +92,7 @@ public class WsrfReceiver extends AbstractInOutSyncMessageReceiver
 
             SOAPEnvelope envelope = null;
             OMElement result = null;
-            XmlBeansEndpoint endpoint = (XmlBeansEndpoint) destObject;
+            SmartFrogAxisEndpoint endpoint = (SmartFrogAxisEndpoint) destObject;
             result = endpoint.dispatch(operation, inMessage);
             envelope = getSOAPFactory().getDefaultEnvelope();
             if (result != null) {

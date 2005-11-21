@@ -25,22 +25,12 @@ import nu.xom.Element;
 import org.apache.axis2.om.OMElement;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.xmlbeans.XmlObject;
-import org.ggf.xbeans.cddlm.api.ActiveSystemsDocument;
-import org.ggf.xbeans.cddlm.api.NameUriListType;
-import org.ggf.xbeans.cddlm.api.PortalInformationType;
-import org.ggf.xbeans.cddlm.api.StaticPortalStatusDocument;
-import org.ggf.xbeans.cddlm.api.StaticPortalStatusType;
-import org.ggf.xbeans.cddlm.api.SystemReferenceListType;
-import org.ggf.xbeans.cddlm.api.UriListType;
-import org.ggf.xbeans.cddlm.wsrf.wsa2003.EndpointReferenceType;
-import org.smartfrog.services.deployapi.binding.Axis2Beans;
 import org.smartfrog.services.deployapi.binding.DescriptorHelper;
 import org.smartfrog.services.deployapi.binding.XomHelper;
 import org.smartfrog.services.deployapi.components.DeploymentServer;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.system.Utils;
-import org.smartfrog.services.deployapi.transport.faults.BaseException;
+import org.smartfrog.services.deployapi.transport.wsrf.Property;
 import org.smartfrog.services.deployapi.transport.wsrf.PropertyMap;
 import org.smartfrog.services.deployapi.transport.wsrf.WSRPResourceSource;
 import org.smartfrog.services.filesystem.FileSystem;
@@ -70,10 +60,8 @@ public class ServerInstance implements WSRPResourceSource {
 
     private String resourceID = Utils.createNewID();
 
-    private StaticPortalStatusDocument staticStatus;
+    private PropertyMap properties;
 
-    private PropertyMap properties=new PropertyMap();
-    
     private JobRepository jobs;
 
     private ActionQueue queue = new ActionQueue();
@@ -99,6 +87,7 @@ public class ServerInstance implements WSRPResourceSource {
     private static Log log= LogFactory.getLog(ServerInstance.class);
 
     private URL systemsURL;
+    private static final String BUILD_TIMESTAMP = "$Date$";
 
     /**
      * Create a new server instance, and bind it to be our current
@@ -153,7 +142,6 @@ public class ServerInstance implements WSRPResourceSource {
 
 
     private void init() throws IOException {
-        staticStatus = createStaticStatusInfo();
         systemsURL = new URL(protocol,hostname, port,path);
         jobs = new JobRepository(systemsURL);
         workers = new ActionWorker[WORKERS];
@@ -169,6 +157,9 @@ public class ServerInstance implements WSRPResourceSource {
         descriptorHelper=new DescriptorHelper(tempdir);
         AddedFilestore filestore = new AddedFilestore(tempdir);
         log.debug("Creating server instance "+toString());
+
+        //now create our property map
+        initPropertyMap();
     }
 
     /**
@@ -191,32 +182,14 @@ public class ServerInstance implements WSRPResourceSource {
 
     }
 
-
-    private StaticPortalStatusDocument createStaticStatusInfo() {
-        StaticPortalStatusDocument doc= StaticPortalStatusDocument.Factory.newInstance();
-        StaticPortalStatusType status = doc.addNewStaticPortalStatus();
-        PortalInformationType portalInfo = status.addNewPortal();
-        portalInfo.setName(Constants.BUILD_INFO_IMPLEMENTATION_NAME);
-        portalInfo.setBuild("$Date$");
-        portalInfo.setLocation(location);
-        portalInfo.setHome(Constants.BUILD_INFO_HOMEPAGE);
-        Date now=new Date();
-        BigInteger tzoffset=BigInteger.valueOf(now.getTimezoneOffset());
-        portalInfo.setTimezoneUTCOffset(tzoffset);
-        NameUriListType languages = status.addNewLanguages();
-        NameUriListType.Item item = languages.addNewItem();
-        item.setName(Constants.BUILD_INFO_CDL_LANGUAGE);
-        item.setUri(Constants.XML_CDL_NAMESPACE);
-        item = languages.addNewItem();
-        item.setName(Constants.BUILD_INFO_SF_LANGUAGE);
-        item.setUri(Constants.SMARTFROG_NAMESPACE);
-        UriListType notifications = status.addNewNotifications();
-        notifications.addNewItem().setStringValue(Constants.WSRF_WSNT_NAMESPACE);
-        UriListType options = status.addNewOptions();
-
-        return doc;
+    /**
+     * Returns a string representation of the object.
+     *
+     * @return a string representation of the object.
+     */
+    public String toString() {
+        return "Server @" + systemsURL + " filestore:" + tempdir;
     }
-
     public JobRepository getJobs() {
         return jobs;
     }
@@ -254,60 +227,90 @@ public class ServerInstance implements WSRPResourceSource {
         queue.push(action);
     }
 
+    private void initPropertyMap() {
+        properties=new PropertyMap();
+        properties.addStaticProperty(Constants.PROPERTY_MUWS_RESOURCEID,
+                XomHelper.makeResourceId(resourceID));
+        properties.addStaticProperty(Constants.PROPERTY_PORTAL_STATIC_PORTAL_STATUS,
+                makeStaticStatus());
+        properties.add(new ActiveSystemsProperty(this));
+    }
+
     /**
-     * Get a resource
+     * Get a property value
      *
-     * @param resource
+     * @param property
      * @return null for no match;
-     * @throws BaseException if they feel like it
+     * @throws org.smartfrog.services.deployapi.transport.faults.BaseException
+     *          if they feel like it
      */
-    public OMElement getProperty(QName resource) {
-        XmlObject result=null;
-        Element xom=null;
-        OMElement resultElement = null;
-        if(Constants.PROPERTY_PORTAL_STATIC_PORTAL_STATUS.equals(resource)) {
-            result= staticStatus;
-        }
-        if (Constants.PROPERTY_MUWS_RESOURCEID.equals(resource)) {
-            xom = XomHelper.makeResourceId(resourceID);
-        }
-        if(Constants.PROPERTY_PORTAL_ACTIVE_SYSTEMS.equals(resource)) {
-            result= getJobList().getActiveSystems();
-        }
-        //conver to Axiom
-        if(result!=null) {
-            resultElement = Axis2Beans.convertDocument(result);
-            return resultElement;
-        }
-        if(xom!=null) {
-            resultElement=Utils.xomToAxiom(xom);
-        }
-        return resultElement;
+    public OMElement getProperty(QName property) {
+        return properties.getProperty(property);
     }
 
-    /**
-     * Get the job list
-     * @return a list of jobs
-     */
-    private ActiveSystemsDocument getJobList() {
-        ActiveSystemsDocument doc=ActiveSystemsDocument.Factory.newInstance();
-        SystemReferenceListType systems = doc.addNewActiveSystems();
-        int size=jobs.size();
-        EndpointReferenceType apps[]=new EndpointReferenceType[size];
-        int counter=0;
-        for(Job job:jobs) {
-            apps[counter++]=(EndpointReferenceType)job.getEndpoint().copy();
-        }
-        systems.setSystemArray(apps);
-        return doc;
+    private Element makeStaticStatus() {
+        Element status=XomHelper.element(Constants.PROPERTY_PORTAL_STATIC_PORTAL_STATUS);
+        Element portal =XomHelper.apiElement("portal");
+        status.appendChild(portal);
+
+        portal.appendChild(
+                XomHelper.apiElement("name",Constants.BUILD_INFO_IMPLEMENTATION_NAME));
+        portal.appendChild(
+                XomHelper.apiElement("build", BUILD_TIMESTAMP));
+        portal.appendChild(
+                XomHelper.apiElement("location", location));
+        portal.appendChild(
+                XomHelper.apiElement("home", Constants.BUILD_INFO_HOMEPAGE));
+        Date now = new Date();
+        BigInteger tzoffset = BigInteger.valueOf(now.getTimezoneOffset());
+        portal.appendChild(
+                XomHelper.apiElement("timezoneUTCOffset", tzoffset.toString()));
+
+        Element languages = XomHelper.apiElement("languages");
+        Element cdl=XomHelper.apiElement("item");
+        Element name=XomHelper.apiElement("name", Constants.BUILD_INFO_CDL_LANGUAGE);
+        Element uri= XomHelper.apiElement("uri", Constants.XML_CDL_NAMESPACE);
+        cdl.appendChild(name);
+        cdl.appendChild(uri);
+        languages.appendChild(cdl);
+        status.appendChild(languages);
+        Element sfrog = XomHelper.apiElement("item");
+        name = XomHelper.apiElement("name", Constants.BUILD_INFO_SF_LANGUAGE);
+        uri = XomHelper.apiElement("uri", Constants.SMARTFROG_NAMESPACE);
+        sfrog.appendChild(name);
+        sfrog.appendChild(uri);
+        languages.appendChild(sfrog);
+
+        Element notifications=XomHelper.apiElement("notifications");
+        Element wsrf=XomHelper.apiElement("item", Constants.WSRF_WSNT_NAMESPACE);
+        notifications.appendChild(wsrf);
+        status.appendChild(notifications);
+
+        Element options=XomHelper.apiElement("options");
+        status.appendChild(options);
+        return status;
     }
 
-    /**
-     * Returns a string representation of the object. 
-     *
-     * @return a string representation of the object.
-     */
-    public String toString() {
-        return "Server @"+systemsURL+" filestore:"+tempdir;
+
+    private static class ActiveSystemsProperty implements Property {
+
+        ServerInstance owner;
+
+        public ActiveSystemsProperty(ServerInstance owner) {
+            this.owner = owner;
+        }
+
+        public QName getName() {
+            return Constants.PROPERTY_PORTAL_ACTIVE_SYSTEMS;
+        }
+
+        public OMElement getValue() {
+            Element response=XomHelper.element(Constants.PROPERTY_PORTAL_ACTIVE_SYSTEMS);
+            JobRepository jobs = owner.getJobs();
+            for (Job job : jobs) {
+                response.appendChild(job.getEndpointer().copy());
+            }
+            return Utils.xomToAxiom(response);
+        }
     }
 }

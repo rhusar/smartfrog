@@ -32,7 +32,7 @@ import java.io.IOException;
 /**
  * An endpoint that is deployed under Smartfrog.
  */
-public abstract class XmlBeansEndpoint {
+public abstract class SmartFrogAxisEndpoint {
 
     /**
      * deliver a message

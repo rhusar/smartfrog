@@ -19,18 +19,10 @@
  */
 package org.smartfrog.services.deployapi.transport.endpoints.portal;
 
-import org.apache.axis2.AxisFault;
-import org.apache.axis2.om.OMElement;
-import org.ggf.xbeans.cddlm.api.LookupSystemRequestDocument;
-import org.ggf.xbeans.cddlm.api.LookupSystemResponseDocument;
-import org.smartfrog.services.deployapi.binding.bindings.LookupSystemBinding;
 import org.smartfrog.services.deployapi.binding.XomHelper;
 import org.smartfrog.services.deployapi.engine.Job;
-import org.smartfrog.services.deployapi.engine.ServerInstance;
-import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.transport.endpoints.Processor;
-import org.smartfrog.services.deployapi.transport.endpoints.XmlBeansEndpoint;
-import org.smartfrog.services.deployapi.transport.faults.DeploymentException;
+import org.smartfrog.services.deployapi.transport.endpoints.SmartFrogAxisEndpoint;
 import nu.xom.Element;
 import nu.xom.Document;
 
@@ -42,21 +34,8 @@ import java.io.IOException;
 
 public class LookupSystemProcessor extends Processor {
 
-    public LookupSystemProcessor(XmlBeansEndpoint owner) {
+    public LookupSystemProcessor(SmartFrogAxisEndpoint owner) {
         super(owner);
-    }
-
-
-    public OMElement process(OMElement request) throws AxisFault {
-        LookupSystemBinding binding = new LookupSystemBinding();
-        LookupSystemRequestDocument lookupSystemRequestDocument = binding.convertRequest(request);
-        LookupSystemRequestDocument.LookupSystemRequest lookupSystemRequest = lookupSystemRequestDocument
-                .getLookupSystemRequest();
-        String resourceId = lookupSystemRequest.getResourceId();
-        Job job = lookupJob(resourceId);
-        LookupSystemResponseDocument response = binding.createResponse();
-        response.setLookupSystemResponse(job.getEndpoint());
-        return binding.convertResponse(response);
     }
 
 

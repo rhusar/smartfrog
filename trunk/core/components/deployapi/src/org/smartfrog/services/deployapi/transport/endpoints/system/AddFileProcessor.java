@@ -26,7 +26,7 @@ import org.apache.axis2.om.OMElement;
 import org.smartfrog.services.deployapi.binding.XomHelper;
 import org.smartfrog.services.deployapi.engine.ServerInstance;
 import org.smartfrog.services.deployapi.system.Utils;
-import org.smartfrog.services.deployapi.transport.endpoints.XmlBeansEndpoint;
+import org.smartfrog.services.deployapi.transport.endpoints.SmartFrogAxisEndpoint;
 import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
 import org.smartfrog.services.filesystem.filestore.AddedFilestore;
 import org.smartfrog.services.filesystem.filestore.FileEntry;
@@ -38,7 +38,7 @@ public class AddFileProcessor extends SystemProcessor {
     public static final String PREFIX = "file";
     public static final String SUFFIX = "bin";
 
-    public AddFileProcessor(XmlBeansEndpoint owner) {
+    public AddFileProcessor(SmartFrogAxisEndpoint owner) {
         super(owner);
     }
 

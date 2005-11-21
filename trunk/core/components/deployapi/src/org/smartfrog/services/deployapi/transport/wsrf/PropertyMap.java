@@ -28,12 +28,15 @@ import java.util.Hashtable;
 import java.util.Map;
 
 /**
-
+ * A property map represents a source of live or static WSRP properties.
+ * This class acts as a source for WSRP resources.
  */
-public class PropertyMap {
+public class PropertyMap implements WSRPResourceSource {
 
     private Map<QName,Property> map=new Hashtable<QName, Property>();
 
+    public PropertyMap() {
+    }
 
     /**
      * add a resource
@@ -51,12 +54,14 @@ public class PropertyMap {
         map.remove(name);
     }
 
+
+
     /**
      * resolve a property or return null
      * @param name
      * @return
      */
-    public Property getProperty(QName name) {
+    public Property lookupProperty(QName name) {
         return map.get(name);
     }
 
@@ -66,8 +71,8 @@ public class PropertyMap {
      * @param name
      * @return the value or null for no match
      */
-    public OMElement getPropertyValue(QName name) {
-        Property property = getProperty(name);
+    public OMElement getProperty(QName name) {
+        Property property = lookupProperty(name);
         if(property!=null) {
             return property.getValue();
         } else {

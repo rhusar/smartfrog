@@ -30,7 +30,7 @@ import org.smartfrog.services.deployapi.engine.ServerInstance;
 import org.smartfrog.services.deployapi.system.DeploymentLanguage;
 import org.smartfrog.services.deployapi.system.LifecycleStateEnum;
 import org.smartfrog.services.deployapi.system.Utils;
-import org.smartfrog.services.deployapi.transport.endpoints.XmlBeansEndpoint;
+import org.smartfrog.services.deployapi.transport.endpoints.SmartFrogAxisEndpoint;
 
 import java.io.File;
 import java.io.IOException;
@@ -50,7 +50,7 @@ public class InitializeProcessor extends SystemProcessor {
     DescriptorHelper helper;
 
 
-    public InitializeProcessor(XmlBeansEndpoint owner) {
+    public InitializeProcessor(SmartFrogAxisEndpoint owner) {
         super(owner);
         helper = ServerInstance.currentInstance().getDescriptorHelper();
     }
