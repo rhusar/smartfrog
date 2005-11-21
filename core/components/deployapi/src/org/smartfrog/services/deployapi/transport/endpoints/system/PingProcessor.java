@@ -22,14 +22,10 @@ package org.smartfrog.services.deployapi.transport.endpoints.system;
 import org.apache.axis2.om.OMElement;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.ggf.xbeans.cddlm.api.PingRequestDocument;
-import org.ggf.xbeans.cddlm.api.PingResponseDocument;
-import org.smartfrog.services.deployapi.binding.bindings.PingBinding;
 import org.smartfrog.services.deployapi.binding.XomHelper;
 import org.smartfrog.services.deployapi.system.Utils;
 import org.smartfrog.services.deployapi.system.Constants;
-import org.smartfrog.services.deployapi.transport.endpoints.XmlBeansEndpoint;
-import org.smartfrog.services.filesystem.filestore.FileEntry;
+import org.smartfrog.services.deployapi.transport.endpoints.SmartFrogAxisEndpoint;
 
 import java.rmi.RemoteException;
 
@@ -48,7 +44,7 @@ public class PingProcessor extends SystemProcessor {
     private static final Log log = LogFactory.getLog(PingProcessor.class);
 
 
-    public PingProcessor(XmlBeansEndpoint owner) {
+    public PingProcessor(SmartFrogAxisEndpoint owner) {
         super(owner);
     }
 
@@ -59,7 +55,8 @@ public class PingProcessor extends SystemProcessor {
         Element root = document.getRootElement();
         Element body = XomHelper.getElement(document,
                 "api:"+ Constants.API_ELEMENT_PING_REQUEST);
-        Element response = XomHelper.apiElement(Constants.API_ELEMENT_PING_RESPONSE);
+
+        Element response = job.ping(document);
         return Utils.xomToAxiom(response);
     }
 

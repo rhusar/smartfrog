@@ -19,7 +19,7 @@
  */
 package org.smartfrog.services.deployapi.binding;
 
-import org.apache.axis2.clientapi.StreamWrapper;
+import org.apache.axis2.client.StreamWrapper;
 import org.apache.axis2.om.OMAbstractFactory;
 import org.apache.axis2.om.OMElement;
 import org.apache.axis2.om.OMFactory;

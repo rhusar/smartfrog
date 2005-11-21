@@ -20,14 +20,14 @@
 package org.smartfrog.services.deployapi.transport.endpoints.system;
 
 import nu.xom.Element;
+import nu.xom.Document;
 import org.apache.axis2.om.OMElement;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.ggf.xbeans.cddlm.api.RunRequestDocument;
-import org.smartfrog.services.deployapi.binding.XomHelper;
 import org.smartfrog.services.deployapi.binding.bindings.RunBinding;
 import org.smartfrog.services.deployapi.system.Utils;
-import org.smartfrog.services.deployapi.transport.endpoints.XmlBeansEndpoint;
+import org.smartfrog.services.deployapi.transport.endpoints.SmartFrogAxisEndpoint;
 
 import java.io.IOException;
 
@@ -43,21 +43,22 @@ public class RunProcessor extends SystemProcessor {
     private static final Log log = LogFactory.getLog(RunProcessor.class);
 
 
-    public RunProcessor(XmlBeansEndpoint owner) {
+    public RunProcessor(SmartFrogAxisEndpoint owner) {
         super(owner);
     }
 
-    public OMElement process(OMElement request) throws IOException {
+    /**
+     * override this for Xom-based processing
+     *
+     * @param request
+     * @return the response
+     * @throws java.io.IOException
+     */
+    public Element process(Document request) throws IOException {
         jobMustExist();
 
-        RunBinding binding = new RunBinding();
-        RunRequestDocument doc = binding.convertRequest(request);
-        Utils.maybeValidate(doc);
-
-        Element response = XomHelper.apiElement("runResponse");
-        return Utils.xomToAxiom(response);
-
+        Element response = job.run();
+        return response;
     }
-
 
 }

@@ -28,6 +28,8 @@ import org.ggf.cddlm.generated.api.CddlmConstants;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
 
+import javax.xml.namespace.QName;
+
 /** generic xom stuff */
 public class XomHelper {
     public static final String API = "api:";
@@ -39,6 +41,7 @@ public class XomHelper {
         return new Element(API + name,
                 CddlmConstants.CDL_API_TYPES_NAMESPACE);
     }
+
 
     public static Element apiElement(String name,String value) {
         Element e=apiElement(name);
@@ -70,6 +73,20 @@ public class XomHelper {
     }
 
     /**
+     * turn a qname into an element of the same name
+     *
+     * @param qname
+     * @return
+     */
+    public static Element element(QName qname) {
+        Element element = new Element(qname.getLocalPart(),
+                qname.getNamespaceURI());
+        element.setNamespacePrefix(qname.getPrefix());
+        return element;
+
+    }
+
+    /**
      * Move an element into the cdl namespace
      * @param element
      * @param name
@@ -79,7 +96,7 @@ public class XomHelper {
         element.setNamespaceURI(Constants.CDL_API_TYPES_NAMESPACE);
         element.setNamespacePrefix("api");
     }
-    
+
     /**
      * Get an element's value. Throws a BadArgument Deployment fault if it
      * doesnt resolve.

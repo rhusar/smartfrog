@@ -26,12 +26,10 @@ import org.apache.axis2.om.OMElement;
 import org.apache.axis2.om.OMNamespace;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.ggf.xbeans.cddlm.wsrf.wsrp.GetResourcePropertyDocument;
-import org.smartfrog.services.deployapi.binding.bindings.GetResourcePropertyBinding;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.system.Utils;
 import org.smartfrog.services.deployapi.transport.endpoints.Processor;
-import org.smartfrog.services.deployapi.transport.endpoints.XmlBeansEndpoint;
+import org.smartfrog.services.deployapi.transport.endpoints.SmartFrogAxisEndpoint;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
 import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
 
@@ -43,7 +41,7 @@ import java.util.Iterator;
 /**
  * Implement WSRP
  */
-public abstract class WsrfEndpoint extends XmlBeansEndpoint {
+public abstract class WsrfEndpoint extends SmartFrogAxisEndpoint {
 
     private static Log log = LogFactory.getLog(WsrfEndpoint.class);
 
@@ -117,12 +115,12 @@ public abstract class WsrfEndpoint extends XmlBeansEndpoint {
         if (source == null) {
             throw new BaseException(Constants.F_WSRF_WSRP_UNKNOWN_RESOURCE);
         }
-        GetResourcePropertyBinding binding = new GetResourcePropertyBinding();
-        GetResourcePropertyDocument requestDoc = binding.convertRequest(request);
-        QName qName = requestDoc.getGetResourceProperty();
-        OMElement result = source.getProperty(qName);
+        QName name;
+        String value=request.getText();
+        name=request.resolveQName(value);
+        OMElement result = source.getProperty(name);
         if (result == null) {
-            throw invalidQNameException(qName.toString());
+            throw invalidQNameException(name.toString());
         }
 
         OMElement response = Utils.createOmElement(

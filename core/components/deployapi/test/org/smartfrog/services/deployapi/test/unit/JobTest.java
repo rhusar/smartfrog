@@ -76,9 +76,7 @@ public class JobTest extends UnitTestBase {
     }
 
     private EndpointReference getJobEndpointer() {
-        EndpointReferenceType endpoint = job.getEndpoint();
-        EndpointReference epr= EprHelper.Wsa2003ToEPR(endpoint);
-        return epr;
+        return job.getAxisEpr();
     }
 
     public void testQueryWithSpacesWorks() throws Exception {

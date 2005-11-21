@@ -25,7 +25,7 @@ import org.smartfrog.services.deployapi.engine.JobRepository;
 import org.smartfrog.services.deployapi.engine.ServerInstance;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.system.Utils;
-import org.smartfrog.services.deployapi.transport.endpoints.XmlBeansEndpoint;
+import org.smartfrog.services.deployapi.transport.endpoints.SmartFrogAxisEndpoint;
 
 import java.io.IOException;
 
@@ -36,7 +36,7 @@ import java.io.IOException;
 public class DestroyProcessor extends SystemProcessor {
     public static final String ERROR_SYSTEM_NOT_FOUND_TO_DESTROY = "system may already have been destroyed";
 
-    public DestroyProcessor(XmlBeansEndpoint owner) {
+    public DestroyProcessor(SmartFrogAxisEndpoint owner) {
         super(owner);
     }
 

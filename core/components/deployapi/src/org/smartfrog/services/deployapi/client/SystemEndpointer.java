@@ -36,7 +36,6 @@ import static org.smartfrog.services.deployapi.binding.XomHelper.apiElement;
 import org.smartfrog.services.deployapi.binding.bindings.InitializeBinding;
 import static org.smartfrog.services.deployapi.system.Constants.*;
 import org.smartfrog.services.deployapi.system.LifecycleStateEnum;
-import org.smartfrog.services.deployapi.system.Constants;
 
 import javax.xml.namespace.QName;
 import java.io.IOException;
@@ -309,10 +308,10 @@ public class SystemEndpointer extends Endpointer {
     public long ping() throws
             IOException {
         Element request;
-        request = apiElement(Constants.API_ELEMENT_PING_REQUEST);
+        request = apiElement(API_ELEMENT_PING_REQUEST);
         Date start, finish;
         start=new Date();
-        invokeBlocking(Constants.API_SYSTEM_OPERATION_PING,
+        invokeBlocking(API_SYSTEM_OPERATION_PING,
                 request);
         finish = new Date();
         return finish.getTime()-start.getTime();

@@ -19,8 +19,6 @@
  */
 package org.smartfrog.services.deployapi.transport.endpoints.portal;
 
-import org.apache.axis2.AxisFault;
-import org.apache.axis2.om.OMElement;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.smartfrog.services.deployapi.binding.XomHelper;
@@ -28,9 +26,8 @@ import org.smartfrog.services.deployapi.engine.Job;
 import org.smartfrog.services.deployapi.engine.JobRepository;
 import org.smartfrog.services.deployapi.engine.ServerInstance;
 import org.smartfrog.services.deployapi.system.Constants;
-import org.smartfrog.services.deployapi.system.Utils;
 import org.smartfrog.services.deployapi.transport.endpoints.Processor;
-import org.smartfrog.services.deployapi.transport.endpoints.XmlBeansEndpoint;
+import org.smartfrog.services.deployapi.transport.endpoints.SmartFrogAxisEndpoint;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
 
 import java.util.Locale;
@@ -52,7 +49,7 @@ public class CreateProcessor extends Processor {
     private Job job;
     public static final String ERROR_NO_DESCRIPTOR = "No descriptor element";
 
-    public CreateProcessor(XmlBeansEndpoint owner) {
+    public CreateProcessor(SmartFrogAxisEndpoint owner) {
         super(owner);
     }
 

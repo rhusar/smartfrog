@@ -22,17 +22,9 @@ package org.smartfrog.services.deployapi.client;
 import nu.xom.Element;
 import nu.xom.Nodes;
 import org.apache.axis2.addressing.EndpointReference;
-import org.ggf.xbeans.cddlm.api.CreateRequestDocument;
-import org.ggf.xbeans.cddlm.api.CreateResponseDocument;
 import org.ggf.xbeans.cddlm.api.DescriptorType;
-import org.ggf.xbeans.cddlm.api.LookupSystemRequestDocument;
-import org.ggf.xbeans.cddlm.api.LookupSystemResponseDocument;
 import org.ggf.xbeans.cddlm.api.TerminateRequestDocument;
-import org.ggf.xbeans.cddlm.wsrf.wsa2003.EndpointReferenceType;
-import org.ggf.xbeans.cddlm.wsrf.wsrp.GetResourcePropertyResponseDocument;
 import org.smartfrog.services.deployapi.binding.EprHelper;
-import org.smartfrog.services.deployapi.binding.bindings.CreateBinding;
-import org.smartfrog.services.deployapi.binding.bindings.LookupSystemBinding;
 import org.smartfrog.services.deployapi.binding.bindings.TerminateBinding;
 import org.smartfrog.services.deployapi.system.Constants;
 

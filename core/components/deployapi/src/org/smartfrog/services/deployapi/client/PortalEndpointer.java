@@ -20,28 +20,34 @@
 package org.smartfrog.services.deployapi.client;
 
 
+import nu.xom.Document;
+import nu.xom.Element;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.description.AxisOperation;
 import org.apache.axis2.description.AxisService;
 import org.apache.axis2.description.InOutAxisOperation;
-import org.smartfrog.services.deployapi.system.Constants;
-import org.smartfrog.services.deployapi.binding.XomHelper;
-import org.smartfrog.services.deployapi.binding.EprHelper;
-import org.smartfrog.services.deployapi.binding.bindings.LookupSystemBinding;
-import static org.ggf.cddlm.generated.api.CddlmConstants.*;
+import static org.ggf.cddlm.generated.api.CddlmConstants.API_ELEMENT_LOOKUPSYSTEM_REQUEST;
+import static org.ggf.cddlm.generated.api.CddlmConstants.API_PORTAL_OPERATION_CREATE;
+import static org.ggf.cddlm.generated.api.CddlmConstants.API_PORTAL_OPERATION_LOOKUPSYSTEM;
+import static org.ggf.cddlm.generated.api.CddlmConstants.API_PORTAL_OPERATION_RESOLVE;
+import static org.ggf.cddlm.generated.api.CddlmConstants.WSRF_OPERATION_GETCURRENTMESSAGE;
+import static org.ggf.cddlm.generated.api.CddlmConstants.WSRF_OPERATION_GETMULTIPLERESOURCEPROPERTIES;
+import static org.ggf.cddlm.generated.api.CddlmConstants.WSRF_OPERATION_GETRESOURCEPROPERTY;
+import static org.ggf.cddlm.generated.api.CddlmConstants.WSRF_OPERATION_SUBSCRIBE;
 import org.ggf.xbeans.cddlm.api.LookupSystemRequestDocument;
 import org.ggf.xbeans.cddlm.api.LookupSystemResponseDocument;
 import org.ggf.xbeans.cddlm.wsrf.wsa2003.EndpointReferenceType;
+import org.smartfrog.services.deployapi.binding.EprHelper;
+import org.smartfrog.services.deployapi.binding.XomHelper;
+import org.smartfrog.services.deployapi.binding.bindings.LookupSystemBinding;
+import org.smartfrog.services.deployapi.system.Constants;
 
 import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.rmi.RemoteException;
-
-import nu.xom.Element;
-import nu.xom.Document;
 
 /**
  * created Aug 31, 2004 4:27:08 PM represents a server binding.

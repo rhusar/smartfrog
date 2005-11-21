@@ -20,6 +20,7 @@
 package org.smartfrog.services.deployapi.transport.endpoints.system;
 
 import nu.xom.Element;
+import nu.xom.Document;
 import org.apache.axis2.om.OMElement;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -29,7 +30,8 @@ import org.smartfrog.services.deployapi.binding.bindings.TerminateBinding;
 import org.smartfrog.services.deployapi.engine.JobRepository;
 import org.smartfrog.services.deployapi.engine.ServerInstance;
 import org.smartfrog.services.deployapi.system.Utils;
-import org.smartfrog.services.deployapi.transport.endpoints.XmlBeansEndpoint;
+import org.smartfrog.services.deployapi.system.Constants;
+import org.smartfrog.services.deployapi.transport.endpoints.SmartFrogAxisEndpoint;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
@@ -44,26 +46,14 @@ public class TerminateProcessor extends SystemProcessor {
      */
     private static final Log log = LogFactory.getLog(TerminateProcessor.class);
 
-    public TerminateProcessor(XmlBeansEndpoint owner) {
+    public TerminateProcessor(SmartFrogAxisEndpoint owner) {
         super(owner);
     }
 
-    public OMElement process(OMElement request) throws IOException {
-        TerminateBinding binding = new TerminateBinding();
-        if(job!=null) {
-            TerminateRequestDocument inDoc = binding.convertRequest(request);
-            terminate(inDoc);
-        }
-        Element response = XomHelper.apiElement("terminateResponse");
-        return Utils.xomToAxiom(response);
-    }
 
 
-    public void  terminate(TerminateRequestDocument terminate)
+    public void  terminate(String reason)
             throws RemoteException {
-        TerminateRequestDocument.TerminateRequest terminateRequest;
-        terminateRequest = terminate.getTerminateRequest();
-        String reason = terminateRequest.getReason();
         if (reason == null) {
             reason = "";
         }
@@ -71,7 +61,21 @@ public class TerminateProcessor extends SystemProcessor {
         jobs.terminate(job, reason);
     }
 
-
+    /**
+     * override this for Xom-based processing
+     *
+     * @param request
+     * @return the response
+     * @throws java.io.IOException
+     */
+    public Element process(Document request) throws IOException {
+        if (job != null) {
+            String reason = XomHelper.getElementValue(request.getRootElement(), "api:reason");
+            terminate(reason);
+        }
+        Element response = XomHelper.apiElement(Constants.API_ELEMENT_TERMINATE_RESPONSE);
+        return response;
+    }
 
 
 }

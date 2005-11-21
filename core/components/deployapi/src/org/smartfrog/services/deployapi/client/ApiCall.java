@@ -21,15 +21,15 @@
 package org.smartfrog.services.deployapi.client;
 
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.transport.http.HTTPConstants;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.client.Call;
 import org.apache.axis2.client.Callback;
-import org.apache.axis2.context.ServiceContext;
 import org.apache.axis2.context.MessageContext;
+import org.apache.axis2.context.ServiceContext;
 import org.apache.axis2.description.AxisOperation;
 import org.apache.axis2.description.AxisService;
 import org.apache.axis2.om.OMElement;
+import org.apache.axis2.transport.http.HTTPConstants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.wsdl.WSDLInterface;

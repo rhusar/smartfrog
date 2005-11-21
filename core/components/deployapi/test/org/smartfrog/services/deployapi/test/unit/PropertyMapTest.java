@@ -56,44 +56,44 @@ public class PropertyMapTest extends UnitTestBase {
     }
 
     public void testAddLookupRemove() throws Exception {
-        OMElement result = map.getPropertyValue(PROPNAME);
+        OMElement result = map.getProperty(PROPNAME);
         assertNull(result);
         map.addStaticProperty(PROPNAME,
                 elt);
-        result=map.getPropertyValue(PROPNAME);
+        result=map.getProperty(PROPNAME);
         assertNotNull(result);
         map.remove(PROPNAME);
-        result = map.getPropertyValue(PROPNAME);
+        result = map.getProperty(PROPNAME);
         assertNull(result);
     }
 
     public void testAddLookupRemove2() throws Exception {
-        Property result = map.getProperty(Utils.convert(PROPNAME));
+        Property result = map.lookupProperty(Utils.convert(PROPNAME));
         assertNull(result);
         map.addStaticProperty(PROPNAME,
                 elt);
-        result = map.getProperty(Utils.convert(PROPNAME));
+        result = map.lookupProperty(Utils.convert(PROPNAME));
         assertNotNull(result);
         map.remove(result);
-        result = result = map.getProperty(Utils.convert(PROPNAME));
+        result = result = map.lookupProperty(Utils.convert(PROPNAME));
         assertNull(result);
     }
 
 
     public void testAddStatic() throws Exception {
-        Property result = map.getProperty(Utils.convert(PROPNAME));
+        Property result = map.lookupProperty(Utils.convert(PROPNAME));
         assertNull(result);
         OMElement e =Utils.xomToAxiom(elt);
         map.addStaticProperty(Utils.convert(PROPNAME),
                 e);
-        result = map.getProperty(Utils.convert(PROPNAME));
+        result = map.lookupProperty(Utils.convert(PROPNAME));
         assertNotNull(result);
         OMElement value=result.getValue();
         assertSame(e,value);
-        value = map.getPropertyValue(Utils.convert(PROPNAME));
+        value = map.getProperty(Utils.convert(PROPNAME));
         assertSame(e, value);
         map.remove(result);
-        result = result = map.getProperty(Utils.convert(PROPNAME));
+        result = result = map.lookupProperty(Utils.convert(PROPNAME));
         assertNull(result);
     }
 
@@ -101,11 +101,11 @@ public class PropertyMapTest extends UnitTestBase {
         final String text = Utils.toIsoTime(new Date());
         assertIsoDate(text);
         map.addStaticProperty(Utils.convert(PROPNAME), text);
-        Property result = map.getProperty(Utils.convert(PROPNAME));
+        Property result = map.lookupProperty(Utils.convert(PROPNAME));
         assertNotNull(result);
         OMElement value=result.getValue();
         assertEquals(text,value.getText());
-        value = map.getPropertyValue(Utils.convert(PROPNAME));
+        value = map.getProperty(Utils.convert(PROPNAME));
         assertEquals(text, value.getText());
     }
 

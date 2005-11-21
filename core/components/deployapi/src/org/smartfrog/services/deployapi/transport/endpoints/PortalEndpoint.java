@@ -55,8 +55,6 @@ public class PortalEndpoint extends WsrfEndpoint {
         if (result != null) {
             return result;
         }
-
-
         OMElement request = getRequestBody(inMessage);
         String requestName = request.getLocalName();
         verifyDeployApiNamespace(request.getQName());

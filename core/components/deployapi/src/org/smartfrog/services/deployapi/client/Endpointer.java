@@ -22,7 +22,6 @@ package org.smartfrog.services.deployapi.client;
 import nu.xom.Document;
 import nu.xom.Element;
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.context.ConfigurationContextFactory;
@@ -30,19 +29,17 @@ import org.apache.axis2.context.ServiceContext;
 import org.apache.axis2.context.ServiceGroupContext;
 import org.apache.axis2.description.AxisService;
 import org.apache.axis2.description.AxisServiceGroup;
+import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.axis2.om.OMElement;
 import org.apache.axis2.soap.SOAP12Constants;
-import org.ggf.xbeans.cddlm.wsrf.wsrp.GetResourcePropertyDocument;
-import org.ggf.xbeans.cddlm.wsrf.wsrp.GetResourcePropertyResponseDocument;
-import static org.smartfrog.services.deployapi.system.Constants.*;
-import org.smartfrog.services.deployapi.binding.bindings.GetResourcePropertyBinding;
-import static org.smartfrog.services.deployapi.binding.XomHelper.apiElement;
 import org.smartfrog.services.deployapi.system.Constants;
+import static org.smartfrog.services.deployapi.system.Constants.WSRF_OPERATION_GETRESOURCEPROPERTY;
+import static org.smartfrog.services.deployapi.system.Constants.WSRF_RP_ELEMENT_GETRESOURCEPROPERTY_REQUEST;
+import static org.smartfrog.services.deployapi.system.Constants.WSRF_WSRP_NAMESPACE;
 import org.smartfrog.services.deployapi.system.Utils;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
 
 import javax.xml.namespace.QName;
-import java.io.IOException;
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -66,6 +63,11 @@ public abstract class Endpointer implements Serializable {
      * this is the prefix we look for on the command line
      */
     public static final String URL_COMMAND = "-url:";
+
+    /**
+     * private XMLNS used inside requests
+     */
+    private static final String PRIVATE_NAMESPACE = "getprop_ns";
 
     public Endpointer() {
     }
@@ -239,7 +241,6 @@ public abstract class Endpointer implements Serializable {
         axisConfiguration.addServiceGroup(axisServiceGroup);
         ServiceGroupContext serviceGroupContext=new ServiceGroupContext(configurationContext,axisServiceGroup);
 
-        //TODO: verify this patch works
         String serviceInstanceID = localPart;
         serviceContext = configurationContext.getServiceContext(
                 serviceInstanceID);
@@ -277,9 +278,7 @@ public abstract class Endpointer implements Serializable {
 
         String prefix = property.getPrefix();
         if(prefix.length()==0) {
-            //make up a new prefix
-            Random r=new Random();
-            prefix="p"+ r.nextLong();
+            prefix=PRIVATE_NAMESPACE;
 
         }
         request.addNamespaceDeclaration(prefix, property.getNamespaceURI());

@@ -21,10 +21,8 @@ package org.smartfrog.services.deployapi.transport.endpoints;
 
 import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.om.OMElement;
-import org.apache.axis2.AxisFault;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.xmlbeans.XmlObject;
 import org.smartfrog.services.deployapi.engine.Job;
 import org.smartfrog.services.deployapi.engine.JobRepository;
 import org.smartfrog.services.deployapi.engine.ServerInstance;
@@ -47,18 +45,18 @@ import nu.xom.Element;
 public class Processor extends FaultRaiser {
     private static final Log log = LogFactory.getLog(Processor.class);
 
-    public Processor(XmlBeansEndpoint owner) {
+    public Processor(SmartFrogAxisEndpoint owner) {
         this.owner = owner;
     }
 
     /**
      * our owner
      */
-    private XmlBeansEndpoint owner;
+    private SmartFrogAxisEndpoint owner;
 
     private MessageContext messageContext;
 
-    public XmlBeansEndpoint getOwner() {
+    public SmartFrogAxisEndpoint getOwner() {
         return owner;
     }
 
@@ -77,21 +75,7 @@ public class Processor extends FaultRaiser {
         throw new RuntimeException(url, e);
     }
 
-    /**
-     * turn an application into a valid URI
-     *
-     * @param application
-     * @return a URI that can be used as a reference
-     * @throws RuntimeException if the URL was malformed
-     */
-/*    public static URI makeURIFromApplication(String application) {
-        try {
-            assert application != null;
-            return new URI("http://localhost/" + application);
-        } catch (URISyntaxException e) {
-            return makeRuntimeException(application, e);
-        }
-    }*/
+
 
 
     /**
@@ -122,6 +106,22 @@ public class Processor extends FaultRaiser {
         Job job = jobs.lookup(jobURI);
         return job;
     }
+
+    /**
+     * look up a job by resid
+     *
+     * @param resourceId
+     * @return
+     * @throws DeploymentException if there is no match
+     */
+    protected Job lookupJob(String resourceId) {
+        ServerInstance server = ServerInstance.currentInstance();
+        Job job = server.getJobs().lookup(resourceId);
+        if (job == null) {
+            throw new DeploymentException(Constants.F_NO_SUCH_APPLICATION);
+        }
+        return job;
+    }    
 
     /**
      * parse a message fragment and turn it into a Xom document
@@ -170,18 +170,5 @@ public class Processor extends FaultRaiser {
         return null;
     }
 
-    /**
-     * look up a job by resid
-     * @param resourceId
-     * @return
-     * @throws DeploymentException if there is no match
-     */
-    protected Job lookupJob(String resourceId) {
-        ServerInstance server = ServerInstance.currentInstance();
-        Job job = server.getJobs().lookup(resourceId);
-        if (job == null) {
-            throw new DeploymentException(Constants.F_NO_SUCH_APPLICATION);
-        }
-        return job;
-    }
+
 }
