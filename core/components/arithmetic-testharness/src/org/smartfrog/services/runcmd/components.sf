@@ -1,7 +1,13 @@
 #include "org/smartfrog/components.sf"
+#include "org/smartfrog/services/os/runshell/components.sf"
+
+RunCommand extends RunShellScripts {
+sfClass "org.smartfrog.services.runcmd.RunCommandImpl";
+}
 
 
-RunCommand extends Prim {
+
+/*RunCommand extends Prim {
    sfClass "org.smartfrog.services.runcmd.SFRunCommand";
    //runDuringDeploy  false; //By default it runs the application during sfStart phace.
    //processName ""; //Mandatory
@@ -46,6 +52,7 @@ RunCommand extends Prim {
    //outputStream       // Object that implements org.smartfrog.services.runcmd.OutputStreamInt
    //errorStream        // Object that implements org.smartfrog.services.runcmd.InfoStreamInt
 }
+*/
 
 RunBatch extends RunCommand {
    isBatch true;
