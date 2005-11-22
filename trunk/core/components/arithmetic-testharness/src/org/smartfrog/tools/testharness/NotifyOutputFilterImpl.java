@@ -58,14 +58,7 @@ public class NotifyOutputFilterImpl implements NotifyOutputFilter, Runnable , Pr
 
   /** A unique identifier of this filter for the scheduler. */
   String myId;
- // int count =0;
-  static int count = 0;
-  String value;
-  String host;
-  int port;
   static int i = 0;
-  static int startcounter = 0;
-  static int stopcounter = 0;
   /** A pipe that connects the daemon's output with pIn. */
   PipedOutputStream pOut;
 
@@ -97,19 +90,12 @@ public class NotifyOutputFilterImpl implements NotifyOutputFilter, Runnable , Pr
                                 String[] searchForcePatterns,
                                 String[] resultForceTags,
                                 String[] searchCustomPatterns,
-                                String[] resultCustomTags,
-				int count, String host, int port, String  value)
+                                String[] resultCustomTags)
     throws IOException {
     this.scheduler = scheduler;
     this.myId = myId;
-    this.count = count;
-    this.value = value;
-    this.host = host;
-    this.port = port;
     this.fileOutputName = fileOutputName;
 	System.out.println("fileOutputName in NotifyOutputFilterImpl =============> " +fileOutputName);
-	System.out.println("Count in NotifyOutputFilterImpl =============> " +this.count);
-	System.out.println("Value in NotifyOutputFilterImpl =============> " +this.value);
 
 
  /*  if (fileOutputName==null)
@@ -279,8 +265,6 @@ public class NotifyOutputFilterImpl implements NotifyOutputFilter, Runnable , Pr
 
     String line;
    String resultTag = null;
-	System.out.println("In RUN");
-
     try {
 			 if (this.fileOutputName==null)
         dumpOut = System.out;
@@ -346,7 +330,6 @@ private String exploreTag(String line) throws RemoteException {
        }
     }
     String resultTag= null;
-    count ++;
   //try {
   //  int k = 0;
   //  String var[]=null;	
@@ -357,7 +340,7 @@ private String exploreTag(String line) throws RemoteException {
     else if ((resultTag = scanTag(line,searchForcePatterns,resultForceTags)) != null)
     {
 	System.out.println(":::::::::::::::::::: ResultTag"+ resultTag);
-	System.out.println(":::::::::::::::::::: COUNT"+ this.count);
+//	System.out.println(":::::::::::::::::::: COUNT"+ this.count);
         /*var[i] = resultTag;
         i++;
 	if (this.count > 0 && this.host !=null) {
