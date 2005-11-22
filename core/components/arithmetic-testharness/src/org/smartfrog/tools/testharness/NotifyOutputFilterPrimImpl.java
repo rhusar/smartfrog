@@ -138,28 +138,17 @@ public class NotifyOutputFilterPrimImpl extends PrimImpl implements NotifyOutput
 
     /* A  unique id for the scheduler. THIS IS A MUST.*/
     String processId = null;
-	int count = 0;
-	String value = null;
-	String host = null;
-	int port = 0;
-    //processId = (String)  sfResolve(PROCESS_ID);
 	 processId = sfResolve(PROCESS_ID,processId, true);
-    System.out.println("Process Id: =====" + processId);
-	count = sfResolve("count", count,false);
-	value = sfResolve("value", value,false);
-        System.out.println ("count : =====" + count);
-        System.out.println ("Value : =====" + value);
-	host = sfResolve("host", host,false);
-	port = sfResolve("cport", port,false);
+         System.out.println("Process Id: =====" + processId);
 	log("searchNormalPatterns:"+arrayToString(searchNormalPatterns));
-    log("resultNormalTags:"+arrayToString(resultNormalTags));
+        log("resultNormalTags:"+arrayToString(resultNormalTags));
     try {
         notifyFilter = new
                         NotifyOutputFilterImpl(scheduler,fileOutputName,
                              processId,searchNormalPatterns,
                              resultNormalTags,searchForcePatterns,
                              resultForceTags,searchCustomPatterns,
-                             resultCustomTags, count , host, port, value);
+                             resultCustomTags);
     }catch (Exception ex) {
         SmartFrogException.forward(ex);
     }
