@@ -29,4 +29,5 @@ LogToFileImpl extends  LogToStreamsImpl {
   useProcessNameInFileName true;
   //fileNamePrefix //"prefix"; //or PROPERTY java.io.tmpdir;
   redirectSystemOutputs false;
+  append true;
 }

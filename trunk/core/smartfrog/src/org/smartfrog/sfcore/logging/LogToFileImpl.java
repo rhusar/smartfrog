@@ -73,6 +73,8 @@ public class LogToFileImpl extends LogToStreamsImpl implements LogToFile {
     /** Redirect system.out and system.err */
     boolean redirectSystemOutputs = false;
 
+    /** Append data  */
+    boolean append = true;
 
 
 
@@ -89,21 +91,11 @@ public class LogToFileImpl extends LogToStreamsImpl implements LogToFile {
         } catch (SmartFrogException ex1) {
            this.error("",ex1);
         }
-//        assert name != null;
-//        logName = name;
-//        // Set initial log level
-//        setLevel(initialLogLevel.intValue());
 
-//        //Check Class and read configuration...including system.properties
-//        try {
-//          classComponentDescription = LogImpl.getClassComponentDescription(this, true);
-//        } catch (SmartFrogException ex) {
-//           this.warn(ex.toString());
-//        }
         PrintStream out=null;
         try {
            logFile = createFile(logFileExtension);
-           FileOutputStream fos = new FileOutputStream(logFile);
+           FileOutputStream fos = new FileOutputStream(logFile,append);
            out = new PrintStream(fos);
         } catch (Exception ex){
           //@todo
@@ -145,6 +137,7 @@ public class LogToFileImpl extends LogToStreamsImpl implements LogToFile {
           useLogNameInFileName = classComponentDescription.sfResolve(ATR_USE_LOG_NAME_IN_FILE_NAME,useLogNameInFileName, false);
           useHostNameInFileName = classComponentDescription.sfResolve(ATR_USE_HOST_NAME_IN_FILE_NAME,useHostNameInFileName, false);
           useProcessNameInFileName = classComponentDescription.sfResolve(ATR_USE_PROCESS_NAME_IN_FILE_NAME,useProcessNameInFileName, false);
+          append = classComponentDescription.sfResolve(ATR_APPEND,append, false);
         } catch (Exception ex){
            this.warn("",ex);
         }
@@ -164,6 +157,12 @@ public class LogToFileImpl extends LogToStreamsImpl implements LogToFile {
             path += File.separator;
         }
 
+        {
+            //Create new dir if it does not exist
+            File parentDir = new File(path);
+            parentDir.mkdir();
+        }
+
         fullLogFileName.append(path);
         StringBuffer newfileName=new StringBuffer();
 
@@ -171,7 +170,7 @@ public class LogToFileImpl extends LogToStreamsImpl implements LogToFile {
             if ((newfileName.toString().length()>0)&&!(newfileName.toString().endsWith("_"))) {
                             newfileName.append("_");
             }
-          newfileName.append(correctFilename(fileNamePrefix));
+          newfileName.append(fileNamePrefix);
         }
 
         if (useHostNameInFileName) {
@@ -180,7 +179,7 @@ public class LogToFileImpl extends LogToStreamsImpl implements LogToFile {
                 if ((newfileName.toString().length()>0)&&!(newfileName.toString().endsWith("_"))) {
                                 newfileName.append("_");
                 }
-                newfileName.append(correctFilename(hostname));
+                newfileName.append(hostname);
             } catch (UnknownHostException ex) {
                 if (isErrorEnabled()) error("",ex);
             }
@@ -192,7 +191,7 @@ public class LogToFileImpl extends LogToStreamsImpl implements LogToFile {
                 if ((newfileName.toString().length()>0) && !(newfileName.toString().endsWith("_"))) {
                     newfileName.append("_");
                 }
-                newfileName.append(correctFilename(processName));
+                newfileName.append(processName);
             }
         }
 
@@ -200,7 +199,7 @@ public class LogToFileImpl extends LogToStreamsImpl implements LogToFile {
             if ((newfileName.toString().length()>0)&&!(newfileName.toString().endsWith("_"))) {
                             newfileName.append("_");
             }
-           newfileName.append(correctFilename(logName));
+           newfileName.append(logName);
         }
 
         if (datedName){
@@ -214,10 +213,13 @@ public class LogToFileImpl extends LogToStreamsImpl implements LogToFile {
             newfileName.append(dateFileNameFormatter.format(new Date()));
         }
 
-        fullLogFileName.append (newfileName);
         // add the extension
-        //System.out.println("**********LogToFileImpl::createFile : "+fullLogFileName.toString()+"."+fileExtension);
-        return new File( fullLogFileName.toString()+"."+fileExtension);
+        newfileName.append("."+fileExtension);
+
+        fullLogFileName.append (newfileName);
+
+        //Return file
+        return new File( correctFilename(fullLogFileName.toString()));
     }
 
     private String correctFilename(String filename) {
@@ -227,6 +229,9 @@ public class LogToFileImpl extends LogToStreamsImpl implements LogToFile {
             char c= filename.charAt(i);
             switch(c) {
                 case ':':
+                    buffer.append('_');
+                    break;
+                case ' ':
                     buffer.append('_');
                     break;
                 case '"':
