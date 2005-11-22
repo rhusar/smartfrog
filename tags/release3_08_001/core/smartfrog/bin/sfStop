@@ -1,0 +1,15 @@
+#!/bin/sh
+if [ -z "$SFHOME" -o ! -d "$SFHOME" ] ; then
+    #echo "$0"
+    SFHOME=`dirname "$0"`/..
+    SFHOME=`cd "$SFHOME" && pwd`
+    export SFHOME;
+    echo SFHOME undefined, using $SFHOME as base directory;
+fi
+
+echo "---------------------------------------------------"
+echo "sfStop is now obsolete and replaced by sfTerminate."
+echo "Please use sfTerminate from next time."
+echo "---------------------------------------------------"
+
+. "$SFHOME/bin/sfTerminate" $1 $2

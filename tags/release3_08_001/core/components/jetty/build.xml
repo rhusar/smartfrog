@@ -1,0 +1,168 @@
+<?xml version="1.0"?>
+<project name="jetty" default="default">
+
+<!--
+/** (C) Copyright 1998-2004 Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+-->
+
+<description>
+     Build file for Jetty.
+     Important: set ${jetty.lib.dir} to point to the directory of jetty that 
+     contains the following files
+     org.mortbay.jetty.jar
+     org.mortbay.jmx.jar
+     jasper-compiler.jar
+     jasper-runtime.jar
+     javax-servlet.jar
+     
+     This is usually JETTY_HOME/lib and JETTY_HOME/ext in a source distribution.
+
+     After deploying point your browser at http://localhost:8080 to see the web
+     site.
+
+     There is also a debug servlet that can change the debug setting of a
+     running server.  It is configured by the component HttpServerAdmin and is 
+     run on port 8081 as part of the standard Jetty demo.
+     
+     
+</description>
+
+   <!-- override point -->
+  <property file="build.properties" />
+  <property name="root.dir" location="../../"  />
+  <property name="Name.System" value="Jetty"/>
+ <!-- Import common stuff -->
+  <!--available file="../../common.xml" property="root.dir" value="../.."/--> 
+  <import file="${root.dir}/common.xml"/>
+  
+   <property name="is.component" value="true"  />
+  <!-- ========================================================== -->
+  <!-- ========================================================== -->
+
+  <target name="init" depends="init-standard-output-dirs,use-smartfrog-tasks">
+
+    <property name="example.path" value="/org/smartfrog/services/jetty/examples"/>
+    <property name="deploy.sf" value="${example.path}/example1.sf"/>
+    <property name="manifestName"
+       value="${smartfrog.home}/private/sealManifest.mf"/>
+    <tstamp/>
+    <property name="Name.Company" value="(C) Copyright 1998-2005 Hewlett-Packard Development Company, LP"/>
+    <property name="version" value="smartfrog components"/>
+    <property name="year" value="2005"/>
+
+
+  </target>
+    
+  <target name="m2-files" depends="m2-tasks">
+    <m2-libraries pathID="m2.classpath">
+      <dependency groupID="org.smartfrog"
+        artifactID="sf-www"
+        version="${Version}"/>
+    </m2-libraries>
+  </target>  
+  
+ <target name="declare-compile.classpath-lib-dir"
+    depends="declare-base.compile.classpath,probe-lib-dir,m2-files"
+    if="lib.dir.found">
+    <path id="compile.classpath">
+      <path refid="base.compile.classpath"/>
+      <path refid="m2.classpath"/>
+      <fileset dir="${lib.dir}">
+        <include name="**/*.jar"/>
+      </fileset>
+    </path>
+  </target>
+  
+  <!-- ========================================================== -->
+  <!-- this is an override point -->
+  <!-- set the verified.ok property if everything needed is present -->
+  <!-- Do Not Fail. This test is used to control conditional builds -->
+  <!-- NB, set property verify.fail.message to something meaningful
+       for better diagnostic messages on failure (see assert-prerequisites) 
+       -->
+  <!-- ========================================================== -->
+  <target name="verify-prerequisites" depends="pre-verify-prerequisites">
+    <available property="verified.ok"
+               classname="org.mortbay.http.HttpServer"
+               classpathref="compile.classpath"
+               ignoresystemclasses="false"/>
+    <property name="verify.fail.message"
+              value="No Jetty found"/>
+  </target>
+  
+    <!-- ========================================================== -->
+    <!-- parse the file -->
+    <!-- ========================================================== -->
+    <target name="parse" depends="init,package"
+        description="parse the deployment descriptor">
+
+      <sf-parse quiet="true" file="${src.dir}/${deploy.sf}"
+        classpathref="exec.classpath">
+      </sf-parse>
+      <sf-parse quiet="true" file="${src.dir}/${example.path}/example2.sf"
+        classpathref="exec.classpath">
+      </sf-parse>
+      <sf-parse quiet="true" file="${src.dir}/${example.path}/example3.sf"
+        classpathref="exec.classpath">
+      </sf-parse>
+      <sf-parse quiet="true" file="${src.dir}/${example.path}/dynamicexample.sf"
+        classpathref="exec.classpath">
+      </sf-parse>
+    </target>
+    
+  <!-- ========================================================== -->
+  <!-- this is an override, as we add a manifest -->
+  <!-- create the jar -->
+  <!-- ========================================================== -->
+  <target name="dist" depends="common.dist,jdocs,parse" description="create a full distribution">
+     <copy todir="${dist.lib.dir}">
+       <fileset dir="${lib.dir}"/>
+     </copy>
+
+     <copy todir="${dist.doc.dir}">
+       <fileset dir="${doc.dir}"/>
+     </copy>
+
+     <copy todir="${dist.src.dir}">
+       <fileset dir="${src.dir}">
+         <include name="**/examples/**"/>
+       </fileset>
+     </copy>
+   <copy tofile="${dist.dir}/build.xml" file="releaseBuild.xml"/> 
+   <copy tofile="${dist.dir}/build.example.properties" file="build.example.properties"/>
+  </target>
+
+<!-- ========================================================== -->
+  <!-- clean -->
+  <!-- ========================================================== -->
+
+ <target name="clean" depends="common.clean" description="clean up build ,dist and releases" >
+    <delete dir="releases"  />  
+    <delete dir="test"  /> 
+    <delete file="version.properties"/>
+ </target>  
+
+  <!-- =================================================================== -->
+  <!--   JDocs                                                             -->
+  <!-- =================================================================== -->
+  <target name="jdocs" depends="javadoc" description="Generates the API documentation"/>
+
+</project>
