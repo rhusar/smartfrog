@@ -118,7 +118,7 @@ public class RunShellImpl extends PrimImpl implements Prim, RunShell, Runnable {
 
     //Stream consumers
     /** Output stream consumer. */
-   protected  OutputStreamIntf outputStreamObj = null; // india team change
+   protected  OutputStreamIntf outputStreamObj = null; 
     /** Error stream consumer. */
     StreamIntf errorStreamObj = null;
 
