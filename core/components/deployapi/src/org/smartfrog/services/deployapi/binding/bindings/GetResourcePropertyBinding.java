@@ -2,7 +2,7 @@ package org.smartfrog.services.deployapi.binding.bindings;
 
 import org.ggf.xbeans.cddlm.wsrf.wsrp.GetResourcePropertyDocument;
 import org.ggf.xbeans.cddlm.wsrf.wsrp.GetResourcePropertyResponseDocument;
-import org.smartfrog.services.deployapi.binding.EndpointBinding;
+import org.smartfrog.services.deployapi.binding.xmlbeans.EndpointBinding;
 
 /**
  */

@@ -38,8 +38,8 @@ import static org.ggf.cddlm.generated.api.CddlmConstants.WSRF_OPERATION_SUBSCRIB
 import org.ggf.xbeans.cddlm.api.LookupSystemRequestDocument;
 import org.ggf.xbeans.cddlm.api.LookupSystemResponseDocument;
 import org.ggf.xbeans.cddlm.wsrf.wsa2003.EndpointReferenceType;
-import org.smartfrog.services.deployapi.binding.EprHelper;
 import org.smartfrog.services.deployapi.binding.XomHelper;
+import org.smartfrog.services.deployapi.binding.xmlbeans.BeanUtils;
 import org.smartfrog.services.deployapi.binding.bindings.LookupSystemBinding;
 import org.smartfrog.services.deployapi.system.Constants;
 
@@ -204,28 +204,6 @@ public class PortalEndpointer extends Endpointer {
         SystemEndpointer createdSystem;
         createdSystem=new SystemEndpointer(response);
         return createdSystem;
-    }
-
-
-    /**
-     * look up an application against the server
-     *
-     * @param id id of app
-     * @return URI of the app
-     * @deprecated
-     */
-
-    public SystemEndpointer lookupSystem2(String id) throws RemoteException {
-        LookupSystemBinding binding = new LookupSystemBinding();
-        LookupSystemRequestDocument requestDoc = binding.createRequest();
-        LookupSystemRequestDocument.LookupSystemRequest request = requestDoc.addNewLookupSystemRequest();
-        request.setResourceId(id);
-        LookupSystemResponseDocument response = binding.invokeBlocking(this,
-                Constants.API_PORTAL_OPERATION_LOOKUPSYSTEM, requestDoc);
-        EndpointReferenceType epr = response.getLookupSystemResponse();
-        EndpointReference epr2 = EprHelper.Wsa2003ToEPR(epr);
-        SystemEndpointer endpointer = new SystemEndpointer(epr2, id);
-        return endpointer;
     }
 
 

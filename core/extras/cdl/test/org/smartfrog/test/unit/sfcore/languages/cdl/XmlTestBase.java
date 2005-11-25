@@ -5,7 +5,6 @@ import nu.xom.Element;
 import nu.xom.ParsingException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.smartfrog.services.xml.utils.ResourceLoader;
 import org.smartfrog.sfcore.languages.cdl.CdlCatalog;
 import org.smartfrog.sfcore.languages.cdl.CdlParser;
 import org.smartfrog.sfcore.languages.cdl.ParseContext;
@@ -53,9 +52,11 @@ public abstract class XmlTestBase extends SmartFrogTestBase
     };
 
 
-    protected CdlParser parser;
 
-    boolean PARSER_MUST_VALIDATE = true;
+    boolean validating = true;
+
+    DocumentTestHelper helper;
+
     //public static final boolean PARSER_MUST_VALIDATE = false;
 
     /**
@@ -63,6 +64,7 @@ public abstract class XmlTestBase extends SmartFrogTestBase
      */
     protected XmlTestBase(String name) {
         super(name);
+        helper=new DocumentTestHelper();
     }
 
     /**
@@ -71,13 +73,7 @@ public abstract class XmlTestBase extends SmartFrogTestBase
      * @return
      */
     protected CdlCatalog createCatalog() {
-        ResourceLoader loader;
-        loader = new ResourceLoader(this.getClass());
-        return new CdlCatalog(loader);
-    }
-
-    private void loading(String filename) {
-        log(filename);
+        return helper.createCatalog();
     }
 
     protected void log(String message) {
@@ -86,10 +82,7 @@ public abstract class XmlTestBase extends SmartFrogTestBase
 
     protected CdlDocument load(String filename) throws IOException,
             ParsingException, CdlException {
-        CdlDocument doc;
-        loading(filename);
-        doc = parser.parseResource(filename);
-        return doc;
+        return helper.load(filename);
     }
 
     /**
@@ -98,8 +91,7 @@ public abstract class XmlTestBase extends SmartFrogTestBase
      * @throws SAXException
      */
     protected void initParser() throws SAXException {
-        ResourceLoader loader = new ResourceLoader(this.getClass());
-        parser = new CdlParser(loader, PARSER_MUST_VALIDATE);
+        helper.initParser(validating);
     }
 
     /**
@@ -108,6 +100,14 @@ public abstract class XmlTestBase extends SmartFrogTestBase
     protected void setUp() throws Exception {
         super.setUp();
         initParser();
+    }
+
+    /**
+     * Get the helper. valid after setUp().
+     * @return
+     */
+    public DocumentTestHelper getHelper() {
+        return helper;
     }
 
     /**
@@ -121,8 +121,7 @@ public abstract class XmlTestBase extends SmartFrogTestBase
      */
     protected void assertInvalidCDL(String resource, String text)
             throws Exception {
-        ParseContext context = new ParseContext();
-        assertInvalidCDL(context, resource, text);
+        helper.assertInvalidCDL(resource, text);
     }
 
     /**
@@ -137,19 +136,7 @@ public abstract class XmlTestBase extends SmartFrogTestBase
     protected void assertInvalidCDL(ParseContext context,
             String resource,
             String text) throws Exception {
-        try {
-            if (text == null) {
-                text = "";
-            }
-            CdlDocument doc = load(resource);
-            doc.parse(context);
-            fail("expected a validity failure with " + text);
-        } catch (Exception e) {
-            if (e.getMessage().indexOf(text) < 0) {
-                log("expected [" + text + "] but got " + e.toString());
-                throw e;
-            }
-        }
+        helper.assertInvalidCDL(context, resource, text);
     }
 
     /**
@@ -163,8 +150,7 @@ public abstract class XmlTestBase extends SmartFrogTestBase
      */
     protected void assertValidCDL(String resource) throws IOException,
             ParsingException, CdlException {
-        ParseContext context = new ParseContext();
-        parseValidCDL(context, resource);
+        helper.assertValidCDL(resource);
     }
 
     /**
@@ -180,9 +166,8 @@ public abstract class XmlTestBase extends SmartFrogTestBase
     protected CdlDocument parseValidCDL(ParseContext context, String resource)
             throws IOException,
             ParsingException, CdlException {
-        CdlDocument cdlDocument = loadValidCDL(resource);
-        cdlDocument.parse(context);
-        return cdlDocument;
+
+        return helper.parseValidCDL(context,resource);
     }
 
     /**
@@ -197,10 +182,7 @@ public abstract class XmlTestBase extends SmartFrogTestBase
     protected CdlDocument parseValidCDL(String resource)
             throws IOException,
             ParsingException, CdlException {
-        ParseContext context = new ParseContext();
-        CdlDocument cdlDocument = loadValidCDL(resource);
-        cdlDocument.parse(context);
-        return cdlDocument;
+        return helper.parseValidCDL(resource);
     }
 
 
@@ -212,8 +194,7 @@ public abstract class XmlTestBase extends SmartFrogTestBase
      */
     protected CdlDocument loadValidCDL(String resource) throws IOException,
             ParsingException, CdlException {
-        CdlDocument doc = load(resource);
-        return doc;
+        return helper.loadValidCDL(resource);
     }
 
     /**
@@ -226,11 +207,7 @@ public abstract class XmlTestBase extends SmartFrogTestBase
      */
     protected CdlDocument loadCDLToDOM(String resource) throws IOException,
             ParsingException, CdlException {
-        CdlDocument doc = load(resource);
-        ParseContext context = new ParseContext();
-        doc.setParseContext(context);
-        doc.parsePhaseBuildDom();
-        return doc;
+        return helper.loadCDLToDOM(resource);
     }
 
     /**
@@ -240,7 +217,7 @@ public abstract class XmlTestBase extends SmartFrogTestBase
      * @param local
      */
     protected void assertHasAttribute(PropertyList template, String local) {
-        assertHasAttribute(template, "", local);
+        DocumentTestHelper.assertHasAttribute(template, local);
     }
 
     /**
@@ -252,8 +229,7 @@ public abstract class XmlTestBase extends SmartFrogTestBase
     protected void assertHasAttribute(PropertyList template,
             String namespace,
             String local) {
-        assertTrue("Template " + template + " lacks the attribute " + local,
-                template.hasAttribute(namespace, local));
+        DocumentTestHelper.assertHasAttribute(template, namespace, local);
     }
 
     /**
@@ -268,10 +244,7 @@ public abstract class XmlTestBase extends SmartFrogTestBase
             String namespace,
             String local,
             String expected) {
-        Attribute attribute = template.getAttribute(local, namespace);
-        assertNotNull("Template " + template + " lacks the attribute " + local,
-                attribute);
-        assertEquals(expected, attribute.getValue());
+        DocumentTestHelper.assertAttributeValueEquals(template, namespace, local,expected);
     }
 
     /**
@@ -284,25 +257,16 @@ public abstract class XmlTestBase extends SmartFrogTestBase
     protected void assertAttributeValueEquals(PropertyList template,
             String local,
             String expected) {
-        assertAttributeValueEquals(template, "", local, expected);
+        DocumentTestHelper.assertAttributeValueEquals(template, "", local, expected);
     }
 
     public void assertElementValueEquals(Element e, String value) {
-        assertNotNull("Null element", e);
-        String actual = e.getValue();
-        assertEquals("Element " +
-                e +
-                " has value [" +
-                actual +
-                "] and not the expected value [" + value + "]",
-                value, actual);
+        DocumentTestHelper.assertElementValueEquals(e,value);
     }
 
     protected void assertElementTextContains(Element element,
             String search) {
-        String value = element.getValue();
-        assertTrue("Not found: [" + search + "] in [" + value + "]",
-                value.indexOf(search) >= 0);
+        DocumentTestHelper.assertElementTextContains(element, search);
     }
 
     /**
@@ -312,13 +276,12 @@ public abstract class XmlTestBase extends SmartFrogTestBase
      * @param localname
      */
     protected PropertyList lookup(CdlDocument doc, String localname) {
-        PropertyList template = doc.lookup(new QName(localname));
-        assertNotNull("Lookup failed for element name " + localname, template);
-        return template;
+        return DocumentTestHelper.lookup(doc,localname);
     }
 
     protected File saveToSmartFrog(CdlDocument cdlDocument) throws IOException,
             CdlException {
-        return SmartFrogSourceGenerator.translate(cdlDocument);
+        return DocumentTestHelper.saveToSmartFrog(cdlDocument);
     }
+
 }

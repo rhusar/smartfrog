@@ -3,7 +3,6 @@ package org.smartfrog.services.deployapi.transport.faults;
 import org.apache.axis2.AxisFault;
 import org.apache.xmlbeans.XmlObject;
 import org.ggf.cddlm.utils.FaultTemplate;
-import org.ggf.xbeans.cddlm.wsrf.wsbf.BaseFaultType;
 
 import javax.xml.namespace.QName;
 import java.util.GregorianCalendar;
@@ -12,7 +11,7 @@ import java.util.GregorianCalendar;
  */
 public class BaseException extends RuntimeException {
 
-    private BaseFaultType baseFault;
+    //private BaseFaultType baseFault;
 
     private QName faultCode;
 

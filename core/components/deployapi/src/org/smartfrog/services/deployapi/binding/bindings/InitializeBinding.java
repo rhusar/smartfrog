@@ -22,7 +22,7 @@ package org.smartfrog.services.deployapi.binding.bindings;
 import org.apache.xmlbeans.XmlOptions;
 import org.ggf.xbeans.cddlm.api.InitializeRequestDocument;
 import org.ggf.xbeans.cddlm.api.InitializeResponseDocument;
-import org.smartfrog.services.deployapi.binding.EndpointBinding;
+import org.smartfrog.services.deployapi.binding.xmlbeans.EndpointBinding;
 
 /**
  * created 21-Sep-2005 13:08:40

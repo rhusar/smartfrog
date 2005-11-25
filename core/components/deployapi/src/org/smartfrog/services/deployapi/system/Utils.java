@@ -22,18 +22,13 @@ package org.smartfrog.services.deployapi.system;
 import nu.xom.Document;
 import nu.xom.Element;
 import nu.xom.Serializer;
-import nu.xom.converters.DOMConverter;
 import org.apache.axis2.om.OMAbstractFactory;
 import org.apache.axis2.om.OMElement;
 import org.apache.axis2.om.OMFactory;
 import org.apache.axis2.om.impl.llom.builder.StAXOMBuilder;
-import org.apache.xmlbeans.XmlObject;
-import org.apache.xmlbeans.XmlOptions;
-import org.ggf.xbeans.cddlm.cmp.DeploymentFaultType;
 import org.smartfrog.services.deployapi.binding.NuxStaxBuilder;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
 import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
-import org.w3c.dom.Node;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLInputFactory;
@@ -58,7 +53,6 @@ import java.io.Writer;
 import java.nio.charset.Charset;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.UUID;
 
@@ -80,46 +74,6 @@ public class Utils {
      */
     public static QName convert(QName in) {
         return in;
-    }
-
-    /**
-     * We are invalid.
-     *
-     * @param message
-     * @throws org.smartfrog.services.deployapi.transport.faults.DeploymentException
-     *
-     * @returns true for use in conditional code
-     */
-    public static boolean validate(XmlObject message) {
-        ArrayList validationErrors = new ArrayList();
-        XmlOptions validationOptions = new XmlOptions();
-        validationOptions.setErrorListener(validationErrors);
-        if (!message.validate(validationOptions)) {
-            message.dump();
-            DeploymentFaultType fault = DeploymentFaultType.Factory.newInstance();
-            throw FaultRaiser.raiseBadArgumentFault("XML did not validate against the schema");
-        }
-        return true;
-    }
-
-    /**
-     * validate documents iff assertions are enabled
-     *
-     * @param message
-     */
-    public static void maybeValidate(XmlObject message) {
-        assert validate(message);
-    }
-
-    /**
-     * Turn a bean (which must map to an element, unless you like runtime exceptions
-     * @param bean to convert
-     * @return the converted doc
-     */
-    public static Element beanToXom(XmlObject bean) {
-        Node dom = bean.getDomNode();
-        org.w3c.dom.Element elt=(org.w3c.dom.Element)dom;
-        return DOMConverter.convert(elt);
     }
 
 
