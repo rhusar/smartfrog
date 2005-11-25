@@ -297,4 +297,10 @@ For more information: www.smartfrog.org
   <target name="gump-test" depends="test" />
 
 
+  <!-- =================================================================== -->
+  <!-- cddlm compile is handed down-->
+  <!-- =================================================================== -->
+  <target name="cddlm" depends="m2-install">
+    <forward2 dir="${components.project}" target="cddlm"/>
+  </target>
 </project>
