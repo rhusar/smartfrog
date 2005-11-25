@@ -22,7 +22,7 @@ package org.smartfrog.services.deployapi.test.unit;
 import org.apache.axis2.om.OMElement;
 import org.ggf.xbeans.cddlm.api.CreateRequestDocument;
 import org.ggf.xbeans.cddlm.api.CreateResponseDocument;
-import org.smartfrog.services.deployapi.binding.Axis2Beans;
+import org.smartfrog.services.deployapi.binding.xmlbeans.Axis2Beans;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.transport.endpoints.PortalEndpoint;
 import org.smartfrog.services.deployapi.transport.endpoints.portal.CreateProcessor;

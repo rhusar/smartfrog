@@ -24,8 +24,10 @@ import nu.xom.Builder;
 import nu.xom.Document;
 import nu.xom.ParsingException;
 import nu.xom.NodeFactory;
+import nu.xom.converters.DOMConverter;
 import org.smartfrog.services.xml.utils.ParserHelper;
 import org.smartfrog.services.xml.utils.ResourceLoader;
+import org.smartfrog.services.xml.utils.DomToXom;
 import org.smartfrog.sfcore.languages.cdl.dom.CdlDocument;
 import org.smartfrog.sfcore.languages.cdl.dom.ExtendedNodeFactory;
 import org.smartfrog.sfcore.languages.cdl.dom.DocumentNode;
@@ -89,7 +91,7 @@ public class CdlParser {
     public CdlDocument parseFile(String filename) throws IOException,
             ParsingException, CdlException {
         File f = new File(filename);
-        return new CdlDocument((DocumentNode) builder.build(f));
+        return new CdlDocument(builder.build(f));
     }
 
     /**
@@ -103,7 +105,7 @@ public class CdlParser {
     public CdlDocument parseStream(InputStream instream) throws IOException,
             ParsingException, CdlException {
         Document doc = builder.build(instream);
-        return new CdlDocument((DocumentNode)doc);
+        return new CdlDocument(doc);
     }
 
     /**
@@ -118,6 +120,21 @@ public class CdlParser {
             ParsingException, CdlException {
         InputStream in = resourceLoader.loadResource(resource);
         return parseStream(in);
+    }
+
+    /**
+     * Convert a Dom document to a CDL one.
+     * @param dom
+     * @return a CdlDocument from a Dom
+     * @throws ParsingException
+     * @throws CdlException
+     */
+    public CdlDocument parseDom(org.w3c.dom.Document dom) throws 
+            ParsingException, CdlException {
+        DomToXom converter = new DomToXom(builder);
+        //this converts it to a Dom Document, but not to
+        Document document = converter.convert(dom);
+        return new CdlDocument(document);
     }
 
     /**

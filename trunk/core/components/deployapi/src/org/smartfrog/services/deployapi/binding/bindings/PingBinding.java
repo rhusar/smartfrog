@@ -21,7 +21,7 @@ package org.smartfrog.services.deployapi.binding.bindings;
 
 import org.ggf.xbeans.cddlm.api.PingRequestDocument;
 import org.ggf.xbeans.cddlm.api.PingResponseDocument;
-import org.smartfrog.services.deployapi.binding.EndpointBinding;
+import org.smartfrog.services.deployapi.binding.xmlbeans.EndpointBinding;
 
 /**
  * created 21-Sep-2005 13:53:31

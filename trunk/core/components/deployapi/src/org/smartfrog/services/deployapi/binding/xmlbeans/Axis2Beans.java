@@ -17,7 +17,7 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.services.deployapi.binding;
+package org.smartfrog.services.deployapi.binding.xmlbeans;
 
 import org.apache.axis2.client.StreamWrapper;
 import org.apache.axis2.om.OMAbstractFactory;
@@ -38,6 +38,7 @@ import java.io.StringWriter;
 
 /**
  * Convert axis2 stuff into a an XMLBean
+ * @deprecated
  */
 public class Axis2Beans<T extends XmlObject> {
 

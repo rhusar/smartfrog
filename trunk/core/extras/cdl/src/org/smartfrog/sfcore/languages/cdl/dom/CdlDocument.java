@@ -120,6 +120,10 @@ public class CdlDocument implements Names, ToSmartFrog {
         bind(doc);
     }
 
+    public CdlDocument(Document doc) throws CdlException {
+        bind((DocumentNode)doc);
+    }
+
     /**
      * get the parse context
      *

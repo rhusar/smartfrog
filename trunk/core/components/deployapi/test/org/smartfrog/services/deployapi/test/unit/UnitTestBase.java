@@ -32,7 +32,7 @@ import org.apache.xmlbeans.XmlOptions;
 import org.ggf.xbeans.cddlm.testhelper.TestType;
 import org.ggf.xbeans.cddlm.testhelper.TestsDocument;
 import org.ggf.xbeans.cddlm.testhelper.TestsType;
-import org.smartfrog.services.deployapi.binding.Axis2Beans;
+import org.smartfrog.services.deployapi.binding.xmlbeans.Axis2Beans;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
 import org.smartfrog.services.xml.utils.ResourceLoader;

@@ -23,11 +23,6 @@ import nu.xom.Element;
 import org.apache.axis2.addressing.AnyContentType;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.addressing.ServiceName;
-import org.ggf.xbeans.cddlm.wsrf.wsa2003.AttributedURI;
-import org.ggf.xbeans.cddlm.wsrf.wsa2003.EndpointReferenceType;
-import org.ggf.xbeans.cddlm.wsrf.wsa2003.ReferencePropertiesType;
-import org.ggf.xbeans.cddlm.wsrf.wsa2003.ServiceNameType;
-import org.ggf.xbeans.cddlm.wsrf.wsa2004.AttributedQName;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
 
@@ -86,77 +81,7 @@ public class EprHelper {
         throw FaultRaiser.raiseBadArgumentFault("Unknown namespace "+ns);
     }
 
-    public static EndpointReference Wsa2003ToEPR(EndpointReferenceType source) {
-        AttributedURI addrURI = source.getAddress();
-        EndpointReference dest = new EndpointReference(addrURI.getStringValue());
-        if(source.isSetServiceName()) {
-            ServiceNameType sourceServiceName = source.getServiceName();
-            ServiceName destServiceName=new ServiceName(sourceServiceName.getQNameValue(),
-                    sourceServiceName.getPortName());
-            dest.setServiceName(destServiceName);
-        }
-        if(source.isSetReferenceProperties()) {
-            ReferencePropertiesType props = source.getReferenceProperties();
-            props.newCursor();
-            dest.getReferenceParameters();
-            AnyContentType content=new AnyContentType();
 
-            //TODO: reference properties are not currently supported
-
-        }
-        return dest;
-    }
-
-    public static EndpointReferenceType EPRToWsa2003(EndpointReference source) {
-        EndpointReferenceType dest = EndpointReferenceType.Factory.newInstance();
-        dest.addNewAddress().setStringValue(source.getAddress());
-        ServiceName serviceName = source.getServiceName();
-        if(serviceName!=null) {
-            ServiceNameType destServiceName = dest.addNewServiceName();
-            destServiceName.setPortName(serviceName.getEndpointName());
-            destServiceName.setQNameValue(serviceName.getName());
-        }
-        //TODO: reference properties are not currently supported
-        return dest;
-    }
-
-
-
-    public static EndpointReference Wsa2004ToEPR(org.ggf.xbeans.cddlm.wsrf.wsa2004.EndpointReferenceType source) {
-        org.ggf.xbeans.cddlm.wsrf.wsa2004.AttributedURI addrURI = source.getAddress();
-        EndpointReference dest = new EndpointReference(addrURI.getStringValue());
-        org.ggf.xbeans.cddlm.wsrf.wsa2004.ReferencePropertiesType props = source.getReferenceProperties();
-        //TODO: reference properties are not currently supported
-        return dest;
-    }
-
-    public static org.ggf.xbeans.cddlm.wsrf.wsa2004.EndpointReferenceType EPRToWsa2004(EndpointReference source) {
-        org.ggf.xbeans.cddlm.wsrf.wsa2004.EndpointReferenceType dest =
-                org.ggf.xbeans.cddlm.wsrf.wsa2004.EndpointReferenceType.Factory.newInstance();
-        dest.addNewAddress().setStringValue(source.getAddress());
-        //TODO: reference properties are not currently supported
-        return dest;
-    }
-
-
-    /**
-     * copy a source to a dest
-     * @param source
-     */
-    public static void copyInto(org.ggf.xbeans.cddlm.wsrf.wsa2004.EndpointReferenceType source,
-                                EndpointReferenceType dest) {
-        org.ggf.xbeans.cddlm.wsrf.wsa2004.AttributedURI address = source.getAddress();
-
-        dest.addNewAddress().setStringValue(address.getStringValue());
-
-        AttributedQName portType = source.getPortType();
-        dest.addNewPortType().setQNameValue(portType.getQNameValue());
-        org.ggf.xbeans.cddlm.wsrf.wsa2004.ServiceNameType serviceName = source.getServiceName();
-        dest.addNewServiceName().setPortName(serviceName.getPortName());
-        org.ggf.xbeans.cddlm.wsrf.wsa2004.ReferencePropertiesType sourceProperties = source.getReferenceProperties();
-        ReferencePropertiesType destProperties = dest.addNewReferenceProperties();
-        //TODO
-    }
 
     /**
      * Turn an endpointer into a readable string
