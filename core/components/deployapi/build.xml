@@ -202,7 +202,7 @@
      <dependency groupID="axis2"
         artifactID="axis2"
         version="${axis2.version}"/>
-      <dependency groupID="xmlbeans"
+<!--      <dependency groupID="xmlbeans"
         artifactID="xbean"
         version="${xmlbeans.version}"/>
       <dependency groupID="xmlbeans"
@@ -213,7 +213,7 @@
         version="${xmlbeans.version}"/>
       <dependency groupID="xmlbeans"
         artifactID="xmlpublic"
-        version="${xmlbeans.version}"/>        
+        version="${xmlbeans.version}"/>   -->
       <dependency groupID="saxon"
         artifactID="saxon"
         version="${saxon.version}"/>        
