@@ -78,11 +78,11 @@ For more information: www.smartfrog.org
   <!-- ========================================================== -->
   <!-- initialisation -->
   <!-- ========================================================== -->
-  <target name="init" >
+  <target name="init" depends="init-common-simpledefinitions" >
     <!-- add new components here, in alphabetical order. this is
       not where dependency logic is imposed -->
     <property name="arithmetic-testharness.project" location="arithmetic-testharness" />
-    <property name="cddlm.project" location="cddlm" />
+    <property name="cdl.project" location="${extras.dir}/cdl"/>
     <property name="deployapi.project" location="deployapi" />
     <property name="emailer.project" location="emailer" />
     <property name="jetty.project" location="jetty" />
@@ -139,19 +139,32 @@ For more information: www.smartfrog.org
       /-->
     </path>
     <property name="component.path.asproperty"
-      refid="component.path"/>
-    <echo level="verbose">component.path :=   ${component.path.asproperty}    </echo>
+        refid="component.path"/>
+    <echo level="verbose">component.path := ${component.path.asproperty}</echo>
 
-  <presetdef name="delegate">
+    <path id="web.path">
+      <pathelement location="${www.project}"/>
+      <pathelement location="${jetty.project}"/>
+      <pathelement location="${tomcat.project}"/>
+    </path>
+
+    <path id="cddlm.path">
+      <pathelement location="${cdl.project}"/>
+      <pathelement location="${jetty.project}"/>
+      <pathelement location="${tomcat.project}"/>
+    </path>
+
+
+    <presetdef name="delegate">
       <subant buildpathref="component.path"
-        antfile="build.xml"
-        inheritall ="false" inheritrefs="false"/>
+          antfile="build.xml"
+          inheritall="false" inheritrefs="false"/>
     </presetdef>
 
-  <presetdef name="delegateBuild">
+    <presetdef name="delegateBuild">
       <subant buildpathref="component.path"
-        antfile="buildRelease.xml"
-        inheritall ="false" inheritrefs="false"/>
+          antfile="buildRelease.xml"
+          inheritall="false" inheritrefs="false"/>
     </presetdef>
 
   </target>
@@ -205,6 +218,15 @@ For more information: www.smartfrog.org
   </target>
 
 
+  <target name="web" depends="init"
+      description="web components">
+    <delegate target="m2-install" buildpathref="web.path"/>
+  </target>
+
+  <target name="cddlm" depends="web,m2-install"
+      description="CDDLM implementation components">
+    <delegate target="m2-install" buildpathref="cddlm.path"/>
+  </target>
 
 
   <!-- =================================================================== -->
