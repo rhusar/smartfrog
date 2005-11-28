@@ -22,10 +22,7 @@ package org.smartfrog.services.deployapi.client;
 import nu.xom.Element;
 import nu.xom.Nodes;
 import org.apache.axis2.addressing.EndpointReference;
-import org.ggf.xbeans.cddlm.api.DescriptorType;
-import org.ggf.xbeans.cddlm.api.TerminateRequestDocument;
 import org.smartfrog.services.deployapi.binding.EprHelper;
-import org.smartfrog.services.deployapi.binding.bindings.TerminateBinding;
 import org.smartfrog.services.deployapi.system.Constants;
 
 import javax.xml.namespace.QName;
@@ -244,27 +241,6 @@ public abstract class ConsoleOperation {
     }
 
     /**
-     * initiate an undeployment
-     * 
-     * @param application
-     * @param reason
-     * @throws java.rmi.RemoteException
-     */
-    public void terminate(SystemEndpointer application, String reason)
-            throws RemoteException {
-        TerminateBinding binding = new TerminateBinding();
-        TerminateRequestDocument request = binding.createRequest();
-        TerminateRequestDocument.TerminateRequest terminateRequest = request.addNewTerminateRequest();
-        if (reason != null) {
-            terminateRequest.setReason(reason);
-        }
-        binding.invokeBlocking(application,
-                Constants.API_SYSTEM_OPERATION_TERMINATE,
-                request);
-    }
-
-
-    /**
      * exit, use success flag to choose the return time. This method does not
      * return
      *
@@ -332,15 +308,4 @@ public abstract class ConsoleOperation {
         }
     }
 
-    /**
-     * Add a file to a descriptor
-     * @param descriptor
-     * @param file
-     * @param language
-     */
-    public void addFileToDescriptorAsReference(DescriptorType descriptor,
-                                               File file,
-                                               String language) {
-
-    }
 }

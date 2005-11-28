@@ -19,15 +19,16 @@
  */
 package org.smartfrog.services.deployapi.transport.endpoints.system;
 
+import nu.xom.Element;
+import nu.xom.Node;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.ggf.xbeans.cddlm.api.OptionMapType;
-import org.ggf.xbeans.cddlm.api.OptionType;
+import org.smartfrog.services.deployapi.binding.XomHelper;
+import org.smartfrog.services.deployapi.engine.OptionPropertyMap;
 import org.smartfrog.services.deployapi.system.DeployApiConstants;
 import org.smartfrog.services.deployapi.transport.endpoints.SmartFrogAxisEndpoint;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
-
-import java.util.Properties;
+import org.smartfrog.sfcore.languages.cdl.utils.NodeIterator;
 
 /**
  * this processor extracts options from the request. If any option is marked
@@ -37,7 +38,6 @@ import java.util.Properties;
 
 public class OptionProcessor extends SystemProcessor {
 
-    private Properties propertyMap = new Properties();
     private boolean validateOnly = false;
     private String name;
 
@@ -45,6 +45,8 @@ public class OptionProcessor extends SystemProcessor {
      * log
      */
     private static final Log log = LogFactory.getLog(OptionProcessor.class);
+    private static final String OPTION_ATTR_NAME = "name";
+    private OptionPropertyMap optionPropertyMap;
 
     public OptionProcessor(SmartFrogAxisEndpoint owner) {
         super(owner);
@@ -60,16 +62,22 @@ public class OptionProcessor extends SystemProcessor {
      *
      * @param options
      */
-    public void process(OptionMapType options) {
+    public void process(Element options) {
         if (options == null) {
             return;
         }
-        for (OptionType option : options.getOptionList()) {
-            boolean processed = false;
-            String optionName = option.getName();
-            if (log.isDebugEnabled()) {
-                log.debug("option " + optionName);
+        NodeIterator nodes=new NodeIterator(options);
+        for(Node node:nodes) {
+            if(!(node instanceof Element)) {
+                //comments and things, presumably.
+                continue;
             }
+            Element option=(Element) node;
+            boolean processed = false;
+
+            String optionName = getOptionName(option);
+            log.debug("option " + optionName);
+            boolean mustUnderstand = getMustUnderstand(option);
             if (DeployApiConstants.OPTION_PROPERTIES.equals(optionName)) {
                 processPropertiesOption(option);
                 processed = true;
@@ -87,20 +95,67 @@ public class OptionProcessor extends SystemProcessor {
                 if (log.isDebugEnabled()) {
                     log.debug("Ignored header " + optionName);
                 }
-                if (option.getMustUnderstand()) {
+                if (mustUnderstand) {
                     throwFailedToUnderstand(option);
                 }
             }
         }
     }
 
+    private boolean getMustUnderstand(Element option) {
+        XomHelper.getApiAttrValue(option, "mustUnderstand", false);
+        boolean mustUnderstand = XomHelper.getBoolApiAttrValue(option, "mustUnderstand", false,false);
+        return mustUnderstand;
+    }
+
+    private String getOptionName(Element option) {
+        return XomHelper.getApiAttrValue(option, OPTION_ATTR_NAME,true);
+    }
+
     /**
-     * throw a fault declaring the option is not understood
-     *
-     * @param option always
+     * Get the (required) string attribute of an option
+     * @param option
+     * @return value of the api:string attr
+     * @throws BaseException if missing
      */
-    private void throwFailedToUnderstand(OptionType option) {
-        String uriName = option.getName();
+    private String getOptionStringValue(Element option) {
+        return XomHelper.getElementValue(option,"api:string");
+    }
+
+    /**
+     * Get the (required) boolean attribute of an option
+     *
+     * @param option
+     * @return value of the api:boolean attr
+     * @throws BaseException if missing
+     */
+    private boolean getOptionBoolValue(Element option) {
+        return XomHelper.getXsdBoolValue(XomHelper.getElementValue(option, "api:boolean"));
+    }
+
+    private int getOptionIntValue(Element option) {
+        String val = XomHelper.getElementValue(option, "api:boolean");
+        return Integer.valueOf(val);
+    }
+
+    private Element getOptionDataValue(Element option) {
+        return XomHelper.getElement(option, "api:data",true);
+    }
+
+    private OptionPropertyMap getOptionPropertyMapValue(Element option) {
+        OptionPropertyMap map=new OptionPropertyMap();
+        Element xmlMap = XomHelper.getElement(option, "api:propertyMapOption", true);
+        map.importMap(xmlMap);
+        return map;
+    }
+
+    /**
+* throw a fault declaring the option is not understood
+*
+* @param option always
+*/
+    private void throwFailedToUnderstand(Element option) {
+        String uriName = getOptionName(option);
         log.warn("failed to process option " + uriName);
         throw raiseFault(DeployApiConstants.FAULT_NOT_UNDERSTOOD,
                 "Did not recognise the mustUnderstand option" + uriName);
@@ -111,9 +166,9 @@ public class OptionProcessor extends SystemProcessor {
      *
      * @param option
      */
-    private void processNameOption(OptionType option) {
+    private void processNameOption(Element option) {
         assertNoXml(option);
-        name = option.getString();
+        name = getOptionStringValue(option);
     }
 
     /**
@@ -121,12 +176,10 @@ public class OptionProcessor extends SystemProcessor {
      *
      * @param option
      */
-    private void processValidateOption(OptionType option) {
+    private void processValidateOption(Element option) {
         assertNoXml(option);
-        validateOnly = option.isSetBoolean();
-        if (log.isDebugEnabled()) {
-            log.debug("validateOnly :=" + validateOnly);
-        }
+        validateOnly = getOptionBoolValue(option);
+        log.debug("validateOnly :=" + validateOnly);
     }
 
     /**
@@ -134,31 +187,9 @@ public class OptionProcessor extends SystemProcessor {
      *
      * @param option
      */
-    private void processPropertiesOption(OptionType option) {
-        /*
-        UnboundedXMLAnyNamespace xml = option.getData();
-        MessageElement[] contents = xml.get_any();
-        if (contents.length > 1) {
-            throw raiseBadPropertiesData();
-        }
-        if (contents.length <= 0) {
-            log.debug("empty data in properties");
-            return;
-        }
-        MessageElement element = contents[0];
-        final String message = "when parsing properties XML";
-        Document doc = null;
-        parseMessageFragment(element, message);
-*/
-        //TODO
-        if (option.getMustUnderstand()) {
-            throwFailedToUnderstand(option);
-        }
-    }
-
-    private static BaseException raiseBadPropertiesData() {
-        return raiseBadArgumentFault(
-                "wrong structure of the properties option");
+    private void processPropertiesOption(Element option) {
+        assertNoXml(option);
+        optionPropertyMap = getOptionPropertyMapValue(option);
     }
 
     /**
@@ -166,9 +197,9 @@ public class OptionProcessor extends SystemProcessor {
      *
      * @param option
      */
-    private static void assertNoXml(OptionType option) {
-        if (option.getData() != null) {
-            raiseBadArgumentFault("No XML allowed in " + option.getName());
+    private static void assertNoXml(Element option) {
+        if (XomHelper.getElement(option, "api:data", false)!= null) {
+            raiseBadArgumentFault("No XML allowed in " + option);
         }
     }
 
@@ -185,15 +216,11 @@ public class OptionProcessor extends SystemProcessor {
         return name;
     }
 
-    public void setPropertyMap(Properties propertyMap) {
-        this.propertyMap = propertyMap;
-    }
-
-    public void setValidateOnly(boolean validateOnly) {
-        this.validateOnly = validateOnly;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+    /**
+     * Get the (possibly null) runtime properties
+     * @return runtime options
+     */
+    public OptionPropertyMap getOptionPropertyMap() {
+        return optionPropertyMap;
     }
 }

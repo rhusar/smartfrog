@@ -1,17 +1,21 @@
 package org.smartfrog.services.deployapi.transport.faults;
 
 import org.apache.axis2.AxisFault;
-import org.apache.xmlbeans.XmlObject;
 import org.ggf.cddlm.utils.FaultTemplate;
+import org.smartfrog.services.deployapi.binding.XomHelper;
 
 import javax.xml.namespace.QName;
 import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Calendar;
+
+import nu.xom.Element;
 
 /**
  */
 public class BaseException extends RuntimeException {
 
-    //private BaseFaultType baseFault;
 
     private QName faultCode;
 
@@ -19,11 +23,14 @@ public class BaseException extends RuntimeException {
 
     private String faultActor;
 
+    private Calendar timestamp= new GregorianCalendar();
+
     /**
      * This is here because WS-BaseFaults persists in having some world view of declared faults, forcing
      * the recipient to expect to handle everything that went wrong.
      */
-    private XmlObject underlyingFaultData;
+    private List<Element> data=new ArrayList<Element>();
+
 
     /**
      * Constructs a new runtime exception with <code>null</code> as its
@@ -35,7 +42,7 @@ public class BaseException extends RuntimeException {
 
     public BaseException(Throwable arg1) {
         super(arg1);
-        createAndConfigureInnerFault();
+        init();
     }
 
 
@@ -57,17 +64,7 @@ public class BaseException extends RuntimeException {
      */
     public BaseException(String message) {
         super(message);
-        createAndConfigureInnerFault();
-    }
-
-    /**
-     * Constructs a new runtime exception with <code>null</code> as its
-     * detail message.  The cause is not initialized, and may subsequently be
-     * initialized by a call to {@link #initCause}.
-     */
-    public BaseException(BaseFaultType xmlfault) {
-        this.baseFault = xmlfault;
-        createAndConfigureInnerFault();
+        init();
     }
 
     /**
@@ -76,7 +73,10 @@ public class BaseException extends RuntimeException {
      */
     public BaseException(String arg0, Throwable arg1) {
         super(arg0, arg1);
-        createInnerFault();
+        init();
+    }
+
+    private void init() {
     }
 
     /**
@@ -89,7 +89,9 @@ public class BaseException extends RuntimeException {
         return null;
     }
 
+
     private void initFromTemplate(FaultTemplate template) {
+        init();
         QName qualifiedName = template.getQualifiedName();
         setFaultCode(qualifiedName);
         faultReason = template.getWireMessage();
@@ -117,42 +119,6 @@ public class BaseException extends RuntimeException {
         }
     }
 
-    protected void createAndConfigureInnerFault() {
-        BaseFaultType baseFaultType = createInnerFault();
-        configureInnerFault(baseFaultType);
-        setBaseFault(baseFaultType);
-    }
-
-
-    /**
-     * overriders beware: this is called in the ctor
-     */
-    protected BaseFaultType createInnerFault() {
-        BaseFaultType baseFaultType = BaseFaultType.Factory.newInstance();
-        configureInnerFault(baseFaultType);
-        return baseFaultType;
-    }
-
-    /**
-     * overriders beware: this is called in the ctor
-     *
-     * @param baseFaultType
-     */
-    public void configureInnerFault(BaseFaultType baseFaultType) {
-        if (baseFaultType.getTimestamp() != null) {
-            baseFaultType.setTimestamp(new GregorianCalendar());
-        }
-    }
-
-
-    public BaseFaultType getBaseFault() {
-        return baseFault;
-    }
-
-    public void setBaseFault(BaseFaultType baseFault) {
-        this.baseFault = baseFault;
-    }
-
     public QName getFaultCode() {
         return faultCode;
     }
@@ -177,6 +143,13 @@ public class BaseException extends RuntimeException {
         this.faultActor = faultActor;
     }
 
+    public Calendar getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Calendar timestamp) {
+        this.timestamp = timestamp;
+    }
 
     /**
      * Turn into an Axis Fault or otherwise serialize
@@ -190,7 +163,14 @@ public class BaseException extends RuntimeException {
         return fault;
     }
 
+    /**
+     * add some fault detail
+     * @param name
+     * @param detail
+     */
     public void addFaultDetail(QName name, String detail) {
-        //TODO
+        Element elt= XomHelper.element(name);
+        elt.appendChild(detail);
+        data.add(elt);
     }
 }

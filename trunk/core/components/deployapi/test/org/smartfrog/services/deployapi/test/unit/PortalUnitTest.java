@@ -20,9 +20,6 @@
 package org.smartfrog.services.deployapi.test.unit;
 
 import org.apache.axis2.om.OMElement;
-import org.ggf.xbeans.cddlm.api.CreateRequestDocument;
-import org.ggf.xbeans.cddlm.api.CreateResponseDocument;
-import org.smartfrog.services.deployapi.binding.xmlbeans.Axis2Beans;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.transport.endpoints.PortalEndpoint;
 import org.smartfrog.services.deployapi.transport.endpoints.portal.CreateProcessor;
@@ -56,34 +53,6 @@ public class PortalUnitTest extends UnitTestBase {
     public void testOMLookup() throws Exception {
         OMElement ome = loadTestOMElement(DOC_CREATE, TEST_CREATE_REQUEST_HOSTNAME);
         assertNotNull(ome);
-    }
-
-    public void BrokentestRoundTrip() throws Exception {
-        Axis2Beans<CreateRequestDocument.CreateRequest> requestBinder = new Axis2Beans<CreateRequestDocument.CreateRequest>();
-        CreateRequestDocument.CreateRequest doc= (CreateRequestDocument.CreateRequest)
-                loadTestElement(DOC_CREATE,TEST_CREATE_REQUEST_HOSTNAME);
-        QName requestQname=new QName(Constants.CDL_API_TYPES_NAMESPACE, Constants.API_ELEMENT_CREATE_REQUEST);
-        assertName(doc,requestQname);
-        assertValid(doc);
-        //test round tripping
-        OMElement request = requestBinder.convert(doc);
-        assertEquals(requestQname, request.getQName());
-        Axis2Beans<CreateRequestDocument> docBinder = new Axis2Beans<CreateRequestDocument>();
-        CreateRequestDocument doc2 = docBinder.convert(request);
-        CreateRequestDocument.CreateRequest createRequest = doc2.getCreateRequest();
-        assertName(createRequest, requestQname);
-        assertValid(createRequest);
-        assertEquals(doc, createRequest);
-
-    }
-
-    public void NotestDispatch() throws Exception {
-        OMElement request=loadTestOMElement(DOC_CREATE, TEST_CREATE_REQUEST_HOSTNAME);
-        CreateProcessor createProcessor = new CreateProcessor(portal);
-        OMElement response = createProcessor.process(request);
-        Axis2Beans<CreateResponseDocument> responseBinder = new Axis2Beans<CreateResponseDocument>();
-        CreateResponseDocument responseDoc=responseBinder.convert(response);
-        assertValid(responseDoc);
     }
 
 }

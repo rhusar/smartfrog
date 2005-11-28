@@ -24,15 +24,6 @@ import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.om.OMAttribute;
 import org.apache.axis2.om.OMElement;
 import org.apache.axis2.om.impl.llom.builder.StAXOMBuilder;
-import org.apache.xmlbeans.XmlCursor;
-import org.apache.xmlbeans.XmlError;
-import org.apache.xmlbeans.XmlException;
-import org.apache.xmlbeans.XmlObject;
-import org.apache.xmlbeans.XmlOptions;
-import org.ggf.xbeans.cddlm.testhelper.TestType;
-import org.ggf.xbeans.cddlm.testhelper.TestsDocument;
-import org.ggf.xbeans.cddlm.testhelper.TestsType;
-import org.smartfrog.services.deployapi.binding.xmlbeans.Axis2Beans;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
 import org.smartfrog.services.xml.utils.ResourceLoader;
@@ -55,7 +46,6 @@ import java.util.Iterator;
 public abstract class UnitTestBase extends TestCase {
     public static final String TEST_FILES_API_VALID = "test/api/valid/";
     public static final String DECLARE_TEST_NAMESPACE= "declare namespace t='"+ Constants.TEST_HELPER_NAMESPACE+"'; ";
-    XmlOptions options;
     public static final QName TEST_ELEMENT=new QName(Constants.TEST_HELPER_NAMESPACE,"test");
     public static final QName TEST_NAME = new QName(Constants.TEST_HELPER_NAMESPACE, "name");
     public static final QName TEST_NAME_LOCAL = new QName("name");
@@ -84,46 +74,6 @@ public abstract class UnitTestBase extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
         resolver = new XmlCatalogResolver(new ResourceLoader());
-        options = new XmlOptions();
-        options.setEntityResolver(resolver);
-    }
-
-    /**
-     * Assert that a doc is valid
-     *
-     * @param bean bean to check
-     * @throws junit.framework.AssertionFailedError
-     *          with all the error messages inside
-     */
-    public void assertValid(XmlObject bean) {
-        assertNotNull("XmlObject is null", bean);
-        ArrayList<XmlError> validationErrors = new ArrayList<XmlError>();
-        XmlOptions validationOptions = new XmlOptions();
-        validationOptions.setErrorListener(validationErrors);
-        if (!bean.validate(validationOptions)) {
-            StringBuffer errors = new StringBuffer();
-            for (XmlError error : validationErrors) {
-                errors.append(error.getMessage());
-                errors.append("\n");
-            }
-            fail(errors.toString());
-        }
-    }
-
-    public void assertName(XmlObject bean,String namespace,String localname) {
-        if (namespace== null) {
-            namespace = "";
-        }
-        QName match = new QName(namespace, localname);
-        assertName(bean, match);
-    }
-
-    public void assertName(XmlObject bean, QName match) {
-        assertNotNull("XmlObject is null", bean);
-        Node node = bean.getDomNode();
-        String namespaceURI = node.getNamespaceURI();
-        QName name = new QName(namespaceURI,node.getLocalName());
-        assertEquals(match,name);
     }
 
     protected InputStream loadResource(String resource) {
@@ -134,30 +84,8 @@ public abstract class UnitTestBase extends TestCase {
         return stream;
     }
 
-    public XmlObject loadTestElement(String resource,String name) throws IOException, XmlException {
-        Axis2Beans<TestsDocument> binder = new Axis2Beans<TestsDocument>(options);
-        TestsDocument doc = binder.loadBeansFromResource(resource);
-        XmlObject[] children = doc.selectChildren(Constants.TEST_HELPER_NAMESPACE,
-                TESTS);
-        TestsType tests = doc.getTests();
-        for(TestType test:tests.getTestList()) {
-            if(name.equals(test.getName())) {
-                XmlCursor cursor=test.newCursor();
-                if (cursor.toFirstChild()) {
-                    return cursor.getObject();    
-                } else {
-                    throw new XmlException("Element "+test+" has no children");
-                }
-            }
-        }
 
-        throw new XmlException("No node of name " +
-                name +
-                " found in resource " +
-                resource);
-    }
-
-    public OMElement loadTestOMElement(String resource, String name) throws IOException, XmlException,
+    public OMElement loadTestOMElement(String resource, String name) throws IOException,
             XMLStreamException {
         InputStream in=loadResource(resource);
         XMLStreamReader parser = XMLInputFactory.newInstance().createXMLStreamReader(in);
@@ -182,14 +110,10 @@ public abstract class UnitTestBase extends TestCase {
                 return element.getFirstElement();
             }
         }
-        throw new XmlException("No node of name " + name + " found in resource " + resource);
+        fail("No node of name " + name + " found in resource " + resource);
+        return null;
     }
 
-    protected void maybedump(XmlObject object) {
-        if(dump) {
-            object.dump();
-        }
-    }
 
     /**
      * assert that text is an iso date

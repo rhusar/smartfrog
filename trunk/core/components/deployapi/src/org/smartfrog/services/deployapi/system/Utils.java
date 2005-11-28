@@ -21,12 +21,12 @@ package org.smartfrog.services.deployapi.system;
 
 import nu.xom.Document;
 import nu.xom.Element;
-import nu.xom.Serializer;
 import org.apache.axis2.om.OMAbstractFactory;
 import org.apache.axis2.om.OMElement;
 import org.apache.axis2.om.OMFactory;
 import org.apache.axis2.om.impl.llom.builder.StAXOMBuilder;
 import org.smartfrog.services.deployapi.binding.NuxStaxBuilder;
+import org.smartfrog.services.deployapi.binding.XomHelper;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
 import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
 
@@ -37,7 +37,6 @@ import javax.xml.stream.XMLStreamReader;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
@@ -89,13 +88,23 @@ public class Utils {
         return "uuid_" + s;
     }
 
+    /**
+     * Create an OMElement from the QName
+     * @param qname element qname
+     * @return
+     */
     public static OMElement createOmElement(QName qname) {
-        OMFactory factory = OMAbstractFactory.getOMFactory();
-        OMElement element = factory.createOMElement(qname.getLocalPart(),
-            qname.getNamespaceURI(), qname.getPrefix());
-        return element;
+        return createOmElement(
+                qname.getNamespaceURI(), qname.getLocalPart(),qname.getPrefix());
     }
 
+    /**
+     * Create an om element from the infividual elements of the qname.
+     * @param namespace
+     * @param local
+     * @param prefix
+     * @return
+     */
     public static OMElement createOmElement(String namespace,String local,String prefix) {
         OMFactory factory = OMAbstractFactory.getOMFactory();
         OMElement element = factory.createOMElement(local,namespace, prefix);
@@ -110,49 +119,38 @@ public class Utils {
      * @throws BaseException if needed 
      */
     public static Document axiomToXom(OMElement em)  {
-        Document document = null;
         try {
+            Document document;
             XMLStreamReader reader = em.getXMLStreamReader();
             NuxStaxBuilder builder=new NuxStaxBuilder();
             document = builder.build(reader);
+            return document;
         } catch (XMLStreamException e) {
             throw FaultRaiser.raiseInternalError("converting object models",e);
         }
-        return document;
     }
+
 
     /**
-     * detatch the root element from the doc, so it
-     * can be used elsewhere. The doc is left with a dummy element
-     * to avoid it being malformed.
-     * @param document
-     * @return element that was the root
+     * Convert a Xom graph to Axiom. The Element is detached from its parents and placed
+     * at the base of a new doc in the process; this is not a zero-side-effect operation
+     * @param element
+     * @return an Axom equivalent
      */
-    public static Element detachRootElement(Document document) {
-        Element rootElement = document.getRootElement();
-        document.setRootElement(new Element("dummy"));
-        return rootElement;
-    }
-
-
-    public static byte[] xomToBuffer(Document document) throws IOException {
-        ByteArrayOutputStream out=new ByteArrayOutputStream();
-        Serializer serializer=new Serializer(out);
-        serializer.write(document);
-        serializer.flush();
-        out.close();
-        return out.toByteArray();
-    }
-
     public static OMElement xomToAxiom(Element element)  {
         element.detach();
         Document document=new Document(element);
         return xomToAxiom(document);
     }
 
+    /**
+     *
+     * @param document
+     * @return
+     */
     public static OMElement xomToAxiom(Document document) {
         try {
-            byte[] buffer = xomToBuffer(document);
+            byte[] buffer = XomHelper.xomToBuffer(document);
             return loadAxiomFromBuffer(buffer);
         } catch (IOException e) {
             throw FaultRaiser.raiseInternalError("doc conversion error",e);
@@ -172,6 +170,10 @@ public class Utils {
         }
     }
 
+    /**
+     * Close any open stream; ignore any errors.
+     * @param stream
+     */
     public static void close(Closeable stream) {
         try {
             stream.close();
