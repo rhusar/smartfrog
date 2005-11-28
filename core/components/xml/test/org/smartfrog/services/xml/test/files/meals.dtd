@@ -1,7 +1,0 @@
-<!DOCTYPE meals [
-<!ELEMENT meal (#PCDATA)>
-<!ATTLIST meal
-    name CDATA #REQUIRED
-    served CDATA #REQUIRED>
-<!ELEMENT meals (meal)*>
-]>
