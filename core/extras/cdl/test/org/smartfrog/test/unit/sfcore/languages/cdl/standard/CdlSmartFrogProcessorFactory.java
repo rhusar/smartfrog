@@ -19,8 +19,8 @@
  */
 package org.smartfrog.test.unit.sfcore.languages.cdl.standard;
 
-import org.ggf.cddlm.cdl.test.CDLProcessorFactory;
 import org.ggf.cddlm.cdl.test.CDLProcessor;
+import org.ggf.cddlm.cdl.test.CDLProcessorFactory;
 
 /**
  * created 25-Nov-2005 15:08:50

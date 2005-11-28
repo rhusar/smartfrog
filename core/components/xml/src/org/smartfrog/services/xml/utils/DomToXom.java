@@ -33,6 +33,9 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.ByteArrayInputStream;
 
+import org.w3c.dom.DOMImplementation;
+import org.w3c.dom.bootstrap.DOMImplementationRegistry;
+
 /**
  * created 25-Nov-2005 16:50:16
  */
@@ -43,6 +46,13 @@ public class DomToXom {
      * builder class
      */
     private Builder builder;
+
+    /**
+     * How to look for a dom3 parser
+     * {@value}
+     */
+    private static final String DOM3 = "XML 3.0";
+    private static final String UTF8 = "UTF-8";
 
     public DomToXom(Builder builder) {
         this.builder = builder;
@@ -56,7 +66,7 @@ public class DomToXom {
         try {
             ser.write(xom);
             ser.flush();
-            String rawdoc = out.toString("UTF-8");
+            String rawdoc = out.toString(UTF8);
             return out.toByteArray();
         } catch (IOException e) {
             //too unlikely for an internal thing
@@ -64,6 +74,38 @@ public class DomToXom {
         }
     }
 
+    /**
+     * Get a Dom3 impl
+     * @return the implementation
+     * @throws RuntimeException if things go wrong
+     */
+    public static DOMImplementation getDom3Implementation() {
+        try {
+            // get an instance of the DOMImplementation registry
+            DOMImplementationRegistry registry =
+                    DOMImplementationRegistry.newInstance();
+            // get a DOM implementation the Level 3 XML module
+            DOMImplementation domImpl =
+                    registry.getDOMImplementation(DOM3);
+            return domImpl;
+        } catch (Exception e) {
+            RuntimeException rte;
+            if(!(e instanceof RuntimeException)) {
+                rte=new RuntimeException(e);
+            } else {
+                rte=(RuntimeException) e;
+            }
+            throw rte;
+        }
+    }
+
+    /**
+     * Convert a Dom doc to a Xom doc
+     * @param dom
+     * @return
+     * @throws ParsingException
+     * @throws RuntimeException for IO problems (very hard to do, given we are reading a string buffer)
+     */
     public Document convert(org.w3c.dom.Document dom) throws ParsingException {
         try {
             byte bytes[]=convertToBytes(dom);
@@ -74,5 +116,16 @@ public class DomToXom {
             //too unlikely for an internal thing
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * Convert from a Xom document to a W3C Dom Document
+     * @param xom
+     * @return the Dom equivalent
+     * @throws RuntimeException for dom instantiation problems
+     */
+    public static org.w3c.dom.Document fromXom(Document xom) {
+        DOMImplementation domImpl=getDom3Implementation();
+        return DOMConverter.convert(xom,domImpl);
     }
 }
