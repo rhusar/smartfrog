@@ -392,7 +392,7 @@ public class CdlDocument implements Names, ToSmartFrog {
             //if we get here, then either there is stuff that we don't recognise
             //or its in another namespace
             if (CDL_NAMESPACE.equals(child.getNamespaceURI())) {
-                //strange stuff here
+                //strange stuff in the doc
                 throw new CdlXmlParsingException("Unknown element " + child);
             } else {
                 //do nothing
@@ -432,11 +432,11 @@ public class CdlDocument implements Names, ToSmartFrog {
     }
 
     public void parsePhaseResolveVariables() throws CdlException {
-
+        //TODO
     }
 
     public void parsePhaseEvaluateExpressions() throws CdlException {
-
+        //TODO
     }
 
 

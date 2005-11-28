@@ -19,22 +19,21 @@
  */
 package org.smartfrog.test.unit.sfcore.languages.cdl.standard;
 
-import org.ggf.cddlm.cdl.test.CDLProcessor;
-import org.ggf.cddlm.cdl.test.CDLException;
-import org.w3c.dom.Document;
+import nu.xom.ParsingException;
+import nu.xom.converters.DOMConverter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.smartfrog.sfcore.languages.cdl.CdlCatalog;
+import org.ggf.cddlm.cdl.test.CDLException;
+import org.ggf.cddlm.cdl.test.CDLProcessor;
 import org.smartfrog.sfcore.languages.cdl.ParseContext;
-import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
 import org.smartfrog.sfcore.languages.cdl.dom.CdlDocument;
-import org.smartfrog.services.xml.utils.ResourceLoader;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlRuntimeException;
 import org.smartfrog.test.unit.sfcore.languages.cdl.DocumentTestHelper;
+import org.smartfrog.services.xml.utils.DomToXom;
+import org.w3c.dom.Document;
 
 import java.net.URI;
-import java.io.IOException;
-
-import nu.xom.ParsingException;
 
 /**
  * created 25-Nov-2005 15:09:51
@@ -43,7 +42,7 @@ import nu.xom.ParsingException;
 public class CdlSmartFrogProcessor implements CDLProcessor {
 
     protected Log log = LogFactory.getLog(this.getClass());
-   DocumentTestHelper helper=new DocumentTestHelper();
+    DocumentTestHelper helper = new DocumentTestHelper();
 
 
     /**
@@ -66,22 +65,18 @@ public class CdlSmartFrogProcessor implements CDLProcessor {
      * @param doc a CDL document to be resolved.
      * @return resolved data.
      * @throws CDLException
-     *
      */
     public Document resolve(Document doc) throws CDLException {
         try {
             ParseContext context = new ParseContext();
-            CdlDocument document=helper.load(doc);
-            //TODO
-            return null;
-        } catch (CdlException e) {
-            throw new CDLException(e);
-        } catch (ParsingException e) {
+            CdlDocument cdlDocument = helper.load(doc);
+            cdlDocument.parse(context);
+            nu.xom.Document xomDoc = cdlDocument.getDocument();
+            return DomToXom.fromXom(xomDoc);
+        } catch (Exception e) {
             throw new CDLException(e);
         }
     }
-
-
 
 
     /**
@@ -92,8 +87,6 @@ public class CdlSmartFrogProcessor implements CDLProcessor {
     public void close() {
         //TODO
     }
-
-
 
 
 }
