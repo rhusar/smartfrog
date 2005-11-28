@@ -263,7 +263,7 @@ public class DescriptorHelper extends XomHelper {
 
     private Element inlineDescriptorFromDocument(Document document,
                                                  String language) {
-        Element rootElement = Utils.detachRootElement(document);
+        Element rootElement = detachRootElement(document);
         return createInlineDescriptor(rootElement, language);
     }
 

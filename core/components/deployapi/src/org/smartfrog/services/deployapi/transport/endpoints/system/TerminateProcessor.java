@@ -19,17 +19,13 @@
  */
 package org.smartfrog.services.deployapi.transport.endpoints.system;
 
-import nu.xom.Element;
 import nu.xom.Document;
-import org.apache.axis2.om.OMElement;
+import nu.xom.Element;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.ggf.xbeans.cddlm.api.TerminateRequestDocument;
 import org.smartfrog.services.deployapi.binding.XomHelper;
-import org.smartfrog.services.deployapi.binding.bindings.TerminateBinding;
 import org.smartfrog.services.deployapi.engine.JobRepository;
 import org.smartfrog.services.deployapi.engine.ServerInstance;
-import org.smartfrog.services.deployapi.system.Utils;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.transport.endpoints.SmartFrogAxisEndpoint;
 

@@ -26,14 +26,9 @@ import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.description.AxisOperation;
 import org.apache.axis2.description.AxisService;
 import org.apache.axis2.description.InOutAxisOperation;
-import org.ggf.xbeans.cddlm.api.DescriptorType;
-import org.ggf.xbeans.cddlm.api.InitializeRequestDocument;
-import org.ggf.xbeans.cddlm.api.InitializeResponseDocument;
-import org.ggf.xbeans.cddlm.api.OptionMapType;
 import org.smartfrog.services.deployapi.binding.EprHelper;
 import org.smartfrog.services.deployapi.binding.XomHelper;
 import static org.smartfrog.services.deployapi.binding.XomHelper.apiElement;
-import org.smartfrog.services.deployapi.binding.bindings.InitializeBinding;
 import static org.smartfrog.services.deployapi.system.Constants.*;
 import org.smartfrog.services.deployapi.system.LifecycleStateEnum;
 
@@ -229,30 +224,6 @@ public class SystemEndpointer extends Endpointer {
     }
 
 
-    /**
-     * deploy a named application, or return an exception
-     *
-     * @param descriptor
-     * @param options
-     * @deprecated
-     */
-    public void initialize(DescriptorType descriptor,
-                           OptionMapType options)
-            throws RemoteException {
-        InitializeBinding binding = new InitializeBinding();
-        if (options == null) {
-            options = OptionMapType.Factory.newInstance();
-        }
-
-        InitializeRequestDocument requestDoc = binding.createRequest();
-        InitializeRequestDocument.InitializeRequest request = requestDoc.addNewInitializeRequest();
-        request.setDescriptor(descriptor);
-        request.setOptions(options);
-        InitializeResponseDocument responseDoc = binding
-                .invokeBlocking(this,
-                        API_ELEMENT_INITALIZE_REQUEST,
-                        requestDoc);
-    }
 
     /**
      * make an init request

@@ -21,7 +21,6 @@
 
 package org.smartfrog.services.deployapi.test.system;
 
-import org.ggf.xbeans.cddlm.wsrf.wsrp.GetResourcePropertyResponseDocument;
 import org.smartfrog.services.deployapi.client.ConsoleOperation;
 import org.smartfrog.services.deployapi.client.Deploy;
 import org.smartfrog.services.deployapi.client.Endpointer;

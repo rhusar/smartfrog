@@ -2,15 +2,13 @@ package org.smartfrog.services.deployapi.transport.faults;
 
 import org.apache.axis2.AxisFault;
 import org.ggf.cddlm.utils.FaultTemplate;
-import org.ggf.xbeans.cddlm.cmp.DeploymentFaultType;
-import org.ggf.xbeans.cddlm.cmp.StringListType;
-import org.ggf.xbeans.cddlm.wsrf.wsbf.BaseFaultType;
 
 import javax.xml.namespace.QName;
 
 /**
  */
 public class DeploymentException extends BaseException {
+
 
 
     public DeploymentException() {
@@ -27,14 +25,6 @@ public class DeploymentException extends BaseException {
         super(message);
     }
 
-    /**
-     * Constructs a new runtime exception with <code>null</code> as its
-     * detail message.  The cause is not initialized, and may subsequently be
-     * initialized by a call to {@link #initCause}.
-     */
-    public DeploymentException(BaseFaultType xmlfault) {
-        super(xmlfault);
-    }
 
     /**
      * @param message
@@ -58,17 +48,14 @@ public class DeploymentException extends BaseException {
         super(axisFault);
     }
 
-    protected BaseFaultType createInnerFault() {
-        return super.createInnerFault();
-    }
 
     /**
      * overriders beware: this is called in the ctor
      *
-     * @param baseFaultType
      */
-    public void configureInnerFault(BaseFaultType baseFaultType) {
-        super.configureInnerFault(baseFaultType);
+/*
+    public void configureInnerFault() {
+        super.configureInnerFault();
         if (baseFaultType instanceof DeploymentFaultType) {
             DeploymentFaultType fault = (DeploymentFaultType) baseFaultType;
             if (!fault.isSetStack()) {
@@ -78,6 +65,8 @@ public class DeploymentException extends BaseException {
             //TODO: extract
         }
     }
+*/
+/*
 
     public void copyStackTrace(DeploymentFaultType fault, StackTraceElement[] stackTrace) {
         StringListType stackList = fault.addNewStack();
@@ -85,14 +74,8 @@ public class DeploymentException extends BaseException {
             stackList.addItem(element.toString());
         }
     }
+*/
 
-    public DeploymentFaultType getBaseFault() {
-        return (DeploymentFaultType) super.getBaseFault();
-    }
-
-    public void setBaseFault(DeploymentFaultType baseFault) {
-        super.setBaseFault(baseFault);
-    }
 
 
     public void addTextElement(QName qname, String text) {

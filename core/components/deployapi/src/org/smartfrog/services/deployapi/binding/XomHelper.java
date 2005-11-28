@@ -20,68 +20,143 @@
 
 package org.smartfrog.services.deployapi.binding;
 
+import static org.ggf.cddlm.generated.api.CddlmConstants.CDL_API_TYPES_NAMESPACE;
 import nu.xom.Attribute;
 import nu.xom.Element;
 import nu.xom.Node;
 import nu.xom.Nodes;
+import nu.xom.Document;
+import nu.xom.Serializer;
 import org.ggf.cddlm.generated.api.CddlmConstants;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
+import org.smartfrog.services.xml.utils.XomUtils;
+import org.smartfrog.services.xml.utils.XsdUtils;
 
 import javax.xml.namespace.QName;
+import java.io.IOException;
+import java.io.ByteArrayOutputStream;
 
 /** generic xom stuff */
-public class XomHelper {
+public class XomHelper extends XomUtils  {
     public static final String API = "api:";
     public static final String WSRF_RL = "wsrf-rl:";
     public static final String MUWSP1_XS = "muws-p1-xs:";
-    public static final String TNS = CddlmConstants.CDL_API_TYPES_NAMESPACE;
+    public static final String TNS = CDL_API_TYPES_NAMESPACE;
 
+    /**
+     * Create a new API element with the api: prefix in the API namespace
+     * @param name localname
+     * @return a new element
+     */
     public static Element apiElement(String name) {
         return new Element(API + name,
-                CddlmConstants.CDL_API_TYPES_NAMESPACE);
+                CDL_API_TYPES_NAMESPACE);
     }
 
 
+    /**
+     * Create a new API element
+     * @param name localname
+     * @param value string name
+     * @return
+     */
     public static Element apiElement(String name,String value) {
         Element e=apiElement(name);
         e.appendChild(value);
         return e;
     }
 
+    /**
+     * Create a new Api element with the specified child element
+     * @param name localname
+     * @param child child element. May be null.
+     * @return
+     */
     public static Element apiElement(String name, Element child) {
         Element e = apiElement(name);
-        e.appendChild(child);
+        if(child!=null) {
+            e.appendChild(child);
+        }
         return e;
     }
 
 
+    /**
+     * Add a new API attribute to an element
+     * @param element element to add to
+     * @param name attribute name
+     * @param value string value of the element
+     */
     public static void addApiAttr(Element element, String name, String value) {
         Attribute attribute = new Attribute(API + name,
-                Constants.CDL_API_TYPES_NAMESPACE,
+                CDL_API_TYPES_NAMESPACE,
                 value);
         element.addAttribute(attribute);
     }
 
+    /**
+     * Get the value of an api attribute
+     * @param element element to look at
+     * @param name attribute name
+     * @param required flag if needed
+     * @return
+     */
+    public static String getApiAttrValue(Element element, String name,boolean required) {
+        Attribute val = element.getAttribute(name, CDL_API_TYPES_NAMESPACE);
+        if(val==null) {
+            if(required) {
+                throw FaultRaiser.raiseBadArgumentFault("No attribute api:"+name+" on "+element);
+            } else {
+                return null;
+            }
+        }
+        return val.getValue();
+    }
+
+    /**
+     * Get the boolean value of an attribute
+     * @param element
+     * @param name
+     * @param required
+     * @param defval
+     * @return
+     * @throws org.smartfrog.services.deployapi.transport.faults.BaseException if the value doesnt map to a bool
+     */
+    public static boolean getBoolApiAttrValue(Element element, String name, boolean required,boolean defval) {
+        String val=getApiAttrValue(element,name, required);
+        if(val==null) {
+            return defval;
+        }
+        return getXsdBoolValue(val);
+    }
+
+    /**
+     *
+     * @param string value to parse
+     * @return value
+     * @throws org.smartfrog.services.deployapi.transport.faults.BaseException if the value doesnt map to a bool
+     */
+    public static boolean getXsdBoolValue(String string) {
+        if(XsdUtils.isXsdBooleanTrue(string)) {
+            return true;
+        }
+        if(XsdUtils.isXsdBooleanFalse(string)) {
+            return false;
+        }
+        throw FaultRaiser.raiseBadArgumentFault("Not a valid boolean value:" +string);
+    }
+
+    /**
+     * Create a MUWS resource ID element from a string ID
+     * @param id new ID
+     * @return the new element
+     */
     public static Element makeResourceId(String id) {
         Element element = new Element(MUWSP1_XS +
                 Constants.PROPERTY_MUWS_RESOURCEID.getLocalPart(),
                 Constants.MUWS_P1_NAMESPACE);
         element.appendChild(id);
-        return element;
-
-    }
-
-    /**
-     * turn a qname into an element of the same name
-     *
-     * @param qname
-     * @return
-     */
-    public static Element element(QName qname) {
-        Element element = new Element(qname.getLocalPart(),
-                qname.getNamespaceURI());
-        element.setNamespacePrefix(qname.getPrefix());
         return element;
 
     }
@@ -93,7 +168,7 @@ public class XomHelper {
      */
     public static void adopt(Element element,String name) {
         element.setLocalName(name);
-        element.setNamespaceURI(Constants.CDL_API_TYPES_NAMESPACE);
+        element.setNamespaceURI(CDL_API_TYPES_NAMESPACE);
         element.setNamespacePrefix("api");
     }
 
@@ -151,5 +226,6 @@ public class XomHelper {
         }
         return (Element) n;
     }
+
 
 }

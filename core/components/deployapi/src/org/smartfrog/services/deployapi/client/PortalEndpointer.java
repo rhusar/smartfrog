@@ -35,12 +35,7 @@ import static org.ggf.cddlm.generated.api.CddlmConstants.WSRF_OPERATION_GETCURRE
 import static org.ggf.cddlm.generated.api.CddlmConstants.WSRF_OPERATION_GETMULTIPLERESOURCEPROPERTIES;
 import static org.ggf.cddlm.generated.api.CddlmConstants.WSRF_OPERATION_GETRESOURCEPROPERTY;
 import static org.ggf.cddlm.generated.api.CddlmConstants.WSRF_OPERATION_SUBSCRIBE;
-import org.ggf.xbeans.cddlm.api.LookupSystemRequestDocument;
-import org.ggf.xbeans.cddlm.api.LookupSystemResponseDocument;
-import org.ggf.xbeans.cddlm.wsrf.wsa2003.EndpointReferenceType;
 import org.smartfrog.services.deployapi.binding.XomHelper;
-import org.smartfrog.services.deployapi.binding.xmlbeans.BeanUtils;
-import org.smartfrog.services.deployapi.binding.bindings.LookupSystemBinding;
 import org.smartfrog.services.deployapi.system.Constants;
 
 import javax.xml.namespace.QName;

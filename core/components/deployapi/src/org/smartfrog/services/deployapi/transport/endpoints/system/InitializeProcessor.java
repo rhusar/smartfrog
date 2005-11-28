@@ -27,6 +27,7 @@ import org.apache.commons.logging.LogFactory;
 import org.smartfrog.services.deployapi.binding.DescriptorHelper;
 import org.smartfrog.services.deployapi.binding.XomHelper;
 import org.smartfrog.services.deployapi.engine.ServerInstance;
+import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.system.DeploymentLanguage;
 import org.smartfrog.services.deployapi.system.LifecycleStateEnum;
 import org.smartfrog.services.deployapi.system.Utils;
@@ -77,8 +78,9 @@ public class InitializeProcessor extends SystemProcessor {
         options = new OptionProcessor(getOwner());
 
         job.bind(requestIn, options);
-        //options.process(requestIn.getOptions());
-
+        Element optionSet= requestIn.getFirstChildElement("options",
+                Constants.CDL_API_TYPES_NAMESPACE);
+        options.process(optionSet);
 
         boolean deployed = false;
 

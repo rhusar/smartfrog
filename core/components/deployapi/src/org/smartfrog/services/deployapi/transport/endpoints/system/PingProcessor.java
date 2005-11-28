@@ -19,18 +19,17 @@
  */
 package org.smartfrog.services.deployapi.transport.endpoints.system;
 
+import nu.xom.Document;
+import nu.xom.Element;
 import org.apache.axis2.om.OMElement;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.smartfrog.services.deployapi.binding.XomHelper;
-import org.smartfrog.services.deployapi.system.Utils;
 import org.smartfrog.services.deployapi.system.Constants;
+import org.smartfrog.services.deployapi.system.Utils;
 import org.smartfrog.services.deployapi.transport.endpoints.SmartFrogAxisEndpoint;
 
 import java.rmi.RemoteException;
-
-import nu.xom.Document;
-import nu.xom.Element;
 
 /**
  * This class is *NOT* re-entrant. Create one for each deployment. created Aug
