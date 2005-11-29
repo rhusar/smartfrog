@@ -36,6 +36,12 @@ public interface JavaWebApplicationServer extends Remote {
 
 
     /**
+     * Port attribute (from WebServer)
+     * {@value}
+     */
+    public static final String ATTR_PORT ="port";
+
+    /**
      * attribute that is to be set only if WAR deployment is supported.
      * {@value}
      */

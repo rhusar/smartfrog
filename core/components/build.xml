@@ -124,6 +124,7 @@ For more information: www.smartfrog.org
       <pathelement location="${utils.project}"/>
       <!--pathelement location="${logger.project}"/-->
       <pathelement location="${ssh.project}"/>
+      <pathelement location="${junit.project}"/>
       <pathelement location="${net.project}"/>
       <pathelement location="${emailer.project}"/>
       <pathelement location="${slp.project}"/>
@@ -148,10 +149,13 @@ For more information: www.smartfrog.org
       <pathelement location="${tomcat.project}"/>
     </path>
 
+    <path id="xml.path">
+      <pathelement location="${xml.project}"/>
+    </path>
+
     <path id="cddlm.path">
       <pathelement location="${cdl.project}"/>
-      <pathelement location="${jetty.project}"/>
-      <pathelement location="${tomcat.project}"/>
+      <pathelement location="${deployapi.project}"/>
     </path>
 
 
@@ -223,7 +227,12 @@ For more information: www.smartfrog.org
     <delegate target="m2-install" buildpathref="web.path"/>
   </target>
 
-  <target name="cddlm" depends="web,m2-install"
+  <target name="xml" depends="init"
+          description="xml support">
+    <delegate target="m2-install" buildpathref="web.path"/>
+  </target>
+
+  <target name="cddlm" depends="web,m2-install,xml"
       description="CDDLM implementation components">
     <delegate target="m2-install" buildpathref="cddlm.path"/>
   </target>
