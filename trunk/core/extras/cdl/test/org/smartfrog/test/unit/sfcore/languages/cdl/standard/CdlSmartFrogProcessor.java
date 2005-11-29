@@ -41,8 +41,8 @@ import java.net.URI;
 
 public class CdlSmartFrogProcessor implements CDLProcessor {
 
-    protected Log log = LogFactory.getLog(this.getClass());
-    DocumentTestHelper helper = new DocumentTestHelper();
+    private Log log = LogFactory.getLog(this.getClass());
+    private DocumentTestHelper helper = new DocumentTestHelper();
 
 
     /**

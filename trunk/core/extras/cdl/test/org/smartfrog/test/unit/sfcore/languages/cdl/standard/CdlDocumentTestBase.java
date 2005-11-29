@@ -25,7 +25,7 @@ import org.ggf.cddlm.cdl.test.AbstractCdlTestBase;
  * created 25-Nov-2005 15:06:06
  */
 
-public class CdlDocumentTestBase extends AbstractCdlTestBase {
+public abstract class CdlDocumentTestBase extends AbstractCdlTestBase {
 
     /**
      * Override point: the name of the default factory
@@ -34,5 +34,17 @@ public class CdlDocumentTestBase extends AbstractCdlTestBase {
      */
     protected String getDefaultFactoryClassname() {
         return CdlSmartFrogProcessorFactory.class.getName();
+    }
+
+    /**
+     * implementations should return the name of the resource dir
+     * @return
+     */
+    abstract protected String getTestFileResourceDir();
+
+    protected void setUp() throws Exception {
+        super.setUp();
+        String dir=getTestFileResourceDir();
+        setPatterns(createPatternsFromResourceDir(dir));
     }
 }
