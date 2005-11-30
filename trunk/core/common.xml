@@ -137,9 +137,13 @@
     <property name="project.name" value="${jar.prefix}${ant.project.name}" />
 
         <!-- information about the ant tasks -->
-    <property name="smartfrog.tasks.prefix" value="${jar.prefix}tasks"/>      
+    <property name="smartfrog.tasks.prefix" value="${jar.prefix}tasks"/>
 
-    
+    <!-- work out our java version by introspection -->
+    <condition property="java1.5+" >
+      <available classname="java.lang.Readable"/>
+    </condition>
+
   </target>
 
 

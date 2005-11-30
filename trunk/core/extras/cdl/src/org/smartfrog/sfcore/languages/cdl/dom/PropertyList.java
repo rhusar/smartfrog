@@ -26,7 +26,7 @@ import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
 import org.smartfrog.sfcore.languages.cdl.generate.GenerateContext;
 import org.smartfrog.sfcore.languages.cdl.utils.ClassLogger;
-import org.smartfrog.sfcore.languages.cdl.utils.XmlUtils;
+import org.smartfrog.services.xml.java5.NamespaceUtils;
 import org.smartfrog.sfcore.languages.cdl.Constants;
 import org.smartfrog.sfcore.logging.Log;
 import org.ggf.cddlm.generated.api.CddlmConstants;
@@ -99,8 +99,8 @@ public class PropertyList extends DocNode {
         if (extendsAttr != null) {
             String rawextension = extendsAttr.getValue();
             //now split that into namespace
-            String prefix = XmlUtils.extractNamespacePrefix(rawextension);
-            String local = XmlUtils.extractLocalname(rawextension);
+            String prefix = NamespaceUtils.extractNamespacePrefix(rawextension);
+            String local = NamespaceUtils.extractLocalname(rawextension);
             String namespace = null;
             if (prefix != null) {
                 namespace = getNamespaceURI(prefix);
@@ -109,7 +109,7 @@ public class PropertyList extends DocNode {
                             ErrorMessages.ERROR_UNKNOWN_NAMESPACE + prefix);
                 }
             }
-            setExtendsName(XmlUtils.makeQName(namespace, local, prefix));
+            setExtendsName(NamespaceUtils.makeQName(namespace, local, prefix));
         }
     }
 

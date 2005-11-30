@@ -27,9 +27,9 @@ import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
 import org.smartfrog.sfcore.languages.cdl.generate.GenerateContext;
 import org.smartfrog.sfcore.languages.cdl.generate.ToSmartFrog;
-import org.smartfrog.sfcore.languages.cdl.utils.AttributeIterator;
-import org.smartfrog.sfcore.languages.cdl.utils.NodeIterator;
-import org.smartfrog.sfcore.languages.cdl.utils.XmlUtils;
+import org.smartfrog.services.xml.java5.iterators.AttributeIterator;
+import org.smartfrog.services.xml.java5.iterators.NodeIterator;
+import org.smartfrog.services.xml.java5.NamespaceUtils;
 import org.smartfrog.sfcore.languages.sf.functions.BaseUnaryOperator;
 
 import javax.xml.namespace.QName;
@@ -114,7 +114,7 @@ public class ElementEx extends Element implements ToSmartFrog {
      * @return
      */
     public QName getQName() {
-        return XmlUtils.makeQName(this);
+        return NamespaceUtils.makeQName(this);
     }
 
     /**

@@ -35,8 +35,8 @@ import org.smartfrog.sfcore.languages.cdl.generate.GenerateContext;
 import org.smartfrog.sfcore.languages.cdl.generate.ToSmartFrog;
 import org.smartfrog.sfcore.languages.cdl.resolving.ExtendsResolver;
 import org.smartfrog.sfcore.languages.cdl.utils.ClassLogger;
-import org.smartfrog.sfcore.languages.cdl.utils.IteratorRelay;
-import org.smartfrog.sfcore.languages.cdl.utils.NodeIterator;
+import org.smartfrog.services.xml.java5.iterators.IteratorRelay;
+import org.smartfrog.services.xml.java5.iterators.NodeIterator;
 import org.smartfrog.sfcore.logging.Log;
 
 import javax.xml.namespace.QName;

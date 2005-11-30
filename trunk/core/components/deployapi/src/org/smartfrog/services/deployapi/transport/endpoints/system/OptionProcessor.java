@@ -28,7 +28,7 @@ import org.smartfrog.services.deployapi.engine.OptionPropertyMap;
 import org.smartfrog.services.deployapi.system.DeployApiConstants;
 import org.smartfrog.services.deployapi.transport.endpoints.SmartFrogAxisEndpoint;
 import org.smartfrog.services.deployapi.transport.faults.BaseException;
-import org.smartfrog.sfcore.languages.cdl.utils.NodeIterator;
+import org.smartfrog.services.xml.java5.iterators.NodeIterator;
 
 /**
  * this processor extracts options from the request. If any option is marked
