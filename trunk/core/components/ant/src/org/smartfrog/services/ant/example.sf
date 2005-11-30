@@ -233,6 +233,30 @@ sfConfig extends Ant {
     message "SFHOME is ${myenv.SFHOME}";
    }
 
+   propertyNameBuild extends {
+     AntTask "property";
+     name "build";
+     location "build";
+   }
+   propertyNameBuildClasses extends {
+     AntTask "property";
+     name "build.classes.dir";
+     location "${build}";
+   }
+
+   propertyFile extends {
+     AntTask "property";
+     file "build.properties";
+   }
+   propertyJulio extends {
+     AntTask "property";
+     environment "env";
+   }
+
+   echoSFHOMEEnvTask extends Echo {
+    message "SFHOME is ${env.SFHOME}";
+   }
+
   echoEndTask extends Echo {
     message "Done!";
   }
