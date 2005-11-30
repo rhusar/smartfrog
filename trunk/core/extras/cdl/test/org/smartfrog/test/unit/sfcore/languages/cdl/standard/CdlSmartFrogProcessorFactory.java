@@ -21,6 +21,8 @@ package org.smartfrog.test.unit.sfcore.languages.cdl.standard;
 
 import org.ggf.cddlm.cdl.test.CDLProcessor;
 import org.ggf.cddlm.cdl.test.CDLProcessorFactory;
+import org.ggf.cddlm.cdl.test.CDLException;
+import org.xml.sax.SAXException;
 
 /**
  * created 25-Nov-2005 15:08:50
@@ -36,6 +38,10 @@ public class CdlSmartFrogProcessorFactory implements CDLProcessorFactory {
      *
      */
     public CDLProcessor getProcessor() {
-        return new CdlSmartFrogProcessor();
+        try {
+            return new CdlSmartFrogProcessor();
+        } catch (SAXException e) {
+            throw new CDLException(e);
+        }
     }
 }

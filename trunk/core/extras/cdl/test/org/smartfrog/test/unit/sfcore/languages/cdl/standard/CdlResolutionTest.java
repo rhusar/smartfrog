@@ -10,6 +10,6 @@ public class CdlResolutionTest extends CdlDocumentTestBase {
      * @return
      */
     protected String getTestFileResourceDir() {
-        return "/test/cdl/valid/normative/resolution";
+        return "test/cdl/valid/normative/resolution";
     }
 }

@@ -28,6 +28,7 @@ import org.smartfrog.sfcore.languages.cdl.dom.CdlDocument;
 import org.smartfrog.test.unit.sfcore.languages.cdl.DocumentTestHelper;
 import org.smartfrog.services.xml.java5.XomToDom3;
 import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 import java.net.URI;
 
@@ -38,8 +39,12 @@ import java.net.URI;
 public class CdlSmartFrogProcessor implements CDLProcessor {
 
     private Log log = LogFactory.getLog(this.getClass());
-    private DocumentTestHelper helper = new DocumentTestHelper();
+    private DocumentTestHelper helper;
 
+
+    public CdlSmartFrogProcessor() throws SAXException {
+        helper = new DocumentTestHelper(true);
+    }
 
     /**
      * Give a document which will be referred to by the CDL document to be resolved.

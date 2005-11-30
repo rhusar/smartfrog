@@ -48,6 +48,9 @@ public class XomToDom3 {
             // get a DOM implementation the Level 3 XML module
             DOMImplementation domImpl =
                     registry.getDOMImplementation(DOM3);
+            if(domImpl==null) {
+                throw new RuntimeException("Failed to create a parser with the attributes:"+DOM3);
+            }
             return domImpl;
         } catch (Exception e) {
             RuntimeException rte;
@@ -68,6 +71,7 @@ public class XomToDom3 {
      */
     public static org.w3c.dom.Document fromXom(Document xom) {
         DOMImplementation domImpl=getDom3Implementation();
+        assert domImpl!=null;
         return DOMConverter.convert(xom,domImpl);
     }
 }
