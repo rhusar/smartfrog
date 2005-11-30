@@ -28,7 +28,7 @@ import org.smartfrog.services.deployapi.binding.EprHelper;
 import org.smartfrog.services.deployapi.client.PortalEndpointer;
 import org.smartfrog.services.deployapi.client.SystemEndpointer;
 import org.smartfrog.services.deployapi.system.Constants;
-import org.smartfrog.sfcore.languages.cdl.utils.ElementsIterator;
+import org.smartfrog.services.xml.java5.iterators.NodeIterator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -136,9 +136,9 @@ public class PortalTest extends ApiTestBase {
         nodes= staticstatus.query("api:notifications", Constants.XOM_CONTEXT);
         assertTrue(nodes.size() >= 1);
         Element notifications=(Element) nodes.get(0);
-        ElementsIterator it=new ElementsIterator(notifications);
+        NodeIterator it=new NodeIterator(notifications);
         boolean found=false;
-        for(Element n:it) {
+        for(Node n:it) {
             if (Constants.WSRF_WSNT_NAMESPACE.equals(n.getValue().trim())) {
                 found=true;
                 break;

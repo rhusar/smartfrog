@@ -24,7 +24,7 @@ import nu.xom.Node;
 
 import java.util.HashMap;
 
-import org.smartfrog.sfcore.languages.cdl.utils.NodeIterator;
+import org.smartfrog.services.xml.java5.iterators.NodeIterator;
 import org.smartfrog.services.deployapi.binding.XomHelper;
 import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
 

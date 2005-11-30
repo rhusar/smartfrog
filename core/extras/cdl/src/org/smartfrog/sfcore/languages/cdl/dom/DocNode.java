@@ -24,7 +24,7 @@ import nu.xom.Element;
 import org.smartfrog.sfcore.languages.cdl.ParseContext;
 import org.smartfrog.sfcore.languages.cdl.dom.attributes.GenericAttribute;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
-import org.smartfrog.sfcore.languages.cdl.utils.AttributeIterator;
+import org.smartfrog.services.xml.java5.iterators.AttributeIterator;
 
 /**
  * Representation of any element. created 21-Apr-2005 14:25:53 The node stored
