@@ -19,24 +19,20 @@
  */
 package org.smartfrog.services.xml.utils;
 
-import nu.xom.NodeFactory;
-import nu.xom.Document;
 import nu.xom.Builder;
-import nu.xom.Serializer;
-import nu.xom.ValidityException;
+import nu.xom.Document;
 import nu.xom.ParsingException;
+import nu.xom.Serializer;
 import nu.xom.converters.DOMConverter;
 
-import java.io.OutputStream;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.Reader;
-import java.io.ByteArrayInputStream;
-
-import org.w3c.dom.DOMImplementation;
-import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 
 /**
+ * Convert from Dom to Xom, using a builder of choice.
+ * The built in Xom utility doesnt let you spec a builder, so you dont
+ * get a custom class hierarchy.
  * created 25-Nov-2005 16:50:16
  */
 
@@ -46,13 +42,6 @@ public class DomToXom {
      * builder class
      */
     private Builder builder;
-
-    /**
-     * How to look for a dom3 parser
-     * {@value}
-     */
-    private static final String DOM3 = "XML 3.0";
-    private static final String UTF8 = "UTF-8";
 
     public DomToXom(Builder builder) {
         this.builder = builder;
@@ -66,36 +55,10 @@ public class DomToXom {
         try {
             ser.write(xom);
             ser.flush();
-            String rawdoc = out.toString(UTF8);
             return out.toByteArray();
         } catch (IOException e) {
             //too unlikely for an internal thing
             throw new RuntimeException(e);
-        }
-    }
-
-    /**
-     * Get a Dom3 impl
-     * @return the implementation
-     * @throws RuntimeException if things go wrong
-     */
-    public static DOMImplementation getDom3Implementation() {
-        try {
-            // get an instance of the DOMImplementation registry
-            DOMImplementationRegistry registry =
-                    DOMImplementationRegistry.newInstance();
-            // get a DOM implementation the Level 3 XML module
-            DOMImplementation domImpl =
-                    registry.getDOMImplementation(DOM3);
-            return domImpl;
-        } catch (Exception e) {
-            RuntimeException rte;
-            if(!(e instanceof RuntimeException)) {
-                rte=new RuntimeException(e);
-            } else {
-                rte=(RuntimeException) e;
-            }
-            throw rte;
         }
     }
 
@@ -118,14 +81,4 @@ public class DomToXom {
         }
     }
 
-    /**
-     * Convert from a Xom document to a W3C Dom Document
-     * @param xom
-     * @return the Dom equivalent
-     * @throws RuntimeException for dom instantiation problems
-     */
-    public static org.w3c.dom.Document fromXom(Document xom) {
-        DOMImplementation domImpl=getDom3Implementation();
-        return DOMConverter.convert(xom,domImpl);
-    }
 }

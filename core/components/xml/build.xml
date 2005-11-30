@@ -120,20 +120,29 @@
        with selective use of the nux codec. -->
   <!-- ========================================================== -->
   <target name="compile"
-    depends="pre-compile">
+      depends="pre-compile">
     <available property="nux.found"
-      classname="nux.xom.binary.BinaryXMLCodec"/>
+        classname="nux.xom.binary.BinaryXMLCodec"/>
+    <!-- work out our java version by introspection, fall back to 1.4 if 1.5 is not found -->
+    <condition property="javac.version" value="1.5">
+      <available classname="java.lang.Readable"/>
+    </condition>
+    <property name="javac.version" value="1.4"/>
+
     <depend srcdir="${src.dir}"
-      destdir="${build.classes.dir}"
-      cache="${build.dir}/depends"
-      closure="yes"/>
+        destdir="${build.classes.dir}"
+        cache="${build.dir}/depends"
+        closure="yes"/>
     <sf-javac
-      classpathref="compile.classpath"
-      srcdir="${src.dir}"
-      destdir="${build.classes.dir}"
-      >
+        classpathref="compile.classpath"
+        srcdir="${src.dir}"
+        source="${javac.version}"
+        target="${javac.version}"
+        destdir="${build.classes.dir}"
+        >
       <include name="**/*.java"/>
       <exclude name="**/NuxBinaryCodec.java" unless="nux.found"/>
+      <exclude name="**/java5/**/*.java" unless="java1.5+"/>
     </sf-javac>
     <copy-useful-files src="${src.dir}" dest="${build.classes.dir}"/>
   </target>
