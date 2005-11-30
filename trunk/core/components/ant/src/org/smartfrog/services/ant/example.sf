@@ -1,0 +1,239 @@
+/** (C) Copyright Hewlett-Packard Development Company, LP
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+For more information: www.smartfrog.org
+
+*/
+
+/**
+ * This component is an example of use of ExampleTemplate component.
+ */
+
+/**
+ * Include the core smartfrog components.
+ */
+#include "org/smartfrog/components.sf"
+#include "org/smartfrog/services/ant/components.sf"
+
+
+#include "org/smartfrog/components.sf"
+#include "org/smartfrog/services/ant/components.sf"
+
+//Elements
+Fileset extends {
+  AntElement "fileset";
+}
+
+Filterset extends {
+  AntElement "filterset";
+}
+
+FiltersFile extends {
+  AntElement "filtersfile";
+}
+
+GlobMapper extends {
+   AntElement "globmapper";
+}
+
+
+GlobMapper extends {
+   AntElement "mapper";
+   type "glob";
+}
+
+
+
+
+// Tasks
+Echo extends {
+  AntTask "echo";
+}
+
+Copy extends {
+  AntTask "copy";
+}
+
+Fixcrlf extends {
+  AntTask "fixcrlf";
+}
+
+sfConfig extends Ant {
+  echoTask extends Echo {
+    message "hellow world!";
+  }
+  copyTask extends Copy {
+      todir "tmp";
+      filtering "true";
+      myFileSet extends Fileset {
+        AntElement "fileset";
+        dir ".";
+        includes "*.xml";
+      }
+      myFilterSet extends Filterset {
+         myFiltersFile extends FiltersFile {
+           file "/filters.props";
+         }
+      }
+  }
+  echoMedTask extends Echo {
+    message "--------------------------------";
+  }
+
+
+
+  copyTask2 extends Copy {
+      todir "/juliotmp/kk";
+      filtering "true";
+      verbose "true";
+      myFileSet extends Fileset {
+        dir "/";
+        includes "*.txt";
+      }
+
+
+      globMapper extends GlobMapper {
+        from "*";
+        to "*.bak";
+      }
+
+  }
+
+  copyTask3 extends Copy {
+      todir "/juliotmp/kk";
+      filtering "true";
+      verbose "true";
+      myFileSet extends Fileset {
+        dir "/";
+        includes "*.txt";
+      }
+
+      flattenmapper extends {AntElement "mapper"; type "flatten";}
+  }
+
+  copyTask4 extends Copy {
+      todir "/juliotmp/kk";
+      filtering "true";
+      verbose "true";
+      myFileSet extends Fileset {
+        dir "/";
+        includes "*.txt";
+      }
+
+        /*
+        <filtermapper>
+          <replacestring from="\" to="/"/>
+        </filtermapper>
+        */
+      filtermapper extends {
+        AntElement "filtermapper";
+        repacestring extends {
+          AntElement "replacestring";
+          from "\\";
+          to "/";
+        }
+      }
+
+  }
+
+  copyTask5 extends Copy {
+      todir "/juliotmp/kk";
+      filtering "true";
+      verbose "true";
+      myFileSet extends Fileset {
+        dir "/";
+        includes "*.txt";
+      }
+      filtermapper extends {
+        //Try the class directly
+        AntElement "org.apache.tools.ant.types.mappers.FilterMapper";
+        repacestring extends {
+          AntElement "replacestring";
+          from "\\";
+          to "/";
+        }
+      }
+
+  }
+
+  fixcrlf extends Fixcrlf {
+       //srcdir "${src}";
+       srcdir ".";
+       tab "add";
+       includes "**/Makefile";
+  }
+
+//  fixcrlf2 extends Fixcrlf {
+//       srcdir "${SFHOME}";
+//       tab "add";
+//       includes "**/Makefile";
+//  }
+
+//  fixcrlf3 extends Fixcrlf {
+//       srcdir "${src}";
+//       tab "add";
+//       includes "**/Makefile";
+//  }
+
+   /*
+     <pathconvert property="x" targetos="unix">
+        <path path="Aj.Java"/>
+        <mapper>
+        <chainedmapper>
+          <flattenmapper/>
+          <globmapper from="a*.java" to="*.java.bak" casesensitive="no"/>
+        </chainedmapper>
+        </mapper>
+      </pathconvert>
+      <echo>x is ${x}</echo>
+
+   */
+   pathconvert extends {
+       AntTask "pathconvert";
+       property "x";
+       targetos "unix";
+        path extends {
+          AntElement "path";
+          path "Aj.Java";
+        } //path
+//        mapper extends {
+//         AntElement "mapper";
+//         type "mapper";
+         chainedmapper extends {
+          AntElement "chainedmapper";
+          flattenmapper extends {AntElement "flattenmapper";}
+          globmapper extends {
+            AntElement "globmapper";
+            from "a*.java";
+            to "*.java.bak";
+            casesensitive "no";
+          } //globmapper
+         } //chainedmapper
+//        } //mapper
+   } //pathconvert
+
+   echoXTask extends Echo {
+    message "x is ${x}";
+   }
+
+   echoSFHOMETask extends Echo {
+    message "SFHOME is ${myenv.SFHOME}";
+   }
+
+  echoEndTask extends Echo {
+    message "Done!";
+  }
+}
