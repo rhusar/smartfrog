@@ -45,6 +45,18 @@ import java.io.IOException;
  */
 
 public class DocumentTestHelper extends Assert {
+    public DocumentTestHelper() {
+    }
+
+    /**
+     * create a parser as we go
+     * @param validating is the parser validating?
+     * @throws SAXException
+     */
+    public DocumentTestHelper(boolean validating) throws SAXException {
+        initParser(validating);
+    }
+
     private CdlParser parser;
 
     protected Log log = LogFactory.getLog(this.getClass());
@@ -54,7 +66,7 @@ public class DocumentTestHelper extends Assert {
      *
      * @throws org.xml.sax.SAXException
      */
-    protected void initParser(boolean validate) throws SAXException {
+    public void initParser(boolean validate) throws SAXException {
         ResourceLoader loader = new ResourceLoader(this.getClass());
         parser = new CdlParser(loader, validate);
     }
