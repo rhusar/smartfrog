@@ -62,4 +62,13 @@ public interface XmlConstants {
             "http://java.sun.com/xml/jaxp/properties/schemaSource";
     public static final String URI_XSD =
             "http://www.w3.org/2001/XMLSchema";
+
+
+
+    public static final String DOM_PARSER_XERCES =
+            "org.apache.xerces.dom.DOMImplementationSourceImpl";
+    public static final String DOM_PARSER_JAVA15 =
+            "com.sun.org.apache.xerces.internal.dom.DOMImplementationSourceImpl";
+
+    public static final String DOM3_PARSER_LIST=DOM_PARSER_XERCES+" "+DOM_PARSER_JAVA15;
 }

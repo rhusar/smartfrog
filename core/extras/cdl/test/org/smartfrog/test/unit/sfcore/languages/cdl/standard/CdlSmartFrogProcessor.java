@@ -27,10 +27,17 @@ import org.smartfrog.sfcore.languages.cdl.ParseContext;
 import org.smartfrog.sfcore.languages.cdl.dom.CdlDocument;
 import org.smartfrog.test.unit.sfcore.languages.cdl.DocumentTestHelper;
 import org.smartfrog.services.xml.java5.XomToDom3;
+import org.smartfrog.services.xml.utils.DomToXom;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 import java.net.URI;
+import java.io.PrintStream;
+import java.io.IOException;
+
+import nu.xom.converters.DOMConverter;
+import nu.xom.Serializer;
+import nu.xom.Element;
 
 /**
  * created 25-Nov-2005 15:09:51
@@ -73,7 +80,10 @@ public class CdlSmartFrogProcessor implements CDLProcessor {
             CdlDocument cdlDocument = helper.load(doc);
             cdlDocument.parse(context);
             nu.xom.Document xomDoc = cdlDocument.getDocument();
-            return XomToDom3.fromXom(xomDoc);
+            Element system= cdlDocument.getSystem();
+            system.detach();
+            nu.xom.Document newRoot = new nu.xom.Document(system);
+            return XomToDom3.fromXom(newRoot);
         } catch (Exception e) {
             throw new CDLException(e);
         }
@@ -90,4 +100,21 @@ public class CdlSmartFrogProcessor implements CDLProcessor {
     }
 
 
+    /**
+     * Dump an XML doc to an output stream
+     *
+     * @param out     output stream
+     * @param doc     doc to dump (may be null)
+     * @param message text message
+     */
+    public void dump(PrintStream out, Document doc, String message) throws IOException {
+        out.println(message);
+        if (doc == null) {
+            out.println("(null)");
+            return;
+        }
+        nu.xom.Document document = DOMConverter.convert(doc);
+        Serializer ser=new Serializer(out);
+        ser.write(document);
+    }
 }
