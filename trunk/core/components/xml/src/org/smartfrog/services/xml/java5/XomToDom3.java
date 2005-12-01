@@ -21,6 +21,8 @@ package org.smartfrog.services.xml.java5;
 
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
+import org.smartfrog.services.xml.utils.ParserHelper;
+import org.smartfrog.services.xml.utils.XmlConstants;
 import nu.xom.Document;
 import nu.xom.converters.DOMConverter;
 
@@ -35,6 +37,15 @@ public class XomToDom3 {
      */
     private static final String DOM3 = "XML 3.0";
 
+
+    private static void configureDomRegistry() {
+        String current=System.getProperty(DOMImplementationRegistry.PROPERTY);
+        if(current==null) {
+            System.setProperty(DOMImplementationRegistry.PROPERTY,
+                    XmlConstants.DOM3_PARSER_LIST);
+        }
+    }
+
     /**
      * Get a Dom3 impl
      * @return the implementation
@@ -42,6 +53,7 @@ public class XomToDom3 {
      */
     public static DOMImplementation getDom3Implementation() {
         try {
+            //configureDomRegistry();
             // get an instance of the DOMImplementation registry
             DOMImplementationRegistry registry =
                     DOMImplementationRegistry.newInstance();
@@ -49,17 +61,18 @@ public class XomToDom3 {
             DOMImplementation domImpl =
                     registry.getDOMImplementation(DOM3);
             if(domImpl==null) {
+                //fallback
+                domImpl= ParserHelper.loadDomImplementation();
+            }
+            if(domImpl==null) {
+                //crisis
                 throw new RuntimeException("Failed to create a parser with the attributes:"+DOM3);
             }
             return domImpl;
+        } catch (RuntimeException e) {
+            throw e;
         } catch (Exception e) {
-            RuntimeException rte;
-            if(!(e instanceof RuntimeException)) {
-                rte=new RuntimeException(e);
-            } else {
-                rte=(RuntimeException) e;
-            }
-            throw rte;
+            throw new RuntimeException(e);
         }
     }
 
@@ -73,5 +86,9 @@ public class XomToDom3 {
         DOMImplementation domImpl=getDom3Implementation();
         assert domImpl!=null;
         return DOMConverter.convert(xom,domImpl);
+    }
+
+    public static void createXerces() {
+
     }
 }
