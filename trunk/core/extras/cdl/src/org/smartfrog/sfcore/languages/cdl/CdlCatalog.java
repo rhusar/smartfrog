@@ -44,30 +44,33 @@ import java.io.IOException;
 
 public class CdlCatalog extends XmlCatalogResolver {
 
-    protected static final String PACKAGE_BASE = "org/ggf/cddlm/";
+    public static final String PACKAGE_BASE = "org/ggf/cddlm/";
     /**
      * where all the WSRF files really live {@value}
      */
-    private static final String WSRF_PACKAGE = PACKAGE_BASE
+    public  static final String WSRF_PACKAGE = PACKAGE_BASE
             + CddlmConstants.XML_FILENAME_WSRF_DIRECTORY;
 
     /**
      * where the API files really live {@value}
      */
-    private static final String API_PACKAGE = PACKAGE_BASE
+    public static final String API_PACKAGE = PACKAGE_BASE
             + CddlmConstants.CDL_FILENAME_XML_DIRECTORY;
 
 
+    public static final String RESOURCE_XML_CDL_XSD = API_PACKAGE +
+       CddlmConstants.CDL_FILENAME_XML_CDL;
+    public static final String RESOURCE_DEPLOYAPI_XSD = API_PACKAGE +
+       Constants.DEPLOY_API_SCHEMA_FILENAME;
+    public static final String RESOURCE_WS_ADDR_XSD = WSRF_PACKAGE +
+       CddlmConstants.XML_FILENAME_WS_ADDRESSING;
     /**
      * This maps from namespaces to resources in our classpath {@value}
      */
     private static final String CDDLM_MAPPINGS[] = {
-        CddlmConstants.XML_CDL_NAMESPACE, API_PACKAGE +
-            CddlmConstants.CDL_FILENAME_XML_CDL,
-        CddlmConstants.CDL_API_TYPES_NAMESPACE, API_PACKAGE +
-            Constants.DEPLOY_API_SCHEMA_FILENAME,
-        CddlmConstants.WS_ADDRESSING_NAMESPACE, WSRF_PACKAGE +
-            CddlmConstants.XML_FILENAME_WS_ADDRESSING,
+        CddlmConstants.XML_CDL_NAMESPACE, RESOURCE_XML_CDL_XSD,
+        CddlmConstants.CDL_API_TYPES_NAMESPACE, RESOURCE_DEPLOYAPI_XSD,
+        CddlmConstants.WS_ADDRESSING_NAMESPACE, RESOURCE_WS_ADDR_XSD,
     };
 
 

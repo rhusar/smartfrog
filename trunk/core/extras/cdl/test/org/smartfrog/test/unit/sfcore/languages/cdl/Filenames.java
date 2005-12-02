@@ -170,4 +170,9 @@ public interface Filenames {
             + "import-recursive-local.cdl";
     String IMPORT_RECURSIVE = INVALID_IMPORT
             + "import-recursive.cdl";
- }
+
+    String NORMATIVE_VALID = VALID_RESOURCES +"normative/";
+    String NORMATIVE_VALID_RESOLUTION = NORMATIVE_VALID + "resolution/";
+    String NORMATIVE_INVALID = INVALID_RESOURCES + "normative/";
+    String NORMATIVE_INVALID_RESOLUTION = NORMATIVE_INVALID + "resolution/";
+}
