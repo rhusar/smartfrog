@@ -32,6 +32,8 @@ public class Constants {
     }
 
 
+    public static final String XML_NAMESPACE_URI="http://www.w3.org/2000/xmlns/";
+
     public static final String DEPLOY_API_SCHEMA_FILENAME =
             CddlmConstants.CDL_FILENAME_DEPLOYMENT_API;
 
