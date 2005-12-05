@@ -7,15 +7,15 @@ import org.smartfrog.test.unit.sfcore.languages.cdl.Filenames;
 
 /**
  */
-public class ResolutionFailureTest extends TestCase {
+public class ResolutionDebuggingTest extends TestCase  {
 
     /**
      * This is the suite
      * @return
      */
     public static TestSuite suite() {
-        return SingleDocumentTestCase.createSuite(ResolutionFailureTest.class,
-                Filenames.NORMATIVE_INVALID_RESOLUTION,
+        return SingleDocumentTestCase.createSuite(ResolutionDebuggingTest.class,
+                Filenames.VALID_RESOURCES+"debugging",
                 new CdlSmartFrogProcessorFactory());
     }
 

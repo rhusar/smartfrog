@@ -79,7 +79,6 @@ public class CdlSmartFrogProcessor implements CDLProcessor {
             ParseContext context = new ParseContext();
             CdlDocument cdlDocument = helper.load(doc);
             cdlDocument.parse(context);
-            nu.xom.Document xomDoc = cdlDocument.getDocument();
             Element system= cdlDocument.getSystem();
             system.detach();
             nu.xom.Document newRoot = new nu.xom.Document(system);
