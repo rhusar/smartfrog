@@ -14,7 +14,8 @@ public class ResolutionSuccessTest extends TestCase  {
      * @return
      */
     public static TestSuite suite() {
-        return SingleDocumentTestCase.createSuite(Filenames.NORMATIVE_VALID_RESOLUTION,
+        return SingleDocumentTestCase.createSuite(ResolutionSuccessTest.class,
+                Filenames.NORMATIVE_VALID_RESOLUTION,
                 new CdlSmartFrogProcessorFactory());
     }
 

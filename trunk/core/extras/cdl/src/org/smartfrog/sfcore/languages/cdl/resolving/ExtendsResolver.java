@@ -233,23 +233,23 @@ public class ExtendsResolver {
                 //it is what we want.
 
                 //now, look for a match locally
-                PropertyList matchedList = target.mapToPropertyList(
+                PropertyList matchedList = target. getChildTemplateMatching(
                         resolvedList);
+                PropertyList copiedList;
                 if (matchedList == null) {
                     //insert a copy of the resolved element.
                     //the copy is needed in case it gets manipulated later
-                    PropertyList copiedList = (PropertyList) resolvedList.copy();
-                    newChildren.add(copiedList);
-                    //register in the cache of mapped things.
-                    entries.put(name, name);
+                    copiedList = (PropertyList) resolvedList.copy();
                 } else {
                     //complex merge.
                     //first, pull in the attributes of the child
-                    matchedList.inheritAttributes(resolvedList);
+                    copiedList = (PropertyList) matchedList.copy();
+                    copiedList.inheritAttributes(resolvedList);
                     //then insert the children of the current list into place
-                    newChildren.add(matchedList);
-                    entries.put(name, name);
                 }
+                newChildren.add(copiedList);
+                //register in the cache of mapped things.
+                entries.put(name, name);
             } else {
                 //something other than Element; could be Text
                 newChildren.add(node);
@@ -306,7 +306,7 @@ public class ExtendsResolver {
                     newChildren.add(resolvedList);
                 } else {
                     //when mapping, we do a lookup
-                    if (map.get(name) != null) {
+                    if (map.get(name) == null) {
                         //and only add unique things
                         map.put(name, name);
                         newChildren.add(resolvedList);
