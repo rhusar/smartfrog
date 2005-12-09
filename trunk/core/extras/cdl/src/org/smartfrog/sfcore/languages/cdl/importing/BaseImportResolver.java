@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.net.URL;
 
 /**
+ * CDL document importing is a bit, well, more relaxed than the secure mechanism
+ * of SmartFrog
  * This is the base import resolver. It is abstract
  * and must be implemented by something 
  */
