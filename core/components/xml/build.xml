@@ -115,12 +115,7 @@
   </target>
 
 
-  <!-- ========================================================== -->
-  <!-- this is an override
-       with selective use of the nux codec. -->
-  <!-- ========================================================== -->
-  <target name="compile"
-      depends="pre-compile">
+  <target name="check-versions" depends="init">
     <available property="nux.found"
         classname="nux.xom.binary.BinaryXMLCodec"/>
     <!-- work out our java version by introspection, fall back to 1.4 if 1.5 is not found -->
@@ -128,7 +123,28 @@
       <available classname="java.lang.Readable"/>
     </condition>
     <property name="javac.version" value="1.4"/>
+    <condition property="javac.is.1.4" >
+      <equals arg1="${javac.version}" arg2="1.4" />
+    </condition>
+  </target>
 
+  <target name="javac.version" depends="check-versions" if="javac.is.1.4">
+    <echo level="warn">
+      Using Javac version 1.4: the java 1.5 packages will be omitted.
+      Do not redistribute this build.
+    </echo>
+
+  </target>
+
+  <target name="pre-compile" depends="common.pre-compile,javac.version" >
+
+  </target>
+  <!-- ========================================================== -->
+  <!-- this is an override
+       with selective use of the nux codec. -->
+  <!-- ========================================================== -->
+  <target name="compile"
+      depends="pre-compile">
     <depend srcdir="${src.dir}"
         destdir="${build.classes.dir}"
         cache="${build.dir}/depends"
