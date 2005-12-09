@@ -24,6 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import org.ggf.cddlm.cdl.test.CDLException;
 import org.ggf.cddlm.cdl.test.CDLProcessor;
 import org.smartfrog.sfcore.languages.cdl.ParseContext;
+import org.smartfrog.sfcore.languages.cdl.importing.FilestoreImportResolver;
 import org.smartfrog.sfcore.languages.cdl.dom.CdlDocument;
 import org.smartfrog.test.unit.sfcore.languages.cdl.DocumentTestHelper;
 import org.smartfrog.services.xml.java5.XomToDom3;
@@ -34,6 +35,8 @@ import org.xml.sax.SAXException;
 import java.net.URI;
 import java.io.PrintStream;
 import java.io.IOException;
+import java.io.File;
+import java.io.FileOutputStream;
 
 import nu.xom.converters.DOMConverter;
 import nu.xom.Serializer;
@@ -49,10 +52,20 @@ public class CdlSmartFrogProcessor implements CDLProcessor {
 
     private Log log = LogFactory.getLog(this.getClass());
     private DocumentTestHelper helper;
+    private FilestoreImportResolver filestore;
 
 
     public CdlSmartFrogProcessor() throws SAXException {
         helper = new DocumentTestHelper(true);
+        File dir = null;
+        try {
+            dir = File.createTempFile("files", ".tmp");
+            dir.delete();
+            filestore = new FilestoreImportResolver(dir);
+        } catch (IOException e) {
+            throw new CDLException("when creating the filestore in directory "
+                    +dir,e);
+        }
     }
 
     /**
@@ -64,7 +77,12 @@ public class CdlSmartFrogProcessor implements CDLProcessor {
      * @param doc
      */
     public void put(URI id, Document doc) {
-        //TODO
+        try {
+            File file=filestore.createEntry(id.toString(), "cdl");
+            saveToFile(doc, file);
+        } catch (IOException e) {
+            throw new CDLException(e);
+        }
     }
 
     /**
@@ -79,6 +97,7 @@ public class CdlSmartFrogProcessor implements CDLProcessor {
     public Document resolve(Document doc) throws CDLException {
         try {
             ParseContext context = new ParseContext();
+            context.setImportResolver(filestore);
             CdlDocument cdlDocument = helper.load(doc);
             cdlDocument.parse(context);
             Element system= cdlDocument.getSystem();
@@ -97,7 +116,11 @@ public class CdlSmartFrogProcessor implements CDLProcessor {
      * caused from invocations of put() and resolve().
      */
     public void close() {
-        //TODO
+        try {
+            filestore.close();
+        } catch (IOException e) {
+            throw new CDLException("When closing "+filestore,e);
+        }
     }
 
 
@@ -114,9 +137,31 @@ public class CdlSmartFrogProcessor implements CDLProcessor {
             out.println("(null)");
             return;
         }
+        saveToStream(doc, out);
+    }
+
+    /**
+     * Save a doc to a stream
+     * @param doc
+     * @param out
+     * @throws IOException
+     */
+
+    private void saveToStream(Document doc, PrintStream out) throws IOException {
         nu.xom.Document document = DOMConverter.convert(doc);
         Serializer ser=new Serializer(out);
         ser.write(document);
+    }
+
+
+    private void saveToFile(Document doc, File file) throws IOException {
+        PrintStream print=null;
+        try {
+            new PrintStream(file,"UTF-8");
+            saveToStream(doc, print);
+        } finally {
+            print.close();
+        }
     }
 
     /**
