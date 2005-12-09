@@ -44,7 +44,7 @@ import java.io.IOException;
 
 public class CdlCatalog extends XmlCatalogResolver {
 
-    public static final String PACKAGE_BASE = "org/ggf/cddlm/";
+    public static final String PACKAGE_BASE = "";
     /**
      * where all the WSRF files really live {@value}
      */

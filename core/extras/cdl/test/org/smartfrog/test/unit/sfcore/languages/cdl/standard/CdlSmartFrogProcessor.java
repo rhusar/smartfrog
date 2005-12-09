@@ -39,6 +39,8 @@ import nu.xom.converters.DOMConverter;
 import nu.xom.Serializer;
 import nu.xom.Element;
 
+import javax.xml.namespace.QName;
+
 /**
  * created 25-Nov-2005 15:09:51
  */
@@ -115,5 +117,21 @@ public class CdlSmartFrogProcessor implements CDLProcessor {
         nu.xom.Document document = DOMConverter.convert(doc);
         Serializer ser=new Serializer(out);
         ser.write(document);
+    }
+
+    /**
+     * Verify that a received fault is of the expected type. How this is done
+     * is up to the implementation; a default implementation would be to
+     * always return true.
+     * This method is called when a test declared that a fault would be thrown.
+     *
+     * @param test      the name of the test, e,g cddlm-cdl-2005-01-0001
+     * @param faultCode the fault code that was expected in this fault. Is null if the
+     *                  test document did not specify what the fault code would be
+     * @param thrown    the exception that was received
+     * @return true if the throwable was the type expected.
+     */
+    public boolean isExpectedFault(String test, QName faultCode, Throwable thrown) {
+        return true;
     }
 }

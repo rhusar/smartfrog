@@ -44,7 +44,7 @@ import java.util.Iterator;
  */
 
 public abstract class UnitTestBase extends TestCase {
-    public static final String TEST_FILES_API_VALID = "test/api/valid/";
+    public static final String TEST_FILES_API_VALID = "org/ggf/cddlm/files/api/valid/";
     public static final String DECLARE_TEST_NAMESPACE= "declare namespace t='"+ Constants.TEST_HELPER_NAMESPACE+"'; ";
     public static final QName TEST_ELEMENT=new QName(Constants.TEST_HELPER_NAMESPACE,"test");
     public static final QName TEST_NAME = new QName(Constants.TEST_HELPER_NAMESPACE, "name");

@@ -20,9 +20,7 @@
 package org.smartfrog.services.deployapi.binding;
 
 import nu.xom.Element;
-import org.apache.axis2.addressing.AnyContentType;
 import org.apache.axis2.addressing.EndpointReference;
-import org.apache.axis2.addressing.ServiceName;
 import org.smartfrog.services.deployapi.system.Constants;
 import org.smartfrog.services.deployapi.transport.faults.FaultRaiser;
 
@@ -64,8 +62,12 @@ public class EprHelper {
         return dest;
     }
 
-    public static EndpointReference XomWsa2004ToEpr(Element element) {
-        throw FaultRaiser.raiseNotImplementedFault("wsa2004");
+    public static EndpointReference XomWsa2004ToEpr(Element addr) {
+        String wsa = WSA2004;
+        String uri = addr.getFirstChildElement(Constants.WSA_ELEMENT_ADDRESS,
+                wsa).getValue();
+        EndpointReference dest = new EndpointReference(uri);
+        return dest;
     }
 
     public static EndpointReference XomWsaToEpr(Element addr) {
@@ -73,14 +75,12 @@ public class EprHelper {
         if (WSA.equals(ns)) {
             return XomWsa2003ToEpr(addr);
         } else {
-            if (WSA2004
-                    .equals(ns)) {
+            if (WSA2004.equals(ns)) {
                 return XomWsa2004ToEpr(addr);
             }
         }
-        throw FaultRaiser.raiseBadArgumentFault("Unknown namespace "+ns);
+        throw FaultRaiser.raiseBadArgumentFault("Unknown namespace " + ns);
     }
-
 
 
     /**

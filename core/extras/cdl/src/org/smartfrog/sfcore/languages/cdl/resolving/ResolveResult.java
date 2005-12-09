@@ -37,6 +37,11 @@ public class ResolveResult {
         this.resolvedPropertyList = resolvedPropertyList;
     }
 
+    public ResolveResult(PropertyList resolvedPropertyList) {
+        this.resolvedPropertyList = resolvedPropertyList;
+        this.state=resolvedPropertyList.getResolveState();
+    }
+
     public ResolveEnum getState() {
         return state;
     }
