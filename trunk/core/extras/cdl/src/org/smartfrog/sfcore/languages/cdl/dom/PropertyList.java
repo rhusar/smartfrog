@@ -28,6 +28,7 @@ import org.smartfrog.sfcore.languages.cdl.generate.GenerateContext;
 import org.smartfrog.sfcore.languages.cdl.utils.ClassLogger;
 import org.smartfrog.services.xml.java5.NamespaceUtils;
 import org.smartfrog.sfcore.languages.cdl.Constants;
+import org.smartfrog.sfcore.languages.cdl.resolving.ResolveEnum;
 import org.smartfrog.sfcore.logging.Log;
 import org.ggf.cddlm.generated.api.CddlmConstants;
 
@@ -46,22 +47,23 @@ public class PropertyList extends DocNode {
      * can be extended
      * 
      */ 
-    protected boolean template = false;
+    private boolean template = false;
 
     /**
      * Name of the template that we extend. Null if we do not extend anything
      */
     protected QName extendsName;
 
-    /**
-     * And the resolved extension Null if extendsName==null;
-     */
-    public PropertyList extendsResolved;
 
     /**
-     * a log
+     * What is the state of resolution
      */
-    protected Log log = ClassLogger.getLog(this);
+    private ResolveEnum resolveState= ResolveEnum.ResolvedUnknown;
+
+    /**
+    * a log
+    */
+    private Log log = ClassLogger.getLog(this);
 
     public PropertyList(String name) {
         super(name);
@@ -82,6 +84,14 @@ public class PropertyList extends DocNode {
 
     public void setExtendsName(QName extendsName) {
         this.extendsName = extendsName;
+    }
+
+    public ResolveEnum getResolveState() {
+        return resolveState;
+    }
+
+    public void setResolveState(ResolveEnum resolveState) {
+        this.resolveState = resolveState;
     }
 
     /**
@@ -113,9 +123,17 @@ public class PropertyList extends DocNode {
         }
     }
 
+    /**
+     * Copy the element and local state.
+     * @return
+     */
     @Override
     protected Element shallowCopy() {
-        return new PropertyList(getQualifiedName(), getNamespaceURI());
+        PropertyList copy = new PropertyList(getQualifiedName(), getNamespaceURI());
+        copy.setResolveState(getResolveState());
+        copy.setExtendsName(getExtendsName());
+        copy.setTemplate(isTemplate());
+        return copy;
     }
 
     /**
@@ -329,6 +347,24 @@ public class PropertyList extends DocNode {
         }
         return parent;
     }
-    
+
+    /**
+     * Run through the list and update the entire aggregate resolution state
+     * This will set all children to their appropriate values, using
+     * the priority logic of {@link ResolveEnum#merge(ResolveEnum, ResolveEnum)}
+     * @return the new state of the tree.
+     */
+    public ResolveEnum aggregateResolutionState() {
+        ResolveEnum state=getResolveState();
+        for(Node n:nodes()) {
+            if(n instanceof PropertyList) {
+                PropertyList child=(PropertyList) n;
+                ResolveEnum childState = child.aggregateResolutionState();
+                state=ResolveEnum.merge(resolveState,childState);
+            }
+        }
+        setResolveState(state);
+        return state;
+    }
 
 }

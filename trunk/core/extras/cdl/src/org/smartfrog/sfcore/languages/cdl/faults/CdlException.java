@@ -19,19 +19,28 @@
  */
 package org.smartfrog.sfcore.languages.cdl.faults;
 
+import org.ggf.cddlm.utils.FaultCodeComparator;
+import org.ggf.cddlm.utils.FaultTemplate;
+
+import javax.xml.namespace.QName;
+
 
 /**
  * Base class for our exceptions
  * created 10-Jun-2005 15:29:38
  */
 
-public class CdlException extends Exception {
+public class CdlException extends Exception implements FaultCodeComparator {
+
+    private QName faultCode;
+
     /**
      * Constructs a new exception with <code>null</code> as its detail message.
      * The cause is not initialized, and may subsequently be initialized by a
      * call to {@link #initCause}.
      */
     public CdlException() {
+        setFaultCode(createDefaultFaultCode());
     }
 
     /**
@@ -44,6 +53,7 @@ public class CdlException extends Exception {
      */
     public CdlException(String message) {
         super(message);
+        setFaultCode(createDefaultFaultCode());
     }
 
     /**
@@ -61,18 +71,60 @@ public class CdlException extends Exception {
      */
     public CdlException(String message, Throwable cause) {
         super(message, cause);
+        setFaultCode(createDefaultFaultCode());
     }
 
     /**
-     * Constructs a new exception with the specified cause and a detail message
-     * of <tt>(cause==null ? null : cause.toString())</tt> (which typically
-     * contains the class and detail message of <tt>cause</tt>).
-     *
-     * @param cause the cause (which is saved for later retrieval by the {@link
-     *              #getCause()} method).  (A <tt>null</tt> value is permitted,
-     *              and indicates that the cause is nonexistent or unknown.)
+     * Constructs a new exception from the fault template.
+     * The error message and the fault code are extracted from the template
      */
+    public CdlException(FaultTemplate template) {
+        super(template.getErrorMessage());
+        setFaultCode(template.getQualifiedName());
+    }
+
+    /**
+     * Override point called in constructor (danger, danger),
+     * to get the default fault code. This is not called when
+     * creating a fault using the FaultTemplate-based ctor, but
+     * is in all other cases
+     */
+    protected QName createDefaultFaultCode() {
+        return null;
+    }
+    /**
+    * Constructs a new exception with the specified cause and a detail message
+    * of <tt>(cause==null ? null : cause.toString())</tt> (which typically
+    * contains the class and detail message of <tt>cause</tt>).
+    *
+    * @param cause the cause (which is saved for later retrieval by the {@link
+    *              #getCause()} method).  (A <tt>null</tt> value is permitted,
+    *              and indicates that the cause is nonexistent or unknown.)
+    */
     public CdlException(Throwable cause) {
         super(cause);
+    }
+
+    public QName getFaultCode() {
+        return faultCode;
+    }
+
+    private void setFaultCode(QName faultCode) {
+        this.faultCode = faultCode;
+    }
+
+    /**
+     * Test for an expected fault code matching the actual value of the object
+     * The concept "fault code of the object" is deliberately undefined; it could be a static
+     * value, it could be the fault code of a nested fault.
+     *
+     * @param expected fault code to check
+     * @return true if and only iff the fault code of the object matches the supplied faultCode.
+     */
+    public boolean isFault(QName expected) {
+        if(faultCode==null) {
+            return expected==null;
+        }
+        return faultCode.equals(expected);
     }
 }

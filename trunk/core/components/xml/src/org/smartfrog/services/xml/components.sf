@@ -176,7 +176,8 @@ XmlDocumentSchema extends XmlCompoundNodeSchema {
     docType extends Optional;
 
     //root node must be a Document Node.
-    root extends Compulsory;
+    //can be omitted if a sourcefile is given instead
+    root extends OptionalCD;
 
     /**
     * encoding string when saving

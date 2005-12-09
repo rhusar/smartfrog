@@ -21,10 +21,69 @@ package org.smartfrog.sfcore.languages.cdl.resolving;
  */
 public enum ResolveEnum {
 
-    ResolvedNoWorkNeeded,
-    ResolvedComplete,
-    ResolvedIncomplete,
-    ResolvedLazyLinksRemaining
+
+    /*
+    There is some deviousness here
+    */
+    ResolvedUnknown(0),
+    //ResolvedNoWorkNeeded(1),
+    ResolvedComplete(1),
+    ResolvedIncomplete(2),
+    ResolvedLazyLinksRemaining(3),
+    ;
+    private int value;
+
+    ResolveEnum(int value) {
+       this.value = value;
+   }
+
+    /**
+     * Propagate resolution
+     *
+     * @param parent
+     * @return
+     */
+    public static ResolveEnum propagate(ResolveEnum parent) {
+        switch (parent) {
+            case ResolvedComplete:
+                return ResolvedComplete;
+            case ResolvedIncomplete:
+                return ResolvedIncomplete;
+//            case ResolvedNoWorkNeeded:
+//                return ResolvedComplete;
+            case ResolvedUnknown:
+                return ResolvedUnknown;
+            case ResolvedLazyLinksRemaining:
+            default:
+                return ResolvedLazyLinksRemaining;
+        }
+    }
+
+    /**
+     * Merge the parent state and the child state to produce an aggregate which is
+     * the worst-case merging of the two.
+     * @param parent
+     * @param child
+     * @return whichever of the two is in the least resolved state.
+     */
+    public static ResolveEnum merge(ResolveEnum parent, ResolveEnum child) {
+        if(child.value>parent.value) {
+            return child;
+        } else {
+            return parent;
+        }
+    }
+
+    /**
+     * Test for the state being completed for parse time.
+     * There may be links, but they are lazy ones.
+     *
+     * @return true if this is the case
+     */
+    public boolean isParseTimeResolutionComplete() {
+        return this == ResolvedComplete
+            || this == ResolvedLazyLinksRemaining;
+    }
 
 
 }

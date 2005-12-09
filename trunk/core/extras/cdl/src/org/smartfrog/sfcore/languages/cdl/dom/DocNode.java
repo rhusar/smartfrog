@@ -50,9 +50,13 @@ public abstract class DocNode extends ElementEx implements Names {
         return (DocumentNode) getDocument();
     }
 
+    /**
+     * backtrack up the to get our owner. Null if there is none at this point.
+     * @return owner document or null for no owner
+     */
     public CdlDocument getOwner() {
         DocumentNode documentNode = getDocumentNode();
-        return documentNode.getOwner();
+        return documentNode!=null?documentNode.getOwner():null;
     }
 
 

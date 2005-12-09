@@ -27,6 +27,7 @@ import org.smartfrog.sfcore.languages.cdl.dom.ToplevelList;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlResolutionException;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlInternalErrorException;
 import org.smartfrog.sfcore.languages.cdl.utils.ClassLogger;
 import org.smartfrog.sfcore.logging.Log;
 
@@ -80,6 +81,10 @@ public class ExtendsResolver {
         if (system != null) {
             PropertyList newSystem = resolveChildExtends(system);
             document.replaceSystem((ToplevelList) newSystem);
+            ResolveEnum state = newSystem.aggregateResolutionState();
+            if(!state.isParseTimeResolutionComplete()) {
+                throw new CdlInternalErrorException("Incomplete parse time resolution");
+            }
             return true;
         } else {
             return false;
@@ -120,23 +125,29 @@ public class ExtendsResolver {
     public ResolveResult resolveExtends(PropertyList target)
             throws CdlException {
         boolean toplevel = target.isTemplate();
+        if (toplevel) {
+            return resolveToplevelTemplate(target);
+        } else {
+            return innerResolve(target);
+        }
+    }
+
+    /**
+     * resolve a toplevel template by pushing the name onto the stack,
+     * popping it when it is exited
+     * @param target
+     * @return
+     * @throws CdlException
+     */
+    private ResolveResult resolveToplevelTemplate(PropertyList target) throws CdlException {
         QName name = target.getQName();
         assert name != null;
-        if (toplevel) {
-            //only track names on entry and exit when we are toplevel.
-            //after the first resolve, this case will always hold, but
-            //the initial resolve may not be so extended
-            stack.enter(name);
-        }
-        ResolveResult result;
+        stack.enter(name);
         try {
-            result = innerResolve(target);
+            return innerResolve(target);
         } finally {
-            if (toplevel) {
-                stack.exit(name);
-            }
+            stack.exit(name);
         }
-        return result;
     }
 
     /**
@@ -168,6 +179,11 @@ public class ExtendsResolver {
         ResolveResult result;
         PropertyList output = target;
         ResolveEnum state = ResolveEnum.ResolvedIncomplete;
+        ResolveEnum resolveState = target.getResolveState();
+        if(resolveState.isParseTimeResolutionComplete()) {
+            //we are in a state where no parse time resolution is required.
+            return new ResolveResult(target);
+        }
         //do the work
         QName extending = target.getExtendsName();
         if (extending == null) {
@@ -197,9 +213,10 @@ public class ExtendsResolver {
                 //now do the element inheritance
                 output = inheritChildren(target, resolvedPropertyList);
             }
-            state = propagate(extended.state);
+            state = ResolveEnum.propagate(extended.state);
         }
-        result = new ResolveResult(state, output);
+        output.setResolveState(state);
+        result = new ResolveResult(output);
         return result;
     }
 
@@ -209,7 +226,7 @@ public class ExtendsResolver {
      * @param extension
      */
     private PropertyList inheritChildren(PropertyList target,
-            PropertyList extension)
+                                         PropertyList extension)
             throws CdlException {
         //max size of our list is the sum of all children
         int maxsize = target.getChildCount() +
@@ -224,7 +241,7 @@ public class ExtendsResolver {
                 PropertyList template = (PropertyList) node;
                 QName name = template.getQName();
 
-                //merge it
+                //resolve it
                 ResolveResult resolved = resolveExtends(template);
                 PropertyList resolvedList = resolved.getResolvedPropertyList();
 
@@ -242,8 +259,12 @@ public class ExtendsResolver {
                     copiedList = (PropertyList) resolvedList.copy();
                 } else {
                     //complex merge.
-                    //first, pull in the attributes of the child
-                    copiedList = (PropertyList) matchedList.copy();
+                    //extend the document
+                    ResolveResult result = resolveExtends(matchedList);
+                    assert result.getState().isParseTimeResolutionComplete();
+                    //clone it
+                    copiedList = (PropertyList) result.getResolvedPropertyList().copy();
+                    //pull in the attributes of the child
                     copiedList.inheritAttributes(resolvedList);
                     //then insert the children of the current list into place
                 }
@@ -298,7 +319,7 @@ public class ExtendsResolver {
                 //merge it
                 ResolveResult resolved = resolveExtends(entry);
                 PropertyList resolvedList = resolved.getResolvedPropertyList();
-
+                assert name.equals(resolvedList.getQName());
                 //now, at this point we have a resolved property list.
                 //we add this to our children
                 if (map == null) {
@@ -354,25 +375,6 @@ public class ExtendsResolver {
      */
     private PropertyList lookup(QName nodeName) {
         return parseContext.prototypeResolve(nodeName);
-    }
-
-    /**
-     * Propagate resolution
-     *
-     * @param parent
-     * @return
-     */
-    private ResolveEnum propagate(ResolveEnum parent) {
-        if (parent == ResolveEnum.ResolvedComplete) {
-            return ResolveEnum.ResolvedComplete;
-        }
-        if (parent == ResolveEnum.ResolvedIncomplete) {
-            return ResolveEnum.ResolvedIncomplete;
-        }
-        if (parent == ResolveEnum.ResolvedNoWorkNeeded) {
-            return ResolveEnum.ResolvedComplete;
-        }
-        return ResolveEnum.ResolvedLazyLinksRemaining;
     }
 
 

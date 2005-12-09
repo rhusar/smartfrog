@@ -429,6 +429,7 @@ public class CdlDocument implements Names, ToSmartFrog {
         ExtendsResolver extendsResolver = new ExtendsResolver(
                 getParseContext());
         extendsResolver.resolveExtends(this);
+
     }
 
     public void parsePhaseResolveVariables() throws CdlException {
