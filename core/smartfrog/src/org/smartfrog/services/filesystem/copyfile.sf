@@ -20,15 +20,24 @@ For more information: www.smartfrog.org
 
 #include "org/smartfrog/services/filesystem/filesystemtemplate.sf"
 
-#include "org/smartfrog/services/filesystem/textfile.sf"
-#include "org/smartfrog/services/filesystem/selfdeletingfile.sf"
-#include "org/smartfrog/services/filesystem/file.sf"
-#include "org/smartfrog/services/filesystem/tempfile.sf"
-#include "org/smartfrog/services/filesystem/mkdir.sf"
-#include "org/smartfrog/services/filesystem/touchfile.sf"
-#include "org/smartfrog/services/filesystem/copyfile.sf"
 
+CopyFileSchema extends Schema {
 
+    //file is a file component.
+    source extends Compulsory;
 
+    //file is a file component.
+    destination extends Compulsory;
+}
 
+/**
+ * creates a copy of a file
+ */
 
+CopyFile extends Compound {
+    copySchema extends CopyFileSchema;
+    sfClass "org.smartfrog.services.filesystem.CopyFileImpl";
+
+   //source
+   //destination
+}
