@@ -342,7 +342,9 @@ public class SFProcess implements MessageKeys {
             } else {
                 //Logger.log("sfDaemon killed!");
                 LogFactory.sfGetProcessLog().out("sfDaemon killed!");
-                System.exit(0);
+                //http://www.tldp.org/LDP/abs/html/exitcodes.html
+                // 130 - Control-C is fatal error signal 2, (130 = 128 + 2)
+                System.exit(130);
             }
         }
 

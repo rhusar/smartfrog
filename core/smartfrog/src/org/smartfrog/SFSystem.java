@@ -83,9 +83,12 @@ public class SFSystem implements MessageKeys {
     private static  LogSF sflog = null;
 
     /**
-     * value of the error code returned during a failed exit
+     * value of the error code returned during a failed exit {@value}
+     *
      */
-    private static final int EXIT_ERROR_CODE = -1;
+    // http://www.tldp.org/LDP/abs/html/exitcodes.html
+    // 1 - Catchall for general errors
+    private static final int EXIT_ERROR_CODE = 1;
 
     /**
      * root process. Will be null after termination.
