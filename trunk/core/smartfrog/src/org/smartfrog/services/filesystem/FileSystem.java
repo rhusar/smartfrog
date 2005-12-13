@@ -41,7 +41,6 @@ import java.io.BufferedReader;
 import java.io.FileOutputStream;
 
 /**
- * created 05-Apr-2005 14:28:15
  */
 
 public class FileSystem {
