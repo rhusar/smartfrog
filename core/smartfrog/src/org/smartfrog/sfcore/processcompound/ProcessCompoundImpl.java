@@ -54,6 +54,7 @@ import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.reference.ReferencePart;
 import org.smartfrog.sfcore.security.SFSecurity;
 import org.smartfrog.sfcore.security.SFSecurityProperties;
+import org.smartfrog.sfcore.common.ExitCodes;
 
 
 
@@ -471,7 +472,7 @@ public class ProcessCompoundImpl extends CompoundImpl implements ProcessCompound
                 sfLog().out(MessageUtil.formatMessage(MSG_SF_DEAD, name)+" "+ new Date(System.currentTimeMillis()));
             } catch (Throwable thr){
             }
-            System.exit(0);
+            ExitCodes.exitWithError(ExitCodes.EXIT_CODE_SUCCESS);
             // Runtime.getRuntime().halt(0);
         }
     }

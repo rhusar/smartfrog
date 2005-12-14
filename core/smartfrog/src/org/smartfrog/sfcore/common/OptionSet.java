@@ -100,6 +100,10 @@ public class OptionSet {
     /** Error string for SFSystem. */
     public String errorString = null;
 
+    /** ExitCode for SFSystem. */
+    public int exitCode = ExitCodes.EXIT_ERROR_CODE_BAD_ARGS;
+
+
     /** Hostname where the description is to be deployed. */
     public String host = null;
 
@@ -133,6 +137,7 @@ public class OptionSet {
                     switch (args[i].charAt(1)) {
                     case '?':
                         errorString = "SFSystem help" + help;
+                        exitCode = ExitCodes.EXIT_CODE_SUCCESS;
                         break;
 
                     case 'a':

@@ -35,6 +35,7 @@ import org.smartfrog.sfcore.prim.Prim;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.sfcore.security.SFClassLoader;
+import org.smartfrog.sfcore.common.ExitCodes;
 import sun.misc.Signal;
 import sun.misc.SignalHandler;
 
@@ -344,7 +345,7 @@ public class SFProcess implements MessageKeys {
                 LogFactory.sfGetProcessLog().out("sfDaemon killed!");
                 //http://www.tldp.org/LDP/abs/html/exitcodes.html
                 // 130 - Control-C is fatal error signal 2, (130 = 128 + 2)
-                System.exit(130);
+                ExitCodes.exitWithError(ExitCodes.EXIT_ERROR_CODE_CRTL_ALT_DEL);
             }
         }
 

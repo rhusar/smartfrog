@@ -38,6 +38,7 @@ import org.smartfrog.sfcore.security.SFSecurity;
 import org.smartfrog.sfcore.security.SFSecurityProperties;
 import org.smartfrog.sfcore.prim.TerminationRecord;
 import org.smartfrog.sfcore.prim.Prim;
+import org.smartfrog.sfcore.common.ExitCodes;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -82,13 +83,6 @@ public class SFSystem implements MessageKeys {
     /** Core Log  */
     private static  LogSF sflog = null;
 
-    /**
-     * value of the error code returned during a failed exit {@value}
-     *
-     */
-    // http://www.tldp.org/LDP/abs/html/exitcodes.html
-    // 1 - Catchall for general errors
-    private static final int EXIT_ERROR_CODE = 1;
 
     /**
      * root process. Will be null after termination.
@@ -217,39 +211,24 @@ public class SFSystem implements MessageKeys {
      *
      * @param str string to print on out
      */
-    public void exitWith(String str) {
+    public void exitWith(String str, int exitCode) {
         if (str != null) {
             System.err.println(str);
         }
-        exitWithError();
+        ExitCodes.exitWithError(exitCode);
     }
 
-    /**
-     * Exits from the system.
-     */
-    protected void exitWithError() {
-        exit(EXIT_ERROR_CODE);
-    }
-
-    /**
-     * Exits from the system.
-     * This is the only place in the framework where System.exit() should be used.
-     * That way a subjclass can change exit behaviour (within limits)
-     */
-    protected void exit(int code) {
-        System.exit(code);
-    }
 
     /**
      * exit with an error code that depends on the status of the execution
      *
      * @param somethingFailed flag to indicate trouble
      */
-    private void exitWithStatus(boolean somethingFailed) {
+    public static void exitWithStatus(boolean somethingFailed, int exitCode) {
         if(somethingFailed) {
-            exitWithError();
+            ExitCodes.exitWithError(exitCode);
         } else {
-            exit(0);
+            ExitCodes.exitWithError(ExitCodes.EXIT_CODE_SUCCESS);
         }
     }
 
@@ -346,7 +325,7 @@ public class SFSystem implements MessageKeys {
                     sfLog().error(ex);
                 }
             } catch (Exception ex1) {ex1.printStackTrace();}
-            exitWithError();
+            ExitCodes.exitWithError(ExitCodes.EXIT_ERROR_CODE_GENERAL);
         }
 
         setRootProcess(null);
@@ -358,35 +337,35 @@ public class SFSystem implements MessageKeys {
         showDiagnostics(opts);
 
         if (opts.errorString != null) {
-            sfLog().out(opts.errorString);
-            exitWithError();
+            sfLog().out(opts.errorString+" ("+opts.exitCode+")");
+            ExitCodes.exitWithError(opts.exitCode);
         }
         try {
             setRootProcess(runSmartFrog(opts.cfgDescriptors));
         } catch (SmartFrogException sfex) {
             sfLog().out(sfex);
             if (Logger.logStackTrace){ printStackTrace(sfex); }
-            exitWithError();
+            ExitCodes.exitWithError(ExitCodes.EXIT_ERROR_CODE_GENERAL);
         } catch (UnknownHostException uhex) {
             sfLog().err(MessageUtil.formatMessage(MSG_UNKNOWN_HOST, opts.host), uhex);
             if (Logger.logStackTrace){ printStackTrace(uhex); }
-            exitWithError();
+            ExitCodes.exitWithError(ExitCodes.EXIT_ERROR_CODE_GENERAL);
         } catch (ConnectException cex) {
             sfLog().err(MessageUtil.formatMessage(MSG_CONNECT_ERR, opts.host), cex);
             if (Logger.logStackTrace){ printStackTrace(cex); }
-            exitWithError();
+            ExitCodes.exitWithError(ExitCodes.EXIT_ERROR_CODE_GENERAL);
         } catch (RemoteException rmiEx) {
             // log stack trace
             sfLog().err(MessageUtil.formatMessage(MSG_REMOTE_CONNECT_ERR,
                     opts.host), rmiEx);
             if (Logger.logStackTrace){ printStackTrace(rmiEx); }
-            exitWithError();
+            ExitCodes.exitWithError(ExitCodes.EXIT_ERROR_CODE_GENERAL);
         } catch (Exception ex) {
             //log stack trace
             sfLog().err(MessageUtil.
                     formatMessage(MSG_UNHANDLED_EXCEPTION), ex);
             if (Logger.logStackTrace){ printStackTrace(ex); }
-            exitWithError();
+            ExitCodes.exitWithError(ExitCodes.EXIT_ERROR_CODE_GENERAL);
         }
 
         //Report Actions successes of failures.
@@ -406,7 +385,7 @@ public class SFSystem implements MessageKeys {
          }
         // Check for exit flag
         if (opts.exit) {
-            exitWithStatus(somethingFailed);
+            exitWithStatus(somethingFailed,opts.exitCode);
         } else {
             //sfLog().out(MessageUtil.formatMessage(MSG_SF_READY));
             if (true) {
