@@ -337,7 +337,7 @@ public class SFSystem implements MessageKeys {
         showDiagnostics(opts);
 
         if (opts.errorString != null) {
-            sfLog().out(opts.errorString+" ("+opts.exitCode+")");
+            sfLog().out(opts.errorString);
             ExitCodes.exitWithError(opts.exitCode);
         }
         try {
