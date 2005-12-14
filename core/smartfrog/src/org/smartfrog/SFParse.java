@@ -37,6 +37,7 @@ import org.smartfrog.sfcore.languages.sf.predicates.BasePredicate;
 import org.smartfrog.sfcore.parser.Phases;
 import org.smartfrog.sfcore.parser.SFParser;
 import org.smartfrog.sfcore.security.SFClassLoader;
+import org.smartfrog.sfcore.common.ExitCodes;
 
 /**
  * SFParse provides the utility methods to parse file descriptions and generate
@@ -273,8 +274,10 @@ public class SFParse implements MessageKeys {
             if (opts.errorString != null) {
                 if (opts.help) {
                     SFSystem.sfLog().out( "Help: \n"+opts.errorString);
+                    ExitCodes.exitWithError(ExitCodes.EXIT_CODE_SUCCESS);
                 } else {
                     SFSystem.sfLog().out( "Error: "+opts.errorString);
+                    ExitCodes.exitWithError(ExitCodes.EXIT_CODE_SUCCESS);
                 }
                 exit();
             }
@@ -294,7 +297,7 @@ public class SFParse implements MessageKeys {
              exit();
            } else {
                SFSystem.sfLog().out( "SFParse: SUCCESSFUL");
-	       System.exit(0);
+               ExitCodes.exitWithError(ExitCodes.EXIT_CODE_SUCCESS);
            }
         } catch (Throwable thr){
 //           Logger.log(thr);
@@ -310,7 +313,7 @@ public class SFParse implements MessageKeys {
      */
     private static void exit() {
         SFSystem.sfLog().out( "SFParse: FAILED");
-        System.exit(-1);
+        ExitCodes.exitWithError(ExitCodes.EXIT_ERROR_CODE_GENERAL);
     }
 
     /**

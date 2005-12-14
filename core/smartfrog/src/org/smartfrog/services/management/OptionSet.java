@@ -21,14 +21,19 @@ For more information: www.smartfrog.org
 package org.smartfrog.services.management;
 
 import java.util.Vector;
+import org.smartfrog.sfcore.common.ExitCodes;
 
 
 /**
- * Parses the SFSystem arguments into an option set. Options are
+ * Parses the sfManagementConsole arguments into an option set. Options are
  * seperated by optionFlagIndicator characters.
  *
  */
 public class OptionSet {
+
+    /** ExitCode for ManagementConsole. */
+
+    public int exitCode = ExitCodes.EXIT_ERROR_CODE_BAD_ARGS;
     /** Option flag indicator. */
     protected char optionFlagIndicator = '-';
     /** Option length. */
@@ -73,13 +78,13 @@ public class OptionSet {
                     switch (args[i].charAt(1)) {
                     case '?':
                         errorString = "SFManagementConsole help";
-
+                        exitCode = ExitCodes.EXIT_CODE_SUCCESS;
                         break;
 
                     case 'h':
-
                         if (isRemoteDaemon) {
                             errorString = "at most one -h allowed";
+                            exitCode = ExitCodes.EXIT_ERROR_CODE_BAD_ARGS;
                         }
 
                         isRemoteDaemon = true;
@@ -91,6 +96,7 @@ public class OptionSet {
 
                         if (isRemoteSubprocess) {
                             errorString = "at most one -p allowed";
+                            exitCode = ExitCodes.EXIT_ERROR_CODE_BAD_ARGS;
                         }
 
                         isRemoteSubprocess = true;
@@ -102,6 +108,7 @@ public class OptionSet {
 
                         if (isWindowPosition) {
                             errorString = "at most one -w allowed";
+                            exitCode = ExitCodes.EXIT_ERROR_CODE_BAD_ARGS;
                         }
 
                         isWindowPosition = true;
@@ -122,15 +129,18 @@ public class OptionSet {
 
                     default:
                         errorString = "unknown option " + args[i].charAt(1);
+                        exitCode = ExitCodes.EXIT_ERROR_CODE_BAD_ARGS;
                     }
                 } else {
                     errorString = "illegal option format for option " +
                         args[i];
+                    exitCode = ExitCodes.EXIT_ERROR_CODE_BAD_ARGS;
                 }
 
                 i++;
             } catch (Exception e) {
                 errorString = "illegal format for options ";
+                exitCode = ExitCodes.EXIT_ERROR_CODE_BAD_ARGS;
             }
         }
 
@@ -142,32 +152,4 @@ public class OptionSet {
         }
     }
 
-    /*
-       public void print () {
-            if (errorString != null) {
-                System.out.println(errorString);
-                return;
-           }
-           if (isRemoteDaemon) System.out.println("remote deamon on host " +
-   host);
-           if (isRemoteSubprocess)  System.out.println("remote subprocess " +
-   subprocess);
-           if (exit) System.out.println("exit on completion");
-           System.out.println("terminations");
-           for (Enumeration et = terminations.elements(); et.hasMoreElements();) {
-               System.out.println("   " + (String) et.nextElement());
-           }
-           System.out.println("configurations");
-           for (Enumeration ec = configs.elements(); ec.hasMoreElements();) {
-               String config = (String) ec.nextElement();
-               System.out.println("   " + (String) config +" named " +
-       names.get(config));
-           }
-       }
-       public static void main(String[] args) {
-           System.out.println("running");
-           OptionSet o = new OptionSet(args);
-           o.print();
-       }
-     */
 }
