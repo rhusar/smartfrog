@@ -46,6 +46,7 @@ import org.smartfrog.sfcore.processcompound.SFProcess;
 import org.smartfrog.sfcore.reference.Reference;
 import org.smartfrog.services.display.WindowUtilities;
 import org.smartfrog.sfcore.common.Logger;
+import org.smartfrog.sfcore.common.ExitCodes;
 
 
 /**
@@ -88,7 +89,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
       OptionSet opts = new OptionSet(args);
 
       if (opts.errorString != null) {
-         exitWith(opts.errorString);
+         exitWith(opts.errorString, opts.exitCode);
       }
 
       final boolean showRootProcess = opts.showRootProcess;
@@ -101,12 +102,12 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
          startConsole(nameDisplay, height, width, positionDisplay,
                showRootProcess,showCDasChild, hostname, port, true);
       } catch (java.net.UnknownHostException uex) {
-         exitWith("Error: Unknown host.");
+         exitWith("Error: Unknown host.", ExitCodes.EXIT_ERROR_CODE_GENERAL);
       } catch (java.rmi.ConnectException cex) {
-         exitWith("Error: " + cex.getMessage());
+         exitWith("Error: " + cex.getMessage(), ExitCodes.EXIT_ERROR_CODE_GENERAL);
       } catch (Exception e) {
          e.printStackTrace();
-         exitWith("Error in SFDeployDisplay.main():" + e);
+         exitWith("Error in SFDeployDisplay.main():" + e, ExitCodes.EXIT_ERROR_CODE_GENERAL);
       }
 
       sflog.out("Running.");
@@ -186,7 +187,7 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
 //                        Logger.log(ex);
 //                        System.err.println();
 //                        ex.printStackTrace();
-                        exitWith("Error in SFDeployDisplay.refresh():" + ex);
+                        exitWith("Error in SFDeployDisplay.refresh():" + ex, ExitCodes.EXIT_ERROR_CODE_GENERAL);
                      }
                   }
                }
@@ -238,12 +239,12 @@ public class SFDeployDisplay extends SFDisplay implements ActionListener {
     *
     *@param  str  string to print on out
     */
-   public static void exitWith(String str) {
+   public static void exitWith(String str, int exitCode) {
       if (str != null) {
          System.err.println(str);
       }
 
-      System.exit(1);
+      System.exit(exitCode);
    }
 
 

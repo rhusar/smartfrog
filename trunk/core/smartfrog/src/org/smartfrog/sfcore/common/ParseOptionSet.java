@@ -63,6 +63,9 @@ public class ParseOptionSet {
     /** Error string for SFParse. */
     public String errorString = null;
 
+    /** ExitCode for SFParse. */
+    public int exitCode = ExitCodes.EXIT_ERROR_CODE_BAD_ARGS;
+
     /** Flag indicating the help option. */
     public boolean help =false;
 
@@ -105,6 +108,7 @@ public class ParseOptionSet {
                     switch (args[i].charAt(1)) {
                     case '?':
                         errorString =  helpTxt;
+                        exitCode = ExitCodes.EXIT_CODE_SUCCESS;
                         help=true;
                         break;
 
@@ -145,6 +149,7 @@ public class ParseOptionSet {
                 i++;
             } catch (Exception e) {
                 errorString = "illegal format for options ";
+                exitCode = ExitCodes.EXIT_ERROR_CODE_BAD_ARGS;
                 //Logger.log(ex);
                 if (SFSystem.sfLog().isErrorEnabled()) {
                     SFSystem.sfLog().error(e);
@@ -167,6 +172,7 @@ public class ParseOptionSet {
            if (SFSystem.sfLog().isErrorEnabled()) {
                SFSystem.sfLog().error(ex);
            }
+           exitCode = ExitCodes.EXIT_ERROR_CODE_BAD_ARGS;
        }
     }
 

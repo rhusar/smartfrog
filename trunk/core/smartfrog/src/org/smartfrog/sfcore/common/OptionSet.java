@@ -144,6 +144,7 @@ public class OptionSet {
                         try {
                             this.cfgDescriptors.add(new ConfigurationDescriptor(args[++i]));
                         } catch (SmartFrogInitException ex){
+                           exitCode = ExitCodes.EXIT_ERROR_CODE_BAD_ARGS;
                           //Logger.log(ex);
                           if (SFSystem.sfLog().isErrorEnabled()) {
                               SFSystem.sfLog().error(ex.getMessage(),ex);
@@ -155,6 +156,7 @@ public class OptionSet {
                         try {
                             this.readCfgDescriptorsFile(args[++i]);
                         } catch (SmartFrogInitException ex){
+                          exitCode = ExitCodes.EXIT_ERROR_CODE_BAD_ARGS;
                           //Logger.log(ex);
                           if (SFSystem.sfLog().isErrorEnabled()) {
                               SFSystem.sfLog().error(ex.getMessage(),ex);
@@ -172,14 +174,16 @@ public class OptionSet {
 
                     default:
                         errorString = "unknown option " + args[i].charAt(1);
+                        exitCode = ExitCodes.EXIT_ERROR_CODE_BAD_ARGS;
                     }
                 } else {
-                    errorString = "illegal option format for option " +
-                        args[i];
+                    errorString = "illegal option format for option " + args[i];
+                    exitCode = ExitCodes.EXIT_ERROR_CODE_BAD_ARGS;
                 }
 
                 i++;
             } catch (Exception e) {
+                exitCode = ExitCodes.EXIT_ERROR_CODE_BAD_ARGS;
                 //protects from dodgy shell scripts
                 if (!(e instanceof java.lang.ArrayIndexOutOfBoundsException)){
                    errorString = "illegal format for options \n";
