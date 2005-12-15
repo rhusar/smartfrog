@@ -231,8 +231,8 @@ public class Parse extends TaskBase implements SysPropertyAdder {
             case 0:
                 //success
                 break;
-            case -1:
-            case 255: //for HPUX and other unixes.
+            case 69:
+            case 1:
                 //parse fail
                 throw new BuildException("parse failure");
             default:
