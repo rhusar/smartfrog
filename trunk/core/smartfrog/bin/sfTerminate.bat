@@ -18,8 +18,10 @@ echo "Terminating %1"
 GOTO end
 :usage
 echo Insufficient arguments to use sfTerminate
+echo Usage: sfTerminate HostName ComponentName
+exit /B 69
 :help
 echo Usage: sfTerminate HostName ComponentName
+exit /B 0
 :end
-
 endlocal

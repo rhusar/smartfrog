@@ -17,7 +17,10 @@ if defined SFDEFAULTSF  set SFCMDPARAMETERS=%SFCMDPARAMETERS% %SFDEFAULTSF%
 GOTO end
 :usage
 echo Insufficient arguments to use sfRun
+echo Usage: sfRun URL [-e]
+exit /B 69
 :help
 echo Usage: sfRun URL [-e]
+exit /B 0
 :end
 endlocal

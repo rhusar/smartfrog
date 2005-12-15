@@ -17,8 +17,10 @@ call "%SFHOME%\bin\setSFProperties"
 GOTO end
 :usage
 echo Insufficient arguments to use sfDetachAndTerminate
+echo Usage: sfDetachAndTerminate HostName ComponentName
+exit /B 69
 :help
 echo Usage: sfDetachAndTerminate HostName ComponentName
+exit /B 0
 :end
-
 endlocal
