@@ -9,15 +9,15 @@ fi
 if [ -z $1 ] ; then
    echo "Insufficient arguments to use sfTerminate"
    echo "Usage: sfTerminate HostName ComponentName"
-exit
+   exit 69
 fi
 if [ $# -eq 1 ] && [ $1 == "-?" ];then
    echo "Usage: sfTerminate HostName ComponentName"
-   exit
+   exit 0
 elif [ $# -ne 2 ];then
    echo "Insufficient arguments to use sfTerminate"
    echo "Usage: sfTerminate HostName ComponentName"
-   exit
+   exit 69
 fi
 #for i in $SFHOME/lib/*.jar; do CLASSPATH=$i:$CLASSPATH; done
 #export CLASSPATH

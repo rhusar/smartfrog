@@ -28,11 +28,11 @@ echo Creating diagnostics report (%1) for %COMPONENT% in %PROCESS%
 
 GOTO end
 :usage
-echo Insufficient arguments to use sfDiag
-echo Usage: sfDiag HostName [ComponentName] [ProcessName]
+echo Insufficient arguments to use sfDiagnostics
+echo Usage: sfDiagnostics HostName [ComponentName] [ProcessName]
 exit /B 69
 :help
-echo Usage: sfDiag HostName [ComponentName] [ProcessName]
+echo Usage: sfDiagnostics HostName [ComponentName] [ProcessName]
 exit /B 0
 :end
 endlocal
