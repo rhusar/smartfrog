@@ -59,10 +59,10 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
      * what is the default timeout for those tasks that have a timeout
      */
     public static final long DEFAULT_TIMEOUT_VALUE = 60 * 10 * 1000L;
-    
+
     /**
      * option for 'don't timeout'
-     */ 
+     */
     public static final long NO_DEFAULT_TIMEOUT = -1L;
     /**
      * spawn flag, false by default. Needs Ant1.7 or later to work.
@@ -104,12 +104,12 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
     /**
      * override point
      * @return default timeout, return 1 number less than 0 for no timeout
-     */ 
+     */
     protected long getDefaultTimeout() {
         return DEFAULT_TIMEOUT_VALUE;
     }
-    
-    
+
+
 
 
     /**
@@ -365,7 +365,7 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
      * Override point: declare the name of the entry point of this task.
      * @see SmartFrogJVMProperties#SMARTFROG_ENTRY_POINT
      * @return name of the class providing a static void Main(String args[]) method
-     */ 
+     */
     protected String getEntrypoint() {
         return SmartFrogJVMProperties.SMARTFROG_ENTRY_POINT;
     }
@@ -587,11 +587,8 @@ public abstract class SmartFrogTask extends TaskBase implements SysPropertyAdder
             case 0:
                 //success
                 return true;
-            case -1:
-            case 255:
-                //-1 is an expected error, but
-                //for some reason smartfrog on HP-UX returns something else.
-                //so we catch 255 as well.
+            case 1:
+            case 69:
                 if (!failOnError) {
                     return false;
                 }
