@@ -7,13 +7,13 @@ if [ -z "$SFHOME" -o ! -d "$SFHOME" ] ; then
     echo SFHOME undefined, using $SFHOME as base directory;
 fi
 if [ -z $1 ] ; then
-   echo "Insufficient arguments to use sfDiag"
-   echo "Usage: sfDiag HostName [ComponentName] [ProcessName]"
-exit
+   echo "Insufficient arguments to use sfDiagnostics"
+   echo "Usage: sfDiagnostics HostName [ComponentName] [ProcessName]"
+   exit 69
 fi
 if [ $# -eq 1 ] && [ $1 == "-?" ];then
-   echo "Usage: sfDiag HostName [ComponentName] [ProcessName]"
-   exit
+   echo "Usage: sfDiagnostics HostName [ComponentName] [ProcessName]"
+   exit 0
 fi   
 if [ -z $2 ]; then
     COMPONENT="rootProcess";

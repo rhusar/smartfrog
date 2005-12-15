@@ -9,11 +9,11 @@ fi
 if [ -z $1 ] ; then
    echo "Insufficient arguments to use sfPing"
    echo "Usage: sfPing HostName [ComponentName]"
-exit
+   exit 69
 fi
 if [ $# -eq 1 ] && [ $1 == "-?" ];then
    echo "Usage: sfPing HostName [ComponentName]"
-   exit
+   exit 0
 fi   
 if [ -z $2 ]; then
     COMPONENT="rootProcess";
