@@ -24,8 +24,10 @@ echo "Pinging %1 in %COMPONENT%"
 GOTO end
 :usage
 echo Insufficient arguments to use sfPing
+echo Usage: sfPing HostName [ComponentName]
+exit /B 69
 :help
 echo Usage: sfPing HostName [ComponentName]
+exit /B 0
 :end
-
 endlocal

@@ -17,7 +17,10 @@ echo "Stopping sfDaemon in %1"
 GOTO end
 :usage
 echo Insufficient arguments to use sfStopDaemon
+echo Usage: sfStopDaemon HostName
+exit /B 69
 :help
 echo Usage: sfStopDaemon HostName
+exit /B 0
 :end 
 endlocal

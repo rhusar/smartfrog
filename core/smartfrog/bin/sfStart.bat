@@ -17,7 +17,10 @@ call "%SFHOME%\bin\setSFProperties"
 GOTO end
 :usage
 echo Insufficient arguments to use sfStart 
+echo Usage: sfStart HostName ApplicationName URL
+exit /B 69
 :help
 echo Usage: sfStart HostName ApplicationName URL
+exit /B 0
 :end
 endlocal
