@@ -18,13 +18,12 @@ set SFDEFAULTINI=-Dorg.smartfrog.iniFile="%SFHOME%\test\default.ini"
 echo "Start Daemon"
 start call "%SFHOME%\bin\sfDaemon.bat" 
 
-sleep 5
+pause
 
 echo "Run test"
 start call "%SFHOME%\bin\smartfrog.bat" -f org/smartfrog/examples/configurationdescriptor/example.sfcd -e
 
-sleep 45
-
+pause
 
 echo "Stop Daemon"
 call "%SFHOME%\bin\sfStopDaemon.bat" localhost
