@@ -14,6 +14,3 @@ rem echo java -Dorg.smartfrog.iniFile=%SFHOME%\bin\default.ini org.smartfrog.SFS
 %SFJVM% %SFCMDPARAMETERS% org.smartfrog.SFSystem %1 %2 %3 %4 %5 %6 %7 %8 %9
 
 endlocal
-
-exit 0
-
