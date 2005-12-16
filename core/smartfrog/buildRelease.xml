@@ -230,10 +230,10 @@ To Be Written
         <include name="${dist}/docs/SmartFrogTutorial.pdf"/>
         <include name="${dist}/docs/ant_tasks_for_smartfrog.pdf"/>
         <include name="${dist}/docs/IDE_development.pdf"/>
-        <include name="${dist}/docs/components/**"/>                
-        <include name="${dist}/docs/antTasksManual/**"/>                
-        <include name="${dist}/docs/skin/**"/>                
-        <include name="${dist}/docs/images/**"/>                
+        <include name="${dist}/docs/components/**"/>
+        <include name="${dist}/docs/antTasksManual/**"/>
+        <include name="${dist}/docs/skin/**"/>
+        <include name="${dist}/docs/images/**"/>
         <include name="${dist}/docs/csfExtensions.pdf"/>
         <include name="${dist}/docs/jdocs/**"/>
        </zipfileset>
@@ -257,18 +257,19 @@ To Be Written
         <include name="docs/SmartFrogTutorial.pdf"/>
         <include name="docs/ant_tasks_for_smartfrog.pdf"/>
         <include name="docs/IDE_development.pdf"/>
-        <include name="docs/components/filesystem.pdf"/>        
+        <include name="docs/components/filesystem.pdf"/>
         <include name="docs/csfExtensions.pdf"/>
-        <include name="docs/components/**"/>                
-        <include name="docs/antTasksManual/**"/>                
-        <include name="docs/skin/**"/>                
-        <include name="docs/images/**"/>                
+        <include name="docs/components/**"/>
+        <include name="docs/antTasksManual/**"/>
+        <include name="docs/skin/**"/>
+        <include name="docs/images/**"/>
 	<include name="lib/**"/>
 	<!--include name="lib/**/*-${version}.jar"/>
 	<include name="lib/readme.txt"/-->
         <include name="src/**"/>
         <include name="private/**"/>
         <include name="testCA/**"/>
+        <include name="test/**"/>
         <include name="javacc/*"/>
         <include name="build.xml"/>
         <include name="releaseBuild.xml"/>
@@ -307,12 +308,12 @@ To Be Written
         <include name="${dist}/docs/SmartFrogTutorial.pdf"/>
         <include name="${dist}/docs/ant_tasks_for_smartfrog.pdf"/>
         <include name="${dist}/docs/IDE_development.pdf"/>
-        <include name="${dist}/docs/components/filesystem.pdf"/>       
+        <include name="${dist}/docs/components/filesystem.pdf"/>
         <include name="${dist}/docs/csfExtensions.pdf"/>
-        <include name="${dist}/docs/components/**"/>                
-        <include name="${dist}/docs/antTasksManual/**"/>                
-        <include name="${dist}/docs/skin/**"/>                
-        <include name="${dist}/docs/images/**"/>                
+        <include name="${dist}/docs/components/**"/>
+        <include name="${dist}/docs/antTasksManual/**"/>
+        <include name="${dist}/docs/skin/**"/>
+        <include name="${dist}/docs/images/**"/>
         <include name="${dist}/docs/jdocs/**"/>
        </zipfileset>
        <!--zipfileset dir="." prefix="${Name.System}.${version}">
@@ -345,12 +346,12 @@ To Be Written
         <include name="${dist}/docs/SmartFrogTutorial.pdf"/>
         <include name="${dist}/docs/ant_tasks_for_smartfrog.pdf"/>
         <include name="${dist}/docs/IDE_development.pdf"/>
-        <include name="${dist}/docs/components/filesystem.pdf"/>        
+        <include name="${dist}/docs/components/filesystem.pdf"/>
         <include name="${dist}/docs/csfExtensions.pdf"/>
-        <include name="${dist}/docs/components/**"/>                
-        <include name="${dist}/docs/antTasksManual/**"/>                
-        <include name="${dist}/docs/skin/**"/>                
-        <include name="${dist}/docs/images/**"/>                
+        <include name="${dist}/docs/components/**"/>
+        <include name="${dist}/docs/antTasksManual/**"/>
+        <include name="${dist}/docs/skin/**"/>
+        <include name="${dist}/docs/images/**"/>
         <include name="${dist}/docs/jdocs/**"/>
        </tarfileset>
        <!--tarfileset dir="." prefix="${Name.System}.${version}">
@@ -383,18 +384,19 @@ To Be Written
         <include name="docs/SmartFrogTutorial.pdf"/>
         <include name="docs/ant_tasks_for_smartfrog.pdf"/>
         <include name="docs/IDE_development.pdf"/>
-        <include name="docs/components/filesystem.pdf"/>        
+        <include name="docs/components/filesystem.pdf"/>
         <include name="docs/csfExtensions.pdf"/>
-        <include name="docs/components/**"/>                
-        <include name="docs/antTasksManual/**"/>                
-        <include name="docs/skin/**"/>                
-        <include name="docs/images/**"/>                
+        <include name="docs/components/**"/>
+        <include name="docs/antTasksManual/**"/>
+        <include name="docs/skin/**"/>
+        <include name="docs/images/**"/>
 	<include name="lib/**"/>
 	<!--include name="lib/*-${version}.jar"/>
 	<include name="lib/readme.txt"/-->
         <include name="src/**"/>
         <include name="private/**"/>
         <include name="testCA/**"/>
+        <include name="test/**"/>
         <include name="javacc/*"/>
         <include name="build.xml"/>
         <include name="releaseBuild.xml"/>
@@ -448,12 +450,12 @@ To Be Written
         <include name="${dist}/docs/SmartFrogTutorial.pdf"/>
         <include name="${dist}/docs/ant_tasks_for_smartfrog.pdf"/>
         <include name="${dist}/docs/IDE_development.pdf"/>
-        <include name="${dist}/docs/components/filesystem.pdf"/>        
+        <include name="${dist}/docs/components/filesystem.pdf"/>
         <include name="${dist}/docs/csfExtensions.pdf"/>
-        <include name="${dist}/docs/components/**"/>                
-        <include name="${dist}/docs/antTasksManual/**"/>                
-        <include name="${dist}/docs/skin/**"/>                
-        <include name="${dist}/docs/images/**"/>                
+        <include name="${dist}/docs/components/**"/>
+        <include name="${dist}/docs/antTasksManual/**"/>
+        <include name="${dist}/docs/skin/**"/>
+        <include name="${dist}/docs/images/**"/>
         <include name="${dist}/docs/jdocs/**"/>
        </tarfileset>
        <!--tarfileset dir="." prefix="${Name.System}.${version}">

@@ -95,6 +95,7 @@
     <pathelement location="lib/mx4j-tools.jar"/>
     <pathelement location="lib/sf-scripting.jar"/>
     <pathelement location="lib/bsh-1.3.0.jar"/>
+    <pathelement location="lib/ant.jar"/>
   </path>
   <!-- =================================================================== -->
   <!-- Global properties                                                   -->
@@ -104,7 +105,7 @@
   <property file="../build.properties"/>
   <!-- properties file to modify version.sf -->
   <property file="sf-build-version.properties"/>
-  
+
   <property environment="env"/>
   <!-- Release Directories -->
   <property name="src" value="src"/>
@@ -131,6 +132,7 @@
   <property name="docs" value="docs"/>
   <property name="jdocs" value="${docs}/jdocs"/>
   <property name="SFjdocs" value="${docs}/SFjdocs"/>
+  <property name="test" value="test"/>
   <property name="dist.lib.dir" location="${dist.dir}/${lib}"/>
   <property name="dist.bin.dir" location="${dist.dir}/${bin}"/>
   <property name="dist.src.dir" location="${dist.dir}/${src}"/>
@@ -141,6 +143,7 @@
   <property name="dist.jdocs.dir" location="${dist.dir}/${jdocs}"/>
   <property name="dist.SFjdocs.dir" location="${dist.dir}/${SFjdocs}"/>
   <property name="java.class.path" location="${dist.dir}/${SFjdocs}"/>
+  <property name="dist.test.dir" location="${dist.dir}/${test}"/>
   <!--property name="redist" value="redist"/ -->
   <property name="examplesFiles" value="org/smartfrog/examples/**/*"/>
   <!-- a list of files for rmic -->
@@ -235,6 +238,7 @@
     <mkdir dir="${dist.private.dir}"/>
     <mkdir dir="${dist.signedLib.dir}"/>
     <mkdir dir="${dist.src.dir}"/>
+    <mkdir dir="${dist.test.dir}"/>
   </target>
   <!-- =================================================================== -->
   <!-- FixCRLF for different platforms  only inside DIST!                  -->
@@ -269,9 +273,9 @@
     -->
     <!-- Compile the java code -->
     <echo>${javac.java.version} build.compiler=${build.compiler} javac.compiler=${javac.compiler}</echo>
-    <javac compiler="${javac.compiler}" srcdir="${src.dir}" 
-      includes="**/*.java" destdir="${build.classes.dir}" 
-      debug="${javac.debug.mode}" debuglevel="${javac.debug.level}" 
+    <javac compiler="${javac.compiler}" srcdir="${src.dir}"
+      includes="**/*.java" destdir="${build.classes.dir}"
+      debug="${javac.debug.mode}" debuglevel="${javac.debug.level}"
       includeAntRuntime="false" source="${javac.java.version}" target="${javac.java.version}">
       <classpath refid="smartfrog.class.path"/>
     </javac>
@@ -284,11 +288,11 @@
       CPUs, but as the SunRmic adapter runs rmic in-VM, that is too dangerous.
       We'd need to fork rmic to get decent isolation.
     -->
-    <rmic includesfile="${rmitargets}" compiler="${rmic.compiler}" 
+    <rmic includesfile="${rmitargets}" compiler="${rmic.compiler}"
       stubversion="1.2" base="${build.classes.dir}">
       <classpath refid="smartfrog.class.path"/>
     </rmic>
-    <rmic includesfile="${rmitargets}Examples" compiler="${rmic.compiler}" 
+    <rmic includesfile="${rmitargets}Examples" compiler="${rmic.compiler}"
       stubversion="1.2" base="${build.classes.dir}">
       <classpath refid="smartfrog.class.path"/>
     </rmic>
@@ -398,6 +402,17 @@
       </fileset>
     </copy>
   </target>
+
+  <!-- =================================================================== -->
+  <!--                                                                     -->
+  <!-- =================================================================== -->
+  <target name="copyTest" depends="initdist">
+    <copy todir="${dist.test.dir}">
+      <fileset dir="${test}">
+        <include name="**/*"/>
+      </fileset>
+    </copy>
+  </target>
   <!-- =================================================================== -->
   <!-- Copy binary files.                                                  -->
   <!-- execute permissions are set on binary stuff, permissions that get   -->
@@ -471,7 +486,7 @@
       <classpath>
          <pathelement location="${javacc.dir}/javacc.jar"/>
        </classpath>
-     </java>    
+     </java>
   </target>
   <!-- =================================================================== -->
   <!--  BUILD                                                              -->
@@ -507,13 +522,13 @@
 
   <!--  SmartFrog Jar                                                     -->
   <target name="sfJar" depends="build,target-names">
-    <jar jarfile="${smartfrog.jar}" basedir="${build.classes.dir}" 
+    <jar jarfile="${smartfrog.jar}" basedir="${build.classes.dir}"
       includes="**/smartfrog/**" excludes="**/services/**,**/examples/**" manifest="${manifestName}"/>
   </target>
   <!--  sfServices.jar                                               -->
 
   <target name="sfServicesJar" depends="build,target-names">
-    <jar jarfile="${sf-services.jar}" basedir="${build.classes.dir}" 
+    <jar jarfile="${sf-services.jar}" basedir="${build.classes.dir}"
       includes="**/services/**" manifest="${manifestName}"/>
   </target>
 
@@ -531,7 +546,7 @@
   <!--  build, create jars and signs them.                                 -->
   <!-- =================================================================== -->
   <target name="secureBuild" depends="build,jars,signJars"/>
-  
+
   <!-- =================================================================== -->
   <!--  create security buld file                                          -->
   <!-- =================================================================== -->
@@ -547,7 +562,7 @@
   <!-- =================================================================== -->
   <!--  DIST                                                               -->
   <!-- =================================================================== -->
-  <target name="dist" depends="build,initdist,jars,copylibs,copybins,copyPrivate,copydocs, copyexamples,copyTestCA,buildSetup,fixCRLF,srczip" description="Prepares distribution package">
+  <target name="dist" depends="build,initdist,jars,copylibs,copybins,copyPrivate,copydocs, copyexamples,copyTestCA,copyTest,buildSetup,fixCRLF,srczip" description="Prepares distribution package">
   </target>
   <!-- =================================================================== -->
   <!--  SECUREDIST                                                         -->
@@ -579,7 +594,7 @@
   <!-- a clean distribution                                               -->
   <!-- =================================================================== -->
   <target name="fromclean" depends="clean,sfParseTest,dist"/>
-  
+
   <!-- =================================================================== -->
   <!-- sfParse parsertargets                                                -->
   <!-- =================================================================== -->

@@ -15,3 +15,5 @@ rem echo java -Dorg.smartfrog.iniFile=%SFHOME%\bin\default.ini org.smartfrog.SFS
 
 endlocal
 
+exit 0
+
