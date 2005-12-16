@@ -1,0 +1,221 @@
+//#  standard ant tasks
+mkdir extends { AntTask "";}        
+javac extends { AntTask "";}        
+chmod extends { AntTask "";}        
+delete extends { AntTask "";}       
+copy extends { AntTask "";}         
+move extends { AntTask "";}         
+jar extends { AntTask "";}          
+rmic extends { AntTask "";}         
+cvs extends { AntTask "";}          
+get extends { AntTask "";}          
+unzip extends { AntTask "";}        
+unjar extends { AntTask "";}        
+unwar extends { AntTask "";}        
+echo extends { AntTask "";}         
+javadoc extends { AntTask "";}      
+zip extends { AntTask "";}          
+gzip extends { AntTask "";}         
+gunzip extends { AntTask "";}       
+replace extends { AntTask "";}      
+java extends { AntTask "";}         
+tstamp extends { AntTask "";}       
+property extends { AntTask "";}     
+xmlproperty extends { AntTask "";}  
+taskdef extends { AntTask "";}      
+ant extends { AntTask "";}          
+exec extends { AntTask "";}         
+tar extends { AntTask "";}          
+untar extends { AntTask "";}        
+available extends { AntTask "";}    
+filter extends { AntTask "";}       
+fixcrlf extends { AntTask "";}      
+patch extends { AntTask "";}        
+xslt extends { AntTask "";}         
+touch extends { AntTask "";}        
+signjar extends { AntTask "";}      
+genkey extends { AntTask "";}       
+antstructure extends { AntTask "";} 
+execon extends { AntTask "";}       
+antcall extends { AntTask "";}      
+sql extends { AntTask "";}          
+mail extends { AntTask "";}         
+fail extends { AntTask "";}         
+war extends { AntTask "";}          
+uptodate extends { AntTask "";}       
+apply extends { AntTask "";}          
+record extends { AntTask "";}         
+cvspass extends { AntTask "";}        
+typedef extends { AntTask "";}        
+sleep extends { AntTask "";}          
+pathconvert extends { AntTask "";} 
+ear extends { AntTask "";}         
+parallel extends { AntTask "";}      
+sequential extends { AntTask "";}    
+condition extends { AntTask "";}     
+dependset extends { AntTask "";}     
+bzip2 extends { AntTask "";}         
+bunzip2 extends { AntTask "";}       
+checksum extends { AntTask "";}      
+waitfor extends { AntTask "";}       
+input extends { AntTask "";}         
+loadfile extends { AntTask "";}         
+manifest extends { AntTask "";}         
+loadproperties extends { AntTask "";}   
+basename extends { AntTask "";}    
+dirname extends { AntTask "";}     
+cvschangelog extends { AntTask "";}
+cvsversion extends { AntTask "";}  
+buildnumber extends { AntTask "";} 
+concat extends { AntTask "";}      
+cvstagdiff extends { AntTask "";}    
+tempfile extends { AntTask "";}      
+classloader extends { AntTask "";}   
+import extends { AntTask "";}        
+whichresource extends { AntTask "";} 
+subant extends { AntTask "";}        
+sync extends { AntTask "";}          
+defaultexcludes extends { AntTask "";} 
+presetdef extends { AntTask "";}    
+macrodef extends { AntTask "";}     
+nice extends { AntTask "";}         
+libraries extends { AntTask "";}    
+length extends { AntTask "";}       
+clone extends { AntTask "";}        
+copypath extends { AntTask "";}     
+diagnostics extends { AntTask "";}  
+
+//#  optional tasks
+image extends { AntTask "";}        
+script extends { AntTask "";}       
+netrexxc extends { AntTask "";}     
+renameext extends { AntTask "";}    
+ejbc extends { AntTask "";}         
+ddcreator extends { AntTask "";}    
+wlrun extends { AntTask "";}        
+wlstop extends { AntTask "";}       
+vssadd extends { AntTask "";}       
+vsscheckin extends { AntTask "";}   
+vsscheckout extends { AntTask "";}  
+vsscp extends { AntTask "";}        
+vsscreate extends { AntTask "";}    
+vssget extends { AntTask "";}       
+vsshistory extends { AntTask "";}   
+vsslabel extends { AntTask "";}     
+ejbjar extends { AntTask "";}       
+mparse extends { AntTask "";}       
+mmetrics extends { AntTask "";}     
+maudit extends { AntTask "";}       
+junit extends { AntTask "";}        
+cab extends { AntTask "";}          
+ftp extends { AntTask "";}          
+icontract extends { AntTask "";}    
+javacc extends { AntTask "";}       
+jjdoc extends { AntTask "";}        
+jjtree extends { AntTask "";}       
+stcheckout extends { AntTask "";}   
+stcheckin extends { AntTask "";}    
+stlabel extends { AntTask "";}      
+stlist extends { AntTask "";}       
+wljspc extends { AntTask "";}       
+jlink extends { AntTask "";}        
+native2ascii extends { AntTask "";} 
+propertyfile extends { AntTask "";} 
+depend extends { AntTask "";}       
+antlr extends { AntTask "";}        
+vajload extends { AntTask "";}      
+vajexport extends { AntTask "";}    
+vajimport extends { AntTask "";}    
+telnet extends { AntTask "";}       
+csc extends { AntTask "";}          
+ilasm extends { AntTask "";}        
+wsdltodotnet extends { AntTask "";} 
+importtypelib extends { AntTask "";}
+stylebook extends { AntTask "";}    
+test extends { AntTask "";}         
+pvcs extends { AntTask "";}         
+p4change extends { AntTask "";}     
+p4delete extends { AntTask "";}     
+p4label extends { AntTask "";}      
+p4labelsync extends { AntTask "";}  
+p4have extends { AntTask "";}       
+p4sync extends { AntTask "";}       
+p4edit extends { AntTask "";}       
+p4integrate extends { AntTask "";}  
+p4resolve extends { AntTask "";}    
+p4submit extends { AntTask "";}     
+p4counter extends { AntTask "";}    
+p4revert extends { AntTask "";}     
+p4reopen extends { AntTask "";}     
+p4fstat extends { AntTask "";}      
+javah extends { AntTask "";}        
+ccupdate extends { AntTask "";}     
+cccheckout extends { AntTask "";}   
+cccheckin extends { AntTask "";}    
+ccuncheckout extends { AntTask "";} 
+ccmklbtype extends { AntTask "";}   
+ccmklabel extends { AntTask "";}    
+ccrmtype extends { AntTask "";}     
+cclock extends { AntTask "";}       
+ccunlock extends { AntTask "";}     
+ccmkbl extends { AntTask "";}       
+ccmkattr extends { AntTask "";}     
+ccmkelem extends { AntTask "";}     
+ccmkdir extends { AntTask "";}      
+sound extends { AntTask "";}        
+junitreport extends { AntTask "";}  
+blgenclient extends { AntTask "";}  
+rpm extends { AntTask "";}          
+xmlvalidate extends { AntTask "";}   
+iplanet-ejbc extends { AntTask "";}  
+jdepend extends { AntTask "";}       
+mimemail extends { AntTask "";}      
+ccmcheckin extends { AntTask "";}    
+ccmcheckout extends { AntTask "";}   
+ccmcheckintask extends { AntTask "";}
+ccmreconfigure extends { AntTask "";}
+ccmcreatetask extends { AntTask "";} 
+jpcoverage extends { AntTask "";}    
+jpcovmerge extends { AntTask "";}    
+jpcovreport extends { AntTask "";}   
+p4add extends { AntTask "";}         
+jspc extends { AntTask "";}          
+replaceregexp extends { AntTask "";}   
+translate extends { AntTask "";}       
+sosget extends { AntTask "";}          
+soscheckin extends { AntTask "";}      
+soscheckout extends { AntTask "";}     
+soslabel extends { AntTask "";}        
+echoproperties extends { AntTask "";}  
+splash extends { AntTask "";}          
+serverdeploy extends { AntTask "";}          
+jarlib-display extends { AntTask "";}          
+jarlib-manifest extends { AntTask "";}         
+jarlib-available extends { AntTask "";}         
+jarlib-resolve extends { AntTask "";}          
+setproxy extends { AntTask "";}          
+vbc extends { AntTask "";}         
+symlink extends { AntTask "";}         
+chgrp extends { AntTask "";}          
+chown extends { AntTask "";}          
+attrib extends { AntTask "";}     
+sshexec extends { AntTask "";}          
+jsharpc extends { AntTask "";}          org.apache.tools.ant.taskdefs.optional.dotnet.JSharp
+rexec extends { AntTask "";}          org.apache.tools.ant.taskdefs.optional.net.RExecTask
+scriptdef extends { AntTask "";}          org.apache.tools.ant.taskdefs.optional.script.ScriptDef
+ildasm extends { AntTask "";}          org.apache.tools.ant.taskdefs.optional.dotnet.Ildasm
+apt extends { AntTask "";}          org.apache.tools.ant.taskdefs.Apt
+schemavalidate extends { AntTask "";}          org.apache.tools.ant.taskdefs.optional.SchemaValidate
+verifyjar extends { AntTask "";}          org.apache.tools.ant.taskdefs.VerifyJar
+resourcecount extends { AntTask "";}          org.apache.tools.ant.taskdefs.ResourceCount
+echoxml extends { AntTask "";}          org.apache.tools.ant.taskdefs.EchoXML
+
+//#  deprecated ant tasks (kept for back compatibility)
+starteam extends { AntTask "";}          org.apache.tools.ant.taskdefs.optional.scm.AntStarTeamCheckOut
+javadoc2 extends { AntTask "";}          org.apache.tools.ant.taskdefs.Javadoc
+copydir extends { AntTask "";}          org.apache.tools.ant.taskdefs.Copydir
+copyfile extends { AntTask "";}          org.apache.tools.ant.taskdefs.Copyfile
+deltree extends { AntTask "";}          org.apache.tools.ant.taskdefs.Deltree
+rename extends { AntTask "";}          org.apache.tools.ant.taskdefs.Rename
+WsdlToDotnet extends { AntTask "";}          org.apache.tools.ant.taskdefs.optional.dotnet.WsdlToDotnet
+style extends { AntTask "";}          org.apache.tools.ant.taskdefs.XSLTProcess

@@ -62,7 +62,9 @@ public class AntImpl extends PrimImpl implements Prim, Ant {
 
        //Test get enviroment
        System.out.println( "SFHOME = " +  ant.getenv("SFHOME"));
-
+       //Test get enviroment
+       System.out.println( "Ant Version = " +  ant.getenv("ant.version"));
+       System.out.println( "Ant Java = " +  ant.getenv("ant.java.version"));
        //set src to test if {$src} works.
        ant.setenv("src",".");
 
@@ -74,9 +76,17 @@ public class AntImpl extends PrimImpl implements Prim, Ant {
            value = i.next();
            if (value instanceof org.smartfrog.sfcore.componentdescription.ComponentDescription){
                try {
-                   Object task = ant.getTask((String)attribute, (ComponentDescription)value);
+                   if (((ComponentDescription)value).sfContainsAttribute("AntTask")) {
+                       Object task = ant.getTask((String)attribute,(ComponentDescription)value);
 //                   ((AntProject)echo).invoke("message", new String[] {"hola"});
-                   ((Task)task).execute();
+                       ((Task)task).execute();
+                   } else if (((ComponentDescription)value).sfContainsAttribute("AntElement")) {
+                       Object element = ant.getElement((String)attribute,(ComponentDescription)value);
+//                   ((AntProject)echo).invoke("message", new String[] {"hola"});
+
+                   } else {
+                       System.out.println("@todo: something with attribute: "+ attribute + " "+value+";");
+                   }
                } catch (Exception ex) {
                    Throwable thr = ex;
                    if (thr instanceof java.lang.reflect.InvocationTargetException){

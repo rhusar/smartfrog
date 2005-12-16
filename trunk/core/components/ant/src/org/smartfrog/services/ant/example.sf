@@ -31,6 +31,7 @@ For more information: www.smartfrog.org
 
 #include "org/smartfrog/components.sf"
 #include "org/smartfrog/services/ant/components.sf"
+#include "org/smartfrog/services/ant/components.sf"
 
 //Elements
 Fileset extends {
@@ -55,7 +56,9 @@ GlobMapper extends {
    type "glob";
 }
 
-
+PathElement extends {
+    AntElement "pathelement";
+}
 
 
 // Tasks
@@ -75,6 +78,11 @@ sfConfig extends Ant {
   echoTask extends Echo {
     message "hellow world!";
   }
+
+   echoAntTask extends Echo {
+      message "Ant version '${ant.version}', java version '${ant.java.version}";
+   }
+
   copyTask extends Copy {
       todir "tmp";
       filtering "true";
@@ -226,7 +234,7 @@ sfConfig extends Ant {
    } //pathconvert
 
    echoXTask extends Echo {
-    message "x is ${x}";
+     message "x is ${x}";
    }
 
    echoSFHOMETask extends Echo {
@@ -255,6 +263,37 @@ sfConfig extends Ant {
 
    echoSFHOMEEnvTask extends Echo {
     message "SFHOME is ${env.SFHOME}";
+   }
+
+//  <path id="smartfrog.class.path">
+//    <pathelement path="${classpath}"/>
+//    <pathelement location="lib/log4j-1.2.8.jar"/>
+//    <pathelement location="lib/jmxri.jar"/>
+//    <pathelement location="lib/mx4j-tools.jar"/>
+//    <pathelement location="lib/sf-scripting.jar"/>
+//    <pathelement location="lib/bsh-1.3.0.jar"/>
+//    <pathelement location="lib/ant.jar"/>
+//  </path>
+
+//   pathBSH extends {
+//      AntElement "path";
+//      id "smartfrog.class.path";
+//      pathelement1 extends PathElement {
+//         path "${classpath}";
+//      }
+//      pathelement1 extends PathElement {
+//         path "${classpath}";
+//      }
+//      pathelement2 extends PathElement {
+//         location "lib/bsh-1.3.0.jar";
+//      }
+//      pathelement3 extends PathElement {
+//        location "lib/sf-scripting.jar";
+//      }
+//   }
+
+   echoSFPathTask extends Echo {
+      message "smartfrog.class.path is '${smartfrog.class.path}'";
    }
 
   echoEndTask extends Echo {
