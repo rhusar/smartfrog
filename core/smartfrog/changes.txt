@@ -1,4 +1,15 @@
-relase 3_08_000
+release 3_08_004
+----------------
+2005-Dec-16 Release date
+2005-Dec-16 Mod: sfReference Manual with an appendix of exit codes
+2005-Dec-15 Mod: Scripts to handle return codes
+2005-Dec-13 Add: New CopyFile component
+2005-Nov-22 Mod: sfLogging documentation updated to add "append" attribute to LogToFile log writer
+2005-Nov-22 Add: Added extra LogToFile properties examples in default.ini file
+2005-Nov-22 Fix: Added extra LogToFile property: append 
+2005-Nov-17 Mod: SmartFrog System Documentation updated
+
+release 3_08_000
 ---------------
 2005-Nov-17 Release date
 2005-Nov-14 Fix: Problem when browsing a CD with a Prim parent
