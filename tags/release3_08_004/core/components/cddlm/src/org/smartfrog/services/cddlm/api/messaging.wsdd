@@ -1,0 +1,26 @@
+<!-- Use this file to deploy some handlers/chains and services      -->
+<!-- Two ways to do this:                                           -->
+<!--   java org.apache.axis.client.AdminClient deploy.wsdd          -->
+<!--      after the axis server is running                          -->
+<!-- or                                                             -->
+<!--   java org.apache.axis.utils.Admin client|server deploy.wsdd   -->
+<!--      from the same directory that the Axis engine runs         -->
+
+<deployment
+  xmlns="http://xml.apache.org/axis/wsdd/"
+  xmlns:java="http://xml.apache.org/axis/wsdd/providers/java">
+
+  <!-- Services from CDDLMDeploymentService WSDL service -->
+
+  <service name="cddlm" provider="java:RPC" style="message" use="literal">
+    <parameter name="wsdlTargetNamespace" value="http://gridforum.org/cddlm/serviceAPI/api/2004/07/30"/>
+    <parameter name="wsdlServiceElement" value="CDDLMDeploymentService"/>
+    <parameter name="wsdlServicePort" value="cddlm"/>
+    <parameter name="className" value="org.smartfrog.services.cddlm.generated.api.endpoint.CddlmSoapBindingSkeleton"/>
+    <parameter name="wsdlPortType" value="MessageEndpoint"/>
+    <parameter name="allowedMethods" value="*"/>
+
+    <wsdlFile>/org/smartfrog/services/cddlm/xsd/deploymentAPI.wsdl</wsdlFile>
+
+  </service>
+</deployment>
