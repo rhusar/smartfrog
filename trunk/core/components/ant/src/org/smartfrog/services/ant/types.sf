@@ -22,7 +22,7 @@ regexp extends { AntElement "regexp";}
 substitution extends { AntElement "substitution";}
 xmlcatalog extends { AntElement "xmlcatalog";}
 extensionSet extends { AntElement "extensionSet";}
-extension extends { AntElement ExtensionAdapter";}
+extension extends { AntElement "extension";}
 selector extends { AntElement "selector";}
 signedselector extends { AntElement "signedselector";}
 scriptfilter extends { AntElement "scriptfilter";}

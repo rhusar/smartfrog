@@ -1,36 +1,36 @@
 //#  standard ant tasks
-mkdir extends { AntTask "";}        
-javac extends { AntTask "";}        
-chmod extends { AntTask "";}        
-delete extends { AntTask "";}       
-copy extends { AntTask "";}         
-move extends { AntTask "";}         
-jar extends { AntTask "";}          
-rmic extends { AntTask "";}         
-cvs extends { AntTask "";}          
-get extends { AntTask "";}          
-unzip extends { AntTask "";}        
-unjar extends { AntTask "";}        
-unwar extends { AntTask "";}        
-echo extends { AntTask "";}         
-javadoc extends { AntTask "";}      
-zip extends { AntTask "";}          
-gzip extends { AntTask "";}         
-gunzip extends { AntTask "";}       
-replace extends { AntTask "";}      
-java extends { AntTask "";}         
-tstamp extends { AntTask "";}       
-property extends { AntTask "";}     
-xmlproperty extends { AntTask "";}  
-taskdef extends { AntTask "";}      
-ant extends { AntTask "";}          
-exec extends { AntTask "";}         
-tar extends { AntTask "";}          
-untar extends { AntTask "";}        
-available extends { AntTask "";}    
-filter extends { AntTask "";}       
-fixcrlf extends { AntTask "";}      
-patch extends { AntTask "";}        
+mkdir extends { AntTask "mkdir";}        
+javac extends { AntTask "javac";}        
+chmod extends { AntTask "chmod";}        
+delete extends { AntTask "delete";}       
+copy extends { AntTask "copy";}         
+move extends { AntTask "move";}         
+jar extends { AntTask "jar";}          
+rmic extends { AntTask "rmic";}         
+cvs extends { AntTask "cvs";}          
+get extends { AntTask "get";}          
+unzip extends { AntTask "unzip";}        
+unjar extends { AntTask "unjar";}        
+unwar extends { AntTask "unwar";}        
+echo extends { AntTask "echo";}         
+javadoc extends { AntTask "javadoc";}      
+zip extends { AntTask "zip";}          
+gzip extends { AntTask "gzip";}         
+gunzip extends { AntTask "gunzip";}       
+replace extends { AntTask "replace";}      
+java extends { AntTask "java";}         
+tstamp extends { AntTask "tstamp";}       
+property extends { AntTask "property";}     
+xmlproperty extends { AntTask "xmlproperty";}  
+taskdef extends { AntTask "taskdef";} 
+ant extends { AntTask "ant";}          
+exec extends { AntTask "exec";}         
+tar extends { AntTask "tar";}          
+untar extends { AntTask "untar";}        
+available extends { AntTask "available";}    
+filter extends { AntTask "filter";}       
+fixcrlf extends { AntTask "fixcrlf";}      
+patch extends { AntTask "patch";}        
 xslt extends { AntTask "";}         
 touch extends { AntTask "";}        
 signjar extends { AntTask "";}      
@@ -200,22 +200,22 @@ chgrp extends { AntTask "";}
 chown extends { AntTask "";}          
 attrib extends { AntTask "";}     
 sshexec extends { AntTask "";}          
-jsharpc extends { AntTask "";}          org.apache.tools.ant.taskdefs.optional.dotnet.JSharp
-rexec extends { AntTask "";}          org.apache.tools.ant.taskdefs.optional.net.RExecTask
-scriptdef extends { AntTask "";}          org.apache.tools.ant.taskdefs.optional.script.ScriptDef
-ildasm extends { AntTask "";}          org.apache.tools.ant.taskdefs.optional.dotnet.Ildasm
-apt extends { AntTask "";}          org.apache.tools.ant.taskdefs.Apt
-schemavalidate extends { AntTask "";}          org.apache.tools.ant.taskdefs.optional.SchemaValidate
-verifyjar extends { AntTask "";}          org.apache.tools.ant.taskdefs.VerifyJar
-resourcecount extends { AntTask "";}          org.apache.tools.ant.taskdefs.ResourceCount
-echoxml extends { AntTask "";}          org.apache.tools.ant.taskdefs.EchoXML
+jsharpc extends { AntTask "";}      
+rexec extends { AntTask "";}        
+scriptdef extends { AntTask "";}    
+ildasm extends { AntTask "";}       
+apt extends { AntTask "";}          
+schemavalidate extends { AntTask "";} 
+verifyjar extends { AntTask "";}      
+resourcecount extends { AntTask "";}  
+echoxml extends { AntTask "";}        
 
 //#  deprecated ant tasks (kept for back compatibility)
-starteam extends { AntTask "";}          org.apache.tools.ant.taskdefs.optional.scm.AntStarTeamCheckOut
-javadoc2 extends { AntTask "";}          org.apache.tools.ant.taskdefs.Javadoc
-copydir extends { AntTask "";}          org.apache.tools.ant.taskdefs.Copydir
-copyfile extends { AntTask "";}          org.apache.tools.ant.taskdefs.Copyfile
-deltree extends { AntTask "";}          org.apache.tools.ant.taskdefs.Deltree
-rename extends { AntTask "";}          org.apache.tools.ant.taskdefs.Rename
-WsdlToDotnet extends { AntTask "";}          org.apache.tools.ant.taskdefs.optional.dotnet.WsdlToDotnet
-style extends { AntTask "";}          org.apache.tools.ant.taskdefs.XSLTProcess
+starteam extends { AntTask "";}       
+javadoc2 extends { AntTask "";}       
+copydir extends { AntTask "";}        
+copyfile extends { AntTask "";}       
+deltree extends { AntTask "";}        
+rename extends { AntTask "";}         
+WsdlToDotnet extends { AntTask "";}   
+style extends { AntTask "";}          

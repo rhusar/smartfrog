@@ -61,10 +61,10 @@ public class AntImpl extends PrimImpl implements Prim, Ant {
        AntProject ant = new AntProject();
 
        //Test get enviroment
-       System.out.println( "SFHOME = " +  ant.getenv("SFHOME"));
+       //System.out.println( "SFHOME = " +  ant.getenv("SFHOME"));
        //Test get enviroment
-       System.out.println( "Ant Version = " +  ant.getenv("ant.version"));
-       System.out.println( "Ant Java = " +  ant.getenv("ant.java.version"));
+       //System.out.println( "Ant Version = " +  ant.getenv("ant.version"));
+       //System.out.println( "Ant Java = " +  ant.getenv("ant.java.version"));
        //set src to test if {$src} works.
        ant.setenv("src",".");
 
@@ -85,7 +85,7 @@ public class AntImpl extends PrimImpl implements Prim, Ant {
 //                   ((AntProject)echo).invoke("message", new String[] {"hola"});
 
                    } else {
-                       System.out.println("@todo: something with attribute: "+ attribute + " "+value+";");
+                       //System.out.println("@todo: something with attribute: "+ attribute + " "+value+";");
                    }
                } catch (Exception ex) {
                    Throwable thr = ex;

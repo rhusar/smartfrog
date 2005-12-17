@@ -29,102 +29,65 @@ For more information: www.smartfrog.org
 #include "org/smartfrog/services/ant/components.sf"
 
 
-#include "org/smartfrog/components.sf"
-#include "org/smartfrog/services/ant/components.sf"
-#include "org/smartfrog/services/ant/components.sf"
-
-//Elements
-Fileset extends {
-  AntElement "fileset";
-}
-
-Filterset extends {
-  AntElement "filterset";
-}
-
-FiltersFile extends {
-  AntElement "filtersfile";
-}
-
-GlobMapper extends {
-   AntElement "globmapper";
-}
 
 
-GlobMapper extends {
-   AntElement "mapper";
-   type "glob";
-}
+//GlobMapper extends {
+//   AntElement "mapper";
+//   type "glob";
+//}
 
-PathElement extends {
-    AntElement "pathelement";
-}
-
-
-// Tasks
-Echo extends {
-  AntTask "echo";
-}
-
-Copy extends {
-  AntTask "copy";
-}
-
-Fixcrlf extends {
-  AntTask "fixcrlf";
-}
 
 sfConfig extends Ant {
-  echoTask extends Echo {
+  echoTask extends echo {
     message "hellow world!";
   }
 
-   echoAntTask extends Echo {
+   echoAntTask extends echo {
       message "Ant version '${ant.version}', java version '${ant.java.version}";
    }
 
-  copyTask extends Copy {
+  copyTask extends copy {
       todir "tmp";
       filtering "true";
-      myFileSet extends Fileset {
-        AntElement "fileset";
+      myFileSet extends fileset {
         dir ".";
         includes "*.xml";
       }
-      myFilterSet extends Filterset {
-         myFiltersFile extends FiltersFile {
+      myFilterSet extends filterset {
+         myFiltersFile extends {
+           AntElement "filtersfile"; 	
            file "/filters.props";
          }
       }
   }
-  echoMedTask extends Echo {
+  echoMedTask extends echo {
     message "--------------------------------";
   }
 
 
 
-  copyTask2 extends Copy {
+  copyTask2 extends copy {
       todir "/juliotmp/kk";
       filtering "true";
       verbose "true";
-      myFileSet extends Fileset {
+      myFileSet extends fileset {
         dir "/";
         includes "*.txt";
       }
 
 
-      globMapper extends GlobMapper {
+      globMapper extends globmapper {
         from "*";
         to "*.bak";
       }
 
   }
 
-  copyTask3 extends Copy {
+  copyTask3 extends copy {
       todir "/juliotmp/kk";
       filtering "true";
       verbose "true";
-      myFileSet extends Fileset {
+      myFileSet extends fileset {
         dir "/";
         includes "*.txt";
       }
@@ -132,11 +95,11 @@ sfConfig extends Ant {
       flattenmapper extends {AntElement "mapper"; type "flatten";}
   }
 
-  copyTask4 extends Copy {
+  copyTask4 extends copy {
       todir "/juliotmp/kk";
       filtering "true";
       verbose "true";
-      myFileSet extends Fileset {
+      myFileSet extends fileset {
         dir "/";
         includes "*.txt";
       }
@@ -146,10 +109,9 @@ sfConfig extends Ant {
           <replacestring from="\" to="/"/>
         </filtermapper>
         */
-      filtermapper extends {
-        AntElement "filtermapper";
-        repacestring extends {
-          AntElement "replacestring";
+      filterMapper extends filtermapper {
+        replacestring1 extends {
+          AntElement "replacestring";	
           from "\\";
           to "/";
         }
@@ -157,18 +119,18 @@ sfConfig extends Ant {
 
   }
 
-  copyTask5 extends Copy {
+  copyTask5 extends copy {
       todir "/juliotmp/kk";
       filtering "true";
       verbose "true";
-      myFileSet extends Fileset {
+      myFileSet extends fileset {
         dir "/";
         includes "*.txt";
       }
       filtermapper extends {
         //Try the class directly
         AntElement "org.apache.tools.ant.types.mappers.FilterMapper";
-        repacestring extends {
+        replacestring extends {
           AntElement "replacestring";
           from "\\";
           to "/";
@@ -177,7 +139,7 @@ sfConfig extends Ant {
 
   }
 
-  fixcrlf extends Fixcrlf {
+  fixcrlf1 extends fixcrlf {
        //srcdir "${src}";
        srcdir ".";
        tab "add";
@@ -213,8 +175,8 @@ sfConfig extends Ant {
        AntTask "pathconvert";
        property "x";
        targetos "unix";
-        path extends {
-          AntElement "path";
+        myPath extends {
+          AntElement "path"; 	
           path "Aj.Java";
         } //path
 //        mapper extends {
@@ -233,11 +195,11 @@ sfConfig extends Ant {
 //        } //mapper
    } //pathconvert
 
-   echoXTask extends Echo {
+   echoXTask extends echo {
      message "x is ${x}";
    }
 
-   echoSFHOMETask extends Echo {
+   echoSFHOMETask extends echo {
     message "SFHOME is ${myenv.SFHOME}";
    }
 
@@ -261,7 +223,7 @@ sfConfig extends Ant {
      environment "env";
    }
 
-   echoSFHOMEEnvTask extends Echo {
+   echoSFHOMEEnvTask extends echo {
     message "SFHOME is ${env.SFHOME}";
    }
 
@@ -292,11 +254,11 @@ sfConfig extends Ant {
 //      }
 //   }
 
-   echoSFPathTask extends Echo {
+   echoSFPathTask extends echo {
       message "smartfrog.class.path is '${smartfrog.class.path}'";
    }
 
-  echoEndTask extends Echo {
+  echoEndTask extends echo {
     message "Done!";
   }
 }
