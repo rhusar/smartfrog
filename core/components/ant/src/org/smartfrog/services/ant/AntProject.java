@@ -64,7 +64,7 @@ public class AntProject {
 
             validateAnt();
 //        org.apache.tools.ant.Diagnostics.validateVersion();
-//       System.out.println("Ant version: "+org.apache.tools.ant.Main.getAntVersion());
+//       //System.out.println("Ant version: "+org.apache.tools.ant.Main.getAntVersion());
             project = new org.apache.tools.ant.Project();
             project.setCoreLoader(null);
             project.init();
@@ -125,7 +125,7 @@ public class AntProject {
         final String ATR_ANT_ELEMENT = "AntElement";
 
         Object getElement(Object task, String name, ComponentDescription cd )throws Exception {
-            System.out.println("  * "+name+" - Processing new element for "+ task.getClass().getName());
+            //System.out.println("  * "+name+" - Processing new element for "+ task.getClass().getName());
             java.lang.reflect.Method[] methods = task.getClass().getMethods();
             String attribute = null;
             Object value = null;
@@ -156,7 +156,7 @@ public class AntProject {
             Method method = null;
             for (int m = 0; m<methods.length;) {
                 method = methods[m++];
-                //System.out.println("                methodAttribute "+method.getName());
+                ////System.out.println("                methodAttribute "+method.getName());
                 if (method.getName().equalsIgnoreCase("set"+attribute)||
                     (attribute.equalsIgnoreCase("text")&& method.getName().equals("addText"))) {
 
@@ -169,15 +169,15 @@ public class AntProject {
                        // Conversion for ${xxx} is not done in setText or addText
                        String oldValue = (String)value;
                        value = project.replaceProperties((String)value);
-                       System.out.println("       -replaced properties in: '"+ oldValue + "' to '"+value+"'");
+                       //System.out.println("       -replaced properties in: '"+ oldValue + "' to '"+value+"'");
                     }
                     // May need for type conversion
                     if (!ptypes[0].equals(value.getClass())) {
                         value = convType((String)value, ptypes[0]);
                     }
-                    //System.out.println("    +  "+method.getName()+" - TO beAdded attribute "+attribute+" for "+task.getClass().getName()+", value "+value +", "+value.getClass().getName());
+                    ////System.out.println("    +  "+method.getName()+" - TO beAdded attribute "+attribute+" for "+task.getClass().getName()+", value "+value +", "+value.getClass().getName());
                     method.invoke(task, new Object[] {value});
-                    System.out.println("    +  "+method.getName()+"    - Added attribute "+attribute+" for "+task.getClass().getName()+", value "+value);
+                    //System.out.println("    +  "+method.getName()+"    - Added attribute "+attribute+" for "+task.getClass().getName()+", value "+value);
                     return;
                 }
             }
@@ -190,19 +190,19 @@ public class AntProject {
             Method method = null;
             String mName = null;
             if (methods!=null) {
-                System.out.println(" # "+elementType+" - Creating element "+ elementType+" for "+task.getClass().getName());
+                //System.out.println(" # "+elementType+" - Creating element "+ elementType+" for "+task.getClass().getName());
                 for (int e = 0; e<methods.length; ) {
                     method = methods[e++];
                     mName = method.getName();
-                    //System.out.println("            Method - "+mName);
+                    ////System.out.println("            Method - "+mName);
                     if (mName.equalsIgnoreCase("create"+elementType)) {
-                        System.out.println("   #-Created element with: "+mName+ "of  element type "+elementType+" to "+task.getClass().getName());
+                        //System.out.println("   #-Created element with: "+mName+ "of  element type "+elementType+" to "+task.getClass().getName());
                         return method.invoke(task, new Object[] {});
                     } else if (mName.equalsIgnoreCase("add"+elementType)|| mName.equalsIgnoreCase("addConfigured"+elementType)) {
                         Class[] ptypes = method.getParameterTypes();
                         if (ptypes.length==1) {
                             Object[] args = new Object[] {ptypes[0].newInstance()};
-                            System.out.println("   #-Adding element with: "+  mName+"of  element type "+ elementType+" to "+ task.getClass().getName());
+                            //System.out.println("   #-Adding element with: "+  mName+"of  element type "+ elementType+" to "+ task.getClass().getName());
                             method.invoke(task, args);
                             return args[0];
                         }
@@ -216,14 +216,14 @@ public class AntProject {
                 //if (types.containsKey(elementType)) {
                 if (project.getDataTypeDefinitions().containsKey(elementType)){
                     //Try to find the real class for Types that are defined in ant/types/default.properties
-                    System.out.println("   #-Creating element for: "+elementType+" using "+project.getDataTypeDefinitions().get(elementType));
+                    //System.out.println("   #-Creating element for: "+elementType+" using "+project.getDataTypeDefinitions().get(elementType));
                     //Object obj = Class.forName(types.getProperty(elementType)).newInstance();
                     Object obj = ((Class)project.getDataTypeDefinitions().get(elementType)).newInstance();
                     //@todo: improve error messages
                     return obj;
                 } else {
                     //Try to load the class directly
-                    System.out.println("   #- Creating element for: "+elementType+" using "+elementType);
+                    //System.out.println("   #- Creating element for: "+elementType+" using "+elementType);
                     Object obj = Class.forName(elementType).newInstance();
                     return obj;
                     //@todo: improve error messages
@@ -280,7 +280,7 @@ public class AntProject {
 
 
     Object convType (String arg, Class type) throws NoSuchMethodException, SecurityException,IllegalArgumentException, IllegalAccessException, InvocationTargetException,InstantiationException, ClassNotFoundException{
-         System.out.println("          = ContType: "+ arg +", "+type);
+         //System.out.println("          = ContType: "+ arg +", "+type);
       if (type.isPrimitive()){
         if (type.toString().equals("boolean")){
           String ucArg = arg.toUpperCase();
@@ -304,7 +304,7 @@ public class AntProject {
       } else if (EnumeratedAttribute.class.isAssignableFrom(type)) {
         Object newType = type.newInstance();
         ((EnumeratedAttribute)newType).setValue(arg);
-        System.out.println("Conv:Created EnumeratedAttribute:"+newType.toString());
+        //System.out.println("Conv:Created EnumeratedAttribute:"+newType.toString());
         return newType;
       } else if (java.lang.String.class.equals(type)){
           return (String)arg;
@@ -383,7 +383,7 @@ public class AntProject {
       String taskname = cd.sfResolve(ATR_TASK_NAME,tname,false);
   //      String clazz = tasks.getProperty(taskname);
       Class clazz =  ((Class)(project.getTaskDefinitions().get(taskname)));
-      System.out.println("- Creating task: "+tname+" ,type: "+taskname+", clazz: "+clazz);
+      //System.out.println("- Creating task: "+tname+" ,type: "+taskname+", clazz: "+clazz);
       if (clazz == null){
         throw new Exception("no such task: " + taskname);
       }
