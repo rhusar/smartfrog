@@ -90,11 +90,13 @@ public class ScpTo extends AbsScp {
         assert lFile != null;
         File localFile = new File (lFile);
         int fileSize = (int) localFile.length();
+	String lFilePart = lFile.substring(
+			lFile.lastIndexOf(File.separatorChar)+1);
         StringBuffer cmdBuff = new StringBuffer("C0644")
                                     .append(" ")
                                     .append(fileSize)
                                     .append(" ")
-                                    .append(lFile)
+                                    .append(lFilePart)
                                     .append("\n");
         // send command over OutputStream
         String cmd = cmdBuff.toString();
