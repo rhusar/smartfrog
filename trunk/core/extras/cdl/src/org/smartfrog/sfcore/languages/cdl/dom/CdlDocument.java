@@ -43,6 +43,7 @@ import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,6 +63,11 @@ public class CdlDocument implements Names, ToSmartFrog {
      * URL of the document; may be null
      */
     private URL documentURL;
+
+    /**
+     * the name of the resource used to source the document
+     */
+    private String documentResource;
 
     /**
      * Original Xom Document
@@ -239,6 +245,22 @@ public class CdlDocument implements Names, ToSmartFrog {
     }
 
     /**
+     * Get the (often null) resource path of a doc
+     * @return string value or null
+     */
+    public String getDocumentResource() {
+        return documentResource;
+    }
+
+    /**
+     * Set the resource where this document came from.
+     * @param documentResource
+     */
+    public void setDocumentResource(String documentResource) {
+        this.documentResource = documentResource;
+    }
+
+    /**
      * Iterate just over elements
      *
      * @param element
@@ -271,13 +293,26 @@ public class CdlDocument implements Names, ToSmartFrog {
     /**
      * bind the document. This does not do any parsing of the XML
      *
-     * @param doc
+     * @param graph the document graph
      * @throws CdlException
      */
-    public void bind(DocumentNode doc) throws CdlException {
-        assert doc != null;
-        this.document = doc;
-        doc.setOwner(this);
+    public void bind(DocumentNode graph) throws CdlException {
+        assert graph != null;
+        this.document = graph;
+        graph.setOwner(this);
+        //extract the URL From the doc
+        String uri=graph.getBaseURI();
+        if(uri!=null && uri.length()>0) {
+            try {
+                URL url=new URL(uri);
+                setDocumentURL(url);
+            } catch (MalformedURLException e) {
+                log.info("Could not make a URL of "+uri,e);
+            }
+        } else {
+            log.debug("Unknown origin of document");
+        }
+
     }
 
     /**
@@ -412,8 +447,10 @@ public class CdlDocument implements Names, ToSmartFrog {
      */
     public void parsePhaseProcessImports() throws CdlException, IOException,
             ParsingException {
+        ParseContext context = getParseContext();
         for (Import imp : getImports()) {
-            CdlDocument imported = getParseContext().importDocument(this, imp);
+            CdlDocument imported = context.importDocument(this, imp);
+            //TODO: do we need to do anything with the imported doc?
         }
 
 

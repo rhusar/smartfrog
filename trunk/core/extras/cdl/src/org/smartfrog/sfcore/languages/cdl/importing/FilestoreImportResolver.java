@@ -43,8 +43,10 @@ public class FilestoreImportResolver extends BaseImportResolver implements Close
 
 
     /**
-     * map the path to a URI. For in-classpath resolution, URLs of the type
-     * returned by
+     * map the path to a URI.
+     * Entries in the filestore are checked first.
+     * For in-classpath resolution, URLs of the type
+     * returned by the superclass are returned.
      *
      * @param path
      * @return the URL to the resource
@@ -52,10 +54,10 @@ public class FilestoreImportResolver extends BaseImportResolver implements Close
      */
     public URL resolveToURL(String path) throws IOException {
         File mapping = entries.get(path);
-        if(mapping==null) {
-            return super.resolveToURL(path);
-        } else {
+        if(mapping!=null) {
             return mapping.toURL();
+        } else {
+            return super.resolveToURL(path);
         }
     }
 

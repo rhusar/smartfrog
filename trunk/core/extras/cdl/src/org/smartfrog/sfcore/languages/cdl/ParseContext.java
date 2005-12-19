@@ -27,6 +27,7 @@ import org.smartfrog.sfcore.languages.cdl.dom.PropertyList;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlDuplicatePrototypeException;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlRuntimeException;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlResolutionException;
 import org.smartfrog.sfcore.languages.cdl.importing.ClasspathResolver;
 import org.smartfrog.sfcore.languages.cdl.importing.ImportResolver;
 import org.smartfrog.sfcore.languages.cdl.importing.ImportedDocument;
@@ -39,6 +40,7 @@ import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.net.MalformedURLException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Properties;
@@ -72,8 +74,15 @@ public class ParseContext {
      */ 
     ResourceLoader loader;
 
+    /**
+     * Map of imported documents
+     */
     private ImportedDocumentMap imports = new ImportedDocumentMap();
 
+    /**
+     * Local imports are things that are imported without a namespace;
+     * these are effectively merged into the current templated
+     */
     private ImportedDocumentMap localImports = new ImportedDocumentMap();
 
     /**
@@ -105,6 +114,7 @@ public class ParseContext {
     public static final String ERROR_DIFFERENT_LOCATION = "Cannot import %s into %s because %s is there already";
     public static final String ERROR_RECURSIVE_LOCAL_IMPORT = "Recursive import of ";
     public static final String ERROR_PARSER_SAX_FAULT = "when creating parser";
+    public static final String ERROR_RELATIVE_IMPORT_FAILED = "Unable to resolve relative import path ";
 
     /**
      * Create a parse context
@@ -209,19 +219,22 @@ public class ParseContext {
 
     /**
      * Import a document
-     * @param importer who is doing the import. This lets us do relative resolution
+     * @param parent who is doing the import. This lets us do relative resolution
      * @param declaration the import declaration from the doc
-     * @return the imported document
+     * @return the imported document or null if it was already imported.
      * @throws IOException IO errors
      * @throws CdlException CDL errors
      * @throws ParsingException parsing problems.
      */
-    public CdlDocument importDocument(CdlDocument importer, Import declaration) throws IOException, CdlException,
+    public CdlDocument importDocument(CdlDocument parent, Import declaration) throws IOException, CdlException,
             ParsingException {
         assert declaration != null;
         String namespace = declaration.getNamespace();
         String path = declaration.getLocation();
-
+        //now, do some relative resolution stuff. This needs to happen early,
+        //because the map tables need absolute references to work properly.
+        URL url=resolveRelativePath(parent, path);
+        String urlpath=url.toExternalForm();
         if (namespace == null) {
             return importLocalDocument(path);
         } else {
@@ -230,11 +243,38 @@ public class ParseContext {
     }
 
     /**
-     * do the full document import, to the extent of including and parsing the
-     * doc
+     * try and turn a possibly relative path into an absolute URL
+     * @param parent document to use as a basis
+     * @param path the relative/absolute path
+     * @return
+     * @throws CdlResolutionException
+     */
+    public URL resolveRelativePath(CdlDocument parent,String path) throws CdlResolutionException {
+        URL documentURL = parent != null ? parent.getDocumentURL() : null;
+        URL url=null;
+        try {
+            url=new URL(path);
+        } catch (MalformedURLException first) {
+            String message = ERROR_RELATIVE_IMPORT_FAILED + path;
+            try {
+                if(documentURL == null) {
+                    throw new CdlResolutionException(message +" - no base document/URL");
+                }
+                url=new URL(documentURL, path);
+            } catch (MalformedURLException second) {
+                //double failure. Throw the first exception, as it may be the most meaningful.
+                log.info("resolving "+path+" relative to "+documentURL,second);
+                throw new CdlResolutionException(message,first);
+            }
+        }
+        return url;
+    }
+
+    /**
+     * Import a a document into the current namespace.
      *
      * @param path the full path to the doc (not a relative path)
-     * @return the imported document
+     * @return the imported document or null if the import has already taken place
      * @throws IOException
      * @throws CdlException
      */
@@ -246,28 +286,34 @@ public class ParseContext {
         //no namespace, check in local paths
         ImportedDocument importedDocument = localImports.get(path);
         if (importedDocument != null) {
+            //check for being present
             if (importedDocument.getDocument() == null) {
+                //if the doc is present, then throw an exception
                 throw new CdlException(ERROR_RECURSIVE_LOCAL_IMPORT + path);
             }
+            //else return null to say the import has already taken place
             return null;
         }
 
         //place a stub in to say it is being imported
+        //to catch and trigger recursive things
         localImports.put(path, new ImportedDocument());
         //import it
         ImportedDocument imported = doImport(path, null);
         //then patch in the imported doc into our import list
         localImports.put(path, imported);
+        //and return the document
         return imported.getDocument();
     }
 
     /**
      * do the full document import, to the extent of including and parsing the
-     * doc
+     * doc.
      *
+     * Catches importing the same namespace from multiple locations.
      * @param namespace namespace
      * @param path the full path to the doc (not a relative path)
-     * @return the imported document
+     * @return the imported document or null for an already imported doc
      * @throws IOException
      * @throws CdlException
      */
@@ -301,10 +347,11 @@ public class ParseContext {
     }
 
     /**
-     * do the actual import
-     * @param path
+     * do the actual import. this includes mapping from the import path to a
+     * URL, fetching the contents thereof.
+     * @param path unresolved import.
      * @param namespace xmlnamespace, can be null
-     * @return
+     * @return the imported document
      * @throws IOException
      * @throws ParsingException
      * @throws CdlException
@@ -318,16 +365,18 @@ public class ParseContext {
         if (log.isDebugEnabled()) {
             log.debug("Importing " + namespace + " url " + location);
         }
-        //we now have a location; lets load it.
+        //we now have a location; let's load it.
         InputStream inputStream = location.openStream();
         CdlDocument doc;
         try {
+            //open and parse the document
             doc = createParser().parseStream(inputStream);
             //recursive parse
             doc.parse(this);
         } finally {
             inputStream.close();
         }
+        //return the newly imported document
         ImportedDocument imported = new ImportedDocument();
         imported.setDocument(doc);
         imported.setNamespace(namespace);
