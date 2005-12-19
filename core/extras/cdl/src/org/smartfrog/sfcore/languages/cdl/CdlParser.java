@@ -23,14 +23,11 @@ package org.smartfrog.sfcore.languages.cdl;
 import nu.xom.Builder;
 import nu.xom.Document;
 import nu.xom.ParsingException;
-import nu.xom.NodeFactory;
-import nu.xom.converters.DOMConverter;
 import org.smartfrog.services.xml.utils.ParserHelper;
 import org.smartfrog.services.xml.utils.ResourceLoader;
 import org.smartfrog.services.xml.utils.DomToXom;
 import org.smartfrog.sfcore.languages.cdl.dom.CdlDocument;
 import org.smartfrog.sfcore.languages.cdl.dom.ExtendedNodeFactory;
-import org.smartfrog.sfcore.languages.cdl.dom.DocumentNode;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
@@ -38,6 +35,7 @@ import org.xml.sax.XMLReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 
 /**
  * Xom based utility to parse CDL files. created Jul 1, 2004 1:49:31 PM
@@ -91,7 +89,8 @@ public class CdlParser {
     public CdlDocument parseFile(String filename) throws IOException,
             ParsingException, CdlException {
         File f = new File(filename);
-        return new CdlDocument(builder.build(f));
+        Document doc = builder.build(f);
+        return new CdlDocument(doc);
     }
 
     /**
@@ -109,7 +108,7 @@ public class CdlParser {
     }
 
     /**
-     * load and parse a resoure through our current resource loader
+     * load and parse a resource through our current resource loader
      *
      * @param resource
      * @return
@@ -119,7 +118,9 @@ public class CdlParser {
     public CdlDocument parseResource(String resource) throws IOException,
             ParsingException, CdlException {
         InputStream in = resourceLoader.loadResource(resource);
-        return parseStream(in);
+        CdlDocument cdlDocument = parseStream(in);
+        cdlDocument.setDocumentResource(resource);
+        return cdlDocument;
     }
 
     /**
@@ -129,7 +130,7 @@ public class CdlParser {
      * @throws ParsingException
      * @throws CdlException
      */
-    public CdlDocument parseDom(org.w3c.dom.Document dom) throws 
+    public CdlDocument parseDom(org.w3c.dom.Document dom) throws
             ParsingException, CdlException {
         DomToXom converter = new DomToXom(builder);
         //this converts it to a Dom Document, but not to
