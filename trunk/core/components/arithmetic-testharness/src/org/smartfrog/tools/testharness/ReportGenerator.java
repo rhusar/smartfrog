@@ -22,7 +22,7 @@ public class ReportGenerator {
   {
 
            System.out.println("VEL :::::::::::::::::::: Report Generator_generateReport()" +  report.size());
-           printItemReportHTML(report);
+          // printItemReportHTML(report);
            try {
               newFile = new FileWriter(fileName+"_report.html");
               newFile.write("<!doctype HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\"><html>");
