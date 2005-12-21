@@ -14,7 +14,7 @@ for x in $@;
     mv sfExamples-*.jar sfExamples.jar
     mv sfServices-*.jar sfServices.jar
     mv sf-arithmetic-testharness-*.jar sf-arithmetic-testharness.jar
-    mv sf-net-*.jar sf-net.jar
+   # mv sf-net-*.jar sf-net.jar
     mv sf-scripting-*.jar sf-scripting.jar
  done
 

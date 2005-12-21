@@ -7,7 +7,7 @@
     #set ($httpJars = ["sfServices.jar","velocity-1.1.jar","bsh-1.3.0.jar","SFGuiTools.jar", "SFGuiBrowser.jar","sf-arithmetic-testharness.jar","sf-scripting.jar"])
   #else 
     ## security is ON and  DL is OFF
-    #set ($libJars = ["sfServices.jar","velocity-1.1.jar","bsh-1.3.0.jar","SFGuiTools.jar", "SFGuiBrowser.jar","sf-arithmetic-testharness.jar","sf-scripting.jar"])
+    #set ($libJars = ["sfServices.jar","velocity-1.1.jar","bsh-1.3.0.jar","SFGuiTools.jar","SFGuiBrowser.jar" , "sf-arithmetic-testharness.jar", "sf-scripting.jar"])
   #end
 
 #else 
@@ -232,7 +232,7 @@ Scheduler extends SchedulerCompound {
 #if ($securityOn)
         secPolicy "${daemon.sfHome}/private/sf.policy";
         secKeyStore "${daemon.sfHome}/private/host1/mykeys.st";
-        secPropFile "${daemon.sfHome}/private/host1/SFsecurity.properties";
+        secPropFile "${daemon.sfHome}/private/host1/SFSecurity.properties";
 #end
       }
 #end
@@ -257,7 +257,7 @@ TemplateSerrano extends Compound {
 #if ($securityOn)
         secPolicy "${principalDaemon.sfHome}/private/sf.policy";
         secKeyStore "${principalDaemon.sfHome}/private/host1/mykeys.st";
-        secPropFile "${principalDaemon.sfHome}/private/host1/SFsecurity.properties";
+        secPropFile "${principalDaemon.sfHome}/private/host1/SFSecurity.properties";
 #end
 
   port 3801;
