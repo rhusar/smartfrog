@@ -24,7 +24,7 @@ public class ResolveImportTest extends XmlTestBase {
     }
 
     private URL resolve(String path) throws IOException {
-        return resolver.resolveToURL(path);
+        return resolver.createReferenceURL(path);
     }
 
     private void expectResolveFailure(String path) throws IOException {

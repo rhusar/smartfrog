@@ -1,6 +1,7 @@
 package org.smartfrog.sfcore.languages.cdl.importing;
 
 import org.smartfrog.sfcore.languages.cdl.ParseContext;
+import org.smartfrog.sfcore.languages.cdl.importing.classpath.UrlFactory;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -9,10 +10,9 @@ import java.net.URL;
 /**
  * CDL document importing is a bit, well, more relaxed than the secure mechanism
  * of SmartFrog
- * This is the base import resolver. It is abstract
- * and must be implemented by something 
+ * This is the base import resolver.
  */
-public abstract class BaseImportResolver implements ImportResolver {
+public class BaseImportResolver implements ImportResolver {
 
     private ParseContext context;
     public static final String ERROR_NO_RESOLUTION = "Unable to resolve :";
@@ -36,15 +36,30 @@ public abstract class BaseImportResolver implements ImportResolver {
     }
 
     /**
-     * map the path to a URI. For in-classpath resolution, URLs of the type
-     * returned by
+     * Turn the reference URL into the source URL which can then be opened.
+     * If any form of caching/retrieval is done, this should be where the
+     * reference URL is turned into a local URL to a file: copy.
      *
-     * @param path
+     * @param referenceURL the URL returned by {@link #createReferenceURL(String)}
      * @return the URL to the resource
      * @throws java.io.IOException on failure to locate or other problems
      */
-    public URL resolveToURL(String path) throws IOException {
-        throw createResolutionFailure(path);
+    public URL convertToSourceURL(URL referenceURL) throws IOException {
+        return referenceURL;
+    }
+
+    /**
+     * Take a path and turn it in to an absolute URL in the schema of choice.
+     * This is the URL that will be used for caching the import list, and
+     * for relative references, not for loading the files
+     *
+     * @param path
+     * @return a URL
+     * @throws java.io.IOException
+     */
+    public URL createReferenceURL(String path) throws IOException {
+        UrlFactory urlFactory = context.getUrlFactory();
+        return urlFactory.createUrl(path);
     }
 
     /**

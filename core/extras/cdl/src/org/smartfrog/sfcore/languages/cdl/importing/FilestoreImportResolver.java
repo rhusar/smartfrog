@@ -24,6 +24,9 @@ import java.io.IOException;
 import java.io.Closeable;
 import java.util.Hashtable;
 import java.net.URL;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.MalformedURLException;
 
 /**
  * This component resolves URLs for import against a filestore (somewhere)
@@ -34,7 +37,7 @@ public class FilestoreImportResolver extends BaseImportResolver implements Close
 
     private File directory;
 
-    private Hashtable<String,File> entries=new Hashtable<String, File>();
+    private Hashtable<URI,File> entries=new Hashtable<URI, File>();
 
     public FilestoreImportResolver(File directory) {
         this.directory = directory;
@@ -43,25 +46,39 @@ public class FilestoreImportResolver extends BaseImportResolver implements Close
 
 
     /**
-     * map the path to a URI.
-     * Entries in the filestore are checked first.
-     * For in-classpath resolution, URLs of the type
-     * returned by the superclass are returned.
+     * Turn the reference URL into the source URL which can then be opened.
+     * If any form of caching/retrieval is done, this should be where the
+     * reference URL is turned into a local URL to a file: copy.
      *
-     * @param path
+     * @param referenceURL the URL returned by {@link #createReferenceURL(String)}
      * @return the URL to the resource
      * @throws java.io.IOException on failure to locate or other problems
      */
-    public URL resolveToURL(String path) throws IOException {
-        File mapping = entries.get(path);
-        if(mapping!=null) {
-            return mapping.toURL();
-        } else {
-            return super.resolveToURL(path);
+    public URL convertToSourceURL(URL referenceURL) throws IOException {
+        try {
+            URI uri = referenceURL.toURI();
+            //look up in the map
+            File mapping = entries.get(uri);
+            if (mapping != null) {
+                //if found: return the local copy
+                return mapping.toURL();
+            } else {
+                //return the original
+                return referenceURL;
+            }
+        } catch (URISyntaxException e) {
+            throw new MalformedURLException("cannot convert to a URI "+referenceURL);
         }
     }
 
-    public File createEntry(String path,String suffix) throws IOException {
+    /**
+     * create an entry in the filestore
+     * @param path
+     * @param suffix
+     * @return
+     * @throws IOException
+     */
+    public File createEntry(URI path,String suffix) throws IOException {
         assert path !=null;
         assert suffix != null;
         File tempFile = File.createTempFile("import", suffix, directory);

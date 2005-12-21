@@ -53,21 +53,23 @@ public class CdlParser {
      */
     private Builder builder;
 
+    private ParseContext context;
     /**
      * create a parser;
      * This includes creating an {@link nu.xom.Builder} with
      * {@link ExtendedNodeFactory} as the node factory
-     * @param loader   resource loader algorithm
+     * @param context loading context
      * @param validate validation logic.
      */
-    public CdlParser(ResourceLoader loader, boolean validate)
+    public CdlParser(ParseContext context, boolean validate)
             throws SAXException {
-        resourceLoader = loader;
+        this.context=context;
+        resourceLoader = context.getLoader();
         //we mandate Xerces, as the others cannot handle schema so well
         XMLReader xerces = ParserHelper.createXmlParser(validate, true, true);
 
         if (validate) {
-            CdlCatalog resolver = new CdlCatalog(loader);
+            CdlCatalog resolver = new CdlCatalog(resourceLoader);
             try {
                 resolver.bind(xerces);
             } catch (IOException e) {
@@ -119,7 +121,8 @@ public class CdlParser {
             ParsingException, CdlException {
         InputStream in = resourceLoader.loadResource(resource);
         CdlDocument cdlDocument = parseStream(in);
-        cdlDocument.setDocumentResource(resource);
+        URL docURL=context.getUrlFactory().createClasspathUrl(resource);
+        cdlDocument.setDocumentURL(docURL);
         return cdlDocument;
     }
 

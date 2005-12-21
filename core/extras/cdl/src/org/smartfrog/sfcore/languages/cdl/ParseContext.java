@@ -32,6 +32,8 @@ import org.smartfrog.sfcore.languages.cdl.importing.ClasspathResolver;
 import org.smartfrog.sfcore.languages.cdl.importing.ImportResolver;
 import org.smartfrog.sfcore.languages.cdl.importing.ImportedDocument;
 import org.smartfrog.sfcore.languages.cdl.importing.ImportedDocumentMap;
+import org.smartfrog.sfcore.languages.cdl.importing.BaseImportResolver;
+import org.smartfrog.sfcore.languages.cdl.importing.classpath.UrlFactory;
 import org.smartfrog.sfcore.languages.cdl.utils.ClassLogger;
 import org.smartfrog.sfcore.logging.Log;
 import org.xml.sax.SAXException;
@@ -102,6 +104,9 @@ public class ParseContext {
      */
     private HashMap<QName, PropertyList> resolvablePrototypes = new HashMap<QName, PropertyList>();
 
+
+    private UrlFactory urlFactory;
+
     /**
      * base document. may be null
      */
@@ -124,13 +129,15 @@ public class ParseContext {
      */
     public ParseContext(ImportResolver importResolver, ResourceLoader loader) {
         if (importResolver == null) {
-            importResolver = new ClasspathResolver();
+            importResolver = new BaseImportResolver();
         }
-        this.importResolver = importResolver;
+        setImportResolver(importResolver);
         if (loader == null) {
             loader = new ResourceLoader(this.getClass());
         }
         this.loader=loader;
+        //URL factory
+        urlFactory= new UrlFactory(loader);
 
     }
     
@@ -141,7 +148,7 @@ public class ParseContext {
      */ 
     CdlParser createParser() {
         try {
-            CdlParser parser = new CdlParser(loader, true);
+            CdlParser parser = new CdlParser(this, true);
             return parser;
         } catch (SAXException e) {
             throw new CdlRuntimeException(ERROR_PARSER_SAX_FAULT, e);
@@ -236,9 +243,9 @@ public class ParseContext {
         URL url=resolveRelativePath(parent, path);
         String urlpath=url.toExternalForm();
         if (namespace == null) {
-            return importLocalDocument(path);
+            return importLocalDocument(urlpath);
         } else {
-            return importDocument(namespace, path);
+            return importDocument(namespace, urlpath);
         }
     }
 
@@ -361,37 +368,31 @@ public class ParseContext {
         if (log.isDebugEnabled()) {
             log.debug("Importing " + path);
         }
-        URL location = resolveImport(path);
+        URL referenceURL=importResolver.createReferenceURL(path);
+        URL sourceURL = importResolver.convertToSourceURL(referenceURL);
         if (log.isDebugEnabled()) {
-            log.debug("Importing " + namespace + " url " + location);
+            log.debug("Importing ns=" + namespace + " url " +referenceURL+" from "+ sourceURL);
         }
         //we now have a location; let's load it.
-        InputStream inputStream = location.openStream();
-        CdlDocument doc;
+        InputStream inputStream = getUrlFactory().openStream(sourceURL);
+        CdlDocument cdlDocument;
         try {
-            //open and parse the document
-            doc = createParser().parseStream(inputStream);
+            //open the document
+            CdlParser parser = createParser();
+            cdlDocument = parser.parseStream(inputStream);
+            //patch the document's origin
+            cdlDocument.setDocumentURL(referenceURL);
             //recursive parse
-            doc.parse(this);
+            cdlDocument.parse(this);
         } finally {
             inputStream.close();
         }
         //return the newly imported document
         ImportedDocument imported = new ImportedDocument();
-        imported.setDocument(doc);
+        imported.setDocument(cdlDocument);
         imported.setNamespace(namespace);
         imported.setLocation(path);
         return imported;
-    }
-
-    /**
-     * This resolves an import.
-     * @param path
-     * @return
-     * @throws IOException
-     */
-    private URL resolveImport(String path) throws IOException {
-        return getImportResolver().resolveToURL(path);
     }
 
     /**
@@ -416,18 +417,6 @@ public class ParseContext {
         document = new CdlDocument(this);
         return document;
     }
-
-    /**
-     * map the path to a URI. Hands off to the importResolver
-     *
-     * @param path
-     * @return the URL to the resource
-     * @throws java.io.IOException on failure to locate or other problems
-     */
-    public URL resolveToURL(String path) throws IOException {
-        return importResolver.resolveToURL(path);
-    }
-
 
     /**
      * Resolve a prototype
@@ -488,5 +477,13 @@ public class ParseContext {
 
     public Log getLog() {
         return log;
+    }
+
+    public ResourceLoader getLoader() {
+        return loader;
+    }
+
+    public UrlFactory getUrlFactory() {
+        return urlFactory;
     }
 }

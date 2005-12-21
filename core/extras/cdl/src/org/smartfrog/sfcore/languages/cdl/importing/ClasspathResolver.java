@@ -29,6 +29,8 @@ public class ClasspathResolver extends BaseImportResolver {
         this.classLoader = classLoader;
     }
 
+
+
     /**
      * map the path to a URI. For in-classpath resolution, URLs of the type
      * returned by
@@ -37,7 +39,7 @@ public class ClasspathResolver extends BaseImportResolver {
      * @return the URL to the resource
      * @throws java.io.IOException on failure to locate or other problems
      */
-    public URL resolveToURL(String path) throws IOException {
+    public URL createReferenceURL(String path) throws IOException {
         URL resource = resolve(path);
         if (resource == null) {
             throw createResolutionFailure(path);
