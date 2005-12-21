@@ -487,10 +487,12 @@ public class CdlDocument implements Names, ToSmartFrog {
         if (configuration != null) {
             configuration.registerPrototypes();
         }
+/* No: only configuration elements can act as prototypes
 
         if (system != null) {
             system.registerPrototypes();
         }
+*/
     }
 
     /**

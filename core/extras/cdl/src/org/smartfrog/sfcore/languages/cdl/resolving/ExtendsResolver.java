@@ -44,7 +44,7 @@ import java.util.List;
 
 public class ExtendsResolver {
 
-    ExtendsContext stack = new ExtendsContext();
+    private ExtendsContext stack = new ExtendsContext();
 
     /**
      * a log
