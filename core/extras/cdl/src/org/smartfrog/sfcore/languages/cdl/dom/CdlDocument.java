@@ -474,6 +474,10 @@ public class CdlDocument implements Names, ToSmartFrog {
 
     }
 
+    /**
+     * Resolve compile-time variables
+     * @throws CdlException
+     */
     public void parsePhaseResolveVariables() throws CdlException {
         //TODO
     }
@@ -492,12 +496,6 @@ public class CdlDocument implements Names, ToSmartFrog {
         if (configuration != null) {
             configuration.registerPrototypes();
         }
-/* No: only configuration elements can act as prototypes
-
-        if (system != null) {
-            system.registerPrototypes();
-        }
-*/
     }
 
     /**
