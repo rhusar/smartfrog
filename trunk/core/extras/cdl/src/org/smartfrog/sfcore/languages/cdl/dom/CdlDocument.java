@@ -236,6 +236,10 @@ public class CdlDocument implements Names, ToSmartFrog {
     }
 
 
+    /**
+     * The url from where the doc came; may be null
+     * @return a URL, possibly including the classpath: type
+     */
     public URL getDocumentURL() {
         return documentURL;
     }

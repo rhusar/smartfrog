@@ -29,6 +29,7 @@ import org.smartfrog.sfcore.languages.cdl.dom.CdlDocument;
 import org.smartfrog.test.unit.sfcore.languages.cdl.DocumentTestHelper;
 import org.smartfrog.services.xml.java5.XomToDom3;
 import org.smartfrog.services.xml.utils.DomToXom;
+import org.smartfrog.services.filesystem.FileSystem;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -78,7 +79,7 @@ public class CdlSmartFrogProcessor implements CDLProcessor {
      */
     public void put(URI id, Document doc) {
         try {
-            File file=filestore.createEntry(id.toString(), "cdl");
+            File file=filestore.createEntry(id, ".cdl");
             saveToFile(doc, file);
         } catch (IOException e) {
             throw new CDLException(e);
@@ -157,10 +158,10 @@ public class CdlSmartFrogProcessor implements CDLProcessor {
     private void saveToFile(Document doc, File file) throws IOException {
         PrintStream print=null;
         try {
-            new PrintStream(file,"UTF-8");
+            print=new PrintStream(file,"UTF-8");
             saveToStream(doc, print);
         } finally {
-            print.close();
+            FileSystem.close(print);
         }
     }
 

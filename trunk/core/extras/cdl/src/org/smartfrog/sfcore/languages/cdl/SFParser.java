@@ -57,8 +57,8 @@ public class SFParser implements StreamParser {
 
             //TODO: use the smartfrog classloader
             ResourceLoader loader = new ResourceLoader(this.getClass());
-            CdlParser parser = new CdlParser(loader, true);
-            ParseContext parseContext = new ParseContext();
+            ParseContext parseContext = new ParseContext(null,loader);
+            CdlParser parser = parseContext.createParser();
             CdlDocument cdlDocument = parser.parseStream(is);
             //here it is loaded; create the dom
             cdlDocument.parse(parseContext);

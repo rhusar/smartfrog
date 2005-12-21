@@ -45,7 +45,7 @@ public class RelativeClasspathResolver extends ClasspathResolver {
      * @return the URL to the resource
      * @throws java.io.IOException on failure to locate or other problems
      */
-    public URL resolveToURL(String path) throws IOException {
+    public URL convertToSourceURL(String path) throws IOException {
         URL url = resolve(path);
         if(url!=null) {
             return url;

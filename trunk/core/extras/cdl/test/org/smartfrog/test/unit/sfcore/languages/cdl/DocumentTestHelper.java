@@ -68,7 +68,8 @@ public class DocumentTestHelper extends Assert {
      */
     public void initParser(boolean validate) throws SAXException {
         ResourceLoader loader = new ResourceLoader(this.getClass());
-        parser = new CdlParser(loader, validate);
+        ParseContext context = new ParseContext(null,loader);
+        parser = new CdlParser(context, validate);
     }
 
 
@@ -79,7 +80,7 @@ public class DocumentTestHelper extends Assert {
     /**
      * create a new catalog, using the local classloader for resolution
      *
-     * @return
+     * @return the catalog
      */
     public CdlCatalog createCatalog() {
         ResourceLoader loader;
@@ -118,7 +119,7 @@ public class DocumentTestHelper extends Assert {
      */
     public void assertInvalidCDL(String resource, String text)
             throws Exception {
-        ParseContext context = new ParseContext();
+        ParseContext context=new ParseContext();
         assertInvalidCDL(context, resource, text);
     }
 
@@ -204,7 +205,7 @@ public class DocumentTestHelper extends Assert {
      * Load a valid CDL document
      *
      * @param resource
-     * @return
+     * @return the loaded document
      */
     public CdlDocument loadValidCDL(String resource) throws IOException,
             ParsingException, CdlException {
