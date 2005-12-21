@@ -25,9 +25,9 @@ import org.smartfrog.sfcore.languages.cdl.dom.CdlDocument;
 import org.smartfrog.sfcore.languages.cdl.dom.PropertyList;
 import org.smartfrog.sfcore.languages.cdl.dom.ToplevelList;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlException;
+import org.smartfrog.sfcore.languages.cdl.faults.CdlInternalErrorException;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlResolutionException;
 import org.smartfrog.sfcore.languages.cdl.faults.CdlXmlParsingException;
-import org.smartfrog.sfcore.languages.cdl.faults.CdlInternalErrorException;
 import org.smartfrog.sfcore.languages.cdl.utils.ClassLogger;
 import org.smartfrog.sfcore.logging.Log;
 
@@ -82,7 +82,7 @@ public class ExtendsResolver {
             PropertyList newSystem = resolveChildExtends(system);
             document.replaceSystem((ToplevelList) newSystem);
             ResolveEnum state = newSystem.aggregateResolutionState();
-            if(!state.isParseTimeResolutionComplete()) {
+            if (!state.isParseTimeResolutionComplete()) {
                 throw new CdlInternalErrorException("Incomplete parse time resolution");
             }
             return true;
@@ -135,6 +135,7 @@ public class ExtendsResolver {
     /**
      * resolve a toplevel template by pushing the name onto the stack,
      * popping it when it is exited
+     *
      * @param target
      * @return
      * @throws CdlException
@@ -180,7 +181,7 @@ public class ExtendsResolver {
         PropertyList output = target;
         ResolveEnum state = ResolveEnum.ResolvedIncomplete;
         ResolveEnum resolveState = target.getResolveState();
-        if(resolveState.isParseTimeResolutionComplete()) {
+        if (resolveState.isParseTimeResolutionComplete()) {
             //we are in a state where no parse time resolution is required.
             return new ResolveResult(target);
         }
@@ -306,10 +307,12 @@ public class ExtendsResolver {
      * @cdl:extends stripped.
      */
     private List<Node> copyAndResolve(PropertyList target,
-            HashMap<QName, QName> map)
+                                      HashMap<QName, QName> map)
             throws CdlException {
         int childCount = target.getChildCount();
         List<Node> newChildren = new ArrayList<Node>(childCount);
+        //our goal state.
+        ResolveEnum state = ResolveEnum.ResolvedComplete;
         for (Node node : target.nodes()) {
             if (node instanceof PropertyList) {
 
@@ -317,27 +320,34 @@ public class ExtendsResolver {
                 PropertyList entry = (PropertyList) node;
                 QName name = entry.getQName();
                 //merge it
-                ResolveResult resolved = resolveExtends(entry);
-                PropertyList resolvedList = resolved.getResolvedPropertyList();
+                ResolveResult result = resolveExtends(entry);
+                PropertyList resolvedList = result.getResolvedPropertyList();
                 assert name.equals(resolvedList.getQName());
                 //now, at this point we have a resolved property list.
                 //we add this to our children
+                boolean add = false;
                 if (map == null) {
                     //when not mapping, we add everything
-                    newChildren.add(resolvedList);
+                    add = true;
                 } else {
                     //when mapping, we do a lookup
                     if (map.get(name) == null) {
                         //and only add unique things
                         map.put(name, name);
-                        newChildren.add(resolvedList);
+                        add = true;
                     }
+                }
+                if (add) {
+                    //add if told to
+                    state = ResolveEnum.merge(state, resolvedList.getResolveState());
+                    newChildren.add(resolvedList);
                 }
             } else {
                 //anything other than a PropertyList. Just merge it in
                 newChildren.add(node);
             }
         }
+        target.setResolveState(state);
         return newChildren;
     }
 
@@ -352,10 +362,11 @@ public class ExtendsResolver {
      * @throws CdlXmlParsingException
      */
     private PropertyList replaceNode(PropertyList target,
-            List<Node> newChildren)
+                                     List<Node> newChildren)
             throws CdlXmlParsingException {
         //copy the target element
         PropertyList replacement = (PropertyList) target.copy();
+
         //strip its children away (a bit wasteful)
         replacement.removeChildren();
         //add the new ones in order

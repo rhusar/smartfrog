@@ -17,7 +17,7 @@
  For more information: www.smartfrog.org
 
  */
-package org.smartfrog.test.unit.sfcore.languages.cdl.standard.suites;
+package org.smartfrog.test.unit.sfcore.languages.cdl.standard.suites.invalid;
 
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -29,7 +29,7 @@ import org.smartfrog.test.unit.sfcore.languages.cdl.standard.CdlSmartFrogProcess
  * created 20-Dec-2005 11:25:27
  */
 
-public class InvalidImportSuiteTest extends TestCase {
+public class Invalid_04_ImportTest extends TestCase {
 
     /**
      * This is the suite
@@ -37,7 +37,7 @@ public class InvalidImportSuiteTest extends TestCase {
      * @return
      */
     public static TestSuite suite() {
-        return SingleDocumentTestCase.createSuite(InvalidImportSuiteTest.class,
+        return SingleDocumentTestCase.createSuite(Invalid_04_ImportTest.class,
                 CddlmConstants.TEST_PACKAGE_CDL_INVALID_SET_04_IMPORTS,
                 new CdlSmartFrogProcessorFactory());
     }

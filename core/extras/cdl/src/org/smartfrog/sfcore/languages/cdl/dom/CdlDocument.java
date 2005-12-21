@@ -24,6 +24,8 @@ import nu.xom.Element;
 import nu.xom.Node;
 import nu.xom.ParentNode;
 import nu.xom.ParsingException;
+import org.smartfrog.services.xml.java5.iterators.IteratorRelay;
+import org.smartfrog.services.xml.java5.iterators.NodeIterator;
 import org.smartfrog.sfcore.languages.cdl.ParseContext;
 import org.smartfrog.sfcore.languages.cdl.dom.attributes.GenericAttribute;
 import org.smartfrog.sfcore.languages.cdl.dom.attributes.URIAttribute;
@@ -35,15 +37,13 @@ import org.smartfrog.sfcore.languages.cdl.generate.GenerateContext;
 import org.smartfrog.sfcore.languages.cdl.generate.ToSmartFrog;
 import org.smartfrog.sfcore.languages.cdl.resolving.ExtendsResolver;
 import org.smartfrog.sfcore.languages.cdl.utils.ClassLogger;
-import org.smartfrog.services.xml.java5.iterators.IteratorRelay;
-import org.smartfrog.services.xml.java5.iterators.NodeIterator;
 import org.smartfrog.sfcore.logging.Log;
 
 import javax.xml.namespace.QName;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -127,7 +127,7 @@ public class CdlDocument implements Names, ToSmartFrog {
     }
 
     public CdlDocument(Document doc) throws CdlException {
-        bind((DocumentNode)doc);
+        bind((DocumentNode) doc);
     }
 
     /**
@@ -238,6 +238,7 @@ public class CdlDocument implements Names, ToSmartFrog {
 
     /**
      * The url from where the doc came; may be null
+     *
      * @return a URL, possibly including the classpath: type
      */
     public URL getDocumentURL() {
@@ -250,6 +251,7 @@ public class CdlDocument implements Names, ToSmartFrog {
 
     /**
      * Get the (often null) resource path of a doc
+     *
      * @return string value or null
      */
     public String getDocumentResource() {
@@ -258,6 +260,7 @@ public class CdlDocument implements Names, ToSmartFrog {
 
     /**
      * Set the resource where this document came from.
+     *
      * @param documentResource
      */
     public void setDocumentResource(String documentResource) {
@@ -305,13 +308,13 @@ public class CdlDocument implements Names, ToSmartFrog {
         this.document = graph;
         graph.setOwner(this);
         //extract the URL From the doc
-        String uri=graph.getBaseURI();
-        if(uri!=null && uri.length()>0) {
+        String uri = graph.getBaseURI();
+        if (uri != null && uri.length() > 0) {
             try {
-                URL url=new URL(uri);
+                URL url = new URL(uri);
                 setDocumentURL(url);
             } catch (MalformedURLException e) {
-                log.info("Could not make a URL of "+uri,e);
+                log.info("Could not make a URL of " + uri, e);
             }
         } else {
             log.debug("Unknown origin of document");
@@ -386,8 +389,6 @@ public class CdlDocument implements Names, ToSmartFrog {
         if (targetNamespaceAttr != null) {
             targetNamespace = targetNamespaceAttr.getUri();
         }
-
-
 
         //bind the root
         getRoot().bind();

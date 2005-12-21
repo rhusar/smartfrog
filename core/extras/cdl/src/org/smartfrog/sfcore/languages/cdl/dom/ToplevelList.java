@@ -23,24 +23,12 @@ public class ToplevelList extends PropertyList {
     }
 
     /**
-     * <p/>
-     * Creates a very shallow copy of the element with the same name and
-     * namespace URI, but no children, attributes, base URI, or namespace
-     * declaration. This method is invoked as necessary by the {@link
-     * nu.xom.Element#copy() copy} method and the {@link
-     * nu.xom.Element#Element(nu.xom.Element) copy constructor}. </p>
-     * <p/>
-     * <p/>
-     * Subclasses should override this method so that it returns an instance of
-     * the subclass so that types are preserved when copying. This method should
-     * not add any attributes, namespace declarations, or children to the
-     * shallow copy. Any such items will be overwritten. </p>
+     * this is an override point, part of a shallowCopy.
      *
-     * @return an empty element with the same name and namespace as this
-     *         element
+     * @return a new PropertyList or a subclass, with
      */
-    protected Element shallowCopy() {
-        return new ToplevelList(getQualifiedName(), getNamespaceURI());
+    protected PropertyList newList(String name, String namespace) {
+        return new ToplevelList(name, namespace);
     }
 
     /**
@@ -51,7 +39,7 @@ public class ToplevelList extends PropertyList {
      * @return true for a match
      */
     public static boolean isConfigurationElement(String namespace,
-            String localname) {
+                                                 String localname) {
         return isNode(namespace, localname, ELEMENT_CONFIGURATION);
     }
 
@@ -63,7 +51,7 @@ public class ToplevelList extends PropertyList {
      * @return true for a match
      */
     public static boolean isSystemElement(String namespace,
-            String localname) {
+                                          String localname) {
         return isNode(namespace, localname, ELEMENT_SYSTEM);
     }
 
