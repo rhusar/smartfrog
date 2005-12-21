@@ -93,6 +93,7 @@ public class PropertyList extends DocNode {
         this.resolveState = resolveState;
     }
 
+
     /**
      * Parse from XML
      *
@@ -379,4 +380,35 @@ public class PropertyList extends DocNode {
         return state;
     }
 
+    /**
+     * get the refroot value
+     *
+     * @return refroot or null
+     */
+    public String getRefRootValue() {
+        return getAttributeValue(ATTR_REFROOT, CDL_NAMESPACE);
+    }
+
+    /**
+     * Get the reference
+     *
+     * @return the value of any reference. null means 'no reference'
+     */
+    public String getRefValue() {
+        return getAttributeValue(ATTR_REF, CDL_NAMESPACE);
+    }
+
+    protected void markReferenceResolved() {
+        String localname=ATTR_REF;
+        String namespace=CDL_NAMESPACE;
+        removeAttribute(localname, namespace);
+    }
+
+    private void removeAttribute(String localname, String namespace) {
+        removeAttribute(getAttribute(localname,namespace));
+    }
+
+    public ResolveEnum resolveLocalReference() {
+
+    }
 }
