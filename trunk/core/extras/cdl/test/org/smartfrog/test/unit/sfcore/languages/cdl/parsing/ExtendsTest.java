@@ -157,7 +157,8 @@ public class ExtendsTest extends XmlTestBase {
             ParsingException {
         ParseContext context = new ParseContext();
         CdlDocument cdlDocument = parseValidCDL(context, CDL_DOC_EXTENDS_1);
-        PropertyList propertyList = context.prototypeResolve(a3);
+
+        PropertyList propertyList = cdlDocument.getSystem().getChildTemplateMatching(a3);
         assertNotNull(propertyList);
         Attribute attribute = propertyList.getAttribute("attr");
         assertNotNull("Attribute copy failed", attribute);
@@ -277,9 +278,12 @@ public class ExtendsTest extends XmlTestBase {
 
     public void testExtendsWithinSystem() throws Exception {
         ParseContext context = new ParseContext();
+        assertInvalidCDL(CDL_DOC_EXTENDS_WITHIN_SYSTEM,
+                ExtendsResolver.ERROR_UNKNOWN_TEMPLATE);
+        //xpath tests to verify the stuff
+/*
         CdlDocument cdlDocument = parseValidCDL(context,
                 CDL_DOC_EXTENDS_WITHIN_SYSTEM);
-        //xpath tests to verify the stuff
         ToplevelList system = cdlDocument.getSystem();
         PropertyList component = lookupChildPropertyList(system,
                 "Component",
@@ -287,6 +291,7 @@ public class ExtendsTest extends XmlTestBase {
         PropertyList child = lookupChildPropertyList(component, "child2");
         assertAttributeValueEquals(child, "size", "20");
         assertElementValueEquals(child, "text");
+*/
     }
 
 
